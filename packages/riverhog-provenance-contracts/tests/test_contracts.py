@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import json
 from pathlib import Path
 
 import pytest
@@ -85,6 +86,24 @@ def test_nonportable_wire_values_are_rejected(value):
 def test_raw_json_rejects_loss_or_noncanonical_frames(raw):
     with pytest.raises(ValueError):
         decode_document(raw)
+
+
+def test_portable_ascii_keys_and_values_preserve_all_non_nul_code_points():
+    text = "".join(chr(code) for code in range(1, 128))
+    for document in ({"ascii": text}, {text: text}, {"empty": ""}):
+        expected = json.dumps(document, ensure_ascii=False, separators=(",", ":")).encode()
+        assert canonical_document(document) == expected
+        assert decode_document(expected) == document
+    for document in ({"ascii": text + "\x00"}, {"\x00" + text: text}):
+        with pytest.raises(ValueError, match=r"U\+0000"):
+            canonical_document(document)
+
+
+@pytest.mark.parametrize("invalid", ["\x00", "\ud800", "\udfff", "\ufdd0", "\ufffe", "\U0010ffff"])
+def test_mixed_unicode_provenance_keeps_portability_rejections(invalid: str):
+    for document in ({"value": "ascii-" + invalid}, {"ascii-" + invalid: "value"}):
+        with pytest.raises(ValueError):
+            canonical_document(document)
 
 
 def test_canonical_object_keys_are_utf16_ordered_and_unicode_is_not_normalized():
