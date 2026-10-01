@@ -12,8 +12,10 @@ from pydantic import BaseModel, ConfigDict, JsonValue
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client.canonical_completion import CompletionRecord
 from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
+from stove0_target_client import TargetCallbackClient
 from stove0_target_protocol import (
     OperationContract,
+    TargetCallbackAccess,
     TargetDescriptor,
     TargetJobRequest,
     TargetJobStatus,
@@ -56,6 +58,26 @@ class TargetExecutionSession:
         self.state_root = state_root
         self._lock = threading.RLock()
         self._completed_status: TargetJobStatus | None = None
+        self._callback_access = request.callback_access
+        self._callback_client: TargetCallbackClient | None = None
+
+    def callback_client(self) -> TargetCallbackClient:
+        """Bind queued and running callback reads to the latest transient access."""
+        with self._lock:
+            if self._callback_client is None:
+                self._callback_client = TargetCallbackClient(self._callback_access)
+            return self._callback_client
+
+    def refresh_callback_access(self, access: TargetCallbackAccess) -> None:
+        """Keep callback refresh scoped to the already accepted endpoint."""
+        with self._lock:
+            if access.model_dump(exclude={"token"}) != self._callback_access.model_dump(
+                exclude={"token"}
+            ):
+                raise ValueError("active target callback endpoint changed")
+            if self._callback_client is not None:
+                self._callback_client.refresh_access(access)
+            self._callback_access = access
 
     def completion_checkpoint(self, request: TargetJobRequest) -> TargetCompletionCheckpoint | None:
         if self.state_root is None:

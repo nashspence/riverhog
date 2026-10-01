@@ -68,7 +68,7 @@ from stove0_protocol import (
     WorkInputGroup,
     WorkPayload,
 )
-from stove0_target_client import TargetClient, TargetProtocolError
+from stove0_target_client import TargetCallbackClient, TargetClient, TargetProtocolError
 from stove0_target_protocol import (
     DEPARTURE_EFFECT_HTTP_OPERATIONS,
     OutputArtifactSetIdentity,
@@ -76,6 +76,7 @@ from stove0_target_protocol import (
     SemanticIntentConformanceVectors,
     TargetCallbackAccess,
     TargetInputAuthority,
+    TargetInputPage,
     TargetPreRootResult,
     TargetProductionAuthority,
     TargetProductionAuthorityPayload,
@@ -1975,7 +1976,28 @@ def test_queued_target_constructs_runtime_with_refreshed_authority_before_claim_
     waiting = threading.Event()
     start = threading.Event()
     claims: list[str] = []
+    callback_tokens: list[str] = []
     workflow = request.declaration.controller_evidence.execution_envelope.workflow_plan
+
+    def callback(http_request: httpx.Request) -> httpx.Response:
+        token = http_request.headers["Authorization"]
+        callback_tokens.append(token)
+        assert token == "Bearer refreshed-queued-callback-secret"
+        return httpx.Response(
+            200,
+            json=TargetInputPage(
+                authority=request.declaration.plan.inputs, complete=True, artifacts=(_input(),)
+            ).model_dump(mode="json"),
+        )
+
+    original_client_init = TargetCallbackClient.__init__
+
+    def callback_client_init(self, access, **kwargs):
+        original_client_init(self, access, **kwargs)
+        self._client.close()
+        self._client = httpx.Client(transport=httpx.MockTransport(callback))
+
+    monkeypatch.setattr(TargetCallbackClient, "__init__", callback_client_init)
 
     def claim(api: ApiClient, claim_id: str):
         assert claim_id == request.declaration.claim_id
@@ -1998,6 +2020,7 @@ def test_queued_target_constructs_runtime_with_refreshed_authority_before_claim_
         assert start.wait(timeout=5)
         with TargetExecutionRuntime.from_request(original, session=session) as execution:
             assert execution.runtime.api.current.token == "refreshed-queued-secret"
+            assert tuple(item for item, _claimed in execution.iter_inputs()) == (_input(),)
         raise TargetExecutionInapplicable("fixture-inapplicable", "fixture input")
 
     state = tmp_path / "state"
@@ -2010,7 +2033,9 @@ def test_queued_target_constructs_runtime_with_refreshed_authority_before_claim_
         replacement = TargetJobRequest.seal(
             request.declaration,
             request.runtime.model_copy(update={"capability_token": "refreshed-queued-secret"}),
-            request.callback_access,
+            request.callback_access.model_copy(
+                update={"token": "refreshed-queued-callback-secret"}
+            ),
         )
         assert replacement.request_sha256 == request.request_sha256
         service.put_job(replacement)
@@ -2022,12 +2047,89 @@ def test_queued_target_constructs_runtime_with_refreshed_authority_before_claim_
         status = service.get_job(request.declaration.job_id)
         assert (status.state, status.attempt) == ("inapplicable", 1)
         assert claims == ["refreshed-queued-secret"]
+        assert callback_tokens == ["Bearer refreshed-queued-callback-secret"]
     finally:
         start.set()
         service.close()
     persisted = b"\n".join(path.read_bytes() for path in state.iterdir())
     assert b"first-secret" not in persisted
     assert b"refreshed-queued-secret" not in persisted
+    assert b"callback-secret" not in persisted
+    assert b"refreshed-queued-callback-secret" not in persisted
+
+
+def test_running_target_refreshes_callback_access_and_rejects_endpoint_changes(
+    tmp_path: Path,
+) -> None:
+    operation, target, request = _request()
+    started = threading.Event()
+    proceed = threading.Event()
+    tokens: list[str] = []
+
+    def callback(http_request: httpx.Request) -> httpx.Response:
+        tokens.append(http_request.headers["Authorization"])
+        return httpx.Response(
+            200,
+            json=TargetInputPage(
+                authority=request.declaration.plan.inputs, complete=True, artifacts=(_input(),)
+            ).model_dump(mode="json"),
+        )
+
+    def execute(original, _attempt, _cancellation, session):
+        client = session.callback_client()
+        client._client.close()
+        client._client = httpx.Client(transport=httpx.MockTransport(callback))
+        try:
+            assert tuple(client.iter_inputs(original.declaration.job_id)) == (_input(),)
+            started.set()
+            assert proceed.wait(timeout=5)
+            assert tuple(client.iter_inputs(original.declaration.job_id)) == (_input(),)
+        finally:
+            client.close()
+        raise TargetExecutionInapplicable("fixture-inapplicable", "fixture input")
+
+    state_root = tmp_path / "state"
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=state_root,
+        execute=execute,
+    )
+    try:
+        service.put_job(request)
+        assert started.wait(timeout=5)
+        replacement = TargetJobRequest.seal(
+            request.declaration,
+            request.runtime,
+            request.callback_access.model_copy(update={"token": "renewed-callback-secret"}),
+        )
+        assert replacement.request_sha256 == request.request_sha256
+        assert service.put_job(replacement).state == "running"
+        for changed in (
+            {"stove0_base_url": "https://different-stove0.invalid"},
+            {"allow_insecure_http": True},
+        ):
+            redirected = TargetJobRequest.seal(
+                replacement.declaration,
+                replacement.runtime,
+                replacement.callback_access.model_copy(update={**changed, "token": "wrong-secret"}),
+            )
+            with pytest.raises(TargetServiceError, match="callback endpoint changed") as failure:
+                service.put_job(redirected)
+            assert failure.value.status == 409
+        proceed.set()
+        deadline = time.monotonic() + 5
+        while service.get_job(request.declaration.job_id).state not in {"failed", "inapplicable"}:
+            assert time.monotonic() < deadline
+            time.sleep(0.01)
+        assert service.get_job(request.declaration.job_id).state == "inapplicable"
+    finally:
+        proceed.set()
+        service.close()
+    assert tokens == ["Bearer callback-secret", "Bearer renewed-callback-secret"]
+    persisted = b"\n".join(path.read_bytes() for path in state_root.iterdir())
+    for secret in (b"callback-secret", b"renewed-callback-secret", b"wrong-secret"):
+        assert secret not in persisted
 
 
 def test_restart_before_publication_preserves_semantic_execution_identity(

@@ -417,7 +417,11 @@ class TargetExecutionRuntime:
         self._runtime_binding: Any = None
         self._workspaces: list[ProcessingWorkspace] = []
         self._publications: list[TargetCollectionPublication] = []
-        self._input_client = TargetCallbackClient(request.callback_access)
+        self._input_client = (
+            TargetCallbackClient(request.callback_access)
+            if session is None
+            else session.callback_client()
+        )
         self._completed = False
 
     @classmethod

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import threading
 from collections.abc import Callable, Iterator, Mapping
 from typing import Any, Literal, TypeVar
 from urllib.parse import quote
@@ -219,7 +220,21 @@ class TargetCallbackClient:
             allow_insecure_http=access.allow_insecure_http,
         )
         self.token = access.token
+        self._allow_insecure_http = access.allow_insecure_http
+        self._lock = threading.RLock()
         self._client = httpx.Client(http2=True, timeout=timeout)
+
+    def refresh_access(self, access: TargetCallbackAccess) -> None:
+        """Renew transient callback credentials without changing the endpoint."""
+        base_url = safe_http_base_url(
+            access.stove0_base_url,
+            setting="Stove0 target callback base URL",
+            allow_insecure_http=access.allow_insecure_http,
+        )
+        if base_url != self.base_url or access.allow_insecure_http != self._allow_insecure_http:
+            raise ValueError("active target callback endpoint changed")
+        with self._lock:
+            self.token = access.token
 
     def close(self) -> None:
         self._client.close()
@@ -366,10 +381,12 @@ class TargetCallbackClient:
         operation = http_operation_for_request(TARGET_CALLBACK_HTTP_OPERATIONS, method, path)
         if operation is None:
             raise ValueError("target callback request is absent from its HTTP contract")
+        with self._lock:
+            token = self.token
         response = self._client.request(
             method,
             f"{self.base_url}{path}",
-            headers={"Authorization": f"Bearer {self.token}", "Accept": "application/json"},
+            headers={"Authorization": f"Bearer {token}", "Accept": "application/json"},
             params=params,
             json=(
                 payload.model_dump(mode="json", by_alias=True, exclude_none=True)

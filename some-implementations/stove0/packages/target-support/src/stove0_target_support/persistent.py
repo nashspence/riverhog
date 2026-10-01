@@ -253,6 +253,12 @@ class PersistentTargetService:
                         "target_runtime_mismatch",
                         "active target runtime endpoint changed",
                     )
+                session = self._sessions.get(job_id)
+                if session is not None:
+                    try:
+                        session.refresh_callback_access(request.callback_access)
+                    except ValueError as exc:
+                        raise TargetServiceError(409, "target_runtime_mismatch", str(exc)) from exc
                 self._runtime_contexts[job_id] = runtime_context
                 token_fingerprint = hashlib.sha256(
                     request.runtime.capability_token.encode()
