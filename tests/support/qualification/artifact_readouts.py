@@ -8,13 +8,15 @@ from riverhog_client.processing.provenance import ClaimedProvenance
 from riverhog_protocol import ArtifactId
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_protocol.collection_workflows import CollectionRootIdentity
+from riverhog_protocol.paths import parse_collection_id_parameter
 from riverhog_protocol.provenance_transport import MaterializationHintDocument
 from riverhog_provenance import selected_delivery_occurrence
 
 
 def root_bound_artifacts(
-    api: Any, collection_id: int
+    api: Any, collection_id: int | str
 ) -> Iterator[tuple[Any, tuple[str, ...] | None]]:
+    collection_id = parse_collection_id_parameter(collection_id)
     collection = api.get_collection(collection_id)
     root = CollectionRootIdentity(
         collection_id, collection["archive_root_sha256"], collection["artifact_set_identity"]
