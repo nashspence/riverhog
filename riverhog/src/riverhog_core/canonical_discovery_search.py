@@ -264,11 +264,11 @@ def _clause_predicate(assertion: Any, clause: AssertionClause) -> ColumnElement[
     return and_(*filters)
 
 
-def _member_clause_exists(build_id: Any, artifact_id: Any, clause: AssertionClause) -> Any:
+def _matching_members(clause: AssertionClause) -> Any:
     membership = aliased(Membership)
     assertion = aliased(Assertion)
-    return exists(
-        select(1)
+    return (
+        select(membership.build_id, membership.artifact_id)
         .select_from(membership)
         .join(
             assertion,
@@ -278,11 +278,11 @@ def _member_clause_exists(build_id: Any, artifact_id: Any, clause: AssertionClau
             ),
         )
         .where(
-            membership.build_id == build_id,
-            membership.artifact_id == artifact_id,
             membership.scope.in_(clause.scopes),
             _clause_predicate(assertion, clause),
         )
+        .distinct()
+        .subquery()
     )
 
 
@@ -391,13 +391,24 @@ def _discovery_candidate_statement(
     statement = statement.where(
         artifact_scope_filter(artifacts.collection_id, artifacts.artifact_id, principal)
     )
+    if request.collections:
+        # Expose the explicit bound on both sides of the selected-view join
+        # so planning retains indexed collection/member lookups.
+        statement = statement.where(
+            artifacts.collection_id.in_(tuple(map(int, request.collections)))
+        )
     if request.artifact_id is not None:
         statement = statement.where(artifacts.artifact_id == request.artifact_id)
     if request.payload_sha256 is not None:
         statement = statement.where(artifacts.sha256 == request.payload_sha256)
     for clause in request.provenance_all:
-        statement = statement.where(
-            _member_clause_exists(collections.c.active_build_id, artifacts.artifact_id, clause)
+        matches = _matching_members(clause)
+        statement = statement.join(
+            matches,
+            and_(
+                matches.c.build_id == collections.c.active_build_id,
+                matches.c.artifact_id == artifacts.artifact_id,
+            ),
         )
 
     return statement

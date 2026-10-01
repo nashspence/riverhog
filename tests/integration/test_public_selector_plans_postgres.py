@@ -311,4 +311,19 @@ def test_native_discovery_request_body_uses_bounded_current_postgresql_plans(
                 "collection_provenance_index_memberships_pkey",
                 "ix_provenance_index_membership_row",
             } & index_names(payload), case.id
+            # These selective claims match at most one member in a collection
+            # with thousands of artifacts. A posting lookup must not turn into
+            # a scan of that collection (or the entire member relation).
+            pending = [payload[0]["Plan"]]
+            examined = 0
+            while pending:
+                node = pending.pop()
+                if node.get("Relation Name") == "collection_artifacts":
+                    examined += (
+                        node["Actual Rows"]
+                        + node.get("Rows Removed by Filter", 0)
+                        + node.get("Rows Removed by Index Recheck", 0)
+                    ) * node["Actual Loops"]
+                pending.extend(node.get("Plans", ()))
+            assert examined <= 100, (case.id, examined, payload)
         assert payload[0]["Execution Time"] < 5000, case.id

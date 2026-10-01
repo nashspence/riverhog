@@ -728,6 +728,8 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
   --env "EXPECTED_DESCRIPTION=Classified FTP compose qualification" \
   --entrypoint python test -c "${classification_code}"
 
+# Synchronous admission evaluates every declared observer stage. Match the
+# maintained Stove0 client's 300-second operation timeout; browse stays at 5s.
 scheduler_step_code="import json, os, urllib.request
 collection_id = os.environ['INPUT_COLLECTION_ID']
 expected = os.environ['RIVERHOG_SMOKE_SCHEDULER_STEP']
@@ -742,7 +744,7 @@ for _ in range(4):
         },
         method='POST',
     )
-    result = json.load(urllib.request.urlopen(request, timeout=30))
+    result = json.load(urllib.request.urlopen(request, timeout=300))
     assert result['admission'] is not None, result
     assert result['admission']['failures'] == [], result
     request = urllib.request.Request(
@@ -856,7 +858,7 @@ def post(path, payload):
         },
         method='POST',
     )
-    return json.load(urllib.request.urlopen(request, timeout=30))
+    return json.load(urllib.request.urlopen(request, timeout=300))
 preview = post(
     '/v1/workflow-previews',
     OperatorWorkflowPreviewRequest(recipe_id='stove0.conformance-media/v1', inputs=(root,)),
