@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import hashlib
+from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
+from threading import Event, Lock
 from types import SimpleNamespace
 from typing import Any, cast
 
@@ -21,6 +23,8 @@ from a_stove0_riverhog_provenance_observer import (
 from a_stove0_riverhog_provenance_observer import (
     extract_core_facts as _extract_core_facts,
 )
+from a_stove0_riverhog_provenance_observer.app import create_app
+from fastapi.testclient import TestClient
 from riverhog_archive_contracts import HistoryJournalAnchor, MemberHistoryRoot
 from riverhog_protocol import CollectionArtifactProvenanceBindingDocument
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
@@ -39,11 +43,13 @@ from riverhog_provenance import (
 from riverhog_provenance_contracts import SOURCE_NAMING_VIEW_SCHEME
 from stove0_observer_protocol import (
     CollectionRootIdentityRef,
+    ContentObservationInvocation,
     ContentObservationRequest,
     ContentObservationRequestPayload,
+    ObserverRuntimeAuthority,
     WorkArtifactSubject,
 )
-from stove0_observer_support import ContentObservationRuntime
+from stove0_observer_support import ContentObservationResultBuilder, ContentObservationRuntime
 
 from tests.support.member_history import member_history_fixture
 
@@ -151,6 +157,90 @@ def _fixture(
         sha256=hashlib.sha256(b"abc").hexdigest(),
     )
     return subject, binding, summary
+
+
+def test_service_bounds_parallel_provenance_reads_with_request_local_results() -> None:
+    subject, _, _ = _fixture(
+        name="/source/clip.wav", view_id="urn:uuid:11111111-1111-4111-8111-111111111111"
+    )
+    entered = Event()
+    release = Event()
+    lock = Lock()
+    active = peak = count = 0
+
+    class Observer(RiverhogProvenanceObserver):
+        def observe(self, request, runtime):
+            nonlocal active, peak, count
+            with lock:
+                active += 1
+                peak = max(peak, active)
+                count += 1
+                if active == 4:
+                    entered.set()
+            try:
+                assert release.wait(timeout=5)
+                _, binding, summary = _fixture(
+                    name="/source/clip.wav",
+                    view_id="urn:uuid:11111111-1111-4111-8111-111111111111",
+                )
+                fact = extract_materialization_hint_fact(request.subjects[0], binding, summary)
+                return ContentObservationResultBuilder(self.descriptor(), request).observed(
+                    {"artifacts": [fact]}
+                )
+            finally:
+                with lock:
+                    active -= 1
+
+    observer = Observer(image_id="sha256:" + "f" * 64)
+    invocations = tuple(
+        ContentObservationInvocation(
+            request=ContentObservationRequest.seal(
+                ContentObservationRequestPayload(
+                    work_id=f"{index:064x}",
+                    observer_registration_id="canonical-hint",
+                    observer_descriptor_sha256=observer.descriptor().descriptor_sha256,
+                    observer_contract_id=MATERIALIZATION_HINT_OBSERVER_CONTRACT.id,
+                    observer_contract_sha256=MATERIALIZATION_HINT_OBSERVER_CONTRACT.contract_sha256,
+                    read_actions=("read-provenance",),
+                    subjects=(subject.model_copy(update={"id": f"subject-{index}"}),),
+                )
+            ),
+            claim_id=f"claim-{index}",
+            fence=index + 1,
+            runtime=ObserverRuntimeAuthority(
+                riverhog_base_url="https://riverhog.invalid",
+                capability_token="fixture-capability",
+                declared_workspace_protection="memory-backed",
+            ),
+        )
+        for index in range(7)
+    )
+    with TestClient(create_app(token="fixture", observer=observer)) as client:
+        with ThreadPoolExecutor(max_workers=7) as callers:
+            responses = [
+                callers.submit(
+                    client.post,
+                    "/v1/observe",
+                    headers={"Authorization": "Bearer fixture"},
+                    content=invocation.model_dump_json(exclude_none=True),
+                )
+                for invocation in invocations
+            ]
+            try:
+                assert entered.wait(timeout=5)
+                assert count == active == peak == 4
+            finally:
+                release.set()
+            for invocation, pending in zip(invocations, responses, strict=True):
+                response = pending.result(timeout=5)
+                assert response.status_code == 200, response.text
+                result = response.json()
+                assert result["request_id"] == invocation.request.request_id
+                assert (
+                    result["facts"]["artifacts"][0]["subject_id"]
+                    == invocation.request.subjects[0].id
+                )
+    assert peak == 4 and count == 7 and active == 0
 
 
 def test_direct_locator_facts_preserve_context_identifier_and_exact_support() -> None:

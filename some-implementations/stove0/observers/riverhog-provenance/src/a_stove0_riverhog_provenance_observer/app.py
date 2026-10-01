@@ -46,6 +46,7 @@ def create_app(*, token: str, observer: RiverhogProvenanceObserver) -> FastAPI:
         raise ValueError("provenance observer token must be nonempty")
     binding = ObserverHttpBinding(
         observer,
+        maximum_concurrency=4,
         semantic_validators=SemanticValidatorRegistry(
             (CORE_PROVENANCE_SEMANTIC_VALIDATOR, MATERIALIZATION_HINT_SEMANTIC_VALIDATOR)
         ),
