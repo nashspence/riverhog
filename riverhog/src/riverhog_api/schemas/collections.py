@@ -660,6 +660,7 @@ class CollectionUploadSessionOut(RiverhogModel):
                         "properties": {
                             "artifact_set_identity": {"type": "string"},
                             "archive_root_sha256": {"type": "string"},
+                            "provenance_identity": {"type": "string"},
                             "registration_constraints": {"type": "null"},
                             "collection": {"type": "object"},
                             "tag_revision": {"type": "integer"},
@@ -671,6 +672,7 @@ class CollectionUploadSessionOut(RiverhogModel):
                         "properties": {
                             "artifact_set_identity": {"type": "null"},
                             "archive_root_sha256": {"type": "null"},
+                            "provenance_identity": {"type": "null"},
                             "registration_constraints": {"type": "object"},
                             "collection": {"type": "null"},
                         }
@@ -808,27 +810,6 @@ class CreateOrResumeCollectionUploadSessionOut(CollectionUploadSessionOut):
 
 
 class CollectionUploadDiscardPlanOut(RiverhogModel):
-    model_config = ConfigDict(
-        json_schema_extra={
-            "allOf": [
-                {
-                    "if": {
-                        "properties": {"state": {"const": "finalizing"}},
-                        "required": ["state"],
-                    },
-                    "then": {
-                        "properties": {
-                            "custody": {
-                                "properties": {"state": {"const": "complete"}},
-                                "required": ["state"],
-                            }
-                        }
-                    },
-                }
-            ]
-        }
-    )
-
     status: Literal["ready", "blocked"]
     collection_id: CollectionId
     warning: str

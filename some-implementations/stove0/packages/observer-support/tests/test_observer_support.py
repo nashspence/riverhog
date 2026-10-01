@@ -16,12 +16,11 @@ from http_api_contracts import http_operation_inventory
 from jsonschema import Draft202012Validator
 from pydantic import ValidationError
 from riverhog_protocol import (
-    ImmutableFileIdentityDocument,
+    ArtifactMemberIdentityDocument,
     PortableCollectionHeader,
     PortableCollectionInventoryAuthority,
     PortableCollectionInventoryPage,
 )
-from riverhog_protocol.collection_workflows import PRODUCER_EVIDENCE_PATH
 from stove0_observer_client import (
     ContentObserverClient,
     ObserverProtocolError,
@@ -85,16 +84,16 @@ class RetrievalApi:
 
     def search(self, _query: str | None = None, **_kwargs: Any) -> dict[str, Any]:
         return {
-            "files": [
+            "artifacts": [
                 {
                     "collection_id": "1",
-                    "path": PRODUCER_EVIDENCE_PATH,
+                    "artifact_id": _sha("b"),
                     "bytes": "2",
                     "sha256": hashlib.sha256(b"{}").hexdigest(),
                 },
                 {
                     "collection_id": "1",
-                    "path": "camera/input.mov",
+                    "artifact_id": _sha("a"),
                     "bytes": str(len(self.data)),
                     "sha256": self.sha256,
                 },
@@ -107,15 +106,13 @@ class RetrievalApi:
         self.inventory_requests += 1
         assert collection_id == 1
         assert kwargs["cursor"] is None
-        files = [
-            ImmutableFileIdentityDocument(
-                path=str(item["path"]),
+        artifacts = [
+            ArtifactMemberIdentityDocument(
+                artifact_id=str(item["artifact_id"]),
                 bytes=str(item["bytes"]),
                 sha256=str(item["sha256"]),
             )
-            for item in sorted(
-                self.search()["files"], key=lambda item: str(item["path"]).encode("utf-8")
-            )
+            for item in sorted(self.search()["artifacts"], key=lambda item: item["artifact_id"])
         ]
         return PortableCollectionInventoryPage(
             authority=PortableCollectionInventoryAuthority(
@@ -124,40 +121,40 @@ class RetrievalApi:
                     artifact_set_identity=_sha("2"),
                     encryption_format="age-v1-scrypt",
                     passphrase_id="fixture-archive-key-v1",
-                    provenance_mode="omitted",
+                    provenance_identity=_sha("7"),
                 ),
                 inventory_identity=_sha("8"),
-                file_count=str(len(files)),
-                file_bytes=str(sum(file.bytes for file in files)),
+                artifact_count=str(len(artifacts)),
+                artifact_bytes=str(sum(artifact.bytes for artifact in artifacts)),
             ),
-            files=files,
+            artifacts=artifacts,
             complete=True,
         )
 
-    def _rows(self, files: Sequence[tuple[int, str]]) -> list[dict[str, object]]:
+    def _rows(self, artifacts: Sequence[tuple[int, str]]) -> list[dict[str, object]]:
         return [
             {
                 "collection_id": str(collection_id),
-                "path": path,
+                "artifact_id": artifact_id,
                 "bytes": str(len(self.data)),
                 "sha256": self.sha256,
             }
-            for collection_id, path in files
+            for collection_id, artifact_id in artifacts
         ]
 
     def plan_retrieval(
         self,
-        files: Sequence[tuple[int, str]],
+        artifacts: Sequence[tuple[int, str]],
         **_kwargs: Any,
     ) -> dict[str, Any]:
-        self.planned_files = self._rows(files)
+        self.planned_artifacts = self._rows(artifacts)
         return {
             "id": "observer-plan",
             "etag": _sha("9"),
-            "file_count": len(self.planned_files),
+            "artifact_count": len(self.planned_artifacts),
         }
 
-    def list_retrieval_plan_files(
+    def list_retrieval_plan_artifacts(
         self,
         plan_id: str,
         **kwargs: Any,
@@ -167,7 +164,7 @@ class RetrievalApi:
             "plan_id": plan_id,
             "etag": kwargs["plan_etag"],
             "start_ordinal": kwargs["start_ordinal"],
-            "files": self.planned_files,
+            "artifacts": self.planned_artifacts,
             "complete": True,
             "next_ordinal": None,
         }
@@ -200,7 +197,7 @@ class RetrievalApi:
         self.canceled.append(job_id)
         return {"id": job_id, "state": "canceled"}
 
-    def download_retrieval_file(
+    def download_retrieval_artifact(
         self,
         _job_id: str,
         *,
@@ -211,7 +208,7 @@ class RetrievalApi:
         return len(self.data)
 
     @contextmanager
-    def stream_retrieval_file(
+    def stream_retrieval_artifact(
         self,
         _job_id: str,
         *,
@@ -279,7 +276,7 @@ def _request(
                         archive_root_sha256=_sha("1"),
                         artifact_set_identity=_sha("2"),
                     ),
-                    path="camera/input.mov",
+                    artifact_id=_sha("a"),
                     bytes=str(len(api.data)),
                     sha256=api.sha256,
                 ),
@@ -333,8 +330,8 @@ def test_observation_runtime_exposes_only_exact_requested_artifacts(tmp_path: Pa
         declared_workspace_protection="memory-backed",
     ) as runtime:  # type: ignore[arg-type]
         resolved = runtime.subjects()
-        assert [(subject.id, artifact.path) for subject, artifact in resolved] == [
-            ("source", "camera/input.mov")
+        assert [(subject.id, artifact.artifact_id) for subject, artifact in resolved] == [
+            ("source", _sha("a"))
         ]
         for _ in range(64):
             assert runtime.read_bytes(request.subjects[0], maximum_bytes=1024) == api.data
@@ -628,7 +625,7 @@ def test_subject_batch_preference_is_not_a_request_limit() -> None:
             id=f"source-{index}",
             role="fixture.source/v1",
             collection=root,
-            path=f"camera/input-{index}.mov",
+            artifact_id=f"{index:064x}",
             bytes=str(len(api.data)),
             sha256=api.sha256,
         )

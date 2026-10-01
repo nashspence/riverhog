@@ -16,21 +16,22 @@ from riverhog_api.schemas.archive import (
 )
 from riverhog_api.schemas.collections import (
     CollectionDeletionPlanOut,
+    CollectionUploadArtifactOut,
     CollectionUploadDiscardPlanOut,
-    CollectionUploadFileOut,
     CollectionUploadListItemOut,
-    CollectionUploadSessionFilesRegistrationOut,
+    CollectionUploadSessionArtifactsRegistrationOut,
     CollectionUploadSessionOut,
 )
 from riverhog_api.schemas.provenance import (
-    CollectionFileProvenanceDetailOut,
-    CollectionFileProvenanceTraceOut,
-    CollectionProvenanceVerificationOut,
-    ListCollectionFileProvenanceOut,
+    CollectionArtifactProvenanceDetailOut,
+    ListCollectionArtifactProvenanceOut,
 )
-from riverhog_api.schemas.retrieval import RetrievalJobOut, RetrievalPlanFileOut
-from riverhog_api.schemas.search import SearchFileOut
+from riverhog_api.schemas.retrieval import RetrievalJobOut, RetrievalPlanArtifactOut
+from riverhog_api.schemas.search import SearchArtifactOut
+from riverhog_archive_contracts import MemberHistoryDocument, member_history_object_path
 from riverhog_protocol import collection_tag_set_identity
+
+from tests.unit.archive_object_fixtures import make_archive
 
 DESCRIPTION_IDENTITY = "d" * 64
 EMPTY_TAG_SET_IDENTITY = collection_tag_set_identity(None)
@@ -103,6 +104,16 @@ def test_upload_discard_readiness_requires_orphaned_custody_but_orphans_may_be_b
         }
     )
     CollectionUploadDiscardPlanOut.model_validate(blocked_orphan)
+
+    pending_finalization = {
+        **blocked_orphan,
+        "state": "finalizing",
+        "custody": {"state": "pending", "files": 0, "bytes": 0},
+    }
+    CollectionUploadDiscardPlanOut.model_validate(pending_finalization)
+    Draft202012Validator(CollectionUploadDiscardPlanOut.model_json_schema()).validate(
+        pending_finalization
+    )
 
     ready_open = deepcopy(payload)
     ready_open["state"] = "open"
@@ -254,9 +265,10 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
         "tag_set_identity": None,
         "tag_publication": "pending",
         "tag_count": 0,
-        "provenance_mode": "omitted",
         "provenance_identity": None,
-        "content_identity": None,
+        "delivery_context_id": "urn:uuid:00000000-0000-4000-8000-000000000001",
+        "construction_identity_sha256": "e" * 64,
+        "artifact_set_identity": None,
         "archive_root_sha256": None,
         "archive_store": "archive",
         "use_cache": False,
@@ -288,7 +300,7 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
     open_with_final_identity.update(
         {
             "state": "open",
-            "content_identity": "a" * 64,
+            "artifact_set_identity": "a" * 64,
             "registration_constraints": {
                 "pack_member_bytes": "1",
                 "raw_part_plaintext_bytes": "65536",
@@ -303,7 +315,7 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
     open_payload = deepcopy(open_with_final_identity)
     open_payload.update(
         {
-            "content_identity": None,
+            "artifact_set_identity": None,
             "archive_phase": "planning",
         }
     )
@@ -350,8 +362,8 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
             "custody": {"state": "pending", "files": 0, "bytes": 0},
         }
     )
-    with pytest.raises(ValidationError, match="complete Riverhog custody"):
-        CollectionUploadSessionOut.model_validate(incomplete_finalizing)
+    CollectionUploadSessionOut.model_validate(incomplete_finalizing)
+    schema_validator.validate(incomplete_finalizing)
 
     incomplete_transferred_upload = deepcopy(open_payload)
     incomplete_transferred_upload.update(
@@ -364,8 +376,8 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
             "custody": {"state": "pending", "files": 0, "bytes": 0},
         }
     )
-    with pytest.raises(ValidationError, match="complete Riverhog custody"):
-        CollectionUploadSessionOut.model_validate(incomplete_transferred_upload)
+    CollectionUploadSessionOut.model_validate(incomplete_transferred_upload)
+    schema_validator.validate(incomplete_transferred_upload)
 
     producer_retained_upload = deepcopy(incomplete_transferred_upload)
     producer_retained_upload["custody_mode"] = "producer-retained"
@@ -382,22 +394,16 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
 
     nonfinal_provenance_identity = deepcopy(open_payload)
     nonfinal_provenance_identity["provenance_identity"] = "c" * 64
-    with pytest.raises(ValidationError, match="nonfinal.*provenance identity"):
+    with pytest.raises(ValidationError, match="exact canonical provenance identity"):
         CollectionUploadSessionOut.model_validate(nonfinal_provenance_identity)
     with pytest.raises(JsonSchemaValidationError):
         schema_validator.validate(nonfinal_provenance_identity)
 
-    nonfinal_mixed = deepcopy(open_payload)
-    nonfinal_mixed["provenance_mode"] = "mixed"
-    with pytest.raises(ValidationError, match="mixed provenance"):
-        CollectionUploadSessionOut.model_validate(nonfinal_mixed)
-    with pytest.raises(JsonSchemaValidationError):
-        schema_validator.validate(nonfinal_mixed)
-
     finalized_payload = deepcopy(payload)
     finalized_payload.update(
         {
-            "content_identity": "a" * 64,
+            "provenance_identity": "c" * 64,
+            "artifact_set_identity": "a" * 64,
             "archive_root_sha256": "b" * 64,
             "tag_revision": 1,
             "tag_set_identity": EMPTY_TAG_SET_IDENTITY,
@@ -412,7 +418,7 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
                 "tag_revision": 1,
                 "tag_set_identity": EMPTY_TAG_SET_IDENTITY,
                 "tag_publication": "current",
-                "content_identity": "a" * 64,
+                "artifact_set_identity": "a" * 64,
                 "archive_root_sha256": "b" * 64,
                 "encryption_format": "age-x25519/v1",
                 "passphrase_id": "0123456789abcdef",
@@ -447,25 +453,12 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
     CollectionUploadSessionOut.model_validate(complete_finalized)
     schema_validator.validate(complete_finalized)
 
-    for provenance_mode in ("captured", "mixed"):
-        missing_provenance_identity = deepcopy(finalized_payload)
-        missing_provenance_identity["provenance_mode"] = provenance_mode
-        with pytest.raises(ValidationError, match="captured provenance requires its identity"):
-            CollectionUploadSessionOut.model_validate(missing_provenance_identity)
-        with pytest.raises(JsonSchemaValidationError):
-            schema_validator.validate(missing_provenance_identity)
-
-        captured_payload = deepcopy(missing_provenance_identity)
-        captured_payload["provenance_identity"] = "c" * 64
-        CollectionUploadSessionOut.model_validate(captured_payload)
-        schema_validator.validate(captured_payload)
-
-    omitted_with_identity = deepcopy(finalized_payload)
-    omitted_with_identity["provenance_identity"] = "c" * 64
-    with pytest.raises(ValidationError, match="omitted provenance cannot have an identity"):
-        CollectionUploadSessionOut.model_validate(omitted_with_identity)
+    missing_provenance_identity = deepcopy(finalized_payload)
+    missing_provenance_identity["provenance_identity"] = None
+    with pytest.raises(ValidationError, match="exact canonical provenance identity"):
+        CollectionUploadSessionOut.model_validate(missing_provenance_identity)
     with pytest.raises(JsonSchemaValidationError):
-        schema_validator.validate(omitted_with_identity)
+        schema_validator.validate(missing_provenance_identity)
 
     for field in ("files_total", "bytes_total"):
         negative_count = deepcopy(open_payload)
@@ -593,7 +586,7 @@ def test_upload_session_list_states_reject_impossible_custody_lifecycles(
         schema_validator.validate(invalid)
 
 
-def test_file_registration_response_has_one_reachable_state() -> None:
+def test_artifact_registration_response_has_one_reachable_state() -> None:
     payload = {
         "collection_id": "1",
         "ingest_source": None,
@@ -601,18 +594,18 @@ def test_file_registration_response_has_one_reachable_state() -> None:
         "encryption_format": "age-x25519/v1",
         "passphrase_id": "0123456789abcdef",
         "state": "open",
-        "files": [],
+        "artifacts": [],
         "volumes": [],
     }
     schema_validator = Draft202012Validator(
-        CollectionUploadSessionFilesRegistrationOut.model_json_schema()
+        CollectionUploadSessionArtifactsRegistrationOut.model_json_schema()
     )
-    CollectionUploadSessionFilesRegistrationOut.model_validate(payload)
+    CollectionUploadSessionArtifactsRegistrationOut.model_validate(payload)
     schema_validator.validate(payload)
 
     impossible = {**payload, "state": "uploading"}
     with pytest.raises(ValidationError):
-        CollectionUploadSessionFilesRegistrationOut.model_validate(impossible)
+        CollectionUploadSessionArtifactsRegistrationOut.model_validate(impossible)
     with pytest.raises(JsonSchemaValidationError):
         schema_validator.validate(impossible)
 
@@ -672,7 +665,7 @@ def test_upload_session_list_states_accept_reachable_custody_lifecycles(
         {"state": "uploading", "custody_mode": "custody-transfer"},
     ),
 )
-def test_upload_session_list_complete_states_require_complete_custody(
+def test_unpublished_session_list_states_distinguish_pending_and_complete_custody(
     changes: dict[str, object],
 ) -> None:
     payload: dict[str, object] = {
@@ -701,10 +694,8 @@ def test_upload_session_list_complete_states_require_complete_custody(
 
     incomplete = {**payload, **changes}
     schema_validator = Draft202012Validator(CollectionUploadListItemOut.model_json_schema())
-    with pytest.raises(ValidationError, match="complete Riverhog custody"):
-        CollectionUploadListItemOut.model_validate(incomplete)
-    with pytest.raises(JsonSchemaValidationError):
-        schema_validator.validate(incomplete)
+    CollectionUploadListItemOut.model_validate(incomplete)
+    schema_validator.validate(incomplete)
 
     complete = {
         **payload,
@@ -787,160 +778,61 @@ def test_archive_copy_projection_accepts_each_reachable_evidence_state() -> None
         validator.validate(impossible)
 
 
-def test_provenance_read_projections_preserve_captured_mixed_and_omitted_truth() -> None:
-    journal_id = "urn:uuid:00000000-0000-4000-8000-000000000001"
-    state_id = "urn:uuid:00000000-0000-4000-8000-000000000002"
-    file_identity = {
+def test_provenance_read_responses_retain_the_primary_and_root_bound_history() -> None:
+    artifact_id = "f" * 64
+    archive = make_archive({artifact_id: b"payload"})
+    history_binding = archive.provenance.bindings[0]
+    history = MemberHistoryDocument.from_json_bytes(
+        archive.provenance.structures[member_history_object_path(history_binding.history_sha256)]
+    )
+    member = {"artifact_id": artifact_id, "bytes": "7", "sha256": history.sha256}
+    page = {
         "collection_id": "1",
-        "path": "camera/clip.mp4",
-        "bytes": "42",
-        "sha256": "a" * 64,
+        "archive_root_sha256": archive.archive_root_sha256,
+        "artifact_set_identity": archive.provenance.root.artifact_set_sha256,
+        "provenance_identity": archive.provenance.identity,
+        "artifacts": [member],
+        "next_artifact_id": None,
     }
-    captured = {
-        **file_identity,
-        "provenance": {
-            "status": "captured",
-            "journal_id": journal_id,
-            "current_state_id": state_id,
-        },
-    }
-    omitted = {
-        **file_identity,
-        "path": "camera/omitted.mp4",
-        "provenance": {"status": "omitted", "omission_reason": "device did not provide it"},
-    }
-    page_base = {
-        "page_size": 2,
-        "next_page_token": None,
-        "sort": "path",
-        "order": "asc",
-        "query": None,
-        "status": None,
+    assert (
+        ListCollectionArtifactProvenanceOut.model_validate(page).artifacts[0].artifact_id
+        == artifact_id
+    )
+    detail = {
         "collection_id": "1",
+        "archive_root_sha256": archive.archive_root_sha256,
+        "artifact": member,
+        "binding": {"artifact_id": artifact_id, **history.primary.to_mapping()},
+        "history_binding": history_binding.to_mapping(),
+        "member_history": history.to_mapping(),
     }
-    pages = (
-        {
-            **page_base,
-            "provenance_mode": "captured",
-            "provenance_identity": "b" * 64,
-            "files": [captured],
-        },
-        {
-            **page_base,
-            "provenance_mode": "mixed",
-            "provenance_identity": "b" * 64,
-            "files": [captured, omitted],
-        },
-        {
-            **page_base,
-            "provenance_mode": "omitted",
-            "provenance_identity": None,
-            "files": [omitted],
-        },
-    )
-
-    for payload in pages:
-        assert (
-            ListCollectionFileProvenanceOut.model_validate(payload).root.provenance_mode
-            == payload["provenance_mode"]
-        )
-
-    journal = {
-        "journal_id": journal_id,
-        "bytes": 128,
-        "sha256": "c" * 64,
-        "entries": 1,
-        "current_state_id": state_id,
-        "current_path": "camera/clip.mp4",
-        "current_bytes": 42,
-        "current_sha256": "a" * 64,
-        "agent_count": 1,
-        "entity_counts": {"file": 1},
-    }
-    assert (
-        CollectionFileProvenanceDetailOut.model_validate(
-            {**captured, "journal": journal}
-        ).root.provenance.status
-        == "captured"
-    )
-    assert (
-        CollectionFileProvenanceTraceOut.model_validate(
-            {
-                **captured,
-                "journal": journal,
-                "page_size": 25,
-                "next_page_token": None,
-                "items": [{"kind": "journal", "journal": journal}],
-            }
-        ).root.provenance.status
-        == "captured"
-    )
-    omitted_detail = {**omitted, "journal": None}
-    assert CollectionFileProvenanceDetailOut.model_validate(omitted_detail).root.journal is None
-    assert (
-        CollectionFileProvenanceTraceOut.model_validate(
-            {
-                **omitted_detail,
-                "page_size": 25,
-                "next_page_token": None,
-                "items": [],
-            }
-        ).root.provenance.status
-        == "omitted"
-    )
-    assert (
-        CollectionProvenanceVerificationOut.model_validate(
-            {
-                "collection_id": "1",
-                "valid": True,
-                "provenance_mode": "omitted",
-                "provenance_identity": None,
-                "files": 1,
-                "journals": 0,
-                "entities": 0,
-            }
-        ).root.valid
-        is True
-    )
-    assert (
-        CollectionProvenanceVerificationOut.model_validate(
-            {
-                "collection_id": "1",
-                "valid": True,
-                "provenance_mode": "mixed",
-                "provenance_identity": "b" * 64,
-                "files": 2,
-                "journals": 1,
-                "entities": 1,
-            }
-        ).root.valid
-        is True
-    )
+    parsed = CollectionArtifactProvenanceDetailOut.model_validate(detail)
+    assert parsed.binding.journal == parsed.member_history.primary.journal
+    assert parsed.history_binding.history_sha256 == history.identity
+    Draft202012Validator(CollectionArtifactProvenanceDetailOut.model_json_schema()).validate(detail)
+    missing = deepcopy(detail)
+    del missing["member_history"]
+    with pytest.raises(ValidationError):
+        CollectionArtifactProvenanceDetailOut.model_validate(missing)
 
 
-def test_file_and_access_set_responses_reuse_their_canonical_owners() -> None:
-    identity = {"path": "camera/clip.mp4", "bytes": "42", "sha256": "a" * 64}
+def test_artifact_and_access_set_responses_reuse_their_canonical_owners() -> None:
+    identity = {"artifact_id": "f" * 64, "bytes": "42", "sha256": "a" * 64}
     assert (
-        CollectionUploadFileOut.model_validate(
-            {
-                **identity,
-                "provenance": {
-                    "status": "omitted",
-                    "omission_reason": "device did not provide it",
-                },
-            }
-        ).path
-        == identity["path"]
+        CollectionUploadArtifactOut.model_validate(
+            {**identity, "payload_sealed": False}
+        ).artifact_id
+        == identity["artifact_id"]
     )
     assert (
-        RetrievalPlanFileOut.model_validate(
+        RetrievalPlanArtifactOut.model_validate(
             {**identity, "collection_id": "1", "requires_restore": False}
         ).bytes
         == 42
     )
     assert (
-        SearchFileOut.model_validate(
-            {**identity, "collection_id": "1", "file_ref": "1/camera/clip.mp4"}
+        SearchArtifactOut.model_validate(
+            {**identity, "collection_id": "1", "artifact_ref": "1/" + identity["artifact_id"]}
         ).sha256
         == identity["sha256"]
     )
@@ -956,12 +848,11 @@ def test_file_and_access_set_responses_reuse_their_canonical_owners() -> None:
         .permission
         == "catalog:read"
     )
-
-    upload_file_schema = create_app().openapi()["components"]["schemas"]["CollectionUploadFileOut"]
-    assert set(upload_file_schema["properties"]) == {
-        "path",
+    schema = create_app().openapi()["components"]["schemas"]["CollectionUploadArtifactOut"]
+    assert set(schema["properties"]) == {
+        "artifact_id",
         "bytes",
         "sha256",
-        "provenance",
+        "payload_sealed",
         "custody_receipt",
     }
