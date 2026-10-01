@@ -11,12 +11,12 @@ import riverhog_client.client as riverhog_client_module
 import riverhog_core.services.app_keys as app_key_service_module
 import riverhog_core.services.archive_copy_jobs as archive_copy_service_module
 import riverhog_core.services.archive_stores as archive_store_service_module
+import riverhog_core.services.canonical_provenance as provenance_service_module
 import riverhog_core.services.collection_tags as tag_service_module
 import riverhog_core.services.collection_uploads as upload_service_module
 import riverhog_core.services.collection_workflows as workflow_service_module
 import riverhog_core.services.collections as collection_service_module
 import riverhog_core.services.download_allowances as quota_service_module
-import riverhog_core.services.provenance as provenance_service_module
 import riverhog_core.services.retrieval as retrieval_service_module
 import riverhog_core.services.search as search_service_module
 import stove0_api_client.client as a_stove0_client_module
@@ -80,12 +80,10 @@ from riverhog_protocol import (
     CollectionUploadState,
     DownloadQuotaSort,
     ProcessingClaimSort,
-    ProvenanceSort,
-    ProvenanceStatus,
+    RetrievalArtifactReferenceDocument,
     RetrievalCacheProtection,
     RetrievalCacheSort,
     RetrievalCacheState,
-    RetrievalFileReferenceDocument,
     SearchSort,
     SortOrder,
 )
@@ -125,10 +123,10 @@ SUPPORTED_CLIENT_HELPERS = {
         "collection_provenance_journal_metadata",
         "download_collection_provenance_journal",
         "spawn",
-        "stream_retrieval_file",
+        "stream_retrieval_artifact",
         "upload_collection_upload_session_provenance_journal",
     },
-    "stove0": {"close", "health_live", "health_ready", "iter_inputs"},
+    "stove0": {"close", "health_live", "health_ready", "iter_inputs", "iter_outputs"},
     "a-riverhog-ftp-spool": {
         "close",
         "ftp_spool_health_live",
@@ -145,19 +143,19 @@ SUPPORTED_CLIENT_HELPERS = {
             {
                 "collection_id": "1",
                 "archive_root_sha256": "a" * 64,
-                "content_identity": "b" * 64,
+                "artifact_set_identity": "b" * 64,
             },
         ),
         (
-            RetrievalFileReferenceDocument,
-            {"collection_id": "1", "path": "camera/clip.mp4"},
+            RetrievalArtifactReferenceDocument,
+            {"collection_id": "1", "artifact_id": "f" * 64},
         ),
         (
             CollectionRootIdentityRef,
             {
                 "collection_id": "1",
                 "archive_root_sha256": "a" * 64,
-                "content_identity": "b" * 64,
+                "artifact_set_identity": "b" * 64,
             },
         ),
         (
@@ -165,7 +163,7 @@ SUPPORTED_CLIENT_HELPERS = {
             {
                 "collection_id": "1",
                 "archive_root_sha256": "a" * 64,
-                "content_identity": "b" * 64,
+                "artifact_set_identity": "b" * 64,
                 "derivation_sha256": "c" * 64,
             },
         ),
@@ -185,7 +183,7 @@ def test_public_collection_identity_dataclass_uses_the_canonical_scalar() -> Non
         CollectionRootIdentity(
             collection_id="1",  # type: ignore[arg-type]
             archive_root_sha256="a" * 64,
-            content_identity="b" * 64,
+            artifact_set_identity="b" * 64,
         )
 
 
@@ -345,7 +343,7 @@ def test_control_client_transport_calls_carry_exact_server_operation_identities(
             create_riverhog_app,
             {
                 "collection_provenance_journal_metadata": {"stream_collection_provenance_journal"},
-                "stream_retrieval_file": {"download_retrieval_file"},
+                "stream_retrieval_artifact": {"download_retrieval_artifact"},
             },
         ),
         ((a_stove0_client_module,), create_stove0_contract_app, {}),
@@ -478,10 +476,8 @@ READ_COLLECTION_OPERATIONS = {
             "list_apps",
             "list_archive_copy_jobs",
             "list_archive_stores",
-            "list_collection_provenance",
-            "list_collection_provenance_journal_agents",
             "list_collection_archive_copies",
-            "list_collection_upload_session_files",
+            "list_collection_upload_session_artifacts",
             "list_collection_upload_sessions",
             "list_collections",
             "list_download_quotas",
@@ -489,12 +485,13 @@ READ_COLLECTION_OPERATIONS = {
             "list_retrieval_cache_objects",
             "search",
             "list_tags",
-            "trace_collection_file_provenance",
         },
         "cursor-feed": {"list_catalog_sync_changes", "list_lifecycle_events"},
         "exact-set-page": {"get_portable_collection_inventory"},
         "exact-authority-page": {
-            "list_retrieval_plan_files",
+            "list_collection_artifact_provenance",
+            "list_collection_provenance_journals",
+            "list_retrieval_plan_artifacts",
             "list_processing_claim_artifacts",
             "list_processing_claim_disposition_outputs",
             "list_processing_claim_dispositions",
@@ -516,6 +513,7 @@ READ_COLLECTION_OPERATIONS = {
         "exact-authority-page": {
             "get_artifact_selection",
             "get_target_execution_inputs",
+            "get_target_execution_outputs",
         },
     },
     "a-riverhog-ftp-spool": {
@@ -529,6 +527,7 @@ READ_COLLECTION_OPERATIONS = {
 EXACT_RESOURCE_STREAM_OPERATIONS = {
     "riverhog": {
         "stream_collection_provenance_journal",
+        "stream_collection_upload_session_provenance_journal",
     },
     "stove0": set(),
     "a-riverhog-ftp-spool": set(),
@@ -541,7 +540,8 @@ EXACT_RESOURCE_STREAM_OPERATIONS = {
 PUBLIC_QUERY_SELECTORS = {
     "riverhog": {
         "acquire_collection_upload_session_work": {"limit"},
-        "download_retrieval_file": {"collection_id", "path"},
+        "discover_artifacts": {"page_token"},
+        "download_retrieval_artifact": {"collection_id", "artifact_id"},
         "list_app_key_access": {
             "active",
             "app",
@@ -558,15 +558,8 @@ PUBLIC_QUERY_SELECTORS = {
         "list_apps": {"active", "order", "page_size", "page_token", "q", "sort"},
         "list_archive_copy_jobs": {"order", "page_size", "page_token", "q", "sort", "state"},
         "list_archive_stores": {"order", "page_size", "page_token", "q", "sort"},
-        "list_collection_provenance": {
-            "order",
-            "page_size",
-            "page_token",
-            "q",
-            "sort",
-            "status",
-        },
-        "list_collection_provenance_journal_agents": {"page_size", "page_token"},
+        "list_collection_artifact_provenance": {"page_size", "after_artifact_id"},
+        "list_collection_provenance_journals": {"page_size", "after_journal_id"},
         "list_collection_archive_copies": {"page_size", "page_token"},
         "get_portable_collection_inventory": {"cursor", "limit"},
         "list_tags": {"page_size", "page_token", "q"},
@@ -577,7 +570,7 @@ PUBLIC_QUERY_SELECTORS = {
             "tag_set_identity",
         },
         "collection_contains_tag": {"revision", "tag_set_identity"},
-        "list_collection_upload_session_files": {"page_size", "page_token"},
+        "list_collection_upload_session_artifacts": {"page_size", "page_token"},
         "list_collection_upload_sessions": {
             "order",
             "page_size",
@@ -628,16 +621,16 @@ PUBLIC_QUERY_SELECTORS = {
             "source_store",
             "state",
         },
-        "list_retrieval_plan_files": {"page_size", "start_ordinal"},
+        "list_retrieval_plan_artifacts": {"page_size", "start_ordinal"},
         "plan_collection_deletion": {"source_collection_retirement_claim_id"},
         "list_catalog_sync_changes": {"cursor", "limit"},
         "list_catalog_sync_collections": {"cursor", "limit"},
         "search": {"collection", "order", "page_size", "page_token", "q", "sort"},
-        "trace_collection_file_provenance": {"page_size", "page_token"},
     },
     "stove0": {
         "get_artifact_selection": {"continuation"},
         "get_target_execution_inputs": {"continuation"},
+        "get_target_execution_outputs": {"after_id", "production_sha256"},
         "get_recipe": {"revision"},
         "list_admissions": {
             "order",
@@ -671,7 +664,6 @@ NAMED_ENUM_QUERY_SELECTOR_TYPES = {
     "CollectionUploadSort": CollectionUploadSort,
     "CollectionUploadState": CollectionUploadState,
     "DownloadQuotaSort": DownloadQuotaSort,
-    "ProvenanceStatus": ProvenanceStatus,
     "RetrievalCacheProtection": RetrievalCacheProtection,
     "RetrievalCacheSort": RetrievalCacheSort,
     "RetrievalCacheState": RetrievalCacheState,
@@ -679,8 +671,6 @@ NAMED_ENUM_QUERY_SELECTOR_TYPES = {
     "SortOrder": SortOrder,
 }
 INLINE_ENUM_QUERY_SELECTOR_TYPES = {
-    ("riverhog", "list_collection_provenance", "sort"): ProvenanceSort,
-    ("riverhog", "list_collection_provenance", "order"): SortOrder,
     ("riverhog", "list_processing_claims", "state"): ClaimState,
     ("riverhog", "list_processing_claims", "sort"): ProcessingClaimSort,
     ("riverhog", "list_processing_claims", "order"): SortOrder,
@@ -1009,8 +999,6 @@ def test_official_client_selector_validation_projects_public_vocabularies() -> N
         "_COLLECTION_UPLOAD_SORTS": CollectionUploadSort,
         "_COLLECTION_UPLOAD_STATES": CollectionUploadState,
         "_DOWNLOAD_QUOTA_SORTS": DownloadQuotaSort,
-        "_PROVENANCE_SORTS": ProvenanceSort,
-        "_PROVENANCE_STATUSES": ProvenanceStatus,
         "_RETRIEVAL_CACHE_PROTECTIONS": RetrievalCacheProtection,
         "_RETRIEVAL_CACHE_SORTS": RetrievalCacheSort,
         "_RETRIEVAL_CACHE_STATES": RetrievalCacheState,
@@ -1054,9 +1042,6 @@ def test_service_selector_validation_projects_public_vocabularies() -> None:
         (retrieval_service_module, "_SORT_ORDERS", SortOrder),
         (search_service_module, "_SORT_FIELDS", SearchSort),
         (search_service_module, "_SORT_ORDERS", SortOrder),
-        (provenance_service_module, "_SORT_FIELDS", ProvenanceSort),
-        (provenance_service_module, "_STATUS_VALUES", ProvenanceStatus),
-        (provenance_service_module, "_SORT_ORDERS", SortOrder),
         (archive_copy_service_module, "_SORT_FIELDS", ArchiveCopyJobSort),
         (archive_copy_service_module, "_SORT_ORDERS", SortOrder),
         (archive_store_service_module, "_SORT_FIELDS", ArchiveStoreSort),
@@ -1353,8 +1338,11 @@ def test_official_clients_accept_a_scoped_remote_cleartext_opt_in(
         client.close()
 
 
-def test_official_direct_ingress_callers_share_the_upload_runner() -> None:
-    assert a_riverhog_cli.upload_collection_units is upload_collection_units
+def test_official_direct_ingress_uses_the_shared_collection_producer() -> None:
+    assert (
+        a_riverhog_cli.IncrementalCollectionProducer
+        is riverhog_client.IncrementalCollectionProducer
+    )
     assert riverhog_producer.upload_collection_units is upload_collection_units
 
 

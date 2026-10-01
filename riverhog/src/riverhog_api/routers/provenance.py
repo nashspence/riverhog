@@ -6,7 +6,11 @@ from collections.abc import Iterator
 from typing import Annotated, Any
 
 from fastapi import Header, Query, Request, Response
-from http_api_contracts import operation_interface, parse_quoted_sha256_identity
+from http_api_contracts import (
+    exact_authority_page_operation,
+    operation_interface,
+    parse_quoted_sha256_identity,
+)
 from riverhog_archive_contracts import provenance_structure_object_path
 from riverhog_protocol import ArtifactId, CollectionIdParameter
 from riverhog_protocol.errors import BadRequest, PreconditionFailed, PreconditionRequired
@@ -106,7 +110,15 @@ _PROVENANCE_JOURNAL_RESPONSE: dict[int | str, dict[str, Any]] = {
 @router.get(
     "/collections/{collection_id}/provenance/artifacts",
     response_model=ListCollectionArtifactProvenanceOut,
-    openapi_extra=operation_interface("standard-tool/protocol"),
+    openapi_extra={
+        **operation_interface("standard-tool/protocol"),
+        **exact_authority_page_operation(
+            authority="archive-root-member-history-bindings",
+            authority_parameter="If-Match",
+            cursor_parameter="after_artifact_id",
+            limit_parameter="page_size",
+        ),
+    },
 )
 def list_collection_artifact_provenance(
     collection_id: CollectionIdParameter,
@@ -147,7 +159,15 @@ def get_collection_artifact_provenance(
 @router.get(
     "/collections/{collection_id}/provenance/journals",
     response_model=ListCollectionProvenanceJournalsOut,
-    openapi_extra=operation_interface("standard-tool/protocol"),
+    openapi_extra={
+        **operation_interface("standard-tool/protocol"),
+        **exact_authority_page_operation(
+            authority="archive-root-canonical-journal-corpus",
+            authority_parameter="If-Match",
+            cursor_parameter="after_journal_id",
+            limit_parameter="page_size",
+        ),
+    },
 )
 def list_collection_provenance_journals(
     collection_id: CollectionIdParameter,

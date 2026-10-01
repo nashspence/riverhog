@@ -22,7 +22,7 @@ from time_formats import utc_timestamp_now
 
 from riverhog_core.canonical_discovery_extraction import ascii_fold, literal_chunks
 from riverhog_core.canonical_discovery_rows import IndexedAssertion
-from riverhog_core.catalog_models import CollectionRecord
+from riverhog_core.catalog_models import CollectionDeletionRecord, CollectionRecord
 from riverhog_core.catalog_provenance_index_models import (
     CollectionProvenanceIndexAssertionRecord,
     CollectionProvenanceIndexEdgeRecord,
@@ -67,10 +67,17 @@ class IndexResourceLimit(RuntimeError):
     pass
 
 
+def _indexable_collection(session: Session, collection_id: int) -> CollectionRecord | None:
+    collection = session.get(CollectionRecord, collection_id, with_for_update=True)
+    if collection is not None and session.get(CollectionDeletionRecord, collection_id) is not None:
+        raise StaleIndexBuild("collection deletion fenced discovery indexing")
+    return collection
+
+
 def begin_index_build(session: Session, *, collection_id: int) -> str:
     """Fence one rebuild against the current archive root and prior worker epoch."""
 
-    collection = session.get(CollectionRecord, collection_id, with_for_update=True)
+    collection = _indexable_collection(session, collection_id)
     if (
         collection is None
         or collection.archive_root_sha256 is None
@@ -109,10 +116,10 @@ def _require_pending(session: Session, build_id: str) -> CollectionProvenanceInd
     build = session.get(CollectionProvenanceIndexGenerationRecord, build_id)
     if build is None or build.complete:
         raise StaleIndexBuild("discovery build is absent or already complete")
+    collection = _indexable_collection(session, build.collection_id)
     state = session.get(
         CollectionProvenanceIndexStateRecord, build.collection_id, with_for_update=True
     )
-    collection = session.get(CollectionRecord, build.collection_id)
     if (
         state is None
         or state.pending_build_id != build_id
@@ -537,10 +544,10 @@ def publish_index_build(session: Session, *, build_id: str) -> str:
     build = session.get(CollectionProvenanceIndexGenerationRecord, build_id)
     if build is None or not build.complete or build.generation_id is None:
         raise StaleIndexBuild("discovery generation is not complete")
+    collection = _indexable_collection(session, build.collection_id)
     state = session.get(
         CollectionProvenanceIndexStateRecord, build.collection_id, with_for_update=True
     )
-    collection = session.get(CollectionRecord, build.collection_id, with_for_update=True)
     if (
         state is None
         or state.pending_build_id != build_id

@@ -50,6 +50,9 @@ from riverhog_core.catalog_models import (
     RetrievalPlanPlacementRecord,
     RetrievalPlanRecord,
 )
+from riverhog_core.catalog_provenance_index_models import (
+    CollectionProvenanceIndexGenerationRecord,
+)
 from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
 from riverhog_core.ports.archive_store import ArchiveObjectIdentity
 from riverhog_core.ports.retrieval_cache import RetrievalCache
@@ -443,10 +446,19 @@ class SqlAlchemyCollectionDeletionService:
 
             for table in _collection_cascade_tables():
                 primary_key = tuple(table.primary_key.columns)
+                scope = (
+                    table.c.collection_id == collection_id
+                    if "collection_id" in table.c
+                    else table.c.build_id.in_(
+                        select(CollectionProvenanceIndexGenerationRecord.build_id).where(
+                            CollectionProvenanceIndexGenerationRecord.collection_id == collection_id
+                        )
+                    )
+                )
                 rows = list(
                     session.execute(
                         select(*primary_key)
-                        .where(table.c.collection_id == collection_id)
+                        .where(scope)
                         .order_by(*primary_key)
                         .limit(_CATALOG_DELETE_BATCH)
                     )
@@ -1048,11 +1060,8 @@ def _archive_object_identity(record: CollectionArchiveObjectRecord) -> ArchiveOb
     )
 
 
-@cache
-def _collection_cascade_tables() -> tuple[Table, ...]:
-    """Return collection-owned cascade tables in bounded deletion order."""
-
-    reachable = {CollectionRecord.__tablename__}
+def _cascade_descendants(root: str) -> set[str]:
+    reachable = {root}
     changed = True
     while changed:
         changed = False
@@ -1067,6 +1076,15 @@ def _collection_cascade_tables() -> tuple[Table, ...]:
                     reachable.add(table.name)
                     changed = True
                     break
+    return reachable
+
+
+@cache
+def _collection_cascade_tables() -> tuple[Table, ...]:
+    """Return collection-owned cascade tables in bounded deletion order."""
+
+    reachable = _cascade_descendants(CollectionRecord.__tablename__)
+    index_owned = _cascade_descendants(CollectionProvenanceIndexGenerationRecord.__tablename__)
     excluded = {
         CollectionRecord.__tablename__,
         CollectionTagMembershipRecord.__tablename__,
@@ -1080,7 +1098,12 @@ def _collection_cascade_tables() -> tuple[Table, ...]:
         for table in reversed(Base.metadata.sorted_tables)
         if table.name in reachable and table.name not in excluded
     )
-    missing_key = [table.name for table in result if "collection_id" not in table.c]
+    missing_key = [
+        table.name
+        for table in result
+        if "collection_id" not in table.c
+        and not (table.name in index_owned and "build_id" in table.c)
+    ]
     if missing_key:
         raise RuntimeError(
             "collection cascade tables need an explicit bounded deletion key: "
