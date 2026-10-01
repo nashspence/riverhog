@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import subprocess
+import threading
 from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, cast
+from unittest.mock import MagicMock
 
 import pytest
 from a_stove0_materialization_hint_evidence_contract_lib import (
     MATERIALIZATION_HINT_OBSERVER_CONTRACT,
 )
+from a_stove0_rclone_target import target as target_support
 from a_stove0_rclone_target.contracts import RCLONE_DELIVER_OPERATION
 from a_stove0_rclone_target.target import (
     RcloneDestination,
@@ -19,6 +23,8 @@ from a_stove0_rclone_target.target import (
     _verify_selected_inputs,
     _write_delivery_manifest,
 )
+from riverhog_canonical_json import require_canonical_json
+from riverhog_client.processing import ProcessingWorkspace
 from riverhog_materialization import DestinationRules
 from riverhog_protocol import canonical_json_bytes
 from stove0_observer_protocol import (
@@ -31,7 +37,7 @@ from stove0_observer_protocol import (
 )
 from stove0_observer_support import ContentObservationResultBuilder
 from stove0_protocol import ArtifactSelection, CollectionRootIdentityRef, WorkArtifactSubject
-from stove0_target_support import InputArtifact, TargetEffectCommitUncertain
+from stove0_target_support import InputArtifact, TargetEffectCommitUncertain, TargetJobRequest
 
 
 def _destination() -> RcloneDestination:
@@ -232,6 +238,91 @@ def test_rclone_streamed_manifest_is_canonical_and_covers_every_input(tmp_path: 
             selection=selection,
             entries=iter(rows[:1]),
         )
+
+
+def test_rclone_execution_delivers_canonical_manifest_for_exact_opaque_members(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    payload = b"x"
+    subjects = tuple(
+        _subject(name, character * 64).model_copy(
+            update={"sha256": hashlib.sha256(payload).hexdigest()}
+        )
+        for name, character in (("one", "1"), ("two", "2"))
+    )
+    evidence = _hint_evidence(subjects, ({"components": ["Album", "clip.bin"]}, None))
+    inputs = tuple(InputArtifact.model_validate(item.model_dump(mode="json")) for item in subjects)
+    selection = ArtifactSelection.seal(subjects).ref()
+    destination = _destination()
+    service = RcloneEffectTargetService(
+        state_root=tmp_path / "state",
+        workspace_root=tmp_path / "workspace",
+        destination=destination,
+        image_id="sha256:" + "b" * 64,
+        implementation_version="0.1.0",
+    )
+    plan = SimpleNamespace(
+        target_options={
+            "destination_identity": destination.identity,
+            "destination_rules_sha256": destination.rules_sha256,
+        },
+        inputs=SimpleNamespace(selection=selection),
+        plan_sha256="a" * 64,
+    )
+    request = cast(
+        TargetJobRequest,
+        SimpleNamespace(
+            declaration=SimpleNamespace(
+                plan=plan,
+                job_id="c" * 64,
+                controller_evidence=SimpleNamespace(
+                    execution_envelope=SimpleNamespace(
+                        workflow_plan=SimpleNamespace(observations=(evidence,))
+                    )
+                ),
+            )
+        ),
+    )
+    workspace = ProcessingWorkspace.open(
+        service.workspace_root, execution_id="c" * 64, declared_protection="memory-backed"
+    )
+    execution = MagicMock()
+    execution.__enter__.return_value = execution
+    execution.open_workspace.return_value = workspace
+    execution.iter_inputs.side_effect = lambda: iter((item, item) for item in inputs)
+    execution.prepare_inputs.return_value.__enter__.return_value.download.side_effect = (
+        lambda _claimed, path: path.write_bytes(payload)
+    )
+    monkeypatch.setattr(
+        target_support.TargetExecutionRuntime, "from_request", lambda *_a, **_k: execution
+    )
+    committed = []
+
+    def commit(_destination, *, objects_root, manifest_path, **_kwargs):
+        encoded = manifest_path.read_bytes()
+        require_canonical_json(encoded)
+        manifest = json.loads(encoded)
+        for item in manifest["artifacts"]:
+            assert (objects_root / item["delivered_path"]).read_bytes() == payload
+        committed.append(manifest)
+
+    monkeypatch.setattr(RcloneDestination, "commit", commit)
+    try:
+        service._execute(request, 1, threading.Event(), MagicMock())
+        assert len(committed) == 1
+        rows = committed[0]["artifacts"]
+        assert [item["artifact_id"] for item in rows] == [
+            str(item.artifact_id) for item in subjects
+        ]
+        assert rows[0]["delivered_path"] == "1/files/Album/clip.bin"
+        assert rows[0]["materialization_reason"] == "hint"
+        assert rows[1]["delivered_path"] == f"1/artifacts/22/{subjects[1].artifact_id}"
+        assert rows[1]["materialization_reason"] == "no-hint"
+        receipt = execution.effect_success.call_args.args[0]
+        assert receipt["artifact_count"] == 2 and receipt["total_bytes"] == 2
+        execution.effect_success.assert_called_once()
+    finally:
+        service.close()
 
 
 def test_generic_rclone_descriptor_has_one_effect_operation(tmp_path: Path) -> None:
