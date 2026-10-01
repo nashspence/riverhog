@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import hashlib
+import os
 from collections.abc import Callable, Iterator, Mapping
 from contextlib import AbstractContextManager, contextmanager
 from dataclasses import dataclass
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any, Protocol
 
 from riverhog_archive_contracts import (
@@ -154,14 +158,19 @@ class ClaimedProvenance:
         self.verify_root()
         return proof
 
-    def history_import(self, *, extent: str) -> MemberHistoryImport:
-        """Bind an explicitly accepted transfer to the exact delivered input State."""
+    @contextmanager
+    def history_import(
+        self, *, extent: str
+    ) -> Iterator[
+        tuple[MemberHistoryImport, SourceMemberHistoryBindingProof, MemberHistoryClosure]
+    ]:
+        """Keep one validated selection open through its exact history transfer."""
 
         # Validation precedes accepting a transfer. Missing supplemental records
         # fail here, including when the caller chose the broader retained extent.
-        with self.history_closure(extent=extent):
+        with self.history_closure(extent=extent) as closure:
             proof = self.source_binding_proof()
-            primary = self.bound_summary()
+            primary = closure.summary_at(self.history.primary.journal)
             state, _ = selected_delivery_occurrence(
                 primary,
                 binding={
@@ -173,7 +182,7 @@ class ClaimedProvenance:
                 sha256=self.history.sha256,
                 member_role=COLLECTION_MEMBER_ROLE,
             )
-            return MemberHistoryImport.from_mapping(
+            imported = MemberHistoryImport.from_mapping(
                 {
                     "source": {
                         "identity": proof.source_identity,
@@ -188,6 +197,7 @@ class ClaimedProvenance:
                     "input_state": external_reference(primary, state["id"]),
                 }
             )
+            yield imported, proof, closure
 
     def _read_journal(self, journal_id: str, end: int | None) -> Iterator[bytes]:
         selected = next((row for row in self.iter_journals() if row.journal_id == journal_id), None)
@@ -204,13 +214,42 @@ class ClaimedProvenance:
     def history_closure(self, *, extent: str) -> Iterator[MemberHistoryClosure]:
         """Retain exact history without borrowing other collections' live authority."""
 
-        with MemberHistoryClosure(
-            self.history_store, self._read_journal, member_role=COLLECTION_MEMBER_ROLE
-        ) as closure:
-            closure.resolve(self.history_binding, extent=extent)
-            self.verify_root()
-            yield closure
-            self.verify_root()
+        with TemporaryDirectory(prefix="riverhog-claimed-history-") as scratch:
+            directory = Path(scratch)
+
+            def read_object(path: str) -> Iterator[bytes]:
+                # Repeated structural walks reuse authenticated immutable bytes
+                # only inside this selection. Claim/root fences still surround
+                # every replay, and a later selection performs fresh API reads.
+                self.heartbeat()
+                self.verify_root()
+                target = directory / hashlib.sha256(path.encode()).hexdigest()
+                if not target.exists():
+                    pending = target.with_suffix(".pending")
+                    try:
+                        with os.fdopen(
+                            os.open(pending, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600), "wb"
+                        ) as output:
+                            for chunk in self._read_structure(path):
+                                output.write(chunk)
+                        pending.replace(target)
+                    finally:
+                        pending.unlink(missing_ok=True)
+                with target.open("rb") as source:
+                    while chunk := source.read(128 * 1024):
+                        self.heartbeat()
+                        yield chunk
+                self.verify_root()
+
+            with MemberHistoryClosure(
+                MemberHistoryStore(read_object),
+                self._read_journal,
+                member_role=COLLECTION_MEMBER_ROLE,
+            ) as closure:
+                closure.resolve(self.history_binding, extent=extent)
+                self.verify_root()
+                yield closure
+                self.verify_root()
 
     def iter_journals(self) -> Iterator[ProvenanceJournal]:
         after: str | None = None

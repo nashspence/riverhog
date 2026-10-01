@@ -27,9 +27,11 @@ from riverhog_archive_contracts import (
 )
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
 from riverhog_client.processing import ClaimedArtifact, ClaimedCollectionReader
+from riverhog_client.processing.history_transfer import CanonicalHistoryTransfer
 from riverhog_protocol import ArtifactMemberIdentityDocument
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_protocol.collection_workflows import CollectionRootIdentity
+from riverhog_protocol.errors import NotFound
 from riverhog_provenance import (
     BoundedSourceObserver,
     BytesSource,
@@ -85,6 +87,8 @@ class ProvenanceApi:
                 provenance_structure_identity(raw).object_id: raw for raw in builder.objects()
             }
         self.calls: list[str] = []
+        self.structure_reads: list[str] = []
+        self.proof_reads = 0
 
     def get_collection(self, collection_id: int) -> dict[str, Any]:
         assert collection_id == 1
@@ -115,7 +119,16 @@ class ProvenanceApi:
         self, collection_id: int, object_id: str, *, archive_root_sha256: str
     ) -> bytes:
         assert collection_id == 1 and archive_root_sha256 == self.root.archive_root_sha256
+        self.structure_reads.append(object_id)
         return self.objects[object_id]
+
+    def get_collection_artifact_history_binding_proof(
+        self, collection_id: int, artifact_id: str, *, archive_root_sha256: str
+    ) -> SourceMemberHistoryBindingProof:
+        assert collection_id == 1 and artifact_id == self.artifact.artifact_id
+        assert archive_root_sha256 == self.root.archive_root_sha256
+        self.proof_reads += 1
+        return _source_proof(self)
 
     def list_collection_provenance_journals(
         self,
@@ -303,6 +316,74 @@ def test_history_closure_keeps_retracted_late_bytes_and_does_not_widen_extent() 
         pass
     with pytest.raises(ValueError, match="outside the selected archive"):
         with view.history_closure(extent=RETAINED_HISTORY_EXTENT):
+            pass
+
+
+def test_history_transfer_reuses_one_validated_selection_and_preserves_retained_context() -> None:
+    api = ProvenanceApi()
+    late = _add_selected(api, inclusion="retained", retract=True)
+    proof = _source_proof(api)
+    api.root = replace(api.root, archive_root_sha256=hashlib.sha256(proof.archive_root).hexdigest())
+    api.artifact = replace(api.artifact, root=api.root)
+    view = _reader(api).provenance(api.artifact)
+
+    class Receiver:
+        def __init__(self) -> None:
+            self.objects: dict[str, bytes] = {}
+            self.journals: dict[str, bytes] = {}
+
+        def stage_collection_upload_session_history_structure(self, collection_id, content):
+            assert collection_id == 2
+            self.objects[provenance_structure_identity(content).object_id] = content
+
+        def get_collection_upload_session_provenance_journal(self, collection_id, journal_id):
+            raise NotFound("not transferred yet")
+
+        def upload_collection_upload_session_provenance_journal(
+            self, collection_id, journal_id, *, content, byte_count, sha256, selection_role
+        ):
+            assert collection_id == 2 and selection_role == "history-dependency"
+            raw = b"".join(content)
+            assert (len(raw), hashlib.sha256(raw).hexdigest()) == (byte_count, sha256)
+            self.journals[journal_id] = raw
+
+    receiver = Receiver()
+    imported = CanonicalHistoryTransfer(receiver, 2).accept(view, extent=RETAINED_HISTORY_EXTENT)
+    assert imported.extent == RETAINED_HISTORY_EXTENT
+    assert imported.input_state == external_reference(api.summary, api.summary.states[0]["id"])
+    assert api.proof_reads == 1
+    assert len(api.structure_reads) == len(set(api.structure_reads))
+    assert receiver.journals == api.journals
+    store = MemberHistoryStore(
+        lambda path: (receiver.objects[provenance_structure_object_id(path)],)
+    )
+    with MemberHistoryClosure(
+        store,
+        lambda identity, end: (receiver.journals[identity][:end],),
+        member_role=COLLECTION_MEMBER_ROLE,
+    ) as closure:
+        closure.resolve_import(imported)
+        assert {a.journal_id for a in closure.journal_anchors()} == {api.journal_id, late}
+
+
+def test_claimed_history_replay_checks_root_and_next_selection_reads_fresh_objects() -> None:
+    api = ProvenanceApi()
+    view = _reader(api).provenance(api.artifact)
+    with view.history_closure(extent=BOUND_HISTORY_EXTENT) as closure:
+        assert tuple(closure.structure_objects())
+        assert len(api.structure_reads) == len(set(api.structure_reads))
+    reads = len(api.structure_reads)
+    with view.history_closure(extent=BOUND_HISTORY_EXTENT):
+        pass
+    assert len(api.structure_reads) == 2 * reads
+    with pytest.raises(RuntimeError, match="claimed collection root changed"):
+        with view.history_closure(extent=BOUND_HISTORY_EXTENT) as closure:
+            api.root = replace(api.root, archive_root_sha256="d" * 64)
+            tuple(closure.structure_objects())
+    api.root = api.artifact.root
+    api.objects.clear()
+    with pytest.raises(KeyError):
+        with view.history_closure(extent=BOUND_HISTORY_EXTENT):
             pass
 
 
