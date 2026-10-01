@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
+import shutil
 import subprocess
 import sys
 from collections.abc import Iterator
@@ -26,6 +28,35 @@ def load_script() -> ModuleType:
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
+
+
+@pytest.mark.parametrize("missing_structure", [False, True])
+def test_installed_recovery_qualification_verifies_selected_member_history(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, missing_structure: bool
+) -> None:
+    module = load_script()
+    executable = shutil.which("a-riverhog-recovery-tool")
+    assert executable is not None
+    environment = {"PATH": os.environ["PATH"]}
+    run = module._run
+
+    def recover(command, **options):
+        completed = run(command, **options)
+        if missing_structure:
+            recovered = tmp_path / "recovered"
+            descriptor = next((recovered / "structure/provenance/history").rglob("*.json"))
+            descriptor.unlink()
+        return completed
+
+    monkeypatch.setattr(module, "_run", recover)
+    if missing_structure:
+        with pytest.raises(FileNotFoundError):
+            module._run_recovery(Path(executable), scratch=tmp_path, environment=environment)
+    else:
+        assert (
+            len(module._run_recovery(Path(executable), scratch=tmp_path, environment=environment))
+            == 64
+        )
 
 
 def test_disposable_event_fixtures_are_exact_owned_lifecycle_pages() -> None:

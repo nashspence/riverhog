@@ -205,7 +205,9 @@ dist:
 		printf '%s\n' 'Riverhog Makefile targets require mise on PATH, or MISE_BIN=/abs/path/to/mise.' >&2; \
 		exit 127; \
 	fi
-	@"$(MISE_BIN)" x -- uv build --all-packages --clear --no-create-gitignore
+	@rm -rf -- dist
+	@mkdir -p dist
+	@"$(MISE_BIN)" x -- uv build --all-packages --no-create-gitignore
 	@$(UV_RUN) python scripts/check_distribution_licenses.py dist
 
 dist-smoke: dist

@@ -1650,6 +1650,8 @@ def _run_recovery(
 ) -> str:
     if str(ROOT) not in sys.path:
         sys.path.insert(0, str(ROOT))
+    from riverhog_archive_contracts import MemberHistoryBinding
+
     from tests.support.qualification.recovery_archive import (
         PASSPHRASE,
         PASSPHRASE_ID,
@@ -1695,15 +1697,20 @@ def _run_recovery(
     ]
     if {row["artifact_id"] for row in rows} != set(fixture.members):
         raise QualificationError("installed recovery mapping omits an artifact")
+    expected_bindings = {binding.artifact_id: binding for binding in fixture.history_bindings}
     for row in rows:
         artifact_id = row["artifact_id"]
         payload = (output.joinpath(*row["components"])).read_bytes()
         if payload != fixture.members[artifact_id]:
             raise QualificationError("installed recovery payload differs from the fixture")
+        binding = MemberHistoryBinding.from_mapping(row["binding"])
+        if binding != expected_bindings[artifact_id]:
+            raise QualificationError("installed recovery member history binding differs")
+        history = binding.verify_descriptor(output.joinpath(*row["history"]).read_bytes())
         sidecar = output.joinpath(*row["sidecar"])
-        if (
-            hashlib.sha256(sidecar.read_bytes()).hexdigest()
-            != row["binding"]["journal"]["prefix_sha256"]
+        primary = sidecar.read_bytes()
+        if len(primary) != history.primary.journal.prefix_bytes or (
+            hashlib.sha256(primary).hexdigest() != history.primary.journal.prefix_sha256
         ):
             raise QualificationError("installed recovery primary history differs")
     if (
@@ -1715,6 +1722,10 @@ def _run_recovery(
         digest = hashlib.sha256(journal).hexdigest()
         if (output / "provenance/journals" / f"{digest}.jsonseq").read_bytes() != journal:
             raise QualificationError("installed recovery shared history differs")
+    for relative_path, raw in fixture.history_objects.items():
+        recovered = output.joinpath("structure", *relative_path.removesuffix(".age").split("/"))
+        if recovered.read_bytes() != raw:
+            raise QualificationError("installed recovery member history structure differs")
     return hashlib.sha256((output / "recovery.json").read_bytes()).hexdigest()
 
 

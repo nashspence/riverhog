@@ -140,6 +140,7 @@ def _run_make(
     *args: str,
     extra_env: dict[str, str] | None = None,
     with_mise: bool = True,
+    cwd: Path = REPO_ROOT,
 ) -> tuple[subprocess.CompletedProcess[str], Path, Path]:
     docker_log_path = _install_fake_command(tmp_path, "docker", "docker.log")
     uv_log_path = (
@@ -165,7 +166,7 @@ def _run_make(
 
     completed = subprocess.run(
         ["make", "-f", str(MAKEFILE), *args],
-        cwd=REPO_ROOT,
+        cwd=cwd,
         env=env,
         check=False,
         capture_output=True,
@@ -530,12 +531,18 @@ def test_compose_helpers_reject_a_missing_explicit_environment_file(tmp_path: Pa
 
 
 def test_dist_builds_a_clean_complete_artifact_set(tmp_path: Path) -> None:
-    completed, docker_log_path, uv_log_path = _run_make(tmp_path, "dist")
+    output = tmp_path / "dist"
+    output.mkdir()
+    stale = output / "stale.whl"
+    stale.write_bytes(b"previous build")
+    completed, docker_log_path, uv_log_path = _run_make(tmp_path, "dist", cwd=tmp_path)
 
     assert completed.returncode == 0, completed.stderr
+    assert output.is_dir()
+    assert not stale.exists()
     assert _read_log_lines(docker_log_path) == []
     assert _read_log_lines(uv_log_path) == [
-        "|x -- uv build --all-packages --clear --no-create-gitignore",
+        "|x -- uv build --all-packages --no-create-gitignore",
         "|x -- uv run --locked --all-packages --group dev "
         "python scripts/check_distribution_licenses.py dist",
     ]
