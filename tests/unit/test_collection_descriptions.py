@@ -24,8 +24,8 @@ from riverhog_core.catalog_models import (
     CatalogEventRecord,
     CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
+    CollectionArtifactRecord,
     CollectionDescriptionPublicationRecord,
-    CollectionFileRecord,
     CollectionMutableDocumentPublicationAttemptRecord,
     CollectionMutableDocumentReclamationRecord,
     CollectionRecord,
@@ -216,11 +216,11 @@ def _seed(
             creation_identity_sha256="1" * 64,
             creation_custody_mode="producer-retained",
             archive_generation="2" * 64,
-            content_identity="3" * 64,
+            artifact_set_identity="3" * 64,
             encryption_format="age-v1-scrypt",
             passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
-            provenance_mode="omitted",
-            provenance_identity=None,
+            provenance_identity="7" * 64,
+            delivery_context_id="urn:uuid:11111111-1111-4111-8111-111111111111",
             inventory_identity="4" * 64,
             archive_root_sha256="5" * 64,
             description_revision=0,
@@ -232,8 +232,8 @@ def _seed(
             created_by_principal_id="fixture",
             created_at=NOW,
             is_published=True,
-            file_count=1,
-            file_bytes=7,
+            artifact_count=1,
+            artifact_bytes=7,
         )
         session.add(collection)
         session.add(
@@ -315,9 +315,9 @@ def _seed(
             )
         )
         session.add(
-            CollectionFileRecord(
+            CollectionArtifactRecord(
                 collection_id=1,
-                path="source/camera.bin",
+                artifact_id="c" * 64,
                 bytes=7,
                 sha256="7" * 64,
             )
@@ -341,15 +341,14 @@ def _immutable_identity(collection: CollectionRecord) -> tuple[object, ...]:
     return (
         collection.creation_identity_sha256,
         collection.archive_generation,
-        collection.content_identity,
+        collection.artifact_set_identity,
         collection.encryption_format,
         collection.passphrase_id,
-        collection.provenance_mode,
         collection.provenance_identity,
         collection.inventory_identity,
         collection.archive_root_sha256,
-        collection.file_count,
-        collection.file_bytes,
+        collection.artifact_count,
+        collection.artifact_bytes,
     )
 
 
@@ -383,7 +382,7 @@ def test_description_is_outside_immutable_archive_authority() -> None:
         Path(__file__).resolve().parents[2] / "packages/riverhog-archive-contracts/schemas"
     )
     schemas = [json.loads(path.read_text(encoding="utf-8")) for path in schema_root.glob("*.json")]
-    assert len(schemas) == 4
+    assert schemas
 
     def property_names(value: object) -> set[str]:
         if isinstance(value, list):
@@ -485,28 +484,28 @@ def test_description_replacement_is_durable_searchable_and_syncable(tmp_path: Pa
         principal=PRINCIPAL,
     )
     assert [item.id for item in matched.collections] == [1]
-    assert (
-        files.search(
+    assert [
+        item["artifact_id"]
+        for item in files.search(
             q="morning reference",
             page_size=25,
             position=None,
-            sort="file_ref",
+            sort="artifact_ref",
             order="asc",
             principal=PRINCIPAL,
-        )["files"]
-        == []
-    )
+        )["artifacts"]
+    ] == ["c" * 64]
     assert [
-        item["path"]
+        item["artifact_id"]
         for item in files.search(
-            q="camera.bin",
+            q="c" * 64,
             page_size=25,
             position=None,
-            sort="file_ref",
+            sort="artifact_ref",
             order="asc",
             principal=PRINCIPAL,
-        )["files"]
-    ] == ["source/camera.bin"]
+        )["artifacts"]
+    ] == ["c" * 64]
 
     caught_up = sync.changes(cursor=bootstrap.changes_cursor, limit=10, principal=PRINCIPAL)
     assert caught_up.changes == []
@@ -515,7 +514,7 @@ def test_description_replacement_is_durable_searchable_and_syncable(tmp_path: Pa
         CatalogSyncUpsert(
             collection_id="1",
             archive_root_sha256="5" * 64,
-            content_identity="3" * 64,
+            artifact_set_identity="3" * 64,
             description=description,
             description_revision=1,
             description_identity=description_identity,

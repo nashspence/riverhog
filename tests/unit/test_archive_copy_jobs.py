@@ -9,6 +9,7 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
+from riverhog_client import IncrementalCollectionProducer, ProducerStream
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     ARCHIVES_MANAGE,
@@ -49,13 +50,14 @@ from riverhog_protocol.errors import BadRequest, Conflict
 from sqlalchemy import select
 from time_formats import format_utc_timestamp, utc_now
 
+from tests.support.upload_api import UploadServiceApi
 from tests.unit.archive_object_fixtures import (
     COLLECTION_ID,
     FixtureArchive,
     MemoryArchiveStore,
+    archive_receipt,
     archive_store_binding,
     make_archive,
-    make_captured_provenance_archive,
     seed_archive_copy,
     sqlite_url,
 )
@@ -64,7 +66,7 @@ from tests.unit.storage_incarnation_fixtures import (
     seed_storage_incarnation,
 )
 
-FILES = {"document.txt": b"archive copy service\n", "notes.txt": b"small notes\n"}
+ARTIFACTS = {"d" * 64: b"archive copy service\n", "e" * 64: b"small notes\n"}
 PACK_ID = f"pack-{0:064x}"
 VOLUME_METADATA_ID = f"volume-metadata-{0:064x}"
 VOLUME_TERMINAL_ID = f"volume-terminal-{1:064x}"
@@ -173,7 +175,7 @@ def _service(
     MemoryArchiveStore,
     SqlAlchemyArchiveCopyJobService,
 ]:
-    config, archive = seed_archive_copy(path, FILES, archive=archive)
+    config, archive = seed_archive_copy(path, ARTIFACTS, archive=archive)
     b2_config = replace(
         config.archive_store("deep"),
         name="b2",
@@ -287,8 +289,6 @@ def test_upload_copy_choices_are_atomic_and_idempotent(
         "copy_to": ["b2"],
         "initiator": actor,
         "event_context": None,
-        "provenance_mode": "omitted",
-        "provenance_omission_reason": "fixture has no source provenance",
     }
     opened = producer.create_or_resume(**request)
     assert opened["use_cache"] is False
@@ -478,46 +478,36 @@ def test_upload_publication_atomically_queues_the_accepted_copy(tmp_path: Path) 
         ),
     )
     uploader = SqlAlchemyCollectionUploadService(config, registry)
-    opened = uploader.create_or_resume(
-        idempotency_key="publish-with-copy",
-        ingest_source="fixture",
-        archive_store=None,
-        use_cache=False,
-        copy_to=["b2"],
-        initiator=actor,
-        event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture has no source provenance",
-    )
-    collection_id = int(opened["collection_id"])
+    api = UploadServiceApi(uploader, actor)
     content = b"durable copy intent from accepted upload"
-    uploader.register_files(
-        collection_id,
-        (
-            {
-                "path": "document.txt",
-                "bytes": str(len(content)),
-                "sha256": hashlib.sha256(content).hexdigest(),
-            },
-        ),
+    producer = IncrementalCollectionProducer(
+        api,
+        producer_app="fixture",
+        adapter_id="fixture/v1",
+        adapter_version="1",
+        ingest_source="fixture",
+        source_event_id="publish-with-copy",
+        idempotency_key="publish-with-copy",
+        use_cache=False,
+        copy_to=("b2",),
     )
-    uploader.complete(collection_id)
-    volume = uploader.list_volumes(collection_id)["volumes"][0]
-    unit = volume["units"][0]
-    uploader.upload_unit(
-        collection_id,
-        str(volume["volume_id"]),
-        int(unit["unit"]),
-        plan_sha256=str(volume["plan_sha256"]),
-        content=content,
-    )
-    for _ in range(256):
-        result = uploader.get(collection_id)
-        if result["state"] == "finalized":
-            break
-        assert uploader.process_due_finalizations() == 1
-    else:
-        raise AssertionError("upload did not finalize")
+    collection_id = producer.collection_id
+    try:
+        producer.append_inputs(
+            (
+                ProducerStream(
+                    artifact_id="d" * 64,
+                    bytes=len(content),
+                    sha256=hashlib.sha256(content).hexdigest(),
+                    read_range=lambda start, size: content[start : start + size],
+                    allow_missing_materialization_hint=True,
+                ),
+            )
+        )
+        producer.finish(poll_seconds=0.01, timeout_seconds=30)
+    finally:
+        producer.stop()
+        api.close()
     with session_scope(make_session_factory(database_url)) as session:
         collection = session.get(CollectionRecord, collection_id)
         intent = session.get(CollectionUploadCopyIntentRecord, (collection_id, "b2"))
@@ -539,8 +529,6 @@ def test_upload_publication_atomically_queues_the_accepted_copy(tmp_path: Path) 
         copy_to=["b2"],
         initiator=actor,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture has no source provenance",
     )
     canceled_id = int(canceled_upload["collection_id"])
     assert uploader.cancel(canceled_id)["state"] == "canceled"
@@ -656,7 +644,7 @@ def test_copy_job_explicit_cache_choice_overrides_direct_store_policy(tmp_path: 
 
 
 def test_copy_preflights_real_part_boundaries_before_read_or_write(tmp_path: Path) -> None:
-    archive = _multiple_archive_parts(FILES)
+    archive = _multiple_archive_parts(ARTIFACTS)
     config, _, source, destination, service = _service(
         tmp_path / "catalog.sqlite3", archive=archive
     )
@@ -708,27 +696,17 @@ def test_archive_copy_preserves_the_independent_object_manifest(
         f"{prefix}/{relative_path}": content
         for relative_path, content in archive.stored_objects.items()
     }
-    expected_ids = (
-        archive.pack_plan.volume_id,
-        f"volume-metadata-{0:064x}",
-        f"volume-terminal-{1:064x}",
-        "manifest",
-        "recovery-descriptor",
-    )
+    expected_ids = tuple(row.object_id for row in archive_receipt(archive).objects)
     assert source.prepared == [expected_ids]
     assert source.cleaned == [expected_ids]
     with session_scope(make_session_factory(config.database_url)) as session:
         copy = session.get(CollectionArchiveCopyRecord, (COLLECTION_ID, "b2"))
         assert copy is not None
         assert [(current.kind, current.object_id) for current in copy.objects] == [
-            ("pack", archive.pack_plan.volume_id),
-            ("volume-metadata", f"volume-metadata-{0:064x}"),
-            ("volume-terminal", f"volume-terminal-{1:064x}"),
-            ("manifest", "manifest"),
-            ("recovery-descriptor", "recovery-descriptor"),
+            (row.kind, row.object_id) for row in archive_receipt(archive).objects
         ]
         pack = copy.objects[0]
-        assert [current.path for current in pack.placements] == sorted(FILES)
+        assert [current.artifact_id for current in pack.placements] == sorted(ARTIFACTS)
         assert pack.plan_sha256 == archive.pack_plan_sha256
         assert pack.index_sha256 == archive.pack_index_sha256
         job = session.get(ArchiveCopyJobRecord, (COLLECTION_ID, "b2"))
@@ -790,7 +768,11 @@ def test_archive_copy_preserves_the_independent_object_manifest(
     assert events[-1].payload["context"] == {"workflow": "promotion"}
     transfer_messages = [message for message in caplog.messages if "transfer operation=" in message]
     assert any("operation=archive_copy_segment" in message for message in transfer_messages)
-    assert sum("operation=archive_copy_object" in message for message in transfer_messages) == 4
+    expected_object_transfers = sum(row.kind != "pack" for row in archive_receipt(archive).objects)
+    assert (
+        sum("operation=archive_copy_object" in message for message in transfer_messages)
+        == expected_object_transfers
+    )
     assert all("integrity_seconds=" in message for message in transfer_messages)
     assert all(PACK_ID not in message for message in transfer_messages)
 
@@ -858,7 +840,7 @@ def test_failed_archive_copy_job_has_terminal_evidence_and_can_restart(
 def test_archive_copy_pipelines_source_parts_into_parallel_destination_requests(
     tmp_path: Path,
 ) -> None:
-    archive = _multiple_archive_parts(FILES)
+    archive = _multiple_archive_parts(ARTIFACTS)
 
     class ConcurrentDestination(MemoryArchiveStore):
         def __init__(self) -> None:
@@ -908,7 +890,7 @@ def test_archive_copy_pipelines_source_parts_into_parallel_destination_requests(
 
 
 def test_archive_copy_preserves_immutable_provenance_objects(tmp_path: Path) -> None:
-    archive = make_captured_provenance_archive(FILES, tmp_path / "source")
+    archive = make_archive(ARTIFACTS)
     config, archive, source, destination, service = _service(
         tmp_path / "catalog.sqlite3",
         archive=archive,
@@ -923,23 +905,7 @@ def test_archive_copy_preserves_immutable_provenance_objects(tmp_path: Path) -> 
     assert service.process_due(limit=1) == 1
     assert archive.provenance is not None
 
-    expected_ids = (
-        PACK_ID,
-        VOLUME_METADATA_ID,
-        VOLUME_TERMINAL_ID,
-        *(
-            f"provenance-payload-{item.document.sequence:064x}"
-            for item in archive.provenance.volumes
-        ),
-        *(
-            f"provenance-volume-{item.document.sequence:064x}"
-            for item in archive.provenance.volumes
-        ),
-        f"provenance-terminal-{len(archive.provenance.volumes):064x}",
-        "provenance-root",
-        "manifest",
-        "recovery-descriptor",
-    )
+    expected_ids = tuple(row.object_id for row in archive_receipt(archive).objects)
     prefix = "archives/b2/new-copy"
     assert destination.objects == {
         f"{prefix}/{relative_path}": content
@@ -951,32 +917,7 @@ def test_archive_copy_preserves_immutable_provenance_objects(tmp_path: Path) -> 
         copy = session.get(CollectionArchiveCopyRecord, (COLLECTION_ID, "b2"))
         assert copy is not None
         assert [(current.kind, current.object_id) for current in copy.objects] == [
-            ("pack", PACK_ID),
-            ("volume-metadata", VOLUME_METADATA_ID),
-            ("volume-terminal", VOLUME_TERMINAL_ID),
-            *(
-                (
-                    "provenance-bindings"
-                    if item.document.payload.kind == "bindings"
-                    else "provenance-journal-segment",
-                    f"provenance-payload-{item.document.sequence:064x}",
-                )
-                for item in archive.provenance.volumes
-            ),
-            *(
-                (
-                    "provenance-volume-metadata",
-                    f"provenance-volume-{item.document.sequence:064x}",
-                )
-                for item in archive.provenance.volumes
-            ),
-            (
-                "provenance-terminal",
-                f"provenance-terminal-{len(archive.provenance.volumes):064x}",
-            ),
-            ("provenance-root", "provenance-root"),
-            ("manifest", "manifest"),
-            ("recovery-descriptor", "recovery-descriptor"),
+            (row.kind, row.object_id) for row in archive_receipt(archive).objects
         ]
 
 
@@ -985,7 +926,7 @@ def test_archive_copy_to_restore_required_store_writes_final_custody(
 ) -> None:
     config, archive = seed_archive_copy(
         tmp_path / "catalog.sqlite3",
-        FILES,
+        ARTIFACTS,
         store="b2",
     )
     with session_scope(make_session_factory(config.database_url)) as session:
@@ -1042,11 +983,7 @@ def test_archive_copy_to_restore_required_store_writes_final_custody(
         assert cached is not None
         assert lease is not None
     assert set(destination.objects) == {
-        f"archives/deep/new-copy/volumes/{archive.pack_plan.volume_id}.tar.age",
-        f"archives/deep/new-copy/metadata/volume-{0:064x}.json.age",
-        f"archives/deep/new-copy/metadata/volume-{1:064x}.json.age",
-        "archives/deep/new-copy/manifest.json.age",
-        "archives/deep/new-copy/recovery.json",
+        f"archives/deep/new-copy/{relative_path}" for relative_path in source.archive.stored_objects
     }
     pack_path = f"archives/deep/new-copy/volumes/{archive.pack_plan.volume_id}.tar.age"
     assert cache.store.objects[cached.object_path] == destination.objects[pack_path]
@@ -1057,7 +994,7 @@ def test_restore_required_copy_uses_archive_only_when_new_archive_cache_is_disab
 ) -> None:
     config, archive = seed_archive_copy(
         tmp_path / "catalog.sqlite3",
-        FILES,
+        ARTIFACTS,
         store="b2",
     )
     with session_scope(make_session_factory(config.database_url)) as session:
@@ -1114,13 +1051,7 @@ def test_archive_copy_waits_for_selected_source_objects(tmp_path: Path) -> None:
         job = session.get(ArchiveCopyJobRecord, (COLLECTION_ID, "b2"))
         assert job is not None and job.state == "waiting"
     assert source.prepared == [
-        (
-            PACK_ID,
-            VOLUME_METADATA_ID,
-            VOLUME_TERMINAL_ID,
-            "manifest",
-            "recovery-descriptor",
-        )
+        tuple(row.object_id for row in archive_receipt(source.archive).objects)
     ]
     assert destination.objects == {}
 
@@ -1177,13 +1108,7 @@ def test_archive_copy_canceled_during_source_check_cleans_the_requested_read(
     assert service.process_due(limit=1) == 1
     assert service.get(COLLECTION_ID, destination_store="b2")["state"] == "canceled"
     assert source.cleaned == [
-        (
-            PACK_ID,
-            VOLUME_METADATA_ID,
-            VOLUME_TERMINAL_ID,
-            "manifest",
-            "recovery-descriptor",
-        )
+        tuple(row.object_id for row in archive_receipt(source.archive).objects)
     ]
     assert destination.discarded_uploads == ["archives/b2/new-copy"]
 
@@ -1202,13 +1127,7 @@ def test_archive_copy_cancellation_closes_waiting_job_and_discards_prefix(
     assert canceled["state"] == "canceled"
     assert canceled["finished_at"] is not None
     assert source.cleaned == [
-        (
-            PACK_ID,
-            VOLUME_METADATA_ID,
-            VOLUME_TERMINAL_ID,
-            "manifest",
-            "recovery-descriptor",
-        )
+        tuple(row.object_id for row in archive_receipt(source.archive).objects)
     ]
     assert destination.discarded_uploads == ["archives/b2/new-copy"]
     filtered = service.list(

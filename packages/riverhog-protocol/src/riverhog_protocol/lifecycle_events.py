@@ -172,7 +172,7 @@ class RetrievalEventData(RiverhogEventData):
 
 class RetrievalRequestedData(RetrievalEventData):
     state: Literal["requested", "ready"]
-    files: int = Field(ge=1)
+    artifacts: int = Field(ge=1)
     objects: int = Field(ge=1)
     restore_required: bool
 

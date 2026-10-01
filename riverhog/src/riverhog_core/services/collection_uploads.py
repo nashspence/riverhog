@@ -5851,6 +5851,9 @@ def _stage_provenance_structure(
                 content=content,
             )
         )
+        # Autoflush is disabled. Make shared objects visible to the next
+        # member in this bounded transaction before it stages the same set.
+        session.flush()
     elif (existing.kind, existing.relative_path, existing.content) != (
         kind,
         relative_path,

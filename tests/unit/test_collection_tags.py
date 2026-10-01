@@ -114,7 +114,7 @@ def _service(
 ) -> tuple[SqlAlchemyCollectionTagService, object, MemoryArchiveStore]:
     config, archive = seed_archive_copy(
         path,
-        {"camera/clip.bin": b"clip"},
+        {"c" * 64: b"clip"},
         store="archive",
         database_url=database_url,
     )
