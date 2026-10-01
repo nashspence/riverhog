@@ -34,6 +34,8 @@ def require_portable_json(value: Any, *, depth: int = 0) -> None:
     if type(value) is str:
         if "\x00" in value:
             raise ValueError("U+0000 is not portable to PostgreSQL jsonb; use bytes")
+        if value.isascii():
+            return
         for c in value:
             cp = ord(c)
             if 0xD800 <= cp <= 0xDFFF or 0xFDD0 <= cp <= 0xFDEF or cp & 0xFFFF >= 0xFFFE:
