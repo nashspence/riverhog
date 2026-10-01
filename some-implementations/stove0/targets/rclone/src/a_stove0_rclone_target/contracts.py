@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from typing import cast
+
+from pydantic import JsonValue
+from riverhog_canonical_json import scalar_schema
 from stove0_protocol import JSON_SCHEMA_ONLY_SEMANTIC_PROFILE, JsonSchemaValidationProfile
 from stove0_target_protocol import (
     InputArtifactContract,
@@ -42,7 +46,7 @@ RCLONE_RECEIPT_SCHEMA = JsonSchemaValidationProfile.from_schema(
             "source_selection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
             "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
             "artifact_count": {"type": "integer", "minimum": 1},
-            "total_bytes": {"type": "integer", "minimum": 0},
+            "total_bytes": cast(dict[str, JsonValue], scalar_schema("nonnegative")),
             "verification": {"const": "rclone-download-check-and-manifest-readback/v1"},
         },
         "additionalProperties": False,

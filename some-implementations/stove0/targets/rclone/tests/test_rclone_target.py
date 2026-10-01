@@ -15,7 +15,7 @@ from a_stove0_materialization_hint_evidence_contract_lib import (
     MATERIALIZATION_HINT_OBSERVER_CONTRACT,
 )
 from a_stove0_rclone_target import target as target_support
-from a_stove0_rclone_target.contracts import RCLONE_DELIVER_OPERATION
+from a_stove0_rclone_target.contracts import RCLONE_DELIVER_OPERATION, RCLONE_RECEIPT_SCHEMA
 from a_stove0_rclone_target.target import (
     RcloneDestination,
     RcloneEffectTargetService,
@@ -23,7 +23,8 @@ from a_stove0_rclone_target.target import (
     _verify_selected_inputs,
     _write_delivery_manifest,
 )
-from riverhog_canonical_json import require_canonical_json
+from jsonschema import Draft202012Validator
+from riverhog_canonical_json import format_scalar, parse_scalar, require_canonical_json
 from riverhog_client.processing import ProcessingWorkspace
 from riverhog_materialization import DestinationRules
 from riverhog_protocol import canonical_json_bytes
@@ -319,10 +320,31 @@ def test_rclone_execution_delivers_canonical_manifest_for_exact_opaque_members(
         assert rows[1]["delivered_path"] == f"1/artifacts/22/{subjects[1].artifact_id}"
         assert rows[1]["materialization_reason"] == "no-hint"
         receipt = execution.effect_success.call_args.args[0]
-        assert receipt["artifact_count"] == 2 and receipt["total_bytes"] == 2
+        assert receipt["artifact_count"] == 2 and receipt["total_bytes"] == "2"
+        Draft202012Validator(RCLONE_RECEIPT_SCHEMA.document).validate(receipt)
         execution.effect_success.assert_called_once()
     finally:
         service.close()
+
+
+@pytest.mark.parametrize("total_bytes", [(1 << 53) + 1, (1 << 63) - 1, 70 * ((1 << 63) - 1)])
+def test_rclone_receipt_preserves_exact_wide_aggregate_byte_counts(total_bytes: int) -> None:
+    receipt = {
+        "format": "stove0-rclone-delivery-receipt/v1",
+        "destination_identity": "a" * 64,
+        "delivery_id": "b" * 64,
+        "source_selection_sha256": "c" * 64,
+        "manifest_sha256": "d" * 64,
+        "artifact_count": 70,
+        "total_bytes": format_scalar("nonnegative", total_bytes),
+        "verification": "rclone-download-check-and-manifest-readback/v1",
+    }
+    validator = Draft202012Validator(RCLONE_RECEIPT_SCHEMA.document)
+    validator.validate(receipt)
+    encoded = canonical_json_bytes(receipt)
+    require_canonical_json(encoded)
+    assert parse_scalar("nonnegative", json.loads(encoded)["total_bytes"]) == total_bytes
+    assert not validator.is_valid({**receipt, "total_bytes": total_bytes})
 
 
 def test_generic_rclone_descriptor_has_one_effect_operation(tmp_path: Path) -> None:
