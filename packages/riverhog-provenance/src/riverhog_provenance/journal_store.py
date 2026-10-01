@@ -538,6 +538,10 @@ class JournalStore:
             shutil.rmtree(directory)
             raise
         self._cleanup = weakref.finalize(self, _cleanup_snapshot, self.db, directory)
+        # This is a disposable validation projection, never journal custody.
+        # Failed validation destroys it; preserve disk-backed rollback without
+        # synchronizing each temporary schema write to durable storage.
+        self.db.execute("PRAGMA synchronous = OFF")
         self.db.execute("PRAGMA cache_size = -512")
         self.db.execute("PRAGMA temp_store = FILE")
         self.db.executescript(

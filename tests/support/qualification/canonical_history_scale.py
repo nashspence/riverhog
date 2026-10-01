@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import gc
 import hashlib
+import sys
 import time
 import tracemalloc
 from collections import Counter
@@ -49,6 +50,7 @@ from tests.unit.test_operation_lifecycle_api import _api, _container
 
 MAX_REBUILD_PEAK_BYTES = 64 * 1024 * 1024
 MAX_REBUILD_SECONDS = 900
+MAX_NATIVE_HTTP_SECONDS = 5
 SHARED_PREDICATE = "https://example.invalid/qualification/member-evidence"
 
 
@@ -61,6 +63,7 @@ class SharedHistoryFixture:
     generation_id: str
     shared_bytes: int
     journal_bytes: int
+    logical_journal_bytes: int
     expected_snapshots: int
     shared_journal_id: str
 
@@ -102,9 +105,13 @@ def publish_shared_history(
         use_cache=False,
     )
     try:
-        producer.append_inputs(sources)
+        # This witness measures history extent, independently of the PostgreSQL
+        # upload-concurrency rail. Keep its SQLite unit fixture deterministic.
+        for source in sources:
+            producer.append_inputs((source,))
         collection_id = int(producer.collection_id)
         journal_bytes = 0
+        dependency_bytes = 0
         for offset, source in enumerate(sources):
             binding = api.get_collection_upload_session_artifact_provenance_binding(
                 collection_id, source.artifact_id
@@ -117,11 +124,16 @@ def publish_shared_history(
             journal_bytes += len(raw)
             summary = validate_journal(raw, require_profiles=False)
             state = summary.graph_validation.objects[binding.delivery_association_id]["state"]
+            endpoint = external_reference(summary, state["object_id"])
+            for frame in summary.frames:
+                dependency_bytes += len(frame.encoded)
+                if frame.reference == endpoint["entry"]:
+                    break
             claims.append(
                 assertion(
                     "extension",
                     who,
-                    subject=external_reference(summary, state["object_id"]),
+                    subject=endpoint,
                     property=SHARED_PREDICATE,
                     value={"type": "text", "value": f"member-token-{offset:06d}:" + "x" * 2048},
                 )
@@ -212,6 +224,7 @@ def publish_shared_history(
         generation_id,
         len(shared),
         journal_bytes + len(shared),
+        journal_bytes + (members - 1) * dependency_bytes + members * len(shared),
         expected_snapshots,
         shared_summary.journal_id,
     )
@@ -270,38 +283,56 @@ def measure_archive_rebuild(fixture: SharedHistoryFixture) -> dict[str, object]:
             identities[object_id].stored_bytes * times for object_id, times in reads.items()
         )
     assert snapshots == fixture.expected_snapshots and shared_snapshots == 1
-    found = fixture.api.discover_artifacts(
-        {
-            "collections": [str(fixture.collection_id)],
-            "provenance_all": [
+    native_http = {}
+    for phase in ("first_read", "repeat_read"):
+        gc.collect()
+        tracemalloc.start()
+        start = time.perf_counter()
+        try:
+            found = fixture.api.discover_artifacts(
                 {
-                    "kind": "extension",
-                    "scopes": ["member"],
-                    "values": [
+                    "collections": [str(fixture.collection_id)],
+                    "provenance_all": [
                         {
-                            "pointer": "/value/value",
-                            "operator": "contains",
-                            "value": "member-token-000000:",
+                            "kind": "extension",
+                            "scopes": ["member"],
+                            "values": [
+                                {
+                                    "pointer": "/value/value",
+                                    "operator": "contains",
+                                    "value": "member-token-000000:",
+                                }
+                            ],
                         }
                     ],
                 }
-            ],
+            )
+            query_seconds = time.perf_counter() - start
+            _current, query_peak = tracemalloc.get_traced_memory()
+        finally:
+            tracemalloc.stop()
+        assert [row["artifact"]["artifact_id"] for row in found["artifacts"]] == [
+            fixture.artifact_ids[0]
+        ]
+        assert query_seconds <= MAX_NATIVE_HTTP_SECONDS and query_peak <= MAX_REBUILD_PEAK_BYTES
+        native_http[phase] = {
+            "elapsed_seconds": round(query_seconds, 3),
+            "peak_application_bytes": query_peak,
+            "exact_member_matches": 1,
         }
-    )
-    assert [row["artifact"]["artifact_id"] for row in found["artifacts"]] == [
-        fixture.artifact_ids[0]
-    ]
+    assert Counter(store.read) == reads, "native discovery reread archive authority"
     return {
         "members": len(fixture.artifact_ids),
         "shared_journal_bytes": fixture.shared_bytes,
         "physical_journal_bytes": fixture.journal_bytes,
-        "logical_required_history_bytes": fixture.journal_bytes * len(fixture.artifact_ids),
+        "logical_required_journal_bytes": fixture.logical_journal_bytes,
         "elapsed_seconds": round(elapsed, 3),
         "peak_application_bytes": peak,
         "archive_object_reads": sum(reads.values()),
         "encrypted_archive_bytes_read": encrypted_bytes,
         "max_reads_per_object": max(reads.values()),
         "indexed_snapshots": snapshots,
+        "native_http": native_http,
         "index_generation": generation,
         "source_and_upload_scratch_removed": True,
     }
@@ -323,14 +354,24 @@ def qualify_shared_history_scaling(database_url: str, directory: Path) -> dict[s
             )
             fixture = None
             try:
+                print(f"Shared history: publishing {members} members", file=sys.stderr, flush=True)
+                start = time.perf_counter()
                 fixture = publish_shared_history(
                     directory / str(members), members=members, database_url=scoped
                 )
+                publication_seconds = round(time.perf_counter() - start, 3)
+                print(f"Shared history: rebuilding {members} members", file=sys.stderr, flush=True)
                 first = measure_archive_rebuild(fixture)
                 repeated = measure_archive_rebuild(fixture)
                 measurements.append(
-                    {"members": members, "first_rebuild": first, "repeated_rebuild": repeated}
+                    {
+                        "members": members,
+                        "publication_seconds": publication_seconds,
+                        "first_rebuild": first,
+                        "repeated_rebuild": repeated,
+                    }
                 )
+                print(f"Shared history: qualified {members} members", file=sys.stderr, flush=True)
             finally:
                 if fixture is not None:
                     fixture.container.close()
@@ -345,6 +386,7 @@ def qualify_shared_history_scaling(database_url: str, directory: Path) -> dict[s
         "max_peak_application_bytes": MAX_REBUILD_PEAK_BYTES,
         "max_rebuild_seconds": MAX_REBUILD_SECONDS,
         "maximum_reads_per_encrypted_object": 1,
+        "max_native_http_seconds": MAX_NATIVE_HTTP_SECONDS,
         "measurements": measurements,
         "qualification": "passed",
     }
