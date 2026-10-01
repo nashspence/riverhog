@@ -1,6 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
+from copy import deepcopy
+from typing import Any
+
 import pytest
+import stove0_protocol.models as protocol_models
+from jsonschema import Draft202012Validator
 from pydantic import ValidationError
 from riverhog_protocol.collection_workflows import (
     CollectionRootIdentity,
@@ -115,6 +121,78 @@ def test_json_schema_document_resolves_local_dynamic_references() -> None:
             "properties": {"child": {"$dynamicRef": "#node"}},
         },
     )
+
+
+@pytest.fixture
+def schema_validation_checks(monkeypatch: pytest.MonkeyPatch) -> Iterator[list[object]]:
+    checks: list[object] = []
+    original_check = Draft202012Validator.check_schema
+
+    def counted_check(schema: Any, format_checker: Any = None) -> None:
+        checks.append(deepcopy(schema))
+        original_check(schema, format_checker)
+
+    protocol_models._validated_schema_profile.cache_clear()
+    monkeypatch.setattr(Draft202012Validator, "check_schema", counted_check)
+    try:
+        yield checks
+    finally:
+        protocol_models._validated_schema_profile.cache_clear()
+
+
+def test_repeated_schema_checks_reuse_exact_bytes_without_trusting_mutated_profiles(
+    schema_validation_checks: list[object],
+) -> None:
+    profile = JsonSchemaValidationProfile.from_schema(
+        "fixture.cached-schema/v1",
+        {"properties": {"value": {"type": "string"}}, "additionalProperties": False},
+    )
+    JsonSchemaValidationProfile.model_validate(profile.model_dump(mode="json", by_alias=True))
+    renamed = JsonSchemaValidationProfile.from_schema(
+        "fixture.same-schema/v1", deepcopy(profile.document)
+    )
+    assert renamed.profile_sha256 == profile.profile_sha256
+    assert len(schema_validation_checks) == 1
+
+    # Frozen models still contain mutable JSON; every read must verify its digest.
+    profile.document["properties"] = {"value": {"type": "integer"}}
+    with pytest.raises(ValueError, match="digest does not match"):
+        JsonSchemaValidationProfile.model_validate(profile)
+    assert len(schema_validation_checks) == 1
+
+    changed = JsonSchemaValidationProfile.from_schema(
+        "fixture.changed-schema/v1", deepcopy(profile.document)
+    )
+    assert changed.profile_sha256 != renamed.profile_sha256
+    assert len(schema_validation_checks) == 2
+
+
+@pytest.mark.parametrize(
+    ("schema", "error"),
+    [
+        ({"type": "invalid-type"}, "not valid JSON Schema"),
+        ({"$ref": "https://schemas.example/remote.json"}, "sealed schema document"),
+        ({"$ref": "#/$defs/absent"}, "sealed schema document"),
+    ],
+)
+def test_failed_schema_checks_are_never_reused(
+    schema_validation_checks: list[object], schema: dict[str, Any], error: str
+) -> None:
+    JsonSchemaValidationProfile.from_schema("fixture.valid-schema/v1", {"type": "object"})
+    for _ in range(2):
+        with pytest.raises(ValueError, match=error):
+            JsonSchemaValidationProfile.from_schema("fixture.invalid-schema/v1", schema)
+    assert len(schema_validation_checks) == 3
+
+
+def test_large_valid_schemas_remain_supported_without_retention_in_the_check_cache(
+    schema_validation_checks: list[object],
+) -> None:
+    schema = {"type": "object", "description": "large schema " * 6000}
+    first = JsonSchemaValidationProfile.from_schema("fixture.large-schema/v1", schema)
+    second = JsonSchemaValidationProfile.from_schema("fixture.large-schema/v1", schema)
+    assert first == second
+    assert len(schema_validation_checks) == 2
 
 
 def _sha(character: str) -> str:
