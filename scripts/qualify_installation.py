@@ -110,6 +110,30 @@ class QualificationHandler(http.server.SimpleHTTPRequestHandler):
         return
 
 
+@contextmanager
+def _timed_phase(
+    records: list[dict[str, object]] | None,
+    phase: str,
+    *,
+    repetition: int | None = None,
+) -> Iterator[None]:
+    started = time.monotonic()
+    outcome = "failed"
+    try:
+        yield
+        outcome = "passed"
+    finally:
+        if records is not None and len(records) < 128:
+            record: dict[str, object] = {
+                "phase": phase,
+                "outcome": outcome,
+                "elapsed_milliseconds": round((time.monotonic() - started) * 1000),
+            }
+            if repetition is not None:
+                record["repetition"] = repetition
+            records.append(record)
+
+
 def _run(
     command: list[str],
     *,
@@ -517,6 +541,7 @@ def _run_gogurt(
     listener_lifecycle_repetitions: int,
     gogurt_evidence_dir: Path | None,
     reference: dict[str, str],
+    phase_timings: list[dict[str, object]] | None = None,
 ) -> str:
     environment = {
         **environment,
@@ -589,13 +614,14 @@ def _run_gogurt(
             if gogurt_evidence_dir is not None
             else None
         )
-        _run_gogurt_listener_lifecycle(
-            executable,
-            scratch=lifecycle_scratch,
-            environment=environment,
-            evidence_dir=evidence_dir,
-            exercise_extended_lifecycle=repetition == 1,
-        )
+        with _timed_phase(phase_timings, "gogurt-lifecycle", repetition=repetition):
+            _run_gogurt_listener_lifecycle(
+                executable,
+                scratch=lifecycle_scratch,
+                environment=environment,
+                evidence_dir=evidence_dir,
+                exercise_extended_lifecycle=repetition == 1,
+            )
     return "native-listener-lifecycle"
 
 
@@ -705,15 +731,38 @@ def _listener_status(
 def _process_is_running(pid: int) -> bool:
     if sys.platform == "win32":
         import ctypes
+        from ctypes import wintypes
 
-        kernel32 = cast(Any, ctypes).windll.kernel32
+        if isinstance(pid, bool) or not isinstance(pid, int) or not 0 < pid <= 0xFFFFFFFF:
+            raise ValueError("Windows process ID must be a positive DWORD")
+        native = cast(Any, ctypes)
+        kernel32 = native.WinDLL("kernel32", use_last_error=True)
+        kernel32.OpenProcess.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
+        kernel32.OpenProcess.restype = wintypes.HANDLE
+        kernel32.WaitForSingleObject.argtypes = (wintypes.HANDLE, wintypes.DWORD)
+        kernel32.WaitForSingleObject.restype = wintypes.DWORD
+        kernel32.CloseHandle.argtypes = (wintypes.HANDLE,)
+        kernel32.CloseHandle.restype = wintypes.BOOL
         handle = kernel32.OpenProcess(0x00100000, False, pid)
         if not handle:
-            return kernel32.GetLastError() == 5
+            error = native.get_last_error()
+            if error == 87:  # ERROR_INVALID_PARAMETER: a positive PID no longer exists.
+                return False
+            if error == 5:  # ERROR_ACCESS_DENIED cannot prove that custody ended.
+                return True
+            raise native.WinError(error)
         try:
-            return kernel32.WaitForSingleObject(handle, 0) == 0x00000102
+            result = kernel32.WaitForSingleObject(handle, 0)
+            if result == 0:  # WAIT_OBJECT_0: the process object is signaled.
+                return False
+            if result == 0x00000102:  # WAIT_TIMEOUT: still running.
+                return True
+            if result == 0xFFFFFFFF:  # WAIT_FAILED is not process termination.
+                raise native.WinError(native.get_last_error())
+            raise OSError(f"unexpected Windows process wait result: {result}")
         finally:
-            kernel32.CloseHandle(handle)
+            if not kernel32.CloseHandle(handle):
+                raise native.WinError(native.get_last_error())
     try:
         os.kill(pid, 0)
     except (OverflowError, ProcessLookupError, ValueError):
@@ -1132,13 +1181,33 @@ def _retain_gogurt_failure_evidence(
 ) -> None:
     if evidence_dir is None:
         return
+    # Each source is independent: a hung/broken status command must not hide
+    # the native state, transition history, or logs which explain its failure.
     try:
         evidence_dir.mkdir(parents=True, exist_ok=True)
-        diagnostic = " ".join(f"{type(failure).__name__}: {failure}".splitlines())[:4096]
-        (evidence_dir / f"{phase}-failure.txt").write_text(
-            diagnostic + "\n",
-            encoding="utf-8",
+    except OSError:
+        return  # CI's missing-evidence upload is deliberately fail-closed.
+
+    def retain_error(source: str, exc: BaseException) -> None:
+        try:
+            diagnostic = " ".join(f"{type(exc).__name__}: {exc}".splitlines())[:4096]
+            (evidence_dir / f"{phase}-{source}-evidence-error.txt").write_text(
+                diagnostic + "\n", encoding="utf-8"
+            )
+        except OSError:
+            pass
+
+    def write_json(name: str, payload: object) -> None:
+        (evidence_dir / f"{phase}-{name}.json").write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
+
+    try:
+        diagnostic = " ".join(f"{type(failure).__name__}: {failure}".splitlines())[:4096]
+        (evidence_dir / f"{phase}-failure.txt").write_text(diagnostic + "\n", encoding="utf-8")
+    except OSError as exc:
+        retain_error("failure", exc)
+    try:
         status = subprocess.run(
             [str(executable), "listener", "status", "--json"],
             cwd=scratch,
@@ -1148,57 +1217,59 @@ def _retain_gogurt_failure_evidence(
             text=True,
             timeout=5,
         )
-        status_payload = {
-            "returncode": status.returncode,
-            "stdout": status.stdout[-65536:],
-            "stderr": status.stderr[-65536:],
-        }
-        (evidence_dir / f"{phase}-status.json").write_text(
-            json.dumps(status_payload, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
+        write_json(
+            "status",
+            {
+                "returncode": status.returncode,
+                "stdout": status.stdout[-65536:],
+                "stderr": status.stderr[-65536:],
+            },
         )
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        retain_error("status", exc)
+    try:
         native = _native_listener_snapshot(scratch=scratch, environment=environment)
         if native is not None:
-            (evidence_dir / f"{phase}-native.json").write_text(
-                json.dumps(native, indent=2, sort_keys=True) + "\n",
-                encoding="utf-8",
+            write_json("native", native)
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        retain_error("native", exc)
+    if native_transitions:
+        try:
+            write_json(
+                "native-transitions",
+                {
+                    "format": "gogurt-native-lifecycle-trace/v1",
+                    "events": native_transitions[-NATIVE_TRACE_EVENT_LIMIT:],
+                },
             )
-        if native_transitions:
-            (evidence_dir / f"{phase}-native-transitions.json").write_text(
-                json.dumps(
-                    {
-                        "format": "gogurt-native-lifecycle-trace/v1",
-                        "events": native_transitions,
-                    },
-                    indent=2,
-                    sort_keys=True,
-                )
-                + "\n",
-                encoding="utf-8",
-            )
-        log_sources = {
-            *state_dir.glob("listener.log*"),
-            *state_dir.glob("listener.fatal.log*"),
-        }
-        for source in sorted(log_sources):
+        except (OSError, ValueError) as exc:
+            retain_error("transitions", exc)
+    # Runtime-owned names only. A glob allows an unbounded number of lookalikes;
+    # copying entire files makes artifact size depend on unrelated old content.
+    names = (
+        "listener.log",
+        "listener.log.1",
+        "listener.log.2",
+        "listener.log.3",
+        "listener.fatal.log",
+        "listener.fatal.log.1",
+    )
+    for name in names:
+        source = state_dir / name
+        try:
             if source.is_symlink():
                 continue
             info = source.stat()
-            if not stat.S_ISREG(info.st_mode) or info.st_size > 2 * 1024 * 1024:
+            if not stat.S_ISREG(info.st_mode):
                 continue
-            shutil.copy2(source, evidence_dir / source.name)
-    except (OSError, subprocess.SubprocessError, ValueError) as evidence_error:
-        try:
-            evidence_dir.mkdir(parents=True, exist_ok=True)
-            diagnostic = " ".join(
-                f"{type(evidence_error).__name__}: {evidence_error}".splitlines()
-            )[:4096]
-            (evidence_dir / f"{phase}-evidence-error.txt").write_text(
-                diagnostic + "\n",
-                encoding="utf-8",
-            )
-        except OSError:
-            return
+            with source.open("rb") as stream:
+                stream.seek(max(0, info.st_size - 65536))
+                content = stream.read(65536)
+            (evidence_dir / name).write_bytes(content)
+        except FileNotFoundError:
+            continue
+        except OSError as exc:
+            retain_error(name, exc)
 
 
 def _run_gogurt_listener_lifecycle(
@@ -1749,6 +1820,7 @@ def _qualify_component(
     listener_lifecycle: bool,
     listener_lifecycle_repetitions: int,
     gogurt_evidence_dir: Path | None,
+    phase_timings: list[dict[str, object]] | None = None,
 ) -> dict[str, Any]:
     root = str(component["root"])
     environment = _tool_environment(scratch, root)
@@ -1887,6 +1959,7 @@ def _qualify_component(
             listener_lifecycle_repetitions=listener_lifecycle_repetitions,
             gogurt_evidence_dir=gogurt_evidence_dir,
             reference=gogurt_providers,
+            phase_timings=phase_timings,
         )
     else:
         operation = _run_recovery(
@@ -1932,6 +2005,7 @@ def qualify(
     listener_lifecycle: bool = False,
     listener_lifecycle_repetitions: int = 1,
     gogurt_evidence_dir: Path | None = None,
+    phase_timings: list[dict[str, object]] | None = None,
 ) -> dict[str, Any]:
     if listener_lifecycle_repetitions < 1:
         raise QualificationError("listener lifecycle repetitions must be at least one")
@@ -1947,34 +2021,38 @@ def qualify(
         web_root.mkdir()
         server, thread, base_url = _server(web_root)
         try:
-            manifest = _stage_artifacts(
-                root,
-                scratch,
-                version=version,
-                source_sha=source_sha,
-                base_url=base_url,
-            )
+            with _timed_phase(phase_timings, "stage-artifacts"):
+                manifest = _stage_artifacts(
+                    root,
+                    scratch,
+                    version=version,
+                    source_sha=source_sha,
+                    base_url=base_url,
+                )
             artifact_root = scratch / "installation"
             expected_index = base_url + "/" + str(manifest["index"]["path"])
             if manifest["index"]["url"] != expected_index:
                 raise QualificationError("staged index URL does not match its HTTP origin")
             projects = release.validate_release_contract(root)
             all_project_names = {project.name for project in projects}
-            results = [
-                _qualify_component(
-                    component,
-                    manifest,
-                    source_root=root,
-                    artifact_root=artifact_root,
-                    scratch=scratch,
-                    base_url=base_url,
-                    all_project_names=all_project_names,
-                    listener_lifecycle=listener_lifecycle,
-                    listener_lifecycle_repetitions=listener_lifecycle_repetitions,
-                    gogurt_evidence_dir=gogurt_evidence_dir,
-                )
-                for component in manifest["components"]
-            ]
+            results = []
+            for component in manifest["components"]:
+                with _timed_phase(phase_timings, str(component["root"])):
+                    results.append(
+                        _qualify_component(
+                            component,
+                            manifest,
+                            source_root=root,
+                            artifact_root=artifact_root,
+                            scratch=scratch,
+                            base_url=base_url,
+                            all_project_names=all_project_names,
+                            listener_lifecycle=listener_lifecycle,
+                            listener_lifecycle_repetitions=listener_lifecycle_repetitions,
+                            gogurt_evidence_dir=gogurt_evidence_dir,
+                            phase_timings=phase_timings,
+                        )
+                    )
         finally:
             server.shutdown()
             server.server_close()
@@ -1999,6 +2077,9 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", required=True)
     parser.add_argument("--summary", type=Path)
     parser.add_argument(
+        "--timings", type=Path, help="Write bounded phase timing on success or failure."
+    )
+    parser.add_argument(
         "--listener-lifecycle",
         action="store_true",
         help="Exercise the real per-user service manager and a disposable mounted volume.",
@@ -2019,6 +2100,7 @@ def _parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    phase_timings: list[dict[str, object]] = []
     try:
         payload = qualify(
             ROOT,
@@ -2026,6 +2108,7 @@ def main(argv: list[str] | None = None) -> int:
             listener_lifecycle=args.listener_lifecycle,
             listener_lifecycle_repetitions=args.listener_lifecycle_repetitions,
             gogurt_evidence_dir=args.gogurt_evidence_dir,
+            phase_timings=phase_timings,
         )
     except (
         OSError,
@@ -2034,7 +2117,46 @@ def main(argv: list[str] | None = None) -> int:
         release.ReleaseError,
         subprocess.CalledProcessError,
     ) as exc:
+        if args.gogurt_evidence_dir is not None:
+            try:
+                args.gogurt_evidence_dir.mkdir(parents=True, exist_ok=True)
+                (args.gogurt_evidence_dir / "qualification-failure.json").write_text(
+                    json.dumps(
+                        {
+                            "exception": type(exc).__name__,
+                            "platform": sys.platform,
+                            "phases": phase_timings,
+                        },
+                        indent=2,
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
+            except OSError:
+                pass  # The CI upload must fail if no evidence can be retained.
         raise SystemExit(f"installation qualification error: {exc}") from exc
+    finally:
+        if args.timings is not None:
+            # A timing-write error must be fatal on success, but must not replace
+            # the original qualification failure already propagating outward.
+            primary_failure = sys.exc_info()[0] is not None
+            try:
+                timing_payload = {
+                    "source_sha": release._source_sha(ROOT),
+                    "platform": sys.platform,
+                    "run_id": os.environ.get("GITHUB_RUN_ID"),
+                    "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+                    "phases": phase_timings,
+                    "truncated": len(phase_timings) == 128,
+                }
+                args.timings.parent.mkdir(parents=True, exist_ok=True)
+                args.timings.write_text(
+                    json.dumps(timing_payload, indent=2) + "\n", encoding="utf-8"
+                )
+            except (OSError, release.ReleaseError, subprocess.CalledProcessError) as exc:
+                if not primary_failure:
+                    raise
+                print(f"qualification timing evidence error: {type(exc).__name__}", file=sys.stderr)
     rendered = json.dumps(payload, indent=2, sort_keys=True) + "\n"
     if args.summary is not None:
         args.summary.parent.mkdir(parents=True, exist_ok=True)

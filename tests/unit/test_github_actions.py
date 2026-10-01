@@ -216,6 +216,7 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "jdx/mise-action",
         "docker/setup-docker-action",
         "docker/setup-compose-action",
+        "actions/upload-artifact",
     ]
     action_steps = [
         step
@@ -246,7 +247,16 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
     assert steps[3]["if"] == "matrix.docker"
     assert steps[3]["with"] == {"version": "v5.1.1"}
     assert [step["run"] for step in steps if "run" in step] == ['make "$CI_TARGET"']
-    assert steps[-1]["env"] == {"CI_TARGET": "${{ matrix.target }}"}
+    target_step = next(step for step in steps if step.get("id") == "repository-target")
+    assert target_step["env"] == {
+        "CI_TARGET": "${{ matrix.target }}",
+        "GOGURT_TEST_EVIDENCE_DIR": "${{ runner.temp }}/gogurt-unit-evidence",
+        "GOGURT_CI_SOURCE_SHA": "${{ inputs.ref || github.sha }}",
+    }
+    assert steps[-1]["if"] == (
+        "failure() && matrix.target == 'unit' && steps.repository-target.outcome == 'failure'"
+    )
+    assert steps[-1]["with"]["if-no-files-found"] == "error"
 
     client_platforms = workflow["jobs"]["client-platforms"]
     assert client_platforms["strategy"] == {
@@ -263,28 +273,57 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
     assert client_platforms["env"] == {"MISE_AUTO_INSTALL": "0"}
     assert [
         step["uses"].split("@", 1)[0] for step in client_platforms["steps"] if "uses" in step
-    ] == ["actions/checkout", "jdx/mise-action", "actions/upload-artifact"]
+    ] == [
+        "actions/checkout",
+        "jdx/mise-action",
+        "actions/upload-artifact",
+        "actions/upload-artifact",
+        "actions/upload-artifact",
+    ]
     assert client_platforms["steps"][0]["with"]["persist-credentials"] == "false"
     assert client_platforms["steps"][1]["with"] == {"install_args": "python uv age"}
     assert [step["run"] for step in client_platforms["steps"] if "run" in step] == [
         "mise x python uv age -- uv run --locked --all-packages --group dev "
-        "python -m pytest -q "
+        "python -m pytest -q --durations=20 "
         "packages/riverhog-provenance/tests/test_platform_live.py "
         "some-implementations/gogurt/application/tests "
         "tests/platform/test_end_user_artifacts.py",
         "mise x python uv age -- uv run --locked --all-packages --group dev "
         "python scripts/qualify_installation.py --version 1.0.0 --listener-lifecycle "
         "--listener-lifecycle-repetitions ${{ matrix.listener_repetitions }} "
-        '--gogurt-evidence-dir "${{ runner.temp }}/gogurt-failure-evidence"',
+        '--gogurt-evidence-dir "${{ runner.temp }}/gogurt-failure-evidence" '
+        '--summary "${{ runner.temp }}/gogurt-qualification/summary.json" '
+        '--timings "${{ runner.temp }}/gogurt-qualification/timings.json"',
     ]
-    evidence_step = client_platforms["steps"][-1]
-    assert evidence_step["if"] == "failure()"
-    assert evidence_step["with"] == {
-        "name": "gogurt-lifecycle-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}",
-        "path": "${{ runner.temp }}/gogurt-failure-evidence",
-        "if-no-files-found": "warn",
-        "retention-days": "14",
+    native_step = next(
+        step for step in client_platforms["steps"] if step.get("id") == "native-tests"
+    )
+    assert native_step["env"] == {
+        "GOGURT_TEST_EVIDENCE_DIR": "${{ runner.temp }}/gogurt-native-test-evidence",
+        "GOGURT_CI_SOURCE_SHA": "${{ inputs.ref || github.sha }}",
     }
+    uploads = client_platforms["steps"][-3:]
+    assert [step["if"] for step in uploads[:2]] == [
+        "failure() && steps.native-tests.outcome == 'failure'",
+        "failure() && steps.staged-installs.outcome == 'failure'",
+    ]
+    assert uploads[-1]["if"] == (
+        "always() && (steps.staged-installs.outcome == 'success' || "
+        "steps.staged-installs.outcome == 'failure')"
+    )
+    assert [step["with"]["path"] for step in uploads] == [
+        "${{ runner.temp }}/gogurt-native-test-evidence",
+        "${{ runner.temp }}/gogurt-failure-evidence",
+        "${{ runner.temp }}/gogurt-qualification",
+    ]
+    for step in uploads:
+        assert step["with"]["if-no-files-found"] == "error"
+        assert step["with"]["retention-days"] == "14"
+        assert step["with"]["name"].endswith(
+            "${{ inputs.ref || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}"
+        )
+    assert "continue-on-error" not in text
+    assert "--reruns" not in text
     assert "secrets." not in text
 
 

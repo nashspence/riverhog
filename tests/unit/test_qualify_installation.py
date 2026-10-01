@@ -690,3 +690,129 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
     events = trace.stop()
 
     assert events == ()
+
+
+def test_status_timeout_does_not_hide_native_evidence_or_bounded_log_tails(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = load_script()
+    state = tmp_path / "state"
+    state.mkdir()
+    (state / "listener.log").write_bytes(b"discard" * 20000 + b"terminal")
+    (state / "listener.log.99").write_text("not runtime owned")
+    target = tmp_path / "evidence"
+
+    def timeout(*_args: object, **_kwargs: object) -> None:
+        raise subprocess.TimeoutExpired("gogurt listener status", 5)
+
+    monkeypatch.setattr(module.subprocess, "run", timeout)
+    monkeypatch.setattr(
+        module,
+        "_native_listener_snapshot",
+        lambda **_kwargs: {"returncode": 0, "fields": {"MainPID": 123}},
+    )
+    module._retain_gogurt_failure_evidence(
+        Path("gogurt"),
+        state_dir=state,
+        scratch=tmp_path,
+        environment={},
+        evidence_dir=target,
+        failure=RuntimeError("original failure"),
+        phase="lifecycle",
+    )
+    assert "original failure" in (target / "lifecycle-failure.txt").read_text()
+    assert "TimeoutExpired" in (target / "lifecycle-status-evidence-error.txt").read_text()
+    assert json.loads((target / "lifecycle-native.json").read_text())["fields"] == {"MainPID": 123}
+    assert (target / "listener.log").stat().st_size == 65536
+    assert (target / "listener.log").read_bytes().endswith(b"terminal")
+    assert not (target / "listener.log.99").exists()
+
+
+def test_phase_timings_record_failures_without_repeating_operation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = load_script()
+    ticks = iter([1.0, 1.25, 2.0, 2.5])
+    monkeypatch.setattr(module.time, "monotonic", lambda: next(ticks))
+    records: list[dict[str, object]] = []
+    with module._timed_phase(records, "stage-artifacts"):
+        pass
+    with pytest.raises(RuntimeError, match="original failure"):
+        with module._timed_phase(records, "gogurt-lifecycle", repetition=1):
+            raise RuntimeError("original failure")
+    assert records == [
+        {"phase": "stage-artifacts", "outcome": "passed", "elapsed_milliseconds": 250},
+        {
+            "phase": "gogurt-lifecycle",
+            "outcome": "failed",
+            "elapsed_milliseconds": 500,
+            "repetition": 1,
+        },
+    ]
+
+
+def test_timing_write_failure_does_not_replace_original_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = load_script()
+
+    def fail(*_args: object, **_kwargs: object) -> None:
+        raise module.QualificationError("original qualification failure")
+
+    monkeypatch.setattr(module, "qualify", fail)
+    monkeypatch.setattr(module.release, "_source_sha", lambda _root: "a" * 40)
+    blocked = tmp_path / "file"
+    blocked.write_text("not a directory")
+    with pytest.raises(SystemExit, match="original qualification failure"):
+        module.main(["--version", "1.0.0", "--timings", str(blocked / "timings.json")])
+
+
+def test_qualification_process_probe_does_not_treat_wait_failure_as_dead(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ctypes
+    from ctypes import wintypes
+    from unittest.mock import Mock
+
+    module = load_script()
+    kernel = SimpleNamespace(
+        OpenProcess=Mock(return_value=1 << 40),
+        WaitForSingleObject=Mock(return_value=0xFFFFFFFF),
+        CloseHandle=Mock(return_value=1),
+    )
+    monkeypatch.setattr(module.sys, "platform", "win32")
+    monkeypatch.setattr(ctypes, "WinDLL", lambda *_a, **_kw: kernel, raising=False)
+    monkeypatch.setattr(ctypes, "get_last_error", lambda: 6, raising=False)
+    monkeypatch.setattr(
+        ctypes, "WinError", lambda code: OSError(code, "failed wait"), raising=False
+    )
+    with pytest.raises(OSError, match="failed wait"):
+        module._process_is_running(123)
+    assert kernel.OpenProcess.restype is wintypes.HANDLE
+    kernel.CloseHandle.assert_called_once_with(1 << 40)
+
+
+def test_failure_before_lifecycle_still_retains_first_attempt_metadata(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = load_script()
+    attempts = 0
+
+    def fail(*_args: object, **_kwargs: object) -> None:
+        nonlocal attempts
+        attempts += 1
+        raise module.QualificationError("staging failed")
+
+    monkeypatch.setattr(module, "qualify", fail)
+    target = tmp_path / "evidence"
+    with pytest.raises(SystemExit, match="staging failed"):
+        module.main(["--version", "1.0.0", "--gogurt-evidence-dir", str(target)])
+    assert attempts == 1
+    assert json.loads((target / "qualification-failure.json").read_text()) == {
+        "exception": "QualificationError",
+        "platform": sys.platform,
+        "phases": [],
+    }

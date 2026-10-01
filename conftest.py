@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pytest
 
+pytest_plugins = ("scripts.gogurt_pytest_evidence",)
+
 
 @pytest.fixture(autouse=True)
 def isolated_provenance_user_state(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

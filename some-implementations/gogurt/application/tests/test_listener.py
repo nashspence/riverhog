@@ -171,8 +171,26 @@ def _wait_for_published_pid(pid_file: Path) -> int:
         try:
             return int(pid_file.read_text(encoding="utf-8"))
         except (FileNotFoundError, ValueError):
-            time.sleep(0.02)
+            pass
+        except PermissionError as exc:
+            # A bounded observation of an atomically promoted fixture file may
+            # encounter Windows delete-sharing settlement. Do not retry other
+            # permissions, other platforms, or the action itself.
+            if sys.platform != "win32" or getattr(exc, "winerror", None) not in {5, 32}:
+                raise
+        time.sleep(0.02)
     raise AssertionError("Gogurt action did not publish its process ID")
+
+
+def _wait_for_completed(runtime: ListenerRuntime, expected: int) -> None:
+    deadline = time.monotonic() + 5
+    while time.monotonic() < deadline:
+        if runtime.store.summary()["counts"].get("completed") == expected:
+            with runtime._active_lock:
+                if runtime._active_dispatch is None and runtime._active_process is None:
+                    return
+        time.sleep(0.02)
+    raise AssertionError(f"Gogurt did not durably complete and release {expected} dispatches")
 
 
 def _heartbeat_payload(paths: ListenerRuntimePaths) -> dict[str, object]:
@@ -245,6 +263,7 @@ def test_listener_runs_once_across_restart_and_again_after_remount(tmp_path: Pat
     thread.start()
     try:
         _wait_for_runs(counter, 1)
+        _wait_for_completed(first, 1)
     finally:
         first.request_stop()
         thread.join(timeout=5)
@@ -276,6 +295,7 @@ def test_listener_runs_once_across_restart_and_again_after_remount(tmp_path: Pat
         assert absence_observed.wait(timeout=5)
         mounted.set()
         _wait_for_runs(counter, 2)
+        _wait_for_completed(second, 2)
     finally:
         second.request_stop()
         thread.join(timeout=5)
@@ -751,7 +771,15 @@ def test_cooperative_stop_request_settles_active_custody_independently_of_poll_i
         original_heartbeat()
 
     monkeypatch.setattr(runtime, "_heartbeat", observed_heartbeat)
-    thread = threading.Thread(target=runtime.run)
+    failures: list[BaseException] = []
+
+    def run() -> None:
+        try:
+            runtime.run()
+        except BaseException as exc:
+            failures.append(exc)
+
+    thread = threading.Thread(target=run)
     thread.start()
     action_pid: int | None = None
     try:
@@ -760,6 +788,7 @@ def test_cooperative_stop_request_settles_active_custody_independently_of_poll_i
         thread.join(timeout=5)
 
         assert not thread.is_alive()
+        assert failures == []
         assert _native_listener_adapter().process_is_running(action_pid) is False
         assert ListenerStore(paths.database_file).summary()["counts"] == {"uncertain": 1}
         assert post_stop_worker_heartbeats == []
@@ -2213,3 +2242,47 @@ def test_listener_stop_waits_for_durable_action_custody_settlement(tmp_path: Pat
 
 def datetime_timestamp(value: str) -> float:
     return time.mktime(time.strptime(value, "%Y-%m-%dT%H:%M:%SZ"))
+
+
+@pytest.mark.parametrize("winerror", [5, 32])
+def test_pid_publication_observation_tolerates_only_classified_windows_sharing(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    winerror: int,
+) -> None:
+    error = PermissionError("transient PID sharing")
+    error.winerror = winerror
+    attempts = 0
+
+    def read(_path: Path, **_kwargs: object) -> str:
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise error
+        return "123"
+
+    monkeypatch.setattr(sys, "platform", "win32")
+    monkeypatch.setattr(Path, "read_text", read)
+    monkeypatch.setattr(time, "sleep", lambda _delay: None)
+    assert _wait_for_published_pid(tmp_path / "pid") == 123
+    assert attempts == 2
+
+
+@pytest.mark.parametrize(("platform", "winerror"), [("linux", 5), ("win32", 1314)])
+def test_pid_publication_does_not_hide_unclassified_permission_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    platform: str,
+    winerror: int,
+) -> None:
+    error = PermissionError("not transient sharing")
+    error.winerror = winerror
+
+    def read(_path: Path, **_kwargs: object) -> str:
+        raise error
+
+    monkeypatch.setattr(sys, "platform", platform)
+    monkeypatch.setattr(Path, "read_text", read)
+    with pytest.raises(PermissionError) as caught:
+        _wait_for_published_pid(tmp_path / "pid")
+    assert caught.value is error

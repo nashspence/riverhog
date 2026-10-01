@@ -11,6 +11,8 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 from collections.abc import Mapping, Sequence
+from ctypes import wintypes
+from functools import cached_property
 from hashlib import sha256
 from pathlib import Path, PureWindowsPath
 from typing import Any, cast
@@ -139,10 +141,17 @@ class TaskSchedulerUserAdapter:
             "[Console]::Out.Write([Security.Principal.WindowsIdentity]::GetCurrent().User.Value)",
         ]
 
-    def _current_user_sid(self) -> str:
+    @cached_property
+    def _process_user_sid(self) -> str:
+        # This adapter is scoped to one CLI process. Its PowerShell children use
+        # that process's primary token, not a thread impersonation token. Cache
+        # only this immutable identity, never Task Scheduler state or liveness.
         user_sid = self._run(self._identity_command()).stdout.strip()
         _windows_task_name(user_sid)
         return user_sid
+
+    def _current_user_sid(self) -> str:
+        return self._process_user_sid
 
     @staticmethod
     def _state_command(task_name: str) -> list[str]:
@@ -244,14 +253,36 @@ class TaskSchedulerUserAdapter:
 
     @staticmethod
     def process_is_running(pid: int) -> bool:
-        kernel32 = cast(Any, ctypes).windll.kernel32
+        if isinstance(pid, bool) or not isinstance(pid, int) or not 0 < pid <= 0xFFFFFFFF:
+            raise ValueError("Windows process ID must be a positive DWORD")
+        native = cast(Any, ctypes)
+        kernel32 = native.WinDLL("kernel32", use_last_error=True)
+        kernel32.OpenProcess.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
+        kernel32.OpenProcess.restype = wintypes.HANDLE
+        kernel32.WaitForSingleObject.argtypes = (wintypes.HANDLE, wintypes.DWORD)
+        kernel32.WaitForSingleObject.restype = wintypes.DWORD
+        kernel32.CloseHandle.argtypes = (wintypes.HANDLE,)
+        kernel32.CloseHandle.restype = wintypes.BOOL
         handle = kernel32.OpenProcess(0x00100000, False, pid)
         if not handle:
-            return bool(kernel32.GetLastError() == 5)
+            error = native.get_last_error()
+            if error == 87:  # ERROR_INVALID_PARAMETER: a positive PID no longer exists.
+                return False
+            if error == 5:  # ERROR_ACCESS_DENIED cannot prove that custody ended.
+                return True
+            raise native.WinError(error)
         try:
-            return bool(kernel32.WaitForSingleObject(handle, 0) == 0x00000102)
+            result = kernel32.WaitForSingleObject(handle, 0)
+            if result == 0:  # WAIT_OBJECT_0: the process object is signaled.
+                return False
+            if result == 0x00000102:  # WAIT_TIMEOUT: still running.
+                return True
+            if result == 0xFFFFFFFF:  # WAIT_FAILED is not process termination.
+                raise native.WinError(native.get_last_error())
+            raise OSError(f"unexpected Windows process wait result: {result}")
         finally:
-            kernel32.CloseHandle(handle)
+            if not kernel32.CloseHandle(handle):
+                raise native.WinError(native.get_last_error())
 
 
 def listener_adapter() -> ListenerAdapter:
