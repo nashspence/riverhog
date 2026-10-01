@@ -23,6 +23,11 @@ if ! [[ "${smoke_audio_frames}" =~ ^[0-9]+$ ]] ||
   exit 2
 fi
 smoke_claim_file_count=$((smoke_file_count + 1))
+# The overlapping-route proof produces four target outputs per fixture input.
+# Allow 45 seconds per output on a shared runner, plus ten minutes for the
+# smaller jobs and complete archive/history publication. This is a fixture
+# completion window; individual HTTP requests retain their own fixed budgets.
+smoke_completion_timeout=$((600 + 180 * smoke_file_count))
 smoke_max_bytes=$((smoke_file_count * (smoke_audio_frames * 2 + 4096) + 16384))
 # Three independent readers exercise each input in this lifecycle. Account for
 # age-unit amplification as well as logical payload so quota policy remains
@@ -996,9 +1001,9 @@ def diagnostic(row):
     }
 # The supplied Opus target intentionally admits one target job at a time.
 # Two independently classified producers and the overlapping-route proof create
-# four valid jobs, so leave enough wall time for serialized execution on a
-# slower shared CI runner without imposing a semantic work limit.
-deadline = time.monotonic() + 600
+# four valid jobs. Scale the fixture deadline with its declared workload;
+# target cardinality and archive extents remain unchanged.
+deadline = time.monotonic() + ${smoke_completion_timeout}
 last = None
 while time.monotonic() < deadline:
     request = urllib.request.Request(
