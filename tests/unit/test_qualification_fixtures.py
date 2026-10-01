@@ -14,6 +14,7 @@ from a_riverhog_event_relay.relay import load_config as load_event_relay_config
 from a_riverhog_ftp_spool.config import load_config as load_adapter_config
 from a_stove0_media_sampling_contract_lib import MEDIA_SAMPLING_OBSERVER_CONTRACT
 from a_stove0_rclone_target.app import load_config as load_rclone_config
+from a_stove0_rclone_target.contracts import RCLONE_DELIVER_OPERATION
 from gogurt_core.core import execute_gogurt_action, load_gogurt_actions, plan_gogurt_action
 from review0.app import load_config as load_materializer_config
 from riverhog_core.runtime_document import load_runtime_document
@@ -221,6 +222,7 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     assert "archive example-camera" in completed.stdout
 
     recipes = RecipeCatalog.load(REPO_ROOT / "qualification/fixtures/stove0/recipes.yaml")
+    assert recipes.operation(RCLONE_DELIVER_OPERATION.id) == RCLONE_DELIVER_OPERATION
     assert {recipe.id for recipe in recipes.recipes} == {
         "stove0.audio-archive/v1",
         "stove0.conformance-media/v1",

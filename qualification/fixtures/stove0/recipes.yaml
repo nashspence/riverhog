@@ -342,7 +342,7 @@ operations:
   outputs: []
   effect_receipt_schema:
     id: stove0.rclone.delivery-receipt/v1
-    profile_sha256: 4030b471046390e739e2a9ac73c60ec6f06dca8bd15d86e921542214b00a9b41
+    profile_sha256: 8983df55f1af994ce9637b935b3ed043a24a0ca5233c3b3b06457936aa1cc6c8
     dialect: https://json-schema.org/draft/2020-12/schema
     format_policy: annotation-only
     schema:
@@ -376,13 +376,13 @@ operations:
           type: integer
           minimum: 1
         total_bytes:
-          type: integer
-          minimum: 0
+          type: string
+          pattern: ^(?:0|[1-9][0-9]*)(?![\s\S])
         verification:
           const: rclone-download-check-and-manifest-readback/v1
       additionalProperties: false
   source_collection_retirement_permitted: true
-  contract_sha256: b6bf35d59d00318966db215bbb41bdf6f623220facae2eb5f78a8388eea2c921
+  contract_sha256: 875c15f16077eee4dd422d7090de4a22661ba8d3c82c18a31f5949fc8a8f9aeb
 - id: stove0.review.materialize/v1
   result_kind: collection
   intent_schema:

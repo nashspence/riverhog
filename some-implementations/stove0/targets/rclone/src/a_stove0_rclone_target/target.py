@@ -18,6 +18,7 @@ from a_stove0_materialization_hint_evidence_contract_lib import (
     validate_materialization_hint_facts,
 )
 from pydantic import JsonValue
+from riverhog_canonical_json import format_scalar
 from riverhog_materialization import (
     DestinationRules,
     MemberAdvice,
@@ -326,7 +327,7 @@ class RcloneEffectTargetService(PersistentTargetService):
                         ),
                         "manifest_sha256": manifest_sha256,
                         "artifact_count": artifact_count,
-                        "total_bytes": total_bytes,
+                        "total_bytes": format_scalar("nonnegative", total_bytes),
                         "verification": "rclone-download-check-and-manifest-readback/v1",
                     },
                     operation=RCLONE_DELIVER_OPERATION,

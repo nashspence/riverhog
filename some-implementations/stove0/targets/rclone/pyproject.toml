@@ -20,6 +20,7 @@ dependencies = [
   "fastapi>=0.111,<1.0",
   "http-api-contracts>=0.1,<0.2",
   "pydantic>=2.7,<3.0",
+  "riverhog-canonical-json>=0.1,<0.2",
   "riverhog-protocol>=0.1,<0.2",
   "riverhog-materialization>=0.1,<0.2",
   "stove0-protocol>=0.1,<0.2",
@@ -35,6 +36,7 @@ a-stove0-rclone-target = "a_stove0_rclone_target.app:main"
 [tool.uv.sources]
 a-stove0-materialization-hint-evidence-contract-lib = { workspace = true }
 config-validation = { workspace = true }
+riverhog-canonical-json = { workspace = true }
 riverhog-protocol = { workspace = true }
 riverhog-materialization = { workspace = true }
 http-api-contracts = { workspace = true }
