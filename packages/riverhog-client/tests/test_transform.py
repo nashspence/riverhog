@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from pathlib import Path
@@ -1828,7 +1829,14 @@ def test_capability_client_refreshes_workers_without_closing_active_delegate() -
             self.closed = False
 
         def identity(self) -> str:
+            assert not self.closed
             return self.value
+
+        @contextmanager
+        def stream(self):
+            assert not self.closed
+            yield iter((self.value,))
+            assert not self.closed
 
         def close(self) -> None:
             self.closed = True
@@ -1838,14 +1846,118 @@ def test_capability_client_refreshes_workers_without_closing_active_delegate() -
     root = CapabilityApiClient(first, owns_client=True)
     worker = root.spawn()
 
-    assert worker.identity() == "first"
-    root.replace(second, owns_client=True)
-
-    assert worker.identity() == "second"
-    assert not first.closed
+    with worker.stream() as body:
+        root.replace(second, owns_client=True)
+        assert next(body) == "first"
+        assert worker.identity() == "second"
+        assert not first.closed
+    assert first.closed
     root.close()
     assert first.closed
     assert second.closed
+
+
+def test_capability_refresh_keeps_only_current_and_actively_streaming_clients() -> None:
+    from riverhog_client.processing import CapabilityApiClient
+
+    clients: list[Any] = []
+
+    class Client:
+        def __init__(self, value: int) -> None:
+            self.value = value
+            self.closed = 0
+            clients.append(self)
+
+        @contextmanager
+        def stream(self):
+            assert not self.closed
+            yield iter((self.value,))
+            assert not self.closed
+
+        def close(self):
+            self.closed += 1
+
+    root = CapabilityApiClient(Client(0), owns_client=True)
+    worker = root.spawn()
+    with worker.stream() as body:
+        for value in range(1, 129):
+            root.replace(Client(value), owns_client=True)
+            assert sum(not client.closed for client in clients) == 2
+        assert tuple(body) == (0,)
+    assert sum(not client.closed for client in clients) == 1
+    worker.close()
+    assert not clients[-1].closed
+    root.close()
+    assert all(client.closed == 1 for client in clients)
+
+
+@pytest.mark.parametrize("finish", ["exhaust", "close", "failure"])
+def test_capability_iterator_releases_retired_client_after_its_cleanup(finish: str) -> None:
+    from riverhog_client.processing import CapabilityApiClient
+
+    class Client:
+        closed = False
+        cleaned = False
+
+        def rows(self):
+            try:
+                yield "first"
+                if finish == "failure":
+                    raise ValueError("stream failed")
+            finally:
+                assert not self.closed
+                self.cleaned = True
+
+        def close(self):
+            self.closed = True
+
+    first = Client()
+    root = CapabilityApiClient(first, owns_client=True)
+    rows = root.rows()
+    assert next(rows) == "first"
+    root.replace(Client(), owns_client=True)
+    assert not first.closed
+    if finish == "failure":
+        with pytest.raises(ValueError, match="stream failed"):
+            next(rows)
+    elif finish == "exhaust":
+        assert tuple(rows) == ()
+    else:
+        rows.close()
+    assert first.cleaned and first.closed
+    root.close()
+
+
+def test_capability_refresh_preserves_in_flight_regular_request_until_return() -> None:
+    from riverhog_client.processing import CapabilityApiClient
+
+    started = threading.Event()
+    finish = threading.Event()
+
+    class Client:
+        closed = False
+
+        def request(self):
+            started.set()
+            assert finish.wait(timeout=5)
+            assert not self.closed
+
+        def close(self):
+            self.closed = True
+
+    first = Client()
+    root = CapabilityApiClient(first, owns_client=True)
+    thread = threading.Thread(target=root.request)
+    thread.start()
+    try:
+        assert started.wait(timeout=5)
+        root.replace(Client(), owns_client=True)
+        assert not first.closed
+    finally:
+        finish.set()
+        thread.join(timeout=5)
+        root.close()
+    assert not thread.is_alive() and first.closed
 
 
 @pytest.mark.parametrize("runtime_type", [ClaimedCollectionRuntime, CollectionTransformRuntime])
