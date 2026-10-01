@@ -56,7 +56,9 @@ def test_builder_and_store_preserve_large_selection_across_pages_without_order_d
             objects = {
                 provenance_structure_identity(raw).relative_path: raw for raw in builder.objects()
             }
-            store = MemberHistoryStore(lambda path, archive_objects=objects: (archive_objects[path],))
+            store = MemberHistoryStore(
+                lambda path, archive_objects=objects: (archive_objects[path],)
+            )
             assert store.descriptor(binding) == history
             assert len(tuple(store.roots(binding, extent="complete-retained-history"))) == 386
             assert len(tuple(store.roots(binding, extent="bound-and-required-history"))) == 193

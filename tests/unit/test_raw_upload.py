@@ -183,11 +183,11 @@ def _plan(content: bytes) -> RawVolumePlan:
     return RawVolumePlan(
         volume_id="segment-" + "0" * 64,
         sequence=0,
-        source_path="large.bin",
-        file_offset=0,
+        artifact_id="a" * 64,
+        artifact_offset=0,
         plaintext_bytes=len(content),
-        file_bytes=len(content),
-        file_sha256=hashlib.sha256(content).hexdigest(),
+        artifact_bytes=len(content),
+        artifact_sha256=hashlib.sha256(content).hexdigest(),
     )
 
 
@@ -248,7 +248,7 @@ def test_raw_upload_resumes_on_server_defined_age_part_boundaries() -> None:
     receipt = uploader.sealed_receipt(resumed)
 
     assert resumed.completed is not None
-    assert receipt.source_path == "large.bin"
+    assert receipt.artifact_id == "a" * 64
     assert [part.plaintext_bytes for part in receipt.parts] == [
         first.plaintext_len,
         second.plaintext_len,

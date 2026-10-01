@@ -29,8 +29,8 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.collection_completion import (
     COMPLETION_REQUIRED_RECORD_KINDS,
-    CollectionCompletionRequirementDocument,
     CollectionCompletionRecordingRequestDocument,
+    CollectionCompletionRequirementDocument,
 )
 from riverhog_protocol.errors import Conflict
 from riverhog_provenance import BoundedSourceObserver, BytesSource, create_journal, validate_journal

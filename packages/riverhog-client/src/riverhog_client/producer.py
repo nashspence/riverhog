@@ -719,8 +719,6 @@ class IncrementalCollectionProducer:
     ) -> ProducerArtifactCustody | None:
         """Reconcile one previously verified identity without rereading released bytes."""
         self._require_heartbeat()
-        if self.constraints is None:
-            raise RuntimeError("incremental producer has no registration constraints")
         source = _Source(
             artifact_id=identity.artifact_id,
             bytes=identity.bytes,
@@ -728,15 +726,10 @@ class IncrementalCollectionProducer:
             materialization_hint=None,
             allow_missing_materialization_hint=True,
         )
-        payload = self.api.register_collection_upload_session_artifacts(
-            self.collection_id,
-            [_source_registration(source)],
-            registration_constraints=self.constraints,
+        member = self.api.get_collection_upload_session_artifact(
+            self.collection_id, identity.artifact_id
         )
-        rows = payload.get("artifacts")
-        if not isinstance(rows, list) or len(rows) != 1:
-            raise RuntimeError("Riverhog returned an invalid exact custody inventory")
-        receipts = self._accept_registered_rows(iter(rows), expected=(source,))
+        receipts = self._accept_registered_rows(iter((member,)), expected=(source,))
         return receipts[0] if receipts else None
 
     def _accept_registered_rows(

@@ -782,6 +782,7 @@ class ProcessingCapabilityCreateDocument(RiverhogWorkflowDocument):
                 {"const": ["read-inputs"]},
                 {"const": ["read-provenance"]},
                 {"const": ["read-inputs", "write-output"]},
+                {"const": ["read-inputs", "read-provenance", "write-output"]},
             ]
         },
     )
@@ -794,6 +795,7 @@ class ProcessingCapabilityCreateDocument(RiverhogWorkflowDocument):
             ["read-inputs"],
             ["read-provenance"],
             ["read-inputs", "write-output"],
+            ["read-inputs", "read-provenance", "write-output"],
         ):
             raise ValueError(
                 "capability actions must select one scoped read or input/output execution"
@@ -1197,6 +1199,7 @@ class ProcessingCapabilityDocument(RiverhogWorkflowDocument):
                 {"const": ["read-inputs"]},
                 {"const": ["read-provenance"]},
                 {"const": ["read-inputs", "write-output"]},
+                {"const": ["read-inputs", "read-provenance", "write-output"]},
             ]
         },
     )

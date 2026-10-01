@@ -70,11 +70,11 @@ from riverhog_archive_contracts.provenance_archive import (
     PROVENANCE_VOLUME_FORMAT,
     ProvenanceArchiveError,
     ProvenancePayload,
-    provenance_payload_object_path,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
     ordered_provenance_commitment,
+    provenance_payload_object_path,
     update_provenance_commitment,
 )
 from riverhog_archive_contracts.provenance_structure import (

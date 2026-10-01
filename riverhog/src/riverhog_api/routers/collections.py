@@ -67,6 +67,7 @@ from riverhog_api.schemas.collections import (
     CollectionDeletionResultOut,
     CollectionDescriptionOut,
     CollectionSummaryOut,
+    CollectionUploadArtifactOut,
     CollectionUploadDiscardPlanOut,
     CollectionUploadDiscardResultOut,
     CollectionUploadProvenanceJournalOut,
@@ -647,6 +648,23 @@ def stream_collection_upload_session_provenance_journal(
             "Content-Length": str(status["bytes"]),
             "ETag": f'"{status["sha256"]}"',
         },
+    )
+
+
+@router.get(
+    "/collection-upload-sessions/{collection_id}/artifacts/{artifact_id}",
+    response_model=CollectionUploadArtifactOut,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def get_collection_upload_session_artifact(
+    collection_id: CollectionIdParameter,
+    artifact_id: ArtifactId,
+    container: ContainerDep,
+    principal: CollectionUploadReader,
+) -> CollectionUploadArtifactOut:
+    container.collection_uploads.require_read_access(collection_id, principal)
+    return CollectionUploadArtifactOut.model_validate(
+        container.collection_uploads.get_artifact(collection_id, artifact_id)
     )
 
 

@@ -118,7 +118,9 @@ def _encrypt(value: bytes, passphrase: str) -> bytes:
     return encrypt_age_scrypt(value, passphrase, log_n=1)
 
 
-def _inherited_selection(source: FixtureArchive):
+def _inherited_selection(
+    source: FixtureArchive,
+) -> tuple[MemberHistoryImport, dict[str, bytes], dict[str, bytes]]:
     binding = source.history_bindings[0]
     proof_tree = binding_tree_commitment(
         source.history_bindings, target_artifact_id=binding.artifact_id

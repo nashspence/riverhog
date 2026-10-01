@@ -534,7 +534,7 @@ recipes:
     retrieval_policy: allow
   - registration_id: canonical-provenance
     contract_id: stove0.riverhog-provenance/v1
-    contract_sha256: fb7aa7408b54a3b298fcc79ffb15eed069c4bded0749857d75e7028079fee558
+    contract_sha256: 6e7b06cabb0079b31e052345a87daf74fc8dc8961cfce1b34a94991a2df2ae29
     after:
     - exiftool
     subject_roles:
@@ -639,7 +639,7 @@ recipes:
     sources:
     - &id001
       observation_contract_id: stove0.riverhog-provenance/v1
-      observation_contract_sha256: fb7aa7408b54a3b298fcc79ffb15eed069c4bded0749857d75e7028079fee558
+      observation_contract_sha256: 6e7b06cabb0079b31e052345a87daf74fc8dc8961cfce1b34a94991a2df2ae29
       records_pointer: /artifacts
       record_array_pointer: /claims
       where:
@@ -761,7 +761,7 @@ recipes:
     retrieval_policy: allow
   - registration_id: canonical-provenance
     contract_id: stove0.riverhog-provenance/v1
-    contract_sha256: fb7aa7408b54a3b298fcc79ffb15eed069c4bded0749857d75e7028079fee558
+    contract_sha256: 6e7b06cabb0079b31e052345a87daf74fc8dc8961cfce1b34a94991a2df2ae29
     after:
     - exiftool
     subject_roles:
@@ -1031,7 +1031,7 @@ recipes:
     retrieval_policy: allow
   - registration_id: canonical-provenance
     contract_id: stove0.riverhog-provenance/v1
-    contract_sha256: fb7aa7408b54a3b298fcc79ffb15eed069c4bded0749857d75e7028079fee558
+    contract_sha256: 6e7b06cabb0079b31e052345a87daf74fc8dc8961cfce1b34a94991a2df2ae29
     after:
     - exiftool
     subject_roles:

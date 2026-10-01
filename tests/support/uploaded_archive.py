@@ -23,7 +23,7 @@ class UploadedArchiveStore(MemoryArchiveStore):
     ) -> None:
         super().__init__(**kwargs)
         self.passphrases = passphrases
-        self.read_stored = read_stored or self.objects.__getitem__
+        self.read_stored = read_stored or (lambda path: self.objects[path])
 
     def iter_archive_object(
         self, *, collection_id, object, passphrase_id, attribution=None

@@ -755,6 +755,7 @@ class SqlAlchemyCollectionWorkflowService:
             ("read-inputs",),
             ("read-provenance",),
             ("read-inputs", "write-output"),
+            ("read-inputs", "read-provenance", "write-output"),
         ):
             raise BadRequest("processing capability actions are invalid")
         normalized_audience = str(audience)

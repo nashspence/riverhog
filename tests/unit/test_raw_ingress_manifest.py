@@ -13,7 +13,7 @@ from riverhog_protocol.raw_ingress import (
 def test_raw_source_is_hashed_once_into_small_authority_and_bounded_batches() -> None:
     content = b"abcdefgh" * 20000
     result = hash_raw_source_chunks(
-        path="large.bin",
+        artifact_id="a" * 64,
         chunks=(content[:1234], content[1234:]),
         expected_bytes=len(content),
         part_plaintext_bytes=65536,
@@ -41,7 +41,7 @@ def test_raw_source_digest_summary_has_no_resource_growing_member_list() -> None
     digest = hashlib.sha256(b"content").hexdigest()
     count, commitment = ordered_raw_part_commitment((digest,))
     summary = RawSourceDigestSummary(
-        path="large.bin",
+        artifact_id="a" * 64,
         bytes=7,
         sha256=digest,
         part_plaintext_bytes=65536,

@@ -943,7 +943,11 @@ class UploadApi:
     def get_collection_upload_session_member_history_inputs(
         self, _collection_id: int, artifact_id: str
     ) -> Any:
-        return self.history_inputs[artifact_id]
+        from riverhog_protocol.provenance_transport import ArchiveRecordSetReferenceDocument
+
+        return ArchiveRecordSetReferenceDocument.model_validate(
+            self.history_inputs[artifact_id].to_mapping()
+        )
 
     def set_collection_upload_session_completion_requirement(
         self, _collection_id: int, requirement: Any

@@ -498,7 +498,7 @@ class RecipePlanner:
             item
             for item in observations
             if item.request.observer_contract_id in route.forward_observation_contract_ids
-            and all(subject.id in selected_ids for subject in item.request.subjects)
+            and any(subject.id in selected_ids for subject in item.request.subjects)
         )
         if {item.request.observer_contract_id for item in forwarded} != set(
             route.forward_observation_contract_ids

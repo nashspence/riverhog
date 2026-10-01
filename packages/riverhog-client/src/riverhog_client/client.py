@@ -41,7 +41,7 @@ from riverhog_archive_contracts import (
     provenance_structure_identity,
     provenance_structure_object_path,
 )
-from riverhog_canonical_json import parse_identity_json
+from riverhog_canonical_json import canonical_json_bytes, parse_identity_json
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
     RIVERHOG_HTTP_ERROR_AUTHORITY,
@@ -112,6 +112,7 @@ from riverhog_protocol.errors import (
     error_type_for_code,
 )
 from riverhog_protocol.lifecycle_events import LifecycleEventCursor, RiverhogEventPage
+from riverhog_protocol.provenance_transport import ArchiveRecordSetReferenceDocument
 from riverhog_provenance_contracts import ProvenanceJournalId
 
 from riverhog_client._file_download import verified_download
@@ -348,9 +349,6 @@ def _validated_collection_upload_artifact_response(
         for row in rows:
             if not isinstance(row, Mapping):
                 raise ValueError("collection upload artifact response contains an invalid row")
-            receipt_value = row.get("custody_receipt")
-            if receipt_value is None:
-                continue
             artifact = ArtifactMemberIdentityDocument.model_validate(
                 {
                     "artifact_id": row.get("artifact_id"),
@@ -358,8 +356,11 @@ def _validated_collection_upload_artifact_response(
                     "sha256": row.get("sha256"),
                 }
             )
+            receipt_value = row.get("custody_receipt")
+            if receipt_value is None:
+                continue
             receipt = CollectionUploadArtifactCustodyReceiptDocument.model_validate_json(
-                json.dumps(receipt_value, sort_keys=True, separators=(",", ":"))
+                canonical_json_bytes(receipt_value)
             )
             validate_collection_upload_artifact_custody_receipt(
                 collection_id,
@@ -1171,8 +1172,8 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
 
     def set_collection_upload_session_member_history_inputs(
         self, collection_id: CollectionId, artifact_id: ArtifactId, authority: RecordSetRef
-    ) -> RecordSetRef:
-        accepted = RecordSetRef.from_mapping(
+    ) -> ArchiveRecordSetReferenceDocument:
+        accepted = ArchiveRecordSetReferenceDocument.model_validate(
             self._json(
                 "set_collection_upload_session_member_history_inputs",
                 "PUT",
@@ -1181,7 +1182,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
                 json=authority.to_mapping(),
             )
         )
-        if accepted != authority:
+        if accepted.model_dump(mode="json") != authority.to_mapping():
             raise HashMismatch("construction accepted another input-history extent")
         return accepted
 
@@ -1189,8 +1190,8 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         self,
         collection_id: CollectionId,
         artifact_id: ArtifactId,
-    ) -> RecordSetRef:
-        return RecordSetRef.from_mapping(
+    ) -> ArchiveRecordSetReferenceDocument:
+        return ArchiveRecordSetReferenceDocument.model_validate(
             self._json(
                 "get_collection_upload_session_member_history_inputs",
                 "GET",
@@ -1285,6 +1286,25 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             ),
             expected_state="open",
         )
+
+    def get_collection_upload_session_artifact(
+        self, collection_id: CollectionId, artifact_id: ArtifactId
+    ) -> dict[str, Any]:
+        """Read an accepted member without repeating its registration contract."""
+        normalized_collection_id = _collection_id(collection_id)
+        normalized_artifact_id = _ARTIFACT_ID.validate_python(artifact_id, strict=True)
+        member = self._json(
+            "get_collection_upload_session_artifact",
+            "GET",
+            f"/v1/collection-upload-sessions/{normalized_collection_id}/artifacts/{normalized_artifact_id}",
+        )
+        if member.get("artifact_id") != normalized_artifact_id:
+            raise InvalidState("API substituted another collection upload artifact")
+        _validated_collection_upload_artifact_response(
+            normalized_collection_id,
+            {"collection_id": str(normalized_collection_id), "artifacts": [member]},
+        )
+        return member
 
     def list_collection_upload_session_artifacts(
         self,

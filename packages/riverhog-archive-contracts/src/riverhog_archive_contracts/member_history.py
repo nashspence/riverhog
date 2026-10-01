@@ -9,7 +9,7 @@ import sqlite3
 import tempfile
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Final, Literal
 
 from riverhog_canonical_json import (
     canonical_json_bytes,
@@ -24,8 +24,8 @@ from .structural_record_set import RecordPage, RecordSetCommitment, RecordSetRef
 MEMBER_HISTORY_FORMAT = "riverhog-member-history/v1"
 MEMBER_HISTORY_ROOTS_SCHEMA = "riverhog-member-history-roots/v1"
 MEMBER_HISTORY_IMPORTS_SCHEMA = "riverhog-member-history-imports/v1"
-BOUND_HISTORY_EXTENT = "bound-and-required-history"
-RETAINED_HISTORY_EXTENT = "complete-retained-history"
+BOUND_HISTORY_EXTENT: Final = "bound-and-required-history"
+RETAINED_HISTORY_EXTENT: Final = "complete-retained-history"
 MEMBER_HISTORY_BYTES_MAX = 64 * 1024
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
 _UUID = re.compile(r"urn:uuid:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\Z")

@@ -495,7 +495,7 @@ class IncrementalDerivedCollectionWriter:
                         },
                         "state": external_reference(summary, state["id"]),
                     },
-                    {"artifact_id": str(artifact_id), "imports": imports.to_mapping()},
+                    {"artifact_id": str(artifact_id), "imports": imports.model_dump(mode="json")},
                 )
             token = page.get("next_page_token")
             if token is None:

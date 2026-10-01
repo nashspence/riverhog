@@ -104,6 +104,7 @@ class ProvenancePayload:
             "bytes": format_scalar("nonnegative", self.bytes),
             "sha256": self.sha256,
         }
+
     @classmethod
     def from_mapping(cls, row: object, *, sequence: int) -> ProvenancePayload:
         if not isinstance(row, dict) or set(row) != {"kind", "path", "bytes", "sha256"}:
