@@ -7,6 +7,8 @@ orchestrator, cloning the Riverhog repository, or sharing a database schema.
 
 from __future__ import annotations
 
+import hashlib
+from functools import lru_cache
 from typing import Annotated, Any, Literal, Self
 
 from jsonschema import Draft202012Validator
@@ -23,6 +25,7 @@ from pydantic import (
 from referencing import Registry
 from referencing.exceptions import Unresolvable
 from referencing.jsonschema import DRAFT202012
+from riverhog_canonical_json import parse_identity_json
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.collection_workflows import (
     CollectionRootIdentity,
@@ -131,6 +134,27 @@ def _validate_local_schema_reference_closure(document: dict[str, JsonValue]) -> 
     visit(document, resolver)
 
 
+def _validate_schema_profile(preimage: bytes) -> None:
+    profile = parse_identity_json(preimage)
+    if not isinstance(profile, dict):
+        raise ValueError("schema execution profile must contain an object schema")
+    document = profile.get("schema")
+    if not isinstance(document, dict):
+        raise ValueError("schema execution profile must contain an object schema")
+    try:
+        Draft202012Validator.check_schema(document)
+    except SchemaError as exc:
+        raise ValueError("schema is not valid JSON Schema Draft 2020-12") from exc
+    _validate_local_schema_reference_closure(document)
+
+
+@lru_cache(maxsize=128)
+def _validated_schema_profile(preimage: bytes) -> None:
+    # Cache only successful checks of immutable bytes, at most 8 MiB of keys.
+    # Larger profiles remain fully supported through the uncached path.
+    _validate_schema_profile(preimage)
+
+
 class Stove0ProtocolModel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, populate_by_name=True)
 
@@ -152,13 +176,13 @@ class JsonSchemaValidationProfile(Stove0ProtocolModel):
             "format_policy": self.format_policy,
             "schema": self.document,
         }
-        if canonical_json_sha256(profile) != self.profile_sha256:
+        preimage = canonical_json_bytes(profile)
+        if hashlib.sha256(preimage).hexdigest() != self.profile_sha256:
             raise ValueError("schema profile digest does not match its complete execution profile")
-        try:
-            Draft202012Validator.check_schema(self.document)
-        except SchemaError as exc:
-            raise ValueError("schema is not valid JSON Schema Draft 2020-12") from exc
-        _validate_local_schema_reference_closure(self.document)
+        if len(preimage) <= 64 * 1024:
+            _validated_schema_profile(preimage)
+        else:
+            _validate_schema_profile(preimage)
         return self
 
     @classmethod
