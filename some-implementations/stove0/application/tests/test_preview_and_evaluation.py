@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Barrier, Event, Lock
 from typing import cast
 
 import pytest
@@ -515,6 +517,72 @@ def test_workflow_preview_is_deterministic_across_claim_generations() -> None:
     assert len(riverhog.abandoned) == 2
     assert "write-output" not in riverhog.actions
     assert target_port.preflights == 2
+
+
+def test_failed_preview_drains_bounded_reads_before_abandoning_claim() -> None:
+    operation = _operation()
+    target = _target(operation)
+    observer_value = _observer()
+    contract, descriptor = observer_value
+    work = _work()
+    template = PreviewPlanning(operation, target, observer_value).observation_requests(work)[0]
+    requests = tuple(
+        ContentObservationRequest.seal(
+            ContentObservationRequestPayload(
+                work_id=work.work_id,
+                observer_registration_id=template.observer_registration_id,
+                observer_descriptor_sha256=descriptor.descriptor_sha256,
+                observer_contract_id=contract.id,
+                observer_contract_sha256=contract.contract_sha256,
+                subjects=(template.subjects[0].model_copy(update={"id": f"source-{index}"}),),
+            )
+        )
+        for index in range(7)
+    )
+    wave = Barrier(4)
+    failed = Event()
+    release = Event()
+    lock = Lock()
+    started: list[str] = []
+    riverhog = PreviewRiverhog()
+
+    class Planning(PreviewPlanning):
+        def observation_requests(self, *_args: object) -> tuple[ContentObservationRequest, ...]:
+            return requests
+
+    class Observer(PreviewObserver):
+        def observe(self, registration_id, invocation, *, descriptor):
+            with lock:
+                started.append(invocation.request.request_id)
+            wave.wait(timeout=5)
+            if invocation.request == requests[0]:
+                failed.set()
+                raise RuntimeError("fixture observer transport failed")
+            assert release.wait(timeout=5)
+            assert riverhog.abandoned == []
+            return super().observe(registration_id, invocation, descriptor=descriptor)
+
+    service = WorkflowPreviewService(
+        riverhog=riverhog,
+        planning=Planning(operation, target, observer_value),
+        observers=Observer(observer_value),
+        targets=PreviewTarget(operation, target),
+    )
+    with ThreadPoolExecutor(max_workers=1) as caller:
+        result = caller.submit(service.preview, work)
+        try:
+            assert failed.wait(timeout=5)
+            assert riverhog.abandoned == [] and not result.done()
+        finally:
+            release.set()
+        preview = result.result(timeout=5)
+    assert preview.state == "failed"
+    assert (
+        preview.outcome is not None
+        and "fixture observer transport failed" in preview.outcome.message
+    )
+    assert set(started) == {request.request_id for request in requests[:4]}
+    assert len(riverhog.abandoned) == 1
 
 
 def test_no_action_preview_retains_observations_without_target_preflight() -> None:

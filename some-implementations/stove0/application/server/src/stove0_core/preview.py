@@ -8,12 +8,16 @@ is used by preview and execution so the preview is not an approximate simulator.
 
 from __future__ import annotations
 
+from collections import deque
+from concurrent.futures import Future, ThreadPoolExecutor
+from itertools import islice
 from typing import Protocol
 
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     ContentObservationInvocation,
     ContentObservationRequest,
+    ContentObservationResult,
     ObserverRuntimeAuthority,
     validate_observation_request,
 )
@@ -196,54 +200,82 @@ class WorkflowPreviewService:
         all_observations: list[ContentObservationEvidence],
     ) -> tuple[ContentObservationEvidence, ...]:
         evidence: list[ContentObservationEvidence] = []
-        while requests := self.planning.observation_requests(work, tuple(evidence)):
-            for observation_request in requests:
-                if observation_request.work_id != work.work_id:
-                    raise RuntimeError("preview observation request differs from the work identity")
-                descriptor = self.observers.descriptor(observation_request.observer_registration_id)
-                if descriptor.descriptor_sha256 != observation_request.observer_descriptor_sha256:
-                    raise RuntimeError(
-                        "configured observer descriptor changed after preview request sealing"
-                    )
-                validate_observation_request(observation_request, descriptor)
-                predecessors = _selected_observation_evidence(observation_request, evidence)
-                authority = self.riverhog.observation_authority(claim, observation_request)
-                result = self.observers.observe(
-                    observation_request.observer_registration_id,
-                    ContentObservationInvocation(
-                        request=observation_request,
-                        claim_id=claim.claim_id,
-                        fence=claim.fence,
-                        runtime=authority,
-                        evidence=predecessors,
-                    ),
-                    descriptor=descriptor,
+        # Requests in one declared stage are independent. Bound in-flight work
+        # and accept results in request order before planning a dependent stage.
+        # Shutdown drains started reads before the enclosing claim is abandoned.
+        with ThreadPoolExecutor(max_workers=4, thread_name_prefix="stove0-preview") as pool:
+            while requests := self.planning.observation_requests(work, tuple(evidence)):
+                remaining = iter(requests)
+                pending = deque(
+                    (request, self._submit_observation(pool, work, claim, request, evidence))
+                    for request in islice(remaining, 4)
                 )
-                if result.state == "inapplicable":
-                    assert result.inapplicable is not None
-                    raise PlanningObservationTerminal(
-                        state="inapplicable",
-                        code=result.inapplicable.code,
-                        message=result.inapplicable.message,
-                    )
-                if result.state == "failed":
-                    assert result.failure is not None
-                    raise PlanningObservationTerminal(
-                        state="failed",
-                        code=result.failure.code,
-                        message=result.failure.message,
-                        retryable=result.failure.retryable,
-                    )
-                if result.state == "canceled":
-                    raise PlanningObservationTerminal(
-                        state="canceled",
-                        code="observer-canceled",
-                        message="The content observer canceled the preview request.",
-                    )
-                item = ContentObservationEvidence(request=observation_request, result=result)
-                evidence.append(item)
-                all_observations.append(item)
+                while pending:
+                    observation_request, future = pending.popleft()
+                    result = future.result()
+                    if result.state == "inapplicable":
+                        assert result.inapplicable is not None
+                        raise PlanningObservationTerminal(
+                            state="inapplicable",
+                            code=result.inapplicable.code,
+                            message=result.inapplicable.message,
+                        )
+                    if result.state == "failed":
+                        assert result.failure is not None
+                        raise PlanningObservationTerminal(
+                            state="failed",
+                            code=result.failure.code,
+                            message=result.failure.message,
+                            retryable=result.failure.retryable,
+                        )
+                    if result.state == "canceled":
+                        raise PlanningObservationTerminal(
+                            state="canceled",
+                            code="observer-canceled",
+                            message="The content observer canceled the preview request.",
+                        )
+                    item = ContentObservationEvidence(request=observation_request, result=result)
+                    evidence.append(item)
+                    all_observations.append(item)
+                    if request := next(remaining, None):
+                        pending.append(
+                            (
+                                request,
+                                self._submit_observation(pool, work, claim, request, evidence),
+                            )
+                        )
         return tuple(sorted(evidence, key=lambda item: item.request.request_id))
+
+    def _submit_observation(
+        self,
+        pool: ThreadPoolExecutor,
+        work: WorkIdentity,
+        claim: ClaimBinding,
+        request: ContentObservationRequest,
+        evidence: list[ContentObservationEvidence],
+    ) -> Future[ContentObservationResult]:
+        if request.work_id != work.work_id:
+            raise RuntimeError("preview observation request differs from the work identity")
+        descriptor = self.observers.descriptor(request.observer_registration_id)
+        if descriptor.descriptor_sha256 != request.observer_descriptor_sha256:
+            raise RuntimeError(
+                "configured observer descriptor changed after preview request sealing"
+            )
+        validate_observation_request(request, descriptor)
+        predecessors = _selected_observation_evidence(request, evidence)
+        authority = self.riverhog.observation_authority(claim, request)
+        return pool.submit(
+            self.observers.observe,
+            request.observer_registration_id,
+            ContentObservationInvocation(
+                request=request,
+                claim_id=claim.claim_id,
+                fence=claim.fence,
+                runtime=authority,
+                evidence=predecessors,
+            ),
+            descriptor=descriptor,
+        )
 
 
 __all__ = ["PreviewRiverhogPort", "WorkflowPreviewService"]

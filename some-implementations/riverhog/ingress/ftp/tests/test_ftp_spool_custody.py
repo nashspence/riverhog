@@ -1120,6 +1120,7 @@ def test_completion_source_names_share_persisted_view_across_independent_observa
         source_locator = next(
             row for row in graph["locator_bindings"] if row["context_id"] == context["id"]
         )
+        assert graph["locator_bindings"] == [source_locator]
         assert (
             base64.b64decode(source_locator["locator"]["name"]["bytes"]["data"])
             == (source.root.resolve() / filename).as_posix().encode()

@@ -1322,6 +1322,9 @@ class FtpSpool:
         )
         graph_value = observed.graph_fragment()
         if completion_record is not None:
+            # The handoff file is disposable custody placement. Only the
+            # completion authority records the acquired source's locator.
+            graph_value["locator_bindings"] = []
             _record_completed_source_locator(
                 graph_value,
                 observed=observed,
