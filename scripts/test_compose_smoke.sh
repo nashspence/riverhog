@@ -763,6 +763,7 @@ for _ in range(4):
     current = matches[0]['state']
     if current == expected:
         break
+    assert current in state_order, matches[0]
     assert state_order[current] < state_order[expected], matches[0]
 else:
     raise AssertionError({'expected': expected, 'matches': matches})"

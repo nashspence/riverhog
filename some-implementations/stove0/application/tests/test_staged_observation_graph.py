@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from pathlib import Path
+from threading import Barrier, Lock
 from types import SimpleNamespace
 from typing import Any, cast
 
+import pytest
 from stove0_core.preview import WorkflowPreviewService
 from stove0_core.recipes import RecipePlanner
 from stove0_core.work_state import ClaimBinding, WorkNoAction
@@ -62,7 +64,10 @@ def _descriptor(contract: ObserverContract, batch_size: int) -> ObserverDescript
     )
 
 
-def test_dependent_stage_receives_complete_role_partitions_and_exact_predecessors() -> None:
+@pytest.mark.parametrize("subject_count", (3, 9))
+def test_dependent_stage_receives_complete_role_partitions_and_exact_predecessors(
+    subject_count: int,
+) -> None:
     classify = _contract("fixture.classify/v1", "read-inputs")
     compare = _contract("fixture.compare/v1", "read-evidence")
     descriptors = {"classify": _descriptor(classify, 1), "compare": _descriptor(compare, 2)}
@@ -122,8 +127,8 @@ def test_dependent_stage_receives_complete_role_partitions_and_exact_predecessor
         artifact_set_identity="b" * 64,
     )
     inventory = tuple(
-        {"collection": root, "artifact_id": digit * 64, "bytes": 1, "sha256": "e" * 64}
-        for digit in ("1", "2", "3")
+        {"collection": root, "artifact_id": f"{index:064x}", "bytes": 1, "sha256": "e" * 64}
+        for index in range(1, subject_count + 1)
     )
     planner = RecipePlanner(
         catalog=cast(Any, SimpleNamespace(recipe=lambda *_: recipe)),
@@ -136,7 +141,7 @@ def test_dependent_stage_receives_complete_role_partitions_and_exact_predecessor
     planner.__dict__["_inventory"] = lambda _: inventory
     work = planner.create_work(recipe.id, (root,))
     first_stage = planner.observation_requests(work)
-    assert len(first_stage) == 3
+    assert len(first_stage) == subject_count
     assert {item.observer_registration_id for item in first_stage} == {"classify"}
     evidence = tuple(
         ContentObservationEvidence(
@@ -148,7 +153,7 @@ def test_dependent_stage_receives_complete_role_partitions_and_exact_predecessor
                             "subject_id": request.subjects[0].id,
                             "kind": (
                                 "sidecar"
-                                if request.subjects[0].artifact_id == "3" * 64
+                                if request.subjects[0].artifact_id == f"{subject_count:064x}"
                                 else "primary"
                             ),
                         }
@@ -162,14 +167,14 @@ def test_dependent_stage_receives_complete_role_partitions_and_exact_predecessor
     assert len(second_stage) == 1  # complete scope despite preferred batch size of two
     request = second_stage[0]
     assert request.observer_registration_id == "compare"
-    assert len(request.subjects) == 3
+    assert len(request.subjects) == subject_count
     assert request.options["primary_ids"] == sorted(
         item.id for item in request.subjects if item.role == primary
     )
     assert request.options["sidecar_ids"] == sorted(
         item.id for item in request.subjects if item.role == sidecar
     )
-    assert len(request.evidence_slots or ()) == 3
+    assert len(request.evidence_slots or ()) == subject_count
     assert request.options["provenance_slots"] == [
         item.slot for item in request.evidence_slots or ()
     ]
@@ -182,12 +187,27 @@ def test_dependent_stage_receives_complete_role_partitions_and_exact_predecessor
     invocations = []
     abandoned = []
     expected = {item.request.request_id: item for item in evidence}
+    first_wave = Barrier(min(4, subject_count))
+    lock = Lock()
+    started = active = maximum_active = completed = 0
 
     def observe(registration, invocation, *, descriptor):
+        nonlocal started, active, maximum_active, completed
         invocations.append(invocation)
         if registration == "classify":
+            with lock:
+                started += 1
+                ordinal = started
+                active += 1
+                maximum_active = max(maximum_active, active)
+            if ordinal <= first_wave.parties:
+                first_wave.wait(timeout=5)
+            with lock:
+                active -= 1
+                completed += 1
             return expected[invocation.request.request_id].result
         assert registration == "compare"
+        assert completed == subject_count and active == 0
         assert invocation.request == request
         assert invocation.evidence == tuple(
             sorted(evidence, key=lambda item: item.request.request_id)
@@ -195,7 +215,7 @@ def test_dependent_stage_receives_complete_role_partitions_and_exact_predecessor
         return ContentObservationResultBuilder(descriptor, invocation.request).observed({})
 
     def finish(_work, accepted, **_kwargs):
-        assert len(accepted) == 4
+        assert len(accepted) == subject_count + 1
         assert {item.request.observer_registration_id for item in accepted} == {
             "classify",
             "compare",
@@ -226,8 +246,9 @@ def test_dependent_stage_receives_complete_role_partitions_and_exact_predecessor
         targets=cast(Any, object()),
     )
     preview = service.preview(work)
-    assert preview.state == "no_action" and len(preview.observations) == 4
-    assert len(invocations) == 4 and abandoned == [True]
+    assert preview.state == "no_action" and len(preview.observations) == subject_count + 1
+    assert len(invocations) == subject_count + 1 and abandoned == [True]
+    assert maximum_active == min(4, subject_count)
 
 
 def test_supplied_media_recipe_classifies_before_probe_and_exact_provenance() -> None:
