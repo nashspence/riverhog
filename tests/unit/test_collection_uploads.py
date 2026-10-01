@@ -6,7 +6,19 @@ from pathlib import Path
 
 import pytest
 from riverhog_age import decrypt_age_scrypt
-from riverhog_archive_contracts import CollectionArchiveManifest, RecoveryDescriptor
+from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
+    RETAINED_HISTORY_EXTENT,
+    CollectionArchiveManifest,
+    MemberHistoryBinding,
+    RecoveryDescriptor,
+)
+from riverhog_client.canonical_production import (
+    ProducedMemberJournal,
+    ProducerAttribution,
+    build_member_journal,
+    member_materialization_decision,
+)
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     CATALOG_READ,
@@ -23,18 +35,13 @@ from riverhog_core.catalog_db import initialize_db, make_session_factory, sessio
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectRecord,
     CollectionArchiveObjectUploadRecord,
+    CollectionArtifactProvenanceRecord,
+    CollectionArtifactRecord,
     CollectionDescriptionPublicationRecord,
-    CollectionFileProvenanceRecord,
-    CollectionFileRecord,
-    CollectionProvenanceEntityRecord,
-    CollectionProvenanceExternalStateReferenceRecord,
-    CollectionProvenanceJournalChunkRecord,
-    CollectionProvenanceJournalRecord,
     CollectionRecord,
     CollectionTagNodeRecord,
     CollectionUploadProvenanceJournalChunkRecord,
     CollectionUploadProvenanceJournalRecord,
-    CollectionUploadProvenanceValidationFactRecord,
     CollectionUploadRecord,
     CollectionUploadTagNodeReferenceRecord,
     RetrievalCacheLeaseRecord,
@@ -42,20 +49,19 @@ from riverhog_core.catalog_models import (
 )
 from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
 from riverhog_core.collection_plan import CollectionVolumePolicy
-from riverhog_core.domain.archive import ArchiveFile
+from riverhog_core.domain.archive import ArchiveArtifact
 from riverhog_core.incremental_plan import (
     incremental_volume_planner_checkpoint_bytes,
     parse_incremental_volume_planner_checkpoint,
 )
 from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.canonical_provenance import SqlAlchemyCanonicalProvenanceService
 from riverhog_core.services.catalog_sync import SqlAlchemyCatalogSyncService
 from riverhog_core.services.collection_uploads import (
     SqlAlchemyCollectionUploadService,
-    _entity_validation_fact_key,
 )
 from riverhog_core.services.lifecycle_events import SqlAlchemyLifecycleEventService
-from riverhog_core.services.provenance import SqlAlchemyProvenanceService
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
     MirroredArchiveResumableObjectStore,
 )
@@ -63,28 +69,27 @@ from riverhog_core.throughput import ArchiveThroughputTuning, log_transfer_timin
 from riverhog_protocol import (
     COLLECTION_DESCRIPTION_RELATIVE_PATH,
     COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
+    ArtifactId,
+    ArtifactMemberIdentityDocument,
+    CollectionArtifactProvenanceBindingBatchDocument,
     CollectionDescriptionDocument,
     CollectionTagSet,
     CollectionUploadProvenanceJournalCreateDocument,
     CollectionUploadRawDigestBatchDocument,
     MemoryCollectionTagNodeStore,
 )
+from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_protocol.errors import Conflict, NotFound
-from riverhog_protocol.manifest import collection_content_identity
+from riverhog_protocol.manifest import artifact_set_identity
 from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
 from riverhog_provenance import (
-    ArchiveFileProvenanceRecord,
-    ProvenanceRootDocument,
-    ProvenanceTerminalDocument,
-    ProvenanceVolumeDocument,
-    create_observation_journal,
-    parse_binding_segment,
-    update_ordered_volume_commitment,
-    validate_journal,
+    BoundedSourceObserver,
+    BytesSource,
+    MemberHistoryClosure,
 )
 from sqlalchemy import select
 
-from tests.provenance_observer import native_provenance_observer
+from tests.support.uploaded_archive import UploadedArchiveStore
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
 from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
@@ -128,18 +133,80 @@ def _tag_set_identity(*tags: str) -> str:
     return tag_set.identity
 
 
-def test_provenance_entity_validation_fact_keys_are_database_safe_and_unambiguous() -> None:
-    first = _entity_validation_fact_key("agents", "urn:uuid:first")
-    second = _entity_validation_fact_key("agent", "surn:uuid:first")
+class _ArchiveRanges:
+    """Read the same encrypted objects written through independent fake ports."""
 
-    assert len(first) == 64
-    assert set(first) <= set("0123456789abcdef")
-    assert first != second
+    def __init__(self, metadata, resumable, immutable) -> None:
+        self.metadata = metadata
+        self.resumable = resumable
+        self.immutable = immutable
+
+    def read_stored(self, object_path):
+        if object_path in self.immutable.objects:
+            content = self.immutable.objects[object_path].content
+        elif object_path in self.resumable.objects:
+            content = self.resumable.objects[object_path][0]
+        else:
+            content = self.metadata.objects[object_path]
+        return content
+
+    def iter_object_range(self, *, object_path, revision, expected_bytes, offset, size):
+        content = self.read_stored(object_path)
+        assert len(content) == expected_bytes
+        yield content[offset : offset + size]
 
 
-class _UnusedRangeStore:
-    def iter_object_range(self, **_: object):
-        raise AssertionError("collection upload does not read archive ranges")
+def _bind_primary(service, collection_id, artifact_id, content) -> ProducedMemberJournal:
+    opened = service.get(collection_id)
+    produced = build_member_journal(
+        member=ArtifactMemberIdentityDocument(
+            artifact_id=artifact_id,
+            bytes=str(len(content)),
+            sha256=hashlib.sha256(content).hexdigest(),
+        ),
+        observation=BoundedSourceObserver().observe(BytesSource(content)),
+        delivery_context_id=opened["delivery_context_id"],
+        attribution=ProducerAttribution(
+            producer_app="upload-test",
+            adapter_id="bounded-bytes-test",
+            adapter_version="1",
+            source_event_id=str(collection_id),
+            ingest_source="fixture",
+            source_context={},
+            construction_identity=opened["construction_identity_sha256"],
+        ),
+        materialization_hint=None,
+    )
+    _upload_provenance_journal(
+        service,
+        collection_id,
+        produced.journal_id,
+        produced.content,
+        hashlib.sha256(produced.content).hexdigest(),
+    )
+    service.bind_artifact_provenance(
+        collection_id,
+        CollectionArtifactProvenanceBindingBatchDocument(bindings=[produced.binding]),
+    )
+    service.set_artifact_materialization_decisions(
+        collection_id,
+        member_materialization_decision(
+            artifact_id=artifact_id,
+            materialization_hint=None,
+            allow_missing_materialization_hint=True,
+        ),
+    )
+    return produced
+
+
+def _custody_until(service, collection_id, artifact_id) -> dict[str, object]:
+    for _ in range(64):
+        members = service.list_artifacts(collection_id, page_size=100, position=None)["artifacts"]
+        member = next(item for item in members if item["artifact_id"] == artifact_id)
+        if member["custody_receipt"] is not None:
+            return member["custody_receipt"]
+        assert service.process_due_custody_receipts() == 1
+    raise AssertionError("bounded primary custody did not produce a receipt")
 
 
 class _MemoryResumableCache:
@@ -205,8 +272,6 @@ def test_upload_description_is_exact_and_bound_to_create_idempotency(tmp_path: P
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture has no source provenance",
     )
     resumed = service.create_or_resume(
         idempotency_key="described-upload",
@@ -215,8 +280,6 @@ def test_upload_description_is_exact_and_bound_to_create_idempotency(tmp_path: P
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture has no source provenance",
     )
 
     assert opened["description"] == resumed["description"] == description
@@ -238,8 +301,6 @@ def test_upload_description_is_exact_and_bound_to_create_idempotency(tmp_path: P
             archive_store=None,
             initiator=_CREATOR,
             event_context=None,
-            provenance_mode="omitted",
-            provenance_omission_reason="fixture has no source provenance",
         )
 
 
@@ -252,8 +313,6 @@ def test_open_upload_retains_tag_nodes_until_publication_can_finish(tmp_path: Pa
         archive_store=None,
         initiator=_TAGGED_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture has no source provenance",
     )
     collection_id = int(opened["collection_id"])
     factory = make_session_factory(config.database_url)
@@ -293,15 +352,13 @@ def test_upload_cannot_close_until_complete_initial_tag_intent_is_staged(tmp_pat
         archive_store=None,
         initiator=_TAGGED_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture has no source provenance",
     )
     collection_id = int(opened["collection_id"])
 
     with pytest.raises(Conflict, match="initial collection tags are incomplete"):
         service.complete(collection_id)
     service.add_tags(collection_id, tags[100:], principal=_TAGGED_CREATOR)
-    with pytest.raises(Conflict, match="has no registered files"):
+    with pytest.raises(Conflict, match="has no registered artifacts"):
         service.complete(collection_id)
 
 
@@ -367,8 +424,6 @@ def test_provenance_append_persists_next_ordinal_across_retry_and_restart(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="captured",
-        provenance_omission_reason=None,
     )
     collection_id = int(opened["collection_id"])
     chunks = (b"a" * COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX, b"terminal")
@@ -424,24 +479,6 @@ def test_provenance_append_persists_next_ordinal_across_retry_and_restart(
         ) == [0, 1]
 
 
-def _verify_provenance(
-    service: SqlAlchemyProvenanceService,
-    collection_id: int,
-    *,
-    principal: Principal,
-) -> dict[str, object]:
-    service.request_verification(collection_id, principal=principal)
-    for _ in range(256):
-        status = service.get_verification(collection_id, principal=principal)
-        if status["state"] in {"succeeded", "failed"}:
-            assert status["state"] == "succeeded", status.get("failure")
-            result = status["result"]
-            assert isinstance(result, dict)
-            return result
-        assert service.process_due_verifications() == 1
-    raise AssertionError("bounded provenance verification did not terminate")
-
-
 def _service_with_archive_objects(
     tmp_path: Path,
     *,
@@ -458,14 +495,15 @@ def _service_with_archive_objects(
     initialize_db(database_url)
     with session_scope(make_session_factory(database_url)) as session:
         seed_storage_incarnation(session, "archive", "archive")
-    archive_store = MemoryArchiveStore()
+    archive_store = UploadedArchiveStore(passphrases=config.archive_passphrases)
     resumable = MemoryResumableStore()
     root = MemoryImmutableStore()
+    archive_store.read_stored = _ArchiveRanges(archive_store, resumable, root).read_stored
     binding = replace(
         archive_store_binding(archive_store),
         resumable_objects=resumable,
         immutable_objects=root,
-        object_ranges=_UnusedRangeStore(),
+        object_ranges=_ArchiveRanges(archive_store, resumable, root),
     )
     return (
         SqlAlchemyCollectionUploadService(
@@ -512,14 +550,15 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
         "collection-test-key-v1": "first archive secret",
         "collection-test-key-v2": "second archive secret",
     }
-    archive_store = MemoryArchiveStore()
+    archive_store = UploadedArchiveStore(passphrases=passphrases)
     resumable = MemoryResumableStore()
     root = MemoryImmutableStore()
+    archive_store.read_stored = _ArchiveRanges(archive_store, resumable, root).read_stored
     binding = replace(
         archive_store_binding(archive_store),
         resumable_objects=resumable,
         immutable_objects=root,
-        object_ranges=_UnusedRangeStore(),
+        object_ranges=_ArchiveRanges(archive_store, resumable, root),
     )
 
     def service(active: str) -> SqlAlchemyCollectionUploadService:
@@ -539,8 +578,6 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture has no source provenance",
     )
     rotated = service("collection-test-key-v2")
     resumed = rotated.create_or_resume(
@@ -549,17 +586,27 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture has no source provenance",
     )
     assert first["passphrase_id"] == resumed["passphrase_id"] == "collection-test-key-v1"
 
     content = b"frozen generation\n"
     sha256 = hashlib.sha256(content).hexdigest()
     collection_id = int(first["collection_id"])
-    rotated.register_files(
+    rotated.register_artifacts(
         collection_id,
-        ({"path": "file.txt", "bytes": str(len(content)), "sha256": sha256},),
+        (
+            {
+                "artifact_id": "0000000000000000000000000000000000000000000000000000000000000001",
+                "bytes": str(len(content)),
+                "sha256": sha256,
+            },
+        ),
+    )
+    _bind_primary(
+        rotated,
+        collection_id,
+        "0000000000000000000000000000000000000000000000000000000000000001",
+        content,
     )
     rotated.complete(collection_id)
     volume = rotated.list_volumes(collection_id)["volumes"][0]
@@ -589,14 +636,24 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture has no source provenance",
     )
     assert after_rotation["passphrase_id"] == "collection-test-key-v2"
     reencrypted_collection_id = int(after_rotation["collection_id"])
-    rotated.register_files(
+    rotated.register_artifacts(
         reencrypted_collection_id,
-        ({"path": "file.txt", "bytes": str(len(content)), "sha256": sha256},),
+        (
+            {
+                "artifact_id": "0000000000000000000000000000000000000000000000000000000000000001",
+                "bytes": str(len(content)),
+                "sha256": sha256,
+            },
+        ),
+    )
+    _bind_primary(
+        rotated,
+        reencrypted_collection_id,
+        "0000000000000000000000000000000000000000000000000000000000000001",
+        content,
     )
     rotated.complete(reencrypted_collection_id)
     reencrypted_volume = rotated.list_volumes(reencrypted_collection_id)["volumes"][0]
@@ -609,7 +666,7 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
     )
     reencrypted = _process_until(rotated, reencrypted_collection_id)
     assert reencrypted_collection_id != collection_id
-    assert reencrypted["content_identity"] == finalized["content_identity"]
+    assert reencrypted["artifact_set_identity"] == finalized["artifact_set_identity"]
     assert reencrypted["passphrase_id"] == "collection-test-key-v2"
 
 
@@ -634,18 +691,20 @@ def test_restore_required_ingress_commits_encrypted_cache_with_initial_lease(
         seed_storage_incarnation(session, "cache", "memory")
     archive_resumable = MemoryResumableStore()
     cache = _MemoryResumableCache()
+    archive_store = MemoryArchiveStore(read_mode="restore_required")
+    root = MemoryImmutableStore()
     binding = replace(
-        archive_store_binding(MemoryArchiveStore(read_mode="restore_required")),
+        archive_store_binding(archive_store),
         resumable_objects=archive_resumable,
-        immutable_objects=MemoryImmutableStore(),
-        object_ranges=_UnusedRangeStore(),
+        immutable_objects=root,
+        object_ranges=_ArchiveRanges(archive_store, archive_resumable, root),
     )
     service = SqlAlchemyCollectionUploadService(
         config,
         ArchiveStoreRegistry({"archive": binding}),
         policy=CollectionVolumePolicy(
             pack_source_bytes=16 * 1024 * 1024,
-            pack_files=100,
+            pack_artifacts=100,
             pack_member_bytes=8 * 1024 * 1024,
             pack_part_plaintext_bytes=5 * 1024 * 1024,
             raw_volume_plaintext_bytes=10 * 1024 * 1024,
@@ -661,13 +720,23 @@ def test_restore_required_ingress_commits_encrypted_cache_with_initial_lease(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
     )
     collection_id = int(opened["collection_id"])
-    service.register_files(
+    service.register_artifacts(
         collection_id,
-        ({"path": "document.txt", "bytes": str(len(content)), "sha256": sha256},),
+        (
+            {
+                "artifact_id": "0000000000000000000000000000000000000000000000000000000000000002",
+                "bytes": str(len(content)),
+                "sha256": sha256,
+            },
+        ),
+    )
+    _bind_primary(
+        service,
+        collection_id,
+        "0000000000000000000000000000000000000000000000000000000000000002",
+        content,
     )
     service.complete(collection_id)
     volume = service.list_volumes(collection_id)["volumes"][0]
@@ -738,8 +807,6 @@ def test_restore_required_ingress_uses_archive_only_when_new_archive_cache_is_di
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
     )
     assert opened["use_cache"] is False
     selected = service._volume_object_store(
@@ -756,8 +823,6 @@ def test_restore_required_ingress_uses_archive_only_when_new_archive_cache_is_di
         use_cache=True,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
     )
     assert explicit["use_cache"] is True
     assert isinstance(
@@ -770,316 +835,126 @@ def test_restore_required_ingress_uses_archive_only_when_new_archive_cache_is_di
     )
 
 
-def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(
+def test_mandatory_primary_and_member_history_survive_encrypted_archive_publication(
     tmp_path: Path,
 ) -> None:
-    service, config, _resumable, root = _service_with_archive_objects(tmp_path)
-    contents = {
-        "captured.bin": b"captured payload\n",
-        "operator-note.txt": b"explicitly omitted provenance\n",
-    }
-    observed = tmp_path / "captured.bin"
-    observed.write_bytes(contents["captured.bin"])
-    journal = create_observation_journal(
-        observed,
-        relative_path="captured.bin",
-        host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
-        agent_name="riverhog-test-client",
-        agent_version="1.0.0",
-        observer=native_provenance_observer(),
-    )
-    summary = validate_journal(journal)
-    bindings = (
-        ArchiveFileProvenanceRecord(
-            path="captured.bin",
-            bytes=len(contents["captured.bin"]),
-            sha256=hashlib.sha256(contents["captured.bin"]).hexdigest(),
-            status="captured",
-            journal_id=summary.journal_id,
-            current_state_id=summary.current_state_id,
-        ),
-        ArchiveFileProvenanceRecord(
-            path="operator-note.txt",
-            bytes=len(contents["operator-note.txt"]),
-            sha256=hashlib.sha256(contents["operator-note.txt"]).hexdigest(),
-            status="omitted",
-            omission_reason="operator explicitly omitted unavailable source provenance",
-        ),
-    )
+    service, config, resumable, root = _service_with_archive_objects(tmp_path)
+    contents = {"a" * 64: b"first payload\n", "b" * 64: b"second payload\n"}
     opened = service.create_or_resume(
-        idempotency_key="mixed-provenance-upload",
+        idempotency_key="canonical-provenance-upload",
         ingest_source="fixture",
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="captured",
-        provenance_omission_reason=None,
     )
     collection_id = int(opened["collection_id"])
-    staged = _upload_provenance_journal(
-        service,
-        collection_id,
-        summary.journal_id,
-        journal,
-        summary.journal_sha256,
-    )
-    assert staged["accepted_bytes"] == str(len(journal))
-    assert staged["sha256"] == summary.journal_sha256
-    assert staged["current_state_id"] == summary.current_state_id
-    with session_scope(make_session_factory(config.database_url)) as session:
-        entity_keys = tuple(
-            session.scalars(
-                select(CollectionUploadProvenanceValidationFactRecord.fact_key).where(
-                    CollectionUploadProvenanceValidationFactRecord.collection_id == collection_id,
-                    CollectionUploadProvenanceValidationFactRecord.journal_id == summary.journal_id,
-                    CollectionUploadProvenanceValidationFactRecord.kind == "entity",
-                )
-            )
-        )
-        assert entity_keys
-        assert all(len(key) == 64 and set(key) <= set("0123456789abcdef") for key in entity_keys)
-    service.register_files(
+    service.register_artifacts(
         collection_id,
         tuple(
             {
-                "path": binding.path,
-                "bytes": str(binding.bytes),
-                "sha256": binding.sha256,
-                "provenance": {
-                    "status": binding.status,
-                    **(
-                        {
-                            "journal_id": binding.journal_id,
-                            "current_state_id": binding.current_state_id,
-                        }
-                        if binding.status == "captured"
-                        else {"omission_reason": binding.omission_reason}
-                    ),
-                },
+                "artifact_id": artifact_id,
+                "bytes": str(len(content)),
+                "sha256": hashlib.sha256(content).hexdigest(),
             }
-            for binding in reversed(bindings)
+            for artifact_id, content in reversed(tuple(contents.items()))
         ),
     )
-    closing = service.complete(collection_id)
-    assert closing["provenance_identity"] is None
+    produced = {
+        artifact_id: _bind_primary(service, collection_id, artifact_id, content)
+        for artifact_id, content in contents.items()
+    }
+    with session_scope(make_session_factory(config.database_url)) as session:
+        for primary in produced.values():
+            staged = session.get(
+                CollectionUploadProvenanceJournalRecord, (collection_id, primary.journal_id)
+            )
+            assert staged is not None and staged.state == "sealed"
+            assert staged.sha256 == hashlib.sha256(primary.content).hexdigest()
+    assert service.complete(collection_id)["provenance_identity"] is None
     for volume in service.list_volumes(collection_id)["volumes"]:
         for unit in volume["units"]:
+            payload = b"".join(
+                contents[source["artifact_id"]][
+                    int(source["offset"]) : int(source["offset"]) + int(source["bytes"])
+                ]
+                for source in unit["sources"]
+            )
             service.upload_unit(
                 collection_id,
                 str(volume["volume_id"]),
                 int(unit["unit"]),
                 plan_sha256=str(volume["plan_sha256"]),
-                content=b"".join(contents[str(source["path"])] for source in unit["sources"]),
+                content=payload,
             )
-    assert _process_until(service, collection_id)["provenance_mode"] == "mixed"
-
-    with session_scope(make_session_factory(config.database_url)) as session:
-        objects = list(
-            session.query(CollectionArchiveObjectRecord)
-            .filter(CollectionArchiveObjectRecord.collection_id == collection_id)
-            .order_by(CollectionArchiveObjectRecord.object_order)
-        )
-        bindings_by_path = {
-            item.path: item
-            for item in session.query(CollectionFileProvenanceRecord).filter_by(
-                collection_id=collection_id
-            )
-        }
-        exact = session.get(
-            CollectionProvenanceJournalRecord,
-            (collection_id, summary.journal_id),
-        )
-        projected = list(
-            session.query(CollectionProvenanceEntityRecord).filter_by(
-                collection_id=collection_id,
-                journal_id=summary.journal_id,
-            )
-        )
-        external_state_references = list(
-            session.query(CollectionProvenanceExternalStateReferenceRecord).filter_by(
-                collection_id=collection_id,
-                from_journal_id=summary.journal_id,
-            )
-        )
-        exact_bytes = b"".join(
-            session.scalars(
-                select(CollectionProvenanceJournalChunkRecord.content)
-                .where(
-                    CollectionProvenanceJournalChunkRecord.collection_id == collection_id,
-                    CollectionProvenanceJournalChunkRecord.journal_id == summary.journal_id,
-                )
-                .order_by(CollectionProvenanceJournalChunkRecord.ordinal)
-            )
-        )
-    assert [item.kind for item in objects] == [
-        "pack",
-        "volume-metadata",
-        "volume-terminal",
-        "provenance-bindings",
-        "provenance-volume-metadata",
-        "provenance-journal-segment",
-        "provenance-volume-metadata",
-        "provenance-terminal",
-        "provenance-root",
-        "manifest",
-        "recovery-descriptor",
-    ]
-    assert bindings_by_path["captured.bin"].status == "captured"
-    assert bindings_by_path["operator-note.txt"].status == "omitted"
-    assert exact is not None and exact_bytes == journal
-    assert exact.entries == len(summary.frames)
-    assert exact.agent_count == len(summary.agent_ids)
-    assert exact.entity_counts_json
-    assert projected
-    assert external_state_references == []
-
-    stored_by_suffix = {path.rsplit("/", 1)[-1]: stored for path, stored in root.objects.items()}
+    finalized = _process_until(service, collection_id)
+    assert finalized["state"] == "finalized" and finalized["provenance_identity"]
     passphrase = config.archive_passphrase_for(config.archive_active_passphrase_id)
-    root_bytes = decrypt_age_scrypt(
-        stored_by_suffix["root.json.age"].content,
-        passphrase,
+    stored_root = next(
+        value for path, value in root.objects.items() if path.endswith("/manifest.json.age")
     )
-    provenance_root = ProvenanceRootDocument.from_json_bytes(root_bytes)
-    volume_digest = hashlib.sha256()
-    recovered_bindings: list[dict[str, object]] = []
-    recovered_journal = bytearray()
-    sequence = 0
-    while True:
-        metadata_record = next(
-            item
-            for item in objects
-            if item.object_id
-            in {
-                f"provenance-volume-{sequence:064x}",
-                f"provenance-terminal-{sequence:064x}",
-            }
-        )
-        metadata_bytes = decrypt_age_scrypt(
-            root.objects[metadata_record.object_path].content,
-            passphrase,
-        )
-        if metadata_record.object_id.startswith("provenance-terminal-"):
-            terminal = ProvenanceTerminalDocument.from_json_bytes(metadata_bytes)
-            assert terminal.sequence == sequence
-            update_ordered_volume_commitment(volume_digest, terminal)
-            break
-        volume = ProvenanceVolumeDocument.from_json_bytes(metadata_bytes)
-        update_ordered_volume_commitment(volume_digest, volume)
-        payload_record = next(
-            item for item in objects if item.object_id == f"provenance-payload-{sequence:064x}"
-        )
-        payload = decrypt_age_scrypt(
-            root.objects[payload_record.object_path].content,
-            passphrase,
-        )
-        assert hashlib.sha256(payload).hexdigest() == volume.payload.sha256
-        if volume.payload.kind == "bindings":
-            _first, current = parse_binding_segment(payload)
-            recovered_bindings.extend(current)
-        else:
-            recovered_journal.extend(payload)
-        sequence += 1
-    assert volume_digest.hexdigest() == provenance_root.ordered_volume_sha256
-    assert recovered_bindings == [
-        {
-            "path": binding.path,
-            "bytes": binding.bytes,
-            "sha256": binding.sha256,
-            "status": binding.status,
-            **(
-                {
-                    "journal_id": binding.journal_id,
-                    "current_state_id": binding.current_state_id,
-                }
-                if binding.status == "captured"
-                else {"omission_reason": binding.omission_reason}
-            ),
-        }
-        for binding in sorted(bindings, key=lambda current: current.path.encode("utf-8"))
-    ]
-    assert bytes(recovered_journal) == journal
-
-    manifest = decrypt_age_scrypt(
-        stored_by_suffix["manifest.json.age"].content,
-        passphrase,
+    manifest = CollectionArchiveManifest.from_json_bytes(
+        decrypt_age_scrypt(stored_root.content, passphrase)
     )
-    parsed = CollectionArchiveManifest.from_json_bytes(manifest).to_mapping()
-    provenance_descriptor = parsed["provenance"]
-    assert isinstance(provenance_descriptor, dict)
-    assert provenance_descriptor["identity"] == provenance_root.identity
-    assert provenance_descriptor["root"]["sha256"] == provenance_root.identity
+    assert manifest.to_mapping()["provenance"]["identity"] == finalized["provenance_identity"]
 
+    provenance = SqlAlchemyCanonicalProvenanceService(config, service._archive_stores)
     reader = Principal(
-        id="catalog-reader",
-        key_id="key-reader",
+        id="reader",
+        key_id="reader-key",
         access=frozenset(
             {
                 ApplicationAccess(CATALOG_READ, ALL_RESOURCES),
+                ApplicationAccess(PROVENANCE_READ, ALL_RESOURCES),
                 ApplicationAccess(PROVENANCE_EXPORT, ALL_RESOURCES),
             }
         ),
     )
-    provenance_service = SqlAlchemyProvenanceService(config)
-    listed = provenance_service.list_files(
-        collection_id,
-        page_size=100,
-        position=None,
-        q=None,
-        status=None,
-        sort="path",
-        order="asc",
-        principal=reader,
+    listed = provenance.list_artifacts(
+        collection_id, page_size=100, after_artifact_id=None, principal=reader
     )
-    assert listed["provenance_mode"] == "mixed"
-    assert [item["provenance"]["status"] for item in listed["files"]] == [
-        "captured",
-        "omitted",
-    ]
-    shown = provenance_service.show_file(collection_id, "captured.bin", principal=reader)
-    assert shown["journal"]["journal_id"] == summary.journal_id
-    traced = provenance_service.trace_file(
-        collection_id,
-        "captured.bin",
-        page_size=100,
-        position=None,
-        principal=reader,
-    )
-    assert [
-        item["journal"]["journal_id"] for item in traced["items"] if item["kind"] == "journal"
-    ] == [summary.journal_id]
-    _exported_bytes, exported_sha256 = provenance_service.journal_metadata(
-        collection_id,
-        summary.journal_id,
-        principal=reader,
-    )
-    exported = b"".join(
-        provenance_service.iter_journal(
-            collection_id,
-            summary.journal_id,
-            principal=reader,
+    assert [item["artifact_id"] for item in listed["artifacts"]] == sorted(contents)
+    archive_reader = provenance._archives.reader(collection_id)
+    summary = archive_reader.scan()
+    assert summary.root.identity == finalized["provenance_identity"]
+    for artifact_id, primary in produced.items():
+        shown = provenance.get_artifact(collection_id, ArtifactId(artifact_id), principal=reader)
+        binding = MemberHistoryBinding.from_mapping(shown["history_binding"])
+        assert shown["binding"] == primary.binding.model_dump(mode="json")
+        assert (
+            b"".join(
+                provenance.iter_journal_range(collection_id, primary.journal_id, principal=reader)
+            )
+            == primary.content
         )
-    )
-    assert exported == journal
-    assert exported_sha256 == summary.journal_sha256
-    assert (
-        _verify_provenance(
-            provenance_service,
-            collection_id,
-            principal=reader,
-        )["valid"]
-        is True
-    )
-
+        assert provenance.journal_metadata(collection_id, primary.journal_id, principal=reader) == (
+            len(primary.content),
+            hashlib.sha256(primary.content).hexdigest(),
+        )
+        for extent in (BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT):
+            with MemberHistoryClosure(
+                archive_reader.history_store(),
+                lambda journal_id, size: archive_reader.iter_journal_range(journal_id, size=size),
+                member_role=COLLECTION_MEMBER_ROLE,
+            ) as closure:
+                closure.resolve(binding, extent=extent)
+                anchors = tuple(closure.journal_anchors())
+                assert len(anchors) == 1 and anchors[0].journal_id == primary.journal_id
+                assert tuple(closure.structure_objects())
+    # Export permission remains distinct from read permission and catalog visibility.
     catalog_only = Principal(
-        id="catalog-only",
-        key_id="key-catalog",
-        access=frozenset({ApplicationAccess(CATALOG_READ, ALL_RESOURCES)}),
+        id="catalog",
+        key_id="catalog-key",
+        access=frozenset(
+            {
+                ApplicationAccess(CATALOG_READ, ALL_RESOURCES),
+            }
+        ),
     )
     with pytest.raises(NotFound):
-        provenance_service.show_file(collection_id, "captured.bin", principal=catalog_only)
+        provenance.get_artifact(collection_id, ArtifactId("a" * 64), principal=catalog_only)
     read_only = Principal(
-        id="provenance-reader",
-        key_id="key-provenance",
+        id="read-only",
+        key_id="read-key",
         access=frozenset(
             {
                 ApplicationAccess(CATALOG_READ, ALL_RESOURCES),
@@ -1089,12 +964,33 @@ def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(
     )
     with pytest.raises(NotFound):
         list(
-            provenance_service.iter_journal(
-                collection_id,
-                summary.journal_id,
-                principal=read_only,
+            provenance.iter_journal_range(
+                collection_id, produced["a" * 64].journal_id, principal=read_only
             )
         )
+    with session_scope(make_session_factory(config.database_url)) as session:
+        objects = list(
+            session.scalars(
+                select(CollectionArchiveObjectRecord).where(
+                    CollectionArchiveObjectRecord.collection_id == collection_id
+                )
+            )
+        )
+        assert len({item.object_id for item in objects}) == len(objects)
+        assert any(item.kind == "provenance-root" for item in objects)
+        for item in objects:
+            if item.kind == "recovery-descriptor":
+                continue
+            encrypted = (
+                root.objects[item.object_path].content
+                if item.object_path in root.objects
+                else resumable.objects[item.object_path][0]
+            )
+            assert encrypted.startswith(b"age-encryption.org/v1\n")
+            if item.stored_sha256 is not None:
+                assert hashlib.sha256(encrypted).hexdigest() == item.stored_sha256
+            else:
+                assert item.kind in {"pack", "segment"}
 
 
 @pytest.mark.parametrize(
@@ -1120,8 +1016,6 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture does not exercise source observation",
         custody_mode=custody_mode,
     )
     assert opened["custody_mode"] == custody_mode
@@ -1134,20 +1028,30 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
             archive_store=None,
             initiator=_CREATOR,
             event_context=None,
-            provenance_mode="omitted",
-            provenance_omission_reason="fixture does not exercise source observation",
             custody_mode=custody_mode,
         )
-    registered = service.register_files(
+    registered = service.register_artifacts(
         collection_id,
-        ({"path": "document.txt", "bytes": str(len(content)), "sha256": sha256},),
+        (
+            {
+                "artifact_id": "0000000000000000000000000000000000000000000000000000000000000002",
+                "bytes": str(len(content)),
+                "sha256": sha256,
+            },
+        ),
     )
     assert registered["volumes"] == []
     with session_scope(make_session_factory(config.database_url)) as session:
         upload = session.get(CollectionUploadRecord, collection_id)
         assert upload is not None
-        assert (upload.file_count, upload.file_bytes) == (1, len(content))
+        assert (upload.artifact_count, upload.artifact_bytes) == (1, len(content))
 
+    _bind_primary(
+        service,
+        collection_id,
+        "0000000000000000000000000000000000000000000000000000000000000002",
+        content,
+    )
     closed = service.complete(collection_id)
     assert closed["state"] == ("closing" if custody_mode == "custody-transfer" else "uploading")
     assert (closed["upload_state_expires_at"] is not None) == (custody_mode == "custody-transfer")
@@ -1158,7 +1062,7 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
     unit = volume["units"][0]
     assert unit["sources"] == [
         {
-            "path": "document.txt",
+            "artifact_id": "0000000000000000000000000000000000000000000000000000000000000002",
             "offset": "0",
             "bytes": str(len(content)),
             "artifact_sha256": sha256,
@@ -1194,31 +1098,39 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
     with session_scope(make_session_factory(config.database_url)) as session:
         collection = session.get(CollectionRecord, collection_id)
         assert collection is not None
-        assert (collection.file_count, collection.file_bytes) == (1, len(content))
-        file = session.get(CollectionFileRecord, (collection_id, "document.txt"))
-        assert file is not None and file.provenance_status == "omitted"
+        assert (collection.artifact_count, collection.artifact_bytes) == (1, len(content))
+        member = session.get(
+            CollectionArtifactRecord,
+            (collection_id, "0000000000000000000000000000000000000000000000000000000000000002"),
+        )
+        binding = session.get(
+            CollectionArtifactProvenanceRecord,
+            (collection_id, "0000000000000000000000000000000000000000000000000000000000000002"),
+        )
+        assert member is not None and binding is not None
         objects = list(
             session.query(CollectionArchiveObjectRecord)
             .filter(CollectionArchiveObjectRecord.collection_id == collection_id)
             .order_by(CollectionArchiveObjectRecord.object_order)
         )
-        assert [current.object_id for current in objects] == [
-            f"pack-{0:064x}",
-            f"volume-metadata-{0:064x}",
-            f"volume-terminal-{1:064x}",
-            "manifest",
-            "recovery-descriptor",
-        ]
-        assert objects[0].object_path.endswith(f"/volumes/pack-{0:064x}.tar.age")
-        assert objects[1].object_path.endswith(f"/metadata/volume-{0:064x}.json.age")
-        assert objects[2].object_path.endswith(f"/metadata/volume-{1:064x}.json.age")
-        assert objects[3].object_path.endswith("/manifest.json.age")
-        assert objects[4].object_path.endswith("/recovery.json")
-        root_object = immutable.objects[objects[3].object_path]
+        by_id = {current.object_id: current for current in objects}
+        assert len(by_id) == len(objects)
+        assert by_id[f"pack-{0:064x}"].object_path.endswith(f"/volumes/pack-{0:064x}.tar.age")
+        assert by_id[f"volume-metadata-{0:064x}"].object_path.endswith(
+            f"/metadata/volume-{0:064x}.json.age"
+        )
+        assert by_id[f"volume-terminal-{1:064x}"].object_path.endswith(
+            f"/metadata/volume-{1:064x}.json.age"
+        )
+        assert by_id["manifest"].object_path.endswith("/manifest.json.age")
+        assert by_id["recovery-descriptor"].object_path.endswith("/recovery.json")
+        assert any(current.kind == "provenance-root" for current in objects)
+        root_record = by_id["manifest"]
+        root_object = immutable.objects[root_record.object_path]
         plaintext_root_sha256 = root_object.identity["riverhog-plaintext-sha256"]
-        assert objects[3].sha256 == plaintext_root_sha256
-        assert objects[3].stored_sha256 == root_object.receipt.stored_sha256
-        assert objects[3].sha256 != objects[3].stored_sha256
+        assert root_record.sha256 == plaintext_root_sha256
+        assert root_record.stored_sha256 == root_object.receipt.stored_sha256
+        assert root_record.sha256 != root_record.stored_sha256
         publication = session.get(
             CollectionDescriptionPublicationRecord,
             (collection_id, "archive"),
@@ -1266,8 +1178,6 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture does not exercise source observation",
         custody_mode=custody_mode,
     )
     assert resumed["collection_id"] == str(collection_id)
@@ -1282,8 +1192,6 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
             archive_store=None,
             initiator=_CREATOR,
             event_context=None,
-            provenance_mode="omitted",
-            provenance_omission_reason="fixture does not exercise source observation",
             custody_mode=changed_custody_mode,
         )
     with pytest.raises(Conflict, match="idempotency identity changed"):
@@ -1293,8 +1201,6 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
             archive_store=None,
             initiator=_CREATOR,
             event_context=None,
-            provenance_mode="omitted",
-            provenance_omission_reason="fixture does not exercise source observation",
             custody_mode=custody_mode,
         )
     with pytest.raises(Conflict, match="idempotency identity changed"):
@@ -1304,19 +1210,6 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
             archive_store=None,
             initiator=_CREATOR,
             event_context={"source": "other-fixture"},
-            provenance_mode="omitted",
-            provenance_omission_reason="fixture does not exercise source observation",
-            custody_mode=custody_mode,
-        )
-    with pytest.raises(Conflict, match="idempotency identity changed"):
-        service.create_or_resume(
-            idempotency_key="upload-1",
-            ingest_source="fixture",
-            archive_store=None,
-            initiator=_CREATOR,
-            event_context=None,
-            provenance_mode="omitted",
-            provenance_omission_reason="a different explicit omission",
             custody_mode=custody_mode,
         )
 
@@ -1333,14 +1226,24 @@ def test_closed_custody_transfer_keeps_lease_until_final_tail_is_custodied(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
         custody_mode="custody-transfer",
     )
     collection_id = int(opened["collection_id"])
-    service.register_files(
+    service.register_artifacts(
         collection_id,
-        ({"path": "tail.txt", "bytes": str(len(content)), "sha256": sha256},),
+        (
+            {
+                "artifact_id": "0000000000000000000000000000000000000000000000000000000000000003",
+                "bytes": str(len(content)),
+                "sha256": sha256,
+            },
+        ),
+    )
+    _bind_primary(
+        service,
+        collection_id,
+        "0000000000000000000000000000000000000000000000000000000000000003",
+        content,
     )
     closing = service.complete(collection_id)
     assert closing["state"] == "closing"
@@ -1360,8 +1263,6 @@ def test_closed_custody_transfer_keeps_lease_until_final_tail_is_custodied(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
         custody_mode="custody-transfer",
     )
     assert resumed["state"] == "closing"
@@ -1379,7 +1280,9 @@ def test_closed_custody_transfer_keeps_lease_until_final_tail_is_custodied(
     )
     queued = service.get(collection_id)
     assert queued["state"] == "finalizing"
-    assert queued["custody"] == {"state": "complete"}
+    assert queued["custody"] == {"state": "pending", "files": 0, "bytes": 0}
+    _custody_until(service, collection_id, f"{3:064x}")
+    assert service.get(collection_id)["custody"] == {"state": "complete"}
     assert queued["upload_state_expires_at"] is None
 
 
@@ -1388,7 +1291,7 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
 ) -> None:
     policy = CollectionVolumePolicy(
         pack_source_bytes=1024,
-        pack_files=1,
+        pack_artifacts=1,
         pack_member_bytes=1024,
         pack_part_plaintext_bytes=5 * 1024 * 1024,
         raw_volume_plaintext_bytes=5 * 1024 * 1024,
@@ -1398,15 +1301,16 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
         tmp_path,
         policy=policy,
     )
-    contents = {"a.txt": b"first", "b.txt": b"second"}
+    contents = {
+        "0000000000000000000000000000000000000000000000000000000000000004": b"first",
+        "0000000000000000000000000000000000000000000000000000000000000005": b"second",
+    }
     opened = service.create_or_resume(
         idempotency_key="custody-transfer",
         ingest_source="fixture",
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture intentionally omits host provenance",
         custody_mode="custody-transfer",
     )
     collection_id = int(opened["collection_id"])
@@ -1415,16 +1319,18 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
 
     for path in contents:
         content = contents[path]
-        service.register_files(
+        service.register_artifacts(
             collection_id,
             (
                 {
-                    "path": path,
+                    "artifact_id": path,
                     "bytes": str(len(content)),
                     "sha256": hashlib.sha256(content).hexdigest(),
                 },
             ),
         )
+    for artifact_id, content in contents.items():
+        _bind_primary(service, collection_id, artifact_id, content)
     volume = service.list_volumes(collection_id)["volumes"][0]
     unit = volume["units"][0]
     service.upload_unit(
@@ -1432,12 +1338,23 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
         str(volume["volume_id"]),
         int(unit["unit"]),
         plan_sha256=str(volume["plan_sha256"]),
-        content=b"".join(contents[str(source["path"])] for source in unit["sources"]),
+        content=b"".join(contents[str(source["artifact_id"])] for source in unit["sources"]),
     )
-    files = service.list_files(collection_id, page_size=100, position=None)["files"]
-    by_path = {str(item["path"]): item for item in files}
-    assert by_path["a.txt"]["custody_receipt"] is not None
-    assert by_path["b.txt"]["custody_receipt"] is None
+    _custody_until(service, collection_id, f"{4:064x}")
+    files = service.list_artifacts(collection_id, page_size=100, position=None)["artifacts"]
+    by_path = {str(item["artifact_id"]): item for item in files}
+    assert (
+        by_path["0000000000000000000000000000000000000000000000000000000000000004"][
+            "custody_receipt"
+        ]
+        is not None
+    )
+    assert (
+        by_path["0000000000000000000000000000000000000000000000000000000000000005"][
+            "custody_receipt"
+        ]
+        is None
+    )
     assert service.get(collection_id)["custody"] == {
         "state": "pending",
         "files": 1,
@@ -1446,8 +1363,8 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
     with session_scope(make_session_factory(config.database_url)) as session:
         upload = session.get(CollectionUploadRecord, collection_id)
         assert upload is not None
-        assert (upload.file_count, upload.file_bytes) == (2, 11)
-        assert (upload.custodied_file_count, upload.custodied_file_bytes) == (1, 5)
+        assert (upload.artifact_count, upload.artifact_bytes) == (2, 11)
+        assert (upload.safe_release_artifact_count, upload.safe_release_artifact_bytes) == (1, 5)
 
     service.require_read_access(collection_id, _DELETER)
     service.require_discard_access(collection_id, _DELETER)
@@ -1498,8 +1415,6 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture intentionally omits host provenance",
         custody_mode="custody-transfer",
     )
     assert resumed["state"] == "open"
@@ -1568,8 +1483,6 @@ def test_failed_orphan_cleanup_remains_visible_and_exactly_retryable(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
         custody_mode="custody-transfer",
     )
     collection_id = int(opened["collection_id"])
@@ -1613,7 +1526,7 @@ def test_completion_defers_canonical_identity_to_bounded_server_finalization(
     service, config = _service(tmp_path)
     files = tuple(
         {
-            "path": f"many/file-{index:04d}.txt",
+            "artifact_id": f"{index:064x}",
             "bytes": str(index),
             "sha256": hashlib.sha256(f"payload-{index}".encode()).hexdigest(),
         }
@@ -1625,12 +1538,10 @@ def test_completion_defers_canonical_identity_to_bounded_server_finalization(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
     )
     collection_id = int(opened["collection_id"])
     for start in range(0, len(files), 64):
-        service.register_files(collection_id, files[start : start + 64])
+        service.register_artifacts(collection_id, files[start : start + 64])
     result = service.complete(collection_id)
 
     assert result["state"] == "uploading"
@@ -1639,19 +1550,18 @@ def test_completion_defers_canonical_identity_to_bounded_server_finalization(
         assert upload is not None
         checkpoint = parse_incremental_volume_planner_checkpoint(upload.planner_checkpoint_json)
         assert checkpoint.closed is True
-        assert checkpoint.files_seen == len(files)
-        assert checkpoint.content_identity is not None
-        assert upload.catalog_content_identity is None
-        assert upload.catalog_phase == "content-identity"
+        assert checkpoint.artifacts_seen == len(files)
+        assert upload.catalog_artifact_set_identity is None
+        assert upload.catalog_phase == "artifact-set-identity"
 
 
 def test_server_owned_membership_is_independent_of_registration_order(
     tmp_path: Path,
 ) -> None:
     contents = {
-        "a/first.txt": b"first\n",
-        "m/middle.txt": b"middle\n",
-        "z/last.txt": b"last\n",
+        "0000000000000000000000000000000000000000000000000000000000000006": b"first\n",
+        "0000000000000000000000000000000000000000000000000000000000000007": b"middle\n",
+        "0000000000000000000000000000000000000000000000000000000000000008": b"last\n",
     }
 
     def publish(order: tuple[str, ...], key: str) -> tuple[dict[str, object], str]:
@@ -1662,27 +1572,27 @@ def test_server_owned_membership_is_independent_of_registration_order(
             archive_store=None,
             initiator=_CREATOR,
             event_context=None,
-            provenance_mode="omitted",
-            provenance_omission_reason="fixture",
         )
         collection_id = int(opened["collection_id"])
         for path in order:
             content = contents[path]
-            service.register_files(
+            service.register_artifacts(
                 collection_id,
                 (
                     {
-                        "path": path,
+                        "artifact_id": path,
                         "bytes": str(len(content)),
                         "sha256": hashlib.sha256(content).hexdigest(),
                     },
                 ),
             )
+        for artifact_id, content in contents.items():
+            _bind_primary(service, collection_id, artifact_id, content)
         service.complete(collection_id)
         for volume in service.list_volumes(collection_id)["volumes"]:
             for unit in volume["units"]:
                 payload = b"".join(
-                    contents[str(source["path"])][
+                    contents[str(source["artifact_id"])][
                         int(source["offset"]) : int(source["offset"]) + int(source["bytes"])
                     ]
                     for source in unit["sources"]
@@ -1711,21 +1621,20 @@ def test_server_owned_membership_is_independent_of_registration_order(
 
     forward, forward_tree = publish(tuple(contents), "server-membership-forward")
     shuffled, shuffled_tree = publish(tuple(reversed(contents)), "server-membership-shuffled")
-    expected = collection_content_identity(
-        (
-            (path, len(content), hashlib.sha256(content).hexdigest())
-            for path, content in contents.items()
+    expected = artifact_set_identity(
+        ArtifactMemberIdentityDocument(
+            artifact_id=artifact_id,
+            bytes=str(len(content)),
+            sha256=hashlib.sha256(content).hexdigest(),
         )
+        for artifact_id, content in contents.items()
     )
 
-    assert forward["content_identity"] == shuffled["content_identity"] == expected
-    tree = hashlib.sha256()
-    for path, content in sorted(contents.items()):
-        tree.update(f"{path}\t{len(content)}\t{hashlib.sha256(content).hexdigest()}\n".encode())
-    assert forward_tree == shuffled_tree == tree.hexdigest()
+    assert forward["artifact_set_identity"] == shuffled["artifact_set_identity"] == expected
+    assert forward_tree == shuffled_tree == expected
 
 
-def test_completion_requires_volume_plans_to_match_registered_file_identities(
+def test_completion_requires_volume_plans_to_match_registered_artifact_identities(
     tmp_path: Path,
 ) -> None:
     service, config = _service(tmp_path)
@@ -1737,13 +1646,17 @@ def test_completion_requires_volume_plans_to_match_registered_file_identities(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture does not exercise source observation",
     )
     collection_id = int(opened["collection_id"])
-    service.register_files(
+    service.register_artifacts(
         collection_id,
-        ({"path": "document.txt", "bytes": str(len(content)), "sha256": sha256},),
+        (
+            {
+                "artifact_id": "0000000000000000000000000000000000000000000000000000000000000002",
+                "bytes": str(len(content)),
+                "sha256": sha256,
+            },
+        ),
     )
     with session_scope(make_session_factory(config.database_url)) as session:
         upload = session.get(CollectionUploadRecord, collection_id)
@@ -1752,9 +1665,9 @@ def test_completion_requires_volume_plans_to_match_registered_file_identities(
         upload.planner_checkpoint_json = incremental_volume_planner_checkpoint_bytes(
             replace(
                 checkpoint,
-                pending_pack_files=(
-                    ArchiveFile(
-                        path="document.txt",
+                pending_pack_artifacts=(
+                    ArchiveArtifact(
+                        artifact_id="0000000000000000000000000000000000000000000000000000000000000002",
                         bytes=len(content),
                         sha256="b" * 64,
                     ),
@@ -1762,7 +1675,7 @@ def test_completion_requires_volume_plans_to_match_registered_file_identities(
             )
         ).decode("utf-8")
 
-    with pytest.raises(Conflict, match="volume plans differ from registered files"):
+    with pytest.raises(Conflict, match="volume plans differ from registered artifacts"):
         service.complete(collection_id)
 
 
@@ -1770,7 +1683,7 @@ def test_raw_upload_units_expose_the_registered_source_identity(tmp_path: Path) 
     part_bytes = 5 * 1024 * 1024
     policy = CollectionVolumePolicy(
         pack_source_bytes=1,
-        pack_files=1,
+        pack_artifacts=1,
         pack_member_bytes=1,
         pack_part_plaintext_bytes=part_bytes,
         raw_volume_plaintext_bytes=part_bytes,
@@ -1786,15 +1699,13 @@ def test_raw_upload_units_expose_the_registered_source_identity(tmp_path: Path) 
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture does not exercise source observation",
     )
     collection_id = int(opened["collection_id"])
-    service.register_files(
+    service.register_artifacts(
         collection_id,
         (
             {
-                "path": "media.bin",
+                "artifact_id": "0000000000000000000000000000000000000000000000000000000000000009",
                 "bytes": str(len(content)),
                 "sha256": sha256,
                 "raw_parts": {
@@ -1808,7 +1719,7 @@ def test_raw_upload_units_expose_the_registered_source_identity(tmp_path: Path) 
     service.register_raw_part_digests(
         collection_id,
         CollectionUploadRawDigestBatchDocument(
-            path="media.bin",
+            artifact_id="0000000000000000000000000000000000000000000000000000000000000009",
             first_part="0",
             sha256s=[sha256],
         ),
@@ -1819,7 +1730,7 @@ def test_raw_upload_units_expose_the_registered_source_identity(tmp_path: Path) 
     assert volume["kind"] == "segment"
     assert volume["units"][0]["sources"] == [
         {
-            "path": "media.bin",
+            "artifact_id": "0000000000000000000000000000000000000000000000000000000000000009",
             "offset": "0",
             "bytes": str(len(content)),
             "artifact_sha256": sha256,
@@ -1839,13 +1750,23 @@ def test_startup_reconciles_interrupted_finalization_from_its_durable_checkpoint
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture does not exercise source observation",
     )
     collection_id = int(opened["collection_id"])
-    service.register_files(
+    service.register_artifacts(
         collection_id,
-        ({"path": "document.txt", "bytes": str(len(content)), "sha256": sha256},),
+        (
+            {
+                "artifact_id": "0000000000000000000000000000000000000000000000000000000000000002",
+                "bytes": str(len(content)),
+                "sha256": sha256,
+            },
+        ),
+    )
+    _bind_primary(
+        service,
+        collection_id,
+        "0000000000000000000000000000000000000000000000000000000000000002",
+        content,
     )
     service.complete(collection_id)
     volume = service.list_volumes(collection_id)["volumes"][0]
