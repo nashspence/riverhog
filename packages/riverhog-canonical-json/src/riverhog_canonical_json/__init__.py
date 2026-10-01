@@ -28,6 +28,8 @@ class CanonicalJsonError(ValueError):
 
 
 def _string(value: str) -> str:
+    if value.isascii():
+        return value
     for character in value:
         code = ord(character)
         if 0xD800 <= code <= 0xDFFF or 0xFDD0 <= code <= 0xFDEF or code & 0xFFFF >= 0xFFFE:

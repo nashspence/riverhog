@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 
 import pytest
 from riverhog_canonical_json import (
@@ -21,6 +22,28 @@ def test_jcs_orders_utf16_keys_and_preserves_unicode_code_points() -> None:
     assert encoded == '{"a":true,"😀":"é","\ue000":"e\u0301"}'.encode()
     assert canonical_json_sha256(value) == hashlib.sha256(encoded).hexdigest()
     assert require_canonical_json(encoded) == value
+
+
+def test_complete_ascii_strings_preserve_control_escaping_and_exact_identity() -> None:
+    text = "".join(chr(code) for code in range(128)) * 128
+    value = {text: text}
+    expected = json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode()
+    assert canonical_json_bytes(value) == expected
+    assert require_canonical_json(expected) == value
+    assert canonical_json_sha256(value) == hashlib.sha256(expected).hexdigest()
+
+
+@pytest.mark.parametrize(
+    "codepoint",
+    [0xD800, 0xDFFF, 0xFDD0, 0xFDEF]
+    + [(plane << 16) | suffix for plane in range(17) for suffix in (0xFFFE, 0xFFFF)],
+)
+def test_identity_rejects_noncharacters_and_surrogates_mixed_with_ascii(codepoint: int) -> None:
+    invalid = "ASCII prefix " + chr(codepoint) + " ASCII suffix"
+    for value in ({"value": invalid}, {invalid: "value"}):
+        with pytest.raises(CanonicalJsonError) as exc_info:
+            canonical_json_bytes(value)
+        assert exc_info.value.reason == "unicode"
 
 
 @pytest.mark.parametrize(
