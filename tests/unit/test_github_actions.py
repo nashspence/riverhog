@@ -269,7 +269,7 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
     assert [step["run"] for step in client_platforms["steps"] if "run" in step] == [
         "mise x python uv age -- uv run --locked --all-packages --group dev "
         "python -m pytest -q "
-        "packages/riverhog-provenance/tests/test_platform_live.py "
+        "tests/platform/test_native_provenance.py "
         "some-implementations/gogurt/application/tests "
         "tests/platform/test_end_user_artifacts.py",
         "mise x python uv age -- uv run --locked --all-packages --group dev "
@@ -277,6 +277,13 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "--listener-lifecycle-repetitions ${{ matrix.listener_repetitions }} "
         '--gogurt-evidence-dir "${{ runner.temp }}/gogurt-failure-evidence"',
     ]
+    native_tests = next(
+        step["run"]
+        for step in client_platforms["steps"]
+        if step.get("name") == "Qualify native end-user behavior"
+    )
+    for path in native_tests.split()[native_tests.split().index("-q") + 1 :]:
+        assert (REPO_ROOT / path).exists(), path
     evidence_step = client_platforms["steps"][-1]
     assert evidence_step["if"] == "failure()"
     assert evidence_step["with"] == {
