@@ -170,17 +170,13 @@ def _literal_pattern(value: str) -> str:
     return f"%{escaped}%"
 
 
-def _value_exists(
-    assertion: Any,
+def _value_filters(
+    value: Any,
     predicate: ValuePredicate,
     *,
     profile: Any | None,
-) -> ColumnElement[bool]:
-    value = aliased(Value)
-    filters: list[ColumnElement[bool]] = [
-        value.build_id == assertion.build_id,
-        value.row_key == assertion.row_key,
-    ]
+) -> list[ColumnElement[bool]]:
+    filters: list[ColumnElement[bool]] = []
     if predicate.pointer is not None:
         filters.append(value.pointer == predicate.pointer)
     if profile is not None:
@@ -227,8 +223,19 @@ def _value_exists(
                 ),
             )
         )
+    return filters
+
+
+def _value_exists(assertion: Any, predicate: ValuePredicate) -> ColumnElement[bool]:
+    value = aliased(Value)
     return exists(
-        select(1).where(*filters).correlate(assertion, *((profile,) if profile is not None else ()))
+        select(1)
+        .where(
+            value.build_id == assertion.build_id,
+            value.row_key == assertion.row_key,
+            *_value_filters(value, predicate, profile=None),
+        )
+        .correlate(assertion)
     )
 
 
@@ -239,28 +246,25 @@ def _clause_predicate(assertion: Any, clause: AssertionClause) -> ColumnElement[
     if clause.assertion_state != "any":
         filters.append(assertion.assertion_state == clause.assertion_state)
     if clause.profile is None:
-        filters.extend(
-            _value_exists(assertion, predicate, profile=None) for predicate in clause.values
-        )
+        filters.extend(_value_exists(assertion, predicate) for predicate in clause.values)
     else:
         profile = aliased(Profile)
-        filters.append(
-            exists(
-                select(1)
-                .where(
-                    profile.build_id == assertion.build_id,
-                    profile.row_key == assertion.row_key,
-                    profile.contract_id == clause.profile.contract_id,
-                    profile.contract_sha256 == clause.profile.contract_sha256,
-                    profile.schema_id == clause.profile.schema_id,
-                    *(
-                        _value_exists(profile, predicate, profile=profile)
-                        for predicate in clause.values
-                    ),
-                )
-                .correlate(assertion)
+        statement = select(1).select_from(profile)
+        profile_filters = [
+            profile.build_id == assertion.build_id,
+            profile.row_key == assertion.row_key,
+            profile.contract_id == clause.profile.contract_id,
+            profile.contract_sha256 == clause.profile.contract_sha256,
+            profile.schema_id == clause.profile.schema_id,
+        ]
+        for predicate in clause.values:
+            value = aliased(Value)
+            statement = statement.join(
+                value,
+                and_(value.build_id == profile.build_id, value.row_key == profile.row_key),
             )
-        )
+            profile_filters.extend(_value_filters(value, predicate, profile=profile))
+        filters.append(exists(statement.where(*profile_filters).correlate(assertion)))
     return and_(*filters)
 
 

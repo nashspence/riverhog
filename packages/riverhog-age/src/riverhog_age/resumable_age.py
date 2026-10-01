@@ -21,6 +21,7 @@ import math
 import os
 from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
+from functools import lru_cache
 
 from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
@@ -739,6 +740,14 @@ def _derive_scrypt_wrap_key(
     # age default logN=18 needs about 256 MiB, so give it explicit headroom.
     if maxmem is None:
         maxmem = max(64 * 1024 * 1024, (128 * 8 * (1 << log_n)) * 2)
+    return _cached_scrypt_wrap_key(passphrase, salt, log_n, maxmem)
+
+
+@lru_cache(maxsize=128, typed=True)
+def _cached_scrypt_wrap_key(passphrase: bytes, salt: bytes, log_n: int, maxmem: int) -> bytes:
+    # Immutable archive headers recur during bounded provenance reads. Retain
+    # only this small derivation in process memory; authentication still runs
+    # for every header and payload, and validation precedes each cache lookup.
     return hashlib.scrypt(
         passphrase,
         salt=SCRYPT_SALT_PREFIX + salt,
