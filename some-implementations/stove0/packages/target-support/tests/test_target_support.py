@@ -7,6 +7,7 @@ import threading
 import time
 from collections.abc import Mapping
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import httpx
@@ -22,6 +23,7 @@ from pydantic import ValidationError
 from riverhog_canonical_json import require_canonical_json
 from riverhog_client import ProducerArtifactCustody, ProducerArtifactIdentity, ProducerFile
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
+from riverhog_client.client import ApiClient
 from riverhog_client.processing import (
     ClaimedCollectionRuntime,
     ClaimedCollectionRuntimeRegistry,
@@ -1964,6 +1966,68 @@ def test_running_target_receives_capability_refresh_without_persisting_secrets(
     assert b"first-secret" not in persisted
     assert b"replacement-secret" not in persisted
     assert b"riverhog.invalid" not in persisted
+
+
+def test_queued_target_constructs_runtime_with_refreshed_authority_before_claim_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    operation, target, request = _request()
+    waiting = threading.Event()
+    start = threading.Event()
+    claims: list[str] = []
+    workflow = request.declaration.controller_evidence.execution_envelope.workflow_plan
+
+    def claim(api: ApiClient, claim_id: str):
+        assert claim_id == request.declaration.claim_id
+        claims.append(api.token)
+        if api.token != "refreshed-queued-secret":
+            raise Unauthorized("original queued bearer expired")
+        return SimpleNamespace(
+            plan=SimpleNamespace(
+                execution_id=request.declaration.job_id,
+                output_policy=workflow.output_policy,
+                inputs=SimpleNamespace(sha256=_sha("a")),
+                artifacts=SimpleNamespace(sha256=_sha("b")),
+            )
+        )
+
+    monkeypatch.setattr(ApiClient, "get_processing_claim", claim)
+
+    def execute(original, _attempt, _cancellation, session):
+        waiting.set()
+        assert start.wait(timeout=5)
+        with TargetExecutionRuntime.from_request(original, session=session) as execution:
+            assert execution.runtime.api.current.token == "refreshed-queued-secret"
+        raise TargetExecutionInapplicable("fixture-inapplicable", "fixture input")
+
+    state = tmp_path / "state"
+    service = PersistentTargetService(
+        descriptor=target, operations={operation.id: operation}, state_root=state, execute=execute
+    )
+    try:
+        service.put_job(request)
+        assert waiting.wait(timeout=5)
+        replacement = TargetJobRequest.seal(
+            request.declaration,
+            request.runtime.model_copy(update={"capability_token": "refreshed-queued-secret"}),
+            request.callback_access,
+        )
+        assert replacement.request_sha256 == request.request_sha256
+        service.put_job(replacement)
+        start.set()
+        deadline = time.monotonic() + 5
+        while service.get_job(request.declaration.job_id).state not in {"failed", "inapplicable"}:
+            assert time.monotonic() < deadline
+            time.sleep(0.01)
+        status = service.get_job(request.declaration.job_id)
+        assert (status.state, status.attempt) == ("inapplicable", 1)
+        assert claims == ["refreshed-queued-secret"]
+    finally:
+        start.set()
+        service.close()
+    persisted = b"\n".join(path.read_bytes() for path in state.iterdir())
+    assert b"first-secret" not in persisted
+    assert b"refreshed-queued-secret" not in persisted
 
 
 def test_restart_before_publication_preserves_semantic_execution_identity(

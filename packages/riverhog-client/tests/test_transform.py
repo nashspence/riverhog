@@ -1891,14 +1891,20 @@ def test_runtime_registry_applies_refresh_arriving_before_target_start() -> None
     registry = ClaimedCollectionRuntimeRegistry()
     runtime = Runtime()
     registry.refresh("job-1", "replacement")
+    assert registry.capability_token("job-1", fallback="initial") == "replacement"
+    assert registry.capability_token("job-2", fallback="independent") == "independent"
 
     with registry.bind("job-1", runtime):  # type: ignore[arg-type]
         assert runtime.tokens == ["replacement"]
         registry.refresh("job-1", "newer")
         assert runtime.tokens == ["replacement", "newer"]
+        assert registry.capability_token("job-1", fallback="initial") == "newer"
+
+    assert registry.capability_token("job-1", fallback="initial") == "newer"
 
     registry.discard("job-1")
     assert not runtime.closed
+    assert registry.capability_token("job-1", fallback="initial") == "initial"
 
 
 def test_runtime_rejects_empty_capability_without_environment_fallback() -> None:

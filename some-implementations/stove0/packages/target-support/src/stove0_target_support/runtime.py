@@ -434,11 +434,19 @@ class TargetExecutionRuntime:
         workflow = evidence.execution_envelope.workflow_plan
         work = workflow.work
         authority = request.runtime
+        capability_token = authority.capability_token
+        if session is not None:
+            # A queued job's original bearer may expire before its runtime is
+            # constructed. Constructor claim checks precede registry binding,
+            # so they must already use the latest in-memory refresh.
+            capability_token = session.runtime_registry.capability_token(
+                declaration.job_id, fallback=capability_token
+            )
         runtime: ClaimedCollectionRuntime | CollectionTransformRuntime
         if workflow.result_kind == "external-effect":
             runtime = ClaimedCollectionRuntime.from_capability(
                 base_url=authority.riverhog_base_url,
-                capability_token=authority.capability_token,
+                capability_token=capability_token,
                 allow_insecure_http=authority.allow_insecure_http,
                 inputs=work.root_identities(),
                 claim_id=declaration.claim_id,
@@ -464,7 +472,7 @@ class TargetExecutionRuntime:
             )
             runtime = CollectionTransformRuntime.from_capability(
                 base_url=authority.riverhog_base_url,
-                capability_token=authority.capability_token,
+                capability_token=capability_token,
                 allow_insecure_http=authority.allow_insecure_http,
                 spec=spec,
                 claim_id=declaration.claim_id,

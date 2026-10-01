@@ -25,7 +25,16 @@ class ClaimedCollectionRuntimeRegistry:
     def __init__(self) -> None:
         self._lock = threading.RLock()
         self._runtimes: dict[str, RefreshableClaimedCollectionRuntime] = {}
-        self._pending_tokens: dict[str, str] = {}
+        self._tokens: dict[str, str] = {}
+
+    def capability_token(self, job_id: str, *, fallback: str) -> str:
+        """Select current authority before runtime construction makes API calls."""
+        normalized = _job_id(job_id)
+        token = fallback.strip()
+        if not token:
+            raise ValueError("claimed collection capability token must be nonempty")
+        with self._lock:
+            return self._tokens.get(normalized, token)
 
     @contextmanager
     def bind(
@@ -38,7 +47,7 @@ class ClaimedCollectionRuntimeRegistry:
             if normalized in self._runtimes:
                 raise RuntimeError(f"claimed collection runtime is already active: {normalized}")
             self._runtimes[normalized] = runtime
-            pending = self._pending_tokens.pop(normalized, None)
+            pending = self._tokens.get(normalized)
             try:
                 if pending is not None:
                     runtime.refresh_capability(pending)
@@ -59,16 +68,16 @@ class ClaimedCollectionRuntimeRegistry:
         if not token:
             raise ValueError("claimed collection capability token must be nonempty")
         with self._lock:
+            self._tokens[normalized] = token
             runtime = self._runtimes.get(normalized)
             if runtime is None:
-                self._pending_tokens[normalized] = token
                 return
         runtime.refresh_capability(token)
 
     def discard(self, job_id: str) -> None:
         normalized = _job_id(job_id)
         with self._lock:
-            self._pending_tokens.pop(normalized, None)
+            self._tokens.pop(normalized, None)
             runtime = self._runtimes.pop(normalized, None)
         if runtime is not None:
             runtime.close()
