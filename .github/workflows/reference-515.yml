@@ -1,51 +1,13 @@
 name: External reference 515
 
 on:
-  push:
-    branches:
-      - reference/external/515-gogurt-deterministic-ci
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  diagnostic-tools:
-    name: Export locked diagnostic tools
+  checkpoint:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
     steps:
-      - name: Check out exact reference commit
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          ref: ${{ github.sha }}
-      - name: Install locked toolchain
-        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
-        with:
-          install_args: python uv
-      - name: Export diagnostic-only tools without credentials
-        shell: bash
-        run: |
-          uv run --locked --all-packages --group dev python - <<'PY'
-          import importlib, importlib.metadata, json, os, pathlib, shutil, tarfile
-          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'reference-tools'
-          root.mkdir()
-          versions = {}
-          for module_name, distribution_name in [('rfc8785', 'rfc8785'), ('license_expression', 'license-expression'), ('boolean', 'boolean.py')]:
-              module = importlib.import_module(module_name)
-              shutil.copytree(pathlib.Path(module.__file__).parent, root / module_name)
-              versions[distribution_name] = importlib.metadata.version(distribution_name)
-          shutil.copy2(shutil.which('ruff'), root / 'ruff')
-          versions['ruff'] = importlib.metadata.version('ruff')
-          (root / 'versions.json').write_text(json.dumps(versions, indent=2))
-          with tarfile.open(root.with_suffix('.tar.gz'), 'w:gz') as archive:
-              archive.add(root, arcname='reference-tools')
-          PY
-      - name: Retain bounded diagnostic tools
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: reference-515-tools-${{ github.sha }}
-          path: ${{ runner.temp }}/reference-tools.tar.gz
-          if-no-files-found: error
-          retention-days: 1
+      - run: echo 'Transport checkpoint only; final reference validation has not started.'
