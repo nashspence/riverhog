@@ -318,7 +318,10 @@ def test_native_discovery_request_body_uses_bounded_current_postgresql_plans(
             examined = 0
             while pending:
                 node = pending.pop()
-                if node.get("Relation Name") == "collection_artifacts":
+                if node.get("Relation Name") in {
+                    "collection_artifacts",
+                    "collection_provenance_index_profiles",
+                }:
                     examined += (
                         node["Actual Rows"]
                         + node.get("Rows Removed by Filter", 0)

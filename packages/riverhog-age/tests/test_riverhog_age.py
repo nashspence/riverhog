@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import shutil
@@ -231,6 +232,50 @@ def test_wrong_passphrase_fails():
     age_file = new_test_session().encrypt_plaintext(b"secret")
     with pytest.raises(AgeDecryptError):
         decrypt_age_scrypt(age_file, b"wrong passphrase")
+
+
+def test_repeated_reads_bound_derivation_work_and_authenticate_every_ciphertext():
+    from riverhog_age.resumable_age import _cached_scrypt_wrap_key
+
+    _cached_scrypt_wrap_key.cache_clear()
+    try:
+        with patch("riverhog_age.resumable_age.hashlib.scrypt", wraps=hashlib.scrypt) as derive:
+            content = b"immutable provenance object"
+            sealed = encrypt_age_scrypt(content, PASS, log_n=4)
+            for _ in range(4):
+                assert decrypt_age_scrypt(sealed, PASS) == content
+                assert b"".join(iter_decrypt_age_scrypt(iter((sealed,)), PASS)) == content
+            assert derive.call_count == 1
+
+            bad_payload = bytearray(sealed)
+            bad_payload[-1] ^= 1
+            with pytest.raises(AgeDecryptError):
+                decrypt_age_scrypt(bytes(bad_payload), PASS)
+            bad_header = bytearray(sealed)
+            mac_start = bad_header.index(b"\n--- ") + len(b"\n--- ")
+            bad_header[mac_start] = ord("A") if bad_header[mac_start] != ord("A") else ord("B")
+            with pytest.raises(AgeDecryptError, match="header MAC"):
+                decrypt_age_scrypt(bytes(bad_header), PASS)
+            assert derive.call_count == 1
+
+            with pytest.raises(AgeDecryptError):
+                decrypt_age_scrypt(sealed, b"different credential")
+            assert derive.call_count == 2
+            with pytest.raises(ValueError):
+                decrypt_age_scrypt(sealed, PASS, scrypt_maxmem=1)
+
+            # A warm derivation cannot bypass argument validation or its memory
+            # policy. Extra distinct headers evict old entries instead of
+            # retaining keys for the whole archive indefinitely.
+            with pytest.raises(TypeError):
+                ResumableAgeScryptSession.create(PASS, log_n=4.0)
+            for _ in range(129):
+                encrypt_age_scrypt(b"other object", PASS, log_n=1)
+            before = derive.call_count
+            assert decrypt_age_scrypt(sealed, PASS) == content
+            assert derive.call_count == before + 1
+    finally:
+        _cached_scrypt_wrap_key.cache_clear()
 
 
 def test_unsupported_recipient_type_is_no_match_for_decrypt():
