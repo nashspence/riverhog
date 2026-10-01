@@ -280,7 +280,7 @@ class RcloneEffectTargetService(PersistentTargetService):
                             {
                                 "collection": artifact.collection.model_dump(mode="json"),
                                 "subject_id": artifact.id,
-                                "artifact_id": artifact.artifact_id,
+                                "artifact_id": str(artifact.artifact_id),
                                 "role": artifact.role,
                                 "bytes": str(artifact.bytes),
                                 "sha256": artifact.sha256,
