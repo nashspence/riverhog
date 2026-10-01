@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from pathlib import Path
 
@@ -25,15 +24,18 @@ from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
+    ArtifactId,
+    ArtifactMemberIdentityDocument,
+    CollectionArtifactProvenanceBindingDocument,
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadCustodyObjectDocument,
-    CollectionUploadUnitWorkDocument,
+    CollectionUploadProvenanceCustodyObjectDocument,
     CollectionUploadWorkBatchDocument,
 )
-from riverhog_protocol.collection_upload_transport import collection_upload_path_order_key
-from riverhog_protocol.collection_workflows import DERIVATION_EVIDENCE_PATH
-from riverhog_protocol.manifest import collection_content_identity_ordered
+from riverhog_protocol.errors import NotFound
+from riverhog_protocol.manifest import artifact_set_identity_ordered
 
+from tests.support.upload_api import UploadServiceApi
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
 from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
@@ -41,95 +43,98 @@ from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
 class _CustodyApi:
     def __init__(self) -> None:
-        self.rows: dict[str, dict[str, object]] = {}
-        self.completed: dict[str, object] | None = None
+        self.rows = {}
+        self.bindings = {}
+        self.journals = {}
+        self.completed = None
         self.heartbeats = 0
         self.session_calls = 0
-        self.initial_tags: tuple[str, ...] = ()
+        self.initial_tags = ()
         self.initial_tag_set_identity = ""
-        self.tag_batches: list[tuple[str, ...]] = []
+        self.tag_batches = []
 
-    def spawn(self) -> _CustodyApi:
+    def spawn(self):
         return self
 
-    def close(self) -> None:
+    def close(self):
         pass
 
-    def create_or_resume_collection_upload_session(
-        self,
-        _idempotency_key: str,
-        **kwargs: object,
-    ) -> dict[str, object]:
+    def create_or_resume_collection_upload_session(self, _key, **kwargs):
         assert kwargs["custody_mode"] == "custody-transfer"
-        self.initial_tags = tuple(str(tag) for tag in kwargs.get("tags", ()))
-        self.initial_tag_set_identity = str(kwargs["initial_tag_set_identity"])
+        self.initial_tags = tuple(kwargs.get("tags", ()))
+        self.initial_tag_set_identity = kwargs["initial_tag_set_identity"]
         self.session_calls += 1
         return {
             "collection_id": "42",
             "resumed": self.session_calls > 1,
             "state": "open",
+            "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
             "registration_constraints": {
                 "pack_member_bytes": "1024",
                 "raw_part_plaintext_bytes": "65536",
             },
         }
 
-    def add_collection_upload_session_tags(
-        self,
-        _collection_id: int,
-        tags: Sequence[str],
-    ) -> dict[str, object]:
-        batch = tuple(tags)
-        self.tag_batches.append(batch)
-        return {"collection_id": "42", "added": len(batch), "tag_count": len(batch)}
+    def add_collection_upload_session_tags(self, _collection_id, tags):
+        self.tag_batches.append(tuple(tags))
+        return {"collection_id": "42", "added": len(tags), "tag_count": len(tags)}
 
-    def heartbeat_collection_upload_session(self, _collection_id: int) -> dict[str, object]:
+    def heartbeat_collection_upload_session(self, _collection_id):
         self.heartbeats += 1
         return {"state": "open"}
 
-    def list_collection_upload_session_files(
-        self,
-        _collection_id: int,
-        **_kwargs: object,
-    ) -> dict[str, object]:
+    def _receipt(self, row):
+        artifact_id = row["artifact_id"]
+        primary = self.bindings.get(artifact_id)
+        if primary is None:
+            return None
+        return CollectionUploadArtifactCustodyReceiptDocument.seal(
+            collection_id=42,
+            artifact_id=artifact_id,
+            bytes=int(row["bytes"]),
+            sha256=row["sha256"],
+            primary=primary,
+            completion_requirement_sha256=None,
+            archive_objects=(
+                CollectionUploadCustodyObjectDocument(
+                    volume_id="pack-" + "0" * 64,
+                    sealed_receipt_sha256="f" * 64,
+                ),
+            ),
+            provenance_objects=(
+                CollectionUploadProvenanceCustodyObjectDocument(
+                    object_id="fixture-primary",
+                    relative_path="provenance/payloads/fixture.bin.age",
+                    plaintext_bytes=str(primary.journal.prefix_bytes),
+                    plaintext_sha256=primary.journal.prefix_sha256,
+                    sealed_receipt_sha256="e" * 64,
+                ),
+            ),
+        ).model_dump(mode="json")
+
+    def list_collection_upload_session_artifacts(self, _collection_id, **_kwargs):
         return {
             "page_size": 100,
             "next_page_token": None,
-            "files": list(self.rows.values()),
+            "artifacts": [
+                {**row, "custody_receipt": self._receipt(row)} for row in self.rows.values()
+            ],
         }
 
-    def register_collection_upload_session_files(
-        self,
-        _collection_id: int,
-        files: Sequence[Mapping[str, object]],
-        **_kwargs: object,
-    ) -> dict[str, object]:
-        for supplied in files:
+    def register_collection_upload_session_artifacts(self, _collection_id, artifacts, **_kwargs):
+        for supplied in artifacts:
             row = dict(supplied)
-            path = str(row["path"])
-            receipt = CollectionUploadArtifactCustodyReceiptDocument.seal(
-                collection_id=42,
-                path=path,
-                bytes=int(row["bytes"]),
-                sha256=str(row["sha256"]),
-                archive_objects=(
-                    CollectionUploadCustodyObjectDocument(
-                        volume_id=f"pack-{len(self.rows):064x}",
-                        sealed_receipt_sha256="f" * 64,
-                    ),
-                ),
-            )
-            row["custody_receipt"] = receipt.model_dump(mode="json")
-            self.rows[path] = row
-        return {"files": [self.rows[str(item["path"])] for item in files], "volumes": []}
+            key = row["artifact_id"]
+            assert self.rows.setdefault(key, row) == row
+        return {
+            "artifacts": [
+                {**self.rows[row["artifact_id"]], "custody_receipt": self._receipt(row)}
+                for row in artifacts
+            ],
+            "volumes": [],
+        }
 
-    def acquire_collection_upload_session_work(
-        self,
-        collection_id: int,
-        *,
-        limit: int = 16,
-    ) -> CollectionUploadWorkBatchDocument:
-        del limit
+    def acquire_collection_upload_session_work(self, collection_id, *, limit=16):
         return CollectionUploadWorkBatchDocument(
             collection_id=str(collection_id),
             planning_complete=True,
@@ -139,28 +144,38 @@ class _CustodyApi:
         )
 
     def upload_collection_upload_session_provenance_journal(
-        self, *_args: object, **_kwargs: object
-    ) -> None:
-        raise AssertionError("omitted-provenance fixture must not publish journals")
+        self, _collection_id, journal_id, *, content, byte_count, sha256, **_kwargs
+    ):
+        raw = b"".join(content)
+        assert (len(raw), hashlib.sha256(raw).hexdigest()) == (byte_count, sha256)
+        assert self.journals.setdefault(journal_id, raw) == raw
 
-    def complete_collection_upload_session(
-        self,
-        _collection_id: int,
-    ) -> dict[str, object]:
-        ordered = sorted(
-            self.rows.values(),
-            key=lambda item: collection_upload_path_order_key(str(item["path"])),
-        )
-        content_identity = collection_content_identity_ordered(
-            (str(item["path"]), int(item["bytes"]), str(item["sha256"])) for item in ordered
+    def bind_collection_upload_session_artifact_provenance(self, _collection_id, batch):
+        for binding in batch.bindings:
+            assert self.bindings.setdefault(binding.artifact_id, binding) == binding
+
+    def get_collection_upload_session_artifact_provenance_binding(
+        self, _collection_id, artifact_id
+    ):
+        if artifact_id not in self.bindings:
+            raise NotFound("binding absent")
+        return self.bindings[artifact_id]
+
+    def set_collection_upload_session_materialization_decisions(self, *_args):
+        pass
+
+    def complete_collection_upload_session(self, _collection_id):
+        identity = artifact_set_identity_ordered(
+            ArtifactMemberIdentityDocument.model_validate(row)
+            for _key, row in sorted(self.rows.items())
         )
         self.completed = {
             "state": "finalized",
-            "content_identity": content_identity,
+            "artifact_set_identity": identity,
             "archive_root_sha256": "e" * 64,
             "collection": {
                 "id": 42,
-                "content_identity": content_identity,
+                "artifact_set_identity": identity,
                 "archive_root_sha256": "e" * 64,
             },
         }
@@ -221,243 +236,91 @@ def test_incremental_producer_rejects_late_invalid_tags_before_remote_mutation()
     assert api.session_calls == 0
 
 
-def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(
-    tmp_path: Path,
-) -> None:
+def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(tmp_path):
     api = _CustodyApi()
     source = tmp_path / "artifact.bin"
-    source.write_bytes(b"completed artifact")
+    payload = b"completed artifact"
+    source.write_bytes(payload)
+    artifact_id = ArtifactId("a" * 64)
+    identity = ProducerArtifactIdentity(
+        artifact_id, len(payload), hashlib.sha256(payload).hexdigest()
+    )
     first = _producer(api)
     try:
-        receipts = first.append_inputs((ProducerFile(source, "z/artifact.bin"),))
-        assert "z/artifact.bin" in {item.artifact.path for item in receipts}
+        receipts = first.append_inputs(
+            (ProducerFile(source, artifact_id, allow_missing_materialization_hint=True),)
+        )
+        assert identity in {receipt.artifact for receipt in receipts}
     finally:
         first.stop()
-
-    resumed_input = ProducerFile(source, "z/artifact.bin")
     source.unlink()
     resumed = _producer(api)
     try:
-        identity = ProducerArtifactIdentity(
-            "z/artifact.bin",
-            len(b"completed artifact"),
-            hashlib.sha256(b"completed artifact").hexdigest(),
-        )
-        receipts = resumed.append_inputs(
-            (resumed_input,),
-            expected_identities={"z/artifact.bin": identity},
-        )
-        assert tuple(item.artifact for item in receipts if item.artifact.path == identity.path) == (
-            identity,
-        )
-        produced = resumed.finish(
-            terminal_evidence={DERIVATION_EVIDENCE_PATH: b'{"format":"fixture/v1"}'},
-        )
+        receipt = resumed.resume_artifact_custody(identity)
+        assert receipt is not None and receipt.artifact == identity
+        produced = resumed.finish()
     finally:
         resumed.stop()
-
     assert produced.collection_id == 42
     assert produced.archive_root_sha256 == "e" * 64
-    assert DERIVATION_EVIDENCE_PATH in api.rows
+    assert tuple(api.rows) == (artifact_id,)
+    assert len(api.journals) == 1
     assert api.completed is not None
-    registered = tuple(api.rows)
-    assert registered == (
-        "z/artifact.bin",
-        "riverhog/producer-evidence.json",
-        DERIVATION_EVIDENCE_PATH,
-    )
-    expected = api.rows["z/artifact.bin"]
-    assert expected["sha256"] == hashlib.sha256(b"completed artifact").hexdigest()
 
 
-def test_incremental_producer_keeps_local_custody_when_receipt_identity_is_wrong(
-    tmp_path: Path,
-) -> None:
-    class _WrongReceiptApi(_CustodyApi):
-        def register_collection_upload_session_files(
-            self,
-            collection_id: int,
-            files: Sequence[Mapping[str, object]],
-            **kwargs: object,
-        ) -> dict[str, object]:
-            result = super().register_collection_upload_session_files(
-                collection_id,
-                files,
-                **kwargs,
+def test_incremental_producer_keeps_local_custody_when_receipt_identity_is_wrong(tmp_path):
+    class WrongReceiptApi(_CustodyApi):
+        def _receipt(self, row):
+            primary = self.bindings.get(row["artifact_id"])
+            if primary is None:
+                return None
+            wrong = "b" * 64
+            wrong_primary = CollectionArtifactProvenanceBindingDocument.model_validate(
+                {
+                    **primary.model_dump(mode="json"),
+                    "artifact_id": wrong,
+                }
             )
-            row = self.rows.get("z/artifact.bin")
-            if row is not None:
-                row["custody_receipt"] = CollectionUploadArtifactCustodyReceiptDocument.seal(
-                    collection_id=collection_id,
-                    path="z/other.bin",
-                    bytes=int(row["bytes"]),
-                    sha256=str(row["sha256"]),
-                    archive_objects=(
-                        CollectionUploadCustodyObjectDocument(
-                            volume_id=f"pack-{0:064x}",
-                            sealed_receipt_sha256="f" * 64,
-                        ),
-                    ),
-                ).model_dump(mode="json")
-            return result
+            self.bindings[wrong] = wrong_primary
+            return super()._receipt({**row, "artifact_id": wrong})
 
-    api = _WrongReceiptApi()
+    api = WrongReceiptApi()
     source = tmp_path / "artifact.bin"
     source.write_bytes(b"completed artifact")
     producer = _producer(api)
     try:
-        with pytest.raises(ValueError, match="upload file identity"):
-            producer.append_inputs((ProducerFile(source, "z/artifact.bin"),))
-        assert "z/artifact.bin" in producer._sources  # noqa: SLF001
+        with pytest.raises(ValueError, match="upload member identity"):
+            producer.append_inputs(
+                (ProducerFile(source, "a" * 64, allow_missing_materialization_hint=True),)
+            )
+        assert "a" * 64 in producer._sources
+        assert source.exists()
     finally:
         producer.stop()
 
 
-def test_incremental_producer_inserts_evidence_when_one_append_crosses_its_path(
-    tmp_path: Path,
-) -> None:
+def test_incremental_producer_keeps_equal_bytes_as_distinct_members(tmp_path):
     api = _CustodyApi()
-    before = tmp_path / "before.bin"
-    after = tmp_path / "after.bin"
-    before.write_bytes(b"before evidence")
-    after.write_bytes(b"after evidence")
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"identical bytes")
     producer = _producer(api)
     try:
         producer.append_inputs(
-            (
-                ProducerFile(before, "a.txt"),
-                ProducerFile(after, "z.txt"),
+            tuple(
+                ProducerFile(source, key * 64, allow_missing_materialization_hint=True)
+                for key in ("a", "b")
             )
         )
-        producer.finish(
-            terminal_evidence={DERIVATION_EVIDENCE_PATH: b'{"format":"fixture/v1"}'},
-        )
+        producer.finish()
     finally:
         producer.stop()
-
-    assert tuple(api.rows) == (
-        "a.txt",
-        "z.txt",
-        "riverhog/producer-evidence.json",
-        DERIVATION_EVIDENCE_PATH,
-    )
+    assert tuple(api.rows) == ("a" * 64, "b" * 64)
+    assert len(api.journals) == 2
+    assert api.rows["a" * 64]["sha256"] == api.rows["b" * 64]["sha256"]
+    assert api.bindings["a" * 64].journal != api.bindings["b" * 64].journal
 
 
-class _ServiceApi:
-    def __init__(
-        self,
-        service: SqlAlchemyCollectionUploadService,
-        principal: Principal,
-    ) -> None:
-        self.service = service
-        self.principal = principal
-        self.work_calls = 0
-
-    def spawn(self) -> _ServiceApi:
-        return self
-
-    def close(self) -> None:
-        pass
-
-    def create_or_resume_collection_upload_session(
-        self,
-        idempotency_key: str,
-        **kwargs: object,
-    ) -> dict[str, object]:
-        return self.service.create_or_resume(
-            idempotency_key=idempotency_key,
-            ingest_source=str(kwargs["ingest_source"]),
-            tags=tuple(str(tag) for tag in kwargs.get("tags", ())),
-            initial_tag_set_identity=str(kwargs["initial_tag_set_identity"]),
-            archive_store=None,
-            initiator=self.principal,
-            event_context=None,
-            provenance_mode=str(kwargs["provenance_mode"]),
-            provenance_omission_reason=str(kwargs["provenance_omission_reason"]),
-            custody_mode=str(kwargs["custody_mode"]),
-        )
-
-    def heartbeat_collection_upload_session(self, collection_id: int) -> dict[str, object]:
-        return self.service.heartbeat(collection_id)
-
-    def list_collection_upload_session_files(
-        self,
-        collection_id: int,
-        **_kwargs: object,
-    ) -> dict[str, object]:
-        payload = self.service.list_files(collection_id, page_size=100, position=None)
-        raw_files = payload["files"]
-        assert isinstance(raw_files, list)
-        files = []
-        for raw in raw_files:
-            assert isinstance(raw, Mapping)
-            row = dict(raw)
-            receipt = row.get("custody_receipt")
-            if isinstance(receipt, CollectionUploadArtifactCustodyReceiptDocument):
-                row["custody_receipt"] = receipt.model_dump(mode="json")
-            files.append(row)
-        return {**payload, "files": files}
-
-    def register_collection_upload_session_files(
-        self,
-        collection_id: int,
-        files: Sequence[Mapping[str, object]],
-        **_kwargs: object,
-    ) -> dict[str, object]:
-        return self.service.register_files(collection_id, files)
-
-    def acquire_collection_upload_session_work(
-        self,
-        collection_id: int,
-        *,
-        limit: int = 16,
-    ) -> CollectionUploadWorkBatchDocument:
-        self.work_calls += 1
-        return CollectionUploadWorkBatchDocument.model_validate(
-            self.service.acquire_work(collection_id, limit=limit)
-        )
-
-    def get_collection_upload_session_unit(
-        self,
-        collection_id: int,
-        volume_id: str,
-        unit: int,
-    ) -> CollectionUploadUnitWorkDocument:
-        return CollectionUploadUnitWorkDocument.model_validate(
-            self.service.get_unit(collection_id, volume_id, unit)
-        )
-
-    def put_collection_upload_session_unit(
-        self,
-        collection_id: int,
-        volume_id: str,
-        unit: int,
-        *,
-        plan_sha256: str,
-        content: bytes,
-    ) -> CollectionUploadUnitWorkDocument:
-        return CollectionUploadUnitWorkDocument.model_validate(
-            self.service.upload_unit(
-                collection_id,
-                volume_id,
-                unit,
-                plan_sha256=plan_sha256,
-                content=content,
-            )
-        )
-
-    def complete_collection_upload_session(
-        self,
-        collection_id: int,
-    ) -> dict[str, object]:
-        return self.service.complete(collection_id)
-
-    def get_collection_upload_session(self, collection_id: int) -> dict[str, object]:
-        self.service.process_due_finalizations(limit=1)
-        return self.service.get(collection_id)
-
-
-def _bounded_service_api(tmp_path: Path) -> tuple[_ServiceApi, MemoryArchiveStore]:
+def _bounded_service_api(tmp_path: Path) -> tuple[UploadServiceApi, MemoryArchiveStore]:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
     config = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     initialize_db(database_url)
@@ -470,7 +333,7 @@ def _bounded_service_api(tmp_path: Path) -> tuple[_ServiceApi, MemoryArchiveStor
         ArchiveStoreRegistry({"archive": binding}),
         policy=CollectionVolumePolicy(
             pack_source_bytes=1024,
-            pack_files=4,
+            pack_artifacts=4,
             pack_member_bytes=1024,
             pack_part_plaintext_bytes=5 * 1024 * 1024,
             raw_volume_plaintext_bytes=5 * 1024 * 1024,
@@ -482,14 +345,14 @@ def _bounded_service_api(tmp_path: Path) -> tuple[_ServiceApi, MemoryArchiveStor
         key_id="fixture-key",
         access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
     )
-    return _ServiceApi(service, principal), store
+    return UploadServiceApi(service, principal), store
 
 
 def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
+    monkeypatch.setenv("RIVERHOG_UPLOAD_ARTIFACT_CONCURRENCY", "1")
     api, store = _bounded_service_api(tmp_path)
     producer = IncrementalCollectionProducer(
         api,  # type: ignore[arg-type]
@@ -504,21 +367,30 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
     high_water = 0
     try:
         for index in range(25):
-            path = f"z/output-{index:04d}.bin"
+            artifact_id = f"{index:064x}"
             source = tmp_path / f"output-{index:04d}.bin"
             source.write_bytes(f"artifact-{index}".encode())
-            local[path] = source
+            local[artifact_id] = source
             high_water = max(high_water, sum(item.exists() for item in local.values()))
-            receipts = producer.append_inputs((ProducerFile(source, path),))
+            receipts = producer.append_inputs(
+                (ProducerFile(source, artifact_id, allow_missing_materialization_hint=True),)
+            )
+            # The production worker advances one durable custody milestone at
+            # a time. Drive it separately from the actual HTTP request path.
+            for _ in range(4):
+                if api.service.process_due_custody_receipts(limit=4) == 0:
+                    break
+            else:
+                raise AssertionError("the bounded pack custody window did not drain")
+            receipts = (*receipts, *producer.reconcile_custody())
             for receipt in receipts:
-                owned = local.get(receipt.artifact.path)
+                owned = local.get(receipt.artifact.artifact_id)
                 if owned is not None:
                     owned.unlink()
             high_water = max(high_water, sum(item.exists() for item in local.values()))
         result = producer.finish(
-            terminal_evidence={DERIVATION_EVIDENCE_PATH: b'{"format":"fixture/v1"}'},
             poll_seconds=0.01,
-            timeout_seconds=10,
+            timeout_seconds=60,
         )
         for owned in local.values():
             if owned.exists():

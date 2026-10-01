@@ -14,6 +14,10 @@ from typing import Any
 
 from http_api_contracts import closed_literal_values
 from riverhog_age import UploadState
+from riverhog_archive_contracts import (
+    provenance_payload_object_path,
+    provenance_structure_object_path,
+)
 from riverhog_canonical_json import format_scalar
 from riverhog_protocol import ArchiveCopyJobSort, SortOrder
 from riverhog_protocol.errors import BadRequest, Conflict, InvalidState, NotFound
@@ -102,6 +106,9 @@ _COPY_OBJECT_KINDS = frozenset(
         "provenance-terminal",
         "provenance-bindings",
         "provenance-journal-segment",
+        "provenance-history",
+        "provenance-record-page",
+        "provenance-source-proof",
         "manifest",
         "recovery-descriptor",
     }
@@ -1618,6 +1625,11 @@ class SqlAlchemyArchiveCopyJobService:
                 "provenance-journal-segment": (
                     "application/vnd.riverhog-provenance-journal-segment.v1.age"
                 ),
+                "provenance-history": "application/vnd.riverhog-provenance-history.v1.age",
+                "provenance-record-page": "application/vnd.riverhog-provenance-record-page.v1.age",
+                "provenance-source-proof": (
+                    "application/vnd.riverhog-provenance-source-proof.v1.age"
+                ),
             }[source.kind]
             with self._resources.upload_requests.reserve() as upload_wait:
                 remote_started = time.perf_counter()
@@ -2197,8 +2209,13 @@ def _destination_object_path(
         sequence = _object_sequence(source.object_id, "provenance-terminal-")
         relative = f"provenance/metadata/volume-{sequence}.json.age"
     elif source.kind in {"provenance-bindings", "provenance-journal-segment"}:
-        sequence = _object_sequence(source.object_id, "provenance-payload-")
-        relative = f"provenance/payloads/volume-{sequence}.bin.age"
+        digest = _object_sequence(source.object_id, "provenance-payload-")
+        relative = provenance_payload_object_path(digest)
+    elif source.kind in {"provenance-history", "provenance-record-page", "provenance-source-proof"}:
+        try:
+            relative = provenance_structure_object_path(source.object_id)
+        except ValueError as exc:
+            raise Conflict("archive copy provenance structure identity is invalid") from exc
     else:
         raise Conflict(f"archive copy object kind is not immutable: {source.kind}")
     return f"{prefix}/{relative}"

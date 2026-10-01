@@ -26,12 +26,13 @@ from tests.unit.archive_object_fixtures import (
     COLLECTION_ID,
     MemoryArchiveStore,
     add_archive_copy,
+    archive_receipt,
     archive_store_binding,
     seed_archive_copy,
 )
 from tests.unit.storage_incarnation_fixtures import fixture_storage_incarnation_id
 
-FILES = {"document.txt": b"archive copy retirement\n"}
+ARTIFACTS = {"d" * 64: b"archive copy retirement\n"}
 
 
 def _set_current_description(
@@ -85,7 +86,7 @@ def _service(
     MemoryArchiveStore,
     SqlAlchemyArchiveCopyRetirementService,
 ]:
-    config, archive = seed_archive_copy(path, FILES, store="deep")
+    config, archive = seed_archive_copy(path, ARTIFACTS, store="deep")
     with session_scope(make_session_factory(config.database_url)) as session:
         add_archive_copy(
             session,
@@ -124,7 +125,8 @@ def test_retirement_plan_counts_the_target_objects(tmp_path: Path) -> None:
     assert plan["status"] == "ready"
     target = cast(dict[str, object], plan["target_copy"])
     retained = cast(list[dict[str, object]], plan["retained_copies"])
-    assert target["object_count"] == 6
+    assert _deep.archive is not None
+    assert target["object_count"] == len(archive_receipt(_deep.archive).objects) + 1
     assert [current["store"] for current in retained] == ["b2"]
     assert plan["terminal_retrieval_job_count"] == 0
     assert plan["challenge"]
@@ -141,13 +143,8 @@ def test_retirement_verifies_a_retained_copy_then_deletes_every_target_object(
 
     assert result["status"] == "deleted"
     assert result["verified_store"] == "b2"
-    expected = (
-        "pack-" + "0" * 64,
-        "volume-metadata-" + "0" * 64,
-        "volume-terminal-" + "0" * 63 + "1",
-        "manifest",
-        "recovery-descriptor",
-    )
+    assert deep_store.archive is not None
+    expected = tuple(row.object_id for row in archive_receipt(deep_store.archive).objects)
     assert b2_store.verified == [expected]
     assert deep_store.deleted == [expected]
     with session_scope(make_session_factory(config.database_url)) as session:
@@ -180,19 +177,19 @@ def test_retirement_blocks_an_active_plan_and_reclaims_its_expired_authority(
                 idempotency_key=plan_id,
                 creation_identity_sha256="d" * 64,
                 state="ready",
-                request_json='[{"collection_id":1,"path":"document.txt"}]',
+                request_json='[{"collection_id":"1","artifact_id":"' + "d" * 64 + '"}]',
                 lease_seconds=3600,
                 restore_policy="allow",
                 created_at="2026-08-08T00:00:00.000000000Z",
                 ready_at="2026-08-08T00:00:00.000000000Z",
                 expires_at="2099-08-08T00:00:00.000000000Z",
                 failure=None,
-                next_file_order=1,
+                next_artifact_order=1,
                 next_placement_sequence=0,
                 object_count=1,
                 retrieval_bytes=archive_object.stored_bytes,
                 requires_restore=False,
-                file_commitment_sha256="a" * 64,
+                artifact_commitment_sha256="a" * 64,
                 segment_commitment_sha256="b" * 64,
                 etag="c" * 64,
             )

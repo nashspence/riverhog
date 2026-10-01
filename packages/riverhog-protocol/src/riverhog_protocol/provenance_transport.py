@@ -6,6 +6,7 @@ from collections.abc import Mapping, Sequence
 from typing import Any, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic.json_schema import SkipJsonSchema
 from riverhog_archive_contracts import (
     MemberHistoryBinding,
     MemberHistoryDocument,
@@ -195,13 +196,21 @@ class MaterializationHintDocument(BaseModel):
         return self
 
 
+def _omit_absent_hint_default(schema: dict[str, Any]) -> None:
+    schema.pop("default", None)
+
+
 class ArtifactMaterializationDecisionDocument(BaseModel):
     """Publication policy for one preallocated collection member."""
 
     model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
 
     artifact_id: ArtifactId
-    materialization_hint: MaterializationHintDocument | None = None
+    materialization_hint: MaterializationHintDocument | SkipJsonSchema[None] = Field(
+        default=None,
+        exclude_if=lambda value: value is None,
+        json_schema_extra=_omit_absent_hint_default,
+    )
     allow_missing_materialization_hint: bool = False
 
     @model_validator(mode="after")

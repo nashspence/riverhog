@@ -20,6 +20,7 @@ from tests.unit.archive_object_fixtures import (
     COLLECTION_ID,
     MemoryArchiveStore,
     archive_store_binding,
+    fixture_artifact_id,
     seed_archive_copy,
 )
 
@@ -38,7 +39,7 @@ def harness(tmp_path: Path) -> Harness:
     content = b"current archive contract\n"
     config, archive = seed_archive_copy(
         tmp_path / "catalog.sqlite3",
-        {"readme.txt": content},
+        {fixture_artifact_id("readme"): content},
     )
     factory = make_session_factory(config.database_url)
     with session_scope(factory) as session:
@@ -78,10 +79,10 @@ def test_catalog_search_and_archive_store_share_current_identity(harness: Harnes
         position=None,
     )
     search = harness.search.search(
-        q="readme",
+        q=fixture_artifact_id("readme"),
         page_size=25,
         position=None,
-        sort="file_ref",
+        sort="artifact_ref",
         order="asc",
     )
     archive = harness.archive_stores.get("deep")
@@ -102,21 +103,23 @@ def test_catalog_search_and_archive_store_share_current_identity(harness: Harnes
     copy_rows = copies["copies"]
     assert isinstance(copy_rows, list)
     assert [(copy["store"], copy["state"]) for copy in copy_rows] == [("deep", "uploaded")]
-    assert search["files"][0]["file_ref"] == f"{COLLECTION_ID}/readme.txt"
+    assert search["artifacts"][0]["artifact_ref"] == (
+        f"{COLLECTION_ID}/{fixture_artifact_id('readme')}"
+    )
     assert archive.collections == 1
     assert [item.collection_id for item in catalog.collections] == [COLLECTION_ID]
 
 
-def test_application_retrieves_one_manifest_selected_file(harness: Harness) -> None:
-    header, files, etag, file_count, file_bytes = harness.retrieval.collection_inventory(
-        COLLECTION_ID
+def test_application_retrieves_one_manifest_selected_artifact(harness: Harness) -> None:
+    header, artifacts, etag, artifact_count, artifact_bytes = (
+        harness.retrieval.collection_inventory(COLLECTION_ID)
     )
     assert header.collection == COLLECTION_ID
-    assert file_count == 1
-    assert file_bytes == len(b"current archive contract\n")
-    assert [(item.path, item.bytes, item.sha256) for item in files] == [
+    assert artifact_count == 1
+    assert artifact_bytes == len(b"current archive contract\n")
+    assert [(item.artifact_id, item.bytes, item.sha256) for item in artifacts] == [
         (
-            "readme.txt",
+            fixture_artifact_id("readme"),
             len(b"current archive contract\n"),
             hashlib.sha256(b"current archive contract\n").hexdigest(),
         )
@@ -137,11 +140,11 @@ def test_application_retrieves_one_manifest_selected_file(harness: Harness) -> N
             access=frozenset({ApplicationAccess(CATALOG_READ)}),
         ),
     )
-    assert catalog.collections[0].content_identity == header.content_identity
+    assert catalog.collections[0].artifact_set_identity == header.artifact_set_identity
     assert len(etag) == 64
 
-    files = [(COLLECTION_ID, "readme.txt")]
-    plan = harness.retrieval.plan(files)
+    artifacts = [(COLLECTION_ID, fixture_artifact_id("readme"))]
+    plan = harness.retrieval.plan(artifacts)
     job = harness.retrieval.create(
         principal_id="local",
         plan_id=str(plan["id"]),
@@ -151,7 +154,7 @@ def test_application_retrieves_one_manifest_selected_file(harness: Harness) -> N
         principal_id="local",
         job_id=str(job["id"]),
         collection_id=COLLECTION_ID,
-        path="readme.txt",
+        artifact_id=fixture_artifact_id("readme"),
     )
 
     content = b"".join(chunks)
