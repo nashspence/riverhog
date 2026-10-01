@@ -4,7 +4,9 @@ import hashlib
 from pathlib import Path
 from unittest.mock import patch
 
+import httpx
 import pytest
+from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
 from riverhog_protocol.collection_workflows import (
     ArtifactDisposition,
     ArtifactDispositionOutput,
@@ -82,6 +84,7 @@ from stove0_target_support import (
     TargetDescriptor,
     TargetDescriptorPayload,
     TargetExecutionEvidence,
+    TargetExecutionSession,
     TargetJobDeclaration,
     TargetJobRequest,
     TargetJobStatus,
@@ -501,6 +504,59 @@ def test_target_callback_authority_seals_exact_production_and_is_idempotent() ->
     assert sealed.outputs == OutputArtifactSetIdentity.seal((output,))
     assert sealed.disposition_count == 1
     assert sealed.source_edge_count == 1
+
+
+@pytest.mark.parametrize("started", [False, True], ids=["queued", "running"])
+def test_callback_refresh_after_real_expiry_preserves_job_and_claim_scope(started: bool) -> None:
+    with patch("stove0_core.target_callbacks.time.time", return_value=1000):
+        _store, service, record, _operation_contract, callbacks, access = (
+            _queued_target_callback_execution()
+        )
+    assert record.target_request is not None
+    request = TargetJobRequest.seal(
+        record.target_request.declaration,
+        TargetRuntimeAuthority(
+            riverhog_base_url="https://riverhog.invalid", capability_token="fixture-secret"
+        ),
+        access,
+    )
+    session = TargetExecutionSession(request, 1, ClaimedCollectionRuntimeRegistry())
+    client = session.callback_client() if started else None
+    job_id = request.declaration.job_id
+
+    def callback(http_request: httpx.Request) -> httpx.Response:
+        token = http_request.headers["Authorization"].removeprefix("Bearer ")
+        page = callbacks.input_page(token, job_id=job_id, continuation=None, limit=256)
+        return httpx.Response(200, json=page.model_dump(mode="json"))
+
+    with patch("stove0_core.target_callbacks.time.time", return_value=2000):
+        with pytest.raises(PermissionError, match="unavailable"):
+            callbacks.input_page(access.token, job_id=job_id, continuation=None, limit=256)
+        renewed = callbacks.issue_access(record, "fixture-target")
+        session.refresh_callback_access(renewed)
+        current = session.callback_client()
+        assert client is None or current is client
+        current._client.close()
+        current._client = httpx.Client(transport=httpx.MockTransport(callback))
+        try:
+            assert len(tuple(current.iter_inputs(job_id))) == 1
+            with pytest.raises(ValueError, match="callback endpoint changed"):
+                current.refresh_access(
+                    renewed.model_copy(update={"stove0_base_url": "https://different.invalid"})
+                )
+            with pytest.raises(PermissionError, match="unavailable"):
+                callbacks.input_page(renewed.token, job_id=_sha("9"), continuation=None, limit=256)
+            assert record.claim is not None
+            service.rebind_claim(
+                record.work_id,
+                claim_id=record.claim.claim_id,
+                fence=record.claim.fence + 1,
+                expected_revision=record.revision,
+            )
+            with pytest.raises(PermissionError, match="stale"):
+                tuple(current.iter_inputs(job_id))
+        finally:
+            current.close()
 
 
 def test_target_production_seal_is_segmented_closes_declarations_and_replays() -> None:
