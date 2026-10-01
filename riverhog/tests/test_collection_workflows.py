@@ -21,7 +21,7 @@ from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.catalog_models import (
     CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
-    CollectionFileRecord,
+    CollectionArtifactRecord,
     CollectionRecord,
     CollectionUploadRecord,
 )
@@ -39,8 +39,6 @@ from riverhog_core.services.collection_workflows import (
 )
 from riverhog_protocol.collection_tags import COLLECTION_TAG_REQUEST_MEMBERS_MAX
 from riverhog_protocol.collection_workflows import (
-    DERIVATION_EVIDENCE_PATH,
-    PRODUCER_EVIDENCE_PATH,
     ArtifactDiscardApproval,
     ArtifactDisposition,
     ArtifactDispositionOutput,
@@ -53,7 +51,6 @@ from riverhog_protocol.collection_workflows import (
     RecipeIdentity,
     canonical_json_bytes,
     canonical_json_sha256,
-    derivation_evidence_page_path,
     processing_outcome_set_identity,
 )
 from riverhog_protocol.effect_settlement import ExternalEffectSettlement
@@ -102,11 +99,13 @@ def _collection(
         creation_idempotency_key=idempotency_key or f"collection-{collection_id}",
         creation_identity_sha256=f"{collection_id:064x}",
         creation_custody_mode="producer-retained",
-        content_identity=str(collection_id) * 64,
+        artifact_set_identity=str(collection_id) * 64,
         encryption_format="age-v1-scrypt",
         passphrase_id="fixture-archive-key-v1",
-        provenance_mode="omitted",
-        provenance_identity=None,
+        provenance_identity="e" * 64,
+        delivery_context_id=f"urn:uuid:11111111-1111-4111-8111-{collection_id:012x}",
+        artifact_count=1 if collection_id == 1 else 0,
+        artifact_bytes=4 if collection_id == 1 else 0,
         inventory_identity="f" * 64,
         ingest_source="fixture",
         created_by_principal_id=creator,
@@ -117,9 +116,9 @@ def _collection(
     session.flush()
     if collection_id == 1:
         session.add(
-            CollectionFileRecord(
+            CollectionArtifactRecord(
                 collection_id=collection_id,
-                path="camera/input.mov",
+                artifact_id="1" * 64,
                 bytes=4,
                 sha256="8" * 64,
             )
@@ -181,7 +180,7 @@ def _work_document(root: CollectionRootIdentity) -> dict[str, object]:
 def _artifact(root: CollectionRootIdentity) -> CollectionArtifactIdentity:
     return CollectionArtifactIdentity(
         collection=root,
-        path="camera/input.mov",
+        artifact_id="1" * 64,
         bytes=4,
         sha256="8" * 64,
     )
@@ -267,8 +266,8 @@ def _seal_dispositions(
     claim_id: str,
     *,
     root: CollectionRootIdentity,
-    input_path: str,
-    output_path: str,
+    input_artifact_id: str,
+    output_artifact_id: str,
 ) -> ArtifactDispositionSetIdentity:
     service.record_dispositions(
         claim_id,
@@ -277,7 +276,7 @@ def _seal_dispositions(
             ArtifactDisposition(
                 input_collection_id=root.collection_id,
                 input_archive_root_sha256=root.archive_root_sha256,
-                input_path=input_path,
+                input_artifact_id=input_artifact_id,
                 status="transformed",
             ),
         ),
@@ -290,8 +289,8 @@ def _seal_dispositions(
             ArtifactDispositionOutput(
                 input_collection_id=root.collection_id,
                 input_archive_root_sha256=root.archive_root_sha256,
-                input_path=input_path,
-                output_path=output_path,
+                input_artifact_id=input_artifact_id,
+                output_artifact_id=output_artifact_id,
             ),
         ),
         principal=_principal(),
@@ -422,7 +421,7 @@ def test_disposition_batch_counts_shared_sources_once(
     disposition = ArtifactDisposition(
         input_collection_id=root.collection_id,
         input_archive_root_sha256=root.archive_root_sha256,
-        input_path="camera/input.mov",
+        input_artifact_id="1" * 64,
         status="transformed",
     )
     service.record_dispositions(
@@ -438,10 +437,10 @@ def test_disposition_batch_counts_shared_sources_once(
             ArtifactDispositionOutput(
                 input_collection_id=root.collection_id,
                 input_archive_root_sha256=root.archive_root_sha256,
-                input_path="camera/input.mov",
-                output_path=path,
+                input_artifact_id="1" * 64,
+                output_artifact_id=path,
             )
-            for path in ("video/archive.mkv", "video/archive.mkv.xmp")
+            for path in ("5" * 64, "6" * 64)
         ),
         principal=_principal(),
     )
@@ -534,8 +533,8 @@ def test_claim_plan_capabilities_settlement_and_deletion_blocker(
         service,
         claim_id,
         root=root,
-        input_path="camera/input.mov",
-        output_path="video/output.mkv",
+        input_artifact_id="1" * 64,
+        output_artifact_id="3" * 64,
     )
     derivation = CollectionDerivation(
         execution_id=EXECUTION_ID,
@@ -563,42 +562,18 @@ def test_claim_plan_capabilities_settlement_and_deletion_blocker(
         )
         session.add_all(
             [
-                CollectionFileRecord(
+                CollectionArtifactRecord(
                     collection_id=2,
-                    path="video/output.mkv",
+                    artifact_id="3" * 64,
                     bytes=4,
                     sha256="7" * 64,
-                ),
-                CollectionFileRecord(
-                    collection_id=2,
-                    path=DERIVATION_EVIDENCE_PATH,
-                    bytes=len(derivation.to_json_bytes()),
-                    sha256=derivation.sha256,
-                ),
-                CollectionFileRecord(
-                    collection_id=2,
-                    path=PRODUCER_EVIDENCE_PATH,
-                    bytes=1,
-                    sha256="5" * 64,
-                ),
-                CollectionFileRecord(
-                    collection_id=2,
-                    path=derivation_evidence_page_path("dispositions", 0),
-                    bytes=1,
-                    sha256="3" * 64,
-                ),
-                CollectionFileRecord(
-                    collection_id=2,
-                    path=derivation_evidence_page_path("output-edges", 0),
-                    bytes=1,
-                    sha256="4" * 64,
                 ),
             ]
         )
         output_record = session.get(CollectionRecord, 2)
         assert output_record is not None
-        output_record.file_count = 5
-        output_record.file_bytes = 4 + len(derivation.to_json_bytes()) + 3
+        output_record.artifact_count = 1
+        output_record.artifact_bytes = 4
 
     with factory() as session, session.begin():
         stored = session.get(CollectionProcessingClaimRecord, claim_id)
@@ -830,9 +805,7 @@ def test_expired_execution_upload_remains_a_deletion_blocker(
                 ingest_source=f"processing:{EXECUTION_ID}",
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
-                provenance_mode="omitted",
-                provenance_omission_reason="fixture",
-                provenance_identity=None,
+                delivery_context_id="urn:uuid:11111111-1111-4111-8111-000000000003",
                 initiated_by_principal_id=f"processing:{EXECUTION_ID}",
                 initiated_by_key_id="stove0-key",
                 event_context_json=None,
@@ -1045,9 +1018,9 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
     root = _setup(factory)
     with factory() as session, session.begin():
         session.add(
-            CollectionFileRecord(
+            CollectionArtifactRecord(
                 collection_id=1,
-                path="camera/sidecar.json",
+                artifact_id="2" * 64,
                 bytes=2,
                 sha256="9" * 64,
             )
@@ -1074,11 +1047,11 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
         *,
         outcome_id: str,
         execution_id: str,
-        source_path: str,
+        source_artifact_id: str,
         source_bytes: int,
         source_sha256: str,
         output_collection_id: int,
-        output_path: str,
+        output_artifact_id: str,
     ) -> None:
         work = {
             "format": "fixture-output-work/v1",
@@ -1093,7 +1066,7 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
             root=root,
             artifact=CollectionArtifactIdentity(
                 collection=root,
-                path=source_path,
+                artifact_id=source_artifact_id,
                 bytes=source_bytes,
                 sha256=source_sha256,
             ),
@@ -1119,8 +1092,8 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
             service,
             claim_id,
             root=root,
-            input_path=source_path,
-            output_path=output_path,
+            input_artifact_id=source_artifact_id,
+            output_artifact_id=output_artifact_id,
         )
         derivation = CollectionDerivation(
             execution_id=execution_id,
@@ -1151,42 +1124,18 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
             )
             session.add_all(
                 [
-                    CollectionFileRecord(
+                    CollectionArtifactRecord(
                         collection_id=output_collection_id,
-                        path=output_path,
+                        artifact_id=output_artifact_id,
                         bytes=source_bytes,
                         sha256=source_sha256,
-                    ),
-                    CollectionFileRecord(
-                        collection_id=output_collection_id,
-                        path=DERIVATION_EVIDENCE_PATH,
-                        bytes=len(derivation.to_json_bytes()),
-                        sha256=derivation.sha256,
-                    ),
-                    CollectionFileRecord(
-                        collection_id=output_collection_id,
-                        path=PRODUCER_EVIDENCE_PATH,
-                        bytes=1,
-                        sha256="5" * 64,
-                    ),
-                    CollectionFileRecord(
-                        collection_id=output_collection_id,
-                        path=derivation_evidence_page_path("dispositions", 0),
-                        bytes=1,
-                        sha256="3" * 64,
-                    ),
-                    CollectionFileRecord(
-                        collection_id=output_collection_id,
-                        path=derivation_evidence_page_path("output-edges", 0),
-                        bytes=1,
-                        sha256="4" * 64,
                     ),
                 ]
             )
             output_record = session.get(CollectionRecord, output_collection_id)
             assert output_record is not None
-            output_record.file_count = 5
-            output_record.file_bytes = source_bytes + len(derivation.to_json_bytes()) + 3
+            output_record.artifact_count = 1
+            output_record.artifact_bytes = source_bytes
         service.settle_claim(
             claim_id,
             fence=1,
@@ -1216,20 +1165,20 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
     settle_output(
         outcome_id="video-copy",
         execution_id="1" * 64,
-        source_path="camera/input.mov",
+        source_artifact_id="1" * 64,
         source_bytes=4,
         source_sha256="8" * 64,
         output_collection_id=2,
-        output_path="video/output.mkv",
+        output_artifact_id="3" * 64,
     )
     settle_output(
         outcome_id="sidecar-copy",
         execution_id="2" * 64,
-        source_path="camera/sidecar.json",
+        source_artifact_id="2" * 64,
         source_bytes=2,
         source_sha256="9" * 64,
         output_collection_id=3,
-        output_path="metadata/sidecar.json",
+        output_artifact_id="4" * 64,
     )
     with factory() as session:
         assert processing_claim_blockers(session, 2)
@@ -1331,7 +1280,7 @@ def _effect_claim(
             ArtifactDisposition(
                 input_collection_id=root.collection_id,
                 input_archive_root_sha256=root.archive_root_sha256,
-                input_path="camera/input.mov",
+                input_artifact_id="1" * 64,
                 status="effect-applied",
                 effect_receipt_sha256=canonical_json_sha256(receipt),
             ),
@@ -1503,7 +1452,7 @@ def _no_output_claim(
             ArtifactDisposition(
                 input_collection_id=root.collection_id,
                 input_archive_root_sha256=root.archive_root_sha256,
-                input_path=selected.path,
+                input_artifact_id=selected.artifact_id,
                 status="not-carried-forward",
                 code="fixture.no-successor/v1",
                 message="The decision produced no material output.",
@@ -1592,7 +1541,10 @@ def test_mismatched_no_output_verdict_cannot_retire_source(
         )
     with factory() as session:
         assert session.get(CollectionRecord, root.collection_id) is not None
-        assert session.get(CollectionFileRecord, (root.collection_id, subject.path)) is not None
+        assert (
+            session.get(CollectionArtifactRecord, (root.collection_id, subject.artifact_id))
+            is not None
+        )
 
 
 @pytest.mark.parametrize("approved_loss", [False, True])
@@ -1649,7 +1601,7 @@ def test_no_output_settlement_uses_shared_retirement_coverage(
                 )
             )
             session.execute(
-                delete(CollectionFileRecord).where(CollectionFileRecord.collection_id == 1)
+                delete(CollectionArtifactRecord).where(CollectionArtifactRecord.collection_id == 1)
             )
             session.execute(delete(CollectionRecord).where(CollectionRecord.id == 1))
         with factory() as session:
@@ -1768,7 +1720,9 @@ def test_external_effect_commit_replays_across_service_restart_and_deletion(
                 CollectionArchiveCopyRecord.collection_id == 1
             )
         )
-        session.execute(delete(CollectionFileRecord).where(CollectionFileRecord.collection_id == 1))
+        session.execute(
+            delete(CollectionArtifactRecord).where(CollectionArtifactRecord.collection_id == 1)
+        )
         session.execute(delete(CollectionRecord).where(CollectionRecord.id == 1))
     resumed = SqlAlchemyCollectionWorkflowService(cast(Any, object()), session_factory=factory)
     assert _settle_effect(resumed, document)["state"] == "retiring"
@@ -1922,12 +1876,12 @@ def test_effect_retirement_requires_complete_inventory_and_grace(
     with factory() as session, session.begin():
         session.add_all(
             [
-                CollectionFileRecord(
-                    collection_id=1, path="camera/not-selected.mov", bytes=3, sha256="7" * 64
+                CollectionArtifactRecord(
+                    collection_id=1, artifact_id="7" * 64, bytes=3, sha256="7" * 64
                 ),
-                CollectionFileRecord(
+                CollectionArtifactRecord(
                     collection_id=1,
-                    path="riverhog/not-control.json",
+                    artifact_id="8" * 64,
                     bytes=3,
                     sha256="6" * 64,
                 ),
@@ -1944,9 +1898,7 @@ def test_effect_retirement_requires_complete_inventory_and_grace(
     # execution can rewrite its sealed scope. Catalog tampering is not a workflow API.
     with factory() as session, session.begin():
         session.execute(
-            delete(CollectionFileRecord).where(
-                CollectionFileRecord.path == "camera/not-selected.mov"
-            )
+            delete(CollectionArtifactRecord).where(CollectionArtifactRecord.artifact_id == "7" * 64)
         )
     with pytest.raises(Conflict, match="lacks a verified safe disposition"):
         service.begin_source_collection_retirement(
@@ -1954,9 +1906,7 @@ def test_effect_retirement_requires_complete_inventory_and_grace(
         )
     with factory() as session, session.begin():
         session.execute(
-            delete(CollectionFileRecord).where(
-                CollectionFileRecord.path == "riverhog/not-control.json"
-            )
+            delete(CollectionArtifactRecord).where(CollectionArtifactRecord.artifact_id == "8" * 64)
         )
     t0 = parse_utc_timestamp(str(settled["settled_at"]))
     monkeypatch.setattr(
@@ -2042,7 +1992,7 @@ def test_retirement_refuses_a_corrupted_retained_effect_and_input_root(
         effect.document_sha256 = document.sha256
         collection = session.get(CollectionRecord, 1)
         assert collection is not None
-        collection.content_identity = "f" * 64
+        collection.artifact_set_identity = "f" * 64
     with pytest.raises(Conflict):
         service.begin_source_collection_retirement(
             document.claim_id, fence=1, principal=_principal()
@@ -2061,7 +2011,7 @@ def _settled_collection_child(
     child_id = str(child["id"])
     _seal_plan(service, child_id)
     dispositions = _seal_dispositions(
-        service, child_id, root=root, input_path="camera/input.mov", output_path="out/result.bin"
+        service, child_id, root=root, input_artifact_id="1" * 64, output_artifact_id="9" * 64
     )
     derivation = CollectionDerivation(
         execution_id=EXECUTION_ID,
@@ -2080,11 +2030,7 @@ def _settled_collection_child(
         disposition_set=dispositions,
     )
     files = [
-        ("out/result.bin", 4, "7" * 64),
-        (DERIVATION_EVIDENCE_PATH, len(derivation.to_json_bytes()), derivation.sha256),
-        (PRODUCER_EVIDENCE_PATH, 1, "5" * 64),
-        (derivation_evidence_page_path("dispositions", 0), 1, "3" * 64),
-        (derivation_evidence_page_path("output-edges", 0), 1, "4" * 64),
+        ("9" * 64, 4, "7" * 64),
     ]
     with factory() as session, session.begin():
         _collection(
@@ -2095,13 +2041,13 @@ def _settled_collection_child(
             idempotency_key=EXECUTION_ID,
         )
         session.add_all(
-            CollectionFileRecord(collection_id=2, path=path, bytes=size, sha256=digest)
+            CollectionArtifactRecord(collection_id=2, artifact_id=path, bytes=size, sha256=digest)
             for path, size, digest in files
         )
         output = session.get(CollectionRecord, 2)
         assert output is not None
-        output.file_count = len(files)
-        output.file_bytes = sum(item[1] for item in files)
+        output.artifact_count = len(files)
+        output.artifact_bytes = sum(item[1] for item in files)
     service.settle_claim(
         child_id,
         fence=1,
@@ -2175,15 +2121,15 @@ def test_mixed_result_retirement_uses_one_exact_disposition_denominator(
     root = _setup(factory)
     sidecar = CollectionArtifactIdentity(
         collection=root,
-        path="camera/sidecar.json",
+        artifact_id="2" * 64,
         bytes=2,
         sha256="9" * 64,
     )
     with factory() as session, session.begin():
         session.add(
-            CollectionFileRecord(
+            CollectionArtifactRecord(
                 collection_id=1,
-                path=sidecar.path,
+                artifact_id=sidecar.artifact_id,
                 bytes=sidecar.bytes,
                 sha256=sidecar.sha256,
             )
