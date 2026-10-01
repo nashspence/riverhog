@@ -1,0 +1,35 @@
+name: External reference 515
+
+on:
+  push:
+    branches:
+      - reference/external/515-gogurt-deterministic-ci
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-snapshot:
+    name: Exact external-reference source snapshot
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact reference commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Export tracked source without credentials
+        run: |
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/reference-515-source.tar.gz"
+          git rev-parse HEAD > "$RUNNER_TEMP/reference-515-source.sha"
+      - name: Retain exact source for external validation
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reference-515-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/reference-515-source.tar.gz
+            ${{ runner.temp }}/reference-515-source.sha
+          if-no-files-found: error
+          retention-days: 1
