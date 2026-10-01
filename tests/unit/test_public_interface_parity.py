@@ -126,7 +126,14 @@ SUPPORTED_CLIENT_HELPERS = {
         "stream_retrieval_artifact",
         "upload_collection_upload_session_provenance_journal",
     },
-    "stove0": {"close", "health_live", "health_ready", "iter_inputs", "iter_outputs"},
+    "stove0": {
+        "close",
+        "health_live",
+        "health_ready",
+        "iter_inputs",
+        "iter_outputs",
+        "refresh_access",
+    },
     "a-riverhog-ftp-spool": {
         "close",
         "ftp_spool_health_live",
