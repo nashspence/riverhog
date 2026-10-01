@@ -365,7 +365,7 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                                     {
                                         "artifact_id": output.id,
                                         "source_artifact_id": window.input_id,
-                                        "output_artifact_id": resumed.artifact_id,
+                                        "output_artifact_id": str(resumed.artifact_id),
                                         "start_ms": window.start_ms,
                                         "duration_ms": window.duration_ms,
                                     }
@@ -401,7 +401,7 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                                 {
                                     "artifact_id": output.id,
                                     "source_artifact_id": window.input_id,
-                                    "output_artifact_id": member_id,
+                                    "output_artifact_id": str(member_id),
                                     "start_ms": window.start_ms,
                                     "duration_ms": window.duration_ms,
                                 }
