@@ -19,6 +19,7 @@ classifiers = [
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
+  "stove0-protocol>=0.1,<0.2",
   "a-riverhog-direct-relations-contract-lib>=0.1,<0.2",
   "riverhog-archive-contracts>=0.1,<0.2",
   "riverhog-provenance>=0.1,<0.2",
@@ -37,6 +38,7 @@ stove0-target-conformance = "stove0_target_support.conformance:main"
 stove0-target-schemas = "stove0_target_support.schemas:main"
 
 [tool.uv.sources]
+stove0-protocol = { workspace = true }
 a-riverhog-direct-relations-contract-lib = { workspace = true }
 riverhog-archive-contracts = { workspace = true }
 riverhog-provenance = { workspace = true }

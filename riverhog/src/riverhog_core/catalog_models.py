@@ -145,6 +145,7 @@ class CollectionRecord(Base):
     creation_archive_store: Mapped[str] = mapped_column(String, nullable=False, default="archive")
     creation_use_cache: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     creation_copy_to_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
+    completion_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     archive_generation: Mapped[str] = mapped_column(
         String(64), nullable=False, default=lambda: secrets.token_hex(32)
     )
@@ -626,6 +627,20 @@ class CollectionArtifactRecord(Base):
             "collection_id",
             "sha256",
             "artifact_id",
+        ),
+        Index("ix_collection_artifacts_id", "artifact_id", "collection_id"),
+        Index("ix_collection_artifacts_bytes", "bytes", "collection_id", "artifact_id"),
+        Index(
+            "ix_collection_artifacts_id_trgm",
+            "artifact_id",
+            postgresql_using="gin",
+            postgresql_ops={"artifact_id": "gin_trgm_ops"},
+        ),
+        Index(
+            "ix_collection_artifacts_sha_trgm",
+            "sha256",
+            postgresql_using="gin",
+            postgresql_ops={"sha256": "gin_trgm_ops"},
         ),
     )
 
@@ -2545,6 +2560,7 @@ class CollectionUploadRecord(Base):
     completion_journal_id: Mapped[str | None] = mapped_column(String(45), nullable=True)
     completion_recorded_at: Mapped[str | None] = mapped_column(String, nullable=True)
     completion_records_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    completion_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     encryption_format: Mapped[str] = mapped_column(String, nullable=False)
     passphrase_id: Mapped[str] = mapped_column(String, nullable=False)
     initiated_by_principal_id: Mapped[str] = mapped_column(String, default="riverhog")
@@ -3093,7 +3109,7 @@ class CollectionUploadProvenanceStructureRecord(Base):
             "ix_upload_structure_publication",
             "collection_id",
             "object_id",
-            postgresql_where=text("receipt_json IS NULL"),
+            postgresql_where=text("(receipt_json IS NULL)"),
             sqlite_where=text("receipt_json IS NULL"),
         ),
     )
@@ -3258,57 +3274,6 @@ class CollectionUploadProvenanceCustodyObjectRecord(Base):
             name="ck_provenance_custody_segment_extent",
         ),
         Index("ix_provenance_custody_objects_path", "collection_id", "relative_path"),
-    )
-
-
-class CollectionUploadProvenanceValidationFactRecord(Base):
-    __tablename__ = "collection_upload_provenance_validation_facts"
-
-    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
-    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
-    kind: Mapped[str] = mapped_column(String, primary_key=True)
-    fact_key: Mapped[str] = mapped_column(String, primary_key=True)
-    value_json: Mapped[str] = mapped_column(Text)
-
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["collection_id", "journal_id"],
-            [
-                "collection_upload_provenance_journals.collection_id",
-                "collection_upload_provenance_journals.journal_id",
-            ],
-            ondelete="CASCADE",
-        ),
-        CheckConstraint(
-            "kind IN ('entry','agent','event','state','binding','entity','external-state')",
-            name="ck_upload_provenance_validation_fact_kind",
-        ),
-    )
-
-
-class CollectionUploadProvenanceReachabilityRecord(Base):
-    __tablename__ = "collection_upload_provenance_reachability"
-
-    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
-    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
-    after_external_fact_key: Mapped[str | None] = mapped_column(String, nullable=True)
-    expanded: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("false"))
-
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["collection_id", "journal_id"],
-            [
-                "collection_upload_provenance_journals.collection_id",
-                "collection_upload_provenance_journals.journal_id",
-            ],
-            ondelete="CASCADE",
-        ),
-        Index(
-            "ix_upload_provenance_reachability_pending",
-            "collection_id",
-            "expanded",
-            "journal_id",
-        ),
     )
 
 

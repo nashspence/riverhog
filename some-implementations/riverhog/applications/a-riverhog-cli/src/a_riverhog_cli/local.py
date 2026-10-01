@@ -1092,65 +1092,150 @@ def show_collection(
     emit(payload if json_mode else format_local_collection(payload), json_mode=json_mode)
 
 
+LOCAL_LIST_SORT_FIELDS = {
+    "collection_id": "collection_id",
+    "created_at": "created_at",
+    "tag_count": "tag_count",
+    "status": "status",
+    "artifacts": "artifacts",
+    "bytes": "bytes",
+}
+
+
 @local_app.command("list")
 def list_collections(
     page_size: Annotated[
-        int, typer.Option("--page-size", min=1, max=LOCAL_LIST_PAGE_SIZE_MAX)
+        int,
+        typer.Option("--page-size", min=1, max=LOCAL_LIST_PAGE_SIZE_MAX),
     ] = 25,
     page_token: Annotated[str | None, typer.Option("--page-token")] = None,
-    ids: Annotated[bool, typer.Option("--ids")] = False,
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
+    sort: Annotated[str, typer.Option("--sort", help="Sort field")] = "collection_id",
+    order: Annotated[str, typer.Option("--order", help="Sort order")] = "asc",
+    query: Annotated[
+        str | None,
+        typer.Option("--query", "-q", help="Search collection id, tag, or status"),
+    ] = None,
+    ids: Annotated[
+        bool,
+        typer.Option("--ids", help="Emit one collection id per line"),
+    ] = False,
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
     if ids and json_mode:
         raise typer.BadParameter("--ids and --json cannot be used together")
+    if sort not in LOCAL_LIST_SORT_FIELDS:
+        allowed = ", ".join(sorted(LOCAL_LIST_SORT_FIELDS))
+        raise typer.BadParameter(f"--sort must be one of: {allowed}")
+    normalized_order = order.strip().lower()
+    if normalized_order not in {"asc", "desc"}:
+        raise typer.BadParameter("--order must be asc or desc")
+
     target = _target()
+    normalized_query = (query or "").strip() or None
+    selectors = {
+        "order": normalized_order,
+        "query": normalized_query,
+        "sort": sort,
+    }
     database = _database(target)
-    codec = BrowseTokenCodec(
-        hashlib.sha256(b"a-riverhog-cli-local-list-token/v1\x00" + str(database).encode()).digest(),
+    token_codec = BrowseTokenCodec(
+        hashlib.sha256(
+            b"a-riverhog-cli-local-list-token/v1\x00" + str(database).encode("utf-8")
+        ).digest(),
         lifetime_seconds=LOCAL_LIST_TOKEN_LIFETIME_SECONDS,
     )
     try:
-        position = codec.verify(
+        position = token_codec.verify(
             page_token,
             operation="local.list_collections",
             principal=str(database),
-            selectors={},
+            selectors=selectors,
         )
     except BrowseTokenError as exc:
         raise typer.BadParameter(str(exc), param_hint="--page-token") from exc
-    if position is not None and (
-        len(position) != 1 or type(position[0]) is not int or position[0] < 1
-    ):
+    if position is not None and len(position) != 2:
         raise typer.BadParameter("page token position is invalid", param_hint="--page-token")
-    after = position[0] if position is not None else 0
     with closing(_connect(target)) as db:
+        filters = ""
+        params: list[object] = []
+        if normalized_query:
+            filters = (
+                "WHERE CAST(collection_id AS TEXT) LIKE ? "
+                "OR EXISTS (SELECT 1 FROM desired_collection_tags AS t "
+                "           WHERE t.collection_id = local_collections.collection_id "
+                "             AND t.tag LIKE ?) "
+                "OR status LIKE lower(?)"
+            )
+            pattern = f"%{normalized_query}%"
+            params.extend((pattern, pattern, pattern))
+        base_query = f"""
+                WITH local_collections AS (
+                SELECT c.collection_id, c.created_at, c.remote_unavailable,
+                       (SELECT COUNT(*) FROM desired_collection_tags AS t
+                        WHERE t.collection_id = c.collection_id) AS tag_count,
+                       CASE
+                           WHEN c.remote_unavailable = 1 THEN 'remote-unavailable'
+                           ELSE 'desired'
+                       END AS status,
+                       COUNT(a.artifact_id) AS artifacts,
+                       COALESCE(SUM(a.bytes), 0) AS bytes
+                FROM desired_collections AS c
+                LEFT JOIN desired_artifacts AS a USING (collection_id)
+                GROUP BY c.collection_id, c.created_at, c.remote_unavailable
+                )
+                SELECT * FROM local_collections
+                {filters}
+                """
+        order_column = LOCAL_LIST_SORT_FIELDS[sort]
+        continuation = ""
+        if position is not None:
+            sort_value, collection_id = position
+            if not isinstance(collection_id, int) or isinstance(collection_id, bool):
+                raise typer.BadParameter(
+                    "page token position is invalid", param_hint="--page-token"
+                )
+            comparison = ">" if normalized_order == "asc" else "<"
+            continuation = (
+                f"WHERE ({order_column} {comparison} ? "
+                f"OR ({order_column} = ? AND collection_id > ?))"
+            )
+            params.extend((sort_value, sort_value, collection_id))
         rows = db.execute(
-            "SELECT collection_id FROM desired_collections WHERE collection_id > ? "
-            "ORDER BY collection_id LIMIT ?",
-            (after, page_size + 1),
+            f"""
+            SELECT * FROM ({base_query})
+            {continuation}
+            ORDER BY {order_column} {normalized_order.upper()}, collection_id ASC
+            LIMIT ?
+            """,
+            (*params, page_size + 1),
         ).fetchall()
         has_more = len(rows) > page_size
-        selected = rows[:page_size]
-        collections = [_local_collection(db, int(row["collection_id"])) for row in selected]
-    next_page_token = (
-        codec.issue(
+        page_rows = rows[:page_size]
+        collections = [_local_collection(db, int(row["collection_id"])) for row in page_rows]
+    next_page_token = None
+    if has_more and page_rows:
+        last = page_rows[-1]
+        next_page_token = token_codec.issue(
             operation="local.list_collections",
             principal=str(database),
-            selectors={},
-            position=(int(selected[-1]["collection_id"]),),
+            selectors=selectors,
+            position=(last[order_column], int(last["collection_id"])),
         )
-        if has_more and selected
-        else None
-    )
     payload = {
         "page_size": page_size,
         "next_page_token": next_page_token,
+        "sort": sort,
+        "order": normalized_order,
+        "query": normalized_query,
         "collections": collections,
     }
     if ids:
-        emit(format_list_ids(payload, "collections", id_key="collection_id"), json_mode=False)
-    else:
-        emit(payload if json_mode else format_local_collections(payload), json_mode=json_mode)
+        emit(
+            format_list_ids(payload, "collections", id_key="collection_id"),
+            json_mode=False,
+        )
+        return
+    emit(payload if json_mode else format_local_collections(payload), json_mode=json_mode)
 
 
 @local_app.command("audit")

@@ -39,7 +39,7 @@ def test_media_metadata_contract_carries_exact_evidence_without_a_ceiling() -> N
     assert MEDIA_METADATA_OBSERVER_CONTRACT.id == "stove0.media.metadata/v1"
     assert (
         MEDIA_METADATA_OBSERVER_CONTRACT.contract_sha256
-        == "5c778f920b7e7dc3a28a4f2eee3743d02fc2ebf42d6f60df8380682a0e492aa2"
+        == "23bae2a55c65c7bb88defe8fca3ca37d655e82f803dc75d24d189c2a90ec9b8b"
     )
     assert facts.artifacts[0].artifact_id == "primary"
     assert (

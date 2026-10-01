@@ -152,7 +152,9 @@ class CollectionProvenanceIndexAssertionRecord(Base):
             "assertion_state IN ('effective','retracted')",
             name="ck_provenance_index_assertion_state",
         ),
-        Index("ix_provenance_index_assertion_kind", "build_id", "kind", "assertion_state"),
+        Index(
+            "ix_provenance_index_assertion_kind", "build_id", "kind", "assertion_state", "row_key"
+        ),
         Index("ix_provenance_index_assertion_referent", "build_id", "referent_id"),
         Index("ix_provenance_index_assertion_identity", "build_id", "assertion_id"),
     )
@@ -177,7 +179,9 @@ class CollectionProvenanceIndexProfileRecord(Base):
             ],
             ondelete="CASCADE",
         ),
-        Index("ix_provenance_index_profile_pin", "build_id", "contract_sha256", "schema_id"),
+        Index(
+            "ix_provenance_index_profile_pin", "build_id", "contract_sha256", "schema_id", "row_key"
+        ),
     )
 
 

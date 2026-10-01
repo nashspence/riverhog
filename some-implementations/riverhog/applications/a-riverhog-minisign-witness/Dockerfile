@@ -31,6 +31,8 @@ COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol
+COPY packages/riverhog-provenance packages/riverhog-provenance
+COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
 COPY packages/state-schema packages/state-schema
 COPY packages/time-formats packages/time-formats

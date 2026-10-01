@@ -81,7 +81,7 @@ def review() -> None:
         {
             "collection_id": receipt["collection_id"],
             "archive_root_sha256": receipt["archive_root_sha256"],
-            "content_identity": receipt["content_identity"],
+            "artifact_set_identity": receipt["artifact_set_identity"],
         }
     )
     with riverhog() as client:
@@ -89,11 +89,12 @@ def review() -> None:
             int(input_ref.collection_id), limit=100
         )
         assert inventory.complete, inventory
-        source = next(file for file in inventory.files if file.path == "review-input.wav")
+        assert len(inventory.artifacts) == 1, inventory
+        source = inventory.artifacts[0]
         artifact_id = (
             "a-"
             + canonical_json_sha256(
-                {"collection_id": input_ref.collection_id, "path": source.path}
+                {"collection_id": input_ref.collection_id, "artifact_id": str(source.artifact_id)}
             )[:32]
         )
     sample_plan = {
@@ -141,7 +142,7 @@ def review() -> None:
     with riverhog() as client:
         collection = client.get_collection(output_id)
         assert collection["archive_root_sha256"] == output["archive_root_sha256"]
-        assert collection["content_identity"] == output["content_identity"]
+        assert collection["artifact_set_identity"] == output["artifact_set_identity"]
         tags = client.list_collection_tags(
             output_id,
             revision=collection["tag_revision"],

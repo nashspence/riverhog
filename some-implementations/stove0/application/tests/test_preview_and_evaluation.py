@@ -205,7 +205,11 @@ class PreviewPlanning:
         self.target = target
         self.observer = observer
 
-    def observation_requests(self, work: WorkIdentity) -> tuple[ContentObservationRequest, ...]:
+    def observation_requests(
+        self, work: WorkIdentity, observations: tuple[ContentObservationEvidence, ...] = ()
+    ) -> tuple[ContentObservationRequest, ...]:
+        if observations:
+            return ()
         contract, descriptor = self.observer
         return (
             ContentObservationRequest.seal(
@@ -220,7 +224,7 @@ class PreviewPlanning:
                             id="source",
                             role="fixture.source/v1",
                             collection=_root(),
-                            path="source/input.bin",
+                            artifact_id="1" * 64,
                             bytes=str(12),
                             sha256=_sha("4"),
                         ),
@@ -279,7 +283,7 @@ class PreviewPlanning:
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
-                    path="source/input.bin",
+                    artifact_id="1" * 64,
                     bytes=str(12),
                     sha256=_sha("4"),
                 ),
@@ -523,8 +527,10 @@ def test_no_action_preview_retains_observations_without_target_preflight() -> No
     delegate = PreviewPlanning(operation, target, observer_value)
 
     class NoActionPlanning:
-        def observation_requests(self, work: WorkIdentity) -> tuple[ContentObservationRequest, ...]:
-            return delegate.observation_requests(work)
+        def observation_requests(
+            self, work: WorkIdentity, observations: tuple[ContentObservationEvidence, ...] = ()
+        ) -> tuple[ContentObservationRequest, ...]:
+            return delegate.observation_requests(work, observations)
 
         def workflow_plan(
             self,
@@ -835,7 +841,7 @@ def test_evaluation_projects_single_settled_collection_branch() -> None:
                 id="source",
                 role="fixture.source/v1",
                 collection=_root(),
-                path="source/input.bin",
+                artifact_id="1" * 64,
                 bytes="12",
                 sha256=_sha("4"),
             ),
@@ -882,7 +888,7 @@ def test_evaluation_projects_single_settled_collection_branch() -> None:
                     archive_root_sha256=output.archive_root_sha256,
                     artifact_set_identity=output.artifact_set_identity,
                 ),
-                path="review/output.bin",
+                artifact_id="2" * 64,
                 bytes="1",
                 sha256=_sha("e"),
             ),
@@ -984,7 +990,7 @@ def test_workflow_preview_rejects_observer_result_that_does_not_bind_request() -
                 id="other",
                 role="fixture.source/v1",
                 collection=_root(),
-                path="source/other.bin",
+                artifact_id="3" * 64,
                 bytes=str(12),
                 sha256=_sha("4"),
             )

@@ -1,12 +1,3 @@
--- Exact current Riverhog PostgreSQL v1 baseline conformance fixture.
-
-CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
-
-CREATE TABLE state_schema_revision (
-    version_num VARCHAR(32) NOT NULL,
-    CONSTRAINT state_schema_revision_pkc PRIMARY KEY (version_num)
-);
-
 CREATE TABLE app_keys (
 	id VARCHAR NOT NULL,
 	app VARCHAR NOT NULL,
@@ -183,6 +174,7 @@ CREATE TABLE collections (
 	creation_archive_store VARCHAR NOT NULL,
 	creation_use_cache BOOLEAN NOT NULL,
 	creation_copy_to_json TEXT NOT NULL,
+	completion_receipt_json TEXT,
 	archive_generation VARCHAR(64) NOT NULL,
 	delivery_context_id VARCHAR NOT NULL,
 	artifact_set_identity VARCHAR(64) NOT NULL,
@@ -754,6 +746,7 @@ CREATE TABLE collection_uploads (
 	completion_journal_id VARCHAR(45),
 	completion_recorded_at VARCHAR,
 	completion_records_sha256 VARCHAR(64),
+	completion_receipt_json TEXT,
 	encryption_format VARCHAR NOT NULL,
 	passphrase_id VARCHAR NOT NULL,
 	initiated_by_principal_id VARCHAR NOT NULL,
@@ -1711,7 +1704,7 @@ CREATE TABLE collection_upload_provenance_structure (
 	CONSTRAINT ck_upload_structure_bytes CHECK (length(content) > 0 AND length(content) <= 4194304)
 );
 
-CREATE INDEX ix_upload_structure_publication ON collection_upload_provenance_structure (collection_id, object_id) WHERE receipt_json IS NULL;
+CREATE INDEX ix_upload_structure_publication ON collection_upload_provenance_structure (collection_id, object_id) WHERE (receipt_json IS NULL);
 
 CREATE TABLE collection_upload_tag_node_references (
 	collection_id BIGINT NOT NULL,
@@ -2057,28 +2050,6 @@ CREATE TABLE collection_upload_provenance_journal_chunks (
 	CONSTRAINT ck_upload_provenance_journal_chunks_content CHECK (length(content) > 0)
 );
 
-CREATE TABLE collection_upload_provenance_reachability (
-	collection_id BIGINT NOT NULL,
-	journal_id VARCHAR NOT NULL,
-	after_external_fact_key VARCHAR,
-	expanded BOOLEAN DEFAULT false NOT NULL,
-	PRIMARY KEY (collection_id, journal_id),
-	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE
-);
-
-CREATE INDEX ix_upload_provenance_reachability_pending ON collection_upload_provenance_reachability (collection_id, expanded, journal_id);
-
-CREATE TABLE collection_upload_provenance_validation_facts (
-	collection_id BIGINT NOT NULL,
-	journal_id VARCHAR NOT NULL,
-	kind VARCHAR NOT NULL,
-	fact_key VARCHAR NOT NULL,
-	value_json TEXT NOT NULL,
-	PRIMARY KEY (collection_id, journal_id, kind, fact_key),
-	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
-	CONSTRAINT ck_upload_provenance_validation_fact_kind CHECK (kind IN ('entry','agent','event','state','binding','entity','external-state'))
-);
-
 CREATE TABLE collection_upload_raw_part_digests (
 	collection_id BIGINT NOT NULL,
 	artifact_id VARCHAR(64) NOT NULL,
@@ -2211,7 +2182,7 @@ CREATE TABLE collection_provenance_index_assertions (
 
 CREATE INDEX ix_provenance_index_assertion_identity ON collection_provenance_index_assertions (build_id, assertion_id);
 
-CREATE INDEX ix_provenance_index_assertion_kind ON collection_provenance_index_assertions (build_id, kind, assertion_state);
+CREATE INDEX ix_provenance_index_assertion_kind ON collection_provenance_index_assertions (build_id, kind, assertion_state, row_key);
 
 CREATE INDEX ix_provenance_index_assertion_referent ON collection_provenance_index_assertions (build_id, referent_id);
 
@@ -2326,7 +2297,7 @@ CREATE TABLE collection_provenance_index_profiles (
 	CONSTRAINT ck_collection_provenance_index_profiles_contract_sha256_hex CHECK (length(contract_sha256) = 64 AND lower(contract_sha256) = contract_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(contract_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_provenance_index_profile_pin ON collection_provenance_index_profiles (build_id, contract_sha256, schema_id);
+CREATE INDEX ix_provenance_index_profile_pin ON collection_provenance_index_profiles (build_id, contract_sha256, schema_id, row_key);
 
 CREATE TABLE collection_provenance_index_values (
 	build_id VARCHAR(36) NOT NULL,
@@ -2371,4 +2342,10 @@ CREATE INDEX ix_provenance_index_folded_trgm ON collection_provenance_index_text
 
 CREATE INDEX ix_provenance_index_text_trgm ON collection_provenance_index_text_chunks USING gin (text_chunk gin_trgm_ops);
 
-INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');
+CREATE INDEX ix_collection_artifacts_bytes ON collection_artifacts (bytes, collection_id, artifact_id);
+
+CREATE INDEX ix_collection_artifacts_id ON collection_artifacts (artifact_id, collection_id);
+
+CREATE INDEX ix_collection_artifacts_id_trgm ON collection_artifacts USING gin (artifact_id gin_trgm_ops);
+
+CREATE INDEX ix_collection_artifacts_sha_trgm ON collection_artifacts USING gin (sha256 gin_trgm_ops);

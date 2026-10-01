@@ -29,6 +29,7 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
 COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
+COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/config-validation packages/config-validation
 COPY some-implementations/stove0/targets/rclone some-implementations/stove0/targets/rclone
 COPY packages/riverhog-application-access packages/riverhog-application-access
@@ -37,6 +38,7 @@ COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol
+COPY some-implementations/riverhog/provenance/contracts/direct-relations some-implementations/riverhog/provenance/contracts/direct-relations
 COPY packages/riverhog-materialization packages/riverhog-materialization
 COPY packages/riverhog-provenance packages/riverhog-provenance
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts

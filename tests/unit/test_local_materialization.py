@@ -338,3 +338,62 @@ def test_local_rejects_wrong_primary_anchor_without_freezing_state(
     assert result.exit_code != 0
     with local._connect(local_root) as db:
         assert db.execute("SELECT COUNT(*) FROM desired_collections").fetchone()[0] == 0
+
+
+def test_local_list_filters_sorts_and_fences_continuation(local_root: Path) -> None:
+    with local._connect(local_root) as db:
+        for collection_id in (1, 2, 3):
+            db.execute(
+                "INSERT INTO desired_collections "
+                "(collection_id,archive_root_sha256,inventory_identity,artifact_set_identity,"
+                "provenance_identity,created_at,layout_mode,rules_json,remote_unavailable) "
+                "VALUES (?,?,?,?,?,?,?,?,?)",
+                (
+                    collection_id,
+                    ROOT,
+                    "d" * 64,
+                    ARTIFACT_SET,
+                    PROVENANCE,
+                    CREATED_AT,
+                    "id-layout",
+                    "{}",
+                    int(collection_id == 2),
+                ),
+            )
+            db.execute(
+                "INSERT INTO desired_collection_tags (collection_id,tag) VALUES (?,?)",
+                (collection_id, "camera" if collection_id != 3 else "delivery"),
+            )
+    runner = CliRunner()
+    options = [
+        "list",
+        "--page-size",
+        "1",
+        "--sort",
+        "collection_id",
+        "--order",
+        "desc",
+        "--query",
+        "camera",
+        "--json",
+    ]
+    first = runner.invoke(local.local_app, options)
+    assert first.exit_code == 0, first.exception
+    first_page = json.loads(first.stdout)
+    assert [row["collection_id"] for row in first_page["collections"]] == [2]
+    assert first_page["collections"][0]["status"] == "remote-unavailable"
+    token = first_page["next_page_token"]
+    assert token
+    second = runner.invoke(local.local_app, [*options, "--page-token", token])
+    assert second.exit_code == 0, second.exception
+    second_page = json.loads(second.stdout)
+    assert [row["collection_id"] for row in second_page["collections"]] == [1]
+    assert second_page["next_page_token"] is None
+    changed = runner.invoke(
+        local.local_app, [*options, "--query", "delivery", "--page-token", token]
+    )
+    assert changed.exit_code != 0
+    assert "page token" in changed.stderr
+    by_status = runner.invoke(local.local_app, ["list", "--query", "remote-unavailable", "--json"])
+    assert by_status.exit_code == 0, by_status.exception
+    assert [row["collection_id"] for row in json.loads(by_status.stdout)["collections"]] == [2]

@@ -357,9 +357,39 @@ client_environment=(
   --env RIVERHOG_ALLOW_INSECURE_HTTP=true
   --env "RIVERHOG_TOKEN=${smoke_token}"
 )
-stove0_compose up --detach --build --wait \
-  state api controller worker a-stove0-ffprobe-observer a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer a-stove0-opus-target \
-  a-review0-opus-sampler
+# Bootstrap identities above allow Compose to interpolate unselected services.
+# Build before creating any executable component, then inject its actual OCI ID.
+stove0_compose build \
+  --sbom="generator=docker.io/docker/buildkit-syft-scanner:stable-1@sha256:79e7b013cbec16bbb436f312819a49a4a57752b2270c1a9332ae1a10fcc82a68" \
+  state api controller worker a-stove0-ffprobe-observer a-stove0-magic-observer \
+  a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer \
+  a-stove0-exiftool-observer a-stove0-opus-target a-review0-opus-sampler review0 a-stove0-rclone-target
+for image in a-stove0-ffprobe-observer a-stove0-magic-observer \
+  a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer \
+  a-stove0-exiftool-observer a-stove0-opus-target review0 a-stove0-rclone-target; do
+  prefix="${image//-/_}"
+  image_id="$(docker image inspect --format '{{.Id}}' "${image}:dev")"
+  [[ "${image_id}" =~ ^sha256:[0-9a-f]{64}$ ]]
+  test "$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "${image}:dev")" = "${SOURCE_REVISION}"
+  export "${prefix^^}_IMAGE_ID=${image_id}"
+done
+stove0_compose up --detach --wait \
+  state api controller worker a-stove0-ffprobe-observer a-stove0-magic-observer \
+  a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer \
+  a-stove0-exiftool-observer a-stove0-opus-target a-review0-opus-sampler
+# Qualify the independently selectable stream-facts and sampling contracts with
+# actual CPU-produced video/audio; malformed probing must fail, never classify.
+stove0_compose exec -T a-stove0-opus-target ffmpeg -nostdin -hide_banner -loglevel error \
+  -f lavfi -i 'color=c=black:s=320x180:r=24' \
+  -f lavfi -i 'sine=frequency=440:sample_rate=48000' -t 1 \
+  -c:v libx264 -profile:v high -preset veryfast -pix_fmt yuv420p \
+  -x264-params 'colorprim=bt709:transfer=bt709:colormatrix=bt709' \
+  -colorspace bt709 -color_trc bt709 -color_primaries bt709 \
+  -c:a aac -b:a 96000 -ac 2 -ar 48000 \
+  -movflags frag_keyframe+empty_moov -f mp4 - | \
+  stove0_compose exec -T a-stove0-ffprobe-observer python -c \
+    "$(cat "${ROOT_DIR}/tests/harness/ffprobe_observer_tool_parity.py")"
+
 sampler_descriptor_code="import json, urllib.request
 request = urllib.request.Request(
     'http://127.0.0.1:8080/v1/sampler',
@@ -370,7 +400,7 @@ export A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256="$(
   stove0_compose exec -T a-review0-opus-sampler python -c "${sampler_descriptor_code}"
 )"
 write_review_configs
-stove0_compose up --detach --build --wait review0 a-stove0-rclone-target
+stove0_compose up --detach --wait review0 a-stove0-rclone-target
 stove0_compose exec -T review0 python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-review0-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-transform-target/v1'"
 stove0_compose exec -T a-stove0-rclone-target python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-rclone-target-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-effect-target/v1'"
 stove0_compose exec -T a-stove0-rclone-target python -c "from pathlib import Path; import subprocess; source = Path('/tmp/rclone-probe'); source.write_bytes(b'riverhog-rclone-effect-probe'); destination = Path('/var/lib/stove0-rclone-delivery/qualification/probe'); subprocess.run(['rclone', 'copyto', str(source), str(destination)], check=True); assert destination.read_bytes() == source.read_bytes(); source.unlink(); destination.unlink()"
@@ -458,7 +488,7 @@ assert receipts[0]['collection_id'] != receipts[1]['collection_id']
 print(json.dumps([
     {
         key: receipt[key]
-        for key in ('collection_id', 'archive_root_sha256', 'content_identity')
+        for key in ('collection_id', 'archive_root_sha256', 'artifact_set_identity')
     }
     for receipt in receipts
 ], sort_keys=True))"
@@ -497,32 +527,29 @@ partition_verify_code="import hashlib
 import json
 import os
 from riverhog_client import ApiClient
+from tests.support.qualification.artifact_readouts import root_bound_artifacts
 receipts = json.loads(os.environ['PARTITION_RECEIPTS'])
 expected = (b'first exact FTP event', b'second distinct exact FTP event')
 with ApiClient() as client:
     for receipt, content in zip(receipts, expected, strict=True):
         collection_id = int(receipt['collection_id'])
-        page = client.get_portable_collection_inventory(collection_id, limit=100)
-        assert page.complete, page
-        by_path = {artifact.path: artifact for artifact in page.files}
-        assert set(by_path) == {
-            'riverhog/producer-evidence.json',
-            'same-path.bin',
-        }, page
-        artifact = by_path['same-path.bin']
-        assert artifact.bytes == len(content)
+        readouts = list(root_bound_artifacts(client, collection_id))
+        assert len(readouts) == 1, readouts
+        artifact, hint = readouts[0]
+        assert hint == ('same-path.bin',), hint
+        assert int(artifact.bytes) == len(content)
         assert artifact.sha256 == hashlib.sha256(content).hexdigest()
         plan = client.plan_retrieval(
-            [(collection_id, artifact.path)],
+            [(collection_id, str(artifact.artifact_id))],
             restore_policy='never',
         )
         job = client.create_retrieval_job(plan['id'], plan_etag=plan['etag'])
         assert job['state'] == 'ready', job
-        with client.stream_retrieval_file(
+        with client.stream_retrieval_artifact(
             job['id'],
             collection_id=collection_id,
-            path=artifact.path,
-            expected_bytes=artifact.bytes,
+            artifact_id=str(artifact.artifact_id),
+            expected_bytes=int(artifact.bytes),
             expected_sha256=artifact.sha256,
         ) as chunks:
             assert b''.join(chunks) == content
@@ -670,7 +697,7 @@ assert len(new_receipts) == 1, new_receipts
 receipt = json.loads(new_receipts[0].read_text(encoding='utf-8'))
 print(json.dumps({
     key: receipt[key]
-    for key in ('collection_id', 'archive_root_sha256', 'content_identity')
+    for key in ('collection_id', 'archive_root_sha256', 'artifact_set_identity')
 }, sort_keys=True))"
 scale_started_ns="$(date +%s%N)"
 input_receipt_json="$(adapter_compose exec -T \
@@ -890,7 +917,7 @@ client_receipt_json="$(
     --entrypoint a-riverhog-cli test collection upload start /cli-input \
     --description 'Classified CLI compose qualification' \
     --tag stove0/conformance \
-    --omit-provenance 'compose qualification fixture' --json
+    --json
 )"
 client_collection_id="$(printf '%s' "${client_receipt_json}" | jq -r '.collection_id')"
 compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
@@ -911,7 +938,7 @@ overflow_result="$(
   compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
     --volume "${overflow_root}:/overflow:ro" \
     --entrypoint a-riverhog-cli test collection upload start /overflow \
-    --omit-provenance 'compose qualification fixture' --json
+    --json
 )"
 overflow_collection_id="$(printf '%s' "${overflow_result}" | jq -r '.collection_id')"
 overflow_cache_code="import os, time
@@ -1042,37 +1069,33 @@ test -n "${output_collection_id}"
 
 lineage_code="import json, os
 from riverhog_client import ApiClient
-def collect(method, key, **kwargs):
-    page_token = None
-    rows = []
-    while True:
-        payload = method(page_size=100, page_token=page_token, **kwargs)
-        rows.extend(payload[key])
-        page_token = payload.get('next_page_token')
-        if page_token is None:
-            return rows
+from tests.support.qualification.artifact_readouts import root_bound_artifacts
+def readouts(client, collection_id):
+    result = {}
+    for artifact, hint in root_bound_artifacts(client, collection_id):
+        assert hint is not None, artifact
+        name = '/'.join(hint)
+        assert name not in result, name
+        result[name] = artifact.model_dump(mode='json')
+    return result
 with ApiClient() as client:
     inputs = [client.get_collection(int(os.environ['INPUT_COLLECTION_ID']))]
     outputs = [client.get_collection(int(os.environ['OUTPUT_COLLECTION_ID']))]
-    input_files = [row for row in collect(client.search, 'files', collection=inputs[0]['id']) if not row['path'].startswith('riverhog/')]
-    output_files = [row for row in collect(client.search, 'files', collection=outputs[0]['id']) if not row['path'].startswith('riverhog/')]
+    input_artifacts = readouts(client, inputs[0]['id'])
+    output_artifacts = readouts(client, outputs[0]['id'])
     audio_count = int(os.environ['STOVE0_SMOKE_FILE_COUNT'])
-    assert len(input_files) == audio_count + 1
-    archive_outputs = [row for row in output_files if row['path'].endswith('.opus')]
-    projected_xmp = [row for row in output_files if row['path'].endswith('.opus.xmp')]
-    retained_xmp = [
-        row for row in output_files
-        if row['path'].startswith('audio/~source-artifacts/') and row['path'].endswith('.xmp')
-    ]
-    assert len(archive_outputs) == audio_count
-    assert len(projected_xmp) == audio_count
-    assert len(retained_xmp) == 1
-    assert len(output_files) == audio_count * 2 + 1
-    source_xmp = next(row for row in input_files if row['path'] == 'smoke-0000.xmp')
-    assert retained_xmp[0]['bytes'] == source_xmp['bytes']
-    assert retained_xmp[0]['sha256'] == source_xmp['sha256']
+    assert len(input_artifacts) == audio_count + 1
+    expected_names = {
+        name
+        for ordinal in range(audio_count)
+        for name in (f'smoke-{ordinal:04d}.opus', f'smoke-{ordinal:04d}.opus.xmp')
+    } | {'smoke-0000.xmp'}
+    assert set(output_artifacts) == expected_names
+    source_xmp = input_artifacts['smoke-0000.xmp']
+    retained_xmp = output_artifacts['smoke-0000.xmp']
+    assert (retained_xmp['bytes'], retained_xmp['sha256']) == (source_xmp['bytes'], source_xmp['sha256'])
     elapsed_seconds = int(os.environ['STOVE0_SMOKE_ELAPSED_NS']) / 1_000_000_000
-    input_bytes = sum(int(row['bytes']) for row in input_files)
+    input_bytes = sum(int(row['bytes']) for row in input_artifacts.values())
     derivation = client.get_collection_derivation(outputs[0]['id'])
     assert derivation['derivation']['format'] == 'riverhog-collection-derivation/v1'
     authority = derivation['derivation']['input_set_sha256']
@@ -1094,12 +1117,12 @@ with ApiClient() as client:
         'format': 'stove0-final-image-scale/v1',
         'elapsed_seconds': elapsed_seconds,
         'input_bytes': input_bytes,
-        'input_files': len(input_files),
-        'items_per_second': len(input_files) / elapsed_seconds,
+        'input_artifacts': len(input_artifacts),
+        'items_per_second': len(input_artifacts) / elapsed_seconds,
         'measurement': 'ftp-ingress-through-opus-derived-publication',
         'mib_per_second': input_bytes / 1048576 / elapsed_seconds,
-        'output_bytes': sum(int(row['bytes']) for row in output_files),
-        'output_files': len(output_files),
+        'output_bytes': sum(int(row['bytes']) for row in output_artifacts.values()),
+        'output_artifacts': len(output_artifacts),
     }, sort_keys=True))"
 compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
   --env "STOVE0_SMOKE_FILE_COUNT=${smoke_file_count}" \
@@ -1191,10 +1214,10 @@ print(json.dumps({'format': 'stove0-transfer-phases/v1', **asdict(summary)}, sor
 fi
 
 stove0_compose restart \
-  api controller worker a-stove0-ffprobe-observer a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer \
+  api controller worker a-stove0-ffprobe-observer a-stove0-magic-observer a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer \
   a-stove0-opus-target a-review0-opus-sampler review0 a-stove0-rclone-target
 stove0_compose up --detach --wait \
-  api controller worker a-stove0-ffprobe-observer a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer \
+  api controller worker a-stove0-ffprobe-observer a-stove0-magic-observer a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer \
   a-stove0-opus-target a-review0-opus-sampler review0 a-stove0-rclone-target
 stove0_compose exec -T api python -c "${wait_code}"
 
@@ -1214,7 +1237,7 @@ review_input_receipt_json="$(
   compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
     --volume "${review_input_root}:/review-input:ro" \
     --entrypoint a-riverhog-cli test collection upload start /review-input \
-    --omit-provenance 'compose qualification fixture' --json
+    --json
 )"
 review_qualification="$(cat "${ROOT_DIR}/scripts/qualify_review0_delivery.py")"
 review_result_json="$(stove0_compose exec -T \
@@ -1271,7 +1294,7 @@ witness_receipt_json="$(
   compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
     --volume "${witness_input_root}:/witness-input:ro" \
     --entrypoint a-riverhog-cli test collection upload start /witness-input \
-    --omit-provenance 'compose qualification fixture' --json
+    --json
 )"
 witness_collection_id="$(printf '%s' "${witness_receipt_json}" | jq -r '.collection_id')"
 test -n "${witness_collection_id}"

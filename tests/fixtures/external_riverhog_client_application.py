@@ -10,6 +10,20 @@ from types import SimpleNamespace
 from typing import Any
 
 import riverhog_client.producer as producer_module
+from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
+    ArchiveProvenanceIdentity,
+    CollectionArchiveManifest,
+    CollectionArtifactSetIdentity,
+    MemberHistoryBuilder,
+    MemberHistoryPrimary,
+    MemberHistoryRoot,
+    ProvenanceRootDocument,
+    ProvenanceRootIdentity,
+    SourceMemberHistoryBindingProof,
+    binding_tree_commitment,
+    provenance_structure_identity,
+)
 from riverhog_client import (
     ApiClient,
     ProducerArtifactIdentity,
@@ -18,8 +32,15 @@ from riverhog_client import (
     create_or_resume_with_initial_collection_tags,
     hash_raw_source_chunks,
 )
-from riverhog_protocol import PortableCollectionInventoryPage
+from riverhog_client.canonical_completion import CompletionRecord
+from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
+from riverhog_protocol import ArtifactMemberIdentityDocument, PortableCollectionInventoryPage
 from riverhog_protocol.artifact_identity import ArtifactId
+from riverhog_protocol.collection_completion import CollectionCompletionRecordingDocument
+from riverhog_protocol.collection_workflow_transport import (
+    ArtifactDispositionOutputPageDocument,
+    ArtifactDispositionPageDocument,
+)
 from riverhog_protocol.collection_workflows import (
     ArtifactDispositionSetIdentity,
     CollectionRootIdentity,
@@ -27,8 +48,16 @@ from riverhog_protocol.collection_workflows import (
     RecipeIdentity,
 )
 from riverhog_protocol.errors import NotFound
+from riverhog_protocol.manifest import artifact_set_identity_ordered
 from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
-from riverhog_provenance import validate_journal
+from riverhog_provenance import (
+    BoundedSourceObserver,
+    BytesSource,
+    assertion,
+    create_journal,
+    external_reference,
+    validate_journal,
+)
 
 assert not any(name.startswith("riverhog_client.processing") for name in sys.modules)
 
@@ -53,9 +82,199 @@ OUTPUT_SHA256 = hashlib.sha256(OUTPUT_CONTENT).hexdigest()
 DISPOSITIONS = ArtifactDispositionSetIdentity(1, 1, 1, "5" * 64)
 
 
+class ExternalInputHistory:
+    """One source archive with an exact primary and explicitly bound late claim."""
+
+    def __init__(self, collection_id: int, artifact_id: ArtifactId, content: bytes) -> None:
+        self.collection_id = collection_id
+        self.member = ArtifactMemberIdentityDocument(
+            artifact_id=artifact_id,
+            bytes=str(len(content)),
+            sha256=hashlib.sha256(content).hexdigest(),
+        )
+        produced = build_member_journal(
+            member=self.member,
+            observation=BoundedSourceObserver().observe(BytesSource(content)),
+            delivery_context_id="urn:uuid:22222222-2222-4222-8222-222222222222",
+            attribution=ProducerAttribution(
+                "fixture", "fixture/v1", "1", "event", "fixture", {}, "f" * 64
+            ),
+            materialization_hint=None,
+        )
+        self.primary = produced.binding
+        self.summary = validate_journal(produced.content, require_profiles=False)
+        who = self.summary.graph["agents"][0]["id"]
+        late = create_journal(
+            {
+                "agents": self.summary.graph["agents"],
+                "extensions": [
+                    assertion(
+                        "extension",
+                        who,
+                        subject=external_reference(self.summary, self.summary.states[0]["id"]),
+                        property="https://fixture.invalid/late-record",
+                        value={"type": "text", "value": "retained late evidence"},
+                    )
+                ],
+            },
+            recorded_by_agent_id=who,
+        )
+        late_summary = validate_journal(late, require_profiles=False)
+        self.late_journal_id = late_summary.journal_id
+        self.journals = {produced.journal_id: produced.content, late_summary.journal_id: late}
+        with MemberHistoryBuilder(
+            artifact_id=artifact_id,
+            bytes=len(content),
+            sha256=self.member.sha256,
+            primary=MemberHistoryPrimary.from_mapping(
+                {
+                    "journal": self.primary.journal.model_dump(mode="json"),
+                    "delivery_association_id": self.primary.delivery_association_id,
+                }
+            ),
+        ) as builder:
+            builder.add_root(
+                MemberHistoryRoot.from_mapping(
+                    {"journal": late_summary.anchor, "inclusion": "bound"}
+                )
+            )
+            self.history_binding, self.history = builder.seal()
+            self.objects = {
+                provenance_structure_identity(raw).object_id: raw for raw in builder.objects()
+            }
+        identity = artifact_set_identity_ordered((self.member,))
+        provenance = ProvenanceRootDocument(
+            archive_generation="1" * 64,
+            artifact_set_sha256=identity,
+            delivery_context_id="urn:uuid:22222222-2222-4222-8222-222222222222",
+            binding_count=1,
+            binding_tree_sha256=binding_tree_commitment((self.history_binding,)).root_sha256,
+            journal_count=2,
+            ordered_volume_sha256="e" * 64,
+        )
+        archive = CollectionArchiveManifest(
+            archive_generation=provenance.archive_generation,
+            artifact_set=CollectionArtifactSetIdentity(1, len(content), identity),
+            ordered_volume_sha256="f" * 64,
+            provenance=ArchiveProvenanceIdentity(
+                provenance.identity,
+                ProvenanceRootIdentity(
+                    id="provenance-root",
+                    kind="provenance-root",
+                    path="provenance/root.json.age",
+                    plaintext_bytes=len(provenance.to_json_bytes()),
+                    sha256=provenance.identity,
+                    stored_bytes=1234,
+                    stored_sha256="0" * 64,
+                ),
+            ),
+        )
+        self.proof = SourceMemberHistoryBindingProof(
+            "a" * 64,
+            collection_id,
+            archive.to_json_bytes(),
+            provenance.to_json_bytes(),
+            self.history_binding,
+            0,
+            (),
+        )
+        self.root = CollectionRootIdentity(
+            collection_id, hashlib.sha256(archive.to_json_bytes()).hexdigest(), identity
+        )
+
+    def get_collection(self, collection_id: int) -> dict[str, Any]:
+        assert collection_id == self.collection_id
+        return {
+            "id": str(collection_id),
+            "archive_root_sha256": self.root.archive_root_sha256,
+            "artifact_set_identity": self.root.artifact_set_identity,
+        }
+
+    def get_collection_artifact_provenance(
+        self, collection_id: int, artifact_id: ArtifactId
+    ) -> dict[str, Any]:
+        assert collection_id == self.collection_id and artifact_id == self.member.artifact_id
+        return {
+            "collection_id": str(collection_id),
+            "archive_root_sha256": self.root.archive_root_sha256,
+            "artifact": self.member.model_dump(mode="json"),
+            "binding": self.primary.model_dump(mode="json"),
+            "history_binding": self.history_binding.to_mapping(),
+            "member_history": self.history.to_mapping(),
+        }
+
+    def get_collection_provenance_structure(
+        self, collection_id: int, object_id: str, *, archive_root_sha256: str
+    ) -> bytes:
+        assert (
+            collection_id == self.collection_id
+            and archive_root_sha256 == self.root.archive_root_sha256
+        )
+        return self.objects[object_id]
+
+    def get_collection_artifact_history_binding_proof(
+        self, collection_id: int, artifact_id: ArtifactId, *, archive_root_sha256: str
+    ) -> SourceMemberHistoryBindingProof:
+        assert collection_id == self.collection_id and artifact_id == self.member.artifact_id
+        assert archive_root_sha256 == self.root.archive_root_sha256
+        return self.proof
+
+    def list_collection_provenance_journals(
+        self, collection_id: int, **kwargs: Any
+    ) -> dict[str, Any]:
+        assert collection_id == self.collection_id and kwargs["after_journal_id"] is None
+        return {
+            "collection_id": str(collection_id),
+            "archive_root_sha256": self.root.archive_root_sha256,
+            "journals": [
+                {
+                    "journal_id": key,
+                    "bytes": str(len(raw)),
+                    "sha256": hashlib.sha256(raw).hexdigest(),
+                }
+                for key, raw in sorted(self.journals.items())
+            ],
+            "next_journal_id": None,
+        }
+
+    @contextmanager
+    def stream_collection_provenance_journal(
+        self,
+        collection_id: int,
+        journal_id: str,
+        *,
+        expected_bytes: int,
+        expected_sha256: str,
+        end: int | None,
+    ) -> Iterator[Iterator[bytes]]:
+        assert collection_id == self.collection_id
+        raw = self.journals[journal_id]
+        assert (len(raw), hashlib.sha256(raw).hexdigest()) == (expected_bytes, expected_sha256)
+        yield iter((raw[:end],))
+
+    def accepted(self) -> Any:
+        from riverhog_client.processing import ClaimedArtifact
+
+        reader = ClaimedCollectionReader(
+            self, inputs=(self.root,), work_id=WORK_ID, claim_id=CLAIM_ID, fence=1
+        )
+        return reader.provenance(
+            ClaimedArtifact(
+                self.root, self.member.artifact_id, self.member.bytes, self.member.sha256
+            )
+        )
+
+
+_INPUT_HISTORY = ExternalInputHistory(1, INPUT_ID, INPUT_CONTENT)
+INPUT_ROOT = _INPUT_HISTORY.root
+
+
 class ReadApi:
     def __init__(self) -> None:
         self.closed = False
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(_INPUT_HISTORY, name)
 
     def get_collection(self, collection_id: int) -> dict[str, object]:
         assert collection_id == INPUT_ROOT.collection_id
@@ -77,7 +296,9 @@ class ReadApi:
                         "artifact_set_identity": INPUT_ROOT.artifact_set_identity,
                         "encryption_format": "age-v1-scrypt",
                         "passphrase_id": "external-archive-key-v1",
-                        "provenance_identity": "e" * 64,
+                        "provenance_identity": hashlib.sha256(
+                            _INPUT_HISTORY.proof.provenance_root
+                        ).hexdigest(),
                     },
                     "inventory_identity": "6" * 64,
                     "artifact_count": "1",
@@ -147,7 +368,26 @@ class UploadApi(ReadApi):
         super().__init__()
         self.registered: dict[str, dict[str, Any]] = {}
         self.journals: dict[str, bytes] = {}
-        self.bindings: list[dict[str, object]] = []
+        self.bindings: dict[str, Any] = {}
+        self.structures: dict[str, bytes] = {}
+        self.history_inputs: dict[str, Any] = {}
+        self.requirement: Any = None
+        self.recording: Any = None
+        self.finalized = False
+        self.derivation_identity = DISPOSITIONS
+        self.dispositions = [
+            {
+                "input": {
+                    "collection_id": "1",
+                    "archive_root_sha256": INPUT_ROOT.archive_root_sha256,
+                    "artifact_id": INPUT_ID,
+                },
+                "status": "transformed",
+            }
+        ]
+        self.output_edges = [
+            {"input": self.dispositions[0]["input"], "output_artifact_id": OUTPUT_ID}
+        ]
         self.decisions: list[dict[str, object]] = []
 
     def get_processing_claim(self, claim_id: str) -> SimpleNamespace:
@@ -169,6 +409,7 @@ class UploadApi(ReadApi):
             "resumed": False,
             "state": "open",
             "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
+            "construction_identity_sha256": "c" * 64,
             "registration_constraints": {
                 "pack_member_bytes": "1048576",
                 "raw_part_plaintext_bytes": "65536",
@@ -193,6 +434,7 @@ class UploadApi(ReadApi):
         content: Iterator[bytes],
         byte_count: int,
         sha256: str,
+        **_kwargs: Any,
     ) -> None:
         raw = b"".join(content)
         assert len(raw) == byte_count
@@ -203,12 +445,16 @@ class UploadApi(ReadApi):
     def get_collection_upload_session_artifact_provenance_binding(
         self, _collection_id: int, _artifact_id: ArtifactId
     ) -> object:
-        raise NotFound("binding absent")
+        try:
+            return self.bindings[_artifact_id]
+        except KeyError as exc:
+            raise NotFound("binding absent") from exc
 
     def bind_collection_upload_session_artifact_provenance(
         self, _collection_id: int, batch: Any
     ) -> None:
-        self.bindings.extend(batch.model_dump(mode="json")["bindings"])
+        for binding in batch.bindings:
+            assert self.bindings.setdefault(binding.artifact_id, binding) == binding
 
     def set_collection_upload_session_materialization_decisions(
         self, _collection_id: int, batch: Any
@@ -219,6 +465,7 @@ class UploadApi(ReadApi):
         return {"state": "open"}
 
     def complete_collection_upload_session(self, _collection_id: int) -> dict[str, object]:
+        self.finalized = True
         return {
             "state": "finalized",
             "artifact_set_identity": "8" * 64,
@@ -228,6 +475,132 @@ class UploadApi(ReadApi):
                 "artifact_set_identity": "8" * 64,
             },
         }
+
+    def list_processing_claim_dispositions(
+        self,
+        claim_id: str,
+        *,
+        identity_sha256: str,
+        start_ordinal: int = 0,
+    ) -> ArtifactDispositionPageDocument:
+        assert claim_id == CLAIM_ID
+        identity = self.derivation_identity
+        assert identity_sha256 == identity.sha256 and start_ordinal == 0
+        return ArtifactDispositionPageDocument.model_validate(
+            {
+                "identity": identity.as_dict(),
+                "start_ordinal": "0",
+                "dispositions": self.dispositions
+                if self.dispositions is not None
+                else [
+                    {
+                        "input": {
+                            "collection_id": "1",
+                            "archive_root_sha256": "1" * 64,
+                            "artifact_id": f"{index:064x}",
+                        },
+                        "status": "transformed",
+                    }
+                    for index in range(identity.disposition_count)
+                ],
+            }
+        )
+
+    def list_processing_claim_disposition_outputs(
+        self,
+        claim_id: str,
+        *,
+        identity_sha256: str,
+        start_ordinal: int = 0,
+    ) -> ArtifactDispositionOutputPageDocument:
+        assert claim_id == CLAIM_ID
+        identity = self.derivation_identity
+        assert identity_sha256 == identity.sha256 and start_ordinal == 0
+        return ArtifactDispositionOutputPageDocument.model_validate(
+            {
+                "identity": identity.as_dict(),
+                "start_ordinal": "0",
+                "outputs": self.output_edges
+                if self.output_edges is not None
+                else [
+                    {
+                        "input": {
+                            "collection_id": "1",
+                            "archive_root_sha256": "1" * 64,
+                            "artifact_id": f"{index:064x}",
+                        },
+                        "output_artifact_id": f"{index + 100:064x}",
+                    }
+                    for index in range(identity.output_edge_count)
+                ],
+            }
+        )
+
+    def stage_collection_upload_session_history_structure(
+        self, _collection_id: int, raw: bytes
+    ) -> None:
+        identity = provenance_structure_identity(raw).object_id
+        assert self.structures.setdefault(identity, raw) == raw
+
+    def set_collection_upload_session_member_history_inputs(
+        self, _collection_id: int, artifact_id: str, inputs: Any
+    ) -> None:
+        assert self.history_inputs.setdefault(artifact_id, inputs) == inputs
+
+    def get_collection_upload_session_member_history_inputs(
+        self, _collection_id: int, artifact_id: str
+    ) -> Any:
+        from riverhog_protocol.provenance_transport import ArchiveRecordSetReferenceDocument
+
+        return ArchiveRecordSetReferenceDocument.model_validate(
+            self.history_inputs[artifact_id].to_mapping()
+        )
+
+    def set_collection_upload_session_completion_requirement(
+        self, _collection_id: int, requirement: Any
+    ) -> None:
+        if self.requirement is not None:
+            assert self.requirement == requirement
+        self.requirement = requirement
+
+    def get_collection_upload_session_provenance_journal(
+        self, _collection_id: int, journal_id: str
+    ) -> Any:
+        if journal_id not in self.journals:
+            raise NotFound("staged journal absent")
+        raw = self.journals[journal_id]
+        return SimpleNamespace(
+            state="sealed", bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest()
+        )
+
+    @contextmanager
+    def stream_collection_upload_session_provenance_journal(
+        self, _collection_id: int, journal_id: str
+    ) -> Iterator[Iterator[bytes]]:
+        yield iter((self.journals[journal_id],))
+
+    def reserve_collection_upload_session_completion_recording(
+        self, _collection_id: int, request: Any
+    ) -> Any:
+        value = CollectionCompletionRecordingDocument(
+            **request.model_dump(),
+            journal_id="urn:uuid:99999999-9999-4999-8999-999999999999",
+            recorded_at="2026-10-01T00:00:00.000000000Z",
+        )
+        if self.recording is not None:
+            assert self.recording == value
+        self.recording = value
+        return value
+
+    def get_collection_upload_session(self, _collection_id: int) -> dict[str, object]:
+        if self.finalized:
+            return self.complete_collection_upload_session(_collection_id)
+        return {"state": "open", "construction_identity_sha256": "c" * 64}
+
+    def list_collection_upload_session_artifacts(
+        self, _collection_id: int, **_kwargs: Any
+    ) -> dict[str, object]:
+        return {"artifacts": list(self.registered.values()), "next_page_token": None}
 
     def spawn(self) -> UploadApi:
         return self
@@ -323,13 +696,35 @@ def main() -> None:
             materialization_hint=("output.bin",),
         ),
         identity=identity,
+        output_id="external-output",
+        source_histories=(_INPUT_HISTORY.accepted(),),
+        history_extent=BOUND_HISTORY_EXTENT,
+    )
+    raw_evidence = b'{"optional":null,"quality":1.2300}'
+    evidence_digest = hashlib.sha256(raw_evidence).hexdigest()
+    completion_records = tuple(
+        CompletionRecord(kind, len(raw_evidence), evidence_digest, lambda: (raw_evidence,))
+        for kind in (
+            "implementation",
+            "invocation",
+            "target-execution",
+            "target-output-declarations",
+            "target-result",
+        )
     )
     receipt = runtime.finish_incremental_publication(
-        writer, execution_sha256="1" * 64, disposition_set=DISPOSITIONS, poll_seconds=0.01
+        writer,
+        execution_sha256=evidence_digest,
+        disposition_set=DISPOSITIONS,
+        completion_records=completion_records,
+        poll_seconds=0.01,
     )
     runtime.close()
     assert receipt.collection_id == 2
-    assert len(upload_api.registered) == len(upload_api.journals) == len(upload_api.bindings) == 1
+    assert len(upload_api.registered) == len(upload_api.bindings) == 1
+    assert len(upload_api.journals) == 4  # two inherited snapshots, primary, completion
+    assert upload_api.requirement is not None and upload_api.recording is not None
+    assert len(upload_api.structures) >= 3
     assert upload_api.decisions[0]["materialization_hint"] == {"components": ["output.bin"]}
 
     settlement = SettlementClient()

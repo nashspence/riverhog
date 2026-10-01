@@ -10,6 +10,7 @@ from riverhog_provenance_contracts import ProvenanceJournalId
 from time_formats import CanonicalUtcTimestamp
 
 from .collection_workflows import canonical_json_sha256
+from .provenance_transport import JournalAnchorDocument
 
 Sha256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 
@@ -63,6 +64,46 @@ class CollectionCompletionRecordingRequestDocument(BaseModel):
 class CollectionCompletionRecordingDocument(CollectionCompletionRecordingRequestDocument):
     journal_id: ProvenanceJournalId
     recorded_at: CanonicalUtcTimestamp
+
+
+class CollectionCompletionRecordIdentityDocument(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    sha256: Sha256
+    bytes: Annotated[str, Field(pattern=r"^(0|[1-9][0-9]*)$")]
+
+
+class CollectionCompletionPublicationReceiptDocument(BaseModel):
+    """Root-bearing protocol responses retain verified completion retry identities.
+
+    These hashes are a catalog projection of the accepted canonical completion,
+    without granting journal-read authority or becoming archived semantic claims.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    requirement_sha256: Sha256
+    records_sha256: Sha256
+    journal: JournalAnchorDocument
+    records: dict[str, CollectionCompletionRecordIdentityDocument]
+
+    @model_validator(mode="after")
+    def validate_identities(self) -> Self:
+        from .collection_record_preimages import completion_record_inventory_sha256
+
+        if not set(COMPLETION_REQUIRED_RECORD_KINDS).issubset(self.records):
+            raise ValueError("completion receipt omits required record identities")
+        if any(not kind or kind != kind.strip() for kind in self.records):
+            raise ValueError("completion receipt record kind is not canonical")
+        if len(canonical_json_bytes(self.model_dump(mode="json"))) > 64 * 1024:
+            raise ValueError("completion receipt exceeds its bounded control document")
+        if (
+            completion_record_inventory_sha256(
+                (kind, record.sha256, int(record.bytes))
+                for kind, record in sorted(self.records.items())
+            )
+            != self.records_sha256
+        ):
+            raise ValueError("completion receipt differs from its accepted inventory")
+        return self
 
 
 __all__ = ["COMPLETION_REQUIRED_RECORD_KINDS", "CollectionCompletionRequirementDocument"]

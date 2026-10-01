@@ -20,11 +20,11 @@ from riverhog_core.catalog_db import (
     session_scope,
 )
 from riverhog_core.catalog_models import (
+    CollectionArchiveArtifactObjectRecord,
     CollectionArchiveCopyRecord,
-    CollectionArchiveFileObjectRecord,
     CollectionArchiveObjectRecord,
+    CollectionArtifactRecord,
     CollectionDeletionRecord,
-    CollectionFileRecord,
     CollectionRecord,
     CollectionTagPublicationRecord,
     CollectionUploadRecord,
@@ -52,8 +52,6 @@ from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUpload
 from riverhog_core.services.collection_workflows import SqlAlchemyCollectionWorkflowService
 from riverhog_core.services.retrieval import SqlAlchemyRetrievalService
 from riverhog_protocol.collection_workflows import (
-    DERIVATION_EVIDENCE_PATH,
-    PRODUCER_EVIDENCE_PATH,
     ArtifactDisposition,
     ArtifactDispositionOutput,
     ArtifactDispositionSetIdentity,
@@ -63,9 +61,7 @@ from riverhog_protocol.collection_workflows import (
     CollectionRootIdentity,
     OperationIdentity,
     RecipeIdentity,
-    canonical_json_bytes,
     canonical_json_sha256,
-    derivation_evidence_page_path,
     processing_outcome_set_identity,
 )
 from riverhog_protocol.effect_settlement import ExternalEffectSettlement
@@ -73,6 +69,7 @@ from riverhog_protocol.errors import Conflict, NotFound
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
+from tests.support.completion_receipt_fixtures import published_completion_projection
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
@@ -80,9 +77,11 @@ pytestmark = pytest.mark.integration
 
 COLLECTION_ID = 1
 SECOND_COLLECTION_ID = 3
-FILE_PATH = "document.txt"
+INPUT_ARTIFACT_ID = "1" * 64
 CONTENT = b"archived document"
-SECOND_FILE_PATH = "second.txt"
+SECOND_INPUT_ARTIFACT_ID = "2" * 64
+OUTPUT_ARTIFACT_ID = "3" * 64
+SECOND_OUTPUT_ARTIFACT_ID = "4" * 64
 SECOND_CONTENT = b"second archived document"
 DELETER = Principal(
     id="riverhog-client",
@@ -107,7 +106,7 @@ OPERATION = OperationIdentity("fixture.transform/v1", canonical_json_sha256(OPER
 def _workflow_artifact(root: CollectionRootIdentity) -> CollectionArtifactIdentity:
     return CollectionArtifactIdentity(
         collection=root,
-        path=FILE_PATH,
+        artifact_id=INPUT_ARTIFACT_ID,
         bytes=len(CONTENT),
         sha256=hashlib.sha256(CONTENT).hexdigest(),
     )
@@ -217,8 +216,10 @@ def _seed(database_url: str) -> None:
                 creation_idempotency_key="fixture-docs",
                 creation_identity_sha256="e" * 64,
                 creation_custody_mode="producer-retained",
+                provenance_identity="f" * 64,
+                delivery_context_id="urn:uuid:22222222-2222-4222-8222-222222222222",
                 archive_root_sha256="b" * 64,
-                content_identity="0" * 64,
+                artifact_set_identity="0" * 64,
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="0" * 64,
@@ -226,9 +227,9 @@ def _seed(database_url: str) -> None:
             )
         )
         session.add(
-            CollectionFileRecord(
+            CollectionArtifactRecord(
                 collection_id=COLLECTION_ID,
-                path=FILE_PATH,
+                artifact_id=INPUT_ARTIFACT_ID,
                 bytes=len(CONTENT),
                 sha256=hashlib.sha256(CONTENT).hexdigest(),
             )
@@ -267,13 +268,13 @@ def _seed(database_url: str) -> None:
                 )
             )
         session.add(
-            CollectionArchiveFileObjectRecord(
+            CollectionArchiveArtifactObjectRecord(
                 collection_id=COLLECTION_ID,
                 store="deep",
-                path=FILE_PATH,
+                artifact_id=INPUT_ARTIFACT_ID,
                 sequence=0,
                 object_id="segment-000000000000",
-                file_offset=0,
+                artifact_offset=0,
                 bytes=len(CONTENT),
             )
         )
@@ -318,8 +319,10 @@ def _seed_second_input(database_url: str) -> CollectionRootIdentity:
                 creation_idempotency_key="fixture-second",
                 creation_identity_sha256="d" * 64,
                 creation_custody_mode="producer-retained",
+                provenance_identity="f" * 64,
+                delivery_context_id="urn:uuid:22222222-2222-4222-8222-222222222222",
                 archive_root_sha256="f" * 64,
-                content_identity="1" * 64,
+                artifact_set_identity="1" * 64,
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="1" * 64,
@@ -327,9 +330,9 @@ def _seed_second_input(database_url: str) -> CollectionRootIdentity:
             )
         )
         session.add(
-            CollectionFileRecord(
+            CollectionArtifactRecord(
                 collection_id=SECOND_COLLECTION_ID,
-                path=SECOND_FILE_PATH,
+                artifact_id=SECOND_INPUT_ARTIFACT_ID,
                 bytes=len(SECOND_CONTENT),
                 sha256=hashlib.sha256(SECOND_CONTENT).hexdigest(),
             )
@@ -368,13 +371,13 @@ def _seed_second_input(database_url: str) -> CollectionRootIdentity:
                 )
             )
         session.add(
-            CollectionArchiveFileObjectRecord(
+            CollectionArchiveArtifactObjectRecord(
                 collection_id=SECOND_COLLECTION_ID,
                 store="deep",
-                path=SECOND_FILE_PATH,
+                artifact_id=SECOND_INPUT_ARTIFACT_ID,
                 sequence=0,
                 object_id="segment-000000000000",
-                file_offset=0,
+                artifact_offset=0,
                 bytes=len(SECOND_CONTENT),
             )
         )
@@ -596,52 +599,6 @@ def _settle_outcomes(
     return settled
 
 
-def _derivation_evidence_records(
-    service: SqlAlchemyCollectionWorkflowService,
-    claim_id: str,
-    authority: ArtifactDispositionSetIdentity,
-    *,
-    collection_id: int,
-) -> tuple[tuple[CollectionFileRecord, ...], int]:
-    pages = (
-        (
-            "dispositions",
-            service.list_dispositions(
-                claim_id,
-                identity_sha256=authority.sha256,
-                start_ordinal=0,
-                principal=WORKFLOW_PRINCIPAL,
-            ),
-        ),
-        (
-            "output-edges",
-            service.list_disposition_outputs(
-                claim_id,
-                identity_sha256=authority.sha256,
-                start_ordinal=0,
-                principal=WORKFLOW_PRINCIPAL,
-            ),
-        ),
-    )
-    records: list[CollectionFileRecord] = []
-    total_bytes = 0
-    for kind, page in pages:
-        content = canonical_json_bytes(page)
-        total_bytes += len(content)
-        records.append(
-            CollectionFileRecord(
-                collection_id=collection_id,
-                path=derivation_evidence_page_path(
-                    "dispositions" if kind == "dispositions" else "output-edges",
-                    0,
-                ),
-                bytes=len(content),
-                sha256=hashlib.sha256(content).hexdigest(),
-            )
-        )
-    return tuple(records), total_bytes
-
-
 def _seed_derived_output(
     database_url: str,
     *,
@@ -649,7 +606,7 @@ def _seed_derived_output(
     root: CollectionRootIdentity,
     output_collection_id: int = 2,
     execution_id: str = EXECUTION_ID,
-    output_path: str = "derived/document.txt",
+    output_artifact_id: str = OUTPUT_ARTIFACT_ID,
 ) -> CollectionDerivation:
     controller_evidence: dict[str, JsonValue] = {
         "format": "stove0-controller-evidence/v1",
@@ -661,22 +618,17 @@ def _seed_derived_output(
     disposition = ArtifactDisposition(
         input_collection_id=COLLECTION_ID,
         input_archive_root_sha256=root.archive_root_sha256,
-        input_path=FILE_PATH,
+        input_artifact_id=INPUT_ARTIFACT_ID,
         status="transformed",
     )
     output = ArtifactDispositionOutput(
         input_collection_id=COLLECTION_ID,
         input_archive_root_sha256=root.archive_root_sha256,
-        input_path=FILE_PATH,
-        output_path=output_path,
+        input_artifact_id=INPUT_ARTIFACT_ID,
+        output_artifact_id=output_artifact_id,
     )
     disposition_set = _seal_disposition_set(service, claim_id, (disposition,), (output,))
-    evidence_records, evidence_bytes = _derivation_evidence_records(
-        service,
-        claim_id,
-        disposition_set,
-        collection_id=output_collection_id,
-    )
+
     claim = service.get_claim(claim_id, principal=WORKFLOW_PRINCIPAL)
     plan = cast(dict[str, object], claim["plan"])
     derivation = CollectionDerivation(
@@ -698,10 +650,13 @@ def _seed_derived_output(
             CollectionRecord(
                 id=output_collection_id,
                 creation_idempotency_key=execution_id,
+                completion_receipt_json=published_completion_projection(derivation),
                 creation_identity_sha256=("c" if output_collection_id == 2 else "b") * 64,
                 creation_custody_mode="producer-retained",
+                provenance_identity="f" * 64,
+                delivery_context_id="urn:uuid:22222222-2222-4222-8222-222222222222",
                 archive_root_sha256="1" * 64,
-                content_identity=("4" if output_collection_id == 2 else "5") * 64,
+                artifact_set_identity=("4" if output_collection_id == 2 else "5") * 64,
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity=("3" if output_collection_id == 2 else "4") * 64,
@@ -709,31 +664,18 @@ def _seed_derived_output(
                 created_by_principal_id=f"processing:{execution_id}",
                 created_by_key_id="stove0-key",
                 created_at="2026-01-01T00:00:00.000000000Z",
-                file_count=5,
-                file_bytes=len(CONTENT) + len(derivation.to_json_bytes()) + 2 + evidence_bytes,
+                artifact_count=1,
+                artifact_bytes=len(CONTENT),
             )
         )
         session.add_all(
             (
-                CollectionFileRecord(
+                CollectionArtifactRecord(
                     collection_id=output_collection_id,
-                    path=output_path,
+                    artifact_id=output_artifact_id,
                     bytes=len(CONTENT),
                     sha256="2" * 64,
                 ),
-                CollectionFileRecord(
-                    collection_id=output_collection_id,
-                    path=DERIVATION_EVIDENCE_PATH,
-                    bytes=len(derivation.to_json_bytes()),
-                    sha256=derivation.sha256,
-                ),
-                CollectionFileRecord(
-                    collection_id=output_collection_id,
-                    path=PRODUCER_EVIDENCE_PATH,
-                    bytes=2,
-                    sha256=hashlib.sha256(b"{}").hexdigest(),
-                ),
-                *evidence_records,
             )
         )
         session.add(
@@ -783,13 +725,13 @@ def _seed_multi_input_derived_output(
         ArtifactDisposition(
             input_collection_id=COLLECTION_ID,
             input_archive_root_sha256=roots[0].archive_root_sha256,
-            input_path=FILE_PATH,
+            input_artifact_id=INPUT_ARTIFACT_ID,
             status="transformed",
         ),
         ArtifactDisposition(
             input_collection_id=SECOND_COLLECTION_ID,
             input_archive_root_sha256=roots[1].archive_root_sha256,
-            input_path=SECOND_FILE_PATH,
+            input_artifact_id=SECOND_INPUT_ARTIFACT_ID,
             status="transformed",
         ),
     )
@@ -797,23 +739,18 @@ def _seed_multi_input_derived_output(
         ArtifactDispositionOutput(
             input_collection_id=COLLECTION_ID,
             input_archive_root_sha256=roots[0].archive_root_sha256,
-            input_path=FILE_PATH,
-            output_path="derived/document.txt",
+            input_artifact_id=INPUT_ARTIFACT_ID,
+            output_artifact_id=OUTPUT_ARTIFACT_ID,
         ),
         ArtifactDispositionOutput(
             input_collection_id=SECOND_COLLECTION_ID,
             input_archive_root_sha256=roots[1].archive_root_sha256,
-            input_path=SECOND_FILE_PATH,
-            output_path="derived/second.txt",
+            input_artifact_id=SECOND_INPUT_ARTIFACT_ID,
+            output_artifact_id=SECOND_OUTPUT_ARTIFACT_ID,
         ),
     )
     disposition_set = _seal_disposition_set(service, claim_id, dispositions, outputs)
-    evidence_records, evidence_bytes = _derivation_evidence_records(
-        service,
-        claim_id,
-        disposition_set,
-        collection_id=2,
-    )
+
     claim = service.get_claim(claim_id, principal=WORKFLOW_PRINCIPAL)
     plan = cast(dict[str, object], claim["plan"])
     derivation = CollectionDerivation(
@@ -835,10 +772,13 @@ def _seed_multi_input_derived_output(
             CollectionRecord(
                 id=2,
                 creation_idempotency_key=EXECUTION_ID,
+                completion_receipt_json=published_completion_projection(derivation),
                 creation_identity_sha256="c" * 64,
                 creation_custody_mode="producer-retained",
+                provenance_identity="f" * 64,
+                delivery_context_id="urn:uuid:22222222-2222-4222-8222-222222222222",
                 archive_root_sha256="1" * 64,
-                content_identity="4" * 64,
+                artifact_set_identity="4" * 64,
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="3" * 64,
@@ -846,43 +786,24 @@ def _seed_multi_input_derived_output(
                 created_by_principal_id=f"processing:{EXECUTION_ID}",
                 created_by_key_id="stove0-key",
                 created_at="2026-01-01T00:00:00.000000000Z",
-                file_count=6,
-                file_bytes=(
-                    len(CONTENT)
-                    + len(SECOND_CONTENT)
-                    + len(derivation.to_json_bytes())
-                    + 2
-                    + evidence_bytes
-                ),
+                artifact_count=2,
+                artifact_bytes=len(CONTENT) + len(SECOND_CONTENT),
             )
         )
         session.add_all(
             (
-                CollectionFileRecord(
+                CollectionArtifactRecord(
                     collection_id=2,
-                    path="derived/document.txt",
+                    artifact_id=OUTPUT_ARTIFACT_ID,
                     bytes=len(CONTENT),
                     sha256="2" * 64,
                 ),
-                CollectionFileRecord(
+                CollectionArtifactRecord(
                     collection_id=2,
-                    path="derived/second.txt",
+                    artifact_id=SECOND_OUTPUT_ARTIFACT_ID,
                     bytes=len(SECOND_CONTENT),
                     sha256="7" * 64,
                 ),
-                CollectionFileRecord(
-                    collection_id=2,
-                    path=DERIVATION_EVIDENCE_PATH,
-                    bytes=len(derivation.to_json_bytes()),
-                    sha256=derivation.sha256,
-                ),
-                CollectionFileRecord(
-                    collection_id=2,
-                    path=PRODUCER_EVIDENCE_PATH,
-                    bytes=2,
-                    sha256=hashlib.sha256(b"{}").hexdigest(),
-                ),
-                *evidence_records,
             )
         )
         copy = CollectionArchiveCopyRecord(
@@ -951,13 +872,13 @@ def _seed_b2_copy(database_url: str) -> None:
             b2.objects.append(copied)
             for placement in current.placements:
                 copied.placements.append(
-                    CollectionArchiveFileObjectRecord(
+                    CollectionArchiveArtifactObjectRecord(
                         collection_id=COLLECTION_ID,
                         store="b2",
-                        path=placement.path,
+                        artifact_id=placement.artifact_id,
                         sequence=placement.sequence,
                         object_id=current.object_id,
-                        file_offset=placement.file_offset,
+                        artifact_offset=placement.artifact_offset,
                         bytes=placement.bytes,
                         member=placement.member,
                     )
@@ -965,7 +886,7 @@ def _seed_b2_copy(database_url: str) -> None:
 
 
 def _create_retrieval(service: SqlAlchemyRetrievalService) -> dict[str, object]:
-    files = [(COLLECTION_ID, FILE_PATH)]
+    files = [(COLLECTION_ID, INPUT_ARTIFACT_ID)]
     plan = service.plan(files)
     return service.create(
         principal_id="local",
@@ -1202,8 +1123,6 @@ def test_postgres_exact_output_intent_creation_resumes_one_upload(
                     archive_store=None,
                     initiator=transform,
                     event_context=None,
-                    provenance_mode="omitted",
-                    provenance_omission_reason="PostgreSQL concurrency fixture.",
                 )
             )
         except BaseException as exc:  # pragma: no cover - asserted by parent thread
@@ -1311,14 +1230,14 @@ def test_postgres_concurrent_first_disposition_and_output_create_one_set(
     disposition = ArtifactDisposition(
         input_collection_id=COLLECTION_ID,
         input_archive_root_sha256=root.archive_root_sha256,
-        input_path=FILE_PATH,
+        input_artifact_id=INPUT_ARTIFACT_ID,
         status="transformed",
     )
     output = ArtifactDispositionOutput(
         input_collection_id=COLLECTION_ID,
         input_archive_root_sha256=root.archive_root_sha256,
-        input_path=FILE_PATH,
-        output_path="derived/document.txt",
+        input_artifact_id=INPUT_ARTIFACT_ID,
+        output_artifact_id=OUTPUT_ARTIFACT_ID,
     )
     barrier = threading.Barrier(2)
     failures: list[BaseException] = []
@@ -1446,7 +1365,7 @@ def test_postgres_concurrent_outcome_attachments_are_complete_and_exact(
             root=root,
             output_collection_id=output_id,
             execution_id=execution_id,
-            output_path=f"derived/{outcome_id}.txt",
+            output_artifact_id=OUTPUT_ARTIFACT_ID,
         )
         children.append((child_id, output_id, derivation, outcome_id))
 
@@ -1519,7 +1438,7 @@ def _collection_outcomes(
                     output_collection=CollectionRootIdentity(
                         collection_id=output_id,
                         archive_root_sha256="1" * 64,
-                        content_identity=("4" if output_id == 2 else "5") * 64,
+                        artifact_set_identity=("4" if output_id == 2 else "5") * 64,
                     ),
                     derivation_sha256=derivation.sha256,
                 )
@@ -1569,7 +1488,7 @@ def test_postgres_last_outcome_attachment_and_claim_closure_converge(
                     root=root,
                     output_collection_id=output_id,
                     execution_id=execution_id,
-                    output_path=f"derived/{outcome_id}.txt",
+                    output_artifact_id=OUTPUT_ARTIFACT_ID,
                 ),
                 outcome_id,
             )
@@ -1678,7 +1597,7 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
             _workflow_artifact(first_root),
             CollectionArtifactIdentity(
                 collection=second_root,
-                path=SECOND_FILE_PATH,
+                artifact_id=SECOND_INPUT_ARTIFACT_ID,
                 bytes=len(SECOND_CONTENT),
                 sha256=hashlib.sha256(SECOND_CONTENT).hexdigest(),
             ),
@@ -1819,7 +1738,7 @@ def test_retirement_marker_forces_retrieval_to_replan_onto_a_retained_copy(
         stores,
         None,
     )
-    files = [(COLLECTION_ID, FILE_PATH)]
+    files = [(COLLECTION_ID, INPUT_ARTIFACT_ID)]
     challenge = str(retirement.plan(COLLECTION_ID, store="deep")["challenge"])
     failures: list[BaseException] = []
 
@@ -1902,7 +1821,7 @@ def _sealed_effect(
             ArtifactDisposition(
                 input_collection_id=root.collection_id,
                 input_archive_root_sha256=root.archive_root_sha256,
-                input_path=_workflow_artifact(root).path,
+                input_artifact_id=_workflow_artifact(root).artifact_id,
                 status="effect-applied",
                 effect_receipt_sha256=canonical_json_sha256(receipt),
             ),

@@ -31,21 +31,40 @@ from riverhog_core.canonical_discovery_index import (
 )
 from riverhog_core.canonical_discovery_relevance import member_relevance, relevance_row_keys
 from riverhog_core.canonical_discovery_rows import iter_index_assertions
-from riverhog_core.canonical_discovery_search import discover_artifacts
+from riverhog_core.canonical_discovery_search import _clause_predicate, discover_artifacts
 from riverhog_core.catalog_db import Base, create_catalog_engine
 from riverhog_core.catalog_models import (
     CatalogSyncStateRecord,
     CollectionArtifactRecord,
     CollectionRecord,
 )
-from riverhog_core.catalog_provenance_index_models import CollectionProvenanceIndexStateRecord
+from riverhog_core.catalog_provenance_index_models import (
+    CollectionProvenanceIndexAssertionRecord as Assertion,
+)
+from riverhog_core.catalog_provenance_index_models import (
+    CollectionProvenanceIndexProfileRecord as Profile,
+)
+from riverhog_core.catalog_provenance_index_models import (
+    CollectionProvenanceIndexStateRecord,
+)
+from riverhog_core.catalog_provenance_index_models import (
+    CollectionProvenanceIndexTextChunkRecord as TextChunk,
+)
+from riverhog_core.catalog_provenance_index_models import (
+    CollectionProvenanceIndexValueRecord as Value,
+)
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.search import SqlAlchemySearchService
-from riverhog_protocol import ArtifactDiscoveryRequest, ArtifactMemberIdentityDocument
+from riverhog_protocol import (
+    ArtifactDiscoveryRequest,
+    ArtifactMemberIdentityDocument,
+    AssertionClause,
+)
 from riverhog_protocol.collection_production_provenance import collection_production_contract
 from riverhog_protocol.errors import Conflict, ServiceUnavailable
 from riverhog_provenance import BoundedSourceObserver, BytesSource, validate_journal
 from riverhog_provenance_contracts import ContractCatalog
+from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
 from tests.support.member_history import member_history_selection_fixture
@@ -369,4 +388,86 @@ def test_discovery_http_authentication_paging_and_metadata_fence(tmp_path: Path)
             assert stale.status_code == 409, stale.text
 
     asyncio.run(exercise())
+    engine.dispose()
+
+
+def test_profile_candidate_values_remain_on_the_same_assertion(tmp_path: Path) -> None:
+    engine = create_catalog_engine(sqlite_url(tmp_path / "profile-candidates.sqlite3"))
+    Base.metadata.create_all(engine)
+    with Session(engine) as session:
+        _indexed_collection(session)
+        template = session.scalar(select(Assertion).limit(1))
+        assert template is not None
+        for ordinal in (1, 2, 3):
+            key = str(ordinal) * 64
+            session.add(
+                Assertion(
+                    build_id=template.build_id,
+                    row_key=key,
+                    journal_id=template.journal_id,
+                    prefix_sha256=template.prefix_sha256,
+                    sequence=template.sequence,
+                    entry_id=template.entry_id,
+                    assertion_id=template.assertion_id,
+                    referent_id=template.referent_id,
+                    kind="reported_description",
+                    assertion_state="effective",
+                    assertion_sha256=key,
+                    canonical_json=b"{}",
+                )
+            )
+            session.flush()
+            if ordinal != 2:
+                session.add(
+                    Profile(
+                        build_id=template.build_id,
+                        row_key=key,
+                        pointer="/properties",
+                        contract_id="qualification:opaque",
+                        contract_sha256="c" * 64,
+                        schema_id="qualification:section",
+                    )
+                )
+            value = "wrong" if ordinal == 1 else "needle"
+            session.add(
+                Value(
+                    build_id=template.build_id,
+                    row_key=key,
+                    ordinal=0,
+                    pointer="/properties/data/name",
+                    representation="json-scalar",
+                    scalar_type="string",
+                    source_value_sha256=key,
+                    exact_json=b'"' + value.encode() + b'"',
+                    text_value=value,
+                    folded_text=value,
+                )
+            )
+            session.flush()
+            session.add(
+                TextChunk(
+                    build_id=template.build_id,
+                    row_key=key,
+                    value_ordinal=0,
+                    chunk_ordinal=0,
+                    codepoint_offset=0,
+                    text_chunk=value,
+                    folded_chunk=value,
+                )
+            )
+        session.flush()
+        clause = AssertionClause.model_validate(
+            {
+                "profile": {
+                    "contract_id": "qualification:opaque",
+                    "contract_sha256": "c" * 64,
+                    "schema_id": "qualification:section",
+                },
+                "values": [{"value": "needle", "pointer": "/properties/data/name"}],
+            }
+        )
+        matches = session.scalars(
+            select(Assertion.row_key).where(_clause_predicate(Assertion, clause))
+        )
+        assert list(matches) == ["3" * 64]
     engine.dispose()

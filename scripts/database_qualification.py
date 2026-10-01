@@ -31,13 +31,13 @@ from riverhog_core.app_permissions import (
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import create_catalog_engine, initialize_db
-from riverhog_core.catalog_models import CollectionFileRecord
+from riverhog_core.catalog_models import CollectionArtifactRecord, CollectionRecord
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.catalog_sync import SqlAlchemyCatalogSyncService
 from riverhog_core.services.collection_tags import SqlAlchemyCollectionTagService
 from riverhog_core.services.retrieval import SqlAlchemyRetrievalService
 from riverhog_protocol import PortableCollectionIdentityBuilder
-from riverhog_protocol.paths import relpath_search_key, relpath_sort_key, text_search_key
+from riverhog_protocol.paths import text_search_key
 from sqlalchemy import select, text
 from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.sql.compiler import IdentifierPreparer
@@ -67,6 +67,10 @@ from tests.support.qualification.database_selector_plans import (
 )
 from tests.support.qualification.database_selector_plans import (
     seed_stove0_selector_relations as _seed_stove0_selector_relations,
+)
+from tests.support.qualification.native_discovery_plans import (
+    native_discovery_plan_cases,
+    seed_native_discovery_relations,
 )
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 
@@ -345,49 +349,43 @@ def _schema_url(database_url: str, schema: str, *, application_name: str) -> str
     )
 
 
-def _seed_unicode_files(engine: Engine) -> tuple[str, ...]:
-    paths = (
-        "unicode/Éclair.bin",
-        "unicode/éclair.bin",
-        "unicode/ΩMEGA.bin",
-        "unicode/Ωmega.bin",
-    )
+def _seed_unicode_metadata(engine: Engine) -> tuple[str, ...]:
+    descriptions = ("unicode/Éclair", "unicode/éclair", "unicode/ΩMEGA", "unicode/Ωmega")
+    artifact_ids = ("f" * 64, "e" * 64, "d" * 64, "c" * 64)
     with engine.begin() as connection:
-        for ordinal, path in enumerate(paths):
+        for ordinal, (description, artifact_id) in enumerate(
+            zip(descriptions, artifact_ids, strict=True)
+        ):
             connection.execute(
                 text(
-                    "INSERT INTO collection_files "
-                    "(collection_id, path, bytes, sha256, provenance_status, path_sort_key, "
-                    "search_text, path_search_text) "
-                    "VALUES (1, :path, :bytes, :sha256, 'omitted', :sort_key, "
-                    ":search_text, :path_search_text)"
+                    "UPDATE collections SET description = :description, "
+                    "description_search = :search WHERE id = :id"
                 ),
                 {
-                    "path": path,
-                    "bytes": ordinal,
-                    "sha256": hashlib.sha256(path.encode("utf-8")).hexdigest(),
-                    "sort_key": relpath_sort_key(path),
-                    "search_text": f"1/{relpath_search_key(path)}",
-                    "path_search_text": relpath_search_key(path),
+                    "description": description,
+                    "search": text_search_key(description),
+                    "id": ordinal + 1,
                 },
             )
             connection.execute(
                 text(
-                    "INSERT INTO collection_file_provenance "
-                    "(collection_id, path, status, journal_id, current_state_id, "
-                    "omission_reason) VALUES "
-                    "(1, :path, 'omitted', NULL, NULL, 'qualification fixture')"
+                    "INSERT INTO collection_artifacts (collection_id, artifact_id, bytes, sha256) "
+                    "VALUES (1, :artifact_id, :bytes, :sha256)"
                 ),
-                {"path": path},
+                {
+                    "artifact_id": artifact_id,
+                    "bytes": ordinal,
+                    "sha256": hashlib.sha256(description.encode("utf-8")).hexdigest(),
+                },
             )
         connection.execute(
             text(
-                "UPDATE collections SET file_count = file_count + :files, "
-                "file_bytes = file_bytes + :bytes WHERE id = 1"
+                "UPDATE collections SET artifact_count = artifact_count + :artifacts, "
+                "artifact_bytes = artifact_bytes + :bytes WHERE id = 1"
             ),
-            {"files": len(paths), "bytes": sum(range(len(paths)))},
+            {"artifacts": len(artifact_ids), "bytes": sum(range(len(artifact_ids)))},
         )
-    return paths
+    return descriptions
 
 
 def _seal_fixture_inventory(database_url: str) -> None:
@@ -400,7 +398,7 @@ def _seal_fixture_inventory(database_url: str) -> None:
     builder = PortableCollectionIdentityBuilder(header)
     for file in files:
         builder.add(file)
-    if builder.files != file_count or builder.bytes != file_bytes:
+    if builder.artifacts != file_count or builder.bytes != file_bytes:
         raise QualificationError("high-fanout fixture inventory projections differ")
     engine = create_catalog_engine(database_url)
     try:
@@ -413,7 +411,9 @@ def _seal_fixture_inventory(database_url: str) -> None:
         engine.dispose()
 
 
-def _database_semantics(engine: Engine, *, unicode_paths: Sequence[str]) -> dict[str, object]:
+def _database_semantics(
+    engine: Engine, *, unicode_descriptions: Sequence[str]
+) -> dict[str, object]:
     with engine.begin() as connection:
         extension = connection.execute(
             text(
@@ -462,37 +462,38 @@ def _database_semantics(engine: Engine, *, unicode_paths: Sequence[str]) -> dict
             raise QualificationError("durable SHA-256 invariant scan failed: " + ", ".join(invalid))
         ordered = tuple(
             connection.scalars(
-                text(
-                    "SELECT path FROM collection_files "
-                    "WHERE path LIKE 'unicode/%' ORDER BY path_sort_key"
+                select(CollectionArtifactRecord.artifact_id)
+                .where(
+                    CollectionArtifactRecord.artifact_id.in_(
+                        ("f" * 64, "e" * 64, "d" * 64, "c" * 64)
+                    )
                 )
+                .order_by(CollectionArtifactRecord.artifact_id)
             )
         )
-        expected_order = tuple(sorted(unicode_paths, key=relpath_sort_key))
-        if ordered != expected_order:
-            raise QualificationError("PostgreSQL path ordering differs from canonical UTF-8")
+        if ordered != tuple(sorted(("f" * 64, "e" * 64, "d" * 64, "c" * 64))):
+            raise QualificationError("PostgreSQL opaque artifact ordering is inconsistent")
         search_results: dict[str, list[str]] = {}
         expected_searches = {
-            "ΩMEGA": sorted(path for path in unicode_paths if "Ωmega" in relpath_search_key(path)),
-            "Éclair": ["unicode/Éclair.bin"],
-            "éclair": ["unicode/éclair.bin"],
+            "ΩMEGA": sorted(
+                value for value in unicode_descriptions if "Ωmega" in text_search_key(value)
+            ),
+            "Éclair": ["unicode/Éclair"],
+            "éclair": ["unicode/éclair"],
         }
         for query, expected in expected_searches.items():
             rows = list(
                 connection.scalars(
-                    select(CollectionFileRecord.path)
-                    .where(
-                        CollectionFileRecord.path_search_text.like(
-                            f"%{text_search_key(query)}%",
-                            escape="\\",
+                    select(CollectionRecord.description).where(
+                        CollectionRecord.description_search.like(
+                            f"%{text_search_key(query)}%", escape="\\"
                         )
                     )
-                    .order_by(CollectionFileRecord.path_sort_key)
                 )
             )
-            if rows != sorted(expected, key=relpath_sort_key):
-                raise QualificationError(f"PostgreSQL path search differs for {query!r}")
-            search_results[query] = rows
+            if sorted(rows) != sorted(expected):
+                raise QualificationError(f"PostgreSQL metadata search differs for {query!r}")
+            search_results[query] = sorted(rows)
         database_settings = connection.execute(
             text(
                 "SELECT current_setting('server_encoding'), datlocprovider, "
@@ -518,7 +519,7 @@ def _database_semantics(engine: Engine, *, unicode_paths: Sequence[str]) -> dict
                     str(database_settings[3]) if database_settings[3] is not None else None
                 ),
             },
-            "ordered_paths": list(ordered),
+            "ordered_artifact_ids": list(ordered),
             "search_results": search_results,
         },
     }
@@ -687,7 +688,7 @@ def _measure_http_path(
             )
             if inventory_identity is None:
                 inventory_identity = inventory.authority.inventory_identity
-            inventory_rows += len(inventory.files)
+            inventory_rows += len(inventory.artifacts)
             if inventory.complete:
                 break
             cursor = inventory.next_cursor
@@ -823,8 +824,9 @@ def _measure_cardinality(
         riverhog_engine = create_catalog_engine(riverhog_url)
         stove0_engine = create_catalog_engine(stove0_url)
         _seed_selector_relations(riverhog_engine, rows=rows)
+        seed_native_discovery_relations(riverhog_engine)
         _seed_stove0_selector_relations(stove0_engine, rows=rows)
-        unicode_paths = _seed_unicode_files(riverhog_engine)
+        unicode_descriptions = _seed_unicode_metadata(riverhog_engine)
         _seal_fixture_inventory(riverhog_url)
         with riverhog_engine.begin() as connection:
             connection.execute(text("ANALYZE"))
@@ -833,7 +835,7 @@ def _measure_cardinality(
         engines = {"riverhog": riverhog_engine, "stove0": stove0_engine}
         plans: list[dict[str, object]] = []
         plan_failures: list[str] = []
-        for case in cases:
+        for case in (*cases, *native_discovery_plan_cases(riverhog_engine)):
             try:
                 plans.append(_measure_plan(engines[case.database], case, rows=rows))
             except QualificationError as exc:
@@ -856,7 +858,7 @@ def _measure_cardinality(
             "page_streams": page_streams,
             "database_semantics": _database_semantics(
                 riverhog_engine,
-                unicode_paths=unicode_paths,
+                unicode_descriptions=unicode_descriptions,
             ),
             "http": _measure_http_path(
                 riverhog_url,

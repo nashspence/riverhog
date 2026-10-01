@@ -60,18 +60,9 @@ class SqlAlchemyCanonicalProvenanceService:
             raise ValueError("artifact page size must be 1 to 200")
         with read_snapshot(self._session_factory) as session:
             collection = _authorized_collection(session, normalized_id, principal)
-            statement = select(CollectionArtifactRecord).where(
-                CollectionArtifactRecord.collection_id == normalized_id,
-                artifact_scope_filter(
-                    CollectionArtifactRecord.collection_id,
-                    CollectionArtifactRecord.artifact_id,
-                    principal,
-                ),
+            statement = _artifact_list_statement(
+                normalized_id, after_artifact_id=after_artifact_id, principal=principal
             )
-            if after_artifact_id is not None:
-                statement = statement.where(
-                    CollectionArtifactRecord.artifact_id > str(after_artifact_id)
-                )
             rows = list(
                 session.scalars(
                     statement.order_by(CollectionArtifactRecord.artifact_id).limit(page_size + 1)
@@ -316,3 +307,17 @@ def _member_row(row: CollectionArtifactRecord) -> dict[str, str]:
 
 
 __all__ = ["SqlAlchemyCanonicalProvenanceService"]
+
+
+def _artifact_list_statement(
+    collection_id: int, *, after_artifact_id: ArtifactId | None, principal: Principal | None
+) -> Any:
+    statement = select(CollectionArtifactRecord).where(
+        CollectionArtifactRecord.collection_id == collection_id,
+        artifact_scope_filter(
+            CollectionArtifactRecord.collection_id, CollectionArtifactRecord.artifact_id, principal
+        ),
+    )
+    if after_artifact_id is not None:
+        statement = statement.where(CollectionArtifactRecord.artifact_id > str(after_artifact_id))
+    return statement.order_by(CollectionArtifactRecord.artifact_id)

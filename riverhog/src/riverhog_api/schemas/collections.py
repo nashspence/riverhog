@@ -30,6 +30,7 @@ from riverhog_protocol import (
     SourceCollectionRetirementClaimReferenceDocument,
     validate_collection_upload_artifact_custody_receipt,
 )
+from riverhog_protocol.collection_completion import CollectionCompletionPublicationReceiptDocument
 from riverhog_protocol.transport import COLLECTION_DELETION_BLOCKERS_MAX
 from riverhog_provenance_contracts import ProvenanceJournalId
 from time_formats import CanonicalUtcTimestamp
@@ -714,6 +715,7 @@ class CollectionUploadSessionOut(RiverhogModel):
     delivery_context_id: str
     construction_identity_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     completion_journal_id: ProvenanceJournalId | None = None
+    completion_receipt: CollectionCompletionPublicationReceiptDocument | None = None
     artifact_set_identity: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     archive_root_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     archive_store: ArchiveStoreName

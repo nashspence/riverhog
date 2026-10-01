@@ -72,7 +72,7 @@ QUALIFICATION_CONSUMERS = {
     "scripts/qualify_installation.py": (RECOVERY_AUTHORITY, RECOVERY_SYMBOLS),
     "some-implementations/riverhog/recovery/tests/test_recovery.py": (
         RECOVERY_AUTHORITY,
-        RECOVERY_SYMBOLS,
+        RECOVERY_SYMBOLS | {"FixtureArchive"},
     ),
     "tests/harness/filesystem_recovery_materialization.py": (RECOVERY_AUTHORITY, RECOVERY_SYMBOLS),
 }

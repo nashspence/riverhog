@@ -19,6 +19,10 @@ from riverhog_protocol import (
     SortOrder,
     SourceCollectionRetirementClaimReferenceDocument,
 )
+from riverhog_protocol.collection_completion import (
+    CollectionCompletionPublicationReceiptDocument,
+    CollectionCompletionRequirementDocument,
+)
 from riverhog_protocol.collection_workflow_transport import (
     CONSIDERATION_EVIDENCE_MAX_BYTES,
     CONTROLLER_EVIDENCE_MAX_BYTES,
@@ -1539,6 +1543,7 @@ class SqlAlchemyCollectionWorkflowService:
             disposition_set = _verified_disposition_set(session, claim, document.disposition_set)
             _verify_dispositions(session, claim, disposition_set, output)
             _collection_root(session, output.id)
+            _verify_archived_completion(output, document)
             existing = session.get(CollectionDerivationRecord, output.id)
             encoded = document.to_json_bytes().decode("utf-8")
             if existing is not None:
@@ -4285,3 +4290,29 @@ __all__ = [
     "processing_claim_blockers",
     "require_source_collection_retirement_exemption",
 ]
+
+
+def _verify_archived_completion(output: CollectionRecord, document: CollectionDerivation) -> None:
+    """Settlement must attest the same pre-root evidence accepted for publication."""
+    if output.completion_receipt_json is None:
+        raise Conflict("derived collection has no accepted completion evidence")
+    try:
+        receipt = CollectionCompletionPublicationReceiptDocument.model_validate_json(
+            output.completion_receipt_json
+        )
+        requirement = CollectionCompletionRequirementDocument(
+            execution_id=document.execution_id,
+            execution_envelope_sha256=document.execution_envelope_sha256,
+            controller_evidence_sha256=document.controller_evidence_sha256,
+            record_kinds=tuple(sorted(receipt.records)),
+        )
+    except ValueError as exc:
+        raise Conflict("derived collection completion evidence is invalid") from exc
+    if (
+        requirement.identity != receipt.requirement_sha256
+        or receipt.records["target-execution"].sha256 != document.execution_sha256
+        or receipt.records["controller"].sha256 != document.controller_evidence_sha256
+        or receipt.records["disposition-identity"].sha256
+        != canonical_json_sha256(document.disposition_set.as_dict())
+    ):
+        raise Conflict("derivation differs from the archived completion evidence")

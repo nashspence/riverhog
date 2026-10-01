@@ -19,6 +19,7 @@ from riverhog_core.services.app_keys import (
     _key_list_statement,
 )
 from riverhog_core.services.archive_copy_jobs import _archive_copy_job_list_statement
+from riverhog_core.services.canonical_provenance import _artifact_list_statement
 from riverhog_core.services.catalog_sync import (
     _catalog_change_revision_statement,
     _catalog_collection_page_statement,
@@ -28,7 +29,6 @@ from riverhog_core.services.collection_uploads import _upload_list_statement
 from riverhog_core.services.collection_workflows import _claim_list_statement
 from riverhog_core.services.collections import _collection_list_statement
 from riverhog_core.services.download_allowances import _key_quota_statements
-from riverhog_core.services.provenance import _provenance_file_statement
 from riverhog_core.services.retrieval import _cache_list_statement
 from riverhog_core.services.search import _search_statement
 from riverhog_protocol import (
@@ -40,7 +40,6 @@ from riverhog_protocol import (
     CollectionUploadSort,
     DownloadQuotaSort,
     ProcessingClaimSort,
-    ProvenanceSort,
     RetrievalCacheSort,
     SearchSort,
     collection_tag_set_identity,
@@ -106,7 +105,7 @@ _DATABASE_PLAN_OPERATIONS = {
     ("riverhog", "list_app_keys"): "application-keys",
     ("riverhog", "list_apps"): "applications",
     ("riverhog", "list_archive_copy_jobs"): "archive-copy-jobs",
-    ("riverhog", "list_collection_provenance"): "provenance",
+    ("riverhog", "list_collection_artifact_provenance"): "provenance",
     ("riverhog", "list_collection_upload_sessions"): "uploads",
     ("riverhog", "list_collections"): "collections",
     ("riverhog", "list_download_quotas"): "download-quotas",
@@ -126,7 +125,7 @@ _DATABASE_FILTER_SELECTORS = {
     "collections": {"encryption_format", "passphrase_id", "q", "tags"},
     "download-quotas": {"active", "app", "q"},
     "processing-claims": {"state"},
-    "provenance": {"q", "status"},
+    "provenance": {"after_artifact_id"},
     "retrieval-cache": {
         "cache_store",
         "collection_id",
@@ -146,7 +145,7 @@ _DATABASE_FILTER_SELECTORS = {
 }
 _NON_PLAN_QUERY_OPERATIONS = {
     ("riverhog", "acquire_collection_upload_session_work"): {"limit"},
-    ("riverhog", "download_retrieval_file"): {"collection_id", "path"},
+    ("riverhog", "download_retrieval_artifact"): {"collection_id", "artifact_id"},
     ("riverhog", "get_portable_collection_inventory"): {"cursor", "limit"},
     ("riverhog", "list_archive_stores"): {
         "order",
@@ -175,7 +174,7 @@ _NON_PLAN_QUERY_OPERATIONS = {
         "identity_sha256",
         "start_ordinal",
     },
-    ("riverhog", "list_collection_upload_session_files"): {"page_size", "page_token"},
+    ("riverhog", "list_collection_upload_session_artifacts"): {"page_size", "page_token"},
     ("riverhog", "list_collection_archive_copies"): {"page_size", "page_token"},
     ("riverhog", "list_collection_tags"): {
         "page_size",
@@ -184,21 +183,19 @@ _NON_PLAN_QUERY_OPERATIONS = {
         "tag_set_identity",
     },
     ("riverhog", "collection_contains_tag"): {"revision", "tag_set_identity"},
-    ("riverhog", "list_collection_provenance_journal_agents"): {
-        "page_size",
-        "page_token",
-    },
+    ("riverhog", "list_collection_provenance_journals"): {"page_size", "after_journal_id"},
+    ("riverhog", "discover_artifacts"): {"page_token"},
     ("riverhog", "list_lifecycle_events"): {"after", "limit"},
-    ("riverhog", "list_retrieval_plan_files"): {"page_size", "start_ordinal"},
+    ("riverhog", "list_retrieval_plan_artifacts"): {"page_size", "start_ordinal"},
     ("riverhog", "plan_collection_deletion"): {"source_collection_retirement_claim_id"},
     ("riverhog", "list_catalog_sync_changes"): {"cursor", "limit"},
     ("riverhog", "list_catalog_sync_collections"): {"cursor", "limit"},
-    ("riverhog", "trace_collection_file_provenance"): {"page_size", "page_token"},
     ("a-riverhog-ftp-spool", "get_ftp_spool_status"): {"page_size", "page_token"},
     ("a-riverhog-ftp-spool", "list_ftp_spool_events"): {"after", "limit"},
     ("stove0", "get_artifact_selection"): {"continuation"},
     ("stove0", "get_recipe"): {"revision"},
     ("stove0", "get_target_execution_inputs"): {"continuation"},
+    ("stove0", "get_target_execution_outputs"): {"after_id", "production_sha256"},
     ("stove0", "list_departure_effects"): {"page_size", "page_token"},
     ("stove0", "list_events"): {"after", "limit"},
 }
@@ -284,18 +281,19 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             INSERT INTO collections (
                 id, creation_idempotency_key, creation_identity_sha256,
                 creation_custody_mode, creation_archive_store, creation_use_cache,
-                creation_copy_to_json, content_identity, encryption_format,
-                passphrase_id, provenance_mode, provenance_identity, inventory_identity,
-                archive_generation, archive_root_sha256, catalog_revision, ingest_source,
+                creation_copy_to_json, artifact_set_identity, encryption_format,
+                passphrase_id, provenance_identity, inventory_identity,
+                archive_generation, delivery_context_id, archive_root_sha256,
+                catalog_revision, ingest_source,
                 description, description_search, description_revision, description_identity,
-                created_by_principal_id, created_at, file_count, file_bytes
+                created_by_principal_id, created_at, artifact_count, artifact_bytes
             )
             SELECT g, 'collection-' || g, {sha}, 'producer-retained',
                    'archive-' || lpad((g % 16)::text, 2, '0'), false, '[]', {sha},
                    CASE WHEN g = {rows} THEN 'age-v1-scrypt' ELSE 'age-v1-other' END,
                    CASE WHEN g = {rows} THEN 'qualification-key-v1'
                         ELSE 'qualification-key-v2' END,
-                   'omitted', NULL, {sha}, {sha}, {sha}, g,
+                   {sha}, {sha}, {sha}, 'urn:uuid:22222222-2222-4222-8222-222222222222', {sha}, g,
                    'fixture-' || lpad(g::text, 6, '0'),
                    'Reference description ' || lpad(g::text, 6, '0'),
                    'reference description ' || lpad(g::text, 6, '0'),
@@ -307,10 +305,11 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             f"""
             INSERT INTO catalog_events (
                 revision, change, collection_id, occurred_at, inventory_identity,
-                archive_root_sha256, content_identity, description, description_revision,
+                archive_root_sha256, artifact_set_identity, provenance_identity,
+                description, description_revision,
                 description_identity, tag_revision, tag_set_identity, committed_at, published
             )
-            SELECT g, 'created', g, {timestamp}, {sha}, {sha}, {sha},
+            SELECT g, 'created', g, {timestamp}, {sha}, {sha}, {sha}, {sha},
                    'Reference description ' || lpad(g::text, 6, '0'), 1, {sha}, 1, {sha},
                    {timestamp}, true
             FROM generate_series(1, {rows}) AS g
@@ -321,42 +320,19 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             WHERE singleton = 1
             """,
             f"""
-            INSERT INTO collection_files (
-                collection_id, path, bytes, sha256, provenance_status,
-                path_sort_key, search_text, path_search_text
-            )
-            SELECT g, 'camera/file-' || lpad(g::text, 6, '0') || '.bin', g,
-                   {sha}, 'omitted',
-                   convert_to('camera/file-' || lpad(g::text, 6, '0') || '.bin', 'UTF8'),
-                   g || '/camera/file-' || lpad(g::text, 6, '0') || '.bin',
-                   'camera/file-' || lpad(g::text, 6, '0') || '.bin'
+            INSERT INTO collection_artifacts (collection_id, artifact_id, bytes, sha256)
+            SELECT g, repeat(md5('source-' || g::text), 2), g, {sha}
             FROM generate_series(1, {rows}) AS g
             """,
             f"""
-            INSERT INTO collection_files (
-                collection_id, path, bytes, sha256, provenance_status,
-                path_sort_key, search_text, path_search_text
-            )
-            SELECT 1, 'archive/member-' || md5(g::text) || '.bin', g,
-                   {sha}, CASE WHEN g % 2 = 0 THEN 'captured' ELSE 'omitted' END,
-                   convert_to('archive/member-' || md5(g::text) || '.bin', 'UTF8'),
-                   '1/archive/member-' || md5(g::text) || '.bin',
-                   'archive/member-' || md5(g::text) || '.bin'
+            INSERT INTO collection_artifacts (collection_id, artifact_id, bytes, sha256)
+            SELECT 1, repeat(md5('extra-' || g::text), 2), g, {sha}
             FROM generate_series(1, {rows}) AS g
             """,
             f"""
-            UPDATE collections SET file_count = {rows + 1},
-                                   file_bytes = {rows * (rows + 1) // 2 + 1}
+            UPDATE collections SET artifact_count = {rows + 1},
+                                   artifact_bytes = {rows * (rows + 1) // 2 + 1}
             WHERE id = 1
-            """,
-            """
-            INSERT INTO collection_file_provenance (
-                collection_id, path, status, journal_id, current_state_id,
-                omission_reason
-            )
-            SELECT collection_id, path, 'omitted', NULL, NULL, 'qualification fixture'
-            FROM collection_files
-            WHERE provenance_status = 'omitted'
             """,
             f"""
             INSERT INTO collection_tag_memberships (
@@ -368,8 +344,8 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             f"""
             INSERT INTO collection_uploads (
                 collection_id, idempotency_key, creation_identity_sha256,
-                initial_tag_set_identity, archive_generation,
-                ingest_source, provenance_mode, provenance_omission_reason,
+                initial_tag_set_identity, archive_generation, delivery_context_id,
+                ingest_source,
                 provenance_identity, encryption_format, passphrase_id,
                 initiated_by_principal_id, initiated_by_key_id, event_context_json,
                 state, custody_mode, lease_expires_at, orphaned_at, archive_store,
@@ -378,13 +354,14 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                 archive_phase_updated_at, archive_attempt_count,
                 archive_next_attempt_at, archive_last_attempt_at, archive_failure,
                 archive_storage_prefix, planner_checkpoint_json,
-                file_count, file_bytes, custodied_file_count, custodied_file_bytes,
+                artifact_count, artifact_bytes,
+                payload_sealed_artifact_count, payload_sealed_artifact_bytes,
                 search_text
             )
             SELECT {rows} + g, 'upload-' || g, {sha},
                    '{_EMPTY_TAG_SET_IDENTITY}', {sha},
-                   'source-' || lpad(g::text, 6, '0'), 'omitted',
-                   'qualification fixture', NULL, 'age-v1-scrypt',
+                   'urn:uuid:22222222-2222-4222-8222-222222222222',
+                   'source-' || lpad(g::text, 6, '0'), NULL, 'age-v1-scrypt',
                    'qualification-key-v1', 'qualification', NULL, NULL,
                    CASE WHEN g = {rows} THEN 'open' ELSE 'orphaned' END,
                    'producer-retained', NULL,
@@ -590,8 +567,8 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
     collection_indexes = {
         "id": "collections_pkey",
         "created_at": "ix_collections_created_at_id",
-        "files": "ix_collections_file_count_id",
-        "bytes": "ix_collections_file_bytes_id",
+        "files": "ix_collections_artifact_count_id",
+        "bytes": "ix_collections_artifact_bytes_id",
     }
     for sort in sorted(closed_literal_values(CollectionSort)):
         for order in ("asc", "desc"):
@@ -667,10 +644,10 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
     )
 
     search_indexes = {
-        "file_ref": "ix_collection_files_collection_path",
-        "collection_id": "ix_collection_files_collection_path",
-        "path": "ix_collection_files_path",
-        "bytes": "ix_collection_files_bytes",
+        "artifact_ref": "collection_artifacts_pkey",
+        "collection_id": "collection_artifacts_pkey",
+        "artifact_id": "ix_collection_artifacts_id",
+        "bytes": "ix_collection_artifacts_bytes",
     }
     for sort in sorted(closed_literal_values(SearchSort)):
         for order in ("asc", "desc"):
@@ -697,15 +674,15 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
                 "search.filter.q",
                 _riverhog_plan_statement(
                     _search_statement(
-                        q="file-065536",
+                        q="297ce0b3c836ae307023d7c2c3a7b1ec",
                         collection=None,
-                        sort="file_ref",
+                        sort="artifact_ref",
                         order="asc",
                         principal=None,
                     ),
                     order="asc",
                 ),
-                frozenset({"ix_collection_files_search_trgm"}),
+                frozenset({"ix_collection_artifacts_id_trgm"}),
             ),
             _PlanCase(
                 "search.filter.collection",
@@ -713,13 +690,13 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
                     _search_statement(
                         q=None,
                         collection=1,
-                        sort="file_ref",
+                        sort="artifact_ref",
                         order="asc",
                         principal=None,
                     ),
                     order="asc",
                 ),
-                frozenset({"ix_collection_files_collection_path"}),
+                frozenset({"collection_artifacts_pkey"}),
             ),
         )
     )
@@ -739,8 +716,8 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
         "id": "collection_uploads_pkey",
         "created_at": "ix_collection_uploads_opened_at",
         "state": "ix_collection_uploads_state",
-        "files": "ix_collection_uploads_file_count",
-        "bytes": "ix_collection_uploads_file_bytes",
+        "files": "ix_collection_uploads_artifact_count",
+        "bytes": "ix_collection_uploads_artifact_bytes",
     }
     for sort in sorted(closed_literal_values(CollectionUploadSort)):
         for order in ("asc", "desc"):
@@ -777,62 +754,12 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
         )
         cases.append(_PlanCase(f"uploads.filter.{name}", statement, frozenset({index})))
 
-    provenance_indexes = {
-        "path": "ix_collection_files_collection_path",
-        "bytes": "ix_collection_files_collection_bytes",
-        "status": "ix_collection_files_collection_provenance",
-    }
-    for sort in sorted(closed_literal_values(ProvenanceSort)):
-        for order in ("asc", "desc"):
-            statement = _riverhog_plan_statement(
-                _provenance_file_statement(
-                    collection_id=1,
-                    principal=_READER,
-                    q=None,
-                    status=None,
-                    sort=sort,
-                    order=order,
-                ),
-                order=order,
-            )
-            cases.append(
-                _PlanCase(
-                    f"provenance.sort.{sort}.{order}",
-                    statement,
-                    frozenset({provenance_indexes[sort]}),
-                )
-            )
     cases.extend(
         (
             _PlanCase(
-                "provenance.filter.q",
-                _riverhog_plan_statement(
-                    _provenance_file_statement(
-                        collection_id=1,
-                        principal=_READER,
-                        q="member-297ce0b3c836ae307023d7c2c3a7b1ec",
-                        status=None,
-                        sort="path",
-                        order="asc",
-                    ),
-                    order="asc",
-                ),
-                frozenset({"ix_collection_files_path_search_trgm"}),
-            ),
-            _PlanCase(
-                "provenance.filter.status",
-                _riverhog_plan_statement(
-                    _provenance_file_statement(
-                        collection_id=1,
-                        principal=_READER,
-                        q=None,
-                        status="omitted",
-                        sort="path",
-                        order="asc",
-                    ),
-                    order="asc",
-                ),
-                frozenset({"ix_collection_files_collection_provenance"}),
+                "provenance.filter.after_artifact_id",
+                _artifact_list_statement(1, after_artifact_id="8" * 64, principal=_READER),
+                frozenset({"collection_artifacts_pkey"}),
             ),
         )
     )
