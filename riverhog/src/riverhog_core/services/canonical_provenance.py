@@ -23,6 +23,7 @@ from riverhog_core.app_permissions import (
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.artifact_access import artifact_scope_filter, require_artifact_scope
+from riverhog_core.canonical_discovery_rebuild import rebuild_canonical_index
 from riverhog_core.canonical_provenance_archive import PublishedCanonicalProvenance
 from riverhog_core.catalog_db import SessionFactory, make_session_factory
 from riverhog_core.catalog_models import (
@@ -46,6 +47,11 @@ class SqlAlchemyCanonicalProvenanceService:
     ) -> None:
         self._session_factory = session_factory or make_session_factory(config.database_url)
         self._archives = PublishedCanonicalProvenance(self._session_factory, archive_stores)
+
+    def rebuild_index(self, collection_id: int) -> str:
+        return rebuild_canonical_index(
+            self._session_factory, self._archives, validate_collection_id(collection_id)
+        )
 
     def list_artifacts(
         self,

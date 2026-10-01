@@ -1,3 +1,12 @@
+-- Exact current Riverhog PostgreSQL v1 baseline conformance fixture.
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
+
+CREATE TABLE state_schema_revision (
+    version_num VARCHAR(32) NOT NULL,
+    CONSTRAINT state_schema_revision_pkc PRIMARY KEY (version_num)
+);
+
 CREATE TABLE app_keys (
 	id VARCHAR NOT NULL,
 	app VARCHAR NOT NULL,
@@ -2342,10 +2351,20 @@ CREATE INDEX ix_provenance_index_folded_trgm ON collection_provenance_index_text
 
 CREATE INDEX ix_provenance_index_text_trgm ON collection_provenance_index_text_chunks USING gin (text_chunk gin_trgm_ops);
 
-CREATE INDEX ix_collection_artifacts_bytes ON collection_artifacts (bytes, collection_id, artifact_id);
 
-CREATE INDEX ix_collection_artifacts_id ON collection_artifacts (artifact_id, collection_id);
+CREATE INDEX ix_collection_artifacts_bytes ON collection_artifacts (bytes, collection_id, artifact_id)
+;
 
-CREATE INDEX ix_collection_artifacts_id_trgm ON collection_artifacts USING gin (artifact_id gin_trgm_ops);
 
-CREATE INDEX ix_collection_artifacts_sha_trgm ON collection_artifacts USING gin (sha256 gin_trgm_ops);
+CREATE INDEX ix_collection_artifacts_id ON collection_artifacts (artifact_id, collection_id)
+;
+
+
+CREATE INDEX ix_collection_artifacts_id_trgm ON collection_artifacts USING gin (artifact_id gin_trgm_ops)
+;
+
+
+CREATE INDEX ix_collection_artifacts_sha_trgm ON collection_artifacts USING gin (sha256 gin_trgm_ops)
+;
+
+INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

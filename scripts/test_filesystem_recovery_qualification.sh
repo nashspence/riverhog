@@ -136,6 +136,9 @@ receipt="$({
 } 2>"${proof_root}/client.stderr")"
 printf '%s\n' "${receipt}" >"${proof_root}/receipt.json"
 python3 -c 'import json,sys; value=json.load(open(sys.argv[1])); collection_id=value["collection_id"]; assert isinstance(collection_id,str) and collection_id == str(int(collection_id)) and int(collection_id) > 0; assert len(value["archive_root_sha256"]) == 64' "${proof_root}/receipt.json"
+collection_id="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["collection_id"])' "${proof_root}/receipt.json")"
+compose exec -T app riverhog-api index rebuild --collection "${collection_id}" --json \
+  >"${proof_root}/index-rebuild.json"
 
 compose stop app postgres filesystem-cache-adapter
 docker run --rm \

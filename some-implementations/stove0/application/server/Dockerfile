@@ -51,6 +51,7 @@ COPY some-implementations/stove0/observers/contracts/ffprobe-streams some-implem
 COPY some-implementations/stove0/observers/contracts/magic some-implementations/stove0/observers/contracts/magic
 COPY some-implementations/stove0/observers/contracts/materialization-hint some-implementations/stove0/observers/contracts/materialization-hint
 COPY some-implementations/stove0/observers/contracts/riverhog-provenance some-implementations/stove0/observers/contracts/riverhog-provenance
+COPY some-implementations/stove0/observers/contracts/filename-prefix-sidecars some-implementations/stove0/observers/contracts/filename-prefix-sidecars
 RUN uv sync --frozen --package stove0-server \
     --package a-stove0-media-metadata-contract-lib \
     --package a-stove0-media-sampling-contract-lib \
@@ -58,6 +59,7 @@ RUN uv sync --frozen --package stove0-server \
     --package a-stove0-magic-facts-contract-lib \
     --package a-stove0-materialization-hint-evidence-contract-lib \
     --package a-stove0-riverhog-provenance-evidence-contract-lib \
+    --package a-stove0-filename-prefix-sidecar-evidence-contract-lib \
     --no-dev --no-editable
 
 FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203 AS runtime-base

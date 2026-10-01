@@ -32,6 +32,12 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     "set -euo pipefail",
                     f'printf \'%s|%s\\n\' "${{COMPOSE_PROJECT_NAME:-}}" "$*" >> {log_path}',
                     'if [[ "$1" == "image" && "$2" == "inspect" ]]; then',
+                    '  if [[ "$*" == *"{{.Id}}"* ]]; then',
+                    "    printf 'sha256:'; printf 'a%.0s' {1..64}; printf '\\n'; exit 0",
+                    "  fi",
+                    '  if [[ "$*" == *"org.opencontainers.image.revision"* ]]; then',
+                    "    printf '%s\\n' \"${SOURCE_REVISION}\"; exit 0",
+                    "  fi",
                     '  [[ "${FAKE_DOCKER_HAVE_IMAGES:-0}" == "1" ]] && '
                     "printf 'fake-image-id\\n' && exit 0",
                     "  exit 1",
@@ -50,11 +56,11 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                         "  printf '%s\\n' "
                         '\'[{"archive_root_sha256":"'
                         + "5" * 64
-                        + '","collection_id":1,"content_identity":"'
+                        + '","collection_id":1,"artifact_set_identity":"'
                         + "6" * 64
                         + '"},{"archive_root_sha256":"'
                         + "7" * 64
-                        + '","collection_id":2,"content_identity":"'
+                        + '","collection_id":2,"artifact_set_identity":"'
                         + "8" * 64
                         + "\"}]'"
                     ),
@@ -64,7 +70,7 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                         "  printf '%s\\n' "
                         '\'{"archive_root_sha256":'
                         '"1111111111111111111111111111111111111111111111111111111111111111",'
-                        '"collection_id":1,"content_identity":'
+                        '"collection_id":1,"artifact_set_identity":'
                         '"2222222222222222222222222222222222222222222222222222222222222222"}\''
                     ),
                     "fi",
@@ -73,7 +79,7 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                         "  printf '%s\\n' "
                         '\'{"archive_root_sha256":'
                         '"3333333333333333333333333333333333333333333333333333333333333333",'
-                        '"collection_id":3,"content_identity":'
+                        '"collection_id":3,"artifact_set_identity":'
                         '"4444444444444444444444444444444444444444444444444444444444444444"}\''
                     ),
                     "fi",
@@ -616,7 +622,8 @@ def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
     docker_log = "\n".join(_read_log_lines(docker_log_path))
     assert "--env STOVE0_SMOKE_FILE_COUNT=7" in docker_log
     assert "--env STOVE0_SMOKE_AUDIO_FRAMES=4000" in docker_log
-    assert " up --detach --build --wait state api controller worker" in docker_log
+    assert " up --detach --wait state api controller worker" in docker_log
+    assert "image inspect --format {{.Id}} a-stove0-opus-target:dev" in docker_log
     assert " down --volumes --remove-orphans" in docker_log
 
 

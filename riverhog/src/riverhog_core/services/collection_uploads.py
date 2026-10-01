@@ -175,22 +175,15 @@ from riverhog_core.archive_root import (
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
+from riverhog_core.canonical_discovery_build import stage_relevant_member
 from riverhog_core.canonical_discovery_index import (
     begin_index_build,
     complete_index_build,
     publish_index_build,
-    stage_assertion_page,
-    stage_entry_page,
-    stage_member,
-    stage_membership_page,
-    stage_snapshot_header,
 )
 from riverhog_core.canonical_discovery_relevance import (
     member_relevance,
-    relevance_row_keys,
-    snapshots_for_relevance,
 )
-from riverhog_core.canonical_discovery_rows import iter_index_assertions
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_events import (
     begin_catalog_event,
@@ -5470,38 +5463,16 @@ def _advance_catalog_canonical_index(session: Session, upload: CollectionUploadR
             catalog=admission_provenance_catalog(),
         ) as relevance,
     ):
-        for summary in snapshots_for_relevance(
-            relevance, corpus=corpus, catalog=admission_provenance_catalog()
-        ):
-            snapshot_key = (build_id, summary.journal_id, summary.journal_sha256)
-            if session.get(CollectionProvenanceIndexSnapshotRecord, snapshot_key) is not None:
-                continue
-            stage_snapshot_header(session, build_id=build_id, summary=summary)
-            session.flush()
-            for start in range(0, len(summary.frames), 128):
-                stage_entry_page(session, build_id=build_id, summary=summary, start=start)
-            session.flush()
-            rows = iter_index_assertions(summary)
-            while batch := tuple(islice(rows, 2)):
-                stage_assertion_page(session, build_id=build_id, rows=batch)
-        stage_member(
+        memberships_indexed += stage_relevant_member(
             session,
             build_id=build_id,
-            artifact_id=member_record.artifact_id,
-            bytes=member_record.bytes,
-            sha256=member_record.sha256,
-            journal_id=primary.journal_id,
-            prefix_sha256=primary.journal_sha256,
-            delivery_association_id=binding.delivery_association_id,
+            member=member,
+            binding=binding,
+            primary=primary,
+            relevance=relevance,
+            corpus=corpus,
+            catalog=admission_provenance_catalog(),
         )
-        session.flush()
-        membership_rows = (
-            (member_record.artifact_id, row_key, scope)
-            for row_key, scope in relevance_row_keys(relevance)
-        )
-        while membership_batch := tuple(islice(membership_rows, 1024)):
-            stage_membership_page(session, build_id=build_id, rows=membership_batch)
-            memberships_indexed += len(membership_batch)
         _set_catalog_cursor(
             upload,
             {

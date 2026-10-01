@@ -856,6 +856,8 @@ def test_images_copy_only_their_owned_implementation_project() -> None:
             "some-implementations/stove0/observers/contracts/riverhog-provenance",
         ),
         REPO / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile": (
+            "some-implementations/riverhog/provenance/contracts/direct-relations",
+            "some-implementations/stove0/observers/contracts/materialization-hint",
             "some-implementations/stove0/observers/contracts/media-metadata",
             "some-implementations/stove0/targets/media-archive/contracts",
             "some-implementations/stove0/targets/media-archive/support",
@@ -868,6 +870,8 @@ def test_images_copy_only_their_owned_implementation_project() -> None:
             "some-implementations/stove0/review0/sampler/support",
         ),
         REPO / "some-implementations/stove0/targets/opus/Dockerfile": (
+            "some-implementations/riverhog/provenance/contracts/direct-relations",
+            "some-implementations/stove0/observers/contracts/materialization-hint",
             "some-implementations/stove0/observers/contracts/media-metadata",
             "some-implementations/stove0/targets/media-archive/contracts",
             "some-implementations/stove0/targets/media-archive/support",
@@ -879,12 +883,14 @@ def test_images_copy_only_their_owned_implementation_project() -> None:
             "some-implementations/stove0/review0/sampler/support",
         ),
         REPO / "some-implementations/stove0/review0/application/Dockerfile": (
+            "some-implementations/riverhog/provenance/contracts/direct-relations",
             "some-implementations/stove0/review0/contracts",
             "some-implementations/stove0/review0/application",
             "some-implementations/stove0/review0/sampler/client",
             "some-implementations/stove0/review0/sampler/protocol",
         ),
         REPO / "some-implementations/stove0/targets/rclone/Dockerfile": (
+            "some-implementations/riverhog/provenance/contracts/direct-relations",
             "some-implementations/stove0/targets/rclone",
             "some-implementations/stove0/observers/contracts/materialization-hint",
         ),
