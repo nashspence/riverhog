@@ -1,13 +1,16 @@
 name: External reference 515
 
 on:
+  push:
+    branches:
+      - reference/external/515-gogurt-deterministic-ci
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  checkpoint:
-    runs-on: ubuntu-24.04
-    steps:
-      - run: echo 'Transport checkpoint only; final reference validation has not started.'
+  reference-ci:
+    uses: ./.github/workflows/ci.yml
+    with:
+      ref: ${{ github.sha }}
