@@ -196,52 +196,53 @@ class WorkflowPreviewService:
         all_observations: list[ContentObservationEvidence],
     ) -> tuple[ContentObservationEvidence, ...]:
         evidence: list[ContentObservationEvidence] = []
-        for observation_request in self.planning.observation_requests(work):
-            if observation_request.work_id != work.work_id:
-                raise RuntimeError("preview observation request differs from the work identity")
-            descriptor = self.observers.descriptor(observation_request.observer_registration_id)
-            if descriptor.descriptor_sha256 != observation_request.observer_descriptor_sha256:
-                raise RuntimeError(
-                    "configured observer descriptor changed after preview request sealing"
+        while requests := self.planning.observation_requests(work, tuple(evidence)):
+            for observation_request in requests:
+                if observation_request.work_id != work.work_id:
+                    raise RuntimeError("preview observation request differs from the work identity")
+                descriptor = self.observers.descriptor(observation_request.observer_registration_id)
+                if descriptor.descriptor_sha256 != observation_request.observer_descriptor_sha256:
+                    raise RuntimeError(
+                        "configured observer descriptor changed after preview request sealing"
+                    )
+                validate_observation_request(observation_request, descriptor)
+                predecessors = _selected_observation_evidence(observation_request, evidence)
+                authority = self.riverhog.observation_authority(claim, observation_request)
+                result = self.observers.observe(
+                    observation_request.observer_registration_id,
+                    ContentObservationInvocation(
+                        request=observation_request,
+                        claim_id=claim.claim_id,
+                        fence=claim.fence,
+                        runtime=authority,
+                        evidence=predecessors,
+                    ),
+                    descriptor=descriptor,
                 )
-            validate_observation_request(observation_request, descriptor)
-            predecessors = _selected_observation_evidence(observation_request, evidence)
-            authority = self.riverhog.observation_authority(claim, observation_request)
-            result = self.observers.observe(
-                observation_request.observer_registration_id,
-                ContentObservationInvocation(
-                    request=observation_request,
-                    claim_id=claim.claim_id,
-                    fence=claim.fence,
-                    runtime=authority,
-                    evidence=predecessors,
-                ),
-                descriptor=descriptor,
-            )
-            if result.state == "inapplicable":
-                assert result.inapplicable is not None
-                raise PlanningObservationTerminal(
-                    state="inapplicable",
-                    code=result.inapplicable.code,
-                    message=result.inapplicable.message,
-                )
-            if result.state == "failed":
-                assert result.failure is not None
-                raise PlanningObservationTerminal(
-                    state="failed",
-                    code=result.failure.code,
-                    message=result.failure.message,
-                    retryable=result.failure.retryable,
-                )
-            if result.state == "canceled":
-                raise PlanningObservationTerminal(
-                    state="canceled",
-                    code="observer-canceled",
-                    message="The content observer canceled the preview request.",
-                )
-            item = ContentObservationEvidence(request=observation_request, result=result)
-            evidence.append(item)
-            all_observations.append(item)
+                if result.state == "inapplicable":
+                    assert result.inapplicable is not None
+                    raise PlanningObservationTerminal(
+                        state="inapplicable",
+                        code=result.inapplicable.code,
+                        message=result.inapplicable.message,
+                    )
+                if result.state == "failed":
+                    assert result.failure is not None
+                    raise PlanningObservationTerminal(
+                        state="failed",
+                        code=result.failure.code,
+                        message=result.failure.message,
+                        retryable=result.failure.retryable,
+                    )
+                if result.state == "canceled":
+                    raise PlanningObservationTerminal(
+                        state="canceled",
+                        code="observer-canceled",
+                        message="The content observer canceled the preview request.",
+                    )
+                item = ContentObservationEvidence(request=observation_request, result=result)
+                evidence.append(item)
+                all_observations.append(item)
         return tuple(sorted(evidence, key=lambda item: item.request.request_id))
 
 

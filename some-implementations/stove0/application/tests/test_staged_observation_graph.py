@@ -6,7 +6,9 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, cast
 
+from stove0_core.preview import WorkflowPreviewService
 from stove0_core.recipes import RecipePlanner
+from stove0_core.work_state import ClaimBinding, WorkNoAction
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     JsonSchemaValidationProfile,
@@ -15,6 +17,7 @@ from stove0_observer_protocol import (
     ObserverContractSupport,
     ObserverDescriptor,
     ObserverDescriptorPayload,
+    ObserverRuntimeAuthority,
 )
 from stove0_observer_support import ContentObservationResultBuilder
 from stove0_protocol import JSON_SCHEMA_ONLY_SEMANTIC_PROFILE, CollectionRootIdentityRef
@@ -173,6 +176,58 @@ def test_dependent_stage_receives_complete_role_partitions_and_exact_predecessor
     assert {item.request_id for item in request.evidence_slots or ()} == {
         item.request.request_id for item in evidence
     }
+
+    # The real preview adapter must drain the same recipe graph before routing.
+    # A no-action result still requires all of its declared observation stages.
+    invocations = []
+    abandoned = []
+    expected = {item.request.request_id: item for item in evidence}
+
+    def observe(registration, invocation, *, descriptor):
+        invocations.append(invocation)
+        if registration == "classify":
+            return expected[invocation.request.request_id].result
+        assert registration == "compare"
+        assert invocation.request == request
+        assert invocation.evidence == tuple(
+            sorted(evidence, key=lambda item: item.request.request_id)
+        )
+        return ContentObservationResultBuilder(descriptor, invocation.request).observed({})
+
+    def finish(_work, accepted, **_kwargs):
+        assert len(accepted) == 4
+        assert {item.request.observer_registration_id for item in accepted} == {
+            "classify",
+            "compare",
+        }
+        return WorkNoAction(code="classified-no-action", message="All observations were evaluated.")
+
+    planner.__dict__["workflow_plan"] = finish
+    service = WorkflowPreviewService(
+        planning=planner,
+        riverhog=cast(
+            Any,
+            SimpleNamespace(
+                acquire_preview_claim=lambda _: ClaimBinding(claim_id="preview", fence=1),
+                observation_authority=lambda *_: ObserverRuntimeAuthority(
+                    riverhog_base_url="https://riverhog.invalid",
+                    capability_token="fixture",
+                    declared_workspace_protection="memory-backed",
+                ),
+                abandon_preview_claim=lambda *_: abandoned.append(True),
+            ),
+        ),
+        observers=cast(
+            Any,
+            SimpleNamespace(
+                descriptor=lambda registration: descriptors[registration], observe=observe
+            ),
+        ),
+        targets=cast(Any, object()),
+    )
+    preview = service.preview(work)
+    assert preview.state == "no_action" and len(preview.observations) == 4
+    assert len(invocations) == 4 and abandoned == [True]
 
 
 def test_supplied_media_recipe_classifies_before_probe_and_exact_provenance() -> None:

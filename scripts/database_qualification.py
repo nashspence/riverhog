@@ -837,7 +837,7 @@ def _measure_cardinality(
         engines = {"riverhog": riverhog_engine, "stove0": stove0_engine}
         plans: list[dict[str, object]] = []
         plan_failures: list[str] = []
-        for case in (*cases, *native_discovery_plan_cases(riverhog_engine)):
+        for case in cases:
             try:
                 plans.append(_measure_plan(engines[case.database], case, rows=rows))
             except QualificationError as exc:
@@ -966,7 +966,15 @@ def _fixture_sha256(path: Path) -> str:
 
 
 def build_evidence(database_url: str, *, source_sha: str) -> dict[str, object]:
-    cases = (*_plan_cases(), *_catalog_sync_plan_cases())
+    planning = create_catalog_engine(database_url)
+    try:
+        cases = (
+            *_plan_cases(),
+            *_catalog_sync_plan_cases(),
+            *native_discovery_plan_cases(planning),
+        )
+    finally:
+        planning.dispose()
     if len({case.id for case in cases}) != len(cases):
         raise QualificationError("database selector plan identities are not unique")
     measurements = [
