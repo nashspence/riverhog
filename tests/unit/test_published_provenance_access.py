@@ -3,13 +3,21 @@
 from __future__ import annotations
 
 import hashlib
+from collections import Counter
 from collections.abc import Callable, Iterator
 from dataclasses import replace
 from pathlib import Path
+from types import SimpleNamespace
+from typing import get_args
 from unittest.mock import Mock
 
 import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
 from riverhog_age import decrypt_age_scrypt
+from riverhog_api.auth import ProvenanceExporter
+from riverhog_api.deps import get_container
+from riverhog_api.routers.provenance import router
 from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
     RETAINED_HISTORY_EXTENT,
@@ -75,6 +83,7 @@ class _ArchiveStore:
         self.allowance = allowance
         self.name = name
         self.downloaded = 0
+        self.object_reads: Counter[str] = Counter()
         self.before_yield: Callable[[str], None] = lambda _path: None
         self.after_yield: Callable[[str], None] = lambda _path: None
 
@@ -83,6 +92,7 @@ class _ArchiveStore:
         ciphertext = (self.root / relative).read_bytes()
 
         def remote() -> Iterator[bytes]:
+            self.object_reads[relative] += 1
             self.downloaded += len(ciphertext)
             yield ciphertext
 
@@ -527,3 +537,119 @@ def test_stream_continuation_rechecks_revocation_after_cached_member_closure(
         ).state = "revoked"
     with pytest.raises(NotFound):
         next(stream)
+
+
+@pytest.mark.parametrize("members", [4, 128])
+def test_scoped_pages_and_ranges_reuse_verified_history_without_repeat_downloads(
+    tmp_path: Path, members: int, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    payloads = {f"{ordinal + 1:064x}": b"member" for ordinal in range(members)}
+    service, archive, config, _registry, stores, allowance, *_ = _environment(
+        tmp_path, members=payloads, hints={artifact_id: None for artifact_id in payloads}
+    )
+    principal = persisted_artifact_scope(
+        config.database_url,
+        access=tuple(ApplicationAccess(p) for p in _PERMISSIONS),
+        artifacts=tuple((1, m.artifact_id, m.bytes, m.sha256) for m in archive.history_bindings),
+    )
+    resolved = 0
+    original = MemberHistoryClosure.resolve
+
+    def resolve(self, *args, **kwargs):
+        nonlocal resolved
+        resolved += 1
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(MemberHistoryClosure, "resolve", resolve)
+    first = service.list_journals(1, page_size=1, after_journal_id=None, principal=principal)
+    assert len(first["journals"]) == 1 and first["next_journal_id"] is not None
+    initial_bytes = sum(store.downloaded for store in stores.values())
+    initial_reads = sum(sum(store.object_reads.values()) for store in stores.values())
+    assert initial_bytes > 0 and initial_reads > members
+    assert max(stores["preferred"].object_reads.values()) == 1
+    assert resolved == members
+    assert allowance.get_key_quota(key_id=principal.key_id)["accounted_bytes"] == initial_bytes
+    assert (
+        service.list_journals(1, page_size=1, after_journal_id=None, principal=principal) == first
+    )
+    continuation = service.list_journals(
+        1, page_size=1, after_journal_id=first["next_journal_id"], principal=principal
+    )
+    assert continuation["journals"][0]["journal_id"] > first["journals"][0]["journal_id"]
+    journal = first["journals"][0]
+    assert service.journal_metadata(1, journal["journal_id"], principal=principal) == (
+        int(journal["bytes"]),
+        journal["sha256"],
+    )
+    assert (
+        b"".join(
+            service.iter_journal_range(
+                1, journal["journal_id"], offset=0, size=1, principal=principal
+            )
+        )
+        == archive.journals[journal["journal_id"]][:1]
+    )
+    assert resolved == members
+    assert sum(store.downloaded for store in stores.values()) == initial_bytes
+    assert sum(sum(store.object_reads.values()) for store in stores.values()) == initial_reads
+    assert allowance.get_key_quota(key_id=principal.key_id)["accounted_bytes"] == initial_bytes
+    with session_scope(service._session_factory) as session:
+        session.get(
+            CollectionProcessingCapabilityRecord, principal.artifact_scope_capability_id
+        ).state = "revoked"
+    with pytest.raises(NotFound):
+        service.list_journals(1, page_size=1, after_journal_id=None, principal=principal)
+    with pytest.raises(NotFound):
+        service.journal_metadata(1, journal["journal_id"], principal=principal)
+    assert sum(store.downloaded for store in stores.values()) == initial_bytes
+
+
+def test_warm_membership_never_widens_a_different_member_selection(tmp_path: Path) -> None:
+    service, archive, config, *_ = _environment(tmp_path)
+    selected = _scope(config, archive)
+    service.list_journals(1, page_size=200, after_journal_id=None, principal=selected)
+    other = archive.history_bindings[1]
+    principal = persisted_artifact_scope(
+        config.database_url,
+        access=tuple(ApplicationAccess(p) for p in _PERMISSIONS),
+        artifacts=((1, other.artifact_id, other.bytes, other.sha256),),
+    )
+    first = archive.history_bindings[0]
+    history = MemberHistoryStore(lambda path: (archive.history_objects[path],)).descriptor(first)
+    with pytest.raises(NotFound):
+        service.journal_metadata(1, history.primary.journal.journal_id, principal=principal)
+
+
+def test_one_byte_http_range_shares_metadata_and_body_membership_work(tmp_path: Path) -> None:
+    payloads = {f"{ordinal + 1:064x}": b"member" for ordinal in range(4)}
+    service, archive, config, _registry, stores, allowance, *_ = _environment(
+        tmp_path, members=payloads, hints={artifact_id: None for artifact_id in payloads}
+    )
+    principal = persisted_artifact_scope(
+        config.database_url,
+        access=tuple(ApplicationAccess(p) for p in _PERMISSIONS),
+        artifacts=tuple((1, m.artifact_id, m.bytes, m.sha256) for m in archive.history_bindings),
+    )
+    history = MemberHistoryStore(lambda path: (archive.history_objects[path],)).descriptor(
+        archive.history_bindings[0]
+    )
+    anchor = history.primary.journal
+    app = FastAPI()
+    app.include_router(router, prefix="/v1")
+    app.dependency_overrides[get_container] = lambda: SimpleNamespace(provenance=service)
+    app.dependency_overrides[get_args(ProvenanceExporter)[1].dependency] = lambda: principal
+    with TestClient(app) as client:
+        path = f"/v1/collections/1/provenance/journals/{anchor.journal_id}"
+        headers = {"Range": "bytes=0-0", "If-Match": f'"{anchor.prefix_sha256}"'}
+        response = client.get(path, headers=headers)
+        assert response.status_code == 206, response.text
+        assert response.content == archive.journals[anchor.journal_id][:1]
+        assert response.headers["content-length"] == "1"
+        reads = sum(sum(store.object_reads.values()) for store in stores.values())
+        downloaded = sum(store.downloaded for store in stores.values())
+        assert max(stores["preferred"].object_reads.values()) == 1
+        for _ in range(3):
+            assert client.get(path, headers=headers).content == response.content
+        assert sum(sum(store.object_reads.values()) for store in stores.values()) == reads
+        assert sum(store.downloaded for store in stores.values()) == downloaded
+        assert allowance.get_key_quota(key_id=principal.key_id)["accounted_bytes"] == downloaded

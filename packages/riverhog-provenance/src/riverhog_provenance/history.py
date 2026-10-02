@@ -72,6 +72,60 @@ def _prefix(chunks: Iterable[bytes], count: int) -> Iterator[bytes]:
             close()
 
 
+class MemberHistoryMembership:
+    """Transient local query projection of a previously verified closure.
+
+    Images are process-local cache data, never archive authority or wire evidence.
+    The caller retains the exact root, selection and extent and current read fences.
+    """
+
+    def __init__(self, image: bytes) -> None:
+        self._scratch = TemporaryDirectory(prefix="riverhog-history-membership-")
+        path = Path(self._scratch.name) / "membership.sqlite3"
+        path.write_bytes(image)
+        self._db = sqlite3.connect(path)
+        self._cursors: set[sqlite3.Cursor] = set()
+        try:
+            self._db.execute("PRAGMA query_only = ON")
+            self._db.execute("PRAGMA cache_size = -512")
+        except BaseException:
+            self._db.close()
+            self._scratch.cleanup()
+            raise
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        for cursor in self._cursors:
+            cursor.close()
+        self._cursors.clear()
+        self._db.close()
+        self._scratch.cleanup()
+
+    def journal_anchors(self) -> Iterator[HistoryJournalAnchor]:
+        cursor = self._db.execute("SELECT anchor FROM journals ORDER BY identity")
+        self._cursors.add(cursor)
+        try:
+            for (encoded,) in cursor:
+                yield HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
+        finally:
+            if cursor in self._cursors:
+                self._cursors.remove(cursor)
+                cursor.close()
+
+    def journal_anchor(self, journal_id: str) -> HistoryJournalAnchor | None:
+        row = self._db.execute(
+            "SELECT anchor FROM journals WHERE identity = ?", (journal_id,)
+        ).fetchone()
+        return HistoryJournalAnchor.from_mapping(require_canonical_json(row[0])) if row else None
+
+    def contains_structure_object(self, path: str) -> bool:
+        return (
+            self._db.execute("SELECT 1 FROM objects WHERE path = ?", (path,)).fetchone() is not None
+        )
+
+
 class MemberHistoryClosure:
     """Resolve exactly requested roots, documentary dependencies and accepted imports.
 
@@ -311,6 +365,31 @@ class MemberHistoryClosure:
         for (encoded,) in self._db.execute("SELECT anchor FROM journals ORDER BY identity"):
             yield HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
 
+    def journal_anchor(self, journal_id: str) -> HistoryJournalAnchor | None:
+        row = self._db.execute(
+            "SELECT anchor FROM journals WHERE identity = ?", (journal_id,)
+        ).fetchone()
+        return HistoryJournalAnchor.from_mapping(require_canonical_json(row[0])) if row else None
+
+    def membership_image(self, *, max_bytes: int) -> bytes | None:
+        """Freeze verified membership for a bounded process-local cache.
+
+        A larger closure remains usable without caching; capacity never limits
+        accepted history. No journal graph or causal authority is unioned.
+        """
+        pages = self._db.execute("PRAGMA page_count").fetchone()[0]
+        page_bytes = self._db.execute("PRAGMA page_size").fetchone()[0]
+        if pages * page_bytes > max_bytes:
+            return None
+        self._db.commit()
+        path = Path(self._scratch.name) / "membership.sqlite3"
+        copy = sqlite3.connect(path)
+        try:
+            self._db.backup(copy)
+        finally:
+            copy.close()
+        return path.read_bytes()
+
     def snapshots(self) -> Iterator[HistoryJournalAnchor]:
         """Every exact selected or required snapshot, without a latest-head union."""
         for (encoded,) in self._db.execute("SELECT anchor FROM snapshots ORDER BY identity"):
@@ -336,4 +415,4 @@ class MemberHistoryClosure:
         )
 
 
-__all__ = ["MemberHistoryClosure"]
+__all__ = ["MemberHistoryClosure", "MemberHistoryMembership"]

@@ -29,8 +29,10 @@ from tests.support.qualification.canonical_history_scale import (
 def test_archive_only_rebuild_retains_shared_roots_and_exact_member_scope(tmp_path: Path) -> None:
     fixture = publish_shared_history(tmp_path, members=2)
     try:
-        measure_archive_rebuild(fixture)
-        measure_archive_rebuild(fixture)
+        first = measure_archive_rebuild(fixture, cold=True)
+        repeated = measure_archive_rebuild(fixture)
+        assert first["archive_object_reads"] > 0
+        assert repeated["archive_object_reads"] == 0
     finally:
         fixture.container.close()
 

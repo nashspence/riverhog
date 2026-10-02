@@ -45,7 +45,7 @@ def persisted_artifact_scope(
         session.add(
             CollectionProcessingClaimRecord(
                 id=claim_id,
-                work_id="a" * 64,
+                work_id=identity,
                 consumer_app="fixture-controller",
                 consumer_key_id="fixture-key",
                 purpose="fixture artifact authorization",

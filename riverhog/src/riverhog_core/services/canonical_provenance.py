@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any
@@ -18,7 +19,7 @@ from riverhog_protocol import ArtifactId, CollectionArtifactProvenanceBindingDoc
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_protocol.errors import InvalidState, NotFound, PreconditionFailed
 from riverhog_protocol.paths import validate_collection_id
-from riverhog_provenance import MemberHistoryClosure
+from riverhog_provenance import MemberHistoryClosure, MemberHistoryMembership
 from riverhog_provenance_contracts import ProvenanceJournalId
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -48,6 +49,7 @@ from riverhog_core.catalog_models import (
 from riverhog_core.collection_access import require_collection_access
 from riverhog_core.ports.download_allowance import DownloadAttribution
 from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
+from riverhog_core.provenance_read_cache import ProvenanceReadCache
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.app_keys import require_current_principal
 
@@ -68,6 +70,7 @@ class SqlAlchemyCanonicalProvenanceService:
             archive_stores,
             read_order=config.archive_read_order,
         )
+        self._memberships = ProvenanceReadCache(byte_budget=8 * 1024 * 1024, entry_budget=128)
 
     def rebuild_index(self, collection_id: int) -> str:
         return rebuild_canonical_index(
@@ -134,7 +137,9 @@ class SqlAlchemyCanonicalProvenanceService:
                 projection.delivery_association_id,
             )
             projected_history = (projection.history_sha256, projection.history_bytes)
-        with self._cached_reader(normalized_id, principal, permission=PROVENANCE_READ) as reader:
+        with self._cached_reader(
+            normalized_id, principal, permission=PROVENANCE_READ, expected_root=root_identity
+        ) as reader:
             final_binding: MemberHistoryBinding | None = None
             for value in reader.iter_bindings():
                 candidate = MemberHistoryBinding.from_mapping(value)
@@ -187,9 +192,11 @@ class SqlAlchemyCanonicalProvenanceService:
     ) -> bytes:
         normalized_id = validate_collection_id(collection_id)
         self._require_export_root(normalized_id, expected_root, principal)
-        with self._cached_reader(normalized_id, principal) as reader:
+        with self._cached_reader(normalized_id, principal, expected_root=expected_root) as reader:
             if principal.has_artifact_scope:
-                with self._scope_closure(normalized_id, principal, reader) as closure:
+                with self._scope_closure(
+                    normalized_id, principal, reader, root_identity=expected_root
+                ) as closure:
                     if not closure.contains_structure_object(
                         provenance_structure_object_path(object_id)
                     ):
@@ -210,7 +217,7 @@ class SqlAlchemyCanonicalProvenanceService:
         self._require_export_root(normalized_id, expected_root, principal, artifact_id=artifact_id)
         detail = self.get_artifact(normalized_id, artifact_id, principal=principal)
         binding = MemberHistoryBinding.from_mapping(detail["history_binding"])
-        with self._cached_reader(normalized_id, principal) as reader:
+        with self._cached_reader(normalized_id, principal, expected_root=expected_root) as reader:
             tree = reader.binding_inclusion(artifact_id)
             if tree.target_index is None:
                 raise InvalidState("root-authenticated member binding is absent")
@@ -262,19 +269,15 @@ class SqlAlchemyCanonicalProvenanceService:
                     session, normalized_id, principal, permission=PROVENANCE_EXPORT
                 )
             )
-        with self._cached_reader(normalized_id, principal) as reader:
+        with self._cached_reader(normalized_id, principal, expected_root=root) as reader:
             if principal.has_artifact_scope:
-                with self._scope_closure(normalized_id, principal, reader) as closure:
-                    result = next(
-                        (
-                            (anchor.prefix_bytes, anchor.prefix_sha256)
-                            for anchor in closure.journal_anchors()
-                            if anchor.journal_id == journal_id
-                        ),
-                        None,
-                    )
-                    if result is None:
+                with self._scope_closure(
+                    normalized_id, principal, reader, root_identity=root
+                ) as closure:
+                    anchor = closure.journal_anchor(journal_id)
+                    if anchor is None:
                         raise NotFound("journal is outside the member selection")
+                    result = (anchor.prefix_bytes, anchor.prefix_sha256)
             else:
                 result = reader.journal_metadata(journal_id)
         self._require_export_root(normalized_id, root, principal)
@@ -297,8 +300,10 @@ class SqlAlchemyCanonicalProvenanceService:
             )
             root_identity = _archive_root(collection)
         with (
-            self._cached_reader(normalized_id, principal) as reader,
-            self._scope_closure(normalized_id, principal, reader) as closure,
+            self._cached_reader(normalized_id, principal, expected_root=root_identity) as reader,
+            self._scope_closure(
+                normalized_id, principal, reader, root_identity=root_identity
+            ) as closure,
         ):
             headers = (
                 (
@@ -352,17 +357,12 @@ class SqlAlchemyCanonicalProvenanceService:
                     session, normalized_id, principal, permission=PROVENANCE_EXPORT
                 )
             )
-        with self._cached_reader(normalized_id, principal) as reader:
+        with self._cached_reader(normalized_id, principal, expected_root=root) as reader:
             if principal.has_artifact_scope:
-                with self._scope_closure(normalized_id, principal, reader) as closure:
-                    anchor = next(
-                        (
-                            item
-                            for item in closure.journal_anchors()
-                            if item.journal_id == journal_id
-                        ),
-                        None,
-                    )
+                with self._scope_closure(
+                    normalized_id, principal, reader, root_identity=root
+                ) as closure:
+                    anchor = closure.journal_anchor(journal_id)
                     if anchor is None:
                         raise NotFound("journal is outside the member selection")
                     if type(offset) is not int or offset < 0 or offset > anchor.prefix_bytes:
@@ -383,12 +383,15 @@ class SqlAlchemyCanonicalProvenanceService:
         principal: Principal,
         *,
         permission: str = PROVENANCE_EXPORT,
+        expected_root: str | None = None,
     ) -> Iterator[CanonicalProvenanceArchiveReader]:
         """Reuse exact verified object bytes only for this read operation."""
         with read_snapshot(self._session_factory) as session:
             root = _archive_root(
                 _authorized_collection(session, collection_id, principal, permission=permission)
             )
+        if expected_root is not None and root != expected_root:
+            raise PreconditionFailed("collection archive root changed")
 
         def fence() -> None:
             self._require_export_root(collection_id, root, principal, permission=permission)
@@ -409,8 +412,24 @@ class SqlAlchemyCanonicalProvenanceService:
         collection_id: int,
         principal: Principal,
         reader: CanonicalProvenanceArchiveReader,
-    ) -> Iterator[MemberHistoryClosure]:
+        *,
+        root_identity: str,
+    ) -> Iterator[MemberHistoryClosure | MemberHistoryMembership]:
         """Exact retained member closure; each imported extent remains independently sealed."""
+        key = None
+        if principal.has_artifact_scope:
+            self._require_export_root(collection_id, root_identity, principal)
+            selection = hashlib.sha256()
+            for artifact_id in self._scoped_artifacts(collection_id, principal):
+                selection.update(artifact_id.encode("utf-8") + b"\0")
+            # The archive root commits every H and its separately sealed import
+            # extents. The member selection is recomputed from current authority.
+            key = (collection_id, root_identity, RETAINED_HISTORY_EXTENT, selection.hexdigest())
+            image = self._memberships.get(key)
+            if image is not None:
+                with MemberHistoryMembership(image) as membership:
+                    yield membership
+                return
         with MemberHistoryClosure(
             reader.history_store(),
             lambda journal_id, end: reader.iter_journal_range(journal_id, size=end),
@@ -431,6 +450,10 @@ class SqlAlchemyCanonicalProvenanceService:
                     wanted = next(allowed, None)
                 if wanted is not None:
                     raise NotFound("archive does not confirm the selected member")
+                image = closure.membership_image(max_bytes=self._memberships.byte_budget)
+                if image is not None:
+                    self._require_export_root(collection_id, root_identity, principal)
+                    self._memberships.put(key, image)
             yield closure
 
     def _scoped_artifacts(self, collection_id: int, principal: Principal) -> Iterator[str]:

@@ -329,6 +329,19 @@ def _publish_prefix(source: Path, output: Path, *, byte_count: int, sha256: str)
         staging.unlink(missing_ok=True)
 
 
+def _windows_path_budget(probe: Path) -> int:
+    """Qualify the process/filesystem's native long-path behavior."""
+    destination = probe.joinpath(*("path" * 20 for _ in range(4)))
+    try:
+        destination.mkdir(parents=True)
+        (destination / "leaf").write_bytes(b"x")
+    except OSError as exc:
+        if getattr(exc, "winerror", None) != 206:
+            raise
+        return 240
+    return 32767
+
+
 def _destination_rules(target: Path) -> DestinationRules:
     with tempfile.TemporaryDirectory(prefix=".rules-", dir=target) as name:
         probe = Path(name)
@@ -336,16 +349,17 @@ def _destination_rules(target: Path) -> DestinationRules:
         case_sensitive = not (probe / "CASE").exists()
         (probe / "e\u0301").write_bytes(b"x")
         unicode_equivalence = "NFC" if (probe / "\u00e9").exists() else "exact"
+        fallback_path_bytes = _windows_path_budget(probe) if os.name == "nt" else 4096
     try:
         component_bytes = os.pathconf(target, "PC_NAME_MAX")
         relative_path_bytes = os.pathconf(target, "PC_PATH_MAX")
     except (AttributeError, OSError, ValueError):
         component_bytes = 255
-        relative_path_bytes = 240 if os.name == "nt" else 4096
+        relative_path_bytes = fallback_path_bytes
     if component_bytes < 1:
         component_bytes = 255
     if relative_path_bytes < 1:
-        relative_path_bytes = 240 if os.name == "nt" else 4096
+        relative_path_bytes = fallback_path_bytes
     # Paths are created through this absolute collection directory. PATH_MAX
     # includes its prefix, the joining separator and the terminating NUL.
     relative_path_bytes -= len(os.fsencode(target.absolute())) + 2
@@ -433,7 +447,7 @@ def _journals(
                 if output.exists() or output.is_symlink():
                     if not repair:
                         raise InvalidState("local canonical journal differs from archive")
-                    _quarantine(target, output)
+                    _quarantine(target, output, collection_id=collection_id)
                 with tempfile.TemporaryDirectory(prefix=".journal-", dir=output.parent) as name:
                     staging = Path(name) / "journal.jsonseq"
                     downloaded = api.download_collection_provenance_journal(
@@ -523,7 +537,7 @@ def _publish_provenance_blob(
     if output.exists() or output.is_symlink():
         if not repair:
             raise InvalidState("local member history was modified")
-        _quarantine(target, output)
+        _quarantine(target, output, collection_id=collection_id)
     staged = None
     try:
         with tempfile.NamedTemporaryFile(
@@ -1089,7 +1103,12 @@ def _ensure_provenance(
                 if output.exists() or output.is_symlink():
                     if not repair:
                         raise InvalidState("local primary provenance was modified")
-                    _quarantine(target, output)
+                    _quarantine(
+                        target,
+                        output,
+                        collection_id=collection_id,
+                        artifact_id=selected.artifact_id,
+                    )
                 _publish_prefix(source, output, byte_count=byte_count, sha256=sha256)
         if api.get_collection(collection_id)["archive_root_sha256"] != archive_root:
             raise InvalidState(
@@ -1097,15 +1116,41 @@ def _ensure_provenance(
             )
 
 
-def _quarantine(target: Path, output: Path) -> Path:
+def _quarantine(
+    target: Path,
+    output: Path,
+    *,
+    collection_id: int,
+    artifact_id: str | None = None,
+) -> Path:
     directory = target / ".a-riverhog-cli-quarantine"
     if directory.is_symlink():
         raise InvalidState("local quarantine is a symbolic link")
     directory.mkdir(mode=0o700, exist_ok=True)
     if output.is_symlink() or not output.is_file():
         raise InvalidState("local non-regular materialization requires manual repair")
-    destination = directory / (uuid.uuid4().hex + "-" + output.name)
-    os.link(output, destination)
+    identity = uuid.uuid4().hex
+    destination = directory / (identity + ".data")
+    association = directory / (identity + ".json")
+    record = {
+        "collection_id": str(collection_id),
+        "artifact_id": artifact_id,
+        "original_destination": list(output.relative_to(target).parts),
+    }
+    created = False
+    try:
+        with association.open("xb") as stream:
+            created = True
+            stream.write(canonical_json_bytes(record))
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(output, destination)
+        with destination.open("rb") as stream:
+            os.fsync(stream.fileno())
+    except BaseException:
+        if created and not destination.exists():
+            association.unlink(missing_ok=True)
+        raise
     output.unlink()
     return destination
 
@@ -1135,7 +1180,12 @@ def _missing_artifacts(
                     err=True,
                 )
                 continue
-            _quarantine(target, output)
+            _quarantine(
+                target,
+                output,
+                collection_id=int(row["collection_id"]),
+                artifact_id=str(row["artifact_id"]),
+            )
         missing.append((int(row["collection_id"]), str(row["artifact_id"])))
     return missing
 

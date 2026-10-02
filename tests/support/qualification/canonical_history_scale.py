@@ -23,6 +23,7 @@ from riverhog_archive_contracts import (
 )
 from riverhog_client import ApiClient
 from riverhog_client.producer import IncrementalCollectionProducer, ProducerFile
+from riverhog_core.canonical_provenance_archive import PublishedCanonicalProvenance
 from riverhog_core.catalog_db import create_catalog_engine, session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectRecord, CollectionUploadRecord
 from riverhog_core.catalog_provenance_index_models import (
@@ -230,9 +231,20 @@ def publish_shared_history(
     )
 
 
-def measure_archive_rebuild(fixture: SharedHistoryFixture) -> dict[str, object]:
+def measure_archive_rebuild(
+    fixture: SharedHistoryFixture, *, cold: bool = False
+) -> dict[str, object]:
     store = fixture.container.collection_uploads._archive_stores.require("primary").store
     assert isinstance(store, UploadedArchiveStore)
+    if cold:
+        # Model a restarted archive reader, independently of publication or prior
+        # interruptions. Warm measurements retain its bounded verified-byte cache.
+        archives = fixture.container.provenance._archives
+        fixture.container.provenance._archives = PublishedCanonicalProvenance(
+            fixture.container.session_factory,
+            archives._archive_stores,
+            read_order=archives._read_order,
+        )
     store.read.clear()
     gc.collect()
     tracemalloc.start()
@@ -246,7 +258,8 @@ def measure_archive_rebuild(fixture: SharedHistoryFixture) -> dict[str, object]:
     assert generation == fixture.generation_id
     assert peak <= MAX_REBUILD_PEAK_BYTES and elapsed <= MAX_REBUILD_SECONDS
     reads = Counter(store.read)
-    assert reads and max(reads.values()) == 1, "shared archive objects were downloaded repeatedly"
+    assert not cold or reads, "cold rebuild did not read archive custody"
+    assert max(reads.values(), default=0) <= 1, "shared archive objects were downloaded repeatedly"
     with session_scope(fixture.container.session_factory) as session:
         state = session.get(State, fixture.collection_id)
         assert state is not None and state.active_build_id is not None
@@ -330,7 +343,8 @@ def measure_archive_rebuild(fixture: SharedHistoryFixture) -> dict[str, object]:
         "peak_application_bytes": peak,
         "archive_object_reads": sum(reads.values()),
         "encrypted_archive_bytes_read": encrypted_bytes,
-        "max_reads_per_object": max(reads.values()),
+        "max_reads_per_object": max(reads.values(), default=0),
+        "cache_state": "cold" if cold else "warm",
         "indexed_snapshots": snapshots,
         "native_http": native_http,
         "index_generation": generation,
@@ -361,8 +375,9 @@ def qualify_shared_history_scaling(database_url: str, directory: Path) -> dict[s
                 )
                 publication_seconds = round(time.perf_counter() - start, 3)
                 print(f"Shared history: rebuilding {members} members", file=sys.stderr, flush=True)
-                first = measure_archive_rebuild(fixture)
+                first = measure_archive_rebuild(fixture, cold=True)
                 repeated = measure_archive_rebuild(fixture)
+                assert repeated["archive_object_reads"] == 0, "warm rebuild reread cached custody"
                 measurements.append(
                     {
                         "members": members,

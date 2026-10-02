@@ -147,6 +147,19 @@ def _metadata_ciphertext_pins(archive: Path) -> tuple[tuple[int, str] | None, tu
     return description, head
 
 
+def _windows_path_budget(probe: Path) -> int:
+    """Qualify the process/filesystem's native long-path behavior."""
+    destination = probe.joinpath(*("path" * 20 for _ in range(4)))
+    try:
+        destination.mkdir(parents=True)
+        (destination / "leaf").write_bytes(b"x")
+    except OSError as exc:
+        if getattr(exc, "winerror", None) != 206:
+            raise
+        return 240
+    return 32767
+
+
 def _destination_rules(output_parent: Path, *, roots: tuple[Path, ...]) -> DestinationRules:
     with tempfile.TemporaryDirectory(prefix=".riverhog-rule-probe-", dir=output_parent) as name:
         probe = Path(name)
@@ -154,12 +167,13 @@ def _destination_rules(output_parent: Path, *, roots: tuple[Path, ...]) -> Desti
         case_sensitive = not (probe / "CASE").exists()
         (probe / "e\u0301").write_bytes(b"x")
         unicode_equivalence = "NFC" if (probe / "\u00e9").exists() else "exact"
+        fallback_path_bytes = _windows_path_budget(probe) if os.name == "nt" else 4096
     try:
         component_bytes = os.pathconf(output_parent, "PC_NAME_MAX")
         path_bytes = os.pathconf(output_parent, "PC_PATH_MAX")
     except (AttributeError, OSError, ValueError):
         component_bytes = 255
-        path_bytes = 240 if os.name == "nt" else 4096
+        path_bytes = fallback_path_bytes
     # Both creation in staging and final published paths must fit. PATH_MAX
     # includes the absolute prefix, joining separator and terminating NUL.
     prefix_bytes = max(len(os.fsencode(root.absolute())) for root in roots)

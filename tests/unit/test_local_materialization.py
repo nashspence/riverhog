@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any
@@ -21,6 +22,7 @@ from riverhog_archive_contracts import (
     member_history_object_path,
     provenance_structure_object_path,
 )
+from riverhog_canonical_json import require_canonical_json
 from riverhog_materialization import (
     DestinationRules,
     primary_sidecar_components,
@@ -341,6 +343,44 @@ def test_local_sync_materializes_exact_hint_and_complete_provenance(
     assert repaired.exit_code == 0, repaired.exception
     assert hinted_path.read_bytes() == b"hinted payload"
     assert any((local_root / ".a-riverhog-cli-quarantine").iterdir())
+    assert runner.invoke(local.local_app, ["audit"]).exit_code == 0
+
+
+@pytest.mark.parametrize("name,windows_names", [("é" * 120, False), (":" * 80, True)])
+def test_repair_preserves_long_materialization_edits_with_opaque_quarantine_names(
+    local_root: Path, monkeypatch: pytest.MonkeyPatch, name: str, windows_names: bool
+) -> None:
+    artifact_id = "1" * 64
+    archived = b"archived payload"
+    api = FakeApi({artifact_id: archived}, {artifact_id: (name,)})
+    monkeypatch.setattr(local, "ApiClient", lambda: api)
+    monkeypatch.setattr(
+        local,
+        "_destination_rules",
+        lambda target: replace(_NATIVE_DESTINATION_RULES(target), windows_names=windows_names),
+    )
+    runner = CliRunner()
+    added = runner.invoke(local.local_app, ["add", "1"])
+    assert added.exit_code == 0, added.exception
+    synced = runner.invoke(local.local_app, ["sync"])
+    assert synced.exit_code == 0, synced.exception
+    output = next((local_root / "1/files").iterdir())
+    assert len(output.name.encode("utf-8")) == 240
+    edit = b"local edit to retain"
+    output.write_bytes(edit)
+    repaired = runner.invoke(local.local_app, ["repair"])
+    assert repaired.exit_code == 0, repaired.exception
+    assert output.read_bytes() == archived
+    quarantine = local_root / ".a-riverhog-cli-quarantine"
+    retained = list(quarantine.glob("*.data"))
+    assert len(retained) == 1 and retained[0].read_bytes() == edit
+    association = require_canonical_json(retained[0].with_suffix(".json").read_bytes())
+    assert association == {
+        "collection_id": "1",
+        "artifact_id": artifact_id,
+        "original_destination": list(output.relative_to(local_root).parts),
+    }
+    assert len(retained[0].name.encode("utf-8")) < 64
     assert runner.invoke(local.local_app, ["audit"]).exit_code == 0
 
 

@@ -22,7 +22,7 @@ from .errors import (
     UnresolvedContractError,
 )
 from .graph import GraphValidation, validate_graph
-from .history import MemberHistoryClosure
+from .history import MemberHistoryClosure, MemberHistoryMembership
 from .interface import ObservationSource, StateObserver
 from .journal import (
     JournalFrame,
@@ -89,6 +89,7 @@ __all__ = [
     "UnresolvedContractError",
     "GraphValidation",
     "MemberHistoryClosure",
+    "MemberHistoryMembership",
     "validate_graph",
     "ObservationSource",
     "StateObserver",

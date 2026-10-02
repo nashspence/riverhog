@@ -20,7 +20,11 @@ from riverhog_core.catalog_models import (
 from riverhog_core.ports.archive_store import ArchiveObjectIdentity
 from riverhog_core.ports.download_allowance import DownloadAttribution
 from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
+from riverhog_core.provenance_read_cache import ProvenanceReadCache
 from riverhog_core.services.archive_records import select_readable_archive_copy
+
+_OBJECT_CACHE_BYTES = 8 * 1024 * 1024
+_OBJECT_CACHE_ENTRIES = 4096
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,6 +57,11 @@ class PublishedCanonicalProvenance:
         self._session_factory = session_factory
         self._archive_stores = archive_stores
         self._read_order = tuple(read_order)
+        # Immutable verified plaintext is reusable across requests. Capacity bounds
+        # working memory, not history extent; misses always use normal custody I/O.
+        self._objects = ProvenanceReadCache(
+            byte_budget=_OBJECT_CACHE_BYTES, entry_budget=_OBJECT_CACHE_ENTRIES
+        )
 
     def reader(
         self,
@@ -121,12 +130,40 @@ class PublishedCanonicalProvenance:
                 stored_sha256=row.stored_sha256,
                 revision=row.revision,
             )
-        yield from binding.store.iter_archive_object(
+        key = (
+            selected.archive_root_sha256,
+            selected.store_name,
+            selected.incarnation_id,
+            object_identity.sha256,
+        )
+        cached = self._objects.get(key)
+        if cached is not None:
+            for offset in range(0, len(cached), 128 * 1024):
+                yield cached[offset : offset + 128 * 1024]
+            return
+        pending = bytearray() if object_identity.plaintext_bytes <= _OBJECT_CACHE_BYTES else None
+        digest = hashlib.sha256()
+        received = 0
+        for chunk in binding.store.iter_archive_object(
             collection_id=selected.collection_id,
             object=object_identity,
             passphrase_id=selected.passphrase_id,
             attribution=attribution,
-        )
+        ):
+            received += len(chunk)
+            if received > object_identity.plaintext_bytes:
+                raise InvalidState("published provenance object exceeds its exact identity")
+            digest.update(chunk)
+            if pending is not None:
+                pending.extend(chunk)
+            yield chunk
+        if (
+            received != object_identity.plaintext_bytes
+            or digest.hexdigest() != object_identity.sha256
+        ):
+            raise InvalidState("published provenance object differs from its exact identity")
+        if pending is not None:
+            self._objects.put(key, bytes(pending))
 
     def _select_copy(self, collection_id: int) -> _SelectedCopy:
         with read_snapshot(self._session_factory) as session:
