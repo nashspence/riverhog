@@ -91,7 +91,7 @@ class LifecycleTests(unittest.TestCase):
         old = self.service.prepare(binding.key, authority_expires=100, now=0)
         self.service.expire_probes(2)
         new = self.service.prepare(binding.key, authority_expires=100, now=2)
-        late = Permit("old-probe")
+        late = Permit(str(old))
         self.assertFalse(self.service.admit(old, late, now=2))
         self.assertTrue(late.released)
         self.assertEqual(self.service.probes[binding.key], new)
@@ -107,7 +107,7 @@ class LifecycleTests(unittest.TestCase):
     def test_authority_expiring_during_probe_does_not_launch(self):
         binding = self.accept()
         ticket = self.service.prepare(binding.key, authority_expires=0.5, now=0)
-        permit = Permit("grant")
+        permit = Permit(str(ticket))
         self.assertFalse(self.service.admit(ticket, permit, now=0.5))
         self.assertTrue(permit.released)
         self.assertEqual(self.service.status(binding.key)["state"], "queued")
@@ -122,7 +122,7 @@ class LifecycleTests(unittest.TestCase):
         binding = self.accept()
         ticket = self.service.prepare(binding.key, authority_expires=10, now=0)
         self.service.cancel(binding.key)
-        permit = Permit("late")
+        permit = Permit(str(ticket))
         self.assertFalse(self.service.admit(ticket, permit, now=0))
         self.assertTrue(permit.released)
         self.assertEqual(self.service.starts, [])
@@ -230,7 +230,7 @@ class LifecycleTests(unittest.TestCase):
         old.recover(workers_stopped=True)
         self.service = Service(self.store)
         _, live = self.start(binding)
-        late = Permit("old-owner")
+        late = Permit(str(ticket))
         self.assertFalse(old.admit(ticket, late, now=0))
         self.assertTrue(late.released)
         self.assertFalse(live.released)
@@ -286,6 +286,88 @@ class LifecycleTests(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.store.get(second.key)
         self.assertEqual(self.service.accept(first)["state"], "queued")
+
+
+    def test_cancel_intent_survives_restart_of_replay_safe_work(self):
+        for kind in ("observer", "transform"):
+            binding = self.accept(kind)
+            self.start(binding)
+            self.service.cancel(binding.key)
+            self.service.recover(workers_stopped=True)
+            self.service = Service(self.store)
+            self.assertEqual(self.service.accept(binding)["state"], "canceled")
+            with self.assertRaises(ValueError):
+                self.service.resume(binding.key)
+
+    def test_recovered_interrupted_work_can_be_canceled_without_restarting_it(self):
+        binding = self.accept("observer")
+        self.start(binding)
+        self.service.recover(workers_stopped=True)
+        self.service = Service(self.store)
+        self.assertEqual(self.service.cancel(binding.key)["state"], "canceled")
+        with self.assertRaises(ValueError):
+            self.service.resume(binding.key)
+
+    def test_cancel_intent_never_makes_uncertain_effect_replayable(self):
+        for kind in ("effect", "departure"):
+            binding = self.accept(kind)
+            self.start(binding)
+            self.service.cancel(binding.key)
+            self.service.recover(workers_stopped=True)
+            self.service = Service(self.store)
+            self.assertEqual(self.service.cancel(binding.key)["state"], "uncertain")
+            with self.assertRaises(ValueError):
+                self.service.resume(binding.key)
+
+    def test_wrong_owner_permit_cannot_authorize_execution(self):
+        binding = self.accept()
+        ticket = self.service.prepare(binding.key, authority_expires=10, now=0)
+        wrong = Permit("another-invocation")
+        self.assertFalse(self.service.admit(ticket, wrong, now=0))
+        # Do not release a foreign owner's live lease either: quarantine/reconcile.
+        self.assertFalse(wrong.released)
+        self.assertEqual(self.service.status(binding.key)["state"], "queued")
+        self.assertEqual(self.service.starts, [])
+
+    def test_proven_completion_survives_later_lease_loss_and_cancel(self):
+        for kind in ("transform", "effect", "departure"):
+            binding = self.accept(kind)
+            ticket, permit = self.start(binding)
+            self.service.cancel(binding.key)
+            permit.valid = False
+            # Fixture asserts already validated, exact durable completion evidence.
+            result = self.service.finish(
+                ticket, outcome="complete", result="proven-completion",
+                workers_stopped=True, completion_proven=True,
+            )
+            self.assertEqual(result["state"], "complete")
+            self.assertTrue(permit.released)
+            self.assertEqual(self.service.accept(binding), result)
+
+    def test_no_capacity_claim_from_an_already_released_permit(self):
+        binding = self.accept()
+        ticket = self.service.prepare(binding.key, authority_expires=10, now=0)
+        permit = Permit(str(ticket))
+        permit.release()
+        self.assertFalse(self.service.admit(ticket, permit, now=0))
+        self.assertEqual(self.service.starts, [])
+
+    def test_denied_probe_releases_local_slot_for_another_job(self):
+        blocked = self.accept(name="blocked")
+        ready = self.accept(name="ready")
+        ticket = self.service.prepare(blocked.key, authority_expires=10, now=0)
+        self.assertIsNone(self.service.prepare(ready.key, authority_expires=10, now=0))
+        self.assertFalse(self.service.admit(ticket, None, now=0))
+        started, _ = self.start(ready)
+        self.service.finish(started, outcome="complete", result="ready", workers_stopped=True)
+
+    def test_observing_status_never_requests_a_permit_or_starts_work(self):
+        binding = self.accept()
+        for _ in range(100):
+            self.assertEqual(self.service.status(binding.key)["state"], "queued")
+        self.assertEqual(self.service.probes, {})
+        self.assertEqual(self.service.active, {})
+        self.assertEqual(self.service.starts, [])
 
 
 if __name__ == "__main__":

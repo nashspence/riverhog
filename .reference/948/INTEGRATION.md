@@ -1,99 +1,107 @@
 # Integration-agent reading map
 
-This is proposed concrete input for #948 under #903, not an instruction to merge.
-Read the current issue, reconcile against current main, and use the normal
-integration rail. Do not copy `.reference` material into production as documentation
-or treat the miniature model as a shared production kernel.
+External reference for #948 under #903; not an instruction to merge. Start with
+DESIGN.md. Reconcile the proposal with the owning issue and then-current main.
+Do not install this SQLite model or these documents as production contracts.
 
-## Audited source anchors
+## Snapshot reconciliation
 
-All links below pin `239985271c9ec24942073f4005dd18da621d0251`. Read ranges are
-stated to avoid claiming a full repository audit. Blob hashes cover the corresponding
-whole file; matching a hash does not imply every line was reviewed.
+Original authoritative branch base: `239985271c9ec24942073f4005dd18da621d0251`.
+Previous reference: `6d5e3985fb9c781052594641773ba36ea1e05b30`.
+Latest main audited on 2026-10-02: `88a3b3ae7d0addec10ced70b9eb04c7f96e0332f`.
 
-| Source | Read anchors | Git blob |
-| --- | --- | --- |
-| [AGENTS.md](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/AGENTS.md) | Complete; boundaries, baseline and integration policy | `6c2ad90111bc6f58c5fc82e25700beffb028e9d9` |
-| [scheduler.py](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/some-implementations/stove0/application/server/src/stove0_core/scheduler.py) | Complete; sequential step loop and admission/departure lanes | `473e33195859e6063d9709fba8cb6b173f1c1a4a` |
-| [coordinator.py](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/some-implementations/stove0/application/server/src/stove0_core/coordinator.py) | 384-635; observation, nested planning, preflight and target dispatch/poll functions also read in prior inspection; whole-file blob unchanged | `fbb76a78d6b0a0bb5300b1f94c9cc093a6d93fa0` |
-| [work_state.py](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/some-implementations/stove0/application/server/src/stove0_core/work_state.py) | 1524-1619; bind request before dispatch, target status mapping | `00415744bc03c2114bc37e751a55f3232ac99fea` |
-| [persistent.py](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/some-implementations/stove0/packages/target-support/src/stove0_target_support/persistent.py) | 1-340, 450-752; accept, submit, cancel, recover, durable writes | `4e0a8b25e0769b61b10757224787a57b438a72a7` |
-| [observer http_binding.py](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/some-implementations/stove0/packages/observer-support/src/stove0_observer_support/http_binding.py) | Complete; synchronous handler and blocking semaphore | `c7f11b1bca58a2a2e19b1dd97ce449b324eec018` |
-| [protocol models.py](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/some-implementations/stove0/packages/protocol/src/stove0_protocol/models.py) | 550-735; semantic request versus fence-bound invocation, terminal evidence | `aede32aa95034a7abfaa614266c6ee8d7c658cca` |
-| [preview.py](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/some-implementations/stove0/application/server/src/stove0_core/preview.py) | Complete; future waits, nested traversal, claim finally | `14e2338f0a71b75070c7fbc5b52f61bc5ad3a374` |
-| [admission.py](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/some-implementations/stove0/application/server/src/stove0_core/admission.py) | 570-760; durable candidate and synchronous preview | `a3427c12f728fd55220f49c7c140b4022671ecf8` |
-| [departure.py](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/some-implementations/stove0/application/server/src/stove0_core/departure.py) | 535-632; durable pending effect, synchronous receipt and retry | `3eaddeaef02e0245c1760051f0a772e1926c4995` |
-| [NVENC common.py](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/some-implementations/stove0/targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/common.py) | Complete; process wait, cancellation, timeout, version probe | `a06795b0f5fea67168c85cdab2745c6fa1bfd9bf` |
-| [test_departure_target.py](https://github.com/nashspence/riverhog/blob/239985271c9ec24942073f4005dd18da621d0251/some-implementations/stove0/packages/target-support/tests/test_departure_target.py) | Complete; exact intent and lost-response receipt replay | `90e27865fa9c29ef340dc6c7ba5f23d3ac29d80b` |
+Both full source snapshots were downloaded using GitHub (Additional Tools).
+Archive and manifest SHA-256, every file's SHA-256/Git blob, and reconstructed Git
+tree identities were verified. Removing `.reference/` from the prior reference
+reconstructs the original base tree exactly. All 328 tracked files under
+`some-implementations/stove0/` are byte- and mode-identical between the snapshots.
 
-#903's body and its process-correction comment were read. #948's body was read;
-there were no comments when this audit began. The branch does not infer acceptance
-of earlier conversation-level API sketches from that absence.
+Main has 12 modified and one new non-generated file since that base, concerning
+provenance/recovery/local materialization and Review0 qualification diagnostics;
+the other differences are generated contract artifacts. None changes the audited
+Stove0 execution boundary. The reference is revised by appending to its existing
+history, not by rewriting its published SHA or mixing newer production files into
+its diff. Latest-main reconciliation is recorded separately from historical base.
 
-## Suggested change sequence
+## Source map
 
-1. Establish the control-call and lifecycle invariants in focused tests first.
-   Preserve typed terminal evidence and clarify metadata/preflight's bounded role.
-2. In target support, implement dormant durable queueing, bounded dispatch capacity,
-   admission injection, and started-versus-unstarted recovery/cancellation. Include
-   partial acceptance writes and repeated queued PUTs, not just the happy path.
-3. Add observer runtime envelopes and support wrapping the existing observer
-   implementation boundary. Update client, binding, schema/conformance surfaces,
-   exact invocation identity, freshness refresh, and cancellation propagation together.
-4. Convert main and nested observation advancement plus preview/admission consumers
-   to durable resumable steps. Cover operator and evaluation callers sharing preview;
-   do not leave a hidden synchronous fallback or abandon a live preview claim.
-5. Add pollable departure-effect delivery without losing artifact-free identity,
-   durable receipt idempotency, uncertain-effect reconciliation, or policy intent.
-6. Apply shared due scheduling, authority maintenance, bounded backlog admission,
-   observability and component deployment configuration. Wire a fake external lease
-   into the actual NVENC target for an end-to-end witness before claiming completion.
+Paths below are relative to `some-implementations/stove0/` at audited main
+`88a3b3ae7d0addec10ced70b9eb04c7f96e0332f`. Named functions and tests were inspected,
+not every file in the repository. Hash verification is not semantic code review.
 
-These are integration suggestions, not new child issues, priorities, or accepted
-scope. A support abstraction is justified by shared lifecycle mechanics; it does
-not authorize a cross-application database or imports between implementation packages.
+| Source | Relevant evidence |
+| --- | --- |
+| `application/server/src/stove0_core/scheduler.py` | Sequential `advance`; `run_once` also advances admission and departure |
+| `application/server/src/stove0_core/coordinator.py` | `step` renews claims; `_observe_one`/nested observation are synchronous; `_queue_or_poll` binds target request before PUT; cancellation is another reconciliation path |
+| `application/server/src/stove0_core/work_state.py` | Observation request persistence, `record_target_status`, claim rebinding and cancellation; repeated status currently goes through `_replace` |
+| `packages/target-support/src/stove0_target_support/persistent.py` | `put_job`, `_submit`, `_run`, `cancel_job`, `_recover_interrupted`; queued/running/canceling recovery and success checkpoint precedence |
+| `packages/target-support/src/stove0_target_support/execution.py` | Refreshable execution session and exact completion ownership; keep these rather than copying fixture flags |
+| `packages/observer-support/src/stove0_observer_support/http_binding.py` | Synchronous observe call under blocking semaphore |
+| `packages/observer-client/src/stove0_observer_client/client.py` | Synchronous terminal-result HTTP contract; default timeout is 300 seconds, not a scheduler-pass guarantee |
+| `packages/protocol/src/stove0_protocol/models.py` | Semantic request/result identity versus claim/fence-bound invocation; terminal-only observation evidence |
+| `application/server/src/stove0_core/preview.py` | Future waits, nested observation, preflight and claim-abandoning finally |
+| `application/server/src/stove0_core/admission.py` | Durable candidate followed by synchronous preview in `_advance_candidate` |
+| `application/server/src/stove0_api/app.py` | `/v1/work` re-previews and checks accepted digest; `/v1/workflow-previews` invokes preview directly |
+| `application/server/src/stove0_core/departure.py` | Durable pending intent and retry date, but synchronous receipt acquisition |
+| `packages/target-protocol/src/stove0_target_protocol/departure.py` | Artifact-free intent/receipt identity distinct from ordinary effect jobs |
+| `targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/target.py` | Encoding execution and target options; preserve transformation identity |
+| `targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/common.py` | FFmpeg cancellation/process wait and execution timeout; wrapper-based admission would consume that timeout |
 
-## Regression evidence to retain or extend
+Read root AGENTS.md, README.md, architecture.md and current #903/#948 as well.
+The policy is baseline convergence before v1, not compatibility aliases for retired
+surfaces. Exact code, executable schemas and tests remain authoritative after
+normal integration. No generated closure or release baseline is edited here.
 
-Reconcile the existing target-support tests (including publication/checkpoint and
-shutdown behavior), observer-support tests, coordinator/work-state tests,
-preview/evaluation tests, departure tests, and relevant PostgreSQL concurrency tests.
-The supplied reference does not run those suites. The inspected departure test's
-lost-response scenario must continue to produce one exact receipt, not a duplicate
-effect, after transport becomes pollable.
+## Integration sequence and regression focus
 
-Update the appropriate package dependencies/exports, protocol schemas, HTTP error
-bindings, API clients, CLI/operator views, distribution manifests, state baselines,
-fixtures and generated contract closure using repository-owned generation/validation.
-Follow the current pre-v1 baseline policy rather than adding legacy aliases by
-assumption. Do not regenerate the frozen contract candidate on this reference branch.
+First establish the bounded-control and never-started/possibly-started invariants
+in the real runtime tests. Add dormant dispatch to target support while preserving
+refresh, completion checkpoint and output custody handling. Then add pollable
+observer/departure delivery and resumable caller state together; do not leave a
+synchronous fallback in nested planning or preview admission.
 
-## Evidence matrix (proposed checks, not authoritative acceptance)
+Include the `/v1/work` accepted-preview revalidation path. Making preview pending
+must neither rerun it inline nor bypass exact digest validation. Scheduling changes
+cannot weaken stale-claim/implementation rejection or authorize output effects
+from preview. Independently schedule claim maintenance, remote contacts and cleanup.
 
-| Property | Reference evidence | Production integration still needed |
-| --- | --- | --- |
-| Acceptance precedes execution and survives reopening | SQLite acceptance/reopen tests | Real outbox/target crash windows and actual storage ownership |
-| Indeterminate NVENC lease wait does not consume workers | 500 denied probes; later grant; unrelated work progress | Actual NVENC + external lease service + worker/process inspection |
-| Local capacity before external lease; bounded probes | Reservation, deadline, stale-grant tests | Transport deadlines and prevention of orphaned probe threads |
-| Idempotent submit/poll and immutable terminal evidence | Repeated accepts, one start, lost-result replay | HTTP retry/status validation, multi-scheduler and process races |
-| Cancel while queued/probing/running | Explicit interleaving tests | Actual cancellation route, process-tree teardown and work cleanup |
-| Recovery distinguishes queued from may-have-started | All four kinds; uncertain effects do not replay | Atomic storage, process containment, existing checkpoint resumption |
-| Fresh authority and claim-generation identity | Expiry and identity separation tests | Real capabilities/callback refresh, stale fences, authorization checks |
-| Backlog bounded before acceptance | Refusal/deduplication test | Queue byte/row limits, retention/deduplication, load and fairness |
-| Preview/nested/automatic admission does not wait | Design and audited call graph only | Durable continuation, restart, read-only scope, result-order tests |
-| Poll backoff never starves claim maintenance | Design only | Due indexes, independent renewal, long waits and restart tests |
-| Lease loss cannot release a still-running consumer | Model requires explicit stop proof | Real broker fencing/renewal, orphaned children, kill/crash qualification |
+Existing `packages/target-support/tests/test_target_support.py` cases to retain:
+`test_persistent_target_shutdown_and_operator_cancel_have_distinct_state`,
+`test_running_target_receives_capability_refresh_without_persisting_secrets`,
+`test_queued_target_constructs_runtime_with_refreshed_authority_before_claim_read`,
+`test_uncertain_effect_commit_stays_interrupted_and_never_auto_repeats`,
+`test_published_success_wins_late_cancel_and_cleanup_failure`, and
+`test_persistent_target_resumes_sealed_publication_without_rerunning_operation`.
+Also retain `test_departure_target.py` exact-intent and lost-response receipt replay.
+The standalone reference suite does not replace these production tests.
 
-The model's `workers_stopped=True` and authority expiry are **test inputs**, not
-an implementation of proof, capability validation, or device fencing. `complete`
-in the model carries an opaque fixture string, not a Riverhog result schema. The
-single-owner SQLite model does not demonstrate distributed CAS or actual concurrency.
+The updated model adds checks for cancellation surviving restart, cancellation of
+stopped interrupted work, foreign permit rejection, and already-proven completion
+after lease loss. It still cannot prove process containment, transport deadlines,
+capability freshness, completed checkpoint reconciliation or distributed CAS.
+Pending is not failure; cancel is not rollback; a resource permit is not completion
+authority. Preserve those distinctions in schemas, error handling and UI state.
 
-## Questions to settle in the owning issue
+## Evidence still required in normal integration
 
-The publication comment summarizes these so they are not stranded only in a branch:
-confirm bounded metadata/preflight is permitted; confirm resumable preview and
-artifact-free departure delivery belong in the consistent boundary; decide whether
-any independent sampler API enters scope. Choose concrete poll/control budgets,
-backlog/retention policy and permit-supervision responsibilities in normal integration.
-The reference recommends those invariants but does not establish those decisions.
+The actual NVIDIA target must wait on a synthetic external scheduler while unrelated
+work progresses, without spawning waiting FFmpeg processes or consuming payload
+slots. Cover restart before grant, canceled jobs receiving late grants, refreshed
+authority, one valid execution after grant, and execution-only timeout accounting.
+
+Exercise real HTTP concurrency and finite per-call/pass budgets, backlog limits,
+fair scans, PostgreSQL multi-scheduler races, durable cancellation before dispatch,
+preview/nested continuation, independent claim renewal, and effect reconciliation.
+Derive stop/noncommit/completion facts from real supervision/evidence, never from
+untrusted Booleans equivalent to this model's test inputs.
+
+Update actual client/binding/schema/CLI/operator views, distribution dependencies,
+state fixtures/baselines and generated contracts using repository-owned tools.
+Run the normal focused suites and `make lint`, `make unit`, `make dist-smoke`,
+`make build`, and required pushed-SHA checks on integrated production changes.
+
+Open interpretation: bounded metadata/preflight belongs in the control allowance.
+This reference recommends covering all affected preview/admission and departure
+paths; it does not silently authorize changes to independent Review0 sampler APIs.
+No universal scheduler backend, priority model, permit-renewal wire protocol, generic
+workflow framework or mid-execution preemption is needed for this v1 change.

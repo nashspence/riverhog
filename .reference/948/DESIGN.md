@@ -1,280 +1,244 @@
 # #948: bounded extension control and deferred execution
 
-**Proposed reference design, not accepted repository authority.** Read
-[the handoff](../HANDOFF.md). #948 owns scope and decisions; #903 governs this
-external reference. Earlier conversation sketches are motivation, not specification.
+Proposed external reference under #903, not accepted repository authority. Read
+[the handoff](../HANDOFF.md). This revision supersedes the design/model handoff at
+`6d5e3985fb9c781052594641773ba36ea1e05b30`; history remains intact. Earlier conversation
+is intent calibration. #948 and subsequent maintainer decisions own scope.
 
-## Recommendation
+## Recommendation and minimum v1 change
 
-Preserve Stove0's content-opaque orchestration and existing target result contracts.
-Give every extension execution boundary a durable, pollable lifecycle, and keep
-resource admission in the component runtime. Do not introduce a GPU scheduler into
-Stove0 or a second generic workflow ontology.
+Keep Stove0 content-opaque. Make extension execution durably pollable, and let the
+component runtime defer dispatch until it can actually run. Do not turn Stove0 into
+a resource scheduler, or make every deployment implement a lease service.
 
 The governing rule from #948 is:
 
-> Stove0's scheduler may synchronously perform only bounded control-plane operations
+> Stove0’s scheduler may synchronously perform only bounded control-plane operations
 > against extensions: accept/refresh, poll, and cancel. Actual observer, target, or
 > effect execution must occur outside the Stove0 scheduler thread.
 
-This is a call-graph rule, not merely a thread-placement rule. Starting a local
-future and immediately waiting for it, blocking on a semaphore, or hiding a polling
-loop in a client still violates it. Waiting jobs retain metadata and may require
-claim maintenance; they are not literally resource-free. They must not retain a
-payload executor slot, GPU lease, plaintext workspace, or open payload retrieval
-solely because external admission is unavailable.
+The minimum useful contract change is asymmetric:
 
-Immediate admission remains the default, but **never inline payload execution**.
-Unrelated work can progress; dependent recipe branches still wait for their actual
-inputs. This does not promise that an external scheduler ever grants capacity.
+- Transform and ordinary workflow-effect targets already have a suitable job
+  protocol. Fix their runtime queue/dispatch/cancellation/recovery behavior without
+  introducing another target state machine.
+- Observers and the separate artifact-free departure-effect interface need pollable
+  runtime delivery around their existing typed terminal results/receipts.
+- Stove0's affected callers need resumable advancement and durable cancellation.
+  This includes nested observation and preview/automatic-admission paths, not just
+  the main target call. No new GPU-specific `WorkPhase` is needed.
 
-## What the audited base establishes
+The reusable Python admission boundary can be small and local to support code.
+Backend resource names, scheduling policy, broker credentials, permits, renewal
+mechanisms and priorities must not become fields in sealed workflows or mandatory
+public scheduler interfaces. Optional polling hints and a generic `Job[T]` framework
+are not prerequisites. Default admission needs no external service; execution starts
+promptly when local capacity is available, never inline in the control handler.
 
-Base: `main` at `239985271c9ec24942073f4005dd18da621d0251`.
-Source locations and blob identities are in [INTEGRATION.md](INTEGRATION.md).
+## Meaning of bounded and pending
 
-* Target submission is already bound in Stove0 state before `put_job`. Repeated PUTs
-  retain the declaration and refresh runtime/callback authority. Target `queued`
-  already maps to Stove0 `queued`; no new GPU-specific work phase is needed.
-* `PersistentTargetService` immediately submits new jobs, creates per-job sessions,
-  and marks them running before invoking their implementation. It does not yet
-  implement a dormant, externally admitted queue. Queued cancellation currently
-  depends on an executor eventually observing the cancellation event.
-* Recovery currently maps queued/running/canceling to interrupted; ordinary effect
-  jobs then cannot automatically resume. That is conservative for a possibly
-  started effect, but wrong for a new queue whose records prove execution never
-  started. Acceptance and status are separate files, another crash window to close.
-* Observers synchronously return terminal evidence and block on an HTTP-binding
-  semaphore. Nested planning also invokes them synchronously. Preview waits on
-  observation futures; automatic admission calls preview synchronously.
-* Departure effects are a separate, artifact-free, receipt-only protocol. Their
-  local intent is durable and retry-dated, but the call still waits for execution.
+This is a call-graph rule, not just a thread-placement rule. Dispatching a future and
+then waiting for its result, sleeping through retries, or blocking on a semaphore
+still ties up the caller. Bound each control operation and the aggregate contact
+work in a scheduler pass; a backlog of slow endpoints must not exhaust the whole
+pass. Use due scheduling and per-component isolation/backoff rather than a retry
+loop in a client. A network timeout does not cancel remote work.
 
-Thus a target admission callback alone cannot close #948. The observer, nested
-planning, preview/admission, and departure call paths must also be reconciled.
+Pending is not literally resource-free: durable metadata, bounded bookkeeping,
+and authority maintenance remain necessary. It must not require one payload worker,
+plaintext workspace, retrieval session or GPU permit per waiting job. Short bounded
+admission probes are control overhead, not parked payload executors. Execution
+runtime deadlines must not start at queue acceptance; indefinite admission delay
+is not media failure. An explicit operator queue deadline is a separate policy.
 
-## 1. Keep control, admission, and execution separate
+Descriptor reads and deterministic preflight can remain synchronous only as bounded
+metadata validation: no content reads, scarce-resource acquisition, execution, or
+waiting for admission. Resource-dependent analysis belongs in an observation/job.
+This is the proposed interpretation of #948's control-operation list, to confirm in
+the owning issue rather than silently deleting existing descriptor/preflight APIs.
 
-Use three responsibilities, without requiring three services or processes:
+## Durable acceptance and component-owned dispatch
 
-| Responsibility | Work allowed | Work prohibited |
-| --- | --- | --- |
-| Stove0 step / component control handler | Validate bounded declarations; persist/replay identity; refresh credentials; return status; record cancellation | Wait for a resource or a payload result; sleep through retries |
-| Component-local dispatcher | Select bounded due candidates; make a bounded admission probe; reserve an immediately usable local slot | Allocate a waiting worker per queued item; hold a service-wide lock through external calls |
-| Component execution owner | Read inputs; run tools; maintain a granted permit; checkpoint/publish evidence; stop and clean up | Invent new workflow authority; release a device while its consumer still runs |
+Stove0 persists exact invocation identity before its first remote command. The
+extension returns accepted/queued only after durable identity and initial status
+are recoverable. Make acceptance atomic or cover every partial-write recovery
+window. Queue saturation is a declared retryable refusal before acceptance, not a
+fake queued response or eviction of accepted work.
 
-PUT may trigger or wake dispatch, but does not wait for it or call the payload
-implementation. An in-process dispatcher is enough. A bounded probe may also be
-performed as a control action if the adapter demonstrably meets the same deadline;
-its ability to wait for a grant is never part of the control contract.
+Keep queued jobs dormant. Repeated PUT refreshes/replays the same invocation and
+may wake a dispatcher; it neither starts a duplicate future nor increments an
+execution attempt. GET only observes. Polling unchanged status must not generate
+semantic progress or an endless WORK_UPDATED stream. Completed results bypass
+admission entirely and replay exactly. Bound queue rows/bytes and volatile state;
+retain receipts/tombstones for the supported replay horizon.
 
-Metadata descriptor reads and deterministic preflight validation need an explicit
-interpretation of #948's list: permit them only as bounded metadata operations.
-They must not acquire execution resources, fetch content, or wait for resource
-admission. Resource-dependent preflight work belongs in an observation/job, not a
-hidden exception. The owning issue should confirm this interpretation before
-integration; do not remove useful existing descriptor/preflight contracts blindly.
+A component-local dispatcher performs bounded work without requiring a new daemon:
 
-## 2. Small runtime admission boundary
+1. Reserve immediately usable local dispatch capacity without waiting. Do not first
+   acquire a GPU lease and then place it in an executor's backlog.
+2. Try admission with a bounded deadline outside transactions and global locks.
+   Deferred admission releases the short reservation and is reconsidered later.
+   Broker failure fails closed with operational diagnostics, not inapplicability.
+3. A grant is an owner-specific permit, not an availability Boolean. Check exact
+   invocation/attempt ownership, cancellation, authority freshness and launch
+   capacity again. Release stale grants belonging to this probe. Reject and
+   reconcile a foreign-owner grant without freeing another consumer's permit.
+4. Persist the may-have-started boundary before any payload or effect can execute.
+   Launch with the reserved slot. Clean up a proven launch failure; an ambiguous
+   launch is not proof that execution never happened.
+5. Release resources only after consumers and child processes stop. Renew and
+   supervise an expiring permit while it is in use, when that backend requires it.
 
-The conceptual outcome is **granted permit** or **deferred**, with optional bounded
-operational diagnostics. Names and exact Python signatures remain integration
-choices. Inputs identify the component invocation and attempt, not a secret-bearing
-`TargetJobRequest` passed indiscriminately to a scheduler plugin.
+A scheduler adapter that registers jobs must deduplicate repeated probes and withdraw
+canceled registrations. An unknown grant after timeout needs reconciliation/expiry,
+not an unbounded pile of abandoned requests. A probe timeout is not proof that its
+thread exited: production must bound actual in-flight calls as well as bookkeeping.
+The fixture models probe expiry, not transport cancellation or containment.
 
-A permit is an owner-specific handle, not an `available=True` hint. Availability
-checking followed by an unprotected launch is a race. Configuration maps component
-invocations to a deployment's resources. Gate endpoints, credentials, priorities,
-device paths, and lease tokens are not added to sealed recipe/plan identities.
-A changed transformation or selected implementation still uses the existing exact
-semantic identities; this is not permission to switch implementations invisibly.
+A non-expiring local lock does not need a renewal protocol. A renewable lease does.
+Neither a process crash nor a TTL proves an FFmpeg child stopped; deployment-specific
+containment/fencing must establish safe reallocation. Quarantine when exclusivity
+cannot be established. These are obligations of the selected adapter/supervisor,
+not a requirement to build GPU fencing or distributed exactly-once execution into
+Stove0. Start with invocation-level admission. Per-file release/reacquisition and
+mid-encode preemption are deliberately outside the minimum change.
 
-A dispatch attempt proceeds as follows:
+## Keep runtime identity separate from semantic evidence
 
-1. Reserve a local dispatch/execution slot without waiting. If none is available,
-   keep the durable job queued without acquiring an external permit.
-2. Probe admission with a bounded deadline, outside database transactions and global
-   state locks. Deferred/unavailable releases the short reservation and schedules
-   a later probe. An unavailable broker fails closed, with diagnostics, not as
-   content inapplicability or successful admission.
-3. On a grant, recheck cancellation, ownership generation, current declaration,
-   authority freshness, and immediate launch capacity. Discard stale replies and
-   release only the permit owned by that probe. Never queue a granted GPU lease in
-   an executor backlog.
-4. Persist the may-have-started marker before executing any payload or external
-   effect; then launch the execution owner. Release on known launch failure.
-5. Maintain the permit while consuming the resource, and release after verified
-   stop/cleanup. Cancellation and shutdown acknowledgements do not stand in for
-   stopped child processes.
+### Transform and ordinary workflow-effect targets
 
-A scheduler that registers requests needs stable deduplication across probes;
-repeated polls must not create new external queue entries. Timeouts with an unknown
-grant need adapter-level reconciliation, expiry/cancellation, and owner-specific
-cleanup. A bare `try_acquire` plus `finally: release` is not a complete lease protocol.
-An expiring lease requires renewal and a loss path that stops/fences consumers
-before reallocation. A local lock may need no renewal. Keep these differences
-inside the deployment adapter/supervisor rather than mandating one global backend.
-
-A process crash is not proof its FFmpeg child stopped. A GPU does not enforce a
-Riverhog fence. Use process containment/device-owner enforcement appropriate to the
-deployment; where exclusivity cannot be established, quarantine rather than launch
-another consumer. Do not claim exactly-once effects from an expiring lease.
-
-The initial useful granularity is an invocation. Releasing/reacquiring around
-individual files or encode phases is an optional component-local optimization,
-not a prerequisite or a generic mid-execution suspend/resume feature for #948.
-
-## 3. Transport and identity: share the pattern, keep typed results
-
-### Existing transform and workflow effect targets
-
-Keep `TargetJobStatus` and the current PUT/GET/cancel surface. `queued` means accepted
-without payload execution. Make existing queued records eligible for future dispatch,
-not only newly created or interrupted records. Repeated PUT does not enqueue another
-future or increment an execution attempt. GET is observational; running/terminal PUTs
-refresh/replay without duplicate dispatch. Terminal evidence remains immutable.
-
-No new target state enum is needed. Operational poll hints can be additive if useful;
-a local polling policy is enough initially. The default runtime still launches
-promptly when both local capacity and any configured gate permit it.
+Retain `TargetJobStatus` and existing PUT/GET/cancel operations. Queued records must
+remain dispatchable after acceptance and restart. A known-unstarted effect is safe
+to admit later; a possibly committed effect is not safe to execute again merely
+because a permit is available. Use the existing interrupted/uncertain-effect
+semantics rather than introducing a new public target enum just for uniformity.
+Resource unavailability must not be reported as retryable terminal execution failure:
+that is a different lifecycle outcome and does not mean ordinary queue waiting.
 
 ### Observers
 
-Add a separate runtime job envelope, retaining `ContentObservationResult` as terminal
-semantic evidence. Proposed shape: job identity, request identity, attempt, lifecycle
-state, and optional terminal result. Queued/running/canceling/interrupted are not
-facts and do not become `ContentObservationEvidence`. Only a validated terminal
-result follows the existing result-acceptance path.
+Add a runtime envelope with exact execution identity, semantic request identity,
+attempt, lifecycle state and optional terminal `ContentObservationResult`. Pending
+states are never `ContentObservationEvidence`. The existing result's observed,
+inapplicable, failed and canceled outcomes keep their meanings; a terminal envelope
+means delivery is complete, not that observation succeeded.
 
-For a concrete baseline, use idempotent PUT, observational GET, and cancel for
-`/v1/observations/{observation_job_id}`. A complete envelope contains the existing
-terminal result, whose `observed/inapplicable/failed/canceled` meaning is unchanged.
-The reference's generic `complete` label means terminal delivery, not semantic success.
-Revise the pre-v1 baseline rather than retaining an old synchronous scheduler route
-or silently switching clients between synchronous and asynchronous semantics.
+Use one idempotent accept/refresh, observational poll and cancel pattern; a concrete
+candidate is PUT/GET `/v1/observations/{observation_job_id}` plus cancellation. Exact
+names and status representation are integration choices. Revise the pre-v1 baseline
+rather than preserving a hidden synchronous compatibility path.
 
-**Do not key durable execution solely by semantic `request_id`.** The current
-invocation binds a separate `claim_id` and `fence`. Define a domain-separated
-execution identity over the immutable non-secret declaration, including the request,
-claim generation, selected descriptor and exact evidence/workspace-protection binding.
-Keep semantic request/result identity separate. Credential refresh must not create a
-new job; a different claim generation must not silently overwrite a live invocation.
-Cache reuse of old semantic facts, if supported, needs explicit validation rather
-than masquerading as execution under new authority.
+Do not use semantic `request_id` alone as execution identity. Current invocation
+separately carries claim/fence authority. Bind a domain-separated job identity to
+the immutable non-secret invocation declaration: request, claim generation, selected
+implementation and exact evidence/workspace-protection binding. Refreshable secrets
+stay outside that identity and outside durable records. A new claim generation
+must not overwrite a live job. Reusing cached facts requires explicit semantic and
+authorization validation, not pretending an old execution ran under a new claim.
 
-An observer support wrapper can keep the implementation author's `observe(request,
-runtime)` function synchronous inside the component executor. The HTTP handler and
-Stove0 client must not execute or await that function to completion.
+The implementation author's `observe(request, runtime)` can remain synchronous
+inside the component executor. Only its invocation/delivery becomes asynchronous.
+Validation of typed results still uses the existing acceptance path.
 
-### Departure effects
+### Artifact-free departure effects
 
-Keep the exact artifact-free intent and existing `departure_id`. Add a pollable
-status envelope around `DepartureEffectReceipt`, using the existing PUT path with
-GET/cancel semantics where authorized. Pending is not a receipt. Do not require
-artifact claims or transform plans for departure jobs just to reuse runtime mechanics.
+Keep `DepartureEffectIntent`, stable `departure_id` and `DepartureEffectReceipt`.
+Add pollable status around the receipt, retaining the existing identity and scope;
+do not manufacture artifact claims or transform plans merely to share mechanics.
+Pending/canceled/uncertain is not a successful withdrawal receipt. Support explicit
+cancellation only with observable unresolved/terminal handling; required withdrawal
+must not silently disappear because a policy changed or a queue was pruned.
 
-Cancellation must be explicit and observable; do not turn a canceled or uncertain
-required withdrawal into `complete`, or automatically discard it when a policy or
-catalog view changes. Existing durable idempotency and lost-response receipt replay
-must survive the transport change. Possibly committed effects remain unresolved
-until target-owned reconciliation or an explicit authorized decision supplies proof.
+Durable receipt replay and target-owned effect reconciliation remain mandatory.
+HTTP 202 alone supplies none of these guarantees. Returning a validated status with
+HTTP 200 is consistent with existing targets; update executable status/error
+contracts and clients together instead of changing status codes for appearance.
 
-For new envelopes, using HTTP 200 with a validated state representation follows the
-existing target binding and avoids adding 202 just for appearance. HTTP 202 alone
-would not supply durable identity, polling, cancellation, or completion guarantees.
-Whichever binding is integrated must update its executable error/status contracts;
-queue saturation is a declared retryable refusal, not a fake accepted record.
+## Resumable Stove0 callers and authority maintenance
 
-## 4. Durable Stove0 advancement, not parked scheduler threads
+Store continuation and operational next-contact state apart from semantic identities.
+A pending observation leaves work observing; a pending target leaves it queued.
+Advance other ready independent observations rather than repeatedly selecting only
+the first incomplete one. Dependencies still wait for valid facts. Persist completed
+nested evidence and resume planning instead of redoing all earlier observations.
 
-Persist the exact invocation/continuation before its first remote command, and
-record bounded poll bookkeeping independently of semantic result identity. Maintain
-per-invocation next-contact scheduling and fair, bounded scans. A large waiting
-backlog should not consume every scan's network budget or create a WORK_UPDATED
-stream merely because an unchanged status was seen again. Waiting is not failure,
-and polling is not an execution attempt. Do not sleep inside a scheduler pass.
+Preview must become resumable wherever used, including automatic classification
+admission, operator preview, evaluation callers, and `/v1/work`'s current re-preview
+check. A pending preview is not a failed preview and is not executable approval.
+Do not eliminate accepted-preview digest comparison just to avoid waiting: bind or
+resume exact revalidation and defer work creation until that validation completes.
+Reuse a validated stored preview only under explicit existing authority rules.
 
-Main work may remain `observing` or `queued`; fine-grained remote status is a view,
-not a new GPU phase. Within an observation stage, contact other ready independent
-requests rather than repeatedly selecting only the first incomplete request. Dependent
-stages cannot proceed with missing facts. The same applies to nested branch planning:
-persist completed evidence and resumable dependencies, and yield to the scheduler
-when a nested invocation is pending. Do not restart all prior observations each poll.
+Preserve preview read-only custody: no target execution, output-write authority,
+collection publication or source retirement. Do not abandon the preview claim in
+a synchronous `finally` while accepted observations still need it. Cancellation
+must reach accepted observer jobs and settle custody before final cleanup.
 
-Make preview advancement resumable as well, including automatic classification
-admission, operator preview, and evaluation callers that reuse it. Persist its
-observation/preflight continuation, return pending status instead of a failed or
-fabricated ready preview, and emit a `WorkflowPreview` only after its current exact
-terminal validation. A pending preview is not executable approval. Preserve its
-read-only scope: no target execution, output-write grant, collection publication,
-or source retirement. Do not abandon the preview claim in an old synchronous
-`finally` while accepted observers still need it; cancellation must converge cleanup.
+Decouple claim maintenance from remote polling. At the audited base, renewal runs
+inside `coordinator.step`; skipping that whole step during a long poll backoff can
+expire the claim. Make maintenance independently due, or wake for maintenance
+without contacting the extension. Bound cumulative scan delay against those duties.
+Keep capability/callback refresh working while queued and running; revalidate
+fresh authority before dispatch after restart. GET/status alone does not renew
+permission to execute. No bearer, callback or lease tokens belong in durable jobs.
 
-**Decouple claim/capability maintenance from poll backoff.** At the audited base,
-claim renewal runs in `coordinator.step`. Simply skipping that entire step until a
-long retry time can expire authority. Maintain claims on a separate due schedule
-(or cap wakeups to the next maintenance deadline without recontacting the extension).
-Revalidate authority before dispatch. Following restart, pending jobs require fresh
-runtime material; do not persist bearer/callback/lease tokens in accepted records.
+Each component owns its job store and Stove0 owns its continuations. Share focused
+support mechanics, not databases or imports between implementation packages. Do not
+replace typed evidence/publication rules with a single generic job framework.
 
-The minimal reusable code is focused lifecycle/admission mechanics in a dependency-
-light support package. Each component owns its durable job storage. Stove0 owns its
-own continuation records. Neither imports the other's implementation or shares a
-new cross-application operational database. Reuse protocol-specific validation,
-publication, effect reconciliation, and workspace cleanup; do not extract one giant
-new `Job[T]` framework or replace existing evidence contracts for uniformity.
+## Cancellation, recovery and already-proven completion
 
-## 5. Recovery and cancellation rules
+Persist cancellation intent before depending on remote acknowledgment. Retry cancel
+until reconciled; ordinary refresh must not override it. A lost first PUT response
+leaves submission uncertain: converge cancellation against that exact identity
+(or an authorized tombstone), so a delayed PUT cannot resurrect canceled work.
 
-| Durable knowledge | Recovery / cancellation consequence |
+| Durable knowledge | Required consequence |
 | --- | --- |
-| Accepted, definitely not started | Stay queued across restart; cancel immediately without needing a worker |
-| Probe outstanding, no start marker | Ignore stale grant after cancellation/owner change; reconcile/release that grant |
-| Start marker committed; execution outcome absent | Treat as may-have-run, even if crash happened just before launch |
-| Replay-safe observer/transform interrupted | Resume only under existing exact identity/checkpoint rules and fresh authority after old execution is contained |
-| External effect may have committed | No generic auto-replay; preserve unresolved status and reconcile by durable effect identity |
-| Cancel requested while running | Remain canceling until execution/children stop; a proven commit may win the race |
-| Durable terminal evidence exists | Replay exact evidence; do not overwrite it with a late cancel/error/old-attempt reply |
+| Accepted, definitely unstarted | Remain queued after restart; cancel without acquiring capacity or a payload worker |
+| Probe outstanding | Cancellation invalidates launch; reconcile any late owned grant |
+| Start marker exists, outcome absent | May have executed, even if the crash was just before launch |
+| Replay-safe interruption, no cancel requested | Resume only with old execution contained, fresh authority and existing exact checkpoint rules |
+| Cancel requested before crash | Preserve it across restart; never convert it into permission to resume payload work |
+| External effect possibly committed | Remain unresolved; no generic replay and no fabricated canceled receipt |
+| Exact completed evidence exists | Replay it; a later cancellation, stale attempt or resource-lease loss does not undo a committed result |
 
-Combine acceptance and initial status atomically, or implement recovery for every
-partial-write window. Bound pending storage and in-memory scheduling metadata. Reject
-excess new work before acceptance; never silently evict accepted work. Terminal
-retention must preserve needed deduplication, especially side-effect receipts.
-Resource/authority loss cannot be reclassified as bad media. Waiting diagnostics
-belong to runtime status, not sealed facts, plans, or receipts.
+Recovery must inspect completed/publication checkpoints before deciding that a
+canceled transform can simply be abandoned. For interrupted observer/transform work
+known stopped with no completed result to reconcile, cancellation needs no restarted
+payload. For uncertain effects, stopping proves no further activity, not absence
+of an earlier commit. Reconcile by the existing effect/receipt authority.
 
-## Basic test witness and limits
+Resource permission and completion authority are distinct. A lost GPU lease forbids
+continued consumption; it does not erase an independently proven completed result.
+Conversely, a valid GPU lease is not Riverhog publication authority. Preserve the
+existing success-wins-over-late-cancel/cleanup behavior. Cleanup failure must not
+change success into a replayable failure, and resource release must still converge.
 
-Use the actual NVIDIA encode target in eventual integration tests, with an external
-lease service held by a synthetic other application. Withhold the grant without a
-promised acquisition time. Accept several encode invocations; their state must be
-durable, inspectable and cancelable with no FFmpeg process, payload worker, or GPU
-permit held for the wait. Unrelated observer/target/effect work must keep advancing.
-Restart while waiting, refresh authority, then release one lease and observe one
-eligible encode start and complete normally. Never use health/version probes as a
-lease acquisition path.
+## Witness, exclusions and evidence
 
-`lifecycle.py` and `test_lifecycle.py` are an executable interleaving model of the
-critical lifecycle rules, with SQLite reopening and fake permits. They are not an
-implementation or qualification of that end-to-end witness. The model intentionally
-omits HTTP, actual processes, capability validation, publication, preview traversal,
-and distributed transactions. Integration evidence remains necessary.
+Eventual integration must exercise the actual NVIDIA encode target with a synthetic
+other application withholding its external lease for an indeterminate interval.
+Several jobs remain durable, inspectable and cancelable without waiting FFmpeg
+processes or payload workers. Unrelated work continues. Restart during the wait,
+refresh authority, then grant one lease and observe eligible execution. Cancel a
+waiting job and prove it never starts on a late grant. Health/version/preflight
+requests must not acquire the lease. Pending time must not consume encode timeout.
 
-## Rejected shortcuts / deliberately deferred scope
+The 36 tests in this reference are an explicit-interleaving SQLite model with fake
+permits, not that end-to-end witness. They do not exercise actual threads, HTTP,
+NVENC, capabilities, publication, preview traversal or distributed transactions.
+`workers_stopped`, `no_effect` and `completion_proven` are fixture assertions, not
+proposed trusted Boolean fields in any runtime/public API. Production must derive
+those facts from its real supervision and exact evidence. Model `uncertain` does
+not propose another target wire state. See [VALIDATION.md](VALIDATION.md).
 
-Do not close this issue with a blocking FFmpeg wrapper, increased worker count,
-sleep/backoff inside a client, or a new `waiting_for_gpu` field. Those relocate or
-hide waiting rather than establishing the control boundary. Similarly, a client
-socket timeout is not proof remote work was canceled. Python futures cannot cancel
-already-running calls by assertion; a real blocking adapter must have a bounded
-transport/containment design.
+Do not solve #948 by a blocking FFmpeg wrapper, more workers, a `waiting_for_gpu`
+field, client sleep loops, or generic resource inventory/priorities/backends.
+Review0 sampler APIs are independent: assess them only if the affected scheduler
+call graph reaches them. No fleet scheduler, migration, preemption or general-purpose
+workflow framework is part of this reference's minimum recommendation.
 
-Do not build resource inventory, priorities, scheduler backends, live GPU migration,
-mid-encode preemption, or a generic fleet scheduler here. A deployment adapter can
-use such systems later. Review0 samplers are adjacent GPU consumers, but changing
-their independent API is not silently authorized by this reference; assess scope
-in #948 if they enter the affected scheduler call graph.
-
-External primary references: Python's [executor/future semantics](https://docs.python.org/3/library/concurrent.futures.html)
+External primary references: Python [executor/future semantics](https://docs.python.org/3/library/concurrent.futures.html)
 and [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110), sections 10.2.3 and 15.3.3.
-These support transport/runtime cautions, not repository-specific design authority.
+These support runtime/HTTP cautions, not repository-specific design authority.

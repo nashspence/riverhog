@@ -2,73 +2,74 @@
 
 Owning issue: nashspence/riverhog#948
 Convention: nashspence/riverhog#903
-Audited base: main @ 239985271c9ec24942073f4005dd18da621d0251
-Audited base tree: 3847c6b32acf67c8e96518b30a5bfcee7b663911
 Reference branch: reference/external/948-extension-execution
-Prepared: 2026-10-02
+Original audited base: main @ 239985271c9ec24942073f4005dd18da621d0251
+Original base tree: 3847c6b32acf67c8e96518b30a5bfcee7b663911
+Prior published reference: 6d5e3985fb9c781052594641773ba36ea1e05b30
+Latest main reconciled: 88a3b3ae7d0addec10ced70b9eb04c7f96e0332f
+Latest main tree: cc681ea890d956ab2fccb45fa0da61e33d12d29d
+Revised: 2026-10-02
 
-Produced by: OpenAI ChatGPT
-Model: GPT-5.6 Sol
-Configuration / effort setting: not exposed; no hidden backend configuration asserted
-Requested by: repository maintainer in the current conversation, for an integration agent
+Produced and revised by: OpenAI ChatGPT
+Model: GPT-6 Astra Pro (user-visible identity)
+Configuration / effort: not exposed; no hidden backend configuration asserted
+Requested by: repository maintainer, for an integration agent to consume
 Published by: OpenAI ChatGPT via the GitHub Connector
+Snapshot retrieval: GitHub (Additional Tools)
 
 ## Purpose and contents
 
-A source-audited proposal for durable, externally admitted component execution with
-bounded Stove0 control operations. This is a design plus executable lifecycle model,
-not a production implementation or a claim of issue completion.
+This is a reviewed design and executable lifecycle experiment, not a production
+implementation or issue completion. Start with [948/DESIGN.md](948/DESIGN.md), then
+[948/INTEGRATION.md](948/INTEGRATION.md). [948/VALIDATION.md](948/VALIDATION.md) records
+snapshot verification, checks actually run and remaining production evidence.
+`948/lifecycle.py` and `948/test_lifecycle.py` are a single-owner SQLite fixture,
+not reusable production runtime code.
 
-Start with [948/DESIGN.md](948/DESIGN.md), then
-[948/INTEGRATION.md](948/INTEGRATION.md). The latter has pinned source anchors,
-proposed integration sequencing and the boundary between model tests and outstanding
-production evidence. [948/lifecycle.py](948/lifecycle.py) and
-[948/test_lifecycle.py](948/test_lifecycle.py) model critical interleavings with SQLite
-and fake owner-specific permits. [948/VALIDATION.md](948/VALIDATION.md) records checks.
+This revision tightens the minimum v1 contract, covers the work-creation preview
+revalidation path, preserves cancellation through restart, checks grant ownership,
+and distinguishes resource-lease validity from already-proven completion.
+It supersedes the prior reference as the recommended integration-agent handoff.
+The new exact published SHA is recorded in #948; the branch name is navigation.
 
-Only `.reference/` files are added. No production source, state baseline, workflow,
-release branch, generated contract candidate, issue body, or integration branch is
-changed. Earlier conversation is intent calibration, not a second source of authority.
+## Provenance correction
 
-## Authority and provenance
+The original supplied `issue-948-reference-package.zip` identifies its producer as
+OpenAI ChatGPT, GPT-6 Astra Pro (user-visible identity). The prior publication changed
+that field to GPT-5.6 Sol. This revision restores the supplied producer identity;
+it does not infer a hidden backend identity from either label. The original design,
+integration map, model and tests matched the published files byte-for-byte. The
+handoff and validation files had publication edits, so the earlier blanket statement
+that all six published blobs matched the supplied package was too broad.
 
-This branch is externally produced reference material for #948. Its creation,
-testing, publication, native issue linkage, or request by an authorized repository
-agent does not establish or extend an accepted design, contract, release requirement,
-or authorization to integrate these changes. Authority remains with the owning
-issue, subsequent maintainer decisions, and the repository's normal integration rail.
-Reconcile against then-current authoritative state and issue decisions; do not apply
-mechanically. The integration agent is the intended consumer, not this material's
-producer and not the requester asserted by this handoff.
+## Authority and revision history
 
-No pre-publication producer commit SHA is asserted. This handoff is intended to be
-published on the exact audited parent named above. The actual published reference
-SHA is recorded in #948 after publication; that SHA is the durable handoff identity
-and the branch name is navigation. Do not force-push away published reference
-history.
+This branch is externally produced reference material. Its creation, validation,
+publication, native linkage or request by a maintainer/authorized agent does not
+establish or extend accepted design, contracts, release requirements or permission
+to integrate. Authority remains with #948, subsequent maintainer decisions and the
+normal repository integration rail. Earlier conversation is intent calibration.
+Do not apply the reference mechanically or land `.reference/` as product docs.
 
-## Validation performed
+The integration agent is the intended consumer, not this material's producer.
+This revision appends to the published reference history; it does not rebase,
+force-push, merge current production changes, alter main/release branches, or change
+generated contracts. The historical branch base remains distinct from the newer
+main snapshot used for reconciliation. All 328 Stove0 files matched across snapshots.
 
-Read #903, its process-correction comment, #948, AGENTS.md, README.md, and the pinned
-source anchors listed in INTEGRATION.md. Ran 28 standalone design-model tests,
-compiled both Python files, repeated the model suite, and checked reference text for
-whitespace errors. A local patch-application round trip verifies all six file blobs.
-Remote publication/tree verification and any GitHub check state are recorded in
-#948 after publication rather than self-referentially in this commit.
+## Validation and limits
 
-## Not validated / known limitations
+Both full snapshots were downloaded and verified by archive/manifest SHA-256,
+per-file SHA-256/Git blob and reconstructed Git tree. The original 28 model tests
+passed locally. Eight new tests were added; the revised 36-test suite passed,
+including ten repeat runs, and Python compilation passed. See VALIDATION.md for
+precise scope. Real HTTP, NVENC, broker leases, PostgreSQL/concurrency, process
+containment and repository-wide production qualification were not performed.
 
-No production change is implemented here. No full Riverhog checkout/dependency
-installation was available: direct public git clone failed because github.com could
-not resolve in the execution container; source audit used the connected GitHub reader.
-`make lint`, `make unit`, `make dist-smoke`, `make build`, PostgreSQL integration,
-HTTP concurrency, NVENC hardware, real scheduler leases, process crash/power-loss,
-and capability/publication qualification were not run. Model tests are not substitute
-evidence for those checks. Known design tradeoffs and integration-only evidence are
-explicit in the accompanying files.
-
-The available GitHub publication actions expose branch/file/commit operations but
-no native issue Development-link operation. Native linkage is therefore absent from
-this publication and is recorded explicitly in #948 as permitted by #903. A Markdown
-URL or closing keyword is not a substitute. No pull request or issue-closing action
-is part of this reference publication.
+Full source snapshots are now available; the earlier source-download limitation is
+historical, not a current explanation for unrun production tests. Reference-only
+changes are not proof of production readiness. Native Development linkage remains
+unestablished by this publisher: the available Connector has no corresponding write
+action. That limitation and the new exact reference SHA are recorded in #948 per
+#903. A Markdown URL or closing keyword is not a substitute. No PR or issue-closing
+action is part of this handoff.

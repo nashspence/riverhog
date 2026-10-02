@@ -133,7 +133,11 @@ class Service:
         self._owner()
         row = self.store.get(key)
         state = row["state"]
-        replacement = "canceled" if state == "queued" else "canceling" if state == "running" else state
+        stopped_replay_safe = state == "interrupted" and row["kind"] in REPLAY_SAFE
+        replacement = (
+            "canceled" if state == "queued" or stopped_replay_safe
+            else "canceling" if state == "running" else state
+        )
         with self.store.db:
             self.store.db.execute("UPDATE jobs SET state=? WHERE key=?", (replacement, key))
         return self.status(key)
@@ -175,6 +179,10 @@ class Service:
         valid = valid and ticket.authority_expires > now and ticket.probe_expires > now
         if permit is None:
             return False
+        if permit.owner != str(ticket):
+            # Reject a foreign grant without releasing someone else's resource.
+            # A real adapter must diagnose/reconcile the malformed broker reply.
+            return False
         valid = valid and permit.valid and not permit.released
         if not valid:
             # A duplicate callback must not release the permit of live execution.
@@ -189,7 +197,13 @@ class Service:
         return True
 
     def finish(self, ticket: Ticket, *, outcome: str, result: str | None = None,
-               workers_stopped: bool, no_effect: bool = False) -> dict:
+               workers_stopped: bool, no_effect: bool = False,
+               completion_proven: bool = False) -> dict:
+        """completion_proven is a fixture input, not a proposed wire/API flag.
+
+        It stands for exact terminal evidence independently validated under the
+        owning operation's rules. A permit is not archive publication authority.
+        """
         self._owner()
         if not workers_stopped:
             raise ValueError("do not release resources before execution has stopped")
@@ -207,7 +221,7 @@ class Service:
             raise ValueError("completion requires result; pending is not evidence")
         if outcome in {"canceled", "failed"} and row["kind"] not in REPLAY_SAFE and not no_effect:
             raise ValueError("no proof of absence of an effect")
-        if not active[1].valid and outcome == "complete":
+        if not active[1].valid and outcome == "complete" and not completion_proven:
             raise ValueError("lost lease is not completion authority")
         with self.store.db:
             self.store.db.execute(
@@ -220,6 +234,8 @@ class Service:
         """Simulated crash recovery, requiring external proof old consumers stopped.
 
         This is NOT a claim that process death, lease expiry, or a TTL proves it.
+        There are no separate completion checkpoints in this model. Production
+        recovery must reconcile those first, before settling cancellation.
         """
         self._owner()
         if not workers_stopped:
@@ -231,8 +247,10 @@ class Service:
         with self.store.db:
             self.store.db.execute("UPDATE runtime SET epoch=epoch+1 WHERE id=1")
             self.store.db.execute(
-                "UPDATE jobs SET state=CASE WHEN kind IN ('observer','transform') "
-                "THEN 'interrupted' ELSE 'uncertain' END WHERE state IN ('running','canceling')"
+                "UPDATE jobs SET state=CASE "
+                "WHEN state='canceling' AND kind IN ('observer','transform') THEN 'canceled' "
+                "WHEN kind IN ('observer','transform') THEN 'interrupted' "
+                "ELSE 'uncertain' END WHERE state IN ('running','canceling')"
             )
         # Caller constructs a new service. This owner intentionally becomes stale.
 
