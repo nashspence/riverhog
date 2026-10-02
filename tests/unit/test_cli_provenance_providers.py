@@ -3,10 +3,17 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+import typer.rich_utils
 from a_riverhog_cli.main import app
+from click import unstyle
 from typer.testing import CliRunner
 
 RUNNER = CliRunner()
+
+
+def _diagnostic(output: str) -> str:
+    return " ".join(unstyle(output).replace("│", " ").split())
 
 
 def test_local_provenance_observer_introspection_has_human_json_parity() -> None:
@@ -47,9 +54,16 @@ def test_local_provenance_observer_show_reports_exact_contract_identity() -> Non
     assert payload["contract_sha256"] in human.stdout
 
 
+@pytest.mark.parametrize("terminal_width", [80, 120])
 def test_upload_requires_source_host_for_selected_native_observer_before_opening_session(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    terminal_width: int,
 ) -> None:
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setattr(typer.rich_utils, "FORCE_TERMINAL", True)
+    monkeypatch.setattr(typer.rich_utils, "COLOR_SYSTEM", "standard")
+    monkeypatch.setattr(typer.rich_utils, "MAX_WIDTH", terminal_width)
     root = tmp_path / "collection"
     root.mkdir()
     (root / "payload.bin").write_bytes(b"payload")
@@ -67,7 +81,8 @@ def test_upload_requires_source_host_for_selected_native_observer_before_opening
     )
 
     assert result.exit_code != 0
-    assert "requires --source-host-id" in result.output
+    assert "\x1b[" in result.output
+    assert "requires --source-host-id" in _diagnostic(result.output), result.output
 
 
 def test_upload_dry_run_reports_opaque_artifacts_in_both_outputs(
@@ -98,10 +113,16 @@ def test_upload_dry_run_reports_opaque_artifacts_in_both_outputs(
     assert "would upload 1 artifacts" in human.stdout
 
 
+@pytest.mark.parametrize("terminal_width", [80, 120])
 def test_upload_provider_environment_selection_requires_source_host(
-    monkeypatch,
+    monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
+    terminal_width: int,
 ) -> None:
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setattr(typer.rich_utils, "FORCE_TERMINAL", True)
+    monkeypatch.setattr(typer.rich_utils, "COLOR_SYSTEM", "standard")
+    monkeypatch.setattr(typer.rich_utils, "MAX_WIDTH", terminal_width)
     root = tmp_path / "collection"
     root.mkdir()
     (root / "payload.bin").write_bytes(b"payload")
@@ -113,4 +134,5 @@ def test_upload_provider_environment_selection_requires_source_host(
     )
 
     assert result.exit_code != 0
-    assert "requires --source-host-id" in result.output
+    assert "\x1b[" in result.output
+    assert "requires --source-host-id" in _diagnostic(result.output), result.output

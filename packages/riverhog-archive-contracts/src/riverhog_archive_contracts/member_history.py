@@ -8,6 +8,7 @@ import re
 import sqlite3
 import tempfile
 from collections.abc import Iterable, Mapping, Sequence
+from contextlib import closing
 from dataclasses import dataclass
 from typing import Any, Final, Literal
 
@@ -466,7 +467,7 @@ def verify_member_history_sets(
     records they need. Neither set needs to be materialized as a collection.
     """
     with tempfile.TemporaryDirectory(prefix="riverhog-history-check-") as scratch:
-        with sqlite3.connect(scratch + "/heads.sqlite3") as bound_heads:
+        with closing(sqlite3.connect(scratch + "/heads.sqlite3")) as bound_heads, bound_heads:
             bound_heads.execute("PRAGMA cache_size = -512")
             bound_heads.execute(
                 "CREATE TABLE bound_heads (journal_id TEXT PRIMARY KEY) WITHOUT ROWID"

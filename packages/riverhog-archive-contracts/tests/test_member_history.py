@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import hashlib
+import sqlite3
+import tempfile
 import uuid
 
 import pytest
@@ -26,6 +28,52 @@ from riverhog_archive_contracts import (
     verify_record_pages,
 )
 from riverhog_canonical_json import canonical_json_bytes
+
+
+@pytest.mark.parametrize("missing_terminal", [False, True])
+def test_history_validation_closes_database_before_removing_scratch(
+    monkeypatch: pytest.MonkeyPatch, missing_terminal: bool
+) -> None:
+    import riverhog_archive_contracts.member_history as history_contract
+
+    primary = MemberHistoryPrimary(_anchor("1"), "urn:uuid:33333333-3333-4333-8333-333333333333")
+    with MemberHistoryBuilder(
+        artifact_id="c" * 64, bytes=7, sha256="d" * 64, primary=primary
+    ) as builder:
+        _binding, descriptor = builder.seal()
+        objects = {
+            provenance_structure_identity(raw).relative_path: raw for raw in builder.objects()
+        }
+        store = MemberHistoryStore(lambda path: (objects[path],))
+        root_pages = tuple(store.pages(descriptor.roots))
+        import_pages = tuple(store.pages(descriptor.imports))
+
+    connections = []
+    connect = sqlite3.connect
+
+    def track_connection(*args, **kwargs):
+        connection = connect(*args, **kwargs)
+        connections.append(connection)
+        return connection
+
+    class CheckCleanup(tempfile.TemporaryDirectory):
+        def __exit__(self, *exc):
+            assert connections
+            for connection in connections:
+                with pytest.raises(sqlite3.ProgrammingError, match="closed"):
+                    connection.execute("SELECT 1")
+            return super().__exit__(*exc)
+
+    monkeypatch.setattr(history_contract.sqlite3, "connect", track_connection)
+    monkeypatch.setattr(history_contract.tempfile, "TemporaryDirectory", CheckCleanup)
+    if missing_terminal:
+        with pytest.raises(ValueError):
+            verify_member_history_sets(
+                descriptor, root_pages=root_pages[:-1], import_pages=import_pages
+            )
+    else:
+        verify_member_history_sets(descriptor, root_pages=root_pages, import_pages=import_pages)
+    assert len(connections) == 1
 
 
 def test_builder_and_store_preserve_large_selection_across_pages_without_order_dependence() -> None:
