@@ -10,12 +10,24 @@ import tempfile
 import time
 import uuid
 from collections.abc import Iterator, Mapping, Sequence
-from contextlib import closing
+from contextlib import closing, contextmanager
 from pathlib import Path
 from typing import Annotated, Any, cast
 
 import typer
 from http_api_contracts import BrowseTokenCodec, BrowseTokenError
+from riverhog_archive_contracts import (
+    PAGE_BYTES_MAX,
+    RETAINED_HISTORY_EXTENT,
+    MemberHistoryBinding,
+    MemberHistoryStore,
+    SourceMemberHistoryBindingProof,
+    provenance_structure_identity,
+    provenance_structure_object_id,
+    provenance_structure_object_path,
+    read_bounded_history_object,
+)
+from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
 from riverhog_client import (
     ApiClient,
     RestorePolicy,
@@ -45,6 +57,7 @@ from riverhog_protocol.paths import normalize_collection_id
 from riverhog_protocol.provenance_transport import MaterializationHintDocument
 from riverhog_protocol.transport import RETRIEVAL_ARTIFACT_BATCH_MAX
 from riverhog_provenance import (
+    MemberHistoryClosure,
     list_provenance_observers,
     resolve_provenance_observer,
     selected_delivery_occurrence,
@@ -333,6 +346,11 @@ def _destination_rules(target: Path) -> DestinationRules:
         component_bytes = 255
     if relative_path_bytes < 1:
         relative_path_bytes = 240 if os.name == "nt" else 4096
+    # Paths are created through this absolute collection directory. PATH_MAX
+    # includes its prefix, the joining separator and the terminating NUL.
+    relative_path_bytes -= len(os.fsencode(target.absolute())) + 2
+    if relative_path_bytes < 1:
+        raise InvalidState("local destination cannot represent a materialization path")
     return DestinationRules(
         windows_names=os.name == "nt",
         case_sensitive=case_sensitive,
@@ -440,6 +458,9 @@ def _selected_hint(
     archive_root: str,
     artifact: PortableCollectionArtifact,
     journals: Mapping[str, tuple[Path, int, str]],
+    *,
+    db: sqlite3.Connection,
+    closure: MemberHistoryClosure,
 ) -> tuple[dict[str, Any] | None, dict[str, Any]]:
     detail = api.get_collection_artifact_provenance(collection_id, artifact.artifact_id)
     if detail.get("archive_root_sha256") != archive_root or detail.get(
@@ -455,6 +476,9 @@ def _selected_hint(
     binding = CollectionArtifactProvenanceBindingDocument.model_validate(detail["binding"])
     if binding.artifact_id != artifact.artifact_id:
         raise InvalidState("primary provenance binding names another artifact")
+    _freeze_member_history(
+        db, api, target, collection_id, archive_root, artifact, binding, detail, closure
+    )
     journal = journals.get(binding.journal.journal_id)
     if journal is None:
         raise InvalidState("primary provenance journal is absent from corpus")
@@ -487,6 +511,277 @@ def _selected_hint(
         sha256=binding.journal.prefix_sha256,
     )
     return hint, binding.model_dump(mode="json")
+
+
+def _publish_provenance_blob(
+    target: Path, collection_id: int, components: Sequence[str], content: bytes, *, repair: bool
+) -> None:
+    output = _output(target, collection_id, components)
+    digest = hashlib.sha256(content).hexdigest()
+    if _matches(output, len(content), digest):
+        return
+    if output.exists() or output.is_symlink():
+        if not repair:
+            raise InvalidState("local member history was modified")
+        _quarantine(target, output)
+    staged = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="wb", prefix=".history-", dir=output.parent, delete=False
+        ) as stream:
+            staged = Path(stream.name)
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        _publish_file(staged, output, byte_count=len(content), sha256=digest)
+    finally:
+        if staged is not None:
+            staged.unlink(missing_ok=True)
+
+
+def _structure_components(object_id: str) -> tuple[str, ...]:
+    return (
+        "structure",
+        *provenance_structure_object_path(object_id).removesuffix(".age").split("/"),
+    )
+
+
+def _history_file_components(artifact_id: str, suffix: str) -> tuple[str, ...]:
+    return ("provenance", "history", artifact_id[:2], artifact_id + suffix)
+
+
+def _history_control_files(
+    binding: MemberHistoryBinding, proof: SourceMemberHistoryBindingProof
+) -> Iterator[tuple[tuple[str, ...], bytes]]:
+    yield (
+        _history_file_components(binding.artifact_id, ".binding-proof.json"),
+        proof.to_json_bytes(),
+    )
+    yield (
+        _history_file_components(binding.artifact_id, ".selection.json"),
+        canonical_json_bytes(
+            {
+                "history_binding": binding.to_mapping(),
+                "extent": RETAINED_HISTORY_EXTENT,
+                "binding_proof_sha256": proof.identity,
+            }
+        ),
+    )
+
+
+def _blob_chunks(path: Path) -> Iterator[bytes]:
+    with path.open("rb") as source:
+        while chunk := source.read(64 * 1024):
+            yield chunk
+
+
+@contextmanager
+def _history_closure(
+    db: sqlite3.Connection,
+    api: ApiClient | None,
+    target: Path,
+    collection_id: int,
+    archive_root: str,
+    journals: Mapping[str, tuple[Path, int, str]] | None = None,
+    *,
+    repair: bool = False,
+    freezing: bool = False,
+) -> Iterator[MemberHistoryClosure]:
+    def read_structure(path: str) -> Iterator[bytes]:
+        object_id = provenance_structure_object_id(path)
+        output = _output(target, collection_id, _structure_components(object_id))
+        frozen = (
+            None
+            if freezing
+            else db.execute(
+                "SELECT bytes, sha256 FROM desired_history_objects "
+                "WHERE collection_id = ? AND object_id = ?",
+                (collection_id, object_id),
+            ).fetchone()
+        )
+        if not freezing and frozen is None:
+            raise InvalidState("member history needs structure outside its frozen closure")
+        if (
+            output.is_file()
+            and not output.is_symlink()
+            and (frozen is None or _matches(output, int(frozen["bytes"]), str(frozen["sha256"])))
+        ):
+            raw = read_bounded_history_object(_blob_chunks(output), PAGE_BYTES_MAX)
+            if provenance_structure_identity(raw).relative_path != path:
+                raise InvalidState("local history structure differs from its identity")
+        else:
+            if api is None:
+                raise InvalidState("local member history structure is missing or modified")
+            if (output.exists() or output.is_symlink()) and not repair:
+                raise InvalidState("local member history structure was modified")
+            raw = api.get_collection_provenance_structure(
+                collection_id, object_id, archive_root_sha256=archive_root
+            )
+            if provenance_structure_identity(raw).relative_path != path or (
+                frozen is not None
+                and (len(raw), hashlib.sha256(raw).hexdigest())
+                != (int(frozen["bytes"]), str(frozen["sha256"]))
+            ):
+                raise InvalidState("remote history structure differs from the frozen selection")
+            _publish_provenance_blob(
+                target, collection_id, _structure_components(object_id), raw, repair=repair
+            )
+        yield raw
+
+    def read_journal(journal_id: str, end: int | None) -> Iterator[bytes]:
+        if journals is not None:
+            selected = journals.get(journal_id)
+            if selected is None:
+                raise InvalidState("member history needs a missing journal")
+            path, count, _digest = selected
+        else:
+            selected_row = db.execute(
+                "SELECT bytes, sha256 FROM desired_journals "
+                "WHERE collection_id = ? AND journal_id = ?",
+                (collection_id, journal_id),
+            ).fetchone()
+            if selected_row is None:
+                raise InvalidState("member history needs a missing journal")
+            path = _output(
+                target, collection_id, shared_journal_components(str(selected_row["sha256"]))
+            )
+            count = int(selected_row["bytes"])
+        yield from _prefix_chunks(path, count if end is None else end)
+
+    with MemberHistoryClosure(
+        MemberHistoryStore(read_structure), read_journal, member_role=COLLECTION_MEMBER_ROLE
+    ) as closure:
+        yield closure
+
+
+def _freeze_member_history(
+    db: sqlite3.Connection,
+    api: ApiClient,
+    target: Path,
+    collection_id: int,
+    archive_root: str,
+    artifact: PortableCollectionArtifact,
+    primary: CollectionArtifactProvenanceBindingDocument,
+    detail: Mapping[str, Any],
+    closure: MemberHistoryClosure,
+) -> None:
+    try:
+        binding = MemberHistoryBinding.from_mapping(detail.get("history_binding"))
+        history = binding.verify_descriptor(canonical_json_bytes(detail.get("member_history")))
+        if (
+            (binding.artifact_id, binding.bytes, binding.sha256)
+            != (artifact.artifact_id, artifact.bytes, artifact.sha256)
+            or history.primary.journal.to_mapping() != primary.journal.model_dump(mode="json")
+            or history.primary.delivery_association_id != primary.delivery_association_id
+        ):
+            raise ValueError("member history differs from the selected member and primary")
+        proof = api.get_collection_artifact_history_binding_proof(
+            collection_id, artifact.artifact_id, archive_root_sha256=archive_root
+        )
+        if (proof.binding, proof.collection_id, hashlib.sha256(proof.archive_root).hexdigest()) != (
+            binding,
+            collection_id,
+            archive_root,
+        ):
+            raise ValueError("history proof differs from the selected root/member")
+        closure.resolve(binding, extent=RETAINED_HISTORY_EXTENT)
+    except (TypeError, ValueError) as exc:
+        raise InvalidState(f"final member history is missing or invalid: {exc}") from exc
+    _publish_provenance_blob(
+        target,
+        collection_id,
+        _history_file_components(binding.artifact_id, ".json"),
+        history.to_json_bytes(),
+        repair=False,
+    )
+    for components, raw in _history_control_files(binding, proof):
+        _publish_provenance_blob(target, collection_id, components, raw, repair=False)
+    db.execute(
+        "INSERT INTO pending_member_history VALUES (?, ?, ?, ?)",
+        (
+            binding.artifact_id,
+            canonical_json_bytes(binding.to_mapping()).decode(),
+            RETAINED_HISTORY_EXTENT,
+            proof.to_json_bytes().decode(),
+        ),
+    )
+
+
+def _pending_history(db: sqlite3.Connection, artifact_id: str) -> tuple[str, str, str]:
+    row = db.execute(
+        "SELECT binding_json, extent, proof_json FROM pending_member_history WHERE artifact_id = ?",
+        (artifact_id,),
+    ).fetchone()
+    if row is None:
+        raise InvalidState("local plan has no final member history")
+    return str(row[0]), str(row[1]), str(row[2])
+
+
+def _frozen_member_history(
+    row: Any, archive_root: str
+) -> tuple[MemberHistoryBinding, SourceMemberHistoryBindingProof]:
+    if row["history_extent"] != RETAINED_HISTORY_EXTENT:
+        raise InvalidState("local history selection is not complete retained history")
+    binding = MemberHistoryBinding.from_mapping(
+        require_canonical_json(str(row["history_binding_json"]).encode())
+    )
+    proof = SourceMemberHistoryBindingProof.from_json_bytes(str(row["history_proof_json"]).encode())
+    if (
+        (binding.artifact_id, binding.bytes, binding.sha256)
+        != (row["artifact_id"], int(row["bytes"]), row["sha256"])
+        or proof.binding != binding
+        or proof.collection_id != int(row["collection_id"])
+        or hashlib.sha256(proof.archive_root).hexdigest() != archive_root
+    ):
+        raise InvalidState("frozen member history differs from its exact root/member")
+    return binding, proof
+
+
+def _audit_member_histories(db: sqlite3.Connection, target: Path) -> Iterator[str]:
+    for collection in db.execute(
+        "SELECT collection_id, archive_root_sha256 FROM desired_collections ORDER BY collection_id"
+    ):
+        collection_id = int(collection["collection_id"])
+        root = str(collection["archive_root_sha256"])
+        with _history_closure(db, None, target, collection_id, root) as closure:
+            for row in db.execute(
+                "SELECT * FROM desired_artifacts WHERE collection_id = ? ORDER BY artifact_id",
+                (collection_id,),
+            ):
+                try:
+                    binding, proof = _frozen_member_history(row, root)
+                    closure.resolve(binding, extent=RETAINED_HISTORY_EXTENT)
+                    history = closure.store.descriptor(binding)
+                    files = [
+                        (
+                            _history_file_components(binding.artifact_id, ".json"),
+                            history.to_json_bytes(),
+                        ),
+                        *_history_control_files(binding, proof),
+                    ]
+                    for components, raw in files:
+                        if not _matches(
+                            _output(target, collection_id, components),
+                            len(raw),
+                            hashlib.sha256(raw).hexdigest(),
+                        ):
+                            yield (
+                                f"member history mismatch: {collection_id}/"
+                                f"{binding.artifact_id}/{components[-1]}"
+                            )
+                except (OSError, TypeError, ValueError, InvalidState) as exc:
+                    yield f"member history invalid: {collection_id}/{row['artifact_id']}: {exc}"
+        for row in db.execute(
+            "SELECT object_id, bytes, sha256 FROM desired_history_objects "
+            "WHERE collection_id = ? ORDER BY object_id",
+            (collection_id,),
+        ):
+            if not _matches(
+                _output(target, collection_id, _structure_components(str(row["object_id"]))),
+                int(row["bytes"]),
+                str(row["sha256"]),
+            ):
+                yield f"history structure mismatch: {collection_id}/{row['object_id']}"
 
 
 def _tags(api: ApiClient, collection_id: int, summary: Mapping[str, Any]) -> list[str]:
@@ -593,13 +888,39 @@ def add_collection(
         journals = _journals(api, target, normalized, archive_root)
         advice: list[MemberAdvice] = []
         bindings: dict[str, dict[str, Any]] = {}
-        for artifact in artifacts:
-            hint, binding = _selected_hint(
-                api, target, normalized, archive_root, artifact, journals
-            )
-            advice.append(MemberAdvice(str(artifact.artifact_id), hint))
-            bindings[str(artifact.artifact_id)] = binding
-        rules = _destination_rules(target)
+        db.executescript(
+            "CREATE TEMP TABLE pending_member_history (artifact_id TEXT PRIMARY KEY, "
+            "binding_json TEXT NOT NULL, extent TEXT NOT NULL, proof_json TEXT NOT NULL);"
+            "CREATE TEMP TABLE pending_history_objects (object_id TEXT PRIMARY KEY, "
+            "bytes INTEGER NOT NULL, sha256 TEXT NOT NULL);"
+        )
+        with _history_closure(
+            db, api, target, normalized, archive_root, journals, freezing=True
+        ) as closure:
+            for artifact in artifacts:
+                hint, binding = _selected_hint(
+                    api,
+                    target,
+                    normalized,
+                    archive_root,
+                    artifact,
+                    journals,
+                    db=db,
+                    closure=closure,
+                )
+                advice.append(MemberAdvice(str(artifact.artifact_id), hint))
+                bindings[str(artifact.artifact_id)] = binding
+            for raw in closure.structure_objects():
+                identity = provenance_structure_identity(raw)
+                db.execute(
+                    "INSERT INTO pending_history_objects VALUES (?, ?, ?)",
+                    (
+                        identity.object_id,
+                        len(raw),
+                        hashlib.sha256(raw).hexdigest(),
+                    ),
+                )
+        rules = _destination_rules(_collection_directory(target, normalized))
         plan = plan_materialization(advice, rules=rules, mode=cast(Any, mode))
         plan_by_id = {row.artifact_id: row for row in plan}
         tags = _tags(api, normalized, summary)
@@ -642,8 +963,9 @@ def add_collection(
             """
             INSERT INTO desired_artifacts (
                 collection_id, artifact_id, bytes, sha256, destination_json, reason,
-                hint_json, binding_json, primary_bytes, primary_sha256
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                hint_json, binding_json, primary_bytes, primary_sha256,
+                history_binding_json, history_extent, history_proof_json
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 (
@@ -671,9 +993,15 @@ def add_collection(
                     json.dumps(bindings[str(artifact.artifact_id)], sort_keys=True),
                     int(bindings[str(artifact.artifact_id)]["journal"]["prefix_bytes"]),
                     bindings[str(artifact.artifact_id)]["journal"]["prefix_sha256"],
+                    *_pending_history(db, str(artifact.artifact_id)),
                 )
                 for artifact in artifacts
             ),
+        )
+        db.execute(
+            "INSERT INTO desired_history_objects (collection_id, object_id, bytes, sha256) "
+            "SELECT ?, object_id, bytes, sha256 FROM pending_history_objects",
+            (normalized,),
         )
         db.commit()
         payload = {"status": "added", "collection": _local_collection(db, normalized)}
@@ -710,29 +1038,63 @@ def _ensure_provenance(
         current = _journals(api, target, collection_id, archive_root, repair=repair)
         if {key: (value[1], value[2]) for key, value in current.items()} != frozen:
             raise InvalidState("canonical journal corpus differs from frozen local state")
-        for row in db.execute(
-            """
-            SELECT artifact_id, binding_json, primary_bytes, primary_sha256
-            FROM desired_artifacts WHERE collection_id = ? ORDER BY artifact_id
-            """,
-            (collection_id,),
-        ):
-            binding = json.loads(str(row["binding_json"]))
-            source = current[binding["journal"]["journal_id"]][0]
-            output = _output(
-                target,
-                collection_id,
-                primary_sidecar_components(str(row["artifact_id"])),
+        with _history_closure(
+            db, api, target, collection_id, archive_root, current, repair=repair
+        ) as closure:
+            for row in db.execute(
+                "SELECT * FROM desired_artifacts WHERE collection_id = ? ORDER BY artifact_id",
+                (collection_id,),
+            ):
+                selected, proof = _frozen_member_history(row, archive_root)
+                detail = api.get_collection_artifact_provenance(
+                    collection_id, ArtifactId(selected.artifact_id)
+                )
+                try:
+                    if (
+                        detail.get("archive_root_sha256") != archive_root
+                        or MemberHistoryBinding.from_mapping(detail.get("history_binding"))
+                        != selected
+                    ):
+                        raise ValueError("remote member history differs from its frozen selection")
+                    history = selected.verify_descriptor(
+                        canonical_json_bytes(detail.get("member_history"))
+                    )
+                except (TypeError, ValueError) as exc:
+                    raise InvalidState(
+                        f"final member history is missing or invalid: {exc}"
+                    ) from exc
+                closure.resolve(selected, extent=RETAINED_HISTORY_EXTENT)
+                primary = json.loads(str(row["binding_json"]))
+                if history.primary.to_mapping() != {
+                    key: primary[key] for key in ("journal", "delivery_association_id")
+                }:
+                    raise InvalidState("frozen primary differs from final member history")
+                _publish_provenance_blob(
+                    target,
+                    collection_id,
+                    _history_file_components(selected.artifact_id, ".json"),
+                    history.to_json_bytes(),
+                    repair=repair,
+                )
+                for components, raw in _history_control_files(selected, proof):
+                    _publish_provenance_blob(target, collection_id, components, raw, repair=repair)
+                source = current[primary["journal"]["journal_id"]][0]
+                output = _output(
+                    target, collection_id, primary_sidecar_components(selected.artifact_id)
+                )
+                byte_count = int(row["primary_bytes"])
+                sha256 = str(row["primary_sha256"])
+                if _matches(output, byte_count, sha256):
+                    continue
+                if output.exists() or output.is_symlink():
+                    if not repair:
+                        raise InvalidState("local primary provenance was modified")
+                    _quarantine(target, output)
+                _publish_prefix(source, output, byte_count=byte_count, sha256=sha256)
+        if api.get_collection(collection_id)["archive_root_sha256"] != archive_root:
+            raise InvalidState(
+                "collection archive root changed during local history synchronization"
             )
-            byte_count = int(row["primary_bytes"])
-            sha256 = str(row["primary_sha256"])
-            if _matches(output, byte_count, sha256):
-                continue
-            if output.exists() or output.is_symlink():
-                if not repair:
-                    raise InvalidState("local primary provenance was modified")
-                _quarantine(target, output)
-            _publish_prefix(source, output, byte_count=byte_count, sha256=sha256)
 
 
 def _quarantine(target: Path, output: Path) -> Path:
@@ -1253,6 +1615,8 @@ def audit(
             samples.append(label)
 
     with closing(_connect(target)) as db:
+        for problem in _audit_member_histories(db, target):
+            record(problem)
         for row in db.execute(
             "SELECT collection_id, artifact_id, destination_json, bytes, sha256, "
             "primary_bytes, primary_sha256 FROM desired_artifacts "
@@ -1302,8 +1666,7 @@ def evict(
     with closing(_connect(target)) as db, ApiClient() as api:
         rows = list(
             db.execute(
-                "SELECT artifact_id, destination_json, bytes, sha256, "
-                "primary_bytes, primary_sha256 FROM desired_artifacts WHERE collection_id = ?",
+                "SELECT * FROM desired_artifacts WHERE collection_id = ?",
                 (normalized,),
             )
         )
@@ -1314,7 +1677,33 @@ def evict(
             )
         )
         outputs: list[tuple[Path, int, str]] = []
+        collection = db.execute(
+            "SELECT archive_root_sha256 FROM desired_collections WHERE collection_id = ?",
+            (normalized,),
+        ).fetchone()
+        if collection is None:
+            raise NotFound(f"local collection not found: {normalized}")
         for row in rows:
+            history_binding, proof = _frozen_member_history(row, str(collection[0]))
+            outputs.append(
+                (
+                    _output(
+                        target,
+                        normalized,
+                        _history_file_components(history_binding.artifact_id, ".json"),
+                    ),
+                    history_binding.history_bytes,
+                    history_binding.history_sha256,
+                )
+            )
+            for components, raw in _history_control_files(history_binding, proof):
+                outputs.append(
+                    (
+                        _output(target, normalized, components),
+                        len(raw),
+                        hashlib.sha256(raw).hexdigest(),
+                    )
+                )
             outputs.append(
                 (
                     _destination(target, normalized, str(row["destination_json"])),
@@ -1331,6 +1720,17 @@ def evict(
                     ),
                     int(row["primary_bytes"]),
                     str(row["primary_sha256"]),
+                )
+            )
+        for row in db.execute(
+            "SELECT object_id, bytes, sha256 FROM desired_history_objects WHERE collection_id = ?",
+            (normalized,),
+        ):
+            outputs.append(
+                (
+                    _output(target, normalized, _structure_components(str(row["object_id"]))),
+                    int(row["bytes"]),
+                    str(row["sha256"]),
                 )
             )
         for row in journals:

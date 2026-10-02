@@ -17,6 +17,12 @@ from a_riverhog_ftp_spool.state_contract import FTP_OPERATIONAL_STATE_DDL
 from a_riverhog_minisign_witness.schema import state_schema as minisign_witness_schema
 from a_riverhog_opentimestamps_witness.schema import state_schema as ots_witness_schema
 from gogurt_listener_runtime import ListenerStore
+from riverhog_archive_contracts import (
+    RETAINED_HISTORY_EXTENT,
+    MemberHistoryBinding,
+    ProvenanceRootDocument,
+    SourceMemberHistoryBindingProof,
+)
 from riverhog_core.state_migrations.v1_ddl import POSTGRESQL_DDL
 from sqlalchemy.dialects import postgresql
 from stove0_core.state_migrations.v1_ddl import POSTGRESQL_DDL as STOVE0_POSTGRESQL_DDL
@@ -90,7 +96,8 @@ def test_a_riverhog_cli_current_v1_fixture_restarts_with_selection_and_retrieval
         ).fetchone()
         artifact = connection.execute(
             "SELECT artifact_id, bytes, sha256, destination_json, primary_bytes, "
-            "primary_sha256 FROM desired_artifacts WHERE collection_id = 1"
+            "primary_sha256, history_binding_json, history_extent, history_proof_json "
+            "FROM desired_artifacts WHERE collection_id = 1"
         ).fetchone()
         journal = connection.execute(
             "SELECT journal_id, bytes, sha256 FROM desired_journals WHERE collection_id = 1"
@@ -105,22 +112,32 @@ def test_a_riverhog_cli_current_v1_fixture_restarts_with_selection_and_retrieval
 
     assert status.condition == "current"
     assert collection is not None
-    assert tuple(collection) == ("d" * 64, "b" * 64, "c" * 64, "9" * 64, "declared-hints", 0)
     assert artifact is not None
-    assert tuple(artifact) == (
+    binding = MemberHistoryBinding.from_mapping(json.loads(artifact[6]))
+    proof = SourceMemberHistoryBindingProof.from_json_bytes(artifact[8].encode())
+    assert proof.binding == binding
+    assert proof.collection_id == 1
+    assert artifact[7] == RETAINED_HISTORY_EXTENT
+    assert tuple(collection) == (
+        hashlib.sha256(proof.archive_root).hexdigest(),
+        "b" * 64,
+        ProvenanceRootDocument.from_json_bytes(proof.provenance_root).artifact_set_sha256,
+        hashlib.sha256(proof.provenance_root).hexdigest(),
+        "declared-hints",
+        0,
+    )
+    assert tuple(artifact[:4]) == (
         "e" * 64,
         12,
-        "a" * 64,
+        hashlib.sha256(b"fixture text").hexdigest(),
         json.dumps(["notes", "fixture.txt"]),
-        128,
-        "f" * 64,
     )
     assert journal is not None
-    assert tuple(journal) == ("urn:uuid:11111111-1111-4111-8111-111111111111", 128, "f" * 64)
+    assert tuple(journal)[1:] == tuple(artifact[4:6])
     assert retrieval is not None
     assert tuple(retrieval) == ("ready",)
     assert retrieval_artifact is not None
-    assert tuple(retrieval_artifact) == (1, "e" * 64, 12, "a" * 64)
+    assert tuple(retrieval_artifact) == (1, "e" * 64, binding.bytes, binding.sha256)
 
 
 def test_a_riverhog_event_relay_current_v1_fixture_restarts_with_source_cursor(

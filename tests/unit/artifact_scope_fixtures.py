@@ -6,6 +6,7 @@ from collections.abc import Iterable
 
 from riverhog_core.app_permissions import ApplicationAccess, Principal
 from riverhog_core.catalog_db import make_session_factory, session_scope
+from riverhog_core.catalog_models import AppKeyRecord
 from riverhog_core.catalog_workflow_models import (
     CollectionProcessingCapabilityArtifactRecord,
     CollectionProcessingCapabilityRecord,
@@ -31,6 +32,16 @@ def persisted_artifact_scope(
     claim_id = identity
     capability_id = identity[:32]
     with session_scope(make_session_factory(database_url)) as session:
+        if session.get(AppKeyRecord, "fixture-key") is None:
+            session.add(
+                AppKeyRecord(
+                    id="fixture-key",
+                    app="fixture-controller",
+                    token_sha256=hashlib.sha256(b"fixture-controller-key").hexdigest(),
+                    created_at=_NOW,
+                    monthly_download_quota_bytes=1024 * 1024 * 1024,
+                )
+            )
         session.add(
             CollectionProcessingClaimRecord(
                 id=claim_id,

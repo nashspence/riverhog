@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from riverhog_protocol.errors import InvalidState, ServiceUnavailable
 from sqlalchemy import func, literal, select, union_all
 from sqlalchemy.orm import Session
 
+from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_models import (
+    ArchiveCopyRetirementRecord,
     CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
     CollectionDescriptionPublicationRecord,
@@ -22,6 +25,42 @@ def archive_copy_is_complete(copy: CollectionArchiveCopyRecord) -> bool:
     """Return the terminal authority established by bounded copy finalization."""
 
     return bool(copy.state == "uploaded" and copy.last_uploaded_at and copy.last_verified_at)
+
+
+def select_readable_archive_copy(
+    session: Session,
+    collection_id: int,
+    *,
+    archive_stores: ArchiveStoreRegistry,
+    read_order: Sequence[str],
+) -> CollectionArchiveCopyRecord:
+    """Select complete, non-retiring custody in configured order and exact incarnation."""
+    retiring = set(
+        session.scalars(
+            select(ArchiveCopyRetirementRecord.store).where(
+                ArchiveCopyRetirementRecord.collection_id == collection_id
+            )
+        )
+    )
+    copies = {
+        copy.store: copy
+        for copy in session.scalars(
+            select(CollectionArchiveCopyRecord).where(
+                CollectionArchiveCopyRecord.collection_id == collection_id
+            )
+        )
+        if archive_copy_is_complete(copy) and copy.store not in retiring
+    }
+    for store in read_order:
+        copy = copies.get(store)
+        if copy is None:
+            continue
+        try:
+            archive_stores.require_incarnation(store, copy.incarnation_id)
+        except ServiceUnavailable:
+            continue
+        return copy
+    raise InvalidState(f"collection has no readable archive copy: {collection_id}")
 
 
 def archive_copy_identity(copy: CollectionArchiveCopyRecord) -> CollectionArchiveIdentity:

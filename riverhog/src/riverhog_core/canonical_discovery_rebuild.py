@@ -117,7 +117,9 @@ def rebuild_canonical_index(
             select(func.max(Member.artifact_id)).where(Member.build_id == build_id)
         )
     try:
-        with archives.reader(collection_id).cached() as reader, reader.prepared():
+        # Rebuild is a server-owned maintenance read: store allowances apply,
+        # without assigning maintenance traffic to an application key.
+        with archives.reader(collection_id, attribution=None).cached() as reader, reader.prepared():
             root = reader.scan().root
             if root.binding_count != count:
                 raise StaleIndexBuild("archive member count differs from its publication")

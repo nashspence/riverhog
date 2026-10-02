@@ -329,5 +329,11 @@ class MemberHistoryClosure:
                 raise ProvenanceValidationError("history structure path differs from its bytes")
             yield content
 
+    def contains_structure_object(self, path: str) -> bool:
+        """Whether this exact structural object supports the resolved selections."""
+        return (
+            self._db.execute("SELECT 1 FROM objects WHERE path = ?", (path,)).fetchone() is not None
+        )
+
 
 __all__ = ["MemberHistoryClosure"]

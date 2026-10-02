@@ -913,7 +913,7 @@ def test_mandatory_primary_and_member_history_survive_encrypted_archive_publicat
         collection_id, page_size=100, after_artifact_id=None, principal=reader
     )
     assert [item["artifact_id"] for item in listed["artifacts"]] == sorted(contents)
-    archive_reader = provenance._archives.reader(collection_id)
+    archive_reader = provenance._archives.reader(collection_id, attribution=None)
     summary = archive_reader.scan()
     assert summary.root.identity == finalized["provenance_identity"]
     for artifact_id, primary in produced.items():

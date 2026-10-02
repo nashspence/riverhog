@@ -6,10 +6,12 @@ import hashlib
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 from riverhog_age import encrypt_age_scrypt
 from riverhog_archive_contracts import (
     ARCHIVE_ENCRYPTION_FORMAT,
+    BOUND_HISTORY_EXTENT,
     PROVENANCE_BINDINGS_FORMAT,
     RETAINED_HISTORY_EXTENT,
     ArchiveRootCiphertextIdentity,
@@ -68,6 +70,7 @@ from riverhog_provenance import (
     BoundedSourceObserver,
     BytesSource,
     MemberHistoryClosure,
+    append_assertions,
     assertion,
     create_journal,
     external_reference,
@@ -120,6 +123,7 @@ def _encrypt(value: bytes, passphrase: str) -> bytes:
 
 def _inherited_selection(
     source: FixtureArchive,
+    extent: Literal["bound-and-required-history", "complete-retained-history"],
 ) -> tuple[MemberHistoryImport, dict[str, bytes], dict[str, bytes]]:
     binding = source.history_bindings[0]
     proof_tree = binding_tree_commitment(
@@ -157,7 +161,7 @@ def _inherited_selection(
         source_artifact_id=binding.artifact_id,
         source_history_sha256=binding.history_sha256,
         source_binding_proof_sha256=proof.identity,
-        extent=RETAINED_HISTORY_EXTENT,
+        extent=extent,
         input_state=external_reference(primary, state["object_id"]),
     )
     with MemberHistoryClosure(
@@ -165,7 +169,7 @@ def _inherited_selection(
         lambda journal_id, end: (source.journals[journal_id],),
         member_role=COLLECTION_MEMBER_ROLE,
     ) as closure:
-        closure.resolve(binding, extent=RETAINED_HISTORY_EXTENT)
+        closure.resolve(binding, extent=extent)
         objects = {
             provenance_structure_identity(raw).relative_path: raw
             for raw in closure.structure_objects()
@@ -190,14 +194,25 @@ def write_archive(
     tags: Sequence[str] = (),
     hints: Mapping[str, tuple[str, ...] | None] | None = None,
     late_shared_history: bool = False,
+    late_shared_scope: Literal["bound", "retained"] = "bound",
     inherited_history: FixtureArchive | None = None,
+    inherited_extent: Literal[
+        "bound-and-required-history", "complete-retained-history"
+    ] = RETAINED_HISTORY_EXTENT,
+    unselected_journal_tail: bool = False,
+    journal_segment_bytes: int | None = None,
+    members: Mapping[str, bytes] | None = None,
 ) -> FixtureArchive:
     root.mkdir(parents=True, exist_ok=True)
-    contents = {
-        "1" * 64: b"alpha\n",
-        "2" * 64: b"beta\n",
-        "3" * 64: b"first-second",
-    }
+    contents = (
+        dict(members)
+        if members is not None
+        else {
+            "1" * 64: b"alpha\n",
+            "2" * 64: b"beta\n",
+            "3" * 64: b"first-second",
+        }
+    )
     suggested: dict[str, tuple[str, ...] | None] = {
         "1" * 64: ("notes", "alpha.txt"),
         "2" * 64: ("notes", "beta.txt"),
@@ -239,10 +254,28 @@ def write_archive(
         )
         bindings.append(produced.binding)
         journals[produced.journal_id] = produced.content
+        if unselected_journal_tail:
+            who = new_id()
+            journals[produced.journal_id] = append_assertions(
+                produced.content,
+                {
+                    "agents": [
+                        assertion(
+                            "agent", who, object_id=who, kind="software", name="later recorder"
+                        )
+                    ]
+                },
+                recorded_by_agent_id=who,
+                catalog=ContractCatalog((collection_production_contract(),)),
+            )
     history_objects: dict[str, bytes] = {}
     inherited = None
     if inherited_history is not None:
-        inherited, inherited_objects, inherited_journals = _inherited_selection(inherited_history)
+        if inherited_extent not in (BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT):
+            raise ValueError("invalid inherited test history extent")
+        inherited, inherited_objects, inherited_journals = _inherited_selection(
+            inherited_history, inherited_extent
+        )
         history_objects.update(inherited_objects)
         journals.update(inherited_journals)
     final_bindings: list[MemberHistoryBinding] = []
@@ -296,7 +329,7 @@ def write_archive(
             if supplemental is not None:
                 builder.add_root(
                     MemberHistoryRoot(
-                        HistoryJournalAnchor.from_mapping(supplemental.anchor), "bound"
+                        HistoryJournalAnchor.from_mapping(supplemental.anchor), late_shared_scope
                     )
                 )
             selected, history = builder.seal()
@@ -331,20 +364,23 @@ def write_archive(
     )
     payloads: list[bytes] = [binding_page]
     for journal_id, raw in sorted(journals.items()):
-        sequence = len(provenance_docs)
-        provenance_docs.append(
-            ProvenanceVolumeDocument(
-                archive_generation=GENERATION,
-                artifact_set_sha256=artifact_set_sha256,
-                sequence=sequence,
-                payload=ProvenancePayload("journal", sequence, len(raw), _sha256(raw)),
-                journal_id=journal_id,
-                journal_offset=0,
-                journal_bytes=len(raw),
-                journal_sha256=_sha256(raw),
+        segment_bytes = len(raw) if journal_segment_bytes is None else journal_segment_bytes
+        for offset in range(0, len(raw), segment_bytes):
+            segment = raw[offset : offset + segment_bytes]
+            sequence = len(provenance_docs)
+            provenance_docs.append(
+                ProvenanceVolumeDocument(
+                    archive_generation=GENERATION,
+                    artifact_set_sha256=artifact_set_sha256,
+                    sequence=sequence,
+                    payload=ProvenancePayload("journal", sequence, len(segment), _sha256(segment)),
+                    journal_id=journal_id,
+                    journal_offset=offset,
+                    journal_bytes=len(raw),
+                    journal_sha256=_sha256(raw),
+                )
             )
-        )
-        payloads.append(raw)
+            payloads.append(segment)
     for document, payload in zip(provenance_docs, payloads, strict=True):
         archive_objects[document.metadata_path] = _encrypt(document.to_json_bytes(), passphrase)
         archive_objects[document.payload.path] = _encrypt(payload, passphrase)
@@ -382,7 +418,7 @@ def write_archive(
         completed_at="2026-08-08T00:00:00Z",
     )
 
-    pack_artifacts = artifacts[:2]
+    pack_artifacts = artifacts[:2] if members is None else artifacts
     pack = plan_pack_volume(pack_artifacts, sequence=0)
     pack_plaintext = b"".join(
         iter_render_pack_upload_unit(pack, 0, lambda artifact_id: (contents[artifact_id],))
@@ -403,44 +439,47 @@ def write_archive(
         completed_at="2026-08-08T00:00:00Z",
     )
     archive_objects[sealed_pack.relative_path] = pack_ciphertext
-    raw_artifact = artifacts[-1]
     raw_volumes = []
-    offset = 0
-    for sequence, plaintext in enumerate((b"first-", b"second"), start=1):
-        volume_id = f"segment-{format_archive_sequence(sequence)}"
-        ciphertext = _encrypt(plaintext, passphrase)
-        sealed = SealedRawVolume(
-            volume_id=volume_id,
-            sequence=sequence,
-            relative_path=f"volumes/{volume_id}.bin.age",
+    verified_raw_artifacts: tuple[VerifiedRawArtifact, ...] = ()
+    if members is None:
+        raw_artifact = artifacts[-1]
+        offset = 0
+        for sequence, plaintext in enumerate((b"first-", b"second"), start=1):
+            volume_id = f"segment-{format_archive_sequence(sequence)}"
+            ciphertext = _encrypt(plaintext, passphrase)
+            sealed = SealedRawVolume(
+                volume_id=volume_id,
+                sequence=sequence,
+                relative_path=f"volumes/{volume_id}.bin.age",
+                artifact_id=raw_artifact.artifact_id,
+                artifact_offset=offset,
+                plaintext_bytes=len(plaintext),
+                artifact_bytes=raw_artifact.bytes,
+                artifact_sha256=raw_artifact.sha256,
+                age_state_json=age_state_json(len(plaintext)),
+                parts=_part(plaintext, ciphertext),
+                revision=f"fixture-segment-{sequence}",
+                completed_at="2026-08-08T00:00:00Z",
+            )
+            raw_volumes.append(sealed)
+            archive_objects[sealed.relative_path] = ciphertext
+            offset += len(plaintext)
+        verified_raw = VerifiedRawArtifact(
             artifact_id=raw_artifact.artifact_id,
-            artifact_offset=offset,
-            plaintext_bytes=len(plaintext),
-            artifact_bytes=raw_artifact.bytes,
-            artifact_sha256=raw_artifact.sha256,
-            age_state_json=age_state_json(len(plaintext)),
-            parts=_part(plaintext, ciphertext),
-            revision=f"fixture-segment-{sequence}",
-            completed_at="2026-08-08T00:00:00Z",
+            bytes=raw_artifact.bytes,
+            sha256=raw_artifact.sha256,
+            ordered_volume_sha256=raw_artifact_ordered_volume_commitment(
+                artifact=raw_artifact, volumes=raw_volumes
+            ),
+            verified_at="2026-08-08T00:00:00Z",
         )
-        raw_volumes.append(sealed)
-        archive_objects[sealed.relative_path] = ciphertext
-        offset += len(plaintext)
-    verified_raw = VerifiedRawArtifact(
-        artifact_id=raw_artifact.artifact_id,
-        bytes=raw_artifact.bytes,
-        sha256=raw_artifact.sha256,
-        ordered_volume_sha256=raw_artifact_ordered_volume_commitment(
-            artifact=raw_artifact, volumes=raw_volumes
-        ),
-        verified_at="2026-08-08T00:00:00Z",
-    )
+        verified_raw_artifacts = (verified_raw,)
     manifest_raw, volumes = build_collection_archive_authority(
         archive_generation=GENERATION,
         artifacts=artifacts,
         packs=((pack, sealed_pack),),
         raw_volumes=raw_volumes,
-        verified_raw_artifacts=(verified_raw,),
+        verified_raw_artifacts=verified_raw_artifacts,
         provenance_identity=provenance_root.identity,
         provenance_objects=(provenance_object,),
     )

@@ -4,13 +4,23 @@ from __future__ import annotations
 
 import hashlib
 import json
-import uuid
+import os
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any
 
 import pytest
 from a_riverhog_cli import local
-from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
+from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
+    RETAINED_HISTORY_EXTENT,
+    MemberHistoryStore,
+    ProvenanceRootDocument,
+    SourceMemberHistoryBindingProof,
+    binding_tree_commitment,
+    member_history_object_path,
+    provenance_structure_object_path,
+)
 from riverhog_materialization import (
     DestinationRules,
     primary_sidecar_components,
@@ -24,13 +34,15 @@ from riverhog_protocol import (
     PortableCollectionInventoryPage,
     portable_collection_inventory_identity,
 )
-from riverhog_provenance import BoundedSourceObserver, BytesSource
 from typer.testing import CliRunner
+
+from tests.support.qualification.recovery_archive import FixtureArchive, write_archive
 
 ROOT = "a" * 64
 ARTIFACT_SET = "b" * 64
 PROVENANCE = "c" * 64
 CREATED_AT = "2026-07-19T20:55:09.123456000Z"
+_NATIVE_DESTINATION_RULES = local._destination_rules
 
 
 class FakeApi:
@@ -38,35 +50,45 @@ class FakeApi:
         self,
         payloads: dict[str, bytes],
         hints: dict[str, tuple[str, ...] | None],
+        *,
+        archive: FixtureArchive | None = None,
     ) -> None:
         self.payloads = payloads
-        self.journals = {}
-        self.bindings = {}
-        self.members = []
-        for artifact_id, content in sorted(payloads.items()):
-            member = ArtifactMemberIdentityDocument.model_validate(
+        if archive is None:
+            with TemporaryDirectory() as root:
+                archive = write_archive(Path(root), members=payloads, hints=hints)
+        self.archive = archive
+        self.root = archive.archive_root_sha256
+        self.journals = dict(archive.journals)
+        self.history_bindings = {row.artifact_id: row for row in archive.history_bindings}
+        self.history_documents = {
+            artifact_id: json.loads(
+                archive.history_objects[member_history_object_path(row.history_sha256)]
+            )
+            for artifact_id, row in self.history_bindings.items()
+        }
+        self.bindings = {
+            artifact_id: {
+                "artifact_id": artifact_id,
+                **document["primary"],
+            }
+            for artifact_id, document in self.history_documents.items()
+        }
+        self.members = [
+            ArtifactMemberIdentityDocument.model_validate(
                 {
                     "artifact_id": artifact_id,
                     "bytes": str(len(content)),
                     "sha256": hashlib.sha256(content).hexdigest(),
                 }
             )
-            produced = build_member_journal(
-                member=member,
-                observation=BoundedSourceObserver().observe(BytesSource(content)),
-                delivery_context_id=f"urn:uuid:{uuid.uuid4()}",
-                attribution=ProducerAttribution(
-                    "test-cli", "test-bytes", "v1", "event-1", "test", {}, "d" * 64
-                ),
-                materialization_hint=hints.get(artifact_id),
-            )
-            self.members.append(member)
-            self.journals[produced.journal_id] = produced.content
-            self.bindings[artifact_id] = produced.binding.model_dump(mode="json")
+            for artifact_id, content in sorted(payloads.items())
+        ]
+        provenance = ProvenanceRootDocument.from_json_bytes(archive.provenance_root)
         self.header = PortableCollectionHeader(
             collection="1",
-            artifact_set_identity=ARTIFACT_SET,
-            provenance_identity=PROVENANCE,
+            artifact_set_identity=provenance.artifact_set_sha256,
+            provenance_identity=hashlib.sha256(archive.provenance_root).hexdigest(),
             encryption_format="age-v1-scrypt",
             passphrase_id="fixture-archive-key-v1",
         )
@@ -94,8 +116,8 @@ class FakeApi:
         return {
             "id": 1,
             "created_at": CREATED_AT,
-            "archive_root_sha256": ROOT,
-            "artifact_set_identity": ARTIFACT_SET,
+            "archive_root_sha256": self.root,
+            "artifact_set_identity": self.header.artifact_set_identity,
             "tag_revision": 1,
             "tag_set_identity": "e" * 64,
         }
@@ -122,7 +144,7 @@ class FakeApi:
     ) -> dict[str, Any]:
         assert collection_id == 1
         return {
-            "archive_root_sha256": ROOT,
+            "archive_root_sha256": self.root,
             "journals": [
                 {
                     "journal_id": journal_id,
@@ -148,10 +170,36 @@ class FakeApi:
         assert collection_id == 1
         member = next(item for item in self.members if item.artifact_id == artifact_id)
         return {
-            "archive_root_sha256": ROOT,
+            "archive_root_sha256": self.root,
             "artifact": member.model_dump(mode="json"),
             "binding": self.bindings[artifact_id],
+            "history_binding": self.history_bindings[artifact_id].to_mapping(),
+            "member_history": self.history_documents[artifact_id],
         }
+
+    def get_collection_provenance_structure(
+        self, collection_id: int, object_id: str, *, archive_root_sha256: str
+    ) -> bytes:
+        assert collection_id == 1 and archive_root_sha256 == self.root
+        return self.archive.history_objects[provenance_structure_object_path(object_id)]
+
+    def get_collection_artifact_history_binding_proof(
+        self, collection_id: int, artifact_id: str, *, archive_root_sha256: str
+    ) -> SourceMemberHistoryBindingProof:
+        assert collection_id == 1 and archive_root_sha256 == self.root
+        tree = binding_tree_commitment(
+            self.archive.history_bindings, target_artifact_id=artifact_id
+        )
+        assert tree.target_index is not None
+        return SourceMemberHistoryBindingProof(
+            source_identity="d0" * 32,
+            collection_id=collection_id,
+            archive_root=self.archive.archive_root,
+            provenance_root=self.archive.provenance_root,
+            binding=self.history_bindings[artifact_id],
+            index=tree.target_index,
+            siblings=tree.target_siblings,
+        )
 
     def list_collection_tags(self, collection_id: int, **_kwargs: object) -> dict[str, Any]:
         assert collection_id == 1
@@ -397,3 +445,181 @@ def test_local_list_filters_sorts_and_fences_continuation(local_root: Path) -> N
     by_status = runner.invoke(local.local_app, ["list", "--query", "remote-unavailable", "--json"])
     assert by_status.exit_code == 0, by_status.exception
     assert [row["collection_id"] for row in json.loads(by_status.stdout)["collections"]] == [2]
+
+
+@pytest.mark.parametrize("field", ["history_binding", "member_history"])
+def test_local_requires_final_member_history_at_add_and_sync(
+    local_root: Path, monkeypatch: pytest.MonkeyPatch, field: str
+) -> None:
+    artifact_id = "6" * 64
+    api = FakeApi({artifact_id: b"content"}, {artifact_id: None})
+    monkeypatch.setattr(local, "ApiClient", lambda: api)
+    original = api.get_collection_artifact_provenance
+
+    def primary_only(*args):
+        detail = original(*args)
+        del detail[field]
+        return detail
+
+    monkeypatch.setattr(api, "get_collection_artifact_provenance", primary_only)
+    runner = CliRunner()
+    result = runner.invoke(local.local_app, ["add", "1"])
+    assert result.exit_code != 0
+    with local._connect(local_root) as db:
+        assert db.execute("SELECT COUNT(*) FROM desired_collections").fetchone()[0] == 0
+    monkeypatch.setattr(api, "get_collection_artifact_provenance", original)
+    assert runner.invoke(local.local_app, ["add", "1"]).exit_code == 0
+    monkeypatch.setattr(api, "get_collection_artifact_provenance", primary_only)
+    assert runner.invoke(local.local_app, ["sync"]).exit_code != 0
+    assert not (local_root / f"1/artifacts/{artifact_id[:2]}/{artifact_id}").exists()
+
+
+@pytest.mark.parametrize("extent", [BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT])
+def test_local_retains_late_and_inherited_selection_for_offline_audit_and_repair(
+    local_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, extent: str
+) -> None:
+    source = write_archive(
+        tmp_path / "source", late_shared_history=True, late_shared_scope="retained"
+    )
+    archive = write_archive(
+        tmp_path / "derived",
+        inherited_history=source,
+        inherited_extent=extent,
+        late_shared_history=True,
+    )
+    api = FakeApi(dict(archive.members), dict(archive.hints), archive=archive)
+    monkeypatch.setattr(local, "ApiClient", lambda: api)
+    runner = CliRunner()
+    added = runner.invoke(local.local_app, ["add", "1"])
+    assert added.exit_code == 0, added.exception
+    synced = runner.invoke(local.local_app, ["sync"])
+    assert synced.exit_code == 0, synced.exception
+    with local._connect(local_root) as db:
+        rows = list(db.execute("SELECT * FROM desired_artifacts ORDER BY artifact_id"))
+        objects = list(db.execute("SELECT * FROM desired_history_objects ORDER BY object_id"))
+    assert len(rows) == len(archive.members)
+    assert len(objects) >= 5
+    for row in rows:
+        assert row["history_extent"] == RETAINED_HISTORY_EXTENT
+        binding, proof = local._frozen_member_history(row, archive.archive_root_sha256)
+        assert proof.binding == binding
+        assert (
+            json.loads(row["history_binding_json"])
+            == api.history_bindings[row["artifact_id"]].to_mapping()
+        )
+        history = MemberHistoryStore(lambda path: (archive.history_objects[path],)).descriptor(
+            binding
+        )
+        assert int(history.roots.record_count) == 2
+        assert (
+            local_root / "1" / Path(*local._history_file_components(binding.artifact_id, ".json"))
+        ).read_bytes() == history.to_json_bytes()
+        for components, raw in local._history_control_files(binding, proof):
+            assert (local_root / "1" / Path(*components)).read_bytes() == raw
+    first_history = api.history_documents[rows[0]["artifact_id"]]
+    assert first_history["imports"]["record_count"] == "1"
+    monkeypatch.setattr(
+        local,
+        "ApiClient",
+        lambda: (_ for _ in ()).throw(AssertionError("offline audit must not use Riverhog")),
+    )
+    assert runner.invoke(local.local_app, ["audit"]).exit_code == 0
+    first = local_root / "1" / Path(*local._structure_components(objects[0]["object_id"]))
+    original_bytes = first.read_bytes()
+    first.write_bytes(b"local edit")
+    assert runner.invoke(local.local_app, ["audit"]).exit_code == 1
+    monkeypatch.setattr(local, "ApiClient", lambda: api)
+    assert runner.invoke(local.local_app, ["sync"]).exit_code != 0
+    assert first.read_bytes() == b"local edit"
+    repaired = runner.invoke(local.local_app, ["repair"])
+    assert repaired.exit_code == 0, repaired.exception
+    assert first.read_bytes() == original_bytes
+    first.unlink()
+    assert runner.invoke(local.local_app, ["audit"]).exit_code == 1
+    synced = runner.invoke(local.local_app, ["sync"])
+    assert synced.exit_code == 0, synced.exception
+    assert first.read_bytes() == original_bytes
+    assert runner.invoke(local.local_app, ["audit"]).exit_code == 0
+    evicted = runner.invoke(local.local_app, ["evict", "1", "--confirm"])
+    assert evicted.exit_code == 0, evicted.exception
+    assert not list((local_root / "1" / "structure").rglob("*.json"))
+    assert not list((local_root / "1" / "provenance" / "history").rglob("*.json"))
+
+
+@pytest.mark.parametrize("damage", ["descriptor", "proof", "extent"])
+def test_local_audit_rejects_modified_history_selection(
+    local_root: Path, monkeypatch: pytest.MonkeyPatch, damage: str
+) -> None:
+    artifact_id = "7" * 64
+    api = FakeApi({artifact_id: b"content"}, {artifact_id: None})
+    monkeypatch.setattr(local, "ApiClient", lambda: api)
+    runner = CliRunner()
+    assert runner.invoke(local.local_app, ["add", "1"]).exit_code == 0
+    assert runner.invoke(local.local_app, ["sync"]).exit_code == 0
+    if damage == "descriptor":
+        path = local_root / "1" / Path(*local._history_file_components(artifact_id, ".json"))
+        path.write_bytes(b"{}")
+    elif damage == "proof":
+        with local._connect(local_root) as db:
+            proof = json.loads(
+                db.execute("SELECT history_proof_json FROM desired_artifacts").fetchone()[0]
+            )
+            proof["collection_id"] = "2"
+            db.execute(
+                "UPDATE desired_artifacts SET history_proof_json = ?",
+                (local.canonical_json_bytes(proof).decode(),),
+            )
+            db.commit()
+    else:
+        with local._connect(local_root) as db:
+            db.execute("PRAGMA ignore_check_constraints = ON")
+            db.execute("UPDATE desired_artifacts SET history_extent = ?", (BOUND_HISTORY_EXTENT,))
+            db.commit()
+    result = runner.invoke(local.local_app, ["audit", "--json"])
+    assert result.exit_code == 1, result.exception
+    if damage == "extent":
+        assert "CHECK constraint failed" in str(result.exception)
+    else:
+        assert json.loads(result.stdout)["problems"] > 0
+
+
+@pytest.mark.skipif(
+    os.name != "posix", reason="real PATH_MAX boundary uses POSIX filesystem limits"
+)
+def test_local_long_valid_hint_falls_back_using_the_actual_collection_prefix(
+    local_root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    deep_root = local_root / ("deep-" + "p" * 180)
+    deep_root.mkdir()
+    monkeypatch.setenv("A_RIVERHOG_CLI_LOCAL_ROOT", str(deep_root))
+    assert CliRunner().invoke(local.local_app, ["state", "upgrade"]).exit_code == 0
+    local_root = deep_root
+    hint = ("x" * 128,) * 31
+    artifact_id = "8" * 64
+    api = FakeApi({artifact_id: b"content"}, {artifact_id: hint})
+    monkeypatch.setattr(local, "ApiClient", lambda: api)
+    monkeypatch.setattr(local, "_destination_rules", _NATIVE_DESTINATION_RULES)
+    collection_root = local_root / "1"
+    collection_root.mkdir()
+    rules = _NATIVE_DESTINATION_RULES(collection_root)
+    assert (
+        rules.relative_path_bytes
+        == os.pathconf(collection_root, "PC_PATH_MAX")
+        - len(os.fsencode(collection_root.absolute()))
+        - 2
+    )
+    runner = CliRunner()
+    result = runner.invoke(local.local_app, ["add", "1"])
+    assert result.exit_code == 0, result.exception
+    with local._connect(local_root) as db:
+        row = db.execute(
+            "SELECT destination_json, reason, hint_json FROM desired_artifacts"
+        ).fetchone()
+    assert row["reason"] == "destination-limits"
+    assert json.loads(row["hint_json"]) == list(hint)
+    assert json.loads(row["destination_json"]) == ["artifacts", artifact_id[:2], artifact_id]
+    result = runner.invoke(local.local_app, ["sync"])
+    assert result.exit_code == 0, result.exception
+    assert (
+        collection_root / "artifacts" / artifact_id[:2] / artifact_id
+    ).read_bytes() == b"content"

@@ -81,9 +81,29 @@ Table(
     Column("binding_json", Text, nullable=False),
     Column("primary_bytes", Integer, nullable=False),
     Column("primary_sha256", Text, nullable=False),
+    Column("history_binding_json", Text, nullable=False),
+    Column("history_extent", Text, nullable=False),
+    Column("history_proof_json", Text, nullable=False),
     CheckConstraint("bytes >= 0", name="ck_desired_artifacts_bytes"),
     CheckConstraint("primary_bytes > 0", name="ck_desired_artifacts_primary_bytes"),
+    CheckConstraint(
+        "history_extent = 'complete-retained-history'", name="ck_desired_artifacts_history_extent"
+    ),
     UniqueConstraint("collection_id", "destination_json", name="uq_desired_artifact_destination"),
+)
+Table(
+    "desired_history_objects",
+    LOCAL_STATE_METADATA,
+    Column(
+        "collection_id",
+        Integer,
+        ForeignKey("desired_collections.collection_id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column("object_id", Text, primary_key=True),
+    Column("bytes", Integer, nullable=False),
+    Column("sha256", Text, nullable=False),
+    CheckConstraint("bytes > 0", name="ck_desired_history_objects_bytes"),
 )
 Table(
     "desired_journals",

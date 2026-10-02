@@ -58,7 +58,6 @@ from riverhog_core.artifact_access import require_artifact_scope
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
-    ArchiveCopyRetirementRecord,
     CollectionArchiveArtifactObjectRecord,
     CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
@@ -89,7 +88,9 @@ from riverhog_core.ports.download_allowance import DownloadAllowance, DownloadAt
 from riverhog_core.ports.retrieval_cache import RetrievalCache, RetrievalCacheReceipt
 from riverhog_core.raw_retrieval import RawVolumeRangeReader, RawVolumeRetrievalSource
 from riverhog_core.runtime_config import RuntimeConfig
-from riverhog_core.services.archive_records import archive_copy_is_complete
+from riverhog_core.services.archive_records import (
+    select_readable_archive_copy,
+)
 from riverhog_core.services.lifecycle_events import (
     SqlAlchemyLifecycleEventService,
     event_context_json,
@@ -1744,32 +1745,12 @@ class SqlAlchemyRetrievalService:
         return removed
 
     def _select_copy(self, session: Session, collection_id: int) -> CollectionArchiveCopyRecord:
-        retiring_stores = set(
-            session.scalars(
-                select(ArchiveCopyRetirementRecord.store).where(
-                    ArchiveCopyRetirementRecord.collection_id == collection_id
-                )
-            ).all()
+        return select_readable_archive_copy(
+            session,
+            collection_id,
+            archive_stores=self._archive_stores,
+            read_order=self._config.archive_read_order,
         )
-        copies = {
-            copy.store: copy
-            for copy in session.scalars(
-                select(CollectionArchiveCopyRecord).where(
-                    CollectionArchiveCopyRecord.collection_id == collection_id
-                )
-            )
-            if archive_copy_is_complete(copy) and copy.store not in retiring_stores
-        }
-        for store in self._config.archive_read_order:
-            copy = copies.get(store)
-            if copy is None:
-                continue
-            try:
-                self._archive_stores.require_incarnation(store, copy.incarnation_id)
-            except ServiceUnavailable:
-                continue
-            return copy
-        raise InvalidState(f"collection has no readable archive copy: {collection_id}")
 
     def _process_one(self, job_id: str) -> None:
         try:

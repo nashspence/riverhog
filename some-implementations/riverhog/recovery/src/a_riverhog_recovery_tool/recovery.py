@@ -147,7 +147,7 @@ def _metadata_ciphertext_pins(archive: Path) -> tuple[tuple[int, str] | None, tu
     return description, head
 
 
-def _destination_rules(output_parent: Path) -> DestinationRules:
+def _destination_rules(output_parent: Path, *, roots: tuple[Path, ...]) -> DestinationRules:
     with tempfile.TemporaryDirectory(prefix=".riverhog-rule-probe-", dir=output_parent) as name:
         probe = Path(name)
         (probe / "case").write_bytes(b"x")
@@ -160,12 +160,18 @@ def _destination_rules(output_parent: Path) -> DestinationRules:
     except (AttributeError, OSError, ValueError):
         component_bytes = 255
         path_bytes = 240 if os.name == "nt" else 4096
+    # Both creation in staging and final published paths must fit. PATH_MAX
+    # includes the absolute prefix, joining separator and terminating NUL.
+    prefix_bytes = max(len(os.fsencode(root.absolute())) for root in roots)
+    relative_bytes = path_bytes - prefix_bytes - 2
+    if relative_bytes < 1:
+        raise RecoveryError("destination cannot represent a recovery path")
     return DestinationRules(
         windows_names=os.name == "nt",
         case_sensitive=case_sensitive,
         unicode_equivalence=cast(Any, unicode_equivalence),
         component_bytes=max(1, component_bytes),
-        relative_path_bytes=max(1, path_bytes),
+        relative_path_bytes=relative_bytes,
     )
 
 
@@ -524,7 +530,7 @@ def recover_archive(
             expected_archive_root_sha256=expected_archive_root_sha256,
         )
         metadata_pins_before = _metadata_ciphertext_pins(selection.archive)
-        rules = _destination_rules(output.parent)
+        rules = _destination_rules(output.parent, roots=(staging, output))
         _required_layout_fits(rules)
         selected_metadata = stage_metadata(
             read_plaintext=selection.encrypted.read_bounded,

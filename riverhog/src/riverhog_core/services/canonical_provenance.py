@@ -5,12 +5,20 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any
+from uuid import uuid4
 
-from riverhog_archive_contracts import MemberHistoryBinding, SourceMemberHistoryBindingProof
+from riverhog_archive_contracts import (
+    RETAINED_HISTORY_EXTENT,
+    MemberHistoryBinding,
+    SourceMemberHistoryBindingProof,
+    provenance_structure_object_path,
+)
 from riverhog_canonical_json import format_scalar
 from riverhog_protocol import ArtifactId, CollectionArtifactProvenanceBindingDocument
+from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_protocol.errors import InvalidState, NotFound, PreconditionFailed
 from riverhog_protocol.paths import validate_collection_id
+from riverhog_provenance import MemberHistoryClosure
 from riverhog_provenance_contracts import ProvenanceJournalId
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -23,7 +31,11 @@ from riverhog_core.app_permissions import (
     Principal,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
-from riverhog_core.artifact_access import artifact_scope_filter, require_artifact_scope
+from riverhog_core.artifact_access import (
+    artifact_scope_filter,
+    require_artifact_scope,
+    require_current_artifact_capability,
+)
 from riverhog_core.canonical_discovery_rebuild import rebuild_canonical_index
 from riverhog_core.canonical_provenance_archive import PublishedCanonicalProvenance
 from riverhog_core.catalog_db import SessionFactory, make_session_factory
@@ -33,8 +45,11 @@ from riverhog_core.catalog_models import (
     CollectionArtifactRecord,
     CollectionRecord,
 )
+from riverhog_core.collection_access import require_collection_access
+from riverhog_core.ports.download_allowance import DownloadAttribution
 from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.app_keys import require_current_principal
 
 
 class SqlAlchemyCanonicalProvenanceService:
@@ -48,7 +63,11 @@ class SqlAlchemyCanonicalProvenanceService:
         session_factory: SessionFactory | None = None,
     ) -> None:
         self._session_factory = session_factory or make_session_factory(config.database_url)
-        self._archives = PublishedCanonicalProvenance(self._session_factory, archive_stores)
+        self._archives = PublishedCanonicalProvenance(
+            self._session_factory,
+            archive_stores,
+            read_order=config.archive_read_order,
+        )
 
     def rebuild_index(self, collection_id: int) -> str:
         return rebuild_canonical_index(
@@ -108,14 +127,14 @@ class SqlAlchemyCanonicalProvenanceService:
             if projection is None:
                 raise NotFound("collection artifact has no primary canonical binding")
             member_payload = _member_row(member)
-            root_identity = collection.archive_root_sha256
+            root_identity = _archive_root(collection)
             projected_binding = (
                 projection.journal_id,
                 projection.prefix_sha256,
                 projection.delivery_association_id,
             )
             projected_history = (projection.history_sha256, projection.history_bytes)
-        with self._cached_reader(normalized_id) as reader:
+        with self._cached_reader(normalized_id, principal, permission=PROVENANCE_READ) as reader:
             final_binding: MemberHistoryBinding | None = None
             for value in reader.iter_bindings():
                 candidate = MemberHistoryBinding.from_mapping(value)
@@ -168,7 +187,14 @@ class SqlAlchemyCanonicalProvenanceService:
     ) -> bytes:
         normalized_id = validate_collection_id(collection_id)
         self._require_export_root(normalized_id, expected_root, principal)
-        content = self._archives.reader(normalized_id).structure_object(object_id)
+        with self._cached_reader(normalized_id, principal) as reader:
+            if principal.has_artifact_scope:
+                with self._scope_closure(normalized_id, principal, reader) as closure:
+                    if not closure.contains_structure_object(
+                        provenance_structure_object_path(object_id)
+                    ):
+                        raise NotFound("history structure is outside the member selection")
+            content = reader.structure_object(object_id)
         self._require_export_root(normalized_id, expected_root, principal)
         return content
 
@@ -184,7 +210,7 @@ class SqlAlchemyCanonicalProvenanceService:
         self._require_export_root(normalized_id, expected_root, principal, artifact_id=artifact_id)
         detail = self.get_artifact(normalized_id, artifact_id, principal=principal)
         binding = MemberHistoryBinding.from_mapping(detail["history_binding"])
-        with self._cached_reader(normalized_id) as reader:
+        with self._cached_reader(normalized_id, principal) as reader:
             tree = reader.binding_inclusion(artifact_id)
             if tree.target_index is None:
                 raise InvalidState("root-authenticated member binding is absent")
@@ -196,7 +222,10 @@ class SqlAlchemyCanonicalProvenanceService:
             proof = SourceMemberHistoryBindingProof(
                 source_identity=source_identity,
                 collection_id=normalized_id,
-                archive_root=self._archives.archive_root_preimage(normalized_id),
+                archive_root=self._archives.archive_root_preimage(
+                    normalized_id,
+                    attribution=_download_attribution(principal),
+                ),
                 provenance_root=reader.scan().root.to_json_bytes(),
                 binding=binding,
                 index=tree.target_index,
@@ -212,10 +241,11 @@ class SqlAlchemyCanonicalProvenanceService:
         principal: Principal,
         *,
         artifact_id: ArtifactId | None = None,
+        permission: str = PROVENANCE_EXPORT,
     ) -> None:
         with read_snapshot(self._session_factory) as session:
             collection = _authorized_collection(
-                session, collection_id, principal, permission=PROVENANCE_EXPORT
+                session, collection_id, principal, permission=permission
             )
             if artifact_id is not None:
                 require_artifact_scope(session, principal, collection_id, artifact_id)
@@ -227,9 +257,28 @@ class SqlAlchemyCanonicalProvenanceService:
     ) -> tuple[int, str]:
         normalized_id = validate_collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
-            _authorized_collection(session, normalized_id, principal, permission=PROVENANCE_EXPORT)
-        with self._cached_reader(normalized_id) as reader:
-            return reader.journal_metadata(journal_id)
+            root = _archive_root(
+                _authorized_collection(
+                    session, normalized_id, principal, permission=PROVENANCE_EXPORT
+                )
+            )
+        with self._cached_reader(normalized_id, principal) as reader:
+            if principal.has_artifact_scope:
+                with self._scope_closure(normalized_id, principal, reader) as closure:
+                    result = next(
+                        (
+                            (anchor.prefix_bytes, anchor.prefix_sha256)
+                            for anchor in closure.journal_anchors()
+                            if anchor.journal_id == journal_id
+                        ),
+                        None,
+                    )
+                    if result is None:
+                        raise NotFound("journal is outside the member selection")
+            else:
+                result = reader.journal_metadata(journal_id)
+        self._require_export_root(normalized_id, root, principal)
+        return result
 
     def list_journals(
         self,
@@ -246,9 +295,19 @@ class SqlAlchemyCanonicalProvenanceService:
             collection = _authorized_collection(
                 session, normalized_id, principal, permission=PROVENANCE_EXPORT
             )
-            root_identity = collection.archive_root_sha256
-        with self._cached_reader(normalized_id) as reader:
-            headers = reader.iter_journal_headers()
+            root_identity = _archive_root(collection)
+        with (
+            self._cached_reader(normalized_id, principal) as reader,
+            self._scope_closure(normalized_id, principal, reader) as closure,
+        ):
+            headers = (
+                (
+                    (anchor.journal_id, anchor.prefix_bytes, anchor.prefix_sha256)
+                    for anchor in closure.journal_anchors()
+                )
+                if principal.has_artifact_scope
+                else reader.iter_journal_headers()
+            )
             rows: list[dict[str, str]] = []
             for journal_id, byte_count, sha256 in headers:
                 if after_journal_id is not None and journal_id <= after_journal_id:
@@ -288,16 +347,113 @@ class SqlAlchemyCanonicalProvenanceService:
     ) -> Iterator[bytes]:
         normalized_id = validate_collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
-            _authorized_collection(session, normalized_id, principal, permission=PROVENANCE_EXPORT)
-        with self._cached_reader(normalized_id) as reader:
-            yield from reader.iter_journal_range(journal_id, offset=offset, size=size)
+            root = _archive_root(
+                _authorized_collection(
+                    session, normalized_id, principal, permission=PROVENANCE_EXPORT
+                )
+            )
+        with self._cached_reader(normalized_id, principal) as reader:
+            if principal.has_artifact_scope:
+                with self._scope_closure(normalized_id, principal, reader) as closure:
+                    anchor = next(
+                        (
+                            item
+                            for item in closure.journal_anchors()
+                            if item.journal_id == journal_id
+                        ),
+                        None,
+                    )
+                    if anchor is None:
+                        raise NotFound("journal is outside the member selection")
+                    if type(offset) is not int or offset < 0 or offset > anchor.prefix_bytes:
+                        raise NotFound("journal range is outside the member selection")
+                    if size is None:
+                        size = anchor.prefix_bytes - offset
+                    if type(size) is not int or size < 0 or offset + size > anchor.prefix_bytes:
+                        raise NotFound("journal range is outside the member selection")
+            for chunk in reader.iter_journal_range(journal_id, offset=offset, size=size):
+                self._require_export_root(normalized_id, root, principal)
+                yield chunk
+            self._require_export_root(normalized_id, root, principal)
 
     @contextmanager
-    def _cached_reader(self, collection_id: int) -> Iterator[CanonicalProvenanceArchiveReader]:
+    def _cached_reader(
+        self,
+        collection_id: int,
+        principal: Principal,
+        *,
+        permission: str = PROVENANCE_EXPORT,
+    ) -> Iterator[CanonicalProvenanceArchiveReader]:
         """Reuse exact verified object bytes only for this read operation."""
-        with self._archives.reader(collection_id).cached() as reader:
+        with read_snapshot(self._session_factory) as session:
+            root = _archive_root(
+                _authorized_collection(session, collection_id, principal, permission=permission)
+            )
+
+        def fence() -> None:
+            self._require_export_root(collection_id, root, principal, permission=permission)
+
+        with self._archives.reader(
+            collection_id,
+            attribution=_download_attribution(principal),
+            fence=fence,
+        ).cached() as reader:
             with reader.prepared():
+                fence()
                 yield reader
+                fence()
+
+    @contextmanager
+    def _scope_closure(
+        self,
+        collection_id: int,
+        principal: Principal,
+        reader: CanonicalProvenanceArchiveReader,
+    ) -> Iterator[MemberHistoryClosure]:
+        """Exact retained member closure; each imported extent remains independently sealed."""
+        with MemberHistoryClosure(
+            reader.history_store(),
+            lambda journal_id, end: reader.iter_journal_range(journal_id, size=end),
+            member_role=COLLECTION_MEMBER_ROLE,
+        ) as closure:
+            if principal.has_artifact_scope:
+                allowed = iter(self._scoped_artifacts(collection_id, principal))
+                wanted = next(allowed, None)
+                for raw in reader.iter_bindings():
+                    if wanted is None:
+                        break
+                    selected = MemberHistoryBinding.from_mapping(raw)
+                    if selected.artifact_id < wanted:
+                        continue
+                    if selected.artifact_id != wanted:
+                        raise NotFound("archive does not confirm the selected member")
+                    closure.resolve(selected, extent=RETAINED_HISTORY_EXTENT)
+                    wanted = next(allowed, None)
+                if wanted is not None:
+                    raise NotFound("archive does not confirm the selected member")
+            yield closure
+
+    def _scoped_artifacts(self, collection_id: int, principal: Principal) -> Iterator[str]:
+        after = None
+        while True:
+            with read_snapshot(self._session_factory) as session:
+                _authorized_collection(
+                    session, collection_id, principal, permission=PROVENANCE_EXPORT
+                )
+                rows = list(
+                    session.scalars(
+                        _artifact_list_statement(
+                            collection_id,
+                            after_artifact_id=after,
+                            principal=principal,
+                        ).limit(100)
+                    )
+                )
+                ids = [row.artifact_id for row in rows]
+            yield from ids
+            if len(ids) < 100:
+                return
+            after = ids[-1]
 
 
 def _authorized_collection(
@@ -307,15 +463,33 @@ def _authorized_collection(
     *,
     permission: str = PROVENANCE_READ,
 ) -> CollectionRecord:
+    require_current_principal(session, principal)
+    require_current_artifact_capability(session, principal)
     record = session.get(CollectionRecord, collection_id)
     if (
         record is None
         or not record.is_published
-        or not principal.allows_collection(CATALOG_READ, collection_id)
-        or not principal.allows_collection(permission, collection_id)
+        or not principal.allows(CATALOG_READ)
+        or not principal.allows(permission)
     ):
         raise NotFound(f"collection not found: {collection_id}")
+    require_collection_access(session, principal, CATALOG_READ, collection_id)
+    require_collection_access(session, principal, permission, collection_id)
     return record
+
+
+def _download_attribution(principal: Principal) -> DownloadAttribution | None:
+    return (
+        DownloadAttribution(key_id=principal.key_id, job_id="provenance-" + uuid4().hex)
+        if principal.key_id is not None
+        else None
+    )
+
+
+def _archive_root(collection: CollectionRecord) -> str:
+    if collection.archive_root_sha256 is None:
+        raise InvalidState("published collection has no archive root")
+    return collection.archive_root_sha256
 
 
 def _member_row(row: CollectionArtifactRecord) -> dict[str, str]:

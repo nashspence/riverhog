@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 from pathlib import Path
 
@@ -192,6 +193,42 @@ def test_equal_hints_fall_back_for_every_conflicting_artifact(tmp_path: Path) ->
         assert rows[artifact_id]["reason"] == "destination-collision"
         assert rows[artifact_id]["components"] == ["artifacts", artifact_id[:2], artifact_id]
     assert not (output / "files/same.txt").exists()
+
+
+@pytest.mark.skipif(
+    os.name != "posix", reason="real PATH_MAX boundary uses POSIX filesystem limits"
+)
+def test_long_valid_hint_falls_back_in_default_recovery_and_keeps_id_layout_parity(
+    tmp_path: Path,
+) -> None:
+    archive = tmp_path / "archive"
+    artifact_id = "1" * 64
+    hint = ("x" * 128,) * 31
+    fixture = write_archive(archive, hints={artifact_id: hint})
+    parent = tmp_path / ("nested-" + "p" * 180)
+    parent.mkdir()
+    output = parent / "recovered"
+    staging = parent / ".recovered.riverhog-recovery" / "output"
+    rules = recovery_module._destination_rules(parent, roots=(staging, output))
+    assert (
+        rules.relative_path_bytes
+        == os.pathconf(parent, "PC_PATH_MAX")
+        - max(len(os.fsencode(path.absolute())) for path in (staging, output))
+        - 2
+    )
+    recover_archive(archive, output, passphrases=_KEYS)
+    rows = {row["artifact_id"]: row for row in _records(output / "recovery-members.jsonseq")}
+    assert rows[artifact_id]["components"] == ["artifacts", artifact_id[:2], artifact_id]
+    assert rows[artifact_id]["reason"] == "destination-limits"
+    assert (
+        output.joinpath(*rows[artifact_id]["components"]).read_bytes()
+        == fixture.members[artifact_id]
+    )
+    id_output = parent / "ids"
+    recover_archive(archive, id_output, passphrases=_KEYS, layout_mode="id-layout")
+    for row in _records(id_output / "recovery-members.jsonseq"):
+        member = row["artifact_id"]
+        assert id_output.joinpath(*row["components"]).read_bytes() == fixture.members[member]
 
 
 @pytest.mark.parametrize("description_document,description", [(False, None), (True, None)])

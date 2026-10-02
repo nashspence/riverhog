@@ -1253,7 +1253,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
             output_collection_id, page_size=100
         )["journals"]
     }
-    archive_reader = container.provenance._archives.reader(output_collection_id)
+    archive_reader = container.provenance._archives.reader(output_collection_id, attribution=None)
     history_binding = MemberHistoryBinding.from_mapping(final_output["history_binding"])
     history_store = archive_reader.history_store()
     selected_roots = tuple(history_store.roots(history_binding, extent=BOUND_HISTORY_EXTENT))

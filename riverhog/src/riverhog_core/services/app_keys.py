@@ -94,6 +94,23 @@ def _status(record: AppKeyRecord, *, now: str) -> str:
     return "active"
 
 
+def require_current_principal(session: Session, principal: Principal) -> None:
+    """Fence authenticated reads against current key validity and grant identity."""
+    if principal.key_id is None or (
+        principal.authorization_view_identity is None and not principal.has_artifact_scope
+    ):
+        return
+    key = session.get(AppKeyRecord, principal.key_id)
+    if key is None or _status(key, now=format_utc_timestamp(utc_now())) != "active":
+        raise NotFound("application key is no longer active")
+    if principal.authorization_view_identity is not None:
+        current = _authorization_view_identity(
+            session, app=key.app, key_id=key.id, access=tuple(_record_access(session, key.id))
+        )
+        if key.app != principal.id or current != principal.authorization_view_identity:
+            raise NotFound("application key authorization changed")
+
+
 def _validate_list(*, page_size: int, sort: str, order: str, fields: frozenset[str]) -> None:
     validate_page_size(page_size)
     if sort not in fields:
