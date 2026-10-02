@@ -1327,9 +1327,9 @@ def test_sql_work_reads_reuse_exact_validation_without_sharing_mutable_facts(
     tmp_path: Path,
 ) -> None:
     from stove0_core import SqlAlchemyStateStore
-    from stove0_core.persistence import _validated_work_record
+    from stove0_core.persistence import _WORK_RECORD_VALIDATION_CACHE
 
-    _validated_work_record.cache_clear()
+    _WORK_RECORD_VALIDATION_CACHE.clear()
     store = SqlAlchemyStateStore(f"sqlite+pysqlite:///{tmp_path / 'read-cache.sqlite3'}")
     record = store.create(WorkRecord(work=_work()))
     with patch.object(
@@ -1360,20 +1360,135 @@ def test_sql_work_reads_reuse_exact_validation_without_sharing_mutable_facts(
 
 
 def test_work_larger_than_validation_cache_budget_is_accepted_without_caching() -> None:
-    from stove0_core.persistence import _decode_work_record, _validated_work_record
+    from stove0_core.persistence import _WORK_RECORD_VALIDATION_CACHE, _decode_work_record
 
-    _validated_work_record.cache_clear()
+    _WORK_RECORD_VALIDATION_CACHE.clear()
     work = WorkIdentity.seal(
         WorkPayload(
             recipe=_work().recipe,
             inputs=_work().inputs,
-            effective_intent={"evidence": "a" * (2 * 1024 * 1024 + 1)},
+            effective_intent={"evidence": "a" * (8 * 1024 * 1024 + 1)},
         )
     )
     record = WorkRecord(work=work)
     document = record.model_dump_json(by_alias=True, exclude_none=True)
-    assert _decode_work_record(document) == record
-    assert _validated_work_record.cache_info().currsize == 0
+    with patch.object(
+        WorkRecord, "model_validate_json", wraps=WorkRecord.model_validate_json
+    ) as parse:
+        assert _decode_work_record(document) == record
+        assert _decode_work_record(document) == record
+        assert parse.call_count == 2
+
+
+def test_repeated_six_record_browse_reuses_validation_and_isolates_facts(tmp_path: Path) -> None:
+    from stove0_core import SqlAlchemyStateStore
+    from stove0_core.persistence import _WORK_RECORD_VALIDATION_CACHE
+
+    _WORK_RECORD_VALIDATION_CACHE.clear()
+    store = SqlAlchemyStateStore(f"sqlite+pysqlite:///{tmp_path / 'six-records.sqlite3'}")
+    records = [
+        store.create(
+            WorkRecord(
+                work=WorkIdentity.seal(
+                    WorkPayload(
+                        recipe=_work().recipe,
+                        inputs=_work().inputs,
+                        effective_intent={"index": str(index), "evidence": "a" * 65536},
+                    )
+                )
+            )
+        )
+        for index in range(6)
+    ]
+    with patch.object(
+        WorkRecord, "model_validate_json", wraps=WorkRecord.model_validate_json
+    ) as parse:
+        for _ in range(3):
+            rows = store.list_work(page_size=100, sort="work_id")["work"]
+            assert isinstance(rows, list) and len(rows) == 6
+            assert all(isinstance(row, WorkRecord) for row in rows)
+            rows[0].work.effective_intent["evidence"] = "local edit"
+            assert store.load(records[0].work_id) == records[0]
+        assert parse.call_count == 6
+
+
+@pytest.mark.parametrize("max_entries", [1, 128])
+def test_work_validation_eviction_bounds_documents_without_rejecting_them(max_entries: int) -> None:
+    from stove0_core.persistence import _WorkRecordValidationCache
+
+    records = [
+        WorkRecord(
+            work=WorkIdentity.seal(
+                WorkPayload(
+                    recipe=_work().recipe,
+                    inputs=_work().inputs,
+                    effective_intent={"index": str(index), "evidence": "é" * 500},
+                )
+            )
+        )
+        for index in range(3)
+    ]
+    documents = [record.model_dump_json(by_alias=True, exclude_none=True) for record in records]
+    budget = 2 * len(documents[0].encode("utf-8"))
+    cache = _WorkRecordValidationCache(max_bytes=budget, max_entries=max_entries)
+    with patch.object(
+        WorkRecord, "model_validate_json", wraps=WorkRecord.model_validate_json
+    ) as parse:
+        for document, record in zip(documents, records, strict=True):
+            assert cache.decode(document) == record
+        assert cache.decode(documents[-1]) == records[-1]
+        assert parse.call_count == 3
+        assert cache.decode(documents[0]) == records[0]
+        assert parse.call_count == 4
+
+
+def test_sql_browse_preserves_accepted_facts_and_validates_current_documents(
+    tmp_path: Path,
+) -> None:
+    from stove0_core import SqlAlchemyStateStore
+    from stove0_operator_contracts import WorkPage, WorkView
+
+    store = SqlAlchemyStateStore(f"sqlite+pysqlite:///{tmp_path / 'browse.sqlite3'}")
+    work = _work()
+    contract, descriptor = _observer()
+    request, result = _observation(work, contract, descriptor)
+    record = store.create(
+        WorkRecord(
+            work=work,
+            phase="planning",
+            claim=ClaimBinding(claim_id=work.work_id, fence=1),
+            observation_requests=(request,),
+            observation_results=(result,),
+        )
+    )
+    payload = store.list_work()
+    payload.pop("_next_position")
+    payload["next_page_token"] = None
+    page = WorkPage.from_page(payload)
+    projected = page.work[0]
+    assert projected == WorkView.from_record(record)
+    assert WorkPage.model_validate_json(page.model_dump_json()) == page
+    # The projection retains accepted models rather than reconstructing their
+    # complete fact corpus at each browse. Returned nested facts remain isolated.
+    rows = payload["work"]
+    assert isinstance(rows, list) and isinstance(rows[0], WorkRecord)
+    assert projected.observation_results[0] is rows[0].observation_results[0]
+    assert projected.observation_results[0].facts is not None
+    projected.observation_results[0].facts["kind"] = "changed locally"
+    assert store.load(record.work_id) == record
+
+    # An unchanged row identity cannot make altered sealed evidence trustworthy.
+    invalid = record.model_dump(mode="json", by_alias=True, exclude_none=True)
+    invalid["observation_results"][0]["facts"]["kind"] = "changed durably"
+    with store.engine.begin() as connection:
+        connection.execute(
+            text(
+                "UPDATE stove0_work_records SET document_json = :document WHERE work_id = :work_id"
+            ),
+            {"document": json.dumps(invalid), "work_id": record.work_id},
+        )
+    with pytest.raises(ValidationError, match="observation facts digest"):
+        store.list_work()
 
 
 def test_unified_state_store_is_restart_safe_and_compare_and_swap(tmp_path: Path) -> None:

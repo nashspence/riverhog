@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
+from collections import OrderedDict
 from collections.abc import Iterator, Sequence
-from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -2506,18 +2507,52 @@ def _encoded_bytes(value: str) -> int:
     return len(value.encode("utf-8"))
 
 
+class _WorkRecordValidationCache:
+    """Reuse exact document validation within a bounded aggregate JSON budget."""
+
+    def __init__(self, *, max_bytes: int = 8 * 1024 * 1024, max_entries: int = 128) -> None:
+        self._max_bytes = max_bytes
+        self._max_entries = max_entries
+        self._entries: OrderedDict[str, tuple[WorkRecord, int]] = OrderedDict()
+        self._bytes = 0
+        self._lock = threading.Lock()
+
+    def decode(self, document: str) -> WorkRecord:
+        with self._lock:
+            cached = self._entries.get(document)
+            if cached is not None:
+                self._entries.move_to_end(document)
+        if cached is not None:
+            return cached[0].model_copy(deep=True)
+        record = WorkRecord.model_validate_json(document)
+        size = _encoded_bytes(document)
+        if size > self._max_bytes:
+            return record
+        with self._lock:
+            prior = self._entries.pop(document, None)
+            if prior is not None:
+                self._bytes -= prior[1]
+            self._entries[document] = (record, size)
+            self._bytes += size
+            while self._bytes > self._max_bytes or len(self._entries) > self._max_entries:
+                _, (_, removed_size) = self._entries.popitem(last=False)
+                self._bytes -= removed_size
+        return record.model_copy(deep=True)
+
+    def clear(self) -> None:
+        with self._lock:
+            self._entries.clear()
+            self._bytes = 0
+
+
+_WORK_RECORD_VALIDATION_CACHE = _WorkRecordValidationCache()
+
+
 def _decode_work_record(document: str) -> WorkRecord:
-    # Every caller reads current database state and applies its normal fences.
-    # Reuse validation only for identical JSON; never share mutable nested facts
-    # with a caller. The cache holds at most 8 MiB of JSON, not a record-size cap.
-    if _encoded_bytes(document) > 2 * 1024 * 1024:
-        return WorkRecord.model_validate_json(document)
-    return _validated_work_record(document).model_copy(deep=True)
-
-
-@lru_cache(maxsize=4)
-def _validated_work_record(document: str) -> WorkRecord:
-    return WorkRecord.model_validate_json(document)
+    # Read current database state and retain normal fences. Only identical JSON
+    # reuses validation; callers receive independent mutable nested facts. The
+    # cache's document budget never becomes an accepted record-size maximum.
+    return _WORK_RECORD_VALIDATION_CACHE.decode(document)
 
 
 def _require_target_generation(work: _WorkRow, job_id: str) -> None:
@@ -2728,9 +2763,9 @@ def _page(
         "sort": sort,
         "order": order,
         "filters": filters,
-        item_key: [
-            record.model_dump(mode="json", by_alias=True, exclude_none=True) for record in records
-        ],
+        # The adapter owns JSON projection. Retain validated nested models here
+        # so browsing does not rebuild every accepted observation and plan.
+        item_key: list(records),
     }
 
 
