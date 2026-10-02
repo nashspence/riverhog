@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import math
 import re
 from decimal import Decimal, InvalidOperation
-from typing import Any, Literal, cast
+from typing import Literal, cast
 
 import rfc8785
 
@@ -52,34 +53,85 @@ def _exact_integer(value: int) -> int | float:
     return number
 
 
-def _prepare(value: object) -> object:
+def _prepare(value: object, slow_containers: set[int]) -> tuple[object, bool]:
     if value is None or type(value) is bool:
-        return value
+        return value, True
     if type(value) is str:
-        return _string(value)
+        return _string(value), True
     if type(value) is int:
-        return _exact_integer(value)
+        integer = _exact_integer(value)
+        return integer, type(integer) is int
     if type(value) is float:
         if not math.isfinite(value):
             raise CanonicalJsonError("numeric", "nonfinite binary64 value")
-        return value
+        return value, False
     if type(value) is list:
-        return [_prepare(item) for item in value]
+        items: list[object] = []
+        fast = True
+        for item in value:
+            prepared, child_fast = _prepare(item, slow_containers)
+            items.append(prepared)
+            fast = fast and child_fast
+        if not fast:
+            slow_containers.add(id(items))
+        return items, fast
     if type(value) is dict:
         result: dict[str, object] = {}
+        fast = True
         for key, item in value.items():
             if type(key) is not str:
                 raise CanonicalJsonError("shape", "object names must be strings")
-            result[_string(key)] = _prepare(item)
-        return result
+            prepared, child_fast = _prepare(item, slow_containers)
+            result[_string(key)] = prepared
+            fast = fast and key.isascii() and child_fast
+        if not fast:
+            slow_containers.add(id(result))
+        return result, fast
     raise CanonicalJsonError("shape", "identity input must contain JSON values")
+
+
+def _dump(value: object, slow_containers: set[int], sink: io.BytesIO) -> None:
+    if type(value) is float:
+        rfc8785.dump(value, sink)
+    elif id(value) not in slow_containers:
+        # ASCII keys and safe integers have identical native JSON and JCS
+        # spellings. String values retain their original Unicode code points.
+        sink.write(
+            json.dumps(
+                value, ensure_ascii=False, allow_nan=False, sort_keys=True, separators=(",", ":")
+            ).encode("utf-8")
+        )
+    elif type(value) is list:
+        sink.write(b"[")
+        for index, item in enumerate(value):
+            if index:
+                sink.write(b",")
+            _dump(item, slow_containers, sink)
+        sink.write(b"]")
+    else:
+        sink.write(b"{")
+        for index, (key, item) in enumerate(
+            sorted(
+                cast(dict[str, object], value).items(), key=lambda pair: pair[0].encode("utf-16be")
+            )
+        ):
+            if index:
+                sink.write(b",")
+            _dump(key, slow_containers, sink)
+            sink.write(b":")
+            _dump(item, slow_containers, sink)
+        sink.write(b"}")
 
 
 def canonical_json_bytes(value: object) -> bytes:
     """Serialize admitted JSON values with RFC 8785 without Unicode normalization."""
 
     try:
-        return rfc8785.dumps(cast(Any, _prepare(value)))
+        slow_containers: set[int] = set()
+        prepared, _ = _prepare(value, slow_containers)
+        sink = io.BytesIO()
+        _dump(prepared, slow_containers, sink)
+        return sink.getvalue()
     except (rfc8785.CanonicalizationError, UnicodeEncodeError, RecursionError) as exc:
         raise CanonicalJsonError("encoding", str(exc)) from exc
 

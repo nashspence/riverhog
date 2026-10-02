@@ -4,6 +4,7 @@ import hashlib
 import json
 
 import pytest
+import rfc8785
 from riverhog_canonical_json import (
     CanonicalJsonError,
     canonical_json_bytes,
@@ -31,6 +32,46 @@ def test_complete_ascii_strings_preserve_control_escaping_and_exact_identity() -
     assert canonical_json_bytes(value) == expected
     assert require_canonical_json(expected) == value
     assert canonical_json_sha256(value) == hashlib.sha256(expected).hexdigest()
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        None,
+        True,
+        False,
+        0,
+        -(2**53 - 1),
+        2**53 - 1,
+        "é 😀 e\u0301 \u2028\u2029",
+        {"z": [None, True, False, -17], "a": {'\\"\n\x00': "é 😀"}},
+        {"".join(chr(code) for code in range(128)): "".join(chr(code) for code in range(128))},
+        {chr(code): chr(code) for code in reversed(range(128))},
+        {"safe": 1.0, "negative_zero": -0.0, "tiny": 1e-27, "large": 1e30},
+        {"a": [{"\ue000": "BMP", "😀": "astral"}]},
+        {
+            "ready": [{"artifact_id": "opaque", "size": 17, "hint": "é 😀"}],
+            "facts": {"duration": 0.1, "streams": [{"\ue000": 2, "😀": 1}]},
+        },
+    ],
+)
+def test_canonical_encoding_matches_rfc8785_for_nested_primitives_and_utf16_keys(
+    value: object,
+) -> None:
+    expected = rfc8785.dumps(value)  # type: ignore[arg-type]
+    assert canonical_json_bytes(value) == expected
+    assert canonical_json_sha256(value) == hashlib.sha256(expected).hexdigest()
+
+
+def test_exact_large_integer_keeps_jcs_numeric_spelling() -> None:
+    value = {"exact": 2**53}
+    expected = rfc8785.dumps({"exact": float(2**53)})
+    assert canonical_json_bytes(value) == expected
+
+
+def test_exact_integer_rejects_rounded_jcs_spelling() -> None:
+    with pytest.raises(CanonicalJsonError, match="JCS spelling changes"):
+        canonical_json_bytes({"exact": 2**60})
 
 
 @pytest.mark.parametrize(
