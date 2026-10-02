@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import sqlite3
+from collections import OrderedDict
 from collections.abc import Callable, Iterable, Iterator, Mapping
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -92,6 +93,8 @@ class MemberHistoryClosure:
         self.read_journal = read_journal
         self.member_role = member_role
         self.catalog = catalog
+        self._summaries: OrderedDict[bytes, JournalSummary] = OrderedDict()
+        self._summary_bytes = 0
         self._scratch = TemporaryDirectory(prefix="riverhog-history-closure-")
         self._db = sqlite3.connect(Path(self._scratch.name) / "closure.sqlite3")
         self._db.execute("PRAGMA cache_size = -512")
@@ -108,6 +111,8 @@ class MemberHistoryClosure:
         return self
 
     def __exit__(self, *_exc: object) -> None:
+        self._summaries.clear()
+        self._summary_bytes = 0
         self._db.close()
         self._scratch.cleanup()
 
@@ -138,13 +143,39 @@ class MemberHistoryClosure:
             )
 
     def summary_at(self, anchor: HistoryJournalAnchor) -> JournalSummary:
-        return validate_journal_chunks(
-            _prefix(self.read_journal(anchor.journal_id, anchor.prefix_bytes), anchor.prefix_bytes),
+        key = canonical_json_bytes(anchor.to_mapping())
+        chunks = _prefix(
+            self.read_journal(anchor.journal_id, anchor.prefix_bytes), anchor.prefix_bytes
+        )
+        cached = self._summaries.get(key)
+        if cached is not None:
+            # Re-read the authenticated provider even on a cache hit. Exact byte
+            # identity permits reusing validation; current read fences still run.
+            digest = hashlib.sha256()
+            for chunk in chunks:
+                digest.update(chunk)
+            if digest.hexdigest() != anchor.prefix_sha256:
+                raise ProvenanceValidationError("canonical journal prefix identity changed")
+            self._summaries.move_to_end(key)
+            return cached
+        summary = validate_journal_chunks(
+            chunks,
             catalog=self.catalog,
             expected_anchor=anchor.to_mapping(),
             require_exact_tail=True,
             require_profiles=False,
         )
+        # Cache capacity bounds working state, never accepted journal extents.
+        budget = 4 * 1024 * 1024
+        if summary.journal_bytes <= budget:
+            while self._summaries and (
+                len(self._summaries) >= 32 or self._summary_bytes + summary.journal_bytes > budget
+            ):
+                _, removed = self._summaries.popitem(last=False)
+                self._summary_bytes -= removed.journal_bytes
+            self._summaries[key] = summary
+            self._summary_bytes += summary.journal_bytes
+        return summary
 
     def _reference_anchor(self, reference: Mapping[str, Any]) -> HistoryJournalAnchor:
         selected = ExternalReference.model_validate(reference).model_dump(mode="json")

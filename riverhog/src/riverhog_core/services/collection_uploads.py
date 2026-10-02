@@ -5428,15 +5428,20 @@ def _advance_catalog_canonical_index(session: Session, upload: CollectionUploadR
     )
     corpus = _StagedCanonicalCorpus(session, upload.collection_id)
     full_primary = corpus[binding.journal.journal_id]
-    primary = validate_journal_chunks(
-        (
-            frame.encoded
-            for frame in full_primary.frames[: int(binding.journal.through.sequence) + 1]
-        ),
-        catalog=admission_provenance_catalog(),
-        expected_anchor=binding.journal.model_dump(mode="json"),
-        require_exact_tail=True,
-        require_profiles=False,
+    expected_primary = binding.journal.model_dump(mode="json")
+    primary = (
+        full_primary
+        if full_primary.anchor == expected_primary
+        else validate_journal_chunks(
+            (
+                frame.encoded
+                for frame in full_primary.frames[: int(binding.journal.through.sequence) + 1]
+            ),
+            catalog=admission_provenance_catalog(),
+            expected_anchor=expected_primary,
+            require_exact_tail=True,
+            require_profiles=False,
+        )
     )
     member = ArtifactMemberIdentityDocument.model_validate(
         {
