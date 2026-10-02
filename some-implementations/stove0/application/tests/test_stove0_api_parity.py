@@ -11,6 +11,7 @@ import pytest
 from a_stove0_cli import main as a_stove0_cli
 from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
+from pydantic import ValidationError
 from riverhog_client import ApiClient
 from riverhog_protocol import CatalogSyncDescriptor
 from riverhog_protocol.collection_workflows import ArtifactDispositionSetIdentity
@@ -51,6 +52,7 @@ from stove0_operator_contracts import (
     SchedulerRunRequest,
     Stove0EventPage,
     WorkCreateRequest,
+    WorkView,
 )
 from stove0_protocol import (
     ArtifactSelection,
@@ -711,6 +713,36 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
             ),
         )
     )
+
+
+@pytest.mark.parametrize("claimed", [False, True])
+def test_typed_work_projection_preserves_wire_and_rejects_substituted_sealed_plan(
+    claimed: bool,
+) -> None:
+    work = _fixture_work()
+    preview = _ready_preview(work)
+    assert preview.branch_set_plan is not None
+    record = WorkRecord(
+        work=work,
+        phase="claimed" if claimed else "eligible",
+        claim=ClaimBinding(claim_id="qualification", fence=1) if claimed else None,
+        preview_acceptance=PreviewAcceptance.from_preview(preview),
+        branch_set_plan=preview.branch_set_plan,
+    )
+    typed = WorkView.from_record(record)
+    mapping = WorkView.from_record(
+        record.model_dump(mode="python", by_alias=True, exclude_none=True)
+    )
+    assert typed.model_dump(mode="json") == mapping.model_dump(mode="json")
+    substituted = record.model_copy(
+        update={
+            "branch_set_plan": preview.branch_set_plan.model_copy(
+                update={"branch_set_sha256": "f" * 64}
+            )
+        }
+    )
+    with pytest.raises(ValidationError, match="branch-set digest"):
+        WorkView.from_record(substituted)
 
 
 def _composition(database_url: str = "sqlite+pysqlite:///:memory:") -> Stove0Composition:

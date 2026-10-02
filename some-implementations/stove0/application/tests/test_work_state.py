@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 from unittest.mock import patch
 
 import httpx
 import pytest
+from pydantic import ValidationError
 from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
 from riverhog_protocol.collection_workflows import (
     ArtifactDisposition,
@@ -1319,6 +1321,59 @@ def test_retryable_failed_work_can_be_canceled_and_abandoned() -> None:
         expected_revision=pending.revision,
     )
     assert terminal.phase == "canceled"
+
+
+def test_sql_work_reads_reuse_exact_validation_without_sharing_mutable_facts(
+    tmp_path: Path,
+) -> None:
+    from stove0_core import SqlAlchemyStateStore
+    from stove0_core.persistence import _validated_work_record
+
+    _validated_work_record.cache_clear()
+    store = SqlAlchemyStateStore(f"sqlite+pysqlite:///{tmp_path / 'read-cache.sqlite3'}")
+    record = store.create(WorkRecord(work=_work()))
+    with patch.object(
+        WorkRecord, "model_validate_json", wraps=WorkRecord.model_validate_json
+    ) as parse:
+        loaded = store.load(record.work_id)
+        assert loaded == record
+        assert loaded is not None
+        loaded.work.effective_intent["suffix"] = ".changed"
+        assert store.load(record.work_id) == record
+        assert parse.call_count == 1
+
+        # The database remains authoritative: an altered document is validated
+        # afresh even when its primary key and revision did not change.
+        invalid = record.model_dump(mode="json", by_alias=True, exclude_none=True)
+        invalid["work"]["work_id"] = "f" * 64
+        with store.engine.begin() as connection:
+            connection.execute(
+                text(
+                    "UPDATE stove0_work_records SET document_json = :document "
+                    "WHERE work_id = :work_id"
+                ),
+                {"document": json.dumps(invalid), "work_id": record.work_id},
+            )
+        with pytest.raises(ValidationError):
+            store.load(record.work_id)
+        assert parse.call_count == 2
+
+
+def test_work_larger_than_validation_cache_budget_is_accepted_without_caching() -> None:
+    from stove0_core.persistence import _decode_work_record, _validated_work_record
+
+    _validated_work_record.cache_clear()
+    work = WorkIdentity.seal(
+        WorkPayload(
+            recipe=_work().recipe,
+            inputs=_work().inputs,
+            effective_intent={"evidence": "a" * (2 * 1024 * 1024 + 1)},
+        )
+    )
+    record = WorkRecord(work=work)
+    document = record.model_dump_json(by_alias=True, exclude_none=True)
+    assert _decode_work_record(document) == record
+    assert _validated_work_record.cache_info().currsize == 0
 
 
 def test_unified_state_store_is_restart_safe_and_compare_and_swap(tmp_path: Path) -> None:

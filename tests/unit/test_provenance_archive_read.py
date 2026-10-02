@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 import hashlib
+import sqlite3
 from dataclasses import replace
+from tempfile import TemporaryDirectory
+from typing import Any
 
 import pytest
+import riverhog_core.provenance_archive_read as archive_read
 from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
     MEMBER_HISTORY_IMPORTS_SCHEMA,
@@ -173,6 +177,78 @@ def test_root_bound_reader_rejects_changed_sequence_and_payload() -> None:
     objects["provenance/metadata/volume-" + "0" * 63 + "1.json.age"] = b"{}"
     with pytest.raises((ProvenanceArchiveReadError, ValueError)):
         list(reader.iter_journal_range(journal_id))
+
+
+def test_content_addressed_history_read_authenticates_root_without_walking_journals() -> None:
+    source, objects, _, _ = _archive()
+    binding = MemberHistoryBinding.from_mapping(next(source.iter_bindings()))
+    raw = objects[member_history_object_path(binding.history_sha256)]
+    identity = provenance_structure_identity(raw)
+    reads: list[str] = []
+
+    def read_object(path: str):
+        reads.append(path)
+        yield objects[path]
+
+    root = source.scan().root
+    reader = CanonicalProvenanceArchiveReader(
+        read_object,
+        expected_root_sha256=root.identity,
+        archive_generation=root.archive_generation,
+        artifact_set_sha256=root.artifact_set_sha256,
+    )
+    assert reader.structure_object(identity.object_id) == raw
+    assert reads == ["provenance/root.json.age", identity.relative_path]
+
+    objects[identity.relative_path] = replace(
+        MemberHistoryDocument.from_json_bytes(raw), bytes=8
+    ).to_json_bytes()
+    with pytest.raises(ProvenanceArchiveReadError, match="differs from its identity"):
+        reader.structure_object(identity.object_id)
+    objects[identity.relative_path] = raw
+    objects["provenance/root.json.age"] = b"{}"
+    with pytest.raises(ProvenanceArchiveReadError, match="root identity changed"):
+        reader.structure_object(identity.object_id)
+
+
+def test_prepared_reader_closes_partly_consumed_cursors_before_directory_cleanup(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    reader, _, _, _ = _archive()
+    pending: list[TrackedCursor] = []
+
+    class TrackedCursor(sqlite3.Cursor):
+        explicitly_closed = False
+
+        def close(self) -> None:
+            super().close()
+            self.explicitly_closed = True
+
+    class TrackedConnection(sqlite3.Connection):
+        def execute(self, sql: str, parameters: Any = (), /) -> sqlite3.Cursor:
+            cursor = self.cursor(factory=TrackedCursor)
+            assert isinstance(cursor, TrackedCursor)
+            if sql.startswith("SELECT kind, body FROM volumes"):
+                pending.append(cursor)
+            return cursor.execute(sql, parameters)
+
+    class CheckedDirectory(TemporaryDirectory):
+        def cleanup(self) -> None:
+            assert pending and all(cursor.explicitly_closed for cursor in pending)
+            super().cleanup()
+
+    original_connect = sqlite3.connect
+
+    def connect(*args: Any, **kwargs: Any) -> sqlite3.Connection:
+        return original_connect(*args, **kwargs, factory=TrackedConnection)
+
+    monkeypatch.setattr(archive_read.sqlite3, "connect", connect)
+    monkeypatch.setattr(archive_read, "TemporaryDirectory", CheckedDirectory)
+    with reader.prepared():
+        headers = reader.iter_journal_headers()
+        next(headers)
+        assert pending and not pending[0].explicitly_closed
+    headers.close()
 
 
 def test_member_binding_tree_must_match_the_archived_binding_pages() -> None:

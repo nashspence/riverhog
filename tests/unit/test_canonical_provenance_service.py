@@ -6,6 +6,11 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
+from riverhog_archive_contracts import (
+    MemberHistoryBinding,
+    member_history_object_path,
+    provenance_structure_object_id,
+)
 from riverhog_core.app_permissions import (
     CATALOG_READ,
     PROVENANCE_EXPORT,
@@ -23,7 +28,7 @@ from riverhog_core.catalog_models import (
 )
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.canonical_provenance import SqlAlchemyCanonicalProvenanceService
-from riverhog_protocol.errors import NotFound
+from riverhog_protocol.errors import NotFound, PreconditionFailed
 
 from tests.unit.db_helpers import sqlite_url
 from tests.unit.test_provenance_archive_read import _archive
@@ -179,3 +184,38 @@ def test_one_read_reuses_verified_objects_without_reusing_the_next_request(tmp_p
         previous = reads.copy()
         operation()
         assert reads == Counter({path: 2 * count for path, count in previous.items()})
+
+
+def test_history_structure_read_checks_export_authority_and_root_before_and_after(
+    tmp_path: Path,
+) -> None:
+    service, _ = _service(tmp_path / "catalog.sqlite3")
+    source = service._archives.reader.return_value
+    binding = MemberHistoryBinding.from_mapping(next(source.iter_bindings()))
+    path = member_history_object_path(binding.history_sha256)
+    object_id = provenance_structure_object_id(path)
+    exporter = _principal(CATALOG_READ, PROVENANCE_EXPORT)
+    assert service.get_structure_object(1, object_id, expected_root="5" * 64, principal=exporter)
+    with pytest.raises(NotFound):
+        service.get_structure_object(
+            1,
+            object_id,
+            expected_root="5" * 64,
+            principal=_principal(CATALOG_READ, PROVENANCE_READ),
+        )
+    with pytest.raises(PreconditionFailed):
+        service.get_structure_object(1, object_id, expected_root="0" * 64, principal=exporter)
+
+    original = source._read_object
+
+    def changed_root(selected_path: str):
+        yield from original(selected_path)
+        if selected_path == path:
+            with session_scope(service._session_factory) as session:
+                collection = session.get(CollectionRecord, 1)
+                assert collection is not None
+                collection.archive_root_sha256 = "0" * 64
+
+    source._read_object = changed_root
+    with pytest.raises(PreconditionFailed):
+        service.get_structure_object(1, object_id, expected_root="5" * 64, principal=exporter)

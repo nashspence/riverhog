@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Iterator, Sequence
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -788,7 +789,7 @@ class SqlAlchemyStateStore:
     def load(self, work_id: str) -> WorkRecord | None:
         with self.sessions() as session:
             row = session.get(_WorkRow, work_id)
-            return None if row is None else WorkRecord.model_validate_json(row.document_json)
+            return None if row is None else _decode_work_record(row.document_json)
 
     def create(self, record: WorkRecord) -> WorkRecord:
         encoded = _encode(record.model_dump(mode="json", by_alias=True, exclude_none=True))
@@ -808,7 +809,7 @@ class SqlAlchemyStateStore:
             )
             if row is None:
                 raise RuntimeError("stove0 work record disappeared during creation")
-            existing = WorkRecord.model_validate_json(row.document_json)
+            existing = _decode_work_record(row.document_json)
             if (
                 existing.work != record.work
                 or (
@@ -886,7 +887,7 @@ class SqlAlchemyStateStore:
             )
             if row is None:
                 raise KeyError(work_id)
-            current = WorkRecord.model_validate_json(row.document_json)
+            current = _decode_work_record(row.document_json)
             if current.branch_set_plan == decision.plan:
                 return current
             if current.revision != expected_revision:
@@ -925,7 +926,7 @@ class SqlAlchemyStateStore:
                 existing_row = session.get(_WorkRow, child.work_id)
                 if existing_row is None:
                     raise RuntimeError("stove0 branch child disappeared during admission")
-                existing = WorkRecord.model_validate_json(existing_row.document_json)
+                existing = _decode_work_record(existing_row.document_json)
                 if (
                     existing.work != child.work
                     or existing.workflow_plan != child.workflow_plan
@@ -986,7 +987,7 @@ class SqlAlchemyStateStore:
             )
             if row is None:
                 raise KeyError(work_id)
-            current = WorkRecord.model_validate_json(row.document_json)
+            current = _decode_work_record(row.document_json)
             if current.join_plan == plan:
                 return current
             if current.revision != expected_revision:
@@ -1026,7 +1027,7 @@ class SqlAlchemyStateStore:
                 existing_row = session.get(_WorkRow, child.work_id)
                 if existing_row is None:
                     raise RuntimeError("stove0 join child disappeared during admission")
-                existing = WorkRecord.model_validate_json(existing_row.document_json)
+                existing = _decode_work_record(existing_row.document_json)
                 if existing.work != child.work or existing.workflow_plan != child.workflow_plan:
                     raise ConcurrentWorkUpdate("join work identity was reused")
 
@@ -1655,7 +1656,7 @@ class SqlAlchemyStateStore:
                 )
             )
         page_rows = rows[:page_size]
-        records = [WorkRecord.model_validate_json(row.document_json) for row in page_rows]
+        records = [_decode_work_record(row.document_json) for row in page_rows]
         return _page(
             records,
             item_key="work",
@@ -1685,7 +1686,7 @@ class SqlAlchemyStateStore:
         statement = statement.order_by(*(direction(column) for column in key_columns))
         with read_snapshot(self.sessions) as session:
             for row in session.scalars(statement.execution_options(yield_per=100)):
-                yield WorkRecord.model_validate_json(row.document_json)
+                yield _decode_work_record(row.document_json)
 
     def scan_work(
         self,
@@ -1713,7 +1714,7 @@ class SqlAlchemyStateStore:
             rows = list(session.scalars(statement(after=after_work_id)))
             if not rows and after_work_id:
                 rows = list(session.scalars(statement(after="")))
-        records = [WorkRecord.model_validate_json(row.document_json) for row in rows]
+        records = [_decode_work_record(row.document_json) for row in rows]
         return records, (records[-1].work_id if records else "")
 
     def prune_operational_state(self, *, cutoff: str) -> dict[str, int]:
@@ -2505,8 +2506,22 @@ def _encoded_bytes(value: str) -> int:
     return len(value.encode("utf-8"))
 
 
+def _decode_work_record(document: str) -> WorkRecord:
+    # Every caller reads current database state and applies its normal fences.
+    # Reuse validation only for identical JSON; never share mutable nested facts
+    # with a caller. The cache holds at most 8 MiB of JSON, not a record-size cap.
+    if _encoded_bytes(document) > 2 * 1024 * 1024:
+        return WorkRecord.model_validate_json(document)
+    return _validated_work_record(document).model_copy(deep=True)
+
+
+@lru_cache(maxsize=4)
+def _validated_work_record(document: str) -> WorkRecord:
+    return WorkRecord.model_validate_json(document)
+
+
 def _require_target_generation(work: _WorkRow, job_id: str) -> None:
-    record = WorkRecord.model_validate_json(work.document_json)
+    record = _decode_work_record(work.document_json)
     current_job = (
         record.controller_evidence.execution_envelope.execution_envelope_sha256
         if record.controller_evidence is not None

@@ -89,6 +89,7 @@ class CanonicalProvenanceArchiveReader:
         self._artifact_set_sha256 = artifact_set_sha256
         self._prepared_db: sqlite3.Connection | None = None
         self._prepared_summary: ProvenanceArchiveSummary | None = None
+        self._prepared_cursors: set[sqlite3.Cursor] = set()
 
     @contextmanager
     def cached(self) -> Iterator[CanonicalProvenanceArchiveReader]:
@@ -165,6 +166,9 @@ class CanonicalProvenanceArchiveReader:
             finally:
                 self._prepared_db = None
                 self._prepared_summary = None
+                for cursor in self._prepared_cursors:
+                    cursor.close()
+                self._prepared_cursors.clear()
                 db.close()
 
     def _history_pages(self, authority: RecordSetRef) -> Iterator[RecordPage]:
@@ -189,7 +193,11 @@ class CanonicalProvenanceArchiveReader:
         return MemberHistoryStore(self._read_object)
 
     def structure_object(self, object_id: str) -> bytes:
-        self.scan()
+        # The requested hash or record-set authority identifies this bounded
+        # history object; its consumer verifies the selected set commitment.
+        # Authenticate the selected archive root here; journal/binding reads
+        # separately verify their complete volume sequence and terminal.
+        self._root()
         raw = _read_bounded(
             self._read_object(provenance_structure_object_path(object_id)), PAGE_BYTES_MAX
         )
@@ -306,14 +314,21 @@ class CanonicalProvenanceArchiveReader:
                 filters.append("kind = ?")
                 values.append(kind)
             where = " WHERE " + " AND ".join(filters) if filters else ""
-            for selected_kind, raw in self._prepared_db.execute(
+            cursor = self._prepared_db.execute(
                 "SELECT kind, body FROM volumes" + where + " ORDER BY sequence", values
-            ):
-                yield (
-                    ProvenanceTerminalDocument.from_json_bytes(raw)
-                    if selected_kind == "terminal"
-                    else ProvenanceVolumeDocument.from_json_bytes(raw)
-                )
+            )
+            self._prepared_cursors.add(cursor)
+            try:
+                for selected_kind, raw in cursor:
+                    yield (
+                        ProvenanceTerminalDocument.from_json_bytes(raw)
+                        if selected_kind == "terminal"
+                        else ProvenanceVolumeDocument.from_json_bytes(raw)
+                    )
+            finally:
+                if cursor in self._prepared_cursors:
+                    self._prepared_cursors.remove(cursor)
+                    cursor.close()
             return
         sequence = 0
         while True:

@@ -296,7 +296,8 @@ class SqlAlchemyCanonicalProvenanceService:
     def _cached_reader(self, collection_id: int) -> Iterator[CanonicalProvenanceArchiveReader]:
         """Reuse exact verified object bytes only for this read operation."""
         with self._archives.reader(collection_id).cached() as reader:
-            yield reader
+            with reader.prepared():
+                yield reader
 
 
 def _authorized_collection(

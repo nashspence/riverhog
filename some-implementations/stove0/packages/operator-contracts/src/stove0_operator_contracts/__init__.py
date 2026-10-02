@@ -957,10 +957,16 @@ class WorkView(OperatorModel):
 
     @classmethod
     def from_record(cls, record: BaseModel | Mapping[str, Any]) -> WorkView:
-        payload = _payload(record)
+        # Keep accepted nested protocol models typed instead of serializing
+        # and rebuilding every sealed observation and plan for a browse view.
+        payload = (
+            {key: value for key, value in record if value is not None}
+            if isinstance(record, BaseModel)
+            else dict(record)
+        )
         work = WorkIdentity.model_validate(payload.get("work"))
         payload.update(format="stove0-work-view/v1", work_id=work.work_id)
-        return cls.model_validate(payload)
+        return cls.model_validate(payload, from_attributes=isinstance(record, BaseModel))
 
 
 class WorkPage(OperatorModel):
