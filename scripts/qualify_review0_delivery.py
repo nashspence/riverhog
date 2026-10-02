@@ -58,6 +58,26 @@ def riverhog() -> ApiClient:
     return ApiClient("http://app:8000", token, allow_insecure_http=True)
 
 
+def _work_failure_diagnostic(work: dict[str, object]) -> dict[str, object]:
+    def detail(row: dict[str, object]) -> dict[str, object]:
+        status = row.get("target_status") or {}
+        return {
+            "work_id": row.get("work_id"),
+            "phase": row.get("phase"),
+            "failure": row.get("failure"),
+            "target_failure": status.get("failure"),
+        }
+
+    acceptance = work.get("preview_acceptance") or {}
+    return {
+        **detail(work),
+        "branches": [
+            detail(stove(f"/v1/work/{plan['work_id']}"))
+            for plan in acceptance.get("target_plans", [])
+        ],
+    }
+
+
 def await_evaluation(evaluation_id: str) -> dict[str, object]:
     deadline = time.monotonic() + 600
     last: dict[str, object] = {}
@@ -190,7 +210,7 @@ def delivery() -> None:
         if last["phase"] == "complete":
             break
         if last["phase"] in {"failed", "canceled", "inapplicable", "abandon_pending"}:
-            raise AssertionError(last)
+            raise AssertionError(_work_failure_diagnostic(last))
         time.sleep(0.5)
     else:
         raise TimeoutError(last)
