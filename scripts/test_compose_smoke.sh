@@ -24,10 +24,12 @@ if ! [[ "${smoke_audio_frames}" =~ ^[0-9]+$ ]] ||
 fi
 smoke_claim_file_count=$((smoke_file_count + 1))
 # The overlapping-route proof produces four target outputs per fixture input.
-# Allow 45 seconds per output on a shared runner, plus ten minutes for the
-# smaller jobs and complete archive/history publication. This is a fixture
-# completion window; individual HTTP requests retain their own fixed budgets.
-smoke_completion_timeout=$((600 + 180 * smoke_file_count))
+# Allow 75 seconds per output on a shared runner, plus ten minutes for the
+# smaller jobs and complete archive/history publication. The measured default
+# workload needs margin for four serialized target jobs and their shared-history
+# publication. This is a fixture completion window; individual HTTP requests
+# and database qualification retain their own fixed budgets.
+smoke_completion_timeout=$((600 + 300 * smoke_file_count))
 smoke_max_bytes=$((smoke_file_count * (smoke_audio_frames * 2 + 4096) + 16384))
 # Three independent readers exercise each input in this lifecycle. Account for
 # age-unit amplification as well as logical payload so quota policy remains
