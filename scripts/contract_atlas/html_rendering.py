@@ -153,7 +153,7 @@ const sources=[...document.querySelectorAll('code[data-source-path]')];
 if(sources.length)fetch(new URL('../build-manifest.json',location.href))
   .then(response=>response.ok?response.json():null)
   .then(manifest=>{
-    if(!manifest||manifest.format!=='riverhog-contract-preview-build/v1'||
+    if(!manifest||manifest.format!=='riverhog-contract-candidate-build/v1'||
        !/^[0-9a-f]{40}$/.test(manifest.source_sha))return;
     for(const source of sources){
       const path=source.dataset.sourcePath.split('/').map(encodeURIComponent).join('/');

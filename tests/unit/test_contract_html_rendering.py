@@ -24,7 +24,6 @@ from contract_atlas.html_rendering import (  # noqa: E402
     validate_render,
 )
 from contract_atlas.model import ContractAtlasError, canonical_bytes, canonical_sha256  # noqa: E402
-from contract_atlas.records import load_bundle  # noqa: E402
 from contract_freeze import _cli_parsers  # noqa: E402
 
 
@@ -67,8 +66,10 @@ class VisibleFacts(HTMLParser):
 
 
 @pytest.fixture(scope="module")
-def rendered_candidate() -> tuple[dict[str, object], dict[str, object], dict[str, bytes]]:
-    bundle = load_bundle(REPO_ROOT / "qualification/contracts/riverhog-v1.json")
+def rendered_candidate(
+    generated_contract_closure,
+) -> tuple[dict[str, object], dict[str, object], dict[str, bytes]]:
+    bundle = generated_contract_closure["bundle"]
     closure, audit = bundle.closure, bundle.audit
     return closure, audit, render_contract(closure, audit)
 

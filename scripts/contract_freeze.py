@@ -10,7 +10,6 @@ import importlib
 import inspect
 import json
 import re
-import sys
 import tomllib
 from collections import Counter, defaultdict
 from collections.abc import Callable, Iterator, Mapping, Sequence
@@ -35,21 +34,14 @@ from a_riverhog_recovery_tool.cli import _parser as recovery_parser
 from a_stove0_cli.main import app as stove0_app
 from contract_atlas import (
     ContractAtlasError,
-    build_discovered_contract,
     canonical_bytes,
     pointer_value,
     structural_json_schema,
 )
-from contract_atlas.cli_documentation import build_cli_documentation_record
-from contract_atlas.html_rendering import render_contract, validate_render
 from contract_atlas.records import (
-    AUDIT_FILENAME,
     ContractBundle,
-    build_records,
-    load_bundle,
 )
 from contract_discovery import (
-    DiscoveryError,
     discover_configuration_documents,
     discover_environment_reads,
     load_exceptions,
@@ -75,9 +67,6 @@ from stove0_target_support.schemas import _parser as target_schemas_parser
 from typer.main import get_command
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "qualification/contracts/riverhog-v1.json"
-AUDIT_OUTPUT = OUTPUT.with_name(AUDIT_FILENAME)
-RENDER_DIRECTORY = ROOT / "qualification/contracts/riverhog-v1"
 CONTRACT_FREEZE_EXCEPTIONS = ROOT / "qualification/contract-freeze-exceptions.toml"
 FORMAT = "riverhog-contract-freeze/v1"
 TRACE_FORMAT = "riverhog-contract-trace/v1"
@@ -3036,19 +3025,6 @@ def contract_projection() -> dict[str, object]:
     }
 
 
-def _generated_candidate() -> tuple[dict[str, object], ContractBundle, dict[str, bytes]]:
-    """Build checked machine records and the shared human render from one discovery."""
-
-    projection = contract_projection()
-    trace = trace_projection(projection)
-    discovered = build_discovered_contract(projection, trace)
-    closure, audit = build_records(discovered)
-    documentation = build_cli_documentation_record(closure, _cli_parsers())
-    files = render_contract(closure, audit, documentation)
-    validate_render(files)
-    return projection, ContractBundle(closure, audit), files
-
-
 def _extent_diff(
     previous: Mapping[str, object] | None,
     current: Mapping[str, object],
@@ -3087,56 +3063,6 @@ def _extent_diff(
         owner: {kind: counts.get(kind, 0) for kind in ("added", "changed", "removed")}
         for owner, counts in sorted(summary.items())
     }
-
-
-def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=__doc__)
-    subparsers = parser.add_subparsers(dest="command", required=True)
-    subparsers.add_parser("check", help="Verify the checked-in v1 projection.")
-    subparsers.add_parser("update", help="Replace the checked-in v1 projection.")
-    subparsers.add_parser("summary", help="Print the v1 closure roll-up and identities.")
-    list_parser = subparsers.add_parser("list", help="List native semantic contract elements.")
-    list_parser.add_argument("--authority", "--owner", dest="authority")
-    list_parser.add_argument("--interface", "--kind", dest="interface")
-    list_parser.add_argument("--policy")
-    show_parser = subparsers.add_parser("show", help="Print one complete semantic dossier as JSON.")
-    show_parser.add_argument("element_id")
-    return parser
-
-
-def _checked_candidate_matches(bundle: ContractBundle, files: Mapping[str, bytes]) -> bool:
-    if not OUTPUT.is_file() or OUTPUT.read_bytes() != canonical_bytes(bundle.closure):
-        return False
-    if not AUDIT_OUTPUT.is_file() or AUDIT_OUTPUT.read_bytes() != canonical_bytes(bundle.audit):
-        return False
-    expected = {OUTPUT.parent / relative for relative in files}
-    actual = (
-        {path for path in RENDER_DIRECTORY.rglob("*") if path.is_file()}
-        if RENDER_DIRECTORY.is_dir()
-        else set()
-    )
-    if actual != expected:
-        return False
-    return all(
-        path.read_bytes() == files[path.relative_to(OUTPUT.parent).as_posix()] for path in expected
-    )
-
-
-def _write_candidate(bundle: ContractBundle, files: Mapping[str, bytes]) -> None:
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    RENDER_DIRECTORY.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_bytes(canonical_bytes(bundle.closure))
-    AUDIT_OUTPUT.write_bytes(canonical_bytes(bundle.audit))
-    expected = {OUTPUT.parent / relative for relative in files}
-    for relative, payload in files.items():
-        path = OUTPUT.parent / relative
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(payload)
-    for path in sorted(RENDER_DIRECTORY.rglob("*"), reverse=True):
-        if path.is_file() and path not in expected:
-            path.unlink()
-        elif path.is_dir() and not any(path.iterdir()):
-            path.rmdir()
 
 
 def _summary(bundle: ContractBundle) -> dict[str, object]:
@@ -3212,76 +3138,3 @@ def _shown_element(bundle: ContractBundle, element_id: str) -> dict[str, object]
         ],
         "trace_format": trace["format"],
     }
-
-
-def main(argv: Sequence[str] | None = None) -> int:
-    args = _parser().parse_args(argv)
-    try:
-        if args.command in {"summary", "list", "show"}:
-            checked = load_bundle(OUTPUT)
-            payload = (
-                _summary(checked)
-                if args.command == "summary"
-                else _listed_elements(checked, args)
-                if args.command == "list"
-                else _shown_element(checked, str(args.element_id))
-            )
-            print(json.dumps(payload, indent=2, sort_keys=True))
-            return 0
-        projection, bundle, files = _generated_candidate()
-        extent_diff: dict[str, dict[str, int]] | None = None
-        if args.command == "update":
-            previous: Mapping[str, object] | None = None
-            if AUDIT_OUTPUT.is_file():
-                try:
-                    prior = load_bundle(OUTPUT)
-                    previous = {
-                        "external_contract": {
-                            "extents": {
-                                "decisions": cast(
-                                    Mapping[str, object], prior.audit["extent_analysis"]
-                                )["decisions"]
-                            }
-                        }
-                    }
-                except (ContractAtlasError, AttributeError, KeyError):
-                    previous = None
-            extent_diff = _extent_diff(previous, projection)
-            _write_candidate(bundle, files)
-        elif not _checked_candidate_matches(bundle, files):
-            raise ContractFreezeError(
-                "the v1 Contract Closure, Audit Record, or Contract Render is stale; "
-                "run `make contract-freeze-update` and review the semantic diff"
-            )
-        closure_bytes = canonical_bytes(bundle.closure)
-        audit_bytes = canonical_bytes(bundle.audit)
-        print(
-            json.dumps(
-                {
-                    "output": OUTPUT.relative_to(ROOT).as_posix(),
-                    "sha256": hashlib.sha256(closure_bytes).hexdigest(),
-                    "audit": AUDIT_OUTPUT.relative_to(ROOT).as_posix(),
-                    "audit_sha256": hashlib.sha256(audit_bytes).hexdigest(),
-                    "contract_elements": len(cast(Sequence[object], bundle.closure["elements"])),
-                    "render_documents": len(files),
-                    "render_root": "qualification/contracts/riverhog-v1/index.html",
-                    "status": "updated" if args.command == "update" else "current",
-                    **({"extent_diff": extent_diff} if extent_diff is not None else {}),
-                },
-                sort_keys=True,
-            )
-        )
-        return 0
-    except (
-        ContractFreezeError,
-        ContractAtlasError,
-        DiscoveryError,
-        extent_witnesses.ExtentWitnessError,
-        release_contract.ReleaseError,
-    ) as exc:
-        print(f"contract freeze failed: {exc}", file=sys.stderr)
-        return 2
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

@@ -1118,9 +1118,10 @@ def test_generated_install_reference_has_a_file_sbom(tmp_path: Path) -> None:
 
 
 def test_release_evidence_is_complete_and_minisign_verified(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, release_contract_factory
 ) -> None:
     module = load_script()
+    candidate = release_contract_factory()
     output = tmp_path / "evidence"
     output.mkdir()
     payload = output / "artifact.whl"
@@ -1219,6 +1220,7 @@ def test_release_evidence_is_complete_and_minisign_verified(
         source_sha="1" * 40,
         source_epoch=1234567890,
         spdx_created="2009-02-13T23:31:30Z",
+        contract_candidate=candidate,
         install_manifest=install_manifest,
         signing_key=signing_key,
         public_key=public_key,
@@ -1240,18 +1242,19 @@ def test_release_evidence_is_complete_and_minisign_verified(
     )
     assert manifest["v1_history"] == {"kind": "genesis"}
     assert manifest["publication_licenses"] == module._publication_license_inventory(publication)
-    assert manifest["contract"] == {
-        "file": "riverhog-v1-contract.tar.gz",
-        "sha256": module._sha256_file(output / "riverhog-v1-contract.tar.gz"),
+    from contract_atlas.publication import unpack_release_contract
+
+    restored = tmp_path / "published-contract"
+    build = unpack_release_contract(output, manifest["contract"], restored)
+    assert build["source_sha"] == "1" * 40
+    assert build["documentation"] is None
+    assert manifest["contract"]["file"] == "riverhog-v1-contract.tar.gz"
+    assert manifest["contract"]["render"]["file"] == "riverhog-docs-v1.0.0.tar.gz"
+    assert {path.relative_to(restored) for path in restored.rglob("*") if path.is_file()} == {
+        path.relative_to(candidate) for path in candidate.rglob("*") if path.is_file()
     }
-    with module.tarfile.open(output / "riverhog-v1-contract.tar.gz", mode="r:gz") as archive:
-        contract_members = {member.name for member in archive.getmembers() if member.isfile()}
-    assert contract_members == {
-        "riverhog-v1.json",
-        "riverhog-v1-audit.json",
-        *(
-            path.relative_to(REPO_ROOT / "qualification/contracts").as_posix()
-            for path in (REPO_ROOT / "qualification/contracts/riverhog-v1").rglob("*")
-            if path.is_file()
-        ),
-    }
+    assert all(
+        (restored / path.relative_to(candidate)).read_bytes() == path.read_bytes()
+        for path in candidate.rglob("*")
+        if path.is_file()
+    )

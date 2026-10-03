@@ -62,7 +62,7 @@ def source_checkout(tmp_path, monkeypatch):
     # Isolate source identity from the real operation/extent behavioral tests.
     monkeypatch.setattr(module, "operation_matrix", lambda: ())
     monkeypatch.setattr(module, "application_surfaces", lambda: ())
-    monkeypatch.setattr(module, "_contract_freeze_identity", lambda: {})
+    monkeypatch.setattr(module, "_contract_freeze_identity", lambda **_kwargs: {})
     monkeypatch.setattr(module, "_cold_cli_timings", lambda: {})
     return root, sha, module
 

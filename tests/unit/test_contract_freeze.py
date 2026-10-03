@@ -23,7 +23,13 @@ from typer.main import get_command
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts/contract_freeze.py"
-ARTIFACT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
+ARTIFACT: Path
+
+
+@pytest.fixture(scope="module", autouse=True)
+def generated_artifacts(generated_contract_closure: dict[str, Any]) -> None:
+    global ARTIFACT
+    ARTIFACT = generated_contract_closure["root"] / "riverhog-v1.json"
 
 
 def load_script() -> ModuleType:
@@ -185,21 +191,23 @@ contract_freeze.contract_projection()
     assert completed.returncode == 0, completed.stderr[-4000:]
 
 
-def test_checked_contract_freeze_matches_every_executable_authority(
-    checked_contract_closure: dict[str, Any],
+def test_generated_contract_matches_every_executable_authority(
+    generated_contract_closure: dict[str, Any],
 ) -> None:
     module = load_script()
-    checked = checked_contract_closure["discovered"]
-    bundle = checked_contract_closure["bundle"]
-    projection = checked_contract_closure["projection"]
-    trace = checked_contract_closure["trace"]
+    checked = generated_contract_closure["discovered"]
+    bundle = generated_contract_closure["bundle"]
+    projection = generated_contract_closure["projection"]
+    trace = generated_contract_closure["trace"]
 
     assert ARTIFACT.read_bytes() == module.canonical_bytes(bundle.closure)
-    assert module.AUDIT_OUTPUT.read_bytes() == module.canonical_bytes(bundle.audit)
-    documentation = module.build_cli_documentation_record(bundle.closure, module._cli_parsers())
-    assert module._checked_candidate_matches(
-        bundle, module.render_contract(bundle.closure, bundle.audit, documentation)
+    assert ARTIFACT.with_name("riverhog-v1-audit.json").read_bytes() == module.canonical_bytes(
+        bundle.audit
     )
+    from contract_atlas.generation import verify_candidate
+    from contract_atlas.model import canonical_sha256
+
+    assert verify_candidate(ARTIFACT.parent)["closure_sha256"] == canonical_sha256(bundle.closure)
     assert projection["format"] == "riverhog-contract-freeze/v1"
     assert set(projection) == {"format", "series", "boundaries", "external_contract"}
     boundaries = projection["boundaries"]
@@ -442,9 +450,9 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     }
     assert all(
         path.suffix in {".html", ".css", ".js", ".json"}
-        for path in module.RENDER_DIRECTORY.iterdir()
+        for path in (ARTIFACT.parent / "riverhog-v1").iterdir()
     )
-    assert (module.RENDER_DIRECTORY / "index.html").is_file()
+    assert ((ARTIFACT.parent / "riverhog-v1") / "index.html").is_file()
     assert root["identities"]["boundary_canonical_sha256"] == trace["boundary_canonical_sha256"]
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
     freeze = release["governance"]["boundary_freeze"]
@@ -828,9 +836,9 @@ def test_python_external_discovery_uses_public_exports_and_includes_them_automat
 
 
 def test_installed_entry_points_all_resolve_to_included_cli_trees(
-    checked_contract_closure: dict[str, Any],
+    generated_contract_closure: dict[str, Any],
 ) -> None:
-    checked = checked_contract_closure["discovered"]
+    checked = generated_contract_closure["discovered"]
     projection, trace = checked.root["projection"], checked.root["trace"]
     installed = {
         name
@@ -861,9 +869,9 @@ def test_installed_entry_points_all_resolve_to_included_cli_trees(
 
 
 def test_service_runtime_result_contracts_leave_stderr_available_for_diagnostics(
-    checked_contract_closure: dict[str, Any],
+    generated_contract_closure: dict[str, Any],
 ) -> None:
-    cli = checked_contract_closure["discovered"].root["projection"]["external_contract"]["cli"]
+    cli = generated_contract_closure["discovered"].root["projection"]["external_contract"]["cli"]
     runtime_commands: set[str] = set()
 
     def visit(authority: str, node: dict[str, Any], path: str) -> None:
@@ -1001,14 +1009,14 @@ def test_python_public_import_paths_and_special_methods_are_exact_units() -> Non
     ("riverhog_client.ApiClient.list_processing_claims", "riverhog_client.ApiClient"),
 )
 def test_operation_clients_require_exported_owners_and_member_units(
-    missing_identity: str, checked_contract_closure: dict[str, Any]
+    missing_identity: str, generated_contract_closure: dict[str, Any]
 ) -> None:
     module = load_script()
     projects = module.release_contract.validate_release_contract(REPO_ROOT)
     surfaces = module._python_surfaces(projects)
     external = {
         "python": surfaces,
-        "cli": checked_contract_closure["projection"]["external_contract"]["cli"],
+        "cli": generated_contract_closure["projection"]["external_contract"]["cli"],
     }
     records = module._operation_trace(external)
 
@@ -1090,7 +1098,9 @@ def test_exception_overlay_cannot_create_or_describe_a_candidate(tmp_path: Path)
         ),
         encoding="utf-8",
     )
-    with pytest.raises(module.DiscoveryError, match="unexpected|incomplete"):
+    from contract_discovery import DiscoveryError
+
+    with pytest.raises(DiscoveryError, match="unexpected|incomplete"):
         module.load_exceptions(path)
 
 
@@ -1163,24 +1173,29 @@ def test_extent_semantic_diff_is_grouped_by_owning_boundary() -> None:
 def test_audit_commands_route_by_authority_interface_and_dossier(
     capsys: pytest.CaptureFixture[str],
     monkeypatch: pytest.MonkeyPatch,
-    checked_contract_closure: dict[str, Any],
+    generated_contract_closure: dict[str, Any],
 ) -> None:
-    module = load_script()
-    monkeypatch.setattr(module, "load_bundle", lambda _path: checked_contract_closure["bundle"])
+    import contract_candidate as module
 
-    assert module.main(["summary"]) == 0
+    candidate_args = ["--candidate", str(generated_contract_closure["root"])]
+    assert module.main(["summary", *candidate_args]) == 0
     summary = json.loads(capsys.readouterr().out)
     assert summary["format"] == "riverhog-contract-closure/v1"
     assert summary["discovery_anomalies"]["missing"] == 0
     assert summary["render_root"] == "riverhog-v1/index.html"
 
-    assert module.main(["list", "--authority", "riverhog", "--interface", "http-operations"]) == 0
+    assert (
+        module.main(
+            ["list", *candidate_args, "--authority", "riverhog", "--interface", "http-operations"]
+        )
+        == 0
+    )
     elements = json.loads(capsys.readouterr().out)
     assert elements
     assert {item["authority"] for item in elements} == {"riverhog"}
     assert {item["interface"] for item in elements} == {"http-operations"}
 
-    assert module.main(["show", elements[0]["id"]]) == 0
+    assert module.main(["show", *candidate_args, elements[0]["id"]]) == 0
     shown = json.loads(capsys.readouterr().out)
     assert shown["element"] == elements[0]
     assert shown["values"]

@@ -32,9 +32,9 @@ def test_artifact_uploads_use_one_pinned_node24_action() -> None:
     assert all(use == UPLOAD_ARTIFACT_USE for use in uploads)
 
 
-def test_contract_candidate_pages_uses_exact_green_main_and_preview_environment() -> None:
+def test_contract_pages_uses_exact_green_main_and_protected_publication_environment() -> None:
     workflow = yaml.load(CONTRACT_PAGES_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
-    assert set(workflow["on"]) == {"workflow_dispatch"}
+    assert set(workflow["on"]) == {"workflow_dispatch", "workflow_run", "release"}
     assert workflow["jobs"]["build"]["permissions"] == {"actions": "read", "contents": "read"}
     build = workflow["jobs"]["build"]["steps"]
     assert all(
@@ -43,13 +43,20 @@ def test_contract_candidate_pages_uses_exact_green_main_and_preview_environment(
     gate = next(step for step in build if step["name"] == "Require a green commit on main")
     assert "git merge-base --is-ancestor" in gate["run"]
     assert "ci.yml codeql.yml" in gate["run"]
-    assert "make contract-freeze" in next(
-        step["run"] for step in build if step["name"].startswith("Verify checked Closure")
+    assert "make contract-check" in next(
+        step["run"] for step in build if step["name"].startswith("Generate and independently check")
     )
     deploy = workflow["jobs"]["deploy"]
     assert deploy["needs"] == "build"
-    assert deploy["environment"]["name"] == "contract-candidate-pages"
-    assert deploy["permissions"] == {"pages": "write", "id-token": "write"}
+    assert deploy["environment"]["name"] == "github-pages"
+    assert deploy["permissions"] == {
+        "actions": "read",
+        "contents": "read",
+        "pages": "write",
+        "id-token": "write",
+    }
+    assert workflow["concurrency"] == {"group": "riverhog-pages", "cancel-in-progress": "false"}
+    assert any("--check-fresh" in step.get("run", "") for step in deploy["steps"])
 
 
 def test_every_buildx_setup_uses_the_pinned_docker_engine() -> None:
@@ -350,7 +357,8 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "does not follow current v1 head" in stage_history["run"]
     assert "published-candidate.json" in stage_history["run"]
     assert "Historical predecessor digest differs" in stage_history["run"]
-    assert "python -m json.tool --sort-keys --indent 2" in stage_history["run"]
+    assert "canonical_bytes(json.loads(payload))" in stage_history["run"]
+    assert "gh release verify-asset" in stage_history["run"]
     lifecycle_evidence = next(
         step
         for step in audit["steps"]

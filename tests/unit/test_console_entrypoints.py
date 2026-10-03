@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import importlib.metadata
-import json
 import os
 import subprocess
 import sys
@@ -67,17 +66,13 @@ def _run_help(command: tuple[str, ...]) -> subprocess.CompletedProcess[str]:
 
 
 @pytest.fixture(scope="module")
-def checked_console_closure() -> dict[str, Any]:
-    return json.loads(
-        (
-            Path(__file__).resolve().parents[2] / "qualification/contracts/riverhog-v1.json"
-        ).read_text(encoding="utf-8")
-    )
+def generated_console_closure(generated_contract_closure: dict[str, Any]) -> dict[str, Any]:
+    return generated_contract_closure["bundle"].closure
 
 
 @pytest.fixture(scope="module")
-def published_console_scripts(checked_console_closure: dict[str, Any]) -> dict[str, str]:
-    closure = checked_console_closure
+def published_console_scripts(generated_console_closure: dict[str, Any]) -> dict[str, str]:
+    closure = generated_console_closure
     components = closure["boundaries"]["components"]
     published = {
         name: component["distribution"]
@@ -123,11 +118,11 @@ def test_published_console_entrypoint_help_is_side_effect_free(
 
 def test_published_console_entrypoint_reports_installed_version(
     published_console_scripts: dict[str, str],
-    checked_console_closure: dict[str, Any],
+    generated_console_closure: dict[str, Any],
 ) -> None:
     versioned = {
         name
-        for name, root in checked_console_closure["external_contract"]["cli"].items()
+        for name, root in generated_console_closure["external_contract"]["cli"].items()
         if any(control["id"] == "version" for control in root["terminating_controls"])
     }
     for command, distribution in sorted(published_console_scripts.items()):

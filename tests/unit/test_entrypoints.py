@@ -16,7 +16,6 @@ HAND_MAINTAINED_MARKDOWN = {
     REPO / "THIRD_PARTY_NOTICES.md",
     REPO / "docs/architecture.md",
 }
-GENERATED_ATLAS = REPO / "qualification/contracts/riverhog-v1"
 REPOSITORY_MAP_TARGETS = {
     REPO / "riverhog",
     REPO / "some-implementations/gogurt",
@@ -101,9 +100,7 @@ def test_all_markdown_is_reachable_and_links_resolve() -> None:
 
 
 def test_hand_maintained_markdown_surface_is_explicit() -> None:
-    assert {
-        path for path in _markdown_files() if GENERATED_ATLAS not in path.parents
-    } == HAND_MAINTAINED_MARKDOWN
+    assert {path for path in _markdown_files()} == HAND_MAINTAINED_MARKDOWN
 
 
 def test_agents_guidance_stays_compact_and_routes_enforceable_policy_to_tests() -> None:
@@ -156,9 +153,8 @@ def test_readme_states_archive_and_adapter_authority() -> None:
         REPO / "LICENSE.md",
         REPO / "SECURITY.md",
         REPO / "docs/architecture.md",
-        REPO / "qualification/contracts/riverhog-v1/index.html",
     }
-    assert "https://nashspence.github.io/riverhog/contract-candidate/riverhog-v1/" in readme
+    assert "https://nashspence.github.io/riverhog/" in readme
 
 
 def test_agents_requires_post_push_github_validation() -> None:
@@ -168,7 +164,9 @@ def test_agents_requires_post_push_github_validation() -> None:
     assert "Required GitHub checks are part of complete validation" in agents
     assert "`release.toml` owns the release-governance policy" in agents
     assert "Direct commits to `main`" in agents
-    assert "Keep the protected `release/v1` branch pinned as an ancestor" in agents
+    assert (
+        "`release/v1` branch may synchronize to an explicitly approved green main commit" in agents
+    )
     assert "Provider qualification stays disabled" in agents
     assert "never moves a v1 tag" in agents
     assert "Changes to root `README.md` or `docs/architecture.md` are exceptional" in agents

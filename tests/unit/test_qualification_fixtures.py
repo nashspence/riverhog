@@ -25,8 +25,15 @@ from stove0_operator_contracts import AdmissionCatalog
 from tests.gogurt_provider import path_mounted_volume_provider
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CONTRACT_ROOT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
-CONTRACT_FILES = {CONTRACT_ROOT, CONTRACT_ROOT.with_name("riverhog-v1-audit.json")}
+CONTRACT_ROOT: Path
+
+
+@pytest.fixture(scope="module", autouse=True)
+def generated_contract_files(generated_contract_closure) -> None:
+    global CONTRACT_ROOT
+    CONTRACT_ROOT = generated_contract_closure["root"] / "riverhog-v1.json"
+
+
 QUALIFICATION_INPUTS = {
     REPO_ROOT / "qualification/contract-freeze-exceptions.toml",
     REPO_ROOT / "qualification/fixtures/gogurt/gogurt-routes.yaml",
@@ -41,7 +48,6 @@ QUALIFICATION_INPUTS = {
     REPO_ROOT / "qualification/fixtures/stove0/config.yaml",
     REPO_ROOT / "qualification/fixtures/stove0/recipes.yaml",
     REPO_ROOT / "qualification/fixtures/stove0/admissions.json",
-    *CONTRACT_FILES,
     REPO_ROOT / "qualification/provider/config.toml",
 }
 
@@ -192,7 +198,7 @@ def test_review_qualification_observation_fits_the_declared_observer_result_limi
 
 def test_every_checked_qualification_input_runs_through_its_real_consumer(
     tmp_path: Path,
-    checked_contract_closure,
+    generated_contract_closure,
 ) -> None:  # type: ignore[no-untyped-def]
     checked_inputs = {
         path
@@ -335,9 +341,11 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     contract_module = importlib.util.module_from_spec(contract_spec)
     sys.modules[contract_spec.name] = contract_module
     contract_spec.loader.exec_module(contract_module)
-    projection = checked_contract_closure["projection"]
-    trace = checked_contract_closure["trace"]
-    checked = contract_module.load_bundle(CONTRACT_ROOT)
-    assert checked == checked_contract_closure["bundle"]
+    projection = generated_contract_closure["projection"]
+    trace = generated_contract_closure["trace"]
+    from contract_atlas.records import load_bundle
+
+    checked = load_bundle(CONTRACT_ROOT)
+    assert checked == generated_contract_closure["bundle"]
     assert checked.closure["series"] == projection["series"]
     assert checked.audit["trace"]["format"] == trace["format"]

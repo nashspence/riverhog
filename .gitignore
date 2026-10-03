@@ -11,5 +11,8 @@ __pycache__/
 /.riverhog/
 /build/
 /dist/
+/qualification/contracts/riverhog-v1.json
+/qualification/contracts/riverhog-v1-audit.json
+/qualification/contracts/riverhog-v1/
 mise.local.lock
 mise.local.toml

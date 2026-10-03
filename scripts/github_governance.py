@@ -8,7 +8,7 @@ import json
 import subprocess
 import tomllib
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 ROOT = Path(__file__).resolve().parents[1]
 FORMAT = "riverhog-github-governance/v1"
@@ -30,7 +30,7 @@ def _gh(endpoint: str) -> Any:
         capture_output=True,
         text=True,
     )
-    return json.loads(completed.stdout)
+    return cast(dict[str, Any], json.loads(completed.stdout))
 
 
 def _git_sha() -> str:
@@ -47,7 +47,7 @@ def _rule(ruleset: dict[str, Any], rule_type: str) -> dict[str, Any]:
     matching = [rule for rule in ruleset.get("rules", []) if rule.get("type") == rule_type]
     if len(matching) != 1:
         raise GovernanceError(f"{ruleset.get('name', 'ruleset')} must contain one {rule_type} rule")
-    return matching[0]
+    return cast(dict[str, Any], matching[0])
 
 
 def _check_main_ruleset(ruleset: dict[str, Any]) -> None:
@@ -158,7 +158,7 @@ def _check_pre_v1_main_convergence(repository: str) -> tuple[str, str]:
     comparison = _gh(f"repos/{repository}/compare/{release_sha}...{main_sha}")
     if comparison.get("status") not in {"ahead", "identical"}:
         raise GovernanceError(
-            "pre-v1 convergence requires the pinned release/v1 commit to remain an ancestor of main"
+            "pre-v1 convergence requires the release/v1 checkpoint to remain an ancestor of main"
         )
     return main_sha, release_sha
 
@@ -250,7 +250,7 @@ def check(*, scope: str = "complete") -> dict[str, Any]:
         repository,
         str(environments["pages"]),
         maintainer,
-        {("release/v1", "branch"), ("gh-pages", "branch")},
+        {("main", "branch"), ("release/v1", "branch")},
     )
     _check_environment(
         repository,
@@ -274,7 +274,7 @@ def check(*, scope: str = "complete") -> dict[str, Any]:
         "governed_sha": governed_sha,
         "release_sha": release_sha,
         "main": "active-contract-convergence-authority",
-        "release_branch": "protected-pinned-checkpoint",
+        "release_branch": "protected-code-checkpoint",
         "required_checks": required_checks,
         "tag_policy": "immutable-v1",
         "immutable_releases": immutable_release_status,

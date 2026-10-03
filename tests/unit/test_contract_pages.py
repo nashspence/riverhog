@@ -14,17 +14,19 @@ from contract_atlas.model import ContractAtlasError  # noqa: E402
 from contract_pages import build_pages  # noqa: E402
 
 
-def test_pages_preview_contains_the_checked_candidate_under_its_project_path(
+def test_pages_contains_the_source_generated_candidate_under_its_project_path(
     tmp_path: Path,
+    generated_contract_closure,
 ) -> None:
-    source = REPO_ROOT / "qualification/contracts"
+    source = generated_contract_closure["root"]
     destination = tmp_path / "site"
-    source_sha = "a" * 40
+    source_sha = None
 
     build = build_pages(source, destination, source_sha)
 
-    assert build["source_sha"] == source_sha
-    assert build["path"] == "contract-candidate/riverhog-v1/"
+    assert build["inputs"][0]["source_sha"] is None
+    assert build["latest_product_release"] is None
+    assert "No final product releases" in (destination / "index.html").read_text()
     assert (destination / "index.html").is_file()
     assert (destination / ".nojekyll").is_file()
     preview = destination / "contract-candidate"
@@ -32,9 +34,69 @@ def test_pages_preview_contains_the_checked_candidate_under_its_project_path(
     assert "riverhog-v1/" in (preview / "index.html").read_text()
     for name in ("riverhog-v1.json", "riverhog-v1-audit.json"):
         assert (preview / name).read_bytes() == (source / name).read_bytes()
-    assert json.loads((preview / "build-manifest.json").read_bytes()) == build
+    assert json.loads((destination / "site-manifest.json").read_bytes()) == build
+    assert build["site_bytes"] == sum(
+        p.stat().st_size for p in destination.rglob("*") if p.is_file()
+    )
+    assert json.loads((preview / "build-manifest.json").read_bytes())["documentation"] is None
 
 
 def test_pages_preview_requires_an_exact_source_commit(tmp_path: Path) -> None:
     with pytest.raises(ContractAtlasError, match="exact source commit"):
-        build_pages(REPO_ROOT / "qualification/contracts", tmp_path / "site", "main")
+        build_pages(tmp_path / "unused", tmp_path / "site", "main")
+
+
+def test_pages_capacity_fails_before_publishing_and_keeps_all_versions(
+    tmp_path, generated_contract_closure
+):
+    with pytest.raises(ContractAtlasError, match="operational budget"):
+        build_pages(generated_contract_closure["root"], tmp_path / "site", None, budget=1)
+    assert not (tmp_path / "site").exists()
+
+
+def test_pages_does_not_trust_a_claimed_revision(tmp_path, generated_contract_closure):
+    with pytest.raises(ContractAtlasError, match="source does not match"):
+        build_pages(generated_contract_closure["root"], tmp_path / "site", "b" * 40)
+
+
+def test_pages_assembles_versions_semantically_and_preserves_published_bytes(
+    tmp_path,
+    generated_contract_closure,
+    release_contract_factory,
+):
+    from contract_atlas.documentation import SOURCE_FORMAT, AuthoredDocumentation
+    from contract_atlas.model import canonical_bytes
+
+    root = release_contract_factory()
+    authored = AuthoredDocumentation(
+        "v1.10.0",
+        "c" * 40,
+        "v1.10.0/documentation.json",
+        canonical_bytes({"format": SOURCE_FORMAT, "explanations": [], "guides": []}),
+    )
+    documented = release_contract_factory("2" * 40, documentation=authored)
+    entries = [
+        {
+            "root": selected,
+            "tag": tag,
+            "release_id": number,
+            "release_manifest_sha256": "d" * 64,
+            "attestation_sha256": "e" * 64,
+            "assets": {"fixture": "sha256:" + "f" * 64},
+        }
+        for number, (tag, selected) in enumerate((("v1.2.0", root), ("v1.10.0", documented)), 1)
+    ]
+    manifest = build_pages(
+        generated_contract_closure["root"], tmp_path / "site", None, releases=entries
+    )
+    assert manifest["latest_product_release"] == "v1.10.0"
+    assert [item["version"] for item in manifest["inputs"]] == ["development", "v1.10.0", "v1.2.0"]
+    assert 'href="../v1.2.0/"' in (tmp_path / "site/v1.10.0/index.html").read_text()
+    assert "Documentation" in (tmp_path / "site/v1.10.0/index.html").read_text()
+    assert "Documentation" not in (tmp_path / "site/v1.2.0/index.html").read_text()
+    assert all(
+        (tmp_path / "site/v1.10.0" / path.relative_to(documented)).read_bytes() == path.read_bytes()
+        for path in documented.rglob("*")
+        if path.is_file()
+    )
+    assert (tmp_path / "site/v1.10.0/documentation.json").read_bytes() == authored.payload

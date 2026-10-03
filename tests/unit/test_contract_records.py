@@ -28,9 +28,9 @@ def _changed(discovered: DiscoveredContract) -> DiscoveredContract:
 
 
 def test_full_candidate_partition_is_lossless_and_standalone(
-    checked_contract_closure: dict[str, Any],
+    generated_contract_closure: dict[str, Any],
 ) -> None:
-    closure, audit = build_records(checked_contract_closure["discovered"])
+    closure, audit = build_records(generated_contract_closure["discovered"])
 
     validate_closure(closure)
     validate_audit_record(closure, audit)
@@ -40,9 +40,9 @@ def test_full_candidate_partition_is_lossless_and_standalone(
 
 
 def test_audit_only_edit_does_not_change_closure(
-    checked_contract_closure: dict[str, Any],
+    generated_contract_closure: dict[str, Any],
 ) -> None:
-    original = checked_contract_closure["discovered"]
+    original = generated_contract_closure["discovered"]
     changed = _changed(original)
     changed.root["trace"]["sources"][0]["source"]["path"] = "another-source.py"
 
@@ -55,9 +55,9 @@ def test_audit_only_edit_does_not_change_closure(
 
 
 def test_declared_promise_edit_changes_closure_and_invalidates_old_audit(
-    checked_contract_closure: dict[str, Any],
+    generated_contract_closure: dict[str, Any],
 ) -> None:
-    original = checked_contract_closure["discovered"]
+    original = generated_contract_closure["discovered"]
     changed = _changed(original)
     changed.root["projection"]["external_contract"]["release"]["compatibility"]["cli"] += (
         " Changed."
@@ -73,9 +73,9 @@ def test_declared_promise_edit_changes_closure_and_invalidates_old_audit(
 
 
 def test_tampered_audit_cannot_restore_or_rebind_fields(
-    checked_contract_closure: dict[str, Any],
+    generated_contract_closure: dict[str, Any],
 ) -> None:
-    closure, audit = build_records(checked_contract_closure["discovered"])
+    closure, audit = build_records(generated_contract_closure["discovered"])
     tampered = copy.deepcopy(audit)
     tampered["extent_analysis"]["authoring_fields"]["schema-bound/v1"]["requirement"] = (
         "silent new condition"

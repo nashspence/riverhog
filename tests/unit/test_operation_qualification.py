@@ -96,8 +96,13 @@ def test_operation_audiences_distinguish_commands_wires_and_protocols() -> None:
 def observed_operation_evidence(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    generated_contract_closure: dict[str, Any],
 ) -> tuple[ModuleType, dict[str, Any], Path]:
     module = load_script()
+    identities = module._contract_freeze_identity(
+        generated_contract_closure["root"] / "riverhog-v1.json"
+    )
+    monkeypatch.setattr(module, "_contract_freeze_identity", lambda **_kwargs: identities)
     source_sha = "a" * 40
     source_state = {"head": source_sha, "clean": True}
     monkeypatch.setattr(module.qualification_source, "checkout_state", lambda: source_state)
@@ -430,13 +435,14 @@ def test_restart_attribution_requires_successful_test_outcome(
 def test_release_operation_predicate_consumes_current_evidence_and_rejects_missing_proof(
     observed_operation_evidence: tuple[ModuleType, dict[str, Any], Path],
     tmp_path: Path,
+    generated_contract_closure: dict[str, Any],
 ) -> None:
     module, observed, _ = observed_operation_evidence
-    artifact = tmp_path / "qualification/contracts/riverhog-v1.json"
+    artifact = tmp_path / "build/contracts/riverhog-v1.json"
     artifact.parent.mkdir(parents=True)
-    shutil.copyfile(module.CONTRACT_FREEZE, artifact)
+    shutil.copyfile(generated_contract_closure["root"] / "riverhog-v1.json", artifact)
     audit = artifact.with_name("riverhog-v1-audit.json")
-    shutil.copyfile(module.CONTRACT_FREEZE.with_name(audit.name), audit)
+    shutil.copyfile(generated_contract_closure["root"] / audit.name, audit)
     evidence_path = tmp_path / "operations.json"
     step = _release_qualification_step("Verify exact-SHA operation evidence")
 
@@ -510,12 +516,14 @@ def test_release_operation_predicate_consumes_current_evidence_and_rejects_missi
     assert verify(invalid).returncode != 0
 
 
-def test_release_qualification_record_uses_current_artifact_identities(tmp_path: Path) -> None:
-    artifact = tmp_path / "qualification/contracts/riverhog-v1.json"
+def test_release_qualification_record_uses_current_artifact_identities(
+    tmp_path: Path, generated_contract_closure: dict[str, Any]
+) -> None:
+    artifact = tmp_path / "build/contracts/riverhog-v1.json"
     artifact.parent.mkdir(parents=True)
-    shutil.copyfile(REPO_ROOT / "qualification/contracts/riverhog-v1.json", artifact)
+    shutil.copyfile(generated_contract_closure["root"] / "riverhog-v1.json", artifact)
     audit = artifact.with_name("riverhog-v1-audit.json")
-    shutil.copyfile(REPO_ROOT / "qualification/contracts/riverhog-v1-audit.json", audit)
+    shutil.copyfile(generated_contract_closure["root"] / audit.name, audit)
     frozen = json.loads(audit.read_bytes())
     summaries = {}
     for name in ("operations", "database", "release"):
@@ -523,6 +531,8 @@ def test_release_qualification_record_uses_current_artifact_identities(tmp_path:
         summary.write_text(json.dumps({"fixture": name}))
         summaries[name] = summary
     step = _release_qualification_step("Record the completed qualification")
+    # Bind fixture inputs while executing the real producer in its locked project.
+    step = step.replace("build/contracts/", str(artifact.parent) + "/")
     environment = {
         **os.environ,
         "SOURCE_REF": "refs/heads/release/v1",
@@ -536,7 +546,7 @@ def test_release_qualification_record_uses_current_artifact_identities(tmp_path:
     def record() -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             ["bash", "--noprofile", "--norc", "-e", "-o", "pipefail", "-c", step],
-            cwd=tmp_path,
+            cwd=REPO_ROOT,
             env=environment,
             capture_output=True,
             text=True,

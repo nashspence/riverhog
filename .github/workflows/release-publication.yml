@@ -1,0 +1,60 @@
+name: Release publication
+
+on:
+  workflow_dispatch:
+    inputs:
+      preparation_run:
+        description: Successful reviewed release-preparation run ID; dispatch from its pre-approved v1 tag.
+        required: true
+        type: string
+      qualification_run:
+        description: Successful exact-source release-qualification run ID bound by preparation.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: riverhog-release-publication
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Verify reviewed assets and publish immutable release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment:
+      name: release-publication
+    steps:
+      - name: Check out approved tag and authoring history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install repository toolchain
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+        with:
+          install_args: python uv minisign
+      - name: Verify exact prepared input and sign for immutable publication
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+          RELEASE_SIGNING_KEY: ${{ secrets.RELEASE_MINISIGN_SECRET_KEY }}
+          RELEASE_PUBLIC_KEY: ${{ secrets.RELEASE_MINISIGN_PUBLIC_KEY }}
+          PREPARATION_RUN: ${{ inputs.preparation_run }}
+          QUALIFICATION_RUN: ${{ inputs.qualification_run }}
+        run: |
+          umask 077
+          keys="$RUNNER_TEMP/release-keys"
+          mkdir "$keys"
+          trap 'rm -rf "$keys"' EXIT
+          printf '%s\n' "$RELEASE_SIGNING_KEY" > "$keys/release.key"
+          printf '%s\n' "$RELEASE_PUBLIC_KEY" > "$keys/release.pub"
+          unset RELEASE_SIGNING_KEY RELEASE_PUBLIC_KEY
+          gh run download "$PREPARATION_RUN" --repo "${{ github.repository }}" \
+            --name "release-preparation-$GITHUB_SHA" --dir "$RUNNER_TEMP/reviewed-preparation"
+          mise x -- uv run --locked --all-packages --group dev python scripts/release.py publish \
+            --directory "$RUNNER_TEMP/reviewed-preparation/evidence" \
+            --preparation-public-key "$RUNNER_TEMP/reviewed-preparation/evidence.preparation.pub" \
+            --preparation-run "$PREPARATION_RUN" --qualification-run "$QUALIFICATION_RUN" \
+            --signing-key "$keys/release.key" --public-key "$keys/release.pub"

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import importlib
 import os
 import sys
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -11,28 +13,75 @@ import yaml
 
 
 @pytest.fixture(scope="session")
-def checked_contract_closure() -> dict[str, Any]:
-    """Load and validate the immutable checked v1 closure once per test session."""
+def generated_contract_closure(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]:
+    """Generate native records once, without a checked-product bootstrap dependency."""
 
     repo_root = Path(__file__).resolve().parents[1]
     scripts = repo_root / "scripts"
     if str(scripts) not in sys.path:
         sys.path.insert(0, str(scripts))
-    contract_atlas = importlib.import_module("contract_atlas")
-    contract_records = importlib.import_module("contract_atlas.records")
-    contract_freeze = importlib.import_module("contract_freeze")
-    checked = contract_records.load_bundle(repo_root / "qualification/contracts/riverhog-v1.json")
-    projection = contract_freeze.contract_projection()
-    trace = contract_freeze.trace_projection(projection)
-    discovered = contract_atlas.build_discovered_contract(projection, trace)
-    generated_closure, _generated_audit = contract_records.build_records(discovered)
-    assert checked.closure == generated_closure
+    generation = importlib.import_module("contract_atlas.generation")
+    candidate = generation.build_candidate()
+    output = tmp_path_factory.mktemp("generated-contract")
+    candidate.write(output)
     return {
-        "discovered": discovered,
-        "bundle": checked,
-        "projection": projection,
-        "trace": trace,
+        "discovered": candidate.discovered,
+        "bundle": candidate.bundle,
+        "projection": candidate.projection,
+        "trace": candidate.trace,
+        "candidate": candidate,
+        "root": output,
     }
+
+
+@pytest.fixture(scope="session")
+def release_contract_factory(generated_contract_closure, tmp_path_factory):
+    """Isolated release witnesses reuse discovery and exercise native rendering/binding."""
+
+    import contract_freeze
+    from contract_atlas.html_rendering import render_contract
+    from contract_atlas.model import canonical_bytes
+
+    original = generated_contract_closure["candidate"]
+
+    def create(source_sha="1" * 40, *, documentation=None):
+        document = binding = None
+        extras = {}
+        if documentation is not None:
+            document, binding = documentation.bind(
+                original.bundle.closure,
+                original.bundle.audit,
+                contract_freeze._cli_parsers(),
+                source_sha,
+            )
+            extras = {
+                "documentation.json": documentation.payload,
+                "documentation-record.json": canonical_bytes(document),
+            }
+        files = {
+            **{
+                name: value
+                for name, value in original.files.items()
+                if not name.startswith("riverhog-v1/")
+            },
+            **extras,
+            **render_contract(
+                original.bundle.closure, original.bundle.audit, document, source_revision=source_sha
+            ),
+        }
+        manifest = {
+            **original.manifest,
+            "source_sha": source_sha,
+            "build_scope": "revision",
+            "documentation": binding,
+            "files": {name: hashlib.sha256(value).hexdigest() for name, value in files.items()},
+        }
+        candidate = replace(original, files=files, manifest=manifest)
+        root = tmp_path_factory.mktemp("synthetic-release-contract")
+        candidate.write(root)
+        return root
+
+    return create
 
 
 @pytest.fixture(autouse=True)

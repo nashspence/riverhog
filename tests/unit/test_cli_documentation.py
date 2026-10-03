@@ -19,13 +19,12 @@ from contract_atlas.html_rendering import (  # noqa: E402
     render_contract,
 )
 from contract_atlas.model import ContractAtlasError, canonical_sha256  # noqa: E402
-from contract_atlas.records import load_closure  # noqa: E402
 from contract_freeze import _cli_parsers  # noqa: E402
 
 
 @pytest.fixture(scope="module")
-def cli_documentation() -> tuple[dict[str, object], dict[str, object]]:
-    closure = load_closure(REPO_ROOT / "qualification/contracts/riverhog-v1.json")
+def cli_documentation(generated_contract_closure) -> tuple[dict[str, object], dict[str, object]]:
+    closure = generated_contract_closure["bundle"].closure
     return closure, build_cli_documentation_record(closure, _cli_parsers())
 
 

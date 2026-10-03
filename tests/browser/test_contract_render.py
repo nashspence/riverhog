@@ -1,4 +1,4 @@
-"""Browser behavior of the checked v1 candidate and one documentation fixture."""
+"""Browser behavior of the generated v1 candidate and one documentation fixture."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from threading import Thread
 import pytest
 from playwright.sync_api import Browser, sync_playwright
 
+CANDIDATE_SOURCE: Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
@@ -33,10 +34,36 @@ class _QuietHandler(SimpleHTTPRequestHandler):
 
 
 @pytest.fixture(scope="module")
-def candidate_site(tmp_path_factory: pytest.TempPathFactory) -> tuple[str, str, str]:
+def candidate_site(
+    tmp_path_factory: pytest.TempPathFactory, generated_contract_closure, release_contract_factory
+) -> tuple[str, str, str]:
+    global CANDIDATE_SOURCE
+    CANDIDATE_SOURCE = release_contract_factory("0" * 40)
     root = tmp_path_factory.mktemp("contract-site")
-    build_pages(REPO_ROOT / "qualification/contracts", root, "0" * 40)
-    bundle = load_bundle(REPO_ROOT / "qualification/contracts/riverhog-v1.json")
+    from contract_atlas.documentation import SOURCE_FORMAT, AuthoredDocumentation
+
+    authored = AuthoredDocumentation(
+        "v1.10.0",
+        "c" * 40,
+        "v1.10.0/documentation.json",
+        canonical_bytes({"format": SOURCE_FORMAT, "explanations": [], "guides": []}),
+    )
+    entries = [
+        {"root": release_contract_factory("1" * 40), "tag": "v1.2.0", "release_id": 1},
+        {
+            "root": release_contract_factory("2" * 40, documentation=authored),
+            "tag": "v1.10.0",
+            "release_id": 2,
+        },
+    ]
+    for entry in entries:
+        entry.update(
+            release_manifest_sha256="d" * 64,
+            attestation_sha256="e" * 64,
+            assets={"synthetic-witness": "sha256:" + "f" * 64},
+        )
+    build_pages(CANDIDATE_SOURCE, root, "0" * 40, releases=entries)
+    bundle = load_bundle(CANDIDATE_SOURCE / "riverhog-v1.json")
     element = next(
         item
         for item in bundle.closure["elements"]
@@ -116,10 +143,11 @@ def test_candidate_modes_history_direct_links_and_no_js(
     assert page.locator("#audit").is_visible()
     assert "audit=1" in page.url
     assert page.locator("#contract").inner_html() == contract_html
-    page.locator('a[data-source-link="exact-commit"]').first.wait_for()
-    assert "/blob/" + "0" * 40 + "/" in page.locator(
-        'a[data-source-link="exact-commit"]'
-    ).first.get_attribute("href")
+    exact_source = page.locator(
+        'a[href^="https://github.com/nashspence/riverhog/blob/' + "0" * 40 + '/"]'
+    )
+    exact_source.first.wait_for()
+    assert "/blob/" + "0" * 40 + "/" in exact_source.first.get_attribute("href")
 
     page.locator("header p").first.locator("a").nth(2).click()
     assert "/contract-candidate/riverhog-v1/i-" in page.url
@@ -151,7 +179,7 @@ def test_authority_to_extent_marker_navigation(
     candidate_site: tuple[str, str, str], browser: Browser
 ) -> None:
     base, _unused_element_file, _literal = candidate_site
-    bundle = load_bundle(REPO_ROOT / "qualification/contracts/riverhog-v1.json")
+    bundle = load_bundle(CANDIDATE_SOURCE / "riverhog-v1.json")
     owners = {
         pointer: element
         for element in bundle.closure["elements"]
@@ -217,7 +245,7 @@ def test_published_cli_help_is_visible_only_in_documentation_mode(
     candidate_site: tuple[str, str, str], browser: Browser
 ) -> None:
     base, _element, _literal = candidate_site
-    bundle = load_bundle(REPO_ROOT / "qualification/contracts/riverhog-v1.json")
+    bundle = load_bundle(CANDIDATE_SOURCE / "riverhog-v1.json")
     root = next(
         item
         for item in bundle.closure["elements"]
@@ -225,16 +253,14 @@ def test_published_cli_help_is_visible_only_in_documentation_mode(
     )
     context = browser.new_context()
     page = context.new_page()
-    page.goto(f"{base}/contract-candidate/riverhog-v1/{_element_file(root['id'])}")
+    page.goto(f"{base}/v1.10.0/riverhog-v1/{_element_file(root['id'])}")
     contractual = page.locator("#contract").inner_html()
     assert not page.locator("#documentation").is_visible()
     page.locator("#docs-mode").check()
     assert page.locator("#documentation").is_visible()
     assert "Command-line client for Riverhog." in page.locator("#documentation").inner_text()
     assert page.locator("#contract").inner_html() == contractual
-    page.goto(
-        f"{base}/contract-candidate/riverhog-v1/{_inventory_file('a-riverhog-cli', 'cli')}?docs=1"
-    )
+    page.goto(f"{base}/v1.10.0/riverhog-v1/{_inventory_file('a-riverhog-cli', 'cli')}?docs=1")
     assert page.locator(".command-tree .docs-cue:visible").count() > 0
     page.locator("#docs-mode").uncheck()
     assert page.locator(".command-tree .docs-cue:visible").count() == 0
@@ -245,7 +271,7 @@ def test_selection_and_matrix_tables_use_labeled_cards_at_phone_and_desktop_widt
     candidate_site: tuple[str, str, str], browser: Browser
 ) -> None:
     base, _element_file_name, _literal = candidate_site
-    bundle = load_bundle(REPO_ROOT / "qualification/contracts/riverhog-v1.json")
+    bundle = load_bundle(CANDIDATE_SOURCE / "riverhog-v1.json")
     schema = next(
         item
         for item in bundle.closure["elements"]
@@ -377,4 +403,31 @@ def test_authority_filter_dark_mode_and_accounting_navigation(
     assert page.get_by_role("heading", name="Accounting checks").is_visible()
     assert page.get_by_role("heading", name="Discovery anomalies").is_visible()
     assert page.get_by_role("link", name="exact bound Audit Record").is_visible()
+    context.close()
+
+
+def test_aggregate_version_navigation_and_documentation_availability(candidate_site, browser):
+    base, _, _ = candidate_site
+    context = browser.new_context(viewport={"width": 390, "height": 844}, color_scheme="dark")
+    page = context.new_page()
+    page.goto(base)
+    versions = page.get_by_role("navigation", name="Versions")
+    assert versions.get_by_role("link").all_text_contents() == ["development", "v1.10.0", "v1.2.0"]
+    assert (
+        page.locator("body").evaluate("node => getComputedStyle(node).colorScheme") == "light dark"
+    )
+    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    versions.get_by_role("link", name="development", exact=True).click()
+    page.get_by_role("link", name="Contract", exact=True).click()
+    assert page.locator("#docs-mode").count() == 0
+    page.goto(base + "/v1.10.0/")
+    page.get_by_role("link", name="Documentation", exact=True).click()
+    assert page.locator("#docs-mode").is_checked()
+    assert page.locator("#authority-cards").is_visible()
+    page.goto(base + "/v1.2.0/")
+    assert page.get_by_role("link", name="Documentation", exact=True).count() == 0
+    page.get_by_role("link", name="Contract", exact=True).click()
+    assert page.locator("#docs-mode").count() == 0
+    page.goto(base + "/v1/")
+    page.wait_for_url("**/v1.10.0/")
     context.close()

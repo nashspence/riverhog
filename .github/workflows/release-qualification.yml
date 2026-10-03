@@ -215,6 +215,8 @@ jobs:
               continue
             fi
             release="$(gh api "repos/${{ github.repository }}/releases/tags/$tag")"
+            jq --exit-status ' .immutable == true and .draft == false' <<< "$release" >/dev/null
+            gh release verify "$tag" --repo "${{ github.repository }}"
             mapfile -t asset_ids < <(
               jq -r '.assets[] | select(.name == "release-manifest.json") | .id' <<< "$release"
             )
@@ -233,10 +235,15 @@ jobs:
               "repos/${{ github.repository }}/releases/assets/${asset_ids[0]}" > "$manifest"
             jq --exit-status --arg tag "$tag" \
               '.format == "riverhog-release/v1" and .tag == $tag' "$manifest" >/dev/null
-            canonical="$manifest.canonical"
-            mise x -- python -m json.tool --sort-keys --indent 2 "$manifest" "$canonical"
-            cmp --silent "$manifest" "$canonical"
-            rm "$canonical"
+            mise x -- uv run --locked --group dev python -c '
+          import json, sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from contract_atlas.model import canonical_bytes
+          payload = Path(sys.argv[1]).read_bytes()
+          assert payload == canonical_bytes(json.loads(payload)), "release manifest must use JCS"
+          ' "$manifest"
+            gh release verify-asset "$tag" "$manifest" --repo "${{ github.repository }}"
             if [[ "$tag" != "$candidate_tag" ]]; then
               previous_tag="$tag"
             fi
@@ -285,6 +292,8 @@ jobs:
             printf 'RELEASE_PREVIOUS_MANIFEST_SHA256=%s\n' \
               "$observed_previous_sha256" >> "$GITHUB_ENV"
           fi
+      - name: Generate exact-source Closure and Audit
+        run: make contract args="--source-sha $SOURCE_SHA"
       - name: Exercise disposable operation lifecycles and record timings
         env:
           RIVERHOG_OPERATION_SOURCE_SHA: ${{ env.SOURCE_SHA }}
@@ -316,9 +325,9 @@ jobs:
         run: |
           jq --exit-status \
             --arg sha "$SOURCE_SHA" \
-            --arg contract "$(sha256sum qualification/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
-            --arg audit "$(sha256sum qualification/contracts/riverhog-v1-audit.json | cut -d ' ' -f 1)" \
-            --slurpfile record qualification/contracts/riverhog-v1-audit.json '
+            --arg contract "$(sha256sum build/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
+            --arg audit "$(sha256sum build/contracts/riverhog-v1-audit.json | cut -d ' ' -f 1)" \
+            --slurpfile record build/contracts/riverhog-v1-audit.json '
             $record[0].extent_analysis.source_sha256 as $extent
             | ($extent | test("^[0-9a-f]{64}$"))
             and .format == "riverhog-operation-qualification/v1"
@@ -409,6 +418,24 @@ jobs:
           fi
           if [[ "$QUALIFICATION_MODE" == "historical" ]]; then
             history_args+=(--expected-release-manifest "$RELEASE_EXPECTED_MANIFEST")
+            qualification_asset="$QUALIFICATION_DIR/published-qualification.json"
+            export qualification_asset
+            mise x -- uv run --locked --group dev python -c '
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from contract_atlas.github_publication import GitHubPublication
+          from contract_atlas.publication import file_sha256
+          manifest = json.loads(Path(os.environ["RELEASE_EXPECTED_MANIFEST"]).read_bytes())
+          remote = GitHubPublication(os.environ["GITHUB_REPOSITORY"])
+          release = remote.api("releases/tags/" + manifest["tag"])
+          asset = next(a for a in remote.assets(release["id"]) if a["name"] == manifest["qualification"]["file"])
+          path = Path(os.environ["qualification_asset"])
+          remote.download_asset(manifest["tag"], asset, path)
+          assert file_sha256(path) == manifest["qualification"]["sha256"]
+          '
+            history_args+=(--qualification-record "$qualification_asset")
+            history_args+=(--qualification-run "$(jq -r '.qualification.run_id' "$RELEASE_EXPECTED_MANIFEST")")
           fi
           mise x -- uv run --locked --all-packages --group dev \
             python scripts/release.py dry-run \
@@ -432,13 +459,13 @@ jobs:
       - name: Record the completed qualification
         run: |
           jq --exit-status --null-input \
-            --slurpfile audit qualification/contracts/riverhog-v1-audit.json \
+            --slurpfile audit build/contracts/riverhog-v1-audit.json \
             --arg ref "$SOURCE_REF" \
             --arg qualification_mode "$QUALIFICATION_MODE" \
             --arg sha "$SOURCE_SHA" \
             --arg version "$RELEASE_VERSION" \
-            --arg contract_closure_sha256 "$(sha256sum qualification/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
-            --arg contract_audit_sha256 "$(sha256sum qualification/contracts/riverhog-v1-audit.json | cut -d ' ' -f 1)" \
+            --arg contract_closure_sha256 "$(sha256sum build/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
+            --arg contract_audit_sha256 "$(sha256sum build/contracts/riverhog-v1-audit.json | cut -d ' ' -f 1)" \
             --arg operation_evidence_sha256 "$(sha256sum "$OPERATIONS_SUMMARY" | cut -d ' ' -f 1)" \
             --arg database_evidence_sha256 "$(sha256sum "$DATABASE_SUMMARY" | cut -d ' ' -f 1)" \
             --arg release_evidence_sha256 "$(sha256sum "$RELEASE_SUMMARY" | cut -d ' ' -f 1)" \
@@ -465,6 +492,14 @@ jobs:
             | select(.contract_trace_sha256 | test("^[0-9a-f]{64}$"))
             | select(.extent_analysis_sha256 | test("^[0-9a-f]{64}$"))
             ' > "$QUALIFICATION_DIR/qualification.json"
+          mise x -- uv run --locked --group dev python -c '
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from contract_atlas.model import canonical_bytes
+          path = Path(os.environ["QUALIFICATION_DIR"]) / "qualification.json"
+          path.write_bytes(canonical_bytes(json.loads(path.read_bytes())))
+          '
       - name: Upload SHA-bound summaries
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

@@ -36,10 +36,10 @@ def load_script() -> ModuleType:
 
 
 @pytest.fixture(scope="module", autouse=True)
-def _bind_checked_contract(checked_contract_closure: dict[str, Any]) -> None:
+def _bind_checked_contract(generated_contract_closure: dict[str, Any]) -> None:
     global _CHECKED_PROJECTION, _CHECKED_TRACE
-    _CHECKED_PROJECTION = cast(dict[str, Any], checked_contract_closure["projection"])
-    _CHECKED_TRACE = cast(dict[str, Any], checked_contract_closure["trace"])
+    _CHECKED_PROJECTION = cast(dict[str, Any], generated_contract_closure["projection"])
+    _CHECKED_TRACE = cast(dict[str, Any], generated_contract_closure["trace"])
 
 
 def _checked_projection() -> dict[str, Any]:

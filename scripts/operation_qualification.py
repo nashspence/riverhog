@@ -66,7 +66,6 @@ TIMING_FORMAT = "riverhog-operation-timings/v1"
 HTTP_METHODS = frozenset({"delete", "get", "patch", "post", "put"})
 SUPPORTED_ROUTE_METHODS = HTTP_METHODS | {"head"}
 SOURCE_SHA_PATTERN = "0123456789abcdef"
-CONTRACT_FREEZE = Path(__file__).resolve().parents[1] / "qualification/contracts/riverhog-v1.json"
 EVENT_RESTART_TEST = "tests/unit/test_event_cursor_restart.py"
 EVENT_RESTART_ASSERTIONS = (
     "Two unread pre-restart events retain their full content, identity, and order.",
@@ -809,10 +808,17 @@ def _source_sha(value: str) -> str:
     return value
 
 
-def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]:
-    """Bind qualification evidence to the checked Closure and Audit Record."""
+def _contract_freeze_identity(
+    path: Path | None = None, *, source_sha: str | None = None
+) -> dict[str, object]:
+    """Bind qualification evidence to source-generated Closure and Audit records."""
 
     try:
+        from contract_atlas.generation import ensure_candidate, verify_candidate
+
+        if path is None:
+            path = ensure_candidate()
+        verify_candidate(path.parent, expected_source=source_sha)
         bundle = contract_records.load_bundle(path)
         extents = cast(
             dict[str, object],
@@ -1095,7 +1101,7 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
         "qualification": {
             "contract_inputs": {
                 "status": "validated",
-                **_contract_freeze_identity(),
+                **_contract_freeze_identity(source_sha=source_sha),
             },
             "positive_local_lifecycles": {
                 "status": "not_established",

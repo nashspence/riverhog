@@ -27,12 +27,25 @@ def test_contract_builder_has_only_current_record_and_html_dependencies() -> Non
         "cli_documentation": {"human_contract", "model"},
         "html_rendering": {"human_contract", "model", "records"},
         "__init__": {"discovery", "model"},
+        "documentation": {"cli_documentation", "model"},
+        "generation": {
+            "__init__",
+            "documentation",
+            "html_rendering",
+            "model",
+            "publication",
+            "records",
+        },
+        "publication": {"generation", "model"},
+        "github_publication": {"model", "publication"},
+        "release_publication": {"github_publication", "model", "publication"},
+        "review": {"generation", "model", "records"},
     }
     assert {path.stem for path in package.glob("*.py")} == set(allowed_imports)
     for name, allowed in allowed_imports.items():
         parsed = ast.parse((package / f"{name}.py").read_text(encoding="utf-8"))
         imported = {
-            str(node.module).split(".", 1)[0]
+            str(node.module).split(".", 1)[0] if node.module else "__init__"
             for node in ast.walk(parsed)
             if isinstance(node, ast.ImportFrom) and node.level == 1
         }
@@ -50,10 +63,10 @@ def test_canonical_identity_and_exact_integer_encoding() -> None:
 
 
 def test_discovery_covers_every_owned_source_subject_without_anomalies(
-    checked_contract_closure: dict[str, Any],
+    generated_contract_closure: dict[str, Any],
 ) -> None:
-    root = checked_contract_closure["discovered"].root
-    closure = checked_contract_closure["bundle"].closure
+    root = generated_contract_closure["discovered"].root
+    closure = generated_contract_closure["bundle"].closure
     accounting = root["discovery"]
     assert accounting["anomalies"] == {
         "duplicate": 0,
@@ -78,9 +91,9 @@ def test_discovery_covers_every_owned_source_subject_without_anomalies(
 
 
 def test_discovery_rejects_an_undeclared_owner_and_changed_exact_units(
-    checked_contract_closure: dict[str, Any],
+    generated_contract_closure: dict[str, Any],
 ) -> None:
-    root = checked_contract_closure["discovered"].root
+    root = generated_contract_closure["discovered"].root
     elements = copy.deepcopy(root["elements"])
     elements[0]["authority"] = "nearest-looking-bucket"
     with pytest.raises(ContractAtlasError, match="lack legitimate authorities"):
@@ -106,9 +119,9 @@ def test_discovery_rejects_an_undeclared_owner_and_changed_exact_units(
 
 
 def test_policy_definitions_resolve_to_closure_and_applications_stay_audit_only(
-    checked_contract_closure: dict[str, Any],
+    generated_contract_closure: dict[str, Any],
 ) -> None:
-    bundle = checked_contract_closure["bundle"]
+    bundle = generated_contract_closure["bundle"]
     policies = cast(dict[str, list[dict[str, object]]], bundle.audit["policies"])
     closure = bundle.closure
     declared = {item["id"] for records in policies.values() for item in records}
@@ -123,9 +136,9 @@ def test_policy_definitions_resolve_to_closure_and_applications_stay_audit_only(
 
 
 def test_normative_extent_rules_are_explicit_and_analysis_rules_have_no_contract_element(
-    checked_contract_closure: dict[str, Any],
+    generated_contract_closure: dict[str, Any],
 ) -> None:
-    bundle = checked_contract_closure["bundle"]
+    bundle = generated_contract_closure["bundle"]
     extents = bundle.closure["external_contract"]["extents"]
     assert set(extents["rules"]) == {
         "schema-bound/v1",

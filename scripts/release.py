@@ -1451,12 +1451,16 @@ def _sha256_file(path: Path) -> str:
 
 
 def _write_json(path: Path, value: Any) -> None:
+    from contract_atlas.model import canonical_bytes
+
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_bytes(canonical_bytes(value))
 
 
 def _canonical_release_manifest_bytes(value: Mapping[str, object]) -> bytes:
-    return (json.dumps(value, indent=2, sort_keys=True) + "\n").encode()
+    from contract_atlas.model import canonical_bytes
+
+    return canonical_bytes(value)
 
 
 def _verify_reproduced_release_manifest(generated: Path, expected: Path) -> None:
@@ -2816,10 +2820,9 @@ def _write_release_provenance(
             }
         )
     provenance = output / "release.intoto.jsonl"
-    provenance.write_text(
-        "".join(json.dumps(item, sort_keys=True) + "\n" for item in statements),
-        encoding="utf-8",
-    )
+    from contract_atlas.model import canonical_bytes
+
+    provenance.write_bytes(b"".join(canonical_bytes(item) + b"\n" for item in statements))
 
 
 def _write_checksums(output: Path) -> None:
@@ -3006,6 +3009,24 @@ def verify_release_evidence(
     )
     if manifest.get("format") != RELEASE_FORMAT:
         raise ReleaseError("release manifest uses another format")
+    qualified = manifest.get("qualification")
+    if qualified is not None:
+        from contract_atlas.release_publication import validate_qualification
+
+        if (
+            not isinstance(qualified, dict)
+            or set(qualified) != {"file", "sha256", "run_id"}
+            or qualified["file"] != "qualification.json"
+            or type(qualified["run_id"]) is not int
+            or qualified["run_id"] <= 0
+            or qualified["sha256"] != _sha256_file(output / "qualification.json")
+        ):
+            raise ReleaseError("release qualification binding differs from its durable evidence")
+        validate_qualification(
+            json.loads((output / "qualification.json").read_bytes()),
+            str(manifest["source_sha"]),
+            str(manifest["version"]),
+        )
     if publication is None:
         publication = publication_contract(root)
     publication_licenses = _publication_license_inventory(publication)
@@ -3029,11 +3050,20 @@ def verify_release_evidence(
     }:
         raise ReleaseError("release manifest installation identity differs from its evidence")
     contract_name = str(config["artifacts"]["contract"])
-    if manifest.get("contract") != {
-        "file": contract_name,
-        "sha256": _sha256_file(output / contract_name),
-    }:
+    from contract_atlas.publication import unpack_release_contract
+
+    binding = manifest.get("contract")
+    if (
+        not isinstance(binding, dict)
+        or binding.get("file") != contract_name
+        or binding.get("source_sha") != manifest.get("source_sha")
+    ):
         raise ReleaseError("release manifest contract identity differs from its evidence")
+    try:
+        with tempfile.TemporaryDirectory(prefix="riverhog-release-verification-") as temporary:
+            unpack_release_contract(output, binding, Path(temporary) / "candidate")
+    except (ValueError, OSError, KeyError, TypeError) as exc:
+        raise ReleaseError("release contract artifacts do not verify") from exc
     subjects = cast(list[dict[str, Any]], manifest.get("subjects"))
     if not subjects:
         raise ReleaseError("release manifest contains no subjects")
@@ -3206,31 +3236,39 @@ def _generate_release_evidence(
     install_manifest: dict[str, Any],
     signing_key: Path,
     public_key: Path,
+    contract_candidate: Path,
     expected_previous: Mapping[str, str] | None = None,
     historical_manifest_paths: Sequence[Path] = (),
     publication: Mapping[str, object] | None = None,
+    qualification_record: Path | None = None,
+    qualification_run: int | None = None,
 ) -> dict[str, Any]:
     shutil.copy2(root / "THIRD_PARTY_NOTICES.md", output / "THIRD_PARTY_NOTICES.md")
     contract_name = str(_load_config(root)["artifacts"]["contract"])
-    contract_files = [
-        root / "qualification/contracts/riverhog-v1.json",
-        root / "qualification/contracts/riverhog-v1-audit.json",
-        *sorted(
-            path
-            for path in (root / "qualification/contracts/riverhog-v1").rglob("*")
-            if path.is_file()
-        ),
-    ]
-    with (output / contract_name).open("wb") as raw:
-        with gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=source_epoch) as compressed:
-            with tarfile.open(fileobj=compressed, mode="w", format=tarfile.PAX_FORMAT) as archive:
-                for path in contract_files:
-                    relative = path.relative_to(root / "qualification/contracts").as_posix()
-                    content = path.read_bytes()
-                    archive.addfile(
-                        _notice_tar_info(relative, content, source_epoch=source_epoch),
-                        io.BytesIO(content),
-                    )
+    from contract_atlas.publication import (
+        contract_binding,
+        directory_files,
+        verify_published_candidate,
+    )
+
+    verify_published_candidate(contract_candidate, source_sha=source_sha)
+    render_name = str(_load_config(root)["artifacts"]["documentation"]).format(version=version)
+    for asset, rendering in ((contract_name, False), (render_name, True)):
+        with (output / asset).open("wb") as raw:
+            with gzip.GzipFile(
+                filename="", mode="wb", fileobj=raw, mtime=source_epoch
+            ) as compressed:
+                with tarfile.open(
+                    fileobj=compressed, mode="w", format=tarfile.PAX_FORMAT
+                ) as archive:
+                    for relative, path in sorted(directory_files(contract_candidate).items()):
+                        if relative.startswith(("riverhog-v1/", "identifiers/")) != rendering:
+                            continue
+                        content = path.read_bytes()
+                        archive.addfile(
+                            _notice_tar_info(relative, content, source_epoch=source_epoch),
+                            io.BytesIO(content),
+                        )
     written_install_manifest = cast(
         dict[str, Any],
         json.loads((output / "install-manifest.json").read_text(encoding="utf-8")),
@@ -3252,6 +3290,21 @@ def _generate_release_evidence(
         publication = publication_contract(root)
     publication_licenses = _publication_license_inventory(publication)
     _verify_built_publication_licenses(records, publication_licenses)
+    qualification = None
+    if qualification_record is not None:
+        from contract_atlas.release_publication import validate_qualification
+
+        validate_qualification(json.loads(qualification_record.read_bytes()), source_sha, version)
+        if qualification_run is None:
+            raise ReleaseError(
+                "qualified preparation requires the original qualification run identity"
+            )
+        shutil.copyfile(qualification_record, output / "qualification.json")
+        qualification = {
+            "file": "qualification.json",
+            "sha256": _sha256_file(output / "qualification.json"),
+            "run_id": qualification_run,
+        }
     manifest = {
         "format": RELEASE_FORMAT,
         "version": version,
@@ -3267,12 +3320,16 @@ def _generate_release_evidence(
             "manifest": "install-manifest.json",
             "sha256": _sha256_file(output / "install-manifest.json"),
         },
-        "contract": {
-            "file": contract_name,
-            "sha256": _sha256_file(output / contract_name),
-        },
+        "contract": contract_binding(
+            contract_candidate,
+            contract_name,
+            _sha256_file(output / contract_name),
+            render_name,
+            _sha256_file(output / render_name),
+        ),
         "evidence": config["artifacts"]["evidence"],
         "signing": config["signing"],
+        "qualification": qualification,
     }
     _write_json(output / "release-manifest.json", manifest)
     _write_release_provenance(
@@ -3310,9 +3367,29 @@ def build_release_evidence(
     expected_previous: Mapping[str, str] | None = None,
     historical_manifest_paths: Sequence[Path] = (),
     expected_release_manifest: Path | None = None,
+    documentation_commit: str | None = None,
+    qualification_record: Path | None = None,
+    qualification_run: int | None = None,
 ) -> dict[str, Any]:
     _ensure_clean(root)
     source_sha = _source_sha(root)
+    if expected_release_manifest is not None:
+        expected = json.loads(expected_release_manifest.read_bytes())
+        binding = expected["contract"]["documentation"]
+        recorded_commit = None if binding is None else str(binding["commit"])
+        if documentation_commit is not None and documentation_commit != recorded_commit:
+            raise ReleaseError("historical reproduction must use its recorded authored commit")
+        documentation_commit = recorded_commit
+        recorded_qualification = expected.get("qualification")
+        if recorded_qualification is not None:
+            if (
+                qualification_record is None
+                or qualification_run != recorded_qualification["run_id"]
+                or _sha256_file(qualification_record) != recorded_qualification["sha256"]
+            ):
+                raise ReleaseError(
+                    "historical reproduction requires its immutable qualification bytes"
+                )
     source_epoch, image_created, spdx_created = _source_time(root, source_sha)
     if output.exists() and any(output.iterdir()):
         raise ReleaseError(f"release evidence output is not empty: {output}")
@@ -3340,6 +3417,40 @@ def build_release_evidence(
                 source_archive,
                 version=version,
                 source_epoch=source_epoch,
+            )
+            contract_candidate = Path(temporary) / "contract"
+            command = [
+                "mise",
+                "x",
+                "--",
+                "uv",
+                "run",
+                "--locked",
+                "--all-packages",
+                "--group",
+                "dev",
+                "python",
+                "scripts/contract_candidate.py",
+                "generate",
+                "--source-sha",
+                source_sha,
+                "--source-repository",
+                str(root),
+                "--release-version",
+                version,
+                "--source-archive",
+                str(source_archive),
+                "--output",
+                str(contract_candidate),
+            ]
+            if documentation_commit is not None:
+                command.extend(
+                    ("--release", f"v{version}", "--documentation-commit", documentation_commit)
+                )
+            _run(
+                command,
+                cwd=checkout,
+                env={"MISE_TRUSTED_CONFIG_PATHS": _trusted_config_paths(checkout)},
             )
             _run(
                 ["make", "dist-smoke"],
@@ -3396,9 +3507,12 @@ def build_release_evidence(
                 install_manifest=install_manifest,
                 signing_key=signing_key,
                 public_key=public_key,
+                contract_candidate=contract_candidate,
                 expected_previous=expected_previous,
                 historical_manifest_paths=historical_manifest_paths,
                 publication=publication_contract(checkout, projects),
+                qualification_record=qualification_record,
+                qualification_run=qualification_run,
             )
             if expected_release_manifest is not None:
                 _verify_reproduced_release_manifest(
@@ -3444,6 +3558,10 @@ def dry_run(
     expected_previous: Mapping[str, str] | None = None,
     historical_manifest_paths: Sequence[Path] = (),
     expected_release_manifest: Path | None = None,
+    documentation_commit: str | None = None,
+    output: Path | None = None,
+    qualification_record: Path | None = None,
+    qualification_run: int | None = None,
 ) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="riverhog-release-dry-run.") as temporary:
         scratch = Path(temporary)
@@ -3463,15 +3581,24 @@ def dry_run(
             ],
             cwd=keys,
         )
+        if output is not None:
+            output.parent.mkdir(parents=True, exist_ok=True)
+            retained_key = output.with_name(output.name + ".preparation.pub")
+            if retained_key.exists():
+                raise ReleaseError("preparation verification key destination already exists")
+            shutil.copyfile(public_key, retained_key)
         return build_release_evidence(
             root,
             version,
-            scratch / "evidence",
+            output or scratch / "evidence",
             signing_key=signing_key,
             public_key=public_key,
             expected_previous=expected_previous,
             historical_manifest_paths=historical_manifest_paths,
             expected_release_manifest=expected_release_manifest,
+            documentation_commit=documentation_commit,
+            qualification_record=qualification_record,
+            qualification_run=qualification_run,
         )
 
 
@@ -3527,6 +3654,10 @@ def _parser() -> argparse.ArgumentParser:
     )
     dry.add_argument("--version", required=True)
     dry.add_argument("--summary", type=Path)
+    dry.add_argument("--documentation-commit")
+    dry.add_argument("--output", type=Path)
+    dry.add_argument("--qualification-record", type=Path)
+    dry.add_argument("--qualification-run", type=int)
     dry.add_argument("--expected-release-manifest", type=Path)
     _add_history_arguments(dry)
 
@@ -3535,6 +3666,7 @@ def _parser() -> argparse.ArgumentParser:
         help="Build exact-SHA release evidence with an external maintainer key; publish nothing.",
     )
     evidence.add_argument("--version", required=True)
+    evidence.add_argument("--documentation-commit", required=True)
     evidence.add_argument("--output", required=True, type=Path)
     evidence.add_argument("--signing-key", required=True, type=Path)
     evidence.add_argument("--public-key", required=True, type=Path)
@@ -3547,6 +3679,25 @@ def _parser() -> argparse.ArgumentParser:
     verify.add_argument("--directory", required=True, type=Path)
     verify.add_argument("--public-key", required=True, type=Path)
     _add_history_arguments(verify)
+    publish = subparsers.add_parser(
+        "publish", help="Publish a qualified prepared artifact set from its protected tag workflow."
+    )
+    publish.add_argument("--directory", required=True, type=Path)
+    publish.add_argument("--preparation-public-key", required=True, type=Path)
+    publish.add_argument("--public-key", required=True, type=Path)
+    publish.add_argument("--signing-key", required=True, type=Path)
+    publish.add_argument("--preparation-run", required=True, type=int)
+    publish.add_argument("--qualification-run", required=True, type=int)
+    _add_history_arguments(publish)
+    prepare = subparsers.add_parser(
+        "prepare",
+        help="Retain qualified, reviewable release evidence with an ephemeral preparation key.",
+    )
+    prepare.add_argument("--version", required=True)
+    prepare.add_argument("--documentation-commit", required=True)
+    prepare.add_argument("--qualification-run", required=True, type=int)
+    prepare.add_argument("--output", required=True, type=Path)
+    prepare.add_argument("--summary", type=Path)
     return parser
 
 
@@ -3597,6 +3748,14 @@ def main(argv: list[str] | None = None) -> int:
             payload = dry_run(
                 ROOT,
                 args.version,
+                documentation_commit=args.documentation_commit,
+                output=args.output.resolve() if args.output is not None else None,
+                qualification_record=(
+                    args.qualification_record.resolve()
+                    if args.qualification_record is not None
+                    else None
+                ),
+                qualification_run=args.qualification_run,
                 expected_previous=expected_previous,
                 historical_manifest_paths=historical_manifest_paths,
                 expected_release_manifest=(
@@ -3618,8 +3777,51 @@ def main(argv: list[str] | None = None) -> int:
                 args.output.resolve(),
                 signing_key=args.signing_key.resolve(),
                 public_key=args.public_key.resolve(),
+                documentation_commit=args.documentation_commit,
                 expected_previous=expected_previous,
                 historical_manifest_paths=historical_manifest_paths,
+            )
+            print(json.dumps(payload, indent=2, sort_keys=True))
+        elif args.command == "prepare":
+            from contract_atlas.github_publication import GitHubPublication
+            from contract_atlas.release_publication import collect_history, collect_qualification
+
+            _ensure_clean(ROOT)
+            source_sha = _source_sha(ROOT)
+            remote = GitHubPublication(str(_load_config(ROOT)["governance"]["repository"]))
+            with tempfile.TemporaryDirectory(prefix="riverhog-preparation-proof-") as temporary:
+                scratch = Path(temporary)
+                qualified = collect_qualification(
+                    remote, args.qualification_run, source_sha, args.version, scratch / "qualified"
+                )
+                previous, history = collect_history(remote, args.version, scratch / "history")
+                payload = dry_run(
+                    ROOT,
+                    args.version,
+                    output=args.output.resolve(),
+                    documentation_commit=args.documentation_commit,
+                    qualification_record=qualified,
+                    qualification_run=args.qualification_run,
+                    expected_previous=previous,
+                    historical_manifest_paths=history,
+                )
+            if args.summary is not None:
+                _write_json(args.summary, payload)
+            print(json.dumps(payload, indent=2, sort_keys=True))
+        elif args.command == "publish":
+            from contract_atlas.release_publication import publish_prepared_release
+
+            expected_previous, historical_manifest_paths = _history_arguments(args)
+            payload = publish_prepared_release(
+                ROOT,
+                args.directory.resolve(),
+                signing_key=args.signing_key.resolve(),
+                public_key=args.public_key.resolve(),
+                preparation_public_key=args.preparation_public_key.resolve(),
+                preparation_run=args.preparation_run,
+                qualification_run=args.qualification_run,
+                expected_previous=expected_previous,
+                historical_manifests=tuple(historical_manifest_paths),
             )
             print(json.dumps(payload, indent=2, sort_keys=True))
         else:

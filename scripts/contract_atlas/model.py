@@ -294,7 +294,7 @@ _INTERFACE_DESCRIPTORS = (
         "Extent Contract",
         "{label} contract owned by {authority}.",
         17,
-        ("make contract-freeze", "make operation-qualification"),
+        ("make contract-check", "make operation-qualification"),
         "extent",
         "generic",
     ),

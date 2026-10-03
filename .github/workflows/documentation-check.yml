@@ -1,0 +1,48 @@
+name: Release documentation check
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact code commit whose native authorities resolve the prose references.
+        required: true
+        type: string
+      documentation_commit:
+        description: Exact independent release-documentation authoring commit.
+        required: true
+        type: string
+      release:
+        description: Optional v1 product tag whose authored document should be validated.
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Check independent authoring tree and native references
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact code and authoring history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ inputs.source_sha }}
+      - name: Install repository toolchain
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+      - name: Validate authoring boundary and selected authored bytes
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          DOCUMENTATION_COMMIT: ${{ inputs.documentation_commit }}
+          RELEASE_TAG: ${{ inputs.release }}
+        run: |
+          mise x -- uv run --locked --all-packages --group dev python scripts/contract_candidate.py \
+            validate-authoring --source-sha "$SOURCE_SHA" --documentation-commit "$DOCUMENTATION_COMMIT"
+          if [[ -n "$RELEASE_TAG" ]]; then
+            mise x -- uv run --locked --all-packages --group dev python scripts/contract_candidate.py \
+              generate --source-sha "$SOURCE_SHA" --release "$RELEASE_TAG" \
+              --documentation-commit "$DOCUMENTATION_COMMIT" --output "$RUNNER_TEMP/documentation-check"
+          fi

@@ -77,11 +77,11 @@ delivery = "Direct maintainer commits during pre-v1 contract convergence, follow
 protection = "An active no-bypass ruleset requires linear history and rejects force-push and deletion; it has no pull-request or pre-push status gate."
 
 [governance.release]
-delivery = "Keep the protected branch pinned until the maintainer declares a new freeze candidate, then fast-forward it to an exact green main commit through its pull-request rail."
+delivery = "Synchronize the protected branch to an explicitly approved exact green main commit through its pull-request rail; synchronization alone does not select a release candidate."
 required_approvals = 0
 review_policy = "The sole maintainer must inspect the diff and check result; add approval requirements when another maintainer can provide meaningful review."
-contents = "The last synchronized pre-v1 checkpoint; main is the active contract-convergence authority until a new freeze candidate is declared."
-synchronization = "The pinned release/v1 commit must remain an ancestor of main; synchronize only an explicitly selected, fully green main commit."
+contents = "An approved green pre-v1 code checkpoint; main remains the development authority until the maintainer selects a release candidate."
+synchronization = "The release/v1 checkpoint must remain an ancestor of main; synchronize only an explicitly approved, fully green main commit."
 
 [governance.tags]
 release_candidate = "v{version}-rc.{candidate}"

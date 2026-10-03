@@ -1,42 +1,66 @@
-name: Contract candidate Pages
+name: Contract Pages
 
 on:
   workflow_dispatch:
     inputs:
       source_sha:
-        description: Exact green main commit to publish as a candidate preview.
+        description: Exact green main commit to publish in the aggregate site.
         required: true
         type: string
+  workflow_run:
+    workflows: [CI, CodeQL]
+    types: [completed]
+    branches: [main]
+  release:
+    types: [published]
 
 permissions:
   contents: read
 
 concurrency:
-  group: contract-candidate-pages
+  group: riverhog-pages
   cancel-in-progress: false
 
 jobs:
   build:
-    name: Verify and package checked candidate
+    name: Generate development and verify all product versions
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') ||
+      (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v1.') && !github.event.release.prerelease)
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     permissions:
       actions: read
       contents: read
+    outputs:
+      source_sha: ${{ steps.source.outputs.sha }}
     steps:
-      - name: Check out exact candidate
+      - name: Resolve exact development source
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_SHA: ${{ inputs.source_sha || github.event.workflow_run.head_sha }}
+        run: |
+          source_sha="${REQUESTED_SHA:-$(gh api "repos/${{ github.repository }}/git/ref/heads/main" --jq '.object.sha')}"
+          if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
+            printf 'Development source must be an exact commit SHA.\n' >&2
+            exit 2
+          fi
+          printf 'sha=%s\n' "$source_sha" >> "$GITHUB_OUTPUT"
+      - name: Check out exact source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ inputs.source_sha }}
+          ref: ${{ steps.source.outputs.sha }}
       - name: Require a green commit on main
         env:
           GH_TOKEN: ${{ github.token }}
-          SOURCE_SHA: ${{ inputs.source_sha }}
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
         run: |
-          if [[ ! "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ || "$(git rev-parse HEAD)" != "$SOURCE_SHA" ]]; then
-            printf 'Candidate source must be the exact checked-out commit SHA.\n' >&2
+          if [[ "$(git rev-parse HEAD)" != "$SOURCE_SHA" || "$(gh api "repos/${{ github.repository }}/git/ref/heads/main" --jq '.object.sha')" != "$SOURCE_SHA" ]]; then
+            printf 'Development source is stale; rebuild from current main.\n' >&2
             exit 2
           fi
           git fetch --no-tags origin main
@@ -52,37 +76,67 @@ jobs:
         env:
           MISE_EXPERIMENTAL: "1"
         run: mise bootstrap --yes
-      - name: Verify checked Closure, Audit Record, and Contract Render
-        run: make contract-freeze
+      - name: Generate and independently check exact-source contract
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+        run: make contract-check args="--source-sha $SOURCE_SHA"
       - name: Install Chromium headless shell
         run: mise x -- uv run --locked --group browser python -m playwright install --only-shell chromium
-      - name: Exercise candidate in Chromium
+      - name: Exercise development and version navigation in Chromium
         run: make contract-browser
-      - name: Package exact checked candidate for project Pages
+      - name: Assemble development and every immutable product release
         env:
-          SOURCE_SHA: ${{ inputs.source_sha }}
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
         run: |
           mise x -- uv run --locked --group dev python scripts/contract_pages.py \
             --source-sha "$SOURCE_SHA" --output "$RUNNER_TEMP/riverhog-pages"
+          mkdir "$RUNNER_TEMP/pages-inputs"
+          cp "$RUNNER_TEMP/riverhog-pages/site-manifest.json" "$RUNNER_TEMP/pages-inputs/"
+      - name: Retain aggregate input manifest
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pages-inputs
+          path: ${{ runner.temp }}/pages-inputs
+          if-no-files-found: error
       - name: Configure Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
-      - name: Upload candidate Pages artifact
+      - name: Upload complete Pages artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: ${{ runner.temp }}/riverhog-pages
 
   deploy:
-    name: Publish checked candidate
+    name: Publish verified aggregate site
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
+      actions: read
+      contents: read
       pages: write
       id-token: write
     environment:
-      name: contract-candidate-pages
-      url: https://nashspence.github.io/riverhog/contract-candidate/riverhog-v1/
+      name: github-pages
+      url: https://nashspence.github.io/riverhog/
     steps:
-      - name: Deploy checked candidate
+      - name: Check out exact site coordinator
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ needs.build.outputs.source_sha }}
+      - name: Install repository toolchain
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+        with:
+          install_args: python uv
+      - name: Recheck main and complete product inputs before deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download "${{ github.run_id }}" --repo "${{ github.repository }}" \
+            --name pages-inputs --dir "$RUNNER_TEMP/pages-inputs"
+          mise x -- uv run --locked --group dev python scripts/contract_pages.py \
+            --check-fresh "$RUNNER_TEMP/pages-inputs/site-manifest.json"
+      - name: Deploy complete site
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

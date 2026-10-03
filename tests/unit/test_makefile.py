@@ -353,9 +353,11 @@ def test_compose_mounts_document_and_separate_secret_files() -> None:
                 "RELEASE_OUTPUT=/tmp/evidence",
                 "RELEASE_SIGNING_KEY=/tmp/release.key",
                 "RELEASE_PUBLIC_KEY=/tmp/release.pub",
+                "RELEASE_DOCUMENTATION_COMMIT=1111111111111111111111111111111111111111",
             ),
             "python scripts/release.py evidence --version 1.0.0 --output /tmp/evidence "
-            "--signing-key /tmp/release.key --public-key /tmp/release.pub",
+            "--signing-key /tmp/release.key --public-key /tmp/release.pub "
+            "--documentation-commit 1111111111111111111111111111111111111111",
         ),
         (
             "release-verify",

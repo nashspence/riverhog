@@ -1,3 +1,4 @@
+CONTRACT_OUTPUT ?= $(CURDIR)/build/contracts
 SHELL := bash
 .DEFAULT_GOAL := help
 
@@ -15,7 +16,7 @@ UV_RUN = "$(MISE_BIN)" x -- uv run --locked --all-packages --group dev
 BAKE_FILE = docker-bake.hcl
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update contract-browser contract-browser-docker profile provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke dist dist-smoke build bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract contract-check contract-diff contract-browser contract-browser-docker profile provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke dist dist-smoke build bootstrap-garage down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -52,9 +53,10 @@ help:
 		'  make dependency-readiness Verify the live uv graph and Dependabot release gate.' \
 		'  make operation-qualification Verify or emit the generated operation matrix.' \
 		'  make database-qualification Record exact-SHA database scale evidence.' \
-		'  make contract-freeze   Verify the checked-in v1 boundary and external contract.' \
-		'  make contract-freeze-update Regenerate that contract for semantic review.' \
-		'  make contract-browser  Exercise the checked candidate in Chromium (run MISE_EXPERIMENTAL=1 mise bootstrap --yes, then Playwright install --only-shell chromium).' \
+		'  make contract         Generate the current source contract into CONTRACT_OUTPUT.' \
+		'  make contract-check   Validate native contracts and independent generation determinism.' \
+		'  make contract-diff BASE=<ref> Compare exact source-derived candidate contracts.' \
+		'  make contract-browser  Exercise the generated candidate in Chromium (run MISE_EXPERIMENTAL=1 mise bootstrap --yes, then Playwright install --only-shell chromium).' \
 		'  make contract-browser-docker Run the Chromium checks in a disposable official Playwright container.' \
 		'  make profile           Report target, observed transfer or recovery work, and measured comparison without gating.' \
 		'  make provider-qualification Run the operator/provider qualification command.' \
@@ -135,11 +137,14 @@ database-qualification:
 		DATABASE_QUALIFICATION_SOURCE_SHA="$(DATABASE_QUALIFICATION_SOURCE_SHA)" \
 		./scripts/test_database_qualification.sh
 
-contract-freeze:
-	$(call UV_CMD,python scripts/contract_freeze.py check)
+contract:
+	$(call UV_CMD,python scripts/contract_candidate.py generate --output "$(CONTRACT_OUTPUT)" --replace $(args))
 
-contract-freeze-update:
-	$(call UV_CMD,python scripts/contract_freeze.py update)
+contract-check:
+	$(call UV_CMD,python scripts/contract_candidate.py check --output "$(CONTRACT_OUTPUT)" --replace $(args))
+
+contract-diff:
+	$(call UV_CMD,python scripts/contract_candidate.py diff --base "$(BASE)" --head "$(if $(HEAD),$(HEAD),HEAD)" --output "$(CURDIR)/build/contract-diff" $(args))
 
 contract-browser:
 	"$(MISE_BIN)" x -- uv run --locked --all-packages --group dev --group browser \
@@ -170,11 +175,11 @@ release-governance-check:
 	$(call UV_CMD,python scripts/github_governance.py check $(if $(RELEASE_GOVERNANCE_SCOPE),--scope "$(RELEASE_GOVERNANCE_SCOPE)") $(if $(RELEASE_SUMMARY),--summary "$(RELEASE_SUMMARY)"))
 
 release-evidence:
-	@if [[ -z "$(RELEASE_OUTPUT)" || -z "$(RELEASE_SIGNING_KEY)" || -z "$(RELEASE_PUBLIC_KEY)" ]]; then \
-		printf '%s\n' 'RELEASE_OUTPUT, RELEASE_SIGNING_KEY, and RELEASE_PUBLIC_KEY are required.' >&2; \
+	@if [[ -z "$(RELEASE_OUTPUT)" || -z "$(RELEASE_SIGNING_KEY)" || -z "$(RELEASE_PUBLIC_KEY)" || -z "$(RELEASE_DOCUMENTATION_COMMIT)" ]]; then \
+		printf '%s\n' 'RELEASE_OUTPUT, RELEASE_SIGNING_KEY, RELEASE_PUBLIC_KEY, and RELEASE_DOCUMENTATION_COMMIT are required.' >&2; \
 		exit 2; \
 	fi
-	$(call UV_CMD,python scripts/release.py evidence --version "$(RELEASE_VERSION)" --output "$(RELEASE_OUTPUT)" --signing-key "$(RELEASE_SIGNING_KEY)" --public-key "$(RELEASE_PUBLIC_KEY)")
+	$(call UV_CMD,python scripts/release.py evidence --version "$(RELEASE_VERSION)" --output "$(RELEASE_OUTPUT)" --signing-key "$(RELEASE_SIGNING_KEY)" --public-key "$(RELEASE_PUBLIC_KEY)" --documentation-commit "$(RELEASE_DOCUMENTATION_COMMIT)")
 
 release-verify:
 	@if [[ -z "$(RELEASE_OUTPUT)" || -z "$(RELEASE_PUBLIC_KEY)" ]]; then \
