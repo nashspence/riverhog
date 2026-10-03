@@ -21,7 +21,6 @@ from contract_atlas.model import ContractAtlasError, canonical_bytes
 from contract_atlas.publication import (
     DEFAULT_SITE_BUDGET,
     directory_files,
-    file_sha256,
     verify_published_candidate,
 )
 
@@ -166,16 +165,17 @@ def build_pages(
             ):
                 raise ContractAtlasError("historical installation index has a different binding")
             for name, path in index_files.items():
+                payload = path.read_bytes()
                 if (
                     not name.startswith(installation["path"])
-                    or file_sha256(path) != installation["files"][name]
+                    or hashlib.sha256(payload).hexdigest() != installation["files"][name]
                 ):
                     raise ContractAtlasError(
                         "historical installation index changed during assembly"
                     )
                 output = stage / name
                 output.parent.mkdir(parents=True, exist_ok=True)
-                output.write_bytes(path.read_bytes())
+                output.write_bytes(payload)
             inputs.append(
                 {
                     **{

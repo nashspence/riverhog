@@ -42,25 +42,29 @@ def candidate_site(
     root = tmp_path_factory.mktemp("contract-site")
     from contract_atlas.documentation import SOURCE_FORMAT, AuthoredDocumentation
 
-    authored = AuthoredDocumentation(
-        "v1.10.0",
-        "c" * 40,
-        "v1.10.0/documentation.json",
-        canonical_bytes({"format": SOURCE_FORMAT, "explanations": [], "guides": []}),
-    )
-    entries = [
-        {"root": release_contract_factory("1" * 40), "tag": "v1.2.0", "release_id": 1},
-        {
-            "root": release_contract_factory("2" * 40, documentation=authored),
-            "tag": "v1.10.0",
-            "release_id": 2,
-        },
-    ]
-    for entry in entries:
-        entry.update(
-            release_manifest_sha256="d" * 64,
-            attestation_sha256="e" * 64,
-            assets={"synthetic-witness": "sha256:" + "f" * 64},
+    from tests.release_index import make_index
+
+    entries = []
+    for number, tag in enumerate(("v1.2.0", "v1.10.0"), 1):
+        source_sha = str(number) * 40
+        authored = AuthoredDocumentation(
+            tag,
+            "c" * 40,
+            f"{tag}/documentation.json",
+            canonical_bytes({"format": SOURCE_FORMAT, "explanations": [], "guides": []}),
+        )
+        entries.append(
+            dict(
+                root=release_contract_factory(source_sha, documentation=authored),
+                tag=tag,
+                release_id=number,
+                release_manifest_sha256="d" * 64,
+                attestation_sha256="e" * 64,
+                assets={"synthetic-witness": "sha256:" + "f" * 64},
+                installation=make_index(
+                    tmp_path_factory.mktemp(f"installation-{tag}"), tag, source_sha
+                )[0],
+            )
         )
     build_pages(CANDIDATE_SOURCE, root, "0" * 40, releases=entries)
     bundle = load_bundle(CANDIDATE_SOURCE / "riverhog-v1.json")
@@ -425,9 +429,11 @@ def test_aggregate_version_navigation_and_documentation_availability(candidate_s
     assert page.locator("#docs-mode").is_checked()
     assert page.locator("#authority-cards").is_visible()
     page.goto(base + "/v1.2.0/")
-    assert page.get_by_role("link", name="Documentation", exact=True).count() == 0
+    page.get_by_role("link", name="Documentation", exact=True).click()
+    assert page.locator("#docs-mode").is_checked()
+    page.goto(base + "/v1.2.0/")
     page.get_by_role("link", name="Contract", exact=True).click()
-    assert page.locator("#docs-mode").count() == 0
+    assert not page.locator("#docs-mode").is_checked()
     page.goto(base + "/v1/")
     page.wait_for_url("**/v1.10.0/")
     context.close()

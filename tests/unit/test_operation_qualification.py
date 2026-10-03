@@ -531,13 +531,13 @@ def test_release_qualification_record_uses_current_artifact_identities(
         summary.write_text(json.dumps({"fixture": name}))
         summaries[name] = summary
     step = _release_qualification_step("Record the completed qualification")
-    # Bind fixture inputs while executing the real producer in its locked project.
-    step = step.replace("build/contracts/", str(artifact.parent) + "/")
+    # Keep source inputs separate from the real producer's locked project.
     environment = {
         **os.environ,
         "SOURCE_REF": "refs/heads/release/v1",
         "QUALIFICATION_MODE": "prospective",
         "SOURCE_SHA": "a" * 40,
+        "SOURCE_DIR": str(tmp_path),
         "RELEASE_VERSION": "1.0.0",
         "QUALIFICATION_DIR": str(tmp_path),
         "GITHUB_REPOSITORY": "nashspence/riverhog",

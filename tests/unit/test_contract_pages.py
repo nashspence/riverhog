@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 import threading
+from contextlib import contextmanager
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -165,3 +167,71 @@ def test_final_product_without_documentation_is_not_ingested(
             releases=[{"tag": "v1.0.0", "root": release_contract_factory()}],
         )
     assert not (tmp_path / "site").exists()
+
+
+@pytest.mark.parametrize("mutation", ["before-read", "after-read"])
+def test_installation_assembly_publishes_only_the_bytes_it_verified(
+    tmp_path, monkeypatch, generated_contract_closure, release_contract_factory, mutation
+):
+    from contract_atlas.documentation import SOURCE_FORMAT, AuthoredDocumentation
+    from contract_atlas.model import canonical_bytes
+
+    from tests.release_index import make_index
+
+    tag = "v1.0.0"
+    root = release_contract_factory(
+        documentation=AuthoredDocumentation(
+            tag,
+            "b" * 40,
+            f"{tag}/documentation.json",
+            canonical_bytes({"format": SOURCE_FORMAT, "explanations": [], "guides": []}),
+        )
+    )
+    installation = make_index(tmp_path / "installation", tag, "1" * 40)[0]
+    name = installation["path"] + "index.html"
+    watched = installation["root"] / name
+    approved = watched.read_bytes()
+    changed = approved + b"<!-- changed after verification -->"
+    original_open = Path.open
+    mutated = False
+
+    @contextmanager
+    def mutate_after_read(stream):
+        nonlocal mutated
+        with stream:
+            yield stream
+        mutated = True
+        watched.write_bytes(changed)
+
+    def open_with_mutation(path, *args, **kwargs):
+        stream = original_open(path, *args, **kwargs)
+        mode = args[0] if args else kwargs.get("mode", "r")
+        if path == watched and mode == "rb" and not mutated:
+            return mutate_after_read(stream)
+        return stream
+
+    if mutation == "before-read":
+        watched.write_bytes(changed)
+    else:
+        monkeypatch.setattr(Path, "open", open_with_mutation)
+    entry = {
+        "root": root,
+        "tag": tag,
+        "release_id": 1,
+        "release_manifest_sha256": "d" * 64,
+        "attestation_sha256": "e" * 64,
+        "assets": {"fixture": "sha256:" + "f" * 64},
+        "installation": installation,
+    }
+    destination = tmp_path / "site"
+    if mutation == "before-read":
+        with pytest.raises(ContractAtlasError, match="installation index changed"):
+            build_pages(generated_contract_closure["root"], destination, None, releases=[entry])
+        assert not destination.exists()
+        return
+    manifest = build_pages(generated_contract_closure["root"], destination, None, releases=[entry])
+    assert mutated and watched.read_bytes() == changed
+    assert (destination / name).read_bytes() == approved
+    approved_sha = hashlib.sha256(approved).hexdigest()
+    assert manifest["files"][name] == approved_sha
+    assert manifest["inputs"][1]["installation"]["files"][name] == approved_sha

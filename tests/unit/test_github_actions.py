@@ -491,17 +491,39 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
         step for step in audit["steps"] if step["name"] == "Check out workflow authority"
     )
     assert audit_checkout["with"] == {
+        "ref": "${{ github.workflow_sha }}",
+        "path": "coordinator",
         "fetch-depth": "0",
         "persist-credentials": "false",
     }
     exact_checkout = next(
         step for step in audit["steps"] if step["name"] == "Check out verified exact source"
     )
-    assert exact_checkout["run"] == (
-        'git fetch --force --no-tags origin "$SOURCE_SHA"\n'
-        'git checkout --detach "$SOURCE_SHA"\n'
+    assert exact_checkout["with"] == {
+        "ref": "${{ needs.resolve.outputs.sha }}",
+        "path": "source",
+        "fetch-depth": "0",
+        "persist-credentials": "false",
+    }
+    assert audit["defaults"] == {"run": {"working-directory": "source"}}
+    assert audit["env"]["SOURCE_DIR"] == "${{ github.workspace }}/source"
+    verification = next(step for step in audit["steps"] if step["name"] == "Verify exact checkouts")
+    assert verification["run"] == (
         'test "$(git rev-parse --verify HEAD)" = "$SOURCE_SHA"\n'
+        'test "$(git -C ../coordinator rev-parse --verify HEAD)" = "$GITHUB_WORKFLOW_SHA"\n'
     )
+    toolchains = {
+        step["name"]: step["with"]
+        for step in audit["steps"]
+        if step.get("uses", "").startswith("jdx/mise-action@")
+    }
+    assert toolchains == {
+        "Install workflow verification tools": {
+            "working_directory": "coordinator",
+            "install_args": "python uv",
+        },
+        "Install repository toolchain": {"working_directory": "source"},
+    }
     assert all(
         re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"])
         for step in workflow["jobs"]["resolve"]["steps"] + audit["steps"]
@@ -511,6 +533,8 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     record = next(
         step for step in audit["steps"] if step["name"] == "Record the completed qualification"
     )
+    assert record["working-directory"] == "coordinator"
+    assert '"$SOURCE_DIR/build/contracts/' in record["run"]
     assert '> "$QUALIFICATION_DIR/qualification.json"' in record["run"]
     assert "contract_closure_sha256" in record["run"]
     assert "contract_audit_sha256" in record["run"]
