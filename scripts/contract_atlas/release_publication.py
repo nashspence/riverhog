@@ -122,7 +122,7 @@ def publish_prepared_release(
     root: Path,
     evidence: Path,
     *,
-    signing_key: Path,
+    checksums_signature: Path,
     public_key: Path,
     preparation_public_key: Path,
     preparation_run: int,
@@ -214,11 +214,9 @@ def publish_prepared_release(
             raise ContractAtlasError(
                 "product publication requires bound authored and prepared-source inputs"
             )
-        assets = publication_assets(evidence)
-        # Re-sign the same reviewed checksum payload with the external publication key.
-        release._sign_checksums(
-            evidence, signing_key=signing_key, version=version, source_sha=source_sha
-        )
+        # The maintainer signs these exact reviewed checksum bytes offline. CI
+        # receives only the detached signature and the configured public key.
+        (evidence / "SHA256SUMS.minisig").write_bytes(checksums_signature.read_bytes())
         release.verify_release_evidence(
             root,
             evidence,
@@ -226,6 +224,12 @@ def publish_prepared_release(
             expected_previous=expected_previous,
             historical_manifest_paths=historical_manifests,
         )
+        assets = publication_assets(evidence)
+        if "release.pub" in assets:
+            raise ContractAtlasError("prepared evidence collides with the maintainer public key")
+        published_key = scratch / "release.pub"
+        published_key.write_bytes(public_key.read_bytes())
+        assets[published_key.name] = published_key
         notes = scratch / "release-notes.md"
         notes.write_text(
             f"Riverhog {tag}\n\nSource: `{source_sha}`.\n\n"

@@ -3685,7 +3685,12 @@ def _parser() -> argparse.ArgumentParser:
     publish.add_argument("--directory", required=True, type=Path)
     publish.add_argument("--preparation-public-key", required=True, type=Path)
     publish.add_argument("--public-key", required=True, type=Path)
-    publish.add_argument("--signing-key", required=True, type=Path)
+    publish.add_argument(
+        "--checksums-signature",
+        required=True,
+        type=Path,
+        help="Offline Minisign signature of the reviewed preparation's exact SHA256SUMS.",
+    )
     publish.add_argument("--preparation-run", required=True, type=int)
     publish.add_argument("--qualification-run", required=True, type=int)
     _add_history_arguments(publish)
@@ -3815,7 +3820,7 @@ def main(argv: list[str] | None = None) -> int:
             payload = publish_prepared_release(
                 ROOT,
                 args.directory.resolve(),
-                signing_key=args.signing_key.resolve(),
+                checksums_signature=args.checksums_signature.resolve(),
                 public_key=args.public_key.resolve(),
                 preparation_public_key=args.preparation_public_key.resolve(),
                 preparation_run=args.preparation_run,

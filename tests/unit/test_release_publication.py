@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -101,7 +103,9 @@ class _TrustedArtifacts:
         return {"immutable": True}
 
 
-@pytest.mark.parametrize("mutate", ["evidence", "key", "none"])
+@pytest.mark.parametrize(
+    "mutate", ["evidence", "key", "offline-signature", "offline-public-key", "none"]
+)
 def test_protected_publication_uses_the_selected_trusted_preparation_bytes(
     tmp_path,
     monkeypatch,
@@ -129,6 +133,7 @@ def test_protected_publication_uses_the_selected_trusted_preparation_bytes(
     }
     (trusted / "evidence/release-manifest.json").write_bytes(canonical_bytes(manifest))
     shutil.copyfile(record, trusted / "evidence/qualification.json")
+    (trusted / "evidence/SHA256SUMS").write_bytes(b"the exact reviewed checksum payload\n")
     (trusted / "evidence.preparation.pub").write_bytes(b"selected trusted public key")
     local = tmp_path / "local"
     shutil.copytree(trusted, local)
@@ -143,32 +148,105 @@ def test_protected_publication_uses_the_selected_trusted_preparation_bytes(
     monkeypatch.setattr(release, "_source_sha", lambda root: "1" * 40)
     verifications = []
     signs = []
-    monkeypatch.setattr(
-        release, "verify_release_evidence", lambda *args, **kwargs: verifications.append(kwargs)
-    )
     monkeypatch.setattr(release, "_sign_checksums", lambda *args, **kwargs: signs.append(kwargs))
     remote = _TrustedArtifacts(trusted, qualified)
+    signature = tmp_path / "offline.minisig"
+    public_key = tmp_path / "external-pub"
+    offline_key = tmp_path / "offline-key"
+    subprocess.run(
+        ["minisign", "-G", "-W", "-s", str(offline_key), "-p", str(public_key)],
+        check=True,
+        capture_output=True,
+    )
+    signed_message = trusted / "evidence/SHA256SUMS"
+    if mutate == "offline-signature":
+        signed_message = tmp_path / "other-checksums"
+        signed_message.write_bytes(b"a different checksum payload\n")
+    subprocess.run(
+        ["minisign", "-S", "-s", str(offline_key), "-m", str(signed_message), "-x", str(signature)],
+        check=True,
+        capture_output=True,
+    )
+    offline_key.unlink()
+    if mutate == "offline-public-key":
+        public_key.unlink()
+        subprocess.run(
+            ["minisign", "-G", "-W", "-s", str(offline_key), "-p", str(public_key)],
+            check=True,
+            capture_output=True,
+        )
+        offline_key.unlink()
+
+    def verify(*args, **kwargs):
+        verifications.append(kwargs)
+        # The native evidence verifier is independently covered. Exercise its
+        # real cryptographic boundary here, after the trusted-input fences.
+        if kwargs["public_key"] == public_key:
+            release._run(
+                [
+                    "minisign",
+                    "-V",
+                    "-p",
+                    str(public_key),
+                    "-m",
+                    str(local / "evidence/SHA256SUMS"),
+                    "-x",
+                    str(local / "evidence/SHA256SUMS.minisig"),
+                ],
+                cwd=local,
+                capture=True,
+            )
+
+    monkeypatch.setattr(release, "verify_release_evidence", verify)
     kwargs = {
-        "signing_key": tmp_path / "external-key",
-        "public_key": tmp_path / "external-pub",
+        "checksums_signature": signature,
+        "public_key": public_key,
         "preparation_public_key": local / "evidence.preparation.pub",
         "preparation_run": 10,
         "qualification_run": 11,
         "remote": remote,
     }
-    if mutate != "none":
+    if mutate in {"evidence", "key"}:
         with pytest.raises(ContractAtlasError, match="trusted artifact"):
             publish_prepared_release(ROOT, local / "evidence", **kwargs)
         assert not signs and not remote.publications and not verifications
+    elif mutate.startswith("offline-"):
+        with pytest.raises(subprocess.CalledProcessError):
+            publish_prepared_release(ROOT, local / "evidence", **kwargs)
+        assert not signs and not remote.publications
     else:
         report = publish_prepared_release(ROOT, local / "evidence", **kwargs)
-        assert report["immutable"] and len(signs) == 1 and len(remote.publications) == 1
+        assert report["immutable"] and not signs and len(remote.publications) == 1
         assert verifications[0]["public_key"] == kwargs["preparation_public_key"]
         assert verifications[1]["public_key"] == kwargs["public_key"]
         assert (
             file_sha256(local / "evidence/qualification.json")
             == manifest["qualification"]["sha256"]
         )
+        assert (local / "evidence/SHA256SUMS.minisig").read_bytes() == signature.read_bytes()
+        assert remote.publications[0][2]["release.pub"].name == "release.pub"
+
+
+def test_publication_workflow_uses_only_the_offline_signature_and_protected_public_key():
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/release-publication.yml").read_text(), Loader=yaml.BaseLoader
+    )
+    assert set(workflow["on"]["workflow_dispatch"]["inputs"]) == {
+        "preparation_run",
+        "qualification_run",
+        "checksums_signature",
+    }
+    job = workflow["jobs"]["publish"]
+    assert job["environment"]["name"] == "release-publication"
+    approval = next(step for step in job["steps"] if "CHECKSUMS_SIGNATURE" in step.get("env", {}))
+    assert approval["env"] == {
+        "GH_TOKEN": "${{ secrets.RELEASE_GITHUB_TOKEN }}",
+        "CHECKSUMS_SIGNATURE": "${{ inputs.checksums_signature }}",
+        "RELEASE_PUBLIC_KEY": "${{ vars.RELEASE_MINISIGN_PUBLIC_KEY }}",
+        "PREPARATION_RUN": "${{ inputs.preparation_run }}",
+        "QUALIFICATION_RUN": "${{ inputs.qualification_run }}",
+    }
+    assert '--checksums-signature "$approval/SHA256SUMS.minisig"' in approval["run"]
 
 
 def test_qualification_rejects_success_from_an_unrelated_workflow(tmp_path):
