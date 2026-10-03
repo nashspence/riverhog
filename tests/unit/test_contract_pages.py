@@ -21,10 +21,11 @@ def test_pages_contains_the_source_generated_candidate_under_its_project_path(
     source = generated_contract_closure["root"]
     destination = tmp_path / "site"
     source_sha = None
+    candidate_manifest = json.loads((source / "build-manifest.json").read_bytes())
 
     build = build_pages(source, destination, source_sha)
 
-    assert build["inputs"][0]["source_sha"] is None
+    assert build["inputs"][0]["source_sha"] == candidate_manifest["source_sha"]
     assert build["latest_product_release"] is None
     assert "No final product releases" in (destination / "index.html").read_text()
     assert (destination / "index.html").is_file()
