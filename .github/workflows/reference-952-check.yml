@@ -1,0 +1,23 @@
+name: Reference 952 checks
+on:
+  push:
+    branches:
+      - reference/external/952-release-documentation
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact reference
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # audited repository pin
+        with:
+          persist-credentials: false
+      - name: Run isolated documentation reference witnesses
+        run: |
+          python3 -m venv "$RUNNER_TEMP/reference-952"
+          "$RUNNER_TEMP/reference-952/bin/python" -m pip install 'markdown-it-py==4.2.0' 'jsonschema==4.26.0'
+          "$RUNNER_TEMP/reference-952/bin/python" -m unittest discover -s .reference/952 -p 'test_*.py' -v
+          "$RUNNER_TEMP/reference-952/bin/python" -m compileall -q .reference/952

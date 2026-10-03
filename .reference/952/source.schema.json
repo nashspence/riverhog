@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:riverhog:reference:952:documentation-source",
+  "title": "Reference subset of the proposed release documentation source v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "entries", "guides"],
+  "properties": {
+    "format": {"const": "riverhog-release-documentation-source/v2"},
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
+    "guides": {"type": "array", "items": {"$ref": "#/$defs/guide"}}
+  },
+  "$defs": {
+    "line": {"type": "string", "minLength": 1, "pattern": "^[^\\r\\n\\t]+$"},
+    "body": {"type": "string", "pattern": "^[^/\\\\].*\\.md$"},
+    "target": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false,
+         "required": ["element_id", "pointer"],
+         "properties": {"element_id": {"type": "string", "minLength": 1}, "pointer": {"type": "string", "pattern": "^(?:$|/)"}}},
+        {"type": "object", "additionalProperties": false,
+         "required": ["element_id", "member"],
+         "properties": {"element_id": {"type": "string", "minLength": 1},
+           "member": {"type": "object", "additionalProperties": false,
+             "required": ["kind", "key"], "properties": {
+               "kind": {"enum": ["cli-parameter", "python-parameter", "python-result"]},
+               "key": {"type": "string", "minLength": 1}
+             }}}}
+      ]
+    },
+    "entry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["target", "summary"],
+      "properties": {"target": {"$ref": "#/$defs/target"}, "summary": {"$ref": "#/$defs/line"}, "body": {"$ref": "#/$defs/body"}}
+    },
+    "guide": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "title", "body", "subjects"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "title": {"$ref": "#/$defs/line"}, "body": {"$ref": "#/$defs/body"},
+        "subjects": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/target"}}
+      }
+    }
+  }
+}
