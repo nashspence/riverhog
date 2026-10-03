@@ -136,6 +136,13 @@ def test_readme_section_order_is_intentional() -> None:
     ]
 
 
+def test_readme_routes_make_target_documentation_to_make_help() -> None:
+    readme = " ".join((REPO / "README.md").read_text(encoding="utf-8").split())
+
+    assert "Use `make help` for development and validation commands." in readme
+    assert re.findall(r"`make\s+([^`]+)`", readme) == ["help"]
+
+
 def test_readme_states_archive_and_adapter_authority() -> None:
     readme_path = REPO / "README.md"
     readme = " ".join(readme_path.read_text(encoding="utf-8").split())

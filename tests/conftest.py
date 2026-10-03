@@ -44,7 +44,7 @@ def release_contract_factory(generated_contract_closure, tmp_path_factory):
 
     original = generated_contract_closure["candidate"]
 
-    def create(source_sha="1" * 40, *, documentation=None):
+    def create(source_sha="1" * 40, *, documentation=None, preparation=None):
         document = binding = None
         extras = {}
         if documentation is not None:
@@ -74,6 +74,7 @@ def release_contract_factory(generated_contract_closure, tmp_path_factory):
             "source_sha": source_sha,
             "build_scope": "revision",
             "documentation": binding,
+            "preparation": preparation,
             "files": {name: hashlib.sha256(value).hexdigest() for name, value in files.items()},
         }
         candidate = replace(original, files=files, manifest=manifest)

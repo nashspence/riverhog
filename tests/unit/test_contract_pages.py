@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import json
 import sys
+import threading
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import urlsplit
+from urllib.request import urlopen
 
 import pytest
 
@@ -68,7 +73,16 @@ def test_pages_assembles_versions_semantically_and_preserves_published_bytes(
     from contract_atlas.documentation import SOURCE_FORMAT, AuthoredDocumentation
     from contract_atlas.model import canonical_bytes
 
-    root = release_contract_factory()
+    from tests.release_index import make_index
+
+    root = release_contract_factory(
+        documentation=AuthoredDocumentation(
+            "v1.2.0",
+            "b" * 40,
+            "v1.2.0/documentation.json",
+            canonical_bytes({"format": SOURCE_FORMAT, "explanations": [], "guides": []}),
+        )
+    )
     authored = AuthoredDocumentation(
         "v1.10.0",
         "c" * 40,
@@ -84,6 +98,9 @@ def test_pages_assembles_versions_semantically_and_preserves_published_bytes(
             "release_manifest_sha256": "d" * 64,
             "attestation_sha256": "e" * 64,
             "assets": {"fixture": "sha256:" + "f" * 64},
+            "installation": make_index(tmp_path / tag, tag, "1" * 40 if number == 1 else "2" * 40)[
+                0
+            ],
         }
         for number, (tag, selected) in enumerate((("v1.2.0", root), ("v1.10.0", documented)), 1)
     ]
@@ -94,10 +111,57 @@ def test_pages_assembles_versions_semantically_and_preserves_published_bytes(
     assert [item["version"] for item in manifest["inputs"]] == ["development", "v1.10.0", "v1.2.0"]
     assert 'href="../v1.2.0/"' in (tmp_path / "site/v1.10.0/index.html").read_text()
     assert "Documentation" in (tmp_path / "site/v1.10.0/index.html").read_text()
-    assert "Documentation" not in (tmp_path / "site/v1.2.0/index.html").read_text()
+    assert "Documentation" in (tmp_path / "site/v1.2.0/index.html").read_text()
     assert all(
         (tmp_path / "site/v1.10.0" / path.relative_to(documented)).read_bytes() == path.read_bytes()
         for path in documented.rglob("*")
         if path.is_file()
     )
     assert (tmp_path / "site/v1.10.0/documentation.json").read_bytes() == authored.payload
+
+    # Serve the actual aggregate at its project mount; use each generated index URL.
+    class MountedSite(SimpleHTTPRequestHandler):
+        def do_GET(self):
+            assert self.path.startswith("/riverhog/")
+            self.path = self.path.removeprefix("/riverhog")
+            super().do_GET()
+
+        def log_message(self, *args):
+            pass
+
+    server = ThreadingHTTPServer(
+        ("127.0.0.1", 0), partial(MountedSite, directory=tmp_path / "site")
+    )
+    thread = threading.Thread(target=server.serve_forever)
+    thread.start()
+    try:
+        for entry in entries:
+            installation = entry["installation"]
+            base = f"http://127.0.0.1:{server.server_port}" + urlsplit(installation["url"]).path
+            with urlopen(base, timeout=5) as response:
+                assert (
+                    response.read()
+                    == (installation["root"] / installation["path"] / "index.html").read_bytes()
+                )
+            with urlopen(base + "a-riverhog-cli/", timeout=5) as response:
+                page = response.read()
+                assert f"/releases/download/{entry['tag']}/".encode() in page
+                assert b"#sha256=" in page
+            assert all(name in manifest["files"] for name in installation["files"])
+    finally:
+        server.shutdown()
+        thread.join()
+        server.server_close()
+
+
+def test_final_product_without_documentation_is_not_ingested(
+    tmp_path, generated_contract_closure, release_contract_factory
+):
+    with pytest.raises(ContractAtlasError, match="requires bound documentation"):
+        build_pages(
+            generated_contract_closure["root"],
+            tmp_path / "site",
+            None,
+            releases=[{"tag": "v1.0.0", "root": release_contract_factory()}],
+        )
+    assert not (tmp_path / "site").exists()

@@ -126,6 +126,18 @@ class GitHubPublication:
             )
         self.command("release", "verify-asset", tag, str(destination), "--repo", self.repository)
 
+    def download_workflow_artifact(self, artifact_id: int, destination: Path) -> None:
+        with destination.open("xb") as stream:
+            subprocess.run(
+                [
+                    self.executable,
+                    "api",
+                    f"repos/{self.repository}/actions/artifacts/{artifact_id}/zip",
+                ],
+                stdout=stream,
+                check=True,
+            )
+
     def load_product(
         self, selected: dict[str, Any], destination: Path, *, budget: int = DEFAULT_SITE_BUDGET
     ) -> dict[str, Any]:
@@ -153,7 +165,8 @@ class GitHubPublication:
         ):
             raise ContractAtlasError("published product manifest differs from its immutable tag")
         contract = manifest["contract"]
-        required = (contract["file"], contract["render"]["file"])
+        installation = manifest["installation"]
+        required = (contract["file"], contract["render"]["file"], installation["manifest"])
         if contract["source_sha"] != selected["source_sha"] or any(
             name not in assets for name in required
         ):
@@ -164,17 +177,85 @@ class GitHubPublication:
             self.download_asset(tag, assets[name], destination / safe_relative(name))
         candidate = destination / "candidate"
         build = unpack_release_contract(destination, contract, candidate, budget=budget)
-        if build["documentation"] is not None and build["documentation"]["tag"] != tag:
-            raise ContractAtlasError("published documentation belongs to another product version")
+        if build["documentation"] is None or build["documentation"]["tag"] != tag:
+            raise ContractAtlasError("final product requires documentation bound to its version")
+        install_manifest = destination / safe_relative(installation["manifest"])
+        if file_sha256(install_manifest) != installation["sha256"]:
+            raise ContractAtlasError(
+                "published installation manifest differs from release evidence"
+            )
+        index = json.loads(install_manifest.read_bytes())["index"]
+        snapshot_name = safe_relative(index["snapshot_asset"])
+        if snapshot_name not in assets or assets[snapshot_name]["size"] > budget:
+            raise ContractAtlasError("published product lacks a budgeted installation snapshot")
+        self.download_asset(tag, assets[snapshot_name], destination / snapshot_name)
+        from .installation_publication import unpack_installation_index
+
+        installed = unpack_installation_index(
+            install_manifest,
+            destination / snapshot_name,
+            destination / "installation-index",
+            repository=self.repository,
+            tag=tag,
+            source_sha=selected["source_sha"],
+            assets=assets,
+            budget=budget,
+        )
         return {
             "tag": tag,
             "root": candidate,
             "release_id": selected["id"],
             "release_manifest_sha256": hashlib.sha256(raw).hexdigest(),
             "attestation_sha256": hashlib.sha256(attestation).hexdigest(),
+            "installation": installed,
             "assets": {
-                name: assets[name]["digest"] for name in ("release-manifest.json", *required)
+                name: assets[name]["digest"]
+                for name in ("release-manifest.json", *required, snapshot_name)
             },
+        }
+
+    def request_product_pages(self, published: dict[str, Any]) -> dict[str, Any]:
+        """Dispatch through protected main, with the exact immutable release as an input."""
+
+        snapshot = self.snapshot()
+        products = [
+            entry
+            for entry in snapshot["products"]
+            if entry["id"] == published["release_id"]
+            and entry["tag"] == published["tag"]
+            and entry["source_sha"] == published["source_sha"]
+        ]
+        if (
+            len(products) != 1
+            or {
+                asset["name"]: {"digest": asset["digest"], "size": asset["size"]}
+                for asset in products[0]["assets"]
+            }
+            != published["assets"]
+        ):
+            raise ContractAtlasError("Pages request differs from the exact immutable publication")
+        manifest = published["assets"]["release-manifest.json"]["digest"].removeprefix("sha256:")
+        self.command(
+            "api",
+            "--method",
+            "POST",
+            f"repos/{self.repository}/actions/workflows/contract-pages.yml/dispatches",
+            "-f",
+            "ref=main",
+            "-f",
+            "inputs[source_sha]=" + snapshot["main"],
+            "-f",
+            "inputs[release_tag]=" + published["tag"],
+            "-f",
+            "inputs[release_id]=" + str(published["release_id"]),
+            "-f",
+            "inputs[release_manifest_sha256]=" + manifest,
+        )
+        return {
+            "source_sha": snapshot["main"],
+            "release_tag": published["tag"],
+            "release_id": published["release_id"],
+            "release_manifest_sha256": manifest,
         }
 
     def publish_asset_set(

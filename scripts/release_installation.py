@@ -1087,9 +1087,9 @@ def build_installation_artifacts(
         },
     }
     manifest_path = output / "install-manifest.json"
-    manifest_path.write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    from contract_atlas.model import canonical_bytes
+
+    manifest_path.write_bytes(canonical_bytes(manifest))
     return manifest, records
 
 

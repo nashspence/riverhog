@@ -58,8 +58,9 @@ jobs:
           fi
           printf '%s\n' "$CHECKSUMS_SIGNATURE" > "$approval/SHA256SUMS.minisig"
           printf '%s\n' "$RELEASE_PUBLIC_KEY" > "$approval/release.pub"
-          gh run download "$PREPARATION_RUN" --repo "${{ github.repository }}" \
-            --name "release-preparation-$GITHUB_SHA" --dir "$RUNNER_TEMP/reviewed-preparation"
+          mise x -- uv run --locked --group dev python scripts/workflow_evidence.py download \
+            --kind preparation --run-id "$PREPARATION_RUN" --source-sha "$GITHUB_SHA" \
+            --version "${GITHUB_REF#refs/tags/v}" --output "$RUNNER_TEMP/reviewed-preparation"
           mise x -- uv run --locked --all-packages --group dev python scripts/release.py publish \
             --directory "$RUNNER_TEMP/reviewed-preparation/evidence" \
             --preparation-public-key "$RUNNER_TEMP/reviewed-preparation/evidence.preparation.pub" \

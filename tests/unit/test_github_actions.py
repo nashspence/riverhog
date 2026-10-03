@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 import re
+import subprocess
 import tomllib
 from pathlib import Path
 
@@ -34,15 +36,20 @@ def test_artifact_uploads_use_one_pinned_node24_action() -> None:
 
 def test_contract_pages_uses_exact_green_main_and_protected_publication_environment() -> None:
     workflow = yaml.load(CONTRACT_PAGES_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
-    assert set(workflow["on"]) == {"workflow_dispatch", "workflow_run", "release"}
+    assert set(workflow["on"]) == {"workflow_dispatch", "workflow_run"}
     assert workflow["jobs"]["build"]["permissions"] == {"actions": "read", "contents": "read"}
     build = workflow["jobs"]["build"]["steps"]
     assert all(
         re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in build if "uses" in step
     )
-    gate = next(step for step in build if step["name"] == "Require a green commit on main")
+    readiness = workflow["jobs"]["readiness"]
+    gate = next(
+        step for step in readiness["steps"] if step["name"] == "Require a green commit on main"
+    )
     assert "git merge-base --is-ancestor" in gate["run"]
-    assert "ci.yml codeql.yml" in gate["run"]
+    assert "--workflow ci.yml --workflow codeql.yml" in gate["run"]
+    assert "--allow-pending --github-output" in gate["run"]
+    assert workflow["jobs"]["build"]["if"] == "needs.readiness.outputs.ready == 'true'"
     assert "make contract-check" in next(
         step["run"] for step in build if step["name"].startswith("Generate and independently check")
     )
@@ -73,6 +80,23 @@ def test_every_buildx_setup_uses_the_pinned_docker_engine() -> None:
         assert all(
             step["with"] == {"version": "v0.36.0", "driver": "docker"} for step in buildx_steps
         )
+
+
+def test_pages_dispatch_enters_the_environment_through_main_instead_of_a_product_tag() -> None:
+    workflow = yaml.load(CONTRACT_PAGES_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    readiness = workflow["jobs"]["readiness"]
+    guard = readiness["steps"][0]["run"]
+    assert readiness["permissions"]["checks"] == "read"
+    assert "release" not in workflow["on"]
+    for ref, status in (("refs/tags/v1.0.0", 1), ("refs/heads/main", 0)):
+        observed = subprocess.run(
+            ["bash", "-e", "-c", guard],
+            env={**os.environ, "GITHUB_REF": ref},
+            capture_output=True,
+        )
+        assert observed.returncode == status
+    assert workflow["jobs"]["deploy"]["environment"]["name"] == "github-pages"
+    assert workflow["jobs"]["deploy"]["needs"] == "build"
 
 
 def test_provider_qualification_runs_isolated_storage_adapter_images() -> None:
@@ -506,7 +530,10 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "riverhog-release-qualification/v1" in text
     assert 'operation_matrix: "passed"' in text
     assert 'database_contract: "passed"' in text
-    assert "Analyze (actions)" in text and "Analyze (python)" in text
+    assert "scripts/workflow_evidence.py checks" in text
+    assert '--branch "$branch" --workflow codeql.yml' in text
+    assert "-attempt-${{ github.run_attempt }}" in upload["with"]["name"]
+    assert 'record["workflow_execution"]' in record["run"]
     assert "release/v1" in text
     assert "v1\\.[0-9]+\\.[0-9]+" in text
 

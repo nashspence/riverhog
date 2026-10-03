@@ -21,6 +21,7 @@ from contract_atlas.model import ContractAtlasError, canonical_bytes
 from contract_atlas.publication import (
     DEFAULT_SITE_BUDGET,
     directory_files,
+    file_sha256,
     verify_published_candidate,
 )
 
@@ -152,9 +153,29 @@ def build_pages(
         ]
         for entry in products:
             build = verify_published_candidate(entry["root"])
-            if build["documentation"] is not None and build["documentation"]["tag"] != entry["tag"]:
-                raise ContractAtlasError("historical documentation is bound to another version")
+            if build["documentation"] is None or build["documentation"]["tag"] != entry["tag"]:
+                raise ContractAtlasError("historical final product requires bound documentation")
             _copy_verified(entry["root"], stage / entry["tag"], build)
+            installation = entry["installation"]
+            index_files = directory_files(installation["root"])
+            if (
+                installation["path"] != f"artifacts/{entry['tag']}/simple/"
+                or installation["tag"] != entry["tag"]
+                or installation["source_sha"] != build["source_sha"]
+                or set(index_files) != set(installation["files"])
+            ):
+                raise ContractAtlasError("historical installation index has a different binding")
+            for name, path in index_files.items():
+                if (
+                    not name.startswith(installation["path"])
+                    or file_sha256(path) != installation["files"][name]
+                ):
+                    raise ContractAtlasError(
+                        "historical installation index changed during assembly"
+                    )
+                output = stage / name
+                output.parent.mkdir(parents=True, exist_ok=True)
+                output.write_bytes(path.read_bytes())
             inputs.append(
                 {
                     **{
@@ -167,6 +188,9 @@ def build_pages(
                         )
                     },
                     "version": entry["tag"],
+                    "installation": {
+                        key: value for key, value in installation.items() if key != "root"
+                    },
                     **{
                         key: build[key]
                         for key in (
@@ -250,6 +274,25 @@ def build_pages(
     return manifest
 
 
+def require_requested_product(
+    snapshot: dict[str, Any], tag: str | None, release_id: int | None, digest: str | None
+) -> None:
+    if tag is None and release_id is None and digest is None:
+        return
+    products = [
+        entry for entry in snapshot["products"] if entry["tag"] == tag and entry["id"] == release_id
+    ]
+    if (
+        len(products) != 1
+        or not re.fullmatch(r"[0-9a-f]{64}", str(digest))
+        or not any(
+            asset["name"] == "release-manifest.json" and asset["digest"] == "sha256:" + str(digest)
+            for asset in products[0]["assets"]
+        )
+    ):
+        raise ContractAtlasError("requested immutable product is absent or changed")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-sha")
@@ -259,6 +302,9 @@ def main() -> int:
     parser.add_argument("--gh", default="gh")
     parser.add_argument("--budget", type=int, default=DEFAULT_SITE_BUDGET)
     parser.add_argument("--check-fresh", type=Path)
+    parser.add_argument("--release-tag")
+    parser.add_argument("--release-id", type=int)
+    parser.add_argument("--release-manifest-sha256")
     args = parser.parse_args()
     try:
         remote = GitHubPublication(args.repository, executable=args.gh)
@@ -269,6 +315,9 @@ def main() -> int:
         if args.source_sha is None or args.output is None:
             raise ContractAtlasError("Pages publication requires source SHA and output")
         snapshot = remote.snapshot()
+        require_requested_product(
+            snapshot, args.release_tag, args.release_id, args.release_manifest_sha256
+        )
         if snapshot["main"] != args.source_sha:
             raise ContractAtlasError(
                 "development source is stale; publish the current green main commit"

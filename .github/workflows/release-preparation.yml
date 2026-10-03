@@ -30,6 +30,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
+      - name: Require protected main workflow authority
+        run: test "$GITHUB_REF" = refs/heads/main
       - name: Check out exact qualified code and authoring history
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -63,10 +65,13 @@ jobs:
             --qualification-run "$QUALIFICATION_RUN" \
             --output "$RUNNER_TEMP/release-preparation/evidence" \
             --summary "$RUNNER_TEMP/release-preparation/summary.json"
+          mise x -- uv run --locked --group dev python scripts/workflow_evidence.py record \
+            --kind preparation --source-sha "$SOURCE_SHA" --version "$RELEASE_VERSION" \
+            --output "$RUNNER_TEMP/release-preparation/execution.json"
       - name: Retain complete reviewable preparation
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: release-preparation-${{ inputs.source_sha }}
+          name: release-preparation-${{ inputs.source_sha }}-attempt-${{ github.run_attempt }}
           path: ${{ runner.temp }}/release-preparation
           if-no-files-found: error
           retention-days: 30

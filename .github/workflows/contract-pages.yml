@@ -7,12 +7,22 @@ on:
         description: Exact green main commit to publish in the aggregate site.
         required: true
         type: string
+      release_tag:
+        description: Exact immutable product that requested this aggregate rebuild.
+        required: false
+        type: string
+      release_id:
+        description: Immutable GitHub Release ID bound to release_tag.
+        required: false
+        type: string
+      release_manifest_sha256:
+        description: Immutable release-manifest asset identity bound to release_tag.
+        required: false
+        type: string
   workflow_run:
     workflows: [CI, CodeQL]
     types: [completed]
     branches: [main]
-  release:
-    types: [published]
 
 permissions:
   contents: read
@@ -22,20 +32,23 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Generate development and verify all product versions
+  readiness:
+    name: Select trusted exact-source workflow attempts
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') ||
-      (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v1.') && !github.event.release.prerelease)
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 10
     permissions:
       actions: read
+      checks: read
       contents: read
     outputs:
       source_sha: ${{ steps.source.outputs.sha }}
+      ready: ${{ steps.checks.outputs.ready }}
     steps:
+      - name: Require protected main workflow authority
+        run: test "$GITHUB_REF" = refs/heads/main
       - name: Resolve exact development source
         id: source
         env:
@@ -54,7 +67,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           ref: ${{ steps.source.outputs.sha }}
+      - name: Install repository toolchain
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+        with:
+          install_args: python uv
       - name: Require a green commit on main
+        id: checks
         env:
           GH_TOKEN: ${{ github.token }}
           SOURCE_SHA: ${{ steps.source.outputs.sha }}
@@ -65,11 +83,28 @@ jobs:
           fi
           git fetch --no-tags origin main
           git merge-base --is-ancestor "$SOURCE_SHA" origin/main
-          for workflow in ci.yml codeql.yml; do
-            gh api "repos/${{ github.repository }}/actions/workflows/$workflow/runs?head_sha=$SOURCE_SHA&per_page=100" \
-              | jq --exit-status --arg sha "$SOURCE_SHA" \
-                'any(.workflow_runs[]; .event == "push" and .head_sha == $sha and .conclusion == "success")'
-          done
+          mise x -- uv run --locked --group dev python scripts/workflow_evidence.py checks \
+            --source-sha "$SOURCE_SHA" --branch main --workflow ci.yml --workflow codeql.yml \
+            --allow-pending --github-output "$GITHUB_OUTPUT"
+
+  build:
+    name: Generate development and verify all product versions
+    needs: readiness
+    if: needs.readiness.outputs.ready == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      source_sha: ${{ needs.readiness.outputs.source_sha }}
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ needs.readiness.outputs.source_sha }}
       - name: Install repository toolchain
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
       - name: Bootstrap browser host libraries
@@ -78,7 +113,7 @@ jobs:
         run: mise bootstrap --yes
       - name: Generate and independently check exact-source contract
         env:
-          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          SOURCE_SHA: ${{ needs.readiness.outputs.source_sha }}
         run: make contract-check args="--source-sha $SOURCE_SHA"
       - name: Install Chromium headless shell
         run: mise x -- uv run --locked --group browser python -m playwright install --only-shell chromium
@@ -87,10 +122,18 @@ jobs:
       - name: Assemble development and every immutable product release
         env:
           GH_TOKEN: ${{ github.token }}
-          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          SOURCE_SHA: ${{ needs.readiness.outputs.source_sha }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_ID: ${{ inputs.release_id }}
+          RELEASE_MANIFEST_SHA256: ${{ inputs.release_manifest_sha256 }}
         run: |
+          product_args=()
+          if [[ -n "$RELEASE_TAG$RELEASE_ID$RELEASE_MANIFEST_SHA256" ]]; then
+            product_args=(--release-tag "$RELEASE_TAG" --release-id "$RELEASE_ID" \
+              --release-manifest-sha256 "$RELEASE_MANIFEST_SHA256")
+          fi
           mise x -- uv run --locked --group dev python scripts/contract_pages.py \
-            --source-sha "$SOURCE_SHA" --output "$RUNNER_TEMP/riverhog-pages"
+            --source-sha "$SOURCE_SHA" --output "$RUNNER_TEMP/riverhog-pages" "${product_args[@]}"
           mkdir "$RUNNER_TEMP/pages-inputs"
           cp "$RUNNER_TEMP/riverhog-pages/site-manifest.json" "$RUNNER_TEMP/pages-inputs/"
       - name: Retain aggregate input manifest

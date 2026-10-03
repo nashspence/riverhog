@@ -28,8 +28,7 @@ document at `/openapi.json`.
   repository layout.
 - [Contract Render](https://nashspence.github.io/riverhog/) presents the source-generated
   development contract and immutable release versions, with Audit and release Documentation
-  Modes. Run `make contract` to generate the current source locally; `make contract-diff
-  BASE=<ref>` compares independently generated source revisions.
+  Modes.
 - [Licensing](LICENSE.md) defines the repository's release terms.
 
 Release-level reference documentation belongs to tagged releases. The documentation on
