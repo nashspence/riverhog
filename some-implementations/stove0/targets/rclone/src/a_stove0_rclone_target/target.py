@@ -240,11 +240,8 @@ class RcloneEffectTargetService(PersistentTargetService):
                 objects_root = workspace.resolve("output/objects")
                 manifest_path = workspace.resolve("control/manifest.json")
                 manifest_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-                delivered_digest = hashlib.sha256()
-                delivered_count = 0
 
-                def delivered_entries() -> Iterator[tuple[str, int, dict[str, JsonValue]]]:
-                    nonlocal delivered_count
+                def delivered_entries() -> Iterator[tuple[InputArtifact, dict[str, JsonValue]]]:
                     for artifact, claimed in execution.iter_inputs():
                         check()
                         planned = destinations.get(artifact.id)
@@ -257,14 +254,6 @@ class RcloneEffectTargetService(PersistentTargetService):
                             or planned.subject.sha256 != artifact.sha256
                         ):
                             raise ValueError("forwarded hint belongs to another sealed input")
-                        update_artifact_selection_commitment(
-                            delivered_digest,
-                            ordinal=delivered_count,
-                            artifact=WorkArtifactSubject.model_validate(
-                                artifact.model_dump(mode="json")
-                            ),
-                        )
-                        delivered_count += 1
                         relative = planned.relative_path
                         local = objects_root / relative
                         local.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -276,8 +265,7 @@ class RcloneEffectTargetService(PersistentTargetService):
                                 "retrieved artifact differs from the sealed input authority"
                             )
                         yield (
-                            artifact.id,
-                            int(artifact.bytes),
+                            artifact,
                             {
                                 "collection": artifact.collection.model_dump(mode="json"),
                                 "subject_id": artifact.id,
@@ -298,12 +286,6 @@ class RcloneEffectTargetService(PersistentTargetService):
                     selection=request.declaration.plan.inputs.selection,
                     entries=delivered_entries(),
                 )
-                if (
-                    delivered_count != artifact_count
-                    or delivered_digest.hexdigest()
-                    != request.declaration.plan.inputs.selection.selection_sha256
-                ):
-                    raise ValueError("rclone delivered inputs differ from the exact selection")
                 check()
                 execution_sha256 = canonical_json_sha256(
                     {
@@ -359,14 +341,14 @@ def _write_delivery_manifest(
     *,
     delivery_id: str,
     selection: ArtifactSelectionRef,
-    entries: Iterable[tuple[str, int, Mapping[str, JsonValue]]],
+    entries: Iterable[tuple[InputArtifact, Mapping[str, JsonValue]]],
 ) -> tuple[int, int, str]:
-    """Stream one canonical marker after validating the complete ordered input extent."""
+    """Stream one canonical marker in the exact sealed artifact-selection order."""
 
     digest = hashlib.sha256()
+    selection_digest = hashlib.sha256()
     count = 0
     total_bytes = 0
-    previous_id: str | None = None
     with path.open("xb") as manifest:
 
         def write(part: bytes) -> None:
@@ -374,16 +356,22 @@ def _write_delivery_manifest(
             digest.update(part)
 
         write(b'{"artifacts":[')
-        for subject_id, member_bytes, entry in entries:
-            if previous_id is not None and subject_id <= previous_id:
-                raise ValueError("rclone input pages are not ordered by subject identity")
-            previous_id = subject_id
+        for artifact, entry in entries:
+            update_artifact_selection_commitment(
+                selection_digest,
+                ordinal=count,
+                artifact=WorkArtifactSubject.model_validate(artifact.model_dump(mode="json")),
+            )
             if count:
                 write(b",")
             write(canonical_json_bytes(dict(entry)))
             count += 1
-            total_bytes += member_bytes
-        if count != selection.artifact_count or total_bytes != int(selection.total_bytes):
+            total_bytes += int(artifact.bytes)
+        if (
+            count != selection.artifact_count
+            or total_bytes != int(selection.total_bytes)
+            or selection_digest.hexdigest() != selection.selection_sha256
+        ):
             raise ValueError("rclone input pages differ from the sealed selection")
         write(b'],"delivery_id":')
         write(canonical_json_bytes(delivery_id))

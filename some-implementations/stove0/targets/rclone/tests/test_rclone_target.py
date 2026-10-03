@@ -74,6 +74,7 @@ def _hint_evidence(
     subjects: tuple[WorkArtifactSubject, ...],
     hints: tuple[dict[str, object] | None, ...],
 ) -> ContentObservationEvidence:
+    members = tuple(sorted(zip(subjects, hints, strict=True), key=lambda item: item[0].id))
     descriptor = ObserverDescriptor.seal(
         ObserverDescriptorPayload(
             implementation_id="fixture.hint-observer/v1",
@@ -93,7 +94,7 @@ def _hint_evidence(
             observer_contract_id=MATERIALIZATION_HINT_OBSERVER_CONTRACT.id,
             observer_contract_sha256=MATERIALIZATION_HINT_OBSERVER_CONTRACT.contract_sha256,
             read_actions=("read-provenance",),
-            subjects=subjects,
+            subjects=tuple(subject for subject, _hint in members),
         )
     )
     occurrence = {
@@ -128,7 +129,7 @@ def _hint_evidence(
                     "occurrence": occurrence,
                     "materialization_hint": hint,
                 }
-                for subject, hint in zip(subjects, hints, strict=True)
+                for subject, hint in members
             ]
         }
     )
@@ -205,12 +206,17 @@ def test_rclone_checks_exact_target_selection_before_delivery() -> None:
     other_member = inputs[1].model_copy(update={"artifact_id": "3" * 64})
     with pytest.raises(ValueError, match="exact input selection"):
         _verify_selected_inputs((inputs[0], other_member), planned, selection)
+    with pytest.raises(ValueError, match="exact input selection"):
+        _verify_selected_inputs(reversed(inputs), planned, selection)
 
 
 def test_rclone_streamed_manifest_is_canonical_and_covers_every_input(tmp_path: Path) -> None:
-    first, second = _subject("one", "1" * 64), _subject("two", "2" * 64)
+    first, second = _subject("z-last", "1" * 64), _subject("a-first", "2" * 64)
     selection = ArtifactSelection.seal((first, second)).ref()
-    rows = ((first.id, 1, {"z": 1}), (second.id, 1, {"a": 2}))
+    inputs = tuple(
+        InputArtifact.model_validate(subject.model_dump(mode="json")) for subject in (first, second)
+    )
+    rows = ((inputs[0], {"z": 1}), (inputs[1], {"a": 2}))
     path = tmp_path / "manifest.json"
     count, total, sha256 = _write_delivery_manifest(
         path, delivery_id="e" * 64, selection=selection, entries=iter(rows)
@@ -225,7 +231,7 @@ def test_rclone_streamed_manifest_is_canonical_and_covers_every_input(tmp_path: 
     )
     assert (count, total, sha256) == (2, 2, hashlib.sha256(expected).hexdigest())
     assert path.read_bytes() == expected
-    with pytest.raises(ValueError, match="ordered by subject"):
+    with pytest.raises(ValueError, match="sealed selection"):
         _write_delivery_manifest(
             tmp_path / "unordered.json",
             delivery_id="e" * 64,
@@ -239,17 +245,34 @@ def test_rclone_streamed_manifest_is_canonical_and_covers_every_input(tmp_path: 
             selection=selection,
             entries=iter(rows[:1]),
         )
+    with pytest.raises(ValueError, match="sealed selection"):
+        _write_delivery_manifest(
+            tmp_path / "repeated-member.json",
+            delivery_id="e" * 64,
+            selection=selection,
+            entries=iter((rows[0], rows[0])),
+        )
+    with pytest.raises(ValueError, match="sealed selection"):
+        _write_delivery_manifest(
+            tmp_path / "altered-role.json",
+            delivery_id="e" * 64,
+            selection=selection,
+            entries=iter(
+                (rows[0], (inputs[1].model_copy(update={"role": "stove0.other/v1"}), {"a": 2}))
+            ),
+        )
 
 
+@pytest.mark.parametrize("subject_ids", [("one", "two"), ("z-last", "a-first")])
 def test_rclone_execution_delivers_canonical_manifest_for_exact_opaque_members(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, subject_ids: tuple[str, str]
 ) -> None:
     payload = b"x"
     subjects = tuple(
         _subject(name, character * 64).model_copy(
             update={"sha256": hashlib.sha256(payload).hexdigest()}
         )
-        for name, character in (("one", "1"), ("two", "2"))
+        for name, character in zip(subject_ids, ("1", "2"), strict=True)
     )
     evidence = _hint_evidence(subjects, ({"components": ["Album", "clip.bin"]}, None))
     inputs = tuple(InputArtifact.model_validate(item.model_dump(mode="json")) for item in subjects)
