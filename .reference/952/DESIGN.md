@@ -1,183 +1,154 @@
-# #952: meaning, prose, and compiled publication
+# #952: front-matter authoring and review of prepared outputs
 
-This reference is subordinate to issue #952 and subsequent maintainer decisions.
-It is a concrete design/compiler experiment, not a production patch or complete
-coverage extractor. Base: `802ed38225b4ecd9aacd1b7dc3de51a1b1fd1905`.
+Subordinate to #952 and subsequent maintainer decisions. This revision supersedes
+the experiment at `6540d5500361b274192f34ef7d11ab5c71a728e8` without rewriting it.
+The audited code base remains `802ed38225b4ecd9aacd1b7dc3de51a1b1fd1905`.
 
-## The dividing point
+## Decisions
 
-A sentence can be a contract. A string in executable metadata can be editorial.
-Classify by whether changing it changes promised behavior/identity or explains the
-same promise, not by the filename or the spelling `description`.
+Source owns meaning; the release corpus owns editorial expression. Preserve source
+membership, names, defaults, signatures, encodings, guarantees, diagnostics, legal
+facts and useful development context. A guarantee in prose remains source-owned.
+Audit mixed fields before relocation; do not strip every `description` key. A
+one-time deliberate semantic representation rebaseline is permitted, not loss of
+promises. Thereafter prose alone changes artifact/document identities, not Closure.
 
-Source remains authoritative for membership, types, units, defaults, bounds,
-security and recovery guarantees, legal facts, dependency/ownership relationships,
-identifiers, diagnostics and operative examples. Keep useful maintainer comments,
-internal docstrings and the terse main architecture map. Never move a guarantee
-only into optional documentation just because it was embedded in a help string.
+The corpus supplies release-quality CLI/OpenAPI/Python/package/image prose. It is a
+release BUILD input, not a Pages overlay. Source-owned adapters select native slots;
+authors cannot supply import paths, arbitrary patches or executable transforms.
 
-The release corpus owns human summaries, usage explanations, native help prose,
-OpenAPI annotations, public Python reference prose and editorial package/OCI text.
-The prose must be projected into the actual shipped surfaces, not added only to
-Pages. Normal main development keeps syntax, meaningful diagnostics and visibly
-unreleased terse context; development fallback is not accepted release copy.
+The human flow is plan, write Markdown, inspect a prepared candidate, approve/promote
+its exact artifacts. The previous central JSON index and committed review.json are
+removed. A generated manifest is not an authored registry or proof of human reading.
 
-This revises #950's minimal authoring restriction without undoing its source-only
-storage, immutable products, installation index, authority fencing, or history work.
-Do not rewrite #950 or revive a generated-content branch. Full v1 prose and release
-selection remain #440/#444 work, not a prerequisite to this machinery checkpoint.
+## One metadata location: the Markdown document
 
-## Three identity domains and one acyclic pipeline
+One orphan release-documentation branch contains a complete subtree per release.
+Scan every permitted .md file in that subtree in sorted order. Each has one leading
+--- YAML block, one stable document ID and a reference or guide kind. The schema in
+source.schema.json describes the PARSED front matter, not an authored JSON file.
+No file inventory or version is repeated in a central corpus config. Metadata is
+excluded from displayed prose. Long prose remains the Markdown body.
 
-1. Code/source semantics: exact code SHA and source-derived semantic Closure.
-2. Authored inputs: exact docs commit and selected version subtree, with an exact
-   path/byte digest ledger. Whitespace changes are source changes, not silently
-   normalized away. Review state is separately identified.
-3. Compiled/built outputs: policy/compiler/toolchain, normalized Documentation Record,
-   native resources, metadata, packages/images, Render and qualification identities.
+A reference document's subjects pair exact targets with short summaries. An optional
+body selector chooses its complete body (`#`) or a named heading section (`#count`).
+A selected section includes subordinate headings and stops at its next peer/ancestor.
+Omitting body means summary-only; do not attach a whole page to every member by
+accident. A guide lists relevant subject targets but grants no implicit coverage.
+Multiple related subjects can share one file; no per-scalar document mandate.
 
-Discover meaning and documentation obligations before consuming prose. Then compile
-prose and prepare source, build artifacts, rediscover/check the same semantics from
-installed artifacts, validate their actual documentation, and qualify/sign/publish.
-Code-only qualification is insufficient for prose-injected runtime artifacts. A
-signature cannot be an input required to build the very bytes it approves.
+Document identity is independent of path. Moves preserve binding identity but change
+captured source identity. Duplicate document IDs or authoritative subject bindings
+fail. An unlinked valid document is included, not silently dropped as an orphan.
+Unexpected files and Markdown without valid front matter fail this reference profile.
 
-Current prepared-source proof permits version and lockfile preparation. Add an exact
-allowlist of deterministic documentation resource/metadata transformations, not a
-blanket dirty-tree exception. The produced sdist must rebuild its documented wheel
-without Git or another branch. Stage static packaging metadata BEFORE the backend
-reads it, or use a deliberately supported dynamic field; never override a declared
-static field inside a backend or patch built/signed wheel metadata afterward.
+The runnable parser uses PyYAML BaseLoader node composition, string-only scalars and
+explicit token/schema checks. It rejects duplicate/merge keys, anchors, aliases,
+explicit tags/directives, complex keys and unsupported metadata. All prose/identity
+scalars remain strings: on, false and dates do not undergo implicit type conversion.
+Header byte and nesting budgets are operational protections. This is a constrained
+application profile over a real YAML parser, not a custom YAML interpreter.
 
-A change to artifact descriptions can change wheel/image hashes without changing
-semantic Closure. The current projection includes some package/authority prose, so
-first make and record the narrow representation rebaseline. Do not demand the old
-hash survive, and do not strip every key named `description` to force invariance.
+Targets retain native element identity plus a verified object-member pointer or
+named member. Named CLI/Python members are not parameters/0. The NATIVE producer
+must establish ownership and slot eligibility; JSON Pointer existence is insufficient.
+The prototype consumes an already-trusted obligation ledger, not a user inventory.
 
-## Authoring contract
+## Requirements without author bookkeeping
 
-One orphan `release-documentation` branch; one self-contained subtree per version.
-No code/history merges, executable build files, symlinks, or cross-version file
-includes. The exact selected commit is an input; branch tips are navigation only.
+Source policy derives authored obligations, genuine canonical reuse and structural
+facets using the existing registry/discovery/owner maps. Account for all meaningful
+members across the current interface families; no blanket self-describing waiver,
+inferred aliases, legacy-text auto-pass or parent paragraph covering descendants.
+A schema's type bit is a generated facet, not an excuse to require prose boilerplate.
 
-`documentation.json` is an index, not a giant escaped book. The tested subset is in
-`source.schema.json`: entries bind a target to a one-line plain summary and optional
-Markdown body; guides bind a Markdown body to explicit existing subjects. JSON is
-the sole ownership metadata location; no parallel front matter is required.
+`documentation_plan` exposes missing/covered/structural subjects with their native
+authority/interface and exact targets. Production should add friendly names and
+optional explicitly requested starter files with no invented prose. It must not
+rewrite existing docs or treat empty starters as completion.
 
-A target is either:
+`compile_corpus(..., final=False)` permits incomplete previews and reports missing
+subjects. `final=True` requires complete structural coverage, NOT human approval.
+There is no proposed_review API or review.json input. Source/compiler/policy/corpus
+changes are bound through generated preparation evidence and invalidate a selected
+candidate, rather than requiring an author to refresh committed hash stamps.
 
-```json
-{"element_id":"<real existing id>","pointer":""}
-```
+## Markdown safety and destinations
 
-or an exact object-key member pointer validated by the native owner map, or a
-named member such as:
+Use the pinned Markdown parser. The experiment recognizes then rejects raw HTML and
+unsafe schemes, validates parsed links and fragments, and treats fences as data.
+Logical heading IDs are deterministic; emitted DOM IDs are prefixed doc- to avoid
+uncontrolled document names. Body selectors and ordinary Markdown links use logical
+heading slugs; the compiler maps them to emitted IDs. Duplicate headings fail.
 
-```json
-{"element_id":"<real CLI command id>","member":{"kind":"cli-parameter","key":"host"}}
-```
+The runnable subset supports Markdown only, not binary images/assets. Production
+must implement the issue's explicit safe asset policy and source ledger without
+silently omitting selected inputs. Exact original bytes include front matter and
+line endings; compiled HTML/plain text is a separate product.
 
-The typed member form avoids binding an option to `parameters/0` when insertion or
-reordering changes that array. A source-owned resolver joins the stable native name
-to its current exact witness. Python parameter/result selectors follow the same
-principle. Extending member kinds is a source-policy change, not arbitrary author
-input. A JSON Pointer's existence alone is not ownership or a documentation slot.
-The reference compiler consumes a trusted already-resolved requirement ledger; it
-DOES NOT establish native pointer ownership or extract the complete inventory.
+The prototype's intermediate HTML is not a second production site. Integrate its
+concepts with the existing Contract Render and source-owned routes. Native terminal,
+OpenAPI, Python and package destinations need context-correct links and deterministic
+projections; a Pages-relative path is not automatically an offline native link.
 
-Production may support explicitly listed flat entry shards and safe raster assets.
-The runnable subset deliberately refuses images, shards and unknown files until
-those policies are implemented. Do not mistake that subset for a mandate to inline
-long text. The issue defines the complete integration outcome. Do not add a custom
-Markdown framework, recursive includes, arbitrary JSON patches, or executable data.
+## One prepared candidate, not two approval ceremonies
 
-## Requirement policy and review
+Use optional cheap authoring previews, followed by the existing nonpublishing release
+preparation. Stage approved documentation resources/metadata before building actual
+artifacts. Read prose BACK OUT of the installed wheels/apps/images and compare each
+destination to its expected projection. Generate a browsable review index containing
+those observed readouts, the rendered documentation, source links and coverage.
+A UI made solely from the compiler's expected strings is not native-output evidence.
 
-The exact source derives the set of obligations using the existing registry,
-Closure owners, native parser/signature structure and schema traversal. All 23
-current interface families need dispositions; new kinds fail classification.
-A command root is not a substitute for all its parameters. A public schema/export
-root is not a substitute for meaningful members. Conversely, a schema's `type` and
-`required` bits need generated representation, not separate made-up paragraphs.
+The candidate manifest binds exact code and docs commits, full source-file ledger,
+semantic Closure, requirements/policy, compiler/toolchain, compiled record, actual
+readouts, review packet and artifact hashes. Reuse existing release manifest/checksum
+mechanisms. Keep signatures external to the bytes they approve; no self-hash cycle.
 
-The producer marks each obligation authored, a real canonical reference, or a
-structural facet. Authors cannot set `self_describing`, inject defaults, invent an
-alias, or cover unknown subjects. Canonical reuse must follow a verified source
-relationship and remain contextually accurate. Equal types or similar names do not
-prove equal meaning. A shared guide may explain multiple explicitly bound subjects;
-it does not implicitly waive all descendants.
+The maintainer reviews THAT prepared candidate. Existing protected/offline release
+approval selects and signs its exact asset set, including reviewable evidence. Prefer
+promotion of the same bytes without rebuilding. A changed input, output, artifact or
+review packet requires a new candidate/review; rebuilding cannot silently reuse an
+old approval. Destination representations differ intentionally, but each actual
+released destination must equal its own reviewed projection.
 
-The compiler reports every unresolved obligation and accepts incomplete previews.
-A final build rejects unresolved requirements. Native destination parity and actual
-journey execution are additional gates: structural coverage is not prose correctness.
+`candidate.py` demonstrates binding and stale/altered candidate refusal. Its selected
+argument is trusted caller input; it is NOT an authentication/signature API. Tests use
+real argparse readouts but synthetic artifact bytes, NOT built Riverhog wheels/images.
+The helpers cannot prove an observation came from an artifact: production must own
+that extraction step. Nor can hashes prove truthful prose or that a human read it.
+Independent tests, executed journeys and human semantic judgment retain their roles.
 
-Keep review state small. `review.json` binds semantic Closure, requirement ledger
-(including policy) and corpus byte-ledger identity. It excludes itself from the
-corpus digest to avoid a cycle; its bytes remain in the full source ledger/archive.
-`proposed_review()` is an explicit review aid and requires complete coverage.
-Ordinary builds never create or refresh it. Editing meaning, requirements or source
-prose invalidates a copied record. It is NOT a signature or proof of human review;
-the existing protected/offline release approval approves the resulting exact assets.
+## Native integration map and retained boundaries
 
-The reference's report serializer and `*-reference/v1` identities are not new
-production canonical formats. Integration must use Riverhog's native RFC 8785
-codec and manifest mechanisms. The supplied `complete: true` fixture is a trust
-boundary: a production coordinator must derive it, not accept it from the corpus.
+| Existing seam | Required integration |
+|---|---|
+| documentation.py and branch validator | Exact subtree capture, front matter, safe Markdown/assets and complete source ledger |
+| discovery, owner maps, INTERFACE_REGISTRY | Complete native requirement and member-slot producer; no hand-maintained API registry |
+| contract_freeze, structural_json_schema | Explicit mixed-field disposition and semantic rebaseline, no broad key removal |
+| cli_documentation and native CLI/API hooks | Compiled prose into actual destinations; preserve parsing/schema/signatures |
+| prepared_source and build_release_evidence | Bounded transforms BEFORE backend builds; self-contained sdists/resources and metadata parity |
+| release manifest and workflow_evidence | Bind exact code+docs+compiler+prepared artifacts and actual readouts; preserve trusted coordinator separation |
+| Contract Render and Pages | One browsable prepared review packet; immutable historical render/index assembly and verified-byte copying |
+| existing protected approval/offline signing | Select and promote exact reviewed candidate; no new approval registry |
 
-## Markdown and destinations
+Native helpers remain small demonstrations: argparse, operation-level OpenAPI, owned
+Python functions and preparation of a metadata table. Click, nested/shared schemas,
+immutable Python objects, OCI, package-local loading and actual sdist/wheel/image builds
+remain integration work. Respect static/dynamic metadata rules and never patch a built
+or signed wheel. Independent recovery/components must not acquire a monorepo docs
+runtime. Keep useful development fallbacks, but reject them as final prose coverage.
 
-Use the pinned markdown-it-py parser. The experiment parses Markdown ASTs, refuses
-raw HTML and unsafe schemes, validates local files/fragments, and never executes
-fences. It captures original bytes independently from compiled HTML/plain text.
-It rejects heading collisions, case-colliding paths, control sequences and orphans.
-Reference links ending in `.md` become `.html` in the intermediate HTML; original
-Markdown stays unchanged. Production must resolve links through the EXISTING
-Contract Render, not publish this experiment as a second application.
+Keep #950's exact upstream evidence, installation indexes, source-vs-coordinator split,
+offline signing, whole-site freshness, capacity controls and history custody. Actual
+v1 prose and publication remain #440/#444 work. No history or release ref changes here.
 
-`contract:<percent-encoded existing element ID>` is a compile-time link. The trusted
-renderer supplies its actual route; missing subjects/routes fail. The corpus cannot
-invent those routes. Exported OpenAPI, terminal help and package descriptions need
-explicit context-appropriate links, not an assumption that a Pages-relative href
-works everywhere. Native consumers must not fetch a moving branch or full corpus.
+## Finite handoff
 
-The native seams here demonstrate literal argparse help (including percent-format
-hazards), operation-level OpenAPI prose, owned Python docstrings without wrappers,
-and preparation of a new project metadata table. They are NOT exhaustive adapters:
-Click, nested/shared schemas, compiled/immutable Python exports, wheel builds, OCI,
-package-local resource loading and cross-context link projection require integration.
-Independent recovery/components must not acquire a monorepo documentation dependency.
-
-## Actual migration map
-
-| Existing seam | Required change | Evidence |
-|---|---|---|
-| `contract_atlas/documentation.py` authoring-tree validator and `AuthoredDocumentation` | Resolve a pinned subtree/file ledger, compile v2 index plus Markdown, carry source bytes and review fence | Dirty checkout cannot alter selected content; missing/extra/unsafe paths fail |
-| `contract_atlas/cli_documentation.py` | Replace release parser-prose extraction as editorial authority with a compiled prose projection; retain native syntax/discovery | Installed Click and argparse help match selected prose while parsing/defaults are unchanged |
-| `contract_freeze.py`, `model.py::structural_json_schema`, discovered owner maps | Field-family semantic disposition and real member obligations | Property named `description` survives; semantic promises never disappear |
-| `model.py::INTERFACE_REGISTRY`, member discovery | Closed requirement profiles and canonical-reuse witnesses | Every interface/member classified; new kinds and missing children fail |
-| `generation.py::prepared_source`, `build_candidate` | Exact multi-input preparation proof and generated resources before release build | Only approved transforms; reproducible prepared source and installed semantic parity |
-| `release.py::build_release_evidence`, package `pyproject.toml`, Docker build metadata | Stage editorial fields/resources before artifacts are built; archive inputs | sdist-to-wheel/offline parity; metadata, licenses, coordinates and dependencies remain correct |
-| `html_rendering.py`, `publication.py`, `contract_pages.py` | Consume compiled record and full exact corpus archive through existing pipeline | Documentation/Audit modes and immutable historical bytes; installation indexes retained |
-| qualification/preparation/publication workflows and `workflow_evidence.py` | Qualify the exact code+docs+compiler+prepared artifact tuple | A previous code-only or different-docs run cannot authorize the new assets |
-| documentation authoring workflow and policy tests | Preview/coverage/review command plumbing on trusted main coordinator | No corpus code execution or automatic review stamping |
-
-Current qualification coordination is separate from selected source after #950's
-last fix. Preserve that distinction: the coordinator is not imported accidentally
-from a historical source checkout. Retain whole-site freshness, installation-index
-verified-byte copying, offline signing and upstream-run provenance checks.
-
-## Ordered slices and finite stopping point
-
-1. Meaning/prose field disposition, precise rebaseline and development fallbacks.
-2. Exact subtree compiler, Markdown/index format, safe links and source archive.
-3. Complete native requirement producer, reports and explicit review binding.
-4. Native resource/metadata adapters and deterministic prepared-source proof.
-5. Built-artifact semantic AND documentation parity; qualification ordering.
-6. Multi-version synthetic publication/installation/site witnesses, then standard
-   integration gates. No actual v1 prose/publication is necessary for this issue.
-
-Do not merge the reference wholesale. The core compiler experiment tests the join,
-not the truth/completeness of the producer. No universal proof of prose correctness,
-per-scalar bureaucratic inventory, arbitrary source-patch engine, new ontology or
-parallel CMS is requested. Human reading and executable journeys retain their roles.
+Implement ownership migration, native requirements, front-matter compiler, adapters,
+prepared review packet and exact promotion checks through normal integration. The
+reference's serializer is not Riverhog JCS; use native canonicalization in production.
+The reference ledger's complete=true is a trust boundary, not completeness proof.
+Do not copy the branch workflow as a new permanent gate or mechanically merge this
+experiment. No corpus/CMS framework, invented compatibility layer or automated prose
+truth certification is requested. Human reading and executable journeys retain their roles.

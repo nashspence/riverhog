@@ -1,45 +1,149 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:riverhog:reference:952:documentation-source",
-  "title": "Reference subset of the proposed release documentation source v2",
+  "$id": "urn:riverhog:reference:952:document-front-matter",
+  "title": "Parsed strict YAML front matter; Markdown body is separate",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "entries", "guides"],
+  "required": [
+    "format",
+    "id",
+    "kind",
+    "title",
+    "subjects"
+  ],
   "properties": {
-    "format": {"const": "riverhog-release-documentation-source/v2"},
-    "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
-    "guides": {"type": "array", "items": {"$ref": "#/$defs/guide"}}
+    "format": {
+      "const": "riverhog-release-documentation-document/v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "kind": {
+      "enum": [
+        "reference",
+        "guide"
+      ]
+    },
+    "title": {
+      "$ref": "#/$defs/line"
+    },
+    "subjects": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true
+    }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "reference"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "subjects": {
+            "items": {
+              "$ref": "#/$defs/entry"
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "subjects": {
+            "items": {
+              "$ref": "#/$defs/target"
+            }
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
-    "line": {"type": "string", "minLength": 1, "pattern": "^[^\\r\\n\\t]+$"},
-    "body": {"type": "string", "pattern": "^[^/\\\\].*\\.md$"},
+    "line": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\r\\n\\t]+$"
+    },
     "target": {
       "oneOf": [
-        {"type": "object", "additionalProperties": false,
-         "required": ["element_id", "pointer"],
-         "properties": {"element_id": {"type": "string", "minLength": 1}, "pointer": {"type": "string", "pattern": "^(?:$|/)"}}},
-        {"type": "object", "additionalProperties": false,
-         "required": ["element_id", "member"],
-         "properties": {"element_id": {"type": "string", "minLength": 1},
-           "member": {"type": "object", "additionalProperties": false,
-             "required": ["kind", "key"], "properties": {
-               "kind": {"enum": ["cli-parameter", "python-parameter", "python-result"]},
-               "key": {"type": "string", "minLength": 1}
-             }}}}
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "element_id",
+            "pointer"
+          ],
+          "properties": {
+            "element_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "pointer": {
+              "type": "string",
+              "pattern": "^(?:$|/)"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "element_id",
+            "member"
+          ],
+          "properties": {
+            "element_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "member": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "key"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "cli-parameter",
+                    "python-parameter",
+                    "python-result"
+                  ]
+                },
+                "key": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "entry": {
-      "type": "object", "additionalProperties": false,
-      "required": ["target", "summary"],
-      "properties": {"target": {"$ref": "#/$defs/target"}, "summary": {"$ref": "#/$defs/line"}, "body": {"$ref": "#/$defs/body"}}
-    },
-    "guide": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "title", "body", "subjects"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "summary"
+      ],
       "properties": {
-        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
-        "title": {"$ref": "#/$defs/line"}, "body": {"$ref": "#/$defs/body"},
-        "subjects": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/target"}}
+        "target": {
+          "$ref": "#/$defs/target"
+        },
+        "summary": {
+          "$ref": "#/$defs/line"
+        },
+        "body": {
+          "type": "string",
+          "pattern": "^#"
+        }
       }
     }
   }

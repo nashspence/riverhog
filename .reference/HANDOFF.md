@@ -1,80 +1,78 @@
 # NON-AUTHORITATIVE EXTERNAL REFERENCE
 
-Owning issue: #952. Convention: #903. Related predecessor: #950.
-Audited base: `main` @ `802ed38225b4ecd9aacd1b7dc3de51a1b1fd1905`.
-Audited base tree: `079c49f5ea400d891d2ee5e6453a38afebfb51b9`.
+Issue: #952. Convention: #903. Predecessor: #950.
+Audited code base: main @ `802ed38225b4ecd9aacd1b7dc3de51a1b1fd1905`.
+Base tree: `079c49f5ea400d891d2ee5e6453a38afebfb51b9`.
+This revision is a child of prior reference `6540d5500361b274192f34ef7d11ab5c71a728e8`.
+It supersedes that handoff's JSON-index/review-stamp design without rewriting history.
 
 Produced by: OpenAI ChatGPT.
 Model: GPT-6 Astra Pro (user-visible identity).
 Configuration/effort: not exposed; no hidden configuration claim.
 Requested by: Nash Spence, Riverhog maintainer.
-Published by: OpenAI ChatGPT through the connected GitHub tool, on the maintainer's behalf.
-Date: 2026-10-03.
+Published by: OpenAI ChatGPT through the connected GitHub tool on the maintainer's behalf.
+Date: 2026-10-03 (maintainer timezone).
 
-## Purpose
+## Purpose and contents
 
-Settle meaning versus editorial presentation, define a multi-file release corpus,
-source-derived requirements and explicit review fence, and show testable compiler
-and native projection seams. Start at `952/DESIGN.md`; `952/RESEARCH.md` records primary
-sources and implementation consequences. `source.schema.json` is the strict runnable
-subset. `compiler.py` and `test_compiler.py` contain synthetic witnesses, not a real
-v1 documentation corpus or a completed production integration.
+Use Markdown front matter as the single authored identity/binding location. Remove
+central documentation.json and committed review.json from the proposed authoring model.
+Keep source-owned meaning and complete discovery-derived obligations. Make the human
+trust stage inspection of ONE actual prepared candidate, approved by the existing
+protected/offline release mechanism and promoted without unnoticed rebuilding.
 
-The experiment compiles captured Markdown and summaries against SOURCE-owned
-requirements, rejects unowned/duplicate targets and invented waivers, checks local
-links, binds exact source bytes, distinguishes preview from final completeness, and
-keeps explicit review state separate from release authorization. Small adapters show
-literal argparse help, operation-level OpenAPI annotations, owned Python docstrings,
-and prepared project metadata without changing the underlying business semantics.
+Start with `952/DESIGN.md`, then `952/AUTHORING.md` for a tested human-facing example.
+`compiler.py` supplies a strict YAML/Markdown reference compiler and coverage plan;
+`source.schema.json` describes parsed front matter, not an authored JSON index.
+`candidate.py` demonstrates generated candidate binding and altered/stale-byte refusal.
+Tests exercise these helpers plus small native projection seams. RESEARCH.md records
+primary references and integration consequences. The branch-specific workflow is an
+isolated reference check, not another permanent production gate.
 
 ## Validation actually performed
 
-- Acquired a full Git clone pinned to the audited SHA through the read-only clone
-  gateway, not a reconstructed source-only snapshot. Archive SHA-256:
-  `34618aa86bd5cf8abb63429213232ae84bdc4237141d6fc969d15cf8ccb0f29c`.
-- Verified the gateway manifest SHA-256 and all 1,359 exported file hashes, sizes and
-  modes (including Git payload files), then verified actual HEAD/tree, clean status,
-  and `git fsck --full` before adding this reference.
-- Ran the isolated compiler/schema/Git/native-seam test suite locally on Python
-  3.13.5, markdown-it-py 4.2.0 and jsonschema 4.26.0. Results for the final supplied
-  tree and exact pushed reference SHA are recorded in the owning issue.
-- Compiled Python reference modules. No production source or workflow was changed
-  except a new branch-specific read-only reference-check workflow.
-- Inspected actual Closure examples from an earlier retained artifact with the
-  recorded `1c17175e...` identity. This was not fresh native generation.
+Verified the complete downloaded clone at the prior handoff SHA, including all 1,366
+exported file sizes/SHA-256s/modes, exact HEAD/tree and `git fsck --full` before edits.
+Archive SHA-256: `991f52f17fa48be612acd83d57c729d3b0df55b6fb42159498c07628ff4d6d99`.
+Manifest SHA-256: `b902fdd2d416cb43991c4b3f18d01e94083f2ea4ba1877331e27bdaa72ac1129`.
 
-## Limits and integration notice
+40 isolated tests passed locally with markdown-it-py 4.2.0, PyYAML 6.0.3 and
+jsonschema 4.26.0. Compilation and diff whitespace checks passed. The owning issue's
+superseding handoff comment records exact published commit/tree and hosted results.
 
-This is ADDITIVE REFERENCE MATERIAL, not a production patch. The full native
-requirement/discovery producer, pointer ownership resolver, source field disposition,
-semantic rebaseline, full Click/schema/Python/image adapters, package-local resources,
-sdist/wheel rebuilding, workflow migration and end-to-end release qualification
-remain integration work. The compiler trusts its requirement ledger as a source-owned
-input; a caller cannot claim completeness merely by supplying `complete: true`.
+Witnesses include strict YAML refusal, string-only scalar interpretation, missing
+child obligations, exact member sections, duplicate IDs, file moves, valid unlinked
+pages, source-only canonical reuse, unsafe Markdown/links/control sequences, exact Git
+capture despite a dirty checkout, literal argparse percent and unchanged parsing,
+OpenAPI wire fields named description, unchanged Python callable signatures, technical
+metadata preservation, and invalidation of changed candidate inputs/artifacts/readouts.
+AUTHORING.md's two front-matter examples compile against the synthetic requirement set.
 
-The runnable subset supports JSON/Markdown, not assets or shards. Its intermediate
-HTML/link routes are not a second production site. Its plain-text projection and
-native seams are witnesses, not full output-compatibility implementations. The schema
-uses the proposed v2 source vocabulary but is not a published public format.
+## Not validated / limitations
 
-Reference report hashing is deliberately named separately; replace it with native
-Riverhog canonicalization and existing production manifests during integration.
-Installing the missing native `rfc8785==0.1.4` dependency failed on DNS resolution.
-The full pinned Python 3.12.3 / uv 0.11.24 Riverhog environment, native generation,
-all repository gates, browser/OCI/platform/provider/release qualification were NOT
-run. Focused reference checks must not be called full Riverhog qualification.
+This is an experiment, not a completed production patch. Complete native requirement
+extraction and owner/slot validation remain integration work. An input ledger saying
+complete=true is not proof of completeness. The helpers do not prove the source
+producer's truth, human prose accuracy or human approval.
 
-No main/release code branch, documentation-authoring tree, product/maintenance tag,
-release, Pages deployment, or history rewrite is changed by this reference. The
-GitHub commit's publication metadata does not replace the producer record above.
+The runnable profile captures Markdown only; binary assets/images remain refused.
+Intermediate HTML is not another production site. Native seams cover argparse,
+operation OpenAPI, owned Python functions and a metadata table, not full Click/shared
+schema/OCI/resource/sdist/wheel integration. Candidate tests use actual argparse output
+but synthetic package bytes. The candidate helper validates identity only; production
+must extract observations from real artifacts and use the real signing/approval path.
+Reference serialization is not Riverhog JCS. Reuse native codecs and release manifests.
 
-Creation, testing, publication, native issue linkage, or request by an authorized
-repository agent does not establish or extend accepted design, contract, release
-requirements, or integration authority. The owning issue and subsequent maintainer
-decisions control. Reconcile through the then-current normal integration rail; do
-not merge mechanically. The exact reference SHA in #952 is the handoff identity;
-the branch name is navigation only. Do not force-push away an active published handoff.
+Full locked Riverhog generation, lint/unit/dist/build, browser/platform/image/provider
+and release qualification were not run for this additive reference. Focused tests do
+not replace them. No production callers, protected branches, release-documentation
+corpus, release/tag, Pages deployment or history custody were changed.
 
-Available connector actions do not expose native Development linked-branch creation.
-Record that limitation in #952 instead of claiming a Markdown URL is native linkage
-or creating an auto-closing PR as a substitute.
+## Authority
+
+Creation, testing, publication, requester authority and native issue linkage do not
+make this branch authoritative or authorize integration/release. The current #952
+issue and subsequent maintainer decisions control. Reconcile against current source
+and integrate through the normal rail; do not mechanically merge the experiment.
+The exact published reference SHA in the owning issue is the handoff identity.
+Preserve prior handoffs; retire navigation refs only after owning-issue disposition.

@@ -67,3 +67,23 @@ contain 4,747 root elements across the 23 current interface families, including
 fresh generation of the audited main, and it does not count all documentation member
 obligations. The producer must traverse actual named members; a root count alone
 cannot establish coverage. No generated Closure copy is added to this branch.
+
+## Front-matter and review refinement
+
+[PyYAML's documented token, node and loader APIs](https://pyyaml.org/wiki/PyYAMLDocumentation)
+permit parsing metadata without constructing arbitrary Python objects. BaseLoader
+keeps scalar values as strings; that alone does not reject aliases, duplicate keys,
+merge keys or unknown application fields. The revision layers explicit token/schema
+checks and byte/nesting budgets over those APIs. It uses installed PyYAML 6.0.3 in the
+isolated witness environment; integration must reconcile the native dependency lock.
+
+The Markdown security documentation above also warns against uncontrolled generated
+DOM names. This revision prefixes emitted heading IDs while preserving logical
+Markdown fragment names in authoring. Front matter is excluded from body rendering.
+
+The central index and committed review stamp were a design choice, not a requirement
+of Markdown, Git or the native metadata specifications. The updated owning issue
+chooses co-located front matter and generated candidate evidence instead. Trust comes
+from observing the prepared artifact surfaces, human review, existing offline/protected
+approval, and promotion of those exact bytes. No parser or hashing API proves prose
+accuracy; there is no claim that the reference implements full release attestation.

@@ -2,7 +2,7 @@
 
 Not a production discovery engine or release signer. The producer supplies the full
 obligation ledger. Report encoding below is reference-local, NOT Riverhog's JCS codec.
-No network, template execution, source mutation, or implicit review approval occurs.
+Front matter is the sole authored binding. No network, templates, or approval stamping.
 """
 from __future__ import annotations
 
@@ -14,14 +14,15 @@ import json
 import posixpath
 import re
 import subprocess
+
+import yaml
 from pathlib import PurePosixPath
 from typing import Any, Mapping
 from urllib.parse import unquote, urlsplit
 
 from markdown_it import MarkdownIt
 
-SOURCE = "riverhog-release-documentation-source/v2"
-REVIEW = "riverhog-documentation-review-reference/v1"
+SOURCE = "riverhog-release-documentation-document/v1"
 HEX = re.compile(r"[0-9a-f]{64}\Z")
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 INTERFACES = frozenset({
@@ -106,16 +107,61 @@ def target(value: Any) -> str:
     return report_bytes(value).decode().strip()
 
 
+def front_matter(payload: bytes) -> tuple[dict, str]:
+    """Strict string/list/map YAML; no implicit booleans, tags, aliases or merge keys."""
+    need(isinstance(payload, bytes), "document is not bytes")
+    try:
+        source = payload.decode("utf-8")
+    except UnicodeError as exc:
+        raise Invalid("document is not UTF-8") from exc
+    lines = source.splitlines(keepends=True)
+    need(lines and lines[0].rstrip("\r\n") == "---", "Markdown needs leading front matter")
+    end = next((i for i in range(1, len(lines)) if lines[i].rstrip("\r\n") == "---"), None)
+    need(end is not None, "front matter lacks closing delimiter")
+    header = "".join(lines[1:end])
+    need(len(header.encode()) <= 65536, "front-matter operational budget exceeded")
+    try:
+        for token in yaml.scan(header, Loader=yaml.BaseLoader):
+            need(not isinstance(token, (yaml.tokens.AliasToken, yaml.tokens.AnchorToken,
+                                         yaml.tokens.TagToken, yaml.tokens.DirectiveToken)),
+                 "YAML aliases, anchors, tags and directives are forbidden")
+        node = yaml.compose(header, Loader=yaml.BaseLoader)
+    except (yaml.YAMLError, RecursionError) as exc:
+        raise Invalid("invalid bounded YAML front matter") from exc
+    def convert(item, depth=0):
+        need(depth <= 16, "front-matter nesting budget exceeded")
+        if isinstance(item, yaml.ScalarNode):
+            return item.value
+        if isinstance(item, yaml.SequenceNode):
+            return [convert(child, depth + 1) for child in item.value]
+        need(isinstance(item, yaml.MappingNode), "front matter must use string/list/map values")
+        result = {}
+        for key_node, value_node in item.value:
+            need(isinstance(key_node, yaml.ScalarNode), "YAML keys must be strings")
+            key = key_node.value
+            need(key != "<<" and key not in result, "duplicate or merge YAML key")
+            result[key] = convert(value_node, depth + 1)
+        return result
+    metadata = convert(node)
+    need(isinstance(metadata, dict) and set(metadata) == {"format", "id", "kind", "title", "subjects"}
+         and metadata["format"] == SOURCE and isinstance(metadata["kind"], str)
+         and metadata["kind"] in {"reference", "guide"} and isinstance(metadata["id"], str)
+         and re.fullmatch(r"[a-z][a-z0-9-]*", metadata["id"]) is not None
+         and isinstance(metadata["subjects"], list) and bool(metadata["subjects"]),
+         "invalid document metadata")
+    text(metadata["title"], line=True)
+    return metadata, "".join(lines[end + 1:])
+
+
 def capture_git(repository: str, commit: str, version: str) -> dict[str, bytes]:
-    """Capture regular JSON/Markdown files from an exact object, not a live checkout."""
+    """Capture the complete version subtree once; this runnable profile permits Markdown only."""
     need(bool(SHA.fullmatch(commit)), "exact documentation commit required")
     need(re.fullmatch(r"v1\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)", version) is not None,
          "exact final version subtree required")
     def git(*args):
         return subprocess.check_output(["git", "-C", repository, *args], stderr=subprocess.PIPE)
-    rows = git("ls-tree", "-rz", commit, "--", version + "/").split(b"\0")
     files = {}
-    for row in rows:
+    for row in git("ls-tree", "-rz", commit, "--", version + "/").split(b"\0"):
         if not row:
             continue
         metadata, raw = row.split(b"\t", 1)
@@ -124,9 +170,9 @@ def capture_git(repository: str, commit: str, version: str) -> dict[str, bytes]:
         need(name.startswith(version + "/") and mode == "100644" and kind == "blob",
              "corpus contains a non-regular source")
         relative = path_name(name[len(version) + 1:])
-        need(relative.endswith((".json", ".md")), "reference capture supports JSON/Markdown only")
+        need(relative.endswith(".md"), "reference capture permits Markdown only, not indexes/review stamps")
         files[relative] = git("cat-file", "blob", oid)
-    need("documentation.json" in files, "missing version documentation index")
+    need(bool(files), "selected subtree contains no documentation")
     return files
 
 
@@ -155,148 +201,151 @@ def obligations(requirements: dict) -> dict[str, dict]:
     return rows
 
 
-def compile_corpus(files: Mapping[str, bytes], requirements: dict, *, final: bool = False, routes: Mapping[str, str] | None = None) -> dict:
-    """Preview lists missing obligations; final also requires a matching review fence."""
-    captured = dict(files)
-    need(0 < len(captured) <= 10000 and sum(map(len, captured.values())) <= 32_000_000,
-         "reference corpus operational budget exceeded")
-    names = set()
-    for name, payload in captured.items():
-        path_name(name)
-        need(name.casefold() not in names and isinstance(payload, bytes), "case collision/bad bytes")
-        names.add(name.casefold())
-    rows = obligations(requirements)
-    index = read_json(captured.get("documentation.json", b""))
-    need(isinstance(index, dict) and set(index) == {"format", "entries", "guides"}
-         and index["format"] == SOURCE and isinstance(index["entries"], list)
-         and isinstance(index["guides"], list), "unknown index schema")
-    entries, used, pages = {}, {"documentation.json"}, set()
-    for entry in index["entries"]:
-        need(isinstance(entry, dict) and set(entry) <= {"target", "summary", "body"}
-             and {"target", "summary"} <= set(entry), "unknown editorial fields")
-        key = target(entry["target"])
-        need(key in rows and key not in entries and rows[key]["rule"] == "authored",
-             "unknown, duplicate, unowned or non-authorable target")
-        text(entry["summary"], line=True)
-        if "body" in entry:
-            name = path_name(entry["body"])
-            need(name.endswith(".md") and name in captured, "missing Markdown body")
-            pages.add(name)
-        entries[key] = copy.deepcopy(entry)
-    guide_ids = set()
-    for guide in index["guides"]:
-        need(isinstance(guide, dict) and set(guide) == {"id", "title", "body", "subjects"}, "bad guide")
-        need(isinstance(guide["id"], str) and re.fullmatch(r"[a-z][a-z0-9-]*", guide["id"])
-             and guide["id"] not in guide_ids, "duplicate/invalid guide ID")
-        guide_ids.add(guide["id"])
-        text(guide["title"], line=True)
-        keys = [target(t) for t in guide["subjects"]]
-        need(bool(keys) and len(keys) == len(set(keys)) and set(keys) <= set(rows), "unresolved guide subjects")
-        name = path_name(guide["body"])
-        need(name.endswith(".md") and name in captured, "missing guide Markdown")
-        pages.add(name)
-
+def _render_pages(bodies: Mapping[str, str], rows: dict, routes: Mapping[str, str] | None) -> dict:
     md = MarkdownIt("commonmark", {"html": True})
-    # Parse unsafe schemes as links so our policy rejects rather than silently dropping them.
+    # Recognize unsafe syntax, then REJECT it; never return raw HTML tokens.
     md.validateLink = lambda value: True
-    parsed, headings, links = {}, {}, []
-    queue = sorted(pages)
-    while queue:
-        name = queue.pop(0)
-        if name in parsed:
-            continue
-        source = text(captured[name].decode("utf-8"))
+    pages, anchors, links = {}, {}, []
+    for name, source in sorted(bodies.items()):
+        source = text(source)
         tokens = md.parse(source)
-        anchors = set()
-        plain = []
+        headings = {}
         for i, token in enumerate(tokens):
             need(token.type not in {"html_block", "html_inline"}, "raw HTML is not authored markup")
             if token.type == "heading_open":
                 slug = re.sub(r"[^\w-]+", "-", tokens[i + 1].content.casefold()).strip("-") or "section"
-                need(slug not in anchors, "duplicate/colliding heading IDs")
-                anchors.add(slug)
-                token.attrSet("id", slug)
-            if token.type in {"fence", "code_block"}:
-                plain.append(token.content.rstrip())
-            if token.type == "inline":
-                inline = []
-                for child in token.children or []:
-                    need(child.type not in {"html_inline", "image"}, "HTML/images unsupported by reference profile")
-                    if child.type in {"text", "code_inline"}:
-                        inline.append(child.content)
-                    elif child.type in {"softbreak", "hardbreak"}:
-                        inline.append("\n")
-                    if child.type == "link_open":
-                        href = child.attrGet("href") or ""
-                        need(not any(ord(c) < 32 for c in href) and "\\" not in href, "unsafe link bytes")
-                        parts = urlsplit(href)
-                        if parts.scheme == "contract":
-                            element = unquote(parts.path)
-                            need(not parts.netloc and not parts.query and not parts.fragment
-                                 and target({"element_id": element, "pointer": ""}) in rows,
-                                 "unresolved contract link")
-                            need(routes is not None and element in routes, "source renderer route is required")
-                            child.attrSet("href", routes[element])
-                            continue
-                        if parts.scheme or parts.netloc:
-                            need((parts.scheme == "https" and bool(parts.netloc))
-                                 or (parts.scheme == "mailto" and bool(parts.path)), "unsafe link scheme")
-                            continue
-                        need(not parts.query, "local documentation links have no query")
-                        dest = posixpath.normpath(posixpath.join(posixpath.dirname(name), unquote(parts.path))) if parts.path else name
-                        path_name(dest)
-                        need(dest.endswith(".md") and dest in captured, "unresolved local Markdown link")
-                        links.append((dest, unquote(parts.fragment)))
-                        if parts.path:
-                            child.attrSet("href", parts.path[:-3] + ".html" + ("#" + parts.fragment if parts.fragment else ""))
-                        if dest not in parsed:
-                            queue.append(dest)
-                plain.append("".join(inline))
-        parsed[name] = {"markdown": source, "html": md.renderer.render(tokens, md.options, {}),
-                        "plain": "\n\n".join(plain)}
-        headings[name] = anchors
-        used.add(name)
+                need(slug not in headings, "duplicate/colliding heading IDs")
+                headings[slug] = (i, int(token.tag[1:]))
+                token.attrSet("id", "doc-" + slug)
+            for child in token.children or []:
+                need(child.type not in {"html_inline", "image"}, "HTML/images unsupported by reference profile")
+                if child.type != "link_open":
+                    continue
+                href = child.attrGet("href") or ""
+                need(not any(ord(c) < 32 for c in href) and "\\" not in href, "unsafe link bytes")
+                parts = urlsplit(href)
+                if parts.scheme == "contract":
+                    element = unquote(parts.path)
+                    need(not parts.netloc and not parts.query and not parts.fragment
+                         and target({"element_id": element, "pointer": ""}) in rows,
+                         "unresolved contract link")
+                    need(routes is not None and element in routes, "source renderer route is required")
+                    child.attrSet("href", routes[element])
+                    continue
+                if parts.scheme or parts.netloc:
+                    need((parts.scheme == "https" and bool(parts.netloc))
+                         or (parts.scheme == "mailto" and bool(parts.path)), "unsafe link scheme")
+                    continue
+                need(not parts.query, "local documentation links have no query")
+                dest = posixpath.normpath(posixpath.join(posixpath.dirname(name), unquote(parts.path))) if parts.path else name
+                path_name(dest)
+                need(dest in bodies, "unresolved local Markdown link")
+                fragment = unquote(parts.fragment)
+                links.append((dest, fragment))
+                child.attrSet("href", (parts.path[:-3] + ".html" if parts.path else "")
+                              + ("#doc-" + fragment if fragment else ""))
+        anchors[name] = set(headings)
+        def render(start, stop):
+            selected = tokens[start:stop]
+            plain = []
+            for t in selected:
+                if t.type in {"fence", "code_block"}:
+                    plain.append(t.content.rstrip())
+                if t.type == "inline":
+                    plain.append("".join(c.content if c.type in {"text", "code_inline"}
+                                         else "\n" if c.type in {"softbreak", "hardbreak"} else ""
+                                         for c in t.children or []))
+            lines = source.splitlines(keepends=True)
+            first = selected[0].map[0] if selected and selected[0].map else 0
+            last = tokens[stop].map[0] if stop < len(tokens) and tokens[stop].map else len(lines)
+            return {"markdown": "".join(lines[first:last]),
+                    "html": md.renderer.render(selected, md.options, {}), "plain": "\n\n".join(plain)}
+        sections = {"#": render(0, len(tokens))}
+        for slug, (start, level) in headings.items():
+            stop = next((i for i in range(start + 1, len(tokens))
+                         if tokens[i].type == "heading_open" and int(tokens[i].tag[1:]) <= level), len(tokens))
+            sections["#" + slug] = render(start, stop)
+        pages[name] = {**sections["#"], "sections": sections}
     for dest, fragment in links:
-        need(not fragment or fragment in headings[dest], "unresolved Markdown fragment")
-    need(set(captured) - used <= {"review.json"}, "unindexed/orphan corpus file")
+        need(not fragment or fragment in anchors[dest], "unresolved Markdown fragment")
+    return pages
 
-    missing, resolved = [], {}
+
+def compile_corpus(files: Mapping[str, bytes], requirements: dict, *, final: bool = False,
+                   routes: Mapping[str, str] | None = None) -> dict:
+    """Compile all front-matter Markdown. Complete coverage is NOT human approval."""
+    captured = dict(files)
+    need(len(captured) <= 10000 and all(isinstance(v, bytes) for v in captured.values())
+         and sum(map(len, captured.values())) <= 32_000_000, "reference corpus operational budget exceeded")
+    rows = obligations(requirements)
+    documents, bodies, seen_paths, seen_ids, entries, guides = {}, {}, set(), set(), {}, []
+    for name, payload in sorted(captured.items()):
+        path_name(name)
+        need(name.endswith(".md"), "corpus has an index/review stamp or unsupported file")
+        need(name.casefold() not in seen_paths, "case-colliding corpus paths")
+        seen_paths.add(name.casefold())
+        document, body = front_matter(payload)
+        need(document["id"] not in seen_ids, "duplicate document ID")
+        seen_ids.add(document["id"])
+        documents[name], bodies[name] = document, body
+        if document["kind"] == "guide":
+            keys = [target(item) for item in document["subjects"]]
+            need(len(keys) == len(set(keys)) and set(keys) <= set(rows), "unresolved/duplicate guide subjects")
+            guides.append({"id": document["id"], "title": document["title"], "body": name,
+                           "subjects": copy.deepcopy(document["subjects"])})
+            continue
+        for entry in document["subjects"]:
+            need(isinstance(entry, dict) and set(entry) <= {"target", "summary", "body"}
+                 and {"target", "summary"} <= set(entry), "unknown editorial fields")
+            key = target(entry["target"])
+            need(key in rows and key not in entries and rows[key]["rule"] == "authored",
+                 "unknown, duplicate, unowned or non-authorable target")
+            text(entry["summary"], line=True)
+            if "body" in entry:
+                need(isinstance(entry["body"], str) and entry["body"].startswith("#"),
+                     "body selects this document or one heading, not another file")
+            entries[key] = {**copy.deepcopy(entry), "document_id": document["id"], "source_path": name}
+    pages = _render_pages(bodies, rows, routes)
+    for entry in entries.values():
+        if "body" in entry:
+            need(entry["body"] in pages[entry["source_path"]]["sections"], "unresolved body fragment")
     def resolve(key, stack=()):
         need(key not in stack, "cyclic canonical documentation relationship")
         row = rows[key]
         if row["rule"] == "structural":
             return None
         if row["rule"] == "reference":
-            donor = resolve(target(row["canonical"]), (*stack, key))
-            need(rows[target(row["canonical"])] ["rule"] != "structural", "reference targets a structural facet")
-            return donor
+            donor = target(row["canonical"])
+            need(rows[donor]["rule"] != "structural", "reference targets a structural facet")
+            return resolve(donor, (*stack, key))
         return entries.get(key)
-    for key, row in rows.items():
+    missing, resolved = [], {}
+    for key, row in sorted(rows.items()):
         entry = resolve(key)
         if row["rule"] != "structural" and (entry is None or (row["detail"] and "body" not in entry)):
             missing.append(row["target"])
         elif entry is not None:
-            resolved[key] = {**entry, "content": parsed.get(entry.get("body"), {})}
-    ledger = {name: digest(payload) for name, payload in sorted(captured.items()) if name != "review.json"}
-    expected = {"format": REVIEW, "closure_sha256": requirements["closure_sha256"],
-                "requirements_sha256": digest(report_bytes(requirements)),
-                "corpus_sha256": digest(report_bytes(ledger))}
-    review_matches = "review.json" in captured and read_json(captured["review.json"]) == expected
+            content = pages[entry["source_path"]]["sections"][entry["body"]] if "body" in entry else {}
+            resolved[key] = {**entry, "content": content}
+    ledger = {name: digest(data) for name, data in sorted(captured.items())}
     if final:
         need(not missing, "release has unresolved documentation requirements")
-        need(review_matches, "missing/stale review fence; ordinary builds never approve")
-    return {"format": "riverhog-documentation-compiled-reference/v1", "resolved": resolved,
-            "pages": parsed, "guides": index["guides"], "files": ledger,
-            "source_files": {name: digest(data) for name, data in sorted(captured.items())},
+    return {"format": "riverhog-documentation-compiled-reference/v2", "resolved": resolved,
+            "pages": pages, "documents": documents, "guides": guides, "source_files": ledger,
+            "inputs": {"closure_sha256": requirements["closure_sha256"],
+                       "requirements_sha256": digest(report_bytes(requirements)),
+                       "corpus_sha256": digest(report_bytes(ledger))},
             "coverage": {"total": len(rows), "missing": missing,
-                         "structural": sum(r["rule"] == "structural" for r in rows.values())},
-            "review_expected": expected, "review_matches": review_matches}
+                         "structural": sum(r["rule"] == "structural" for r in rows.values())}}
 
 
-def proposed_review(compiled: dict) -> bytes:
-    """Explicit review aid, never evidence of human approval or a release signature."""
-    need(not compiled["coverage"]["missing"], "cannot propose a complete-review fence with missing docs")
-    return report_bytes(compiled["review_expected"])
+def documentation_plan(files: Mapping[str, bytes], requirements: dict) -> list[dict]:
+    """Generated author assistance, not a second authored registry or approval."""
+    result = compile_corpus(files, requirements)
+    missing = {target(t) for t in result["coverage"]["missing"]}
+    return [{"target": row["target"], "authority": row["authority"], "interface": row["interface"],
+             "status": "missing" if key in missing else "structural" if row["rule"] == "structural" else "covered"}
+            for key, row in sorted(obligations(requirements).items())]
 
 
 def apply_argparse(parser: argparse.ArgumentParser, command: dict, parameters: Mapping[str, dict]) -> None:
