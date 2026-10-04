@@ -1,0 +1,4 @@
+# Versions actually exercised by this external reference, not production pins.
+jsonschema==4.26.0
+ruamel.yaml==0.18.17
+pytest==9.0.2

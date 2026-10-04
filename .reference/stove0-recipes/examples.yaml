@@ -1,0 +1,275 @@
+# Each YAML document is a separate proposed RecipeSource. Resource names resolve
+# against language.fixture_resources() for static checks only. These are NOT
+# production contracts, executable deployments, or evidence of runtime behavior.
+format: stove0-recipe/v1
+id: example.simple/v1
+revision: 1
+fork:
+  archive:
+    call:
+      operation: encode
+      intent: {codec: av1, quality: 23}
+export: {branch: archive}
+---
+format: stove0-recipe/v1
+id: example.media/v1
+revision: '1'
+roles:
+  media: stove0.media.source/v1
+  sidecar: stove0.media.xmp-source/v1
+observe:
+  metadata:
+    use: metadata
+    retrieve: allow
+  streams:
+    use: probe
+    inputs:
+      subjects: {roles: [media]}
+    retrieve: allow
+  provenance:
+    use: provenance
+    inputs:
+      subjects: {roles: [media, sidecar]}
+    options:
+      predicates: [describes]
+  names:
+    use: names
+    inputs:
+      primary: {roles: [media]}
+      associated: {roles: [sidecar]}
+      provenance: {evidence: provenance}
+    options: {sidecar_suffixes: [.XMP, .xmp]}
+  hints:
+    use: hint
+    inputs:
+      subjects: {roles: [media, sidecar]}
+classify:
+  cases:
+    - role: sidecar
+      when:
+        facts:
+          view: metadata.records
+          scope: self
+          quantifier: any
+          where:
+            items:
+              path: /facts
+              quantifier: any
+              where:
+                all:
+                  - test: {path: /name, op: eq, value: container-format}
+                  - test: {path: /value, op: in, value: [XMP, application/rdf+xml]}
+  otherwise: media
+groups:
+  media_with_sidecars:
+    primary: media
+    attach: [sidecar]
+    prefer: [provenance.describes, names.full_leaf, names.stem]
+fork:
+  audio:
+    select: {groups: media_with_sidecars}
+    when:
+      facts:
+        view: streams.records
+        scope: candidate
+        roles: [media]
+        quantifier: any
+        where:
+          all:
+            - test: {path: /has_audio, op: eq, value: true}
+            - test: {path: /has_non_attached_video, op: eq, value: false}
+    call:
+      operation: audio
+      intent: {codec: opus, bitrate_kbps: 128, container: opus}
+      options: {allow_missing_materialization_hint: true}
+      evidence: [metadata, hints]
+      retrieve: allow
+  video:
+    select: {groups: media_with_sidecars}
+    when:
+      facts:
+        view: streams.records
+        scope: candidate
+        roles: [media]
+        quantifier: any
+        where:
+          test: {path: /has_non_attached_video, op: eq, value: true}
+    call:
+      operation: encode
+      executor: gpu
+      intent: {codec: av1, quality: 23, salvage: safe-remux}
+      options: {preset: p4, allow_missing_materialization_hint: true}
+      evidence: [metadata, hints]
+      retrieve: allow
+source:
+  unmatched: retain-in-source
+  retirement: {mode: retain}
+---
+format: stove0-recipe/v1
+id: example.repeated_observer/v1
+revision: 1
+observe:
+  first:
+    use: metadata
+    options: {profile: basic}
+  second:
+    use: metadata
+    after: [first]
+    options: {profile: extended}
+fork:
+  archive:
+    call:
+      operation: encode
+      evidence: [first, second]
+---
+format: stove0-recipe/v1
+id: example.overlap_join/v1
+revision: 1
+fork:
+  low:
+    call:
+      operation: encode
+      intent: {quality: 30}
+  high:
+    call:
+      operation: encode
+      intent: {quality: 20}
+  mirror:
+    call:
+      operation: deliver
+      options: {destination_identity: example-destination}
+join:
+  members:
+    high: [example.archive/v1]
+    low: [example.archive/v1]
+  call:
+    operation: assemble
+    intent: {layout: comparison}
+export: join
+source:
+  unmatched: reject-work
+  retirement: {mode: after-settlement, grace_seconds: 86400}
+---
+format: stove0-recipe/v1
+id: example.nested_export/v1
+revision: 1
+fork:
+  first:
+    call: {recipe: child, intent: {quality: 20}}
+  second:
+    call: {recipe: child, intent: {quality: 30}}
+join:
+  members:
+    first: [example.archive/v1]
+    second: [example.archive/v1]
+  call: {operation: assemble}
+export: join
+---
+format: stove0-recipe/v1
+id: example.decision_only/v1
+revision: 1
+observe:
+  policy:
+    use: policy
+decisions:
+  - when:
+      facts:
+        view: policy.records
+        scope: input
+        quantifier: every
+        where:
+          test: {path: /verdict, op: eq, value: discard}
+    no_output:
+      code: example.approved-source-loss/v1
+      message: All exact input members have affirmative source-loss approval.
+      source_loss:
+        id: example.discard-policy/v1
+        evidence:
+          - view: policy.records
+            verdict: {path: /verdict, equals: discard}
+source:
+  unmatched: reject-work
+  retirement: {mode: after-settlement, grace_seconds: 86400}
+---
+format: stove0-recipe/v1
+id: example.nested_no_output/v1
+revision: 1
+fork:
+  policy:
+    call: {recipe: no_output_child}
+  archive:
+    call: {operation: encode}
+export: {branch: archive}
+---
+format: stove0-recipe/v1
+id: example.delivery/v1
+revision: 1
+roles:
+  source: stove0.rclone.source/v1
+observe:
+  hints:
+    use: hint
+fork:
+  deliver:
+    call:
+      operation: deliver
+      evidence: [hints]
+      options:
+        destination_identity: example-destination
+        destination_rules_sha256: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+source:
+  unmatched: reject-work
+  retirement: {mode: after-settlement}
+---
+format: stove0-recipe/v1
+id: example.review/v1
+revision: 1
+parameters:
+  type: object
+  properties:
+    review_sample_plan: {type: object}
+  required: [review_sample_plan]
+  additionalProperties: false
+roles:
+  source: stove0.review.source/v1
+observe:
+  sampling:
+    use: sampling
+fork:
+  review:
+    call:
+      operation: review
+      options: {sampler_registration_id: example-sampler}
+      bind:
+        - {from: parameters, path: /review_sample_plan, to: intent, at: /sample_plan, mode: insert}
+        - {from: evaluation, path: /variant_id, to: intent, at: /variant/id, mode: insert}
+        - {from: evaluation, path: /parameters/review_variant/portable_intent, to: intent, at: /variant/portable_intent, mode: insert}
+        - {from: evaluation, path: /parameters/review_variant/target_options, to: options, at: '', mode: merge-object}
+      output:
+        archive_store: example-review-store
+        use_cache: false
+        copy_to: []
+        tags: [review0/output]
+export: {branch: review}
+---
+format: stove0-recipe/v1
+id: example.explicit_no_output/v1
+revision: 1
+observe:
+  policy:
+    use: policy
+decisions:
+  - when:
+      facts:
+        view: policy.records
+        scope: input
+        quantifier: every
+        where:
+          test: {path: /already_satisfied, op: eq, value: true}
+    no_output:
+      code: example.already-satisfied/v1
+      message: Policy explicitly requires no operation on these inputs.
+fork:
+  archive:
+    call: {operation: encode}
+export: {branch: archive}
