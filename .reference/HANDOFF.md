@@ -3,8 +3,9 @@
 Issue: #952. Convention: #903. Predecessor: #950.
 Audited code base: main @ `802ed38225b4ecd9aacd1b7dc3de51a1b1fd1905`.
 Base tree: `079c49f5ea400d891d2ee5e6453a38afebfb51b9`.
-This revision is a child of prior reference `6540d5500361b274192f34ef7d11ab5c71a728e8`.
-It supersedes that handoff's JSON-index/review-stamp design without rewriting history.
+This revision is a child of prior reference `dac22c6d3281e9edc5575fee094338a5855eb074`.
+It supersedes that handoff with generated documentation drift/audit evidence, preserving
+its front-matter and exact prepared-candidate design and all prior reference ancestry.
 
 Produced by: OpenAI ChatGPT.
 Model: GPT-6 Astra Pro (user-visible identity).
@@ -24,19 +25,22 @@ protected/offline release mechanism and promoted without unnoticed rebuilding.
 Start with `952/DESIGN.md`, then `952/AUTHORING.md` for a tested human-facing example.
 `compiler.py` supplies a strict YAML/Markdown reference compiler and coverage plan;
 `source.schema.json` describes parsed front matter, not an authored JSON index.
-`candidate.py` demonstrates generated candidate binding and altered/stale-byte refusal.
+`candidate.py` is the earlier low-level candidate-binding primitive.
+`documentation_audit.py` adds shared report generation, scoped meaning/prose/policy
+comparison, phase-aware checks, an HTML fragment and audited candidate binding.
+Read `AUDIT.md` for baseline/dependency scope, state semantics and production limits.
 Tests exercise these helpers plus small native projection seams. RESEARCH.md records
 primary references and integration consequences. The branch-specific workflow is an
 isolated reference check, not another permanent production gate.
 
 ## Validation actually performed
 
-Verified the complete downloaded clone at the prior handoff SHA, including all 1,366
+Verified the complete downloaded clone at the prior handoff SHA, including all 1,369
 exported file sizes/SHA-256s/modes, exact HEAD/tree and `git fsck --full` before edits.
-Archive SHA-256: `991f52f17fa48be612acd83d57c729d3b0df55b6fb42159498c07628ff4d6d99`.
-Manifest SHA-256: `b902fdd2d416cb43991c4b3f18d01e94083f2ea4ba1877331e27bdaa72ac1129`.
+Archive SHA-256: `5c01faec347d035c3c732cde955d5aad57d2e15841551940b1b76becf95271f8`.
+Manifest SHA-256: `fe71d923ac2d7e5da2de439666f83cd212e827b87647d68c1a58e8c1bb90c071`.
 
-40 isolated tests passed locally with markdown-it-py 4.2.0, PyYAML 6.0.3 and
+69 isolated tests passed locally with markdown-it-py 4.2.0, PyYAML 6.0.3 and
 jsonschema 4.26.0. Compilation and diff whitespace checks passed. The owning issue's
 superseding handoff comment records exact published commit/tree and hosted results.
 
@@ -53,13 +57,15 @@ AUTHORING.md's two front-matter examples compile against the synthetic requireme
 This is an experiment, not a completed production patch. Complete native requirement
 extraction and owner/slot validation remain integration work. An input ledger saying
 complete=true is not proof of completeness. The helpers do not prove the source
-producer's truth, human prose accuracy or human approval.
+producer's truth, human prose accuracy or human approval. Audit snapshot ownership,
+semantic dependency completeness and baseline authenticity are native-coordinator
+responsibilities; the reference supplies synthetic witnesses, not a production extractor.
 
 The runnable profile captures Markdown only; binary assets/images remain refused.
 Intermediate HTML is not another production site. Native seams cover argparse,
 operation OpenAPI, owned Python functions and a metadata table, not full Click/shared
 schema/OCI/resource/sdist/wheel integration. Candidate tests use actual argparse output
-but synthetic package bytes. The candidate helper validates identity only; production
+but synthetic package bytes. The candidate/audit helpers validate binding and mechanical findings only; production
 must extract observations from real artifacts and use the real signing/approval path.
 Reference serialization is not Riverhog JCS. Reuse native codecs and release manifests.
 

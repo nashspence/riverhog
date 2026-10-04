@@ -90,3 +90,22 @@ integrated. It does not build real release packages/images or provide the comple
 native requirement extractor. The examples above are tested synthetic documents, not
 an actual v1 corpus or evidence of human approval. Production must use the existing
 renderer/publication machinery rather than publish this reference as another site.
+
+## Reading documentation drift without more author bookkeeping
+
+The plan/preview/check workflow produces one generated audit report. You do not add
+any hashes, baseline identifiers, coverage dispositions or acknowledgements to front
+matter. The trusted coordinator selects and identifies the comparison baseline.
+
+In the prepared Contract Render, Documentation Audit shows what is missing, where
+meaning changed without prose changes, which obligations changed, and what actually
+reached installed help/OpenAPI/package surfaces. Open the affected subject to see its
+old/new facts and selected Markdown section. The terminal gives a short view of the
+same findings. A full report remains available when the summary is truncated.
+
+FAIL means a mechanical blocker must be fixed. REVIEW means inspect the evidence and
+wording; the existing wording may still be correct, so do not change it just to clear
+a badge. PASS refers to the checks performed, not to human approval or prose truth.
+A preview can have unverified native outputs. A first release has initial review, not
+an invented prior release. Review the actual prepared candidate and approve its exact
+bytes through the existing release process; there is still only one approval step.

@@ -1,7 +1,7 @@
 # #952: front-matter authoring and review of prepared outputs
 
-Subordinate to #952 and subsequent maintainer decisions. This revision supersedes
-the experiment at `6540d5500361b274192f34ef7d11ab5c71a728e8` without rewriting it.
+Subordinate to #952 and subsequent maintainer decisions. This audit refinement is a
+child of `dac22c6d3281e9edc5575fee094338a5855eb074`, preserving prior reference history.
 The audited code base remains `802ed38225b4ecd9aacd1b7dc3de51a1b1fd1905`.
 
 ## Decisions
@@ -152,3 +152,24 @@ The reference ledger's complete=true is a trust boundary, not completeness proof
 Do not copy the branch workflow as a new permanent gate or mechanically merge this
 experiment. No corpus/CMS framework, invented compatibility layer or automated prose
 truth certification is requested. Human reading and executable journeys retain their roles.
+
+## Documentation audit and drift evidence (superseding refinement)
+
+Read `AUDIT.md` for the selected audit design and `documentation_audit.py` for the
+working reference. There is ONE generated Documentation Audit Record, separate from
+the normative Closure and existing Contract Audit Record. Terminal output, check exit
+status and contextual HTML consume the same record. Meaning scopes include applicable
+shared/global context; unchanged stable IDs do not imply unchanged meaning. Requirement
+relaxations/removals, native destination changes and unavailable comparisons are visible.
+
+Use the small plan/preview/check workflow. First-release initial review is explicit;
+missing requested baselines fail. Preview-only parity remains unverified. Prepared FAIL
+blocks approval, REVIEW stays prominent in the existing review/signature process, and
+PASS never certifies prose truth. No per-finding author dispositions or approval registry.
+
+Audit is generated before its own review UI. The enclosing candidate manifest binds
+the report and augmented review packet, avoiding self-referential hashes. The earlier
+`candidate.py` function is a low-level primitive; use the audited wrapper for this
+reference's complete prepared-audit path. Production must use native source discovery,
+owned-value comparison, actual artifacts and the shared renderer, not this experimental
+fragment as a parallel site. Native canonicalization and existing approval still apply.
