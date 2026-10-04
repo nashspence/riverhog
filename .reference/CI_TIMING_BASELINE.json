@@ -1,0 +1,120 @@
+{
+  "format": "riverhog-ci-gate-reference-timing/v1",
+  "owning_issue": 954,
+  "convention_issue": 903,
+  "audited_base": {
+    "ref": "main",
+    "sha": "29d16e99d52bda0f308495fd7be519c1e321b735",
+    "tree": "2aa3a5547b11dc21e79825755888210075657faf"
+  },
+  "source": "GitHub Actions API/job logs inspected 2026-10-04",
+  "successful_main_runs": [
+    {
+      "run_number": 899,
+      "run_id": 37144084622,
+      "sha": "cc2a5f8e03603d31004e8287e5d0a1078b781980",
+      "unit_minutes": 33.3,
+      "compose_smoke_minutes": 102.1,
+      "postgres_concurrency_minutes": 9.3
+    },
+    {
+      "run_number": 901,
+      "run_id": 37157260367,
+      "sha": "802ed38225b4ecd9aacd1b7dc3de51a1b1fd1905",
+      "unit_minutes": 32.2,
+      "compose_smoke_minutes": 75.9,
+      "postgres_concurrency_minutes": 10
+    },
+    {
+      "run_number": 903,
+      "run_id": 37197047070,
+      "sha": "29d16e99d52bda0f308495fd7be519c1e321b735",
+      "unit_minutes": 53.3,
+      "compose_smoke_minutes": 148,
+      "postgres_concurrency_minutes": 10.3
+    }
+  ],
+  "run_903_jobs_minutes": {
+    "make compose-smoke": 148,
+    "make unit": 53.3,
+    "make postgres-concurrency": 10.3,
+    "client platform (windows-2025)": 9.5,
+    "make filesystem-recovery-qualification": 8.1,
+    "client platform (macos-15)": 5.4,
+    "client platform (ubuntu-24.04)": 4.2,
+    "build a-stove0-rclone-target": 2.8,
+    "build test": 1.8,
+    "build a-riverhog-event-relay": 1.8,
+    "build a-stove0-nvenc-av1-opus-target": 1.8,
+    "build a-riverhog-minisign-witness": 1.8,
+    "make dist-smoke": 1.7,
+    "build a-riverhog-opentimestamps-witness": 1.7,
+    "build riverhog": 1.4,
+    "build stove0": 1.3,
+    "build a-riverhog-aws-store": 1.3,
+    "build a-riverhog-b2-store": 1.2,
+    "build a-riverhog-ftp-spool": 1.2,
+    "build a-stove0-exiftool-observer": 1.2,
+    "build a-riverhog-filesystem-store": 1.1,
+    "build a-stove0-opus-target": 1.1,
+    "build a-stove0-magic-observer": 1.1,
+    "build review0": 1,
+    "build a-stove0-ffprobe-observer": 1,
+    "build a-stove0-filename-prefix-sidecar-observer": 1,
+    "build a-stove0-riverhog-provenance-observer": 0.9,
+    "make lint": 0.6,
+    "make c2sp-vectors": 0.4,
+    "make compile": 0.4
+  },
+  "run_903_unit": {
+    "result": "3376 passed, 1 skipped",
+    "pytest_seconds": 3167.61,
+    "slowest": [
+      {
+        "seconds": 1414.98,
+        "phase": "call",
+        "nodeid": "tests/unit/test_release_pages_path.py::test_trusted_preparation_offline_signature_immutable_history_and_main_pages"
+      },
+      {
+        "seconds": 1130.85,
+        "phase": "call",
+        "nodeid": "tests/unit/test_operation_qualification.py::test_release_disposable_selection_satisfies_current_observation_requirements"
+      },
+      {
+        "seconds": 851.04,
+        "phase": "call",
+        "nodeid": "tests/unit/test_contract_pages.py::test_pages_assembles_versions_semantically_and_preserves_published_bytes"
+      },
+      {
+        "seconds": 781.37,
+        "phase": "call",
+        "nodeid": "tests/unit/test_documentation_workflows.py::test_author_can_plan_write_exact_markdown_and_review_an_incomplete_candidate"
+      },
+      {
+        "seconds": 428.49,
+        "phase": "setup",
+        "nodeid": "tests/unit/test_extent_contract.py::test_transform_output_policy_does_not_import_upload_batch_or_store_count_limits"
+      },
+      {
+        "seconds": 427.55,
+        "phase": "setup",
+        "nodeid": "tests/unit/test_contract_freeze.py::test_decorated_client_source_resolves_to_its_repository_definition"
+      },
+      {
+        "seconds": 427.36,
+        "phase": "setup",
+        "nodeid": "tests/unit/test_console_entrypoints.py::test_published_console_entrypoint_help_is_side_effect_free"
+      },
+      {
+        "seconds": 419.39,
+        "phase": "setup",
+        "nodeid": "tests/unit/test_release.py::test_release_evidence_is_complete_and_minisign_verified"
+      }
+    ]
+  },
+  "notes": [
+    "Durations are rounded from GitHub job timestamps except pytest slowest-test seconds, which are copied from the run #903 pytest report.",
+    "This file is non-authoritative research evidence under issue #954 / convention #903.",
+    "No performance threshold is established by this baseline."
+  ]
+}
