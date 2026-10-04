@@ -107,8 +107,9 @@ def test_degraded_container_keeps_unreachable_historical_store_visible(
         deps.dispose_session_factory(factory)
 
 
+@pytest.mark.parametrize("second_cache", [False, True])
 def test_unavailable_cache_is_admitted_after_recovery_without_restart(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, second_cache: bool
 ) -> None:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
     initialize_db(database_url)
@@ -120,24 +121,34 @@ def test_unavailable_cache_is_admitted_after_recovery_without_restart(
         base,
         retrieval_cache_write_segment_bytes=1024,
         retrieval_cache_stores={
-            "cache": RetrievalCacheStoreRegistration(name="cache", adapter=cache_adapter)
+            "cache": RetrievalCacheStoreRegistration(name="cache", adapter=cache_adapter),
+            **(
+                {
+                    "cloud": RetrievalCacheStoreRegistration(
+                        name="cloud",
+                        adapter=replace(archive, name="cloud", base_url="http://127.0.0.3/cloud"),
+                    )
+                }
+                if second_cache
+                else {}
+            ),
         },
     )
     cache_ready = False
 
     def respond(request: httpx.Request) -> httpx.Response:
-        name = "cache" if request.url.host == "127.0.0.2" else "archive"
+        name = {"127.0.0.2": "cache", "127.0.0.3": "cloud"}.get(str(request.url.host), "archive")
         if request.url.path.endswith("/health/ready"):
-            return httpx.Response(200 if name == "archive" or cache_ready else 503)
+            return httpx.Response(200 if name != "cache" or cache_ready else 503)
         if request.url.path.endswith("/v1/adapter"):
             return httpx.Response(
                 200,
                 json=AdapterDescriptor(
-                    storage_incarnation_id=(
-                        "00000000-0000-4000-8000-000000000002"
-                        if name == "cache"
-                        else "00000000-0000-4000-8000-000000000001"
-                    ),
+                    storage_incarnation_id={
+                        "archive": "00000000-0000-4000-8000-000000000001",
+                        "cache": "00000000-0000-4000-8000-000000000002",
+                        "cloud": "00000000-0000-4000-8000-000000000003",
+                    }[name],
                     implementation_id="fixture.storage/v1",
                     implementation_version="1.0.0",
                     read_mode="restore_required" if name == "archive" else "immediate",
@@ -165,8 +176,11 @@ def test_unavailable_cache_is_admitted_after_recovery_without_restart(
                 config, session_factory=factory, startup_cleanup=cleanup
             )
             assert container.storage_readiness is not None
-            with pytest.raises(RuntimeError, match="retrieval cache"):
+            if second_cache:
                 container.storage_readiness()
+            else:
+                with pytest.raises(RuntimeError, match="retrieval cache"):
+                    container.storage_readiness()
             cache_ready = True
             cache_service = container.retrieval._cache
             assert cache_service is not None
@@ -178,10 +192,17 @@ def test_unavailable_cache_is_admitted_after_recovery_without_restart(
             monkeypatch.setattr(cache_service, "_ensure_accounting_rows", fail_accounting)
             with pytest.raises(RuntimeError, match="accounting unavailable"):
                 container.storage_readiness()
-            assert cache_service._stores == {}
+            assert tuple(cache_service._stores) == (("cloud",) if second_cache else ())
             monkeypatch.setattr(cache_service, "_ensure_accounting_rows", ensure_accounting)
             container.storage_readiness()
-            assert cache_service.store_names == ("cache",)
+            assert cache_service.store_names == tuple(config.retrieval_cache_stores)
+            assert tuple(cache_service._stores) == (
+                ("cloud", "cache") if second_cache else ("cache",)
+            )
+            assert [
+                (store["cache_store"], store["priority"])
+                for store in container.retrieval.cache_status()["stores"]
+            ] == ([("cache", 1), ("cloud", 2)] if second_cache else [("cache", 1)])
     finally:
         transport_client.close()
         deps.dispose_session_factory(factory)

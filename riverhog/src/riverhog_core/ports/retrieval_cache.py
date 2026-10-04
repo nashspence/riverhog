@@ -29,9 +29,13 @@ class RetrievalCacheAdmission:
 
 class RetrievalCache(Protocol):
     @property
-    def store_names(self) -> tuple[str, ...]: ...
+    def store_names(self) -> tuple[str, ...]:
+        """Configured priority order, without adapter recovery or discovery I/O."""
+        ...
 
-    def is_usable_store(self, *, cache_store: str, incarnation_id: str) -> bool: ...
+    def is_usable_store(self, *, cache_store: str, incarnation_id: str) -> bool:
+        """Check this admitted store's live incarnation without recovering other stores."""
+        ...
 
     def mirror_write_constraints(
         self, archive: ResumableWriteConstraints

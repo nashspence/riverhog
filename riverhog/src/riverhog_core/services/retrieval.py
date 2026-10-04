@@ -792,6 +792,14 @@ class SqlAlchemyRetrievalService:
         requested = cast(list[dict[str, object]], json.loads(plan.request_json))
         remaining = _RETRIEVAL_PLAN_SEGMENT_BATCH
         locked_collections: set[int] = set()
+        usable_cache_incarnations: dict[tuple[str, str], bool] = {}
+
+        def usable_cache(cached: RetrievalCacheObjectRecord) -> bool:
+            identity = (cached.cache_store, cached.cache_incarnation_id)
+            if identity not in usable_cache_incarnations:
+                usable_cache_incarnations[identity] = self._cache_record_is_usable(cached)
+            return usable_cache_incarnations[identity]
+
         while remaining and plan.next_artifact_order < len(requested):
             current_ref = requested[plan.next_artifact_order]
             collection_id = int(str(current_ref["collection_id"]))
@@ -915,7 +923,7 @@ class SqlAlchemyRetrievalService:
                             session,
                             object_record,
                             store_order=self._cache.store_names,
-                            usable=self._cache_record_is_usable,
+                            usable=usable_cache,
                         )
                         if self._cache is not None
                         else None
@@ -1382,7 +1390,11 @@ class SqlAlchemyRetrievalService:
                 resources=self._resources,
                 session_cache=self._age_sessions[passphrase_id],
                 timing_observer=log_transfer_timing,
-                policy=self._config.range_policy_for_store(source_store),
+                policy=(
+                    self._config.range_policy
+                    if cached is not None
+                    else self._config.range_policy_for_store(source_store)
+                ),
             ).iter_member_range(source, member, offset=offset, size=requested_size)
             return chunks, expected_bytes, expected_sha256
 

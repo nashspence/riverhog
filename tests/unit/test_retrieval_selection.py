@@ -9,7 +9,7 @@ from typing import Any
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from riverhog_age import UploadState
+from riverhog_age import CHUNK_SIZE, UploadState
 from riverhog_api.deps import get_container
 from riverhog_api.routers.retrieval import router
 from riverhog_api.schemas.retrieval import RetrievalPlanArtifactPageOut, RetrievalPlanOut
@@ -27,6 +27,7 @@ from riverhog_core.catalog_models import (
     RetrievalPlanArtifactRecord,
     RetrievalPlanObjectRecord,
 )
+from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
 from riverhog_core.services.archive_copy_retirements import (
     SqlAlchemyArchiveCopyRetirementService,
 )
@@ -54,6 +55,16 @@ from tests.unit.test_retrieval_service import (
 ARTIFACT = "1" * 64
 OTHER = "2" * 64
 PAYLOAD = b"cache reuse across exact archive copies"
+
+
+class _CacheCandidate(_Candidate):
+    def __init__(self, name: str) -> None:
+        super().__init__(name)
+        self.incarnation_checks: list[str] = []
+
+    def is_current_incarnation(self, incarnation_id: str) -> bool:
+        self.incarnation_checks.append(incarnation_id)
+        return incarnation_id == fixture_storage_incarnation_id("cache", self.name)
 
 
 def _values(record: Any) -> dict[str, Any]:
@@ -626,6 +637,171 @@ def test_cache_store_order_precedes_historical_archive_source_order(tmp_path: Pa
         )
         assert obj is not None
         assert (obj.cache_store, obj.cache_source_store) == ("first", "mirror")
+
+
+def test_late_cache_recovery_preserves_status_admission_and_cross_source_read_priority(
+    tmp_path: Path,
+) -> None:
+    service, collection_id, _cache = _warm(tmp_path)
+    service, _ranges, _mirror = _add_mirror(service, collection_id)
+    registrations = {name: _registration(name) for name in ("local", "cloud")}
+    local, cloud = _CacheCandidate("local"), _CacheCandidate("cloud")
+    with session_scope(service._session_factory) as session:
+        for name in registrations:
+            seed_storage_incarnation(session, "cache", name)
+        cached = session.scalar(select(RetrievalCacheObjectRecord))
+        assert cached is not None
+        cached.cache_store = "cloud"
+        cached.cache_incarnation_id = fixture_storage_incarnation_id("cache", "cloud")
+        values = _values(cached)
+    coordinator = SqlAlchemyRetrievalCache(
+        {"cloud": cloud},  # type: ignore[arg-type]
+        registrations,
+        session_factory=service._session_factory,
+    )
+    service._cache = coordinator
+    service._config = replace(service._config, retrieval_cache_stores=registrations)
+    recovered = False
+    attempts = 0
+
+    def recover() -> None:
+        nonlocal attempts
+        attempts += 1
+        if recovered and "local" not in coordinator._stores:
+            coordinator.admit_store("local", local)  # type: ignore[arg-type]
+
+    coordinator.set_recovery(recover)
+    assert coordinator.store_names == ("local", "cloud")
+    assert attempts == 0
+    initial = service.plan(((collection_id, ARTIFACT),), source_store="mirror")
+    with session_scope(service._session_factory) as session:
+        selected = session.scalar(
+            select(RetrievalPlanObjectRecord).where(
+                RetrievalPlanObjectRecord.plan_id == initial["id"]
+            )
+        )
+        assert selected is not None and selected.cache_store == "cloud"
+    recovered = True
+    admission = coordinator.admit(
+        owner="late-recovery",
+        source_store="mirror",
+        collection_id=collection_id,
+        object_id=str(values["object_id"]),
+        expected_bytes=int(values["stored_bytes"]),
+    )
+    assert admission is not None and admission.cache_store == "local"
+    assert len(local.begin_calls) == 1 and cloud.begin_calls == []
+    assert attempts == 1
+    assert tuple(coordinator._stores) == ("cloud", "local")
+    assert coordinator.store_names == ("local", "cloud")
+    assert [
+        (store["cache_store"], store["priority"]) for store in service.cache_status()["stores"]
+    ] == [("local", 1), ("cloud", 2)]
+    with session_scope(service._session_factory) as session:
+        session.add(
+            RetrievalCacheObjectRecord(
+                **{
+                    **values,
+                    "source_store": "mirror",
+                    "source_incarnation_id": fixture_storage_incarnation_id("archive", "mirror"),
+                    "cache_store": "local",
+                    "cache_incarnation_id": fixture_storage_incarnation_id("cache", "local"),
+                }
+            )
+        )
+    plan = service.plan(((collection_id, ARTIFACT),), source_store="archive")
+    assert plan["state"] == "ready"
+    with session_scope(service._session_factory) as session:
+        selected = session.scalar(
+            select(RetrievalPlanObjectRecord).where(RetrievalPlanObjectRecord.plan_id == plan["id"])
+        )
+        assert selected is not None
+        assert (selected.source_store, selected.cache_store, selected.cache_source_store) == (
+            "archive",
+            "local",
+            "mirror",
+        )
+    assert attempts == 1
+
+
+@pytest.mark.parametrize("warm,admitted", [(False, True), (True, True), (True, False)])
+def test_cache_selection_does_not_recover_optional_stores_under_catalog_locks(
+    tmp_path: Path, warm: bool, admitted: bool
+) -> None:
+    files = {ARTIFACT: PAYLOAD, OTHER: b"second independent raw object"}
+    if warm:
+        service, collection_id, _cache = _warm(tmp_path, raw=True, files=files)
+        job = _drive_requested(service, _ready_job(service, collection_id, OTHER))
+        service.acknowledge(principal_id="reader", job_id=str(job["id"]))
+        service, _ranges, _mirror = _add_mirror(service, collection_id)
+    else:
+        service, collection_id, _ranges, _store = _seed_collection(
+            tmp_path, files, raw=True, cache=MemoryRetrievalCache()
+        )
+    candidate = _CacheCandidate("memory")
+
+    def recover() -> None:
+        raise AssertionError("planning must not discover unavailable optional cache adapters")
+
+    coordinator = SqlAlchemyRetrievalCache(
+        {"memory": candidate} if admitted else {},  # type: ignore[arg-type]
+        {name: _registration(name) for name in ("offline", "memory")},
+        session_factory=service._session_factory,
+        recover=recover,
+    )
+    service._cache = coordinator
+    plan = service.plan(tuple((collection_id, artifact) for artifact in files))
+    assert plan["state"] == "ready"
+    with session_scope(service._session_factory) as session:
+        objects = session.scalars(
+            select(RetrievalPlanObjectRecord).where(RetrievalPlanObjectRecord.plan_id == plan["id"])
+        ).all()
+        assert len(objects) == 2
+        assert {obj.read_mode for obj in objects} == (
+            {"cache"} if warm and admitted else {"immediate"}
+        )
+    assert candidate.incarnation_checks == (
+        [fixture_storage_incarnation_id("cache", "memory")] if warm and admitted else []
+    )
+
+
+@pytest.mark.parametrize("initially_warm", [False, True])
+def test_cached_pack_reads_ignore_archive_fallback_range_policy(
+    tmp_path: Path, initially_warm: bool
+) -> None:
+    payload = bytes(range(256)) * 1024
+    if initially_warm:
+        service, collection_id, cache = _warm(tmp_path, files={ARTIFACT: payload})
+    else:
+        cache = MemoryRetrievalCache()
+        service, collection_id, _ranges, _store = _seed_collection(
+            tmp_path, {ARTIFACT: payload}, read_mode="restore_required", cache=cache
+        )
+    service, ranges, _mirror = _add_mirror(service, collection_id, read_mode="restore_required")
+    service._config = replace(
+        service._config,
+        range_policy_by_store={
+            "archive": PackRangeRetrievalPolicy(
+                max_request_ciphertext_bytes=CHUNK_SIZE + 16,
+                billing_mode="whole_object",
+            ),
+            "mirror": PackRangeRetrievalPolicy(
+                merge_gap_ciphertext_bytes=CHUNK_SIZE,
+                max_request_ciphertext_bytes=2 * (CHUNK_SIZE + 16),
+            ),
+        },
+    )
+    requests: list[list[tuple[str, int, int]]] = []
+    for source in ("archive", "mirror"):
+        plan = service.plan(((collection_id, ARTIFACT),), source_store=source)
+        job = _drive_requested(service, _create(service, plan))
+        assert job["state"] == "ready"
+        cache.range_requests.clear()
+        assert _content(service, job, collection_id, ARTIFACT) == payload
+        requests.append(list(cache.range_requests))
+        service.acknowledge(principal_id="reader", job_id=str(job["id"]))
+    assert requests[0] == requests[1] and requests[0]
+    assert ranges.requests == []
 
 
 def test_all_artifacts_in_one_collection_share_the_pinned_archive_source(
