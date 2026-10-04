@@ -52,6 +52,7 @@ from riverhog_core.services.operation_plans import (
     challenge_has_shape,
     plan_challenge,
 )
+from riverhog_core.services.retrieval_selection import plan_object_uses_store
 
 _CHALLENGE_PREFIX = "retire-copy"
 _ACTIVE_RETRIEVAL_STATES = {"requested", "ready"}
@@ -325,7 +326,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                 .join(RetrievalPlanObjectRecord)
                 .where(
                     RetrievalPlanObjectRecord.collection_id == collection_id,
-                    RetrievalPlanObjectRecord.source_store == store,
+                    plan_object_uses_store(store),
                     RetrievalPlanRecord.state.in_({"planning", "ready"}),
                     RetrievalPlanRecord.expires_at > now_text,
                 )
@@ -345,7 +346,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                 )
                 .where(
                     RetrievalPlanObjectRecord.collection_id == collection_id,
-                    RetrievalPlanObjectRecord.source_store == store,
+                    plan_object_uses_store(store),
                     RetrievalJobRecord.state.in_(_ACTIVE_RETRIEVAL_STATES),
                 )
                 .order_by(RetrievalJobRecord.id)
@@ -378,7 +379,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                 .join(RetrievalPlanObjectRecord)
                 .where(
                     RetrievalPlanObjectRecord.collection_id == collection_id,
-                    RetrievalPlanObjectRecord.source_store == store,
+                    plan_object_uses_store(store),
                     (
                         ~RetrievalPlanRecord.state.in_({"planning", "ready"})
                         | (RetrievalPlanRecord.expires_at <= now_text)
@@ -408,7 +409,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                     .join(RetrievalPlanObjectRecord)
                     .where(
                         RetrievalPlanObjectRecord.collection_id == collection_id,
-                        RetrievalPlanObjectRecord.source_store == store,
+                        plan_object_uses_store(store),
                         (
                             ~RetrievalPlanRecord.state.in_({"planning", "ready"})
                             | (RetrievalPlanRecord.expires_at <= now_text)
@@ -481,7 +482,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                             case(
                                 (
                                     (RetrievalPlanObjectRecord.collection_id == collection_id)
-                                    & (RetrievalPlanObjectRecord.source_store == store),
+                                    & (plan_object_uses_store(store)),
                                     1,
                                 ),
                                 else_=0,
@@ -565,7 +566,7 @@ def _build_plan(
         )
         .where(
             RetrievalPlanObjectRecord.collection_id == collection_id,
-            RetrievalPlanObjectRecord.source_store == store,
+            plan_object_uses_store(store),
             RetrievalJobRecord.state.in_(_ACTIVE_RETRIEVAL_STATES),
         )
         .order_by(RetrievalJobRecord.id)
@@ -576,7 +577,7 @@ def _build_plan(
         .join(RetrievalPlanObjectRecord)
         .where(
             RetrievalPlanObjectRecord.collection_id == collection_id,
-            RetrievalPlanObjectRecord.source_store == store,
+            plan_object_uses_store(store),
             RetrievalPlanRecord.state.in_({"planning", "ready"}),
             RetrievalPlanRecord.expires_at > now_text,
         )
@@ -611,7 +612,7 @@ def _build_plan(
             )
             .where(
                 RetrievalPlanObjectRecord.collection_id == collection_id,
-                RetrievalPlanObjectRecord.source_store == store,
+                plan_object_uses_store(store),
                 ~RetrievalJobRecord.state.in_(_ACTIVE_RETRIEVAL_STATES),
             )
         )

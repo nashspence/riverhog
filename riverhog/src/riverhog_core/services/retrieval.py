@@ -24,6 +24,7 @@ from riverhog_protocol import (
     RetrievalCacheSort,
     RetrievalCacheState,
     SortOrder,
+    validate_archive_store_name,
 )
 from riverhog_protocol.errors import (
     BadRequest,
@@ -41,7 +42,6 @@ from riverhog_protocol.paths import (
 )
 from sqlalchemy import case, delete, exists, func, or_, select, update
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.elements import ColumnElement
 from state_schema import read_snapshot
 from time_formats import (
     epoch_ns_from_datetime,
@@ -97,6 +97,13 @@ from riverhog_core.services.lifecycle_events import (
 )
 from riverhog_core.services.retrieval_cache import register_cache_ready
 from riverhog_core.services.retrieval_cache_accounting import adjust_cache_committed_bytes
+from riverhog_core.services.retrieval_selection import (
+    active_cache_reference,
+    cache_matches_plan,
+    cache_object_key,
+    cache_source_incarnation,
+    select_equivalent_cache,
+)
 from riverhog_core.streaming_age import ResumableAgeSessionCache
 from riverhog_core.throughput import (
     ArchiveThroughputTuning,
@@ -378,7 +385,7 @@ class SqlAlchemyRetrievalService:
                 RetrievalCacheLeaseRecord.expires_at > now,
             )
         )
-        active_retrieval = _active_retrieval_cache_reference(now)
+        active_retrieval = active_cache_reference(now)
         with session_scope(self._session_factory) as session:
             objects, stored_bytes, protected = session.execute(
                 select(
@@ -609,6 +616,7 @@ class SqlAlchemyRetrievalService:
         idempotency_key: str | None = None,
         lease: timedelta | None = None,
         restore_policy: str = "allow",
+        source_store: str | None = None,
         principal: Principal | None = None,
     ) -> dict[str, object]:
         normalized = _normalize_artifact_refs(artifacts)
@@ -616,6 +624,11 @@ class SqlAlchemyRetrievalService:
             uuid.uuid4().hex if idempotency_key is None else idempotency_key
         )
         normalized_restore_policy = _normalize_restore_policy(restore_policy)
+        if source_store is not None:
+            try:
+                validate_archive_store_name(source_store)
+            except ValueError as exc:
+                raise BadRequest("retrieval source_store is invalid") from exc
         requested_lease = lease or self._config.retrieval_default_lease
         if requested_lease.total_seconds() <= 0:
             raise BadRequest("retrieval lease must be positive")
@@ -640,6 +653,7 @@ class SqlAlchemyRetrievalService:
                     "artifacts": json.loads(request_json),
                     "lease_seconds": int(requested_lease.total_seconds()),
                     "restore_policy": normalized_restore_policy,
+                    "source_store": source_store,
                 }
             )
         ).hexdigest()
@@ -664,6 +678,8 @@ class SqlAlchemyRetrievalService:
                     raise Conflict("retrieval plan idempotency identity changed")
                 plan_id = existing.id
             else:
+                if source_store is not None and source_store not in self._config.archive_stores:
+                    raise BadRequest("retrieval source_store is not configured")
                 session.add(
                     RetrievalPlanRecord(
                         id=plan_id,
@@ -675,6 +691,7 @@ class SqlAlchemyRetrievalService:
                         request_json=request_json,
                         lease_seconds=int(requested_lease.total_seconds()),
                         restore_policy=normalized_restore_policy,
+                        source_store=source_store,
                         created_at=format_utc_timestamp(now),
                         expires_at=format_utc_timestamp(
                             now + self._config.retrieval_pending_timeout
@@ -774,10 +791,19 @@ class SqlAlchemyRetrievalService:
     def _advance_plan_record(self, session: Session, plan: RetrievalPlanRecord) -> None:
         requested = cast(list[dict[str, object]], json.loads(plan.request_json))
         remaining = _RETRIEVAL_PLAN_SEGMENT_BATCH
+        locked_collections: set[int] = set()
         while remaining and plan.next_artifact_order < len(requested):
             current_ref = requested[plan.next_artifact_order]
             collection_id = int(str(current_ref["collection_id"]))
             artifact_id = str(current_ref["artifact_id"])
+            # Retirement fences this same row before admitting deletion of a source copy.
+            if collection_id not in locked_collections:
+                session.scalar(
+                    select(CollectionRecord.id)
+                    .where(CollectionRecord.id == collection_id)
+                    .with_for_update()
+                )
+                locked_collections.add(collection_id)
             plan_file = session.get(
                 RetrievalPlanArtifactRecord,
                 (plan.id, plan.next_artifact_order),
@@ -788,7 +814,18 @@ class SqlAlchemyRetrievalService:
                 file_record = session.get(CollectionArtifactRecord, (collection_id, artifact_id))
                 if file_record is None:
                     raise NotFound(f"file not found: {collection_id}/{artifact_id}")
-                copy = self._select_copy(session, collection_id)
+                resolved_source = session.scalar(
+                    select(RetrievalPlanArtifactRecord.source_store)
+                    .where(
+                        RetrievalPlanArtifactRecord.plan_id == plan.id,
+                        RetrievalPlanArtifactRecord.collection_id == collection_id,
+                    )
+                    .order_by(RetrievalPlanArtifactRecord.artifact_order)
+                    .limit(1)
+                )
+                copy = self._select_copy(
+                    session, collection_id, source_store=resolved_source or plan.source_store
+                )
                 plan_file = RetrievalPlanArtifactRecord(
                     plan_id=plan.id,
                     artifact_order=plan.next_artifact_order,
@@ -808,6 +845,8 @@ class SqlAlchemyRetrievalService:
                         "artifact_id": artifact_id,
                         "bytes": format_scalar("nonnegative", file_record.bytes),
                         "sha256": file_record.sha256,
+                        "source_store": copy.store,
+                        "source_incarnation_id": copy.incarnation_id,
                     },
                 )
                 session.flush()
@@ -871,14 +910,16 @@ class SqlAlchemyRetrievalService:
                     )
                     if object_record is None or object_record.kind not in _DATA_KINDS:
                         raise InvalidState("retrieval plan archive object is missing")
-                    cached = session.get(
-                        RetrievalCacheObjectRecord,
-                        (plan_file.source_store, collection_id, placement.object_id),
+                    cached = (
+                        select_equivalent_cache(
+                            session,
+                            object_record,
+                            store_order=self._cache.store_names,
+                            usable=self._cache_record_is_usable,
+                        )
+                        if self._cache is not None
+                        else None
                     )
-                    if cached is not None and cached.state != "ready":
-                        cached = None
-                    if cached is not None and not self._cache_record_is_usable(cached):
-                        cached = None
                     read_mode = (
                         "cache"
                         if cached is not None
@@ -901,6 +942,10 @@ class SqlAlchemyRetrievalService:
                         cache_store=cached.cache_store if cached is not None else None,
                         cache_incarnation_id=(
                             cached.cache_incarnation_id if cached is not None else None
+                        ),
+                        cache_source_store=cached.source_store if cached is not None else None,
+                        cache_source_incarnation_id=(
+                            cached.source_incarnation_id if cached is not None else None
                         ),
                         retrieval_bytes=0,
                     )
@@ -950,7 +995,12 @@ class SqlAlchemyRetrievalService:
                         "stored_bytes": format_scalar("nonnegative", planned_object.stored_bytes),
                         "sha256": planned_object.sha256,
                         "read_mode": planned_object.read_mode,
+                        "source_store": planned_object.source_store,
+                        "source_incarnation_id": planned_object.source_incarnation_id,
                         "cache_store": planned_object.cache_store,
+                        "cache_incarnation_id": planned_object.cache_incarnation_id,
+                        "cache_source_store": planned_object.cache_source_store,
+                        "cache_source_incarnation_id": planned_object.cache_source_incarnation_id,
                         "artifact_offset": format_scalar("nonnegative", placement.artifact_offset),
                         "object_offset": format_scalar("nonnegative", placement.object_offset),
                         "bytes": format_scalar("nonnegative", placement.bytes),
@@ -1019,6 +1069,7 @@ class SqlAlchemyRetrievalService:
                     "format": "riverhog-retrieval-plan-authority/v1",
                     "lease_seconds": plan.lease_seconds,
                     "restore_policy": plan.restore_policy,
+                    "source_store": plan.source_store,
                     "artifact_count": format_scalar("nonnegative", artifact_count),
                     "artifact_identity": plan.artifact_commitment_sha256,
                     "segment_identity": plan.segment_commitment_sha256,
@@ -1167,12 +1218,7 @@ class SqlAlchemyRetrievalService:
                     RetrievalPlanObjectRecord.read_mode.in_({"cache", "restore_required"}),
                     ~exists(
                         select(1).where(
-                            RetrievalCacheObjectRecord.source_store
-                            == RetrievalPlanObjectRecord.source_store,
-                            RetrievalCacheObjectRecord.collection_id
-                            == RetrievalPlanObjectRecord.collection_id,
-                            RetrievalCacheObjectRecord.object_id
-                            == RetrievalPlanObjectRecord.object_id,
+                            cache_matches_plan(),
                             RetrievalCacheObjectRecord.state == "ready",
                         )
                     ),
@@ -1380,13 +1426,17 @@ class SqlAlchemyRetrievalService:
         with read_snapshot(self._session_factory) as session:
             cached = session.get(
                 RetrievalCacheObjectRecord,
-                (planned.source_store, planned.collection_id, planned.object_id),
+                cache_object_key(planned),
             )
             if cached is None or cached.state != "ready":
                 raise InvalidState("retrieval cache object is unavailable")
-            if cached.source_incarnation_id != planned.source_incarnation_id or (
-                planned.cache_incarnation_id is not None
-                and cached.cache_incarnation_id != planned.cache_incarnation_id
+            if (
+                cached.source_incarnation_id != cache_source_incarnation(planned)
+                or (
+                    planned.cache_incarnation_id is not None
+                    and cached.cache_incarnation_id != planned.cache_incarnation_id
+                )
+                or (planned.cache_store is not None and cached.cache_store != planned.cache_store)
             ):
                 raise InvalidState("retrieval cache incarnation changed")
             if not self._cache_record_is_usable(cached):
@@ -1666,7 +1716,7 @@ class SqlAlchemyRetrievalService:
                                 == RetrievalCacheObjectRecord.object_id,
                             )
                             .exists()
-                            & ~_active_retrieval_cache_reference(now_text)
+                            & ~active_cache_reference(now_text)
                         )
                     )
                     .order_by(
@@ -1744,12 +1794,18 @@ class SqlAlchemyRetrievalService:
                     removed += 1
         return removed
 
-    def _select_copy(self, session: Session, collection_id: int) -> CollectionArchiveCopyRecord:
+    def _select_copy(
+        self, session: Session, collection_id: int, *, source_store: str | None = None
+    ) -> CollectionArchiveCopyRecord:
+        if source_store is not None and source_store not in self._config.archive_stores:
+            raise ServiceUnavailable(f"retrieval source store is unavailable: {source_store}")
         return select_readable_archive_copy(
             session,
             collection_id,
             archive_stores=self._archive_stores,
-            read_order=self._config.archive_read_order,
+            read_order=(source_store,)
+            if source_store is not None
+            else self._config.archive_read_order,
         )
 
     def _process_one(self, job_id: str) -> None:
@@ -2504,11 +2560,7 @@ def _retrieval_reference_projections(now: str) -> tuple[Any, Any]:
         ),
         else_=None,
     )
-    matches = (
-        (RetrievalPlanObjectRecord.source_store == RetrievalCacheObjectRecord.source_store)
-        & (RetrievalPlanObjectRecord.collection_id == RetrievalCacheObjectRecord.collection_id)
-        & (RetrievalPlanObjectRecord.object_id == RetrievalCacheObjectRecord.object_id)
-    )
+    matches = cache_matches_plan()
     base = (
         select(RetrievalPlanObjectRecord)
         .join(RetrievalPlanRecord)
@@ -2602,37 +2654,6 @@ def _job_object_owner(job_id: str, object_order: int) -> str:
     return f"job-object:{job_id}:{object_order}"
 
 
-def _active_retrieval_cache_reference(now: str) -> ColumnElement[bool]:
-    return exists(
-        select(1)
-        .select_from(RetrievalPlanObjectRecord)
-        .join(
-            RetrievalPlanRecord,
-            RetrievalPlanRecord.id == RetrievalPlanObjectRecord.plan_id,
-        )
-        .outerjoin(
-            RetrievalJobRecord,
-            RetrievalJobRecord.plan_id == RetrievalPlanRecord.id,
-        )
-        .where(
-            RetrievalPlanObjectRecord.source_store == RetrievalCacheObjectRecord.source_store,
-            RetrievalPlanObjectRecord.collection_id == RetrievalCacheObjectRecord.collection_id,
-            RetrievalPlanObjectRecord.object_id == RetrievalCacheObjectRecord.object_id,
-            or_(
-                (
-                    RetrievalPlanRecord.state.in_({"planning", "ready"})
-                    & (RetrievalPlanRecord.expires_at > now)
-                ),
-                (
-                    (RetrievalJobRecord.state == "requested")
-                    & (RetrievalPlanRecord.expires_at > now)
-                ),
-                ((RetrievalJobRecord.state == "ready") & (RetrievalJobRecord.expires_at > now)),
-            ),
-        )
-    )
-
-
 def _download_attribution(job: RetrievalJobRecord) -> DownloadAttribution | None:
     if job.initiated_by_key_id is None:
         return None
@@ -2682,6 +2703,7 @@ def _plan_payload(record: RetrievalPlanRecord) -> dict[str, object]:
         "failure": record.failure,
         "lease_seconds": record.lease_seconds,
         "restore_policy": record.restore_policy,
+        "source_store": record.source_store,
         "requires_restore": record.requires_restore,
         "artifact_count": len(json.loads(record.request_json)),
         "etag": record.etag,
@@ -2701,6 +2723,7 @@ def _plan_artifact_payload(record: RetrievalPlanArtifactRecord) -> dict[str, obj
         "artifact_id": record.artifact_id,
         "bytes": format_scalar("nonnegative", record.bytes),
         "sha256": record.sha256,
+        "source_store": record.source_store,
         "requires_restore": record.requires_restore,
     }
 

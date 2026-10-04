@@ -28,6 +28,9 @@ class RetrievalCacheAdmission:
 
 
 class RetrievalCache(Protocol):
+    @property
+    def store_names(self) -> tuple[str, ...]: ...
+
     def is_usable_store(self, *, cache_store: str, incarnation_id: str) -> bool: ...
 
     def mirror_write_constraints(

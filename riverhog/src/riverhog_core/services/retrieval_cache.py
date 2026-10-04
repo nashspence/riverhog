@@ -30,6 +30,7 @@ from riverhog_core.services.retrieval_cache_accounting import (
     adjust_cache_committed_bytes,
     locked_cache_accounting,
 )
+from riverhog_core.services.retrieval_selection import active_cache_reference
 from riverhog_core.storage_incarnations import require_storage_incarnation
 from riverhog_core.stores.storage_adapter_retrieval_cache import StorageAdapterRetrievalCache
 
@@ -748,6 +749,7 @@ class SqlAlchemyRetrievalCache:
                         RetrievalCacheLeaseRecord.object_id == RetrievalCacheObjectRecord.object_id,
                     )
                     .exists(),
+                    ~active_cache_reference(format_utc_timestamp(utc_now())),
                 )
                 .order_by(
                     RetrievalCacheObjectRecord.cached_at,

@@ -1324,7 +1324,9 @@ def _cancel_active_retrievals(db: sqlite3.Connection, api: ApiClient) -> list[st
     return canceled
 
 
-def _sync(*, wait: bool, repair: bool, restore_policy: str) -> dict[str, object]:
+def _sync(
+    *, wait: bool, repair: bool, restore_policy: str, source_store: str | None = None
+) -> dict[str, object]:
     if restore_policy not in {"allow", "never"}:
         raise typer.BadParameter("--restore-policy must be allow or never")
     target = _target()
@@ -1380,7 +1382,11 @@ def _sync(*, wait: bool, repair: bool, restore_policy: str) -> dict[str, object]
                         "materialized_artifacts": materialized,
                     }
                 batch = missing[:RETRIEVAL_ARTIFACT_BATCH_MAX]
-                plan = api.plan_retrieval(batch, restore_policy=cast(RestorePolicy, restore_policy))
+                plan = api.plan_retrieval(
+                    batch,
+                    restore_policy=cast(RestorePolicy, restore_policy),
+                    source_store=source_store,
+                )
                 selected = _retrieval_plan_artifacts(api, plan)
                 actual = tuple(
                     (normalize_collection_id(item["collection_id"]), str(item["artifact_id"]))
@@ -1399,7 +1405,9 @@ def _sync(*, wait: bool, repair: bool, restore_policy: str) -> dict[str, object]
                     if not batch:
                         continue
                     plan = api.plan_retrieval(
-                        batch, restore_policy=cast(RestorePolicy, restore_policy)
+                        batch,
+                        restore_policy=cast(RestorePolicy, restore_policy),
+                        source_store=source_store,
                     )
                     selected = _retrieval_plan_artifacts(api, plan)
                 job = api.create_retrieval_job(str(plan["id"]), plan_etag=str(plan["etag"]))
@@ -1442,9 +1450,17 @@ def _sync(*, wait: bool, repair: bool, restore_policy: str) -> dict[str, object]
 def sync(
     wait: Annotated[bool, typer.Option(help="Wait while archive retrieval is pending")] = False,
     restore_policy: Annotated[str, typer.Option("--restore-policy")] = "allow",
+    source_store: Annotated[
+        str | None,
+        typer.Option(
+            "--source-store", help="Archive source for new plans; verified cache remains preferred."
+        ),
+    ] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
 ) -> None:
-    payload = _sync(wait=wait, repair=False, restore_policy=restore_policy)
+    payload = _sync(
+        wait=wait, repair=False, restore_policy=restore_policy, source_store=source_store
+    )
     emit(
         payload
         if json_mode
@@ -1457,9 +1473,17 @@ def sync(
 def repair(
     wait: Annotated[bool, typer.Option(help="Wait while archive retrieval is pending")] = False,
     restore_policy: Annotated[str, typer.Option("--restore-policy")] = "allow",
+    source_store: Annotated[
+        str | None,
+        typer.Option(
+            "--source-store", help="Archive source for new plans; verified cache remains preferred."
+        ),
+    ] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
 ) -> None:
-    payload = _sync(wait=wait, repair=True, restore_policy=restore_policy)
+    payload = _sync(
+        wait=wait, repair=True, restore_policy=restore_policy, source_store=source_store
+    )
     emit(
         payload
         if json_mode

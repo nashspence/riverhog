@@ -336,6 +336,7 @@ CREATE TABLE retrieval_plans (
 	request_json TEXT NOT NULL,
 	lease_seconds BIGINT NOT NULL,
 	restore_policy VARCHAR NOT NULL,
+	source_store VARCHAR,
 	created_at VARCHAR NOT NULL,
 	ready_at VARCHAR,
 	expires_at VARCHAR NOT NULL,
@@ -2336,10 +2337,13 @@ CREATE TABLE retrieval_plan_objects (
 	read_mode VARCHAR NOT NULL,
 	cache_store VARCHAR,
 	cache_incarnation_id VARCHAR(36),
+	cache_source_store VARCHAR,
+	cache_source_incarnation_id VARCHAR(36),
 	retrieval_bytes VARCHAR(64) NOT NULL,
 	PRIMARY KEY (plan_id, object_order),
 	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
+	FOREIGN KEY(cache_source_incarnation_id, cache_source_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(plan_id) REFERENCES retrieval_plans (id) ON DELETE CASCADE,
 	FOREIGN KEY(collection_id, source_store, object_id) REFERENCES collection_archive_objects (collection_id, store, object_id),
 	UNIQUE (plan_id, collection_id, source_store, object_id),
@@ -2347,8 +2351,15 @@ CREATE TABLE retrieval_plan_objects (
 	CONSTRAINT ck_retrieval_plan_objects_read_mode CHECK (read_mode IN ('immediate','restore_required','cache')),
 	CONSTRAINT ck_retrieval_plan_objects_plaintext CHECK (plaintext_bytes >= 0),
 	CONSTRAINT ck_retrieval_plan_objects_stored CHECK (stored_bytes > 0),
+	CONSTRAINT ck_retrieval_plan_objects_cache_identity CHECK (read_mode = 'cache' AND cache_store IS NOT NULL AND cache_incarnation_id IS NOT NULL AND cache_source_store IS NOT NULL AND cache_source_incarnation_id IS NOT NULL OR read_mode <> 'cache' AND cache_store IS NULL AND cache_incarnation_id IS NULL AND cache_source_store IS NULL AND cache_source_incarnation_id IS NULL),
 	CONSTRAINT ck_retrieval_plan_objects_sha256_hex CHECK (sha256 IS NULL OR length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 )
+    """.strip(),
+    """
+CREATE INDEX ix_retrieval_plan_objects_cache_source ON retrieval_plan_objects (collection_id, cache_source_store, plan_id)
+    """.strip(),
+    """
+CREATE INDEX ix_retrieval_plan_objects_object ON retrieval_plan_objects (collection_id, object_id, plan_id)
     """.strip(),
     """
 CREATE INDEX ix_retrieval_plan_objects_copy ON retrieval_plan_objects (collection_id, source_store, plan_id)
@@ -2935,6 +2946,7 @@ CREATE TABLE retrieval_plans (
 	request_json TEXT NOT NULL,
 	lease_seconds BIGINT NOT NULL,
 	restore_policy VARCHAR NOT NULL,
+	source_store VARCHAR,
 	created_at VARCHAR NOT NULL,
 	ready_at VARCHAR,
 	expires_at VARCHAR NOT NULL,
@@ -4936,10 +4948,13 @@ CREATE TABLE retrieval_plan_objects (
 	read_mode VARCHAR NOT NULL,
 	cache_store VARCHAR,
 	cache_incarnation_id VARCHAR(36),
+	cache_source_store VARCHAR,
+	cache_source_incarnation_id VARCHAR(36),
 	retrieval_bytes VARCHAR(64) NOT NULL,
 	PRIMARY KEY (plan_id, object_order),
 	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
+	FOREIGN KEY(cache_source_incarnation_id, cache_source_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(plan_id) REFERENCES retrieval_plans (id) ON DELETE CASCADE,
 	FOREIGN KEY(collection_id, source_store, object_id) REFERENCES collection_archive_objects (collection_id, store, object_id),
 	UNIQUE (plan_id, collection_id, source_store, object_id),
@@ -4947,8 +4962,15 @@ CREATE TABLE retrieval_plan_objects (
 	CONSTRAINT ck_retrieval_plan_objects_read_mode CHECK (read_mode IN ('immediate','restore_required','cache')),
 	CONSTRAINT ck_retrieval_plan_objects_plaintext CHECK (plaintext_bytes >= 0),
 	CONSTRAINT ck_retrieval_plan_objects_stored CHECK (stored_bytes > 0),
+	CONSTRAINT ck_retrieval_plan_objects_cache_identity CHECK (read_mode = 'cache' AND cache_store IS NOT NULL AND cache_incarnation_id IS NOT NULL AND cache_source_store IS NOT NULL AND cache_source_incarnation_id IS NOT NULL OR read_mode <> 'cache' AND cache_store IS NULL AND cache_incarnation_id IS NULL AND cache_source_store IS NULL AND cache_source_incarnation_id IS NULL),
 	CONSTRAINT ck_retrieval_plan_objects_sha256_hex CHECK (sha256 IS NULL OR length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 )
+    """.strip(),
+    """
+CREATE INDEX ix_retrieval_plan_objects_cache_source ON retrieval_plan_objects (collection_id, cache_source_store, plan_id)
+    """.strip(),
+    """
+CREATE INDEX ix_retrieval_plan_objects_object ON retrieval_plan_objects (collection_id, object_id, plan_id)
     """.strip(),
     """
 CREATE INDEX ix_retrieval_plan_objects_copy ON retrieval_plan_objects (collection_id, source_store, plan_id)

@@ -26,6 +26,7 @@ default_tests=(
   tests/integration/test_provider_qualification_checkpoint_postgres.py
   tests/integration/test_public_selector_plans_postgres.py
   tests/integration/test_retrieval_cache_admission_concurrency.py
+  tests/integration/test_retrieval_selection_concurrency.py
   tests/integration/test_stove0_postgres_concurrency.py
 )
 read -r -a postgres_tests <<< "${POSTGRES_TESTS:-${default_tests[*]}}"

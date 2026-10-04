@@ -1973,6 +1973,7 @@ class RetrievalPlanRecord(Base):
     request_json: Mapped[str] = mapped_column(Text)
     lease_seconds: Mapped[int] = mapped_column(BigInteger)
     restore_policy: Mapped[str] = mapped_column(String)
+    source_store: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[str] = mapped_column(String)
     ready_at: Mapped[str | None] = mapped_column(String, nullable=True)
     expires_at: Mapped[str] = mapped_column(String)
@@ -2065,6 +2066,8 @@ class RetrievalPlanObjectRecord(Base):
     read_mode: Mapped[str] = mapped_column(String)
     cache_store: Mapped[str | None] = mapped_column(String, nullable=True)
     cache_incarnation_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    cache_source_store: Mapped[str | None] = mapped_column(String, nullable=True)
+    cache_source_incarnation_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     retrieval_bytes: Mapped[int] = mapped_column(authority_ordinal_type(), default=0)
 
     __table_args__ = (
@@ -2074,6 +2077,10 @@ class RetrievalPlanObjectRecord(Base):
         ),
         ForeignKeyConstraint(
             ["cache_incarnation_id", "cache_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
+        ForeignKeyConstraint(
+            ["cache_source_incarnation_id", "cache_source_store"],
             ["storage_incarnations.id", "storage_incarnations.name"],
         ),
         ForeignKeyConstraint(["plan_id"], ["retrieval_plans.id"], ondelete="CASCADE"),
@@ -2092,6 +2099,13 @@ class RetrievalPlanObjectRecord(Base):
             "source_store",
             "plan_id",
         ),
+        Index(
+            "ix_retrieval_plan_objects_cache_source",
+            "collection_id",
+            "cache_source_store",
+            "plan_id",
+        ),
+        Index("ix_retrieval_plan_objects_object", "collection_id", "object_id", "plan_id"),
         CheckConstraint("kind IN ('pack','segment')", name="ck_retrieval_plan_objects_kind"),
         CheckConstraint(
             "read_mode IN ('immediate','restore_required','cache')",
@@ -2099,6 +2113,14 @@ class RetrievalPlanObjectRecord(Base):
         ),
         CheckConstraint("plaintext_bytes >= 0", name="ck_retrieval_plan_objects_plaintext"),
         CheckConstraint("stored_bytes > 0", name="ck_retrieval_plan_objects_stored"),
+        CheckConstraint(
+            "read_mode = 'cache' AND cache_store IS NOT NULL AND "
+            "cache_incarnation_id IS NOT NULL AND cache_source_store IS NOT NULL AND "
+            "cache_source_incarnation_id IS NOT NULL OR "
+            "read_mode <> 'cache' AND cache_store IS NULL AND cache_incarnation_id IS NULL "
+            "AND cache_source_store IS NULL AND cache_source_incarnation_id IS NULL",
+            name="ck_retrieval_plan_objects_cache_identity",
+        ),
     )
 
     plan: Mapped[RetrievalPlanRecord] = relationship(back_populates="objects")

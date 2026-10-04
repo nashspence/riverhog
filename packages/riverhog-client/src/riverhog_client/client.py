@@ -812,6 +812,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         idempotency_key: RetrievalPlanIdempotencyKey | None = None,
         lease_seconds: int | None = None,
         restore_policy: RestorePolicy = "allow",
+        source_store: ArchiveStoreName | None = None,
     ) -> dict[str, Any]:
         validated_restore_policy = _restore_policy(restore_policy)
         payload: dict[str, Any] = {
@@ -823,6 +824,8 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         }
         if lease_seconds is not None:
             payload["lease_seconds"] = lease_seconds
+        if source_store is not None:
+            payload["source_store"] = _archive_store_name(source_store)
         plan = self._json("plan_retrieval", "POST", "/v1/retrieval-plans", json=payload)
         while plan["state"] == "planning":
             plan = self.advance_retrieval_plan(str(plan["id"]))

@@ -574,6 +574,16 @@ def test_retrieval_plan_fails_closed_before_callers_use_an_unsealed_plan() -> No
         client.plan_retrieval([(42, ARTIFACT_ID)])
 
 
+def test_retrieval_plan_forwards_a_strict_archive_source_with_restore_policy() -> None:
+    client = RecordingClient()
+    client.plan_retrieval([(42, ARTIFACT_ID)], source_store="cold", restore_policy="never")
+    assert client.calls[0][2]["json"]["source_store"] == "cold"
+    assert client.calls[0][2]["json"]["restore_policy"] == "never"
+    with pytest.raises(BadRequest, match="archive store name"):
+        client.plan_retrieval([(42, ARTIFACT_ID)], source_store="../invalid")
+    assert len(client.calls) == 1
+
+
 def test_client_rejects_unknown_restore_policy_before_transport() -> None:
     client = RecordingClient()
 
