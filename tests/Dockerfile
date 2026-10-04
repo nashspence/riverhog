@@ -53,6 +53,7 @@ RUN ln -s /opt/exiftool/exiftool /usr/local/bin/exiftool \
 WORKDIR /workspace
 
 COPY pyproject.toml uv.lock ./
+COPY packages/release-documentation-lib packages/release-documentation-lib
 COPY some-implementations some-implementations
 COPY packages packages
 COPY riverhog riverhog

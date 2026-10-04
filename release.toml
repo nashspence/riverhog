@@ -451,6 +451,7 @@ component = [
   "some-implementations/stove0/targets/rclone",
 ]
 reusable_library = [
+  "packages/release-documentation-lib",
   "some-implementations/riverhog/provenance/contracts/direct-relations",
   "some-implementations/gogurt/mounted-volume/path-support",
   "some-implementations/riverhog/packages/a-riverhog-witness-contract-lib",

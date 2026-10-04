@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 import hashlib
 import json
 import subprocess
@@ -15,9 +14,7 @@ if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
 from contract_atlas.documentation import (  # noqa: E402
-    SOURCE_FORMAT,
     AuthoredDocumentation,
-    validate_authored_documentation,
 )
 from contract_atlas.generation import (  # noqa: E402
     source_revision,
@@ -100,95 +97,44 @@ def test_replacement_accepts_owned_previous_semantics_without_reusing_them(
     assert verify_candidate(output)["closure_sha256"] == candidate.manifest["closure_sha256"]
 
 
-def test_authored_documentation_requires_utf8() -> None:
-    payload = json.dumps({"format": SOURCE_FORMAT, "explanations": [], "guides": []})
-    with pytest.raises(ContractAtlasError, match="UTF-8"):
-        validate_authored_documentation(payload.encode("utf-16"), {"elements": []})
+def test_documentation_binding_preserves_markdown_bytes_and_semantics(generated_contract_closure):
+    from tests.documentation_fixtures import document
 
-
-@pytest.fixture
-def authored(generated_contract_closure: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
     closure = generated_contract_closure["bundle"].closure
-    identity = closure["elements"][0]["id"]
-    return closure, {
-        "format": SOURCE_FORMAT,
-        "explanations": [
-            {"element_id": identity, "text": "Human explanation <script>text</script>"}
-        ],
-        "guides": [
-            {
-                "id": "first-use",
-                "title": "First use",
-                "text": "Follow the contract.",
-                "subjects": [identity],
-            }
-        ],
-    }
-
-
-@pytest.mark.parametrize(
-    "inventory",
-    ["cli_commands", "packages", "images", "artifacts", "release", "defaults", "schema"],
-)
-def test_authored_documentation_excludes_source_owned_reference_inventories(
-    inventory: str, authored: tuple[dict[str, Any], dict[str, Any]]
-) -> None:
-    closure, document = authored
-    document[inventory] = []
-    with pytest.raises(ContractAtlasError, match="only explanations and guides"):
-        validate_authored_documentation(canonical_bytes(document), closure)
-
-
-@pytest.mark.parametrize(
-    "mutation", ["duplicate", "stale", "wrong_type", "empty", "duplicate_subject"]
-)
-def test_authored_documentation_rejects_invalid_or_stale_references(
-    mutation: str, authored: tuple[dict[str, Any], dict[str, Any]]
-) -> None:
-    closure, document = authored
-    if mutation == "duplicate":
-        document["explanations"] *= 2
-    elif mutation == "stale":
-        document["explanations"][0]["element_id"] = "nonexistent"
-    elif mutation == "wrong_type":
-        document["explanations"][0]["text"] = 42
-    elif mutation == "empty":
-        document["guides"][0]["text"] = " "
-    else:
-        document["guides"][0]["subjects"] *= 2
-    with pytest.raises(ContractAtlasError):
-        validate_authored_documentation(canonical_bytes(document), closure)
-
-
-def test_authored_documentation_rejects_duplicate_json_fields() -> None:
-    with pytest.raises(ContractAtlasError, match="duplicate field"):
-        validate_authored_documentation(b'{"format":"one","format":"two"}', {"elements": []})
-
-
-def test_documentation_binding_preserves_exact_authored_bytes_and_generated_help(
-    authored: tuple[dict[str, Any], dict[str, Any]], generated_contract_closure: dict[str, Any]
-) -> None:
-    closure, document = authored
     audit = generated_contract_closure["bundle"].audit
-    closure_before, audit_before = canonical_bytes(closure), canonical_bytes(audit)
-    raw = (json.dumps(document, indent=2, ensure_ascii=False) + "\n").encode()
-    selected = AuthoredDocumentation("v1.0.0", "b" * 40, "v1.0.0/documentation.json", raw)
+    identity = closure["elements"][0]["id"]
+    raw = document(
+        [
+            {
+                "target": {"element_id": identity, "pointer": ""},
+                "summary": "Selected release expression.",
+            }
+        ]
+    )
+    selected = AuthoredDocumentation("v1.0.0", "b" * 40, {"reference/current.md": raw})
+    before = canonical_bytes(closure)
     record, binding = selected.bind(closure, audit, _cli_parsers(), "a" * 40)
-    assert selected.payload == raw
-    assert binding["sha256"] == hashlib.sha256(raw).hexdigest()
+    assert selected.files["reference/current.md"] == raw
+    assert binding["sha256"] == hashlib.sha256(selected.payload).hexdigest()
+    assert (
+        record["compiled"]["source_files"]["reference/current.md"]["sha256"]
+        == hashlib.sha256(raw).hexdigest()
+    )
     assert binding["documentation_record_sha256"] == canonical_sha256(record)
-    assert record["explanations"] == document["explanations"]
-    assert record["cli_commands"]
-    assert canonical_bytes(closure) == closure_before and canonical_bytes(audit) == audit_before
-    changed = copy.deepcopy(document)
-    changed["guides"][0]["text"] = "A revised guide."
-    changed_record, changed_binding = AuthoredDocumentation(
-        selected.tag, selected.commit, selected.path, canonical_bytes(changed)
-    ).bind(closure, audit, _cli_parsers(), "a" * 40)
-    assert changed_record["cli_commands"] == record["cli_commands"]
+    assert canonical_bytes(closure) == before
+    changed = AuthoredDocumentation(
+        selected.tag,
+        selected.commit,
+        {
+            "reference/current.md": raw.replace(
+                b"Selected release expression.", b"Revised release expression."
+            )
+        },
+    )
+    changed_record, changed_binding = changed.bind(closure, audit, _cli_parsers(), "a" * 40)
     assert changed_binding["closure_sha256"] == binding["closure_sha256"]
-    assert changed_binding["audit_sha256"] == binding["audit_sha256"]
-    assert changed_binding["documentation_record_sha256"] != binding["documentation_record_sha256"]
+    assert changed_binding["compiled_sha256"] != binding["compiled_sha256"]
+    assert changed_record["requirements"] == record["requirements"]
 
 
 def _git(repository: Path, *args: str) -> str:
@@ -203,8 +149,8 @@ def test_documentation_uses_selected_git_bytes_after_authoring_branch_advances(
     _git(tmp_path, "init", "-q")
     _git(tmp_path, "config", "user.name", "Fixture")
     _git(tmp_path, "config", "user.email", "fixture@example.invalid")
-    path = tmp_path / "v1.0.0/documentation.json"
-    path.parent.mkdir()
+    path = tmp_path / "v1.0.0/reference/current.md"
+    path.parent.mkdir(parents=True)
     path.write_bytes(b"original exact bytes\n")
     _git(tmp_path, "add", ".")
     _git(tmp_path, "commit", "-qm", "authoring fixture")
@@ -213,7 +159,7 @@ def test_documentation_uses_selected_git_bytes_after_authoring_branch_advances(
     _git(tmp_path, "add", ".")
     _git(tmp_path, "commit", "-qm", "advance authoring fixture")
     selected = AuthoredDocumentation.resolve(tmp_path, "v1.0.0", first)
-    assert selected.payload == b"original exact bytes\n"
+    assert selected.files["reference/current.md"] == b"original exact bytes\n"
     assert selected.commit == first
 
 

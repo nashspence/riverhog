@@ -72,24 +72,22 @@ def test_pages_assembles_versions_semantically_and_preserves_published_bytes(
     generated_contract_closure,
     release_contract_factory,
 ):
-    from contract_atlas.documentation import SOURCE_FORMAT, AuthoredDocumentation
-    from contract_atlas.model import canonical_bytes
+    from contract_atlas.documentation import AuthoredDocumentation
 
+    from tests.documentation_fixtures import synthetic_corpus
     from tests.release_index import make_index
 
     root = release_contract_factory(
         documentation=AuthoredDocumentation(
             "v1.2.0",
             "b" * 40,
-            "v1.2.0/documentation.json",
-            canonical_bytes({"format": SOURCE_FORMAT, "explanations": [], "guides": []}),
+            synthetic_corpus(generated_contract_closure["candidate"].bundle.closure),
         )
     )
     authored = AuthoredDocumentation(
         "v1.10.0",
         "c" * 40,
-        "v1.10.0/documentation.json",
-        canonical_bytes({"format": SOURCE_FORMAT, "explanations": [], "guides": []}),
+        synthetic_corpus(generated_contract_closure["candidate"].bundle.closure),
     )
     documented = release_contract_factory("2" * 40, documentation=authored)
     entries = [
@@ -119,7 +117,7 @@ def test_pages_assembles_versions_semantically_and_preserves_published_bytes(
         for path in documented.rglob("*")
         if path.is_file()
     )
-    assert (tmp_path / "site/v1.10.0/documentation.json").read_bytes() == authored.payload
+    assert (tmp_path / "site/v1.10.0/documentation-source.json").read_bytes() == authored.payload
 
     # Serve the actual aggregate at its project mount; use each generated index URL.
     class MountedSite(SimpleHTTPRequestHandler):
@@ -173,9 +171,9 @@ def test_final_product_without_documentation_is_not_ingested(
 def test_installation_assembly_publishes_only_the_bytes_it_verified(
     tmp_path, monkeypatch, generated_contract_closure, release_contract_factory, mutation
 ):
-    from contract_atlas.documentation import SOURCE_FORMAT, AuthoredDocumentation
-    from contract_atlas.model import canonical_bytes
+    from contract_atlas.documentation import AuthoredDocumentation
 
+    from tests.documentation_fixtures import synthetic_corpus
     from tests.release_index import make_index
 
     tag = "v1.0.0"
@@ -183,8 +181,7 @@ def test_installation_assembly_publishes_only_the_bytes_it_verified(
         documentation=AuthoredDocumentation(
             tag,
             "b" * 40,
-            f"{tag}/documentation.json",
-            canonical_bytes({"format": SOURCE_FORMAT, "explanations": [], "guides": []}),
+            synthetic_corpus(generated_contract_closure["candidate"].bundle.closure),
         )
     )
     installation = make_index(tmp_path / "installation", tag, "1" * 40)[0]

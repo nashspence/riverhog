@@ -18,9 +18,10 @@ classifiers = [
   "Typing :: Typed",
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = ["cryptography>=50.0.0,<51", "riverhog-canonical-json>=0.1,<0.2"]
+dependencies = ["release-documentation-lib>=0.1,<0.2", "cryptography>=50.0.0,<51", "riverhog-canonical-json>=0.1,<0.2"]
 
 [tool.uv.sources]
+release-documentation-lib = { workspace = true }
 riverhog-canonical-json = { workspace = true }
 
 [tool.hatch.build.targets.wheel]

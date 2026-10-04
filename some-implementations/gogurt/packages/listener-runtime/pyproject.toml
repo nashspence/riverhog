@@ -14,13 +14,14 @@ authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = [
+dependencies = ["release-documentation-lib>=0.1,<0.2",
   "config-validation>=0.1,<0.2",
   "gogurt-core>=0.1,<0.2",
   "time-formats>=0.1,<0.2",
 ]
 
 [tool.uv.sources]
+release-documentation-lib = { workspace = true }
 config-validation = { workspace = true }
 gogurt-core = { workspace = true }
 time-formats = { workspace = true }

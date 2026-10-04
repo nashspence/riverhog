@@ -96,6 +96,7 @@ _MODES = """'use strict';
 const root=document.documentElement;
 const audit=document.getElementById('audit-mode');
 const docs=document.getElementById('docs-mode');
+const docAudit=document.getElementById('documentation-audit-mode');
 root.dataset.js='yes';
 const authorityFilter=document.getElementById('authority-filter');
 if(authorityFilter){
@@ -120,10 +121,12 @@ function apply(){const url=new URL(location.href);
   const requestedDocs=url.searchParams.get('docs');
   root.dataset.docs=(requestedDocs==='1'||
     (requestedDocs===null&&root.dataset.docsDefault==='on'))&&docs&&!docs.disabled?'on':'off';
+  root.dataset.docAudit=url.searchParams.get('docAudit')==='1'?'on':'off';
+  if(docAudit)docAudit.checked=root.dataset.docAudit==='on';
   if(audit)audit.checked=root.dataset.audit==='on';
   if(docs)docs.checked=root.dataset.docs==='on';}
 function changed(){const url=new URL(location.href);
-  for(const [key,control] of [['audit',audit],['docs',docs]]){
+  for(const [key,control] of [['audit',audit],['docs',docs],['docAudit',docAudit]]){
     if(control&&control.checked)url.searchParams.set(key,'1');
     else if((key==='audit'&&root.dataset.auditDefault==='on')||
             (key==='docs'&&root.dataset.docsDefault==='on'))url.searchParams.set(key,'0');
@@ -132,6 +135,7 @@ function changed(){const url=new URL(location.href);
   history.pushState(null,'',url);apply();}
 if(audit)audit.addEventListener('change',changed);
 if(docs)docs.addEventListener('change',changed);
+if(docAudit)docAudit.addEventListener('change',changed);
 addEventListener('popstate',apply);
 function revealFragment(){
   if(!location.hash)return;
@@ -144,7 +148,8 @@ document.addEventListener('click',event=>{
   const link=event.target.closest('a[href]');if(!link)return;
   const url=new URL(link.href,location.href);
   if(url.origin!==location.origin||!url.pathname.endsWith('.html'))return;
-  for(const key of ['audit','docs'])if(root.dataset[key]==='on')url.searchParams.set(key,'1');
+  for(const key of ['audit','docs','docAudit'])
+    if(root.dataset[key]==='on')url.searchParams.set(key,'1');
   else url.searchParams.delete(key);
   link.href=url.href;});
 apply();
@@ -447,8 +452,10 @@ def _documentation(
             "explanations",
             "guides",
             "cli_commands",
+            "compiled",
+            "requirements",
         }
-        or document["format"] != "riverhog-contract-documentation-record/v2"
+        or document["format"] != "riverhog-contract-documentation-record/v3"
     ):
         raise ContractAtlasError("documentation record has an unknown or incomplete format")
     if document["closure_sha256"] != canonical_sha256(closure) or any(
@@ -1764,6 +1771,9 @@ def render_contract(
     documentation: Mapping[str, object] | None = None,
     *,
     source_revision: str | None = None,
+    documentation_audit: Mapping[str, object] | None = None,
+    documentation_assets: Mapping[str, bytes] | None = None,
+    review_pages: Mapping[str, bytes] | None = None,
 ) -> dict[str, bytes]:
     """Render the entire Closure with independent optional bound augmentations."""
 
@@ -2168,6 +2178,21 @@ def render_contract(
                 source_revision,
             )
         )
+    from .documentation_rendering import augment
+
+    files.update(
+        {"documentation-assets/" + name: raw for name, raw in (documentation_assets or {}).items()}
+    )
+    for path, raw in (review_pages or {}).items():
+        if path in files or not path.endswith(".html") or "/" in path:
+            raise ContractAtlasError("prepared review page would replace a canonical contract page")
+        files[path] = raw
+    augment(files, closure, documentation, documentation_audit)
+    files["style.css"] += (
+        b'\nhtml[data-js="yes"]:not([data-doc-audit="on"]) '
+        b".documentation-audit{display:none}.documentation-attention{font-weight:600}"
+        b".documentation-audit pre{white-space:pre-wrap;overflow-wrap:anywhere}\n"
+    )
     manifest = {
         "format": "riverhog-contract-render-manifest/v1",
         "closure_sha256": closure_sha256,
@@ -2176,6 +2201,9 @@ def render_contract(
         if documentation is not None
         else None,
         "source_revision": source_revision,
+        "documentation_audit_sha256": canonical_sha256(documentation_audit)
+        if documentation_audit is not None
+        else None,
         "files": {
             path: hashlib.sha256(payload).hexdigest() for path, payload in sorted(files.items())
         },
@@ -2214,12 +2242,18 @@ def validate_render(files: Mapping[str, bytes]) -> None:
         page.feed(payload.decode("utf-8"))
         page.close()
         parsed[path] = page
-    allowed_machine = {"riverhog-v1.json", "riverhog-v1-audit.json"}
+    allowed_machine = {
+        "riverhog-v1.json",
+        "riverhog-v1-audit.json",
+        "documentation-audit.json",
+        "documentation-record.json",
+        "documentation-source.json",
+    }
     for source, page in parsed.items():
         for href in page.links:
             target = urlsplit(href)
             if target.scheme or target.netloc:
-                if target.scheme not in {"http", "https"}:
+                if target.scheme not in {"http", "https", "mailto"}:
                     raise ContractAtlasError(f"render has unsupported external link: {href}")
                 continue
             resolved = (

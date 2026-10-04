@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import shutil
 import subprocess
 import sys
@@ -15,7 +16,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import github_governance  # noqa: E402
 import release  # noqa: E402
-from contract_atlas.documentation import SOURCE_FORMAT, AuthoredDocumentation  # noqa: E402
+from contract_atlas.documentation import AuthoredDocumentation  # noqa: E402
 from contract_atlas.model import ContractAtlasError, canonical_bytes  # noqa: E402
 from contract_atlas.publication import file_sha256  # noqa: E402
 from contract_atlas.release_publication import (  # noqa: E402
@@ -25,6 +26,7 @@ from contract_atlas.release_publication import (  # noqa: E402
 from contract_pages import build_pages, require_requested_product  # noqa: E402
 
 from tests.actions_evidence import ArtifactRemote, execution  # noqa: E402
+from tests.documentation_fixtures import synthetic_corpus  # noqa: E402
 from tests.release_index import make_index  # noqa: E402
 
 
@@ -151,10 +153,12 @@ def test_trusted_preparation_offline_signature_immutable_history_and_main_pages(
     source_sha = git("rev-parse", "HEAD")
     git("checkout", "--orphan", "release-documentation")
     git("read-tree", "--empty")
-    (repo / "v1.0.0").mkdir()
-    document = canonical_bytes({"format": SOURCE_FORMAT, "explanations": [], "guides": []})
-    (repo / "v1.0.0/documentation.json").write_bytes(document)
-    git("add", "v1.0.0/documentation.json")
+    corpus = synthetic_corpus(generated_contract_closure["candidate"].bundle.closure)
+    for name, payload in corpus.items():
+        path = repo / "v1.0.0" / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(payload)
+    git("add", "v1.0.0")
     git("commit", "-m", "Independent authored input")
     documentation_commit = git("rev-parse", "HEAD")
     authored = AuthoredDocumentation.resolve(
@@ -286,6 +290,33 @@ def test_trusted_preparation_offline_signature_immutable_history_and_main_pages(
         rendering, "render_contract", lambda *args, **kwargs: pytest.fail("historical re-render")
     )
     loaded = remote.load_product(snapshot["products"][0], tmp_path / "historical")
+    # A prepared comparison is authenticated from its original run and retains
+    # its original policy; today's audit producer must not reassess it.
+    from contract_atlas import documentation_audit, documentation_baseline
+
+    selector = candidate.parent / documentation_baseline.PROVENANCE_FILE
+    selector.write_bytes(canonical_bytes({"kind": "selected-prepared-candidate", "run_id": 10}))
+    with monkeypatch.context() as historical:
+        original_api = remote.api
+
+        def advanced_main(endpoint):
+            return (
+                {"object": {"sha": "f" * 40}}
+                if endpoint == "git/ref/heads/main"
+                else original_api(endpoint)
+            )
+
+        historical.setattr(remote, "api", advanced_main)
+        historical.setattr(
+            documentation_audit,
+            "check_record",
+            lambda *args, **kwargs: pytest.fail("historical audit reassessment"),
+        )
+        prior, custody = documentation_baseline.resolve(candidate, initial=False, remote=remote)
+    selector.unlink()
+    assert prior == json.loads((candidate / "documentation-audit.json").read_bytes())["current"]
+    assert custody["kind"] == "selected-prepared-candidate"
+    assert custody["verification"]["execution"]["workflow_sha"] == "3" * 40
     site = build_pages(
         generated_contract_closure["root"],
         tmp_path / "site",
@@ -294,7 +325,7 @@ def test_trusted_preparation_offline_signature_immutable_history_and_main_pages(
         snapshot=snapshot,
     )
     assert site["inputs"][1]["documentation"]["commit"] == documentation_commit
-    assert (tmp_path / "site/v1.0.0/documentation.json").read_bytes() == document
+    assert (tmp_path / "site/v1.0.0/documentation-source.json").read_bytes() == authored.payload
     assert (tmp_path / "site/artifacts/v1.0.0/simple/a-riverhog-cli/index.html").is_file()
     assert (
         site["inputs"][1]["installation"]["snapshot_sha256"]

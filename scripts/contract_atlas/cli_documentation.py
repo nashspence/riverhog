@@ -145,13 +145,15 @@ def build_cli_documentation_record(
             f"CLI help and Closure commands differ: missing={missing}, extra={extra}"
         )
     return {
-        "format": "riverhog-contract-documentation-record/v2",
+        "format": "riverhog-contract-documentation-record/v3",
         "closure_sha256": canonical_sha256(closure),
         "release_scope": "v1",
         "build_scope": "checked-workspace",
         "source_revision": "checked-workspace",
         "explanations": [],
         "guides": [],
+        "compiled": None,
+        "requirements": None,
         "cli_commands": [
             {"element_id": cli_elements[path], **by_path[path]} for path in sorted(by_path)
         ],

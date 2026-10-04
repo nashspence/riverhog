@@ -14,7 +14,7 @@ authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = [
+dependencies = ["release-documentation-lib>=0.1,<0.2",
   "riverhog-archive-contracts>=0.1,<0.2",
   "a-stove0-materialization-hint-evidence-contract-lib>=0.1,<0.2",
   "a-stove0-riverhog-provenance-evidence-contract-lib>=0.1,<0.2",
@@ -32,6 +32,7 @@ dependencies = [
 a-stove0-riverhog-provenance-observer = "a_stove0_riverhog_provenance_observer.app:main"
 
 [tool.uv.sources]
+release-documentation-lib = { workspace = true }
 riverhog-archive-contracts = { workspace = true }
 a-stove0-materialization-hint-evidence-contract-lib = { workspace = true }
 a-stove0-riverhog-provenance-evidence-contract-lib = { workspace = true }

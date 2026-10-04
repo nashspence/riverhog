@@ -16,6 +16,8 @@ CODEQL_WORKFLOW = REPO_ROOT / ".github/workflows/codeql.yml"
 QUALIFICATION_WORKFLOW = REPO_ROOT / ".github/workflows/release-qualification.yml"
 PROVIDER_QUALIFICATION_WORKFLOW = REPO_ROOT / ".github/workflows/provider-qualification.yml"
 CONTRACT_PAGES_WORKFLOW = REPO_ROOT / ".github/workflows/contract-pages.yml"
+PREPARATION_WORKFLOW = REPO_ROOT / ".github/workflows/release-preparation.yml"
+DOCUMENTATION_WORKFLOW = REPO_ROOT / ".github/workflows/documentation-check.yml"
 PROVIDER_QUALIFICATION_COMPOSE = REPO_ROOT / "tests/harness/provider-qualification.compose.yaml"
 MISE_LOCK = REPO_ROOT / "mise.lock"
 DATABASE_QUALIFICATION_SCRIPT = REPO_ROOT / "scripts/database_qualification.py"
@@ -97,6 +99,81 @@ def test_pages_dispatch_enters_the_environment_through_main_instead_of_a_product
         assert observed.returncode == status
     assert workflow["jobs"]["deploy"]["environment"]["name"] == "github-pages"
     assert workflow["jobs"]["deploy"]["needs"] == "build"
+
+
+def test_preparation_separates_trusted_authority_from_the_exact_qualified_source() -> None:
+    workflow = yaml.load(PREPARATION_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    assert set(workflow["on"]) == {"workflow_dispatch"}
+    assert workflow["permissions"] == {"actions": "read", "contents": "read"}
+    job = workflow["jobs"]["prepare"]
+    guard = job["steps"][0]["run"]
+    for ref, status in (("refs/heads/main", 0), ("refs/tags/v1.0.0", 1)):
+        result = subprocess.run(
+            ["bash", "-e", "-c", guard],
+            env={**os.environ, "GITHUB_REF": ref},
+            capture_output=True,
+        )
+        assert result.returncode == status
+    checkouts = [
+        step["with"]
+        for step in job["steps"]
+        if step.get("uses", "").startswith("actions/checkout@")
+    ]
+    assert [(c["path"], c["ref"]) for c in checkouts] == [
+        ("coordinator", "${{ github.workflow_sha }}"),
+        ("source", "${{ inputs.source_sha }}"),
+    ]
+    assert all(c["persist-credentials"] == "false" and c["fetch-depth"] == "0" for c in checkouts)
+    preparation = next(step for step in job["steps"] if step.get("working-directory"))
+    assert preparation["working-directory"] == "coordinator"
+    assert preparation["env"]["GH_TOKEN"] == "${{ github.token }}"
+    assert "--source-directory ../source" in preparation["run"]
+    assert 'test "$(git -C ../source rev-parse HEAD)" = "$SOURCE_SHA"' in preparation["run"]
+    assert 'test "$(git rev-parse HEAD)" = "$GITHUB_WORKFLOW_SHA"' in preparation["run"]
+    assert "--qualification-run" in preparation["run"]
+    assert "secrets." not in PREPARATION_WORKFLOW.read_text()
+    assert "environment" not in job
+    assert all(
+        re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in job["steps"] if "uses" in step
+    )
+
+
+def test_documentation_validation_has_read_only_authoring_access() -> None:
+    workflow = yaml.load(DOCUMENTATION_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    assert set(workflow["on"]) == {"workflow_dispatch"}
+    assert workflow["permissions"] == {"contents": "read"}
+    job = workflow["jobs"]["validate"]
+    assert "environment" not in job
+    validation = next(step for step in job["steps"] if "run" in step)
+    assert validation["env"]["GH_TOKEN"] == "${{ github.token }}"
+    assert "validate-authoring" in validation["run"]
+    assert "--coordinate-baseline" in validation["run"]
+    assert "secrets." not in DOCUMENTATION_WORKFLOW.read_text()
+
+
+def test_prepared_native_extraction_is_called_by_the_trusted_coordinator() -> None:
+    tree = ast.parse((REPO_ROOT / "scripts/release.py").read_text())
+    preparation = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "build_release_evidence"
+    )
+    imports = {
+        (node.module, alias.name)
+        for node in ast.walk(preparation)
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
+    assert ("contract_atlas.documentation_artifacts", "inspect_prepared_artifacts") in imports
+    extractor = [
+        node
+        for node in ast.walk(preparation)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "inspect_prepared_artifacts"
+    ]
+    assert len(extractor) == 1
+    assert {k.arg for k in extractor[0].keywords} >= {"baseline", "custody", "image_records"}
 
 
 def test_provider_qualification_runs_isolated_storage_adapter_images() -> None:

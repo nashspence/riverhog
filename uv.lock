@@ -61,6 +61,7 @@ members = [
     "gogurt-listener-runtime",
     "http-api-contracts",
     "lifecycle-events",
+    "release-documentation-lib",
     "review0",
     "review0-contracts",
     "review0-planner",
@@ -101,6 +102,7 @@ dev = [
     { name = "boto3-stubs", extras = ["s3"], specifier = ">=1.43.59,<2.0" },
     { name = "httpx2", specifier = ">=2,<3" },
     { name = "license-expression", specifier = ">=30.4,<31" },
+    { name = "markdown-it-py", specifier = "==4.2.0" },
     { name = "mypy", specifier = ">=2.3.0,<3.0" },
     { name = "packaging", specifier = ">=26,<27" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.4,<4.0" },
@@ -108,6 +110,7 @@ dev = [
     { name = "pytest-cov", specifier = ">=7.1.0,<8.0" },
     { name = "pytest-instafail", specifier = "==0.5.0" },
     { name = "pytest-xdist", specifier = ">=3.8,<4" },
+    { name = "pyyaml", specifier = "==6.0.3" },
     { name = "rdflib", specifier = ">=7,<8" },
     { name = "reuse", specifier = ">=6,<7" },
     { name = "rfc8785", specifier = ">=0.1.4,<0.2" },
@@ -122,10 +125,14 @@ version = "0.1.0"
 source = { editable = "some-implementations/gogurt/listener-host/linux" }
 dependencies = [
     { name = "gogurt-listener-runtime" },
+    { name = "release-documentation-lib" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "gogurt-listener-runtime", editable = "some-implementations/gogurt/packages/listener-runtime" }]
+requires-dist = [
+    { name = "gogurt-listener-runtime", editable = "some-implementations/gogurt/packages/listener-runtime" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+]
 
 [[package]]
 name = "a-gogurt-linux-volume"
@@ -134,12 +141,14 @@ source = { editable = "some-implementations/gogurt/mounted-volume/linux" }
 dependencies = [
     { name = "a-gogurt-path-volume-lib" },
     { name = "gogurt-core" },
+    { name = "release-documentation-lib" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "a-gogurt-path-volume-lib", editable = "some-implementations/gogurt/mounted-volume/path-support" },
     { name = "gogurt-core", editable = "some-implementations/gogurt/packages/core" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
 ]
 
 [[package]]
@@ -148,10 +157,14 @@ version = "0.1.0"
 source = { editable = "some-implementations/gogurt/listener-host/macos" }
 dependencies = [
     { name = "gogurt-listener-runtime" },
+    { name = "release-documentation-lib" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "gogurt-listener-runtime", editable = "some-implementations/gogurt/packages/listener-runtime" }]
+requires-dist = [
+    { name = "gogurt-listener-runtime", editable = "some-implementations/gogurt/packages/listener-runtime" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+]
 
 [[package]]
 name = "a-gogurt-macos-volume"
@@ -160,12 +173,14 @@ source = { editable = "some-implementations/gogurt/mounted-volume/macos" }
 dependencies = [
     { name = "a-gogurt-path-volume-lib" },
     { name = "gogurt-core" },
+    { name = "release-documentation-lib" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "a-gogurt-path-volume-lib", editable = "some-implementations/gogurt/mounted-volume/path-support" },
     { name = "gogurt-core", editable = "some-implementations/gogurt/packages/core" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
 ]
 
 [[package]]
@@ -175,12 +190,14 @@ source = { editable = "some-implementations/gogurt/mounted-volume/path-support" 
 dependencies = [
     { name = "config-validation" },
     { name = "gogurt-core" },
+    { name = "release-documentation-lib" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "config-validation", editable = "packages/config-validation" },
     { name = "gogurt-core", editable = "some-implementations/gogurt/packages/core" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
 ]
 
 [[package]]
@@ -189,10 +206,14 @@ version = "0.1.0"
 source = { editable = "some-implementations/gogurt/listener-host/windows" }
 dependencies = [
     { name = "gogurt-listener-runtime" },
+    { name = "release-documentation-lib" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "gogurt-listener-runtime", editable = "some-implementations/gogurt/packages/listener-runtime" }]
+requires-dist = [
+    { name = "gogurt-listener-runtime", editable = "some-implementations/gogurt/packages/listener-runtime" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+]
 
 [[package]]
 name = "a-gogurt-windows-volume"
@@ -201,12 +222,14 @@ source = { editable = "some-implementations/gogurt/mounted-volume/windows" }
 dependencies = [
     { name = "a-gogurt-path-volume-lib" },
     { name = "gogurt-core" },
+    { name = "release-documentation-lib" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "a-gogurt-path-volume-lib", editable = "some-implementations/gogurt/mounted-volume/path-support" },
     { name = "gogurt-core", editable = "some-implementations/gogurt/packages/core" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
 ]
 
 [[package]]
@@ -217,6 +240,7 @@ dependencies = [
     { name = "a-stove0-media-archive-contract-lib" },
     { name = "fastapi" },
     { name = "http-api-contracts" },
+    { name = "release-documentation-lib" },
     { name = "review0-contracts" },
     { name = "review0-sampler-lib" },
     { name = "review0-sampler-protocol" },
@@ -228,6 +252,7 @@ requires-dist = [
     { name = "a-stove0-media-archive-contract-lib", editable = "some-implementations/stove0/targets/media-archive/contracts" },
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "review0-contracts", editable = "some-implementations/stove0/review0/contracts" },
     { name = "review0-sampler-lib", editable = "some-implementations/stove0/review0/sampler/support" },
     { name = "review0-sampler-protocol", editable = "some-implementations/stove0/review0/sampler/protocol" },
@@ -242,6 +267,7 @@ dependencies = [
     { name = "a-stove0-media-archive-contract-lib" },
     { name = "fastapi" },
     { name = "http-api-contracts" },
+    { name = "release-documentation-lib" },
     { name = "review0-contracts" },
     { name = "review0-sampler-lib" },
     { name = "review0-sampler-protocol" },
@@ -253,6 +279,7 @@ requires-dist = [
     { name = "a-stove0-media-archive-contract-lib", editable = "some-implementations/stove0/targets/media-archive/contracts" },
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "review0-contracts", editable = "some-implementations/stove0/review0/contracts" },
     { name = "review0-sampler-lib", editable = "some-implementations/stove0/review0/sampler/support" },
     { name = "review0-sampler-protocol", editable = "some-implementations/stove0/review0/sampler/protocol" },
@@ -270,6 +297,7 @@ dependencies = [
     { name = "cryptography" },
     { name = "httpx" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-storage-adapter-asgi-support" },
     { name = "riverhog-storage-adapter-protocol" },
     { name = "time-formats" },
@@ -284,6 +312,7 @@ requires-dist = [
     { name = "cryptography", specifier = ">=50,<51" },
     { name = "httpx", specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-storage-adapter-asgi-support", editable = "packages/riverhog-storage-adapter-asgi-support" },
     { name = "riverhog-storage-adapter-protocol", editable = "packages/riverhog-storage-adapter-protocol" },
     { name = "time-formats", editable = "packages/time-formats" },
@@ -298,6 +327,7 @@ dependencies = [
     { name = "a-riverhog-s3-store-lib" },
     { name = "config-validation" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-storage-adapter-asgi-support" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -307,6 +337,7 @@ requires-dist = [
     { name = "a-riverhog-s3-store-lib", editable = "some-implementations/riverhog/storage/s3-support" },
     { name = "config-validation", editable = "packages/config-validation" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-storage-adapter-asgi-support", editable = "packages/riverhog-storage-adapter-asgi-support" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
 ]
@@ -319,6 +350,7 @@ dependencies = [
     { name = "alembic" },
     { name = "http-api-contracts" },
     { name = "httpx" },
+    { name = "release-documentation-lib" },
     { name = "rich" },
     { name = "riverhog-application-access" },
     { name = "riverhog-archive-contracts" },
@@ -338,6 +370,7 @@ requires-dist = [
     { name = "alembic", specifier = ">=1.18.5,<2.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "httpx", specifier = ">=0.27,<1.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "rich", specifier = ">=15.0,<16.0" },
     { name = "riverhog-application-access", editable = "packages/riverhog-application-access" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
@@ -358,6 +391,7 @@ version = "0.1.0"
 source = { editable = "some-implementations/riverhog/provenance/contracts/direct-relations" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts" },
 ]
@@ -365,6 +399,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.12,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
 ]
@@ -379,6 +414,7 @@ dependencies = [
     { name = "httpx" },
     { name = "lifecycle-events" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "sqlalchemy" },
     { name = "state-schema" },
 ]
@@ -390,6 +426,7 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27,<1.0" },
     { name = "lifecycle-events", editable = "packages/lifecycle-events" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "sqlalchemy", specifier = ">=2.0,<3.0" },
     { name = "state-schema", editable = "packages/state-schema" },
 ]
@@ -399,6 +436,7 @@ name = "a-riverhog-filesystem-store"
 version = "0.1.0"
 source = { editable = "some-implementations/riverhog/storage/filesystem" }
 dependencies = [
+    { name = "release-documentation-lib" },
     { name = "riverhog-storage-adapter-asgi-support" },
     { name = "riverhog-storage-adapter-protocol" },
     { name = "time-formats" },
@@ -407,6 +445,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-storage-adapter-asgi-support", editable = "packages/riverhog-storage-adapter-asgi-support" },
     { name = "riverhog-storage-adapter-protocol", editable = "packages/riverhog-storage-adapter-protocol" },
     { name = "time-formats", editable = "packages/time-formats" },
@@ -425,6 +464,7 @@ dependencies = [
     { name = "lifecycle-events" },
     { name = "pydantic" },
     { name = "pyftpdlib" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
@@ -443,6 +483,7 @@ requires-dist = [
     { name = "lifecycle-events", editable = "packages/lifecycle-events" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "pyftpdlib", specifier = ">=2.2,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
@@ -461,6 +502,7 @@ dependencies = [
     { name = "httpx" },
     { name = "lifecycle-events" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
 ]
 
 [package.metadata]
@@ -469,6 +511,7 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27,<1.0" },
     { name = "lifecycle-events", editable = "packages/lifecycle-events" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
 ]
 
 [[package]]
@@ -476,11 +519,15 @@ name = "a-riverhog-linux-provenance-contract-lib"
 version = "0.1.0"
 source = { editable = "some-implementations/riverhog/provenance/contracts/linux" }
 dependencies = [
+    { name = "release-documentation-lib" },
     { name = "riverhog-provenance-contracts" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" }]
+requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+    { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
+]
 
 [[package]]
 name = "a-riverhog-linux-provenance-observer"
@@ -502,11 +549,15 @@ name = "a-riverhog-macos-provenance-contract-lib"
 version = "0.1.0"
 source = { editable = "some-implementations/riverhog/provenance/contracts/macos" }
 dependencies = [
+    { name = "release-documentation-lib" },
     { name = "riverhog-provenance-contracts" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" }]
+requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+    { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
+]
 
 [[package]]
 name = "a-riverhog-macos-provenance-observer"
@@ -531,6 +582,7 @@ dependencies = [
     { name = "a-riverhog-witness-contract-lib" },
     { name = "alembic" },
     { name = "httpx" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
     { name = "sqlalchemy" },
@@ -542,6 +594,7 @@ requires-dist = [
     { name = "a-riverhog-witness-contract-lib", editable = "some-implementations/riverhog/packages/a-riverhog-witness-contract-lib" },
     { name = "alembic", specifier = ">=1.18.5,<2.0" },
     { name = "httpx", specifier = ">=0.27,<1.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "sqlalchemy", specifier = ">=2.0,<3.0" },
@@ -559,6 +612,7 @@ dependencies = [
     { name = "opentimestamps" },
     { name = "pycryptodomex" },
     { name = "python-bitcoinlib" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
     { name = "sqlalchemy" },
@@ -573,6 +627,7 @@ requires-dist = [
     { name = "opentimestamps", specifier = "==0.4.5" },
     { name = "pycryptodomex", specifier = "==3.23.0" },
     { name = "python-bitcoinlib", specifier = "==0.12.2" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "sqlalchemy", specifier = ">=2.0,<3.0" },
@@ -584,6 +639,7 @@ name = "a-riverhog-recovery-tool"
 version = "0.1.0"
 source = { editable = "some-implementations/riverhog/recovery" }
 dependencies = [
+    { name = "release-documentation-lib" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-materialization" },
@@ -593,6 +649,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-materialization", editable = "packages/riverhog-materialization" },
@@ -609,6 +666,7 @@ dependencies = [
     { name = "botocore" },
     { name = "config-validation" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-storage-adapter-protocol" },
     { name = "time-formats" },
 ]
@@ -619,6 +677,7 @@ requires-dist = [
     { name = "botocore", specifier = ">=1.35,<2.0" },
     { name = "config-validation", editable = "packages/config-validation" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-storage-adapter-protocol", editable = "packages/riverhog-storage-adapter-protocol" },
     { name = "time-formats", editable = "packages/time-formats" },
 ]
@@ -628,11 +687,15 @@ name = "a-riverhog-windows-provenance-contract-lib"
 version = "0.1.0"
 source = { editable = "some-implementations/riverhog/provenance/contracts/windows" }
 dependencies = [
+    { name = "release-documentation-lib" },
     { name = "riverhog-provenance-contracts" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" }]
+requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+    { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
+]
 
 [[package]]
 name = "a-riverhog-windows-provenance-observer"
@@ -656,12 +719,14 @@ name = "a-riverhog-witness-contract-lib"
 version = "0.1.0"
 source = { editable = "some-implementations/riverhog/packages/a-riverhog-witness-contract-lib" }
 dependencies = [
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-protocol" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
 ]
@@ -672,6 +737,7 @@ version = "0.1.0"
 source = { editable = "some-implementations/stove0/application/client" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "rich" },
     { name = "stove0-api-client" },
     { name = "stove0-protocol" },
@@ -682,6 +748,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "rich", specifier = ">=15.0,<16.0" },
     { name = "stove0-api-client", editable = "some-implementations/stove0/packages/api-client" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
@@ -698,6 +765,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "http-api-contracts" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-observer-protocol" },
     { name = "stove0-observer-support" },
     { name = "uvicorn", extra = ["standard"] },
@@ -709,6 +777,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
     { name = "stove0-observer-support", editable = "some-implementations/stove0/packages/observer-support" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
@@ -723,6 +792,7 @@ dependencies = [
     { name = "a-stove0-media-sampling-contract-lib" },
     { name = "fastapi" },
     { name = "http-api-contracts" },
+    { name = "release-documentation-lib" },
     { name = "stove0-observer-protocol" },
     { name = "stove0-observer-support" },
     { name = "uvicorn", extra = ["standard"] },
@@ -734,6 +804,7 @@ requires-dist = [
     { name = "a-stove0-media-sampling-contract-lib", editable = "some-implementations/stove0/observers/contracts/media-sampling" },
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
     { name = "stove0-observer-support", editable = "some-implementations/stove0/packages/observer-support" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
@@ -745,12 +816,14 @@ version = "0.1.0"
 source = { editable = "some-implementations/stove0/observers/contracts/ffprobe-streams" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-observer-protocol" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
 ]
 
@@ -761,6 +834,7 @@ source = { editable = "some-implementations/stove0/observers/contracts/filename-
 dependencies = [
     { name = "a-stove0-riverhog-provenance-evidence-contract-lib" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-observer-protocol" },
 ]
 
@@ -768,6 +842,7 @@ dependencies = [
 requires-dist = [
     { name = "a-stove0-riverhog-provenance-evidence-contract-lib", editable = "some-implementations/stove0/observers/contracts/riverhog-provenance" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
 ]
 
@@ -781,6 +856,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "http-api-contracts" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts" },
     { name = "stove0-observer-protocol" },
@@ -795,6 +871,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
@@ -808,12 +885,14 @@ version = "0.1.0"
 source = { editable = "some-implementations/stove0/observers/contracts/magic" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-observer-protocol" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
 ]
 
@@ -826,6 +905,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "http-api-contracts" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-observer-protocol" },
     { name = "stove0-observer-support" },
     { name = "uvicorn", extra = ["standard"] },
@@ -837,6 +917,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
     { name = "stove0-observer-support", editable = "some-implementations/stove0/packages/observer-support" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
@@ -848,6 +929,7 @@ version = "0.1.0"
 source = { editable = "some-implementations/stove0/observers/contracts/materialization-hint" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance-contracts" },
     { name = "stove0-observer-protocol" },
@@ -856,6 +938,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
@@ -867,6 +950,7 @@ version = "0.1.0"
 source = { editable = "some-implementations/stove0/targets/media-archive/contracts" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-protocol" },
     { name = "stove0-target-protocol" },
 ]
@@ -874,6 +958,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
     { name = "stove0-target-protocol", editable = "some-implementations/stove0/packages/target-protocol" },
 ]
@@ -887,6 +972,7 @@ dependencies = [
     { name = "a-stove0-media-archive-contract-lib" },
     { name = "a-stove0-media-metadata-contract-lib" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-protocol" },
     { name = "stove0-observer-protocol" },
     { name = "stove0-protocol" },
@@ -899,6 +985,7 @@ requires-dist = [
     { name = "a-stove0-media-archive-contract-lib", editable = "some-implementations/stove0/targets/media-archive/contracts" },
     { name = "a-stove0-media-metadata-contract-lib", editable = "some-implementations/stove0/observers/contracts/media-metadata" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
@@ -911,12 +998,14 @@ version = "0.1.0"
 source = { editable = "some-implementations/stove0/observers/contracts/media-metadata" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-observer-protocol" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
 ]
 
@@ -926,12 +1015,14 @@ version = "0.1.0"
 source = { editable = "some-implementations/stove0/observers/contracts/media-sampling" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-observer-protocol" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
 ]
 
@@ -945,6 +1036,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "http-api-contracts" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
@@ -960,6 +1052,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
@@ -977,6 +1070,7 @@ dependencies = [
     { name = "a-stove0-media-archive-lib" },
     { name = "fastapi" },
     { name = "http-api-contracts" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
@@ -991,6 +1085,7 @@ requires-dist = [
     { name = "a-stove0-media-archive-lib", editable = "some-implementations/stove0/targets/media-archive/support" },
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
@@ -1009,6 +1104,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "http-api-contracts" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-materialization" },
     { name = "riverhog-protocol" },
@@ -1026,6 +1122,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-materialization", editable = "packages/riverhog-materialization" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
@@ -1042,6 +1139,7 @@ version = "0.1.0"
 source = { editable = "some-implementations/stove0/observers/contracts/riverhog-provenance" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance-contracts" },
@@ -1051,6 +1149,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
@@ -1067,6 +1166,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "http-api-contracts" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance" },
@@ -1082,6 +1182,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
@@ -1506,6 +1607,7 @@ dependencies = [
     { name = "config-validation" },
     { name = "gogurt-core" },
     { name = "gogurt-listener-runtime" },
+    { name = "release-documentation-lib" },
     { name = "typer" },
 ]
 
@@ -1514,6 +1616,7 @@ requires-dist = [
     { name = "config-validation", editable = "packages/config-validation" },
     { name = "gogurt-core", editable = "some-implementations/gogurt/packages/core" },
     { name = "gogurt-listener-runtime", editable = "some-implementations/gogurt/packages/listener-runtime" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "typer", specifier = ">=0.12,<1.0" },
 ]
 
@@ -1523,10 +1626,14 @@ version = "0.1.0"
 source = { editable = "some-implementations/gogurt/packages/core" }
 dependencies = [
     { name = "config-validation" },
+    { name = "release-documentation-lib" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "config-validation", editable = "packages/config-validation" }]
+requires-dist = [
+    { name = "config-validation", editable = "packages/config-validation" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+]
 
 [[package]]
 name = "gogurt-listener-runtime"
@@ -1535,6 +1642,7 @@ source = { editable = "some-implementations/gogurt/packages/listener-runtime" }
 dependencies = [
     { name = "config-validation" },
     { name = "gogurt-core" },
+    { name = "release-documentation-lib" },
     { name = "time-formats" },
 ]
 
@@ -1542,6 +1650,7 @@ dependencies = [
 requires-dist = [
     { name = "config-validation", editable = "packages/config-validation" },
     { name = "gogurt-core", editable = "some-implementations/gogurt/packages/core" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "time-formats", editable = "packages/time-formats" },
 ]
 
@@ -1649,12 +1758,14 @@ version = "0.1.0"
 source = { editable = "packages/http-api-contracts" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
 ]
 
@@ -1922,6 +2033,7 @@ source = { editable = "packages/lifecycle-events" }
 dependencies = [
     { name = "httpx" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "time-formats" },
 ]
 
@@ -1929,6 +2041,7 @@ dependencies = [
 requires-dist = [
     { name = "httpx", specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "time-formats", editable = "packages/time-formats" },
 ]
 
@@ -2574,6 +2687,11 @@ wheels = [
 ]
 
 [[package]]
+name = "release-documentation-lib"
+version = "0.1.0"
+source = { editable = "packages/release-documentation-lib" }
+
+[[package]]
 name = "reuse"
 version = "6.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2598,6 +2716,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "jsonschema" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "review0-contracts" },
     { name = "review0-sampler-client" },
     { name = "review0-sampler-protocol" },
@@ -2616,6 +2735,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "review0-contracts", editable = "some-implementations/stove0/review0/contracts" },
     { name = "review0-sampler-client", editable = "some-implementations/stove0/review0/sampler/client" },
     { name = "review0-sampler-protocol", editable = "some-implementations/stove0/review0/sampler/protocol" },
@@ -2633,6 +2753,7 @@ version = "0.1.0"
 source = { editable = "some-implementations/stove0/review0/contracts" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-protocol" },
     { name = "stove0-target-protocol" },
 ]
@@ -2640,6 +2761,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
     { name = "stove0-target-protocol", editable = "some-implementations/stove0/packages/target-protocol" },
 ]
@@ -2651,6 +2773,7 @@ source = { editable = "some-implementations/stove0/review0/planning" }
 dependencies = [
     { name = "a-stove0-media-sampling-contract-lib" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "review0-contracts" },
     { name = "stove0-protocol" },
 ]
@@ -2659,6 +2782,7 @@ dependencies = [
 requires-dist = [
     { name = "a-stove0-media-sampling-contract-lib", editable = "some-implementations/stove0/observers/contracts/media-sampling" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "review0-contracts", editable = "some-implementations/stove0/review0/contracts" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
 ]
@@ -2670,6 +2794,7 @@ source = { editable = "some-implementations/stove0/review0/sampler/client" }
 dependencies = [
     { name = "http-api-contracts" },
     { name = "httpx" },
+    { name = "release-documentation-lib" },
     { name = "review0-sampler-protocol" },
 ]
 
@@ -2677,6 +2802,7 @@ dependencies = [
 requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "httpx", specifier = ">=0.27,<1.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "review0-sampler-protocol", editable = "some-implementations/stove0/review0/sampler/protocol" },
 ]
 
@@ -2688,6 +2814,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "jsonschema" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "review0-sampler-client" },
     { name = "review0-sampler-protocol" },
 ]
@@ -2697,6 +2824,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "review0-sampler-client", editable = "some-implementations/stove0/review0/sampler/client" },
     { name = "review0-sampler-protocol", editable = "some-implementations/stove0/review0/sampler/protocol" },
 ]
@@ -2708,6 +2836,7 @@ source = { editable = "some-implementations/stove0/review0/sampler/protocol" }
 dependencies = [
     { name = "http-api-contracts" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-protocol" },
     { name = "stove0-protocol" },
 ]
@@ -2716,6 +2845,7 @@ dependencies = [
 requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
 ]
@@ -2748,12 +2878,14 @@ version = "0.1.0"
 source = { editable = "packages/riverhog-age" }
 dependencies = [
     { name = "cryptography" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "cryptography", specifier = ">=50.0.0,<51" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
 ]
 
@@ -2763,12 +2895,14 @@ version = "0.1.0"
 source = { editable = "packages/riverhog-application-access" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-protocol" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
 ]
 
@@ -2777,22 +2911,30 @@ name = "riverhog-archive-contracts"
 version = "0.1.0"
 source = { editable = "packages/riverhog-archive-contracts" }
 dependencies = [
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" }]
+requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+]
 
 [[package]]
 name = "riverhog-canonical-json"
 version = "0.1.0"
 source = { editable = "packages/riverhog-canonical-json" }
 dependencies = [
+    { name = "release-documentation-lib" },
     { name = "rfc8785" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "rfc8785", specifier = ">=0.1.4,<0.2" }]
+requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+    { name = "rfc8785", specifier = ">=0.1.4,<0.2" },
+]
 
 [[package]]
 name = "riverhog-client"
@@ -2802,6 +2944,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "httpx", extra = ["http2"] },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-application-access" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
@@ -2816,6 +2959,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "httpx", extras = ["http2"], specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-application-access", editable = "packages/riverhog-application-access" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
@@ -2830,6 +2974,7 @@ name = "riverhog-materialization"
 version = "0.1.0"
 source = { editable = "packages/riverhog-materialization" }
 dependencies = [
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance-contracts" },
@@ -2837,6 +2982,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
@@ -2850,6 +2996,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "lifecycle-events" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts" },
@@ -2861,6 +3008,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "lifecycle-events", editable = "packages/lifecycle-events" },
     { name = "pydantic", specifier = ">=2.12,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
@@ -2873,6 +3021,7 @@ version = "0.1.0"
 source = { editable = "packages/riverhog-provenance" }
 dependencies = [
     { name = "jsonschema" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts" },
@@ -2890,6 +3039,7 @@ requires-dist = [
     { name = "jsonschema", specifier = ">=4.23,<5.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8,<10" },
     { name = "rdflib", marker = "extra == 'test'", specifier = ">=7,<8" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
@@ -2905,6 +3055,7 @@ dependencies = [
     { name = "jsonschema" },
     { name = "pydantic" },
     { name = "referencing" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
 ]
 
@@ -2913,6 +3064,7 @@ requires-dist = [
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.12,<3.0" },
     { name = "referencing", specifier = ">=0.37,<0.38" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
 ]
 
@@ -2928,6 +3080,7 @@ dependencies = [
     { name = "lifecycle-events" },
     { name = "psycopg", extra = ["binary"] },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-age" },
     { name = "riverhog-application-access" },
     { name = "riverhog-archive-contracts" },
@@ -2953,6 +3106,7 @@ requires-dist = [
     { name = "lifecycle-events", editable = "packages/lifecycle-events" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.4,<4.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-age", editable = "packages/riverhog-age" },
     { name = "riverhog-application-access", editable = "packages/riverhog-application-access" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
@@ -2976,6 +3130,7 @@ source = { editable = "packages/riverhog-storage-adapter-asgi-support" }
 dependencies = [
     { name = "fastapi" },
     { name = "http-api-contracts" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-storage-adapter-protocol" },
     { name = "riverhog-storage-adapter-support" },
 ]
@@ -2984,6 +3139,7 @@ dependencies = [
 requires-dist = [
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-storage-adapter-protocol", editable = "packages/riverhog-storage-adapter-protocol" },
     { name = "riverhog-storage-adapter-support", editable = "packages/riverhog-storage-adapter-support" },
 ]
@@ -2994,6 +3150,7 @@ version = "0.1.0"
 source = { editable = "packages/riverhog-storage-adapter-protocol" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "time-formats" },
 ]
@@ -3001,6 +3158,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "time-formats", editable = "packages/time-formats" },
 ]
@@ -3013,6 +3171,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "httpx", extra = ["http2"] },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-storage-adapter-protocol" },
 ]
@@ -3022,6 +3181,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "httpx", extras = ["http2"], specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-storage-adapter-protocol", editable = "packages/riverhog-storage-adapter-protocol" },
 ]
@@ -3251,12 +3411,14 @@ version = "0.1.0"
 source = { editable = "packages/state-schema" }
 dependencies = [
     { name = "alembic" },
+    { name = "release-documentation-lib" },
     { name = "sqlalchemy" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = ">=1.18.5,<2.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "sqlalchemy", specifier = ">=2.0,<2.1" },
 ]
 
@@ -3267,6 +3429,7 @@ source = { editable = "some-implementations/stove0/packages/api-client" }
 dependencies = [
     { name = "http-api-contracts" },
     { name = "httpx" },
+    { name = "release-documentation-lib" },
     { name = "stove0-operator-contracts" },
     { name = "stove0-protocol" },
 ]
@@ -3275,6 +3438,7 @@ dependencies = [
 requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "httpx", specifier = ">=0.27,<1.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-operator-contracts", editable = "some-implementations/stove0/packages/operator-contracts" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
 ]
@@ -3287,6 +3451,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "httpx" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-observer-protocol" },
 ]
 
@@ -3295,6 +3460,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "httpx", specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
 ]
 
@@ -3306,6 +3472,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "jsonschema" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-protocol" },
 ]
 
@@ -3314,6 +3481,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
 ]
 
@@ -3325,6 +3493,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "jsonschema" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
@@ -3337,6 +3506,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
@@ -3352,6 +3522,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "lifecycle-events" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-protocol" },
     { name = "stove0-observer-protocol" },
     { name = "stove0-protocol" },
@@ -3365,6 +3536,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "lifecycle-events", editable = "packages/lifecycle-events" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
@@ -3381,6 +3553,7 @@ dependencies = [
     { name = "jsonschema" },
     { name = "pydantic" },
     { name = "referencing" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-protocol" },
 ]
@@ -3390,6 +3563,7 @@ requires-dist = [
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "referencing", specifier = ">=0.37,<0.38" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
 ]
@@ -3401,6 +3575,7 @@ source = { editable = "some-implementations/stove0/packages/recipe-config" }
 dependencies = [
     { name = "config-validation" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-protocol" },
     { name = "stove0-protocol" },
     { name = "stove0-target-protocol" },
@@ -3410,6 +3585,7 @@ dependencies = [
 requires-dist = [
     { name = "config-validation", editable = "packages/config-validation" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
     { name = "stove0-target-protocol", editable = "some-implementations/stove0/packages/target-protocol" },
@@ -3426,6 +3602,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "psycopg", extra = ["binary"] },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
@@ -3451,6 +3628,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3,<4.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
@@ -3476,6 +3654,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "httpx" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "stove0-target-protocol" },
 ]
 
@@ -3484,6 +3663,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "httpx", specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "stove0-target-protocol", editable = "some-implementations/stove0/packages/target-protocol" },
 ]
 
@@ -3495,6 +3675,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "jsonschema" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-protocol" },
     { name = "stove0-protocol" },
 ]
@@ -3504,6 +3685,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
 ]
@@ -3517,6 +3699,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "jsonschema" },
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
@@ -3533,6 +3716,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
@@ -3549,10 +3733,14 @@ version = "0.1.0"
 source = { editable = "packages/time-formats" }
 dependencies = [
     { name = "pydantic" },
+    { name = "release-documentation-lib" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pydantic", specifier = ">=2.12,<3.0" }]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.12,<3.0" },
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+]
 
 [[package]]
 name = "tomlkit"

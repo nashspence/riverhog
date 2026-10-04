@@ -33,6 +33,7 @@ members = [
 ]
 
 [tool.uv.sources]
+release-documentation-lib = { workspace = true }
 gogurt-core = { workspace = true }
 gogurt-listener-runtime = { workspace = true }
 a-gogurt-path-volume-lib = { workspace = true }
@@ -95,6 +96,8 @@ time-formats = { workspace = true }
 [dependency-groups]
 browser = ["playwright==1.63.0"]
 dev = [
+  "markdown-it-py==4.2.0",
+  "PyYAML==6.0.3",
   "boto3-stubs[s3]>=1.43.59,<2.0",
   "httpx2>=2,<3",
   "license-expression>=30.4,<31",
@@ -141,6 +144,8 @@ support_paths = [
   "scripts/transfer_profile.py",
   "scripts/operation_qualification.py",
   "scripts/contract_atlas",
+  "scripts/documentation.py",
+  "scripts/documentation_readouts.py",
   "scripts/contract_freeze.py",
   "scripts/provider_qualification.py",
   "scripts/provider_qualification_checkpoint.py",

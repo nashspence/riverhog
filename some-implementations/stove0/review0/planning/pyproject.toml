@@ -18,7 +18,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = [
+dependencies = ["release-documentation-lib>=0.1,<0.2",
   "pydantic>=2.7,<3.0",
   "a-stove0-media-sampling-contract-lib>=0.1,<0.2",
   "stove0-protocol>=0.1,<0.2",
@@ -29,6 +29,7 @@ dependencies = [
 review0-planner = "review0_planner.conformance:main"
 
 [tool.uv.sources]
+release-documentation-lib = { workspace = true }
 a-stove0-media-sampling-contract-lib = { workspace = true }
 stove0-protocol = { workspace = true }
 review0-contracts = { workspace = true }

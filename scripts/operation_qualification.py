@@ -187,6 +187,7 @@ class ApplicationSurface:
     client_types: tuple[type[Any], ...]
     cli_commands: tuple[tuple[str, Callable[..., object], bool], ...]
     supplemental_operations: tuple[SupplementalOperation, ...] = ()
+    factory: Callable[..., FastAPI] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -354,18 +355,21 @@ def application_surfaces() -> tuple[ApplicationSurface, ...]:
             riverhog_app,
             (ApiClient,),
             tuple(_typer_commands(a_riverhog_cli.app)),
+            factory=create_riverhog_app,
         ),
         ApplicationSurface(
             "stove0",
             create_stove0_contract_app(),
             (Stove0ApiClient, TargetCallbackClient),
             tuple(_typer_commands(a_stove0_cli.app)),
+            factory=create_stove0_app,
         ),
         ApplicationSurface(
             "a-riverhog-ftp-spool",
             create_adapter_contract_app(),
             (RiverhogFtpSpoolClient,),
             tuple(_argparse_commands(build_adapter_parser())),
+            factory=create_adapter_app,
         ),
     )
 

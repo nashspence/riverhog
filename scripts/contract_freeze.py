@@ -817,6 +817,8 @@ def _click_parameter(parameter: Any) -> dict[str, object]:
     for attribute in ("is_flag", "count", "envvar"):
         if hasattr(parameter, attribute):
             result[attribute] = _json_value(getattr(parameter, attribute))
+    if getattr(parameter, "hidden", False):
+        result["hidden"] = True
     default = _json_value(parameter.default)
     if default is not None:
         result["default"] = default
@@ -971,6 +973,8 @@ def _argparse_action(action: argparse.Action) -> dict[str, object]:
     }
     if action.choices is not None:
         result["choices"] = list(action.choices)
+    if action.help is argparse.SUPPRESS:
+        result["help_visibility"] = "suppressed"
     if action.type is not None:
         result["type"] = getattr(action.type, "__qualname__", repr(action.type))
     default = _json_value(action.default)

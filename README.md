@@ -27,8 +27,8 @@ document at `/openapi.json`.
 - [Architecture](docs/architecture.md) explains authority, component boundaries, and the
   repository layout.
 - [Contract Render](https://nashspence.github.io/riverhog/) presents the source-generated
-  development contract and immutable release versions, with Audit and release Documentation
-  Modes.
+  development contract and immutable release versions, with Audit, release Documentation
+  and Documentation Audit modes.
 - [Licensing](LICENSE.md) defines the repository's release terms.
 
 Release-level reference documentation belongs to tagged releases. The documentation on

@@ -29,6 +29,7 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
 COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
+COPY packages/release-documentation-lib packages/release-documentation-lib
 COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/config-validation packages/config-validation
 COPY some-implementations/stove0/targets/rclone some-implementations/stove0/targets/rclone

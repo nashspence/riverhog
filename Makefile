@@ -2,6 +2,10 @@ CONTRACT_OUTPUT ?= $(CURDIR)/build/contracts
 SHELL := bash
 .DEFAULT_GOAL := help
 
+.PHONY: documentation-plan documentation-preview documentation-check
+documentation-plan documentation-preview documentation-check:
+	$(call UV_CMD,python scripts/documentation.py $(subst documentation-,,$@) $(args))
+
 MISE_BIN ?= mise
 FILES ?= .
 TESTS ?= packages some-implementations riverhog tests/unit
@@ -56,6 +60,9 @@ help:
 		'  make contract         Generate the current source contract into CONTRACT_OUTPUT.' \
 		'  make contract-check   Validate native contracts and independent generation determinism.' \
 		'  make contract-diff BASE=<ref> Compare exact source-derived candidate contracts.' \
+		'  make documentation-plan Generate missing native subjects; pass args for corpus, baseline and an optional starter.' \
+		'  make documentation-preview Render incomplete Markdown and its documentation audit.' \
+		'  make documentation-check Check coverage; --candidate requires actual prepared artifact evidence.' \
 		'  make contract-browser  Exercise the generated candidate in Chromium (run MISE_EXPERIMENTAL=1 mise bootstrap --yes, then Playwright install --only-shell chromium).' \
 		'  make contract-browser-docker Run the Chromium checks in a disposable official Playwright container.' \
 		'  make profile           Report target, observed transfer or recovery work, and measured comparison without gating.' \

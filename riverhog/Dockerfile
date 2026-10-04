@@ -23,6 +23,7 @@ COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 
 COPY pyproject.toml uv.lock ./
+COPY packages/release-documentation-lib packages/release-documentation-lib
 COPY riverhog/pyproject.toml riverhog/pyproject.toml
 COPY riverhog/src riverhog/src
 COPY packages/config-validation packages/config-validation

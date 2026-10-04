@@ -19,9 +19,13 @@ classifiers = [
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
+  "release-documentation-lib>=0.1,<0.2",
   "alembic>=1.18.5,<2.0",
   "sqlalchemy>=2.0,<2.1",
 ]
+
+[tool.uv.sources]
+release-documentation-lib = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/state_schema"]

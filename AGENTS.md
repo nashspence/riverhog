@@ -33,7 +33,8 @@ shares their image. Keep public code generic; real identity and deployment topol
 Exact behavior belongs in code and tests. Current API shape comes from the running
 application's OpenAPI document, command syntax comes from `--help`, and configuration
 shape comes from real parsers and checked executable examples. Do not add hand-maintained
-inventories of those surfaces to `main`; release reference is generated from a tag.
+inventories of those surfaces to `main`; release reference binds exact source declarations
+and independently authored release prose to the prepared artifacts.
 
 GitHub issue bodies own durable scope, decisions, and issue-local acceptance. Use native
 sub-issues for decomposition, dependencies for hard prerequisites, and milestones for release

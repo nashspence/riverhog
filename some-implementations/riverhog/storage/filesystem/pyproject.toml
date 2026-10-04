@@ -14,7 +14,7 @@ authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = [
+dependencies = ["release-documentation-lib>=0.1,<0.2",
   "riverhog-storage-adapter-asgi-support>=0.1,<0.2",
   "riverhog-storage-adapter-protocol>=0.1,<0.2",
   "time-formats>=0.1,<0.2",
@@ -26,6 +26,7 @@ a-riverhog-filesystem-store = "a_riverhog_filesystem_store.app:main"
 a-riverhog-filesystem-store-materialize = "a_riverhog_filesystem_store.materialize_cli:main"
 
 [tool.uv.sources]
+release-documentation-lib = { workspace = true }
 riverhog-storage-adapter-asgi-support = { workspace = true }
 riverhog-storage-adapter-protocol = { workspace = true }
 time-formats = { workspace = true }
