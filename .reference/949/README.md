@@ -3,9 +3,18 @@
 Non-authoritative input under [#903](https://github.com/nashspence/riverhog/issues/903).
 Scope, observations submitted for triage, decisions, and acceptance remain in
 [#949](https://github.com/nashspence/riverhog/issues/949). This directory is an
-executable experiment and its source map, not a new public contract or integration plan.
+executable experiment and its source map, not a new public contract.
 
-Audited source: `main` at `ec544b60dde572ac3bc2f31b199ab5b3727e4548` (2026-10-02).
+**Current entry point: [integration-agent handoff](INTEGRATION.md).**
+Read the [2026-10-04 issue decision record](https://github.com/nashspence/riverhog/issues/949#issuecomment-5981858530)
+for the newly authorized direction. `lease_model.py` and `test_lease_model.py`
+extend the initial witness with finite renewal and bounded replay-retirement evidence.
+The original two Python files are unchanged; the initial experiment below retains its
+explicitly narrower assumptions.
+
+Re-audited source: `main` at `29d16e99d52bda0f308495fd7be519c1e321b735` (2026-10-04).
+Initial audit: `ec544b60dde572ac3bc2f31b199ab5b3727e4548` (2026-10-02),
+remapped under #950. See `source_audit.json` for exact source-equivalence evidence.
 Only `.reference/` is added. No production modules, dependency declarations,
 state baselines, generated contract closure, release refs, or workflows are changed.
 There is no removable-media adapter, device access, or Home Assistant deployment here.
@@ -16,12 +25,14 @@ From a checkout of this reference commit, with Python 3.10 or newer:
 
 ```sh
 python3 -m unittest discover -s .reference/949 -p 'test_*.py' -v
-python3 -m py_compile .reference/949/semantic_model.py .reference/949/test_semantic_model.py
+python3 -m compileall -q .reference/949
 ```
 
 The experiment has no dependencies beyond the standard library and imports no
-Riverhog implementation. It was run with Python 3.13.5: 36 tests passed, including
-180 distinct interleavings with a snapshot/reload after every transition.
+Riverhog implementation. With Python 3.13.5 the revised suite passes 77 tests,
+including 324 specified serial schedules with snapshot/reload boundaries. The
+initial two files still account for 36 tests and 180 of those schedules. See
+`INTEGRATION.md` for the additional finite-lease tests and validation limits.
 These are **model tests, not Riverhog integration or conformance results**.
 
 ## Reading the experiment
@@ -63,18 +74,19 @@ it is neither a CloudEvents endpoint nor a transactional outbox implementation.
 
 ## Source-to-witness map
 
-All repository links below are pinned to the audited commit, not moving `main`.
+Repository source links below are repinned to the re-audited main commit, not moving
+`main`; the referenced substantive blobs match the predecessor audit.
 
 | Audited seam | Executable witness / reason for including it |
 | --- | --- |
-| [Protocol: write session and exact start](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/protocol.py#L219-L261) | Existing durable continuation is useful; `test_waiting_write_is_persisted_before_accepting_bytes` exercises waiting without replacing that identity. |
-| [Protocol: preparation and readiness](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/protocol.py#L603-L642) | The current request identifies an object set, not a consumer. Overlap, lost prepare replies, release-before-prepare, and the 180-interleaving test isolate the ownership problem. |
-| [HTTP operation/error contract](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/http_binding.py#L393-L630) | The error vocabulary and per-operation acceptance are closed. Readiness-loss and completion-wait tests show why adding only a preflight check is insufficient. |
-| [Archive-copy exception path](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/riverhog/src/riverhog_core/services/archive_copy_jobs.py#L566-L615) and [failure recording](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/riverhog/src/riverhog_core/services/archive_copy_jobs.py#L1931-L1953) | Exceptions can terminally fail a copy. `test_known_wait_ambiguous_effect_and_failure_are_distinct` captures the semantic distinction needed by callers; it does not modify their current behavior. |
-| [Retrieval preparation/polling](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/riverhog/src/riverhog_core/services/retrieval.py#L1760-L1873) and [verified cache handoff](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/riverhog/src/riverhog_core/services/retrieval.py#L2035-L2096) | The inspected restored-object path releases cache admission, not an adapter read preparation. The terminal-outcome/lost-release tests model a durable cleanup obligation rather than process-local `finally` alone. |
-| [Archive-copy batch readiness and cleanup](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/riverhog/src/riverhog_core/services/archive_copy_jobs.py#L948-L1032) | One test demonstrates the all-ready barrier with one available resource; another demonstrates one-object consumption and release. This is not a zero-staging source-to-destination copy proof. |
-| [Delete and verify](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/riverhog/src/riverhog_core/stores/storage_adapter_archive_store.py#L108-L140) | Offline-delete/abort witnesses intentionally avoid asserting that a local tombstone proves provider reclamation. They do not settle the public deletion semantics. |
-| [Incarnation fence](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/client.py#L458-L476) | Tests reject prepare, release, and write continuations against a different incarnation; replacing a registration must not consume old cleanup debt. |
+| [Protocol: write session and exact start](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/protocol.py#L219-L261) | Existing durable continuation is useful; `test_waiting_write_is_persisted_before_accepting_bytes` exercises waiting without replacing that identity. |
+| [Protocol: preparation and readiness](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/protocol.py#L603-L642) | The current request identifies an object set, not a consumer. Overlap, lost prepare replies, release-before-prepare, and the 180-interleaving test isolate the ownership problem. |
+| [HTTP operation/error contract](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/http_binding.py#L393-L630) | The error vocabulary and per-operation acceptance are closed. Readiness-loss and completion-wait tests show why adding only a preflight check is insufficient. |
+| [Archive-copy exception path](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/riverhog/src/riverhog_core/services/archive_copy_jobs.py#L566-L615) and [failure recording](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/riverhog/src/riverhog_core/services/archive_copy_jobs.py#L1931-L1953) | Exceptions can terminally fail a copy. `test_known_wait_ambiguous_effect_and_failure_are_distinct` captures the semantic distinction needed by callers; it does not modify their current behavior. |
+| [Retrieval preparation/polling](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/riverhog/src/riverhog_core/services/retrieval.py#L1760-L1873) and [verified cache handoff](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/riverhog/src/riverhog_core/services/retrieval.py#L2035-L2096) | The inspected restored-object path releases cache admission, not an adapter read preparation. The terminal-outcome/lost-release tests model a durable cleanup obligation rather than process-local `finally` alone. |
+| [Archive-copy batch readiness and cleanup](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/riverhog/src/riverhog_core/services/archive_copy_jobs.py#L948-L1032) | One test demonstrates the all-ready barrier with one available resource; another demonstrates one-object consumption and release. This is not a zero-staging source-to-destination copy proof. |
+| [Delete and verify](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/riverhog/src/riverhog_core/stores/storage_adapter_archive_store.py#L108-L140) | Offline-delete/abort witnesses intentionally avoid asserting that a local tombstone proves provider reclamation. They do not settle the public deletion semantics. |
+| [Incarnation fence](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/client.py#L458-L476) | Tests reject prepare, release, and write continuations against a different incarnation; replacing a registration must not consume old cleanup debt. |
 
 ## Using these witnesses in authorized integration
 
@@ -112,8 +124,8 @@ change deletion meaning or broaden #949's accepted scope.
 
 ## Operator-event boundary and external research
 
-The [generic lifecycle envelope](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/packages/lifecycle-events/src/lifecycle_events/models.py#L24-L54)
-and [relay](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py#L190-L255)
+The [generic lifecycle envelope](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/packages/lifecycle-events/src/lifecycle_events/models.py#L24-L54)
+and [relay](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py#L190-L255)
 already support a separately configured event source. The relay advances its page cursor
 after delivery, so an interrupted page can redeliver earlier events. A future adapter
 can own its own state/outbox and native event endpoint; it should not write into
@@ -139,7 +151,7 @@ Primary sources consulted on 2026-10-02 (supporting context, not Riverhog requir
   asserted here. Keep notifications separate from destructive storage authority.
 
 Keep the adapter's catalog/control plane available when payload media are offline;
-`head` must not invent absence. The [placement selectors and inert assertions](https://github.com/nashspence/riverhog/blob/ec544b60dde572ac3bc2f31b199ab5b3727e4548/packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/protocol.py#L61-L105)
+`head` must not invent absence. The [placement selectors and inert assertions](https://github.com/nashspence/riverhog/blob/29d16e99d52bda0f308495fd7be519c1e321b735/packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/protocol.py#L61-L105)
 are not a volume-routing extension point. Normal media rotation should not replace
 one logical target's incarnation. Independent recovery must not rely solely on a
 lost local catalog: preserve a recoverable inventory and archive materialization path.

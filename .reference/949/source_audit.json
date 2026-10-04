@@ -1,0 +1,100 @@
+{
+  "purpose": "Non-authoritative source-equivalence audit, not integration test evidence",
+  "audited_main": "29d16e99d52bda0f308495fd7be519c1e321b735",
+  "reference_predecessor": "224b3239c8c82be0dbb6730675ca6c09f23e782f",
+  "mapped_original_source_base": "6f4099700834e411d7b7b342c43c077fcc83e55e",
+  "original_pre_cutover_reference": "78415d14ae5e5556a4834267cf93053bb6af66f3",
+  "decision_record": "https://github.com/nashspence/riverhog/issues/949#issuecomment-5981858530",
+  "entries": [
+    {
+      "path": "packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/protocol.py",
+      "predecessor_blob_sha": "7d173691694723173749a91b452027cff9d554c1",
+      "audited_main_blob_sha": "7d173691694723173749a91b452027cff9d554c1",
+      "identical": true
+    },
+    {
+      "path": "packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/http_binding.py",
+      "predecessor_blob_sha": "ff53c4aa7b97f17ffae23ceaafff3c68c2318f7b",
+      "audited_main_blob_sha": "ff53c4aa7b97f17ffae23ceaafff3c68c2318f7b",
+      "identical": true
+    },
+    {
+      "path": "packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/client.py",
+      "predecessor_blob_sha": "99ad71c5d10ce4f9e344f62781711ede7cfe9caa",
+      "audited_main_blob_sha": "99ad71c5d10ce4f9e344f62781711ede7cfe9caa",
+      "identical": true
+    },
+    {
+      "path": "packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/conformance.py",
+      "predecessor_blob_sha": "6cf156804c55010da817a7868c1904912fc48e01",
+      "audited_main_blob_sha": "6cf156804c55010da817a7868c1904912fc48e01",
+      "identical": true
+    },
+    {
+      "path": "riverhog/src/riverhog_core/ports/archive_store.py",
+      "predecessor_blob_sha": "a176146c858aab78225016b659f24cf2cb995a0b",
+      "audited_main_blob_sha": "a176146c858aab78225016b659f24cf2cb995a0b",
+      "identical": true
+    },
+    {
+      "path": "riverhog/src/riverhog_core/stores/storage_adapter_archive_store.py",
+      "predecessor_blob_sha": "f7711b46a632ae65a70e56f4803462c00f30e4f3",
+      "audited_main_blob_sha": "f7711b46a632ae65a70e56f4803462c00f30e4f3",
+      "identical": true
+    },
+    {
+      "path": "riverhog/src/riverhog_core/services/retrieval.py",
+      "predecessor_blob_sha": "f84188c908b3c357aca7b121e9a4673e8eb65844",
+      "audited_main_blob_sha": "f84188c908b3c357aca7b121e9a4673e8eb65844",
+      "identical": true
+    },
+    {
+      "path": "riverhog/src/riverhog_core/services/archive_copy_jobs.py",
+      "predecessor_blob_sha": "62f54867342b9d2b27059d5e023e72a8cccf432b",
+      "audited_main_blob_sha": "62f54867342b9d2b27059d5e023e72a8cccf432b",
+      "identical": true
+    },
+    {
+      "path": "riverhog/src/riverhog_core/services/collection_deletions.py",
+      "predecessor_blob_sha": "3dcd18e710e6ee865aecc89c52de4084793ddc5d",
+      "audited_main_blob_sha": "3dcd18e710e6ee865aecc89c52de4084793ddc5d",
+      "identical": true
+    },
+    {
+      "path": "riverhog/src/riverhog_core/catalog_models.py",
+      "predecessor_blob_sha": "cc857cbff5dcae07a50e46709855309de1df1d67",
+      "audited_main_blob_sha": "cc857cbff5dcae07a50e46709855309de1df1d67",
+      "identical": true
+    },
+    {
+      "path": "riverhog/src/riverhog_core/storage_incarnations.py",
+      "predecessor_blob_sha": "9b3a5bb84a5c5988786fcee8673e254dbbc3dddb",
+      "audited_main_blob_sha": "9b3a5bb84a5c5988786fcee8673e254dbbc3dddb",
+      "identical": true
+    },
+    {
+      "path": "some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py",
+      "predecessor_blob_sha": "220fa087b3d2bcfd5cdd5a366a62951ce35b3b60",
+      "audited_main_blob_sha": "220fa087b3d2bcfd5cdd5a366a62951ce35b3b60",
+      "identical": true
+    },
+    {
+      "path": "packages/lifecycle-events/src/lifecycle_events/models.py",
+      "predecessor_blob_sha": "56fa624b968a423d2a43e40f9078b166d5d18167",
+      "audited_main_blob_sha": "56fa624b968a423d2a43e40f9078b166d5d18167",
+      "identical": true
+    },
+    {
+      "path": "packages/riverhog-storage-adapter-protocol/tests/test_storage_adapter_protocol.py",
+      "predecessor_blob_sha": "a3f8314c9129afb4ddd009448e6380ed8b72f07d",
+      "audited_main_blob_sha": "a3f8314c9129afb4ddd009448e6380ed8b72f07d",
+      "identical": true
+    },
+    {
+      "path": "packages/riverhog-storage-adapter-support/tests/test_storage_adapter_support.py",
+      "predecessor_blob_sha": "1267c43e2fcd502bdc98ae4244476c266fe6492e",
+      "audited_main_blob_sha": "1267c43e2fcd502bdc98ae4244476c266fe6492e",
+      "identical": true
+    }
+  ]
+}
