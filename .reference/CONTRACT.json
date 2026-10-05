@@ -1,0 +1,35 @@
+{
+  "format": "riverhog-959-post-v1-reference/v1",
+  "scheduling": "post-v1-only",
+  "deployment_authorized": false,
+  "chunk_bytes": 16384,
+  "batch_rows": 8,
+  "max_ciphertext_bytes": 16842752,
+  "max_batch_json_bytes": 262144,
+  "work_identity_fields": [
+    "upstream_repository_id", "candidate_repository_id",
+    "upstream_corpus_sha256", "upstream_license_sha256",
+    "candidate_snapshot_sha256", "candidate_corpus_sha256",
+    "toolchain_sha256", "profiles_sha256", "extraction_policy_sha256"
+  ],
+  "nicad_source_reference": "7a90d11795a7fe585282e25b7fa8d9964f202965",
+  "toolchain_build_qualified": false,
+  "nicad_profiles": [
+    {"id": "normalized-exact", "rename": "none", "threshold": "0.00"},
+    {"id": "blind-exact", "rename": "blind", "threshold": "0.00"},
+    {"id": "blind-nearmiss", "rename": "blind", "threshold": "0.20"}
+  ],
+  "nicad_common": {
+    "granularity": "functions", "language": "python",
+    "minsize": 10, "maxsize": 2500,
+    "transform": "none", "filter": "none", "abstract": "none",
+    "normalize": "none", "cluster": "yes", "report": "yes"
+  },
+  "custody_states": ["staging", "ciphertext-custodied", "verified-indexed", "rejected"],
+  "analysis_results": ["matches", "no_match", "partial", "failed", "deferred"],
+  "mcp_read_operations": ["list_runs", "list_candidates", "get_analysis", "get_evidence"],
+  "prohibited_mcp_operations": ["sql", "shell", "fetch_url", "decrypt_path", "send_notice"],
+  "public_transport_members": ["evidence.age", "provenance.jsonl"],
+  "index_owner": "managed-custody-application",
+  "personal_host_required": false
+}
