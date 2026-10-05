@@ -61,6 +61,8 @@ class RetrievalCache(Protocol):
 
     def reap_abandoned_populations(self, *, limit: int = 100) -> int: ...
 
+    def settle_source(self, *, source_store: str, collection_id: int) -> None: ...
+
     def put(
         self,
         *,

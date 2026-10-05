@@ -421,6 +421,7 @@ def _build_default_container(
         archive_copy_retirements=SqlAlchemyArchiveCopyRetirementService(
             config,
             archive_stores,
+            retrieval_cache=retrieval_cache,
             session_factory=session_factory,
         ),
         archive_stores=SqlAlchemyArchiveStoreService(

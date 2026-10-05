@@ -2270,7 +2270,7 @@ class RetrievalCacheObjectRecord(Base):
                 "collection_archive_objects.store",
                 "collection_archive_objects.object_id",
             ],
-            ondelete="CASCADE",
+            ondelete="RESTRICT",
         ),
         Index("ix_retrieval_cache_objects_cleanup", "state", "cached_at"),
         Index(

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator, Mapping
 
+from riverhog_protocol.errors import Conflict
 from riverhog_storage_adapter_protocol import StorageAdapterRejection
 from sqlalchemy import delete, select, tuple_
 from sqlalchemy.exc import IntegrityError
@@ -10,7 +11,10 @@ from time_formats import format_utc_timestamp, utc_now
 
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import (
+    ArchiveCopyRetirementRecord,
     CollectionArchiveCopyRecord,
+    CollectionDeletionRecord,
+    CollectionRecord,
     RetrievalCacheAccountingReconciliationRecord,
     RetrievalCacheLeaseRecord,
     RetrievalCacheObjectRecord,
@@ -216,6 +220,23 @@ class SqlAlchemyRetrievalCache:
             raise ValueError("retrieval cache admission bytes must be positive")
         key = (source_store, collection_id, object_id)
         with session_scope(self._session_factory) as session:
+            # Initial ingress can populate cache before catalog publication. Published
+            # collections share this admission fence with archive-copy retirement.
+            cataloged = session.scalar(
+                select(CollectionRecord.id)
+                .where(CollectionRecord.id == collection_id)
+                .with_for_update()
+            )
+            if (
+                session.get(ArchiveCopyRetirementRecord, (collection_id, source_store)) is not None
+                or session.get(CollectionDeletionRecord, collection_id) is not None
+                or (
+                    cataloged is not None
+                    and session.get(CollectionArchiveCopyRecord, (collection_id, source_store))
+                    is None
+                )
+            ):
+                return None
             ready = session.get(RetrievalCacheObjectRecord, key)
             if ready is not None:
                 if ready.stored_bytes != expected_bytes:
@@ -404,40 +425,54 @@ class SqlAlchemyRetrievalCache:
             )
 
     def reap_abandoned_populations(self, *, limit: int = 100) -> int:
+        return self._reap_abandoned_populations(limit=limit)
+
+    def _reap_abandoned_populations(
+        self, *, limit: int, source: tuple[str, int] | None = None
+    ) -> int:
         if limit < 1:
             return 0
         with session_scope(self._session_factory) as session:
-            populations = list(
-                session.scalars(
-                    select(RetrievalCachePopulationRecord)
+            statement = (
+                select(RetrievalCachePopulationRecord)
+                .where(
+                    ~select(RetrievalCachePopulationClaimRecord.owner)
                     .where(
-                        ~select(RetrievalCachePopulationClaimRecord.owner)
-                        .where(
-                            RetrievalCachePopulationClaimRecord.source_store
-                            == RetrievalCachePopulationRecord.source_store,
-                            RetrievalCachePopulationClaimRecord.collection_id
-                            == RetrievalCachePopulationRecord.collection_id,
-                            RetrievalCachePopulationClaimRecord.object_id
-                            == RetrievalCachePopulationRecord.object_id,
-                        )
-                        .exists()
+                        RetrievalCachePopulationClaimRecord.source_store
+                        == RetrievalCachePopulationRecord.source_store,
+                        RetrievalCachePopulationClaimRecord.collection_id
+                        == RetrievalCachePopulationRecord.collection_id,
+                        RetrievalCachePopulationClaimRecord.object_id
+                        == RetrievalCachePopulationRecord.object_id,
                     )
-                    .order_by(
-                        RetrievalCachePopulationRecord.updated_at,
-                        RetrievalCachePopulationRecord.source_store,
-                        RetrievalCachePopulationRecord.collection_id,
-                        RetrievalCachePopulationRecord.object_id,
-                    )
-                    .limit(limit)
-                    .with_for_update(skip_locked=True)
+                    .exists()
                 )
+                .order_by(
+                    RetrievalCachePopulationRecord.updated_at,
+                    RetrievalCachePopulationRecord.source_store,
+                    RetrievalCachePopulationRecord.collection_id,
+                    RetrievalCachePopulationRecord.object_id,
+                )
+                .limit(limit)
+                .with_for_update(skip_locked=True)
             )
+            if source is not None:
+                statement = (
+                    statement.where(
+                        RetrievalCachePopulationRecord.source_store == source[0],
+                        RetrievalCachePopulationRecord.collection_id == source[1],
+                    )
+                    .order_by(None)
+                    .order_by(RetrievalCachePopulationRecord.object_id)
+                )
+            populations = list(session.scalars(statement))
             cleanup = [
                 (
                     current.source_store,
                     current.collection_id,
                     current.object_id,
                     current.cache_store,
+                    current.cache_incarnation_id,
                     current.object_path,
                     current.write_token,
                     current.expected_bytes,
@@ -454,12 +489,17 @@ class SqlAlchemyRetrievalCache:
             collection_id,
             object_id,
             cache_store,
+            cache_incarnation_id,
             object_path,
             token,
             size,
         ) in cleanup:
             if cache_store is not None:
                 candidate = self._require_store(cache_store)
+                if cache_incarnation_id is None or not candidate.is_current_incarnation(
+                    cache_incarnation_id
+                ):
+                    raise RuntimeError("retrieval cache population incarnation is unavailable")
                 completed = candidate.find_completed_population(
                     source_store=source_store,
                     collection_id=collection_id,
@@ -509,6 +549,151 @@ class SqlAlchemyRetrievalCache:
                 session.delete(population)
                 removed += 1
         return removed
+
+    def settle_source(self, *, source_store: str, collection_id: int) -> None:
+        """Settle fenced source ownership through bounded, retryable cache effects."""
+        while True:
+            now = format_utc_timestamp(utc_now())
+            with session_scope(self._session_factory) as session:
+                if session.get(ArchiveCopyRetirementRecord, (collection_id, source_store)) is None:
+                    raise Conflict("retrieval cache source retirement is not fenced")
+                if (
+                    session.scalar(
+                        select(RetrievalCachePopulationClaimRecord.owner)
+                        .where(
+                            RetrievalCachePopulationClaimRecord.source_store == source_store,
+                            RetrievalCachePopulationClaimRecord.collection_id == collection_id,
+                        )
+                        .limit(1)
+                    )
+                    is not None
+                ):
+                    raise Conflict("retrieval cache population is active on the selected copy")
+                leases = session.scalars(
+                    select(RetrievalCacheLeaseRecord)
+                    .where(
+                        RetrievalCacheLeaseRecord.source_store == source_store,
+                        RetrievalCacheLeaseRecord.collection_id == collection_id,
+                        RetrievalCacheLeaseRecord.expires_at <= now,
+                    )
+                    .order_by(
+                        RetrievalCacheLeaseRecord.object_id,
+                        RetrievalCacheLeaseRecord.expires_at,
+                        RetrievalCacheLeaseRecord.owner,
+                    )
+                    .limit(100)
+                ).all()
+                for lease in leases:
+                    session.delete(lease)
+            if leases:
+                continue
+            removed = self._reap_abandoned_populations(
+                limit=100, source=(source_store, collection_id)
+            )
+            with session_scope(self._session_factory) as session:
+                if (
+                    session.scalar(
+                        select(RetrievalCachePopulationRecord.object_id)
+                        .where(
+                            RetrievalCachePopulationRecord.source_store == source_store,
+                            RetrievalCachePopulationRecord.collection_id == collection_id,
+                        )
+                        .limit(1)
+                    )
+                    is not None
+                ):
+                    if not removed:
+                        raise Conflict(
+                            "retrieval cache population cleanup is busy; retry retirement"
+                        )
+                    continue
+                cached = session.scalar(
+                    select(RetrievalCacheObjectRecord)
+                    .where(
+                        RetrievalCacheObjectRecord.source_store == source_store,
+                        RetrievalCacheObjectRecord.collection_id == collection_id,
+                        ~select(RetrievalCacheLeaseRecord.owner)
+                        .where(
+                            RetrievalCacheLeaseRecord.source_store
+                            == RetrievalCacheObjectRecord.source_store,
+                            RetrievalCacheLeaseRecord.collection_id
+                            == RetrievalCacheObjectRecord.collection_id,
+                            RetrievalCacheLeaseRecord.object_id
+                            == RetrievalCacheObjectRecord.object_id,
+                        )
+                        .exists(),
+                        ~active_cache_reference(now),
+                    )
+                    .order_by(RetrievalCacheObjectRecord.object_id)
+                    .limit(1)
+                    .with_for_update(skip_locked=True)
+                )
+                if cached is None:
+                    if (
+                        session.scalar(
+                            select(RetrievalCacheObjectRecord.object_id)
+                            .where(
+                                RetrievalCacheObjectRecord.source_store == source_store,
+                                RetrievalCacheObjectRecord.collection_id == collection_id,
+                            )
+                            .limit(1)
+                        )
+                        is not None
+                    ):
+                        raise Conflict(
+                            "retrieval cache placement is protected or busy; retry retirement"
+                        )
+                    return
+                key = (cached.source_store, cached.collection_id, cached.object_id)
+                incarnation = cached.cache_incarnation_id
+                identity = (cached.source_incarnation_id, incarnation, *_receipt_identity(cached))
+                cache_store, object_path, revision = (
+                    cached.cache_store,
+                    cached.object_path,
+                    cached.revision,
+                )
+                cached.state = "deleting"
+            try:
+                if not self.is_usable_store(cache_store=cache_store, incarnation_id=incarnation):
+                    raise RuntimeError("retrieval cache incarnation is unavailable")
+                self.delete(cache_store=cache_store, object_path=object_path, revision=revision)
+            except Exception:
+                with session_scope(self._session_factory) as session:
+                    current = session.get(RetrievalCacheObjectRecord, key)
+                    if (
+                        current is not None
+                        and (
+                            current.source_incarnation_id,
+                            current.cache_incarnation_id,
+                            *_receipt_identity(current),
+                        )
+                        == identity
+                    ):
+                        current.state = "delete_pending"
+                raise
+            with session_scope(self._session_factory) as session:
+                current = session.scalar(
+                    select(RetrievalCacheObjectRecord)
+                    .where(
+                        RetrievalCacheObjectRecord.source_store == key[0],
+                        RetrievalCacheObjectRecord.collection_id == key[1],
+                        RetrievalCacheObjectRecord.object_id == key[2],
+                    )
+                    .with_for_update()
+                )
+                if current is None:
+                    continue
+                if (
+                    current.source_incarnation_id,
+                    current.cache_incarnation_id,
+                    *_receipt_identity(current),
+                ) != identity:
+                    raise RuntimeError("retrieval cache deletion ownership changed")
+                accounting = self._accounting(session, cache_store)
+                if accounting.cache_incarnation_id != incarnation:
+                    raise RuntimeError("retrieval cache accounting incarnation changed")
+                adjust_cache_committed_bytes(accounting, delta=-current.stored_bytes)
+                session.delete(current)
 
     def put(
         self,
@@ -865,15 +1050,39 @@ def register_cache_ready(
     object_id: str,
     receipt: RetrievalCacheReceipt,
 ) -> None:
+    session.scalar(
+        select(CollectionRecord.id).where(CollectionRecord.id == collection_id).with_for_update()
+    )
+    if session.get(ArchiveCopyRetirementRecord, (collection_id, source_store)) is not None:
+        raise RuntimeError("retrieval cache source copy is retiring")
     source_copy = session.get(CollectionArchiveCopyRecord, (collection_id, source_store))
     if source_copy is None:
         raise RuntimeError("retrieval cache source copy is unavailable")
     source_incarnation_id = source_copy.incarnation_id
     cache_incarnation_id = require_storage_incarnation(session, "cache", receipt.cache_store)
-    key = (source_store, collection_id, object_id)
-    population = session.get(RetrievalCachePopulationRecord, key)
-    existing = session.get(RetrievalCacheObjectRecord, key)
+    population = session.scalar(
+        select(RetrievalCachePopulationRecord)
+        .where(
+            RetrievalCachePopulationRecord.source_store == source_store,
+            RetrievalCachePopulationRecord.collection_id == collection_id,
+            RetrievalCachePopulationRecord.object_id == object_id,
+        )
+        .with_for_update()
+    )
+    if population is not None and population.state == "abandoning":
+        raise RuntimeError("retrieval cache population is abandoning")
+    existing = session.scalar(
+        select(RetrievalCacheObjectRecord)
+        .where(
+            RetrievalCacheObjectRecord.source_store == source_store,
+            RetrievalCacheObjectRecord.collection_id == collection_id,
+            RetrievalCacheObjectRecord.object_id == object_id,
+        )
+        .with_for_update()
+    )
     if existing is not None:
+        if existing.state != "ready":
+            raise RuntimeError("retrieval cache placement is being deleted")
         if _receipt_identity(existing) != _receipt_value(receipt):
             raise RuntimeError("retrieval cache ready placement changed")
         if population is not None:
