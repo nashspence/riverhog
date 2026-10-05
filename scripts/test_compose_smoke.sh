@@ -4,6 +4,15 @@ set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_compose_env.sh"
 source "${ROOT_DIR}/scripts/_ci_timing.sh"
 
+qualification_lane="${1:-all}"
+case "${qualification_lane}" in
+  all|storage|processing|review-delivery|witnesses) ;;
+  *) printf 'Unknown Compose qualification lane: %s\n' "${qualification_lane}" >&2; exit 2 ;;
+esac
+owns_qualification() {
+  [[ "${qualification_lane}" == "all" || "${qualification_lane}" == "$1" ]]
+}
+
 setup_test_compose_project
 configure_compose_tty
 export COMPOSE_PROFILES=development
@@ -69,21 +78,33 @@ cleanup() {
   local status=$?
   ci_phase teardown "${status}" || true
   if [[ "${status}" -ne 0 ]]; then
-    minisign_compose ps >&2 || true
-    minisign_compose logs --no-color --tail 200 >&2 || true
-    ots_compose ps >&2 || true
-    ots_compose logs --no-color --tail 200 >&2 || true
-    adapter_compose ps >&2 || true
-    adapter_compose logs --no-color --tail 200 >&2 || true
-    stove0_compose ps >&2 || true
-    stove0_compose logs --no-color --tail 200 >&2 || true
+    if owns_qualification witnesses; then
+      minisign_compose ps >&2 || true
+      minisign_compose logs --no-color --tail 200 >&2 || true
+      ots_compose ps >&2 || true
+      ots_compose logs --no-color --tail 200 >&2 || true
+    fi
+    if owns_qualification processing; then
+      adapter_compose ps >&2 || true
+      adapter_compose logs --no-color --tail 200 >&2 || true
+    fi
+    if owns_qualification processing || owns_qualification review-delivery; then
+      stove0_compose ps >&2 || true
+      stove0_compose logs --no-color --tail 200 >&2 || true
+    fi
     compose ps >&2 || true
     compose logs --no-color --tail 200 >&2 || true
   fi
-  minisign_compose down --volumes --remove-orphans || true
-  ots_compose down --volumes --remove-orphans || true
-  adapter_compose down --volumes --remove-orphans || true
-  stove0_compose down --volumes --remove-orphans || true
+  if owns_qualification witnesses; then
+    minisign_compose down --volumes --remove-orphans || true
+    ots_compose down --volumes --remove-orphans || true
+  fi
+  if owns_qualification processing; then
+    adapter_compose down --volumes --remove-orphans || true
+  fi
+  if owns_qualification processing || owns_qualification review-delivery; then
+    stove0_compose down --volumes --remove-orphans || true
+  fi
   compose down --volumes --remove-orphans
   if [[ -d "${smoke_root}" ]]; then
     docker run --rm \
@@ -97,10 +118,18 @@ cleanup() {
 }
 trap cleanup EXIT
 
-ci_phase storage-build
+ci_phase qualification-images
+(
+  cd "${ROOT_DIR}"
+  "${MISE_BIN:-mise}" x -- uv run --locked --all-packages --group dev \
+    python -m scripts.ci_qualification compose-prepare --lane "${qualification_lane}"
+)
+export RIVERHOG_QUALIFICATION_IMAGES_READY=1
+ci_phase storage-bootstrap
 "${ROOT_DIR}/scripts/bootstrap_garage.sh"
-ci_phase storage-adapter-qualification
 compose up --detach --wait archive-adapter filesystem-cache-adapter elastic-cache-adapter
+if owns_qualification storage; then
+ci_phase storage-adapter-qualification
 compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" \
   --entrypoint riverhog-storage-adapter-conformance \
   test \
@@ -159,15 +188,18 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" \
   some-implementations/stove0/application/tests/test_classification_admission.py::test_stale_upsert_cannot_resurrect_a_departed_catalog_revision \
   some-implementations/stove0/application/tests/test_classification_admission.py::test_equal_catalog_revision_with_different_authority_fails_closed \
   some-implementations/stove0/application/tests/test_classification_admission.py::test_failed_lowest_candidate_is_delayed_and_does_not_starve_the_next
+fi
 ci_phase riverhog-build
 ensure_compose_image app
 ci_phase riverhog-lifecycle
 compose up --detach --wait app
 compose exec -T app sh -c \
   'test "$(id -u)" = 65532 && test "$(id -g)" = 65532 && test -w /tmp && test ! -w /usr/share/doc/riverhog'
-compose exec -T postgres createdb --username riverhog --owner riverhog stove0
-compose exec -T postgres psql --username riverhog --dbname stove0 \
-  --command 'CREATE EXTENSION pg_trgm WITH SCHEMA public;'
+if owns_qualification processing || owns_qualification review-delivery; then
+  compose exec -T postgres createdb --username riverhog --owner riverhog stove0
+  compose exec -T postgres psql --username riverhog --dbname stove0 \
+    --command 'CREATE EXTENSION pg_trgm WITH SCHEMA public;'
+fi
 
 bootstrap_token="$(cat "${ROOT_DIR}/tests/harness/riverhog-bootstrap-token")"
 create_code="import json, os, urllib.request
@@ -372,13 +404,8 @@ client_environment=(
   --env "RIVERHOG_TOKEN=${smoke_token}"
 )
 # Bootstrap identities above allow Compose to interpolate unselected services.
-# Build before creating any executable component, then inject its actual OCI ID.
-ci_phase stove0-build
-stove0_compose build \
-  --sbom="generator=docker.io/docker/buildkit-syft-scanner:stable-1@sha256:79e7b013cbec16bbb436f312819a49a4a57752b2270c1a9332ae1a10fcc82a68" \
-  state api controller worker a-stove0-ffprobe-observer a-stove0-magic-observer \
-  a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer \
-  a-stove0-exiftool-observer a-stove0-opus-target a-review0-opus-sampler review0 a-stove0-rclone-target
+# The exact Bake inputs were verified before bootstrap; inject their OCI IDs.
+if owns_qualification processing || owns_qualification review-delivery; then
 for image in a-stove0-ffprobe-observer a-stove0-magic-observer \
   a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer \
   a-stove0-exiftool-observer a-stove0-opus-target review0 a-stove0-rclone-target; do
@@ -420,7 +447,9 @@ stove0_compose up --detach --wait review0 a-stove0-rclone-target
 stove0_compose exec -T review0 python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-review0-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-transform-target/v1'"
 stove0_compose exec -T a-stove0-rclone-target python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-rclone-target-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-effect-target/v1'"
 stove0_compose exec -T a-stove0-rclone-target python -c "from pathlib import Path; import subprocess; source = Path('/tmp/rclone-probe'); source.write_bytes(b'riverhog-rclone-effect-probe'); destination = Path('/var/lib/stove0-rclone-delivery/qualification/probe'); subprocess.run(['rclone', 'copyto', str(source), str(destination)], check=True); assert destination.read_bytes() == source.read_bytes(); source.unlink(); destination.unlink()"
+fi
 
+if owns_qualification processing; then
 admission_baseline_code="import json, time, urllib.request
 deadline = time.monotonic() + 60
 while time.monotonic() < deadline:
@@ -441,7 +470,7 @@ stove0_compose exec -T api python -c "${admission_baseline_code}"
 # catalog cursor must reconcile the missed publication after restart.
 ci_phase ftp-custody
 stove0_compose stop controller
-adapter_compose up --detach --build --wait intake-init ftp-spool ftp-listener
+adapter_compose up --detach --no-build --wait intake-init ftp-spool ftp-listener
 
 partition_run_code="from ftplib import FTP, all_errors
 from io import BytesIO
@@ -1243,6 +1272,8 @@ stove0_compose up --detach --wait \
   a-stove0-opus-target a-review0-opus-sampler review0 a-stove0-rclone-target
 stove0_compose exec -T api python -c "${wait_code}"
 
+fi
+if owns_qualification review-delivery; then
 # Review0's ordinary finalized collection is inspected before introducing the
 # independent delivery admission policy. This makes the collection boundary
 # observable instead of relying on a race with fast local rclone delivery.
@@ -1305,8 +1336,10 @@ stove0_compose exec -T \
   --env "REVIEW_OUTPUT_COLLECTION_ID=${review_output_collection_id}" \
   --env "REVIEW_SOURCE_COLLECTION_ID=${review_source_collection_id}" \
   api python -c "${review_qualification}" delivery > /dev/null
+fi
 
-if [[ "${STOVE0_SMOKE_WITNESS_PROBE:-1}" == "1" ]]; then
+if owns_qualification witnesses && \
+  { [[ "${qualification_lane}" == "witnesses" ]] || [[ "${STOVE0_SMOKE_WITNESS_PROBE:-1}" == "1" ]]; }; then
 # Qualify both independent witnesses against a real finalized catalog item.
 # The deterministic OTS calendar seam supplies a bounded pending attestation;
 # this smoke does not depend on a public calendar or claim Bitcoin confirmation.
@@ -1337,8 +1370,6 @@ witness_key_root="${smoke_root}/witness-key"
 install -d -m 0777 "${witness_key_root}"
 export A_RIVERHOG_MINISIGN_WITNESS_SECRET_KEY_FILE="${witness_key_root}/secret.key"
 export A_RIVERHOG_MINISIGN_WITNESS_PUBLIC_KEY_FILE="${witness_key_root}/public.key"
-minisign_compose build run
-ots_compose build run
 docker run --rm --user 65532:65532 \
   --volume "${witness_key_root}:/keys" --entrypoint minisign \
   a-riverhog-minisign-witness:dev -G -W -s /keys/secret.key -p /keys/public.key

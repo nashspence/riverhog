@@ -231,7 +231,11 @@ def test_every_first_party_image_build_requests_an_sbom_attestation() -> None:
     assert 'docker buildx bake --file "$(BAKE_FILE)" --load' in makefile
     image_steps = workflow["jobs"]["images"]["steps"]
     assert (
-        next(step for step in image_steps if step["name"] == "Build image")["with"]["files"]
+        next(
+            step
+            for step in image_steps
+            if step["name"] == "Build exact image group from target-scoped caches"
+        )["with"]["files"]
         == "docker-bake.hcl"
     )
     assert (

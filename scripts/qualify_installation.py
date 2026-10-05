@@ -24,6 +24,7 @@ import urllib.parse
 import xml.etree.ElementTree as ET
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
 
@@ -85,6 +86,51 @@ class QualificationError(RuntimeError):
     """The staged installation differs from the v1 release contract."""
 
 
+@dataclass(frozen=True)
+class ListenerMountFixture:
+    mount_point: Path
+    setup: tuple[str, ...]
+    teardown: tuple[str, ...]
+    lock_file: Path | None = None
+
+
+def _load_listener_mount_fixture(
+    path: Path, *, lock_file: Path | None = None
+) -> ListenerMountFixture:
+    if not sys.platform.startswith("linux"):
+        raise QualificationError("an operator mount fixture requires Linux")
+    value = json.loads(path.read_bytes())
+    if not isinstance(value, dict) or set(value) != {"mount_point", "setup", "teardown"}:
+        raise QualificationError("mount fixture requires mount_point, setup and teardown")
+    point = value["mount_point"]
+    if not isinstance(point, str) or not point or "\0" in point:
+        raise QualificationError("mount fixture mount_point must be an absolute directory")
+    mount_point = Path(point)
+    if (
+        not mount_point.is_absolute()
+        or not mount_point.is_dir()
+        or mount_point != mount_point.resolve()
+    ):
+        raise QualificationError("mount fixture requires an existing canonical absolute directory")
+    for key in ("setup", "teardown"):
+        argv = value[key]
+        if (
+            not isinstance(argv, list)
+            or not argv
+            or any(not isinstance(arg, str) or not arg or "\0" in arg for arg in argv)
+        ):
+            raise QualificationError(f"mount fixture {key} must be a nonempty argument list")
+    if lock_file is not None and (
+        not lock_file.is_absolute()
+        or not lock_file.parent.is_dir()
+        or lock_file != lock_file.resolve()
+    ):
+        raise QualificationError("mount fixture lock requires a canonical absolute file path")
+    return ListenerMountFixture(
+        mount_point, tuple(value["setup"]), tuple(value["teardown"]), lock_file
+    )
+
+
 class QualificationHandler(http.server.SimpleHTTPRequestHandler):
     requests: list[str] = []
 
@@ -144,13 +190,20 @@ def _qualification_mount_operation(
     *,
     cwd: Path,
 ) -> None:
-    completed = subprocess.run(
-        command,
-        cwd=cwd,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=cwd,
+            check=False,
+            capture_output=True,
+            text=True,
+            stdin=subprocess.DEVNULL,
+            timeout=30,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise QualificationError(
+            f"{operation} timed out after {exc.timeout} seconds; command={command!r}"
+        ) from exc
     if completed.returncode == 0:
         return
     stdout = (completed.stdout or "").strip()[-2000:] or "<empty>"
@@ -276,10 +329,11 @@ def _qualification_listener_mount(
     *,
     observe_failure: Callable[[BaseException], None],
     settle_listener: Callable[[], None],
+    fixture: ListenerMountFixture | None = None,
 ) -> Iterator[Path]:
     """Retain listener failure truth and settle its custody before releasing the mount."""
 
-    with _qualification_mount(scratch) as mount:
+    with _qualification_mount(scratch, fixture=fixture) as mount:
         try:
             yield mount
         except BaseException as exc:
@@ -517,6 +571,7 @@ def _run_gogurt(
     listener_lifecycle_repetitions: int,
     gogurt_evidence_dir: Path | None,
     reference: dict[str, str],
+    listener_mount_fixture: ListenerMountFixture | None = None,
 ) -> str:
     environment = {
         **environment,
@@ -595,12 +650,62 @@ def _run_gogurt(
             environment=environment,
             evidence_dir=evidence_dir,
             exercise_extended_lifecycle=repetition == 1,
+            listener_mount_fixture=listener_mount_fixture,
         )
     return "native-listener-lifecycle"
 
 
 @contextmanager
-def _qualification_mount(scratch: Path) -> Iterator[Path]:
+def _operator_qualification_mount(scratch: Path, fixture: ListenerMountFixture) -> Iterator[Path]:
+    import fcntl
+
+    backing = fixture.mount_point
+    descriptor = (
+        os.open(backing, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        if fixture.lock_file is None
+        else os.open(fixture.lock_file, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+    )
+    try:
+        try:
+            fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise QualificationError("operator mount fixture is already in use") from exc
+        if backing.is_mount() or any(backing.iterdir()):
+            raise QualificationError("operator mount fixture must start unmounted and empty")
+
+        def teardown() -> None:
+            _qualification_mount_operation(
+                "operator qualification teardown", list(fixture.teardown), cwd=scratch
+            )
+            if backing.is_mount() or any(backing.iterdir()):
+                raise QualificationError(
+                    "operator teardown must leave the fixture unmounted and empty"
+                )
+
+        with _settled_qualification_mount(backing, teardown):
+            _qualification_mount_operation(
+                "operator qualification setup", list(fixture.setup), cwd=scratch
+            )
+            if not backing.is_mount() or any(backing.iterdir()):
+                raise QualificationError("operator setup must provide a fresh mounted fixture")
+            with tempfile.TemporaryFile(dir=backing) as probe:
+                probe.write(b"qualification-write-probe")
+                probe.flush()
+            yield backing
+    finally:
+        os.close(descriptor)
+
+
+@contextmanager
+def _qualification_mount(
+    scratch: Path, *, fixture: ListenerMountFixture | None = None
+) -> Iterator[Path]:
+    if fixture is not None:
+        if not sys.platform.startswith("linux"):
+            raise QualificationError("an operator mount fixture requires Linux")
+        with _operator_qualification_mount(scratch, fixture) as mounted:
+            yield mounted
+        return
     if sys.platform.startswith("linux"):
         backing = scratch / "gogurt-listener-volume"
         backing.mkdir()
@@ -608,6 +713,7 @@ def _qualification_mount(scratch: Path) -> Iterator[Path]:
             "Linux tmpfs qualification mount",
             [
                 "sudo",
+                "-n",
                 "mount",
                 "-t",
                 "tmpfs",
@@ -622,7 +728,7 @@ def _qualification_mount(scratch: Path) -> Iterator[Path]:
             backing,
             lambda: _qualification_mount_operation(
                 "Linux tmpfs qualification unmount",
-                ["sudo", "umount", str(backing)],
+                ["sudo", "-n", "umount", str(backing)],
                 cwd=scratch,
             ),
         ) as mounted:
@@ -1208,6 +1314,7 @@ def _run_gogurt_listener_lifecycle(
     environment: dict[str, str],
     evidence_dir: Path | None,
     exercise_extended_lifecycle: bool,
+    listener_mount_fixture: ListenerMountFixture | None = None,
 ) -> None:
     initial = _listener_status(
         executable,
@@ -1334,6 +1441,7 @@ def _run_gogurt_listener_lifecycle(
             scratch,
             observe_failure=retain_lifecycle_failure,
             settle_listener=settle_listener,
+            fixture=listener_mount_fixture,
         ) as mount:
 
             def write_marker(route: str, *, force: bool = False) -> None:
@@ -1779,6 +1887,7 @@ def _qualify_component(
     listener_lifecycle: bool,
     listener_lifecycle_repetitions: int,
     gogurt_evidence_dir: Path | None,
+    listener_mount_fixture: ListenerMountFixture | None = None,
 ) -> dict[str, Any]:
     root = str(component["root"])
     environment = _tool_environment(scratch, root)
@@ -1917,6 +2026,7 @@ def _qualify_component(
             listener_lifecycle_repetitions=listener_lifecycle_repetitions,
             gogurt_evidence_dir=gogurt_evidence_dir,
             reference=gogurt_providers,
+            listener_mount_fixture=listener_mount_fixture,
         )
     else:
         operation = _run_recovery(
@@ -1962,9 +2072,22 @@ def qualify(
     listener_lifecycle: bool = False,
     listener_lifecycle_repetitions: int = 1,
     gogurt_evidence_dir: Path | None = None,
+    listener_mount_fixture: Path | None = None,
+    listener_mount_lock: Path | None = None,
 ) -> dict[str, Any]:
     if listener_lifecycle_repetitions < 1:
         raise QualificationError("listener lifecycle repetitions must be at least one")
+    if listener_mount_fixture is not None and not listener_lifecycle:
+        raise QualificationError(
+            "an operator mount fixture requires listener lifecycle qualification"
+        )
+    if listener_mount_lock is not None and listener_mount_fixture is None:
+        raise QualificationError("a listener mount lock requires an operator mount fixture")
+    fixture = (
+        _load_listener_mount_fixture(listener_mount_fixture, lock_file=listener_mount_lock)
+        if listener_mount_fixture is not None
+        else None
+    )
     release._ensure_clean(root)
     source_sha = release._source_sha(root)
     actual_uv = _run(["uv", "--version"], cwd=root, capture=True).stdout.split()[1]
@@ -2002,6 +2125,7 @@ def qualify(
                     listener_lifecycle=listener_lifecycle,
                     listener_lifecycle_repetitions=listener_lifecycle_repetitions,
                     gogurt_evidence_dir=gogurt_evidence_dir,
+                    listener_mount_fixture=fixture,
                 )
                 for component in manifest["components"]
             ]
@@ -2040,6 +2164,19 @@ def _parser() -> argparse.ArgumentParser:
         help="Run isolated listener lifecycles repeatedly from the same candidate artifacts.",
     )
     parser.add_argument(
+        "--listener-mount-fixture",
+        type=Path,
+        help=(
+            "Linux operator JSON with an existing absolute mount_point and setup/teardown "
+            "argument lists; commands run unattended with a 30-second limit."
+        ),
+    )
+    parser.add_argument(
+        "--listener-mount-lock",
+        type=Path,
+        help="Hold this shared Linux fixture lock through listener settling and teardown.",
+    )
+    parser.add_argument(
         "--gogurt-evidence-dir",
         type=Path,
         help="Retain bounded dummy lifecycle status and logs when Gogurt qualification fails.",
@@ -2056,6 +2193,8 @@ def main(argv: list[str] | None = None) -> int:
             listener_lifecycle=args.listener_lifecycle,
             listener_lifecycle_repetitions=args.listener_lifecycle_repetitions,
             gogurt_evidence_dir=args.gogurt_evidence_dir,
+            listener_mount_fixture=args.listener_mount_fixture,
+            listener_mount_lock=args.listener_mount_lock,
         )
     except (
         OSError,
@@ -2063,6 +2202,7 @@ def main(argv: list[str] | None = None) -> int:
         installation.InstallationError,
         release.ReleaseError,
         subprocess.CalledProcessError,
+        ValueError,
     ) as exc:
         raise SystemExit(f"installation qualification error: {exc}") from exc
     rendered = json.dumps(payload, indent=2, sort_keys=True) + "\n"

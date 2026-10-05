@@ -157,7 +157,7 @@ support_paths = [
   "scripts/qualify_installation.py",
   "scripts/run_mypy.py",
   "scripts/ci_timing.py",
-  "scripts/ci_unit.py",
+  "scripts/ci_qualification.py",
 ]
 
 [[tool.mypy.overrides]]

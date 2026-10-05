@@ -295,115 +295,72 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
 
     assert set(workflow["jobs"]) == {
         "gate",
+        "plan",
         "repository",
+        "units",
+        "compose",
         "client-platforms",
         "images",
     }
-    job = workflow["jobs"]["repository"]
-    assert job["runs-on"] == "ubuntu-24.04"
-    assert job["strategy"]["fail-fast"] == "false"
-    matrix = job["strategy"]["matrix"]["include"]
-    assert [entry["target"] for entry in matrix] == [
-        "lint",
-        "compile",
-        "unit",
-        "c2sp-vectors",
-        "postgres-concurrency",
-        "compose-smoke",
-        "filesystem-recovery-qualification",
-        "dist-smoke",
-    ]
-    assert [entry["target"] for entry in matrix if entry.get("docker") == "true"] == [
-        "postgres-concurrency",
-        "compose-smoke",
-        "filesystem-recovery-qualification",
-    ]
-
-    steps = job["steps"]
-    assert [step["uses"].split("@", 1)[0] for step in steps if "uses" in step] == [
-        "actions/checkout",
-        "jdx/mise-action",
-        "docker/setup-docker-action",
-        "docker/setup-compose-action",
-        "actions/upload-artifact",
-    ]
-    action_steps = [
-        step
-        for workflow_job in workflow["jobs"].values()
-        for step in workflow_job["steps"]
-        if "uses" in step
-    ]
+    jobs = workflow["jobs"]
+    caps = {"repository": "2", "units": "3", "compose": "2", "images": "2", "client-platforms": "1"}
+    assert sum(map(int, caps.values())) == 10
+    for name, cap in caps.items():
+        job = jobs[name]
+        assert job["strategy"]["fail-fast"] == "false"
+        assert job["strategy"]["max-parallel"] == cap
+        if name != "client-platforms":
+            assert job["runs-on"] == "ubuntu-24.04"
+            assert job["needs"] == "plan"
+            assert job["strategy"]["matrix"] == "${{ fromJSON(needs.plan.outputs." + name + ") }}"
+    plan = next(step for step in jobs["plan"]["steps"] if step.get("id") == "plan")
+    assert 'python -m scripts.ci_qualification plan --github-output "$GITHUB_OUTPUT"' in plan["run"]
+    action_steps = [step for job in jobs.values() for step in job["steps"] if "uses" in step]
     assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in action_steps)
-    checkout_steps = [
-        step
-        for workflow_job in workflow["jobs"].values()
-        for step in workflow_job["steps"]
-        if step.get("uses", "").startswith("actions/checkout@")
-    ]
-    assert all(
-        step["with"]
-        == {
-            "persist-credentials": "false",
-            "ref": "${{ inputs.ref || github.sha }}",
-        }
-        for step in checkout_steps
-    )
-    assert steps[2]["if"] == "matrix.docker"
-    assert steps[2]["with"]["version"] == "v29.3.1"
-    assert json.loads(steps[2]["with"]["daemon-config"]) == {
-        "features": {"containerd-snapshotter": True}
-    }
-    assert steps[3]["if"] == "matrix.docker"
-    assert steps[3]["with"] == {"version": "v5.1.1"}
-    run = next(step for step in steps if step["name"] == "Run repository target")
-    assert run["env"] == {
-        "CI_TARGET": "${{ matrix.target }}",
-        "RIVERHOG_CI_TIMING_DIR": "${{ runner.temp }}/ci-timing",
-    }
+    for step in action_steps:
+        if step["uses"].startswith("actions/checkout@"):
+            assert step["with"] == {
+                "persist-credentials": "false",
+                "ref": "${{ inputs.ref || github.sha }}",
+            }
+        if step["uses"].startswith("docker/setup-docker-action@"):
+            assert step["with"]["version"] == "v29.3.1"
+            assert json.loads(step["with"]["daemon-config"]) == {
+                "features": {"containerd-snapshotter": True},
+            }
+        if step["uses"].startswith("docker/setup-compose-action@"):
+            assert step["with"] == {"version": "v5.1.1"}
+    repository = jobs["repository"]
+    run = next(step for step in repository["steps"] if step["name"] == "Run repository target")
     assert 'python scripts/ci_timing.py run --lane "$CI_TARGET"' in run["run"]
     assert '-- make "$CI_TARGET"' in run["run"]
-    timing = steps[-1]
-    assert timing["if"] == "always()"
-    assert timing["uses"] == UPLOAD_ARTIFACT_USE
-    assert timing["with"]["retention-days"] == "7"
-
-    client_platforms = workflow["jobs"]["client-platforms"]
-    assert client_platforms["strategy"] == {
-        "fail-fast": "false",
-        "matrix": {
-            "include": [
-                {"os": "ubuntu-24.04", "listener_repetitions": "12"},
-                {"os": "macos-15", "listener_repetitions": "12"},
-                {"os": "windows-2025", "listener_repetitions": "12"},
-            ],
-        },
-    }
-    assert client_platforms["runs-on"] == "${{ matrix.os }}"
-    assert client_platforms["env"] == {"MISE_AUTO_INSTALL": "0"}
-    assert [
-        step["uses"].split("@", 1)[0] for step in client_platforms["steps"] if "uses" in step
-    ] == ["actions/checkout", "jdx/mise-action", "actions/upload-artifact"]
-    assert client_platforms["steps"][0]["with"]["persist-credentials"] == "false"
-    assert client_platforms["steps"][1]["with"] == {"install_args": "python uv age"}
-    assert [step["run"] for step in client_platforms["steps"] if "run" in step] == [
-        "mise x python uv age -- uv run --locked --all-packages --group dev "
-        "python -m pytest -q "
-        "tests/platform/test_native_provenance.py "
-        "some-implementations/gogurt/application/tests "
-        "tests/platform/test_end_user_artifacts.py",
-        "mise x python uv age -- uv run --locked --all-packages --group dev "
-        "python scripts/qualify_installation.py --version 1.0.0 --listener-lifecycle "
-        "--listener-lifecycle-repetitions ${{ matrix.listener_repetitions }} "
-        '--gogurt-evidence-dir "${{ runner.temp }}/gogurt-failure-evidence"',
-    ]
-    native_tests = next(
-        step["run"]
-        for step in client_platforms["steps"]
-        if step.get("name") == "Qualify native end-user behavior"
+    for name in ("repository", "units", "compose", "images"):
+        retained = jobs[name]["steps"][-1]
+        assert retained["if"] == "always()"
+        assert retained["uses"] == UPLOAD_ARTIFACT_USE
+        assert retained["with"]["retention-days"] == "7"
+        assert retained["with"]["path"] == "${{ runner.temp }}/ci-timing"
+    unit_run = next(step for step in jobs["units"]["steps"] if "run" in step)
+    assert 'make unit-shard UNIT_SHARD="$UNIT_SHARD"' in unit_run["run"]
+    compose_run = next(
+        step
+        for step in jobs["compose"]["steps"]
+        if step["name"] == "Qualify the complete independent lifecycle"
     )
-    for path in native_tests.split()[native_tests.split().index("-q") + 1 :]:
-        assert (REPO_ROOT / path).exists(), path
-    evidence_step = client_platforms["steps"][-1]
+    assert 'make compose-shard COMPOSE_LANE="$COMPOSE_LANE"' in compose_run["run"]
+    client = jobs["client-platforms"]
+    assert client["strategy"]["matrix"] == {"os": ["ubuntu-24.04", "macos-15", "windows-2025"]}
+    assert client["env"] == {"MISE_AUTO_INSTALL": "0"}
+    assert client["steps"][1]["with"] == {"install_args": "python uv age"}
+    native = next(step for step in client["steps"] if "run" in step)
+    assert native["run"] == (
+        "mise x python uv age -- uv run --locked --all-packages --group dev "
+        "python -m scripts.ci_qualification native"
+    )
+    assert native["env"] == {
+        "GOGURT_FAILURE_EVIDENCE_DIR": "${{ runner.temp }}/gogurt-failure-evidence"
+    }
+    evidence_step = client["steps"][-1]
     assert evidence_step["if"] == "failure()"
     assert evidence_step["with"] == {
         "name": "gogurt-lifecycle-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}",
@@ -411,6 +368,7 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "if-no-files-found": "warn",
         "retention-days": "14",
     }
+
     assert "secrets." not in text
 
 

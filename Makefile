@@ -8,8 +8,11 @@ documentation-plan documentation-preview documentation-check:
 
 MISE_BIN ?= mise
 FILES ?= .
-TESTS ?= packages some-implementations riverhog tests/unit
-UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope --instafail --durations=30 --durations-min=0.25 -p scripts.ci_timing
+override CANONICAL_UNIT_TESTS := packages some-implementations riverhog tests/unit
+TESTS ?= $(CANONICAL_UNIT_TESTS)
+UNIT_REPORT_ARGS ?= --instafail --durations=30 --durations-min=0.25 -p scripts.ci_timing
+UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope $(UNIT_REPORT_ARGS)
+UNIT_SHARD_PYTEST_ARGS ?= $(UNIT_REPORT_ARGS)
 PYTHON_PATHS ?= packages some-implementations riverhog scripts tests
 RELEASE_VERSION ?= 1.0.0
 RELEASE_OUTPUT ?=
@@ -78,7 +81,11 @@ help:
 		'  make postgres-concurrency Run database concurrency tests against disposable Postgres.' \
 		'  make unit-shards-check Verify exhaustive ownership of collected unit tests.' \
 		'  make unit-shard UNIT_SHARD=<release|contract|unit> Reproduce a measured CI shard.' \
+		'  make image-qualification IMAGE_GROUP=<core|observers|targets|companions> Build and qualify a complete image group.' \
+		'  make client-platform-qualification Qualify native behavior and staged end-user installation on this host.' \
+		'  make linux-qualification Run the complete portable Linux CI qualification for integration/handoff.' \
 		'  make compose-smoke     Verify disposable adapter, Riverhog, cache, and stove0 lifecycle.' \
+		'  make compose-shard COMPOSE_LANE=<storage|processing|review-delivery|witnesses> Reproduce one complete CI lifecycle.' \
 		'  make filesystem-recovery-qualification Prove built-service recovery from filesystem storage.' \
 		'  make stove0-scale-qualification Run the final-image lifecycle with a 128-file workload.' \
 		'  make a-riverhog-event-relay-smoke  Exercise the already-built final Riverhog event relay image.' \
@@ -104,6 +111,8 @@ help:
 		'  RELEASE_SIGNING_KEY=/path Offline minisign secret key for release-evidence.' \
 		'  RELEASE_PUBLIC_KEY=/path Minisign public key for release-evidence or release-verify.' \
 		'  MISE_BIN=/abs/path/to/mise Use a specific mise binary instead of mise on PATH.' \
+		'  RIVERHOG_QUALIFICATION_MOUNT_FIXTURE=/path/to/fixture.json Select Linux listener mount_point and setup/teardown argv.' \
+		'  RIVERHOG_QUALIFICATION_MOUNT_LOCK=/path/to/fixture.lock Hold the shared fixture lock through listener settling and teardown.' \
 		'  COMPOSE_ENV_FILE=/abs/path/to/overrides.env' \
 		'  TEST_COMPOSE_PROJECT_NAME=riverhog-shared'
 
@@ -137,10 +146,20 @@ unit:
 
 .PHONY: unit-shards-check unit-shard
 unit-shards-check:
-	$(call UV_CMD,python scripts/ci_unit.py check $(TESTS) $(args))
+	$(call UV_CMD,python scripts/ci_unit.py check $(CANONICAL_UNIT_TESTS) $(args))
 
 unit-shard:
-	$(call UV_CMD,python scripts/ci_unit.py run --shard "$(UNIT_SHARD)" $(TESTS) -- $(UNIT_PYTEST_ARGS) $(args))
+	$(call UV_CMD,python scripts/ci_unit.py run --shard "$(UNIT_SHARD)" $(CANONICAL_UNIT_TESTS) -- $(UNIT_SHARD_PYTEST_ARGS) $(args))
+
+.PHONY: image-qualification client-platform-qualification linux-qualification
+image-qualification:
+	$(call UV_CMD,python -m scripts.ci_qualification images --group "$(IMAGE_GROUP)")
+
+client-platform-qualification:
+	"$(MISE_BIN)" x python uv age -- uv run --locked --all-packages --group dev python -m scripts.ci_qualification native
+
+linux-qualification:
+	$(call UV_CMD,python -m scripts.ci_qualification linux)
 
 dependency-readiness:
 	$(call UV_CMD,python scripts/check_dependency_readiness.py $(args))
@@ -212,6 +231,10 @@ postgres-concurrency:
 
 compose-smoke:
 	@./scripts/test_compose_smoke.sh
+
+.PHONY: compose-shard
+compose-shard:
+	@./scripts/test_compose_smoke.sh "$(COMPOSE_LANE)"
 
 filesystem-recovery-qualification:
 	@./scripts/test_filesystem_recovery_qualification.sh

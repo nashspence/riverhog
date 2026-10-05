@@ -575,14 +575,23 @@ def test_compose_smoke_starts_and_cleans_a_fresh_stack(tmp_path: Path) -> None:
 
     assert completed.returncode == 0, completed.stderr
     timing_calls = _read_log_lines(uv_log_path)
-    assert timing_calls and all("ci_timing.py phase " in line for line in timing_calls)
+    assert any(
+        "scripts.ci_qualification compose-prepare --lane all" in line for line in timing_calls
+    )
+    assert all(
+        "ci_timing.py phase " in line or "scripts.ci_qualification compose-prepare" in line
+        for line in timing_calls
+    )
     docker_log = "\n".join(_read_log_lines(docker_log_path))
-    assert f" build --sbom=generator={SBOM_GENERATOR} test" in docker_log
+    assert " build --sbom=" not in docker_log
     assert " up --detach garage" in docker_log
     assert "tests.harness.storage_adapter_restart_probe prepare" in docker_log
     assert " restart archive-adapter" in docker_log
     assert "tests.harness.storage_adapter_restart_probe resume" in docker_log
-    assert f" build --sbom=generator={SBOM_GENERATOR} app" in docker_log
+    assert (
+        " up --detach --wait archive-adapter filesystem-cache-adapter elastic-cache-adapter"
+        in docker_log
+    )
     assert " up --detach --wait app" in docker_log
     assert " exec -T postgres createdb --username riverhog --owner riverhog stove0" in docker_log
     assert " restart app" in docker_log
@@ -629,7 +638,13 @@ def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
 
     assert completed.returncode == 0, completed.stderr
     timing_calls = _read_log_lines(uv_log_path)
-    assert timing_calls and all("ci_timing.py phase " in line for line in timing_calls)
+    assert any(
+        "scripts.ci_qualification compose-prepare --lane all" in line for line in timing_calls
+    )
+    assert all(
+        "ci_timing.py phase " in line or "scripts.ci_qualification compose-prepare" in line
+        for line in timing_calls
+    )
     docker_log = "\n".join(_read_log_lines(docker_log_path))
     assert "--env STOVE0_SMOKE_FILE_COUNT=7" in docker_log
     assert "--env STOVE0_SMOKE_AUDIO_FRAMES=4000" in docker_log
