@@ -1,0 +1,64 @@
+name: Downstream reuse watch
+
+on:
+  schedule:
+    - cron: "23 7 * * 3"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: downstream-reuse-watch
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    if: >-
+      github.repository == 'nashspence/riverhog' &&
+      github.ref == 'refs/heads/main' &&
+      vars.REUSE_WATCH_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Check out trusted collector
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Install repository toolchain
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+        with:
+          install_args: python age
+      - name: Collect and encrypt observations
+        id: collect
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REUSE_WATCH_SEARCH_TOKEN: ${{ secrets.REUSE_WATCH_SEARCH_TOKEN }}
+          REUSE_WATCH_AGE_RECIPIENT: ${{ vars.REUSE_WATCH_AGE_RECIPIENT }}
+        run: >-
+          mise x python age -- python scripts/downstream_reuse_watch.py
+          --output "$RUNNER_TEMP/reuse-watch-upload/observations.age"
+      - name: Attest ciphertext provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: ${{ runner.temp }}/reuse-watch-upload/observations.age
+          show-summary: false
+      - name: Retain ciphertext only
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reuse-observations-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/reuse-watch-upload/observations.age
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - name: Report incomplete collection
+        if: steps.collect.outputs.coverage != 'complete'
+        run: |
+          echo 'Reuse observation coverage is incomplete; encrypted evidence records the gaps.'
+          exit 1

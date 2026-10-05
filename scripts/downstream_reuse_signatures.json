@@ -1,0 +1,28 @@
+{
+  "format": "riverhog-reuse-signatures/v1",
+  "source_commit": "f5d09bfdaef74d8729362df449ecbe0441b9c19c",
+  "reuse_sha256": "c97842f069d5a00e34375b8214c856f556b119ac84db9d67bd3d665d8e4dfcc1",
+  "signatures": [
+    {
+      "id": "member-history-storage",
+      "path": "riverhog/src/riverhog_core/archive_formats.py",
+      "literal": "riverhog-member-history/v1+age",
+      "source_sha256": "c24cc37410c58da31dc5264530deac5970ad1022a4df386b1232fe2dc8aa44bc",
+      "reviewed_license": "CAL-1.0"
+    },
+    {
+      "id": "discovery-extraction",
+      "path": "riverhog/src/riverhog_core/canonical_discovery_index.py",
+      "literal": "riverhog-canonical-discovery-extraction/v1",
+      "source_sha256": "ab638e14afe3e8ab18f4e4457d2be17d700b3419a8c1de3947c9e8370974143c",
+      "reviewed_license": "CAL-1.0"
+    },
+    {
+      "id": "authorization-view",
+      "path": "riverhog/src/riverhog_core/services/app_keys.py",
+      "literal": "riverhog-authorization-view/v1",
+      "source_sha256": "de3241013b1349ad9479d08040b587d5a1633ad234b0c7379c575792d7d98fcf",
+      "reviewed_license": "CAL-1.0"
+    }
+  ]
+}
