@@ -679,29 +679,22 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "v1\\.[0-9]+\\.[0-9]+" in text
 
 
-def test_release_required_check_names_are_derived_from_stable_job_names() -> None:
+def test_release_required_checks_bind_the_exhaustive_ci_gate_and_codeql() -> None:
     workflow = yaml.load(CI_WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    codeql = yaml.load(CODEQL_WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
-    repository = workflow["jobs"]["repository"]
-    images = workflow["jobs"]["images"]
-    client_platforms = workflow["jobs"]["client-platforms"]
+    gate = workflow["jobs"]["gate"]
+    assert gate["if"] == "always()"
+    assert set(gate["needs"]) == set(workflow["jobs"]) - {"gate"}
+    analyze = codeql["jobs"]["analyze"]
+    assert analyze["name"] == "Analyze (${{ matrix.language }})"
     actual = {
+        gate["name"],
         *(
-            repository["name"].replace("${{ matrix.target }}", entry["target"])
-            for entry in repository["strategy"]["matrix"]["include"]
+            analyze["name"].replace("${{ matrix.language }}", language)
+            for language in analyze["strategy"]["matrix"]["language"]
         ),
-        *(
-            images["name"].replace("${{ matrix.target }}", target)
-            for target in images["strategy"]["matrix"]["target"]
-        ),
-        *(
-            client_platforms["name"].replace("${{ matrix.os }}", entry["os"])
-            for entry in client_platforms["strategy"]["matrix"]["include"]
-        ),
-        "Analyze (actions)",
-        "Analyze (python)",
     }
-
     assert release["governance"]["required_checks"] == sorted(actual)
 
 
