@@ -9,7 +9,7 @@ documentation-plan documentation-preview documentation-check:
 MISE_BIN ?= mise
 FILES ?= .
 TESTS ?= packages some-implementations riverhog tests/unit
-UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope --instafail --durations=30 --durations-min=0.25
+UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope --instafail --durations=30 --durations-min=0.25 -p scripts.ci_timing
 PYTHON_PATHS ?= packages some-implementations riverhog scripts tests
 RELEASE_VERSION ?= 1.0.0
 RELEASE_OUTPUT ?=
@@ -76,6 +76,8 @@ help:
 		'  make release-verify    Verify a generated release evidence directory.' \
 		'  make c2sp-vectors      Download and run the pinned C2SP age conformance corpus.' \
 		'  make postgres-concurrency Run database concurrency tests against disposable Postgres.' \
+		'  make unit-shards-check Verify exhaustive ownership of collected unit tests.' \
+		'  make unit-shard UNIT_SHARD=<release|contract|unit> Reproduce a measured CI shard.' \
 		'  make compose-smoke     Verify disposable adapter, Riverhog, cache, and stove0 lifecycle.' \
 		'  make filesystem-recovery-qualification Prove built-service recovery from filesystem storage.' \
 		'  make stove0-scale-qualification Run the final-image lifecycle with a 128-file workload.' \
@@ -132,6 +134,13 @@ compile:
 
 unit:
 	$(call UV_CMD,python -m pytest -q $(UNIT_PYTEST_ARGS) $(TESTS) $(args))
+
+.PHONY: unit-shards-check unit-shard
+unit-shards-check:
+	$(call UV_CMD,python scripts/ci_unit.py check $(TESTS) $(args))
+
+unit-shard:
+	$(call UV_CMD,python scripts/ci_unit.py run --shard "$(UNIT_SHARD)" $(TESTS) -- $(UNIT_PYTEST_ARGS) $(args))
 
 dependency-readiness:
 	$(call UV_CMD,python scripts/check_dependency_readiness.py $(args))

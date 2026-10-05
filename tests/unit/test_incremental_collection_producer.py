@@ -398,7 +398,10 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
             high_water = max(high_water, sum(item.exists() for item in local.values()))
         result = producer.finish(
             poll_seconds=0.01,
-            timeout_seconds=60,
+            # Finalization crosses many bounded worker milestones. Allow CPU
+            # contention from the full suite without changing the 25-artifact
+            # custody-window proof below.
+            timeout_seconds=300,
         )
         for owned in local.values():
             if owned.exists():

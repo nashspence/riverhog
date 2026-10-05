@@ -2,6 +2,7 @@
 set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_compose_env.sh"
+source "${ROOT_DIR}/scripts/_ci_timing.sh"
 
 setup_test_compose_project
 configure_compose_tty
@@ -66,6 +67,7 @@ ots_compose() {
 
 cleanup() {
   local status=$?
+  ci_phase teardown "${status}" || true
   if [[ "${status}" -ne 0 ]]; then
     minisign_compose ps >&2 || true
     minisign_compose logs --no-color --tail 200 >&2 || true
@@ -90,11 +92,14 @@ cleanup() {
       chown -R "$(id -u):$(id -g)" /cleanup || true
   fi
   rm -rf -- "${smoke_root}"
+  ci_phase_finish "${status}" || true
   return "${status}"
 }
 trap cleanup EXIT
 
+ci_phase storage-build
 "${ROOT_DIR}/scripts/bootstrap_garage.sh"
+ci_phase storage-adapter-qualification
 compose up --detach --wait archive-adapter filesystem-cache-adapter elastic-cache-adapter
 compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" \
   --entrypoint riverhog-storage-adapter-conformance \
@@ -154,7 +159,9 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" \
   some-implementations/stove0/application/tests/test_classification_admission.py::test_stale_upsert_cannot_resurrect_a_departed_catalog_revision \
   some-implementations/stove0/application/tests/test_classification_admission.py::test_equal_catalog_revision_with_different_authority_fails_closed \
   some-implementations/stove0/application/tests/test_classification_admission.py::test_failed_lowest_candidate_is_delayed_and_does_not_starve_the_next
+ci_phase riverhog-build
 ensure_compose_image app
+ci_phase riverhog-lifecycle
 compose up --detach --wait app
 compose exec -T app sh -c \
   'test "$(id -u)" = 65532 && test "$(id -g)" = 65532 && test -w /tmp && test ! -w /usr/share/doc/riverhog'
@@ -366,6 +373,7 @@ client_environment=(
 )
 # Bootstrap identities above allow Compose to interpolate unselected services.
 # Build before creating any executable component, then inject its actual OCI ID.
+ci_phase stove0-build
 stove0_compose build \
   --sbom="generator=docker.io/docker/buildkit-syft-scanner:stable-1@sha256:79e7b013cbec16bbb436f312819a49a4a57752b2270c1a9332ae1a10fcc82a68" \
   state api controller worker a-stove0-ffprobe-observer a-stove0-magic-observer \
@@ -380,6 +388,7 @@ for image in a-stove0-ffprobe-observer a-stove0-magic-observer \
   test "$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "${image}:dev")" = "${SOURCE_REVISION}"
   export "${prefix^^}_IMAGE_ID=${image_id}"
 done
+ci_phase stove0-bootstrap
 stove0_compose up --detach --wait \
   state api controller worker a-stove0-ffprobe-observer a-stove0-magic-observer \
   a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer \
@@ -430,6 +439,7 @@ else:
 stove0_compose exec -T api python -c "${admission_baseline_code}"
 # Keep Stove0 offline while the autonomous producer finalizes. Its durable
 # catalog cursor must reconcile the missed publication after restart.
+ci_phase ftp-custody
 stove0_compose stop controller
 adapter_compose up --detach --build --wait intake-init ftp-spool ftp-listener
 
@@ -706,6 +716,7 @@ print(json.dumps({
     key: receipt[key]
     for key in ('collection_id', 'archive_root_sha256', 'artifact_set_identity')
 }, sort_keys=True))"
+ci_phase stove0-admission
 scale_started_ns="$(date +%s%N)"
 input_receipt_json="$(adapter_compose exec -T \
   --env RIVERHOG_SMOKE_RECEIPT_OUTPUT=1 \
@@ -984,6 +995,7 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
   --env "OVERFLOW_COLLECTION_ID=${overflow_collection_id}" \
   --entrypoint python test -c "${overflow_cache_code}"
 
+ci_phase stove0-processing
 wait_code="import json, time, urllib.request
 def diagnostic(row):
     if row is None:
@@ -1234,6 +1246,7 @@ stove0_compose exec -T api python -c "${wait_code}"
 # Review0's ordinary finalized collection is inspected before introducing the
 # independent delivery admission policy. This makes the collection boundary
 # observable instead of relying on a race with fast local rclone delivery.
+ci_phase review-delivery
 review_input_root="${smoke_root}/review-input"
 install -d -m 0700 "${review_input_root}"
 python3 -c "import sys, wave
@@ -1297,6 +1310,7 @@ if [[ "${STOVE0_SMOKE_WITNESS_PROBE:-1}" == "1" ]]; then
 # Qualify both independent witnesses against a real finalized catalog item.
 # The deterministic OTS calendar seam supplies a bounded pending attestation;
 # this smoke does not depend on a public calendar or claim Bitcoin confirmation.
+ci_phase witnesses
 witness_input_root="${smoke_root}/witness-input"
 install -d -m 0700 "${witness_input_root}"
 printf '%s\n' 'independent witness Compose qualification' > "${witness_input_root}/statement.txt"

@@ -22,6 +22,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  gate:
+    name: CI gate
+    if: always()
+    needs: [repository, client-platforms, images]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every mandatory qualification to succeed
+        env:
+          CI_DEPENDENCIES: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          dependencies = json.loads(os.environ["CI_DEPENDENCIES"])
+          failed = {name: value.get("result") for name, value in dependencies.items()
+                    if value.get("result") != "success"}
+          if not dependencies or failed:
+              raise SystemExit(f"Mandatory qualification did not succeed: {failed}")
+          print("Every mandatory qualification succeeded.")
+          PY
+
   repository:
     name: make ${{ matrix.target }}
     runs-on: ubuntu-24.04
@@ -69,7 +90,20 @@ jobs:
       - name: Run repository target
         env:
           CI_TARGET: ${{ matrix.target }}
-        run: make "$CI_TARGET"
+          RIVERHOG_CI_TIMING_DIR: ${{ runner.temp }}/ci-timing
+        run: >-
+          mise x -- uv run --locked --all-packages --group dev
+          python scripts/ci_timing.py run --lane "$CI_TARGET"
+          --output "$RIVERHOG_CI_TIMING_DIR/$CI_TARGET/lane.json"
+          -- make "$CI_TARGET"
+      - name: Retain machine-readable qualification timings
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ci-timing-${{ matrix.target }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-timing
+          if-no-files-found: warn
+          retention-days: 7
 
   client-platforms:
     name: client platform (${{ matrix.os }})

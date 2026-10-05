@@ -302,7 +302,7 @@ def test_compose_mounts_document_and_separate_secret_files() -> None:
             "unit",
             ("args=-k entrypoint",),
             "python -m pytest -q -n 4 --dist=loadscope --instafail "
-            "--durations=30 --durations-min=0.25 "
+            "--durations=30 --durations-min=0.25 -p scripts.ci_timing "
             "packages some-implementations riverhog tests/unit -k entrypoint",
         ),
         (
@@ -310,7 +310,7 @@ def test_compose_mounts_document_and_separate_secret_files() -> None:
             ("TESTS=some-implementations/stove0/application/tests/test_stove0_api_parity.py",),
             (
                 "python -m pytest -q -n 4 --dist=loadscope --instafail "
-                "--durations=30 --durations-min=0.25 "
+                "--durations=30 --durations-min=0.25 -p scripts.ci_timing "
                 "some-implementations/stove0/application/"
                 "tests/test_stove0_api_parity.py"
             ),
@@ -574,7 +574,8 @@ def test_compose_smoke_starts_and_cleans_a_fresh_stack(tmp_path: Path) -> None:
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert _read_log_lines(uv_log_path) == []
+    timing_calls = _read_log_lines(uv_log_path)
+    assert timing_calls and all("ci_timing.py phase " in line for line in timing_calls)
     docker_log = "\n".join(_read_log_lines(docker_log_path))
     assert f" build --sbom=generator={SBOM_GENERATOR} test" in docker_log
     assert " up --detach garage" in docker_log
@@ -627,7 +628,8 @@ def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert _read_log_lines(uv_log_path) == []
+    timing_calls = _read_log_lines(uv_log_path)
+    assert timing_calls and all("ci_timing.py phase " in line for line in timing_calls)
     docker_log = "\n".join(_read_log_lines(docker_log_path))
     assert "--env STOVE0_SMOKE_FILE_COUNT=7" in docker_log
     assert "--env STOVE0_SMOKE_AUDIO_FRAMES=4000" in docker_log
@@ -870,7 +872,7 @@ def test_test_aggregate_runs_lint_then_unit(tmp_path: Path) -> None:
     assert "python scripts/run_mypy.py" in uv_log_lines[3]
     assert (
         "python -m pytest -q -n 4 --dist=loadscope --instafail "
-        "--durations=30 --durations-min=0.25 "
+        "--durations=30 --durations-min=0.25 -p scripts.ci_timing "
         "packages some-implementations riverhog tests/unit" in uv_log_lines[4]
     )
 

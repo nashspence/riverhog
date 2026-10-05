@@ -294,6 +294,7 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
     assert workflow["concurrency"]["cancel-in-progress"] == "true"
 
     assert set(workflow["jobs"]) == {
+        "gate",
         "repository",
         "client-platforms",
         "images",
@@ -324,6 +325,7 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "jdx/mise-action",
         "docker/setup-docker-action",
         "docker/setup-compose-action",
+        "actions/upload-artifact",
     ]
     action_steps = [
         step
@@ -353,8 +355,17 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
     }
     assert steps[3]["if"] == "matrix.docker"
     assert steps[3]["with"] == {"version": "v5.1.1"}
-    assert [step["run"] for step in steps if "run" in step] == ['make "$CI_TARGET"']
-    assert steps[-1]["env"] == {"CI_TARGET": "${{ matrix.target }}"}
+    run = next(step for step in steps if step["name"] == "Run repository target")
+    assert run["env"] == {
+        "CI_TARGET": "${{ matrix.target }}",
+        "RIVERHOG_CI_TIMING_DIR": "${{ runner.temp }}/ci-timing",
+    }
+    assert 'python scripts/ci_timing.py run --lane "$CI_TARGET"' in run["run"]
+    assert '-- make "$CI_TARGET"' in run["run"]
+    timing = steps[-1]
+    assert timing["if"] == "always()"
+    assert timing["uses"] == UPLOAD_ARTIFACT_USE
+    assert timing["with"]["retention-days"] == "7"
 
     client_platforms = workflow["jobs"]["client-platforms"]
     assert client_platforms["strategy"] == {
@@ -401,6 +412,35 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "retention-days": "14",
     }
     assert "secrets." not in text
+
+
+def test_ci_gate_covers_every_job_and_rejects_non_successful_dependencies() -> None:
+    workflow = yaml.load(CI_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    gate = workflow["jobs"]["gate"]
+    assert gate["name"] == "CI gate"
+    assert gate["if"] == "always()"
+    assert gate["runs-on"] == "ubuntu-24.04"
+    assert set(gate["needs"]) == set(workflow["jobs"]) - {"gate"}
+    step = gate["steps"][0]
+    assert step["env"] == {"CI_DEPENDENCIES": "${{ toJSON(needs) }}"}
+
+    def observe(dependencies):
+        return subprocess.run(
+            ["bash", "-c", step["run"]],
+            env={**os.environ, "CI_DEPENDENCIES": json.dumps(dependencies)},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    success = {name: {"result": "success"} for name in gate["needs"]}
+    assert observe(success).returncode == 0
+    assert observe({}).returncode != 0
+    for name in gate["needs"]:
+        for result in ("failure", "cancelled", "skipped", None):
+            observed = observe({**success, name: {"result": result}})
+            assert observed.returncode != 0, (name, result)
+            assert name in observed.stderr
 
 
 def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries() -> None:

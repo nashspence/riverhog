@@ -156,6 +156,8 @@ support_paths = [
   "scripts/test_witness_image.py",
   "scripts/qualify_installation.py",
   "scripts/run_mypy.py",
+  "scripts/ci_timing.py",
+  "scripts/ci_unit.py",
 ]
 
 [[tool.mypy.overrides]]
