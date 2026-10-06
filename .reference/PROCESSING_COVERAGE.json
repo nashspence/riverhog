@@ -1,0 +1,265 @@
+{
+  "format": "riverhog-processing-proof-factorization-reference/v2",
+  "owning_issue": 960,
+  "convention_issue": 903,
+  "authority_comment": 6014447496,
+  "supersedes_reference_commit": "6c5084055bc59905bc8a616fc10e7d152e8f9611",
+  "audited_base": {
+    "ref": "main",
+    "sha": "f4ac676554d5e68cae629f79af618ce35e278a43",
+    "tree": "47d614324a59e5e59507663ea1ff5dc323baaab9"
+  },
+  "targets": {
+    "normal_hosted_critical_path_minutes": {
+      "min": 20,
+      "max": 30,
+      "coverage_overrides_target": true
+    },
+    "processing_admission_audio_files": 16,
+    "processing_admission_xmp_sidecars": 1,
+    "processing_e2e_starting_audio_files": 4,
+    "processing_e2e_xmp_sidecars": 1,
+    "processing_overlap": {
+      "ftp_audio_files": 1,
+      "ftp_xmp_sidecars": 1,
+      "cli_audio_files": 1,
+      "expected_parent_works": 2,
+      "expected_target_jobs": 4
+    },
+    "scale_audio_files": 128,
+    "scale_audio_frames": 2000
+  },
+  "required_same_sha_compose_lanes": [
+    "storage",
+    "ingress-custody",
+    "processing-admission",
+    "processing-e2e",
+    "processing-overlap",
+    "review-delivery",
+    "witnesses"
+  ],
+  "non_ci_scale_rail": "stove0-scale-qualification",
+  "recipe_authority": {
+    "per_commit_processing_recipe": "stove0.conformance-media/v1",
+    "forbidden_substitution": "stove0.audio-archive/v1",
+    "reason": [
+      "conformance archive-audio carries a distinct metadata projection",
+      "conformance archive-audio uses input_retrieval_policy=available-only",
+      "recipe identity commits to the complete exact recipe definition"
+    ],
+    "scale_note": "stove0.audio-archive/v1 may be used only as an independent scale workload if the implementation preserves #568 scale semantics; it is never conformance-equivalence evidence"
+  },
+  "invariants": [
+    {
+      "id": "ftp-same-path-exact-events",
+      "new_owner": "ingress-custody",
+      "execution": "real-compose",
+      "assertions": [
+        "two distinct payloads reuse one visible FTP pathname without overwrite",
+        "both enter listener custody before adapter consumption",
+        "two distinct finalized Riverhog collections are produced"
+      ]
+    },
+    {
+      "id": "ftp-restart-cleanup-retrieval",
+      "new_owner": "ingress-custody",
+      "execution": "real-compose",
+      "assertions": [
+        "ftp-spool and ftp-listener restart before cleanup observation",
+        "claims/completion-events/handoffs/handoff-intents are reclaimed at the durable completion-log tip",
+        "receipts remain durable",
+        "Riverhog retrieval reproduces exact bytes and hashes"
+      ]
+    },
+    {
+      "id": "cache-overflow-placement",
+      "new_owner": "storage",
+      "execution": "real-compose",
+      "fixture": "2 MiB object with 1 MiB local admission budget",
+      "assertions": [
+        "overflow is placed in elastic cache",
+        "ready stores include local and elastic",
+        "status reports exact local admission budget/accounting"
+      ]
+    },
+    {
+      "id": "full-cardinality-ftp-publication",
+      "new_owner": "processing-admission",
+      "execution": "real-compose",
+      "fixture": "16 WAV plus one XMP sidecar; first WAV interrupted and resumed at exact REST offset",
+      "assertions": [
+        "one exact finalized Riverhog receipt binds the source collection",
+        "classification metadata/tag are exact",
+        "all 16 WAV inputs and associated XMP reach the accepted conformance planning boundary"
+      ]
+    },
+    {
+      "id": "missed-publication-reconciliation",
+      "new_owner": "processing-admission",
+      "execution": "real-compose",
+      "assertions": [
+        "autonomous admission is offline while FTP finalizes",
+        "catalog/admission reconciles the missed finalized publication afterward"
+      ]
+    },
+    {
+      "id": "durable-admission-boundaries",
+      "new_owner": "processing-admission",
+      "execution": "real-compose",
+      "assertions": [
+        "intent survives restart",
+        "previewed survives restart",
+        "work_bound survives restart",
+        "autonomous execution cannot race ahead of the boundary proof"
+      ]
+    },
+    {
+      "id": "full-cardinality-conformance-plan",
+      "new_owner": "processing-admission",
+      "execution": "real-compose",
+      "recipe": "stove0.conformance-media/v1",
+      "assertions": [
+        "accepted plan selects archive-audio",
+        "accepted plan selects archive-audio-overlap",
+        "route plans retain distinct exact intents",
+        "accepted selection/evidence accounts for the full 16-WAV collection and sidecar association",
+        "manual exact-receipt preview/work-create converges to the automatically admitted work identity"
+      ],
+      "target_execution_forbidden": true
+    },
+    {
+      "id": "real-conformance-end-to-end",
+      "new_owner": "processing-e2e",
+      "execution": "real-compose",
+      "recipe": "stove0.conformance-media/v1",
+      "fixture": "start with 4 WAV plus one associated XMP sidecar",
+      "path": [
+        "FTP",
+        "Riverhog",
+        "Stove0 observers/planning",
+        "Opus target",
+        "Riverhog output"
+      ],
+      "assertions": [
+        "both overlapping audio routes execute through the real Opus target",
+        "archive-audio child publishes a real finalized output collection",
+        "archive-audio-overlap child successfully settles with a real output collection"
+      ]
+    },
+    {
+      "id": "conformance-output-and-lineage",
+      "new_owner": "processing-e2e",
+      "execution": "real-compose",
+      "deep_child": "archive-audio",
+      "assertions": [
+        "one .opus and one generated .opus.xmp exist for every source WAV",
+        "source XMP sidecar retention follows the exact conformance metadata projection",
+        "retained sidecar bytes and sha256 equal source",
+        "derivation identity is exact",
+        "processing claim input-set authority resolves to the intended input collection"
+      ]
+    },
+    {
+      "id": "e2e-completed-restart-replay",
+      "new_owner": "processing-e2e",
+      "execution": "real-compose",
+      "assertions": [
+        "completed parent/children remain complete after relevant processing-service restart",
+        "settled output identities remain unchanged",
+        "restart/replay creates no duplicate target execution or output"
+      ]
+    },
+    {
+      "id": "two-producer-overlap",
+      "new_owner": "processing-overlap",
+      "execution": "real-compose",
+      "recipe": "stove0.conformance-media/v1",
+      "assertions": [
+        "FTP and CLI producers create distinct parent work identities",
+        "each parent selects archive-audio and archive-audio-overlap",
+        "128 kbps and 96 kbps route intents/plan identities remain distinct",
+        "four distinct real target jobs are accepted",
+        "all four jobs reach successful terminal state and durable settlement"
+      ]
+    },
+    {
+      "id": "single-worker-target-queue",
+      "new_owner": "processing-overlap",
+      "execution": "real-compose",
+      "source_fact": "OpusTargetService inherits PersistentTargetService default maximum_workers=1 at audited source",
+      "assertions": [
+        "four real jobs traverse one real Opus target instance",
+        "production target concurrency is not changed for CI"
+      ],
+      "public_api_addition_forbidden": true
+    },
+    {
+      "id": "overlap-restart-replay",
+      "new_owner": "processing-overlap",
+      "execution": "real-compose",
+      "assertions": [
+        "all completed identities survive processing-target restart",
+        "replay converges without duplicate jobs or changed settled outputs"
+      ]
+    },
+    {
+      "id": "scale-cardinality",
+      "new_owner": "stove0-scale-qualification",
+      "cadence": "final #960 integration and release-related qualification; not every pushed commit",
+      "execution": "real-final-image",
+      "default_fixture": {
+        "audio_files": 128,
+        "audio_frames": 2000
+      },
+      "assertions": [
+        "real target/publication lifecycle executes at declared scale",
+        "input/output cardinality and derivation are exact",
+        "workspace/target/operational/transfer metrics are retained"
+      ],
+      "historical_authority": {
+        "issue": 568,
+        "establishing_commit": "9d7cfdb4dedf24454ac3c1aaccdc753ada114084"
+      }
+    }
+  ],
+  "scheduling": {
+    "keep_cancel_in_progress": true,
+    "compose_max_parallel": 7,
+    "client_platform_max_parallel": 3,
+    "repository_max_parallel_initial": 2,
+    "unit_max_parallel_initial": 3,
+    "image_max_parallel_initial": 2,
+    "rationale": "prioritize heavyweight Compose proof concurrency while staying near the currently published 20-standard-job Free account ceiling when CodeQL also runs; adjust further only from hosted evidence"
+  },
+  "forbidden_shortcuts": [
+    "use stove0.audio-archive/v1 as semantic substitute for conformance-media execution",
+    "add a qualification-only route-disable or recipe mutation",
+    "change production Opus target concurrency only to speed CI",
+    "remove the 16-WAV full-cardinality admission/planning proof",
+    "remove the dedicated 128-file scale rail",
+    "replace a prior real Compose proof with only a mock/unit assertion",
+    "share mutable Docker volumes or databases between Actions jobs",
+    "treat build/cache state as qualification evidence",
+    "defer any required same-SHA invariant to a nightly-only workflow",
+    "copy this reference coverage JSON to main as a new durable source of truth"
+  ],
+  "validation": {
+    "mandatory_local_pre_commit": [
+      "make lint",
+      "make unit",
+      "make dist-smoke",
+      "make build"
+    ],
+    "integration_local": [
+      "make linux-qualification",
+      "make stove0-scale-qualification"
+    ],
+    "required_remote": [
+      "CI gate",
+      "Analyze (actions)",
+      "Analyze (python)"
+    ],
+    "successful_hosted_measurements_required": 3,
+    "timing_artifacts_required": true
+  }
+}
