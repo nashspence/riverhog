@@ -1,0 +1,227 @@
+{
+  "format": "riverhog-processing-qualification-factorization-reference/v1",
+  "owning_issue": 960,
+  "convention_issue": 903,
+  "authority_comment": 6013807376,
+  "audited_base": {
+    "ref": "main",
+    "sha": "a26e214f77ab806e4230125bf7aad93f8c3328da",
+    "tree": "dfd9f178581c0e1290a31584c824c9a286e55c98"
+  },
+  "target_remote_critical_path_minutes": {
+    "preferred_min": 20,
+    "preferred_max": 30,
+    "coverage_overrides_timing_target": true
+  },
+  "required_same_sha_lanes": [
+    "storage",
+    "ingress-custody",
+    "processing-admission",
+    "processing-primary",
+    "processing-overlap",
+    "review-delivery",
+    "witnesses"
+  ],
+  "invariants": [
+    {
+      "id": "ftp-same-path-exact-events",
+      "old_owner": "processing",
+      "new_owner": "ingress-custody",
+      "execution": "real-compose",
+      "fixture": "two distinct small payloads at the same visible FTP pathname",
+      "assertions": [
+        "both transfers enter listener custody before adapter consumption",
+        "two distinct finalized Riverhog collections are produced",
+        "visible pathname reuse cannot overwrite the first exact event"
+      ]
+    },
+    {
+      "id": "ftp-restart-cleanup-and-retrieval",
+      "old_owner": "processing",
+      "new_owner": "ingress-custody",
+      "execution": "real-compose",
+      "assertions": [
+        "ftp-spool and ftp-listener restart before cleanup observation",
+        "claims/completion events/handoffs/handoff-intents are reclaimed at the locked completion-log tip",
+        "receipts remain durable",
+        "retrieval reproduces exact bytes and hashes for both finalized collections"
+      ]
+    },
+    {
+      "id": "full-cardinality-ftp-ingress",
+      "old_owner": "processing",
+      "new_owners": [
+        "processing-admission",
+        "processing-primary"
+      ],
+      "execution": "real-compose",
+      "fixture": {
+        "audio_files": 16,
+        "xmp_sidecars": 1,
+        "first_audio_upload": "interrupted then resumed at exact REST offset"
+      },
+      "assertions": [
+        "all source files leave intake after exact completion",
+        "one finalized Riverhog receipt binds the exact collection root/artifact-set identity",
+        "description and stove0/conformance classification are exact where applicable"
+      ]
+    },
+    {
+      "id": "missed-publication-catalog-reconciliation",
+      "old_owner": "processing",
+      "new_owner": "processing-admission",
+      "execution": "real-compose",
+      "assertions": [
+        "Stove0 autonomous controller is offline while the FTP producer finalizes",
+        "after restart the durable catalog follower discovers the missed finalized collection",
+        "admission operates on the exact reconciled collection"
+      ]
+    },
+    {
+      "id": "durable-admission-boundaries",
+      "old_owner": "processing",
+      "new_owner": "processing-admission",
+      "execution": "real-compose",
+      "assertions": [
+        "intent is durably observable before restart",
+        "previewed is durably observable after restart",
+        "work_bound is durably observable after restart",
+        "autonomous controller cannot race past the explicit boundary proof"
+      ]
+    },
+    {
+      "id": "full-cardinality-overlapping-plan",
+      "old_owner": "processing",
+      "new_owner": "processing-admission",
+      "execution": "real-compose",
+      "recipe": "stove0.conformance-media/v1",
+      "fixture": "16 audio + one associated XMP sidecar",
+      "assertions": [
+        "accepted full-cardinality plan selects archive-audio",
+        "accepted full-cardinality plan selects archive-audio-overlap",
+        "both route plans bind the intended input collection and exact artifact/evidence selection",
+        "no expensive target execution is required to satisfy this planning invariant"
+      ]
+    },
+    {
+      "id": "full-cardinality-primary-transform",
+      "old_owner": "processing",
+      "new_owner": "processing-primary",
+      "execution": "real-compose",
+      "producer": "FTP",
+      "recipe": "stove0.audio-archive/v1",
+      "target": "a-stove0-opus-target",
+      "fixture": "16 audio + one XMP sidecar",
+      "assertions": [
+        "real observers/planning feed one real Opus route",
+        "target execution succeeds",
+        "real finalized Riverhog output is published",
+        "output inventory/cardinality matches the actual single-route recipe contract",
+        "sidecar/association behavior matches that recipe's actual output policy"
+      ]
+    },
+    {
+      "id": "primary-lineage-and-settlement",
+      "old_owner": "processing",
+      "new_owner": "processing-primary",
+      "execution": "real-compose",
+      "assertions": [
+        "derivation format and identity are exact",
+        "processing claim input-set authority resolves to the intended source collection",
+        "target accepted/status records and workspace cleanup are coherent",
+        "completed work/output is unchanged after service restart and replay"
+      ]
+    },
+    {
+      "id": "overlap-two-producers-four-jobs",
+      "old_owner": "processing",
+      "new_owner": "processing-overlap",
+      "execution": "real-compose",
+      "recipe": "stove0.conformance-media/v1",
+      "fixture": {
+        "ftp_producer": "one small real WAV plus associated XMP sidecar",
+        "cli_producer": "one small real WAV"
+      },
+      "assertions": [
+        "FTP and CLI collections have distinct work identities",
+        "each producer selects archive-audio and archive-audio-overlap",
+        "four distinct real Opus jobs execute",
+        "128 kbps and 96 kbps route intents remain distinct",
+        "all four jobs durably settle"
+      ]
+    },
+    {
+      "id": "single-target-serialization",
+      "old_owner": "processing",
+      "new_owner": "processing-overlap",
+      "execution": "real-compose",
+      "assertions": [
+        "the four real Opus jobs progress through one target authority",
+        "observed executing-job concurrency never exceeds one",
+        "serialization is proved from a maintained deployed-state/status observation rather than assumed from elapsed time"
+      ],
+      "constraint": "do not add a new public production API only for this assertion"
+    },
+    {
+      "id": "overlap-restart-replay",
+      "old_owner": "processing",
+      "new_owner": "processing-overlap",
+      "execution": "real-compose",
+      "assertions": [
+        "completed state survives restart of relevant Stove0/target services",
+        "replay converges without duplicate target execution or changed settled outputs"
+      ]
+    },
+    {
+      "id": "retrieval-cache-overflow-placement",
+      "old_owner": "processing",
+      "new_owner": "storage",
+      "execution": "real-compose",
+      "fixture": "2 MiB object against 1 MiB local admission budget",
+      "assertions": [
+        "overflow is placed in elastic cache",
+        "ready cache stores include local and elastic",
+        "status reports exact local admission budget/accounting"
+      ]
+    },
+    {
+      "id": "real-cross-component-spine",
+      "old_owner": "processing",
+      "new_owner": "processing-primary",
+      "execution": "real-compose",
+      "path": [
+        "FTP",
+        "Riverhog",
+        "Stove0 observers/planning",
+        "Opus target",
+        "Riverhog output"
+      ],
+      "synthetic_replacement_forbidden": true
+    }
+  ],
+  "forbidden_shortcuts": [
+    "drop the 16-input cardinality because target execution is slow",
+    "replace previous real Compose proof with only a unit/mock assertion",
+    "add a CI-only production recipe or route-disable switch",
+    "increase production target concurrency only to accelerate CI",
+    "share mutable databases or Docker volumes between Actions jobs",
+    "accept a build cache hit as qualification evidence",
+    "defer any listed invariant to a nightly-only workflow"
+  ],
+  "validation": {
+    "required_local": [
+      "make lint",
+      "make unit",
+      "make dist-smoke",
+      "make build",
+      "make linux-qualification"
+    ],
+    "required_remote": [
+      "CI gate",
+      "Analyze (actions)",
+      "Analyze (python)"
+    ],
+    "hosted_measurements": 3,
+    "timing_artifacts_required": true
+  }
+}
