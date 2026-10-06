@@ -43,8 +43,8 @@ smoke_claim_file_count=$((smoke_file_count + 1))
 # Allow 120 seconds per output on a shared runner, plus ten minutes for the
 # smaller jobs and complete archive/history publication. The measured default
 # workload needs margin for four serialized target jobs and their shared-history
-# publication. This is a fixture completion window; individual HTTP requests
-# and database qualification retain their own fixed budgets.
+# publication. Bulk request budgets also account for declared fixture size;
+# ordinary CI requests and database qualification retain their fixed budgets.
 smoke_completion_timeout=$((600 + 480 * smoke_file_count))
 smoke_max_bytes=$((smoke_file_count * (smoke_audio_frames * 2 + 4096) + 16384))
 # Three independent readers exercise each input in this lifecycle. Account for
@@ -759,6 +759,7 @@ with RiverhogFtpSpoolClient(
     base_url='http://127.0.0.1:8080',
     token='a-riverhog-ftp-spool-compose-smoke-token',
     allow_insecure_http=True,
+    timeout_seconds=max(300, 15 * int(os.environ['STOVE0_SMOKE_FILE_COUNT'])),
 ) as client:
     health = client.ftp_spool_health_ready()
     assert health.service == 'a-riverhog-ftp-spool'

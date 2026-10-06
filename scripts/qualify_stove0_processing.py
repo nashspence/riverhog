@@ -27,7 +27,12 @@ def stove(path: str, payload: Any = None) -> dict[str, Any]:
             "Content-Type": "application/json",
         },
     )
-    with urllib.request.urlopen(request, timeout=300 if payload is not None else 30) as response:
+    # Large scale fixtures perform the same complete bulk operation; their
+    # finite request budget grows without changing ordinary CI fixture budgets.
+    timeout = (
+        max(300, 15 * int(os.environ["STOVE0_SMOKE_FILE_COUNT"])) if payload is not None else 30
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
         document = json.load(response)
     assert isinstance(document, dict)
     return document
