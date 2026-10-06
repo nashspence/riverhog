@@ -31,6 +31,10 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     "#!/usr/bin/env bash",
                     "set -euo pipefail",
                     f'printf \'%s|%s\\n\' "${{COMPOSE_PROJECT_NAME:-}}" "$*" >> {log_path}',
+                    'if [[ -n "${FAKE_DOCKER_CONFIG_CAPTURE:-}" && '
+                    '"$*" == *" up --detach --wait state api "* ]]; then',
+                    '  cp "${STOVE0_CONFIG_HOST_PATH}" "${FAKE_DOCKER_CONFIG_CAPTURE}"',
+                    "fi",
                     'if [[ "$1" == "image" && "$2" == "inspect" ]]; then',
                     '  if [[ "$*" == *"{{.Id}}"* ]]; then',
                     "    printf 'sha256:'; printf 'a%.0s' {1..64}; printf '\\n'; exit 0",
@@ -692,6 +696,23 @@ def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
     assert "storage-cache-placement" not in "\n".join(timing_calls)
     assert "image inspect --format {{.Id}} a-stove0-opus-target:dev" in docker_log
     assert " down --volumes --remove-orphans" in docker_log
+
+
+def test_scale_preview_claim_covers_the_complete_bulk_request(tmp_path: Path) -> None:
+    config_capture = tmp_path / "stove0-config.yaml"
+    completed, _, _ = _run_make(
+        tmp_path,
+        "stove0-scale-qualification",
+        extra_env={
+            "FAKE_DOCKER_HAVE_IMAGES": "1",
+            "FAKE_DOCKER_CONFIG_CAPTURE": str(config_capture),
+            "STOVE0_SMOKE_TRANSFER_METRICS": "0",
+        },
+    )
+    assert completed.returncode == 0, completed.stderr
+    config = yaml.safe_load(config_capture.read_text())
+    assert config["claim_lease_seconds"] == 4260
+    assert config["claim_lease_seconds"] > 3660
 
 
 @pytest.mark.parametrize(

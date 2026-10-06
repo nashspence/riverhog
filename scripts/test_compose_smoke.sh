@@ -43,8 +43,8 @@ smoke_claim_file_count=$((smoke_file_count + 1))
 # Allow 120 seconds per output on a shared runner, plus ten minutes for the
 # smaller jobs and complete archive/history publication. The measured default
 # workload needs margin for four serialized target jobs and their shared-history
-# publication. Bulk request budgets also account for declared fixture size;
-# ordinary CI requests and database qualification retain their fixed budgets.
+# publication. Bulk requests and the scale preview claim also account for
+# declared fixture size; ordinary CI requests retain their fixed budgets.
 smoke_completion_timeout=$((600 + 480 * smoke_file_count))
 smoke_max_bytes=$((smoke_file_count * (smoke_audio_frames * 2 + 4096) + 16384))
 # Three independent readers exercise each input in this lifecycle. Account for
@@ -437,6 +437,14 @@ start_stove0_scope() {
   compose exec -T postgres psql --username riverhog --dbname "${database}" \
     --command 'CREATE EXTENSION pg_trgm WITH SCHEMA public;'
   sed '/^recipes:/,$d' "${ROOT_DIR}/qualification/fixtures/stove0/config.yaml" > "${STOVE0_CONFIG_HOST_PATH}"
+  if [[ "${scope}" == "processing-scale" ]]; then
+    # A synchronous preview's claim covers every observation stage. The default
+    # thirty-minute lease is adequate for CI fixtures but not the scale corpus.
+    local excess=$((smoke_file_count > 16 ? smoke_file_count - 16 : 0))
+    local claim_seconds=$((900 + 30 * excess))
+    if (( claim_seconds < 1800 )); then claim_seconds=1800; fi
+    printf 'claim_lease_seconds: %s\n' "${claim_seconds}" >> "${STOVE0_CONFIG_HOST_PATH}"
+  fi
   printf '%s\n' 'recipes:' >> "${STOVE0_CONFIG_HOST_PATH}"
   sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/recipes.yaml" >> "${STOVE0_CONFIG_HOST_PATH}"
   printf '%s\n' 'admissions:' >> "${STOVE0_CONFIG_HOST_PATH}"
@@ -489,6 +497,13 @@ invoke_processing() {
     --env "STOVE0_SMOKE_RECIPE_ID=${processing_recipe_id}" \
     --env "EXPECTED_WORK_ID=${expected_work_id:-}" \
     api python -c "${processing_qualification}" invoke
+}
+
+wait_processing() {
+  stove0_compose exec -T \
+    --env "STOVE0_SMOKE_FILE_COUNT=${smoke_file_count}" \
+    --env "STOVE0_SMOKE_COMPLETION_TIMEOUT=${smoke_completion_timeout}" \
+    api python -c "${processing_qualification}" wait
 }
 
 processing_snapshot() {
@@ -759,7 +774,7 @@ with RiverhogFtpSpoolClient(
     base_url='http://127.0.0.1:8080',
     token='a-riverhog-ftp-spool-compose-smoke-token',
     allow_insecure_http=True,
-    timeout_seconds=max(300, 15 * int(os.environ['STOVE0_SMOKE_FILE_COUNT'])),
+    timeout_seconds=300 + 30 * max(0, int(os.environ['STOVE0_SMOKE_FILE_COUNT']) - 16),
 ) as client:
     health = client.ftp_spool_health_ready()
     assert health.service == 'a-riverhog-ftp-spool'
@@ -967,6 +982,7 @@ fi
 # state. Empty automatic policies prevent old classified fixtures from executing.
 start_stove0_scope "${active_processing_lane}"
 upload_media_fixture
+ci_phase "${active_processing_lane}-planning"
 stove0_work_id="$(invoke_processing "${input_receipt_json}" "${smoke_file_count}" 1 ftp)"
 processing_work_ids="${stove0_work_id}"
 cache_code="import os
@@ -1024,73 +1040,11 @@ processing_work_ids="${stove0_work_id},${client_work_id}"
 fi
 stove0_compose up --detach --wait controller worker
 ci_phase "${active_processing_lane}-execution"
-wait_code="import json, time, urllib.request
-def diagnostic(row):
-    if row is None:
-        return None
-    target = row.get('target_status') or {}
-    return {
-        'work_id': row.get('work', {}).get('work_id'),
-        'phase': row.get('phase'),
-        'revision': row.get('revision'),
-        'failure': row.get('failure'),
-        'inapplicable': row.get('inapplicable'),
-        'abandon_outcome': row.get('abandon_outcome'),
-        'target_state': target.get('state'),
-        'target_attempt': target.get('attempt'),
-        'target_failure': target.get('failure'),
-        'target_inapplicable': target.get('inapplicable'),
-    }
 # The supplied Opus target intentionally admits one target job at a time.
 # Two independently classified producers and the overlapping-route proof create
 # four valid jobs. Scale the fixture deadline with its declared workload;
 # target cardinality and archive extents remain unchanged.
-deadline = time.monotonic() + ${smoke_completion_timeout}
-last = None
-while time.monotonic() < deadline:
-    request = urllib.request.Request(
-        'http://127.0.0.1:8080/v1/work?page_size=100&sort=updated_at&order=asc',
-        headers={'Authorization': 'Bearer stove0-compose-smoke-token'},
-    )
-    payload = json.load(urllib.request.urlopen(request, timeout=5))
-    rows = payload['work']
-    if rows:
-        last = rows[0]
-        terminal_failure = next(
-            (
-                row
-                for row in rows
-                if row['phase'] in {'failed', 'canceled', 'inapplicable', 'abandon_pending'}
-            ),
-            None,
-        )
-        if terminal_failure is not None:
-            raise RuntimeError(json.dumps(diagnostic(terminal_failure), sort_keys=True))
-        if all(row['phase'] == 'complete' for row in rows):
-            assert any(int((row.get('output') or {}).get('collection_id') or 0) > 0 for row in rows)
-            break
-    time.sleep(0.5)
-else:
-    request = urllib.request.Request(
-        'http://127.0.0.1:8080/v1/admin/scheduler/run',
-        data=json.dumps({'role': 'controller', 'work_limit': 25}).encode(),
-        headers={
-            'Authorization': 'Bearer stove0-compose-smoke-token',
-            'Content-Type': 'application/json',
-        },
-        method='POST',
-    )
-    scheduler_diagnostic = json.load(urllib.request.urlopen(request, timeout=30))
-    raise TimeoutError(
-        json.dumps(
-            {
-                'work': [diagnostic(row) for row in rows],
-                'scheduler': scheduler_diagnostic,
-            },
-            sort_keys=True,
-        )
-    )"
-stove0_compose exec -T api python -c "${wait_code}"
+wait_processing
 
 scale_elapsed_ns=$(( $(date +%s%N) - scale_started_ns ))
 
@@ -1282,7 +1236,7 @@ settled_snapshot="$(processing_snapshot)"
 verify_target_records
 stove0_compose restart api controller worker "${processing_services[@]}"
 stove0_compose up --detach --wait api controller worker "${processing_services[@]}"
-stove0_compose exec -T api python -c "${wait_code}"
+wait_processing
 test "$(processing_snapshot)" = "${settled_snapshot}"
 verify_target_records
 finish_stove0_scope

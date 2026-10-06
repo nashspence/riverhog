@@ -5,11 +5,13 @@ import re
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from threading import Event, Lock
+from types import SimpleNamespace
 
 import pytest
 import yaml
 
 from scripts import ci_qualification as qualification
+from scripts import qualify_stove0_processing as processing
 
 
 @pytest.fixture
@@ -353,3 +355,62 @@ def test_required_compose_plan_owns_every_lifecycle_in_the_shared_harness() -> N
     assert 'qualification_lane="${1:-all}"' in source
     for path in qualification.NATIVE_TESTS:
         assert (qualification.ROOT / path).exists()
+
+
+def test_processing_wait_retries_a_timed_out_read_before_success(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("STOVE0_SMOKE_COMPLETION_TIMEOUT", "30")
+    sleeps = []
+    monkeypatch.setattr(
+        processing, "time", SimpleNamespace(monotonic=lambda: 0, sleep=sleeps.append)
+    )
+    calls = []
+
+    def read(path):
+        calls.append(path)
+        if len(calls) == 1:
+            raise TimeoutError("status read timed out")
+        return {"work": [{"phase": "complete", "output": {"collection_id": "1"}}]}
+
+    monkeypatch.setattr(processing, "stove", read)
+    processing.wait()
+    assert len(calls) == 2
+    assert calls[0] == calls[1]
+    assert sleeps == [0.5]
+
+
+@pytest.mark.parametrize("phase", ["failed", "canceled", "inapplicable", "abandon_pending"])
+def test_processing_wait_rejects_terminal_work_after_a_successful_read(
+    monkeypatch: pytest.MonkeyPatch, phase: str
+) -> None:
+    monkeypatch.setenv("STOVE0_SMOKE_COMPLETION_TIMEOUT", "30")
+    monkeypatch.setattr(processing, "time", SimpleNamespace(monotonic=lambda: 0))
+    monkeypatch.setattr(
+        processing, "stove", lambda path: {"work": [{"work_id": "work", "phase": phase}]}
+    )
+    with pytest.raises(RuntimeError, match=phase):
+        processing.wait()
+
+
+def test_processing_wait_still_fails_at_its_global_deadline(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("STOVE0_SMOKE_COMPLETION_TIMEOUT", "1")
+    ticks = iter([0.0, 0.0, 2.0])
+    monkeypatch.setattr(
+        processing, "time", SimpleNamespace(monotonic=lambda: next(ticks), sleep=lambda _: None)
+    )
+    calls = []
+
+    def unavailable(path, payload=None):
+        calls.append((path, payload))
+        if payload is None:
+            raise TimeoutError("status read timed out")
+        return {"status": "observed"}
+
+    monkeypatch.setattr(processing, "stove", unavailable)
+    with pytest.raises(TimeoutError, match="observed"):
+        processing.wait()
+    assert len(calls) == 2
+    assert calls[1] == ("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25})

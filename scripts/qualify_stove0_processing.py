@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -30,7 +31,9 @@ def stove(path: str, payload: Any = None) -> dict[str, Any]:
     # Large scale fixtures perform the same complete bulk operation; their
     # finite request budget grows without changing ordinary CI fixture budgets.
     timeout = (
-        max(300, 15 * int(os.environ["STOVE0_SMOKE_FILE_COUNT"])) if payload is not None else 30
+        300 + 30 * max(0, int(os.environ["STOVE0_SMOKE_FILE_COUNT"]) - 16)
+        if payload is not None
+        else 30
     )
     with urllib.request.urlopen(request, timeout=timeout) as response:
         document = json.load(response)
@@ -47,6 +50,55 @@ def route_ids() -> set[str]:
         return {"archive-audio"}
     assert recipe_id() == "stove0.conformance-media/v1"
     return {"archive-audio", "archive-audio-overlap"}
+
+
+def work_diagnostic(row: dict[str, Any]) -> dict[str, Any]:
+    target = row.get("target_status") or {}
+    return {
+        "work_id": row.get("work_id"),
+        "phase": row.get("phase"),
+        "revision": row.get("revision"),
+        "failure": row.get("failure"),
+        "inapplicable": row.get("inapplicable"),
+        "abandon_outcome": row.get("abandon_outcome"),
+        "target_state": target.get("state"),
+        "target_attempt": target.get("attempt"),
+        "target_failure": target.get("failure"),
+        "target_inapplicable": target.get("inapplicable"),
+    }
+
+
+def wait() -> None:
+    # A slow status read does not establish a work outcome. Retry only timed-out
+    # reads within the same finite fixture deadline; terminal work still fails.
+    deadline = time.monotonic() + int(os.environ["STOVE0_SMOKE_COMPLETION_TIMEOUT"])
+    rows: list[dict[str, Any]] = []
+    while time.monotonic() < deadline:
+        try:
+            rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc")["work"]
+        except TimeoutError:
+            time.sleep(0.5)
+            continue
+        terminal_failure = next(
+            (
+                row
+                for row in rows
+                if row["phase"] in {"failed", "canceled", "inapplicable", "abandon_pending"}
+            ),
+            None,
+        )
+        if terminal_failure is not None:
+            raise RuntimeError(canonical_json_bytes(work_diagnostic(terminal_failure)).decode())
+        if rows and all(row["phase"] == "complete" for row in rows):
+            assert any(int((row.get("output") or {}).get("collection_id") or 0) > 0 for row in rows)
+            return
+        time.sleep(0.5)
+    scheduler = stove("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25})
+    raise TimeoutError(
+        canonical_json_bytes(
+            {"work": [work_diagnostic(row) for row in rows], "scheduler": scheduler}
+        ).decode()
+    )
 
 
 def declared_values(actual: Any, declared: Any) -> None:
@@ -266,7 +318,9 @@ def target_records() -> None:
 
 
 def main() -> None:
-    {"invoke": invoke, "snapshot": snapshot, "target-records": target_records}[sys.argv[1]]()
+    {"invoke": invoke, "wait": wait, "snapshot": snapshot, "target-records": target_records}[
+        sys.argv[1]
+    ]()
 
 
 if __name__ == "__main__":
