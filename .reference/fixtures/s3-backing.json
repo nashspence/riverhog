@@ -1,0 +1,26 @@
+{
+  "capture_base": "f5d09bfdaef74d8729362df449ecbe0441b9c19c",
+  "expected_assertions": {
+    "riverhog-format": "fixture/v1"
+  },
+  "incarnation_id": "11111111-1111-4111-8111-111111111111",
+  "kind": "synthetic-provider-envelope-with-captured-s3-representation",
+  "logical_path": "archives/reference/object.bin",
+  "marker_key": ".riverhog-storage-incarnation/a918064c8f7e3cfdecbce330fcd565253b5b533f902e20e0ec6d8c869341ea6f",
+  "marker_utf8": "riverhog-storage-incarnation/v1\n11111111-1111-4111-8111-111111111111\n",
+  "payload_sha256": "b3a20ae029c22b690fb4ac0a105d0c6d00ae90424dd40d694a7c782f4ac820bb",
+  "provider_head": {
+    "ContentLength": 23,
+    "ContentType": "application/octet-stream",
+    "ETag": "\"reference-entity-token\"",
+    "LastModified": "2026-01-01T00:00:00+00:00",
+    "Metadata": {
+      "riverhog-adapter-placement-policy": "archive_default",
+      "riverhog-adapter-stored-sha256": "b3a20ae029c22b690fb4ac0a105d0c6d00ae90424dd40d694a7c782f4ac820bb",
+      "riverhog-format": "fixture/v1"
+    },
+    "VersionId": "reference-revision"
+  },
+  "provider_key": "fixture-root/archives/reference/object.bin",
+  "root_prefix": "fixture-root"
+}

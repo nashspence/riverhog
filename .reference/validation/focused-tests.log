@@ -1,0 +1,21 @@
+........................................................................ [ 30%]
+.....................................................................sss [ 61%]
+sssssssssssssss......................................................... [ 91%]
+...................                                                      [100%]
+=========================== short test summary info ============================
+SKIPPED [2] some-implementations/riverhog/recovery/tests/test_recovery.py:58: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:83: official age and age-plugin-batchpass are required
+SKIPPED [2] some-implementations/riverhog/recovery/tests/test_recovery.py:97: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:121: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:166: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:183: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:198: official age and age-plugin-batchpass are required
+SKIPPED [2] some-implementations/riverhog/recovery/tests/test_recovery.py:234: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:255: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:266: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:277: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:296: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:320: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:332: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:352: official age and age-plugin-batchpass are required
+217 passed, 18 skipped in 21.42s

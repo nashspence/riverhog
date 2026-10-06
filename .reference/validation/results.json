@@ -1,0 +1,32 @@
+{
+  "audited_base": "f5d09bfdaef74d8729362df449ecbe0441b9c19c",
+  "reconciled_main": "f4ac676554d5e68cae629f79af618ce35e278a43",
+  "python": "3.13.5",
+  "installed_distribution_versions": {
+    "pytest": "9.0.2",
+    "pydantic": "2.13.4",
+    "cryptography": "46.0.4",
+    "SQLAlchemy": "2.0.50",
+    "boto3": "1.43.18",
+    "jsonschema": "4.26.0"
+  },
+  "result": {
+    "passed": 217,
+    "skipped": 18
+  },
+  "command": "python -m pytest -q tests/unit/test_archive_payload_domains.py .reference/tests packages/riverhog-archive-contracts/tests packages/riverhog-canonical-json/tests tests/unit/test_pack_volume.py some-implementations/riverhog/recovery/tests some-implementations/riverhog/storage/filesystem/tests some-implementations/riverhog/storage/s3-support/tests",
+  "environment": "source imports with installed dependencies; not a locked release installation",
+  "rfc8785": "environment-only algorithm copy of 0.1.4 with annotations/docstrings reduced; not a supported distribution substitute",
+  "crypto": "Python age substituted only at the external executable boundary in the 256-part test; external age suite skipped",
+  "not_run": [
+    "ruff",
+    "mypy",
+    "full make lint",
+    "full make unit",
+    "make dist-smoke",
+    "make build",
+    "make linux-qualification",
+    "release/atlas generation",
+    "live-provider qualification"
+  ]
+}

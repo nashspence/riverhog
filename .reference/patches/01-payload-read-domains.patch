@@ -1,0 +1,367 @@
+diff --git a/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py b/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py
+index 3872960f..49b1dc9b 100644
+--- a/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py
++++ b/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py
+@@ -2,6 +2,7 @@ from riverhog_archive_contracts.archive_manifest import (
+     AGE_UPLOAD_STATE_FORMAT,
+     ARCHIVE_ENCRYPTION_FORMAT,
+     ARCHIVE_PACK_ARTIFACTS_MAX,
++    ARCHIVE_PACK_INDEX_BYTES_MAX,
+     ARCHIVE_ROOT_DOCUMENT_BYTES_MAX,
+     ARCHIVE_SEQUENCE_BITS,
+     ARCHIVE_SEQUENCE_HEX_WIDTH,
+@@ -151,6 +152,7 @@ __all__ = [
+     "verify_record_pages",
+     "AGE_UPLOAD_STATE_FORMAT",
+     "ARCHIVE_PACK_ARTIFACTS_MAX",
++    "ARCHIVE_PACK_INDEX_BYTES_MAX",
+     "ARCHIVE_ROOT_DOCUMENT_BYTES_MAX",
+     "ARCHIVE_SEQUENCE_BITS",
+     "ARCHIVE_SEQUENCE_HEX_WIDTH",
+diff --git a/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/archive_manifest.py b/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/archive_manifest.py
+index 6e3c2095..340c4fab 100644
+--- a/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/archive_manifest.py
++++ b/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/archive_manifest.py
+@@ -24,6 +24,8 @@ COLLECTION_ARCHIVE_MANIFEST_FORMAT = "collection-archive-manifest/v1"
+ COLLECTION_ARCHIVE_VOLUME_FORMAT = "collection-archive-volume/v1"
+ COLLECTION_ARCHIVE_TERMINAL_FORMAT = "collection-archive-terminal/v1"
+ ARCHIVE_PACK_ARTIFACTS_MAX = 50_000
++# Encoded index budget, independent of member count and upload-part construction.
++ARCHIVE_PACK_INDEX_BYTES_MAX = 16 * 1024 * 1024
+ ARCHIVE_VOLUME_PARTS_MAX = 1024
+ ARCHIVE_ROOT_DOCUMENT_BYTES_MAX = 64 * 1024
+ ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX = 1024 * 1024
+diff --git a/riverhog/src/riverhog_core/pack_volume.py b/riverhog/src/riverhog_core/pack_volume.py
+index 8b66c2a1..44d0838d 100644
+--- a/riverhog/src/riverhog_core/pack_volume.py
++++ b/riverhog/src/riverhog_core/pack_volume.py
+@@ -7,7 +7,11 @@ from collections.abc import Callable, Iterable, Iterator, Sequence
+ from dataclasses import replace
+ 
+ from riverhog_age import CHUNK_SIZE
+-from riverhog_archive_contracts import ARCHIVE_PACK_ARTIFACTS_MAX
++from riverhog_archive_contracts import (
++    ARCHIVE_PACK_ARTIFACTS_MAX,
++    ARCHIVE_PACK_INDEX_BYTES_MAX,
++    PACK_INDEX_FORMAT,
++)
+ from riverhog_canonical_json import format_scalar
+ from riverhog_protocol.artifact_identity import ArtifactId, ArtifactMemberIdentityDocument
+ from riverhog_protocol.manifest import artifact_set_identity
+@@ -28,7 +32,6 @@ from riverhog_core.domain.archive import (
+     PackVolumePlan,
+ )
+ 
+-PACK_INDEX_FORMAT = "riverhog-pack-index/v1"
+ PACK_VOLUME_PLAN_FORMAT = "pack-volume-plan/v1"
+ PACK_INDEX_PATH = ".riverhog/pack-index.json"
+ PACK_PADDING_PREFIX = ".riverhog/padding/"
+@@ -170,6 +173,8 @@ def plan_pack_volume(
+         sequence=sequence,
+         members=provisional_members,
+     )
++    if len(index_bytes) > ARCHIVE_PACK_INDEX_BYTES_MAX:
++        raise ValueError("pack index exceeds its bounded contract")
+     index_sha256 = hashlib.sha256(index_bytes).hexdigest()
+     cursor += len(_tar_header(PACK_INDEX_PATH, len(index_bytes)))
+     cursor += len(index_bytes) + _tar_padding(len(index_bytes))
+diff --git a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_payloads.py b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_payloads.py
+index 63c26490..888cd558 100644
+--- a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_payloads.py
++++ b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_payloads.py
+@@ -12,6 +12,8 @@ from pathlib import Path
+ from typing import Any, cast
+ 
+ from riverhog_archive_contracts import (
++    ARCHIVE_PACK_INDEX_BYTES_MAX,
++    ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX,
+     PACK_INDEX_FORMAT,
+     ArchiveArtifactIdentity,
+     CollectionArchiveManifest,
+@@ -114,7 +116,7 @@ def _copy_member(source: Any, destination: Path, *, identity: ArchiveArtifactIde
+ 
+ 
+ def _pack_rows(content: bytes, volume: PackArchiveVolume) -> list[dict[str, Any]]:
+-    if len(content) > 4 * 1024 * 1024:
++    if len(content) > ARCHIVE_PACK_INDEX_BYTES_MAX:
+         raise ValueError("pack index exceeds its bounded contract")
+     payload = require_canonical_json(content)
+     if (
+@@ -130,7 +132,7 @@ def _pack_rows(content: bytes, volume: PackArchiveVolume) -> list[dict[str, Any]
+         raise ValueError("pack index artifact count differs")
+     builder = ArtifactSetIdentityBuilder()
+     expected_bytes = 0
+-    previous_offset = -1
++    previous_end = 0
+     previous_unit = -1
+     for current in rows:
+         if not isinstance(current, dict) or set(current) != {
+@@ -159,11 +161,12 @@ def _pack_rows(content: bytes, volume: PackArchiveVolume) -> list[dict[str, Any]
+             or current["unit"] > previous_unit + 1
+             or previous_unit == -1
+             and current["unit"] != 0
+-            or current["header_offset"] <= previous_offset
++            or current["header_offset"] < previous_end
+             or current["data_offset"] <= current["header_offset"]
+         ):
+             raise ValueError("pack index offsets or units are invalid")
+-        previous_offset = current["data_offset"]
++        # A zero-byte member may end exactly where the next tar header starts.
++        previous_end = current["data_offset"] + identity.bytes
+         previous_unit = current["unit"]
+         expected_bytes += identity.bytes
+         builder.add(_row(identity))
+@@ -189,7 +192,7 @@ def _extract_pack(
+         if len(by_name) != len(members) or not members or members[-1].name != _PACK_INDEX_PATH:
+             raise ValueError("pack members or final index are invalid")
+         index = by_name[_PACK_INDEX_PATH]
+-        if not index.isfile() or index.size > 4 * 1024 * 1024:
++        if not index.isfile() or index.size > ARCHIVE_PACK_INDEX_BYTES_MAX:
+             raise ValueError("pack index is invalid")
+         index_source = archive.extractfile(index)
+         if index_source is None:
+@@ -289,7 +292,9 @@ def stage_payloads(
+     commitment = hashlib.sha256()
+     while True:
+         token = format_archive_sequence(sequence)
+-        raw = encrypted.read_bounded(f"metadata/volume-{token}.json.age", 64 * 1024)
++        raw = encrypted.read_bounded(
++            f"metadata/volume-{token}.json.age", ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX
++        )
+         value = require_canonical_json(raw)
+         if not isinstance(value, dict):
+             raise ValueError("archive volume descriptor is not an object")
+diff --git a/tests/unit/test_archive_payload_domains.py b/tests/unit/test_archive_payload_domains.py
+new file mode 100644
+index 00000000..6adcd12b
+--- /dev/null
++++ b/tests/unit/test_archive_payload_domains.py
+@@ -0,0 +1,228 @@
++"""Writer/recovery domain regressions; no external age interoperability claim."""
++
++from __future__ import annotations
++
++import hashlib
++import json
++import sqlite3
++from collections.abc import Iterator
++from contextlib import closing
++from pathlib import Path
++
++import a_riverhog_recovery_tool._archive_io as archive_io
++import a_riverhog_recovery_tool._payloads as payloads
++import pytest
++import riverhog_core.pack_volume as packs
++from riverhog_age import (
++    CHUNK_SIZE,
++    ResumableAgeScryptSession,
++    decrypt_age_scrypt,
++    encrypt_age_scrypt,
++)
++from riverhog_archive_contracts import (
++    ARCHIVE_PACK_ARTIFACTS_MAX,
++    ARCHIVE_PACK_INDEX_BYTES_MAX,
++    ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX,
++    AgeUploadState,
++    ArchiveProvenanceIdentity,
++    CollectionArchiveManifest,
++    CollectionArchiveTerminalDocument,
++    CollectionArchiveVolumeDocument,
++    CollectionArtifactSetIdentity,
++    PackArchiveVolume,
++    ProvenanceRootIdentity,
++    SegmentArchiveVolume,
++    SegmentArtifactPlacement,
++    StoredPartIdentity,
++    format_archive_sequence,
++    ordered_archive_volume_commitment,
++)
++from riverhog_core.domain.archive import ArchiveArtifact, PackVolumePlan
++from riverhog_protocol import ArtifactMemberIdentityDocument
++from riverhog_protocol.manifest import artifact_set_identity
++
++
++def _sha(raw: bytes) -> str:
++    return hashlib.sha256(raw).hexdigest()
++
++
++def _python_age(source: Path, destination: Path, *, passphrase: str, command: str) -> None:
++    # Only replace the external executable boundary, not parsing, extents or identity checks.
++    destination.write_bytes(decrypt_age_scrypt(source.read_bytes(), passphrase))
++
++
++def _empty_member(_: str) -> Iterator[bytes]:
++    yield b""
++
++
++def _pack_descriptor(plan: PackVolumePlan) -> PackArchiveVolume:
++    return PackArchiveVolume(
++        id=plan.volume_id,
++        sequence=plan.sequence,
++        path=f"volumes/{plan.volume_id}.tar.age",
++        artifacts=len(plan.members),
++        source_bytes=sum(member.bytes for member in plan.members),
++        plaintext_bytes=plan.plaintext_bytes,
++        age_state=AgeUploadState("YQ", "MDAwMDAwMDAwMDAwMDAwMA", plan.plaintext_bytes),
++        index_sha256=plan.index_sha256,
++        plan_sha256=plan.plan_sha256,
++        # Extraction tests operate on tar plaintext; encryption is tested separately below.
++        parts=(StoredPartIdentity(1, 0, plan.plaintext_bytes, "0" * 64, 1, "1" * 64),),
++    )
++
++
++def test_fifty_thousand_empty_members_are_readable_from_the_real_rendered_pack(
++    tmp_path: Path,
++) -> None:
++    members = tuple(
++        ArchiveArtifact(f"{number:064x}", 0, _sha(b""))
++        for number in range(ARCHIVE_PACK_ARTIFACTS_MAX)
++    )
++    plans = packs.plan_pack_volumes(members)
++    assert len(plans) == 1
++    plan = plans[0]
++    assert 4 * 1024 * 1024 < len(plan.index_bytes) <= ARCHIVE_PACK_INDEX_BYTES_MAX
++    plaintext = tmp_path / "pack.tar"
++    with plaintext.open("wb") as sink:
++        for unit in plan.units:
++            for chunk in packs.iter_render_pack_upload_unit(plan, unit.unit, _empty_member):
++                sink.write(chunk)
++    assert plaintext.stat().st_size == plan.plaintext_bytes
++    spool = tmp_path / "spool"
++    spool.mkdir()
++    with closing(sqlite3.connect(":memory:")) as state:
++        state.execute(
++            "CREATE TABLE artifacts(artifact_id TEXT PRIMARY KEY, bytes INTEGER, "
++            "sha256 TEXT, received INTEGER, kind TEXT)"
++        )
++        payloads._extract_pack(plaintext, _pack_descriptor(plan), state, spool)
++        assert state.execute("SELECT COUNT(*) FROM artifacts").fetchone()[0] == len(members)
++    assert sum(1 for _ in spool.iterdir()) == len(members)
++
++
++def test_pack_index_budget_is_inclusive_and_checked_by_writer_and_reader(
++    monkeypatch: pytest.MonkeyPatch,
++) -> None:
++    members = (ArchiveArtifact("1" * 64, 0, _sha(b"")),)
++    plan = packs.plan_pack_volume(members, sequence=0)
++    size = len(plan.index_bytes)
++    monkeypatch.setattr(packs, "ARCHIVE_PACK_INDEX_BYTES_MAX", size)
++    monkeypatch.setattr(payloads, "ARCHIVE_PACK_INDEX_BYTES_MAX", size)
++    assert packs.plan_pack_volume(members, sequence=0).index_bytes == plan.index_bytes
++    assert len(payloads._pack_rows(plan.index_bytes, _pack_descriptor(plan))) == 1
++    monkeypatch.setattr(packs, "ARCHIVE_PACK_INDEX_BYTES_MAX", size - 1)
++    monkeypatch.setattr(payloads, "ARCHIVE_PACK_INDEX_BYTES_MAX", size - 1)
++    with pytest.raises(ValueError, match="pack index exceeds"):
++        packs.plan_pack_volume(members, sequence=0)
++    with pytest.raises(ValueError, match="pack index exceeds"):
++        payloads._pack_rows(plan.index_bytes, _pack_descriptor(plan))
++
++
++def test_tar_index_budget_is_checked_before_reading_index_content(
++    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
++) -> None:
++    plan = packs.plan_pack_volume((ArchiveArtifact("1" * 64, 0, _sha(b"")),), sequence=0)
++    plaintext = tmp_path / "pack.tar"
++    plaintext.write_bytes(b"".join(packs.iter_render_pack_upload_unit(plan, 0, _empty_member)))
++    monkeypatch.setattr(payloads, "ARCHIVE_PACK_INDEX_BYTES_MAX", len(plan.index_bytes) - 1)
++    with (
++        closing(sqlite3.connect(":memory:")) as state,
++        pytest.raises(ValueError, match="pack index is invalid"),
++    ):
++        payloads._extract_pack(plaintext, _pack_descriptor(plan), state, tmp_path / "unused")
++
++
++def test_default_raw_part_count_survives_independent_payload_recovery(
++    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
++) -> None:
++    # Default production volume/part targets produce 256 parts. Use the same count
++    # with small real encrypted chunks, avoiding a 16 GiB regression fixture.
++    from riverhog_core.collection_plan import CollectionVolumePolicy
++
++    policy = CollectionVolumePolicy()
++    count = policy.raw_volume_plaintext_bytes // policy.raw_part_plaintext_bytes
++    assert count == 256
++    chunk = b"x" * CHUNK_SIZE
++    plaintext = chunk * count
++    passphrase = "disposable-payload-domain-test"
++    session = ResumableAgeScryptSession.create(passphrase, log_n=1)
++    parts = []
++    ciphertext = bytearray()
++    for ordinal in range(count):
++        stored = (session.age_prefix if ordinal == 0 else b"") + session.encrypt_chunk(
++            ordinal, chunk, final=ordinal == count - 1,
++        )
++        parts.append(StoredPartIdentity(
++            ordinal + 1, ordinal * len(chunk), len(chunk), _sha(chunk), len(stored), _sha(stored),
++        ))
++        ciphertext.extend(stored)
++    member = ArtifactMemberIdentityDocument.model_validate({
++        "artifact_id": "1" * 64, "bytes": str(len(plaintext)), "sha256": _sha(plaintext),
++    })
++    set_id = artifact_set_identity((member,))
++    volume = SegmentArchiveVolume(
++        id=f"segment-{format_archive_sequence(0)}",
++        sequence=0,
++        path=f"volumes/segment-{format_archive_sequence(0)}.bin.age",
++        plaintext_bytes=len(plaintext),
++        age_state=AgeUploadState.from_mapping(
++            json.loads(session.export_state(plaintext_size=len(plaintext)).to_json_bytes()),
++            plaintext_bytes=len(plaintext),
++        ),
++        artifact=SegmentArtifactPlacement(
++            "1" * 64, 0, len(plaintext), len(plaintext), _sha(plaintext),
++        ),
++        parts=tuple(parts),
++    )
++    document = CollectionArchiveVolumeDocument("a" * 64, set_id, volume)
++    terminal = CollectionArchiveTerminalDocument("a" * 64, set_id, 1)
++    raw = document.to_json_bytes()
++    assert 64 * 1024 < len(raw) <= ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX
++    assert CollectionArchiveVolumeDocument.from_json_bytes(raw) == document
++    # This is a payload-closure regression, not a complete provenance archive fixture.
++    provenance = ArchiveProvenanceIdentity("b" * 64, ProvenanceRootIdentity(
++        "provenance-root", "provenance-root", "provenance/root.json.age", 1, "b" * 64, 1, "c" * 64,
++    ))
++    manifest = CollectionArchiveManifest(
++        "a" * 64, CollectionArtifactSetIdentity(1, len(plaintext), set_id),
++        ordered_archive_volume_commitment((document, terminal)), provenance,
++    )
++    archive = tmp_path / "archive"
++    (archive / "volumes").mkdir(parents=True)
++    (archive / "metadata").mkdir()
++    (archive / volume.path).write_bytes(ciphertext)
++    for ordinal, descriptor in enumerate((document, terminal)):
++        (archive / f"metadata/volume-{format_archive_sequence(ordinal)}.json.age").write_bytes(
++            encrypt_age_scrypt(descriptor.to_json_bytes(), passphrase, log_n=1)
++        )
++    scratch = tmp_path / "scratch"
++    scratch.mkdir()
++    encrypted = archive_io.EncryptedArchive(
++        archive, passphrase=passphrase, age_command="test-boundary", scratch=scratch / "crypto",
++    )
++    monkeypatch.setattr(archive_io, "age_decrypt", _python_age)
++    summary, state = payloads.stage_payloads(encrypted, manifest=manifest, scratch=scratch)
++    state.close()
++    assert summary.artifact_set_sha256 == set_id
++    assert summary.artifacts == 1 and summary.bytes == len(plaintext)
++    assert (scratch / "artifact-spool" / ("1" * 64)).read_bytes() == plaintext
++
++
++def test_volume_document_parser_rejects_bytes_outside_the_contract() -> None:
++    with pytest.raises(ValueError, match="exceeds its byte limit"):
++        CollectionArchiveVolumeDocument.from_json_bytes(
++            b" " * (ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX + 1)
++        )
++
++
++def test_pack_index_rejects_overlapping_nonempty_extents() -> None:
++    from riverhog_canonical_json import canonical_json_bytes
++
++    plan = packs.plan_pack_volume((
++        ArchiveArtifact("1" * 64, 3, _sha(b"abc")),
++        ArchiveArtifact("2" * 64, 3, _sha(b"def")),
++    ), sequence=0)
++    index = json.loads(plan.index_bytes)
++    index["artifacts"][1]["header_offset"] = index["artifacts"][0]["data_offset"]
++    with pytest.raises(ValueError, match="offsets or units"):
++        payloads._pack_rows(canonical_json_bytes(index), _pack_descriptor(plan))

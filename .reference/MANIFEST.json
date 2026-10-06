@@ -1,0 +1,18 @@
+{
+  "scope": "non-authoritative reference artifacts; excludes this manifest",
+  "sha256": {
+    "HANDOFF.md": "d39ab55dc885928cc8f4f1ab1f417280c59d16d60ceeb9efdbf9fc7185c3885e",
+    "INTEGRATION.md": "b462918ff46a3fd34bfb35338c71be3fe51e14e3851211f008c2decf96133908",
+    "fixtures/archive-semantics.json": "aaf3297e1360a166aa6d2d5a0dc929b0254016a020d29a5942d1bba01f4f28c2",
+    "fixtures/filesystem-backing.json": "84a4b6a3a020e13411bba69cf200c2b48384e2ebb3b2de83863fa7d22b4cd014",
+    "fixtures/s3-backing.json": "30ef38894ee6e669082136bd719c118e78e3ed4b8f1c3638c657e50b9091226c",
+    "inspect_fixture.py": "107173bef6edc9162bbf816e4e3811d0f5a2c47eabc784f492d6d7a33b66d571",
+    "patches/01-payload-read-domains.patch": "253fc7a56cea789aa202101288195f8d19f6e1fb48430df564565f30420f2953",
+    "patches/02-v1-readability-policy.patch": "eaa75f4ed17b9a899e1bf5c9d4752f7dada4e4a90adaea2ba2b01ae2d8137e98",
+    "tests/test_frozen_archive_semantics.py": "e28606c58add18964809e15e6c154e1e6f44743fa8d82fdfff9bea8bce85ddde",
+    "tests/test_frozen_backing.py": "b294a1d461e79aba37904fd2e0070c5e224b11909240aafcc4aa2414e9a79cc9",
+    "validation/focused-tests.log": "0bcec7601f49b9854ebfd14cc5398c585edf9f74385c40f4709c332d2a683f2f",
+    "validation/results.json": "b88d5df8a5a65af2e7176432273d6a637ea52fbe2d228d0093eb576a01e8109c",
+    "verify.py": "f9392591de5bb0378ec9dfdcbcbd3c98f567500b049bb6e513368f01caa01657"
+  }
+}
