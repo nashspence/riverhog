@@ -766,13 +766,6 @@ def test_supplied_extension_distributions_each_own_one_selectable_capability() -
         }
         assert len(implementation_ids) == 1, root.relative_to(REPO)
 
-    architecture = " ".join((REPO / "docs/architecture.md").read_text(encoding="utf-8").split())
-    assert "Each selected distribution owns one capability" in architecture
-    assert "shared-dependency image bundles preserve separate identities and selection" in (
-        architecture
-    )
-    assert "only exact digest-bound contracts or selected bindings carry authority" in architecture
-
 
 def test_supplied_implementation_paths_have_structural_roles_and_clear_descriptions() -> None:
     release = tomllib.loads((REPO / "release.toml").read_text(encoding="utf-8"))
@@ -801,9 +794,6 @@ def test_shared_packages_are_product_owned_or_implementation_neutral() -> None:
     for pyproject in (REPO / "packages").glob("*/pyproject.toml"):
         relative = pyproject.parent.relative_to(REPO).as_posix()
         assert classified[relative] in {"reusable_library", "internal_build_unit"}
-
-    architecture = " ".join((REPO / "docs/architecture.md").read_text(encoding="utf-8").split())
-    assert "Riverhog owns product implementations and generic contracts." in architecture
 
 
 def test_core_dependency_graphs_are_acyclic() -> None:

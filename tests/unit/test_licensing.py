@@ -127,9 +127,7 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
             encoding="utf-8"
         )
     )
-    architecture = " ".join(
-        (REPO_ROOT / "docs/architecture.md").read_text(encoding="utf-8").split()
-    )
+    architecture = (REPO_ROOT / "docs/architecture.md").read_text(encoding="utf-8")
 
     assert config["project"]["dependencies"] == [
         "release-documentation-lib>=0.1,<0.2",
@@ -152,8 +150,7 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
     assert config["project"]["scripts"] == {
         "a-riverhog-recovery-tool": "a_riverhog_recovery_tool.cli:main"
     }
-    assert "permissively licensed independent recovery tool" in architecture
-    assert "archives remain recoverable with standard tools" in architecture
+    assert "(../some-implementations/riverhog/recovery/)" in architecture
 
 
 def test_published_images_carry_source_and_license_identity() -> None:
@@ -248,5 +245,5 @@ def test_entrypoint_routes_release_terms_to_the_licensing_authority() -> None:
     readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     licensing = (REPO_ROOT / "LICENSE.md").read_text(encoding="utf-8")
 
-    assert "[Licensing](LICENSE.md) defines the repository's release terms." in readme
+    assert "[Licensing](LICENSE.md)" in readme
     assert licensing.startswith("# Riverhog licensing\n")

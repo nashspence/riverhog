@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import re
 from pathlib import Path
+
+import pytest
 
 from tests.workspace import workspace_pyprojects
 
@@ -18,34 +21,10 @@ HAND_MAINTAINED_MARKDOWN = {
 }
 REPOSITORY_MAP_TARGETS = {
     REPO / "riverhog",
-    REPO / "some-implementations/gogurt",
-    REPO / "some-implementations/riverhog",
-    REPO / "some-implementations/stove0",
+    REPO / "some-implementations",
     REPO / "packages",
 }
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
-ARCHITECTURE_CATEGORY_RE = re.compile(r"^- \*\*([^*]+)\.\*\*", flags=re.MULTILINE)
-ARCHITECTURE_CATEGORIES = {
-    "Authority model": [
-        "Archive authority",
-        "Trust boundary",
-        "Operational state",
-        "Provenance authority",
-        "Collection views",
-        "Deployment configuration",
-    ],
-    "Boundary model": [
-        "Implementation ownership",
-        "Public contracts",
-        "Riverhog platform",
-        "Ingress adapters",
-        "Storage adapters",
-        "Applications",
-        "Extensions",
-        "Runtime images",
-        "Transfer path",
-    ],
-}
 IGNORED_TREES = {
     ".git",
     ".mypy_cache",
@@ -126,14 +105,25 @@ def test_main_context_documents_are_exact_and_directly_routed() -> None:
         assert set(direct_context) == DURABLE_CONTEXT
 
 
-def test_readme_section_order_is_intentional() -> None:
-    readme = (REPO / "README.md").read_text(encoding="utf-8")
-
-    assert re.findall(r"^## (.+)$", readme, flags=re.MULTILINE) == [
-        "Contributions",
-        "Start here",
-        "Context",
-    ]
+@pytest.mark.parametrize(
+    ("relative", "expected_sha256"),
+    [
+        # Maintainer-approved briefs: #957 README and #956 architecture (with navigation links).
+        ("README.md", "c6c14c6940b91e43f07907ce229c4c49aa23c3ce182fbe062bf9cc694a373627"),
+        (
+            "docs/architecture.md",
+            "c3be5f420d5306332067f2b1ae9ab516c4080a25db8d137205825e4eaab49dcf",
+        ),
+    ],
+)
+def test_maintained_context_document_requires_explicit_revision(
+    relative: str, expected_sha256: str
+) -> None:
+    actual = hashlib.sha256((REPO / relative).read_bytes()).hexdigest()
+    assert actual == expected_sha256, (
+        f"Intentional edits to {relative} require an explicit update to its approved "
+        f"SHA-256 in this test; actual SHA-256: {actual}"
+    )
 
 
 def test_readme_routes_make_target_documentation_to_make_help() -> None:
@@ -143,25 +133,25 @@ def test_readme_routes_make_target_documentation_to_make_help() -> None:
     assert re.findall(r"`make\s+([^`]+)`", readme) == ["help"]
 
 
-def test_readme_states_archive_and_adapter_authority() -> None:
+def test_readme_routes_product_context_licensing_and_security_reporting() -> None:
     readme_path = REPO / "README.md"
-    readme = " ".join(readme_path.read_text(encoding="utf-8").split())
-
-    assert "self-hosted archive construction, catalog, transfer, and retrieval system" in readme
-    assert "constructs canonical archive layouts, encrypts them" in readme
-    assert "records collection identity and placement in PostgreSQL" in readme
-    assert (
-        "coordinates verified archive transfer and retrieval through published "
-        "storage-adapter capabilities"
-    ) in readme
-    assert "archives remain independently recoverable with standard tools" in readme
-    assert "some-implementations/" in readme
     assert _local_links(readme_path) == {
         REPO / "LICENSE.md",
         REPO / "SECURITY.md",
         REPO / "docs/architecture.md",
     }
-    assert "https://nashspence.github.io/riverhog/" in readme
+    assert "https://nashspence.github.io/riverhog/" in readme_path.read_text(encoding="utf-8")
+
+
+def test_agents_requires_precommit_gates_and_exhaustive_integration_qualification() -> None:
+    validation = (REPO / "AGENTS.md").read_text(encoding="utf-8").partition("## Validation\n")[2]
+
+    assert re.findall(r"```bash\n(.*?)\n```", validation, flags=re.DOTALL) == [
+        "make lint\nmake unit\nmake dist-smoke\nmake build"
+    ]
+    assert "`make linux-qualification`" in validation
+    assert "substantial integration/handoff validation and release-related work" in validation
+    assert "exhaustive local qualification rail" in validation
 
 
 def test_agents_requires_post_push_github_validation() -> None:
@@ -187,58 +177,12 @@ def test_agents_requires_locked_disposable_container_tool_stages() -> None:
     assert "copy only its required runtime artifacts forward" in agents
 
 
-def test_architecture_is_scoped_to_quick_context() -> None:
-    architecture = (REPO / "docs/architecture.md").read_text(encoding="utf-8")
-
-    assert re.findall(r"^## (.+)$", architecture, flags=re.MULTILINE) == [
-        "Authority model",
-        "Boundary model",
-        "Repository map",
-    ]
-    assert len(architecture.split()) <= 425
-
-
-def test_architecture_categories_follow_the_durable_mental_model() -> None:
-    architecture = (REPO / "docs/architecture.md").read_text(encoding="utf-8")
-
-    for heading, expected in ARCHITECTURE_CATEGORIES.items():
-        section = architecture.partition(f"## {heading}\n")[2].partition("\n## ")[0]
-        assert ARCHITECTURE_CATEGORY_RE.findall(section) == expected
-
-
-def test_architecture_states_the_repo_wide_provenance_authority_policy() -> None:
-    architecture = " ".join((REPO / "docs/architecture.md").read_text(encoding="utf-8").split())
-
-    assert "Per-file provenance is append-only custody history" in architecture
-    assert "Journals remain exact prefixes across handoffs" in architecture
-    assert "omissions require a reason" in architecture
-    assert "database rows are a rebuildable projection" in architecture
-
-
-def test_architecture_states_the_direct_to_final_ingress_authority_policy() -> None:
-    architecture = " ".join((REPO / "docs/architecture.md").read_text(encoding="utf-8").split())
-
-    assert ("Ingress encrypts there; storage adapters receive ciphertext units") in architecture
-    assert "Ingress is not a storage tier" in architecture
-    assert (
-        "Only sealed objects and published immutable roots are archive authority"
-    ) in architecture
-
-
-def test_architecture_states_the_mutable_collection_view_authority_policy() -> None:
-    architecture = " ".join((REPO / "docs/architecture.md").read_text(encoding="utf-8").split())
-
-    assert (
-        "Mutable descriptions and classification-tag sets are copy-adjacent recovery material "
-        "projected into the catalog"
-    ) in architecture
-    assert "applications own richer indexes" in architecture
-
-
 def test_repository_map_exactly_covers_the_workspace_layout() -> None:
     architecture_path = REPO / "docs/architecture.md"
     architecture = architecture_path.read_text(encoding="utf-8")
-    section = architecture.partition("## Repository map\n")[2].partition("\n## ")[0]
+    section = architecture.partition("## How this maps to the repository\n")[2].partition("\n## ")[
+        0
+    ]
     targets = [
         (architecture_path.parent / target.split("#", 1)[0]).resolve()
         for target in MARKDOWN_LINK_RE.findall(section)

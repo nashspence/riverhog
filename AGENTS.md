@@ -91,6 +91,9 @@ make dist-smoke
 make build
 ```
 
+For substantial integration/handoff validation and release-related work, also run
+`make linux-qualification`, the exhaustive local qualification rail.
+
 After pushing, watch the pushed commit's GitHub Actions checks through completion. Required
 GitHub checks are part of complete validation; fix any failure before handing work back.
 `release.toml` owns the release-governance policy. Direct commits to `main` are the current
