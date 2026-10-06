@@ -13,6 +13,7 @@ TESTS ?= $(CANONICAL_UNIT_TESTS)
 UNIT_REPORT_ARGS ?= --instafail --durations=30 --durations-min=0.25 -p scripts.ci_timing
 UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope $(UNIT_REPORT_ARGS)
 UNIT_SHARD_PYTEST_ARGS ?= $(UNIT_REPORT_ARGS)
+LOCAL_QUALIFICATION_JOBS ?= 2
 PYTHON_PATHS ?= packages some-implementations riverhog scripts tests
 RELEASE_VERSION ?= 1.0.0
 RELEASE_OUTPUT ?=
@@ -85,7 +86,7 @@ help:
 		'  make client-platform-qualification Qualify native behavior and staged end-user installation on this host.' \
 		'  make linux-qualification Run the complete portable Linux CI qualification for integration/handoff.' \
 		'  make compose-smoke     Verify disposable adapter, Riverhog, cache, and stove0 lifecycle.' \
-		'  make compose-shard COMPOSE_LANE=<storage|processing|review-delivery|witnesses> Reproduce one complete CI lifecycle.' \
+		'  make compose-shard COMPOSE_LANE=<storage|ingress-custody|processing-admission|processing-e2e|processing-overlap|review-delivery|witnesses> Reproduce one complete CI lifecycle.' \
 		'  make filesystem-recovery-qualification Prove built-service recovery from filesystem storage.' \
 		'  make stove0-scale-qualification Run the final-image lifecycle with a 128-file workload.' \
 		'  make a-riverhog-event-relay-smoke  Exercise the already-built final Riverhog event relay image.' \
@@ -105,6 +106,7 @@ help:
 		"  POSTGRES_TESTS='...'   Select disposable Postgres test files." \
 		'  STOVE0_SCALE_FILES=N  Set the scale-qualification file count (default: 128).' \
 		'  STOVE0_SCALE_AUDIO_FRAMES=N Set frames per scale fixture (default: 2000).' \
+		'  LOCAL_QUALIFICATION_JOBS=N Bound independent local proof concurrency (default: 2; 1 is sequential).' \
 		'  RELEASE_VERSION=1.0.0 Coordinated version for release-plan and release-dry-run.' \
 		'  RELEASE_OUTPUT=/path   Output/evidence directory for release-evidence or release-verify.' \
 		'  RELEASE_SUMMARY=/path  Write a JSON dry-run or governance summary.' \
@@ -159,7 +161,7 @@ client-platform-qualification:
 	"$(MISE_BIN)" x python uv age -- uv run --locked --all-packages --group dev python -m scripts.ci_qualification native
 
 linux-qualification:
-	$(call UV_CMD,python -m scripts.ci_qualification linux)
+	$(call UV_CMD,python -m scripts.ci_qualification linux --jobs "$(LOCAL_QUALIFICATION_JOBS)")
 
 dependency-readiness:
 	$(call UV_CMD,python scripts/check_dependency_readiness.py $(args))
@@ -242,7 +244,7 @@ filesystem-recovery-qualification:
 stove0-scale-qualification:
 	@STOVE0_SMOKE_FILE_COUNT="$${STOVE0_SCALE_FILES:-128}" \
 		STOVE0_SMOKE_AUDIO_FRAMES="$${STOVE0_SCALE_AUDIO_FRAMES:-2000}" \
-		./scripts/test_compose_smoke.sh
+		./scripts/test_compose_smoke.sh processing-scale
 
 dist:
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \

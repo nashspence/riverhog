@@ -6,11 +6,12 @@ source "${ROOT_DIR}/scripts/_ci_timing.sh"
 
 qualification_lane="${1:-all}"
 case "${qualification_lane}" in
-  all|storage|processing|review-delivery|witnesses) ;;
+  all|storage|ingress-custody|processing-admission|processing-e2e|processing-overlap|review-delivery|witnesses|processing-scale) ;;
   *) printf 'Unknown Compose qualification lane: %s\n' "${qualification_lane}" >&2; exit 2 ;;
 esac
 owns_qualification() {
-  [[ "${qualification_lane}" == "all" || "${qualification_lane}" == "$1" ]]
+  [[ "${qualification_lane}" == "$1" ||
+     ( "${qualification_lane}" == "all" && "$1" != "processing-scale" ) ]]
 }
 
 setup_test_compose_project
@@ -20,7 +21,12 @@ export SOURCE_REVISION="${SOURCE_REVISION:-$(git -C "${ROOT_DIR}" rev-parse HEAD
 export RIVERHOG_API_PORT="${RIVERHOG_API_PORT:-0}"
 
 smoke_root="$(mktemp -d "${TMPDIR:-/tmp}/riverhog-compose-smoke.XXXXXX")"
-smoke_file_count="${STOVE0_SMOKE_FILE_COUNT:-16}"
+case "${qualification_lane}" in
+  processing-scale) smoke_file_count="${STOVE0_SMOKE_FILE_COUNT:-128}" ;;
+  processing-e2e) smoke_file_count=4 ;;
+  processing-overlap) smoke_file_count=1 ;;
+  *) smoke_file_count=16 ;;
+esac
 smoke_audio_frames="${STOVE0_SMOKE_AUDIO_FRAMES:-2000}"
 if ! [[ "${smoke_file_count}" =~ ^[0-9]+$ ]] ||
   (( smoke_file_count < 1 || smoke_file_count > 1000 )); then
@@ -49,6 +55,8 @@ if (( smoke_download_quota_bytes < 16777216 )); then
   smoke_download_quota_bytes=16777216
 fi
 stove0_project="${COMPOSE_PROJECT_NAME}-stove0"
+stove0_projects=()
+adapter_started=0
 adapter_project="${COMPOSE_PROJECT_NAME}-ftp-spool"
 minisign_project="${COMPOSE_PROJECT_NAME}-minisign-witness"
 ots_project="${COMPOSE_PROJECT_NAME}-opentimestamps-witness"
@@ -84,11 +92,11 @@ cleanup() {
       ots_compose ps >&2 || true
       ots_compose logs --no-color --tail 200 >&2 || true
     fi
-    if owns_qualification processing; then
+    if [[ "${adapter_started}" == "1" ]]; then
       adapter_compose ps >&2 || true
       adapter_compose logs --no-color --tail 200 >&2 || true
     fi
-    if owns_qualification processing || owns_qualification review-delivery; then
+    if (( ${#stove0_projects[@]} )); then
       stove0_compose ps >&2 || true
       stove0_compose logs --no-color --tail 200 >&2 || true
     fi
@@ -99,11 +107,13 @@ cleanup() {
     minisign_compose down --volumes --remove-orphans || true
     ots_compose down --volumes --remove-orphans || true
   fi
-  if owns_qualification processing; then
+  if [[ "${adapter_started}" == "1" ]]; then
     adapter_compose down --volumes --remove-orphans || true
   fi
-  if owns_qualification processing || owns_qualification review-delivery; then
-    stove0_compose down --volumes --remove-orphans || true
+  if (( ${#stove0_projects[@]} )); then
+    for stove0_project in "${stove0_projects[@]}"; do
+      stove0_compose down --volumes --remove-orphans || true
+    done
   fi
   compose down --volumes --remove-orphans
   if [[ -d "${smoke_root}" ]]; then
@@ -195,11 +205,6 @@ ci_phase riverhog-lifecycle
 compose up --detach --wait app
 compose exec -T app sh -c \
   'test "$(id -u)" = 65532 && test "$(id -g)" = 65532 && test -w /tmp && test ! -w /usr/share/doc/riverhog'
-if owns_qualification processing || owns_qualification review-delivery; then
-  compose exec -T postgres createdb --username riverhog --owner riverhog stove0
-  compose exec -T postgres psql --username riverhog --dbname stove0 \
-    --command 'CREATE EXTENSION pg_trgm WITH SCHEMA public;'
-fi
 
 bootstrap_token="$(cat "${ROOT_DIR}/tests/harness/riverhog-bootstrap-token")"
 create_code="import json, os, urllib.request
@@ -285,14 +290,6 @@ printf '%s\n' 'a-riverhog-ftp-spool-compose-smoke-token' > "${secret_root}/ftp-s
 printf '%s\n' 'a-riverhog-ftp-spool-compose-smoke-password' > "${secret_root}/ftp-spool-password"
 chmod 0640 "${secret_root}"/*
 
-sed '/^recipes:/,$d' "${ROOT_DIR}/qualification/fixtures/stove0/config.yaml" > "${STOVE0_CONFIG_HOST_PATH}"
-printf '%s\n' 'recipes:' >> "${STOVE0_CONFIG_HOST_PATH}"
-sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/recipes.yaml" >> "${STOVE0_CONFIG_HOST_PATH}"
-printf '%s\n' 'admissions:' >> "${STOVE0_CONFIG_HOST_PATH}"
-jq '{format, policies: [.policies[] | select(.id == "conformance-media")]}' \
-  "${ROOT_DIR}/qualification/fixtures/stove0/admissions.json" | \
-  sed 's/^/  /' >> "${STOVE0_CONFIG_HOST_PATH}"
-chmod 0640 "${STOVE0_CONFIG_HOST_PATH}"
 
 adapter_config="${smoke_root}/ftp-spool.yaml"
 cat > "${adapter_config}" <<EOF
@@ -319,6 +316,8 @@ sources:
     tags: []
 EOF
 chmod 0640 "${adapter_config}"
+adapter_config_base="${smoke_root}/ftp-spool.base.yaml"
+cp "${adapter_config}" "${adapter_config_base}"
 
 export RIVERHOG_CONTROL_NETWORK="${COMPOSE_PROJECT_NAME}_default"
 export STOVE0_SECRET_FILE_GID="$(id -g)"
@@ -403,75 +402,111 @@ client_environment=(
   --env RIVERHOG_ALLOW_INSECURE_HTTP=true
   --env "RIVERHOG_TOKEN=${smoke_token}"
 )
-# Bootstrap identities above allow Compose to interpolate unselected services.
-# The exact Bake inputs were verified before bootstrap; inject their OCI IDs.
-if owns_qualification processing || owns_qualification review-delivery; then
-for image in a-stove0-ffprobe-observer a-stove0-magic-observer \
-  a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer \
-  a-stove0-exiftool-observer a-stove0-opus-target review0 a-stove0-rclone-target; do
-  prefix="${image//-/_}"
-  image_id="$(docker image inspect --format '{{.Id}}' "${image}:dev")"
-  [[ "${image_id}" =~ ^sha256:[0-9a-f]{64}$ ]]
-  test "$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "${image}:dev")" = "${SOURCE_REVISION}"
-  export "${prefix^^}_IMAGE_ID=${image_id}"
-done
-ci_phase stove0-bootstrap
-stove0_compose up --detach --wait \
-  state api controller worker a-stove0-ffprobe-observer a-stove0-magic-observer \
-  a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer \
-  a-stove0-exiftool-observer a-stove0-opus-target a-review0-opus-sampler
-# Qualify the independently selectable stream-facts and sampling contracts with
-# actual CPU-produced video/audio; malformed probing must fail, never classify.
-stove0_compose exec -T a-stove0-opus-target ffmpeg -nostdin -hide_banner -loglevel error \
-  -f lavfi -i 'color=c=black:s=320x180:r=24' \
-  -f lavfi -i 'sine=frequency=440:sample_rate=48000' -t 1 \
-  -c:v libx264 -profile:v high -preset veryfast -pix_fmt yuv420p \
-  -x264-params 'colorprim=bt709:transfer=bt709:colormatrix=bt709' \
-  -colorspace bt709 -color_trc bt709 -color_primaries bt709 \
-  -c:a aac -b:a 96000 -ac 2 -ar 48000 \
-  -movflags frag_keyframe+empty_moov -f mp4 - | \
-  stove0_compose exec -T a-stove0-ffprobe-observer python -c \
-    "$(cat "${ROOT_DIR}/tests/harness/ffprobe_observer_tool_parity.py")"
-
-sampler_descriptor_code="import json, urllib.request
-request = urllib.request.Request(
-    'http://127.0.0.1:8080/v1/sampler',
-    headers={'Authorization': 'Bearer stove0-compose-opus-review-sampler-token'},
+# Bootstrap identities allow Compose to interpolate unselected services; inject
+# exact OCI identities only for services actually used by the selected proof.
+processing_services=(
+  a-stove0-ffprobe-observer a-stove0-magic-observer
+  a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer
+  a-stove0-exiftool-observer a-stove0-opus-target
 )
-print(json.load(urllib.request.urlopen(request))['descriptor_sha256'])"
-export A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256="$(
-  stove0_compose exec -T a-review0-opus-sampler python -c "${sampler_descriptor_code}"
-)"
-write_review_configs
-stove0_compose up --detach --wait review0 a-stove0-rclone-target
-stove0_compose exec -T review0 python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-review0-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-transform-target/v1'"
-stove0_compose exec -T a-stove0-rclone-target python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-rclone-target-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-effect-target/v1'"
-stove0_compose exec -T a-stove0-rclone-target python -c "from pathlib import Path; import subprocess; source = Path('/tmp/rclone-probe'); source.write_bytes(b'riverhog-rclone-effect-probe'); destination = Path('/var/lib/stove0-rclone-delivery/qualification/probe'); subprocess.run(['rclone', 'copyto', str(source), str(destination)], check=True); assert destination.read_bytes() == source.read_bytes(); source.unlink(); destination.unlink()"
+if owns_qualification processing-admission || owns_qualification processing-e2e ||
+  owns_qualification processing-overlap || owns_qualification processing-scale ||
+  owns_qualification review-delivery; then
+  inspected_images=("${processing_services[@]}")
+  if owns_qualification review-delivery; then
+    inspected_images+=(review0 a-stove0-rclone-target)
+  fi
+  for image in "${inspected_images[@]}"; do
+    prefix="${image//-/_}"
+    image_id="$(docker image inspect --format '{{.Id}}' "${image}:dev")"
+    [[ "${image_id}" =~ ^sha256:[0-9a-f]{64}$ ]]
+    test "$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "${image}:dev")" = "${SOURCE_REVISION}"
+    export "${prefix^^}_IMAGE_ID=${image_id}"
+  done
 fi
 
-if owns_qualification processing; then
-admission_baseline_code="import json, time, urllib.request
-deadline = time.monotonic() + 60
-while time.monotonic() < deadline:
-    request = urllib.request.Request(
-        'http://127.0.0.1:8080/v1/admission-policies',
-        headers={'Authorization': 'Bearer stove0-compose-smoke-token'},
-    )
-    payload = json.load(urllib.request.urlopen(request, timeout=5))
-    policies = payload['policies']
-    if len(policies) == 1 and policies[0]['phase'] == 'following':
-        assert policies[0]['policy']['id'] == 'conformance-media'
-        break
-    time.sleep(0.25)
-else:
-    raise TimeoutError(payload)"
-stove0_compose exec -T api python -c "${admission_baseline_code}"
-# Keep Stove0 offline while the autonomous producer finalizes. Its durable
-# catalog cursor must reconcile the missed publication after restart.
-ci_phase ftp-custody
-stove0_compose stop controller
-adapter_compose up --detach --no-build --wait intake-init ftp-spool ftp-listener
+start_stove0_scope() {
+  local scope="$1" database="stove0_${1//-/_}"
+  stove0_project="${COMPOSE_PROJECT_NAME}-${scope}"
+  stove0_projects+=("${stove0_project}")
+  export STOVE0_CONFIG_HOST_PATH="${smoke_root}/${scope}.yaml"
+  export STOVE0_DATABASE_URL_FILE="${secret_root}/${scope}-database-url"
+  printf '%s\n' "postgresql+psycopg://riverhog:riverhog@postgres:5432/${database}" > "${STOVE0_DATABASE_URL_FILE}"
+  chmod 0640 "${STOVE0_DATABASE_URL_FILE}"
+  compose exec -T postgres createdb --username riverhog --owner riverhog "${database}"
+  compose exec -T postgres psql --username riverhog --dbname "${database}" \
+    --command 'CREATE EXTENSION pg_trgm WITH SCHEMA public;'
+  sed '/^recipes:/,$d' "${ROOT_DIR}/qualification/fixtures/stove0/config.yaml" > "${STOVE0_CONFIG_HOST_PATH}"
+  printf '%s\n' 'recipes:' >> "${STOVE0_CONFIG_HOST_PATH}"
+  sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/recipes.yaml" >> "${STOVE0_CONFIG_HOST_PATH}"
+  printf '%s\n' 'admissions:' >> "${STOVE0_CONFIG_HOST_PATH}"
+  if [[ "${scope}" == "processing-admission" ]]; then
+    jq '{format, policies: [.policies[] | select(.id == "conformance-media")]}' \
+      "${ROOT_DIR}/qualification/fixtures/stove0/admissions.json" | \
+      sed 's/^/  /' >> "${STOVE0_CONFIG_HOST_PATH}"
+  else
+    jq '{format, policies: []}' "${ROOT_DIR}/qualification/fixtures/stove0/admissions.json" | \
+      sed 's/^/  /' >> "${STOVE0_CONFIG_HOST_PATH}"
+  fi
+  chmod 0640 "${STOVE0_CONFIG_HOST_PATH}"
+  ci_phase "${scope}-bootstrap"
+  stove0_compose up --detach --wait state api "${processing_services[@]}"
+  if [[ "${scope}" == "processing-admission" ]]; then
+    stove0_compose up --detach --wait controller
+  elif [[ "${scope}" == "review-delivery" ]]; then
+    stove0_compose up --detach --wait controller worker a-review0-opus-sampler
+  fi
+}
 
+finish_stove0_scope() {
+  stove0_compose down --volumes --remove-orphans
+}
+
+start_ftp() {
+  adapter_started=1
+  adapter_compose up --detach --no-build --wait intake-init ftp-spool ftp-listener
+}
+
+configure_media_ftp() {
+  local next="${smoke_root}/ftp-spool.next.yaml"
+  sed \
+    -e 's/description: FTP exact-event compose qualification/description: Classified FTP compose qualification/' \
+    -e 's/^    tags: \[\]/    tags: [stove0\/conformance]/' \
+    "${adapter_config_base}" > "${next}"
+  chmod 0640 "${next}"
+  mv "${next}" "${adapter_config}"
+  start_ftp
+  adapter_compose up --detach --force-recreate --wait ftp-spool ftp-listener
+}
+
+processing_qualification="$(cat "${ROOT_DIR}/scripts/qualify_stove0_processing.py")"
+invoke_processing() {
+  stove0_compose exec -T \
+    --env "RIVERHOG_SMOKE_INVOCATION_OUTPUT=$4" \
+    --env "RIVERHOG_INPUT_RECEIPT=$1" \
+    --env "STOVE0_SMOKE_FILE_COUNT=$2" \
+    --env "STOVE0_SMOKE_SIDECAR_COUNT=$3" \
+    --env "STOVE0_SMOKE_RECIPE_ID=${processing_recipe_id}" \
+    --env "EXPECTED_WORK_ID=${expected_work_id:-}" \
+    api python -c "${processing_qualification}" invoke
+}
+
+processing_snapshot() {
+  stove0_compose exec -T --env RIVERHOG_SMOKE_SNAPSHOT_OUTPUT=1 \
+    --env "STOVE0_WORK_IDS=${processing_work_ids}" \
+    --env "STOVE0_SMOKE_RECIPE_ID=${processing_recipe_id}" \
+    api python -c "${processing_qualification}" snapshot
+}
+
+verify_target_records() {
+  stove0_compose exec -T \
+    --env "STOVE0_SETTLED_SNAPSHOT=${settled_snapshot}" \
+    a-stove0-opus-target python -c "${processing_qualification}" target-records
+}
+
+run_ingress_custody() {
+ci_phase ingress-custody
+start_ftp
 partition_run_code="from ftplib import FTP, all_errors
 from io import BytesIO
 import json
@@ -604,17 +639,10 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
   --env "PARTITION_RECEIPTS=${partition_receipts_json}" \
   --entrypoint python test -c "${partition_verify_code}"
 
-# Reload the same independently deployed FTP spool with the classified source
-# policy used by the established Riverhog-to-Stove0 compose proof.
-adapter_config_next="${smoke_root}/ftp-spool.next.yaml"
-sed \
-  -e 's/description: FTP exact-event compose qualification/description: Classified FTP compose qualification/' \
-  -e 's/^    tags: \[\]/    tags: [stove0\/conformance]/' \
-  "${adapter_config}" > "${adapter_config_next}"
-chmod 0640 "${adapter_config_next}"
-mv "${adapter_config_next}" "${adapter_config}"
-adapter_compose up --detach --force-recreate --wait ftp-spool ftp-listener
+}
 
+upload_media_fixture() {
+configure_media_ftp
 adapter_run_code="from ftplib import FTP, all_errors
 from io import BytesIO
 import json
@@ -645,6 +673,8 @@ sidecar_payload = b'''<x:xmpmeta xmlns:x="adobe:ns:meta/">
 uploads = [(source, expected) for source in sources] + [(sidecar, sidecar_payload)]
 receipt_root = Path('/intake/ftp/.a-riverhog-ftp-spool/receipts')
 existing_receipts = {path.name for path in receipt_root.glob('*.json')}
+completion_log = Path('/intake/ftp/.a-riverhog-ftp-spool/completed-transfers.log')
+initial_log_lines = completion_log.read_bytes().count(b'\n') if completion_log.exists() else 1
 
 def connect():
     ftp = FTP(timeout=10)
@@ -665,59 +695,62 @@ def upload(source, content, *, rest=None):
             time.sleep(0.25)
     raise RuntimeError('FTP listener did not accept completed input') from last_error
 
-first_source, first_content = uploads[0]
-split = max(1, len(first_content) // 3)
-deadline = time.monotonic() + 30
-last_error = None
-while time.monotonic() < deadline:
-    try:
-        ftp = connect()
-        data = ftp.transfercmd('STOR ' + first_source.name)
-        data.sendall(first_content[:split])
-        receipt_deadline = time.monotonic() + 10
+if os.environ['STOVE0_SMOKE_INTERRUPT_TRANSFER'] == '1':
+    first_source, first_content = uploads[0]
+    split = max(1, len(first_content) // 3)
+    deadline = time.monotonic() + 30
+    last_error = None
+    while time.monotonic() < deadline:
         try:
-            while time.monotonic() < receipt_deadline:
-                status = ftp.sendcmd('STAT')
-                if any(
-                    line.strip() == f'Total bytes received: {split}'
-                    for line in status.splitlines()
-                ):
-                    break
+            ftp = connect()
+            data = ftp.transfercmd('STOR ' + first_source.name)
+            data.sendall(first_content[:split])
+            receipt_deadline = time.monotonic() + 10
+            try:
+                while time.monotonic() < receipt_deadline:
+                    status = ftp.sendcmd('STAT')
+                    if any(
+                        line.strip() == f'Total bytes received: {split}'
+                        for line in status.splitlines()
+                    ):
+                        break
+                    time.sleep(0.1)
+                else:
+                    raise AssertionError('FTP listener did not receive the exact interrupted prefix')
+                # Close the transfer through the protocol's abort path. Closing
+                # the control socket first can let a FIN on the data socket turn
+                # this prefix into a successful complete upload under load.
+                assert ftp.abort().startswith('426 ')
+                assert ftp.getresp().startswith('226 ')
+            finally:
+                ftp.close()
+                data.close()
+            partial_deadline = time.monotonic() + 10
+            while time.monotonic() < partial_deadline:
+                try:
+                    if first_source.stat().st_size == split:
+                        break
+                except FileNotFoundError:
+                    pass
                 time.sleep(0.1)
             else:
-                raise AssertionError('FTP listener did not receive the exact interrupted prefix')
-            # Close the transfer through the protocol's abort path. Closing
-            # the control socket first can let a FIN on the data socket turn
-            # this prefix into a successful complete upload under load.
-            assert ftp.abort().startswith('426 ')
-            assert ftp.getresp().startswith('226 ')
-        finally:
-            ftp.close()
-            data.close()
-        partial_deadline = time.monotonic() + 10
-        while time.monotonic() < partial_deadline:
-            try:
-                if first_source.stat().st_size == split:
-                    break
-            except FileNotFoundError:
-                pass
-            time.sleep(0.1)
-        else:
-            raise AssertionError('FTP listener did not retain the exact interrupted prefix')
-        break
-    except all_errors as error:
-        last_error = error
-        time.sleep(0.25)
+                raise AssertionError('FTP listener did not retain the exact interrupted prefix')
+            break
+        except all_errors as error:
+            last_error = error
+            time.sleep(0.25)
+    else:
+        raise RuntimeError('FTP listener did not accept interrupted input') from last_error
+    upload(first_source, first_content[split:], rest=split)
 else:
-    raise RuntimeError('FTP listener did not accept interrupted input') from last_error
-upload(first_source, first_content[split:], rest=split)
+    upload(*uploads[0])
 for source, content in uploads[1:]:
     upload(source, content)
 assert all(not source.exists() for source, _content in uploads)
 completion_log = Path('/intake/ftp/.a-riverhog-ftp-spool/completed-transfers.log')
 deadline = time.monotonic() + 10
 while time.monotonic() < deadline:
-    if completion_log.read_bytes().count(b'\n') == len(uploads) + 3:
+    if completion_log.read_bytes().count(b'\n') == len(uploads) + initial_log_lines:
         break
     time.sleep(0.1)
 else:
@@ -738,19 +771,20 @@ with RiverhogFtpSpoolClient(
 assert all(not source.exists() for source, _content in uploads)
 receipts = sorted(receipt_root.glob('*.json'))
 new_receipts = [path for path in receipts if path.name not in existing_receipts]
-assert len(receipts) == 3, receipts
+assert len(receipts) == len(existing_receipts) + 1, receipts
 assert len(new_receipts) == 1, new_receipts
 receipt = json.loads(new_receipts[0].read_text(encoding='utf-8'))
 print(json.dumps({
     key: receipt[key]
     for key in ('collection_id', 'archive_root_sha256', 'artifact_set_identity')
 }, sort_keys=True))"
-ci_phase stove0-admission
+ci_phase "${active_processing_lane}-publication"
 scale_started_ns="$(date +%s%N)"
 input_receipt_json="$(adapter_compose exec -T \
   --env RIVERHOG_SMOKE_RECEIPT_OUTPUT=1 \
   --env "STOVE0_SMOKE_FILE_COUNT=${smoke_file_count}" \
   --env "STOVE0_SMOKE_AUDIO_FRAMES=${smoke_audio_frames}" \
+  --env "STOVE0_SMOKE_INTERRUPT_TRANSFER=${interrupt_transfer}" \
   ftp-spool python -c "${adapter_run_code}")"
 test -n "${input_receipt_json}"
 input_collection_id="$(printf '%s' "${input_receipt_json}" | jq -r '.collection_id')"
@@ -775,6 +809,46 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
   --env "EXPECTED_DESCRIPTION=Classified FTP compose qualification" \
   --entrypoint python test -c "${classification_code}"
 
+}
+
+run_processing_admission() {
+active_processing_lane=processing-admission
+smoke_file_count=16
+interrupt_transfer=1
+processing_recipe_id=stove0.conformance-media/v1
+start_stove0_scope "${active_processing_lane}"
+# Qualify the independently selectable stream-facts and sampling contracts with
+# actual CPU-produced video/audio; malformed probing must fail, never classify.
+stove0_compose exec -T a-stove0-opus-target ffmpeg -nostdin -hide_banner -loglevel error \
+  -f lavfi -i 'color=c=black:s=320x180:r=24' \
+  -f lavfi -i 'sine=frequency=440:sample_rate=48000' -t 1 \
+  -c:v libx264 -profile:v high -preset veryfast -pix_fmt yuv420p \
+  -x264-params 'colorprim=bt709:transfer=bt709:colormatrix=bt709' \
+  -colorspace bt709 -color_trc bt709 -color_primaries bt709 \
+  -c:a aac -b:a 96000 -ac 2 -ar 48000 \
+  -movflags frag_keyframe+empty_moov -f mp4 - | \
+  stove0_compose exec -T a-stove0-ffprobe-observer python -c \
+    "$(cat "${ROOT_DIR}/tests/harness/ffprobe_observer_tool_parity.py")"
+
+admission_baseline_code="import json, time, urllib.request
+deadline = time.monotonic() + 60
+while time.monotonic() < deadline:
+    request = urllib.request.Request(
+        'http://127.0.0.1:8080/v1/admission-policies',
+        headers={'Authorization': 'Bearer stove0-compose-smoke-token'},
+    )
+    payload = json.load(urllib.request.urlopen(request, timeout=5))
+    policies = payload['policies']
+    if len(policies) == 1 and policies[0]['phase'] == 'following':
+        assert policies[0]['policy']['id'] == 'conformance-media'
+        break
+    time.sleep(0.25)
+else:
+    raise TimeoutError(payload)"
+stove0_compose exec -T api python -c "${admission_baseline_code}"
+# Establish the catalog cursor before publication, then reconcile offline.
+stove0_compose stop controller
+upload_media_fixture
 # Synchronous admission evaluates every declared observer stage. Match the
 # maintained Stove0 client's 300-second operation timeout; browse stays at 5s.
 scheduler_step_code="import json, os, urllib.request
@@ -828,37 +902,19 @@ matches = [
 assert len(matches) == 1, matches
 assert matches[0]['state'] == os.environ['EXPECTED_ADMISSION_STATE'], matches[0]"
 
-# Drive each durable admission boundary through the built API and restart the
-# accepting process between boundaries. The autonomous controller remains
-# offline, so no stage can race ahead of the proof.
-stove0_compose exec -T \
-  --env RIVERHOG_SMOKE_SCHEDULER_STEP=intent \
-  --env "INPUT_COLLECTION_ID=${input_collection_id}" \
-  api python -c "${scheduler_step_code}"
-stove0_compose exec -T \
-  --env "INPUT_COLLECTION_ID=${input_collection_id}" \
-  --env EXPECTED_ADMISSION_STATE=intent \
-  api python -c "${admission_state_code}"
-stove0_compose restart api
-stove0_compose up --detach --wait api
-stove0_compose exec -T \
-  --env RIVERHOG_SMOKE_SCHEDULER_STEP=previewed \
-  --env "INPUT_COLLECTION_ID=${input_collection_id}" \
-  api python -c "${scheduler_step_code}"
-stove0_compose exec -T \
-  --env "INPUT_COLLECTION_ID=${input_collection_id}" \
-  --env EXPECTED_ADMISSION_STATE=previewed \
-  api python -c "${admission_state_code}"
-stove0_compose restart api
-stove0_compose up --detach --wait api
-stove0_compose exec -T \
-  --env RIVERHOG_SMOKE_SCHEDULER_STEP=work_bound \
-  --env "INPUT_COLLECTION_ID=${input_collection_id}" \
-  api python -c "${scheduler_step_code}"
-stove0_compose exec -T \
-  --env "INPUT_COLLECTION_ID=${input_collection_id}" \
-  --env EXPECTED_ADMISSION_STATE=work_bound \
-  api python -c "${admission_state_code}"
+# The controller is offline and no worker is started in this scope.
+for admission_state in intent previewed work_bound; do
+  stove0_compose exec -T \
+    --env "RIVERHOG_SMOKE_SCHEDULER_STEP=${admission_state}" \
+    --env "INPUT_COLLECTION_ID=${input_collection_id}" \
+    api python -c "${scheduler_step_code}"
+  stove0_compose restart api
+  stove0_compose up --detach --wait api
+  stove0_compose exec -T \
+    --env "INPUT_COLLECTION_ID=${input_collection_id}" \
+    --env "EXPECTED_ADMISSION_STATE=${admission_state}" \
+    api python -c "${admission_state_code}"
+done
 
 admission_wait_code="import json, os, time, urllib.request
 collection_id = os.environ['INPUT_COLLECTION_ID']
@@ -888,45 +944,30 @@ stove0_work_id="$(stove0_compose exec -T \
   --env "INPUT_COLLECTION_ID=${input_collection_id}" \
   api python -c "${admission_wait_code}")"
 test -n "${stove0_work_id}"
-stove0_compose start controller
-stove0_compose up --detach --wait controller
+expected_work_id="${stove0_work_id}"
+test "$(invoke_processing "${input_receipt_json}" 16 1 ftp)" = "${stove0_work_id}"
+expected_work_id=
+stove0_compose exec -T a-stove0-opus-target \
+  python -c "${processing_qualification}" target-records
+finish_stove0_scope
+}
 
-invoke_code="import json, os, urllib.request
-from stove0_operator_contracts import WorkCreateRequest, OperatorWorkflowPreviewRequest
-from stove0_protocol import CollectionRootIdentityRef
-receipt = json.loads(os.environ['RIVERHOG_INPUT_RECEIPT'])
-root = CollectionRootIdentityRef.model_validate(receipt)
-def post(path, payload):
-    request = urllib.request.Request(
-        'http://127.0.0.1:8080' + path,
-        data=payload.model_dump_json(exclude_none=True).encode(),
-        headers={
-            'Authorization': 'Bearer stove0-compose-smoke-token',
-            'Content-Type': 'application/json',
-        },
-        method='POST',
-    )
-    return json.load(urllib.request.urlopen(request, timeout=300))
-preview = post(
-    '/v1/workflow-previews',
-    OperatorWorkflowPreviewRequest(recipe_id='stove0.conformance-media/v1', inputs=(root,)),
-)
-assert preview['state'] == 'ready', preview
-work = post(
-    '/v1/work',
-    WorkCreateRequest(
-        recipe_id='stove0.conformance-media/v1',
-        inputs=(root,),
-        preview_sha256=preview['preview_sha256'],
-    ),
-)
-assert work['work_id'] == os.environ['EXPECTED_WORK_ID'], work"
-stove0_compose exec -T \
-  --env RIVERHOG_SMOKE_INVOCATION_OUTPUT=1 \
-  --env "RIVERHOG_INPUT_RECEIPT=${input_receipt_json}" \
-  --env "EXPECTED_WORK_ID=${stove0_work_id}" \
-  api python -c "${invoke_code}"
-
+run_processing_execution() {
+active_processing_lane="$1"
+smoke_file_count="$2"
+interrupt_transfer=0
+processing_recipe_id=stove0.conformance-media/v1
+processing_target_count=2
+if [[ "${active_processing_lane}" == "processing-scale" ]]; then
+  processing_recipe_id=stove0.audio-archive/v1
+  processing_target_count=1
+fi
+# Each local proof shares archive/bootstrap resources but has isolated Stove0
+# state. Empty automatic policies prevent old classified fixtures from executing.
+start_stove0_scope "${active_processing_lane}"
+upload_media_fixture
+stove0_work_id="$(invoke_processing "${input_receipt_json}" "${smoke_file_count}" 1 ftp)"
+processing_work_ids="${stove0_work_id}"
 cache_code="import os
 from riverhog_client import ApiClient
 def collect(method, key, **kwargs):
@@ -951,6 +992,7 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
   --env "INPUT_COLLECTION_ID=${input_collection_id}" \
   --entrypoint python test -c "${cache_code}"
 
+if [[ "${active_processing_lane}" == "processing-overlap" ]]; then
 client_input_root="${smoke_root}/cli-input"
 install -d -m 0700 "${client_input_root}"
 python3 -c "import sys, wave
@@ -974,57 +1016,13 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
   --env "INPUT_COLLECTION_ID=${client_collection_id}" \
   --env "EXPECTED_DESCRIPTION=Classified CLI compose qualification" \
   --entrypoint python test -c "${classification_code}"
-client_work_id="$(stove0_compose exec -T \
-  --env RIVERHOG_SMOKE_ADMISSION_OUTPUT=client \
-  --env "INPUT_COLLECTION_ID=${client_collection_id}" \
-  api python -c "${admission_wait_code}")"
+client_work_id="$(invoke_processing "${client_receipt_json}" 1 0 client)"
 test -n "${client_work_id}"
 test "${client_work_id}" != "${stove0_work_id}"
-
-overflow_root="${smoke_root}/overflow"
-install -d -m 0700 "${overflow_root}"
-truncate -s 2MiB "${overflow_root}/larger-than-local-budget.bin"
-overflow_result="$(
-  compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
-    --volume "${overflow_root}:/overflow:ro" \
-    --entrypoint a-riverhog-cli test collection upload start /overflow \
-    --json
-)"
-overflow_collection_id="$(printf '%s' "${overflow_result}" | jq -r '.collection_id')"
-overflow_cache_code="import os, time
-from riverhog_client import ApiClient
-def collect(method, key, **kwargs):
-    page_token = None
-    rows = []
-    while True:
-        payload = method(page_size=100, page_token=page_token, **kwargs)
-        rows.extend(payload[key])
-        page_token = payload.get('next_page_token')
-        if page_token is None:
-            return rows
-with ApiClient() as client:
-    deadline = time.monotonic() + 60
-    while True:
-        rows = collect(client.list_retrieval_cache_objects, 'objects')
-        overflow = [
-            row for row in rows
-            if row['collection_id'] == os.environ['OVERFLOW_COLLECTION_ID']
-        ]
-        stores = {row['cache_store'] for row in rows if row['state'] == 'ready'}
-        if overflow and all(row['state'] == 'ready' for row in overflow) and stores == {'local', 'elastic'}:
-            break
-        if time.monotonic() >= deadline:
-            raise AssertionError((stores, overflow))
-        time.sleep(0.25)
-    assert 'elastic' in {row['cache_store'] for row in overflow}, overflow
-    status = client.retrieval_cache_status()
-    assert [store['cache_store'] for store in status['stores']] == ['local', 'elastic'], status
-    assert status['stores'][0]['admission_budget_bytes'] == 1048576, status"
-compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
-  --env "OVERFLOW_COLLECTION_ID=${overflow_collection_id}" \
-  --entrypoint python test -c "${overflow_cache_code}"
-
-ci_phase stove0-processing
+processing_work_ids="${stove0_work_id},${client_work_id}"
+fi
+stove0_compose up --detach --wait controller worker
+ci_phase "${active_processing_lane}-execution"
 wait_code="import json, time, urllib.request
 def diagnostic(row):
     if row is None:
@@ -1103,7 +1101,16 @@ request = urllib.request.Request(
 work = json.load(urllib.request.urlopen(request, timeout=30))
 assert work['phase'] == 'complete', work
 targets = work['preview_acceptance']['target_plans']
-assert len(targets) == 2, work
+assert len(targets) == int(os.environ['STOVE0_SMOKE_TARGET_COUNT']), work
+for row in targets:
+    request = urllib.request.Request(
+        'http://127.0.0.1:8080/v1/work/' + row['work_id'],
+        headers={'Authorization': 'Bearer stove0-compose-smoke-token'},
+    )
+    other = json.load(urllib.request.urlopen(request, timeout=30))
+    assert other['phase'] == 'complete' and other['output'] is not None, other
+    assert other['target_status']['state'] == 'succeeded'
+    assert other['target_settlement'] is not None
 target = next(row for row in targets if row['branch_id'] == 'archive-audio')
 child_request = urllib.request.Request(
     'http://127.0.0.1:8080/v1/work/' + target['work_id'],
@@ -1115,6 +1122,7 @@ print(child['output']['collection_id'])"
 output_collection_id="$(stove0_compose exec -T \
   --env RIVERHOG_SMOKE_SETTLEMENT_OUTPUT=1 \
   --env "STOVE0_WORK_ID=${stove0_work_id}" \
+  --env "STOVE0_SMOKE_TARGET_COUNT=${processing_target_count}" \
   api python -c "${output_code}")"
 test -n "${output_collection_id}"
 
@@ -1166,6 +1174,8 @@ with ApiClient() as client:
     assert [row.collection_id for row in roots] == [int(inputs[0]['id'])]
     print(json.dumps({
         'format': 'stove0-final-image-scale/v1',
+        'qualification_lane': os.environ['STOVE0_SMOKE_PROCESSING_LANE'],
+        'recipe_id': os.environ['STOVE0_SMOKE_RECIPE_ID'],
         'elapsed_seconds': elapsed_seconds,
         'input_bytes': input_bytes,
         'input_artifacts': len(input_artifacts),
@@ -1178,6 +1188,8 @@ with ApiClient() as client:
 compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
   --env "STOVE0_SMOKE_FILE_COUNT=${smoke_file_count}" \
   --env "STOVE0_SMOKE_ELAPSED_NS=${scale_elapsed_ns}" \
+  --env "STOVE0_SMOKE_PROCESSING_LANE=${active_processing_lane}" \
+  --env "STOVE0_SMOKE_RECIPE_ID=${processing_recipe_id}" \
   --env "INPUT_COLLECTION_ID=${input_collection_id}" \
   --env "OUTPUT_COLLECTION_ID=${output_collection_id}" \
   --entrypoint python test -c "${lineage_code}"
@@ -1264,16 +1276,101 @@ print(json.dumps({'format': 'stove0-transfer-phases/v1', **asdict(summary)}, sor
     "${smoke_root}/riverhog-transfer.log"
 fi
 
-stove0_compose restart \
-  api controller worker a-stove0-ffprobe-observer a-stove0-magic-observer a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer \
-  a-stove0-opus-target a-review0-opus-sampler review0 a-stove0-rclone-target
-stove0_compose up --detach --wait \
-  api controller worker a-stove0-ffprobe-observer a-stove0-magic-observer a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer \
-  a-stove0-opus-target a-review0-opus-sampler review0 a-stove0-rclone-target
+ci_phase "${active_processing_lane}-restart-replay"
+settled_snapshot="$(processing_snapshot)"
+verify_target_records
+stove0_compose restart api controller worker "${processing_services[@]}"
+stove0_compose up --detach --wait api controller worker "${processing_services[@]}"
 stove0_compose exec -T api python -c "${wait_code}"
+test "$(processing_snapshot)" = "${settled_snapshot}"
+verify_target_records
+finish_stove0_scope
+}
+
+if owns_qualification storage; then
+ci_phase storage-cache-placement
+local_root="${smoke_root}/local-cache-input"
+install -d -m 0700 "${local_root}"
+printf '%s\n' 'small local-cache qualification' > "${local_root}/local.txt"
+compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
+  --volume "${local_root}:/local-cache-input:ro" \
+  --entrypoint a-riverhog-cli test collection upload start /local-cache-input --json > /dev/null
+overflow_root="${smoke_root}/overflow"
+install -d -m 0700 "${overflow_root}"
+truncate -s 2MiB "${overflow_root}/larger-than-local-budget.bin"
+overflow_result="$(
+  compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
+    --volume "${overflow_root}:/overflow:ro" \
+    --entrypoint a-riverhog-cli test collection upload start /overflow \
+    --json
+)"
+overflow_collection_id="$(printf '%s' "${overflow_result}" | jq -r '.collection_id')"
+overflow_cache_code="import os, time
+from riverhog_client import ApiClient
+def collect(method, key, **kwargs):
+    page_token = None
+    rows = []
+    while True:
+        payload = method(page_size=100, page_token=page_token, **kwargs)
+        rows.extend(payload[key])
+        page_token = payload.get('next_page_token')
+        if page_token is None:
+            return rows
+with ApiClient() as client:
+    deadline = time.monotonic() + 60
+    while True:
+        rows = collect(client.list_retrieval_cache_objects, 'objects')
+        overflow = [
+            row for row in rows
+            if row['collection_id'] == os.environ['OVERFLOW_COLLECTION_ID']
+        ]
+        stores = {row['cache_store'] for row in rows if row['state'] == 'ready'}
+        if overflow and all(row['state'] == 'ready' for row in overflow) and stores == {'local', 'elastic'}:
+            break
+        if time.monotonic() >= deadline:
+            raise AssertionError((stores, overflow))
+        time.sleep(0.25)
+    assert 'elastic' in {row['cache_store'] for row in overflow}, overflow
+    status = client.retrieval_cache_status()
+    assert [store['cache_store'] for store in status['stores']] == ['local', 'elastic'], status
+    assert status['stores'][0]['admission_budget_bytes'] == 1048576, status"
+compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
+  --env "OVERFLOW_COLLECTION_ID=${overflow_collection_id}" \
+  --entrypoint python test -c "${overflow_cache_code}"
 
 fi
+if owns_qualification ingress-custody; then
+  run_ingress_custody
+fi
+if owns_qualification processing-admission; then
+  run_processing_admission
+fi
+if owns_qualification processing-e2e; then
+  run_processing_execution processing-e2e 4
+fi
+if owns_qualification processing-overlap; then
+  run_processing_execution processing-overlap 1
+fi
+if owns_qualification processing-scale; then
+  run_processing_execution processing-scale "${STOVE0_SMOKE_FILE_COUNT:-128}"
+fi
+
 if owns_qualification review-delivery; then
+start_stove0_scope review-delivery
+sampler_descriptor_code="import json, urllib.request
+request = urllib.request.Request(
+    'http://127.0.0.1:8080/v1/sampler',
+    headers={'Authorization': 'Bearer stove0-compose-opus-review-sampler-token'},
+)
+print(json.load(urllib.request.urlopen(request))['descriptor_sha256'])"
+export A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256="$(
+  stove0_compose exec -T a-review0-opus-sampler python -c "${sampler_descriptor_code}"
+)"
+write_review_configs
+stove0_compose up --detach --wait review0 a-stove0-rclone-target
+stove0_compose exec -T review0 python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-review0-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-transform-target/v1'"
+stove0_compose exec -T a-stove0-rclone-target python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-rclone-target-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-effect-target/v1'"
+stove0_compose exec -T a-stove0-rclone-target python -c "from pathlib import Path; import subprocess; source = Path('/tmp/rclone-probe'); source.write_bytes(b'riverhog-rclone-effect-probe'); destination = Path('/var/lib/stove0-rclone-delivery/qualification/probe'); subprocess.run(['rclone', 'copyto', str(source), str(destination)], check=True); assert destination.read_bytes() == source.read_bytes(); source.unlink(); destination.unlink()"
 # Review0's ordinary finalized collection is inspected before introducing the
 # independent delivery admission policy. This makes the collection boundary
 # observable instead of relying on a race with fast local rclone delivery.
@@ -1304,7 +1401,9 @@ test -n "${review_output_collection_id}"
 full_admission_config="${smoke_root}/stove0.full-admissions.yaml"
 sed '/^admissions:/,$d' "${STOVE0_CONFIG_HOST_PATH}" > "${full_admission_config}"
 printf '%s\n' 'admissions:' >> "${full_admission_config}"
-sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/admissions.json" >> "${full_admission_config}"
+jq '{format, policies: [.policies[] | select(.id == "review0-output-delivery")]}' \
+  "${ROOT_DIR}/qualification/fixtures/stove0/admissions.json" | \
+  sed 's/^/  /' >> "${full_admission_config}"
 cat "${full_admission_config}" > "${STOVE0_CONFIG_HOST_PATH}"
 stove0_compose restart api controller worker
 stove0_compose up --detach --wait api controller worker
@@ -1336,10 +1435,10 @@ stove0_compose exec -T \
   --env "REVIEW_OUTPUT_COLLECTION_ID=${review_output_collection_id}" \
   --env "REVIEW_SOURCE_COLLECTION_ID=${review_source_collection_id}" \
   api python -c "${review_qualification}" delivery > /dev/null
+finish_stove0_scope
 fi
 
-if owns_qualification witnesses && \
-  { [[ "${qualification_lane}" == "witnesses" ]] || [[ "${STOVE0_SMOKE_WITNESS_PROBE:-1}" == "1" ]]; }; then
+if owns_qualification witnesses; then
 # Qualify both independent witnesses against a real finalized catalog item.
 # The deterministic OTS calendar seam supplies a bounded pending attestation;
 # this smoke does not depend on a public calendar or claim Bitcoin confirmation.
@@ -1373,8 +1472,17 @@ export A_RIVERHOG_MINISIGN_WITNESS_PUBLIC_KEY_FILE="${witness_key_root}/public.k
 docker run --rm --user 65532:65532 \
   --volume "${witness_key_root}:/keys" --entrypoint minisign \
   a-riverhog-minisign-witness:dev -G -W -s /keys/secret.key -p /keys/public.key
-test "$(stat -c '%a:%u' "${A_RIVERHOG_MINISIGN_WITNESS_SECRET_KEY_FILE}")" = 600:65532
-test "$(stat -c '%a:%g' "${secret_root}/stove0-api-riverhog-token")" = "640:$(id -g)"
+docker run --rm --user 65532:65532 --group-add "$(id -g)" \
+  --volume "${witness_key_root}:/keys:ro" \
+  --volume "${secret_root}/stove0-api-riverhog-token:/token:ro" \
+  --env "WITNESS_TOKEN_GID=$(id -g)" --entrypoint python \
+  a-riverhog-minisign-witness:dev -c "import os, stat
+from pathlib import Path
+key = Path('/keys/secret.key').stat()
+token = Path('/token').stat()
+assert stat.S_IMODE(key.st_mode) == 0o600 and key.st_uid == 65532
+assert stat.S_IMODE(token.st_mode) == 0o640 and token.st_gid == int(os.environ['WITNESS_TOKEN_GID'])
+assert Path('/keys/secret.key').read_bytes() and Path('/token').read_bytes()"
 minisign_compose up --detach --wait state
 ots_compose up --detach --wait state
 witness_probe="${ROOT_DIR}/tests/harness/witness_compose_probe.py:/qualification.py:ro"

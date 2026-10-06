@@ -8,6 +8,7 @@ import os
 import subprocess
 import sys
 from collections.abc import Sequence
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, cast
 
@@ -26,7 +27,18 @@ REPOSITORY_TARGETS = (
     "dist-smoke",
 )
 DOCKER_TARGETS = {"postgres-concurrency", "filesystem-recovery-qualification"}
-COMPOSE_LANES = ("storage", "processing", "review-delivery", "witnesses")
+COMPOSE_LANES = (
+    "storage",
+    "ingress-custody",
+    "processing-admission",
+    "processing-e2e",
+    "processing-overlap",
+    "review-delivery",
+    "witnesses",
+)
+PROCESSING_LANES = frozenset(
+    {"processing-admission", "processing-e2e", "processing-overlap", "processing-scale"}
+)
 IMAGE_GROUPS = ("core", "observers", "targets", "companions")
 NATIVE_TESTS = (
     "tests/platform/test_native_provenance.py",
@@ -103,14 +115,32 @@ def cache_settings(targets: Sequence[str], *, compose: bool = False) -> list[str
 
 
 def compose_targets(lane: str, graph: dict[str, Any]) -> list[str]:
-    if lane not in (*COMPOSE_LANES, "all"):
+    if lane not in (*COMPOSE_LANES, "processing-scale", "all"):
         raise ValueError(f"unknown Compose qualification: {lane}")
     files: list[tuple[str, set[str] | None]] = [
         ("riverhog/compose.yaml", {"test", "app", "filesystem-cache-adapter"})
     ]
-    if lane in {"all", "processing", "review-delivery"}:
+    if lane in {"all", "review-delivery"}:
         files.append(("some-implementations/stove0/application/compose.yaml", None))
-    if lane in {"all", "processing"}:
+    elif lane in PROCESSING_LANES:
+        files.append(
+            (
+                "some-implementations/stove0/application/compose.yaml",
+                {
+                    "state",
+                    "api",
+                    "controller",
+                    "worker",
+                    "a-stove0-ffprobe-observer",
+                    "a-stove0-magic-observer",
+                    "a-stove0-filename-prefix-sidecar-observer",
+                    "a-stove0-riverhog-provenance-observer",
+                    "a-stove0-exiftool-observer",
+                    "a-stove0-opus-target",
+                },
+            )
+        )
+    if lane in PROCESSING_LANES or lane in {"all", "ingress-custody"}:
         files.append(("some-implementations/riverhog/ingress/ftp/compose.yaml", None))
     if lane in {"all", "witnesses"}:
         files.extend(
@@ -254,33 +284,63 @@ def plan(graph: dict[str, Any]) -> dict[str, object]:
     }
 
 
-def linux_qualification() -> None:
+def independent_proofs(commands: Sequence[Sequence[str]], *, jobs: int) -> None:
+    """Join every started proof, including its fixture cleanup, on failure."""
+
+    def proof(command: Sequence[str]) -> None:
+        lane = command[1]
+        if lane == "unit-shard":
+            lane = "unit-" + command[2].removeprefix("UNIT_SHARD=")
+        # An aggregate run ID can be shared while every proof and its xdist
+        # workers retain their own timing stream.
+        run(command, env={**os.environ, "RIVERHOG_CI_LANE": lane})
+
+    with ThreadPoolExecutor(max_workers=jobs) as executor:
+        futures = {executor.submit(proof, command): command for command in commands}
+        try:
+            for future in as_completed(futures):
+                future.result()
+        except BaseException:
+            for future in futures:
+                future.cancel()
+            raise
+
+
+def linux_qualification(*, jobs: int = 2) -> None:
     if not sys.platform.startswith("linux"):
         raise ValueError("portable Linux qualification must run on Linux")
+    if jobs < 1:
+        raise ValueError("local qualification jobs must be positive")
     run(["make", "client-platform-qualification"])
     for target in REPOSITORY_TARGETS:
         run(["make", target])
     run(["make", "unit-shards-check"])
-    for shard in SHARDS:
-        run(["make", "unit-shard", f"UNIT_SHARD={shard}"])
     for group in IMAGE_GROUPS:
         run(["make", "image-qualification", f"IMAGE_GROUP={group}"])
-    for lane in COMPOSE_LANES:
-        run(["make", "compose-shard", f"COMPOSE_LANE={lane}"])
+    # Image qualification owns mutable development tags; complete it before
+    # Compose selects its bundled image. Unit shards use independent fixtures.
+    independent_proofs(
+        [
+            ["make", "compose-smoke"],
+            *(["make", "unit-shard", f"UNIT_SHARD={shard}"] for shard in SHARDS),
+        ],
+        jobs=jobs,
+    )
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("plan", "images", "compose-prepare", "native", "linux"))
     parser.add_argument("--group", choices=IMAGE_GROUPS)
-    parser.add_argument("--lane", choices=(*COMPOSE_LANES, "all"))
+    parser.add_argument("--lane", choices=(*COMPOSE_LANES, "processing-scale", "all"))
+    parser.add_argument("--jobs", type=int, default=2)
     parser.add_argument("--github-output", type=Path)
     args = parser.parse_args(argv)
     try:
         if args.command == "native":
             native_platform()
         elif args.command == "linux":
-            linux_qualification()
+            linux_qualification(jobs=args.jobs)
         else:
             graph = bake_graph()
             if args.command == "images":
