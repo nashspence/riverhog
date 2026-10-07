@@ -193,6 +193,28 @@ _NON_PLAN_QUERY_OPERATIONS = {
     ("a-riverhog-ftp-spool", "get_ftp_spool_status"): {"page_size", "page_token"},
     ("a-riverhog-ftp-spool", "list_ftp_spool_events"): {"after", "limit"},
     ("stove0", "get_artifact_selection"): {"continuation"},
+    ("stove0", "list_observation_tasks"): {
+        "owner_kind",
+        "owner_id",
+        "page_size",
+        "page_token",
+    },
+    ("stove0", "get_observation_task"): {"owner_kind", "owner_id"},
+    ("stove0", "get_observation_result"): {"owner_kind", "owner_id"},
+    ("stove0", "get_observation_results"): {
+        "owner_kind",
+        "owner_id",
+        "evidence_set_sha256",
+        "start_ordinal",
+        "limit",
+    },
+    ("stove0", "get_observation_view"): {
+        "owner_kind",
+        "owner_id",
+        "view_sha256",
+        "start_ordinal",
+        "limit",
+    },
     ("stove0", "get_recipe"): {"revision"},
     ("stove0", "get_target_execution_inputs"): {"continuation"},
     ("stove0", "get_target_execution_outputs"): {"after_id", "production_sha256"},
@@ -513,11 +535,12 @@ def _seed_stove0_selector_relations(engine: Engine, *, rows: int) -> None:
             text(
                 f"""
             INSERT INTO stove0_work_records (
-                work_id, revision, phase, updated_at, document_bytes, document_json
+                work_id, recipe_sha256, revision, phase, updated_at,
+                document_bytes, document_json, contact_at, contact_failures
             )
-            SELECT repeat(md5('stove-work-' || g), 2), 1,
+            SELECT repeat(md5('stove-work-' || g), 2), repeat(md5('recipe'), 2), 1,
                    CASE WHEN g % 2 = 0 THEN 'eligible' ELSE 'complete' END,
-                   {timestamp}, 2, '{{}}'
+                   {timestamp}, 2, '{{}}', {timestamp}, 0
             FROM generate_series(1, {rows}) AS g
             """
             )
