@@ -4,18 +4,30 @@ from __future__ import annotations
 
 import importlib.metadata
 import json
+import time
+from collections.abc import Callable
 from dataclasses import dataclass
+from functools import cached_property
 from pathlib import Path
 from typing import Annotated, Any, NoReturn, cast
 
 import typer
+from http_api_contracts import closed_literal_values
 from pydantic import BaseModel
 from rich.console import Console
 from rich.pretty import Pretty
 from rich.table import Table
 from stove0_api_client import Stove0ApiClient, Stove0ApiError
-from stove0_protocol import CollectionRootIdentityRef
-from stove0_recipe_config import RecipeCatalog
+from stove0_operator_contracts import PlanningOwnerKind, WorkInitiationStatus
+from stove0_protocol import CollectionRootIdentityRef, canonical_json_bytes
+from stove0_protocol.planning_jobs import PlanningJobStatus
+from stove0_recipe_config.catalog import (
+    CompiledRecipeCatalog,
+    RecipeCatalogExplanation,
+    RecipeCatalogValidation,
+    load_recipe_catalog,
+)
+from stove0_recipe_config.source_map import recipe_source_map
 
 app = typer.Typer(
     help="Operate stove0 collection workflows.",
@@ -67,6 +79,14 @@ _CLI_RESULT_CONTRACT = {
         "usage": {"kind": "parser-rejected-invocation"},
     },
     "output_authorities": {
+        "work create": {
+            "kind": "openapi-schema",
+            "schema": "WorkInitiationStatus",
+        },
+        "preview": {
+            "kind": "openapi-schema",
+            "schema": "PlanningJobStatus",
+        },
         "health": {
             "kind": "openapi-schema",
             "schema": "HealthOut",
@@ -74,24 +94,17 @@ _CLI_RESULT_CONTRACT = {
         "recipe validate": {
             "kind": "cli-local-json-schema",
             "identity": "stove0-recipe-catalog-validation/v1",
-            "schema": {
-                "type": "object",
-                "additionalProperties": False,
-                "required": [
-                    "format",
-                    "catalog_sha256",
-                    "operation_count",
-                    "recipe_count",
-                    "recipes",
-                ],
-                "properties": {
-                    "format": {"const": "stove0-recipe-catalog-validation/v1"},
-                    "catalog_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-                    "operation_count": {"type": "integer", "minimum": 0},
-                    "recipe_count": {"type": "integer", "minimum": 0},
-                    "recipes": {"type": "array", "items": {"type": "object"}},
-                },
-            },
+            "schema": RecipeCatalogValidation.model_json_schema(),
+        },
+        "recipe compile": {
+            "kind": "cli-local-json-schema",
+            "identity": "stove0-compiled-recipe-catalog/v1",
+            "schema": CompiledRecipeCatalog.model_json_schema(),
+        },
+        "recipe explain": {
+            "kind": "cli-local-json-schema",
+            "identity": "stove0-recipe-catalog-explanation/v1",
+            "schema": RecipeCatalogExplanation.model_json_schema(),
         },
     },
     "version_distribution": "a-stove0-cli",
@@ -102,6 +115,7 @@ evaluation_app = typer.Typer(help="Materialized trials and evaluations.")
 event_app = typer.Typer(help="Lifecycle events.")
 scheduler_app = typer.Typer(help="Scheduler status and execution.")
 selection_app = typer.Typer(help="Exact content-addressed artifact selections.")
+observation_app = typer.Typer(help="Named tasks, accepted evidence, and typed observation views.")
 admission_app = typer.Typer(help="Classification admission decisions.")
 admission_policy_app = typer.Typer(help="Configured classification admission policies.")
 departure_app = typer.Typer(help="Catalog-departure external effects.")
@@ -112,6 +126,7 @@ app.add_typer(evaluation_app, name="evaluation")
 app.add_typer(event_app, name="event")
 app.add_typer(scheduler_app, name="scheduler")
 app.add_typer(selection_app, name="selection")
+app.add_typer(observation_app, name="observation")
 app.add_typer(admission_app, name="admission")
 admission_app.add_typer(admission_policy_app, name="policy")
 app.add_typer(departure_app, name="departure")
@@ -119,10 +134,14 @@ departure_app.add_typer(departure_policy_app, name="policy")
 console = Console()
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class Context:
-    client: Stove0ApiClient
+    client_factory: Callable[[], Stove0ApiClient]
     json_output: bool
+
+    @cached_property
+    def client(self) -> Stove0ApiClient:
+        return self.client_factory()
 
 
 @app.callback()
@@ -148,7 +167,7 @@ def configure(
 ) -> None:
     del version
     context.obj = Context(
-        client=Stove0ApiClient(
+        client_factory=lambda: Stove0ApiClient(
             base_url=base_url,
             token=token,
             allow_insecure_http=allow_insecure_http,
@@ -294,14 +313,53 @@ def validate_recipe_catalog(
     context: typer.Context,
     path: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
 ) -> None:
-    """Validate a deployment-owned catalog without contacting Stove0."""
+    """Validate source or compiled catalog documents and their exact offline closure."""
 
     state = _context(context)
     _call(
         state,
-        lambda: RecipeCatalog.load(path).validation_document(),
+        lambda: load_recipe_catalog(path).validation_document(),
         table=("recipes", ("id", "revision", "sha256")),
     )
+
+
+@recipe_app.command("compile")
+def compile_recipe_catalog(
+    context: typer.Context,
+    path: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
+    output: Annotated[
+        Path | None, typer.Option(help="Write the canonical compiled installation document.")
+    ] = None,
+    source_map: Annotated[
+        Path | None, typer.Option(help="Write auxiliary source locations.")
+    ] = None,
+) -> None:
+    """Compile closed source against its exact local documents; make no network calls."""
+
+    def compile_document() -> CompiledRecipeCatalog:
+        destinations = [target.resolve() for target in (output, source_map) if target is not None]
+        if len(set(destinations)) != len(destinations) or path.resolve() in destinations:
+            raise ValueError("compiled output, source map and input paths must be distinct")
+        catalog = load_recipe_catalog(path)
+        locations = recipe_source_map(path) if source_map is not None else None
+        if output is not None:
+            output.write_bytes(
+                canonical_json_bytes(catalog.model_dump(mode="json", by_alias=True)) + b"\n"
+            )
+        if source_map is not None and locations is not None:
+            source_map.write_bytes(canonical_json_bytes(locations.model_dump(mode="json")) + b"\n")
+        return catalog
+
+    _call(_context(context), compile_document, table=("recipes", ("id", "revision", "sha256")))
+
+
+@recipe_app.command("explain")
+def explain_recipe_catalog(
+    context: typer.Context,
+    path: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
+) -> None:
+    """Show normalized semantics, derived boundaries and the required task order."""
+    _call(_context(context), lambda: load_recipe_catalog(path).explanation_document())
 
 
 @work_app.command("list")
@@ -341,18 +399,25 @@ def create_work(
         typer.Argument(help="Collection receipt as ID:ARCHIVE_ROOT_SHA256:CONTENT_IDENTITY"),
     ],
     preview_sha256: str = typer.Option(..., "--preview-sha256"),
+    wait: bool = typer.Option(False, help="Poll the accepted initiation until it resolves."),
+    wait_seconds: float = typer.Option(3600.0, min=0.1),
     revision: int | None = typer.Option(None),
     intent: Annotated[Path | None, typer.Option(exists=True, dir_okay=False)] = None,
 ) -> None:
     state = _context(context)
     _call(
         state,
-        lambda: state.client.create_work(
-            recipe_id,
-            _collection_roots(inputs),
-            preview_sha256=preview_sha256,
-            recipe_revision=revision,
-            effective_intent=_document(intent),
+        lambda: _wait_initiation(
+            state,
+            state.client.create_work(
+                recipe_id,
+                _collection_roots(inputs),
+                preview_sha256=preview_sha256,
+                recipe_revision=revision,
+                effective_intent=_document(intent),
+            ),
+            wait=wait,
+            seconds=wait_seconds,
         ),
     )
 
@@ -386,6 +451,110 @@ def get_artifact_selection(
     )
 
 
+@observation_app.command("list")
+def list_observation_tasks(
+    context: typer.Context,
+    owner_id: str,
+    owner_kind: str = typer.Option("work"),
+    page_size: int = typer.Option(25, min=1, max=100),
+    page_token: str | None = typer.Option(None),
+) -> None:
+    state = _context(context)
+    _call(
+        state,
+        lambda: state.client.list_observation_tasks(
+            owner_kind=_observation_owner(owner_kind),
+            owner_id=owner_id,
+            page_size=page_size,
+            page_token=page_token,
+        ),
+    )
+
+
+@observation_app.command("show")
+def show_observation_task(
+    context: typer.Context,
+    owner_id: str,
+    task_work_id: str,
+    task_id: str,
+    owner_kind: str = typer.Option("work"),
+) -> None:
+    state = _context(context)
+    _call(
+        state,
+        lambda: state.client.get_observation_task(
+            task_work_id, task_id, owner_kind=_observation_owner(owner_kind), owner_id=owner_id
+        ),
+    )
+
+
+@observation_app.command("results")
+def list_observation_results(
+    context: typer.Context,
+    owner_id: str,
+    task_work_id: str,
+    task_id: str,
+    evidence_set_sha256: str,
+    owner_kind: str = typer.Option("work"),
+    start_ordinal: int = typer.Option(0, min=0),
+    limit: int = typer.Option(100, min=1, max=100),
+) -> None:
+    state = _context(context)
+    _call(
+        state,
+        lambda: state.client.get_observation_results(
+            task_work_id,
+            task_id,
+            owner_kind=_observation_owner(owner_kind),
+            owner_id=owner_id,
+            evidence_set_sha256=evidence_set_sha256,
+            start_ordinal=start_ordinal,
+            limit=limit,
+        ),
+    )
+
+
+@observation_app.command("result")
+def show_observation_result(
+    context: typer.Context, owner_id: str, request_id: str, owner_kind: str = typer.Option("work")
+) -> None:
+    state = _context(context)
+    _call(
+        state,
+        lambda: state.client.get_observation_result(
+            request_id, owner_kind=_observation_owner(owner_kind), owner_id=owner_id
+        ),
+    )
+
+
+@observation_app.command("view")
+def show_observation_view(
+    context: typer.Context,
+    owner_id: str,
+    task_work_id: str,
+    task_id: str,
+    view_id: str,
+    view_sha256: str,
+    owner_kind: str = typer.Option("work"),
+    start_ordinal: int = typer.Option(0, min=0),
+    limit: int = typer.Option(100, min=1, max=100),
+) -> None:
+    state = _context(context)
+    _call(
+        state,
+        lambda: state.client.get_observation_view(
+            task_work_id,
+            task_id,
+            view_id,
+            owner_kind=_observation_owner(owner_kind),
+            owner_id=owner_id,
+            view_sha256=view_sha256,
+            start_ordinal=start_ordinal,
+            limit=limit,
+        ),
+    )
+
+
 @work_app.command("step")
 def step_work(context: typer.Context, work_id: str) -> None:
     state = _context(context)
@@ -415,19 +584,74 @@ def preview(
         list[str],
         typer.Argument(help="Collection receipt as ID:ARCHIVE_ROOT_SHA256:CONTENT_IDENTITY"),
     ],
+    wait: bool = typer.Option(False, help="Poll this planning invocation until it resolves."),
+    wait_seconds: float = typer.Option(3600.0, min=0.1),
     revision: int | None = typer.Option(None),
     intent: Annotated[Path | None, typer.Option(exists=True, dir_okay=False)] = None,
 ) -> None:
     state = _context(context)
     _call(
         state,
-        lambda: state.client.preview_workflow(
-            recipe_id,
-            _collection_roots(inputs),
-            recipe_revision=revision,
-            effective_intent=_document(intent),
+        lambda: _wait_preview(
+            state,
+            state.client.preview_workflow(
+                recipe_id,
+                _collection_roots(inputs),
+                recipe_revision=revision,
+                effective_intent=_document(intent),
+            ),
+            wait=wait,
+            seconds=wait_seconds,
         ),
     )
+
+
+@app.command("preview-show")
+def show_preview(context: typer.Context, job_id: str) -> None:
+    state = _context(context)
+    _call(state, lambda: state.client.get_workflow_preview(job_id))
+
+
+@app.command("preview-cancel")
+def cancel_preview(context: typer.Context, job_id: str) -> None:
+    state = _context(context)
+    _call(state, lambda: state.client.cancel_workflow_preview(job_id))
+
+
+@work_app.command("initiation")
+def show_work_initiation(context: typer.Context, job_id: str) -> None:
+    state = _context(context)
+    _call(state, lambda: state.client.get_work_initiation(job_id))
+
+
+def _observation_owner(value: str) -> PlanningOwnerKind:
+    if value not in closed_literal_values(PlanningOwnerKind):
+        raise typer.BadParameter("observation owner must be work or preview")
+    return cast(PlanningOwnerKind, value)
+
+
+def _wait_preview(
+    state: Context, status: PlanningJobStatus, *, wait: bool, seconds: float
+) -> PlanningJobStatus:
+    deadline = time.monotonic() + seconds
+    while wait and status.state != "completed":
+        if time.monotonic() >= deadline:
+            return status
+        time.sleep(max(0.0, min(1.0, deadline - time.monotonic())))
+        status = state.client.get_workflow_preview(status.job_id)
+    return status
+
+
+def _wait_initiation(
+    state: Context, status: WorkInitiationStatus, *, wait: bool, seconds: float
+) -> WorkInitiationStatus:
+    deadline = time.monotonic() + seconds
+    while wait and status.state == "pending":
+        if time.monotonic() >= deadline:
+            return status
+        time.sleep(max(0.0, min(1.0, deadline - time.monotonic())))
+        status = state.client.get_work_initiation(status.job.job_id)
+    return status
 
 
 @evaluation_app.command("list")
@@ -595,10 +819,10 @@ def _call(
 ) -> None:
     try:
         payload = operation()
-    except (Stove0ApiError, ValueError) as exc:
+    except (Stove0ApiError, ValueError, OSError) as exc:
         _fail(str(exc))
     if isinstance(payload, BaseModel):
-        payload = payload.model_dump(mode="json", by_alias=True, exclude_none=True)
+        payload = payload.model_dump(mode="json", by_alias=True)
     _render(payload, json_output=state.json_output, table=table)
 
 
@@ -609,7 +833,7 @@ def _render(
     table: tuple[str, tuple[str, ...]] | None,
 ) -> None:
     if json_output:
-        typer.echo(json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+        typer.echo(canonical_json_bytes(payload).decode("utf-8"))
         return
     if table is not None and isinstance(payload.get(table[0]), list):
         if table[0] == "recipes" and payload.get("catalog_sha256") is not None:
@@ -631,6 +855,9 @@ def _render(
 def _table_value(item: dict[str, Any], column: str) -> str:
     if column in item:
         return str(item[column])
+    recipe = item.get("recipe")
+    if isinstance(recipe, dict) and column in {"id", "revision", "sha256"}:
+        return str(recipe.get(column, ""))
     definition = item.get("definition")
     if isinstance(definition, dict) and column in {"id", "revision"}:
         return str(definition.get(column, ""))

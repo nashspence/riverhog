@@ -6,10 +6,12 @@ import importlib.metadata
 from typing import cast
 
 from a_stove0_materialization_hint_evidence_contract_lib import (
+    MATERIALIZATION_HINT_INTERFACE,
     MATERIALIZATION_HINT_OBSERVER_CONTRACT,
     validate_materialization_hint_facts,
 )
 from a_stove0_riverhog_provenance_evidence_contract_lib import (
+    CORE_PROVENANCE_INTERFACE,
     CORE_PROVENANCE_OBSERVATION_ID,
     CORE_PROVENANCE_OBSERVER_CONTRACT,
     CoreProvenanceOptions,
@@ -47,10 +49,12 @@ class RiverhogProvenanceObserver:
                 contracts=(
                     ObserverContractSupport.from_contract(
                         MATERIALIZATION_HINT_OBSERVER_CONTRACT,
+                        interfaces=(MATERIALIZATION_HINT_INTERFACE.ref,),
                         preferred_subject_batch_size=1,
                     ),
                     ObserverContractSupport.from_contract(
                         CORE_PROVENANCE_OBSERVER_CONTRACT,
+                        interfaces=(CORE_PROVENANCE_INTERFACE.ref,),
                         preferred_subject_batch_size=1,
                     ),
                 ),

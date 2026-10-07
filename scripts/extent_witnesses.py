@@ -276,6 +276,24 @@ WITNESSES = (
         ),
     ),
     SegmentedExtentWitness(
+        id="stove0-accepted-observation-view-progression/v1",
+        owner="stove0-observer-protocol",
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _protocol_subject(
+                "generated:stove0-observer",
+                "schemas/AcceptedObservationJob/$defs/AcceptedViewPage/properties/records",
+            ),
+        ),
+        test_node_ids=(
+            "some-implementations/stove0/application/tests/test_accepted_observations.py::"
+            "test_complete_set_and_view_seal_in_bounded_steps_across_restart",
+            "some-implementations/stove0/application/tests/test_accepted_observations.py::"
+            "test_scoped_view_does_not_forge_or_disclose_original_larger_result",
+        ),
+        gates=("make unit", "make linux-qualification"),
+    ),
+    SegmentedExtentWitness(
         id="stove0-read-collection-progression/v1",
         owner="stove0",
         rule_id="route-progression/v1",

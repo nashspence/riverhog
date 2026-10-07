@@ -118,7 +118,31 @@ class DepartureEffectReceipt(DepartureEffectReceiptPayload):
         return self
 
 
+class DepartureEffectStatus(_Model):
+    """Control status; only a completed receipt establishes the external effect."""
+
+    format: Literal["stove0-departure-effect-status/v1"] = "stove0-departure-effect-status/v1"
+    departure_id: Sha256
+    target_identity: Sha256
+    attempt: int = Field(ge=1)
+    state: Literal["queued", "running", "canceling", "interrupted", "completed", "canceled"]
+    receipt: DepartureEffectReceipt | None = None
+    failure: str | None = Field(default=None, max_length=1000)
+
+    @model_validator(mode="after")
+    def exact_receipt(self) -> Self:
+        if (self.state == "completed") != (self.receipt is not None):
+            raise ValueError("only completed departure status contains an effect receipt")
+        if self.receipt is not None and (
+            self.receipt.departure_id != self.departure_id
+            or self.receipt.target_identity != self.target_identity
+        ):
+            raise ValueError("departure status receipt differs from its accepted intent")
+        return self
+
+
 __all__ = [
+    "DepartureEffectStatus",
     "DepartureEffectTargetDescriptor",
     "DepartureEffectTargetDescriptorPayload",
     "DepartureEffectIntent",

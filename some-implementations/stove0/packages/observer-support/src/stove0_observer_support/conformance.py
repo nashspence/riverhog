@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Literal, Protocol, Self
@@ -14,10 +15,12 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from stove0_observer_client import ContentObserverClient, load_semantic_validator_registry
 from stove0_observer_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
+    AcceptedObservationJob,
     ContentObservationInvocation,
     ContentObservationRequest,
     ContentObservationRequestPayload,
     ContentObservationResult,
+    ObservationJobStatus,
     ObserverDescriptor,
     SemanticFactsConformanceVectors,
     SemanticValidatorProvider,
@@ -137,7 +140,7 @@ class ObserverContractConformance(_ObserverConformanceModel):
         pattern=r"^[0-9a-f]{64}$",
     )
     preferred_subject_batch_size: int = Field(ge=1, strict=True)
-    maximum_result_bytes: int = Field(ge=1, strict=True)
+    maximum_result_bytes: int | None = Field(default=None, ge=1, strict=True)
     execution: Literal["not-exercised", "exercised"]
     semantic_acceptance: ObserverSemanticAcceptance | None = None
     evidence: ObserverContractConformanceEvidence | None = None
@@ -235,12 +238,39 @@ class ObserverConformanceResult(_ObserverConformanceModel):
 class ObserverClient(Protocol):
     def descriptor(self) -> ObserverDescriptor: ...
 
-    def observe(
+    def put_job(
         self,
         invocation: ContentObservationInvocation,
         *,
         descriptor: ObserverDescriptor,
-    ) -> Any: ...
+    ) -> ObservationJobStatus: ...
+
+    def status(
+        self, accepted: AcceptedObservationJob, *, descriptor: ObserverDescriptor
+    ) -> ObservationJobStatus: ...
+
+    def cancel(
+        self, accepted: AcceptedObservationJob, *, descriptor: ObserverDescriptor
+    ) -> ObservationJobStatus: ...
+
+
+def _observe_for_conformance(
+    client: ObserverClient, invocation: ContentObservationInvocation, descriptor: ObserverDescriptor
+) -> ContentObservationResult:
+    # Operator qualification may await payload execution. The control client
+    # and Stove0 scheduler never await execution inside a control call.
+    deadline = time.monotonic() + invocation.request.timeout_seconds + 30
+    status = client.put_job(invocation, descriptor=descriptor)
+    while status.state != "completed":
+        if time.monotonic() >= deadline:
+            client.cancel(invocation.accepted(), descriptor=descriptor)
+            raise TimeoutError("observer qualification exceeded its execution deadline")
+        time.sleep(0.05)
+        status = client.status(invocation.accepted(), descriptor=descriptor)
+        if status.state == "interrupted":
+            status = client.put_job(invocation, descriptor=descriptor)
+    assert status.result is not None
+    return status.result
 
 
 def conformance_report(
@@ -279,7 +309,7 @@ def conformance_report(
             request = invocation.request
             if request.observer_contract_sha256 != support.contract_sha256:
                 raise RuntimeError("invocation does not bind the observer's published contract")
-            result = client.observe(invocation, descriptor=descriptor)
+            result = _observe_for_conformance(client, invocation, descriptor)
             accept_observation_result(result, request, descriptor, semantic_validators)
             entry["execution"] = "exercised"
             entry["evidence"] = {

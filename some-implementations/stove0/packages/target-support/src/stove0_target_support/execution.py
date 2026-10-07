@@ -20,6 +20,7 @@ from stove0_target_protocol import (
     TargetJobRequest,
     TargetJobStatus,
     TargetPreRootResult,
+    TargetProgress,
 )
 
 from stove0_target_support.completion_checkpoint import TargetCompletionCheckpoint, _immutable_file
@@ -49,6 +50,8 @@ class TargetExecutionSession:
         runtime_registry: ClaimedCollectionRuntimeRegistry,
         *,
         state_root: Path | None = None,
+        progress_callback: Callable[[TargetProgress], None] | None = None,
+        completion_callback: Callable[[TargetJobStatus], object] | None = None,
     ) -> None:
         self.job_id = request.declaration.job_id
         self.request_sha256 = request.request_sha256
@@ -58,6 +61,8 @@ class TargetExecutionSession:
         self.state_root = state_root
         self._lock = threading.RLock()
         self._completed_status: TargetJobStatus | None = None
+        self._progress_callback = progress_callback
+        self._completion_callback = completion_callback
         self._callback_access = request.callback_access
         self._callback_client: TargetCallbackClient | None = None
 
@@ -189,6 +194,13 @@ class TargetExecutionSession:
             if self._completed_status is not None and self._completed_status != status:
                 raise RuntimeError("target attempt produced two different terminal outcomes")
             self._completed_status = status
+        if self._completion_callback is not None:
+            self._completion_callback(status)
+
+    def report_progress(self, progress: TargetProgress) -> None:
+        """Publish typed milestones from the executor without creating evidence."""
+        if self._progress_callback is not None:
+            self._progress_callback(progress)
 
     @property
     def completed_status(self) -> TargetJobStatus | None:

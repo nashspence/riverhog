@@ -33,3 +33,7 @@ __all__ = [
     "validate_media_sampling_facts",
     "validate_media_sampling_observation",
 ]
+
+from .interfaces import MEDIA_SAMPLING_INTERFACE, MEDIA_SAMPLING_INTERFACE_VECTORS
+
+__all__ += ["MEDIA_SAMPLING_INTERFACE", "MEDIA_SAMPLING_INTERFACE_VECTORS"]

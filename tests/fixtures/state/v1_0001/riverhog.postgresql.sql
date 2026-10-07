@@ -1224,29 +1224,31 @@ CREATE TABLE collection_mutable_document_publication_attempts (
 CREATE INDEX ix_mutable_document_publication_attempts_created ON collection_mutable_document_publication_attempts (created_at, collection_id, store, document_kind);
 
 CREATE TABLE collection_processing_capabilities (
-	id VARCHAR(32) NOT NULL,
-	claim_id VARCHAR(64) NOT NULL,
-	fence BIGINT NOT NULL,
-	audience VARCHAR(300) NOT NULL,
-	token_sha256 VARCHAR(64) NOT NULL,
-	actions_json TEXT NOT NULL,
-	artifact_count BIGINT NOT NULL,
-	artifact_bytes BIGINT NOT NULL,
-	artifact_hash_state TEXT,
-	artifact_set_sha256 VARCHAR(64),
-	artifacts_sealed_at VARCHAR,
-	state VARCHAR NOT NULL,
-	expires_at VARCHAR NOT NULL,
-	created_at VARCHAR NOT NULL,
-	revoked_at VARCHAR,
-	PRIMARY KEY (id),
-	CONSTRAINT ck_collection_processing_capabilities_state CHECK (state IN ('receiving','active','revoked')),
-	CONSTRAINT ck_collection_processing_capabilities_fence CHECK (fence >= 1),
-	CONSTRAINT ck_collection_processing_capabilities_artifact_totals CHECK (artifact_count >= 0 AND artifact_bytes >= 0),
-	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE,
-	UNIQUE (token_sha256),
-	CONSTRAINT ck_collection_processing_capabilities_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_processing_capabilities_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	id VARCHAR(32) NOT NULL, 
+	claim_id VARCHAR(64) NOT NULL, 
+	fence BIGINT NOT NULL, 
+	audience VARCHAR(300) NOT NULL, 
+	token_sha256 VARCHAR(64) NOT NULL, 
+	actions_json TEXT NOT NULL, 
+	artifact_scope_capability_id VARCHAR(32), 
+	artifact_count BIGINT NOT NULL, 
+	artifact_bytes BIGINT NOT NULL, 
+	artifact_hash_state TEXT, 
+	artifact_set_sha256 VARCHAR(64), 
+	artifacts_sealed_at VARCHAR, 
+	state VARCHAR NOT NULL, 
+	expires_at VARCHAR NOT NULL, 
+	created_at VARCHAR NOT NULL, 
+	revoked_at VARCHAR, 
+	PRIMARY KEY (id), 
+	CONSTRAINT ck_collection_processing_capabilities_state CHECK (state IN ('receiving','active','revoked')), 
+	CONSTRAINT ck_collection_processing_capabilities_fence CHECK (fence >= 1), 
+	CONSTRAINT ck_collection_processing_capabilities_artifact_totals CHECK (artifact_count >= 0 AND artifact_bytes >= 0), 
+	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE, 
+	UNIQUE (token_sha256), 
+	FOREIGN KEY(artifact_scope_capability_id) REFERENCES collection_processing_capabilities (id) ON DELETE CASCADE, 
+	CONSTRAINT ck_collection_processing_capabilities_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
+	CONSTRAINT ck_collection_processing_capabilities_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
 	CONSTRAINT ck_sha256_f421ad4e24e487cb CHECK (artifact_set_sha256 IS NULL OR length(artifact_set_sha256) = 64 AND lower(artifact_set_sha256) = artifact_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
@@ -2375,5 +2377,7 @@ CREATE INDEX ix_collection_artifacts_id_trgm ON collection_artifacts USING gin (
 
 CREATE INDEX ix_collection_artifacts_sha_trgm ON collection_artifacts USING gin (sha256 gin_trgm_ops)
 ;
+
+CREATE INDEX ix_collection_processing_capability_scope_owner ON collection_processing_capabilities (artifact_scope_capability_id, id);
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

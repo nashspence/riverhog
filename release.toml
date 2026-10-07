@@ -19,6 +19,7 @@ supplied_family_machinery_distributions = [
   "review0-sampler-lib",
   "review0-sampler-protocol",
   "stove0-api-client",
+  "stove0-extension-support",
   "stove0-observer-client",
   "stove0-observer-protocol",
   "stove0-observer-support",
@@ -77,7 +78,7 @@ provider_qualification_runtime = "provider-qualification"
 
 [governance.boundary_freeze]
 status = "frozen"
-protected_boundary_sha256 = "74079e82ce7bdadf4e9b5c255a47d3221a5148404cccb7ad69234709ccd5e1e5"
+protected_boundary_sha256 = "04dba8930542eef98c1bc7fa13a5e2d399f03c6a21b6e28bbcbaafdc2341952e"
 protected_components = [
   "config-validation",
   "gogurt",
@@ -144,6 +145,7 @@ protected_components = [
   "stove0-observer-client",
   "stove0-observer-protocol",
   "stove0-observer-support",
+  "stove0-extension-support",
   "stove0-operator-contracts",
   "a-review0-opus-sampler",
   "a-stove0-opus-target",
@@ -450,6 +452,7 @@ reusable_library = [
   "packages/riverhog-storage-adapter-support",
   "some-implementations/stove0/packages/observer-protocol",
   "some-implementations/stove0/packages/observer-support",
+  "some-implementations/stove0/packages/extension-support",
   "some-implementations/stove0/packages/observer-client",
   "some-implementations/stove0/packages/api-client",
   "some-implementations/stove0/packages/operator-contracts",

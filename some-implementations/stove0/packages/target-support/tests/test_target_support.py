@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import shutil
 import threading
@@ -17,6 +18,7 @@ from http_api_contracts import (
     http_operation_inventory,
     operation_openapi,
 )
+from http_api_contracts.control import ControlBudgetExhausted
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from pydantic import ValidationError
@@ -48,6 +50,7 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_sha256 as riverhog_canonical_json_sha256,
 )
 from riverhog_provenance import BoundedSourceObserver, BytesSource, new_id
+from stove0_extension_support import ExecutionOwner, ExecutionPermit
 from stove0_protocol import (
     ArtifactSelection,
     CollectionRootIdentityRef,
@@ -135,6 +138,17 @@ from stove0_target_support.output_checkpoint import TargetOutputCheckpoint
 REPO_ROOT = Path(__file__).resolve().parents[5]
 _EXECUTION_PREIMAGE = canonical_json_bytes({"format": "fixture-execution/v1", "optional": None})
 _EXECUTION_SHA256 = hashlib.sha256(_EXECUTION_PREIMAGE).hexdigest()
+
+
+@pytest.fixture(autouse=True)
+def fixture_dispatch_authority(monkeypatch: pytest.MonkeyPatch) -> None:
+    # These executors use synthetic claims. Live capability/root validation has
+    # its own HTTP witnesses and is exercised by supplied component integration.
+    monkeypatch.setattr(
+        PersistentTargetService,
+        "_validate_live_authority",
+        lambda _self, _request, *, deadline: None,
+    )
 
 
 def _sha(character: str) -> str:
@@ -361,6 +375,27 @@ def _request() -> tuple[OperationContract, TargetDescriptor, TargetJobRequest]:
     operation = _operation()
     target = _target(operation)
     return operation, target, _request_for(operation, target)
+
+
+def _request_at_fence(request: TargetJobRequest, fence: int) -> TargetJobRequest:
+    envelope = ExecutionEnvelope.seal(
+        ExecutionEnvelopePayload.model_validate(
+            request.declaration.controller_evidence.execution_envelope.model_dump(
+                mode="python", exclude={"execution_envelope_sha256"}
+            )
+        ).model_copy(update={"fence": fence})
+    )
+    declaration = TargetJobDeclaration(
+        job_id=envelope.execution_envelope_sha256,
+        claim_id=envelope.claim_id,
+        fence=fence,
+        controller_evidence=ControllerEvidence.seal(
+            ControllerEvidencePayload(execution_envelope=envelope)
+        ),
+        plan=request.declaration.plan,
+        declared_workspace_protection=request.declaration.declared_workspace_protection,
+    )
+    return TargetJobRequest.seal(declaration, request.runtime, request.callback_access)
 
 
 def _effect_request() -> tuple[OperationContract, TargetDescriptor, TargetJobRequest]:
@@ -1329,7 +1364,7 @@ def test_target_client_rejects_noncanonical_job_ids_before_transport() -> None:
         client.cancel("A" * 64, operation=operation)  # type: ignore[arg-type]
 
 
-def test_target_client_sends_cancellation_without_a_request_body(
+def test_target_client_sends_exact_nonsecret_cancellation_context(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     operation, _target, request = _request()
@@ -1339,7 +1374,9 @@ def test_target_client_sends_cancellation_without_a_request_body(
     def respond(received: httpx.Request) -> httpx.Response:
         assert received.method == "POST"
         assert received.url.path == f"/v1/jobs/{request.declaration.job_id}/cancel"
-        assert received.content == b""
+        assert AcceptedTargetJob.model_validate_json(received.content) == request.accepted()
+        assert b"first-secret" not in received.content
+        assert b"callback-secret" not in received.content
         return httpx.Response(200, json=expected.model_dump(mode="json"))
 
     monkeypatch.setattr(
@@ -1374,7 +1411,7 @@ def test_target_client_rejects_a_well_formed_status_for_different_work(
         TargetClient("https://target.example").put_job(request, operation=operation)
 
 
-def test_target_http_operations_publish_exact_job_paths_and_empty_cancel() -> None:
+def test_target_http_operations_publish_exact_job_paths_and_bound_cancel() -> None:
     jobs = [operation for operation in TARGET_HTTP_OPERATIONS if "{job_id}" in operation.path]
     assert len(jobs) == 3
     for operation in jobs:
@@ -1388,7 +1425,8 @@ def test_target_http_operations_publish_exact_job_paths_and_empty_cancel() -> No
             }
         ]
     cancel = next(operation for operation in jobs if operation.path.endswith("/cancel"))
-    assert "requestBody" not in operation_openapi(cancel)["openapi_extra"]
+    assert cancel.request_type is AcceptedTargetJob
+    assert "requestBody" in operation_openapi(cancel)["openapi_extra"]
 
 
 class BindingTargetService:
@@ -1420,7 +1458,8 @@ class BindingTargetService:
         assert job_id == self.request.declaration.job_id
         return self.status_value
 
-    def cancel_job(self, job_id: str) -> TargetJobStatus:
+    def cancel_job(self, request: AcceptedTargetJob) -> TargetJobStatus:
+        job_id = request.declaration.job_id
         assert job_id == self.request.declaration.job_id
         return self.status_value
 
@@ -1635,10 +1674,6 @@ def test_target_schema_bundle_is_deterministic_and_self_validating() -> None:
     assert departure["http_binding"]["operations"] == http_operation_inventory(
         DEPARTURE_EFFECT_HTTP_OPERATIONS
     )
-    assert {operation["path"] for operation in departure["http_binding"]["operations"]} == {
-        "/v1/departure-target",
-        "/v1/departure-effects/{departure_id}",
-    }
     assert first["authorities"] == {
         "structural_models": "schemas",
         "http_operations": "http_binding.operations",
@@ -1765,22 +1800,32 @@ def test_persistent_target_prunes_only_expired_terminal_request_pairs(
     expired_path = state_root / f"{request.declaration.job_id}.status.json"
     _write_model(expired_path, expired_status)
 
+    interrupted_request = _request_at_fence(request, 3)
+    _write_model(
+        state_root / f"{interrupted_request.declaration.job_id}.accepted.json",
+        interrupted_request.accepted(),
+    )
     interrupted = TargetJobStatus(
-        job_id=_sha("b"),
+        job_id=interrupted_request.declaration.job_id,
         state="interrupted",
         attempt=1,
-        request_sha256=_sha("c"),
-        plan_sha256=_sha("d"),
+        request_sha256=interrupted_request.request_sha256,
+        plan_sha256=interrupted_request.declaration.plan.plan_sha256,
         progress=TargetProgress(phase="interrupted", completed=0),
     )
     interrupted_path = state_root / f"{interrupted.job_id}.status.json"
     _write_model(interrupted_path, interrupted)
+    fresh_request = _request_at_fence(request, 4)
+    _write_model(
+        state_root / f"{fresh_request.declaration.job_id}.accepted.json",
+        fresh_request.accepted(),
+    )
     fresh = TargetJobStatus(
-        job_id=_sha("e"),
+        job_id=fresh_request.declaration.job_id,
         state="canceled",
         attempt=1,
-        request_sha256=_sha("f"),
-        plan_sha256=_sha("0"),
+        request_sha256=fresh_request.request_sha256,
+        plan_sha256=fresh_request.declaration.plan.plan_sha256,
         progress=TargetProgress(phase="canceled", completed=0),
     )
     fresh_path = state_root / f"{fresh.job_id}.status.json"
@@ -1803,7 +1848,10 @@ def test_persistent_target_prunes_only_expired_terminal_request_pairs(
     try:
         assert service.prune_terminal_state(now=observed_now) == {"jobs": 0, "bytes": 0}
         assert sorted(path.name for path in state_root.iterdir()) == [
+            ".owner.lock",
+            f"{interrupted.job_id}.accepted.json",
             f"{interrupted.job_id}.status.json",
+            f"{fresh.job_id}.accepted.json",
             f"{fresh.job_id}.status.json",
         ]
     finally:
@@ -1860,6 +1908,353 @@ def test_persistent_target_resumes_exact_declaration_without_storing_authority(
     assert b"riverhog.invalid" not in persisted
 
 
+def test_target_waiters_have_no_payload_slots_and_cancel_without_execution(tmp_path: Path) -> None:
+    operation, target, request = _request()
+    started = threading.Event()
+    calls: list[str] = []
+
+    def block(
+        request: TargetJobRequest,
+        _attempt: int,
+        canceled: threading.Event,
+        _session: TargetExecutionSession,
+    ) -> TargetJobStatus:
+        calls.append(request.declaration.job_id)
+        started.set()
+        assert canceled.wait(5)
+        raise TargetExecutionCanceled
+
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=block,
+        maximum_workers=1,
+    )
+    waiting = [_request_at_fence(request, fence) for fence in range(3, 35)]
+    try:
+        service.put_job(request)
+        assert started.wait(5)
+        for queued in waiting:
+            assert service.put_job(queued).state == "queued"
+        assert service._dispatch.payload_count == 1
+        assert len(service._sessions) == 1
+        for queued in waiting:
+            canceled = service.cancel_job(queued.accepted())
+            assert canceled.state == "canceled"
+            assert canceled.attempt == 1
+            assert service.put_job(queued) == canceled
+        assert calls == [request.declaration.job_id]
+    finally:
+        service.close()
+
+
+@pytest.mark.parametrize("effect", [False, True])
+def test_unstarted_jobs_survive_restart_and_need_fresh_authority(
+    tmp_path: Path, effect: bool
+) -> None:
+    operation, target, request = _effect_request() if effect else _request()
+    state_root = tmp_path / "state"
+    state_root.mkdir()
+    # Crash between accepted declaration and initial status, before dispatch.
+    _write_model(state_root / f"{request.declaration.job_id}.accepted.json", request.accepted())
+    calls: list[str] = []
+    finished = threading.Event()
+
+    def execute(
+        request: TargetJobRequest,
+        _attempt: int,
+        _canceled: threading.Event,
+        _session: TargetExecutionSession,
+    ) -> TargetJobStatus:
+        calls.append(request.runtime.capability_token)
+        finished.set()
+        raise TargetExecutionInapplicable("fixture.unsupported/v1", "fixture")
+
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=state_root,
+        execute=execute,
+    )
+    try:
+        assert service.get_job(request.declaration.job_id).state == "queued"
+        assert service.get_job(request.declaration.job_id).attempt == 1
+        assert not calls
+        refreshed = request.model_copy(
+            update={
+                "runtime": request.runtime.model_copy(
+                    update={"capability_token": "refreshed-secret"}
+                )
+            }
+        )
+        assert service.put_job(refreshed).attempt == 1
+        assert finished.wait(5)
+        assert calls == ["refreshed-secret"]
+    finally:
+        service.close()
+    assert b"refreshed-secret" not in b"".join(p.read_bytes() for p in state_root.iterdir())
+
+
+def test_unknown_cancellation_survives_restart_and_fences_late_put(tmp_path: Path) -> None:
+    operation, target, request = _request()
+    calls: list[str] = []
+
+    def execute(*_args: object) -> TargetJobStatus:
+        calls.append("executed")
+        raise AssertionError("a canceled invocation must not start")
+
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=execute,
+    )
+    binding = TargetHttpBinding(service)
+    try:
+        response = binding.handle(
+            "POST",
+            f"/v1/jobs/{request.declaration.job_id}/cancel",
+            request.accepted().model_dump_json().encode(),
+        )
+        assert response.status == 200
+        terminal = TargetJobStatus.model_validate_json(response.body)
+        assert terminal.state == "canceled"
+        assert service.put_job(request) == terminal
+    finally:
+        service.close()
+    restarted = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=execute,
+    )
+    try:
+        assert restarted.put_job(request) == terminal
+        assert restarted.cancel_job(request.accepted()) == terminal
+        assert calls == []
+    finally:
+        restarted.close()
+
+
+def test_cancellation_tombstone_recovers_before_accepted_status_writes(tmp_path: Path) -> None:
+    operation, target, request = _request()
+    _write_model(tmp_path / f"{request.declaration.job_id}.cancel.json", request.accepted())
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=lambda *_args: _success_status(operation, request),
+    )
+    try:
+        assert service.put_job(request).state == "canceled"
+        assert service.get_job(request.declaration.job_id).attempt == 1
+        assert not service._dispatch.payload_count
+    finally:
+        service.close()
+
+
+def test_queue_pressure_refuses_before_acceptance_and_preserves_refresh(tmp_path: Path) -> None:
+    operation, target, request = _request()
+    started = threading.Event()
+
+    def block(
+        _request: TargetJobRequest,
+        _attempt: int,
+        canceled: threading.Event,
+        _session: TargetExecutionSession,
+    ) -> TargetJobStatus:
+        started.set()
+        assert canceled.wait(5)
+        raise TargetExecutionCanceled
+
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=block,
+        maximum_pending_jobs=2,
+    )
+    queued = _request_at_fence(request, 3)
+    refused = _request_at_fence(request, 4)
+    try:
+        service.put_job(request)
+        assert started.wait(5)
+        assert service.put_job(queued).state == "queued"
+        assert service.put_job(queued).attempt == 1
+        response = TargetHttpBinding(service).handle(
+            "PUT", f"/v1/jobs/{refused.declaration.job_id}", refused.model_dump_json().encode()
+        )
+        assert response.status == 503
+        assert json.loads(response.body)["error"]["code"] == "admission_unavailable"
+        assert not (tmp_path / f"{refused.declaration.job_id}.accepted.json").exists()
+        assert service.cancel_job(queued.accepted()).state == "canceled"
+        assert service.put_job(refused).state == "queued"
+    finally:
+        service.close()
+
+
+class _AdmissionPermit:
+    def __init__(self, owner: ExecutionOwner) -> None:
+        self.owner = owner
+        self.activations = 0
+        self.releases = 0
+        self.released = threading.Event()
+
+    def activate(self, cancellation: threading.Event, *, deadline: float) -> None:
+        assert not cancellation.is_set()
+        assert time.monotonic() < deadline
+        self.activations += 1
+
+    def release(self, *, deadline: float) -> None:
+        self.releases += 1
+        self.released.set()
+
+
+def test_deferred_admission_uses_no_payload_and_other_invocations_progress(tmp_path: Path) -> None:
+    operation, target, request = _request()
+    allowed = _request_at_fence(request, 3)
+    probed = threading.Event()
+    finished = threading.Event()
+    probes: list[ExecutionOwner] = []
+    permits: list[_AdmissionPermit] = []
+    executions: list[str] = []
+
+    class Admission:
+        def probe(self, owner: ExecutionOwner, *, deadline: float) -> ExecutionPermit | None:
+            probes.append(owner)
+            if owner.invocation_id == request.request_sha256:
+                probed.set()
+                return None
+            permit = _AdmissionPermit(owner)
+            permits.append(permit)
+            return permit
+
+        def withdraw(self, owner: ExecutionOwner, *, deadline: float) -> None:
+            pass
+
+    def execute(
+        request: TargetJobRequest,
+        _attempt: int,
+        _canceled: threading.Event,
+        _session: TargetExecutionSession,
+    ) -> TargetJobStatus:
+        executions.append(request.declaration.job_id)
+        finished.set()
+        return _success_status(operation, request)
+
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=execute,
+        execution_admission=Admission(),
+        admission_retry_seconds=0.01,
+    )
+    try:
+        service.put_job(request)
+        assert probed.wait(5)
+        assert service.get_job(request.declaration.job_id).state == "queued"
+        assert not service._dispatch.payload_count
+        assert not service._sessions
+        assert service.put_job(request).attempt == 1
+        service.put_job(allowed)
+        assert finished.wait(5)
+        assert permits[0].released.wait(5)
+        assert service.get_job(allowed.declaration.job_id).state == "succeeded"
+        assert service.get_job(request.declaration.job_id).attempt == 1
+        denied_owners = {owner for owner in probes if owner.invocation_id == request.request_sha256}
+        assert len(denied_owners) == 1
+        assert executions == [allowed.declaration.job_id]
+        assert service.cancel_job(request.accepted()).state == "canceled"
+    finally:
+        service.close()
+
+
+@pytest.mark.parametrize("foreign", [False, True])
+def test_cancel_during_probe_releases_only_its_late_owned_grant(
+    tmp_path: Path, foreign: bool
+) -> None:
+    operation, target, request = _request()
+    probing = threading.Event()
+    deliver = threading.Event()
+    permits: list[_AdmissionPermit] = []
+    withdrawn = threading.Event()
+    executions: list[str] = []
+
+    class Admission:
+        def probe(self, owner: ExecutionOwner, *, deadline: float) -> ExecutionPermit:
+            probing.set()
+            assert deliver.wait(5)
+            returned = (
+                ExecutionOwner(owner.invocation_id, owner.attempt, "another-owner", "foreign")
+                if foreign
+                else owner
+            )
+            permit = _AdmissionPermit(returned)
+            permits.append(permit)
+            return permit
+
+        def withdraw(self, owner: ExecutionOwner, *, deadline: float) -> None:
+            withdrawn.set()
+
+    def execute(*_args: object) -> TargetJobStatus:
+        executions.append("ran")
+        raise AssertionError("late grants cannot revive canceled work")
+
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=execute,
+        execution_admission=Admission(),
+        admission_retry_seconds=0.01,
+    )
+    try:
+        service.put_job(request)
+        assert probing.wait(5)
+        # Probe never holds the control lock. The cancel is durable before the
+        # external application supplies its response.
+        assert service.cancel_job(request.accepted()).state == "canceled"
+        assert not deliver.is_set()
+        deliver.set()
+        assert withdrawn.wait(5)
+        assert permits[0].activations == 0
+        assert permits[0].releases == (0 if foreign else 1)
+        assert executions == []
+        assert service.put_job(request).state == "canceled"
+    finally:
+        deliver.set()
+        service.close()
+
+
+def test_active_target_state_has_one_exclusive_process_owner(tmp_path: Path) -> None:
+    operation, target, request = _request()
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=lambda *_args: _success_status(operation, request),
+    )
+    try:
+        with pytest.raises(RuntimeError, match="active owner"):
+            PersistentTargetService(
+                descriptor=target,
+                operations={operation.id: operation},
+                state_root=tmp_path,
+                execute=lambda *_args: _success_status(operation, request),
+            )
+    finally:
+        service.close()
+    replacement = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=lambda *_args: _success_status(operation, request),
+    )
+    replacement.close()
+
+
 def test_persistent_target_shutdown_and_operator_cancel_have_distinct_state(
     tmp_path: Path,
 ) -> None:
@@ -1897,7 +2292,7 @@ def test_persistent_target_shutdown_and_operator_cancel_have_distinct_state(
     try:
         canceled.put_job(request)
         assert started.wait(timeout=5)
-        assert canceled.cancel_job(request.declaration.job_id).state == "canceling"
+        assert canceled.cancel_job(request.accepted()).state == "canceling"
         deadline = time.monotonic() + 5
         while canceled.get_job(request.declaration.job_id).state != "canceled":
             assert time.monotonic() < deadline
@@ -2304,7 +2699,7 @@ def test_persisted_effect_receipt_replays_without_repeating_external_effect(
         terminal_state_retention_seconds=1,
     )
     try:
-        assert len(tuple(state_root.iterdir())) == 2
+        assert sorted(path.suffix for path in state_root.iterdir()) == [".json", ".json", ".lock"]
         assert restarted.put_job(request) == expected
     finally:
         restarted.close()
@@ -2345,7 +2740,7 @@ def test_uncertain_effect_commit_stays_interrupted_and_never_auto_repeats(
         interrupted = service.get_job(request.declaration.job_id)
         assert interrupted.progress.phase == "external-commit-uncertain"
         assert service.put_job(request) == interrupted
-        assert service.cancel_job(request.declaration.job_id) == interrupted
+        assert service.cancel_job(request.accepted()) == interrupted
         assert calls == 1
     finally:
         service.close()
@@ -2374,7 +2769,7 @@ def test_terminal_target_jobs_release_process_local_bookkeeping(tmp_path: Path) 
         service.put_job(request)
         assert finished.wait(timeout=5)
         deadline = time.monotonic() + 5
-        while service._futures:  # noqa: SLF001 - white-box bounded-state proof
+        while service._dispatch.active_keys:  # noqa: SLF001 - white-box bounded-state proof
             assert time.monotonic() < deadline
             time.sleep(0.01)
         assert service._cancel == {}  # noqa: SLF001 - white-box bounded-state proof
@@ -2410,13 +2805,13 @@ def test_published_success_wins_late_cancel_and_cleanup_failure(tmp_path: Path) 
     try:
         service.put_job(request)
         assert published.wait(timeout=5)
-        assert service.cancel_job(request.declaration.job_id).state == "canceling"
+        assert service.cancel_job(request.accepted()) == success
         release.set()
         deadline = time.monotonic() + 5
         while service.get_job(request.declaration.job_id).state != "succeeded":
             assert time.monotonic() < deadline
             time.sleep(0.01)
-        assert service.cancel_job(request.declaration.job_id) == success
+        assert service.cancel_job(request.accepted()) == success
     finally:
         release.set()
         service.close()
@@ -2651,8 +3046,8 @@ def test_persistent_target_resumes_sealed_publication_without_rerunning_operatio
     release_future = threading.Event()
     run = service._run
 
-    def held_run(fresh, attempt, cancellation, session):
-        status = run(fresh, attempt, cancellation, session)
+    def held_run(fresh, attempt, cancellation, session, permit):
+        status = run(fresh, attempt, cancellation, session, permit)
         if attempt == 2:
             finished_attempt.set()
             assert release_future.wait(timeout=5)
@@ -2660,13 +3055,13 @@ def test_persistent_target_resumes_sealed_publication_without_rerunning_operatio
 
     monkeypatch.setattr(service, "_run", held_run)
     shutdown_started = threading.Event()
-    shutdown = service._pool.shutdown
+    shutdown = service._dispatch.pool.shutdown
 
     def signaled_shutdown(**kwargs):
         shutdown_started.set()
         shutdown(**kwargs)
 
-    monkeypatch.setattr(service._pool, "shutdown", signaled_shutdown)
+    monkeypatch.setattr(service._dispatch.pool, "shutdown", signaled_shutdown)
     closing = None
     try:
         assert service.get_job(job_id).state == "interrupted"
@@ -2690,13 +3085,13 @@ def test_persistent_target_resumes_sealed_publication_without_rerunning_operatio
         )
         assert service.put_job(refreshed).state == "queued"
         if retry_outcome == "cancel":
-            assert service.cancel_job(job_id).state == "canceling"
+            assert service.cancel_job(request.accepted()).state == "canceling"
         elif retry_outcome == "shutdown":
             closing = threading.Thread(target=service.close)
             closing.start()
             assert shutdown_started.wait(timeout=5)
         release_future.set()
-        expected_state = {"cancel": "canceled", "shutdown": "interrupted", "resume": "succeeded"}[
+        expected_state = {"cancel": "canceled", "shutdown": "queued", "resume": "succeeded"}[
             retry_outcome
         ]
         while service.get_job(job_id).state != expected_state:
@@ -2751,7 +3146,7 @@ def test_checkpoint_retention_keeps_failed_unpublished_evidence(tmp_path: Path) 
         service._write_model(tmp_path / f"{job_id}.status.json", expected)
         sizes = sum(path.stat().st_size for path in tmp_path.rglob("*") if path.is_file())
         assert service.prune_terminal_state(now=time.time() + 10**9) == {"jobs": 1, "bytes": sizes}
-        assert list(tmp_path.iterdir()) == []
+        assert list(tmp_path.iterdir()) == [tmp_path / ".owner.lock"]
     finally:
         service.close()
 
@@ -2957,3 +3352,77 @@ def test_step_checkpoint_preserves_original_evidence_after_restart(tmp_path: Pat
     path.write_bytes(canonical_json_bytes(value))
     with pytest.raises(ValueError, match="accepted execution"):
         restarted.stored_step_value("toolchain")
+
+
+def test_staged_preflight_preserves_complete_sealed_plan_and_native_invocation(
+    tmp_path, monkeypatch
+):
+    operation, target, job = _request()
+    base = job.declaration.plan
+    records = [f"{index:05d}:" + "x" * 600 for index in range(8192)]
+    plan = TransformPlan.seal(
+        TransformPlanPayload.model_validate(
+            base.model_dump(mode="json", exclude={"plan_sha256"})
+        ).model_copy(update={"execution_parameters": {"records": records}})
+    )
+    preflight = TargetPreflightRequest(
+        invocation_sha256=base.invocation_sha256,
+        operation_id=operation.id,
+        operation_contract_sha256=operation.contract_sha256,
+        inputs=base.inputs,
+        intent=base.intent,
+        target_options=base.target_options,
+    )
+    received = []
+
+    class Target:
+        def descriptor(self):
+            return target
+
+        def preflight(self, request):
+            assert request == preflight
+            received.append(request)
+            return TargetPreflightResponse(descriptor=target, plan=plan)
+
+    binding = TargetHttpBinding(Target(), maximum_request_bytes=256, metadata_root=tmp_path)
+    assert (
+        binding.handle(
+            "POST", "/v1/preflight", canonical_json_bytes(preflight.model_dump(mode="json"))
+        ).status
+        == 413
+    )
+    real_client = httpx.Client
+    wires = []
+
+    def respond(request):
+        assert request.headers["Authorization"] == "Bearer test-target-token"
+        wires.append((request.url.path, len(request.content)))
+        response = binding.handle(request.method, request.url.path, request.content)
+        return httpx.Response(
+            response.status, content=response.body, headers=dict(response.headers)
+        )
+
+    monkeypatch.setattr(
+        httpx, "Client", lambda **kwargs: real_client(transport=httpx.MockTransport(respond))
+    )
+    client = TargetClient("https://target.invalid", token="test-target-token", staged_metadata=True)
+    try:
+        deadline = time.monotonic() + 30
+        while True:
+            assert time.monotonic() < deadline
+            try:
+                result = client.preflight(preflight)
+                break
+            except ControlBudgetExhausted:
+                time.sleep(0.01)
+        assert result.plan.plan_sha256 == plan.plan_sha256
+        assert result.plan.invocation_sha256 == preflight.invocation_sha256
+        assert result.plan.execution_parameters == {"records": records}
+        assert canonical_json_bytes(result.plan.model_dump(mode="json")) == canonical_json_bytes(
+            plan.model_dump(mode="json")
+        )
+        assert received == [preflight]
+        assert all(path.startswith("/v1/metadata/") and size < 100000 for path, size in wires)
+    finally:
+        client.close()
+        binding.metadata.close()

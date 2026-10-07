@@ -1,26 +1,41 @@
-"""Content-opaque stove0 recipe policy and deterministic planning."""
+"""Interpret only retained compiled recipes and their exact dependency closure."""
 
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
-from copy import deepcopy
-from dataclasses import dataclass, field
-from typing import cast
+from typing import TYPE_CHECKING, Any, Literal, Protocol, Self
 
-from pydantic import JsonValue
-from riverhog_client import ApiClient
-from riverhog_protocol.collection_workflows import (
-    SourceCollectionRetirementPolicy,
-    canonical_json_sha256,
-)
+from pydantic import BaseModel, JsonValue
+from riverhog_protocol.collection_workflows import SourceCollectionRetirementPolicy
+from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from stove0_observer_protocol import (
+    CollectionRootIdentityRef,
     ContentObservationEvidence,
-    ContentObservationRequest,
-    ContentObservationRequestPayload,
     ContentObservationResult,
-    ObservationEvidenceSlot,
-    canonical_json_bytes,
 )
+from stove0_protocol import ArtifactSelectionRef, WorkflowPlan
+from stove0_protocol.no_output_decisions import CompiledNoOutputDecision
+from stove0_protocol.observation_evidence import ObservationQuestion
+from stove0_protocol.recipe_outcomes import NoOutputDefinition
+from stove0_recipe_config.compiled import CompiledRecipe
+from stove0_recipe_config.dependencies import RecipeDependencyClosure
+from stove0_recipe_config.source import BranchExport
+from stove0_target_protocol import OperationContract
+
+from stove0_core.observation_state import ObservationDeliveryPort, ObservationOwnerKind
+from stove0_core.work_metadata import RiverhogInventoryPort
+from stove0_core.work_state import ClaimBinding
+
+if TYPE_CHECKING:
+    from stove0_core.coordinator import ObservationAuthorityPort, ObserverPort, TargetPort
+    from stove0_core.persistence import SqlAlchemyStateStore
+
+import json
+
+from jsonschema import Draft202012Validator
+from pydantic import TypeAdapter
+from sqlalchemy import select
+from stove0_observer_protocol import ObserverDescriptor
 from stove0_protocol import (
     ArtifactSelection,
     BranchDeclaration,
@@ -28,83 +43,80 @@ from stove0_protocol import (
     BranchSetDecision,
     BranchSetPlan,
     BranchWorkBinding,
-    CollectionRootIdentityRef,
     CoordinationBranchPlan,
     JoinDeclaration,
     JoinMemberDeclaration,
     JoinWorkBinding,
     NoOutputBranchPlan,
     OperationIdentityRef,
-    PreviewOutcome,
     WorkArtifactSubject,
-    WorkflowPlan,
     WorkflowPlanIntent,
     WorkIdentity,
     WorkInputGroup,
     WorkPayload,
+    canonical_json_bytes,
+    canonical_json_sha256,
 )
-from stove0_recipe_config import (
-    ArtifactAssociation,
-    ArtifactFactBinding,
-    ArtifactRule,
-    AssociationEvidenceSource,
-    FactCondition,
-    FactPredicate,
-    ObserverUse,
-    OperationProjection,
-    RecipeBranch,
-    RecipeCatalog,
-    RecipeCoordinationRoute,
-    RecipeDefinition,
-    RecipeJoin,
-    RecipeJoinMember,
-    RecipeNoAction,
-    RecipeRoute,
-)
-from stove0_target_protocol import (
-    InputArtifact,
-    OperationContract,
-    TargetInputAuthority,
-    TargetPreflightRequest,
-)
+from stove0_protocol.fork_join import BranchCollectionExport
+from stove0_protocol.observation_evidence import EvidenceResultRef
+from stove0_recipe_config.bindings import apply_bindings
+from stove0_recipe_config.catalog import CompiledRecipeCatalog
+from stove0_recipe_config.compiled import CompiledOperationCall, CompiledRecipeCall
+from stove0_target_protocol import TargetDescriptor, TargetInputAuthority, TargetPreflightRequest
 
-from stove0_core.coordinator import ObserverPort, TargetPort
+from stove0_core.compiled_branches import CompiledBranchScope
+from stove0_core.compiled_decisions import CompiledDecisionPlanning
+from stove0_core.compiled_observation_delivery import CompiledObservationDelivery
+from stove0_core.compiled_observations import CompiledObservationPlanning
+from stove0_core.planning_progress import PlanningProgress
 from stove0_core.work_state import WorkInapplicable, WorkNoAction
 
-NestedObservation = Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
+
+def _json(model: BaseModel) -> str:
+    return canonical_json_bytes(model.model_dump(mode="json", by_alias=True)).decode("utf-8")
 
 
-@dataclass(slots=True)
-class _PlanningFrame:
-    work: WorkIdentity
-    recipe: RecipeDefinition
-    evidence: tuple[ContentObservationEvidence, ...]
-    selected: tuple[tuple[RecipeBranch, ArtifactSelection, tuple[WorkInputGroup, ...]], ...]
-    decision_sha256: str
-    root: bool
-    next_branch: int = 0
-    branches: list[BranchDeclaration] = field(default_factory=list)
-    selections: dict[str, ArtifactSelection] = field(default_factory=dict)
-    branch_sets: dict[str, BranchSetPlan] = field(default_factory=dict)
-    parent_route: RecipeCoordinationRoute | None = None
-    parent_selection: ArtifactSelection | None = None
+class _DescriptorRegistry[Descriptor: BaseModel](Protocol):
+    def registration_ids(self) -> tuple[str, ...]: ...
+
+    def descriptor(self, registration_id: str) -> Descriptor: ...
 
 
 class RecipePlanner:
-    """Production planning authority over metadata and bounded observation facts."""
+    """A selected group set makes one call; every selected branch is required.
+
+    Task delivery is a separate component boundary. This interpreter returns a
+    logical question and advances only after the acceptance owner seals its
+    complete exact testimony. Nested frames are durable and advance independently
+    of process-local recursion or original authoring files.
+    """
 
     def __init__(
         self,
         *,
-        catalog: RecipeCatalog,
-        riverhog: ApiClient,
+        catalog: CompiledRecipeCatalog,
+        state: SqlAlchemyStateStore,
+        riverhog: RiverhogInventoryPort,
         observers: ObserverPort,
         targets: TargetPort,
     ) -> None:
-        self.catalog = catalog
-        self.riverhog = riverhog
-        self.observers = observers
-        self.targets = targets
+        self.catalog, self.state, self.riverhog = catalog, state, riverhog
+        self.observers, self.targets = observers, targets
+        self.observation_planning = CompiledObservationPlanning(state, riverhog)
+        self.decision_planning = CompiledDecisionPlanning(state)
+        self.observation_delivery = CompiledObservationDelivery(self)
+        for recipe in (*catalog.recipes, *catalog.closure.recipes):
+            state.recipe_definitions.retain(recipe, catalog.closure)
+
+    def for_invocation(self, owner_kind: str, owner_id: str) -> Self:
+        from copy import copy
+
+        scoped = copy(self)
+        scoped.state = self.state.planning_context(owner_kind, owner_id)
+        scoped.observation_planning = CompiledObservationPlanning(scoped.state, self.riverhog)
+        scoped.decision_planning = CompiledDecisionPlanning(scoped.state)
+        scoped.observation_delivery = CompiledObservationDelivery(scoped)
+        return scoped
 
     def create_work(
         self,
@@ -112,1210 +124,732 @@ class RecipePlanner:
         roots: Sequence[CollectionRootIdentityRef],
         *,
         revision: int | None = None,
-        effective_intent: Mapping[str, JsonValue] | None = None,
+        effective_intent: dict[str, JsonValue] | None = None,
     ) -> WorkIdentity:
         recipe = self.catalog.recipe(recipe_id, revision)
+        self.state.recipe_definitions.retain_tree(recipe, self.catalog.closure)
+        parameters = dict(effective_intent or {})
+        Draft202012Validator(recipe.parameters_schema.document).validate(parameters)
         return WorkIdentity.seal(
             WorkPayload(
                 recipe=recipe.ref,
-                inputs=tuple(sorted(roots, key=lambda root: root.collection_id)),
-                effective_intent=dict(effective_intent or {}),
+                inputs=tuple(sorted(roots, key=lambda r: r.collection_id)),
+                effective_intent=parameters,
             )
         )
 
-    def observation_requests(
-        self,
-        work: WorkIdentity,
-        observations: tuple[ContentObservationEvidence, ...] = (),
-    ) -> tuple[ContentObservationRequest, ...]:
-        if isinstance(work.fork_join, JoinWorkBinding):
-            return ()
-        recipe = self._recipe(work)
-        requests: list[ContentObservationRequest] = []
-        inventory = self._inventory(work)
-        completed = {item.request.observer_registration_id for item in observations}
-        for item in observations:
-            if item.request.work_id != work.work_id or item.result.state != "observed":
-                raise ValueError("recipe stage predecessor is not an accepted observation")
-        for use in recipe.observers:
-            if use.registration_id in completed or not set(use.after) <= completed:
-                continue
-            descriptor = self.observers.descriptor(use.registration_id)
-            support = descriptor.support_for(use.contract_id)
-            if support.contract_sha256 != use.contract_sha256:
-                raise RuntimeError("observer supports another revision of the recipe contract")
-            classified = _subjects(inventory, recipe.artifact_rules, observations=observations)
-            subjects = (
-                tuple(item for item in classified if item.role in set(use.subject_roles))
-                if use.subject_roles
-                else _subjects(inventory)
-            )
-            if not subjects:
-                continue
-            if use.partitions and any(
-                not any(subject.role in set(partition.roles) for subject in subjects)
-                for partition in use.partitions
+    def _definition(self, work: WorkIdentity) -> tuple[CompiledRecipe, RecipeDependencyClosure]:
+        retained = self.state.recipe_definitions.load(work.recipe)
+        if retained is None:
+            raise ValueError("work lacks its retained compiled recipe and exact offline closure")
+        recipe, closure = retained
+        Draft202012Validator(recipe.parameters_schema.document).validate(work.effective_intent)
+        return recipe, closure
+
+    def step(self, work: WorkIdentity) -> PlanningProgress:
+        frames = self.state.compiled_runtime
+        frames.ensure(work, owner_work_id=work.work_id, depth=0)
+        row = frames.due(work.work_id)
+        if row is None:
+            row = frames.load(work.work_id)
+            return self._result(row)
+        current = WorkIdentity.model_validate_json(row["work_json"])
+        recipe, closure = self._definition(current)
+        if row["phase"] == "observations":
+            progress = self.observation_planning.step(current)
+            if progress.state == "question":
+                return PlanningProgress("question", current, question=progress.question)
+            if progress.state == "inapplicable":
+                return self._inapplicable(row, progress.outcome)
+            if progress.state == "complete":
+                frames.change(row, phase="decisions")
+        elif row["phase"] == "decisions":
+            decision_progress = self.decision_planning.step(current)
+            if decision_progress.state == "no-output":
+                if decision_progress.decision is None:
+                    raise ValueError("no-output planning has no exact indexed decision")
+                frames.change(
+                    row,
+                    phase="no-output",
+                    outcome_json=_json(WorkNoAction(decision=decision_progress.decision)),
+                )
+            elif decision_progress.state == "inapplicable":
+                return self._inapplicable(row, decision_progress.outcome)
+            elif decision_progress.state == "branches":
+                frames.change(row, phase="selections", branch_ordinal=0)
+        elif row["phase"] == "selections":
+            names = sorted(recipe.branches)
+            if row["branch_ordinal"] == len(names):
+                frames.change(row, phase="coverage", branch_ordinal=0)
+            else:
+                name = names[row["branch_ordinal"]]
+                selected = self.state.compiled_branches.step(current, name)
+                if isinstance(selected, WorkInapplicable):
+                    return self._inapplicable(row, selected)
+                if selected is not None:
+                    frames.change(row, scope=selected, branch_ordinal=row["branch_ordinal"] + 1)
+        elif row["phase"] == "coverage":
+            scopes = [
+                CompiledBranchScope.model_validate_json(b["scope_json"])
+                for b in frames.branches(current.work_id)
+            ]
+            if not any(scope.selection.artifact_count for scope in scopes):
+                return self._inapplicable(
+                    row,
+                    WorkInapplicable(
+                        code="no-selected-branch",
+                        message="No recipe branch applies to the exact input.",
+                    ),
+                )
+            inventory = self.state.compiled_planning.inventory_ref(current.work_id)
+            if inventory is None:
+                raise ValueError("compiled coverage lost its original inventory")
+            if recipe.source.unmatched == "reject-work" and self._unmatched(current, inventory):
+                return self._inapplicable(
+                    row,
+                    WorkInapplicable(
+                        code="unmatched-recipe-input",
+                        message="The recipe rejects uncovered input members.",
+                    ),
+                )
+            if (
+                current.fork_join is None
+                and recipe.source.retirement.mode == "after-settlement"
+                and self._unmatched(current, inventory)
             ):
-                continue
-            options = deepcopy(use.options)
-            for partition in use.partitions:
-                if _json_pointer(options, partition.pointer)[0]:
-                    raise ValueError("recipe observer question already sets a generated partition")
-                _json_pointer_set(
-                    options,
-                    partition.pointer,
-                    [item.id for item in subjects if item.role in set(partition.roles)],
+                return self._inapplicable(
+                    row,
+                    WorkInapplicable(
+                        code="unsafe-retirement-coverage",
+                        message="Root retirement requires dispositions for every original member.",
+                    ),
                 )
-            predecessor_items = tuple(
-                item
-                for item in observations
-                if item.request.observer_registration_id in use.evidence_from
-                and {subject.id for subject in item.request.subjects}
-                <= {subject.id for subject in subjects}
+            accepted = [
+                self.state.accepted_observations.accepted(current.work_id, name)
+                for name in sorted(recipe.observations)
+            ]
+            if any(item is None for item in accepted):
+                raise ValueError("compiled coverage lost required accepted task evidence")
+            decision_sha256 = canonical_json_sha256(
+                {
+                    "format": "stove0-compiled-fork-decision/v1",
+                    "work_id": current.work_id,
+                    "recipe": current.recipe.model_dump(mode="json"),
+                    "inventory": inventory.model_dump(mode="json"),
+                    "scopes": [scope.branch_selection_sha256 for scope in scopes],
+                    "evidence_sets": [
+                        item.evidence_set_sha256 for item in accepted if item is not None
+                    ],
+                }
             )
-            slots = tuple(
-                ObservationEvidenceSlot(
-                    slot="evidence." + item.request.request_id,
-                    request_id=item.request.request_id,
-                    result_sha256=item.result.result_sha256,
-                    observer_contract_id=item.request.observer_contract_id,
-                )
-                for item in sorted(predecessor_items, key=lambda item: item.request.request_id)
-            )
-            if use.evidence_from:
-                for predecessor in use.evidence_from:
-                    covered = {
-                        subject.id
-                        for item in predecessor_items
-                        if item.request.observer_registration_id == predecessor
-                        for subject in item.request.subjects
-                    }
-                    if covered != {subject.id for subject in subjects}:
-                        raise ValueError("recipe observation lacks complete predecessor evidence")
-                assert use.evidence_slots_pointer is not None
-                if _json_pointer(options, use.evidence_slots_pointer)[0]:
-                    raise ValueError("recipe observer question already sets evidence slots")
-                _json_pointer_set(
-                    options, use.evidence_slots_pointer, [item.slot for item in slots]
-                )
-            elif support.read_actions == ("read-evidence",):
-                raise ValueError("read-evidence stage requires declared accepted predecessors")
-            elif use.evidence_slots_pointer is not None:
-                raise ValueError("non-evidence stage declares evidence slots")
-            batch_size = use.subject_batch_size or support.preferred_subject_batch_size
-            if use.partitions or use.evidence_from:
-                # A relation question must see its entire exact candidate scope.
-                # The descriptor's preferred batch size is operational advice,
-                # never a limit on a collection or a completeness claim.
-                batch_size = len(subjects)
-            for offset in range(0, len(subjects), batch_size):
-                # Batching is an implementation preference for operational
-                # efficiency, never a request, collection, or workflow limit.
-                batch = subjects[offset : offset + batch_size]
-                requests.append(
-                    ContentObservationRequest.seal(
-                        ContentObservationRequestPayload(
-                            work_id=work.work_id,
-                            observer_registration_id=use.registration_id,
-                            observer_descriptor_sha256=descriptor.descriptor_sha256,
-                            observer_contract_id=support.contract_id,
-                            observer_contract_sha256=support.contract_sha256,
-                            read_actions=support.read_actions,
-                            subjects=batch,
-                            evidence_slots=slots or None,
-                            options=options,
-                            timeout_seconds=use.timeout_seconds,
-                            maximum_result_bytes=use.maximum_result_bytes,
-                            retrieval_policy=use.retrieval_policy,
-                        )
-                    )
-                )
-        return tuple(sorted(requests, key=lambda request: request.request_id))
+            frames.change(row, phase="calls", branch_ordinal=0, decision_sha256=decision_sha256)
+        elif row["phase"] == "calls":
+            names = sorted(recipe.branches)
+            if row["branch_ordinal"] == len(names):
+                if frames.calls_complete(current.work_id):
+                    frames.change(row, phase="seal")
+                else:
+                    frames.change(row, branch_ordinal=0)
+            else:
+                name = names[row["branch_ordinal"]]
+                branch = frames.branch(current.work_id, name)
+                if branch is None:
+                    raise ValueError("compiled call lost its selected branch")
+                scope = CompiledBranchScope.model_validate_json(branch["scope_json"])
+                if scope.selection.artifact_count == 0 or branch["declaration_json"] is not None:
+                    frames.change(row, branch_ordinal=row["branch_ordinal"] + 1)
+                else:
+                    return self._call(row, current, recipe, closure, name, scope)
+        elif row["phase"] == "seal":
+            return self._seal(row, current, recipe, closure)
+        else:
+            raise ValueError("compiled recipe frame has an unsupported continuation phase")
+        return PlanningProgress("pending", work)
 
-    def workflow_plan(
+    def _result(self, row: Mapping[str, Any] | None) -> PlanningProgress:
+        if row is None:
+            raise ValueError("compiled planning lost its retained recipe frame")
+        work = WorkIdentity.model_validate_json(row["work_json"])
+        if row["phase"] == "ready":
+            return PlanningProgress(
+                "ready", work, decision=BranchSetDecision.model_validate_json(row["decision_json"])
+            )
+        if row["phase"] == "no-output":
+            outcome = WorkNoAction.model_validate_json(row["outcome_json"])
+            outcome.decision.verify_recipe(self._definition(work)[0])
+            return PlanningProgress("no-output", work, outcome=outcome)
+        if row["phase"] == "inapplicable":
+            return PlanningProgress(
+                "inapplicable",
+                work,
+                outcome=WorkInapplicable.model_validate_json(row["outcome_json"]),
+            )
+        return PlanningProgress("pending", work)
+
+    def _inapplicable(
+        self, row: Mapping[str, Any], outcome: WorkInapplicable | None
+    ) -> PlanningProgress:
+        if outcome is None:
+            raise ValueError("inapplicable planning has no exact outcome")
+        self.state.compiled_runtime.change(row, phase="inapplicable", outcome_json=_json(outcome))
+        return PlanningProgress("pending", WorkIdentity.model_validate_json(row["work_json"]))
+
+    def _unmatched(self, work: WorkIdentity, inventory: ArtifactSelectionRef) -> bool:
+        # The selected set is a union by immutable member instance, not by bytes.
+        members = self.state.compiled_planning.members
+        selected = members.alias("compiled_selected_member")
+        branches = self.state.compiled_runtime.tables["branches"]
+        covered = (
+            select(selected.c.artifact_id)
+            .join(
+                branches,
+                branches.c.selection_sha256 == selected.c.selection_sha256,
+            )
+            .where(
+                branches.c.work_id == self.state.planning_key(work.work_id),
+                selected.c.member_identity_sha256 == members.c.member_identity_sha256,
+            )
+            .exists()
+        )
+        with self.state.engine.connect() as connection:
+            return (
+                connection.scalar(
+                    select(members.c.artifact_id)
+                    .where(
+                        members.c.selection_sha256 == inventory.selection_sha256,
+                        ~covered,
+                    )
+                    .limit(1)
+                )
+                is not None
+            )
+
+    def _call(
+        self,
+        row: Mapping[str, Any],
+        work: WorkIdentity,
+        recipe: CompiledRecipe,
+        closure: RecipeDependencyClosure,
+        name: str,
+        scope: CompiledBranchScope,
+    ) -> PlanningProgress:
+        declaration: BranchDeclaration
+        definition = recipe.branches[name]
+        selection = self.state.load_selection(scope.selection.selection_sha256)
+        if selection is None or selection.ref() != scope.selection:
+            raise ValueError("compiled call lost its exact selected members")
+        call = definition.call
+        intent, options = apply_bindings(
+            intent=call.intent,
+            options=call.options if isinstance(call, CompiledOperationCall) else {},
+            bindings=call.bind,
+            parameters=work.effective_intent,
+            evaluation=work.evaluation.model_dump(mode="json")
+            if work.evaluation is not None
+            else None,
+        )
+        if isinstance(call, CompiledRecipeCall):
+            child_recipe = closure.recipe(id=call.recipe.id, sha256=call.recipe.sha256)
+            Draft202012Validator(child_recipe.parameters_schema.document).validate(intent)
+            child_work = CoordinationBranchPlan.build_work(
+                parent_work=work,
+                branch_id=name,
+                decision_sha256=row["decision_sha256"],
+                selection=selection,
+                recipe=child_recipe.ref,
+                effective_intent=intent,
+            )
+            child_row = self.state.compiled_runtime.ensure(
+                child_work,
+                owner_work_id=row["owner_work_id"],
+                depth=row["depth"] + 1,
+            )
+            if child_row["phase"] not in {"ready", "no-output", "inapplicable"}:
+                self.state.compiled_runtime.change(
+                    row,
+                    branch_id=name,
+                    child_work_id=child_work.work_id,
+                    branch_ordinal=row["branch_ordinal"] + 1,
+                )
+                return PlanningProgress("pending", work)
+            child = self._result(child_row)
+            if child.state == "inapplicable":
+                if not isinstance(child.outcome, WorkInapplicable):
+                    raise ValueError("child inapplicability has no exact outcome")
+                return self._inapplicable(
+                    row,
+                    WorkInapplicable(
+                        code=child.outcome.code,
+                        message=f"Subrecipe {name}: {child.outcome.message}",
+                    ),
+                )
+            if child.state == "no-output":
+                if not isinstance(child.outcome, WorkNoAction):
+                    raise ValueError("child no-output planning has no exact decision")
+                declaration = NoOutputBranchPlan.seal(
+                    branch_id=name,
+                    selection=selection,
+                    work=child_work,
+                    observations=self._evidence(child_work, tuple(child_recipe.observations)),
+                    decision=child.outcome.decision,
+                )
+            else:
+                if child.decision is None:
+                    raise ValueError("ready child planning has no exact branch decision")
+                declaration = CoordinationBranchPlan(
+                    branch_id=name,
+                    artifact_selection=selection.ref(),
+                    work=child_work,
+                    branch_set_sha256=child.decision.plan.branch_set_sha256,
+                )
+        else:
+            operation = closure.operation(id=call.operation.id, sha256=call.operation.sha256)
+            problem = _input_problem(operation, selection)
+            if problem is not None:
+                return self._inapplicable(
+                    row,
+                    WorkInapplicable(
+                        code="operation-inputs-inapplicable",
+                        message=problem,
+                    ),
+                )
+            binding = self._provider(work, name, call, operation)
+            if binding is None:
+                self.state.compiled_runtime.change(row, branch_ordinal=row["branch_ordinal"] + 1)
+                return PlanningProgress("pending", work)
+            provider, target = binding
+            support = target.support_for(operation.id)
+            Draft202012Validator(operation.intent_schema.document).validate(intent)
+            Draft202012Validator(support.options_schema.document).validate(options)
+            declaration = BranchPlan.build(
+                parent_work=work,
+                branch_id=name,
+                decision_sha256=row["decision_sha256"],
+                selection=selection,
+                recipe=recipe.ref,
+                effective_intent=intent,
+                workflow_intent=WorkflowPlanIntent(
+                    operation=OperationIdentityRef(
+                        id=operation.id, sha256=operation.contract_sha256
+                    ),
+                    result_kind=operation.result_kind,
+                    target_registration_id=provider,
+                    target_descriptor_sha256=target.descriptor_sha256,
+                    requested_target_options=options,
+                    input_groups=self._groups(scope),
+                    input_retrieval_policy=call.retrieve,
+                    output_policy=call.output
+                    if call.output is not None
+                    else OutputCollectionPolicy(),
+                ),
+                observations=self._evidence(work, call.evidence),
+            )
+        self.state.compiled_runtime.change(
+            row,
+            declaration=declaration,
+            child_work_id=child_work.work_id if isinstance(call, CompiledRecipeCall) else None,
+            branch_ordinal=row["branch_ordinal"] + 1,
+        )
+        return PlanningProgress("pending", work)
+
+    def _provider(
         self,
         work: WorkIdentity,
-        observations: tuple[ContentObservationEvidence, ...],
+        call_id: str,
+        call: CompiledOperationCall,
+        operation: OperationContract,
+    ) -> tuple[str, TargetDescriptor] | None:
+        return self._bind_provider(
+            work,
+            "call:" + call_id,
+            registry=self.targets,
+            descriptor_type=TargetDescriptor,
+            expected={
+                "kind": "operation",
+                "executor": call.executor,
+                "contract": {"id": operation.id, "sha256": operation.contract_sha256},
+                "result_kind": operation.result_kind,
+            },
+            accepts=lambda descriptor: any(
+                (support.operation_id, support.operation_contract_sha256, support.result_kind)
+                == (operation.id, operation.contract_sha256, operation.result_kind)
+                for support in descriptor.operations
+            ),
+        )
+
+    def observer_binding(
+        self, work: WorkIdentity, question: ObservationQuestion
+    ) -> tuple[str, ObserverDescriptor] | None:
+        recipe, _ = self._definition(work)
+        task = recipe.observations[question.task_id]
+        return self._bind_provider(
+            work,
+            "task:" + question.task_id,
+            registry=self.observers,
+            descriptor_type=ObserverDescriptor,
+            expected={
+                "kind": "observer",
+                "executor": task.executor,
+                "contract": task.observer.model_dump(mode="json"),
+                "interface": task.interface.model_dump(mode="json"),
+            },
+            accepts=lambda descriptor: any(
+                support.contract_id == task.observer.id
+                and support.contract_sha256 == task.observer.sha256
+                and task.interface in support.interfaces
+                for support in descriptor.contracts
+            ),
+        )
+
+    def _bind_provider[Descriptor: BaseModel](
+        self,
+        work: WorkIdentity,
+        binding_id: str,
         *,
-        nested_observer: NestedObservation | None = None,
-    ) -> BranchSetDecision | WorkInapplicable | WorkNoAction:
-        if isinstance(work.fork_join, JoinWorkBinding):
-            raise RuntimeError("join work cannot become a coordination parent")
-        prepared = self._planning_frame(work, observations, root=True)
-        if isinstance(prepared, (WorkInapplicable, WorkNoAction)):
-            return prepared
+        registry: _DescriptorRegistry[Descriptor],
+        descriptor_type: type[Descriptor],
+        expected: dict[str, JsonValue],
+        accepts: Callable[[Descriptor], bool],
+    ) -> tuple[str, Descriptor] | None:
+        executor = expected["executor"]
+        if executor is not None and not isinstance(executor, str):
+            raise ValueError("deployment executor must be a registration ID")
+        names = (executor,) if executor is not None else registry.registration_ids()
+        store = self.state.compiled_runtime
+        row = store.ensure_provider(
+            work.work_id, binding_id, {**expected, "providers": list(names)}
+        )
+        if row["phase"] == "chosen":
+            descriptor = descriptor_type.model_validate_json(row["descriptor_json"])
+            if not accepts(descriptor):
+                raise ValueError("retained provider binding changed its exact required contracts")
+            provider_id = row["provider_id"]
+            if not isinstance(provider_id, str):
+                raise ValueError("chosen provider has no registration ID")
+            return provider_id, descriptor
+        if row["phase"] in {"ambiguous", "unavailable"}:
+            raise ValueError("call requires one unambiguous exact deployed provider binding")
+        providers = json.loads(row["binding_json"])["providers"]
+        if row["position"] == len(providers):
+            store.change_provider(
+                row, phase="chosen" if row["provider_id"] is not None else "unavailable"
+            )
+            return None
+        name = providers[row["position"]]
+        descriptor = registry.descriptor(name)
+        changes: dict[str, Any] = {"position": row["position"] + 1}
+        if accepts(descriptor):
+            if row["provider_id"] is not None:
+                store.change_provider(row, phase="ambiguous")
+                raise ValueError("call requires one unambiguous exact deployed provider binding")
+            changes.update(provider_id=name, descriptor_json=_json(descriptor))
+        store.change_provider(row, **changes)
+        return None
 
-        stack = [prepared]
-        completed: BranchSetDecision | None = None
-        while stack:
-            frame = stack[-1]
-            if frame.next_branch < len(frame.selected):
-                route, selection, groups = frame.selected[frame.next_branch]
-                frame.next_branch += 1
-                if isinstance(route, RecipeRoute):
-                    frame.branches.append(
-                        self._branch_plan(
-                            parent=frame.work,
-                            observations=frame.evidence,
-                            route=route,
-                            selection=selection,
-                            groups=groups,
-                            decision_sha256=frame.decision_sha256,
-                            recipe=frame.recipe,
-                        )
-                    )
+    def _groups(self, scope: CompiledBranchScope) -> tuple[WorkInputGroup, ...]:
+        if scope.group_source is None:
+            return ()
+        result, ordinal = [], 0
+        while True:
+            page = self.state.compiled_branches.choice_page(scope, start_ordinal=ordinal)
+            for primary_id, candidate_ref, condition in page:
+                if condition.truth.value != "true":
                     continue
-                if nested_observer is None:
-                    raise RuntimeError("nested coordination requires an observation authority")
-                compiled_intent, _compiled_options = self._project_operation(
-                    frame.work,
-                    route.projections,
-                )
-                child_work = CoordinationBranchPlan.build_work(
-                    parent_work=frame.work,
-                    branch_id=route.id,
-                    decision_sha256=frame.decision_sha256,
-                    selection=selection,
-                    recipe=route.recipe,
-                    effective_intent={**route.intent, **compiled_intent},
-                )
-                child_evidence = nested_observer(child_work)
-                child = self._planning_frame(child_work, child_evidence, root=False)
-                if isinstance(child, WorkNoAction):
-                    frame.branches.append(
-                        NoOutputBranchPlan.seal(
-                            branch_id=route.id,
-                            selection=selection,
-                            work=child_work,
-                            observations=child_evidence,
-                            outcome=PreviewOutcome(code=child.code, message=child.message),
-                        )
-                    )
-                    continue
-                if isinstance(child, WorkInapplicable):
-                    return WorkInapplicable(
-                        code=child.code,
-                        message=f"Subrecipe branch {route.id}: {child.message}"[:1000],
-                    )
-                child.parent_route = route
-                child.parent_selection = selection
-                stack.append(child)
-                continue
-
-            join = (
-                self._join_declaration(frame.work, frame.recipe.join)
-                if frame.recipe.join is not None
-                else None
-            )
-            policy = frame.recipe.source_collection_retirement_policy if frame.root else "retain"
-            plan = BranchSetPlan.seal(
-                parent_work=frame.work,
-                decision_sha256=frame.decision_sha256,
-                evidence_sha256s=tuple(
-                    sorted(item.result.result_sha256 for item in frame.evidence)
-                ),
-                branches=frame.branches,
-                join=join,
-                source_collection_retirement_policy=policy,
-                source_collection_retirement_grace_seconds=(
-                    frame.recipe.source_collection_retirement_grace_seconds if frame.root else 0
-                ),
-                selections=frame.selections,
-                branch_sets=frame.branch_sets,
-            )
-            completed = BranchSetDecision(
-                plan=plan,
-                selections=tuple(frame.selections[key] for key in sorted(frame.selections)),
-                branch_sets=tuple(frame.branch_sets[key] for key in sorted(frame.branch_sets)),
-            )
-            stack.pop()
-            if not stack:
-                break
-
-            parent = stack[-1]
-            parent_route = frame.parent_route
-            parent_selection = frame.parent_selection
-            if parent_route is None or parent_selection is None:
-                raise RuntimeError("nested planning frame lost its parent binding")
-            parent.branches.append(
-                CoordinationBranchPlan(
-                    branch_id=parent_route.id,
-                    artifact_selection=parent_selection.ref(),
-                    work=frame.work,
-                    branch_set_sha256=plan.branch_set_sha256,
-                )
-            )
-            for digest, selection_document in completed.selection_documents.items():
-                _retain_exact(parent.selections, digest, selection_document)
-            for digest, child_plan in completed.branch_set_documents.items():
-                _retain_exact(parent.branch_sets, digest, child_plan)
-
-        if completed is None:
-            raise RuntimeError("workflow planning produced no branch-set decision")
-        if completed.plan.source_collection_retirement_policy == "retire-after-settlement":
-            for branch in completed.leaf_branches():
-                selection = completed.selection_documents[
-                    branch.artifact_selection.selection_sha256
-                ]
-                problem = _operation_input_problem(
-                    self.catalog.operation(branch.workflow_plan.operation.id),
-                    selection,
-                )
-                if problem is not None:
-                    return WorkInapplicable(
-                        code="unsafe-retirement-operation-inputs",
-                        message=(
-                            f"Unsafe retirement inputs for branch {branch.branch_id}: {problem}"
+                candidate = self.state.load_selection(candidate_ref.selection_sha256)
+                if candidate is None or candidate.ref() != candidate_ref:
+                    raise ValueError("compiled group lost its exact selected candidate")
+                primary = next(item for item in candidate.artifacts if item.id == primary_id)
+                result.append(
+                    WorkInputGroup(
+                        primary_id=primary.id,
+                        associated_ids=tuple(
+                            sorted(item.id for item in candidate.artifacts if item.id != primary.id)
                         ),
                     )
-        return completed
+                )
+            ordinal += len(page)
+            if ordinal == scope.choice_count:
+                return tuple(sorted(result, key=lambda group: group.primary_id))
+            if not page:
+                raise ValueError("selected group choices made no continuation progress")
 
-    def _planning_frame(
+    def _evidence(
+        self, work: WorkIdentity, task_ids: Sequence[str]
+    ) -> tuple[ContentObservationEvidence, ...]:
+        store, result = self.state.accepted_observations, {}
+        for task_id in sorted(task_ids):
+            accepted = store.accepted(work.work_id, task_id)
+            if accepted is None:
+                raise ValueError("compiled call lacks complete accepted named task evidence")
+            ordinal = 0
+            while True:
+                page = store.evidence_page(
+                    accepted, start_ordinal=ordinal, authorize=lambda scope: None
+                )
+                for reference in page.results:
+                    original = store.original_evidence(
+                        reference.request_id, authorize=lambda scope: None
+                    )
+                    if original.request.task_id != task_id:
+                        raise ValueError("forwarded evidence changed its exact logical task")
+                    result[reference.request_id] = original
+                if page.complete:
+                    break
+                ordinal += len(page.results)
+        return tuple(result[key] for key in sorted(result))
+
+    def _seal(
         self,
+        row: Mapping[str, Any],
         work: WorkIdentity,
-        observations: tuple[ContentObservationEvidence, ...],
-        *,
-        root: bool,
-    ) -> _PlanningFrame | WorkInapplicable | WorkNoAction:
-        recipe = self._recipe(work)
-        evidence = tuple(sorted(observations, key=lambda item: item.request.request_id))
-        if recipe.no_action is not None and all(
-            _predicate_matches(predicate, evidence, candidate=())
-            for predicate in recipe.no_action.when
-        ):
-            return WorkNoAction(code=recipe.no_action.code, message=recipe.no_action.message)
-        inventory = self._inventory(work)
-        selected: list[tuple[RecipeBranch, ArtifactSelection, tuple[WorkInputGroup, ...]]] = []
-        for route in recipe.routes:
-            artifacts, groups = _route_artifacts(
-                _subjects(inventory, recipe.artifact_rules, observations=evidence),
-                route=route,
-                associations=recipe.artifact_associations,
-                observations=evidence,
-            )
-            if not artifacts:
+        recipe: CompiledRecipe,
+        closure: RecipeDependencyClosure,
+    ) -> PlanningProgress:
+        frames = self.state.compiled_runtime
+        branches: list[BranchDeclaration] = []
+        selections: dict[str, ArtifactSelection] = {}
+        children: dict[str, BranchSetPlan] = {}
+        declaration_parser: TypeAdapter[BranchDeclaration] = TypeAdapter(BranchDeclaration)
+        for retained in frames.branches(work.work_id):
+            scope = CompiledBranchScope.model_validate_json(retained["scope_json"])
+            if scope.selection.artifact_count == 0:
                 continue
-            selected.append((route, ArtifactSelection.seal(artifacts), groups))
-        selected.sort(key=lambda item: item[0].id)
-        if not selected:
-            return WorkInapplicable(
-                code="no-matching-route",
-                message="No configured recipe branch accepted the immutable inputs.",
-            )
-
-        selected_ids = {route.id for route, _selection, _groups in selected}
+            if retained["declaration_json"] is None:
+                raise ValueError("compiled recipe lost a required selected call")
+            branch = declaration_parser.validate_json(retained["declaration_json"])
+            branches.append(branch)
+            selection = self.state.load_selection(branch.artifact_selection.selection_sha256)
+            if selection is None or selection.ref() != branch.artifact_selection:
+                raise ValueError("compiled branch lost its exact selected members")
+            selections[selection.selection_sha256] = selection
+            if isinstance(branch, CoordinationBranchPlan):
+                child = self._result(frames.load(branch.work.work_id)).decision
+                if child is None:
+                    raise ValueError("compiled child lost its exact ready decision")
+                for digest, selection in child.selection_documents.items():
+                    _retain(selections, digest, selection)
+                for digest, plan in child.branch_set_documents.items():
+                    _retain(children, digest, plan)
+        join = None
         if recipe.join is not None:
-            missing = [
-                member.branch_id
-                for member in recipe.join.members
-                if member.branch_id not in selected_ids
-            ]
-            if missing:
-                return WorkInapplicable(
-                    code="join-members-inapplicable",
-                    message=(
-                        "The configured exact join requires branches not selected by the "
-                        "immutable observations: " + ", ".join(missing)
+            declared = {item.branch_id: item for item in branches}
+            if not set(recipe.join.members) <= set(declared) or any(
+                isinstance(declared[name], NoOutputBranchPlan) for name in recipe.join.members
+            ):
+                return self._inapplicable(
+                    row,
+                    WorkInapplicable(
+                        code="join-member-inapplicable",
+                        message="Every join member must produce its declared exact collection.",
                     ),
                 )
-
-        uncovered = _uncovered_inventory(inventory, selected)
-        if uncovered and recipe.unmatched_artifact_disposition == "reject-work":
-            return WorkInapplicable(
-                code="unmatched-artifacts",
-                message=(
-                    "The recipe explicitly rejects work with unmatched immutable artifacts: "
-                    + ", ".join(uncovered[:10])
+            call = recipe.join.call
+            operation = closure.operation(id=call.operation.id, sha256=call.operation.sha256)
+            binding = self._provider(work, "$join", call, operation)
+            if binding is None:
+                return PlanningProgress("pending", work)
+            provider, target = binding
+            intent, options = apply_bindings(
+                intent=call.intent,
+                options=call.options,
+                bindings=call.bind,
+                parameters=work.effective_intent,
+                evaluation=work.evaluation.model_dump(mode="json")
+                if work.evaluation is not None
+                else None,
+            )
+            join = JoinDeclaration.seal(
+                recipe=recipe.ref,
+                effective_intent=intent,
+                members=tuple(
+                    JoinMemberDeclaration(branch_id=name, output_roles=roles)
+                    for name, roles in sorted(recipe.join.members.items())
+                ),
+                workflow_intent=WorkflowPlanIntent(
+                    operation=OperationIdentityRef(
+                        id=operation.id, sha256=operation.contract_sha256
+                    ),
+                    result_kind="collection",
+                    target_registration_id=provider,
+                    target_descriptor_sha256=target.descriptor_sha256,
+                    requested_target_options=options,
+                    input_retrieval_policy=call.retrieve,
+                    output_policy=call.output
+                    if call.output is not None
+                    else OutputCollectionPolicy(),
                 ),
             )
-
-        if root and recipe.source_collection_retirement_policy == "retire-after-settlement":
-            if uncovered:
-                return WorkInapplicable(
-                    code="unsafe-retirement-coverage",
-                    message=(
-                        "Source retirement requires the selected branch artifacts to cover "
-                        "the complete immutable input inventory: " + ", ".join(uncovered[:10])
-                    ),
-                )
-        decision_sha256 = canonical_json_sha256(
-            {
-                "format": "stove0-routing-decision/v1",
-                "parent_work_id": work.work_id,
-                "recipe": recipe.ref.model_dump(mode="json"),
-                "evidence_sha256s": sorted(item.result.result_sha256 for item in evidence),
-                "branches": [
-                    {
-                        "branch_id": route.id,
-                        "kind": route.kind,
-                        "artifact_selection_sha256": selection.selection_sha256,
-                        "input_groups": [group.model_dump(mode="json") for group in groups],
-                    }
-                    for route, selection, groups in selected
-                ],
-                "join_members": (
-                    [member.model_dump(mode="json") for member in recipe.join.members]
-                    if recipe.join is not None
-                    else []
+        export: Literal["join"] | BranchCollectionExport | None
+        if isinstance(recipe.export, BranchExport):
+            export = BranchCollectionExport(branch=recipe.export.branch)
+        else:
+            export = recipe.export
+        try:
+            policy, grace = _retirement(recipe, work)
+            plan = BranchSetPlan.seal(
+                parent_work=work,
+                decision_sha256=row["decision_sha256"],
+                evidence_sha256s=tuple(
+                    sorted(
+                        item.result.result_sha256
+                        for item in self._evidence(work, tuple(recipe.observations))
+                    )
                 ),
-            }
+                branches=branches,
+                join=join,
+                export=export,
+                source_collection_retirement_policy=policy,
+                source_collection_retirement_grace_seconds=grace,
+                selections=selections,
+                branch_sets=children,
+            )
+        except ValueError as exc:
+            return self._inapplicable(
+                row,
+                WorkInapplicable(
+                    code="recipe-outcome-inapplicable",
+                    message=str(exc),
+                ),
+            )
+        decision = BranchSetDecision(
+            plan=plan,
+            selections=tuple(selections[key] for key in sorted(selections)),
+            branch_sets=tuple(children[key] for key in sorted(children)),
         )
-        documents = {
-            selection.selection_sha256: selection for _route, selection, _groups in selected
-        }
-        return _PlanningFrame(
-            work=work,
-            recipe=recipe,
-            evidence=evidence,
-            selected=tuple(selected),
-            decision_sha256=decision_sha256,
-            root=root,
-            selections=documents,
-        )
+        frames.change(row, phase="ready", decision_json=_json(decision))
+        return PlanningProgress("pending", work)
 
-    def _branch_plan(
+    def deliver_observation(
         self,
+        progress: PlanningProgress,
         *,
-        parent: WorkIdentity,
-        observations: tuple[ContentObservationEvidence, ...],
-        route: RecipeRoute,
-        selection: ArtifactSelection,
-        groups: tuple[WorkInputGroup, ...],
-        decision_sha256: str,
-        recipe: RecipeDefinition,
-    ) -> BranchPlan:
-        target = self.targets.descriptor(route.target_registration_id)
-        operation = self.catalog.operation(route.operation_id)
-        support = target.support_for(operation.id)
-        if support.operation_contract_sha256 != operation.contract_sha256:
-            raise RuntimeError("target supports another revision of the recipe operation")
-        if support.result_kind != operation.result_kind:
-            raise RuntimeError("target supports another result kind for the recipe operation")
-        compiled_intent, compiled_options = self._project_operation(parent, route.projections)
-        effective_intent = {**route.intent, **compiled_intent}
-        selected_ids = {item.id for item in selection.artifacts}
-        forwarded = tuple(
-            item
-            for item in observations
-            if item.request.observer_contract_id in route.forward_observation_contract_ids
-            and any(subject.id in selected_ids for subject in item.request.subjects)
-        )
-        if {item.request.observer_contract_id for item in forwarded} != set(
-            route.forward_observation_contract_ids
-        ):
-            raise ValueError("recipe route lacks accepted evidence it must forward")
-        for contract_id in route.forward_observation_contract_ids:
-            covered = {
-                subject.id
-                for item in forwarded
-                if item.request.observer_contract_id == contract_id
-                for subject in item.request.subjects
-            }
-            if not selected_ids <= covered:
-                raise ValueError("forwarded observation does not cover the selected inputs")
-        return BranchPlan.build(
-            parent_work=parent,
-            branch_id=route.id,
-            decision_sha256=decision_sha256,
-            selection=selection,
-            recipe=recipe.ref,
-            effective_intent=effective_intent,
-            workflow_intent=WorkflowPlanIntent(
-                operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
-                result_kind=operation.result_kind,
-                target_registration_id=route.target_registration_id,
-                target_descriptor_sha256=target.descriptor_sha256,
-                requested_target_options={**route.target_options, **compiled_options},
-                input_groups=groups,
-                input_retrieval_policy=route.input_retrieval_policy,
-                source_collection_retirement_policy="retain",
-                output_policy=route.output_policy,
-            ),
-            observations=forwarded,
+        owner_kind: ObservationOwnerKind,
+        owner_id: str,
+        claim: ClaimBinding,
+        riverhog: ObservationAuthorityPort,
+        deliveries: ObservationDeliveryPort,
+    ) -> ContentObservationResult | None:
+        return self.observation_delivery.step(
+            progress,
+            owner_kind=owner_kind,
+            owner_id=owner_id,
+            claim=claim,
+            riverhog=riverhog,
+            deliveries=deliveries,
         )
 
-    def _join_declaration(
-        self,
-        parent: WorkIdentity,
-        join: RecipeJoin,
-    ) -> JoinDeclaration:
-        target = self.targets.descriptor(join.target_registration_id)
-        operation = self.catalog.operation(join.operation_id)
-        support = target.support_for(operation.id)
-        if support.operation_contract_sha256 != operation.contract_sha256:
-            raise RuntimeError("join target supports another revision of the recipe operation")
-        if support.result_kind != "collection" or operation.result_kind != "collection":
-            raise RuntimeError("join target operation must produce a collection")
-        compiled_intent, compiled_options = self._project_operation(parent, join.projections)
-        return JoinDeclaration.seal(
-            members=tuple(
-                JoinMemberDeclaration(
-                    branch_id=member.branch_id,
-                    output_roles=member.output_roles,
+    def accepted_evidence(self, work: WorkIdentity) -> tuple[ContentObservationEvidence, ...]:
+        # Physical testimony becomes accepted only after controller validation.
+        # A failed preview may retain earlier valid results from incomplete tasks.
+        store = self.state.accepted_observations
+        q, p = store.tables["question"], store.tables["physical"]
+        frames = self.state.compiled_runtime.tables["frames"]
+        with self.state.engine.connect() as connection:
+            references = tuple(
+                connection.scalars(
+                    select(p.c.ref_json)
+                    .select_from(
+                        p.join(q, p.c.question_sha256 == q.c.question_sha256).join(
+                            frames, frames.c.work_id == q.c.work_id
+                        )
+                    )
+                    .where(
+                        frames.c.owner_work_id == self.state.planning_key(work.work_id),
+                        p.c.evidence_json.is_not(None),
+                    )
+                    .order_by(p.c.request_id)
                 )
-                for member in join.members
-            ),
-            recipe=parent.recipe,
-            effective_intent={**join.intent, **compiled_intent},
-            workflow_intent=WorkflowPlanIntent(
-                operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
-                result_kind="collection",
-                target_registration_id=join.target_registration_id,
-                target_descriptor_sha256=target.descriptor_sha256,
-                requested_target_options={**join.target_options, **compiled_options},
-                input_retrieval_policy=join.input_retrieval_policy,
-                source_collection_retirement_policy="retain",
-                output_policy=join.output_policy,
-            ),
+            )
+        return tuple(
+            store.original_evidence(
+                EvidenceResultRef.model_validate_json(reference).request_id,
+                authorize=lambda scope: None,
+            )
+            for reference in references
         )
+
+    def no_output_policy(
+        self, work: WorkIdentity, *, decision: CompiledNoOutputDecision
+    ) -> tuple[NoOutputDefinition, SourceCollectionRetirementPolicy, int]:
+        recipe, _ = self._definition(work)
+        decision.verify_recipe(recipe)
+        if decision.work_id != work.work_id:
+            raise ValueError("no-output policy requires the exact invocation's indexed decision")
+        policy, grace = _retirement(recipe, work)
+        return decision.definition, policy, grace
+
+    def operation_contract(self, operation: OperationIdentityRef) -> OperationContract:
+        return self.state.recipe_definitions.operation(operation)
+
+    def target_input_selection(
+        self, plan: WorkflowPlan, selections: dict[str, ArtifactSelection]
+    ) -> ArtifactSelection:
+        binding = plan.work.fork_join
+        if isinstance(binding, BranchWorkBinding):
+            selected = selections.get(binding.artifact_selection_sha256)
+            if selected is None:
+                raise ValueError("target lost its exact branch selection")
+            return selected
+        if not isinstance(binding, JoinWorkBinding):
+            raise ValueError("target work requires a branch or join input authority")
+        subjects: dict[str, WorkArtifactSubject] = {}
+        for member in binding.members:
+            selected = selections.get(member.artifact_selection_sha256)
+            if selected is None:
+                raise ValueError("join target lost an exact producer output selection")
+            for artifact in selected.artifacts:
+                _retain(subjects, artifact.id, artifact)
+        return ArtifactSelection.seal(tuple(subjects.values()))
 
     def target_preflight_request(
         self,
         plan: WorkflowPlan,
-        selections: Mapping[str, ArtifactSelection],
+        selections: dict[str, ArtifactSelection],
+        *,
+        descriptor: TargetDescriptor,
     ) -> TargetPreflightRequest:
-        selection = self.target_input_selection(plan, selections)
-        authority = TargetInputAuthority.from_selection(selection)
+        selected = self.target_input_selection(plan, selections)
+        if descriptor.descriptor_sha256 != plan.target_descriptor_sha256:
+            raise ValueError("preflight changed its exact selected target descriptor")
         return TargetPreflightRequest(
             invocation_sha256=plan.workflow_plan_sha256,
-            protocol=self.targets.descriptor(plan.target_registration_id).protocol,
+            protocol=descriptor.protocol,
             operation_id=plan.operation.id,
             operation_contract_sha256=plan.operation.sha256,
-            inputs=authority,
+            inputs=TargetInputAuthority.from_selection(selected),
             intent=plan.work.effective_intent,
             target_options=plan.requested_target_options,
             input_groups=plan.input_groups,
             observations=plan.observations,
         )
 
-    def target_input_selection(
-        self,
-        plan: WorkflowPlan,
-        selections: Mapping[str, ArtifactSelection],
-    ) -> ArtifactSelection:
-        self._recipe(plan.work)
-        binding = plan.work.fork_join
-        if isinstance(binding, BranchWorkBinding):
-            selection = selections.get(binding.artifact_selection_sha256)
-            if selection is None:
-                raise RuntimeError("branch preflight is missing its exact artifact selection")
-            return selection
-        elif isinstance(binding, JoinWorkBinding):
-            artifacts = _join_target_inputs(binding, selections)
-        else:
-            raise RuntimeError("target execution requires explicit branch or join work")
-        return ArtifactSelection.seal(
-            tuple(
-                WorkArtifactSubject.model_validate(
-                    dict(
-                        id=artifact.id,
-                        role=artifact.role,
-                        collection=artifact.collection,
-                        artifact_id=artifact.artifact_id,
-                        bytes=str(artifact.bytes),
-                        sha256=artifact.sha256,
-                    )
-                )
-                for artifact in artifacts
-            )
-        )
 
-    def _project_operation(
-        self,
-        work: WorkIdentity,
-        projections: tuple[OperationProjection, ...],
-    ) -> tuple[dict[str, JsonValue], dict[str, JsonValue]]:
-        if projections:
-            intent: dict[str, JsonValue] = {}
-            options: dict[str, JsonValue] = {}
-            sources: dict[str, JsonValue] = {
-                "work-effective-intent": work.effective_intent,
-                "work-evaluation": (
-                    work.evaluation.model_dump(mode="json") if work.evaluation is not None else None
-                ),
-            }
-            for projection in projections:
-                value = _projection_value(sources[projection.source], projection.source_pointer)
-                destination = intent if projection.destination == "intent" else options
-                _json_pointer_set(destination, projection.destination_pointer, deepcopy(value))
-            return intent, options
-        intent = dict(work.effective_intent)
-        raw_options = intent.pop("target_options", {})
-        if not isinstance(raw_options, Mapping):
-            raise ValueError("effective target_options must be a JSON object")
-        return intent, cast(dict[str, JsonValue], dict(raw_options))
-
-    def operation_contract(self, operation: OperationIdentityRef) -> OperationContract:
-        contract = self.catalog.operation(operation.id)
-        if contract.contract_sha256 != operation.sha256:
-            raise RuntimeError("operation contract differs from the sealed identity")
-        return contract
-
-    def _recipe(self, work: WorkIdentity) -> RecipeDefinition:
-        recipe = self.catalog.recipe(work.recipe.id, work.recipe.revision)
-        if recipe.sha256 != work.recipe.sha256:
-            raise RuntimeError("configured recipe differs from the immutable work identity")
-        return recipe
-
-    def no_output_policy(
-        self, work: WorkIdentity
-    ) -> tuple[RecipeNoAction, SourceCollectionRetirementPolicy, int]:
-        recipe = self._recipe(work)
-        if recipe.no_action is None:
-            raise ValueError("recipe has no selected no-output decision")
-        if isinstance(work.fork_join, BranchWorkBinding):
-            return recipe.no_action, "retain", 0
-        return (
-            recipe.no_action,
-            recipe.source_collection_retirement_policy,
-            recipe.source_collection_retirement_grace_seconds,
-        )
-
-    def _inventory(self, work: WorkIdentity) -> tuple[dict[str, object], ...]:
-        rows: list[dict[str, object]] = []
-        for root in work.inputs:
-            current = self.riverhog.get_collection(root.collection_id)
-            if (
-                str(current.get("archive_root_sha256") or "") != root.archive_root_sha256
-                or str(current.get("artifact_set_identity") or "") != root.artifact_set_identity
-            ):
-                raise RuntimeError(f"collection root changed: {root.collection_id}")
-            cursor: str | None = None
-            inventory_identity: str | None = None
-            while True:
-                page = self.riverhog.get_portable_collection_inventory(
-                    root.collection_id,
-                    cursor=cursor,
-                    limit=1000,
-                    inventory_identity=inventory_identity,
-                )
-                if inventory_identity is None:
-                    inventory_identity = page.authority.inventory_identity
-                elif page.authority.inventory_identity != inventory_identity:
-                    raise RuntimeError("collection inventory identity changed")
-                for artifact in page.artifacts:
-                    rows.append(
-                        {
-                            "collection": root,
-                            "artifact_id": artifact.artifact_id,
-                            "bytes": artifact.bytes,
-                            "sha256": artifact.sha256,
-                        }
-                    )
-                if page.complete:
-                    break
-                cursor = page.next_cursor
-        return tuple(rows)
+def _retirement(
+    recipe: CompiledRecipe, work: WorkIdentity
+) -> tuple[SourceCollectionRetirementPolicy, int]:
+    retirement = recipe.source.retirement
+    if work.fork_join is not None or retirement.mode == "retain":
+        return "retain", 0
+    return "retire-after-settlement", retirement.grace_seconds
 
 
-def _validate_projections(projections: tuple[OperationProjection, ...]) -> None:
-    keys = [(item.destination, item.destination_pointer) for item in projections]
-    if keys != sorted(keys) or len(keys) != len(set(keys)):
-        raise ValueError("operation projections must be unique and canonically ordered")
-    for index, (destination, pointer) in enumerate(keys):
-        for other_destination, other_pointer in keys[index + 1 :]:
-            if other_destination != destination:
-                continue
-            if other_pointer.startswith(f"{pointer}/"):
-                raise ValueError("operation projection destinations must not overlap")
-
-
-def _pointer_parts(pointer: str) -> tuple[str, ...]:
-    if not pointer:
-        return ()
-    return tuple(part.replace("~1", "/").replace("~0", "~") for part in pointer[1:].split("/"))
-
-
-def _projection_value(document: JsonValue, pointer: str) -> JsonValue:
-    current = document
-    for part in _pointer_parts(pointer):
-        if isinstance(current, dict) and part in current:
-            current = current[part]
-        elif isinstance(current, list) and part.isdecimal() and int(part) < len(current):
-            current = current[int(part)]
-        else:
-            raise ValueError(f"operation projection source does not exist: {pointer}")
-    return current
-
-
-def _json_pointer_set(document: dict[str, JsonValue], pointer: str, value: JsonValue) -> None:
-    parts = _pointer_parts(pointer)
-    if not parts:
-        if not isinstance(value, dict):
-            raise ValueError("root operation projection requires a JSON object")
-        document.update(value)
-        return
-    current = document
-    for part in parts[:-1]:
-        child = current.setdefault(part, {})
-        if not isinstance(child, dict):
-            raise ValueError(f"operation projection destination is not an object: {pointer}")
-        current = child
-    current[parts[-1]] = value
-
-
-def _subjects(
-    inventory: Sequence[Mapping[str, object]],
-    rules: Sequence[ArtifactRule] = (),
-    *,
-    observations: Sequence[ContentObservationEvidence] = (),
-) -> tuple[WorkArtifactSubject, ...]:
-    subjects: list[WorkArtifactSubject] = []
-    for raw in inventory:
-        root = cast(CollectionRootIdentityRef, raw["collection"])
-        byte_count = raw["bytes"]
-        if isinstance(byte_count, bool) or not isinstance(byte_count, int):
-            raise RuntimeError("Riverhog returned an invalid artifact byte count")
-        artifact_id = (
-            "a-"
-            + canonical_json_sha256(
-                {"collection_id": root.collection_id, "artifact_id": str(raw["artifact_id"])}
-            )[:32]
-        )
-        base = WorkArtifactSubject.model_validate(
-            dict(
-                id=artifact_id,
-                role="stove0.source/v1",
-                collection=root,
-                artifact_id=str(raw["artifact_id"]),
-                bytes=str(byte_count),
-                sha256=str(raw["sha256"]),
-            )
-        )
-        if not rules:
-            subjects.append(base)
-            continue
-        for rule in rules:
-            candidate = base.model_copy(update={"role": rule.role})
-            if all(
-                _predicate_matches(predicate, observations, candidate=(candidate,))
-                for predicate in rule.when
-            ):
-                subjects.append(candidate)
-                break
-    return tuple(sorted(subjects, key=lambda subject: subject.id))
-
-
-def _route_artifacts(
-    subjects: tuple[WorkArtifactSubject, ...],
-    *,
-    route: RecipeBranch,
-    associations: tuple[ArtifactAssociation, ...],
-    observations: tuple[ContentObservationEvidence, ...],
-) -> tuple[tuple[WorkArtifactSubject, ...], tuple[WorkInputGroup, ...]]:
-    if route.primary_role is None:
-        if all(
-            _predicate_matches(predicate, observations, candidate=()) for predicate in route.when
-        ):
-            return subjects, ()
-        return (), ()
-
-    association = next(
-        (item for item in associations if item.primary_role == route.primary_role), None
-    )
-    if route.associated_roles and association is None:
-        raise RuntimeError("validated recipe route is missing its artifact association")
-    primaries = [subject for subject in subjects if subject.role == route.primary_role]
-    associated = [subject for subject in subjects if subject.role in set(route.associated_roles)]
-    relationships, blocked = (
-        _accepted_relationships(primaries, associated, association, observations)
-        if association is not None
-        else ({}, set())
-    )
-    selected: dict[str, WorkArtifactSubject] = {}
-    groups: list[WorkInputGroup] = []
-    for primary in primaries:
-        if primary.id in blocked:
-            continue
-        candidate = [primary]
-        if route.associated_roles:
-            candidate.extend(relationships.get(primary.id, ()))
-        exact_candidate = tuple(sorted(candidate, key=lambda subject: subject.id))
-        if not all(
-            _predicate_matches(predicate, observations, candidate=exact_candidate)
-            for predicate in route.when
-        ):
-            continue
-        selected.update((subject.id, subject) for subject in exact_candidate)
-        groups.append(
-            WorkInputGroup(
-                primary_id=primary.id,
-                associated_ids=tuple(sorted(subject.id for subject in candidate[1:])),
-            )
-        )
-    return (
-        tuple(selected[artifact_id] for artifact_id in sorted(selected)),
-        tuple(sorted(groups, key=lambda group: group.primary_id)),
-    )
-
-
-def _accepted_relationships(
-    primaries: Sequence[WorkArtifactSubject],
-    associated: Sequence[WorkArtifactSubject],
-    association: ArtifactAssociation,
-    observations: Sequence[ContentObservationEvidence],
-) -> tuple[dict[str, list[WorkArtifactSubject]], set[str]]:
-    """Use ordered accepted facts; only a complete negative permits fallback."""
-
-    primary_by_id = {item.id: item for item in primaries}
-    associated_by_id = {item.id: item for item in associated}
-    links: dict[str, list[WorkArtifactSubject]] = {}
-    blocked: set[str] = set()
-    for sidecar in associated:
-        for source in association.sources:
-            records, endpoint_map, statuses = _relationship_source(
-                source, observations, set(primary_by_id), set(associated_by_id)
-            )
-            matches: set[str] = set()
-            unsupported = any(
-                statuses.get(subject_id) in {"unsupported", "ambiguous", "insufficient"}
-                for subject_id in (*primary_by_id, sidecar.id)
-            )
-            for record in records:
-                if not all(_document_matches_predicate(rule, record) for rule in source.where):
-                    continue
-                left_present, left = _json_pointer(record, source.associated_pointer)
-                if not left_present:
-                    raise ValueError("accepted relation record has no associated endpoint")
-                left_id = _resolve_relation_endpoint(source, left, endpoint_map)
-                if left_id != sidecar.id:
-                    continue
-                if not all(_document_matches_predicate(rule, record) for rule in source.required):
-                    unsupported = True
-                    continue
-                right_present, right = _json_pointer(record, source.primary_pointer)
-                if not right_present:
-                    unsupported = True
-                    continue
-                right_id = _resolve_relation_endpoint(source, right, endpoint_map)
-                if right_id not in primary_by_id or right_id == sidecar.id:
-                    unsupported = True
-                    continue
-                matches.add(right_id)
-            if unsupported or len(matches) > 1:
-                blocked.update(matches or primary_by_id)
-                break
-            if matches:
-                primary_id = next(iter(matches))
-                links.setdefault(primary_id, []).append(sidecar)
-                break
-    return links, blocked
-
-
-def _relationship_source(
-    source: AssociationEvidenceSource,
-    observations: Sequence[ContentObservationEvidence],
-    primary_ids: set[str],
-    associated_ids: set[str],
-) -> tuple[list[dict[str, JsonValue]], dict[str, str], dict[str, str]]:
-    evidence = [
-        item
-        for item in observations
-        if item.request.observer_contract_id == source.observation_contract_id
-        and item.request.observer_contract_sha256 == source.observation_contract_sha256
-    ]
-    if not evidence:
-        raise ValueError("declared relationship evidence was not accepted")
-    records: list[dict[str, JsonValue]] = []
-    covered_subject_ids: set[str] = set()
-    statuses: dict[str, str] = {}
-    for item in evidence:
-        if item.result.facts is None:
-            raise ValueError("accepted relationship evidence has no facts")
-        subject_ids = {subject.id for subject in item.request.subjects}
-        if covered_subject_ids & subject_ids:
-            raise ValueError("accepted relationship evidence repeats a candidate subject")
-        covered_subject_ids.update(subject_ids)
-        static_options = deepcopy(item.request.options)
-        for pointer, expected in (
-            (source.primary_partition_pointer, primary_ids),
-            (source.associated_partition_pointer, associated_ids),
-        ):
-            if pointer is None:
-                continue
-            present, actual = _json_pointer(item.request.options, pointer)
-            if (
-                not present
-                or not isinstance(actual, list)
-                or any(not isinstance(value, str) for value in actual)
-                or set(actual) != expected
-                or len(actual) != len(expected)
-            ):
-                raise ValueError("accepted relationship question covers another subject partition")
-            _delete_json_pointer(static_options, pointer)
-        if source.evidence_slots_pointer is not None:
-            present, actual = _json_pointer(item.request.options, source.evidence_slots_pointer)
-            if not present or actual != [slot.slot for slot in item.request.evidence_slots or ()]:
-                raise ValueError("accepted relationship question differs from its evidence slots")
-            _delete_json_pointer(static_options, source.evidence_slots_pointer)
-        if canonical_json_bytes(static_options) != canonical_json_bytes(source.expected_options):
-            raise ValueError("accepted relationship question differs from the recipe")
-        present, value = _json_pointer(item.result.facts, source.records_pointer)
-        if (
-            not present
-            or not isinstance(value, list)
-            or any(not isinstance(row, dict) for row in value)
-        ):
-            raise ValueError("accepted relationship facts lack their declared records")
-        for row in cast(list[dict[str, JsonValue]], value):
-            if source.record_array_pointer is None:
-                records.append(row)
-                continue
-            present, nested = _json_pointer(row, source.record_array_pointer)
-            if (
-                not present
-                or not isinstance(nested, list)
-                or any(not isinstance(nested_row, dict) for nested_row in nested)
-            ):
-                raise ValueError("accepted relationship facts lack their declared nested records")
-            records.extend(cast(list[dict[str, JsonValue]], nested))
-        if source.status_records_pointer is not None:
-            present, status_rows = _json_pointer(item.result.facts, source.status_records_pointer)
-            if not present or not isinstance(status_rows, list):
-                raise ValueError("accepted relationship facts lack complete status records")
-            assert source.status_pointer is not None
-            for status_row in status_rows:
-                if not isinstance(status_row, dict):
-                    raise ValueError("accepted relationship status row is malformed")
-                has_id, subject_id = _json_pointer(status_row, source.status_subject_pointer)
-                has_status, status = _json_pointer(status_row, source.status_pointer)
-                if (
-                    not has_id
-                    or not isinstance(subject_id, str)
-                    or not has_status
-                    or not isinstance(status, str)
-                    or subject_id in statuses
-                ):
-                    raise ValueError("accepted relationship status is incomplete or repeated")
-                statuses[subject_id] = status
-    if covered_subject_ids != primary_ids | associated_ids:
-        raise ValueError("accepted relationship evidence differs from its exact subject scope")
-    if source.status_records_pointer is not None and set(statuses) != covered_subject_ids:
-        raise ValueError("accepted relationship statuses differ from the exact subject scope")
-    endpoint_map: dict[str, str] = {}
-    if source.endpoint_mode == "exact-endpoint":
-        for item in observations:
-            if item.request.observer_contract_id != source.endpoint_observation_contract_id:
-                continue
-            if item.result.facts is None:
-                raise ValueError("accepted endpoint evidence has no facts")
-            present, value = _json_pointer(item.result.facts, source.endpoint_records_pointer)
-            if not present or not isinstance(value, list):
-                raise ValueError("accepted endpoint evidence lacks its subject records")
-            for endpoint_row in value:
-                if not isinstance(endpoint_row, dict):
-                    raise ValueError("accepted endpoint record is malformed")
-                present, subject_id = _json_pointer(endpoint_row, source.endpoint_subject_pointer)
-                if not present or not isinstance(subject_id, str):
-                    raise ValueError("accepted endpoint record has no subject identity")
-                for pointer in source.endpoint_pointers:
-                    present, endpoint = _json_pointer(endpoint_row, pointer)
-                    if not present:
-                        raise ValueError("accepted endpoint record lacks its declared endpoint")
-                    identity = canonical_json_sha256(endpoint)
-                    previous = endpoint_map.setdefault(identity, subject_id)
-                    if previous != subject_id:
-                        raise ValueError("one exact endpoint identifies multiple member instances")
-        if not endpoint_map:
-            raise ValueError("declared exact endpoint evidence was not accepted")
-        if not (primary_ids | associated_ids) <= set(endpoint_map.values()):
-            raise ValueError("declared exact endpoint evidence omits a candidate subject")
-    return records, endpoint_map, statuses
-
-
-def _delete_json_pointer(document: dict[str, JsonValue], pointer: str) -> None:
-    parts = _pointer_parts(pointer)
-    if not parts:
-        raise ValueError("relationship partition pointer must identify a field")
-    current = document
-    parents: list[tuple[dict[str, JsonValue], str]] = []
-    for part in parts[:-1]:
-        child = current.get(part)
-        if not isinstance(child, dict):
-            raise ValueError("relationship partition pointer is not an object field")
-        parents.append((current, part))
-        current = child
-    current.pop(parts[-1])
-    for parent, key in reversed(parents):
-        if parent[key]:
-            break
-        del parent[key]
-
-
-def _resolve_relation_endpoint(
-    source: AssociationEvidenceSource, value: JsonValue, endpoint_map: Mapping[str, str]
-) -> str | None:
-    if source.endpoint_mode == "subject-id":
-        return value if isinstance(value, str) else None
-    return endpoint_map.get(canonical_json_sha256(value))
-
-
-def _uncovered_inventory(
-    inventory: Sequence[Mapping[str, object]],
-    selected: Sequence[tuple[RecipeBranch, ArtifactSelection, tuple[WorkInputGroup, ...]]],
-) -> list[str]:
-    covered = {
-        (
-            artifact.collection.collection_id,
-            artifact.collection.archive_root_sha256,
-            artifact.artifact_id,
-            artifact.bytes,
-            artifact.sha256,
-        )
-        for _route, selection, _groups in selected
-        for artifact in selection.artifacts
-    }
-    return sorted(
-        str(raw["artifact_id"])
-        for raw in inventory
-        if (
-            cast(CollectionRootIdentityRef, raw["collection"]).collection_id,
-            cast(CollectionRootIdentityRef, raw["collection"]).archive_root_sha256,
-            str(raw["artifact_id"]),
-            raw["bytes"],
-            str(raw["sha256"]),
-        )
-        not in covered
-    )
-
-
-def _retain_exact[T](documents: dict[str, T], digest: str, document: T) -> None:
-    existing = documents.setdefault(digest, document)
+def _retain[Document: BaseModel](
+    documents: dict[str, Document], key: str, document: Document
+) -> None:
+    existing = documents.setdefault(key, document)
     if existing != document:
-        raise RuntimeError("content-addressed planning identity was reused")
+        raise ValueError("exact compiled planning identity was rebound")
 
 
-def _operation_input_problem(
-    operation: OperationContract,
-    selection: ArtifactSelection,
-) -> str | None:
+def _input_problem(operation: OperationContract, selection: ArtifactSelection) -> str | None:
     counts: dict[str, int] = {}
     for artifact in selection.artifacts:
         counts[artifact.role] = counts.get(artifact.role, 0) + 1
     contracts = {item.role: item for item in operation.inputs}
-    unsupported = sorted(set(counts) - set(contracts)) if "*" not in contracts else []
-    if unsupported:
-        return "unsupported role(s): " + ", ".join(unsupported)
+    if "*" not in contracts and set(counts) - set(contracts):
+        return "The operation does not accept every selected role."
     for role, contract in contracts.items():
-        count = sum(counts.values()) if role == "*" else counts.get(role, 0)
+        count = selection.artifact_count if role == "*" else counts.get(role, 0)
         if count < contract.minimum or (contract.maximum is not None and count > contract.maximum):
-            return f"input role cardinality is invalid: {role}"
+            return f"The operation input cardinality is inapplicable for role {role}."
     return None
-
-
-def _target_inputs(
-    inventory: Sequence[Mapping[str, object]],
-    rules: Sequence[ArtifactRule],
-) -> tuple[InputArtifact, ...]:
-    return tuple(
-        InputArtifact.model_validate(
-            dict(
-                id=subject.id,
-                role=subject.role,
-                collection=subject.collection,
-                artifact_id=subject.artifact_id,
-                bytes=str(subject.bytes),
-                sha256=subject.sha256,
-            )
-        )
-        for subject in _subjects(inventory, rules)
-    )
-
-
-def _target_inputs_from_selection(
-    selection: ArtifactSelection,
-) -> tuple[InputArtifact, ...]:
-    return tuple(
-        InputArtifact.model_validate(
-            dict(
-                id=subject.id,
-                role=subject.role,
-                collection=subject.collection,
-                artifact_id=subject.artifact_id,
-                bytes=str(subject.bytes),
-                sha256=subject.sha256,
-            )
-        )
-        for subject in selection.artifacts
-    )
-
-
-def _join_target_inputs(
-    binding: JoinWorkBinding,
-    selections: Mapping[str, ArtifactSelection],
-) -> tuple[InputArtifact, ...]:
-    artifacts: list[InputArtifact] = []
-    for member in binding.members:
-        selection = selections.get(member.artifact_selection_sha256)
-        if selection is None:
-            raise RuntimeError(
-                f"join preflight is missing the exact {member.branch_id} artifact selection"
-            )
-        for subject in selection.artifacts:
-            artifact_id = (
-                "j-"
-                + canonical_json_sha256(
-                    {
-                        "branch_id": member.branch_id,
-                        "selection_sha256": member.artifact_selection_sha256,
-                        "artifact_id": subject.id,
-                    }
-                )[:32]
-            )
-            artifacts.append(
-                InputArtifact.model_validate(
-                    dict(
-                        id=artifact_id,
-                        role=subject.role,
-                        collection=subject.collection,
-                        artifact_id=subject.artifact_id,
-                        bytes=str(subject.bytes),
-                        sha256=subject.sha256,
-                    )
-                )
-            )
-    return tuple(sorted(artifacts, key=lambda item: item.id))
-
-
-def _predicate_matches(
-    predicate: FactPredicate,
-    observations: Sequence[ContentObservationEvidence],
-    *,
-    candidate: Sequence[WorkArtifactSubject],
-) -> bool:
-    matches = [
-        evidence.result
-        for evidence in observations
-        if evidence.request.observer_contract_id == predicate.observation_contract_id
-    ]
-    if not matches or any(result.state != "observed" or result.facts is None for result in matches):
-        return False
-    if predicate.artifact_roles:
-        relevant = {
-            artifact.id for artifact in candidate if artifact.role in set(predicate.artifact_roles)
-        }
-        if not relevant:
-            return predicate.operator == "exists" and predicate.value is False
-        assert predicate.artifact_facts is not None
-        records = _artifact_fact_records(matches, predicate.artifact_facts, relevant)
-        if set(records) != relevant:
-            return False
-        values = [record for artifact_id in sorted(records) for record in records[artifact_id]]
-        if predicate.operator == "exists" and predicate.value is False:
-            return all(_document_matches_predicate(predicate, record) for record in values)
-        return any(_document_matches_predicate(predicate, record) for record in values)
-    if predicate.operator == "exists" and predicate.value is False:
-        return all(
-            result.facts is not None and _document_matches_predicate(predicate, result.facts)
-            for result in matches
-        )
-    return any(
-        result.facts is not None and _document_matches_predicate(predicate, result.facts)
-        for result in matches
-    )
-
-
-def _artifact_fact_records(
-    results: Sequence[ContentObservationResult],
-    binding: ArtifactFactBinding,
-    artifact_ids: set[str],
-) -> dict[str, list[dict[str, JsonValue]]]:
-    records: dict[str, list[dict[str, JsonValue]]] = {}
-    for result in results:
-        assert result.facts is not None
-        present, raw_records = _json_pointer(result.facts, binding.records_pointer)
-        if not present or not isinstance(raw_records, list):
-            continue
-        for raw_record in raw_records:
-            if not isinstance(raw_record, dict):
-                continue
-            has_id, artifact_id = _json_pointer(raw_record, binding.artifact_id_pointer)
-            if not has_id or not isinstance(artifact_id, str) or artifact_id not in artifact_ids:
-                continue
-            records.setdefault(artifact_id, []).append(raw_record)
-    return records
-
-
-def _document_matches_predicate(
-    predicate: FactPredicate,
-    document: dict[str, JsonValue],
-) -> bool:
-    rows: Sequence[JsonValue] = (document,)
-    if predicate.array_pointer is not None:
-        present, selected = _json_pointer(document, predicate.array_pointer)
-        if not present:
-            return False
-        if not isinstance(selected, list):
-            raise ValueError("declared fact array has a different shape")
-        rows = selected
-    rows = tuple(
-        row
-        for row in rows
-        if all(_fact_condition_matches(item, row) for item in predicate.same_item)
-    )
-    if predicate.operator == "exists" and predicate.value is False:
-        return bool(rows) and all(not _json_pointer(row, predicate.pointer)[0] for row in rows)
-    for row in rows:
-        present, value = _json_pointer(row, predicate.pointer)
-        if _comparison_matches(predicate.operator, predicate.value, present, value):
-            return True
-    return False
-
-
-def _fact_condition_matches(condition: FactCondition, row: JsonValue) -> bool:
-    present, value = _json_pointer(row, condition.pointer)
-    return _comparison_matches(condition.operator, condition.value, present, value)
-
-
-def _comparison_matches(
-    operator: str, expected: JsonValue, present: bool, value: JsonValue
-) -> bool:
-    if operator == "exists":
-        return present is expected
-    if not present:
-        return False
-    if operator == "equals":
-        return canonical_json_bytes(value) == canonical_json_bytes(expected)
-    if operator == "not-equals":
-        return canonical_json_bytes(value) != canonical_json_bytes(expected)
-    if operator == "contains":
-        return isinstance(value, list) and any(
-            canonical_json_bytes(item) == canonical_json_bytes(expected) for item in value
-        )
-    if operator == "one-of":
-        return isinstance(expected, list) and any(
-            canonical_json_bytes(value) == canonical_json_bytes(item) for item in expected
-        )
-    raise AssertionError(operator)
-
-
-def _json_pointer(document: JsonValue, pointer: str) -> tuple[bool, JsonValue]:
-    current = document
-    if pointer == "":
-        return True, current
-    for raw in pointer.split("/")[1:]:
-        token = raw.replace("~1", "/").replace("~0", "~")
-        if isinstance(current, dict) and token in current:
-            current = current[token]
-        elif isinstance(current, list) and token.isdigit() and int(token) < len(current):
-            current = current[int(token)]
-        else:
-            return False, None
-    return True, current
-
-
-__all__ = [
-    "ArtifactAssociation",
-    "ArtifactFactBinding",
-    "ArtifactRule",
-    "BranchSetDecision",
-    "FactPredicate",
-    "ObserverUse",
-    "OperationProjection",
-    "RecipeCatalog",
-    "RecipeDefinition",
-    "RecipeJoin",
-    "RecipeJoinMember",
-    "RecipePlanner",
-    "RecipeRoute",
-]

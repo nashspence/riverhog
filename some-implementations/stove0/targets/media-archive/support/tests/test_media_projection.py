@@ -26,6 +26,7 @@ from a_stove0_media_archive_lib import (
 )
 from a_stove0_media_metadata_contract_lib import (
     MEDIA_METADATA_FACTS_SCHEMA,
+    MEDIA_METADATA_INTERFACE,
     MEDIA_METADATA_OBSERVER_CONTRACT,
     MediaArtifactFacts,
     MediaFactEvidence,
@@ -36,7 +37,6 @@ from a_stove0_media_metadata_contract_lib import (
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     ContentObservationRequest,
-    ContentObservationRequestPayload,
     ContentObservationResult,
     ContentObservationResultPayload,
     ObserverImplementation,
@@ -49,6 +49,8 @@ from stove0_protocol import (
     canonical_json_sha256,
 )
 from stove0_target_protocol import InputArtifact, TargetInputAuthority, TargetPreflightRequest
+
+from tests.stove0_observation_fixtures import observation_payload
 
 
 def _sha(character: str) -> str:
@@ -81,7 +83,9 @@ def _evidence(
         for item in inputs
     )
     request = ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=MEDIA_METADATA_OBSERVER_CONTRACT,
+            interface=MEDIA_METADATA_INTERFACE,
             work_id=_sha("3"),
             observer_registration_id="exiftool",
             observer_descriptor_sha256=_sha("4"),

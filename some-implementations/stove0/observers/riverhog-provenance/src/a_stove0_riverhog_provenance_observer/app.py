@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import importlib.metadata
 import json
 import os
 import secrets
-from collections.abc import Sequence
+from collections.abc import AsyncIterator, Sequence
 from pathlib import Path
 
 import uvicorn
@@ -21,8 +22,15 @@ from fastapi import Depends, FastAPI, Request, Response
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPBearer
 from http_api_contracts import HealthOut, error_payload, operation_openapi
+from http_api_contracts.metadata_binding import read_control_body
+from http_api_contracts.metadata_staging import MetadataStagingError
+from riverhog_canonical_json import canonical_json_bytes
 from stove0_observer_protocol import SemanticValidatorRegistry
-from stove0_observer_support import OBSERVER_HTTP_OPERATIONS, ObserverHttpBinding
+from stove0_observer_support import (
+    OBSERVER_HTTP_OPERATIONS,
+    ObserverHttpBinding,
+    PersistentObserverService,
+)
 
 from .observer import RiverhogProvenanceObserver
 
@@ -40,20 +48,35 @@ def _error(status: int, code: str, message: str) -> Response:
     )
 
 
-def create_app(*, token: str, observer: RiverhogProvenanceObserver) -> FastAPI:
+def create_app(*, token: str, observer: RiverhogProvenanceObserver, state_root: Path) -> FastAPI:
     credential = token.strip()
     if not credential:
         raise ValueError("provenance observer token must be nonempty")
-    binding = ObserverHttpBinding(
+    service = PersistentObserverService(
         observer,
-        maximum_concurrency=4,
+        state_root=state_root,
+        maximum_workers=4,
         semantic_validators=SemanticValidatorRegistry(
             (CORE_PROVENANCE_SEMANTIC_VALIDATOR, MATERIALIZATION_HINT_SEMANTIC_VALIDATOR)
         ),
     )
+    binding = ObserverHttpBinding(service)
+
+    @contextlib.asynccontextmanager
+    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+        try:
+            yield
+        finally:
+            await run_in_threadpool(service.close)
+
     app = FastAPI(
-        title="Stove0 Riverhog provenance observer", version="1", openapi_url="/v1/openapi.json"
+        title="Stove0 Riverhog provenance observer",
+        version="1",
+        openapi_url="/v1/openapi.json",
+        lifespan=lifespan,
     )
+
+    app.state.observer_service = service
 
     @app.get("/health/live", response_model=HealthOut, tags=["health"])
     def live() -> dict[str, str]:
@@ -67,9 +90,17 @@ def create_app(*, token: str, observer: RiverhogProvenanceObserver) -> FastAPI:
         scheme, _, supplied = request.headers.get("authorization", "").partition(" ")
         if scheme.casefold() != "bearer" or not secrets.compare_digest(supplied, credential):
             return _error(401, "unauthorized", "Bearer credential is not authorized")
-        result = await run_in_threadpool(
-            binding.handle, request.method, request.url.path, await request.body()
-        )
+        try:
+            body = await read_control_body(
+                request, maximum_request_bytes=binding.maximum_request_bytes
+            )
+        except MetadataStagingError as exc:
+            return Response(
+                content=canonical_json_bytes({"error": {"code": exc.code, "message": exc.message}}),
+                status_code=exc.status,
+                media_type="application/json",
+            )
+        result = await run_in_threadpool(binding.handle, request.method, request.url.path, body)
         return Response(
             content=result.body, status_code=result.status, headers=dict(result.headers)
         )
@@ -172,7 +203,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     token = _secret()
     os.environ.pop(f"{PREFIX}_TOKEN", None)
-    uvicorn.run(create_app(token=token, observer=observer), host=args.host, port=args.port)
+    application = create_app(
+        token=token,
+        observer=observer,
+        state_root=Path(
+            os.getenv(
+                "A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_STATE",
+                "/var/lib/a-stove0-riverhog-provenance-observer",
+            )
+        ),
+    )
+    try:
+        uvicorn.run(application, host=args.host, port=args.port)
+    finally:
+        application.state.observer_service.close()
     return 0
 
 

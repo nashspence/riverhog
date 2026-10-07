@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
-from stove0_protocol import CollectionRootIdentityRef, WorkflowPreview
+from stove0_protocol import CollectionRootIdentityRef, PlanningJobStatus
 from stove0_target_protocol import AcceptedTargetJob, TargetJobStatus, TransformPlan
 
 
@@ -28,14 +28,7 @@ def stove(path: str, payload: Any = None) -> dict[str, Any]:
             "Content-Type": "application/json",
         },
     )
-    # Large scale fixtures perform the same complete bulk operation; their
-    # finite request budget grows without changing ordinary CI fixture budgets.
-    timeout = (
-        300 + 30 * max(0, int(os.environ["STOVE0_SMOKE_FILE_COUNT"]) - 16)
-        if payload is not None
-        else 30
-    )
-    with urllib.request.urlopen(request, timeout=timeout) as response:
+    with urllib.request.urlopen(request, timeout=30) as response:
         document = json.load(response)
     assert isinstance(document, dict)
     return document
@@ -71,9 +64,12 @@ def work_diagnostic(row: dict[str, Any]) -> dict[str, Any]:
 def wait() -> None:
     # A slow status read does not establish a work outcome. Retry only timed-out
     # reads within the same finite fixture deadline; terminal work still fails.
-    deadline = time.monotonic() + int(os.environ["STOVE0_SMOKE_COMPLETION_TIMEOUT"])
+    started = time.monotonic()
+    deadline = started + int(os.environ["STOVE0_SMOKE_COMPLETION_TIMEOUT"])
     rows: list[dict[str, Any]] = []
-    while time.monotonic() < deadline:
+    previous = None
+    next_progress = started
+    while (now := time.monotonic()) < deadline:
         try:
             rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc")["work"]
         except TimeoutError:
@@ -92,6 +88,23 @@ def wait() -> None:
         if rows and all(row["phase"] == "complete" for row in rows):
             assert any(int((row.get("output") or {}).get("collection_id") or 0) > 0 for row in rows)
             return
+        current = tuple(
+            (row.get("work_id"), row.get("phase"), (row.get("target_status") or {}).get("state"))
+            for row in rows
+        )
+        if current != previous or now >= next_progress:
+            print(
+                canonical_json_bytes(
+                    {
+                        "proof": "processing-progress",
+                        "elapsed_seconds": int(now - started),
+                        "work": [work_diagnostic(row) for row in rows],
+                    }
+                ).decode(),
+                file=sys.stderr,
+                flush=True,
+            )
+            previous, next_progress = current, now + 60
         time.sleep(0.5)
     scheduler = stove("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25})
     raise TimeoutError(
@@ -112,12 +125,28 @@ def declared_values(actual: Any, declared: Any) -> None:
         assert actual == declared
 
 
+def await_planning(path: str, *, initiation: bool = False) -> dict[str, Any]:
+    """Drive bounded planning while the fixture's controller is deliberately offline."""
+    deadline = time.monotonic() + int(os.environ.get("STOVE0_SMOKE_COMPLETION_TIMEOUT", "900"))
+    last: dict[str, Any] = {}
+    while time.monotonic() < deadline:
+        stove("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25})
+        last = stove(path)
+        state = last["state"]
+        if state == "completed":
+            return last
+        if initiation and state == "rejected":
+            raise RuntimeError(canonical_json_bytes(last).decode())
+        time.sleep(0.5)
+    raise TimeoutError(canonical_json_bytes({"path": path, "state": last.get("state")}).decode())
+
+
 def invoke() -> None:
     from stove0_operator_contracts import (
         OperatorWorkflowPreviewRequest,
         RecipeCatalogView,
         WorkCreateRequest,
-        WorkView,
+        WorkInitiationStatus,
     )
 
     receipt = json.loads(os.environ["RIVERHOG_INPUT_RECEIPT"])
@@ -129,14 +158,30 @@ def invoke() -> None:
     )
     catalog = RecipeCatalogView.model_validate(stove("/v1/recipes"))
     recipe = next(row for row in catalog.recipes if row.definition.id == recipe_id())
-    preview = WorkflowPreview.model_validate(
+    invocation = {
+        "recipe": {
+            "id": recipe.definition.id,
+            "revision": recipe.definition.model_dump(mode="json")["revision"],
+            "sha256": recipe.sha256,
+        },
+        "inputs": [root.model_dump(mode="json")],
+    }
+    preview_status = PlanningJobStatus.model_validate(
         stove(
             "/v1/workflow-previews",
-            OperatorWorkflowPreviewRequest(recipe_id=recipe_id(), inputs=(root,)).model_dump(
-                mode="json", exclude_none=True
-            ),
+            OperatorWorkflowPreviewRequest(
+                invocation_id=canonical_json_sha256(
+                    {"purpose": "qualification-preview", **invocation}
+                ),
+                recipe_id=recipe_id(),
+                inputs=(root,),
+            ).model_dump(mode="json", exclude_none=True),
         )
     )
+    preview = PlanningJobStatus.model_validate(
+        await_planning("/v1/workflow-previews/" + preview_status.job_id)
+    ).result
+    assert preview is not None
     assert preview.state == "ready", preview.state
     assert preview.work.recipe.id == recipe.definition.id
     assert preview.work.recipe.revision == recipe.definition.revision
@@ -152,11 +197,12 @@ def invoke() -> None:
     expected_audio = int(os.environ["STOVE0_SMOKE_FILE_COUNT"])
     expected_sidecars = int(os.environ.get("STOVE0_SMOKE_SIDECAR_COUNT", "1"))
     plans = {}
-    for route in recipe.definition.routes:
-        if route.id not in targets:
+    for branch_id, declared_branch in recipe.definition.branches.items():
+        if branch_id not in targets:
             continue
-        assert route.kind == "operation"
-        branch = branches[route.id]
+        operation = declared_branch.call
+        assert operation.kind == "operation"
+        branch = branches[branch_id]
         assert branch.kind == "leaf"
         selection = selections[branch.artifact_selection.selection_sha256]
         assert selection.artifact_count == expected_audio + expected_sidecars
@@ -164,13 +210,13 @@ def invoke() -> None:
         roles = [row.role for row in selection.artifacts]
         assert roles.count("stove0.media.source/v1") == expected_audio
         assert roles.count("stove0.media.xmp-source/v1") == expected_sidecars
-        target = targets[route.id]
+        target = targets[branch_id]
         assert target.work_id == branch.workflow_plan.work.work_id
         assert target.workflow_plan_sha256 == branch.workflow_plan.workflow_plan_sha256
         plan = TransformPlan.model_validate(
             {**target.target_plan.plan, "plan_sha256": target.target_plan.plan_sha256}
         )
-        assert plan.operation_id == route.operation_id
+        assert plan.operation_id == operation.operation.id
         assert plan.inputs.selection == selection.ref()
         assert plan.intent == branch.workflow_plan.work.effective_intent
         assert plan.input_groups == branch.workflow_plan.input_groups
@@ -182,8 +228,8 @@ def invoke() -> None:
         assert {subject for group in plan.input_groups for subject in group.associated_ids} == {
             row.id for row in selection.artifacts if row.role == "stove0.media.xmp-source/v1"
         }
-        assert branch.workflow_plan.input_retrieval_policy == route.input_retrieval_policy
-        for name, value in route.intent.items():
+        assert branch.workflow_plan.input_retrieval_policy == operation.retrieve
+        for name, value in operation.intent.items():
             declared_values(plan.intent[name], value)
         projection = plan.execution_parameters["media_projection"]
         assert isinstance(projection, dict)
@@ -191,7 +237,7 @@ def invoke() -> None:
         assert isinstance(projection["retained_xmp_sidecars"], list)
         assert len(projection["items"]) == expected_audio
         assert len(projection["retained_xmp_sidecars"]) == expected_sidecars
-        plans[route.id] = {
+        plans[branch_id] = {
             "work_id": target.work_id,
             "plan_sha256": plan.plan_sha256,
             "bitrate_kbps": plan.intent["bitrate_kbps"],
@@ -200,14 +246,23 @@ def invoke() -> None:
         assert plans["archive-audio"]["bitrate_kbps"] == 128
         assert plans["archive-audio-overlap"]["bitrate_kbps"] == 96
         assert len({row["plan_sha256"] for row in plans.values()}) == 2
-    work = WorkView.model_validate(
+    initiation = WorkInitiationStatus.model_validate(
         stove(
             "/v1/work",
             WorkCreateRequest(
-                recipe_id=recipe_id(), inputs=(root,), preview_sha256=preview.preview_sha256
+                invocation_id=canonical_json_sha256(
+                    {"purpose": "qualification-acceptance", **invocation}
+                ),
+                recipe_id=recipe_id(),
+                inputs=(root,),
+                preview_sha256=preview.preview_sha256,
             ).model_dump(mode="json", exclude_none=True),
         )
     )
+    work = WorkInitiationStatus.model_validate(
+        await_planning("/v1/work-initiations/" + initiation.job.job_id, initiation=True)
+    ).work
+    assert work is not None
     expected_work = os.environ.get("EXPECTED_WORK_ID")
     if expected_work:
         assert work.work_id == expected_work

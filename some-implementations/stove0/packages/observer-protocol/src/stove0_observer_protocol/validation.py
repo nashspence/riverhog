@@ -12,8 +12,10 @@ from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from stove0_protocol.models import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     SHA256_PATTERN,
+    AcceptedObservationJob,
     ContentObservationRequest,
     ContentObservationResult,
+    ObservationJobStatus,
     ObserverContractSupport,
     ObserverDescriptor,
     SemanticValidationProfile,
@@ -93,9 +95,14 @@ def validate_observation_request(
     support = descriptor.support_for(request.observer_contract_id)
     if support.contract_sha256 != request.observer_contract_sha256:
         raise ValueError("observer contract differs from the sealed request")
+    if request.interface not in support.interfaces:
+        raise ValueError("observer does not advertise the exact selected observation interface")
     if request.read_actions != support.read_actions:
         raise ValueError("observer read authority differs from the advertised contract")
-    if request.maximum_result_bytes > support.maximum_result_bytes:
+    if support.maximum_result_bytes is not None and (
+        request.maximum_result_bytes is None
+        or request.maximum_result_bytes > support.maximum_result_bytes
+    ):
         raise ValueError("observation request exceeds the observer contract result limit")
     try:
         Draft202012Validator(support.options_schema.document).validate(request.options)
@@ -149,6 +156,19 @@ def accept_observation_result(
     validator(request, result.facts)
 
 
+def validate_observation_status(
+    status: ObservationJobStatus,
+    accepted: AcceptedObservationJob,
+    descriptor: ObserverDescriptor,
+    semantic_validators: SemanticValidatorProvider | None = None,
+) -> None:
+    if status.job_id != accepted.job_id or status.request_id != accepted.request.request_id:
+        raise ValueError("observer status belongs to another invocation")
+    validate_observation_request(accepted.request, descriptor)
+    if status.result is not None:
+        accept_observation_result(status.result, accepted.request, descriptor, semantic_validators)
+
+
 def validate_observation_result_structure(
     result: ContentObservationResult,
     request: ContentObservationRequest,
@@ -174,9 +194,10 @@ def validate_observation_result_structure(
             Draft202012Validator(support.facts_schema.document).validate(result.facts)
         except JsonSchemaValidationError as exc:
             raise ValueError("observation facts violate their advertised schema") from exc
-    encoded = canonical_json_bytes(result.model_dump(mode="json", exclude_none=True))
-    if len(encoded) > request.maximum_result_bytes:
-        raise ValueError("observation result exceeds the requested result-size limit")
+    if request.maximum_result_bytes is not None:
+        encoded = canonical_json_bytes(result.model_dump(mode="json", exclude_none=True))
+        if len(encoded) > request.maximum_result_bytes:
+            raise ValueError("observation result exceeds the requested result-size limit")
     return support
 
 

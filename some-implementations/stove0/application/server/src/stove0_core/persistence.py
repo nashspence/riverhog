@@ -7,8 +7,9 @@ import json
 import threading
 from collections import OrderedDict
 from collections.abc import Iterator, Sequence
+from datetime import timedelta
 from pathlib import Path
-from typing import Any, Literal, cast
+from typing import Any, Literal, Self, cast
 
 from http_api_contracts import closed_literal_values
 from sqlalchemy import (
@@ -48,6 +49,7 @@ from state_schema import (
     require_postgresql_extension,
     sqlite_engine,
 )
+from stove0_observer_protocol import ObservationJobStatus
 from stove0_operator_contracts import (
     BRANCH_SET_ADMITTED,
     EVALUATION_CREATED,
@@ -81,12 +83,38 @@ from stove0_target_protocol import (
     OutputArtifact,
     OutputSourceEdge,
 )
-from time_formats import utc_timestamp_now
+from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
 
+from stove0_core.accepted_observations import (
+    AcceptedObservationStore,
+    ObservationSelectionPorts,
+    declare_observation_tables,
+)
+from stove0_core.compiled_branches import CompiledBranchPlanning, declare_compiled_branches
+from stove0_core.compiled_groups import CompiledGroupPlanning, declare_compiled_groups
+from stove0_core.compiled_planning_state import CompiledPlanningState, declare_compiled_planning
+from stove0_core.compiled_runtime_state import CompiledRuntimeState, declare_compiled_runtime
 from stove0_core.evaluation import (
     ConcurrentEvaluationUpdate,
     EvaluationRecord,
 )
+from stove0_core.metadata_selections import MetadataSelectionStore, declare_selection_builders
+from stove0_core.metadata_steps import PreviewScan, WorkScan
+from stove0_core.observation_state import (
+    ObservationDeliveryRecord,
+    ObservationOwnerKind,
+    updated_delivery,
+)
+from stove0_core.planning_context import PlanningContext, declare_planning_contexts
+from stove0_core.preview_state import PreviewRecord
+from stove0_core.recipe_definitions import (
+    RetainedRecipeStore,
+    declare_recipe_definitions,
+    declare_retained_operations,
+    declare_retained_recipe_dependencies,
+)
+from stove0_core.riverhog_transfers import RiverhogTransferStore, declare_riverhog_transfers
+from stove0_core.subject_identity import artifact_identity_sha256, subject_identity_sha256
 from stove0_core.work_state import (
     ConcurrentWorkUpdate,
     Stove0StateError,
@@ -133,6 +161,10 @@ class _WorkRow(_Base):
         CheckConstraint("document_bytes >= 0", name="ck_stove0_work_records_document_bytes"),
         Index("ix_stove0_work_records_phase_work_id", "phase", "work_id"),
         Index("ix_stove0_work_records_updated_work_id", "updated_at", "work_id"),
+        Index("ix_stove0_work_contacts", "phase", "contact_at", "work_id"),
+        Index("ix_stove0_work_maintenance", "claim_renew_at", "work_id"),
+        Index("ix_stove0_work_recipe", "recipe_sha256", "work_id"),
+        CheckConstraint("contact_failures >= 0", name="ck_stove0_work_contact_failures"),
         Index(
             "ix_stove0_work_records_id_trgm",
             "work_id",
@@ -142,11 +174,70 @@ class _WorkRow(_Base):
     )
 
     work_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    recipe_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     revision: Mapped[int] = mapped_column(Integer, nullable=False)
     phase: Mapped[str] = mapped_column(String(48), nullable=False)
     updated_at: Mapped[str] = mapped_column(String(40), nullable=False)
     document_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
     document_json: Mapped[str] = mapped_column(Text, nullable=False)
+    contact_at: Mapped[str] = mapped_column(String(40), default=utc_timestamp_now)
+    contact_failures: Mapped[int] = mapped_column(Integer, default=0)
+    claim_renew_at: Mapped[str | None] = mapped_column(String(40))
+
+
+class _ObservationDeliveryRow(_Base):
+    __tablename__ = "stove0_observation_deliveries"
+
+    owner_kind: Mapped[str] = mapped_column(String(16), primary_key=True)
+    owner_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    job_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    claim_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    fence: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    state: Mapped[str] = mapped_column(String(16), nullable=False)
+    document_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    document_json: Mapped[str] = mapped_column(Text, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String(40), nullable=False)
+
+    __table_args__ = (
+        CheckConstraint(
+            "owner_kind IN ('work','preview')", name="ck_stove0_observation_owner_kind"
+        ),
+        CheckConstraint(
+            "state IN ('unsubmitted','queued','running','interrupted','canceling','completed')",
+            name="ck_stove0_observation_delivery_state",
+        ),
+        CheckConstraint("document_bytes >= 0", name="ck_stove0_observation_delivery_bytes"),
+        CheckConstraint("fence >= 1", name="ck_stove0_observation_delivery_fence"),
+        Index(
+            "ix_stove0_observation_deliveries_pending", "owner_kind", "owner_id", "state", "job_id"
+        ),
+    )
+
+
+class _PreviewRow(_Base):
+    __tablename__ = "stove0_planning_jobs"
+    job_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    work_id: Mapped[str] = mapped_column(String(64))
+    recipe_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    revision: Mapped[int] = mapped_column(BigInteger)
+    phase: Mapped[str] = mapped_column(String(16))
+    claim_renew_at: Mapped[str | None] = mapped_column(String(40))
+    contact_at: Mapped[str] = mapped_column(String(40))
+    document_bytes: Mapped[int] = mapped_column(BigInteger)
+    document_json: Mapped[str] = mapped_column(Text)
+    updated_at: Mapped[str] = mapped_column(String(40))
+    __table_args__ = (
+        CheckConstraint("revision >= 1", name="ck_stove0_planning_revision"),
+        CheckConstraint("document_bytes >= 0", name="ck_stove0_planning_document_bytes"),
+        CheckConstraint(
+            "phase IN ('queued','observing','planning','preflight','canceling','abandoning',"
+            "'admitting','completed')",
+            name="ck_stove0_planning_phase",
+        ),
+        Index("ix_stove0_planning_contact", "phase", "contact_at", "job_id"),
+        Index("ix_stove0_preview_recipe", "recipe_sha256", "job_id"),
+        Index("ix_stove0_planning_maintenance", "claim_renew_at", "job_id"),
+    )
 
 
 class _WorkRelationRow(_Base):
@@ -209,8 +300,12 @@ class _ArtifactSelectionRow(_Base):
     selection_sha256: Mapped[str] = mapped_column(String(64), primary_key=True)
     artifact_count: Mapped[int] = mapped_column(Integer, nullable=False)
     total_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    state: Mapped[str] = mapped_column(String(16), nullable=False, default="sealed")
 
     __table_args__ = (
+        CheckConstraint(
+            "state IN ('building','sealed')", name="ck_stove0_selection_publication_state"
+        ),
         CheckConstraint("length(selection_sha256) = 64", name="ck_stove0_selections_id"),
         CheckConstraint("artifact_count >= 0", name="ck_stove0_selections_count"),
         CheckConstraint("total_bytes >= 0", name="ck_stove0_selections_bytes"),
@@ -226,6 +321,10 @@ class _ArtifactSelectionMemberRow(_Base):
         primary_key=True,
     )
     artifact_id: Mapped[str] = mapped_column(String(160), primary_key=True)
+    member_identity_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    artifact_identity_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    source_collection_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    source_artifact_id: Mapped[str] = mapped_column(String(64), nullable=False)
     artifact_order: Mapped[int] = mapped_column(Integer, nullable=False)
     continuation_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     document_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
@@ -233,6 +332,22 @@ class _ArtifactSelectionMemberRow(_Base):
 
     __table_args__ = (
         CheckConstraint("length(artifact_id) >= 1", name="ck_stove0_selection_members_artifact_id"),
+        CheckConstraint(
+            "length(member_identity_sha256) = 64", name="ck_stove0_selection_members_identity"
+        ),
+        CheckConstraint(
+            "length(artifact_identity_sha256) = 64", name="ck_stove0_selection_artifact_identity"
+        ),
+        Index(
+            "ix_stove0_selection_artifact_identity", "selection_sha256", "artifact_identity_sha256"
+        ),
+        Index(
+            "ix_stove0_selection_native_order",
+            "selection_sha256",
+            "source_collection_id",
+            "source_artifact_id",
+            unique=True,
+        ),
         CheckConstraint("artifact_order >= 0", name="ck_stove0_selection_members_order"),
         Index(
             "ix_stove0_selection_members_order",
@@ -726,6 +841,20 @@ class _EventRow(_Base):
     event_json: Mapped[str] = mapped_column(Text, nullable=False)
 
 
+_PLANNING_CONTEXTS = declare_planning_contexts(_Base.metadata)
+_RIVERHOG_TRANSFERS = declare_riverhog_transfers(_Base.metadata)
+_COMPILED_PLANNING = declare_compiled_planning(_Base.metadata)
+_COMPILED_GROUPS = declare_compiled_groups(_Base.metadata, _COMPILED_PLANNING["planning"])
+_COMPILED_BRANCHES = declare_compiled_branches(_Base.metadata, _COMPILED_PLANNING["planning"])
+_COMPILED_RUNTIME = declare_compiled_runtime(_Base.metadata, _COMPILED_PLANNING["planning"])
+_RECIPE_DEFINITIONS = declare_recipe_definitions(_Base.metadata)
+_RETAINED_OPERATIONS = declare_retained_operations(_Base.metadata, _RECIPE_DEFINITIONS)
+_RETAINED_RECIPE_DEPENDENCIES = declare_retained_recipe_dependencies(
+    _Base.metadata, _RECIPE_DEFINITIONS
+)
+_SELECTION_BUILDERS = declare_selection_builders(_Base.metadata)
+_OBSERVATION_TABLES = declare_observation_tables(_Base.metadata)
+
 attach_sha256_string_constraints(_Base.metadata)
 
 
@@ -783,17 +912,280 @@ class SqlAlchemyStateStore:
     ) -> None:
         self.engine = engine or create_state_engine(database_url)
         self.sessions = sessionmaker(self.engine, expire_on_commit=False)
+        self._configure_planning(PlanningContext())
         if initialize:
             with self.engine.begin() as connection:
                 stove0_state_schema(database_url).upgrade_connection(connection)
+
+    def _configure_planning(self, context: PlanningContext) -> None:
+        self.planning_key = context.key
+        self.planning_owner: tuple[str, str] | None = None
+        self.riverhog_transfers = RiverhogTransferStore(self.engine, _RIVERHOG_TRANSFERS, context)
+        self.compiled_planning = CompiledPlanningState(
+            self.engine,
+            _COMPILED_PLANNING,
+            cast(Table, _ArtifactSelectionMemberRow.__table__),
+            cast(Table, _ArtifactSelectionRow.__table__),
+            context=context,
+        )
+        self.compiled_groups = CompiledGroupPlanning(self, _COMPILED_GROUPS)
+        self.compiled_branches = CompiledBranchPlanning(self, _COMPILED_BRANCHES)
+        self.compiled_runtime = CompiledRuntimeState(self, _COMPILED_RUNTIME)
+        self.recipe_definitions = RetainedRecipeStore(
+            self.engine, _RECIPE_DEFINITIONS, _RETAINED_OPERATIONS, _RETAINED_RECIPE_DEPENDENCIES
+        )
+        self.metadata_selections = MetadataSelectionStore(
+            self.engine,
+            _SELECTION_BUILDERS,
+            cast(Table, _ArtifactSelectionRow.__table__),
+            cast(Table, _ArtifactSelectionMemberRow.__table__),
+            context=context,
+        )
+        self.accepted_observations = AcceptedObservationStore(
+            self.engine,
+            _OBSERVATION_TABLES,
+            ObservationSelectionPorts(
+                reference=self.load_selection_ref,
+                member=self.load_selection_artifact,
+                retain=self.retain_selection,
+            ),
+            cast(Table, _ArtifactSelectionMemberRow.__table__),
+            context=context,
+        )
+
+    def planning_context(self, owner_kind: str, owner_id: str) -> Self:
+        """Own transient planning projections independently of semantic Work IDs."""
+        from copy import copy
+
+        context = PlanningContext.owned(owner_kind, owner_id)
+        with self.engine.begin() as connection:
+            insert = postgresql_insert if connection.dialect.name == "postgresql" else sqlite_insert
+            connection.execute(
+                insert(_PLANNING_CONTEXTS)
+                .values(
+                    context_id=context.context_id,
+                    owner_kind=owner_kind,
+                    owner_id=owner_id,
+                    updated_at=utc_timestamp_now(),
+                )
+                .on_conflict_do_nothing()
+            )
+            connection.execute(
+                update(_PLANNING_CONTEXTS)
+                .where(
+                    _PLANNING_CONTEXTS.c.context_id == context.context_id,
+                )
+                .values(updated_at=utc_timestamp_now())
+            )
+        scoped = copy(self)
+        scoped._configure_planning(context)
+        scoped.planning_owner = (owner_kind, owner_id)
+        return scoped
+
+    def read_planning_context(self, owner_kind: str, owner_id: str) -> Self | None:
+        """Inspect an existing owner without creating or refreshing retained state."""
+        from copy import copy
+
+        context = PlanningContext.owned(owner_kind, owner_id)
+        with self.engine.connect() as connection:
+            exists = connection.scalar(
+                select(_PLANNING_CONTEXTS.c.context_id).where(
+                    _PLANNING_CONTEXTS.c.context_id == context.context_id,
+                    _PLANNING_CONTEXTS.c.owner_kind == owner_kind,
+                    _PLANNING_CONTEXTS.c.owner_id == owner_id,
+                )
+            )
+        if exists is None:
+            return None
+        scoped = copy(self)
+        scoped._configure_planning(context)
+        scoped.planning_owner = (owner_kind, owner_id)
+        return scoped
 
     def load(self, work_id: str) -> WorkRecord | None:
         with self.sessions() as session:
             row = session.get(_WorkRow, work_id)
             return None if row is None else _decode_work_record(row.document_json)
 
+    def ensure_observation_delivery(
+        self, record: ObservationDeliveryRecord
+    ) -> ObservationDeliveryRecord:
+        encoded = _encode(record.model_dump(mode="json"))
+        with self.sessions() as session, session.begin():
+            insert_row = (
+                postgresql_insert
+                if session.get_bind().dialect.name == "postgresql"
+                else sqlite_insert
+            )
+            session.execute(
+                insert_row(_ObservationDeliveryRow)
+                .values(
+                    owner_kind=record.owner_kind,
+                    owner_id=record.owner_id,
+                    job_id=record.accepted.job_id,
+                    claim_id=record.accepted.claim_id,
+                    fence=record.accepted.fence,
+                    state="unsubmitted" if record.status is None else record.status.state,
+                    document_json=encoded,
+                    document_bytes=_encoded_bytes(encoded),
+                    updated_at=utc_timestamp_now(),
+                )
+                .on_conflict_do_nothing()
+            )
+            row = session.get(
+                _ObservationDeliveryRow,
+                (record.owner_kind, record.owner_id, record.accepted.job_id),
+            )
+            assert row is not None
+            existing = ObservationDeliveryRecord.model_validate_json(row.document_json)
+            if existing.accepted != record.accepted:
+                raise ValueError("observation invocation changed under its accepted identity")
+            return existing
+
+    def update_observation_delivery(
+        self,
+        owner_kind: ObservationOwnerKind,
+        owner_id: str,
+        job_id: str,
+        status: ObservationJobStatus,
+    ) -> ObservationDeliveryRecord:
+        with self.sessions() as session, session.begin():
+            row = session.scalar(
+                select(_ObservationDeliveryRow)
+                .where(
+                    _ObservationDeliveryRow.owner_kind == owner_kind,
+                    _ObservationDeliveryRow.owner_id == owner_id,
+                    _ObservationDeliveryRow.job_id == job_id,
+                )
+                .with_for_update()
+            )
+            if row is None:
+                raise KeyError(job_id)
+            current = ObservationDeliveryRecord.model_validate_json(row.document_json)
+            record = updated_delivery(current, status)
+            if record != current:
+                encoded = _encode(record.model_dump(mode="json"))
+                row.state = status.state
+                row.document_json, row.document_bytes = encoded, _encoded_bytes(encoded)
+                row.updated_at = utc_timestamp_now()
+            return record
+
+    def scan_observation_deliveries(
+        self,
+        owner_kind: ObservationOwnerKind,
+        owner_id: str,
+        *,
+        after_job_id: str = "",
+        incomplete_only: bool = False,
+        exclude_claim: tuple[str, int] | None = None,
+        limit: int = 100,
+    ) -> tuple[ObservationDeliveryRecord, ...]:
+        if not 1 <= limit <= 100:
+            raise ValueError("observation delivery page budget must be between 1 and 100")
+        with self.sessions() as session:
+            statement = select(_ObservationDeliveryRow).where(
+                _ObservationDeliveryRow.owner_kind == owner_kind,
+                _ObservationDeliveryRow.owner_id == owner_id,
+                _ObservationDeliveryRow.job_id > after_job_id,
+            )
+            if incomplete_only:
+                statement = statement.where(_ObservationDeliveryRow.state != "completed")
+            if exclude_claim is not None:
+                statement = statement.where(
+                    or_(
+                        _ObservationDeliveryRow.claim_id != exclude_claim[0],
+                        _ObservationDeliveryRow.fence != exclude_claim[1],
+                    )
+                )
+            rows = session.scalars(statement.order_by(_ObservationDeliveryRow.job_id).limit(limit))
+            return tuple(
+                ObservationDeliveryRecord.model_validate_json(row.document_json) for row in rows
+            )
+
+    def create_preview(self, record: PreviewRecord) -> PreviewRecord:
+        encoded = _encode(record.model_dump(mode="json"))
+        now = utc_timestamp_now()
+        with self.sessions() as session, session.begin():
+            insert = (
+                postgresql_insert
+                if session.get_bind().dialect.name == "postgresql"
+                else sqlite_insert
+            )
+            statement = (
+                insert(_PreviewRow)
+                .values(
+                    job_id=record.job.job_id,
+                    work_id=record.job.work.work_id,
+                    recipe_sha256=record.job.work.recipe.sha256,
+                    revision=record.revision,
+                    phase=record.phase,
+                    claim_renew_at=record.claim_renew_at,
+                    contact_at=record.contact_at,
+                    document_bytes=len(encoded.encode("utf-8")),
+                    document_json=encoded,
+                    updated_at=now,
+                )
+                .on_conflict_do_nothing(index_elements=["job_id"])
+            )
+            session.execute(statement)
+            row = session.get(_PreviewRow, record.job.job_id)
+            if row is None:
+                raise RuntimeError("planning job disappeared during creation")
+            current = PreviewRecord.model_validate_json(row.document_json)
+            if current.job != record.job:
+                raise ValueError("planning job identity was rebound")
+            return current
+
+    def load_preview(self, job_id: str) -> PreviewRecord | None:
+        with self.sessions() as session:
+            row = session.get(_PreviewRow, job_id)
+            return PreviewRecord.model_validate_json(row.document_json) if row is not None else None
+
+    def compare_and_swap_preview(
+        self, *, expected_revision: int, replacement: PreviewRecord
+    ) -> PreviewRecord:
+        encoded = _encode(replacement.model_dump(mode="json"))
+        with self.sessions() as session, session.begin():
+            row = session.scalar(
+                select(_PreviewRow)
+                .where(_PreviewRow.job_id == replacement.job.job_id)
+                .with_for_update()
+            )
+            if row is None or row.revision != expected_revision:
+                raise ConcurrentWorkUpdate("planning job changed concurrently")
+            current = PreviewRecord.model_validate_json(row.document_json)
+            if current.job != replacement.job or replacement.revision != current.revision + 1:
+                raise ValueError("planning continuation changed its exact invocation")
+            row.revision = replacement.revision
+            row.phase = replacement.phase
+            row.claim_renew_at = replacement.claim_renew_at
+            row.contact_at = replacement.contact_at
+            row.document_bytes = len(encoded.encode("utf-8"))
+            row.document_json = encoded
+            row.updated_at = utc_timestamp_now()
+            return replacement
+
+    def scan_previews(
+        self, *, after_id: str = "", limit: int = 25, maintenance: bool = False
+    ) -> tuple[PreviewScan, ...]:
+        if limit < 1 or limit > 100:
+            raise ValueError("planning page size must be between 1 and 100")
+        with self.sessions() as session:
+            due = _PreviewRow.claim_renew_at if maintenance else _PreviewRow.contact_at
+            statement = (
+                select(_PreviewRow.job_id, _PreviewRow.phase, _PreviewRow.revision)
+                .where(
+                    _PreviewRow.phase != "completed",
+                    _PreviewRow.job_id > after_id,
+                    due <= utc_timestamp_now(),
+                )
+                .order_by(_PreviewRow.job_id)
+                .limit(limit)
+            )
+            return tuple(PreviewScan(*row) for row in session.execute(statement))
+
     def create(self, record: WorkRecord) -> WorkRecord:
-        encoded = _encode(record.model_dump(mode="json", by_alias=True, exclude_none=True))
+        encoded = _encode(record.model_dump(mode="json", by_alias=True))
         now = utc_timestamp_now()
         with self.sessions() as session, session.begin():
             inserted = _insert_work(session, record, encoded=encoded, now=now)
@@ -838,7 +1230,7 @@ class SqlAlchemyStateStore:
     ) -> WorkRecord:
         if replacement.work_id != work_id or replacement.revision != expected_revision + 1:
             raise ValueError("replacement work record has an invalid identity or revision")
-        encoded = _encode(replacement.model_dump(mode="json", by_alias=True, exclude_none=True))
+        encoded = _encode(replacement.model_dump(mode="json", by_alias=True))
         with self.sessions() as session, session.begin():
             changed = cast(
                 CursorResult[object],
@@ -910,7 +1302,7 @@ class SqlAlchemyStateStore:
 
             children = _admitted_child_records(decision, expectations)
             for child in children:
-                encoded = _encode(child.model_dump(mode="json", by_alias=True, exclude_none=True))
+                encoded = _encode(child.model_dump(mode="json", by_alias=True))
                 if _insert_work_atomically(session, child, encoded=encoded, now=now):
                     _emit(
                         session,
@@ -949,9 +1341,7 @@ class SqlAlchemyStateStore:
             row.revision = replacement.revision
             row.phase = replacement.phase
             row.updated_at = now
-            replacement_json = _encode(
-                replacement.model_dump(mode="json", by_alias=True, exclude_none=True)
-            )
+            replacement_json = _encode(replacement.model_dump(mode="json", by_alias=True))
             row.document_bytes = _encoded_bytes(replacement_json)
             row.document_json = replacement_json
             _replace_work_projections(session, replacement)
@@ -1010,7 +1400,7 @@ class SqlAlchemyStateStore:
                 _insert_or_verify_selection(session, selection)
 
             child = WorkRecord(work=plan.work, workflow_plan=plan.workflow_plan)
-            encoded = _encode(child.model_dump(mode="json", by_alias=True, exclude_none=True))
+            encoded = _encode(child.model_dump(mode="json", by_alias=True))
             if _insert_work_atomically(session, child, encoded=encoded, now=now):
                 _emit(
                     session,
@@ -1043,9 +1433,7 @@ class SqlAlchemyStateStore:
             row.revision = replacement.revision
             row.phase = replacement.phase
             row.updated_at = now
-            replacement_json = _encode(
-                replacement.model_dump(mode="json", by_alias=True, exclude_none=True)
-            )
+            replacement_json = _encode(replacement.model_dump(mode="json", by_alias=True))
             row.document_bytes = _encoded_bytes(replacement_json)
             row.document_json = replacement_json
             _replace_work_projections(session, replacement)
@@ -1067,7 +1455,7 @@ class SqlAlchemyStateStore:
     def load_selection(self, selection_sha256: str) -> ArtifactSelection | None:
         with self.sessions() as session:
             row = session.get(_ArtifactSelectionRow, selection_sha256)
-            if row is None:
+            if row is None or row.state != "sealed":
                 return None
             members = session.scalars(
                 select(_ArtifactSelectionMemberRow)
@@ -1085,6 +1473,8 @@ class SqlAlchemyStateStore:
         selection_sha256: str,
         artifact_id: str,
     ) -> WorkArtifactSubject | None:
+        if self.load_selection_ref(selection_sha256) is None:
+            return None
         with self.sessions() as session:
             row = session.get(_ArtifactSelectionMemberRow, (selection_sha256, artifact_id))
             return (
@@ -1170,7 +1560,7 @@ class SqlAlchemyStateStore:
             if row is not None:
                 return TargetProductionSealRecord.model_validate_json(row.document_json)
             record = TargetProductionSealRecord(work_id=work_id, job_id=job_id)
-            encoded = _encode(record.model_dump(mode="json", by_alias=True, exclude_none=True))
+            encoded = _encode(record.model_dump(mode="json", by_alias=True))
             session.add(
                 _TargetProductionSealRow(
                     work_id=work_id,
@@ -1209,7 +1599,7 @@ class SqlAlchemyStateStore:
             or replacement.revision != expected_revision + 1
         ):
             raise ValueError("replacement target production seal has an invalid revision")
-        encoded = _encode(replacement.model_dump(mode="json", by_alias=True, exclude_none=True))
+        encoded = _encode(replacement.model_dump(mode="json", by_alias=True))
         with self.sessions() as session, session.begin():
             work = session.scalar(
                 select(_WorkRow).where(_WorkRow.work_id == work_id).with_for_update()
@@ -1263,7 +1653,7 @@ class SqlAlchemyStateStore:
     def ensure_target_settlement_binding(
         self, record: TargetSettlementSealRecord
     ) -> TargetSettlementSealRecord:
-        encoded = _encode(record.model_dump(mode="json", by_alias=True, exclude_none=True))
+        encoded = _encode(record.model_dump(mode="json", by_alias=True))
         with self.sessions() as session, session.begin():
             work = session.scalar(
                 select(_WorkRow).where(_WorkRow.work_id == record.work_id).with_for_update()
@@ -1318,7 +1708,7 @@ class SqlAlchemyStateStore:
             or replacement.revision != expected_revision + 1
         ):
             raise ValueError("replacement target settlement seal has an invalid revision")
-        encoded = _encode(replacement.model_dump(mode="json", by_alias=True, exclude_none=True))
+        encoded = _encode(replacement.model_dump(mode="json", by_alias=True))
         with self.sessions() as session, session.begin():
             work = session.scalar(
                 select(_WorkRow).where(_WorkRow.work_id == work_id).with_for_update()
@@ -1577,7 +1967,7 @@ class SqlAlchemyStateStore:
     def load_selection_ref(self, selection_sha256: str) -> ArtifactSelectionRef | None:
         with self.sessions() as session:
             row = session.get(_ArtifactSelectionRow, selection_sha256)
-            return None if row is None else _selection_ref(row)
+            return None if row is None or row.state != "sealed" else _selection_ref(row)
 
     def selection_artifact_page(
         self,
@@ -1588,6 +1978,8 @@ class SqlAlchemyStateStore:
     ) -> tuple[tuple[WorkArtifactSubject, ...], str | None, bool]:
         if limit < 1 or limit > 1000:
             raise ValueError("artifact selection page is invalid")
+        if self.load_selection_ref(selection_sha256) is None:
+            raise ValueError("artifact selection is not sealed")
         with self.sessions() as session:
             after = -1
             if continuation is not None:
@@ -1620,6 +2012,8 @@ class SqlAlchemyStateStore:
             )
 
     def iter_selection_artifacts(self, selection_sha256: str) -> Iterator[WorkArtifactSubject]:
+        if self.load_selection_ref(selection_sha256) is None:
+            raise ValueError("artifact selection is not sealed")
         statement = (
             select(_ArtifactSelectionMemberRow)
             .where(_ArtifactSelectionMemberRow.selection_sha256 == selection_sha256)
@@ -1629,6 +2023,38 @@ class SqlAlchemyStateStore:
         with read_snapshot(self.sessions) as session:
             for row in session.scalars(statement):
                 yield WorkArtifactSubject.model_validate_json(row.document_json)
+
+    def native_selection_page(
+        self,
+        selection_sha256: str,
+        *,
+        after_collection_id: int = 0,
+        after_artifact_id: str = "",
+        limit: int = 100,
+    ) -> tuple[WorkArtifactSubject, ...]:
+        if not 1 <= limit <= 1000 or self.load_selection_ref(selection_sha256) is None:
+            raise ValueError("native scope page requires a sealed selection and bounded page")
+        m = _ArtifactSelectionMemberRow
+        query = (
+            select(m.document_json)
+            .where(
+                m.selection_sha256 == selection_sha256,
+                or_(
+                    m.source_collection_id > after_collection_id,
+                    and_(
+                        m.source_collection_id == after_collection_id,
+                        m.source_artifact_id > after_artifact_id,
+                    ),
+                ),
+            )
+            .order_by(m.source_collection_id, m.source_artifact_id)
+            .limit(limit)
+        )
+        with self.sessions() as session:
+            return tuple(
+                WorkArtifactSubject.model_validate_json(document)
+                for document in session.scalars(query)
+            )
 
     def list_work(
         self,
@@ -1695,28 +2121,78 @@ class SqlAlchemyStateStore:
         phases: Sequence[str],
         after_work_id: str,
         limit: int,
-    ) -> tuple[list[WorkRecord], str]:
+        maintenance: bool = False,
+    ) -> tuple[list[WorkScan], str]:
         """Return one bounded keyset page containing only runnable work."""
 
         if not phases or limit < 1 or limit > 100:
             raise ValueError("stove0 work scan is invalid")
         canonical_phases = tuple(sorted(set(phases)))
 
-        def statement(*, after: str) -> Select[tuple[_WorkRow]]:
+        def statement(*, after: str) -> Select[tuple[str, str, int]]:
             query = (
-                select(_WorkRow)
+                select(_WorkRow.work_id, _WorkRow.phase, _WorkRow.revision)
                 .where(_WorkRow.phase.in_(canonical_phases))
+                .where(
+                    (_WorkRow.claim_renew_at if maintenance else _WorkRow.contact_at)
+                    <= utc_timestamp_now()
+                )
                 .order_by(_WorkRow.work_id)
                 .limit(limit)
             )
             return query if not after else query.where(_WorkRow.work_id > after)
 
         with self.sessions() as session:
-            rows = list(session.scalars(statement(after=after_work_id)))
+            rows = list(session.execute(statement(after=after_work_id)))
             if not rows and after_work_id:
-                rows = list(session.scalars(statement(after="")))
-        records = [_decode_work_record(row.document_json) for row in rows]
+                rows = list(session.execute(statement(after="")))
+        records = [WorkScan(*row) for row in rows]
         return records, (records[-1].work_id if records else "")
+
+    def load_work_scan(self, work_id: str) -> WorkScan | None:
+        with self.sessions() as session:
+            row = session.execute(
+                select(_WorkRow.work_id, _WorkRow.phase, _WorkRow.revision).where(
+                    _WorkRow.work_id == work_id
+                )
+            ).first()
+        return WorkScan(*row) if row is not None else None
+
+    def record_work_contact(
+        self, work_id: str, *, expected_revision: int, failed: bool, progressed: bool
+    ) -> None:
+        with self.sessions() as session, session.begin():
+            row = session.execute(
+                select(_WorkRow.revision, _WorkRow.contact_failures)
+                .where(_WorkRow.work_id == work_id)
+                .with_for_update()
+            ).first()
+            if row is None or row.revision != expected_revision:
+                return
+            failures = row.contact_failures + 1 if failed else 0
+            delay = min(30, 2 ** min(failures, 5)) if failed else 0 if progressed else 1
+            session.execute(
+                update(_WorkRow)
+                .where(_WorkRow.work_id == work_id, _WorkRow.revision == expected_revision)
+                .values(
+                    contact_failures=failures,
+                    contact_at=format_utc_timestamp(utc_now() + timedelta(seconds=delay)),
+                )
+            )
+
+    def record_work_maintenance(
+        self, work_id: str, *, expected_revision: int, interval_seconds: float
+    ) -> None:
+        with self.sessions() as session, session.begin():
+            session.execute(
+                update(_WorkRow)
+                .where(_WorkRow.work_id == work_id, _WorkRow.revision == expected_revision)
+                .values(
+                    claim_renew_at=format_utc_timestamp(
+                        utc_now() + timedelta(seconds=interval_seconds)
+                    )
+                )
+            )
 
     def prune_operational_state(self, *, cutoff: str) -> dict[str, int]:
         """Prune bounded batches using rebuildable graph projections and SQL sets."""
@@ -1730,6 +2206,10 @@ class SqlAlchemyStateStore:
             "selection_bytes": 0,
             "events": 0,
             "event_bytes": 0,
+            "previews": 0,
+            "planning_contexts": 0,
+            "observation_deliveries": 0,
+            "recipe_definitions": 0,
         }
         with self.sessions() as session, session.begin():
             if session.get_bind().dialect.name == "postgresql":
@@ -1738,6 +2218,128 @@ class SqlAlchemyStateStore:
                 removed = _prune_work_component(session, work_id=work_id, cutoff=cutoff)
                 for key, value in removed.items():
                     totals[key] += value
+
+            preview_ids = tuple(
+                session.scalars(
+                    select(_PreviewRow.job_id)
+                    .where(
+                        _PreviewRow.phase == "completed",
+                        _PreviewRow.updated_at <= cutoff,
+                    )
+                    .order_by(_PreviewRow.updated_at, _PreviewRow.job_id)
+                    .limit(100)
+                )
+            )
+            if preview_ids:
+                deleted = session.execute(
+                    delete(_PreviewRow).where(_PreviewRow.job_id.in_(preview_ids))
+                )
+                totals["previews"] = int(cast(CursorResult[Any], deleted).rowcount or 0)
+            contexts = tuple(
+                session.scalars(
+                    select(_PLANNING_CONTEXTS.c.context_id)
+                    .where(
+                        _PLANNING_CONTEXTS.c.updated_at <= cutoff,
+                        or_(
+                            and_(
+                                _PLANNING_CONTEXTS.c.owner_kind == "work",
+                                ~select(_WorkRow.work_id)
+                                .where(_WorkRow.work_id == _PLANNING_CONTEXTS.c.owner_id)
+                                .exists(),
+                            ),
+                            and_(
+                                _PLANNING_CONTEXTS.c.owner_kind == "preview",
+                                ~select(_PreviewRow.job_id)
+                                .where(_PreviewRow.job_id == _PLANNING_CONTEXTS.c.owner_id)
+                                .exists(),
+                            ),
+                        ),
+                    )
+                    .order_by(_PLANNING_CONTEXTS.c.updated_at, _PLANNING_CONTEXTS.c.context_id)
+                    .limit(100)
+                )
+            )
+            if contexts:
+                deleted = session.execute(
+                    delete(_PLANNING_CONTEXTS).where(_PLANNING_CONTEXTS.c.context_id.in_(contexts))
+                )
+                totals["planning_contexts"] = int(cast(CursorResult[Any], deleted).rowcount or 0)
+            orphan_deliveries = tuple(
+                session.execute(
+                    select(
+                        _ObservationDeliveryRow.owner_kind,
+                        _ObservationDeliveryRow.owner_id,
+                        _ObservationDeliveryRow.job_id,
+                    )
+                    .where(
+                        _ObservationDeliveryRow.updated_at <= cutoff,
+                        _ObservationDeliveryRow.state == "completed",
+                        or_(
+                            and_(
+                                _ObservationDeliveryRow.owner_kind == "work",
+                                ~select(_WorkRow.work_id)
+                                .where(_WorkRow.work_id == _ObservationDeliveryRow.owner_id)
+                                .exists(),
+                            ),
+                            and_(
+                                _ObservationDeliveryRow.owner_kind == "preview",
+                                ~select(_PreviewRow.job_id)
+                                .where(_PreviewRow.job_id == _ObservationDeliveryRow.owner_id)
+                                .exists(),
+                            ),
+                        ),
+                    )
+                    .order_by(
+                        _ObservationDeliveryRow.updated_at,
+                        _ObservationDeliveryRow.owner_kind,
+                        _ObservationDeliveryRow.owner_id,
+                        _ObservationDeliveryRow.job_id,
+                    )
+                    .limit(100)
+                )
+            )
+            for owner_kind, owner_id, job_id in orphan_deliveries:
+                deleted = session.execute(
+                    delete(_ObservationDeliveryRow).where(
+                        _ObservationDeliveryRow.owner_kind == owner_kind,
+                        _ObservationDeliveryRow.owner_id == owner_id,
+                        _ObservationDeliveryRow.job_id == job_id,
+                    )
+                )
+                totals["observation_deliveries"] += int(
+                    cast(CursorResult[Any], deleted).rowcount or 0
+                )
+
+            definitions = _RECIPE_DEFINITIONS
+            dependencies = _RETAINED_RECIPE_DEPENDENCIES
+            planning = _COMPILED_PLANNING["planning"]
+            unused_recipes = tuple(
+                session.scalars(
+                    select(definitions.c.recipe_sha256)
+                    .where(
+                        definitions.c.updated_at <= cutoff,
+                        ~select(_WorkRow.work_id)
+                        .where(_WorkRow.recipe_sha256 == definitions.c.recipe_sha256)
+                        .exists(),
+                        ~select(_PreviewRow.job_id)
+                        .where(_PreviewRow.recipe_sha256 == definitions.c.recipe_sha256)
+                        .exists(),
+                        ~select(planning.c.work_id)
+                        .where(planning.c.recipe_sha256 == definitions.c.recipe_sha256)
+                        .exists(),
+                        ~select(dependencies.c.recipe_sha256)
+                        .where(dependencies.c.dependency_sha256 == definitions.c.recipe_sha256)
+                        .exists(),
+                    )
+                    .order_by(definitions.c.updated_at, definitions.c.recipe_sha256)
+                    .limit(100)
+                )
+            )
+            if unused_recipes:
+                deleted = session.execute(
+                    delete(definitions).where(definitions.c.recipe_sha256.in_(unused_recipes))
+                )
+                totals["recipe_definitions"] = int(cast(CursorResult[Any], deleted).rowcount or 0)
 
             orphan_ids = tuple(
                 session.scalars(
@@ -1749,6 +2351,62 @@ class SqlAlchemyStateStore:
                             == _ArtifactSelectionRow.selection_sha256
                         )
                         .exists()
+                    )
+                    .where(
+                        ~select(_SELECTION_BUILDERS["builder"].c.builder_id)
+                        .where(
+                            _SELECTION_BUILDERS["builder"].c.selection_sha256
+                            == _ArtifactSelectionRow.selection_sha256
+                        )
+                        .exists(),
+                        ~select(_OBSERVATION_TABLES["question"].c.question_sha256)
+                        .where(
+                            _OBSERVATION_TABLES["question"].c.scope_sha256
+                            == _ArtifactSelectionRow.selection_sha256
+                        )
+                        .exists(),
+                        ~select(_OBSERVATION_TABLES["view"].c.view_key)
+                        .where(
+                            _OBSERVATION_TABLES["view"].c.scope_sha256
+                            == _ArtifactSelectionRow.selection_sha256
+                        )
+                        .exists(),
+                        ~select(_COMPILED_PLANNING["planning"].c.work_id)
+                        .where(
+                            _COMPILED_PLANNING["planning"].c.scope_sha256
+                            == _ArtifactSelectionRow.selection_sha256
+                        )
+                        .exists(),
+                        ~select(_COMPILED_PLANNING["ports"].c.work_id)
+                        .where(
+                            _COMPILED_PLANNING["ports"].c.selection_sha256
+                            == _ArtifactSelectionRow.selection_sha256
+                        )
+                        .exists(),
+                        ~select(_COMPILED_PLANNING["facts"].c.work_id)
+                        .where(
+                            _COMPILED_PLANNING["facts"].c.scope_sha256
+                            == _ArtifactSelectionRow.selection_sha256
+                        )
+                        .exists(),
+                        ~select(_COMPILED_BRANCHES["branches"].c.work_id)
+                        .where(
+                            (
+                                _COMPILED_BRANCHES["branches"].c.scope_sha256
+                                == _ArtifactSelectionRow.selection_sha256
+                            )
+                            | (
+                                _COMPILED_BRANCHES["branches"].c.selection_sha256
+                                == _ArtifactSelectionRow.selection_sha256
+                            )
+                        )
+                        .exists(),
+                        ~select(_COMPILED_BRANCHES["choices"].c.work_id)
+                        .where(
+                            _COMPILED_BRANCHES["choices"].c.scope_sha256
+                            == _ArtifactSelectionRow.selection_sha256
+                        )
+                        .exists(),
                     )
                     .order_by(_ArtifactSelectionRow.selection_sha256)
                     .limit(_PRUNE_ORPHAN_BATCH)
@@ -1853,7 +2511,7 @@ class SqlAlchemyStateStore:
                 yield EvaluationRecord.model_validate_json(row.document_json)
 
     def create_evaluation(self, record: EvaluationRecord) -> EvaluationRecord:
-        encoded = _encode(record.model_dump(mode="json", by_alias=True, exclude_none=True))
+        encoded = _encode(record.model_dump(mode="json", by_alias=True))
         now = utc_timestamp_now()
         with self.sessions() as session, session.begin():
             inserted = _insert_evaluation(session, record, encoded=encoded, now=now)
@@ -1894,7 +2552,7 @@ class SqlAlchemyStateStore:
             or replacement.revision != expected_revision + 1
         ):
             raise ValueError("replacement evaluation has an invalid identity or revision")
-        encoded = _encode(replacement.model_dump(mode="json", by_alias=True, exclude_none=True))
+        encoded = _encode(replacement.model_dump(mode="json", by_alias=True))
         with self.sessions() as session, session.begin():
             changed = cast(
                 CursorResult[object],
@@ -2222,6 +2880,7 @@ def _insert_work(session: Session, record: WorkRecord, *, encoded: str, now: str
             session.add(
                 _WorkRow(
                     work_id=record.work_id,
+                    recipe_sha256=record.work.recipe.sha256,
                     revision=record.revision,
                     phase=record.phase,
                     updated_at=now,
@@ -2245,6 +2904,7 @@ def _insert_or_verify_selection(
         "selection_sha256": selection.selection_sha256,
         "artifact_count": selection.artifact_count,
         "total_bytes": selection.total_bytes,
+        "state": "sealed",
     }
     dialect = session.get_bind().dialect.name
     if dialect == "postgresql":
@@ -2272,6 +2932,8 @@ def _insert_or_verify_selection(
     existing = session.get(_ArtifactSelectionRow, selection.selection_sha256)
     if existing is None:
         raise RuntimeError("stove0 artifact selection disappeared during admission")
+    if existing.state != "sealed":
+        raise ConcurrentWorkUpdate("exact artifact selection publication is still pending")
     members = session.scalars(
         select(_ArtifactSelectionMemberRow)
         .where(_ArtifactSelectionMemberRow.selection_sha256 == selection.selection_sha256)
@@ -2282,6 +2944,8 @@ def _insert_or_verify_selection(
 
 
 def _selection_ref(row: _ArtifactSelectionRow) -> ArtifactSelectionRef:
+    if row.state != "sealed":
+        raise ValueError("artifact selection is not sealed")
     return ArtifactSelectionRef.model_validate(
         dict(
             selection_sha256=row.selection_sha256,
@@ -2300,6 +2964,10 @@ def _selection_member_row(
     return _ArtifactSelectionMemberRow(
         selection_sha256=selection_sha256,
         artifact_id=artifact.id,
+        member_identity_sha256=subject_identity_sha256(artifact),
+        artifact_identity_sha256=artifact_identity_sha256(artifact),
+        source_collection_id=artifact.collection.collection_id,
+        source_artifact_id=artifact.artifact_id,
         artifact_order=artifact_order,
         continuation_sha256=hashlib.sha256(
             b"stove0-artifact-selection-continuation/v1\x00"
@@ -2338,6 +3006,7 @@ def _insert_work_atomically(
     table = cast(Table, _WorkRow.__table__)
     values = {
         "work_id": record.work_id,
+        "recipe_sha256": record.work.recipe.sha256,
         "revision": record.revision,
         "phase": record.phase,
         "updated_at": now,
@@ -2395,6 +3064,23 @@ def _insert_evaluation(
 
 def _replace_work_projections(session: Session, record: WorkRecord) -> None:
     """Replace rebuildable relational projections for one canonical work document."""
+
+    row = session.get(_WorkRow, record.work_id)
+    if row is not None:
+        row.contact_at, row.contact_failures = utc_timestamp_now(), 0
+        if record.claim is None or record.phase in {
+            "complete",
+            "no_action",
+            "inapplicable",
+            "failed",
+            "canceled",
+            "abandon_pending",
+            "settled",
+            "source_collection_retirement_pending",
+        }:
+            row.claim_renew_at = None
+        elif row.claim_renew_at is None:
+            row.claim_renew_at = utc_timestamp_now()
 
     session.execute(delete(_WorkRelationRow).where(_WorkRelationRow.work_id == record.work_id))
     session.execute(delete(_WorkEvaluationRow).where(_WorkEvaluationRow.work_id == record.work_id))
@@ -2785,9 +3471,7 @@ def _model_page(
         "sort": sort,
         "order": order,
         "filters": filters,
-        item_key: [
-            record.model_dump(mode="json", by_alias=True, exclude_none=True) for record in records
-        ],
+        item_key: [record.model_dump(mode="json", by_alias=True) for record in records],
     }
 
 

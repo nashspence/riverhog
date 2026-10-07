@@ -39,3 +39,7 @@ __all__ = [
     "validate_media_metadata_facts",
     "validate_media_metadata_observation",
 ]
+
+from .interfaces import MEDIA_METADATA_INTERFACE, MEDIA_METADATA_INTERFACE_VECTORS
+
+__all__ += ["MEDIA_METADATA_INTERFACE", "MEDIA_METADATA_INTERFACE_VECTORS"]

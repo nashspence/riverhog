@@ -46,6 +46,7 @@ COPY some-implementations/stove0/observers/contracts/media-metadata some-impleme
 COPY some-implementations/stove0/packages/observer-client some-implementations/stove0/packages/observer-client
 COPY some-implementations/stove0/packages/observer-protocol some-implementations/stove0/packages/observer-protocol
 COPY some-implementations/stove0/packages/observer-support some-implementations/stove0/packages/observer-support
+COPY some-implementations/stove0/packages/extension-support some-implementations/stove0/packages/extension-support
 COPY some-implementations/stove0/packages/protocol some-implementations/stove0/packages/protocol
 COPY packages/time-formats packages/time-formats
 RUN uv sync --frozen --package a-stove0-exiftool-observer --no-dev --no-editable
@@ -73,6 +74,10 @@ RUN ln -s /opt/exiftool/exiftool /usr/local/bin/exiftool \
     && ! command -v uv
 
 COPY --from=build /opt/venv /opt/venv
+
+RUN mkdir -p /var/lib/a-stove0-exiftool-observer \
+    && chown 65532:65532 /var/lib/a-stove0-exiftool-observer \
+    && chmod 700 /var/lib/a-stove0-exiftool-observer
 
 ARG BUILD_CREATED=1970-01-01T00:00:00Z
 ARG RELEASE_VERSION=development

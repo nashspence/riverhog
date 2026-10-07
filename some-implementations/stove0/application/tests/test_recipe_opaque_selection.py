@@ -1,199 +1,75 @@
-"""Exact member identity and fact-bound relation selection in recipes."""
+"""Opaque member and relation witnesses run against the retained compiled state."""
 
-from __future__ import annotations
-
-from types import SimpleNamespace
-from typing import Any
+from pathlib import Path
 
 import pytest
-from stove0_core.recipes import _accepted_relationships, _document_matches_predicate, _subjects
-from stove0_protocol import CollectionRootIdentityRef, WorkArtifactSubject
-from stove0_recipe_config import (
-    ArtifactAssociation,
-    AssociationEvidenceSource,
-    FactCondition,
-    FactPredicate,
-)
+from pydantic import TypeAdapter
+from stove0_protocol.predicates import RowPredicate, Truth, evaluate_row
+from test_compiled_groups import _groups, _observed_state
 
 
-def _root() -> CollectionRootIdentityRef:
-    return CollectionRootIdentityRef(
-        collection_id="7",
-        archive_root_sha256="1" * 64,
-        artifact_set_identity="2" * 64,
+def test_opaque_member_instances_never_collapse_by_equal_bytes(tmp_path: Path):
+    state, url, work, subjects = _observed_state(tmp_path, ("primary", "primary"))
+    assert len({member.sha256 for member in subjects}) == 1
+    assert len({member.artifact_id for member in subjects}) == 2
+    state, authority, _ = _groups(state, url, work)
+    assert authority.group_count == 2
+    assert {
+        row.primary_id for row in state.compiled_groups.page(authority, start_ordinal=0).members
+    } == {member.id for member in subjects}
+    state.engine.dispose()
+
+
+def test_complete_negative_relation_allows_next_declared_source(tmp_path: Path):
+    state, url, work, subjects = _observed_state(
+        tmp_path,
+        ("primary", "associated"),
+        fallback=((0, 1),),
     )
+    state, authority, _ = _groups(state, url, work)
+    assert [
+        (row.primary_id, row.associated_id)
+        for row in state.compiled_groups.page(authority, start_ordinal=0).members
+    ] == [
+        (subjects[0].id, None),
+        (subjects[0].id, subjects[1].id),
+    ]
+    state.engine.dispose()
 
 
-def _subject(member: str, role: str) -> WorkArtifactSubject:
-    return WorkArtifactSubject(
-        id="a-" + member * 32,
-        role=role,
-        collection=_root(),
-        artifact_id=member * 64,
-        bytes="4",
-        sha256="f" * 64,
+@pytest.mark.parametrize("status", ("insufficient", "ambiguous", "unsupported"))
+def test_partial_relation_evidence_cannot_be_a_negative(tmp_path: Path, status: str):
+    state, url, work, _ = _observed_state(
+        tmp_path,
+        ("primary", "associated"),
+        fallback=((0, 1),),
+        statuses={("preferred", 1): status},
     )
+    state, authority, _ = _groups(state, url, work)
+    assert authority.group_count == authority.association_count == 0
+    state.engine.dispose()
 
 
-def _source(contract: str) -> AssociationEvidenceSource:
-    return AssociationEvidenceSource(
-        observation_contract_id=contract,
-        observation_contract_sha256="a" * 64,
-        records_pointer="/rows",
-        associated_pointer="/associated",
-        primary_pointer="/primary",
-        endpoint_mode="subject-id",
-        primary_partition_pointer="/primary_subject_ids",
-        associated_partition_pointer="/associated_subject_ids",
+def test_stronger_positive_relation_wins_even_when_weaker_tier_has_another_primary(tmp_path: Path):
+    state, url, work, subjects = _observed_state(
+        tmp_path,
+        ("primary", "primary", "associated"),
+        preferred=((0, 2),),
+        fallback=((1, 2),),
     )
+    state, authority, _ = _groups(state, url, work)
+    assert [
+        (row.primary_id, row.associated_id)
+        for row in state.compiled_groups.page(authority, start_ordinal=0).members
+    ] == [
+        (subjects[0].id, None),
+        (subjects[0].id, subjects[2].id),
+        (subjects[1].id, None),
+    ]
+    state.engine.dispose()
 
 
-def _evidence(
-    contract: str,
-    subjects: tuple[WorkArtifactSubject, ...],
-    rows: list[dict[str, str]],
-) -> Any:
-    primary_ids = sorted(item.id for item in subjects if item.role == "fixture.primary/v1")
-    associated_ids = sorted(item.id for item in subjects if item.role == "fixture.sidecar/v1")
-    return SimpleNamespace(
-        request=SimpleNamespace(
-            observer_contract_id=contract,
-            observer_contract_sha256="a" * 64,
-            subjects=subjects,
-            options={
-                "primary_subject_ids": primary_ids,
-                "associated_subject_ids": associated_ids,
-            },
-        ),
-        result=SimpleNamespace(facts={"rows": rows}),
-    )
-
-
-def test_opaque_member_instances_never_collapse_by_equal_bytes() -> None:
-    inventory = (
-        {"collection": _root(), "artifact_id": "3" * 64, "bytes": 4, "sha256": "f" * 64},
-        {"collection": _root(), "artifact_id": "4" * 64, "bytes": 4, "sha256": "f" * 64},
-    )
-    subjects = _subjects(inventory)
-    assert len(subjects) == 2
-    assert subjects[0].id != subjects[1].id
-    assert {item.artifact_id for item in subjects} == {"3" * 64, "4" * 64}
-
-
-def test_complete_negative_relation_allows_next_declared_source() -> None:
-    primary = _subject("3", "fixture.primary/v1")
-    sidecar = _subject("4", "fixture.sidecar/v1")
-    subjects = (primary, sidecar)
-    association = ArtifactAssociation(
-        primary_role=primary.role,
-        associated_roles=(sidecar.role,),
-        sources=(_source("fixture.direct/v1"), _source("fixture.filename/v1")),
-    )
-    links, blocked = _accepted_relationships(
-        (primary,),
-        (sidecar,),
-        association,
-        (
-            _evidence("fixture.direct/v1", subjects, []),
-            _evidence(
-                "fixture.filename/v1",
-                subjects,
-                [{"associated": sidecar.id, "primary": primary.id}],
-            ),
-        ),
-    )
-    assert links == {primary.id: [sidecar]}
-    assert blocked == set()
-
-
-def test_missing_or_partial_relation_evidence_cannot_be_a_negative() -> None:
-    primary = _subject("3", "fixture.primary/v1")
-    sidecar = _subject("4", "fixture.sidecar/v1")
-    association = ArtifactAssociation(
-        primary_role=primary.role,
-        associated_roles=(sidecar.role,),
-        sources=(_source("fixture.direct/v1"),),
-    )
-    with pytest.raises(ValueError, match="not accepted"):
-        _accepted_relationships((primary,), (sidecar,), association, ())
-    with pytest.raises(ValueError, match="subject partition|subject scope"):
-        _accepted_relationships(
-            (primary,),
-            (sidecar,),
-            association,
-            (_evidence("fixture.direct/v1", (sidecar,), []),),
-        )
-
-
-def test_nested_filename_candidates_follow_declared_tiers_and_complete_statuses() -> None:
-    primary = _subject("3", "fixture.primary/v1")
-    sidecar = _subject("4", "fixture.sidecar/v1")
-    contract = "fixture.filename/v1"
-
-    def source(rule: str) -> AssociationEvidenceSource:
-        return AssociationEvidenceSource(
-            observation_contract_id=contract,
-            observation_contract_sha256="a" * 64,
-            records_pointer="/records",
-            record_array_pointer="/candidates",
-            where=(FactPredicate(observation_contract_id=contract, pointer="/rule", value=rule),),
-            associated_pointer="/sidecar_id",
-            primary_pointer="/primary_id",
-            endpoint_mode="subject-id",
-            primary_partition_pointer="/primary_subject_ids",
-            associated_partition_pointer="/associated_subject_ids",
-            status_records_pointer="/statuses",
-            status_pointer="/status",
-        )
-
-    association = ArtifactAssociation(
-        primary_role=primary.role,
-        associated_roles=(sidecar.role,),
-        sources=(source("full-leaf"), source("stem")),
-    )
-
-    def evidence(status: str, candidates: list[dict[str, str]]) -> Any:
-        return SimpleNamespace(
-            request=SimpleNamespace(
-                observer_contract_id=contract,
-                observer_contract_sha256="a" * 64,
-                subjects=(primary, sidecar),
-                options={
-                    "primary_subject_ids": [primary.id],
-                    "associated_subject_ids": [sidecar.id],
-                },
-            ),
-            result=SimpleNamespace(
-                facts={
-                    "records": [{"candidates": candidates}],
-                    "statuses": [
-                        {"subject_id": primary.id, "status": "usable"},
-                        {"subject_id": sidecar.id, "status": status},
-                    ],
-                }
-            ),
-        )
-
-    stem = {"primary_id": primary.id, "sidecar_id": sidecar.id, "rule": "stem"}
-    full_leaf = {**stem, "rule": "full-leaf"}
-    links, blocked = _accepted_relationships(
-        (primary,), (sidecar,), association, (evidence("usable", [stem, full_leaf]),)
-    )
-    assert links == {primary.id: [sidecar]}
-    assert blocked == set()
-    links, blocked = _accepted_relationships(
-        (primary,), (sidecar,), association, (evidence("usable", [stem]),)
-    )
-    assert links == {primary.id: [sidecar]}
-    assert blocked == set()
-    links, blocked = _accepted_relationships(
-        (primary,), (sidecar,), association, (evidence("ambiguous", [stem]),)
-    )
-    assert links == {}
-    assert blocked == {primary.id}
-
-
-def test_nested_metadata_rows_are_tested_without_position_or_filename_rules() -> None:
+def test_nested_metadata_rows_are_tested_without_position_or_filename_rules():
     document = {
         "subject_id": "a-" + "3" * 32,
         "facts": [
@@ -201,34 +77,37 @@ def test_nested_metadata_rows_are_tested_without_position_or_filename_rules() ->
             {"name": "container-format", "value": "XMP"},
         ],
     }
-    xmp = FactPredicate(
-        observation_contract_id="fixture.metadata/v1",
-        array_pointer="/facts",
-        same_item=(FactCondition(pointer="/name", value="container-format"),),
-        pointer="/value",
-        operator="one-of",
-        value=["XMP", "application/rdf+xml"],
-    )
-    assert _document_matches_predicate(xmp, document)
-    assert not _document_matches_predicate(xmp, {**document, "facts": []})
-    assert not _document_matches_predicate(
-        xmp,
+    condition = TypeAdapter(RowPredicate).validate_python(
         {
-            **document,
-            "facts": [
-                {"name": "creator", "value": "XMP"},
-                {"name": "container-format", "value": "PNG"},
-            ],
-        },
+            "items": {
+                "path": "/facts",
+                "quantifier": "any",
+                "where": {
+                    "all": [
+                        {"test": {"path": "/name", "op": "eq", "value": "container-format"}},
+                        {
+                            "test": {
+                                "path": "/value",
+                                "op": "in",
+                                "value": ["XMP", "application/rdf+xml"],
+                            }
+                        },
+                    ]
+                },
+            },
+        }
     )
-    with pytest.raises(ValueError, match="different shape"):
-        _document_matches_predicate(xmp, {**document, "facts": {}})
-
-    missing = FactPredicate(
-        observation_contract_id="fixture.metadata/v1",
-        array_pointer="/facts",
-        pointer="/unknown",
-        operator="exists",
-        value=False,
+    assert evaluate_row(condition, document) == Truth.TRUE
+    assert evaluate_row(condition, {"facts": list(reversed(document["facts"]))}) == Truth.TRUE
+    assert (
+        evaluate_row(
+            condition,
+            {
+                "facts": [
+                    {"name": "container-format", "value": "MOV"},
+                    {"name": "creator", "value": "XMP"},
+                ]
+            },
+        )
+        == Truth.FALSE
     )
-    assert _document_matches_predicate(missing, document)

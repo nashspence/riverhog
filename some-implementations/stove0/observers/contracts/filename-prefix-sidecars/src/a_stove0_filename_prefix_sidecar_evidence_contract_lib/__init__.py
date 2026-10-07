@@ -29,3 +29,7 @@ __all__ = [
     "FilenameSourceStatus",
     "validate_filename_facts",
 ]
+
+from .interfaces import FILENAME_INTERFACE, FILENAME_INTERFACE_VECTORS
+
+__all__ += ["FILENAME_INTERFACE", "FILENAME_INTERFACE_VECTORS"]

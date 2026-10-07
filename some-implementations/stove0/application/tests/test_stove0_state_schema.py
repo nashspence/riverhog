@@ -6,6 +6,7 @@ import pytest
 import yaml
 from stove0_api.app import main
 from stove0_core import SqlAlchemyStateStore, stove0_state_schema
+from stove0_recipe_config import CompiledRecipeCatalog
 
 
 def test_stove0_state_upgrade_establishes_exact_current_v1_schema(tmp_path: Path) -> None:
@@ -40,7 +41,7 @@ def test_state_cli_enforces_the_postgresql_deployment_boundary(
                 "riverhog_token_file": str(tmp_path / "riverhog-token"),
                 "browse_token_signing_key_file": str(tmp_path / "browse-key"),
                 "declared_workspace_protection": "encrypted-at-rest",
-                "recipes": {"format": "stove0-recipes/v1", "operations": [], "recipes": []},
+                "recipes": CompiledRecipeCatalog().model_dump(mode="json"),
             }
         ),
         encoding="utf-8",

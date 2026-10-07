@@ -27,6 +27,7 @@ from stove0_protocol import (
     evaluate_branch_set,
     resolve_join_plan,
 )
+from stove0_protocol.fork_join import BranchCollectionExport, CoordinationCollectionResult
 from stove0_target_protocol import OutputCollectionRef
 
 from stove0_core.work_state import WorkRecord, WorkStore
@@ -66,29 +67,7 @@ def project_coordination(parent: WorkRecord, store: WorkStore) -> CoordinationPr
                 )
             settlement = child.coordination_settlement
             if settlement is not None and child.phase == "complete":
-                if settlement.collection_result is not None:
-                    producer = _load_declared_work(
-                        store,
-                        settlement.collection_result.producer_work_id,
-                    )
-                    producer_plan = child.join_plan
-                    if producer_plan is None or producer_plan.work.work_id != producer.work_id:
-                        raise RuntimeError("coordination result producer is not exact join work")
-                    producer_settlement = _join_settlement(
-                        producer_plan,
-                        producer,
-                        selections,
-                        store,
-                    )
-                    result = settlement.collection_result
-                    if (
-                        producer_settlement is None
-                        or producer_settlement.settlement_sha256 != result.join_settlement_sha256
-                        or producer_settlement.derivation_sha256 != result.derivation_sha256
-                        or producer_settlement.output_collection != result.output_collection
-                        or producer_settlement.output_selection != result.output_selection
-                    ):
-                        raise RuntimeError("coordination result differs from its producer output")
+                _verify_collection_export(child, store, selections)
                 coordination_settlements.append(settlement)
                 continue
             if child.phase == "complete":
@@ -194,6 +173,105 @@ def project_coordination(parent: WorkRecord, store: WorkStore) -> CoordinationPr
         pending_join=pending_join,
         pending_join_selections=pending_join_selections,
     )
+
+
+def _verify_collection_export(
+    child: WorkRecord, store: WorkStore, selections: dict[str, ArtifactSelection]
+) -> None:
+    """Follow only the explicit sealed export chain to its actual producer.
+
+    No collection is copied or manufactured; the result still names the exact
+    leaf's settled Riverhog output. Iteration imposes no child-depth ceiling.
+    """
+    settlement = child.coordination_settlement
+    plan = child.branch_set_plan
+    if (
+        settlement is None
+        or plan is None
+        or settlement.work != child.work
+        or settlement.branch_set_sha256 != plan.branch_set_sha256
+    ):
+        raise RuntimeError("coordination export has no exact parent settlement")
+    result = settlement.collection_result
+    if (plan.export is None) != (result is None):
+        raise RuntimeError("coordination result differs from its explicit export")
+    if result is None:
+        return
+    current, seen = child, set()
+    while True:
+        if current.work_id in seen:
+            raise RuntimeError("coordination export contains a cycle")
+        seen.add(current.work_id)
+        plan = current.branch_set_plan
+        if plan is None:
+            raise RuntimeError("export chain lost its exact child plan")
+        if plan.export == "join":
+            producer_plan = current.join_plan
+            if producer_plan is None or producer_plan.work.work_id != result.producer_work_id:
+                raise RuntimeError("coordination export producer differs from its declared join")
+            producer = _load_declared_work(store, producer_plan.work.work_id)
+            if producer.workflow_plan != producer_plan.workflow_plan:
+                raise RuntimeError("exported join work changed its exact plan")
+            proof = _join_settlement(producer_plan, producer, selections, store)
+            if (
+                proof is None
+                or current.coordination_settlement is None
+                or proof.settlement_sha256
+                != current.coordination_settlement.final_join_settlement_sha256
+            ):
+                raise RuntimeError("exported join has no exact successful settlement")
+            expected = CoordinationCollectionResult(
+                producer_work_id=proof.work_id,
+                producer_settlement_sha256=proof.producer_settlement_sha256,
+                derivation_sha256=proof.derivation_sha256,
+                output_collection=proof.output_collection,
+                output_selection=proof.output_selection,
+            )
+            break
+        if not isinstance(plan.export, BranchCollectionExport):
+            raise RuntimeError("export chain reached a coordinator without an export")
+        branch = next(item for item in plan.branches if item.branch_id == plan.export.branch)
+        producer = _load_declared_work(store, branch_work(branch).work_id)
+        if isinstance(branch, CoordinationBranchPlan):
+            nested = producer.coordination_settlement
+            if (
+                producer.phase != "complete"
+                or nested is None
+                or nested.work != branch.work
+                or nested.branch_set_sha256 != branch.branch_set_sha256
+                or nested.collection_result != result
+            ):
+                raise RuntimeError("nested export changed its exact settled collection")
+            current = producer
+            continue
+        if (
+            not isinstance(branch, BranchPlan)
+            or producer.work_id != result.producer_work_id
+            or producer.workflow_plan != branch.workflow_plan
+        ):
+            raise RuntimeError("export does not name its exact collection-producing leaf")
+        verification = _branch_settlement(producer)
+        if verification is None or producer.target_settlement is None:
+            raise RuntimeError("exported leaf has no successful producer settlement")
+        output = _output_selection(producer, store)
+        _retain_selection(selections, output)
+        leaf_proof = BranchSettlement.seal(
+            branch=branch,
+            derivation_sha256=verification.derivation_sha256,
+            producer_settlement_sha256=producer.target_settlement.settlement_sha256,
+            output_collection=_collection_root(verification),
+            output_selection=output,
+        )
+        expected = CoordinationCollectionResult(
+            producer_work_id=leaf_proof.work_id,
+            producer_settlement_sha256=leaf_proof.producer_settlement_sha256,
+            derivation_sha256=leaf_proof.derivation_sha256,
+            output_collection=leaf_proof.output_collection,
+            output_selection=leaf_proof.output_selection,
+        )
+        break
+    if expected != result:
+        raise RuntimeError("coordination export differs from its exact producer output")
 
 
 def _declared_selections(

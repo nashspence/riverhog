@@ -381,10 +381,11 @@ def test_generated_contract_matches_every_executable_authority(
         sources["configuration:gogurt-core:configuration:gogurt-routes-schema"]["owner"]
         == "gogurt-core"
     )
-    assert (
-        sources["configuration:stove0-recipe-config:configuration:recipe-catalog"]["owner"]
-        == "stove0-recipe-config"
-    )
+    for name in ("recipe-source-catalog", "compiled-recipe-catalog"):
+        assert (
+            sources[f"configuration:stove0-recipe-config:configuration:{name}"]["owner"]
+            == "stove0-recipe-config"
+        )
     configuration = trace["configuration_registry"]
     configuration_documents = trace["configuration_document_registry"]
     assert configuration_documents["counts"] == {
@@ -431,7 +432,8 @@ def test_generated_contract_matches_every_executable_authority(
     assert not {
         "durable-state",
         "gogurt-core:configuration:gogurt-routes-schema",
-        "stove0-recipe-config:configuration:recipe-catalog",
+        "stove0-recipe-config:configuration:recipe-source-catalog",
+        "stove0-recipe-config:configuration:compiled-recipe-catalog",
     } & {item["authority"] for item in checked.root["elements"]}
 
     root = checked.root
@@ -944,11 +946,11 @@ def test_python_model_signature_is_discovered_after_schema_initialization() -> N
     source = """
 import sys
 from riverhog_protocol import ExternalEffectSettlementDocument
-from stove0_recipe_config import RecipeNoAction
+from stove0_protocol.recipe_outcomes import NoOutputDefinition
 sys.path.insert(0, 'scripts')
 import contract_freeze
 for model, field in (
-    (RecipeNoAction, 'code:'),
+    (NoOutputDefinition, 'code:'),
     (ExternalEffectSettlementDocument, 'claim_id:'),
 ):
     surface = contract_freeze._class_surface(model)

@@ -698,23 +698,6 @@ def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
     assert " down --volumes --remove-orphans" in docker_log
 
 
-def test_scale_preview_claim_covers_the_complete_bulk_request(tmp_path: Path) -> None:
-    config_capture = tmp_path / "stove0-config.yaml"
-    completed, _, _ = _run_make(
-        tmp_path,
-        "stove0-scale-qualification",
-        extra_env={
-            "FAKE_DOCKER_HAVE_IMAGES": "1",
-            "FAKE_DOCKER_CONFIG_CAPTURE": str(config_capture),
-            "STOVE0_SMOKE_TRANSFER_METRICS": "0",
-        },
-    )
-    assert completed.returncode == 0, completed.stderr
-    config = yaml.safe_load(config_capture.read_text())
-    assert config["claim_lease_seconds"] == 4260
-    assert config["claim_lease_seconds"] > 3660
-
-
 @pytest.mark.parametrize(
     "lane",
     (

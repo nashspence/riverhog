@@ -134,6 +134,11 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
     assert payload["networks"]["stove0-internal"]["internal"] is True
     assert payload["networks"]["review-sampler"]["internal"] is True
     assert set(payload["volumes"]) == {
+        "magic-observer-state",
+        "exiftool-observer-state",
+        "ffprobe-observer-state",
+        "riverhog-provenance-observer-state",
+        "filename-prefix-sidecar-observer-state",
         "a-stove0-nvenc-av1-opus-target-state",
         "a-stove0-opus-target-state",
         "review0-state",

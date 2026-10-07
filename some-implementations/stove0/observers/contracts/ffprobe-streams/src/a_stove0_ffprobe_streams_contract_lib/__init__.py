@@ -1,6 +1,7 @@
 """FFprobe stream observation contract and deterministic parser."""
 
 from .contracts import (
+    FFPROBE_STREAMS_FACTS_CONFORMANCE_VECTORS,
     FFPROBE_STREAMS_OBSERVATION_ID,
     FFPROBE_STREAMS_OBSERVER_CONTRACT,
     FFPROBE_STREAMS_SEMANTIC_VALIDATOR,
@@ -15,6 +16,7 @@ from .contracts import (
 )
 
 __all__ = [
+    "FFPROBE_STREAMS_FACTS_CONFORMANCE_VECTORS",
     "FFPROBE_STREAMS_OBSERVATION_ID",
     "FFPROBE_STREAMS_OBSERVER_CONTRACT",
     "FFPROBE_STREAMS_SEMANTIC_VALIDATOR",
@@ -27,3 +29,7 @@ __all__ = [
     "parse_ffprobe_report",
     "validate_ffprobe_stream_facts",
 ]
+
+from .interfaces import FFPROBE_STREAMS_INTERFACE, FFPROBE_STREAMS_INTERFACE_VECTORS
+
+__all__ += ["FFPROBE_STREAMS_INTERFACE", "FFPROBE_STREAMS_INTERFACE_VECTORS"]

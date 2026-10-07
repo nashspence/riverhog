@@ -7,6 +7,7 @@ import pytest
 import yaml
 from stove0_core import database_url_from_config, load_stove0_config
 from stove0_core.runtime_config import generated_config_schema
+from stove0_recipe_config import CompiledRecipeCatalog
 
 SCHEMA = Path(__file__).parents[1] / "server/src/stove0_core/config.schema.json"
 
@@ -21,7 +22,7 @@ def _config(tmp_path: Path) -> tuple[Path, dict[str, object]]:
     document: dict[str, object] = {
         "riverhog_base_url": "https://riverhog.invalid",
         "declared_workspace_protection": "encrypted-at-rest",
-        "recipes": {"format": "stove0-recipes/v1", "operations": [], "recipes": []},
+        "recipes": CompiledRecipeCatalog().model_dump(mode="json"),
     }
     for name, value in secrets.items():
         path = tmp_path / name

@@ -144,6 +144,8 @@ services:
       A_STOVE0_FFPROBE_OBSERVER_WORKSPACE: /run/a-stove0-ffprobe-observer
     secrets: ["a_stove0_ffprobe_observer_token"]
     networks: ["stove0-internal", "riverhog-control"]
+    volumes:
+      - ffprobe-observer-state:/var/lib/a-stove0-ffprobe-observer
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
       - /run/a-stove0-ffprobe-observer:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_OBSERVER_TMPFS_SIZE:-8g}
@@ -177,6 +179,8 @@ services:
       A_STOVE0_MAGIC_OBSERVER_IMAGE_ID: ${A_STOVE0_MAGIC_OBSERVER_IMAGE_ID:?A_STOVE0_MAGIC_OBSERVER_IMAGE_ID is required}
     secrets: ["a_stove0_magic_observer_token"]
     networks: ["stove0-internal", "riverhog-control"]
+    volumes:
+      - magic-observer-state:/var/lib/a-stove0-magic-observer
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
     healthcheck: *ffmpeg-health
@@ -197,6 +201,8 @@ services:
       A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_IMAGE_ID: ${A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_IMAGE_ID:?A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_IMAGE_ID is required}
     secrets: ["a_stove0_riverhog_provenance_observer_token"]
     networks: ["stove0-internal", "riverhog-control"]
+    volumes:
+      - riverhog-provenance-observer-state:/var/lib/a-stove0-riverhog-provenance-observer
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
     healthcheck: *ffmpeg-health
@@ -217,6 +223,8 @@ services:
       A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_IMAGE_ID: ${A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_IMAGE_ID:?A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_IMAGE_ID is required}
     secrets: ["a_stove0_filename_prefix_sidecar_observer_token"]
     networks: ["stove0-internal", "riverhog-control"]
+    volumes:
+      - filename-prefix-sidecar-observer-state:/var/lib/a-stove0-filename-prefix-sidecar-observer
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
     healthcheck: *ffmpeg-health
@@ -238,6 +246,8 @@ services:
       A_STOVE0_EXIFTOOL_OBSERVER_WORKSPACE: /run/a-stove0-exiftool-observer
     secrets: ["a_stove0_exiftool_observer_token"]
     networks: ["stove0-internal", "riverhog-control"]
+    volumes:
+      - exiftool-observer-state:/var/lib/a-stove0-exiftool-observer
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
       - /run/a-stove0-exiftool-observer:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_OBSERVER_TMPFS_SIZE:-8g}
@@ -404,6 +414,11 @@ services:
     healthcheck: *ffmpeg-health
 
 volumes:
+  filename-prefix-sidecar-observer-state:
+  riverhog-provenance-observer-state:
+  magic-observer-state:
+  exiftool-observer-state:
+  ffprobe-observer-state:
   a-stove0-nvenc-av1-opus-target-state:
   a-stove0-opus-target-state:
   review0-state:

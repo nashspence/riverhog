@@ -9,6 +9,11 @@ from stove0_observer_support.http_binding import (
     ObserverHttpBinding,
     ObserverHttpResponse,
 )
+from stove0_observer_support.persistent import (
+    ObservationExecutionCanceled,
+    ObserverServiceError,
+    PersistentObserverService,
+)
 from stove0_observer_support.results import ContentObservationResultBuilder
 from stove0_observer_support.runtime import (
     CancellationCheck,
@@ -34,6 +39,9 @@ __all__ = [
     "OBSERVER_SCHEMA_BUNDLE_FORMAT",
     "ObserverHttpBinding",
     "ObserverHttpResponse",
+    "PersistentObserverService",
+    "ObserverServiceError",
+    "ObservationExecutionCanceled",
     "ObserverClient",
     "ObserverConformanceResult",
     "conformance_report",

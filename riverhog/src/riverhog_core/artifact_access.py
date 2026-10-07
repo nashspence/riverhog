@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from riverhog_protocol.errors import NotFound
-from sqlalchemy import exists, select, true
+from sqlalchemy import exists, func, select, true
 from sqlalchemy.orm import InstrumentedAttribute, Session
 from sqlalchemy.sql.elements import ColumnElement
+from sqlalchemy.sql.selectable import ScalarSelect
 from time_formats import utc_timestamp_now
 
 from riverhog_core.app_permissions import Principal
@@ -51,7 +52,7 @@ def artifact_scope_filter(
     return exists(
         select(1).where(
             CollectionProcessingCapabilityArtifactRecord.capability_id
-            == principal.artifact_scope_capability_id,
+            == artifact_scope_owner(principal),
             CollectionProcessingCapabilityArtifactRecord.collection_id == collection_column,
             CollectionProcessingCapabilityArtifactRecord.artifact_id == artifact_column,
         )
@@ -73,7 +74,7 @@ def require_artifact_scope(
         select(CollectionProcessingCapabilityArtifactRecord.capability_id)
         .where(
             CollectionProcessingCapabilityArtifactRecord.capability_id
-            == principal.artifact_scope_capability_id,
+            == artifact_scope_owner(principal),
             CollectionProcessingCapabilityArtifactRecord.collection_id == collection_id,
             CollectionProcessingCapabilityArtifactRecord.artifact_id == artifact_id,
         )
@@ -82,6 +83,20 @@ def require_artifact_scope(
     if allowed is not None:
         return
     raise NotFound(f"collection artifact not found: {collection_id}/{artifact_id}")
+
+
+def artifact_scope_owner(principal: Principal) -> ScalarSelect[str]:
+    """Resolve only the immutable scope; live authority remains the bearer lease."""
+    return (
+        select(
+            func.coalesce(
+                CollectionProcessingCapabilityRecord.artifact_scope_capability_id,
+                CollectionProcessingCapabilityRecord.id,
+            )
+        )
+        .where(CollectionProcessingCapabilityRecord.id == principal.artifact_scope_capability_id)
+        .scalar_subquery()
+    )
 
 
 __all__ = ["artifact_scope_filter", "require_artifact_scope", "require_current_artifact_capability"]

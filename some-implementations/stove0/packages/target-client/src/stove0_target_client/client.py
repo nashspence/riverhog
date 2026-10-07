@@ -14,6 +14,9 @@ from http_api_contracts import (
     parse_declared_error_payload,
     safe_http_base_url,
 )
+from http_api_contracts.control import check_control_budget, control_timeout, finite_control_seconds
+from http_api_contracts.metadata_contact import metadata_contact
+from http_api_contracts.metadata_exchange import NativeMetadataTransport
 from pydantic import BaseModel, TypeAdapter, ValidationError
 from stove0_target_protocol import (
     TARGET_CALLBACK_HTTP_OPERATIONS,
@@ -76,15 +79,28 @@ class TargetClient:
         base_url: str,
         *,
         token: str | None = None,
-        timeout: float | None = 300.0,
+        timeout: float = 5.0,
         allow_insecure_http: bool = False,
+        staged_metadata: bool = False,
     ) -> None:
         self.base_url = safe_http_base_url(
             base_url,
             setting="target base URL",
             allow_insecure_http=allow_insecure_http,
         )
-        self.timeout = timeout
+        self.timeout = finite_control_seconds(timeout)
+        self._metadata = (
+            NativeMetadataTransport(
+                wire=lambda method, path, model, payload=None: self._wire(
+                    method, path, model, payload=payload
+                ),
+                operations=TARGET_HTTP_OPERATIONS,
+                protocol_error=TargetProtocolError,
+                timeout=self.timeout,
+            )
+            if staged_metadata
+            else None
+        )
         self.token = token.strip() if token and token.strip() else None
 
     def descriptor(self) -> TargetDescriptor:
@@ -138,6 +154,7 @@ class TargetClient:
             "POST",
             f"/v1/jobs/{_job_id(request.declaration.job_id)}/cancel",
             TargetJobStatus,
+            request.accepted() if isinstance(request, TargetJobRequest) else request,
         )
         self._validate(lambda: validate_status_against_request(status, request, operation))
         return status
@@ -152,7 +169,19 @@ class TargetClient:
                 failure_kind="invalid_response",
             ) from exc
 
+    def close(self) -> None:
+        if self._metadata is not None:
+            self._metadata.close()
+
     def _request(
+        self, method: str, path: str, model: type[ModelT], payload: BaseModel | None = None
+    ) -> ModelT:
+        if self._metadata is not None:
+            return self._metadata.request(method, path, model, payload)
+        return self._wire(method, path, model, payload=payload)
+
+    @metadata_contact
+    def _wire(
         self,
         method: str,
         path: str,
@@ -170,7 +199,7 @@ class TargetClient:
                 exclude_none=True,
             )
         try:
-            with httpx.Client(timeout=self.timeout) as client:
+            with httpx.Client(timeout=control_timeout(self.timeout)) as client:
                 response = client.request(
                     method,
                     f"{self.base_url}{path}",
@@ -182,6 +211,7 @@ class TargetClient:
                 f"target request failed: {exc}",
                 failure_kind="transport",
             ) from exc
+        check_control_budget()
         if response.status_code >= 400:
             try:
                 code, message, details = parse_declared_error_payload(

@@ -77,6 +77,7 @@ a-stove0-filename-prefix-sidecar-evidence-contract-lib = { workspace = true }
 a-stove0-riverhog-provenance-observer = { workspace = true }
 stove0-observer-client = { workspace = true }
 stove0-protocol = { workspace = true }
+stove0-extension-support = { workspace = true }
 stove0-recipe-config = { workspace = true }
 stove0-observer-protocol = { workspace = true }
 stove0-observer-support = { workspace = true }

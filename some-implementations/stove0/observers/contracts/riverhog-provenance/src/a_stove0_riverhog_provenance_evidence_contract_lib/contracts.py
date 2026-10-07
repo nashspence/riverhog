@@ -401,7 +401,6 @@ CORE_PROVENANCE_OBSERVER_CONTRACT = ObserverContract.seal(
         options_schema=CORE_PROVENANCE_OPTIONS_SCHEMA,
         facts_schema=CORE_PROVENANCE_FACTS_SCHEMA,
         facts_semantics=CORE_PROVENANCE_FACTS_SEMANTICS,
-        maximum_result_bytes=1024 * 1024,
     )
 )
 

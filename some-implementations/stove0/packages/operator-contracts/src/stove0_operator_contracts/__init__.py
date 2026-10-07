@@ -22,9 +22,9 @@ from riverhog_protocol import (
     CollectionTag,
 )
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
-from stove0_observer_protocol import ContentObservationRequest, ContentObservationResult
 from stove0_protocol import (
     ArtifactSelectionPage,
+    ArtifactSelectionRef,
     BranchSetPlan,
     CollectionRootIdentityRef,
     ControllerEvidence,
@@ -32,6 +32,7 @@ from stove0_protocol import (
     EvaluationDefinition,
     JoinPlan,
     JoinWorkBinding,
+    PlanningJobStatus,
     PreviewOutcome,
     Sha256,
     WorkflowPlan,
@@ -39,7 +40,13 @@ from stove0_protocol import (
     WorkIdentity,
     canonical_json_sha256,
 )
-from stove0_recipe_config import RecipeDefinition
+from stove0_protocol.observation_evidence import (
+    AcceptedEvidenceSet,
+    AcceptedView,
+    ObservationQuestion,
+)
+from stove0_protocol.predicates import LocalName
+from stove0_recipe_config import CompiledRecipe
 from stove0_target_protocol import (
     AcceptedTargetJob,
     DepartureEffectIntent,
@@ -56,7 +63,6 @@ from stove0_operator_contracts.http_errors import STOVE0_HTTP_ERROR_AUTHORITY
 WorkPhase = Literal[
     "eligible",
     "claimed",
-    "observing",
     "planning",
     "target_preflight",
     "queued",
@@ -91,6 +97,7 @@ EvaluationChildState = Literal[
     "failed",
     "canceled",
 ]
+PlanningOwnerKind = Literal["work", "preview"]
 SortOrder = Literal["asc", "desc"]
 WorkSort = Literal["updated_at", "phase", "work_id"]
 EvaluationSort = Literal["updated_at", "phase", "evaluation_id"]
@@ -497,7 +504,6 @@ def validate_work_state_shape(
     no_action_phases = {
         "eligible",
         "claimed",
-        "observing",
         "planning",
         "no_output_pending",
         "no_action",
@@ -640,6 +646,7 @@ def validate_evaluation_state_shape(
 
 
 class OperatorWorkflowPreviewRequest(OperatorModel):
+    invocation_id: Sha256
     recipe_id: str = Field(min_length=1, max_length=160)
     recipe_revision: NonnegativeDecimal | None = Field(default=None, ge=1)
     inputs: tuple[CollectionRootIdentityRef, ...] = Field(min_length=1)
@@ -660,6 +667,20 @@ class OperatorWorkflowPreviewRequest(OperatorModel):
 
 class WorkCreateRequest(OperatorWorkflowPreviewRequest):
     preview_sha256: Sha256
+
+
+class WorkInitiationStatus(OperatorModel):
+    job: PlanningJobStatus
+    state: Literal["pending", "completed", "rejected"]
+    work: WorkView | None = None
+
+    @model_validator(mode="after")
+    def exact_initiation(self) -> Self:
+        if (self.state == "completed") != (self.work is not None):
+            raise ValueError("completed initiation must identify the accepted work")
+        if self.work is not None and self.work.work.work_id != self.job.work_id:
+            raise ValueError("initiated work differs from the planning job")
+        return self
 
 
 class EvaluationReviewRequest(OperatorModel):
@@ -903,9 +924,8 @@ class WorkView(OperatorModel):
     claim: WorkClaimView | None = None
     preview_acceptance: PreviewAcceptanceView | None = None
     no_action_preview: WorkflowPreview | None = None
+    no_output_retirement_policy: Literal["retain", "retire-after-settlement"] | None = None
     expected_target_plan_sha256: Sha256 | None = None
-    observation_requests: tuple[ContentObservationRequest, ...] = ()
-    observation_results: tuple[ContentObservationResult, ...] = ()
     branch_set_plan: BranchSetPlan | None = None
     coordination_settlement: CoordinationSettlement | None = None
     join_plan: JoinPlan | None = None
@@ -984,6 +1004,75 @@ class WorkPage(OperatorModel):
         return cls.model_validate(payload)
 
 
+class ObservationTaskView(OperatorModel):
+    work_id: Sha256
+    task_id: LocalName
+    state: Literal["initializing", "collecting", "complete"]
+    revision: int = Field(ge=1)
+    question_sha256: Sha256 | None = None
+    scope: ArtifactSelectionRef | None = None
+    evidence_set_sha256: Sha256 | None = None
+
+
+class ObservationTaskPage(OperatorModel):
+    page_size: int = Field(ge=1, le=100)
+    next_page_token: BrowsePageToken | None
+    owner_kind: PlanningOwnerKind
+    owner_id: Sha256
+    tasks: tuple[ObservationTaskView, ...] = Field(
+        max_length=100,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-observation-task-page",
+                "progression": "owner-bound-keyset",
+            }
+        },
+    )
+
+    @model_validator(mode="after")
+    def bounded_page(self) -> Self:
+        if len(self.tasks) > self.page_size:
+            raise ValueError("observation task page exceeds its requested size")
+        return self
+
+
+class ObservationTaskDetail(OperatorModel):
+    task: ObservationTaskView
+    question: ObservationQuestion | None
+    accepted: AcceptedEvidenceSet | None
+    views: dict[LocalName, AcceptedView | None]
+
+    @model_validator(mode="after")
+    def exact_task(self) -> Self:
+        if self.question is not None and (
+            self.question.work_id != self.task.work_id
+            or self.question.task_id != self.task.task_id
+            or self.question.question_sha256 != self.task.question_sha256
+            or self.question.scope != self.task.scope
+        ):
+            raise ValueError("observation detail differs from its exact named task")
+        if self.accepted is not None and (
+            self.accepted.question != self.question
+            or self.accepted.evidence_set_sha256 != self.task.evidence_set_sha256
+        ):
+            raise ValueError("observation detail changed its controller acceptance")
+        for name, view in self.views.items():
+            if view is not None and (
+                self.accepted is None
+                or self.question is None
+                or view.view_id != name
+                or view.work_id != self.task.work_id
+                or view.task_id != self.task.task_id
+                or view.question_sha256 != self.task.question_sha256
+                or view.evidence_set_sha256 != self.task.evidence_set_sha256
+                or view.interface != self.question.interface
+                or view.selected_scope != self.task.scope
+            ):
+                raise ValueError("observation view differs from its exact accepted task")
+        return self
+
+
 class EvaluationChildView(OperatorModel):
     variant_id: str = Field(min_length=1, max_length=160)
     work_id: Sha256
@@ -1056,7 +1145,7 @@ class EvaluationPage(OperatorModel):
 
 
 class RecipeView(OperatorModel):
-    definition: RecipeDefinition
+    definition: CompiledRecipe
     sha256: Sha256
 
     @model_validator(mode="after")
@@ -1066,7 +1155,7 @@ class RecipeView(OperatorModel):
         return self
 
     @classmethod
-    def from_definition(cls, definition: RecipeDefinition) -> RecipeView:
+    def from_definition(cls, definition: CompiledRecipe) -> RecipeView:
         return cls(definition=definition, sha256=definition.sha256)
 
 
@@ -1103,6 +1192,16 @@ class DepartureRun(OperatorModel):
     failures: tuple[SchedulerFailure, ...] = ()
 
 
+class PlanningFailure(OperatorModel):
+    job_id: Sha256
+    error: str = Field(min_length=1, max_length=1000)
+
+
+class PlanningRun(OperatorModel):
+    progressed: tuple[Sha256, ...]
+    failures: tuple[PlanningFailure, ...] = ()
+
+
 class SchedulerWorkBatch(OperatorModel):
     role: SchedulerRole
     cursor: str
@@ -1120,12 +1219,17 @@ class SchedulerPruning(OperatorModel):
     selection_bytes: int = Field(ge=0)
     events: int = Field(ge=0)
     event_bytes: int = Field(ge=0)
+    previews: int = Field(default=0, ge=0)
+    planning_contexts: int = Field(default=0, ge=0)
+    observation_deliveries: int = Field(default=0, ge=0)
+    recipe_definitions: int = Field(default=0, ge=0)
 
 
 class SchedulerRun(OperatorModel):
     pruning: SchedulerPruning | None
     admission: AdmissionRun | None = None
     departure: DepartureRun | None = None
+    previews: PlanningRun | None = None
     work: SchedulerWorkBatch
 
 
@@ -1136,6 +1240,11 @@ def _payload(value: BaseModel | Mapping[str, Any]) -> dict[str, Any]:
 
 
 __all__ = [
+    "PlanningOwnerKind",
+    "ObservationTaskView",
+    "ObservationTaskPage",
+    "ObservationTaskDetail",
+    "WorkInitiationStatus",
     "AllVisibleDepartureSelector",
     "ADMISSION_POLICY_COUNT_MAX",
     "AdmissionCatalog",

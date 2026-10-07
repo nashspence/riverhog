@@ -7,11 +7,11 @@ import json
 import math
 import os
 import re
-import subprocess
 from pathlib import Path
 from typing import Any, cast
 
 from a_stove0_media_metadata_contract_lib import (
+    MEDIA_METADATA_INTERFACE,
     MEDIA_METADATA_OBSERVER_CONTRACT,
     MediaArtifactFacts,
     MediaFactEvidence,
@@ -21,6 +21,7 @@ from a_stove0_media_metadata_contract_lib import (
     validate_media_metadata_facts,
 )
 from pydantic import JsonValue
+from stove0_extension_support import subprocess
 from stove0_observer_protocol import (
     ContentObservationRequest,
     ContentObservationResult,
@@ -101,7 +102,9 @@ class ExiftoolObserver:
                 source_revision=source_revision,
                 image_id=image_id,
                 contracts=(
-                    ObserverContractSupport.from_contract(MEDIA_METADATA_OBSERVER_CONTRACT),
+                    ObserverContractSupport.from_contract(
+                        MEDIA_METADATA_OBSERVER_CONTRACT, interfaces=(MEDIA_METADATA_INTERFACE.ref,)
+                    ),
                 ),
             )
         )

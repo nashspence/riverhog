@@ -12,7 +12,6 @@ from stove0_observer_protocol import (
     ContentObservationEvidence,
     ContentObservationInvocation,
     ContentObservationRequest,
-    ContentObservationRequestPayload,
     JsonSchemaValidationProfile,
     ObservationEvidenceSlot,
     ObserverContract,
@@ -24,6 +23,8 @@ from stove0_observer_protocol import (
     WorkArtifactSubject,
 )
 from stove0_observer_support import ContentObservationResultBuilder, ContentObservationRuntime
+
+from tests.stove0_observation_fixtures import accepted_input, fixture_interface, observation_payload
 
 
 def _contract(
@@ -65,7 +66,11 @@ def _descriptor(contract: ObserverContract) -> ObserverDescriptor:
             implementation_version="1",
             source_revision="fixture",
             image_id="sha256:" + "a" * 64,
-            contracts=(ObserverContractSupport.from_contract(contract),),
+            contracts=(
+                ObserverContractSupport.from_contract(
+                    contract, interfaces=(fixture_interface(contract).ref,)
+                ),
+            ),
         )
     )
 
@@ -89,7 +94,8 @@ def _evidence() -> ContentObservationEvidence:
     contract = _contract("fixture.predecessor", "read-inputs")
     descriptor = _descriptor(contract)
     request = ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=contract,
             work_id="f" * 64,
             observer_registration_id="predecessor",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -108,8 +114,10 @@ def _evidence() -> ContentObservationEvidence:
 def _request(evidence: ContentObservationEvidence) -> ContentObservationRequest:
     contract = _contract("fixture.consumer", "read-evidence")
     descriptor = _descriptor(contract)
+    accepted = accepted_input(evidence, contract=_contract("fixture.predecessor", "read-inputs"))
     return ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=contract,
             work_id=evidence.request.work_id,
             observer_registration_id="consumer",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -120,8 +128,7 @@ def _request(evidence: ContentObservationEvidence) -> ContentObservationRequest:
             evidence_slots=(
                 ObservationEvidenceSlot(
                     slot="primary-provenance",
-                    request_id=evidence.request.request_id,
-                    result_sha256=evidence.result.result_sha256,
+                    accepted_input_sha256=accepted.authority.input_sha256,
                     observer_contract_id=evidence.request.observer_contract_id,
                 ),
             ),
@@ -147,6 +154,7 @@ class _Api:
 def test_exact_predecessor_evidence_is_read_only_after_current_root_check() -> None:
     evidence = _evidence()
     request = _request(evidence)
+    accepted = accepted_input(evidence, contract=_contract("fixture.predecessor", "read-inputs"))
     authority = ObserverRuntimeAuthority(
         riverhog_base_url="https://riverhog.invalid",
         capability_token="fixture-token",
@@ -157,7 +165,7 @@ def test_exact_predecessor_evidence_is_read_only_after_current_root_check() -> N
         claim_id="claim",
         fence=1,
         runtime=authority,
-        evidence=(evidence,),
+        evidence=(accepted,),
     )
     with pytest.raises(ValueError, match="differs from the sealed request slots"):
         ContentObservationInvocation(
@@ -176,7 +184,14 @@ def test_exact_predecessor_evidence_is_read_only_after_current_root_check() -> N
         evidence=invocation.evidence,
         declared_workspace_protection="memory-backed",
     ) as runtime:
-        assert runtime.open_evidence("primary-provenance") == evidence
+        assert runtime.open_evidence("primary-provenance") == accepted
+        assert (
+            accepted.authority.source.question.question_sha256 == evidence.request.question_sha256
+        )
+        assert (
+            next(accepted.records("facts")).support[0].result_sha256
+            == evidence.result.result_sha256
+        )
         assert api.checks == 1
         with pytest.raises(ValueError, match="not declared"):
             runtime.open_evidence("unknown")

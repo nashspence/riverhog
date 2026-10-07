@@ -9,15 +9,23 @@ from typing import Any, cast
 from a_stove0_ffprobe_observer import FfprobeObserver
 from a_stove0_ffprobe_observer import app as observer_app
 from a_stove0_ffprobe_observer.app import create_app
-from a_stove0_ffprobe_streams_contract_lib import FFPROBE_STREAMS_OBSERVER_CONTRACT
-from a_stove0_media_sampling_contract_lib import MEDIA_SAMPLING_OBSERVER_CONTRACT
+from a_stove0_ffprobe_streams_contract_lib import (
+    FFPROBE_STREAMS_INTERFACE,
+    FFPROBE_STREAMS_OBSERVER_CONTRACT,
+)
+from a_stove0_media_sampling_contract_lib import (
+    MEDIA_SAMPLING_INTERFACE,
+    MEDIA_SAMPLING_OBSERVER_CONTRACT,
+)
 from fastapi.testclient import TestClient
-from stove0_observer_protocol import ContentObservationRequest, ContentObservationRequestPayload
+from stove0_observer_protocol import ContentObservationRequest
 from stove0_observer_support import ContentObservationRuntime
 from stove0_protocol import (
     CollectionRootIdentityRef,
     WorkArtifactSubject,
 )
+
+from tests.stove0_observation_fixtures import observation_payload
 
 
 def _sha(character: str) -> str:
@@ -76,7 +84,9 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
     descriptor = observer.descriptor()
     support = descriptor.support_for(MEDIA_SAMPLING_OBSERVER_CONTRACT.id)
     request = ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=MEDIA_SAMPLING_OBSERVER_CONTRACT,
+            interface=MEDIA_SAMPLING_INTERFACE,
             work_id=_sha("1"),
             observer_registration_id="ffprobe-sampling",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -176,7 +186,9 @@ def test_stream_registration_reports_exact_subject_bound_container_and_streams(
     ]
     support = descriptor.support_for(FFPROBE_STREAMS_OBSERVER_CONTRACT.id)
     request = ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=FFPROBE_STREAMS_OBSERVER_CONTRACT,
+            interface=FFPROBE_STREAMS_INTERFACE,
             work_id=_sha("1"),
             observer_registration_id="ffprobe-streams",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -228,12 +240,16 @@ def test_stream_registration_reports_exact_subject_bound_container_and_streams(
     assert malformed.failure is not None and malformed.failure.code == "invalid-stream-report"
 
 
-def test_observer_process_exposes_only_observer_contract() -> None:
+def test_observer_process_exposes_only_observer_contract(tmp_path: Path) -> None:
     observer = FfprobeObserver(
         source_revision="fixture",
         image_id="sha256:" + _sha("9"),
     )
-    client = TestClient(create_app(token="observer-secret", observer=observer))
+    client = TestClient(
+        create_app(
+            token="observer-secret", observer=observer, state_root=tmp_path / "observer-state"
+        )
+    )
     response = client.get(
         "/v1/observer",
         headers={"Authorization": "Bearer observer-secret"},
@@ -247,6 +263,7 @@ def test_observer_process_exposes_only_observer_contract() -> None:
         ).status_code
         == 404
     )
+    client.app.state.observer_service.close()
 
 
 def test_observer_process_environment_is_connected(
@@ -271,9 +288,12 @@ def test_observer_process_environment_is_connected(
     monkeypatch.setenv("A_STOVE0_FFPROBE_OBSERVER_IMAGE_ID", "sha256:" + _sha("8"))
     created: dict[str, object] = {}
 
-    class ConfiguredObserver:
+    monkeypatch.setenv("A_STOVE0_FFPROBE_OBSERVER_STATE", str(tmp_path / "state"))
+
+    class ConfiguredObserver(FfprobeObserver):
         def __init__(self, **kwargs: object) -> None:
             created.update(kwargs)
+            super().__init__(**kwargs)
             self.ffprobe = str(kwargs["ffprobe"])
 
     def run(_app: object, *, host: str, port: int) -> None:

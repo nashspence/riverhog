@@ -414,3 +414,68 @@ def test_processing_wait_still_fails_at_its_global_deadline(
         processing.wait()
     assert len(calls) == 2
     assert calls[1] == ("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25})
+
+
+@pytest.mark.parametrize("initiation", [False, True])
+def test_processing_planning_drives_pollable_control_until_exact_completion(
+    monkeypatch: pytest.MonkeyPatch, initiation: bool
+) -> None:
+    monkeypatch.setenv("STOVE0_SMOKE_COMPLETION_TIMEOUT", "30")
+    monkeypatch.setattr(
+        processing, "time", SimpleNamespace(monotonic=lambda: 0, sleep=lambda _: None)
+    )
+    path = "/v1/work-initiations/job" if initiation else "/v1/workflow-previews/job"
+    states = iter(
+        [
+            {"state": "pending" if initiation else "observing"},
+            {"state": "completed", "exact_result": "unchanged"},
+        ]
+    )
+    calls = []
+
+    def read(operation, payload=None):
+        calls.append((operation, payload))
+        return {"progressed": []} if payload is not None else next(states)
+
+    monkeypatch.setattr(processing, "stove", read)
+    assert processing.await_planning(path, initiation=initiation) == {
+        "state": "completed",
+        "exact_result": "unchanged",
+    }
+    assert calls == [
+        ("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25}),
+        (path, None),
+        ("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25}),
+        (path, None),
+    ]
+
+
+def test_processing_initiation_rejection_does_not_become_success(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(processing, "time", SimpleNamespace(monotonic=lambda: 0))
+    monkeypatch.setattr(processing, "stove", lambda *_: {"state": "rejected"})
+    with pytest.raises(RuntimeError, match="rejected"):
+        processing.await_planning("/v1/work-initiations/job", initiation=True)
+
+
+def test_processing_progress_reports_durable_phases_during_long_waits(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
+    monkeypatch.setenv("STOVE0_SMOKE_COMPLETION_TIMEOUT", "300")
+    ticks = iter([0, 1, 2, 62, 63])
+    monkeypatch.setattr(
+        processing, "time", SimpleNamespace(monotonic=lambda: next(ticks), sleep=lambda _: None)
+    )
+    rows = iter(
+        [
+            {"work_id": "work", "phase": "output_finalizing"},
+            {"work_id": "work", "phase": "output_finalizing"},
+            {"work_id": "work", "phase": "output_finalizing"},
+            {"work_id": "work", "phase": "complete", "output": {"collection_id": "1"}},
+        ]
+    )
+    monkeypatch.setattr(processing, "stove", lambda _: {"work": [next(rows)]})
+    processing.wait()
+    progress = [json.loads(line) for line in capsys.readouterr().err.splitlines()]
+    assert len(progress) == 2
+    assert [row["elapsed_seconds"] for row in progress] == [1, 62]
+    assert all(row["work"][0]["phase"] == "output_finalizing" for row in progress)

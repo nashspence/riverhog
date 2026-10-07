@@ -26,11 +26,7 @@ from stove0_core.evaluation import (
 )
 from stove0_core.persistence import SqlAlchemyStateStore, stove0_state_schema
 from stove0_core.preview import PreviewRiverhogPort, WorkflowPreviewService
-from stove0_core.recipes import (
-    RecipeCatalog,
-    RecipeDefinition,
-    RecipePlanner,
-)
+from stove0_core.recipes import RecipePlanner
 from stove0_core.riverhog import RiverhogApi, Stove0RiverhogClient
 from stove0_core.runtime_config import (
     DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS,
@@ -90,8 +86,6 @@ __all__ = [
     "PreviewTargetExpectation",
     "RiverhogApi",
     "RiverhogControlPort",
-    "RecipeCatalog",
-    "RecipeDefinition",
     "RecipePlanner",
     "SqlAlchemyStateStore",
     "SchedulerRole",

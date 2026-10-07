@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 import tarfile
+import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -33,15 +35,163 @@ from review0_sampler_protocol import (
 from riverhog_protocol import canonical_json_sha256
 from stove0_target_support import (
     OutputArtifact,
+    TargetExecutionInapplicable,
     TargetHttpBinding,
     validate_preflight_response_against_request,
 )
 
-from tests.fixtures.stove0_media import media_preflight_request
+from tests.fixtures.stove0_media import media_preflight_request, sealed_media_job
 
 
 def _sha(character: str) -> str:
     return character * 64
+
+
+def test_actual_nvenc_payload_waits_for_a_component_owned_permit_and_releases_after_stop(
+    tmp_path: Path,
+    monkeypatch: Any,
+) -> None:
+    from a_stove0_nvenc_av1_opus_target import app as target_app
+    from fastapi.testclient import TestClient
+
+    probed, entered, released = (threading.Event() for _ in range(3))
+    allowed, activations, executions, withdrawn = set(), [], [], []
+    owners = []
+    active = []
+
+    class Permit:
+        def __init__(self, owner):
+            self.owner = owner
+
+        def activate(self, cancellation, *, deadline):
+            assert time.monotonic() < deadline and not cancellation.is_set()
+            active.append(self.owner)
+            activations.append(self.owner)
+
+        def release(self, *, deadline):
+            assert executions[-1] == self.owner.invocation_id
+            active.clear()
+            released.set()
+
+    class Admission:
+        def probe(self, owner, *, deadline):
+            assert time.monotonic() < deadline
+            owners.append(owner)
+            probed.set()
+            return Permit(owner) if owner.invocation_id in allowed else None
+
+        def withdraw(self, owner, *, deadline):
+            withdrawn.append(owner)
+
+    # The real component executor reaches its first native-tool boundary only
+    # after activation. This fixture stops there; GPU encoding is provider proof.
+    def tool_version(_command):
+        assert len(active) == 1
+        executions.append(active[0].invocation_id)
+        entered.set()
+        raise TargetExecutionInapplicable(
+            "fixture-stop", "The guarded native boundary was reached."
+        )
+
+    monkeypatch.setattr(nvenc_target, "tool_version", tool_version)
+    monkeypatch.setattr(
+        NvencAv1OpusTargetService,
+        "_validate_live_authority",
+        lambda _self, _request, *, deadline: None,
+    )
+    monkeypatch.setattr(
+        target_app.subprocess,
+        "run",
+        lambda *_args, **_kwargs: type(
+            "EncoderList", (), {"returncode": 0, "stdout": b"av1_nvenc"}
+        )(),
+    )
+
+    def service_at_state():
+        return NvencAv1OpusTargetService(
+            state_root=tmp_path / "state",
+            workspace_root=tmp_path / "workspace",
+            image_id="sha256:" + _sha("9"),
+            execution_admission=Admission(),
+        )
+
+    service = service_at_state()
+    intent = {
+        "codec": "av1",
+        "container": "mkv",
+        "quality": 23,
+        "audio_bitrate_kbps": 128,
+        "salvage": "safe-remux",
+    }
+    requests = tuple(
+        sealed_media_job(service, AV1_OPUS_ARCHIVE_OPERATION, {**intent, "quality": quality})
+        for quality in (23, 25, 27)
+    )
+    headers = {"Authorization": "Bearer fixture-target"}
+
+    def put(client, request):
+        before = time.monotonic()
+        response = client.put(
+            f"/v1/jobs/{request.declaration.job_id}",
+            json=request.model_dump(mode="json"),
+            headers=headers,
+        )
+        assert response.status_code == 200, response.text
+        assert time.monotonic() - before < 1
+        return response.json()
+
+    with TestClient(create_target_app(token="fixture-target", target=service)) as client:
+        for request in requests:
+            assert put(client, request)["state"] == "queued"
+        assert probed.wait(5)
+        assert not service._sessions and service._dispatch.payload_count == 0
+        assert not entered.is_set() and not tuple(service.workspace_root.iterdir())
+        assert client.get("/v1/target", headers=headers).status_code == 200
+        assert client.get("/health/live").status_code == 200
+        assert client.get("/health/ready").status_code == 200
+        preflight = media_preflight_request(AV1_OPUS_ARCHIVE_OPERATION, intent)
+        assert (
+            client.post(
+                "/v1/preflight", json=preflight.model_dump(mode="json"), headers=headers
+            ).status_code
+            == 200
+        )
+        with pytest.raises(SystemExit) as version:
+            target_app._parser().parse_args(["--version"])
+        assert version.value.code == 0 and not activations
+        allowed.add(requests[1].request_sha256)
+        assert entered.wait(5) and released.wait(5)
+        assert (
+            client.get(f"/v1/jobs/{requests[0].declaration.job_id}", headers=headers).json()[
+                "state"
+            ]
+            == "queued"
+        )
+    assert owners and all(owner in withdrawn for owner in set(owners))
+    old_owners = set(owners)
+    service = service_at_state()
+    entered.clear()
+    released.clear()
+    with TestClient(create_target_app(token="fixture-target", target=service)) as client:
+        for index in (0, 2):
+            assert service.get_job(requests[index].declaration.job_id).state == "queued"
+        assert not service._dispatch.payload_count and not service._sessions
+        for index in (0, 2):
+            assert put(client, requests[index])["attempt"] == 1
+        canceled = requests[2]
+        response = client.post(
+            f"/v1/jobs/{canceled.declaration.job_id}/cancel",
+            json=canceled.accepted().model_dump(mode="json"),
+            headers=headers,
+        )
+        assert response.status_code == 200 and response.json()["state"] == "canceled"
+        allowed.update((requests[0].request_sha256, canceled.request_sha256))
+        assert put(client, canceled)["state"] == "canceled"
+        assert entered.wait(5) and released.wait(5)
+        assert service.get_job(requests[0].declaration.job_id).state == "inapplicable"
+        assert not active
+    assert executions == [requests[1].request_sha256, requests[0].request_sha256]
+    assert all(owner not in old_owners for owner in activations[1:])
 
 
 def test_source_artifact_zstd_command_is_configurable(monkeypatch: Any) -> None:

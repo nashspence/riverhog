@@ -96,6 +96,7 @@ from stove0_operator_contracts import (
     AdmissionState,
     EvaluationPhase,
     EvaluationSort,
+    PlanningOwnerKind,
     WorkPhase,
     WorkSort,
 )
@@ -514,11 +515,14 @@ READ_COLLECTION_OPERATIONS = {
             "list_departure_effects",
             "list_evaluations",
             "list_work",
+            "list_observation_tasks",
         },
         "cursor-feed": {"list_events"},
         "exact-set-page": set(),
         "exact-authority-page": {
             "get_artifact_selection",
+            "get_observation_results",
+            "get_observation_view",
             "get_target_execution_inputs",
             "get_target_execution_outputs",
         },
@@ -639,6 +643,17 @@ PUBLIC_QUERY_SELECTORS = {
         "get_target_execution_inputs": {"continuation"},
         "get_target_execution_outputs": {"after_id", "production_sha256"},
         "get_recipe": {"revision"},
+        "list_observation_tasks": {"owner_kind", "owner_id", "page_size", "page_token"},
+        "get_observation_task": {"owner_kind", "owner_id"},
+        "get_observation_results": {
+            "owner_kind",
+            "owner_id",
+            "evidence_set_sha256",
+            "start_ordinal",
+            "limit",
+        },
+        "get_observation_result": {"owner_kind", "owner_id"},
+        "get_observation_view": {"owner_kind", "owner_id", "view_sha256", "start_ordinal", "limit"},
         "list_admissions": {
             "order",
             "page_size",
@@ -678,6 +693,11 @@ NAMED_ENUM_QUERY_SELECTOR_TYPES = {
     "SortOrder": SortOrder,
 }
 INLINE_ENUM_QUERY_SELECTOR_TYPES = {
+    ("stove0", "list_observation_tasks", "owner_kind"): PlanningOwnerKind,
+    ("stove0", "get_observation_task", "owner_kind"): PlanningOwnerKind,
+    ("stove0", "get_observation_results", "owner_kind"): PlanningOwnerKind,
+    ("stove0", "get_observation_result", "owner_kind"): PlanningOwnerKind,
+    ("stove0", "get_observation_view", "owner_kind"): PlanningOwnerKind,
     ("riverhog", "list_processing_claims", "state"): ClaimState,
     ("riverhog", "list_processing_claims", "sort"): ProcessingClaimSort,
     ("riverhog", "list_processing_claims", "order"): SortOrder,

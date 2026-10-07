@@ -11,15 +11,19 @@ from http_api_contracts import (
     parse_declared_error_payload,
     safe_http_base_url,
 )
+from http_api_contracts.control import check_control_budget, control_timeout, finite_control_seconds
+from http_api_contracts.metadata_contact import metadata_contact
+from http_api_contracts.metadata_exchange import NativeMetadataTransport
 from pydantic import BaseModel
 from stove0_observer_protocol import (
     OBSERVER_HTTP_OPERATIONS,
+    AcceptedObservationJob,
     ContentObservationInvocation,
-    ContentObservationResult,
+    ObservationJobStatus,
     ObserverDescriptor,
     SemanticValidatorProvider,
-    accept_observation_result,
     require_semantic_validators,
+    validate_observation_status,
 )
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
@@ -51,15 +55,16 @@ class ObserverProtocolError(RuntimeError):
 
 
 class ContentObserverClient:
-    """The complete v1 HTTP binding: descriptor plus synchronous observation."""
+    """Bounded observer acceptance, refresh, status and cancellation calls."""
 
     def __init__(
         self,
         base_url: str,
         *,
         token: str | None = None,
-        timeout: float | None = 300.0,
+        timeout: float = 5.0,
         allow_insecure_http: bool = False,
+        staged_metadata: bool = False,
         semantic_validators: SemanticValidatorProvider | None = None,
     ) -> None:
         self.base_url = safe_http_base_url(
@@ -67,7 +72,19 @@ class ContentObserverClient:
             setting="content observer base URL",
             allow_insecure_http=allow_insecure_http,
         )
-        self.timeout = timeout
+        self.timeout = finite_control_seconds(timeout)
+        self._metadata = (
+            NativeMetadataTransport(
+                wire=lambda method, path, model, payload=None: self._wire(
+                    method, path, model, payload=payload
+                ),
+                operations=OBSERVER_HTTP_OPERATIONS,
+                protocol_error=ObserverProtocolError,
+                timeout=self.timeout,
+            )
+            if staged_metadata
+            else None
+        )
         self.token = token.strip() if token and token.strip() else None
         self.semantic_validators = semantic_validators
 
@@ -82,33 +99,62 @@ class ContentObserverClient:
             ) from exc
         return descriptor
 
-    def observe(
+    def put_job(
         self,
         invocation: ContentObservationInvocation,
         *,
         descriptor: ObserverDescriptor,
-    ) -> ContentObservationResult:
-        result = self._request(
-            "POST",
-            "/v1/observe",
-            ContentObservationResult,
+    ) -> ObservationJobStatus:
+        status = self._request(
+            "PUT",
+            f"/v1/observations/{invocation.job_id}",
+            ObservationJobStatus,
             invocation,
         )
+        return self._validate_status(status, invocation.accepted(), descriptor)
+
+    def status(
+        self, accepted: AcceptedObservationJob, *, descriptor: ObserverDescriptor
+    ) -> ObservationJobStatus:
+        status = self._request("GET", f"/v1/observations/{accepted.job_id}", ObservationJobStatus)
+        return self._validate_status(status, accepted, descriptor)
+
+    def cancel(
+        self, accepted: AcceptedObservationJob, *, descriptor: ObserverDescriptor
+    ) -> ObservationJobStatus:
+        status = self._request(
+            "POST", f"/v1/observations/{accepted.job_id}/cancel", ObservationJobStatus, accepted
+        )
+        return self._validate_status(status, accepted, descriptor)
+
+    def _validate_status(
+        self,
+        status: ObservationJobStatus,
+        accepted: AcceptedObservationJob,
+        descriptor: ObserverDescriptor,
+    ) -> ObservationJobStatus:
         try:
-            accept_observation_result(
-                result,
-                invocation.request,
-                descriptor,
-                self.semantic_validators,
-            )
+            validate_observation_status(status, accepted, descriptor, self.semantic_validators)
         except (TypeError, ValueError) as exc:
             raise ObserverProtocolError(
                 "observer returned a response inconsistent with the invocation",
                 failure_kind="invalid_response",
             ) from exc
-        return result
+        return status
+
+    def close(self) -> None:
+        if self._metadata is not None:
+            self._metadata.close()
 
     def _request(
+        self, method: str, path: str, model: type[ModelT], payload: BaseModel | None = None
+    ) -> ModelT:
+        if self._metadata is not None:
+            return self._metadata.request(method, path, model, payload)
+        return self._wire(method, path, model, payload=payload)
+
+    @metadata_contact
+    def _wire(
         self,
         method: str,
         path: str,
@@ -119,7 +165,7 @@ class ContentObserverClient:
         if operation is None:
             raise ValueError("observer client request is absent from its HTTP contract")
         try:
-            with httpx.Client(timeout=self.timeout) as client:
+            with httpx.Client(timeout=control_timeout(self.timeout)) as client:
                 response = client.request(
                     method,
                     f"{self.base_url}{path}",
@@ -135,6 +181,7 @@ class ContentObserverClient:
                 f"observer request failed: {exc}",
                 failure_kind="transport",
             ) from exc
+        check_control_budget()
         if response.status_code >= 400:
             try:
                 code, message, details = parse_declared_error_payload(

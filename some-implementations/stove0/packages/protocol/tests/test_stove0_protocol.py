@@ -51,7 +51,6 @@ from stove0_protocol.models import (
     ContentObservationInapplicable,
     ContentObservationInvocation,
     ContentObservationRequest,
-    ContentObservationRequestPayload,
     ContentObservationResult,
     ContentObservationResultPayload,
     ObserverContract,
@@ -62,6 +61,8 @@ from stove0_protocol.models import (
     ObserverImplementation,
     ObserverRuntimeAuthority,
 )
+
+from tests.stove0_observation_fixtures import fixture_interface, observation_payload
 
 
 def test_json_schema_document_rejects_invalid_draft_2020_12_schema() -> None:
@@ -274,7 +275,11 @@ def _descriptor(contract: ObserverContract) -> ObserverDescriptor:
             implementation_version="1.2.3",
             source_revision="fixture-revision",
             image_id="sha256:" + _sha("9"),
-            contracts=(ObserverContractSupport.from_contract(contract),),
+            contracts=(
+                ObserverContractSupport.from_contract(
+                    contract, interfaces=(fixture_interface(contract).ref,)
+                ),
+            ),
         )
     )
 
@@ -303,7 +308,8 @@ def _request(
     descriptor: ObserverDescriptor,
 ) -> ContentObservationRequest:
     return ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=contract,
             work_id=work.work_id,
             observer_registration_id="fixture-observer",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -685,6 +691,7 @@ def test_observer_batch_preference_and_large_evaluation_are_supported() -> None:
     support = ObserverContractSupport.from_contract(
         contract,
         preferred_subject_batch_size=10_001,
+        interfaces=(fixture_interface(contract).ref,),
     )
     assert support.preferred_subject_batch_size == 10_001
     assert len(matrix.variants) == 257

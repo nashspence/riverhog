@@ -4,16 +4,17 @@ from __future__ import annotations
 
 import hashlib
 import importlib.metadata
-import subprocess
 from pathlib import Path
 from typing import cast
 
 from a_stove0_magic_facts_contract_lib import (
+    MAGIC_INTERFACE,
     MAGIC_OBSERVER_CONTRACT,
     validate_magic_facts,
 )
 from a_stove0_magic_facts_contract_lib.contracts import MagicOptions
 from pydantic import JsonValue
+from stove0_extension_support import subprocess
 from stove0_observer_protocol import (
     ContentObservationRequest,
     ContentObservationResult,
@@ -107,7 +108,9 @@ class MagicObserver:
                 image_id=image_id,
                 contracts=(
                     ObserverContractSupport.from_contract(
-                        MAGIC_OBSERVER_CONTRACT, preferred_subject_batch_size=1
+                        MAGIC_OBSERVER_CONTRACT,
+                        interfaces=(MAGIC_INTERFACE.ref,),
+                        preferred_subject_batch_size=1,
                     ),
                 ),
             )

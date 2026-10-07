@@ -37,6 +37,8 @@ from stove0_protocol.models import (
     WorkIdentity,
     WorkPayload,
 )
+from stove0_protocol.no_output_decisions import CompiledNoOutputDecision
+from stove0_protocol.selection_refs import ArtifactSelectionRef
 
 ARTIFACT_SELECTION_FORMAT: Literal["stove0-artifact-selection/v1"] = "stove0-artifact-selection/v1"
 ARTIFACT_SELECTION_PAGE_MAX = 256
@@ -72,7 +74,7 @@ JoinEvaluationState = Literal[
 
 
 def _without_digest(model: Stove0ProtocolModel, field: str) -> dict[str, Any]:
-    return model.model_dump(mode="json", by_alias=True, exclude={field}, exclude_none=True)
+    return model.model_dump(mode="json", by_alias=True, exclude={field})
 
 
 def _root_key(root: CollectionRootIdentityRef) -> tuple[int, str, str]:
@@ -103,7 +105,7 @@ def update_artifact_selection_commitment(
 
     if isinstance(ordinal, bool) or ordinal < 0:
         raise ValueError("artifact-selection ordinal must be nonnegative")
-    encoded = canonical_json_bytes(artifact.model_dump(mode="json", exclude_none=True))
+    encoded = canonical_json_bytes(artifact.model_dump(mode="json"))
     digest.update(b"stove0-artifact-selection/v1\x00")
     digest.update(str(ordinal).encode("ascii"))
     digest.update(b"\x00")
@@ -115,8 +117,8 @@ class ArtifactSelection(Stove0ProtocolModel):
     """One exact, content-addressed selection of immutable artifacts."""
 
     format: Literal["stove0-artifact-selection/v1"] = ARTIFACT_SELECTION_FORMAT
-    artifacts: tuple[WorkArtifactSubject, ...] = Field(min_length=1)
-    artifact_count: int = Field(ge=1)
+    artifacts: tuple[WorkArtifactSubject, ...]
+    artifact_count: int = Field(ge=0)
     total_bytes: NonnegativeDecimal = Field(ge=0)
     selection_sha256: Sha256
 
@@ -184,19 +186,7 @@ class ArtifactSelection(Stove0ProtocolModel):
         return tuple(values[key] for key in sorted(values))
 
     def canonical_bytes(self) -> bytes:
-        return canonical_json_bytes(self.model_dump(mode="json", exclude_none=True))
-
-
-class ArtifactSelectionRef(Stove0ProtocolModel):
-    """Closed reference to a separately retained selection document."""
-
-    selection_sha256: Sha256
-    artifact_count: int = Field(ge=1)
-    total_bytes: NonnegativeDecimal = Field(ge=0)
-
-    @classmethod
-    def from_selection(cls, selection: ArtifactSelection) -> ArtifactSelectionRef:
-        return selection.ref()
+        return canonical_json_bytes(self.model_dump(mode="json"))
 
 
 class ArtifactSelectionPage(Stove0ProtocolModel):
@@ -257,6 +247,8 @@ class BranchPlan(Stove0ProtocolModel):
 
     @model_validator(mode="after")
     def bind_child_work(self) -> Self:
+        if self.artifact_selection.artifact_count == 0:
+            raise ValueError("branch work requires a nonempty exact member selection")
         if self.workflow_plan.source_collection_retirement_policy != "retain":
             raise ValueError("branch workflow plans must retain their source collections")
         binding = self.workflow_plan.work.fork_join
@@ -317,6 +309,8 @@ class CoordinationBranchPlan(Stove0ProtocolModel):
 
     @model_validator(mode="after")
     def bind_child_work(self) -> Self:
+        if self.artifact_selection.artifact_count == 0:
+            raise ValueError("child recipe requires a nonempty exact member selection")
         binding = self.work.fork_join
         if not isinstance(binding, BranchWorkBinding):
             raise ValueError("coordination branch work requires an explicit branch binding")
@@ -392,6 +386,7 @@ class NoOutputBranchPlan(Stove0ProtocolModel):
     work: WorkIdentity
     observations: tuple[ContentObservationEvidence, ...]
     outcome: PreviewOutcome
+    decision: CompiledNoOutputDecision
     decision_sha256: Sha256
 
     @model_validator(mode="after")
@@ -404,6 +399,15 @@ class NoOutputBranchPlan(Stove0ProtocolModel):
             or binding.artifact_selection_sha256 != self.artifact_selection.selection_sha256
         ):
             raise ValueError("no-output branch differs from its child work binding")
+        if (
+            self.decision.work_id != self.work.work_id
+            or self.decision.recipe != self.work.recipe
+            or self.decision.inventory != self.artifact_selection
+            or self.outcome.code != self.decision.definition.code
+            or self.outcome.message != self.decision.definition.message
+            or self.outcome.retryable is not None
+        ):
+            raise ValueError("no-output branch changed its exact indexed compiled decision")
         if tuple(item.request.request_id for item in self.observations) != tuple(
             sorted({item.request.request_id for item in self.observations})
         ):
@@ -420,18 +424,21 @@ class NoOutputBranchPlan(Stove0ProtocolModel):
         selection: ArtifactSelection,
         work: WorkIdentity,
         observations: Sequence[ContentObservationEvidence],
-        outcome: PreviewOutcome,
+        decision: CompiledNoOutputDecision,
     ) -> NoOutputBranchPlan:
         payload = {
             "kind": "no-output",
             "branch_id": branch_id,
             "artifact_selection": selection.ref().model_dump(mode="json"),
-            "work": work.model_dump(mode="json", by_alias=True, exclude_none=True),
+            "work": work.model_dump(mode="json", by_alias=True),
             "observations": [
-                item.model_dump(mode="json", by_alias=True, exclude_none=True)
+                item.model_dump(mode="json", by_alias=True)
                 for item in sorted(observations, key=lambda item: item.request.request_id)
             ],
-            "outcome": outcome.model_dump(mode="json", exclude_none=True),
+            "outcome": PreviewOutcome(
+                code=decision.definition.code, message=decision.definition.message
+            ).model_dump(mode="json"),
+            "decision": decision.model_dump(mode="json", by_alias=True),
         }
         return cls.model_validate({**payload, "decision_sha256": canonical_json_sha256(payload)})
 
@@ -450,14 +457,27 @@ def branch_result_kind(
     branch: BranchDeclaration,
     branch_sets: Mapping[str, BranchSetPlan],
 ) -> Literal["collection", "external-effect", "no-output", "coordination"]:
-    if isinstance(branch, BranchPlan):
-        return branch.workflow_plan.result_kind
-    if isinstance(branch, NoOutputBranchPlan):
-        return "no-output"
-    child = branch_sets.get(branch.branch_set_sha256)
-    if child is None:
-        raise ValueError(f"child branch-set document is unavailable: {branch.branch_set_sha256}")
-    return "collection" if child.join is not None else "coordination"
+    seen = set()
+    while True:
+        if isinstance(branch, BranchPlan):
+            return branch.workflow_plan.result_kind
+        if isinstance(branch, NoOutputBranchPlan):
+            return "no-output"
+        if branch.branch_set_sha256 in seen:
+            raise ValueError("collection export contains a coordination cycle")
+        seen.add(branch.branch_set_sha256)
+        child = branch_sets.get(branch.branch_set_sha256)
+        if child is None:
+            raise ValueError(
+                f"child branch-set document is unavailable: {branch.branch_set_sha256}"
+            )
+        # Internal outputs are settled independently of explicit exposure.
+        if child.export == "join":
+            return "collection"
+        if isinstance(child.export, BranchCollectionExport):
+            branch = next(item for item in child.branches if item.branch_id == child.export.branch)
+            continue
+        return "coordination"
 
 
 class JoinMemberDeclaration(Stove0ProtocolModel):
@@ -520,11 +540,15 @@ class JoinDeclaration(Stove0ProtocolModel):
             "members": [item.model_dump(mode="json") for item in ordered],
             "recipe": recipe.model_dump(mode="json"),
             "effective_intent": dict(effective_intent),
-            "workflow_intent": workflow_intent.model_dump(mode="json", exclude_none=True),
+            "workflow_intent": workflow_intent.model_dump(mode="json"),
         }
         return cls.model_validate(
             {**payload, "join_declaration_sha256": canonical_json_sha256(payload)}
         )
+
+
+class BranchCollectionExport(Stove0ProtocolModel):
+    branch: SemanticId
 
 
 class BranchSetPlan(Stove0ProtocolModel):
@@ -536,6 +560,7 @@ class BranchSetPlan(Stove0ProtocolModel):
     evidence_sha256s: tuple[Sha256, ...] = ()
     branches: tuple[BranchDeclaration, ...] = Field(min_length=1)
     join: JoinDeclaration | None = None
+    export: Literal["join"] | BranchCollectionExport | None = None
     source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain"
     source_collection_retirement_grace_seconds: int = Field(default=0, ge=0)
     branch_set_sha256: Sha256
@@ -594,6 +619,19 @@ class BranchSetPlan(Stove0ProtocolModel):
                     "external-effect branches cannot be declared as join members: "
                     + ", ".join(effects)
                 )
+        if self.export == "join" and self.join is None:
+            raise ValueError("collection export names an undeclared join")
+        if isinstance(self.export, BranchCollectionExport):
+            selected = next(
+                (item for item in self.branches if item.branch_id == self.export.branch), None
+            )
+            if selected is None:
+                raise ValueError("collection export names an unselected branch")
+            if isinstance(selected, NoOutputBranchPlan) or (
+                isinstance(selected, BranchPlan)
+                and selected.workflow_plan.result_kind != "collection"
+            ):
+                raise ValueError("collection export requires an exact collection-producing branch")
         if (
             self.parent_work.evaluation is not None
             and self.source_collection_retirement_policy != "retain"
@@ -618,6 +656,7 @@ class BranchSetPlan(Stove0ProtocolModel):
         evidence_sha256s: Sequence[str] = (),
         branches: Sequence[BranchDeclaration],
         join: JoinDeclaration | None = None,
+        export: Literal["join"] | BranchCollectionExport | None = None,
         source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
         source_collection_retirement_grace_seconds: int = 0,
         selections: SelectionDocuments,
@@ -626,26 +665,29 @@ class BranchSetPlan(Stove0ProtocolModel):
         ordered_branches = tuple(sorted(tuple(branches), key=lambda item: item.branch_id))
         payload = {
             "format": BRANCH_SET_FORMAT,
-            "parent_work": parent_work.model_dump(mode="json", by_alias=True, exclude_none=True),
+            "parent_work": parent_work.model_dump(mode="json", by_alias=True),
             "decision_sha256": decision_sha256,
             "evidence_sha256s": sorted(set(evidence_sha256s)),
-            "branches": [
-                item.model_dump(mode="json", by_alias=True, exclude_none=True)
-                for item in ordered_branches
-            ],
+            "branches": [item.model_dump(mode="json", by_alias=True) for item in ordered_branches],
+            "join": None,
+            "export": None,
             "source_collection_retirement_policy": source_collection_retirement_policy,
             "source_collection_retirement_grace_seconds": (
                 source_collection_retirement_grace_seconds
             ),
         }
         if join is not None:
-            payload["join"] = join.model_dump(mode="json", by_alias=True, exclude_none=True)
+            payload["join"] = join.model_dump(mode="json", by_alias=True)
+        if export is not None:
+            payload["export"] = (
+                export if isinstance(export, str) else export.model_dump(mode="json")
+            )
         plan = cls.model_validate({**payload, "branch_set_sha256": canonical_json_sha256(payload)})
         validate_branch_set_plan(plan, selections, branch_sets)
         return plan
 
     def canonical_bytes(self) -> bytes:
-        return canonical_json_bytes(self.model_dump(mode="json", exclude_none=True))
+        return canonical_json_bytes(self.model_dump(mode="json"))
 
 
 class BranchSetDecision(Stove0ProtocolModel):
@@ -944,10 +986,10 @@ class JoinPlan(Stove0ProtocolModel):
             "format": JOIN_PLAN_FORMAT,
             "parent_work_id": parent_work_id,
             "branch_set_sha256": branch_set_sha256,
-            "declaration": declaration.model_dump(mode="json", exclude_none=True),
-            "inputs": [item.model_dump(mode="json", exclude_none=True) for item in ordered],
-            "work": work.model_dump(mode="json", exclude_none=True),
-            "workflow_plan": workflow_plan.model_dump(mode="json", exclude_none=True),
+            "declaration": declaration.model_dump(mode="json"),
+            "inputs": [item.model_dump(mode="json") for item in ordered],
+            "work": work.model_dump(mode="json"),
+            "workflow_plan": workflow_plan.model_dump(mode="json"),
         }
         return cls.model_validate({**payload, "join_plan_sha256": canonical_json_sha256(payload)})
 
@@ -1004,10 +1046,10 @@ class CoordinationChildSettlementRef(Stove0ProtocolModel):
 
 
 class CoordinationCollectionResult(Stove0ProtocolModel):
-    """Parent-visible collection produced by the coordinator's actual join leaf."""
+    """One explicitly exported existing collection and its exact producer settlement."""
 
     producer_work_id: Sha256
-    join_settlement_sha256: Sha256
+    producer_settlement_sha256: Sha256
     derivation_sha256: Sha256
     output_collection: CollectionRootIdentityRef
     output_selection: ArtifactSelectionRef
@@ -1039,15 +1081,6 @@ class CoordinationSettlement(Stove0ProtocolModel):
     def verify_contract(self) -> Self:
         if isinstance(self.work.fork_join, JoinWorkBinding):
             raise ValueError("join work cannot produce a coordination settlement")
-        if (self.final_join_settlement_sha256 is None) != (self.collection_result is None):
-            raise ValueError(
-                "coordination join identity and collection result must appear together"
-            )
-        if (
-            self.collection_result is not None
-            and self.collection_result.join_settlement_sha256 != self.final_join_settlement_sha256
-        ):
-            raise ValueError("coordination collection result differs from its final join")
         expected = canonical_json_sha256(_without_digest(self, "settlement_sha256"))
         if expected != self.settlement_sha256:
             raise ValueError("coordination settlement digest does not match its canonical payload")
@@ -1108,26 +1141,55 @@ class CoordinationSettlement(Stove0ProtocolModel):
             raise ValueError("coordination settlement does not contain every exact child")
         if (plan.join is None) != (join_settlement is None):
             raise ValueError("coordination settlement differs from its declared final join")
-        collection_result = (
-            CoordinationCollectionResult(
+        collection_result = None
+        if plan.export == "join":
+            if join_settlement is None:
+                raise ValueError("declared join export has no exact successful producer")
+            collection_result = CoordinationCollectionResult(
                 producer_work_id=join_settlement.work_id,
-                join_settlement_sha256=join_settlement.settlement_sha256,
+                producer_settlement_sha256=join_settlement.producer_settlement_sha256,
                 derivation_sha256=join_settlement.derivation_sha256,
                 output_collection=join_settlement.output_collection,
                 output_selection=join_settlement.output_selection,
             )
-            if join_settlement is not None
-            else None
-        )
+        elif isinstance(plan.export, BranchCollectionExport):
+            exported = next(
+                (item for item in collection_settlements if item.branch_id == plan.export.branch),
+                None,
+            )
+            if exported is not None:
+                collection_result = CoordinationCollectionResult(
+                    producer_work_id=exported.work_id,
+                    producer_settlement_sha256=exported.producer_settlement_sha256,
+                    derivation_sha256=exported.derivation_sha256,
+                    output_collection=exported.output_collection,
+                    output_selection=exported.output_selection,
+                )
+            else:
+                nested = next(
+                    (
+                        item
+                        for item in coordination_settlements
+                        if isinstance(item.work.fork_join, BranchWorkBinding)
+                        and item.work.fork_join.branch_id == plan.export.branch
+                    ),
+                    None,
+                )
+                if nested is None or nested.collection_result is None:
+                    raise ValueError("declared branch export has no exact collection result")
+                collection_result = nested.collection_result
         payload = {
             "format": COORDINATION_SETTLEMENT_FORMAT,
-            "work": plan.parent_work.model_dump(mode="json", exclude_none=True),
+            "work": plan.parent_work.model_dump(mode="json"),
             "branch_set_sha256": plan.branch_set_sha256,
             "children": [item.model_dump(mode="json") for item in ordered],
             "contains_external_effects": bool(effect_settlements) or nested_effects,
+            "final_join_settlement_sha256": None,
+            "collection_result": None,
         }
-        if join_settlement is not None and collection_result is not None:
+        if join_settlement is not None:
             payload["final_join_settlement_sha256"] = join_settlement.settlement_sha256
+        if collection_result is not None:
             payload["collection_result"] = collection_result.model_dump(mode="json")
         return cls.model_validate({**payload, "settlement_sha256": canonical_json_sha256(payload)})
 
@@ -1188,6 +1250,7 @@ class WorkflowPreviewPayload(Stove0ProtocolModel):
     selections: tuple[ArtifactSelection, ...] = ()
     target_plans: tuple[BranchTargetPreview, ...] = ()
     outcome: PreviewOutcome | None = None
+    no_output_decision: CompiledNoOutputDecision | None = None
     warnings: tuple[str, ...] = ()
 
     @field_validator("observations")
@@ -1239,17 +1302,33 @@ class WorkflowPreviewPayload(Stove0ProtocolModel):
 
     @model_validator(mode="after")
     def validate_state(self) -> Self:
+        decision = self.no_output_decision
+        if self.state == "no_action":
+            if (
+                decision is None
+                or decision.work_id != self.work.work_id
+                or decision.recipe != self.work.recipe
+                or self.outcome is None
+                or self.outcome.code != decision.definition.code
+                or self.outcome.message != decision.definition.message
+                or self.outcome.retryable is not None
+            ):
+                raise ValueError("no-output preview requires its exact indexed decision evidence")
+        elif decision is not None:
+            raise ValueError("only a no-output preview can carry a no-output decision")
         if self.state == "ready":
             if self.branch_set_plan is None or self.outcome is not None:
                 raise ValueError("ready preview requires a branch-set plan and no outcome")
             if self.branch_set_plan.parent_work != self.work:
                 raise ValueError("preview branch-set plan differs from the requested work")
-            decision = BranchSetDecision(
+            branch_decision = BranchSetDecision(
                 plan=self.branch_set_plan,
                 selections=self.selections,
                 branch_sets=self.branch_sets,
             )
-            branches = {item.workflow_plan.work.work_id: item for item in decision.leaf_branches()}
+            branches = {
+                item.workflow_plan.work.work_id: item for item in branch_decision.leaf_branches()
+            }
             if set(branches) != {item.work_id for item in self.target_plans}:
                 raise ValueError("ready preview requires one target plan for every branch")
             for target in self.target_plans:
@@ -1289,7 +1368,7 @@ class WorkflowPreview(WorkflowPreviewPayload):
 
     @classmethod
     def seal(cls, payload: WorkflowPreviewPayload) -> WorkflowPreview:
-        document = payload.model_dump(mode="json", by_alias=True, exclude_none=True)
+        document = payload.model_dump(mode="json", by_alias=True)
         return cls(**document, preview_sha256=canonical_json_sha256(document))
 
 
@@ -1336,6 +1415,10 @@ def validate_branch_set_plan(
             raise ValueError(
                 "join members require an exact collection result: " + ", ".join(invalid)
             )
+    if isinstance(plan.export, BranchCollectionExport):
+        branch = next(item for item in plan.branches if item.branch_id == plan.export.branch)
+        if branch_result_kind(branch, branch_sets) != "collection":
+            raise ValueError("collection export requires an exact collection-producing branch")
 
 
 def _validate_branch_set_tree(
@@ -1619,7 +1702,7 @@ def resolve_join_plan(
             if result is None:
                 raise ValueError(f"coordination branch {member.branch_id} has no collection result")
             settlement_sha256 = coordination.settlement_sha256
-            producer_settlement_sha256 = result.join_settlement_sha256
+            producer_settlement_sha256 = result.producer_settlement_sha256
             derivation_sha256 = result.derivation_sha256
             output_collection = result.output_collection
             output_selection = result.output_selection

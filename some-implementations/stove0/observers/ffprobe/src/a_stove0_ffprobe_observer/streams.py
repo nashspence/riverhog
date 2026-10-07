@@ -6,11 +6,11 @@ import hashlib
 import os
 import selectors
 import shutil
-import subprocess
 import time
 from pathlib import Path
 
 from a_stove0_ffprobe_streams_contract_lib import MAX_REPORT_BYTES
+from stove0_extension_support import subprocess
 
 _MAX_STDERR_BYTES = 64 * 1024
 

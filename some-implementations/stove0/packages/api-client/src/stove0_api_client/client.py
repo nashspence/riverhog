@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import os
+import secrets
 from collections.abc import Mapping, Sequence
 from typing import Any, Self
 from urllib.parse import quote
@@ -17,6 +18,7 @@ from http_api_contracts import (
     parse_operation_error_payload,
     safe_http_base_url,
 )
+from stove0_observer_protocol import ContentObservationEvidence
 from stove0_operator_contracts import (
     STOVE0_HTTP_ERROR_AUTHORITY,
     AdmissionPage,
@@ -34,7 +36,10 @@ from stove0_operator_contracts import (
     EvaluationReviewRequest,
     EvaluationSort,
     EvaluationView,
+    ObservationTaskDetail,
+    ObservationTaskPage,
     OperatorWorkflowPreviewRequest,
+    PlanningOwnerKind,
     RecipeCatalogView,
     RecipeView,
     SchedulerRole,
@@ -44,6 +49,7 @@ from stove0_operator_contracts import (
     SortOrder,
     Stove0EventPage,
     WorkCreateRequest,
+    WorkInitiationStatus,
     WorkPage,
     WorkPhase,
     WorkSort,
@@ -54,9 +60,11 @@ from stove0_protocol import (
     BranchSetEvaluation,
     CollectionRootIdentityRef,
     EvaluationDefinition,
-    WorkflowPreview,
+    PlanningJobStatus,
 )
+from stove0_protocol.observation_evidence import AcceptedEvidencePage, AcceptedViewPage
 
+_PLANNING_OWNER_KINDS = closed_literal_values(PlanningOwnerKind)
 _SORT_ORDERS = closed_literal_values(SortOrder)
 _WORK_SORTS = closed_literal_values(WorkSort)
 _WORK_PHASES = closed_literal_values(WorkPhase)
@@ -299,22 +307,33 @@ class Stove0ApiClient:
         preview_sha256: str,
         recipe_revision: int | None = None,
         effective_intent: Mapping[str, Any] | None = None,
-    ) -> WorkView:
+        invocation_id: str | None = None,
+    ) -> WorkInitiationStatus:
         request = WorkCreateRequest.model_validate(
             dict(
                 recipe_id=recipe_id,
+                invocation_id=invocation_id or secrets.token_hex(32),
                 preview_sha256=preview_sha256,
                 recipe_revision=None if recipe_revision is None else str(recipe_revision),
                 inputs=tuple(inputs),
                 effective_intent=dict(effective_intent or {}),
             )
         )
-        return WorkView.model_validate(
+        return WorkInitiationStatus.model_validate(
             self._json(
                 "create_work",
                 "POST",
                 "/v1/work",
                 json=request.model_dump(mode="json", exclude_none=True),
+            )
+        )
+
+    def get_work_initiation(self, job_id: str) -> WorkInitiationStatus:
+        return WorkInitiationStatus.model_validate(
+            self._json(
+                "get_work_initiation",
+                "GET",
+                f"/v1/work-initiations/{quote(job_id, safe='')}",
             )
         )
 
@@ -329,6 +348,118 @@ class Stove0ApiClient:
                 "inspect_work_coordination",
                 "GET",
                 f"/v1/work/{quote(work_id, safe='')}/coordination",
+            )
+        )
+
+    def list_observation_tasks(
+        self,
+        *,
+        owner_kind: PlanningOwnerKind,
+        owner_id: str,
+        page_size: int = 25,
+        page_token: str | None = None,
+    ) -> ObservationTaskPage:
+        return ObservationTaskPage.model_validate(
+            self._json(
+                "list_observation_tasks",
+                "GET",
+                "/v1/observation-tasks",
+                params=_params(
+                    owner_kind=_one_of(owner_kind, _PLANNING_OWNER_KINDS, "owner_kind"),
+                    owner_id=owner_id,
+                    page_size=page_size,
+                    page_token=page_token,
+                ),
+            )
+        )
+
+    def get_observation_task(
+        self,
+        task_work_id: str,
+        task_id: str,
+        *,
+        owner_kind: PlanningOwnerKind,
+        owner_id: str,
+    ) -> ObservationTaskDetail:
+        return ObservationTaskDetail.model_validate(
+            self._json(
+                "get_observation_task",
+                "GET",
+                f"/v1/observation-tasks/{quote(task_work_id, safe='')}/{quote(task_id, safe='')}",
+                params=_params(
+                    owner_kind=_one_of(owner_kind, _PLANNING_OWNER_KINDS, "owner_kind"),
+                    owner_id=owner_id,
+                ),
+            )
+        )
+
+    def get_observation_results(
+        self,
+        task_work_id: str,
+        task_id: str,
+        *,
+        owner_kind: PlanningOwnerKind,
+        owner_id: str,
+        evidence_set_sha256: str,
+        start_ordinal: int = 0,
+        limit: int = 100,
+    ) -> AcceptedEvidencePage:
+        return AcceptedEvidencePage.model_validate(
+            self._json(
+                "get_observation_results",
+                "GET",
+                f"/v1/observation-tasks/{quote(task_work_id, safe='')}/"
+                f"{quote(task_id, safe='')}/results",
+                params=_params(
+                    owner_kind=_one_of(owner_kind, _PLANNING_OWNER_KINDS, "owner_kind"),
+                    owner_id=owner_id,
+                    evidence_set_sha256=evidence_set_sha256,
+                    start_ordinal=str(start_ordinal),
+                    limit=limit,
+                ),
+            )
+        )
+
+    def get_observation_result(
+        self, request_id: str, *, owner_kind: PlanningOwnerKind, owner_id: str
+    ) -> ContentObservationEvidence:
+        return ContentObservationEvidence.model_validate(
+            self._json(
+                "get_observation_result",
+                "GET",
+                f"/v1/observation-results/{quote(request_id, safe='')}",
+                params=_params(
+                    owner_kind=_one_of(owner_kind, _PLANNING_OWNER_KINDS, "owner_kind"),
+                    owner_id=owner_id,
+                ),
+            )
+        )
+
+    def get_observation_view(
+        self,
+        task_work_id: str,
+        task_id: str,
+        view_id: str,
+        *,
+        owner_kind: PlanningOwnerKind,
+        owner_id: str,
+        view_sha256: str,
+        start_ordinal: int = 0,
+        limit: int = 100,
+    ) -> AcceptedViewPage:
+        return AcceptedViewPage.model_validate(
+            self._json(
+                "get_observation_view",
+                "GET",
+                f"/v1/observation-tasks/{quote(task_work_id, safe='')}/"
+                f"{quote(task_id, safe='')}/views/{quote(view_id, safe='')}",
+                params=_params(
+                    owner_kind=_one_of(owner_kind, _PLANNING_OWNER_KINDS, "owner_kind"),
+                    owner_id=owner_id,
+                    view_sha256=view_sha256,
+                    start_ordinal=str(start_ordinal),
+                    limit=limit,
+                ),
             )
         )
 
@@ -369,21 +500,41 @@ class Stove0ApiClient:
         *,
         recipe_revision: int | None = None,
         effective_intent: Mapping[str, Any] | None = None,
-    ) -> WorkflowPreview:
+        invocation_id: str | None = None,
+    ) -> PlanningJobStatus:
         request = OperatorWorkflowPreviewRequest.model_validate(
             dict(
                 recipe_id=recipe_id,
+                invocation_id=invocation_id or secrets.token_hex(32),
                 recipe_revision=None if recipe_revision is None else str(recipe_revision),
                 inputs=tuple(inputs),
                 effective_intent=dict(effective_intent or {}),
             )
         )
-        return WorkflowPreview.model_validate(
+        return PlanningJobStatus.model_validate(
             self._json(
                 "preview_workflow",
                 "POST",
                 "/v1/workflow-previews",
                 json=request.model_dump(mode="json", exclude_none=True),
+            )
+        )
+
+    def get_workflow_preview(self, job_id: str) -> PlanningJobStatus:
+        return PlanningJobStatus.model_validate(
+            self._json(
+                "get_workflow_preview",
+                "GET",
+                f"/v1/workflow-previews/{quote(job_id, safe='')}",
+            )
+        )
+
+    def cancel_workflow_preview(self, job_id: str) -> PlanningJobStatus:
+        return PlanningJobStatus.model_validate(
+            self._json(
+                "cancel_workflow_preview",
+                "POST",
+                f"/v1/workflow-previews/{quote(job_id, safe='')}/cancel",
             )
         )
 

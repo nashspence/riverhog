@@ -1,6 +1,7 @@
 """Exact public media evidence fixtures shared by maintained target tests."""
 
 from a_stove0_materialization_hint_evidence_contract_lib import (
+    MATERIALIZATION_HINT_INTERFACE,
     MATERIALIZATION_HINT_OBSERVER_CONTRACT,
 )
 from a_stove0_media_archive_contract_lib import (
@@ -9,6 +10,7 @@ from a_stove0_media_archive_contract_lib import (
 )
 from a_stove0_media_metadata_contract_lib import (
     MEDIA_METADATA_FACTS_SCHEMA,
+    MEDIA_METADATA_INTERFACE,
     MEDIA_METADATA_OBSERVER_CONTRACT,
     MediaArtifactFacts,
     MediaFactEvidence,
@@ -30,6 +32,7 @@ from stove0_protocol import (
     WorkInputGroup,
     canonical_json_sha256,
 )
+from stove0_protocol.observation_evidence import ObservationQuestion, ObservationQuestionPayload
 from stove0_target_protocol import (
     InputArtifact,
     OperationContract,
@@ -89,8 +92,14 @@ def media_preflight_request(
         subject.model_copy(update={"role": item.role})
         for subject, item in zip(subjects, inputs, strict=True)
     )
+    metadata_question = fixture_observation_question(
+        "metadata", MEDIA_METADATA_OBSERVER_CONTRACT, MEDIA_METADATA_INTERFACE, subjects
+    )
     request = ContentObservationRequest.seal(
         ContentObservationRequestPayload(
+            task_id=metadata_question.task_id,
+            question_sha256=metadata_question.question_sha256,
+            interface=metadata_question.interface,
             work_id=sha("5"),
             observer_registration_id="exiftool",
             observer_descriptor_sha256=sha("6"),
@@ -149,8 +158,14 @@ def media_preflight_request(
             facts_sha256=canonical_json_sha256(facts),
         )
     )
+    hint_question = fixture_observation_question(
+        "hints", MATERIALIZATION_HINT_OBSERVER_CONTRACT, MATERIALIZATION_HINT_INTERFACE, subjects
+    )
     hint_request = ContentObservationRequest.seal(
         ContentObservationRequestPayload(
+            task_id=hint_question.task_id,
+            question_sha256=hint_question.question_sha256,
+            interface=hint_question.interface,
             work_id=sha("5"),
             observer_registration_id="canonical-hint",
             observer_descriptor_sha256=sha("9"),
@@ -229,6 +244,21 @@ def media_preflight_request(
         intent=intent,
         target_options=dict(target_options or {}),
         observations=evidence,
+    )
+
+
+def fixture_observation_question(task_id, contract, interface, subjects):
+    selection = ArtifactSelection.seal(subjects)
+    return ObservationQuestion.seal(
+        ObservationQuestionPayload(
+            work_id=sha("5"),
+            task_id=task_id,
+            observer_contract=interface.observer_contract,
+            interface=interface.ref,
+            scope=selection.ref(),
+            subject_ports={"subjects": selection.ref()},
+            read_actions=contract.read_actions,
+        )
     )
 
 

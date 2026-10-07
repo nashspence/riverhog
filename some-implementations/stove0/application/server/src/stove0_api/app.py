@@ -10,7 +10,7 @@ import secrets
 import signal
 import sys
 import threading
-from collections.abc import AsyncIterator, Sequence
+from collections.abc import AsyncIterator, Callable, Sequence
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from typing import Annotated, cast
@@ -31,8 +31,10 @@ from http_api_contracts import (
     operation_interface,
 )
 from http_api_contracts.browse import BrowseTokenCodec, BrowseTokenError
+from http_api_contracts.metadata_exchange import MetadataPreparationPending
 from pydantic import TypeAdapter, ValidationError
 from riverhog_client import ApiClient
+from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from sqlalchemy import text
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from state_schema import StateSchemaError, StateStatus
@@ -46,7 +48,6 @@ from stove0_core import (
     HttpDepartureTargetPort,
     HttpObserverPort,
     HttpTargetPort,
-    RecipeCatalog,
     RecipePlanner,
     SchedulerRole,
     SqlAlchemyStateStore,
@@ -63,7 +64,11 @@ from stove0_core import (
     scheduler_role,
     stove0_state_schema,
 )
+from stove0_core.control_http import ControlApiClient
+from stove0_core.metadata_steps import MetadataSteps
+from stove0_core.planning_inspection import PlanningInspection
 from stove0_observer_client import ContentObserverClient, load_semantic_validator_registry
+from stove0_observer_protocol import ContentObservationEvidence
 from stove0_operator_contracts import (
     STOVE0_HTTP_ERROR_AUTHORITY,
     AdmissionPage,
@@ -80,12 +85,16 @@ from stove0_operator_contracts import (
     EvaluationPhase,
     EvaluationSort,
     EvaluationView,
+    ObservationTaskDetail,
+    ObservationTaskPage,
+    PlanningOwnerKind,
     RecipeCatalogView,
     RecipeView,
     SchedulerRun,
     SchedulerStatus,
     SortOrder,
     Stove0EventPage,
+    WorkInitiationStatus,
     WorkPage,
     WorkPhase,
     WorkSort,
@@ -96,9 +105,13 @@ from stove0_protocol import (
     ArtifactSelectionPage,
     BranchSetEvaluation,
     EvaluationDefinition,
-    WorkflowPreview,
+    PlanningJobStatus,
+    Sha256,
     WorkIdentity,
 )
+from stove0_protocol.observation_evidence import AcceptedEvidencePage, AcceptedViewPage
+from stove0_protocol.predicates import LocalName
+from stove0_recipe_config import CompiledRecipeCatalog
 from stove0_target_client import DepartureEffectClient, TargetClient
 from stove0_target_protocol import (
     InputDispositionDeclaration,
@@ -120,6 +133,8 @@ from stove0_api.schemas import (
     SchedulerRunRequest,
     WorkCreateRequest,
 )
+
+_ZERO_ORDINAL = cast(NonnegativeDecimal, "0")
 
 type BrowsePageTokenQuery = Annotated[BrowsePageToken | None, Query()]
 type BrowseQueryParameter = Annotated[BrowseQuery | None, Query()]
@@ -146,7 +161,7 @@ class Stove0Composition:
     config: Stove0RuntimeConfig
     riverhog_api: ApiClient
     state: SqlAlchemyStateStore
-    recipes: RecipeCatalog
+    recipes: CompiledRecipeCatalog
     work: Stove0WorkService
     coordinator: Stove0Coordinator
     preview: WorkflowPreviewService
@@ -156,20 +171,23 @@ class Stove0Composition:
     departure: DepartureEffectService | None = None
     target_callbacks: TargetCallbackAuthority | None = None
     browse_tokens: BrowseTokenCodec | None = None
+    metadata_shutdown: Callable[[], None] | None = None
 
     @classmethod
     def build(cls, config: Stove0RuntimeConfig) -> Stove0Composition:
-        riverhog_api = ApiClient(
+        riverhog_api = ControlApiClient(
             base_url=config.riverhog_base_url,
             token=config.riverhog_token,
             allow_insecure_http=config.riverhog_allow_insecure_http,
         )
         stove0_state_schema(config.database_url).validate()
         state = SqlAlchemyStateStore(config.database_url, initialize=False)
+        metadata_steps = MetadataSteps()
         observers = HttpObserverPort(
             {
                 key: ContentObserverClient(
                     value.base_url,
+                    staged_metadata=True,
                     token=value.token,
                     allow_insecure_http=value.allow_insecure_http,
                     semantic_validators=load_semantic_validator_registry(
@@ -183,6 +201,7 @@ class Stove0Composition:
             {
                 key: TargetClient(
                     value.base_url,
+                    staged_metadata=True,
                     token=value.token,
                     allow_insecure_http=value.allow_insecure_http,
                 )
@@ -192,6 +211,7 @@ class Stove0Composition:
         recipes = config.recipes
         planner = RecipePlanner(
             catalog=recipes,
+            state=state,
             riverhog=riverhog_api,
             observers=observers,
             targets=targets,
@@ -224,10 +244,17 @@ class Stove0Composition:
             target_callbacks=target_callbacks,
         )
         preview = WorkflowPreviewService(
+            metadata_steps=metadata_steps,
             riverhog=authority,
             planning=planner,
             observers=observers,
             targets=targets,
+            store=state,
+            deliveries=state,
+            claim_renew_seconds=min(config.claim_lease_seconds / 3, 300),
+            accept_preview=lambda identity, accepted: coordinator.create_or_resume(
+                identity, preview=accepted
+            ),
         )
         admission = ClassificationAdmissionService(
             catalog=config.admissions,
@@ -245,6 +272,7 @@ class Stove0Composition:
                 {
                     key: DepartureEffectClient(
                         value.base_url,
+                        staged_metadata=True,
                         token=value.token,
                         allow_insecure_http=value.allow_insecure_http,
                     )
@@ -252,7 +280,15 @@ class Stove0Composition:
                 }
             ),
         )
+
+        def shutdown_metadata() -> None:
+            observers.close()
+            targets.close()
+            departure.targets.close()
+            metadata_steps.close()
+
         return cls(
+            metadata_shutdown=shutdown_metadata,
             config=config,
             riverhog_api=riverhog_api,
             state=state,
@@ -262,11 +298,14 @@ class Stove0Composition:
             preview=preview,
             evaluations=EvaluationService(state.evaluation_store(), work=work),
             scheduler=Stove0Scheduler(
+                metadata_steps=metadata_steps,
                 coordinator=coordinator,
                 state=state,
                 production_seals=target_callbacks,
                 admission=admission,
                 departure=departure,
+                previews=preview,
+                claim_renew_seconds=min(config.claim_lease_seconds / 3, 300),
                 operational_state_retention_seconds=(config.operational_state_retention_seconds),
             ),
             admission=admission,
@@ -320,6 +359,8 @@ def create_app(
         try:
             yield
         finally:
+            if composition.metadata_shutdown is not None:
+                composition.metadata_shutdown()
             composition.riverhog_api.close()
             composition.state.engine.dispose()
 
@@ -817,44 +858,58 @@ def create_app(
             )
         )
 
+    def initiation_status(job_id: str) -> WorkInitiationStatus:
+        job = composition.preview.get(job_id)
+        request = composition.preview.request(job_id)
+        if request.accepted_preview_sha256 is None:
+            raise KeyError("planning invocation is not a work initiation")
+        record = composition.state.load(request.work.work_id)
+        if record is not None:
+            actual = (
+                record.no_action_preview.preview_sha256
+                if record.no_action_preview is not None
+                else record.preview_acceptance.preview_sha256
+                if record.preview_acceptance is not None
+                else None
+            )
+            if actual == request.accepted_preview_sha256:
+                return WorkInitiationStatus(
+                    job=job, state="completed", work=WorkView.from_record(record)
+                )
+            return WorkInitiationStatus(job=job, state="rejected")
+        if job.state == "completed":
+            return WorkInitiationStatus(job=job, state="rejected")
+        return WorkInitiationStatus(job=job, state="pending")
+
     @app.post(
         "/v1/work",
-        status_code=201,
-        response_model=WorkView,
+        status_code=202,
+        response_model=WorkInitiationStatus,
         dependencies=[Depends(authorize)],
         operation_id="create_work",
         tags=["work"],
     )
-    def create_work(request: WorkCreateRequest) -> WorkView:
+    def create_work(request: WorkCreateRequest) -> WorkInitiationStatus:
         identity = _work_identity(composition, request)
-        existing = composition.state.load(identity.work_id)
-        if existing is not None:
-            acceptance = existing.preview_acceptance
-            accepted_sha256 = (
-                existing.no_action_preview.preview_sha256
-                if existing.no_action_preview is not None
-                else acceptance.preview_sha256
-                if acceptance is not None
-                else None
-            )
-            if accepted_sha256 != request.preview_sha256:
-                raise HTTPException(
-                    status_code=409,
-                    detail="existing work was not initiated from the accepted preview",
-                )
-            return WorkView.from_record(existing)
-        preview = composition.preview.preview(identity)
-        if (
-            preview.state not in {"ready", "no_action"}
-            or preview.preview_sha256 != request.preview_sha256
-        ):
-            raise HTTPException(
-                status_code=409,
-                detail="current workflow preview differs from the accepted preview",
-            )
-        return WorkView.from_record(
-            composition.coordinator.create_or_resume(identity, preview=preview)
+        status = composition.preview.submit(
+            identity,
+            invocation_id=request.invocation_id,
+            accepted_preview_sha256=request.preview_sha256,
         )
+        existing = composition.state.load(identity.work_id)
+        if existing is not None and status.state != "completed":
+            composition.preview.cancel(status.job_id)
+        return initiation_status(status.job_id)
+
+    @app.get(
+        "/v1/work-initiations/{job_id}",
+        response_model=WorkInitiationStatus,
+        dependencies=[Depends(authorize)],
+        operation_id="get_work_initiation",
+        tags=["work"],
+    )
+    def get_work_initiation(job_id: str) -> WorkInitiationStatus:
+        return initiation_status(job_id)
 
     @app.get(
         "/v1/work/{work_id}",
@@ -878,6 +933,141 @@ def create_app(
     )
     def inspect_work_coordination(work_id: str) -> BranchSetEvaluation:
         return composition.coordinator.inspect_coordination(work_id)
+
+    def observation_inspection(owner_kind: PlanningOwnerKind, owner_id: str) -> PlanningInspection:
+        if owner_kind == "work":
+            record = composition.state.load(owner_id)
+            if record is None:
+                raise KeyError(owner_id)
+            root_work_id = record.work.work_id
+        else:
+            root_work_id = composition.preview.request(owner_id).work.work_id
+        return PlanningInspection(
+            composition.state, owner_kind=owner_kind, owner_id=owner_id, root_work_id=root_work_id
+        )
+
+    @app.get(
+        "/v1/observation-tasks",
+        response_model=ObservationTaskPage,
+        dependencies=[Depends(authorize)],
+        operation_id="list_observation_tasks",
+        tags=["observations"],
+        openapi_extra=mutable_browse_operation(response_items_field="tasks"),
+    )
+    def list_observation_tasks(
+        owner_kind: PlanningOwnerKind,
+        owner_id: Sha256,
+        page_size: int = Query(25, ge=1, le=100),
+        page_token: BrowsePageTokenQuery = None,
+    ) -> ObservationTaskPage:
+        selectors: dict[str, object] = {"owner_kind": owner_kind, "owner_id": owner_id}
+        position = browse_position(
+            operation="list_observation_tasks", page_token=page_token, selectors=selectors
+        )
+        exact_position: tuple[str, str] | None = None
+        if position is not None:
+            if (
+                len(position) != 2
+                or not isinstance(position[0], str)
+                or not isinstance(position[1], str)
+            ):
+                raise HTTPException(status_code=400, detail="invalid observation task continuation")
+            exact_position = position[0], position[1]
+        payload = observation_inspection(owner_kind, owner_id).tasks(
+            page_size=page_size, position=exact_position
+        )
+        return ObservationTaskPage.model_validate(
+            browse_page(payload, operation="list_observation_tasks", selectors=selectors)
+        )
+
+    @app.get(
+        "/v1/observation-tasks/{task_work_id}/{task_id}",
+        response_model=ObservationTaskDetail,
+        dependencies=[Depends(authorize)],
+        operation_id="get_observation_task",
+        tags=["observations"],
+    )
+    def get_observation_task(
+        task_work_id: Sha256,
+        task_id: LocalName,
+        owner_kind: PlanningOwnerKind,
+        owner_id: Sha256,
+    ) -> ObservationTaskDetail:
+        return observation_inspection(owner_kind, owner_id).task(task_work_id, task_id)
+
+    @app.get(
+        "/v1/observation-tasks/{task_work_id}/{task_id}/results",
+        response_model=AcceptedEvidencePage,
+        dependencies=[Depends(authorize)],
+        operation_id="get_observation_results",
+        tags=["observations"],
+        openapi_extra=exact_authority_page_operation(
+            authority="accepted-observation-evidence",
+            authority_parameter="evidence_set_sha256",
+            cursor_parameter="start_ordinal",
+            limit_parameter="limit",
+        ),
+    )
+    def get_observation_results(
+        task_work_id: Sha256,
+        task_id: LocalName,
+        owner_kind: PlanningOwnerKind,
+        owner_id: Sha256,
+        evidence_set_sha256: Sha256,
+        start_ordinal: Annotated[NonnegativeDecimal, Query()] = _ZERO_ORDINAL,
+        limit: int = Query(100, ge=1, le=100),
+    ) -> AcceptedEvidencePage:
+        return observation_inspection(owner_kind, owner_id).results(
+            task_work_id,
+            task_id,
+            evidence_set_sha256=evidence_set_sha256,
+            start_ordinal=int(start_ordinal),
+            limit=limit,
+        )
+
+    @app.get(
+        "/v1/observation-results/{request_id}",
+        response_model=ContentObservationEvidence,
+        dependencies=[Depends(authorize)],
+        operation_id="get_observation_result",
+        tags=["observations"],
+    )
+    def get_observation_result(
+        request_id: Sha256, owner_kind: PlanningOwnerKind, owner_id: Sha256
+    ) -> ContentObservationEvidence:
+        return observation_inspection(owner_kind, owner_id).original(request_id)
+
+    @app.get(
+        "/v1/observation-tasks/{task_work_id}/{task_id}/views/{view_id}",
+        response_model=AcceptedViewPage,
+        dependencies=[Depends(authorize)],
+        operation_id="get_observation_view",
+        tags=["observations"],
+        openapi_extra=exact_authority_page_operation(
+            authority="accepted-observation-view",
+            authority_parameter="view_sha256",
+            cursor_parameter="start_ordinal",
+            limit_parameter="limit",
+        ),
+    )
+    def get_observation_view(
+        task_work_id: Sha256,
+        task_id: LocalName,
+        view_id: LocalName,
+        owner_kind: PlanningOwnerKind,
+        owner_id: Sha256,
+        view_sha256: Sha256,
+        start_ordinal: Annotated[NonnegativeDecimal, Query()] = _ZERO_ORDINAL,
+        limit: int = Query(100, ge=1, le=100),
+    ) -> AcceptedViewPage:
+        return observation_inspection(owner_kind, owner_id).view(
+            task_work_id,
+            task_id,
+            view_id,
+            view_sha256=view_sha256,
+            start_ordinal=int(start_ordinal),
+            limit=limit,
+        )
 
     @app.get(
         "/v1/artifact-selections/{selection_sha256}",
@@ -920,7 +1110,19 @@ def create_app(
         tags=["work"],
     )
     def step_work(work_id: str) -> WorkView:
-        return WorkView.from_record(composition.coordinator.step(work_id))
+        steps = composition.scheduler.metadata_steps
+        if steps is None:
+            composition.coordinator.maintain(work_id)
+            return WorkView.from_record(composition.coordinator.step(work_id))
+        for maintenance in (True, False):
+            try:
+                steps.work(composition.coordinator, work_id, maintenance=maintenance)
+            except MetadataPreparationPending:
+                pass
+        record = composition.state.load(work_id)
+        if record is None:
+            raise KeyError(work_id)
+        return WorkView.from_record(record)
 
     @app.post(
         "/v1/work/{work_id}/retry",
@@ -944,13 +1146,35 @@ def create_app(
 
     @app.post(
         "/v1/workflow-previews",
-        response_model=WorkflowPreview,
+        response_model=PlanningJobStatus,
         dependencies=[Depends(authorize)],
         operation_id="preview_workflow",
         tags=["previews"],
     )
-    def preview_workflow(request: OperatorWorkflowPreviewRequest) -> WorkflowPreview:
-        return composition.preview.preview(_work_identity(composition, request))
+    def preview_workflow(request: OperatorWorkflowPreviewRequest) -> PlanningJobStatus:
+        return composition.preview.submit(
+            _work_identity(composition, request), invocation_id=request.invocation_id
+        )
+
+    @app.get(
+        "/v1/workflow-previews/{job_id}",
+        response_model=PlanningJobStatus,
+        dependencies=[Depends(authorize)],
+        operation_id="get_workflow_preview",
+        tags=["previews"],
+    )
+    def get_workflow_preview(job_id: str) -> PlanningJobStatus:
+        return composition.preview.get(job_id)
+
+    @app.post(
+        "/v1/workflow-previews/{job_id}/cancel",
+        response_model=PlanningJobStatus,
+        dependencies=[Depends(authorize)],
+        operation_id="cancel_workflow_preview",
+        tags=["previews"],
+    )
+    def cancel_workflow_preview(job_id: str) -> PlanningJobStatus:
+        return composition.preview.cancel(job_id)
 
     @app.get(
         "/v1/evaluations",

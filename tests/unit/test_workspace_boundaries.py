@@ -219,6 +219,7 @@ EXTERNAL_DISTRIBUTION_MODULES = {
     "referencing": {"referencing"},
     "rfc8785": {"rfc8785"},
     "rich": {"rich"},
+    "ruamel.yaml": {"ruamel"},
     "sqlalchemy": {"sqlalchemy"},
     "starlette": {"starlette"},
     "typer": {"typer"},

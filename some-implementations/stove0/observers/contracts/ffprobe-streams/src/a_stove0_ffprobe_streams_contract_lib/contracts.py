@@ -395,7 +395,6 @@ FFPROBE_STREAMS_OBSERVER_CONTRACT = ObserverContract.seal(
         options_schema=FFPROBE_STREAMS_OPTIONS_SCHEMA,
         facts_schema=FFPROBE_STREAMS_FACTS_SCHEMA,
         facts_semantics=FFPROBE_STREAMS_FACTS_SEMANTICS,
-        maximum_result_bytes=4 * 1024 * 1024,
     )
 )
 

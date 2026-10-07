@@ -5,6 +5,7 @@ from http_api_contracts import (
     HttpOperationContract,
     HttpPathParameterContract,
 )
+from http_api_contracts.metadata_documents import METADATA_HTTP_OPERATIONS
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     SemanticValidationProfile,
@@ -21,6 +22,7 @@ from stove0_target_protocol.departure import (
     DepartureEffectIntentPayload,
     DepartureEffectReceipt,
     DepartureEffectReceiptPayload,
+    DepartureEffectStatus,
     DepartureEffectTargetDescriptor,
     DepartureEffectTargetDescriptorPayload,
 )
@@ -96,6 +98,7 @@ from stove0_target_protocol.protocol import (
 )
 
 _TARGET_HTTP_ERROR_STATUS: dict[str, int] = {
+    "admission_unavailable": 503,
     "bad_request": 400,
     "invalid_target_request": 400,
     "job_identity_mismatch": 409,
@@ -118,7 +121,7 @@ def _target_http_errors(*codes: str) -> tuple[HttpErrorContract, ...]:
 
 _JOB_ID_PARAMETER = (HttpPathParameterContract("job_id", Sha256),)
 _DEPARTURE_ID_PARAMETER = (HttpPathParameterContract("departure_id", Sha256),)
-DEPARTURE_EFFECT_HTTP_OPERATIONS = (
+DEPARTURE_EFFECT_HTTP_OPERATIONS: tuple[HttpOperationContract, ...] = (
     HttpOperationContract(
         "GET",
         "/v1/departure-target",
@@ -129,19 +132,44 @@ DEPARTURE_EFFECT_HTTP_OPERATIONS = (
         "PUT",
         "/v1/departure-effects/{departure_id}",
         DepartureEffectIntent,
-        DepartureEffectReceipt,
+        DepartureEffectStatus,
         "json",
         errors=_target_http_errors(
             "invalid_target_request",
             "unauthorized",
             "request_too_large",
             "target_descriptor_mismatch",
+            "job_request_mismatch",
+            "admission_unavailable",
+            "target_failed",
+        ),
+        path_parameters=_DEPARTURE_ID_PARAMETER,
+    ),
+    HttpOperationContract(
+        "GET",
+        "/v1/departure-effects/{departure_id}",
+        response_type=DepartureEffectStatus,
+        errors=_target_http_errors("bad_request", "unauthorized", "job_not_found", "target_failed"),
+        path_parameters=_DEPARTURE_ID_PARAMETER,
+    ),
+    HttpOperationContract(
+        "POST",
+        "/v1/departure-effects/{departure_id}/cancel",
+        DepartureEffectIntent,
+        DepartureEffectStatus,
+        "json",
+        errors=_target_http_errors(
+            "invalid_target_request",
+            "unauthorized",
+            "request_too_large",
+            "target_descriptor_mismatch",
+            "job_request_mismatch",
             "target_failed",
         ),
         path_parameters=_DEPARTURE_ID_PARAMETER,
     ),
 )
-TARGET_HTTP_OPERATIONS = (
+TARGET_HTTP_OPERATIONS: tuple[HttpOperationContract, ...] = (
     HttpOperationContract(
         "GET",
         "/v1/target",
@@ -179,6 +207,7 @@ TARGET_HTTP_OPERATIONS = (
             "operation_contract_mismatch",
             "job_request_mismatch",
             "target_runtime_mismatch",
+            "admission_unavailable",
             "unsupported_operation",
             "target_failed",
         ),
@@ -194,8 +223,20 @@ TARGET_HTTP_OPERATIONS = (
     HttpOperationContract(
         "POST",
         "/v1/jobs/{job_id}/cancel",
-        response_type=TargetJobStatus,
-        errors=_target_http_errors("bad_request", "unauthorized", "job_not_found", "target_failed"),
+        AcceptedTargetJob,
+        TargetJobStatus,
+        "json",
+        errors=_target_http_errors(
+            "invalid_target_request",
+            "unauthorized",
+            "request_too_large",
+            "job_identity_mismatch",
+            "job_request_mismatch",
+            "target_descriptor_mismatch",
+            "operation_contract_mismatch",
+            "unsupported_operation",
+            "target_failed",
+        ),
         path_parameters=_JOB_ID_PARAMETER,
     ),
 )
@@ -268,6 +309,9 @@ TARGET_CALLBACK_HTTP_OPERATIONS = (
     ),
 )
 
+TARGET_HTTP_OPERATIONS += METADATA_HTTP_OPERATIONS
+DEPARTURE_EFFECT_HTTP_OPERATIONS += METADATA_HTTP_OPERATIONS
+
 __all__ = [
     "AcceptedTargetJob",
     "DEPARTURE_EFFECT_HTTP_OPERATIONS",
@@ -275,6 +319,7 @@ __all__ = [
     "DepartureEffectIntentPayload",
     "DepartureEffectReceipt",
     "DepartureEffectReceiptPayload",
+    "DepartureEffectStatus",
     "DepartureEffectTargetDescriptor",
     "DepartureEffectTargetDescriptorPayload",
     "MAX_DEPARTURE_RESULT_BYTES",

@@ -1379,7 +1379,8 @@ def _resolve_cli_output_authority(
         if len(candidates) != 1:
             raise ContractFreezeError(
                 f"CLI JSON output has no exact implementation-owned authority: "
-                f"{authority}: {command}: {len(candidates)} operation candidates"
+                f"{authority}: {command}: {len(candidates)} operation candidates "
+                f"({', '.join(candidate.operation_id for candidate in candidates)})"
             )
         return _operation_success_authority(candidates[0], openapi)
     if not isinstance(override, Mapping):

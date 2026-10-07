@@ -12,6 +12,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from a_stove0_materialization_hint_evidence_contract_lib import (
+    MATERIALIZATION_HINT_INTERFACE,
     MATERIALIZATION_HINT_OBSERVER_CONTRACT,
 )
 from a_stove0_rclone_target import target as target_support
@@ -31,7 +32,6 @@ from riverhog_protocol import canonical_json_bytes
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     ContentObservationRequest,
-    ContentObservationRequestPayload,
     ObserverContractSupport,
     ObserverDescriptor,
     ObserverDescriptorPayload,
@@ -39,6 +39,8 @@ from stove0_observer_protocol import (
 from stove0_observer_support import ContentObservationResultBuilder
 from stove0_protocol import ArtifactSelection, CollectionRootIdentityRef, WorkArtifactSubject
 from stove0_target_support import InputArtifact, TargetEffectCommitUncertain, TargetJobRequest
+
+from tests.stove0_observation_fixtures import observation_payload
 
 
 def _destination() -> RcloneDestination:
@@ -82,12 +84,17 @@ def _hint_evidence(
             source_revision="fixture",
             image_id="sha256:" + "e" * 64,
             contracts=(
-                ObserverContractSupport.from_contract(MATERIALIZATION_HINT_OBSERVER_CONTRACT),
+                ObserverContractSupport.from_contract(
+                    MATERIALIZATION_HINT_OBSERVER_CONTRACT,
+                    interfaces=(MATERIALIZATION_HINT_INTERFACE.ref,),
+                ),
             ),
         )
     )
     request = ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=MATERIALIZATION_HINT_OBSERVER_CONTRACT,
+            interface=MATERIALIZATION_HINT_INTERFACE,
             work_id="f" * 64,
             observer_registration_id="hint-observer",
             observer_descriptor_sha256=descriptor.descriptor_sha256,

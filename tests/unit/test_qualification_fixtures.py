@@ -18,9 +18,9 @@ from a_stove0_rclone_target.contracts import RCLONE_DELIVER_OPERATION
 from gogurt_core.core import execute_gogurt_action, load_gogurt_actions, plan_gogurt_action
 from review0.app import load_config as load_materializer_config
 from riverhog_core.runtime_document import load_runtime_document
-from stove0_core import RecipeCatalog
 from stove0_core.runtime_config import load_stove0_config
 from stove0_operator_contracts import AdmissionCatalog
+from stove0_recipe_config import load_recipe_catalog
 
 from tests.gogurt_provider import path_mounted_volume_provider
 
@@ -190,10 +190,15 @@ def test_qualification_owner_witness_rejects_test_module_reuse(other_import: str
 
 
 def test_review_qualification_observation_fits_the_declared_observer_result_limit() -> None:
-    recipes = RecipeCatalog.load(REPO_ROOT / "qualification/fixtures/stove0/recipes.yaml")
-    observer = recipes.recipe("stove0.review/v1", 1).observers[0]
-    assert observer.contract_id == MEDIA_SAMPLING_OBSERVER_CONTRACT.id
-    assert observer.maximum_result_bytes <= MEDIA_SAMPLING_OBSERVER_CONTRACT.maximum_result_bytes
+    recipes = load_recipe_catalog(REPO_ROOT / "qualification/fixtures/stove0/recipes.yaml")
+    observer = recipes.recipe("stove0.review/v1", 1).observations["sampling"]
+    assert observer.observer.id == MEDIA_SAMPLING_OBSERVER_CONTRACT.id
+    assert (
+        recipes.closure.observer(
+            id=observer.observer.id, sha256=observer.observer.sha256
+        ).contract.maximum_result_bytes
+        == MEDIA_SAMPLING_OBSERVER_CONTRACT.maximum_result_bytes
+    )
 
 
 def test_every_checked_qualification_input_runs_through_its_real_consumer(
@@ -227,8 +232,11 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     assert completed.returncode == 0
     assert "archive example-camera" in completed.stdout
 
-    recipes = RecipeCatalog.load(REPO_ROOT / "qualification/fixtures/stove0/recipes.yaml")
-    assert recipes.operation(RCLONE_DELIVER_OPERATION.id) == RCLONE_DELIVER_OPERATION
+    recipes = load_recipe_catalog(REPO_ROOT / "qualification/fixtures/stove0/recipes.yaml")
+    assert (
+        recipes.operation(RCLONE_DELIVER_OPERATION.id, RCLONE_DELIVER_OPERATION.contract_sha256)
+        == RCLONE_DELIVER_OPERATION
+    )
     assert {recipe.id for recipe in recipes.recipes} == {
         "stove0.audio-archive/v1",
         "stove0.conformance-media/v1",

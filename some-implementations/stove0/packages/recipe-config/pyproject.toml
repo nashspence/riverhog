@@ -18,7 +18,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = ["release-documentation-lib>=0.1,<0.2",
+dependencies = ["riverhog-canonical-json>=0.1,<0.2", "jsonschema>=4.25,<5.0", "stove0-observer-protocol>=0.1,<0.2", "ruamel.yaml>=0.18.6,<0.20", "release-documentation-lib>=0.1,<0.2",
   "config-validation>=0.1,<0.2",
   "pydantic>=2.7,<3.0",
   "riverhog-protocol>=0.1,<0.2",
@@ -27,6 +27,8 @@ dependencies = ["release-documentation-lib>=0.1,<0.2",
 ]
 
 [tool.uv.sources]
+riverhog-canonical-json = { workspace = true }
+stove0-observer-protocol = { workspace = true }
 release-documentation-lib = { workspace = true }
 config-validation = { workspace = true }
 riverhog-protocol = { workspace = true }

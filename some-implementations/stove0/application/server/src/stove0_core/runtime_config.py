@@ -15,7 +15,7 @@ from config_validation import load_validated_yaml_config, read_secret_file
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_operator_contracts import AdmissionCatalog, DepartureCatalog
-from stove0_recipe_config import RecipeCatalog
+from stove0_recipe_config import CompiledRecipeCatalog, RecipeSourceCatalog
 
 DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS = 30 * 24 * 60 * 60
 
@@ -41,7 +41,7 @@ class Stove0RuntimeConfig:
     riverhog_base_url: str
     riverhog_token: str = field(repr=False)
     riverhog_allow_insecure_http: bool
-    recipes: RecipeCatalog
+    recipes: CompiledRecipeCatalog
     observers: dict[str, EndpointRegistration]
     targets: dict[str, EndpointRegistration]
     target_callback_base_url: str
@@ -96,7 +96,7 @@ class Stove0Document(_Document):
     riverhog_base_url: str = Field(min_length=1)
     riverhog_token_file: Path
     riverhog_allow_insecure_http: bool = False
-    recipes: RecipeCatalog
+    recipes: CompiledRecipeCatalog | RecipeSourceCatalog = Field(discriminator="format")
     admissions: AdmissionCatalog = Field(default_factory=AdmissionCatalog)
     departures: DepartureCatalog = Field(default_factory=DepartureCatalog)
     observers: dict[str, ObserverEndpointDocument] = Field(default_factory=dict)
@@ -184,7 +184,9 @@ def load_stove0_config(
         riverhog_base_url=document.riverhog_base_url,
         riverhog_token=read_secret_file(document.riverhog_token_file, label="riverhog_token_file"),
         riverhog_allow_insecure_http=document.riverhog_allow_insecure_http,
-        recipes=document.recipes,
+        recipes=document.recipes.compile()
+        if isinstance(document.recipes, RecipeSourceCatalog)
+        else document.recipes,
         admissions=document.admissions,
         departures=document.departures,
         observers=_registrations(document.observers),

@@ -648,6 +648,7 @@ class ClassificationAdmissionService:
             state = row.state
             intent = AdmissionIntent.model_validate_json(row.document_json)
             preview_json = row.preview_json
+            attempt_count = row.attempt_count
         work = self.planner.create_work(
             intent.recipe_id,
             (
@@ -685,7 +686,20 @@ class ClassificationAdmissionService:
             )
             return
         if state == "intent":
-            preview = self.preview.preview(work)
+            pending = self.preview.submit(
+                work,
+                invocation_id=canonical_json_sha256(
+                    {
+                        "format": "stove0-admission-preview/v1",
+                        "admission_id": admission_id,
+                        "attempt": attempt_count,
+                    }
+                ),
+            )
+            if pending.state != "completed":
+                return
+            assert pending.result is not None
+            preview = pending.result
             if preview.work != work:
                 raise RuntimeError("automatic preview differs from the admission work intent")
             if preview.state == "inapplicable":

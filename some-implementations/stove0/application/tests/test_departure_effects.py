@@ -24,6 +24,7 @@ from stove0_target_protocol import (
     DepartureEffectIntent,
     DepartureEffectReceipt,
     DepartureEffectReceiptPayload,
+    DepartureEffectStatus,
 )
 from time_formats import utc_timestamp_now
 
@@ -94,13 +95,13 @@ class _Target:
 
     def put_effect(
         self, registration_id: str, intent: DepartureEffectIntent
-    ) -> DepartureEffectReceipt:
+    ) -> DepartureEffectStatus:
         assert registration_id == "index"
         self.calls.append(intent.departure_id)
         if self.fail_next:
             self.fail_next = False
             raise RuntimeError("index is temporarily unavailable")
-        return self.receipts.setdefault(
+        receipt = self.receipts.setdefault(
             intent.departure_id,
             DepartureEffectReceipt.seal(
                 DepartureEffectReceiptPayload(
@@ -109,6 +110,13 @@ class _Target:
                     result={"action": "withdrawn"},
                 )
             ),
+        )
+        return DepartureEffectStatus(
+            departure_id=intent.departure_id,
+            target_identity=receipt.target_identity,
+            attempt=1,
+            state="completed",
+            receipt=receipt,
         )
 
 

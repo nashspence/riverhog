@@ -69,27 +69,49 @@ def test_pages_does_not_trust_a_claimed_revision(tmp_path, generated_contract_cl
 
 def test_pages_assembles_versions_semantically_and_preserves_published_bytes(
     tmp_path,
-    generated_contract_closure,
-    release_contract_factory,
+    monkeypatch,
 ):
-    from contract_atlas.documentation import AuthoredDocumentation
+    import contract_pages
+    from contract_atlas.generation import BUILD_FORMAT, verify_inventory
+    from contract_atlas.model import canonical_bytes
 
-    from tests.documentation_fixtures import synthetic_corpus
     from tests.release_index import make_index
 
-    root = release_contract_factory(
-        documentation=AuthoredDocumentation(
-            "v1.2.0",
-            "b" * 40,
-            synthetic_corpus(generated_contract_closure["candidate"].bundle.closure),
-        )
-    )
-    authored = AuthoredDocumentation(
-        "v1.10.0",
-        "c" * 40,
-        synthetic_corpus(generated_contract_closure["candidate"].bundle.closure),
-    )
-    documented = release_contract_factory("2" * 40, documentation=authored)
+    # Assembly consumes verified inventories. Full native contract, documentation,
+    # and signature verification is exercised by test_release_pages_path.
+    monkeypatch.setattr(contract_pages, "verify_candidate", verify_inventory)
+    monkeypatch.setattr(contract_pages, "verify_published_candidate", verify_inventory)
+
+    def inventory(name, source_sha, tag=None):
+        selected = tmp_path / name
+        selected.mkdir()
+        files = {
+            "riverhog-v1/index.html": b"<!doctype html><title>Verified contract fixture</title>",
+            "riverhog-v1.json": canonical_bytes({"fixture": name, "record": "closure"}),
+            "riverhog-v1-audit.json": canonical_bytes({"fixture": name, "record": "audit"}),
+        }
+        if tag is not None:
+            files["documentation-source.json"] = canonical_bytes({"fixture": name, "tag": tag})
+        build = {
+            "format": BUILD_FORMAT,
+            "source_sha": source_sha,
+            "documentation": None if tag is None else {"tag": tag},
+            "renderer": {"fixture": "verified-inventory"},
+            "toolchain": {"fixture": "verified-inventory"},
+            "closure_sha256": hashlib.sha256(files["riverhog-v1.json"]).hexdigest(),
+            "audit_sha256": hashlib.sha256(files["riverhog-v1-audit.json"]).hexdigest(),
+            "files": {name: hashlib.sha256(raw).hexdigest() for name, raw in files.items()},
+        }
+        for name, raw in files.items():
+            path = selected / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(raw)
+        (selected / "build-manifest.json").write_bytes(canonical_bytes(build))
+        return selected
+
+    development = inventory("candidate", "a" * 40)
+    root = inventory("first", "1" * 40, "v1.2.0")
+    documented = inventory("latest", "2" * 40, "v1.10.0")
     entries = [
         {
             "root": selected,
@@ -104,9 +126,7 @@ def test_pages_assembles_versions_semantically_and_preserves_published_bytes(
         }
         for number, (tag, selected) in enumerate((("v1.2.0", root), ("v1.10.0", documented)), 1)
     ]
-    manifest = build_pages(
-        generated_contract_closure["root"], tmp_path / "site", None, releases=entries
-    )
+    manifest = build_pages(development, tmp_path / "site", None, releases=entries)
     assert manifest["latest_product_release"] == "v1.10.0"
     assert [item["version"] for item in manifest["inputs"]] == ["development", "v1.10.0", "v1.2.0"]
     assert 'href="../v1.2.0/"' in (tmp_path / "site/v1.10.0/index.html").read_text()
@@ -117,7 +137,6 @@ def test_pages_assembles_versions_semantically_and_preserves_published_bytes(
         for path in documented.rglob("*")
         if path.is_file()
     )
-    assert (tmp_path / "site/v1.10.0/documentation-source.json").read_bytes() == authored.payload
 
     # Serve the actual aggregate at its project mount; use each generated index URL.
     class MountedSite(SimpleHTTPRequestHandler):

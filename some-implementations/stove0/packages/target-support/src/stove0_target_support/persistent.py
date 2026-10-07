@@ -12,7 +12,6 @@ import threading
 import time
 import traceback
 from collections.abc import Callable, Mapping
-from concurrent.futures import Future, ThreadPoolExecutor
 from itertools import chain
 from pathlib import Path
 from typing import Any, Final
@@ -21,6 +20,13 @@ from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
 from riverhog_protocol import DownloadAllowanceExceeded, RiverhogError, ServiceUnavailable
+from stove0_extension_support import (
+    ExclusiveStateOwner,
+    ExecutionAdmission,
+    ExecutionPermit,
+)
+from stove0_extension_support.authority import validate_live_root_authority
+from stove0_extension_support.dispatch import BoundedExecutionDispatcher, ExecutionDispatch
 from stove0_target_protocol import (
     EFFECT_TARGET_PROTOCOL,
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
@@ -49,7 +55,6 @@ from stove0_target_support.http_binding import TargetServiceError
 from stove0_target_support.output_checkpoint import TargetOutputCheckpoint
 from stove0_target_support.runtime import TargetExecutionRuntime
 
-_ACTIVE_STATES: Final = frozenset({"queued", "running", "canceling"})
 _TERMINAL_STATES: Final = frozenset({"inapplicable", "succeeded", "failed", "canceled"})
 DEFAULT_TERMINAL_STATE_RETENTION_SECONDS: Final = 30 * 24 * 60 * 60
 _LOGGER = logging.getLogger(__name__)
@@ -92,10 +97,10 @@ class PersistentTargetService:
     """Persist non-secret job identity and converge identical restart requests.
 
     Capability tokens remain only in process memory. Accepted declarations and
-    statuses are atomically persisted beneath one target-owned state root; an
-    active job found after process loss becomes ``interrupted``. An identical
-    transform request may resume it; effect jobs remain interrupted because
-    repeating an uncertain external commit could duplicate the semantic effect.
+    statuses are atomically persisted beneath one target-owned state root.
+    Queued jobs remain dormant through restart and require refreshed invocation
+    authority before dispatch. A started job found after process loss becomes
+    ``interrupted``; uncertain effects are never automatically repeated.
     """
 
     def __init__(
@@ -107,6 +112,10 @@ class PersistentTargetService:
         execute: JobExecutor,
         intent_semantic_validators: Mapping[str, IntentSemanticValidator] | None = None,
         maximum_workers: int = 1,
+        maximum_pending_jobs: int = 256,
+        execution_admission: ExecutionAdmission | None = None,
+        admission_probe_seconds: float = 1.0,
+        admission_retry_seconds: float = 1.0,
         terminal_state_retention_seconds: int = DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     ) -> None:
         self._descriptor = descriptor
@@ -144,24 +153,44 @@ class PersistentTargetService:
         ):
             raise ValueError("target terminal-state retention must be positive")
         self.terminal_state_retention_seconds = terminal_state_retention_seconds
+        if isinstance(maximum_workers, bool) or maximum_workers < 1:
+            raise ValueError("target execution concurrency must be positive")
+        if isinstance(maximum_pending_jobs, bool) or maximum_pending_jobs < 1:
+            raise ValueError("target queue budget must be positive")
+        self.maximum_workers = maximum_workers
+        self.maximum_pending_jobs = maximum_pending_jobs
+        self._state_owner = ExclusiveStateOwner(self.state_root)
         self._execute = execute
-        self._pool = ThreadPoolExecutor(
-            max_workers=maximum_workers,
-            thread_name_prefix="stove0-target",
-        )
         self._lock = threading.RLock()
         self._cancel: dict[str, threading.Event] = {}
         self._operator_canceled: set[str] = set()
         self._shutdown_interrupted: set[str] = set()
-        self._futures: dict[str, Future[TargetJobStatus]] = {}
         self._pending_submissions: dict[str, tuple[TargetJobRequest, int]] = {}
+        self._nonterminal_job_count = 0
         self._closing = False
+        self._metadata_shutdown: list[Callable[[], None]] = []
         self._runtime_registry = ClaimedCollectionRuntimeRegistry()
         self._runtime_contexts: dict[str, dict[str, object]] = {}
         self._runtime_token_fingerprints: dict[str, bytes] = {}
         self._sessions: dict[str, TargetExecutionSession] = {}
-        self._recover_interrupted()
+        try:
+            self._recover_interrupted()
+        except BaseException:
+            self._state_owner.close()
+            raise
+        self._nonterminal_job_count = sum(
+            TargetJobStatus.model_validate_json(path.read_text(encoding="utf-8")).state
+            not in _TERMINAL_STATES
+            for path in self.state_root.glob("*.status.json")
+        )
         self.prune_terminal_state()
+        self._dispatch = BoundedExecutionDispatcher(
+            state_owner=self._state_owner,
+            maximum_workers=maximum_workers,
+            admission=execution_admission,
+            probe_seconds=admission_probe_seconds,
+            retry_seconds=admission_retry_seconds,
+        )
 
     def descriptor(self) -> TargetDescriptor:
         return self._descriptor
@@ -210,7 +239,36 @@ class PersistentTargetService:
 
     def put_job(self, request: TargetJobRequest) -> TargetJobStatus:
         job_id = request.declaration.job_id
-        plan = request.declaration.plan
+        self._validate_accepted(request.accepted())
+        with self._lock:
+            if self._closing:
+                raise TargetServiceError(503, "admission_unavailable", "target service is closing")
+            existing = self._load_accepted(job_id)
+            if existing is not None and not secrets.compare_digest(
+                existing.request_sha256, request.request_sha256
+            ):
+                raise TargetServiceError(
+                    409,
+                    "job_request_mismatch",
+                    "target job identity is already bound to another declaration",
+                )
+            if existing is None:
+                if self._nonterminal_job_count >= self.maximum_pending_jobs:
+                    raise TargetServiceError(
+                        503, "admission_unavailable", "target admission queue is full"
+                    )
+                self._write_model(self._accepted_path(job_id), request.accepted())
+            status = self._load_status(job_id)
+            if self._load_cancellation(job_id) is not None:
+                if status is None:
+                    status = self._commit_status(
+                        self._status(request, state="canceled", attempt=1, phase="canceled")
+                    )
+                return self._cancel_stopped(request.accepted(), status)
+            return self._refresh_and_enqueue(request, status)
+
+    def _validate_accepted(self, accepted: AcceptedTargetJob) -> None:
+        plan = accepted.declaration.plan
         if (
             plan.target_descriptor_sha256 != self._descriptor.descriptor_sha256
             or plan.target_implementation_id != self._descriptor.implementation_id
@@ -229,21 +287,12 @@ class PersistentTargetService:
         ):
             raise TargetServiceError(409, "operation_contract_mismatch", "operation changed")
         self._validate_operation_request(plan, operation, support)
+
+    def _refresh_and_enqueue(
+        self, request: TargetJobRequest, status: TargetJobStatus | None
+    ) -> TargetJobStatus:
+        job_id = request.declaration.job_id
         with self._lock:
-            if self._closing:
-                raise TargetServiceError(503, "target_failed", "target service is closing")
-            existing = self._load_accepted(job_id)
-            if existing is not None and not secrets.compare_digest(
-                existing.request_sha256, request.request_sha256
-            ):
-                raise TargetServiceError(
-                    409,
-                    "job_request_mismatch",
-                    "target job identity is already bound to another declaration",
-                )
-            if existing is None:
-                self._write_model(self._accepted_path(job_id), request.accepted())
-            status = self._load_status(job_id)
             if status is None or status.state not in _TERMINAL_STATES:
                 runtime_context = request.runtime.model_dump(
                     mode="json",
@@ -279,7 +328,11 @@ class PersistentTargetService:
                 status = self._status(request, state="queued", attempt=1, phase="queued")
                 status = self._commit_status(status)
                 self._submit(request, status.attempt)
+            elif status.state == "queued":
+                self._submit(request, status.attempt)
             elif status.state == "interrupted":
+                if self._load_cancellation(job_id) is not None:
+                    return self._cancel_stopped(request.accepted(), status)
                 if request.declaration.plan.protocol == EFFECT_TARGET_PROTOCOL:
                     return status
                 status = self._status(
@@ -299,21 +352,49 @@ class PersistentTargetService:
                 raise TargetServiceError(404, "job_not_found", "target job was not found")
             return status
 
-    def cancel_job(self, job_id: str) -> TargetJobStatus:
+    def cancel_job(self, request: AcceptedTargetJob) -> TargetJobStatus:
+        self._validate_accepted(request)
+        job_id = request.declaration.job_id
         with self._lock:
+            accepted = self._load_accepted(job_id)
+            if accepted is not None and accepted != request:
+                raise TargetServiceError(
+                    409, "job_request_mismatch", "target cancellation differs from accepted request"
+                )
             status = self._load_status(job_id)
+            if status is not None and status.state in _TERMINAL_STATES:
+                return status
+            # The exact non-secret tombstone also fences a delayed first PUT.
+            self._write_model(self._cancellation_path(job_id), request)
+            if accepted is None:
+                self._write_model(self._accepted_path(job_id), request)
+                accepted = request
             if status is None:
-                raise TargetServiceError(404, "job_not_found", "target job was not found")
+                return self._commit_status(
+                    TargetJobStatus(
+                        protocol=accepted.declaration.plan.protocol,
+                        job_id=job_id,
+                        state="canceled",
+                        attempt=1,
+                        request_sha256=accepted.request_sha256,
+                        plan_sha256=accepted.declaration.plan.plan_sha256,
+                        progress=TargetProgress(phase="canceled", completed=0),
+                    )
+                )
             if status.state == "interrupted":
-                return status
-            if status.state in _TERMINAL_STATES:
-                return status
+                return self._cancel_stopped(accepted, status)
             self._operator_canceled.add(job_id)
             self._shutdown_interrupted.discard(job_id)
             self._cancel.setdefault(job_id, threading.Event()).set()
-            accepted = self._load_accepted(job_id)
-            if accepted is None:
-                raise RuntimeError("target job status has no accepted declaration")
+            self._dispatch.cancel(job_id)
+            if status.state == "queued" and job_id not in self._dispatch.active_keys:
+                self._pending_submissions.pop(job_id, None)
+                self._cancel.pop(job_id, None)
+                self._operator_canceled.discard(job_id)
+                self._runtime_contexts.pop(job_id, None)
+                self._runtime_token_fingerprints.pop(job_id, None)
+                self._runtime_registry.discard(job_id)
+                return self._cancel_stopped(accepted, status)
             canceling = TargetJobStatus(
                 protocol=accepted.declaration.plan.protocol,
                 job_id=job_id,
@@ -325,15 +406,28 @@ class PersistentTargetService:
             )
             return self._commit_status(canceling)
 
+    def register_metadata_shutdown(self, close: Callable[[], None]) -> None:
+        with self._lock:
+            if self._closing:
+                raise RuntimeError("component metadata ownership is shutting down")
+            self._metadata_shutdown.append(close)
+
     def close(self) -> None:
         with self._lock:
             self._closing = True
-            for job_id, future in self._futures.items():
-                if future.done() or job_id in self._operator_canceled:
-                    continue
-                self._shutdown_interrupted.add(job_id)
-                self._cancel.setdefault(job_id, threading.Event()).set()
-        self._pool.shutdown(wait=True, cancel_futures=False)
+            for job_id in self._dispatch.active_keys:
+                if job_id not in self._operator_canceled:
+                    self._shutdown_interrupted.add(job_id)
+        for close in self._metadata_shutdown:
+            close()
+        self._dispatch.close()
+        with self._lock:
+            for job_id in self._pending_submissions:
+                self._runtime_contexts.pop(job_id, None)
+                self._runtime_token_fingerprints.pop(job_id, None)
+                self._runtime_registry.discard(job_id)
+            self._pending_submissions.clear()
+        self._state_owner.close()
 
     def prune_terminal_state(self, *, now: float | None = None) -> dict[str, int]:
         """Remove expired terminal request/status pairs while preserving retryable work."""
@@ -346,8 +440,8 @@ class PersistentTargetService:
                 if status_path.is_symlink():
                     raise ValueError("target state paths must not be symlinks")
                 job_id = status_path.name.removesuffix(".status.json")
-                future = self._futures.get(job_id)
-                if future is not None and not future.done():
+                dispatch = getattr(self, "_dispatch", None)
+                if dispatch is not None and job_id in dispatch.active_keys:
                     continue
                 try:
                     stat = status_path.stat()
@@ -404,6 +498,12 @@ class PersistentTargetService:
                     directory.rmdir()
                 status_path.unlink(missing_ok=True)
                 accepted_path.unlink(missing_ok=True)
+                cancellation_path = self._cancellation_path(job_id)
+                if cancellation_path.exists():
+                    if cancellation_path.is_symlink():
+                        raise ValueError("target cancellation path must not be a symlink")
+                    removed_bytes += cancellation_path.stat().st_size
+                    cancellation_path.unlink()
                 removed_jobs += 1
             if removed_jobs:
                 directory_descriptor = os.open(
@@ -452,60 +552,128 @@ class PersistentTargetService:
 
     def _submit(self, request: TargetJobRequest, attempt: int) -> None:
         job_id = request.declaration.job_id
-        active = self._futures.get(job_id)
-        if active is not None and not active.done():
-            # The prior attempt can publish interruption before its future has
-            # finished. Keep the accepted retry until that future releases its
-            # slot, instead of leaving a queued status with no execution.
-            self._pending_submissions[job_id] = (request, attempt)
-            return
-        cancellation = self._cancel.setdefault(job_id, threading.Event())
-        self._operator_canceled.discard(job_id)
-        self._shutdown_interrupted.discard(job_id)
-        cancellation.clear()
-        session = TargetExecutionSession(
-            request,
-            attempt,
-            self._runtime_registry,
-            state_root=self.state_root,
+        self._pending_submissions[job_id] = (request, attempt)
+        self._dispatch.enqueue(
+            job_id,
+            ExecutionDispatch(
+                invocation_id=request.request_sha256,
+                attempt=attempt,
+                authorize=lambda deadline: self._validate_live_authority(
+                    request, deadline=deadline
+                ),
+                prepare=lambda canceled, permit: self._prepare_dispatch(
+                    request, attempt, canceled, permit
+                ),
+                deferred=lambda: self._admission_deferred(job_id, attempt),
+                failed=lambda error: self._dispatch_failed(request, attempt, error),
+                finished=lambda: self._execution_finished(job_id),
+            ),
         )
-        self._sessions[job_id] = session
-        future = self._pool.submit(
-            self._run,
-            request,
-            attempt,
-            cancellation,
-            session,
-        )
-        self._futures[job_id] = future
 
-        def forget(completed: Future[TargetJobStatus]) -> None:
-            self._forget_future(job_id, completed)
+    def _admission_deferred(self, job_id: str, attempt: int) -> None:
+        with self._lock:
+            status = self._load_status(job_id)
+            if status is not None and status.state == "queued" and status.attempt == attempt:
+                self._commit_status(
+                    status.model_copy(
+                        update={
+                            "progress": TargetProgress(phase="waiting-for-admission", completed=0)
+                        }
+                    )
+                )
 
-        future.add_done_callback(forget)
-
-    def _forget_future(
-        self,
-        job_id: str,
-        completed: Future[TargetJobStatus],
+    def _dispatch_failed(
+        self, request: TargetJobRequest, attempt: int, error: BaseException
     ) -> None:
         with self._lock:
-            if self._futures.get(job_id) is not completed:
-                return
-            self._futures.pop(job_id, None)
-            pending = self._pending_submissions.pop(job_id, None)
-            if pending is not None:
-                status = self._load_status(job_id)
-                if status is not None and (status.state == "canceling" or self._closing):
-                    self._commit_status(self._stop_status(pending[0], pending[1]))
+            current = self._load_status(request.declaration.job_id)
+            if (
+                current is not None
+                and current.state in {"running", "canceling"}
+                and current.attempt == attempt
+            ):
+                self._commit_status(
+                    self._status(
+                        request, state="interrupted", attempt=attempt, phase="dispatch-interrupted"
+                    )
+                )
+        _LOGGER.warning(
+            "target dispatch interrupted job=%s cause=%s",
+            request.declaration.job_id,
+            type(error).__name__,
+        )
+
+    def _validate_live_authority(self, request: TargetJobRequest, *, deadline: float) -> None:
+        root = request.declaration.controller_evidence.execution_envelope.workflow_plan.work.inputs[
+            0
+        ]
+        validate_live_root_authority(
+            base_url=request.runtime.riverhog_base_url,
+            capability_token=request.runtime.capability_token,
+            allow_insecure_http=request.runtime.allow_insecure_http,
+            root=root.to_identity(),
+            deadline=deadline,
+        )
+
+    def _prepare_dispatch(
+        self,
+        request: TargetJobRequest,
+        attempt: int,
+        cancellation: threading.Event,
+        permit: ExecutionPermit,
+    ) -> Callable[[], object] | None:
+        job_id = request.declaration.job_id
+        with self._lock:
+            status = self._load_status(job_id)
+            if (
+                self._closing
+                or status is None
+                or status.state != "queued"
+                or status.attempt != attempt
+            ):
+                return None
+            if self._pending_submissions.get(job_id) != (request, attempt):
+                return None
+            if cancellation.is_set() or self._load_cancellation(job_id) is not None:
+                self._cancel_stopped(request.accepted(), status)
+                return None
+            self._pending_submissions.pop(job_id, None)
+            self._cancel[job_id] = cancellation
+            self._operator_canceled.discard(job_id)
+            self._shutdown_interrupted.discard(job_id)
+            self._runtime_registry.refresh(job_id, request.runtime.capability_token)
+            session = TargetExecutionSession(
+                request,
+                attempt,
+                self._runtime_registry,
+                state_root=self.state_root,
+                progress_callback=lambda progress: self._report_progress(job_id, attempt, progress),
+                completion_callback=self._commit_status,
+            )
+            self._sessions[job_id] = session
+            # This durable marker precedes any possible payload execution.
+            self._commit_status(
+                self._status(request, state="running", attempt=attempt, phase="starting")
+            )
+        return lambda: self._run(request, attempt, cancellation, session, permit)
+
+    def _report_progress(self, job_id: str, attempt: int, progress: TargetProgress) -> None:
+        with self._lock:
+            current = self._load_status(job_id)
+            if current is not None and current.attempt == attempt and current.state == "running":
+                self._commit_status(current.model_copy(update={"progress": progress}))
+
+    def _execution_finished(self, job_id: str) -> None:
+        with self._lock:
+            pending = self._pending_submissions.get(job_id)
+            status = self._load_status(job_id)
+            if pending is not None and status is not None and status.state == "canceling":
+                self._pending_submissions.pop(job_id)
+                self._dispatch.cancel(job_id)
+                self._commit_status(self._stop_status(pending[0], pending[1]))
             self._cancel.pop(job_id, None)
             self._operator_canceled.discard(job_id)
             self._shutdown_interrupted.discard(job_id)
-            if pending is not None and not self._closing:
-                status = self._load_status(job_id)
-                if status is not None and status.state == "queued":
-                    self._submit(*pending)
-        self.prune_terminal_state()
 
     def _run(
         self,
@@ -513,6 +681,7 @@ class PersistentTargetService:
         attempt: int,
         cancellation: threading.Event,
         session: TargetExecutionSession,
+        permit: ExecutionPermit,
     ) -> TargetJobStatus:
         try:
             if cancellation.is_set():
@@ -659,11 +828,55 @@ class PersistentTargetService:
         )
 
     def _recover_interrupted(self) -> None:
+        for path in self.state_root.glob("*.cancel.json"):
+            if path.is_symlink():
+                raise ValueError("target cancellation paths must not be symlinks")
+            canceled = AcceptedTargetJob.model_validate_json(path.read_text(encoding="utf-8"))
+            job_id = canceled.declaration.job_id
+            if path != self._cancellation_path(job_id):
+                raise ValueError("target cancellation identity differs from its state path")
+            accepted = self._load_accepted(job_id)
+            if accepted is None:
+                self._write_model(self._accepted_path(job_id), canceled)
+            elif accepted != canceled:
+                raise ValueError("target cancellation differs from its accepted declaration")
+        for path in self.state_root.glob("*.accepted.json"):
+            if path.is_symlink():
+                raise ValueError("target accepted paths must not be symlinks")
+            accepted = AcceptedTargetJob.model_validate_json(path.read_text(encoding="utf-8"))
+            if path != self._accepted_path(accepted.declaration.job_id):
+                raise ValueError("target accepted identity differs from its state path")
+            if not self._status_path(accepted.declaration.job_id).exists():
+                self._commit_status(
+                    TargetJobStatus(
+                        protocol=accepted.declaration.plan.protocol,
+                        job_id=accepted.declaration.job_id,
+                        state="canceled"
+                        if self._load_cancellation(accepted.declaration.job_id)
+                        else "queued",
+                        attempt=1,
+                        request_sha256=accepted.request_sha256,
+                        plan_sha256=accepted.declaration.plan.plan_sha256,
+                        progress=TargetProgress(
+                            phase="canceled"
+                            if self._load_cancellation(accepted.declaration.job_id)
+                            else "queued",
+                            completed=0,
+                        ),
+                    )
+                )
         for path in self.state_root.glob("*.status.json"):
             if path.is_symlink():
                 raise ValueError("target state paths must not be symlinks")
             status = TargetJobStatus.model_validate_json(path.read_text(encoding="utf-8"))
-            if status.state in _ACTIVE_STATES:
+            if path != self._status_path(status.job_id):
+                raise ValueError("target status identity differs from its state path")
+            accepted = self._load_accepted(status.job_id)
+            if accepted is None or accepted.request_sha256 != status.request_sha256:
+                raise ValueError("target status differs from its accepted declaration")
+            if status.state == "canceling" and self._load_cancellation(status.job_id) is None:
+                self._write_model(self._cancellation_path(status.job_id), accepted)
+            if status.state in {"running", "canceling"}:
                 self._commit_status(
                     status.model_copy(
                         update={
@@ -672,6 +885,42 @@ class PersistentTargetService:
                         }
                     )
                 )
+
+    def _cancel_stopped(
+        self, accepted: AcceptedTargetJob, status: TargetJobStatus
+    ) -> TargetJobStatus:
+        job_id = accepted.declaration.job_id
+        if status.state not in {"queued", "interrupted"}:
+            return status
+        if (status.protocol == EFFECT_TARGET_PROTOCOL and status.state != "queued") or (
+            TargetCompletionCheckpoint.manifest_path(self.state_root, job_id).exists()
+            or TargetOutputCheckpoint.has_job_records(self.state_root, job_id)
+        ):
+            # A stopped payload does not establish that an effect or an early
+            # publication never committed. Keep its exact outcome unresolved.
+            return status
+        return self._commit_status(
+            status.model_copy(
+                update={
+                    "state": "canceled",
+                    "progress": TargetProgress(phase="canceled", completed=0),
+                }
+            )
+        )
+
+    def _cancellation_path(self, job_id: str) -> Path:
+        return self.state_root / f"{_job_id(job_id)}.cancel.json"
+
+    def _load_cancellation(self, job_id: str) -> AcceptedTargetJob | None:
+        path = self._cancellation_path(job_id)
+        if not path.exists():
+            return None
+        if path.is_symlink():
+            raise ValueError("target cancellation path must not be a symlink")
+        intent = AcceptedTargetJob.model_validate_json(path.read_text(encoding="utf-8"))
+        if intent != self._load_accepted(job_id):
+            raise ValueError("target cancellation differs from its accepted declaration")
+        return intent
 
     def _accepted_path(self, job_id: str) -> Path:
         return self.state_root / f"{_job_id(job_id)}.accepted.json"
@@ -698,6 +947,8 @@ class PersistentTargetService:
     def _commit_status(self, status: TargetJobStatus) -> TargetJobStatus:
         with self._lock:
             current = self._load_status(status.job_id)
+            if current == status:
+                return current
             if current is not None:
                 if current.state in _TERMINAL_STATES:
                     return current
@@ -706,8 +957,9 @@ class PersistentTargetService:
                 if current.state == "canceling" and status.state in {"queued", "running"}:
                     return current
             self._write_model(self._status_path(status.job_id), status)
-            if status.state in _TERMINAL_STATES:
-                self.prune_terminal_state()
+            self._nonterminal_job_count += int(status.state not in _TERMINAL_STATES) - int(
+                current is not None and current.state not in _TERMINAL_STATES
+            )
             return status
 
     def _write_model(self, path: Path, model: Any) -> None:
@@ -730,11 +982,10 @@ class PersistentTargetService:
             os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
             0o600,
         )
-        try:
-            os.write(descriptor, encoded)
-            os.fsync(descriptor)
-        finally:
-            os.close(descriptor)
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(encoded)
+            stream.flush()
+            os.fsync(stream.fileno())
         os.replace(temporary, path)
         directory = os.open(self.state_root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
         try:

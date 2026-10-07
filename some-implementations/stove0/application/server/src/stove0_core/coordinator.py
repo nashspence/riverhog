@@ -8,25 +8,27 @@ ports across processes while sharing the same durable :class:`WorkRecord`.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Literal, Protocol
 
+from http_api_contracts.control import ControlBudgetExhausted
 from riverhog_protocol.collection_workflows import SourceCollectionRetirementPolicy
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_client import ContentObserverClient
 from stove0_observer_protocol import (
+    AcceptedObservationJob,
     ContentObservationEvidence,
     ContentObservationInvocation,
     ContentObservationRequest,
     ContentObservationResult,
+    ObservationJobStatus,
     ObserverDescriptor,
     ObserverRuntimeAuthority,
-    validate_observation_request,
+    SemanticValidatorProvider,
 )
 from stove0_protocol import (
     ArtifactSelection,
-    BranchSetDecision,
     BranchSetEvaluation,
     BranchWorkBinding,
     ControllerEvidence,
@@ -42,7 +44,8 @@ from stove0_protocol import (
     WorkIdentity,
     branch_work,
 )
-from stove0_recipe_config import RecipeNoAction
+from stove0_protocol.no_output_decisions import CompiledNoOutputDecision
+from stove0_protocol.recipe_outcomes import NoOutputDefinition
 from stove0_target_client import TargetClient
 from stove0_target_protocol import (
     AcceptedTargetJob,
@@ -61,7 +64,11 @@ from stove0_target_protocol import (
     validate_preflight_response_against_request,
 )
 
+from stove0_core.control_contacts import ControlContacts
 from stove0_core.coordination import project_coordination
+from stove0_core.metadata_steps import planning_control_budget
+from stove0_core.observation_state import ObservationDeliveryPort, ObservationOwnerKind
+from stove0_core.planning_progress import PlanningProgress
 from stove0_core.work_state import (
     ClaimBinding,
     Stove0WorkService,
@@ -86,49 +93,46 @@ class ParentOutcomeBinding:
     outcome_id: str
 
 
-def _selected_observation_evidence(
-    request: ContentObservationRequest,
-    accepted: Iterable[ContentObservationEvidence],
-) -> tuple[ContentObservationEvidence, ...]:
-    """Resolve only sealed predecessor results already accepted by the controller."""
-
-    accepted_items = tuple(accepted)
-    available = {
-        (
-            item.request.request_id,
-            item.result.result_sha256,
-            item.request.observer_contract_id,
-        ): item
-        for item in accepted_items
-    }
-    if len(available) != len(accepted_items):
-        raise ValueError("accepted observation evidence is duplicated")
-    selected: list[ContentObservationEvidence] = []
-    for slot in request.evidence_slots or ():
-        key = (slot.request_id, slot.result_sha256, slot.observer_contract_id)
-        predecessor = available.get(key)
-        if predecessor is None:
-            raise ValueError("required observation evidence was not accepted")
-        if predecessor.result.state != "observed":
-            raise ValueError("required observation evidence was not successful")
-        selected.append(predecessor)
-    return tuple(selected)
+def _raise_observation_outcome(result: ContentObservationResult) -> None:
+    if result.state == "inapplicable":
+        assert result.inapplicable is not None
+        raise PlanningObservationTerminal(
+            state="inapplicable", code=result.inapplicable.code, message=result.inapplicable.message
+        )
+    if result.state == "failed":
+        assert result.failure is not None
+        raise PlanningObservationTerminal(
+            state="failed",
+            code=result.failure.code,
+            message=result.failure.message,
+            retryable=result.failure.retryable,
+        )
+    raise PlanningObservationTerminal(
+        state="canceled",
+        code="observer-canceled",
+        message="The observer canceled the planning question.",
+    )
 
 
-class RiverhogControlPort(Protocol):
-    """Riverhog claim/capability/verification authority used by stove0."""
-
-    def acquire_claim(self, work: WorkIdentity) -> ClaimBinding: ...
-
-    def renew_claim(self, work: WorkIdentity, claim: ClaimBinding) -> ClaimBinding: ...
-
-    def restart_claim(self, work: WorkIdentity, claim: ClaimBinding) -> ClaimBinding: ...
-
+class ObservationAuthorityPort(Protocol):
     def observation_authority(
         self,
         claim: ClaimBinding,
         request: ContentObservationRequest,
-    ) -> ObserverRuntimeAuthority: ...
+        *,
+        owner_kind: str,
+        owner_id: str,
+    ) -> ObserverRuntimeAuthority | None: ...
+
+
+class RiverhogControlPort(ObservationAuthorityPort, Protocol):
+    """Riverhog claim/capability/verification authority used by stove0."""
+
+    def acquire_claim(self, work: WorkIdentity) -> ClaimBinding | None: ...
+
+    def renew_claim(self, work: WorkIdentity, claim: ClaimBinding) -> ClaimBinding: ...
+
+    def restart_claim(self, work: WorkIdentity, claim: ClaimBinding) -> ClaimBinding: ...
 
     def seal_execution(
         self,
@@ -138,7 +142,7 @@ class RiverhogControlPort(Protocol):
         target_plan: TargetPlan,
         inputs: Iterable[WorkArtifactSubject],
         operation: OperationContract,
-    ) -> None: ...
+    ) -> bool: ...
 
     def target_authority(
         self,
@@ -146,7 +150,7 @@ class RiverhogControlPort(Protocol):
         evidence: ControllerEvidence,
         target_plan: TargetPlan,
         inputs: Iterable[WorkArtifactSubject],
-    ) -> TargetInvocationAuthority: ...
+    ) -> TargetInvocationAuthority | None: ...
 
     def verify_and_settle(
         self,
@@ -164,7 +168,7 @@ class RiverhogControlPort(Protocol):
     def verify_and_settle_no_output(
         self,
         record: WorkRecord,
-        no_action: RecipeNoAction,
+        no_action: NoOutputDefinition,
         source_collection_retirement_policy: SourceCollectionRetirementPolicy,
         source_collection_retirement_grace_seconds: int,
         parent_outcome: ParentOutcomeBinding | None = None,
@@ -188,29 +192,33 @@ class RiverhogControlPort(Protocol):
 class PlanningPort(Protocol):
     """Recipe/policy authority; implementations may not inspect content bytes."""
 
-    def observation_requests(
-        self,
-        work: WorkIdentity,
-        observations: tuple[ContentObservationEvidence, ...] = (),
-    ) -> tuple[ContentObservationRequest, ...]: ...
+    def for_invocation(self, owner_kind: str, owner_id: str) -> PlanningPort: ...
 
-    def workflow_plan(
+    def step(self, work: WorkIdentity) -> PlanningProgress: ...
+
+    def deliver_observation(
         self,
-        work: WorkIdentity,
-        observations: tuple[ContentObservationEvidence, ...],
+        progress: PlanningProgress,
         *,
-        nested_observer: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
-        | None = None,
-    ) -> BranchSetDecision | WorkInapplicable | WorkNoAction: ...
+        owner_kind: ObservationOwnerKind,
+        owner_id: str,
+        claim: ClaimBinding,
+        riverhog: ObservationAuthorityPort,
+        deliveries: ObservationDeliveryPort,
+    ) -> ContentObservationResult | None: ...
+
+    def accepted_evidence(self, work: WorkIdentity) -> tuple[ContentObservationEvidence, ...]: ...
 
     def no_output_policy(
-        self, work: WorkIdentity
-    ) -> tuple[RecipeNoAction, SourceCollectionRetirementPolicy, int]: ...
+        self, work: WorkIdentity, *, decision: CompiledNoOutputDecision
+    ) -> tuple[NoOutputDefinition, SourceCollectionRetirementPolicy, int]: ...
 
     def target_preflight_request(
         self,
         plan: WorkflowPlan,
         selections: dict[str, ArtifactSelection],
+        *,
+        descriptor: TargetDescriptor,
     ) -> TargetPreflightRequest: ...
 
     def target_input_selection(
@@ -223,18 +231,40 @@ class PlanningPort(Protocol):
 
 
 class ObserverPort(Protocol):
+    def registration_ids(self) -> tuple[str, ...]: ...
+
+    def semantic_validators(self, registration_id: str) -> SemanticValidatorProvider | None: ...
+
     def descriptor(self, registration_id: str) -> ObserverDescriptor: ...
 
-    def observe(
+    def put_job(
         self,
         registration_id: str,
         invocation: ContentObservationInvocation,
         *,
         descriptor: ObserverDescriptor,
-    ) -> ContentObservationResult: ...
+    ) -> ObservationJobStatus: ...
+
+    def get_job(
+        self,
+        registration_id: str,
+        accepted: AcceptedObservationJob,
+        *,
+        descriptor: ObserverDescriptor,
+    ) -> ObservationJobStatus: ...
+
+    def cancel_job(
+        self,
+        registration_id: str,
+        accepted: AcceptedObservationJob,
+        *,
+        descriptor: ObserverDescriptor,
+    ) -> ObservationJobStatus: ...
 
 
 class TargetPort(Protocol):
+    def registration_ids(self) -> tuple[str, ...]: ...
+
     def descriptor(self, registration_id: str) -> TargetDescriptor: ...
 
     def preflight(
@@ -278,6 +308,10 @@ class TargetCallbackPort(Protocol):
     ) -> TargetCallbackAccess: ...
 
 
+class PlanningObservationPending(RuntimeError):
+    """A durable nested observation remains pending without a payload wait."""
+
+
 class PlanningObservationTerminal(RuntimeError):
     """Truthful terminal result from an observation required during tree planning."""
 
@@ -301,18 +335,58 @@ class HttpObserverPort:
 
     def __init__(self, registrations: dict[str, ContentObserverClient]) -> None:
         self._registrations = dict(registrations)
+        self._contacts = ControlContacts(registrations)
+
+    def registration_ids(self) -> tuple[str, ...]:
+        return tuple(sorted(self._registrations))
+
+    def close(self) -> None:
+        for client in self._registrations.values():
+            client.close()
+
+    def semantic_validators(self, registration_id: str) -> SemanticValidatorProvider | None:
+        return self._client(registration_id).semantic_validators
 
     def descriptor(self, registration_id: str) -> ObserverDescriptor:
-        return self._client(registration_id).descriptor()
+        return self._contacts.call(
+            registration_id, lambda: self._client(registration_id).descriptor()
+        )
 
-    def observe(
+    def put_job(
         self,
         registration_id: str,
         invocation: ContentObservationInvocation,
         *,
         descriptor: ObserverDescriptor,
-    ) -> ContentObservationResult:
-        return self._client(registration_id).observe(invocation, descriptor=descriptor)
+    ) -> ObservationJobStatus:
+        return self._contacts.call(
+            registration_id,
+            lambda: self._client(registration_id).put_job(invocation, descriptor=descriptor),
+        )
+
+    def get_job(
+        self,
+        registration_id: str,
+        accepted: AcceptedObservationJob,
+        *,
+        descriptor: ObserverDescriptor,
+    ) -> ObservationJobStatus:
+        return self._contacts.call(
+            registration_id,
+            lambda: self._client(registration_id).status(accepted, descriptor=descriptor),
+        )
+
+    def cancel_job(
+        self,
+        registration_id: str,
+        accepted: AcceptedObservationJob,
+        *,
+        descriptor: ObserverDescriptor,
+    ) -> ObservationJobStatus:
+        return self._contacts.call(
+            registration_id,
+            lambda: self._client(registration_id).cancel(accepted, descriptor=descriptor),
+        )
 
     def _client(self, registration_id: str) -> ContentObserverClient:
         try:
@@ -326,16 +400,28 @@ class HttpTargetPort:
 
     def __init__(self, registrations: dict[str, TargetClient]) -> None:
         self._registrations = dict(registrations)
+        self._contacts = ControlContacts(registrations)
+
+    def close(self) -> None:
+        for client in self._registrations.values():
+            client.close()
+
+    def registration_ids(self) -> tuple[str, ...]:
+        return tuple(sorted(self._registrations))
 
     def descriptor(self, registration_id: str) -> TargetDescriptor:
-        return self._client(registration_id).descriptor()
+        return self._contacts.call(
+            registration_id, lambda: self._client(registration_id).descriptor()
+        )
 
     def preflight(
         self,
         registration_id: str,
         request: TargetPreflightRequest,
     ) -> TargetPreflightResponse:
-        return self._client(registration_id).preflight(request)
+        return self._contacts.call(
+            registration_id, lambda: self._client(registration_id).preflight(request)
+        )
 
     def put_job(
         self,
@@ -344,7 +430,10 @@ class HttpTargetPort:
         *,
         operation: OperationContract,
     ) -> TargetJobStatus:
-        return self._client(registration_id).put_job(request, operation=operation)
+        return self._contacts.call(
+            registration_id,
+            lambda: self._client(registration_id).put_job(request, operation=operation),
+        )
 
     def get_job(
         self,
@@ -353,7 +442,10 @@ class HttpTargetPort:
         *,
         operation: OperationContract,
     ) -> TargetJobStatus:
-        return self._client(registration_id).status(request, operation=operation)
+        return self._contacts.call(
+            registration_id,
+            lambda: self._client(registration_id).status(request, operation=operation),
+        )
 
     def cancel_job(
         self,
@@ -362,7 +454,10 @@ class HttpTargetPort:
         *,
         operation: OperationContract,
     ) -> TargetJobStatus:
-        return self._client(registration_id).cancel(request, operation=operation)
+        return self._contacts.call(
+            registration_id,
+            lambda: self._client(registration_id).cancel(request, operation=operation),
+        )
 
     def _client(self, registration_id: str) -> TargetClient:
         try:
@@ -405,7 +500,43 @@ class Stove0Coordinator:
             raise KeyError(work_id)
         return project_coordination(record, self.work.store).evaluation
 
+    def maintain(self, work_id: str) -> WorkRecord:
+        """Renew live custody independently of extension contact and its backoff."""
+        record = self.work.store.load(work_id)
+        if record is None:
+            raise KeyError(work_id)
+        if record.claim is None or record.phase in {
+            "complete",
+            "no_action",
+            "inapplicable",
+            "failed",
+            "canceled",
+            "abandon_pending",
+            "settled",
+            "source_collection_retirement_pending",
+        }:
+            return record
+        renewed = self.riverhog.renew_claim(record.work, record.claim)
+        if renewed != record.claim:
+            return self.work.rebind_claim(
+                work_id,
+                claim_id=renewed.claim_id,
+                fence=renewed.fence,
+                expected_revision=record.revision,
+            )
+        return record
+
     def step(self, work_id: str) -> WorkRecord:
+        with planning_control_budget():
+            try:
+                return self._step(work_id)
+            except ControlBudgetExhausted:
+                current = self.work.store.load(work_id)
+                if current is None:
+                    raise KeyError(work_id) from None
+                return current
+
+    def _step(self, work_id: str) -> WorkRecord:
         record = self.work.store.load(work_id)
         if record is None:
             raise KeyError(work_id)
@@ -417,33 +548,19 @@ class Stove0Coordinator:
         ):
             return self._advance_coordination_cancel(record)
         if phase == "abandon_pending":
+            if self._cancel_observation_delivery(record, stale_only=False):
+                return record
             self.riverhog.abandon_claim(record)
             return self.work.complete_abandon(
                 work_id,
                 expected_revision=record.revision,
             )
-        if phase in {
-            "claimed",
-            "observing",
-            "planning",
-            "target_preflight",
-            "queued",
-            "executing",
-            "output_finalizing",
-            "coordinating",
-            "no_output_pending",
-        }:
-            assert record.claim is not None
-            renewed = self.riverhog.renew_claim(record.work, record.claim)
-            if renewed != record.claim:
-                return self.work.rebind_claim(
-                    work_id,
-                    claim_id=renewed.claim_id,
-                    fence=renewed.fence,
-                    expected_revision=record.revision,
-                )
+        if record.claim is not None and self._cancel_observation_delivery(record, stale_only=True):
+            return record
         if phase == "eligible":
             claim = self.riverhog.acquire_claim(record.work)
+            if claim is None:
+                return record
             return self.work.bind_claim(
                 work_id,
                 claim_id=claim.claim_id,
@@ -461,39 +578,34 @@ class Stove0Coordinator:
                     work_id,
                     expected_revision=record.revision,
                 )
-            assert record.claim is not None
-            requests = self.planning.observation_requests(record.work)
-            if requests:
-                return self.work.begin_observations(
-                    work_id,
-                    requests,
-                    expected_revision=record.revision,
-                )
             return self.work.begin_planning(work_id, expected_revision=record.revision)
-        if phase == "observing":
-            return self._observe_one(record)
         if phase == "planning":
-            evidence = tuple(
-                ContentObservationEvidence(request=request, result=result)
-                for request, result in zip(
-                    record.observation_requests,
-                    record.observation_results,
-                    strict=True,
-                )
-            )
-            next_stage = self.planning.observation_requests(record.work, evidence)
-            if next_stage:
-                return self.work.begin_observations(
-                    work_id,
-                    next_stage,
-                    expected_revision=record.revision,
-                )
+            assert record.claim is not None
             try:
-                decision = self.planning.workflow_plan(
-                    record.work,
-                    evidence,
-                    nested_observer=lambda child: self._observe_planning_work(record, child),
+                planning = self.planning.for_invocation("work", record.work_id)
+                progress = planning.step(record.work)
+                if progress.state == "question":
+                    result = planning.deliver_observation(
+                        progress,
+                        owner_kind="work",
+                        owner_id=record.work_id,
+                        claim=record.claim,
+                        riverhog=self.riverhog,
+                        deliveries=self.work.store,
+                    )
+                    if result is not None:
+                        _raise_observation_outcome(result)
+                    return record
+                if progress.state == "pending":
+                    return record
+                decision = progress.decision if progress.state == "ready" else progress.outcome
+                evidence = (
+                    planning.accepted_evidence(record.work)
+                    if isinstance(decision, WorkNoAction)
+                    else ()
                 )
+            except PlanningObservationPending:
+                return record
             except PlanningObservationTerminal as outcome:
                 if outcome.state == "inapplicable":
                     return self.work.mark_inapplicable(
@@ -542,6 +654,7 @@ class Stove0Coordinator:
                         work=record.work,
                         observations=evidence,
                         outcome=PreviewOutcome(code=decision.code, message=decision.message),
+                        no_output_decision=decision.decision,
                     )
                 )
                 if record.no_action_preview is not None and record.no_action_preview != preview:
@@ -557,9 +670,9 @@ class Stove0Coordinator:
                 return self.work.mark_no_action(
                     work_id,
                     preview,
-                    source_collection_retirement_policy=self.planning.no_output_policy(record.work)[
-                        1
-                    ],
+                    source_collection_retirement_policy=self.planning.no_output_policy(
+                        record.work, decision=decision.decision
+                    )[1],
                     expected_revision=record.revision,
                 )
             acceptance = record.preview_acceptance
@@ -576,6 +689,8 @@ class Stove0Coordinator:
                     ),
                     expected_revision=record.revision,
                 )
+            if decision is None:
+                raise ValueError("ready compiled planning lost its exact branch decision")
             if (
                 acceptance is not None
                 and decision.plan.branch_set_sha256 != acceptance.branch_set_sha256
@@ -662,9 +777,7 @@ class Stove0Coordinator:
         if phase == "settled":
             return self._begin_or_complete_retirement(record)
         if phase == "no_output_pending":
-            no_action, retirement_policy, grace_seconds = self.planning.no_output_policy(
-                record.work
-            )
+            no_action, retirement_policy, grace_seconds = self._no_output_policy(record)
             no_output_sha256 = self.riverhog.verify_and_settle_no_output(
                 record,
                 no_action,
@@ -750,108 +863,30 @@ class Stove0Coordinator:
             expected_revision=record.revision,
         )
 
-    def _observe_one(self, record: WorkRecord) -> WorkRecord:
-        assert record.claim is not None
-        completed = {item.request_id for item in record.observation_results}
-        request = next(
-            (item for item in record.observation_requests if item.request_id not in completed),
-            None,
+    def _cancel_observation_delivery(self, owner: WorkRecord, *, stale_only: bool) -> bool:
+        exclude = (
+            (owner.claim.claim_id, owner.claim.fence)
+            if stale_only and owner.claim is not None
+            else None
         )
-        if request is None:
-            raise RuntimeError("observing work has no pending observation request")
-        descriptor = self.observers.descriptor(request.observer_registration_id)
-        if descriptor.descriptor_sha256 != request.observer_descriptor_sha256:
-            raise RuntimeError("configured observer descriptor changed after request sealing")
-        validate_observation_request(request, descriptor)
-        accepted = tuple(
-            ContentObservationEvidence(request=prior, result=result)
-            for prior in record.observation_requests
-            for result in record.observation_results
-            if prior.request_id == result.request_id
+        pending = self.work.store.scan_observation_deliveries(
+            "work",
+            owner.work_id,
+            incomplete_only=True,
+            exclude_claim=exclude,
+            limit=1,
         )
-        predecessors = _selected_observation_evidence(request, accepted)
-        authority = self.riverhog.observation_authority(record.claim, request)
-        result = self.observers.observe(
-            request.observer_registration_id,
-            ContentObservationInvocation(
-                request=request,
-                claim_id=record.claim.claim_id,
-                fence=record.claim.fence,
-                runtime=authority,
-                evidence=predecessors,
-            ),
+        if not pending:
+            return False
+        accepted = pending[0].accepted
+        descriptor = self.observers.descriptor(accepted.request.observer_registration_id)
+        status = self.observers.cancel_job(
+            accepted.request.observer_registration_id,
+            accepted,
             descriptor=descriptor,
         )
-        return self.work.record_observation(
-            record.work_id,
-            result,
-            expected_revision=record.revision,
-        )
-
-    def _observe_planning_work(
-        self,
-        parent: WorkRecord,
-        work: WorkIdentity,
-    ) -> tuple[ContentObservationEvidence, ...]:
-        """Observe an exact nested coordinator under the root's scoped claim."""
-
-        if parent.claim is None:
-            raise RuntimeError("nested planning requires the root coordination claim")
-        evidence: list[ContentObservationEvidence] = []
-        while requests := self.planning.observation_requests(work, tuple(evidence)):
-            for request in requests:
-                result = self._observe_nested_request(parent, work, request, evidence)
-                if result.state == "inapplicable":
-                    assert result.inapplicable is not None
-                    raise PlanningObservationTerminal(
-                        state="inapplicable",
-                        code=result.inapplicable.code,
-                        message=result.inapplicable.message,
-                    )
-                if result.state == "failed":
-                    assert result.failure is not None
-                    raise PlanningObservationTerminal(
-                        state="failed",
-                        code=result.failure.code,
-                        message=result.failure.message,
-                        retryable=result.failure.retryable,
-                    )
-                if result.state == "canceled":
-                    raise PlanningObservationTerminal(
-                        state="canceled",
-                        code="observer-canceled",
-                        message="A required nested content observation was canceled.",
-                    )
-                evidence.append(ContentObservationEvidence(request=request, result=result))
-        return tuple(sorted(evidence, key=lambda item: item.request.request_id))
-
-    def _observe_nested_request(
-        self,
-        parent: WorkRecord,
-        work: WorkIdentity,
-        request: ContentObservationRequest,
-        evidence: list[ContentObservationEvidence],
-    ) -> ContentObservationResult:
-        assert parent.claim is not None
-        if request.work_id != work.work_id:
-            raise RuntimeError("nested observation request differs from its work identity")
-        descriptor = self.observers.descriptor(request.observer_registration_id)
-        if descriptor.descriptor_sha256 != request.observer_descriptor_sha256:
-            raise RuntimeError("configured observer descriptor changed during tree planning")
-        validate_observation_request(request, descriptor)
-        predecessors = _selected_observation_evidence(request, evidence)
-        authority = self.riverhog.observation_authority(parent.claim, request)
-        return self.observers.observe(
-            request.observer_registration_id,
-            ContentObservationInvocation(
-                request=request,
-                claim_id=parent.claim.claim_id,
-                fence=parent.claim.fence,
-                runtime=authority,
-                evidence=predecessors,
-            ),
-            descriptor=descriptor,
-        )
+        self.work.store.update_observation_delivery("work", owner.work_id, accepted.job_id, status)
+        return True
 
     def _preflight(self, record: WorkRecord) -> WorkRecord:
         plan = record.workflow_plan
@@ -863,7 +898,7 @@ class Stove0Coordinator:
         documents = self._selection_documents(record)
         input_selection = self.planning.target_input_selection(plan, documents)
         self.work.store.retain_selection(input_selection)
-        request = self.planning.target_preflight_request(plan, documents)
+        request = self.planning.target_preflight_request(plan, documents, descriptor=target)
         response = self.targets.preflight(plan.target_registration_id, request)
         if (
             record.expected_target_plan_sha256 is not None
@@ -899,7 +934,7 @@ class Stove0Coordinator:
             or record.controller_evidence is None
         ):
             raise RuntimeError("queued work is missing its sealed authorities")
-        self.riverhog.seal_execution(
+        sealed = self.riverhog.seal_execution(
             record.claim,
             record.controller_evidence,
             record.workflow_plan,
@@ -909,6 +944,8 @@ class Stove0Coordinator:
             ),
             self.planning.operation_contract(record.workflow_plan.operation),
         )
+        if not sealed:
+            return record
         authority = self.riverhog.target_authority(
             record.claim,
             record.controller_evidence,
@@ -917,6 +954,8 @@ class Stove0Coordinator:
                 record.target_plan.inputs.selection.selection_sha256
             ),
         )
+        if authority is None:
+            return record
         declaration = TargetJobDeclaration(
             job_id=(record.controller_evidence.execution_envelope.execution_envelope_sha256),
             claim_id=record.claim.claim_id,
@@ -965,6 +1004,8 @@ class Stove0Coordinator:
                 record.target_plan.inputs.selection.selection_sha256
             ),
         )
+        if authority is None:
+            return record
         refreshed = TargetJobRequest(
             declaration=record.target_request.declaration,
             runtime=authority.runtime,
@@ -986,6 +1027,14 @@ class Stove0Coordinator:
             operation=operation,
             expected_revision=record.revision,
         )
+
+    def _no_output_policy(
+        self, record: WorkRecord
+    ) -> tuple[NoOutputDefinition, SourceCollectionRetirementPolicy, int]:
+        preview = record.no_action_preview
+        if preview is None or preview.no_output_decision is None:
+            raise ValueError("successful no-output settlement lacks its exact indexed decision")
+        return self.planning.no_output_policy(record.work, decision=preview.no_output_decision)
 
     def _begin_or_complete_retirement(self, record: WorkRecord) -> WorkRecord:
         policy: SourceCollectionRetirementPolicy | None
@@ -1011,7 +1060,7 @@ class Stove0Coordinator:
                     child.workflow_plan.operation
                 ).source_collection_retirement_permitted
                 if child.workflow_plan is not None
-                else self.planning.no_output_policy(child.work)[0].source_loss is not None
+                else self._no_output_policy(child)[0].source_loss is not None
                 for child in leaves
             ):
                 raise RuntimeError(
@@ -1024,7 +1073,7 @@ class Stove0Coordinator:
                 raise RuntimeError(
                     "operation contract does not authorize source collection retirement"
                 )
-        elif self.planning.no_output_policy(record.work)[0].source_loss is None:
+        elif self._no_output_policy(record)[0].source_loss is None:
             raise RuntimeError("no-output decision has no source-loss retirement permission")
         if not self.riverhog.begin_source_collection_retirement(record):
             return record

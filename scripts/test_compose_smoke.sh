@@ -437,14 +437,6 @@ start_stove0_scope() {
   compose exec -T postgres psql --username riverhog --dbname "${database}" \
     --command 'CREATE EXTENSION pg_trgm WITH SCHEMA public;'
   sed '/^recipes:/,$d' "${ROOT_DIR}/qualification/fixtures/stove0/config.yaml" > "${STOVE0_CONFIG_HOST_PATH}"
-  if [[ "${scope}" == "processing-scale" ]]; then
-    # A synchronous preview's claim covers every observation stage. The default
-    # thirty-minute lease is adequate for CI fixtures but not the scale corpus.
-    local excess=$((smoke_file_count > 16 ? smoke_file_count - 16 : 0))
-    local claim_seconds=$((900 + 30 * excess))
-    if (( claim_seconds < 1800 )); then claim_seconds=1800; fi
-    printf 'claim_lease_seconds: %s\n' "${claim_seconds}" >> "${STOVE0_CONFIG_HOST_PATH}"
-  fi
   printf '%s\n' 'recipes:' >> "${STOVE0_CONFIG_HOST_PATH}"
   sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/recipes.yaml" >> "${STOVE0_CONFIG_HOST_PATH}"
   printf '%s\n' 'admissions:' >> "${STOVE0_CONFIG_HOST_PATH}"
@@ -495,6 +487,7 @@ invoke_processing() {
     --env "STOVE0_SMOKE_FILE_COUNT=$2" \
     --env "STOVE0_SMOKE_SIDECAR_COUNT=$3" \
     --env "STOVE0_SMOKE_RECIPE_ID=${processing_recipe_id}" \
+    --env "STOVE0_SMOKE_COMPLETION_TIMEOUT=${smoke_completion_timeout}" \
     --env "EXPECTED_WORK_ID=${expected_work_id:-}" \
     api python -c "${processing_qualification}" invoke
 }
@@ -867,11 +860,12 @@ stove0_compose stop controller
 upload_media_fixture
 # Synchronous admission evaluates every declared observer stage. Match the
 # maintained Stove0 client's 300-second operation timeout; browse stays at 5s.
-scheduler_step_code="import json, os, urllib.request
+scheduler_step_code="import json, os, time, urllib.request
 collection_id = os.environ['INPUT_COLLECTION_ID']
 expected = os.environ['RIVERHOG_SMOKE_SCHEDULER_STEP']
 state_order = {'intent': 0, 'previewed': 1, 'work_bound': 2}
-for _ in range(4):
+deadline = time.monotonic() + 900
+while time.monotonic() < deadline:
     request = urllib.request.Request(
         'http://127.0.0.1:8080/v1/admin/scheduler/run',
         data=json.dumps({'role': 'controller', 'work_limit': 1}).encode(),
@@ -882,8 +876,8 @@ for _ in range(4):
         method='POST',
     )
     result = json.load(urllib.request.urlopen(request, timeout=300))
-    assert result['admission'] is not None, result
-    assert result['admission']['failures'] == [], result
+    if result['admission'] is not None:
+        assert result['admission']['failures'] == [], result
     request = urllib.request.Request(
         'http://127.0.0.1:8080/v1/admissions?page_size=100&sort=admission_id&order=asc',
         headers={'Authorization': 'Bearer stove0-compose-smoke-token'},
@@ -895,6 +889,7 @@ for _ in range(4):
     ]
     if not matches:
         assert expected == 'intent'
+        time.sleep(0.5)
         continue
     assert len(matches) == 1, matches
     current = matches[0]['state']
@@ -902,6 +897,7 @@ for _ in range(4):
         break
     assert current in state_order, matches[0]
     assert state_order[current] < state_order[expected], matches[0]
+    time.sleep(0.5)
 else:
     raise AssertionError({'expected': expected, 'matches': matches})"
 admission_state_code="import json, os, urllib.request

@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from typing import Any, cast
 
 import pytest
+from planning_fixture import no_output_preview
 from riverhog_client import ApiClient
 from riverhog_protocol import (
     CatalogSyncChangePage,
@@ -30,6 +31,7 @@ from stove0_protocol import (
     BranchTargetPreview,
     CollectionRootIdentityRef,
     OperationIdentityRef,
+    PlanningJobStatus,
     PreviewOutcome,
     RecipeIdentityRef,
     TargetPlanBinding,
@@ -282,16 +284,31 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
 
 
 class _Preview:
-    def preview(self, work: WorkIdentity) -> WorkflowPreview:
+    def submit(self, work: WorkIdentity, *, invocation_id: str) -> PlanningJobStatus:
+        return PlanningJobStatus(
+            job_id=invocation_id,
+            work_id=work.work_id,
+            state="completed",
+            result=self.result_for(work),
+        )
+
+    def result_for(self, work: WorkIdentity) -> WorkflowPreview:
         return _ready_preview(work)
 
 
-class _TerminalPreview:
+class _TerminalPreview(_Preview):
     def __init__(self, state: str, *, retryable: bool | None = None) -> None:
         self.state = state
         self.retryable = retryable
 
-    def preview(self, work: WorkIdentity) -> WorkflowPreview:
+    def result_for(self, work: WorkIdentity) -> WorkflowPreview:
+        if self.state == "no_action":
+            return no_output_preview(
+                work,
+                ArtifactSelection.seal(()).ref(),
+                code="fixture.outcome/v1",
+                message="The exact observation resolved this intent.",
+            )
         request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
         return WorkflowPreview.seal(
             WorkflowPreviewPayload(
@@ -307,11 +324,11 @@ class _TerminalPreview:
         )
 
 
-class _SelectivePreview:
+class _SelectivePreview(_Preview):
     def __init__(self, failing_collection_id: int) -> None:
         self.failing_collection_id = failing_collection_id
 
-    def preview(self, work: WorkIdentity) -> WorkflowPreview:
+    def result_for(self, work: WorkIdentity) -> WorkflowPreview:
         if work.inputs[0].collection_id == self.failing_collection_id:
             raise RuntimeError("permanent candidate failure")
         return _ready_preview(work)

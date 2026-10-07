@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, cast
 
 from a_review0_nvenc_av1_opus_sampler.app import create_app as create_nvenc_sampler_app
 from a_review0_opus_sampler.app import create_app as create_opus_sampler_app
+from a_stove0_exiftool_observer import ExiftoolObserver
 from a_stove0_exiftool_observer.app import create_app as create_exiftool_app
+from a_stove0_ffprobe_observer import FfprobeObserver
 from a_stove0_ffprobe_observer.app import create_app as create_ffprobe_app
 from a_stove0_nvenc_av1_opus_target.app import create_target_app as create_nvenc_target_app
 from a_stove0_opus_target.app import create_target_app as create_opus_target_app
@@ -33,11 +36,23 @@ def _close() -> None:
     pass
 
 
-def _applications() -> tuple[
-    tuple[FastAPI, tuple[HttpOperationContract, ...], tuple[str, str]], ...
-]:
-    observer_exif = cast(Any, SimpleNamespace(exiftool="fixture"))
-    observer_ffprobe = cast(Any, SimpleNamespace(ffprobe="fixture"))
+def _applications(tmp_path: Path):
+    # Real descriptors keep the maintained service startup contract in this witness.
+    apps = _application_set(tmp_path)
+    try:
+        yield from apps
+    finally:
+        for app, _, _ in apps:
+            service = getattr(app.state, "observer_service", None)
+            if service is not None:
+                service.close()
+
+
+def _application_set(
+    tmp_path: Path,
+) -> tuple[tuple[FastAPI, tuple[HttpOperationContract, ...], tuple[str, str]], ...]:
+    observer_exif = ExiftoolObserver(exiftool="fixture", image_id="sha256:" + "f" * 64)
+    observer_ffprobe = FfprobeObserver(ffprobe="fixture", image_id="sha256:" + "f" * 64)
     target = cast(Any, SimpleNamespace(ffmpeg="fixture", close=_close))
     review = cast(Any, SimpleNamespace(close=_close))
     sampler = cast(Any, SimpleNamespace(ffmpeg="fixture"))
@@ -52,12 +67,16 @@ def _applications() -> tuple[
             ("GET", "/v1/objects/read"),
         ),
         (
-            create_exiftool_app(token="secret", observer=observer_exif),
+            create_exiftool_app(
+                token="secret", observer=observer_exif, state_root=tmp_path / "exif-state"
+            ),
             OBSERVER_HTTP_OPERATIONS,
             ("POST", "/v1/observer"),
         ),
         (
-            create_ffprobe_app(token="secret", observer=observer_ffprobe),
+            create_ffprobe_app(
+                token="secret", observer=observer_ffprobe, state_root=tmp_path / "ffprobe-state"
+            ),
             OBSERVER_HTTP_OPERATIONS,
             ("POST", "/v1/observer"),
         ),
@@ -104,8 +123,8 @@ def _operation_set(schema: dict[str, Any]) -> set[tuple[str, str]]:
     }
 
 
-def test_maintained_role_openapi_is_derived_from_each_executable_binding() -> None:
-    for app, contracts, _ in _applications():
+def test_maintained_role_openapi_is_derived_from_each_executable_binding(tmp_path: Path) -> None:
+    for app, contracts, _ in _applications(tmp_path):
         schema = app.openapi()
         assert _operation_set(schema) == {
             (contract.method, contract.path) for contract in contracts
@@ -146,10 +165,10 @@ def test_maintained_role_openapi_is_derived_from_each_executable_binding() -> No
                 )
 
 
-def test_maintained_role_services_expose_no_unaccounted_query_selectors() -> None:
+def test_maintained_role_services_expose_no_unaccounted_query_selectors(tmp_path: Path) -> None:
     """Freeze selector-free role protocols across every maintained implementation."""
 
-    for app, _contracts, _unadvertised in _applications():
+    for app, _contracts, _unadvertised in _applications(tmp_path):
         selectors = {
             str(operation["operationId"]): {
                 parameter["name"]
@@ -165,8 +184,8 @@ def test_maintained_role_services_expose_no_unaccounted_query_selectors() -> Non
         assert selectors == {}
 
 
-def test_unadvertised_role_methods_still_receive_runtime_method_rejection() -> None:
-    for app, _, (method, path) in _applications():
+def test_unadvertised_role_methods_still_receive_runtime_method_rejection(tmp_path: Path) -> None:
+    for app, _, (method, path) in _applications(tmp_path):
         with TestClient(app) as client:
             response = client.request(
                 method,
@@ -184,7 +203,7 @@ def test_target_operation_contract_declares_ordinary_conflict_and_absence() -> N
 
     assert 409 in by_operation[("POST", "/v1/preflight")]
     assert 404 in by_operation[("GET", "/v1/jobs/{job_id}")]
-    assert 404 in by_operation[("POST", "/v1/jobs/{job_id}/cancel")]
+    assert 404 not in by_operation[("POST", "/v1/jobs/{job_id}/cancel")]
 
 
 def test_target_binding_fails_closed_on_an_error_not_declared_for_the_operation() -> None:

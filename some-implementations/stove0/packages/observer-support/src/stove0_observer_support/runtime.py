@@ -18,7 +18,6 @@ from riverhog_client.processing import (
 )
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_protocol import (
-    ContentObservationEvidence,
     ContentObservationInvocation,
     ContentObservationRequest,
     ContentObservationResult,
@@ -26,6 +25,7 @@ from stove0_observer_protocol import (
     ObserverDescriptor,
     WorkArtifactSubject,
 )
+from stove0_protocol.accepted_inputs import AcceptedEvidenceInput
 
 CancellationCheck = Callable[[], None]
 Heartbeat = Callable[[], None]
@@ -56,7 +56,7 @@ class ContentObservationRuntime:
         cancellation_check: CancellationCheck | None = None,
         heartbeat: Heartbeat | None = None,
         declared_workspace_protection: DeclaredWorkspaceProtection,
-        evidence: Sequence[ContentObservationEvidence] = (),
+        evidence: Sequence[AcceptedEvidenceInput] = (),
         owned_api: bool = False,
     ) -> None:
         self.api = (
@@ -66,15 +66,11 @@ class ContentObservationRuntime:
         )
         self.request = request
         selected = {
-            (
-                item.request.request_id,
-                item.result.result_sha256,
-                item.request.observer_contract_id,
-            ): item
+            (item.authority.input_sha256, item.authority.source.question.observer_contract.id): item
             for item in evidence
         }
         slots = {
-            (item.request_id, item.result_sha256, item.observer_contract_id): item.slot
+            (item.accepted_input_sha256, item.observer_contract_id): item.slot
             for item in request.evidence_slots or ()
         }
         if (
@@ -83,20 +79,9 @@ class ContentObservationRuntime:
             or set(selected) != set(slots)
         ):
             raise ValueError("observation runtime evidence differs from the sealed request")
-        subject_keys = {
-            (item.collection, item.artifact_id, item.bytes, item.sha256)
-            for item in request.subjects
-        }
-        if any(
-            item.request.work_id != request.work_id
-            or any(
-                (subject.collection, subject.artifact_id, subject.bytes, subject.sha256)
-                not in subject_keys
-                for subject in item.request.subjects
-            )
-            for item in evidence
-        ):
-            raise ValueError("observation runtime evidence is outside the exact work scope")
+        from stove0_protocol.models import _validate_observation_evidence_scope
+
+        _validate_observation_evidence_scope(request, tuple(evidence))
         self._evidence = {slots[key]: value for key, value in selected.items()}
         self.claim_id = claim_id.strip()
         self.fence = int(fence)
@@ -220,7 +205,7 @@ class ContentObservationRuntime:
         self.heartbeat()
         return self.reader.provenance(artifact)
 
-    def open_evidence(self, slot: str) -> ContentObservationEvidence:
+    def open_evidence(self, slot: str) -> AcceptedEvidenceInput:
         """Return only a declared predecessor after current claim and root checks."""
 
         if self.request.read_actions != ("read-evidence",):

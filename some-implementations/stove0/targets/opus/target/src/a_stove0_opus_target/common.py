@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import hashlib
-import subprocess
 import threading
 import time
 from collections.abc import Callable, Sequence
 from pathlib import Path
+
+from stove0_extension_support import subprocess
 
 
 class OpusContentError(RuntimeError):
