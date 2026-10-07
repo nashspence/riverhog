@@ -326,6 +326,7 @@ jobs:
           TESTS="tests/unit/test_operation_lifecycle_api.py::test_riverhog_official_client_positive_disposable_lifecycle
           tests/unit/test_event_cursor_restart.py
           some-implementations/stove0/application/tests/test_stove0_api_parity.py::test_stove0_official_client_positive_disposable_lifecycle
+          some-implementations/stove0/application/tests/test_planning_inspection.py::test_current_client_inspects_named_tasks_and_exact_accepted_evidence[work]
           some-implementations/stove0/application/tests/test_stove0_api_parity.py::test_target_callback_surface_has_one_current_target_client_and_real_api_witness
           some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py::test_official_client_positive_disposable_lifecycle
           tests/unit/test_collection_reads.py::test_collection_list_query_count_is_independent_of_page_rows
