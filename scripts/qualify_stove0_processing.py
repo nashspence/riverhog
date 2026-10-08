@@ -10,6 +10,7 @@ import json
 import os
 import sys
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -19,7 +20,7 @@ from stove0_protocol import CollectionRootIdentityRef, PlanningJobStatus
 from stove0_target_protocol import AcceptedTargetJob, TargetJobStatus, TransformPlan
 
 
-def stove(path: str, payload: Any = None) -> dict[str, Any]:
+def stove(path: str, payload: Any = None, *, timeout: float = 30) -> dict[str, Any]:
     request = urllib.request.Request(
         "http://127.0.0.1:8080" + path,
         data=None if payload is None else canonical_json_bytes(payload),
@@ -28,7 +29,7 @@ def stove(path: str, payload: Any = None) -> dict[str, Any]:
             "Content-Type": "application/json",
         },
     )
-    with urllib.request.urlopen(request, timeout=30) as response:
+    with urllib.request.urlopen(request, timeout=timeout) as response:
         document = json.load(response)
     assert isinstance(document, dict)
     return document
@@ -123,6 +124,76 @@ def declared_values(actual: Any, declared: Any) -> None:
             declared_values(actual[name], value)
     else:
         assert actual == declared
+
+
+def await_admission() -> None:
+    """Observe exact admission milestones without bounding observation work by a control call."""
+    collection_id = os.environ["INPUT_COLLECTION_ID"]
+    expected = os.environ["RIVERHOG_SMOKE_SCHEDULER_STEP"]
+    state_order = {"intent": 0, "previewed": 1, "work_bound": 2}
+    started = time.monotonic()
+    deadline = started + int(os.environ["STOVE0_SMOKE_ADMISSION_TIMEOUT"])
+    previous = None
+    next_progress = started
+    preview_ids: tuple[str, ...] = ()
+    diagnostic: dict[str, Any] = {"expected": expected}
+    while (now := time.monotonic()) < deadline:
+        result = stove(
+            "/v1/admin/scheduler/run", {"role": "controller", "work_limit": 1}, timeout=5
+        )
+        if result["admission"] is not None:
+            assert result["admission"]["failures"] == [], result
+        previews = result.get("previews") or {}
+        if previews.get("progressed"):
+            preview_ids = tuple(dict.fromkeys(previews["progressed"]))
+        payload = stove("/v1/admissions?page_size=100&sort=admission_id&order=asc", timeout=5)
+        matches = [
+            row
+            for row in payload["admissions"]
+            if row["intent"]["collection"]["collection_id"] == collection_id
+        ]
+        assert len(matches) <= 1, matches
+        row = matches[0] if matches else {}
+        current = row.get("state")
+        if current == expected:
+            return
+        if current is None:
+            assert expected == "intent"
+        else:
+            assert current in state_order, row
+            assert state_order[current] < state_order[expected], row
+        if current != previous or now >= next_progress:
+            planning = []
+            for job_id in preview_ids:
+                try:
+                    status = stove("/v1/workflow-previews/" + job_id, timeout=5)
+                except (TimeoutError, urllib.error.HTTPError) as error:
+                    planning.append(
+                        {"job_id": job_id, "diagnostic_read_error": type(error).__name__}
+                    )
+                else:
+                    planning.append(
+                        {
+                            "job_id": job_id,
+                            "state": status["state"],
+                            "outcome": (status.get("result") or {}).get("state"),
+                        }
+                    )
+            diagnostic = {
+                "proof": "admission-progress",
+                "elapsed_seconds": int(now - started),
+                "expected": expected,
+                "state": current,
+                "admission_id": row.get("intent", {}).get("admission_id"),
+                "attempt_count": row.get("attempt_count"),
+                "failure": row.get("failure"),
+                "planning": planning,
+                "preview_failures": previews.get("failures", []),
+            }
+            print(canonical_json_bytes(diagnostic).decode(), file=sys.stderr, flush=True)
+            previous, next_progress = current, now + 60
+        time.sleep(0.5)
+    raise AssertionError(canonical_json_bytes(diagnostic).decode())
 
 
 def await_planning(path: str, *, initiation: bool = False) -> dict[str, Any]:
@@ -403,9 +474,13 @@ def target_records() -> None:
 
 
 def main() -> None:
-    {"invoke": invoke, "wait": wait, "snapshot": snapshot, "target-records": target_records}[
-        sys.argv[1]
-    ]()
+    {
+        "admission": await_admission,
+        "invoke": invoke,
+        "wait": wait,
+        "snapshot": snapshot,
+        "target-records": target_records,
+    }[sys.argv[1]]()
 
 
 if __name__ == "__main__":

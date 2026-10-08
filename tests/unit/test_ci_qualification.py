@@ -488,3 +488,75 @@ def test_processing_progress_reports_durable_phases_during_long_waits(
     assert len(progress) == 2
     assert [row["elapsed_seconds"] for row in progress] == [1, 62]
     assert all(row["work"][0]["phase"] == "output_finalizing" for row in progress)
+
+
+@pytest.mark.parametrize("ready_at", [902, None])
+def test_admission_wait_retains_pending_work_past_the_old_timeout_and_reports_planning(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture, ready_at: int | None
+) -> None:
+    monkeypatch.setenv("INPUT_COLLECTION_ID", "1")
+    monkeypatch.setenv("RIVERHOG_SMOKE_SCHEDULER_STEP", "previewed")
+    monkeypatch.setenv("STOVE0_SMOKE_ADMISSION_TIMEOUT", "1860")
+    ticks = iter([0, 1, ready_at if ready_at is not None else 1861])
+    monkeypatch.setattr(
+        processing, "time", SimpleNamespace(monotonic=lambda: next(ticks), sleep=lambda _: None)
+    )
+    contacts = []
+    scans = 0
+
+    def read(path, payload=None, *, timeout=30):
+        nonlocal scans
+        contacts.append((path, timeout))
+        if payload is not None:
+            return {
+                "admission": {"failures": []},
+                "previews": {"progressed": ["job"], "failures": []},
+            }
+        if path.startswith("/v1/workflow-previews/"):
+            return {"job_id": "job", "state": "observing", "result": None}
+        scans += 1
+        return {
+            "admissions": [
+                {
+                    "intent": {"collection": {"collection_id": "1"}, "admission_id": "admission"},
+                    "state": "intent" if scans == 1 else "previewed",
+                    "attempt_count": 0,
+                    "failure": None,
+                }
+            ]
+        }
+
+    monkeypatch.setattr(processing, "stove", read)
+    if ready_at is not None:
+        processing.await_admission()
+        assert scans == 2
+    else:
+        with pytest.raises(AssertionError) as error:
+            processing.await_admission()
+        diagnostic = json.loads(str(error.value))
+        assert diagnostic["expected"] == "previewed"
+        assert diagnostic["planning"] == [{"job_id": "job", "state": "observing", "outcome": None}]
+        assert diagnostic["state"] == "intent"
+    progress = [json.loads(line) for line in capsys.readouterr().err.splitlines()]
+    assert progress[0]["planning"][0]["state"] == "observing"
+    assert progress[0]["attempt_count"] == 0 and progress[0]["failure"] is None
+    assert all(timeout == 5 for _, timeout in contacts)
+
+
+def test_admission_wait_does_not_retry_a_reported_admission_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("INPUT_COLLECTION_ID", "1")
+    monkeypatch.setenv("RIVERHOG_SMOKE_SCHEDULER_STEP", "previewed")
+    monkeypatch.setenv("STOVE0_SMOKE_ADMISSION_TIMEOUT", "1860")
+    monkeypatch.setattr(processing, "time", SimpleNamespace(monotonic=lambda: 0))
+    contacts = []
+
+    def read(path, payload=None, *, timeout=30):
+        contacts.append((path, timeout))
+        return {"admission": {"failures": [{"error": "backend-failure"}]}}
+
+    monkeypatch.setattr(processing, "stove", read)
+    with pytest.raises(AssertionError, match="backend-failure"):
+        processing.await_admission()
+    assert contacts == [("/v1/admin/scheduler/run", 5)]

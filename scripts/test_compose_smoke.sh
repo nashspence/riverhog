@@ -49,6 +49,8 @@ smoke_completion_timeout=$((600 + 480 * smoke_file_count))
 # Whole-scope observations execute outside control calls. Give the declared
 # fixture one minute per input plus setup margin within the existing attempt budget.
 smoke_observation_timeout=$((300 + 60 * smoke_file_count))
+# A durable admission milestone may await the complete observation attempt.
+smoke_admission_timeout=$((smoke_observation_timeout + 600))
 # Cold provenance membership validation is data access outside the scheduler.
 # Larger fixtures receive an explicit read allowance; small fixtures keep 300s.
 smoke_content_timeout=$((300 + 30 * (smoke_file_count > 16 ? smoke_file_count - 16 : 0)))
@@ -885,46 +887,6 @@ stove0_compose stop controller
 upload_media_fixture
 # Poll durable admission milestones through bounded scheduler contacts.
 # Observation execution and data access retain their separate physical budgets.
-scheduler_step_code="import json, os, time, urllib.request
-collection_id = os.environ['INPUT_COLLECTION_ID']
-expected = os.environ['RIVERHOG_SMOKE_SCHEDULER_STEP']
-state_order = {'intent': 0, 'previewed': 1, 'work_bound': 2}
-deadline = time.monotonic() + 900
-while time.monotonic() < deadline:
-    request = urllib.request.Request(
-        'http://127.0.0.1:8080/v1/admin/scheduler/run',
-        data=json.dumps({'role': 'controller', 'work_limit': 1}).encode(),
-        headers={
-            'Authorization': 'Bearer stove0-compose-smoke-token',
-            'Content-Type': 'application/json',
-        },
-        method='POST',
-    )
-    result = json.load(urllib.request.urlopen(request, timeout=5))
-    if result['admission'] is not None:
-        assert result['admission']['failures'] == [], result
-    request = urllib.request.Request(
-        'http://127.0.0.1:8080/v1/admissions?page_size=100&sort=admission_id&order=asc',
-        headers={'Authorization': 'Bearer stove0-compose-smoke-token'},
-    )
-    payload = json.load(urllib.request.urlopen(request, timeout=5))
-    matches = [
-        row for row in payload['admissions']
-        if row['intent']['collection']['collection_id'] == collection_id
-    ]
-    if not matches:
-        assert expected == 'intent'
-        time.sleep(0.5)
-        continue
-    assert len(matches) == 1, matches
-    current = matches[0]['state']
-    if current == expected:
-        break
-    assert current in state_order, matches[0]
-    assert state_order[current] < state_order[expected], matches[0]
-    time.sleep(0.5)
-else:
-    raise AssertionError({'expected': expected, 'matches': matches})"
 admission_state_code="import json, os, urllib.request
 collection_id = os.environ['INPUT_COLLECTION_ID']
 request = urllib.request.Request(
@@ -944,7 +906,8 @@ for admission_state in intent previewed work_bound; do
   stove0_compose exec -T \
     --env "RIVERHOG_SMOKE_SCHEDULER_STEP=${admission_state}" \
     --env "INPUT_COLLECTION_ID=${input_collection_id}" \
-    api python -c "${scheduler_step_code}"
+    --env "STOVE0_SMOKE_ADMISSION_TIMEOUT=${smoke_admission_timeout}" \
+    api python -c "${processing_qualification}" admission
   stove0_compose restart api
   stove0_compose up --detach --wait api
   stove0_compose exec -T \
