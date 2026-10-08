@@ -69,6 +69,16 @@ ots_project="${COMPOSE_PROJECT_NAME}-opentimestamps-witness"
 stove0_compose_file="${ROOT_DIR}/some-implementations/stove0/application/compose.yaml"
 stove0_content_budget_file="${smoke_root}/content-read-budget.compose.yaml"
 adapter_compose_file="${ROOT_DIR}/some-implementations/riverhog/ingress/ftp/compose.yaml"
+adapter_isolation_file="${smoke_root}/ftp-isolation.compose.yaml"
+# Qualification FTP clients use the owning Compose network for control and data.
+# Publishing the deployment's fixed passive range would couple independent proofs.
+cat > "${adapter_isolation_file}" <<'EOF'
+services:
+  ftp-spool:
+    ports: !reset []
+  ftp-listener:
+    ports: !reset []
+EOF
 minisign_compose_file="${ROOT_DIR}/some-implementations/riverhog/applications/a-riverhog-minisign-witness/compose.yaml"
 ots_compose_file="${ROOT_DIR}/some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/compose.yaml"
 export STOVE0_CONFIG_HOST_PATH="${smoke_root}/stove0.yaml"
@@ -79,7 +89,8 @@ stove0_compose() {
 }
 
 adapter_compose() {
-  docker compose --project-name "${adapter_project}" --file "${adapter_compose_file}" "$@"
+  docker compose --project-name "${adapter_project}" \
+    --file "${adapter_compose_file}" --file "${adapter_isolation_file}" "$@"
 }
 
 minisign_compose() {
@@ -393,8 +404,6 @@ EOF
   chmod 0644 "${materializer_config}" "${rclone_target_config}"
 }
 write_review_configs
-export A_RIVERHOG_FTP_SPOOL_API_PORT=0
-export A_RIVERHOG_FTP_SPOOL_PORT=0
 export A_RIVERHOG_FTP_SPOOL_PUBLIC_HOST=
 export A_RIVERHOG_FTP_SPOOL_SOURCE_ID=ftp-smoke
 export A_RIVERHOG_FTP_SPOOL_SECRET_FILE_GID="$(id -g)"
