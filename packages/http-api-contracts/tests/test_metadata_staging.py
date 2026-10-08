@@ -131,6 +131,100 @@ def test_whole_canonical_question_and_reply_exceed_inline_limit_without_clipping
         server.close()
 
 
+def complete_worker_before_unlocked_handoff(server, key, release, monkeypatch):
+    active = server._active[key]
+    start = server._start
+
+    def intercepted_start(actual_key, operation):
+        if actual_key == key:
+            acquired = []
+
+            def probe_lock():
+                if server._lock.acquire(blocking=False):
+                    acquired.append(True)
+                    server._lock.release()
+
+            probe = threading.Thread(target=probe_lock)
+            probe.start()
+            probe.join(timeout=10)
+            assert not probe.is_alive()
+            release.set()
+            # Complete the existing worker in the read-to-schedule gap when
+            # another thread can publish there. A locked handoff has no gap.
+            if acquired:
+                active.result(timeout=10)
+        return start(actual_key, operation)
+
+    monkeypatch.setattr(server, "_start", intercepted_start)
+
+
+def test_pending_call_retry_cannot_repeat_completed_native_execution(tmp_path, monkeypatch):
+    executions = []
+    entered, release = threading.Event(), threading.Event()
+
+    def execute(method, path, raw):
+        parsed = Request.model_validate(parse_identity_json(raw))
+        executions.append((method, path, parsed))
+        entered.set()
+        assert release.wait(timeout=10)
+        return Reply(200, canonical_json_bytes(parsed.model_dump(mode="json", exclude={"access"})))
+
+    server = CanonicalMetadataServer(root=tmp_path, operations=(OPERATION,), execute=execute)
+    original = request()
+    raw = canonical_json_bytes(original.model_dump(mode="json", exclude={"access"}))
+    call_id = "a" * 64
+    try:
+        reference = MetadataExchange(wire_for(server))._upload(raw)
+        call = MetadataCall(
+            method="POST",
+            path="/v1/facts",
+            document=reference,
+            transient={"access": original.access.model_dump(mode="json")},
+        )
+        assert server.call(call_id, call).state == "pending"
+        assert entered.wait(timeout=10)
+        complete_worker_before_unlocked_handoff(server, "call:" + call_id, release, monkeypatch)
+        server.call(call_id, call)
+        result = wait_call(server, call_id)
+        assert result.state == "ready" and result.response == reference
+        assert executions == [("POST", "/v1/facts", original)]
+        assert server.call(call_id, call) == result
+        assert executions == [("POST", "/v1/facts", original)]
+    finally:
+        release.set()
+        server.close()
+
+
+def test_verification_poll_cannot_repeat_completed_document_validation(tmp_path, monkeypatch):
+    server = server_at(tmp_path, [])
+    entered, release = threading.Event(), threading.Event()
+    reads = []
+    read_exact = server._read_exact
+
+    def held_read(reference):
+        reads.append(reference)
+        entered.set()
+        assert release.wait(timeout=10)
+        return read_exact(reference)
+
+    monkeypatch.setattr(server, "_read_exact", held_read)
+    raw = canonical_json_bytes({"value": 1})
+    reference = metadata_reference(raw)
+    try:
+        chunk = MetadataChunk.from_bytes(reference, 0, raw)
+        assert server.put_chunk(reference.sha256, chunk).state == "verifying"
+        assert entered.wait(timeout=10)
+        complete_worker_before_unlocked_handoff(
+            server, "document:" + reference.sha256, release, monkeypatch
+        )
+        server.document_status(reference.sha256)
+        assert wait_document(server, reference.sha256).state == "complete"
+        assert reads == [reference]
+    finally:
+        release.set()
+        server.close()
+
+
 def test_control_body_reader_stops_before_buffering_an_unbounded_request():
     import asyncio
     from types import SimpleNamespace

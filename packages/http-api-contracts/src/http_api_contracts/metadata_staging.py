@@ -147,14 +147,13 @@ class CanonicalMetadataServer:
     def document_status(self, digest: str) -> MetadataDocumentStatus:
         with self._lock:
             status = self._load(digest, "document.json", MetadataDocumentStatus)
-            if status is not None:
-                self._path(digest, "document.json").touch()
-        if status is None:
-            raise MetadataStagingError(
-                404, "metadata_not_found", "metadata document is unavailable"
-            )
-        if status.state == "verifying":
-            self._start("document:" + digest, lambda: self._verify_document(status))
+            if status is None:
+                raise MetadataStagingError(
+                    404, "metadata_not_found", "metadata document is unavailable"
+                )
+            self._path(digest, "document.json").touch()
+            if status.state == "verifying":
+                self._start("document:" + digest, lambda: self._verify_document(status))
         return status
 
     def put_chunk(self, digest: str, chunk: MetadataChunk) -> MetadataDocumentStatus:
@@ -209,8 +208,8 @@ class CanonicalMetadataServer:
                 state="verifying" if received == int(chunk.document.bytes) else "receiving",
             )
             self._save(digest, "document.json", status)
-        if status.state == "verifying":
-            self._start("document:" + digest, lambda: self._verify_document(status))
+            if status.state == "verifying":
+                self._start("document:" + digest, lambda: self._verify_document(status))
         return status
 
     def _read_exact(self, reference: MetadataDocumentRef) -> bytes:
@@ -228,9 +227,10 @@ class CanonicalMetadataServer:
             state = "invalid"
         else:
             state = "complete"
-        self._save(
-            status.document.sha256, "document.json", status.model_copy(update={"state": state})
-        )
+        with self._lock:
+            self._save(
+                status.document.sha256, "document.json", status.model_copy(update={"state": state})
+            )
 
     def get_chunk(self, digest: str, offset: int) -> MetadataChunk:
         status = self.document_status(digest)
@@ -308,7 +308,9 @@ class CanonicalMetadataServer:
                 self._save(call_id, "call.json", marker)
             status = MetadataCallStatus(call_id=call_id, state="pending")
             self._save(call_id, "reply.json", status)
-        self._start("call:" + call_id, lambda: self._execute_call(call_id, call, operation))
+            # The pending read and handoff must exclude the worker's terminal
+            # commit; a completed future must never restart this native call.
+            self._start("call:" + call_id, lambda: self._execute_call(call_id, call, operation))
         return status
 
     def call_status(self, call_id: str) -> MetadataCallStatus:
