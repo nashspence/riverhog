@@ -7,7 +7,8 @@ import pytest
 import yaml
 from stove0_core import database_url_from_config, load_stove0_config
 from stove0_core.runtime_config import generated_config_schema
-from stove0_recipe_config import CompiledRecipeCatalog
+from stove0_recipe_config import CompiledRecipeCatalog, RecipeSourceCatalog
+from stove0_recipe_config.reading import read_source_documents
 
 SCHEMA = Path(__file__).parents[1] / "server/src/stove0_core/config.schema.json"
 
@@ -39,6 +40,23 @@ def _write(path: Path, document: dict[str, object]) -> None:
 
 def test_published_schema_matches_parser() -> None:
     assert json.loads(SCHEMA.read_text(encoding="utf-8")) == generated_config_schema()
+
+
+@pytest.mark.parametrize("catalog_kind", ["source", "compiled"])
+def test_nonempty_catalogs_pass_startup_with_the_same_compiled_identity(
+    tmp_path: Path, catalog_kind: str
+) -> None:
+    path, document = _config(tmp_path)
+    fixture = Path(__file__).parents[4] / "qualification/fixtures/stove0/recipes.yaml"
+    source = read_source_documents(fixture)[0]
+    compiled = RecipeSourceCatalog.model_validate(source).compile()
+    document["recipes"] = (
+        source if catalog_kind == "source" else compiled.model_dump(mode="json", by_alias=True)
+    )
+    _write(path, document)
+
+    assert database_url_from_config(path) == "postgresql+psycopg://stove0@postgres/stove0"
+    assert load_stove0_config(path).recipes == compiled
 
 
 def test_scheduler_configuration_does_not_require_operator_api_secret(tmp_path: Path) -> None:

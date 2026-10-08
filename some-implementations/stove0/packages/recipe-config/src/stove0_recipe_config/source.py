@@ -4,7 +4,15 @@ from __future__ import annotations
 
 from typing import Annotated, Literal, Self
 
-from pydantic import ConfigDict, Field, JsonValue, StrictBool, field_validator, model_validator
+from pydantic import (
+    ConfigDict,
+    Field,
+    JsonValue,
+    StrictBool,
+    StrictInt,
+    field_validator,
+    model_validator,
+)
 from riverhog_protocol.collection_tags import CollectionTag
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
@@ -173,7 +181,11 @@ class RetireSource(SourceModel):
     mode: Literal["after-settlement"]
     grace_seconds: NonnegativeDecimal = 0
 
-    @field_validator("grace_seconds", mode="before")
+    @field_validator(
+        "grace_seconds",
+        mode="before",
+        json_schema_input_type=Annotated[StrictInt, Field(ge=0)] | NonnegativeDecimal,
+    )
     @classmethod
     def exact_source_integer(cls, value: object) -> object:
         return str(value) if type(value) is int else value
@@ -216,7 +228,11 @@ class RecipeSource(SourceModel):
     export: Literal["join"] | BranchExport | None = None
     source: SourceDisposition = Field(default_factory=SourceDisposition)
 
-    @field_validator("revision", mode="before")
+    @field_validator(
+        "revision",
+        mode="before",
+        json_schema_input_type=Annotated[StrictInt, Field(ge=1)] | NonnegativeDecimal,
+    )
     @classmethod
     def exact_source_integer(cls, value: object) -> object:
         return str(value) if type(value) is int else value
