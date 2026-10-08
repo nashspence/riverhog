@@ -205,7 +205,14 @@ def invoke() -> None:
         await_planning("/v1/workflow-previews/" + preview_status.job_id)
     ).result
     assert preview is not None
-    assert preview.state == "ready", preview.state
+    assert preview.state == "ready", canonical_json_bytes(
+        {
+            "state": preview.state,
+            "outcome": preview.outcome.model_dump(mode="json", exclude_none=True)
+            if preview.outcome is not None
+            else None,
+        }
+    ).decode()
     assert preview.work.recipe.id == recipe.definition.id
     assert preview.work.recipe.revision == recipe.definition.revision
     assert preview.work.recipe.sha256 == recipe.sha256

@@ -99,9 +99,11 @@ class RecipePlanner:
         riverhog: RiverhogInventoryPort,
         observers: ObserverPort,
         targets: TargetPort,
+        observation_execution_timeout_seconds: int = 300,
     ) -> None:
         self.catalog, self.state, self.riverhog = catalog, state, riverhog
         self.observers, self.targets = observers, targets
+        self.observation_execution_timeout_seconds = observation_execution_timeout_seconds
         self.observation_planning = CompiledObservationPlanning(state, riverhog)
         self.decision_planning = CompiledDecisionPlanning(state)
         self.observation_delivery = CompiledObservationDelivery(self)

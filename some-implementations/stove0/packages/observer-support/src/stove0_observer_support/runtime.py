@@ -144,7 +144,8 @@ class ContentObservationRuntime:
             self.external_heartbeat()
 
     def refresh_capability(self, capability_token: str) -> None:
-        self.heartbeat()
+        # Control refresh does not evaluate execution cancellation or deadlines.
+        # The worker owns those outcomes and its actual cleanup.
         current = self.api.current
         replacement = ApiClient(
             base_url=current.base_url,

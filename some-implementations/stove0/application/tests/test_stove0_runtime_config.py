@@ -81,6 +81,7 @@ def test_runtime_configuration_connects_policy_and_registrations(tmp_path: Path)
         declared_workspace_protection="memory-backed",
         claim_lease_seconds=240,
         capability_ttl_seconds=120,
+        observation_execution_timeout_seconds=7200,
         scheduler_interval_seconds=0.5,
         operational_state_retention_seconds=86400,
         browse_token_lifetime_seconds=7200,
@@ -116,6 +117,7 @@ def test_runtime_configuration_connects_policy_and_registrations(tmp_path: Path)
     assert config.target_authority_batch_size == 17
     assert config.claim_lease_seconds == 240
     assert config.capability_ttl_seconds == 120
+    assert config.observation_execution_timeout_seconds == 7200
     assert config.scheduler_interval_seconds == 0.5
     assert config.operational_state_retention_seconds == 86400
     assert config.browse_token_lifetime_seconds == 7200
@@ -189,3 +191,12 @@ def test_runtime_repr_does_not_emit_secret_material(tmp_path: Path) -> None:
     rendered = repr(load_stove0_config(path))
     assert "role-specific-riverhog-token" not in rendered
     assert "stove0-test-browse-token-signing-key-v1" not in rendered
+
+
+@pytest.mark.parametrize("allowance", [0, 86401])
+def test_observation_execution_allowance_stays_within_the_request_contract(tmp_path, allowance):
+    path, document = _config(tmp_path)
+    document["observation_execution_timeout_seconds"] = allowance
+    _write(path, document)
+    with pytest.raises(ValueError, match="observation_execution_timeout_seconds"):
+        load_stove0_config(path)

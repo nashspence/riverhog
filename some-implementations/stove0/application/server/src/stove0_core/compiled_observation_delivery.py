@@ -40,6 +40,9 @@ class ObservationPlanningPort(Protocol):
     @property
     def observers(self) -> ObserverPort: ...
 
+    @property
+    def observation_execution_timeout_seconds(self) -> int: ...
+
     def _definition(self, work: WorkIdentity) -> tuple[CompiledRecipe, RecipeDependencyClosure]: ...
 
     def observer_binding(
@@ -156,6 +159,7 @@ class CompiledObservationDelivery:
             subjects=subjects,
             subject_ports=subject_ports,
             evidence_ports=evidence_ports,
+            timeout_seconds=self.planner.observation_execution_timeout_seconds,
         )
         store.register_request(question, request, descriptor, resource.interface)
         return request, descriptor

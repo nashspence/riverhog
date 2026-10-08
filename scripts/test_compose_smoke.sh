@@ -43,9 +43,12 @@ smoke_claim_file_count=$((smoke_file_count + 1))
 # Allow 120 seconds per output on a shared runner, plus ten minutes for the
 # smaller jobs and complete archive/history publication. The measured default
 # workload needs margin for four serialized target jobs and their shared-history
-# publication. Bulk requests and the scale preview claim also account for
-# declared fixture size; ordinary CI requests retain their fixed budgets.
+# publication. Bulk requests and observation execution account for declared
+# fixture size; each control contact keeps its fixed allowance.
 smoke_completion_timeout=$((600 + 480 * smoke_file_count))
+# Whole-scope observations execute outside control calls. Give the declared
+# fixture one minute per input plus setup margin within the existing attempt budget.
+smoke_observation_timeout=$((300 + 60 * smoke_file_count))
 smoke_max_bytes=$((smoke_file_count * (smoke_audio_frames * 2 + 4096) + 16384))
 # Three independent readers exercise each input in this lifecycle. Account for
 # age-unit amplification as well as logical payload so quota policy remains
@@ -437,6 +440,7 @@ start_stove0_scope() {
   compose exec -T postgres psql --username riverhog --dbname "${database}" \
     --command 'CREATE EXTENSION pg_trgm WITH SCHEMA public;'
   sed '/^recipes:/,$d' "${ROOT_DIR}/qualification/fixtures/stove0/config.yaml" > "${STOVE0_CONFIG_HOST_PATH}"
+  printf '%s\n' "observation_execution_timeout_seconds: ${smoke_observation_timeout}" >> "${STOVE0_CONFIG_HOST_PATH}"
   printf '%s\n' 'recipes:' >> "${STOVE0_CONFIG_HOST_PATH}"
   sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/recipes.yaml" >> "${STOVE0_CONFIG_HOST_PATH}"
   printf '%s\n' 'admissions:' >> "${STOVE0_CONFIG_HOST_PATH}"

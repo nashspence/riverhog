@@ -260,3 +260,74 @@ def test_queued_graph_requires_its_retained_definition_and_cannot_rebind_invento
             work.work_id, expected_revision=row["revision"], scope=empty.ref()
         )
     state.engine.dispose()
+
+
+def test_execution_allowance_is_physical_and_retained_across_planner_restart(tmp_path):
+    from stove0_core.recipes import RecipePlanner
+    from stove0_recipe_config import CompiledRecipeCatalog
+
+    recipe, closure = _program()
+    root = CollectionRootIdentityRef(
+        collection_id="1", archive_root_sha256="a" * 64, artifact_set_identity="b" * 64
+    )
+    url = f"sqlite:///{tmp_path / 'allowance.db'}"
+
+    class Inventory:
+        def get_collection(self, collection_id):
+            assert collection_id == 1
+            return root.model_dump(mode="json")
+
+        def get_portable_collection_inventory(self, collection_id, **kwargs):
+            return SimpleNamespace(
+                authority=SimpleNamespace(inventory_identity="c" * 64),
+                artifacts=(SimpleNamespace(artifact_id="d" * 64, bytes=1, sha256="e" * 64),),
+                complete=True,
+                next_cursor=None,
+            )
+
+    class Registrations:
+        def registration_ids(self):
+            return ("magic",)
+
+        def descriptor(self, registration_id):
+            assert registration_id == "magic"
+            return _descriptor()
+
+    def planner(allowance, catalog):
+        return RecipePlanner(
+            catalog=catalog,
+            state=SqlAlchemyStateStore(url),
+            riverhog=Inventory(),
+            observers=Registrations(),
+            targets=object(),
+            observation_execution_timeout_seconds=allowance,
+        )
+
+    def request(scoped, work):
+        for _ in range(25):
+            progress = scoped.step(work)
+            if progress.state == "question":
+                prepared = scoped.observation_delivery.request(work, progress.question)
+                if prepared is not None:
+                    physical, _ = prepared
+                    return progress.question, physical
+        raise AssertionError("compiled observation did not produce its physical request")
+
+    original = planner(7200, CompiledRecipeCatalog(recipes=(recipe,), closure=closure))
+    work = original.create_work(recipe.id, (root,))
+    first = original.for_invocation("preview", "1" * 64)
+    question, physical = request(first, work)
+    assert physical.timeout_seconds == 7200
+    assert physical.question_sha256 == question.question_sha256
+    first.state.engine.dispose()
+
+    restarted = planner(300, CompiledRecipeCatalog())
+    retained_question, retained = request(restarted.for_invocation("preview", "1" * 64), work)
+    assert retained_question == question
+    assert retained == physical
+    fresh_question, fresh = request(restarted.for_invocation("preview", "2" * 64), work)
+    assert fresh_question == question
+    assert fresh.timeout_seconds == 300
+    assert fresh.question_sha256 == physical.question_sha256
+    assert fresh.request_id != physical.request_id
+    restarted.state.engine.dispose()

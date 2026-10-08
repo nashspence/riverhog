@@ -58,6 +58,7 @@ class Stove0RuntimeConfig:
     departures: DepartureCatalog = DepartureCatalog()
     departure_targets: dict[str, EndpointRegistration] = field(default_factory=dict)
     browse_token_lifetime_seconds: int = 24 * 60 * 60
+    observation_execution_timeout_seconds: int = 300
 
 
 class _Document(BaseModel):
@@ -109,6 +110,7 @@ class Stove0Document(_Document):
     declared_workspace_protection: Literal["encrypted-at-rest", "memory-backed"]
     claim_lease_seconds: int = Field(default=1800, ge=30)
     capability_ttl_seconds: int = Field(default=900, ge=30)
+    observation_execution_timeout_seconds: int = Field(default=300, ge=1, le=86400)
     scheduler_interval_seconds: float = Field(default=5.0, ge=0.1)
     operational_state_retention_seconds: int = Field(
         default=DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS, ge=1
@@ -206,6 +208,7 @@ def load_stove0_config(
         declared_workspace_protection=document.declared_workspace_protection,
         claim_lease_seconds=document.claim_lease_seconds,
         capability_ttl_seconds=document.capability_ttl_seconds,
+        observation_execution_timeout_seconds=document.observation_execution_timeout_seconds,
         scheduler_interval_seconds=document.scheduler_interval_seconds,
         operational_state_retention_seconds=document.operational_state_retention_seconds,
         browse_token_signing_key=read_secret_file(

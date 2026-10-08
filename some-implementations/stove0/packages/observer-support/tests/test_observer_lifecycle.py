@@ -33,6 +33,7 @@ from stove0_observer_protocol import (
 from stove0_observer_protocol.interfaces import seal_owned_interface
 from stove0_observer_support import (
     ContentObservationResultBuilder,
+    ContentObservationRuntime,
     ObserverHttpBinding,
     PersistentObserverService,
 )
@@ -625,3 +626,64 @@ def test_native_staged_whole_question_and_complete_testimony_preserve_identity(
         )
     finally:
         client.close()
+
+
+def test_control_refresh_leaves_execution_timeout_and_cleanup_with_the_worker(
+    tmp_path, monkeypatch
+):
+    entered, release, expired = threading.Event(), threading.Event(), threading.Event()
+
+    def execute(request, runtime):
+        entered.set()
+        assert release.wait(5)
+        runtime.heartbeat()
+        raise AssertionError("expired execution must not produce facts")
+
+    def real_runtime(job, *, cancellation_check):
+        def check():
+            if expired.is_set():
+                raise TimeoutError("observer execution exceeded its deadline")
+            cancellation_check()
+
+        return ContentObservationRuntime.from_invocation(job, cancellation_check=check)
+
+    monkeypatch.setattr(
+        PersistentObserverService, "_validate_live_authority", lambda *args, **kwargs: None
+    )
+    observer = Observer(execute)
+    service = PersistentObserverService(
+        observer,
+        state_root=tmp_path / "state",
+        runtime_factory=real_runtime,
+        admission_probe_seconds=0.1,
+        admission_retry_seconds=0.01,
+    )
+    binding = ObserverHttpBinding(service)
+    job = invocation(observer)
+    path = "/v1/observations/" + job.job_id
+    try:
+        first = binding.handle("PUT", path, canonical_json_bytes(job.model_dump(mode="json")))
+        assert first.status == 200
+        assert entered.wait(2)
+        expired.set()
+        refreshed = invocation(observer, token="refreshed-capability")
+        response = binding.handle(
+            "PUT", path, canonical_json_bytes(refreshed.model_dump(mode="json"))
+        )
+        assert response.status == 200, response.body
+        status = ObservationJobStatus.model_validate_json(response.body)
+        assert status.state == "running" and status.result is None
+        assert len(observer.calls) == 1
+        assert observer.calls[0][1].api.current.token == "refreshed-capability"
+        release.set()
+        completed = wait_completed(service, job)
+        assert completed.result.state == "failed"
+        assert completed.result.failure.code == "observer-execution"
+        assert completed.result.failure.retryable is True
+        replay = binding.handle("PUT", path, canonical_json_bytes(job.model_dump(mode="json")))
+        assert replay.status == 200
+        assert ObservationJobStatus.model_validate_json(replay.body) == completed
+        assert len(observer.calls) == 1
+    finally:
+        release.set()
+        service.close()

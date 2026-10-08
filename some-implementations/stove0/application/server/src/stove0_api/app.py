@@ -215,6 +215,7 @@ class Stove0Composition:
             riverhog=riverhog_api,
             observers=observers,
             targets=targets,
+            observation_execution_timeout_seconds=config.observation_execution_timeout_seconds,
         )
         work = Stove0WorkService(state)
         authority = Stove0RiverhogClient(
