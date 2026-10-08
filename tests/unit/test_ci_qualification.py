@@ -425,12 +425,17 @@ def test_processing_planning_drives_pollable_control_until_exact_completion(
         processing, "time", SimpleNamespace(monotonic=lambda: 0, sleep=lambda _: None)
     )
     path = "/v1/work-initiations/job" if initiation else "/v1/workflow-previews/job"
-    states = iter(
-        [
-            {"state": "pending" if initiation else "observing"},
-            {"state": "completed", "exact_result": "unchanged"},
-        ]
-    )
+    identity = {"job_id": "a" * 64, "work_id": "b" * 64}
+    observing = {**identity, "state": "observing"}
+    completed = {**identity, "state": "completed", "exact_result": "unchanged"}
+    if initiation:
+        observing = {"state": "pending", "job": observing}
+        completed = {
+            "state": "completed",
+            "job": {**identity, "state": "admitting"},
+            "exact_result": "unchanged",
+        }
+    states = iter([observing, completed])
     calls = []
 
     def read(operation, payload=None):
@@ -438,10 +443,7 @@ def test_processing_planning_drives_pollable_control_until_exact_completion(
         return {"progressed": []} if payload is not None else next(states)
 
     monkeypatch.setattr(processing, "stove", read)
-    assert processing.await_planning(path, initiation=initiation) == {
-        "state": "completed",
-        "exact_result": "unchanged",
-    }
+    assert processing.await_planning(path, initiation=initiation) == completed
     assert calls == [
         ("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25}),
         (path, None),
@@ -452,7 +454,14 @@ def test_processing_planning_drives_pollable_control_until_exact_completion(
 
 def test_processing_initiation_rejection_does_not_become_success(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(processing, "time", SimpleNamespace(monotonic=lambda: 0))
-    monkeypatch.setattr(processing, "stove", lambda *_: {"state": "rejected"})
+    monkeypatch.setattr(
+        processing,
+        "stove",
+        lambda *_: {
+            "state": "rejected",
+            "job": {"job_id": "a" * 64, "work_id": "b" * 64, "state": "completed"},
+        },
+    )
     with pytest.raises(RuntimeError, match="rejected"):
         processing.await_planning("/v1/work-initiations/job", initiation=True)
 
