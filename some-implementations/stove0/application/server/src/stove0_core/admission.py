@@ -8,6 +8,7 @@ from collections.abc import Sequence
 from datetime import timedelta
 from typing import Any, Literal, cast
 
+from http_api_contracts.control import ControlBudgetExhausted
 from riverhog_canonical_json import canonical_json_sha256
 from riverhog_client import ApiClient
 from riverhog_protocol import (
@@ -117,6 +118,8 @@ class ClassificationAdmissionService:
                     try:
                         self._advance_candidate(admission_id)
                         progressed.append(f"admission:{admission_id}")
+                    except ControlBudgetExhausted:
+                        raise
                     except Exception as exc:
                         self._record_candidate_failure(admission_id, exc)
                         failures.append(
@@ -136,6 +139,8 @@ class ClassificationAdmissionService:
                     advanced = self._advance_policy(policy)
                     if advanced:
                         progressed.append(f"policy:{policy.id}")
+                except ControlBudgetExhausted:
+                    raise
                 except Exception as exc:
                     failures.append(
                         SchedulerFailure(

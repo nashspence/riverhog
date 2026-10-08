@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, cast
 
 import pytest
+from metadata_contact_fixture import occupied_metadata_contact
 from riverhog_client import ApiClient
 from riverhog_protocol import (
     CatalogSyncChangePage,
@@ -19,6 +20,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from stove0_core import DepartureEffectService, SqlAlchemyStateStore
 from stove0_core.persistence import _DepartureEffectRow, _DeparturePolicyRow
+from stove0_core.scheduler import Stove0Scheduler
 from stove0_operator_contracts import DepartureCatalog, DeparturePolicy
 from stove0_target_protocol import (
     DepartureEffectIntent,
@@ -425,3 +427,60 @@ def test_departure_intent_and_receipt_reject_tampering() -> None:
         DepartureEffectReceipt.model_validate(
             {**receipt.model_dump(mode="json"), "result": {"action": "deleted"}}
         )
+
+
+@pytest.mark.parametrize("lane", ["policy", "effect"])
+def test_departure_metadata_backpressure_is_pending_without_failure_or_retry(
+    monkeypatch: pytest.MonkeyPatch, lane: str
+) -> None:
+    state, api, target = _state(), _CatalogApi(_descriptor()), _Target()
+    service = _service(state=state, api=api, target=target)
+    scheduler = Stove0Scheduler(coordinator=cast(Any, object()), state=state, departure=service)
+    item_id = None
+    if lane == "effect":
+        assert service.advance(limit=4).failures == ()
+        api.pages["c0"] = (
+            CatalogSyncDeparture(cause="visibility_lost", collection_id="7", revision="2"),
+            "c1",
+        )
+        assert service.advance(limit=1).failures == ()
+        pending = cast(tuple[Any, ...], service.list_effects()["effects"])[0]
+        item_id = pending.intent.departure_id
+        before = service.get_effect(item_id)
+        assert before.state == "pending" and before.attempt_count == 0
+    else:
+        before = service.policies()
+
+    origin = "fixture-departure-metadata"
+    with occupied_metadata_contact(origin) as contacts:
+        if lane == "effect":
+            put_effect = target.put_effect
+            monkeypatch.setattr(
+                target,
+                "put_effect",
+                lambda registration_id, intent: contacts.call(
+                    origin, lambda: put_effect(registration_id, intent)
+                ),
+            )
+        else:
+            checkpoint = api.create_catalog_sync_checkpoint
+            monkeypatch.setattr(
+                api, "create_catalog_sync_checkpoint", lambda: contacts.call(origin, checkpoint)
+            )
+        run = scheduler.run_once(role="controller", work_limit=1)
+        assert run["departure"] is None
+        assert cast(dict[str, Any], run["work"])["failures"] == []
+        current = service.get_effect(item_id) if item_id else service.policies()
+        assert current == before
+        assert target.calls == []
+
+    resumed = scheduler.run_once(role="controller", work_limit=1)
+    assert cast(dict[str, Any], resumed["departure"])["failures"] == ()
+    if item_id:
+        accepted = service.get_effect(item_id)
+        assert accepted.state == "complete"
+        assert accepted.attempt_count == 0 and accepted.failure is None
+        assert accepted.intent == before.intent
+        assert target.calls == [item_id]
+    else:
+        assert service.policies().policies[0].phase == "baseline"

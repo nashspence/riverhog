@@ -49,6 +49,9 @@ smoke_completion_timeout=$((600 + 480 * smoke_file_count))
 # Whole-scope observations execute outside control calls. Give the declared
 # fixture one minute per input plus setup margin within the existing attempt budget.
 smoke_observation_timeout=$((300 + 60 * smoke_file_count))
+# Cold provenance membership validation is data access outside the scheduler.
+# Larger fixtures receive an explicit read allowance; small fixtures keep 300s.
+smoke_content_timeout=$((300 + 30 * (smoke_file_count > 16 ? smoke_file_count - 16 : 0)))
 smoke_max_bytes=$((smoke_file_count * (smoke_audio_frames * 2 + 4096) + 16384))
 # Three independent readers exercise each input in this lifecycle. Account for
 # age-unit amplification as well as logical payload so quota policy remains
@@ -64,13 +67,15 @@ adapter_project="${COMPOSE_PROJECT_NAME}-ftp-spool"
 minisign_project="${COMPOSE_PROJECT_NAME}-minisign-witness"
 ots_project="${COMPOSE_PROJECT_NAME}-opentimestamps-witness"
 stove0_compose_file="${ROOT_DIR}/some-implementations/stove0/application/compose.yaml"
+stove0_content_budget_file="${smoke_root}/content-read-budget.compose.yaml"
 adapter_compose_file="${ROOT_DIR}/some-implementations/riverhog/ingress/ftp/compose.yaml"
 minisign_compose_file="${ROOT_DIR}/some-implementations/riverhog/applications/a-riverhog-minisign-witness/compose.yaml"
 ots_compose_file="${ROOT_DIR}/some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/compose.yaml"
 export STOVE0_CONFIG_HOST_PATH="${smoke_root}/stove0.yaml"
 
 stove0_compose() {
-  docker compose --project-name "${stove0_project}" --file "${stove0_compose_file}" "$@"
+  docker compose --project-name "${stove0_project}" \
+    --file "${stove0_compose_file}" --file "${stove0_content_budget_file}" "$@"
 }
 
 adapter_compose() {
@@ -412,6 +417,13 @@ processing_services=(
   a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer
   a-stove0-exiftool-observer a-stove0-opus-target
 )
+{
+  printf '%s\n' 'services:'
+  for service in "${processing_services[@]}"; do
+    printf '  %s:\n    environment:\n      RIVERHOG_HTTP_TIMEOUT_SECONDS: "%s"\n' \
+      "${service}" "${smoke_content_timeout}"
+  done
+} > "${stove0_content_budget_file}"
 if owns_qualification processing-admission || owns_qualification processing-e2e ||
   owns_qualification processing-overlap || owns_qualification processing-scale ||
   owns_qualification review-delivery; then
@@ -862,8 +874,8 @@ stove0_compose exec -T api python -c "${admission_baseline_code}"
 # Establish the catalog cursor before publication, then reconcile offline.
 stove0_compose stop controller
 upload_media_fixture
-# Synchronous admission evaluates every declared observer stage. Match the
-# maintained Stove0 client's 300-second operation timeout; browse stays at 5s.
+# Poll durable admission milestones through bounded scheduler contacts.
+# Observation execution and data access retain their separate physical budgets.
 scheduler_step_code="import json, os, time, urllib.request
 collection_id = os.environ['INPUT_COLLECTION_ID']
 expected = os.environ['RIVERHOG_SMOKE_SCHEDULER_STEP']
@@ -879,7 +891,7 @@ while time.monotonic() < deadline:
         },
         method='POST',
     )
-    result = json.load(urllib.request.urlopen(request, timeout=300))
+    result = json.load(urllib.request.urlopen(request, timeout=5))
     if result['admission'] is not None:
         assert result['admission']['failures'] == [], result
     request = urllib.request.Request(

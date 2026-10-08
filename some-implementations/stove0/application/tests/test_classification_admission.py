@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from typing import Any, cast
 
 import pytest
+from metadata_contact_fixture import occupied_metadata_contact
 from planning_fixture import no_output_preview
 from riverhog_client import ApiClient
 from riverhog_protocol import (
@@ -23,6 +24,7 @@ from stove0_core import (
     Stove0WorkService,
 )
 from stove0_core.persistence import _AdmissionCandidateRow, _AdmissionPolicyRow
+from stove0_core.scheduler import Stove0Scheduler
 from stove0_operator_contracts import AdmissionCatalog, AdmissionIntent, AdmissionPolicy, WorkView
 from stove0_protocol import (
     ArtifactSelection,
@@ -963,3 +965,56 @@ def test_committed_admission_survives_later_policy_edit() -> None:
     assert admission.intent.policy_revision == 1
     assert admission.intent.effective_intent == {"quality": "archive"}
     assert coordinator.calls[0][0].effective_intent == {"quality": "archive"}
+
+
+@pytest.mark.parametrize("lane", ["policy", "candidate"])
+def test_admission_metadata_backpressure_is_pending_without_failure_or_retry(
+    monkeypatch: pytest.MonkeyPatch, lane: str
+) -> None:
+    state = _state()
+    descriptor = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
+    api = _CatalogApi(descriptor, {"camera", "workflow/archive"})
+    policy, preview = _policy(), _Preview()
+    service = _service(state=state, api=api, policy=policy, preview=preview)
+    scheduler = Stove0Scheduler(coordinator=cast(Any, object()), state=state, admission=service)
+    item_id = None
+    if lane == "candidate":
+        service.rebaseline(policy.id, mode="backfill")
+        assert service.advance(limit=1).failures == ()
+        item_id = AdmissionIntent.seal(policy=policy, collection=descriptor).admission_id
+        before = service.get_admission(item_id)
+        assert before.state == "intent" and before.attempt_count == 0
+    else:
+        before = service.policies()
+
+    origin = "fixture-admission-metadata"
+    with occupied_metadata_contact(origin) as contacts:
+        if lane == "candidate":
+            submit = preview.submit
+            monkeypatch.setattr(
+                preview,
+                "submit",
+                lambda work, *, invocation_id: contacts.call(
+                    origin, lambda: submit(work, invocation_id=invocation_id)
+                ),
+            )
+        else:
+            checkpoint = api.create_catalog_sync_checkpoint
+            monkeypatch.setattr(
+                api, "create_catalog_sync_checkpoint", lambda: contacts.call(origin, checkpoint)
+            )
+        run = scheduler.run_once(role="controller", work_limit=1)
+        assert run["admission"] is None
+        assert cast(dict[str, Any], run["work"])["failures"] == []
+        current = service.get_admission(item_id) if item_id else service.policies()
+        assert current == before
+
+    resumed = scheduler.run_once(role="controller", work_limit=1)
+    assert cast(dict[str, Any], resumed["admission"])["failures"] == ()
+    if item_id:
+        accepted = service.get_admission(item_id)
+        assert accepted.state == "previewed"
+        assert accepted.attempt_count == 0 and accepted.failure is None
+        assert accepted.intent == before.intent
+    else:
+        assert service.policies().policies[0].phase == "baseline"

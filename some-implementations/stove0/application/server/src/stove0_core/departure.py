@@ -7,6 +7,7 @@ import secrets
 from datetime import timedelta
 from typing import Any, Literal, Protocol, cast
 
+from http_api_contracts.control import ControlBudgetExhausted
 from riverhog_canonical_json import canonical_json_sha256
 from riverhog_client import ApiClient
 from riverhog_protocol import (
@@ -140,6 +141,8 @@ class DepartureEffectService:
                     try:
                         self._advance_effect(departure_id)
                         progressed.append(f"effect:{departure_id}")
+                    except ControlBudgetExhausted:
+                        raise
                     except Exception as exc:
                         self._record_effect_failure(departure_id, exc)
                         failures.append(
@@ -158,6 +161,8 @@ class DepartureEffectService:
                     advanced = self._advance_policy(policy)
                     if advanced:
                         progressed.append(f"policy:{policy.id}")
+                except ControlBudgetExhausted:
+                    raise
                 except Exception as exc:
                     failures.append(
                         SchedulerFailure(
