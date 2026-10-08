@@ -14,14 +14,19 @@ from typing import cast
 
 from a_stove0_ffprobe_observer import FfprobeObserver
 from a_stove0_ffprobe_streams_contract_lib import (
+    FFPROBE_STREAMS_INTERFACE,
     FFPROBE_STREAMS_OBSERVER_CONTRACT,
     FFprobeStreamFacts,
 )
-from a_stove0_media_sampling_contract_lib import MEDIA_SAMPLING_OBSERVER_CONTRACT
+from a_stove0_media_sampling_contract_lib import (
+    MEDIA_SAMPLING_INTERFACE,
+    MEDIA_SAMPLING_OBSERVER_CONTRACT,
+)
 from riverhog_canonical_json import canonical_json_bytes
 from stove0_observer_protocol import ContentObservationRequest, ContentObservationRequestPayload
 from stove0_observer_support import ContentObservationRuntime
-from stove0_protocol import CollectionRootIdentityRef, WorkArtifactSubject
+from stove0_protocol import ArtifactSelection, CollectionRootIdentityRef, WorkArtifactSubject
+from stove0_protocol.observation_evidence import ObservationQuestion, ObservationQuestionPayload
 
 
 class Workspace:
@@ -68,27 +73,53 @@ def observe(root: Path, payload: bytes, contract_id: str):
     )
     descriptor = observer.descriptor()
     support = descriptor.support_for(contract_id)
+    contract, interface = {
+        FFPROBE_STREAMS_OBSERVER_CONTRACT.id: (
+            FFPROBE_STREAMS_OBSERVER_CONTRACT,
+            FFPROBE_STREAMS_INTERFACE,
+        ),
+        MEDIA_SAMPLING_OBSERVER_CONTRACT.id: (
+            MEDIA_SAMPLING_OBSERVER_CONTRACT,
+            MEDIA_SAMPLING_INTERFACE,
+        ),
+    }[contract_id]
+    subjects = (
+        WorkArtifactSubject(
+            id="media",
+            role="stove0.source/v1",
+            collection=CollectionRootIdentityRef(
+                collection_id="1",
+                archive_root_sha256="2" * 64,
+                artifact_set_identity="3" * 64,
+            ),
+            artifact_id="4" * 64,
+            bytes=str(len(payload)),
+            sha256=hashlib.sha256(payload).hexdigest(),
+        ),
+    )
+    selection = ArtifactSelection.seal(subjects).ref()
+    question = ObservationQuestion.seal(
+        ObservationQuestionPayload(
+            work_id="1" * 64,
+            task_id="probe",
+            observer_contract=interface.observer_contract,
+            interface=interface.ref,
+            scope=selection,
+            subject_ports={"subjects": selection},
+            read_actions=contract.read_actions,
+        )
+    )
     request = ContentObservationRequest.seal(
         ContentObservationRequestPayload(
-            work_id="1" * 64,
+            work_id=question.work_id,
+            task_id=question.task_id,
+            question_sha256=question.question_sha256,
+            interface=question.interface,
             observer_registration_id="ffprobe-tool-parity",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
             observer_contract_id=support.contract_id,
             observer_contract_sha256=support.contract_sha256,
-            subjects=(
-                WorkArtifactSubject(
-                    id="media",
-                    role="stove0.source/v1",
-                    collection=CollectionRootIdentityRef(
-                        collection_id="1",
-                        archive_root_sha256="2" * 64,
-                        artifact_set_identity="3" * 64,
-                    ),
-                    artifact_id="4" * 64,
-                    bytes=str(len(payload)),
-                    sha256=hashlib.sha256(payload).hexdigest(),
-                ),
-            ),
+            subjects=subjects,
             maximum_result_bytes=256 * 1024,
         )
     )

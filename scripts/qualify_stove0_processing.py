@@ -127,12 +127,35 @@ def declared_values(actual: Any, declared: Any) -> None:
 
 def await_planning(path: str, *, initiation: bool = False) -> dict[str, Any]:
     """Drive bounded planning while the fixture's controller is deliberately offline."""
-    deadline = time.monotonic() + int(os.environ.get("STOVE0_SMOKE_COMPLETION_TIMEOUT", "900"))
+    started = time.monotonic()
+    deadline = started + int(os.environ.get("STOVE0_SMOKE_COMPLETION_TIMEOUT", "900"))
     last: dict[str, Any] = {}
+    previous = None
+    next_progress = started
     while time.monotonic() < deadline:
         stove("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25})
         last = stove(path)
         state = last["state"]
+        job = last["job"] if initiation else last
+        current = (state, job["state"])
+        now = time.monotonic()
+        if current != previous or now >= next_progress:
+            print(
+                canonical_json_bytes(
+                    {
+                        "proof": "planning-progress",
+                        "kind": "work-initiation" if initiation else "workflow-preview",
+                        "elapsed_seconds": int(now - started),
+                        "job_id": job["job_id"],
+                        "work_id": job["work_id"],
+                        "state": job["state"],
+                        "outcome": state,
+                    }
+                ).decode(),
+                file=sys.stderr,
+                flush=True,
+            )
+            previous, next_progress = current, now + 60
         if state == "completed":
             return last
         if initiation and state == "rejected":
