@@ -45,28 +45,26 @@ def candidate_site(
     from tests.documentation_fixtures import synthetic_corpus
     from tests.release_index import make_index
 
-    entries = []
+    # Browser behavior needs complete development and documented renders. Multiple
+    # immutable versions and semantic ordering are covered by test_contract_pages;
+    # duplicating a second full synthetic release can exceed the hosting budget.
     bundle = load_bundle(CANDIDATE_SOURCE / "riverhog-v1.json")
-    for number, tag in enumerate(("v1.2.0", "v1.10.0"), 1):
-        source_sha = str(number) * 40
-        authored = AuthoredDocumentation(
-            tag,
-            "c" * 40,
-            synthetic_corpus(bundle.closure),
+    tag = "v1.10.0"
+    source_sha = "2" * 40
+    authored = AuthoredDocumentation(tag, "c" * 40, synthetic_corpus(bundle.closure))
+    entries = [
+        dict(
+            root=release_contract_factory(source_sha, documentation=authored),
+            tag=tag,
+            release_id=2,
+            release_manifest_sha256="d" * 64,
+            attestation_sha256="e" * 64,
+            assets={"synthetic-witness": "sha256:" + "f" * 64},
+            installation=make_index(
+                tmp_path_factory.mktemp(f"installation-{tag}"), tag, source_sha
+            )[0],
         )
-        entries.append(
-            dict(
-                root=release_contract_factory(source_sha, documentation=authored),
-                tag=tag,
-                release_id=number,
-                release_manifest_sha256="d" * 64,
-                attestation_sha256="e" * 64,
-                assets={"synthetic-witness": "sha256:" + "f" * 64},
-                installation=make_index(
-                    tmp_path_factory.mktemp(f"installation-{tag}"), tag, source_sha
-                )[0],
-            )
-        )
+    ]
     build_pages(CANDIDATE_SOURCE, root, "0" * 40, releases=entries)
     bundle = load_bundle(CANDIDATE_SOURCE / "riverhog-v1.json")
     element = next(
@@ -419,7 +417,7 @@ def test_aggregate_version_navigation_and_documentation_availability(candidate_s
     page = context.new_page()
     page.goto(base)
     versions = page.get_by_role("navigation", name="Versions")
-    assert versions.get_by_role("link").all_text_contents() == ["development", "v1.10.0", "v1.2.0"]
+    assert versions.get_by_role("link").all_text_contents() == ["development", "v1.10.0"]
     assert (
         page.locator("body").evaluate("node => getComputedStyle(node).colorScheme") == "light dark"
     )
@@ -431,10 +429,7 @@ def test_aggregate_version_navigation_and_documentation_availability(candidate_s
     page.get_by_role("link", name="Documentation", exact=True).click()
     assert page.locator("#docs-mode").is_checked()
     assert page.locator("#authority-cards").is_visible()
-    page.goto(base + "/v1.2.0/")
-    page.get_by_role("link", name="Documentation", exact=True).click()
-    assert page.locator("#docs-mode").is_checked()
-    page.goto(base + "/v1.2.0/")
+    page.goto(base + "/v1.10.0/")
     page.get_by_role("link", name="Contract", exact=True).click()
     assert not page.locator("#docs-mode").is_checked()
     page.goto(base + "/v1/")
