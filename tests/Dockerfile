@@ -1,4 +1,4 @@
-FROM jdxcode/mise:2026.7.13@sha256:7fe9145156e33f95f7712632dbadb418592ed0f60fb46e5bcc8c113d372ad8a3 AS mise
+FROM jdxcode/mise:2026.9.16@sha256:ba8323458e59bb82d3132bc15f7a59a8ac9a88c6202286a2fc56507aab0094d2 AS mise
 
 FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203 AS locked-tools
 
