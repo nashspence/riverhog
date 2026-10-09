@@ -133,7 +133,9 @@ class CanonicalProvenanceArchiveReader:
             yield self
             return
         with TemporaryDirectory(prefix="riverhog-provenance-metadata-") as scratch:
-            db = sqlite3.connect(Path(scratch) / "metadata.sqlite3")
+            # The operation owns this index. Its serial HTTP iterator may
+            # advance and close on different worker threads.
+            db = sqlite3.connect(Path(scratch) / "metadata.sqlite3", check_same_thread=False)
             db.executescript(
                 "PRAGMA cache_size = -512; PRAGMA temp_store = FILE; "
                 "CREATE TABLE volumes(sequence TEXT PRIMARY KEY, kind TEXT, "
@@ -160,6 +162,7 @@ class CanonicalProvenanceArchiveReader:
             try:
                 summary = self._scan(remember)
                 db.commit()
+                db.execute("PRAGMA query_only = ON")
                 self._prepared_db = db
                 self._prepared_summary = summary
                 yield self
