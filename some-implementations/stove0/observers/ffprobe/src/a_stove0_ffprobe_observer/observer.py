@@ -71,7 +71,7 @@ class FfprobeObserver:
                     ObserverContractSupport.from_contract(
                         FFPROBE_STREAMS_OBSERVER_CONTRACT,
                         interfaces=(FFPROBE_STREAMS_INTERFACE.ref,),
-                        preferred_subject_batch_size=1,
+                        preferred_subject_batch_size=16,
                     ),
                     ObserverContractSupport.from_contract(
                         MEDIA_SAMPLING_OBSERVER_CONTRACT, interfaces=(MEDIA_SAMPLING_INTERFACE.ref,)
@@ -156,17 +156,22 @@ class FfprobeObserver:
                     workspace=workspace,
                     relative_path=f"input/{subject.id}",
                 )
-                raw = bounded_ffprobe_report(
-                    self.ffprobe, source, timeout_seconds=min(request.timeout_seconds, 300)
-                )
-                facts.append(
-                    artifact_facts(
-                        subject.id,
-                        raw,
-                        ffprobe_version=version,
-                        executable_sha256=executable_sha256,
+                try:
+                    raw = bounded_ffprobe_report(
+                        self.ffprobe, source, timeout_seconds=min(request.timeout_seconds, 300)
                     )
-                )
+                    facts.append(
+                        artifact_facts(
+                            subject.id,
+                            raw,
+                            ffprobe_version=version,
+                            executable_sha256=executable_sha256,
+                        )
+                    )
+                finally:
+                    # Physical batching must not accumulate a whole batch of
+                    # potentially large source files in the observer workspace.
+                    source.unlink(missing_ok=True)
             document = FFprobeStreamFacts(artifacts=tuple(facts)).model_dump(mode="json")
             validate_ffprobe_stream_facts(document, request.subjects)
             return builder.observed(document, execution_evidence=evidence)

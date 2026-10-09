@@ -50,7 +50,7 @@ class RiverhogProvenanceObserver:
                     ObserverContractSupport.from_contract(
                         MATERIALIZATION_HINT_OBSERVER_CONTRACT,
                         interfaces=(MATERIALIZATION_HINT_INTERFACE.ref,),
-                        preferred_subject_batch_size=1,
+                        preferred_subject_batch_size=16,
                     ),
                     ObserverContractSupport.from_contract(
                         CORE_PROVENANCE_OBSERVER_CONTRACT,
