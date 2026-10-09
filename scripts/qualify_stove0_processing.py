@@ -12,6 +12,8 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -157,9 +159,7 @@ def await_admission() -> None:
         current = row.get("state")
         if current == expected:
             return
-        if current is None:
-            assert expected == "intent"
-        else:
+        if current is not None:
             assert current in state_order, row
             assert state_order[current] < state_order[expected], row
         if current != previous or now >= next_progress:
@@ -194,6 +194,26 @@ def await_admission() -> None:
             previous, next_progress = current, now + 60
         time.sleep(0.5)
     raise AssertionError(canonical_json_bytes(diagnostic).decode())
+
+
+def admission_work() -> None:
+    """Require the exact automatically bound input/work pair to survive recovery."""
+    collection_id = os.environ["INPUT_COLLECTION_ID"]
+    payload = stove("/v1/admissions?page_size=100&sort=admission_id&order=asc", timeout=5)
+    matches = [
+        row
+        for row in payload["admissions"]
+        if row["intent"]["collection"]["collection_id"] == collection_id
+    ]
+    assert len(matches) == 1, "expected one automatic admission for the exact input"
+    row = matches[0]
+    assert row["state"] == "work_bound", "automatic admission must be durably work_bound"
+    assert row["intent"]["policy_id"] == "conformance-media"
+    work_id = row["work_id"]
+    assert isinstance(work_id, str) and work_id
+    work = stove("/v1/work/" + work_id, timeout=5)
+    assert work["work_id"] == work_id, "bound work must exist with the exact identity"
+    print(work_id)
 
 
 def await_planning(path: str, *, initiation: bool = False) -> dict[str, Any]:
@@ -235,6 +255,25 @@ def await_planning(path: str, *, initiation: bool = False) -> dict[str, Any]:
     raise TimeoutError(canonical_json_bytes({"path": path, "state": last.get("state")}).decode())
 
 
+@contextmanager
+def processing_phase_cost(phase: str) -> Iterator[None]:
+    started = time.monotonic()
+    try:
+        yield
+    finally:
+        print(
+            canonical_json_bytes(
+                {
+                    "proof": "processing-phase-cost",
+                    "phase": phase,
+                    "seconds": time.monotonic() - started,
+                }
+            ).decode(),
+            file=sys.stderr,
+            flush=True,
+        )
+
+
 def invoke() -> None:
     from stove0_operator_contracts import (
         OperatorWorkflowPreviewRequest,
@@ -260,21 +299,22 @@ def invoke() -> None:
         },
         "inputs": [root.model_dump(mode="json")],
     }
-    preview_status = PlanningJobStatus.model_validate(
-        stove(
-            "/v1/workflow-previews",
-            OperatorWorkflowPreviewRequest(
-                invocation_id=canonical_json_sha256(
-                    {"purpose": "qualification-preview", **invocation}
-                ),
-                recipe_id=recipe_id(),
-                inputs=(root,),
-            ).model_dump(mode="json", exclude_none=True),
+    with processing_phase_cost("accepted-preview"):
+        preview_status = PlanningJobStatus.model_validate(
+            stove(
+                "/v1/workflow-previews",
+                OperatorWorkflowPreviewRequest(
+                    invocation_id=canonical_json_sha256(
+                        {"purpose": "qualification-preview", **invocation}
+                    ),
+                    recipe_id=recipe_id(),
+                    inputs=(root,),
+                ).model_dump(mode="json", exclude_none=True),
+            )
         )
-    )
-    preview = PlanningJobStatus.model_validate(
-        await_planning("/v1/workflow-previews/" + preview_status.job_id)
-    ).result
+        preview = PlanningJobStatus.model_validate(
+            await_planning("/v1/workflow-previews/" + preview_status.job_id)
+        ).result
     assert preview is not None
     assert preview.state == "ready", canonical_json_bytes(
         {
@@ -347,22 +387,23 @@ def invoke() -> None:
         assert plans["archive-audio"]["bitrate_kbps"] == 128
         assert plans["archive-audio-overlap"]["bitrate_kbps"] == 96
         assert len({row["plan_sha256"] for row in plans.values()}) == 2
-    initiation = WorkInitiationStatus.model_validate(
-        stove(
-            "/v1/work",
-            WorkCreateRequest(
-                invocation_id=canonical_json_sha256(
-                    {"purpose": "qualification-acceptance", **invocation}
-                ),
-                recipe_id=recipe_id(),
-                inputs=(root,),
-                preview_sha256=preview.preview_sha256,
-            ).model_dump(mode="json", exclude_none=True),
+    with processing_phase_cost("work-initiation"):
+        initiation = WorkInitiationStatus.model_validate(
+            stove(
+                "/v1/work",
+                WorkCreateRequest(
+                    invocation_id=canonical_json_sha256(
+                        {"purpose": "qualification-acceptance", **invocation}
+                    ),
+                    recipe_id=recipe_id(),
+                    inputs=(root,),
+                    preview_sha256=preview.preview_sha256,
+                ).model_dump(mode="json", exclude_none=True),
+            )
         )
-    )
-    work = WorkInitiationStatus.model_validate(
-        await_planning("/v1/work-initiations/" + initiation.job.job_id, initiation=True)
-    ).work
+        work = WorkInitiationStatus.model_validate(
+            await_planning("/v1/work-initiations/" + initiation.job.job_id, initiation=True)
+        ).work
     assert work is not None
     expected_work = os.environ.get("EXPECTED_WORK_ID")
     if expected_work:
@@ -476,6 +517,7 @@ def target_records() -> None:
 def main() -> None:
     {
         "admission": await_admission,
+        "admission-work": admission_work,
         "invoke": invoke,
         "wait": wait,
         "snapshot": snapshot,

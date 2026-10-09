@@ -6,12 +6,14 @@ shared context, or matching payload bytes as an attribution to a member.
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 import sqlite3
+import sys
 from collections.abc import Iterator, Mapping
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from types import TracebackType
 from typing import Any, Self
 
 from riverhog_archive_contracts import (
@@ -33,6 +35,7 @@ from riverhog_provenance_contracts import ContractCatalog
 
 from riverhog_core.canonical_discovery_rows import index_row_key
 from riverhog_core.provenance_binding import verify_member_binding
+from riverhog_core.scratch_workspace import scratch_directory
 
 type RelevanceKey = tuple[str, str, str]
 
@@ -41,35 +44,48 @@ class MemberRelevance(Mapping[RelevanceKey, frozenset[str]]):
     """Persistent member scope and traversal; no in-memory corpus or result set."""
 
     def __init__(self) -> None:
-        self._scratch = TemporaryDirectory(prefix="riverhog-member-relevance-")
-        self.db = sqlite3.connect(Path(self._scratch.name) / "relevance.sqlite3")
-        self.db.execute("PRAGMA cache_size = -512")
-        self.db.execute("PRAGMA temp_store = FILE")
-        self.db.executescript(
-            "CREATE TABLE scopes(journal TEXT, prefix TEXT, assertion TEXT, scope TEXT, "
-            "PRIMARY KEY(journal, prefix, assertion, scope));"
-            "CREATE TABLE snapshots(journal TEXT, prefix TEXT, anchor BLOB, "
-            "PRIMARY KEY(journal, prefix));"
-            "CREATE TABLE states(journal TEXT, prefix TEXT, state TEXT, scope TEXT, value BLOB, "
-            "done INTEGER, PRIMARY KEY(journal, prefix, state, scope));"
-            "CREATE TABLE causal(reference BLOB PRIMARY KEY);"
-            "CREATE TABLE views(history TEXT, extent TEXT, binding BLOB, "
-            "own INTEGER, done INTEGER, "
-            "PRIMARY KEY(history, extent));"
-        )
+        self._scratch = contextlib.ExitStack()
+        try:
+            scratch = self._scratch.enter_context(
+                scratch_directory(prefix="riverhog-member-relevance-")
+            )
+            self.db = sqlite3.connect(Path(scratch) / "relevance.sqlite3")
+            self._scratch.callback(self.db.close)
+            self.db.execute("PRAGMA cache_size = -512")
+            self.db.execute("PRAGMA temp_store = FILE")
+            self.db.executescript(
+                "CREATE TABLE scopes(journal TEXT, prefix TEXT, assertion TEXT, scope TEXT, "
+                "PRIMARY KEY(journal, prefix, assertion, scope));"
+                "CREATE TABLE snapshots(journal TEXT, prefix TEXT, anchor BLOB, "
+                "PRIMARY KEY(journal, prefix));"
+                "CREATE TABLE states(journal TEXT, prefix TEXT, state TEXT, "
+                "scope TEXT, value BLOB, "
+                "done INTEGER, PRIMARY KEY(journal, prefix, state, scope));"
+                "CREATE TABLE causal(reference BLOB PRIMARY KEY);"
+                "CREATE TABLE views(history TEXT, extent TEXT, binding BLOB, "
+                "own INTEGER, done INTEGER, "
+                "PRIMARY KEY(history, extent));"
+            )
+        except BaseException:
+            self._scratch.__exit__(*sys.exc_info())
+            raise
 
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, *_exc: object) -> None:
-        self.close()
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> bool | None:
+        return self._scratch.__exit__(exc_type, exc, traceback)
 
     def __del__(self) -> None:
         self.close()
 
     def close(self) -> None:
-        self.db.close()
-        self._scratch.cleanup()
+        self._scratch.close()
 
     def __getitem__(self, key: RelevanceKey) -> frozenset[str]:
         values = frozenset(

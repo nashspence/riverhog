@@ -5,10 +5,11 @@ from __future__ import annotations
 import re
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
+from pydantic import JsonValue
 from stove0_protocol.models import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     SHA256_PATTERN,
@@ -21,8 +22,36 @@ from stove0_protocol.models import (
     SemanticValidationProfile,
     canonical_json_bytes,
 )
+from stove0_protocol.observation_interfaces import ExactDocumentRef
+from stove0_protocol.observation_views import CoverageStatus, StatusResolver
 
 FactsSemanticValidator = Callable[[ContentObservationRequest, Mapping[str, object]], None]
+FactsStatusResolver = Callable[
+    [tuple[str, ...], dict[str, JsonValue]], Mapping[str, CoverageStatus]
+]
+
+
+@runtime_checkable
+class SemanticStatusProvider(Protocol):
+    def resolve_status(
+        self, profile_id: str, profile_sha256: str
+    ) -> FactsStatusResolver | None: ...
+
+
+def semantic_status_resolver(provider: SemanticValidatorProvider | None) -> StatusResolver:
+    def resolve(
+        profile: ExactDocumentRef, subjects: tuple[str, ...], facts: dict[str, JsonValue]
+    ) -> Mapping[str, CoverageStatus]:
+        resolver = (
+            provider.resolve_status(profile.id, profile.sha256)
+            if isinstance(provider, SemanticStatusProvider)
+            else None
+        )
+        if resolver is None:
+            raise ValueError("exact semantic completeness extraction is unavailable")
+        return resolver(subjects, facts)
+
+    return resolve
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,17 +61,21 @@ class SemanticValidatorBinding:
     profile_id: str
     profile_sha256: str
     validator: FactsSemanticValidator
+    status_resolver: FactsStatusResolver | None = None
 
     @classmethod
     def from_profile(
         cls,
         profile: SemanticValidationProfile,
         validator: FactsSemanticValidator,
+        *,
+        status_resolver: FactsStatusResolver | None = None,
     ) -> SemanticValidatorBinding:
         return cls(
             profile_id=profile.id,
             profile_sha256=profile.profile_sha256,
             validator=validator,
+            status_resolver=status_resolver,
         )
 
     def __post_init__(self) -> None:
@@ -52,6 +85,8 @@ class SemanticValidatorBinding:
             raise ValueError("semantic validator profile digest must be SHA-256")
         if not callable(self.validator):
             raise TypeError("semantic validator must be callable")
+        if self.status_resolver is not None and not callable(self.status_resolver):
+            raise TypeError("semantic status resolver must be callable")
 
 
 class SemanticValidatorProvider(Protocol):
@@ -68,13 +103,19 @@ class SemanticValidatorRegistry:
     """Immutable exact-profile registry assembled by application composition."""
 
     def __init__(self, bindings: Iterable[SemanticValidatorBinding] = ()) -> None:
+        materialized = tuple(bindings)
         validators: dict[tuple[str, str], FactsSemanticValidator] = {}
-        for binding in bindings:
+        for binding in materialized:
             key = (binding.profile_id, binding.profile_sha256)
             if key in validators:
                 raise ValueError("semantic validator profile is registered more than once")
             validators[key] = binding.validator
         self._validators = validators
+        self._statuses = {
+            (binding.profile_id, binding.profile_sha256): binding.status_resolver
+            for binding in materialized
+            if binding.status_resolver is not None
+        }
 
     def resolve(
         self,
@@ -82,6 +123,9 @@ class SemanticValidatorRegistry:
         profile_sha256: str,
     ) -> FactsSemanticValidator | None:
         return self._validators.get((profile_id, profile_sha256))
+
+    def resolve_status(self, profile_id: str, profile_sha256: str) -> FactsStatusResolver | None:
+        return self._statuses.get((profile_id, profile_sha256))
 
 
 def validate_observation_request(

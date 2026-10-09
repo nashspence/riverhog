@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+import time
 from collections.abc import Callable, Hashable, Iterator
 from contextlib import AbstractContextManager, contextmanager, nullcontext
 from contextvars import ContextVar
@@ -11,11 +13,103 @@ from typing import Protocol, Self
 from http_api_contracts.control import control_budget
 from http_api_contracts.metadata_exchange import ResumableMetadataCalls
 from pydantic import JsonValue
-from stove0_protocol import PlanningJobStatus
+from stove0_protocol import PlanningJobStatus, WorkIdentity, canonical_json_bytes
 
+from stove0_core.planning_progress import PlanningProgress
 from stove0_core.work_state import WorkRecord
 
 _PREPARING = ContextVar("stove0_metadata_preparation", default=False)
+
+_LOGGER = logging.getLogger("stove0_core.planning")
+
+
+@contextmanager
+def planning_cost(phase: str, **counts: str | int) -> Iterator[None]:
+    started = time.perf_counter()
+    outcome = "complete"
+    try:
+        yield
+    except BaseException as error:
+        outcome = type(error).__name__
+        raise
+    finally:
+        if _LOGGER.isEnabledFor(logging.INFO):
+            _LOGGER.info(
+                "stove0-planning-cost %s",
+                canonical_json_bytes(
+                    {
+                        "phase": phase,
+                        "seconds": time.perf_counter() - started,
+                        "outcome": outcome,
+                        **counts,
+                    }
+                ).decode(),
+            )
+
+
+class CompiledPlanningProcessor(Protocol):
+    def step(self, work: WorkIdentity) -> PlanningProgress: ...
+
+
+def advance_planning(
+    planner: CompiledPlanningProcessor,
+    work: WorkIdentity,
+    *,
+    owner_kind: str,
+    owner_id: str,
+    maximum_steps: int = 64,
+    maximum_seconds: float = 0.1,
+    deliver: Callable[[PlanningProgress], None] | None = None,
+    maximum_questions: int = 4,
+) -> PlanningProgress:
+    """Drain persisted metadata continuations within one finite worker quantum.
+
+    Synchronous control callers retain a single step. The metadata worker can
+    drain inexpensive pending steps without paying a scheduler delay for each
+    row. A worker may dispatch/poll a finite burst of independent questions;
+    synchronous callers and workers without a delivery callback return the first
+    question. Target execution and settlement retain their owning boundaries.
+    """
+    if maximum_steps < 1 or maximum_seconds <= 0 or maximum_questions < 1:
+        raise ValueError("planning worker quantum must be positive")
+    if not _PREPARING.get():
+        return planner.step(work)
+    started = time.perf_counter()
+    steps = questions = 0
+    for _ in range(maximum_steps):
+        steps += 1
+        progress = planner.step(work)
+        if progress.state == "question" and deliver is not None:
+            # Delivery durably queues/polls one exact job; it never waits for
+            # observer execution. The persisted task turn selects other ready
+            # dependencies even when this resource remains deferred.
+            deliver(progress)
+            questions += 1
+            progress = PlanningProgress("pending", progress.work)
+        if (
+            progress.state != "pending"
+            or questions >= maximum_questions
+            or time.perf_counter() - started >= maximum_seconds
+        ):
+            break
+    if _LOGGER.isEnabledFor(logging.INFO):
+        _LOGGER.info(
+            "stove0-planning-cost %s",
+            canonical_json_bytes(
+                {
+                    "phase": "compiled-continuations",
+                    "seconds": time.perf_counter() - started,
+                    "steps": steps,
+                    "questions": questions,
+                    "state": progress.state,
+                    "outcome": "complete",
+                    "work_id": work.work_id,
+                    "owner_kind": owner_kind,
+                    "owner_id": owner_id,
+                }
+            ).decode(),
+        )
+    return progress
 
 
 class WorkMetadataProcessor(Protocol):

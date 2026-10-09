@@ -365,3 +365,52 @@ def test_single_output_child_exports_existing_branch_without_dummy_join(tmp_path
     exact_operation = planner.operation_contract(leaf.workflow_plan.operation)
     assert exact_operation == operation
     planner.state.engine.dispose()
+
+
+def test_worker_quantum_and_single_steps_seal_identical_plans_across_restart(tmp_path):
+    from stove0_core.metadata_steps import _preparing, advance_planning
+
+    operation = _operation("external-effect")
+    source = _source(
+        "example.worker-quantum/v1", fork={"effect": {"call": {"operation": "operation"}}}
+    )
+    catalog = _catalog(operation, {"recipe": source})
+    outcomes = []
+    for mode in ("single", "quantum"):
+        url = f"sqlite:///{tmp_path / (mode + '.db')}"
+        state = SqlAlchemyStateStore(url)
+        planner = RecipePlanner(
+            catalog=catalog,
+            state=state,
+            riverhog=Inventory(),
+            observers=object(),
+            targets=Targets(operation),
+        )
+        work = planner.create_work(source.id, (Inventory.root,))
+        planner = planner.for_invocation("work", work.work_id)
+        for ordinal in range(500):
+            if mode == "single":
+                progress = planner.step(work)
+            else:
+                with _preparing():
+                    progress = advance_planning(
+                        planner, work, owner_kind="work", owner_id=work.work_id, maximum_steps=7
+                    )
+            if progress.state != "pending":
+                assert progress.state == "ready"
+                outcomes.append(progress.decision)
+                break
+            if ordinal == 0:
+                planner.state.engine.dispose()
+                state = SqlAlchemyStateStore(url).planning_context("work", work.work_id)
+                planner = RecipePlanner(
+                    catalog=CompiledRecipeCatalog(),
+                    state=state,
+                    riverhog=Inventory(),
+                    observers=object(),
+                    targets=Targets(operation),
+                )
+        else:
+            pytest.fail("worker quantum did not complete the exact retained plan")
+        planner.state.engine.dispose()
+    assert len(outcomes) == 2 and outcomes[0] == outcomes[1]

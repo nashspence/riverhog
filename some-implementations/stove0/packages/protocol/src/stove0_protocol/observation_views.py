@@ -9,9 +9,13 @@ from typing import Literal
 from jsonschema import Draft202012Validator
 from pydantic import JsonValue
 
-from stove0_protocol.interface_schemas import schema_slice
+from stove0_protocol.interface_schemas import SchemaSlice, schema_slice
 from stove0_protocol.jcs import canonical_json_bytes
-from stove0_protocol.models import ObserverContract
+from stove0_protocol.models import (
+    JsonSchemaValidationProfile,
+    ObserverContract,
+    Stove0ProtocolModel,
+)
 from stove0_protocol.observation_interfaces import (
     ExactDocumentRef,
     ExactEndpoint,
@@ -25,7 +29,13 @@ from stove0_protocol.observation_interfaces import (
     SubjectFactsView,
     SubjectPort,
 )
-from stove0_protocol.predicates import MISSING, Truth, evaluate_row, read_pointer
+from stove0_protocol.predicates import (
+    MISSING,
+    FactsQuantification,
+    Truth,
+    evaluate_row,
+    read_pointer,
+)
 
 CoverageStatus = Literal["complete", "unsupported", "ambiguous", "insufficient"]
 StatusResolver = Callable[
@@ -37,6 +47,41 @@ StatusResolver = Callable[
 class SubjectView:
     rows: Mapping[str, tuple[dict[str, JsonValue], ...]]
     statuses: Mapping[str, CoverageStatus]
+
+
+class _CoverageRecord(Stove0ProtocolModel):
+    status: CoverageStatus
+
+
+def coverage_record_schema() -> SchemaSlice:
+    return schema_slice(
+        JsonSchemaValidationProfile.from_schema(
+            "stove0.accepted-view-coverage-record/v1", _CoverageRecord.model_json_schema()
+        ),
+        "",
+    )
+
+
+def evaluate_subject_facts(
+    predicate: FactsQuantification, view: SubjectView, subject: str
+) -> Iterator[Truth]:
+    status = view.statuses.get(subject)
+    if status not in {"complete", "unsupported", "ambiguous", "insufficient"}:
+        yield Truth.INDETERMINATE
+        return
+    if predicate.inspect == "status":
+        # This is the exact accepted coverage statement, never a claim that
+        # unsupported/ambiguous/insufficient records constitute complete facts.
+        yield evaluate_row(predicate.where, {"status": status})
+        return
+    if subject not in view.rows or status != "complete":
+        yield Truth.INDETERMINATE
+        return
+    records = view.rows[subject]
+    if not records and predicate.quantifier == "every":
+        yield Truth.FALSE
+    for record in records:
+        yield evaluate_row(predicate.where, record)
 
 
 @dataclass(frozen=True, slots=True)

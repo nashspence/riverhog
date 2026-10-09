@@ -16,6 +16,7 @@ from stove0_recipe_config.reading import read_source_documents
 
 
 class RecipeSourceLocation(Stove0ProtocolModel):
+    source: str
     line: NonnegativeDecimal = Field(ge=1)
     column: NonnegativeDecimal = Field(ge=1)
 
@@ -26,17 +27,19 @@ class RecipeSourceMap(Stove0ProtocolModel):
     locations: dict[Pointer, RecipeSourceLocation]
 
 
-def recipe_source_map(path: Path) -> RecipeSourceMap:
+def source_document_map(path: Path) -> RecipeSourceMap:
     documents = read_source_documents(path)
     if len(documents) != 1:
-        raise ValueError("recipe source map requires one closed catalog document")
+        raise ValueError("recipe source map requires one closed local document")
     # The strict JSON-domain reader rejects aliases, tags and malformed source
     # first. Round-trip nodes supply locations, never another semantic parser.
     loader = YAML(typ="rt")
     loader.version = (1, 2)
     loader.allow_duplicate_keys = False
     document = loader.load(path.read_text(encoding="utf-8"))
-    locations = {"": RecipeSourceLocation.model_validate({"line": "1", "column": "1"})}
+    locations = {
+        "": RecipeSourceLocation.model_validate({"source": str(path), "line": "1", "column": "1"})
+    }
     pending = [("", document)]
     while pending:
         prefix, node = pending.pop()
@@ -51,7 +54,17 @@ def recipe_source_map(path: Path) -> RecipeSourceMap:
         for name, child, location in children:
             pointer = prefix + "/" + name.replace("~", "~0").replace("/", "~1")
             locations[pointer] = RecipeSourceLocation.model_validate(
-                {"line": str(location[0] + 1), "column": str(location[1] + 1)}
+                {"source": str(path), "line": str(location[0] + 1), "column": str(location[1] + 1)}
             )
             pending.append((pointer, child))
     return RecipeSourceMap(source=str(path), locations=locations)
+
+
+def recipe_source_map(
+    path: Path, *, resources_path: Path | None = None, recipe_paths: dict[str, Path] | None = None
+) -> RecipeSourceMap:
+    from stove0_recipe_config.assembly import assemble_recipe_inputs
+
+    return assemble_recipe_inputs(
+        path, resources_path=resources_path, recipe_paths=recipe_paths
+    ).locations

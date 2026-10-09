@@ -18,7 +18,7 @@ from riverhog_canonical_json import canonical_json_bytes
 
 SHARDS = ("release", "contract", "unit")
 SHARD_PROFILES = {
-    "release": (2, "loadscope"),
+    "release": (2, "worksteal"),
     "contract": (2, "worksteal"),
     "unit": (4, "loadscope"),
 }

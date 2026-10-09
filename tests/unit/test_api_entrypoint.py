@@ -21,6 +21,8 @@ def test_api_entrypoint_listens_on_the_container_network(monkeypatch: Any) -> No
 
     monkeypatch.setattr(api_app.uvicorn, "run", fake_run)
 
+    # One process owns the leased scratch, even if deployment exports a pool size.
+    monkeypatch.setenv("WEB_CONCURRENCY", "4")
     api_app.main([])
 
     assert invocation == {
@@ -29,6 +31,7 @@ def test_api_entrypoint_listens_on_the_container_network(monkeypatch: Any) -> No
         "host": "0.0.0.0",
         "port": 8000,
         "reload": False,
+        "workers": 1,
     }
 
 

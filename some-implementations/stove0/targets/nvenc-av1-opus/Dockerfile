@@ -148,7 +148,7 @@ RUN apt-get update --snapshot "${UBUNTU_APT_SNAPSHOT}" \
     libfontconfig1 libfreetype6 libfribidi0 libharfbuzz0b libopus0 \
  && ln -s /usr/bin/python3 /usr/local/bin/python3 \
  && python3 -c 'import sys; assert sys.version_info[:2] == (3, 12)' \
- && install -d -o 65532 -g 65532 -m 0700 /var/lib/a-stove0-nvenc-av1-opus-target \
+ && install -d -o 65532 -g 65532 -m 0700 /var/lib/a-stove0-nvenc-av1-opus-target /run/stove0-execution-lease \
  && rm -rf /var/lib/apt/lists/* \
  && ! command -v mise
 

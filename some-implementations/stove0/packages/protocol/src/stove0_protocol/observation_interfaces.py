@@ -284,12 +284,30 @@ class ObservationInterface(ObservationInterfacePayload):
                 )
 
 
+class ObservationInterfaceEvidenceContext(Stove0ProtocolModel):
+    """Exact local predecessor fixture for interface conformance, never runtime evidence."""
+
+    contract: ObserverContract
+    interface: ObservationInterface
+    subjects: tuple[WorkArtifactSubject, ...]
+    options: dict[str, JsonValue]
+    facts: dict[str, JsonValue] | None
+    evidence: dict[LocalName, ObservationInterfaceEvidenceContext] = Field(default_factory=dict)
+    semantic_statuses: (
+        dict[str, Literal["complete", "unsupported", "ambiguous", "insufficient"]] | None
+    ) = None
+
+
 class ObservationInterfaceVector(Stove0ProtocolModel):
     id: SemanticId
     accepted: StrictBool
     subjects: tuple[WorkArtifactSubject, ...]
     options: dict[str, JsonValue]
     facts: dict[str, JsonValue] | None
+    evidence: dict[LocalName, ObservationInterfaceEvidenceContext] = Field(default_factory=dict)
+    semantic_statuses: (
+        dict[str, Literal["complete", "unsupported", "ambiguous", "insufficient"]] | None
+    ) = None
     expected_views: dict[LocalName, tuple[JsonValue, ...]] | None = None
 
     @field_validator("subjects")

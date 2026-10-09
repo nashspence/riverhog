@@ -114,6 +114,7 @@ class FactsQuantification(ConditionModel):
     scope: Literal["input", "candidate", "self"]
     roles: tuple[SemanticId, ...] | None = Field(default=None, min_length=1)
     quantifier: Quantifier
+    inspect: Literal["records", "status"] = "records"
     where: RowPredicate
 
     @model_validator(mode="after")

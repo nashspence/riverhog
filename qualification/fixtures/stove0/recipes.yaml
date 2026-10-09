@@ -162,8 +162,8 @@ resources:
       interface_semantics:
         id: stove0.observation-interface-semantics/v1
         sha256: 232719b71d67a71d71c58fb644e771fc23f1c6f7d7b12d1f4380f2c1148a250b
-      conformance_vectors_sha256: 7a18ac9f7e05b323b087d2db2cfd56ec0bbe3378b9c421d90c90d6bdb3c071ec
-      interface_sha256: 1f4ab94eead74439de945b54830868de662c6ed258af0172bf8d79070b676b6d
+      conformance_vectors_sha256: 2038870abf8de40b3e80269332d3c092974a8702cbd93efa5004ac907b5ac742
+      interface_sha256: 0297bddbc392434327c158d8bb01fa89a8a2f3853bda31b326687e42ee1c740e
     interface_vectors:
       format: stove0-observation-interface-conformance/v1
       interface_id: stove0.media.metadata.interface/v1
@@ -678,8 +678,8 @@ resources:
       interface_semantics:
         id: stove0.observation-interface-semantics/v1
         sha256: 232719b71d67a71d71c58fb644e771fc23f1c6f7d7b12d1f4380f2c1148a250b
-      conformance_vectors_sha256: 39eabd1be6e3db6695ec618005ccf55516fec335f48754b3e68900350b094794
-      interface_sha256: c3357c407ec96e25214f279b8df945fda0042b075929c202df2cdc4b96d940f7
+      conformance_vectors_sha256: 5b4482002c91cc22c44b32958484ad92021c8e1ae0aa011bdea1e27e4f68b82d
+      interface_sha256: f07e4cb8b694088007ecd1544f9c9c904f06b73dc2f7895289e9a3e55025ed16
     interface_vectors:
       format: stove0-observation-interface-conformance/v1
       interface_id: stove0.ffprobe.streams.interface/v1
@@ -1518,8 +1518,8 @@ resources:
       interface_semantics:
         id: stove0.observation-interface-semantics/v1
         sha256: 232719b71d67a71d71c58fb644e771fc23f1c6f7d7b12d1f4380f2c1148a250b
-      conformance_vectors_sha256: 28ba8e4f5789b748e8bb8a36de5140b5b5bf9fe78b08d5a993900e05692f2c40
-      interface_sha256: 894c2af50adaca9668b15f83a186ed3cdb2b8621d5d8c8db7b903d9bb96eddbd
+      conformance_vectors_sha256: 3d5bf7bfbdea5585bbca9cdf7128a732c0c94925337439ba65ed73c81430027a
+      interface_sha256: 1bbf22ab996284da7872526b8a0e133ff62aea7e6e0f9f2d990f3fe864a211c7
     interface_vectors:
       format: stove0-observation-interface-conformance/v1
       interface_id: stove0.riverhog-provenance.interface/v1
@@ -2266,8 +2266,8 @@ resources:
       interface_semantics:
         id: stove0.observation-interface-semantics/v1
         sha256: 232719b71d67a71d71c58fb644e771fc23f1c6f7d7b12d1f4380f2c1148a250b
-      conformance_vectors_sha256: de4d0b1900b10a21d0691479e833482291dd038c4bf0f526860ad2f19a259c21
-      interface_sha256: 436b2b8841f40d4f5a5a9910b49ac2d8b566a0e6e2f561bd3bc2bc49c37eeda6
+      conformance_vectors_sha256: 06c5b398419b79d03fe65b1a7a6ae8340c96d4a748c3c084629b79471b0dcbac
+      interface_sha256: acca90317425810d1ae528c7d1150bb313521d709134d80c816f161fc175967f
     interface_vectors:
       format: stove0-observation-interface-conformance/v1
       interface_id: stove0.riverhog-materialization-hint.interface/v1
@@ -2840,7 +2840,7 @@ resources:
             sha256: a64de32b72e8d6b7c358fa7bd8184e13baa709dc49de2e03c747d8c4c130f4ca
           interfaces:
           - id: stove0.riverhog-provenance.interface/v1
-            sha256: 894c2af50adaca9668b15f83a186ed3cdb2b8621d5d8c8db7b903d9bb96eddbd
+            sha256: 1bbf22ab996284da7872526b8a0e133ff62aea7e6e0f9f2d990f3fe864a211c7
           covers:
           - primary
           - sidecar
@@ -2913,8 +2913,8 @@ resources:
       interface_semantics:
         id: stove0.observation-interface-semantics/v1
         sha256: 232719b71d67a71d71c58fb644e771fc23f1c6f7d7b12d1f4380f2c1148a250b
-      conformance_vectors_sha256: b1c79b018604cf22b3f49fbbb650743d2189d1f623cbc1d64a0a48868194e55f
-      interface_sha256: 3da1054f65d753be997b906c928828d86acf7b1b115b795a52431e7bb89570b5
+      conformance_vectors_sha256: da16282e13c32b029117b3c00c7ef24e595ed1c84d037232ed58f1fe717d9f97
+      interface_sha256: 3ccf1ce27337d90698ed64a941aa46486fda39efbc9c7c17ee05e39731555322
     interface_vectors:
       format: stove0-observation-interface-conformance/v1
       interface_id: stove0.filename-prefix-sidecars.interface/v1
@@ -3193,8 +3193,8 @@ resources:
       interface_semantics:
         id: stove0.observation-interface-semantics/v1
         sha256: 232719b71d67a71d71c58fb644e771fc23f1c6f7d7b12d1f4380f2c1148a250b
-      conformance_vectors_sha256: 0b5fd9a19cda948e20cfa4896c7bba379e8de29b59f8e906a7aab81e8c397d1e
-      interface_sha256: 274a92fcb8768472fb389f5f8ddc4dcca12a4ce0e9fda1e86e001a67217cdb8e
+      conformance_vectors_sha256: 87e08ec531f7da7716d7ffbee34af875d8a0c3fcff4b688342091b48c6ce0961
+      interface_sha256: b9d006f6282c5c94cf3dafdbd58aef4059101f0f0b9ead77edb5a4f149eb9a18
     interface_vectors:
       format: stove0-observation-interface-conformance/v1
       interface_id: stove0.media.sampling.interface/v1

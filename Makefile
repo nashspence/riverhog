@@ -14,6 +14,7 @@ UNIT_REPORT_ARGS ?= --instafail --durations=30 --durations-min=0.25 -p scripts.c
 UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope $(UNIT_REPORT_ARGS)
 UNIT_SHARD_PYTEST_ARGS ?= $(UNIT_REPORT_ARGS)
 LOCAL_QUALIFICATION_JOBS ?= 2
+LOCAL_QUALIFICATION_DOCKER_JOBS ?= 2
 PYTHON_PATHS ?= packages some-implementations riverhog scripts tests
 RELEASE_VERSION ?= 1.0.0
 RELEASE_OUTPUT ?=
@@ -107,6 +108,7 @@ help:
 		'  STOVE0_SCALE_FILES=N  Set the scale-qualification file count (default: 128).' \
 		'  STOVE0_SCALE_AUDIO_FRAMES=N Set frames per scale fixture (default: 2000).' \
 		'  LOCAL_QUALIFICATION_JOBS=N Bound independent local proof concurrency (default: 2; 1 is sequential).' \
+		'  LOCAL_QUALIFICATION_DOCKER_JOBS=N Bound concurrent Docker lifecycles (default: 2).' \
 		'  RELEASE_VERSION=1.0.0 Coordinated version for release-plan and release-dry-run.' \
 		'  RELEASE_OUTPUT=/path   Output/evidence directory for release-evidence or release-verify.' \
 		'  RELEASE_SUMMARY=/path  Write a JSON dry-run or governance summary.' \
@@ -161,7 +163,7 @@ client-platform-qualification:
 	"$(MISE_BIN)" x python uv age -- uv run --locked --all-packages --group dev python -m scripts.ci_qualification native
 
 linux-qualification:
-	$(call UV_CMD,python -m scripts.ci_qualification linux --jobs "$(LOCAL_QUALIFICATION_JOBS)")
+	$(call UV_CMD,python -m scripts.ci_qualification linux --jobs "$(LOCAL_QUALIFICATION_JOBS)" --docker-jobs "$(LOCAL_QUALIFICATION_DOCKER_JOBS)")
 
 dependency-readiness:
 	$(call UV_CMD,python scripts/check_dependency_readiness.py $(args))
@@ -232,7 +234,7 @@ postgres-concurrency:
 	@POSTGRES_TESTS="$(POSTGRES_TESTS)" ./scripts/test_postgres_concurrency.sh
 
 compose-smoke:
-	@./scripts/test_compose_smoke.sh
+	@LOCAL_QUALIFICATION_JOBS="$(LOCAL_QUALIFICATION_JOBS)" LOCAL_QUALIFICATION_DOCKER_JOBS="$(LOCAL_QUALIFICATION_DOCKER_JOBS)" ./scripts/test_compose_smoke.sh
 
 .PHONY: compose-shard
 compose-shard:

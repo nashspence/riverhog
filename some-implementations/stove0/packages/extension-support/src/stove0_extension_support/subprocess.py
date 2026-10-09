@@ -11,7 +11,7 @@ from collections.abc import Sequence
 from types import TracebackType
 from typing import IO, Any, Literal, Self, overload
 
-from stove0_extension_support.consumers import CURRENT_CONSUMERS
+from stove0_extension_support.consumers import CURRENT_CONSUMERS, ConsumerScope
 
 PIPE = _subprocess.PIPE
 STDOUT = _subprocess.STDOUT
@@ -22,9 +22,23 @@ SubprocessError = _subprocess.SubprocessError
 CompletedProcess = _subprocess.CompletedProcess
 
 
+def _launch_supervisor(
+    control: int,
+    descriptors: tuple[int, ...],
+    options: dict[str, Any],
+) -> _subprocess.Popen[Any]:
+    # Text/binary pipes follow the public wrapper's runtime options. The
+    # nongeneric launcher only owns the private guardian and its descriptors.
+    return _subprocess.Popen(
+        [sys.executable, "-m", "stove0_extension_support.process_supervisor", str(control)],
+        pass_fds=(control, *descriptors),
+        **options,
+    )
+
+
 class SupervisedProcess[T: (str, bytes)]:
     def __init__(self, args: Sequence[str], **kwargs: Any) -> None:
-        scope = CURRENT_CONSUMERS.get()
+        scope: ConsumerScope | None = CURRENT_CONSUMERS.get()
         if scope is None:
             raise RuntimeError("supervised payload needs a component consumer scope")
         if os.name != "posix":
@@ -33,16 +47,16 @@ class SupervisedProcess[T: (str, bytes)]:
             raise RuntimeError("native payload containment requires a POSIX supervisor")
         if kwargs.get("shell") or kwargs.get("preexec_fn") or kwargs.get("pass_fds"):
             raise ValueError("supervised tools require a direct executable invocation")
-        self.args = args
-        self._scope = scope
-        self._control_lock = threading.Lock()
+        self.args: Sequence[str] = args
+        self._scope: ConsumerScope = scope
+        self._control_lock: threading.Lock = threading.Lock()
         self._write: int | None = None
         read, write = os.pipe()
         try:
-            self._process: _subprocess.Popen[T] = _subprocess.Popen(
-                [sys.executable, "-m", "stove0_extension_support.process_supervisor", str(read)],
-                pass_fds=(read, scope.owner.descriptor),
-                **kwargs,
+            self._process: _subprocess.Popen[T] = _launch_supervisor(
+                read,
+                self._scope.descriptors,
+                kwargs,
             )
             self._write = write
             scope.retain(self)

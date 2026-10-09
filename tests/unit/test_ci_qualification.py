@@ -136,10 +136,14 @@ def test_a_cold_build_uses_current_inputs_before_verification(
 
 def test_local_linux_qualification_delegates_every_shared_semantic_lane(
     monkeypatch: pytest.MonkeyPatch,
+    graph: dict,
 ) -> None:
     commands = []
     monkeypatch.setattr(qualification, "run", lambda command, **kwargs: commands.append(command))
     monkeypatch.setattr(qualification.sys, "platform", "linux")
+    monkeypatch.setattr(qualification, "bake_graph", lambda: graph)
+    monkeypatch.setattr(qualification, "compose_targets", lambda *args: ["stove0"])
+    monkeypatch.setattr(qualification, "prepare_images", lambda *args, **kwargs: None)
     qualification.linux_qualification()
     assert commands[0] == ["make", "client-platform-qualification"]
     assert {tuple(command) for command in commands} == {
@@ -150,7 +154,10 @@ def test_local_linux_qualification_delegates_every_shared_semantic_lane(
             ("make", "image-qualification", f"IMAGE_GROUP={group}")
             for group in qualification.IMAGE_GROUPS
         ),
-        ("make", "compose-smoke"),
+        *(
+            ("make", "compose-shard", f"COMPOSE_LANE={lane}")
+            for lane in qualification.COMPOSE_LANES
+        ),
         ("make", "client-platform-qualification"),
     }
     assert len(commands) == len({tuple(command) for command in commands})
@@ -560,3 +567,42 @@ def test_admission_wait_does_not_retry_a_reported_admission_failure(
     with pytest.raises(AssertionError, match="backend-failure"):
         processing.await_admission()
     assert contacts == [("/v1/admin/scheduler/run", 5)]
+
+
+@pytest.mark.parametrize("state", ["intent", "previewed", "work_bound"])
+def test_automatic_execution_requires_the_exact_durable_admission_binding(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture, state: str
+) -> None:
+    monkeypatch.setenv("INPUT_COLLECTION_ID", "7")
+    row = {
+        "intent": {"collection": {"collection_id": "7"}, "policy_id": "conformance-media"},
+        "state": state,
+        "work_id": "automatic-work",
+    }
+    calls = []
+
+    def read(path, *, timeout=30):
+        calls.append(path)
+        if path.startswith("/v1/admissions"):
+            return {"admissions": [row]}
+        return {"work_id": "automatic-work"}
+
+    monkeypatch.setattr(processing, "stove", read)
+    if state != "work_bound":
+        with pytest.raises(AssertionError, match="durably work_bound"):
+            processing.admission_work()
+        assert len(calls) == 1
+    else:
+        processing.admission_work()
+        assert calls[-1] == "/v1/work/automatic-work"
+        assert capsys.readouterr().out.strip() == "automatic-work"
+
+
+@pytest.mark.parametrize("matches", [[], [{"intent": {"collection": {"collection_id": "8"}}}]])
+def test_automatic_execution_does_not_substitute_another_input(
+    monkeypatch: pytest.MonkeyPatch, matches: list
+) -> None:
+    monkeypatch.setenv("INPUT_COLLECTION_ID", "7")
+    monkeypatch.setattr(processing, "stove", lambda *args, **kwargs: {"admissions": matches})
+    with pytest.raises(AssertionError, match="exact input"):
+        processing.admission_work()

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from copy import deepcopy
 from typing import Any, cast
 
@@ -10,13 +11,19 @@ from stove0_protocol.jcs import canonical_json_bytes
 from stove0_protocol.models import ObserverContract, WorkArtifactSubject
 from stove0_protocol.observation_interfaces import (
     OBSERVATION_INTERFACE_SEMANTICS,
+    EvidencePort,
+    ExactDocumentRef,
     ObservationInterface,
     ObservationInterfaceConformanceVectors,
+    ObservationInterfaceEvidenceContext,
     ObservationInterfacePayload,
     ObservationInterfaceVector,
     SubjectPort,
 )
 from stove0_protocol.observation_views import (
+    CoverageStatus,
+    ProjectedView,
+    StatusResolver,
     SubjectView,
     project_interface,
 )
@@ -45,10 +52,82 @@ def interface_subject_ports(
     return ports
 
 
+def _project_vector(
+    *,
+    interface: ObservationInterface,
+    contract: ObserverContract,
+    subjects: tuple[WorkArtifactSubject, ...],
+    options: dict[str, JsonValue],
+    facts: dict[str, JsonValue] | None,
+    evidence: Mapping[str, ObservationInterfaceEvidenceContext],
+    semantic_statuses: Mapping[str, CoverageStatus] | None,
+    semantic_status: StatusResolver | None,
+) -> dict[str, ProjectedView]:
+    interface.validate_contract(contract)
+    ids = [subject.id for subject in subjects]
+    if ids != sorted(set(ids)):
+        raise ValueError("interface conformance context has noncanonical subject identities")
+    ports = interface_subject_ports(interface, subjects, options)
+    predecessors = {}
+    for name, context in evidence.items():
+        port = interface.inputs.get(name)
+        if not isinstance(port, EvidencePort) or (
+            context.interface.ref not in port.interfaces
+            or context.interface.observer_contract not in port.contracts
+        ):
+            raise ValueError("interface conformance input differs from its exact evidence port")
+        selected = {subject for covered in port.covers for subject in ports[covered]}
+        provided = {subject.id: subject for subject in context.subjects}
+        current = {subject.id: subject for subject in subjects}
+        for subject in selected:
+            if subject not in provided or provided[subject].model_dump(exclude={"role"}) != current[
+                subject
+            ].model_dump(exclude={"role"}):
+                raise ValueError(
+                    "interface conformance predecessor changes an exact covered subject"
+                )
+        predecessors[name] = _project_vector(
+            interface=context.interface,
+            contract=context.contract,
+            subjects=context.subjects,
+            options=context.options,
+            facts=context.facts,
+            evidence=context.evidence,
+            semantic_statuses=context.semantic_statuses,
+            semantic_status=semantic_status,
+        )
+
+    def fixture_status(
+        profile: ExactDocumentRef, covered: tuple[str, ...], document: dict[str, JsonValue]
+    ) -> Mapping[str, CoverageStatus]:
+        if profile != interface.semantic_profile or semantic_statuses is None:
+            raise ValueError("interface vector lacks its exact semantic status oracle")
+        if set(semantic_statuses) != set(ids):
+            raise ValueError("interface vector status oracle changes its exact subject domain")
+        expected = {subject: semantic_statuses[subject] for subject in covered}
+        if semantic_status is not None:
+            actual = dict(semantic_status(profile, covered, document))
+            if actual != expected:
+                raise ValueError("semantic status resolver differs from exact conformance")
+        return expected
+
+    return project_interface(
+        interface=interface,
+        contract=contract,
+        subjects=tuple(ids),
+        ports=ports,
+        facts=facts,
+        evidence_views=predecessors,
+        semantic_status=fixture_status,
+    )
+
+
 def verify_interface_vectors(
     interface: ObservationInterface,
     contract: ObserverContract,
     vectors: ObservationInterfaceConformanceVectors,
+    *,
+    semantic_status: StatusResolver | None = None,
 ) -> None:
     interface.validate_contract(contract)
     if (
@@ -59,12 +138,15 @@ def verify_interface_vectors(
     for vector in vectors.vectors:
         accepted = True
         try:
-            projected = project_interface(
+            projected = _project_vector(
                 interface=interface,
                 contract=contract,
-                subjects=tuple(subject.id for subject in vector.subjects),
-                ports=interface_subject_ports(interface, vector.subjects, vector.options),
+                subjects=vector.subjects,
+                options=vector.options,
                 facts=vector.facts,
+                evidence=vector.evidence,
+                semantic_statuses=vector.semantic_statuses,
+                semantic_status=semantic_status,
             )
         except ValueError:
             accepted = False
@@ -74,11 +156,13 @@ def verify_interface_vectors(
             actual = {}
             for name, view in projected.items():
                 actual[name] = (
-                    tuple(row for subject in sorted(view.rows) for row in view.rows[subject])
+                    [row for subject in sorted(view.rows) for row in view.rows[subject]]
                     if isinstance(view, SubjectView)
-                    else tuple(view.records)
+                    else list(view.records)
                 )
-            if canonical_json_bytes(actual) != canonical_json_bytes(vector.expected_views):
+            if canonical_json_bytes(actual) != canonical_json_bytes(
+                vector.model_dump(mode="json")["expected_views"]
+            ):
                 raise ValueError(f"observation interface expected view differs: {vector.id}")
 
 

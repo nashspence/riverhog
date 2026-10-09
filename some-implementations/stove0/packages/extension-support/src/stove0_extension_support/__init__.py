@@ -7,7 +7,7 @@ import sys
 import threading
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,6 +36,18 @@ class ExecutionPermit(Protocol):
     def activate(self, cancellation: threading.Event, *, deadline: float) -> None: ...
 
     def release(self, *, deadline: float) -> None: ...
+
+
+@runtime_checkable
+class ExecutionConsumerOwnership(Protocol):
+    """Optional local descriptors held by the native containment supervisor.
+
+    These are private operating-system reservations, never wire contract fields.
+    The permit remains responsible for activation and release after containment.
+    """
+
+    @property
+    def consumer_descriptors(self) -> tuple[int, ...]: ...
 
 
 class ExecutionAdmission(Protocol):
@@ -111,6 +123,7 @@ class ExclusiveStateOwner:
 __all__ = [
     "ExclusiveStateOwner",
     "ExecutionAdmission",
+    "ExecutionConsumerOwnership",
     "ExecutionOwner",
     "ExecutionPermit",
     "ImmediateExecutionAdmission",

@@ -474,3 +474,100 @@ def test_failed_nvenc_command_removes_bounded_diagnostic_log(
             canceled=lambda: False,
         )
     assert tuple(tmp_path.glob(".ffmpeg-*.log")) == ()
+
+
+@pytest.mark.parametrize("selection", ["argument", "environment"])
+def test_maintained_nvenc_executable_uses_a_real_deployment_cooperative_lease(
+    tmp_path,
+    monkeypatch,
+    selection,
+):
+    import fcntl
+
+    from a_stove0_nvenc_av1_opus_target import app as target_app
+    from fastapi.testclient import TestClient
+
+    prefix = "A_STOVE0_NVENC_AV1_OPUS_TARGET"
+    resource = tmp_path / "deployment-resource.lock"
+    token = tmp_path / "target-token"
+    token.write_text("fixture-target")
+    for name, value in {
+        "STATE_ROOT": str(tmp_path / "state"),
+        "WORKSPACE": str(tmp_path / "workspace"),
+        "IMAGE_ID": "sha256:" + _sha("9"),
+        "TOKEN_FILE": str(token),
+    }.items():
+        monkeypatch.setenv(f"{prefix}_{name}", value)
+    args = []
+    if selection == "argument":
+        args = ["--execution-lease-file", str(resource)]
+    else:
+        monkeypatch.setenv(f"{prefix}_EXECUTION_LEASE_FILE", str(resource))
+    entered = threading.Event()
+    created = []
+    original = NvencAv1OpusTargetService
+
+    def construct(**kwargs):
+        service = original(**kwargs)
+        created.append(service)
+        return service
+
+    def guarded_tool(_command):
+        entered.set()
+        raise TargetExecutionInapplicable("fixture-stop", "Reached the guarded native boundary.")
+
+    monkeypatch.setattr(original, "_validate_live_authority", lambda *_args, **_kw: None)
+    monkeypatch.setattr(nvenc_target, "tool_version", guarded_tool)
+    monkeypatch.setattr(target_app, "NvencAv1OpusTargetService", construct)
+    monkeypatch.setattr(
+        target_app.subprocess,
+        "run",
+        lambda *_args, **_kwargs: type("Encoders", (), {"returncode": 0, "stdout": b"av1_nvenc"})(),
+    )
+    with resource.open("w+b") as external:
+        fcntl.flock(external, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+        def serve(app, **_options):
+            service = created[0]
+            request = sealed_media_job(
+                service,
+                AV1_OPUS_ARCHIVE_OPERATION,
+                {
+                    "codec": "av1",
+                    "container": "mkv",
+                    "quality": 23,
+                    "audio_bitrate_kbps": 128,
+                    "salvage": "safe-remux",
+                },
+            )
+            headers = {"Authorization": "Bearer fixture-target"}
+            with TestClient(app) as client:
+                start = time.monotonic()
+                response = client.put(
+                    f"/v1/jobs/{request.declaration.job_id}",
+                    json=request.model_dump(mode="json"),
+                    headers=headers,
+                )
+                assert response.status_code == 200 and response.json()["state"] == "queued"
+                for _ in range(10):
+                    response = client.get(f"/v1/jobs/{request.declaration.job_id}", headers=headers)
+                    assert response.json()["state"] == "queued"
+                assert time.monotonic() - start < 1
+                assert service._dispatch.payload_count == 0 and not entered.is_set()
+                assert not service._sessions and not tuple(service.workspace_root.iterdir())
+                fcntl.flock(external, fcntl.LOCK_UN)
+                assert entered.wait(5)
+                deadline = time.monotonic() + 5
+                while True:
+                    status = client.get(
+                        f"/v1/jobs/{request.declaration.job_id}", headers=headers
+                    ).json()
+                    if status["state"] == "inapplicable":
+                        break
+                    assert time.monotonic() < deadline
+                    threading.Event().wait(0.01)
+            # Shutdown has joined the consumer before releasing the resource.
+            fcntl.flock(external, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+        monkeypatch.setattr(target_app.uvicorn, "run", serve)
+        assert target_app.target_main(args) == 0

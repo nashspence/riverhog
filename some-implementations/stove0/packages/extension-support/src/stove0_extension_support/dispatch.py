@@ -280,7 +280,7 @@ class BoundedExecutionDispatcher:
         permit: ExecutionPermit,
     ) -> object:
         try:
-            with consumer_scope(self.state_owner, self._cancellation[key]):
+            with consumer_scope(self.state_owner, self._cancellation[key], permit=permit):
                 return payload()
         except BaseException as exc:
             dispatch.failed(exc)

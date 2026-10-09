@@ -12,6 +12,7 @@ from stove0_protocol.observation_views import (
     GlobalView,
     ProjectedView,
     RelationViewResult,
+    evaluate_subject_facts,
 )
 from stove0_protocol.predicates import (
     FactsQuantification,
@@ -80,20 +81,7 @@ def condition_truth(
 
         def answers() -> Iterator[Truth]:
             for member in scope:
-                if member.id not in view.rows or member.id not in view.statuses:
-                    # The accepted view can be complete for a smaller declared
-                    # task domain. It proves nothing about an unasked member.
-                    # Omissions inside its own domain were rejected at acceptance.
-                    yield Truth.INDETERMINATE
-                    continue
-                if view.statuses[member.id] != "complete":
-                    yield Truth.INDETERMINATE
-                    continue
-                rows = view.rows[member.id]
-                if not rows and predicate.quantifier == "every":
-                    yield Truth.FALSE
-                for row in rows:
-                    yield evaluate_row(predicate.where, row)
+                yield from evaluate_subject_facts(predicate, view, member.id)
 
         return quantify(predicate.quantifier, answers())
 

@@ -45,6 +45,7 @@ from stove0_observer_protocol import (
     validate_observation_request,
 )
 from stove0_observer_protocol.interfaces import interface_subject_ports
+from stove0_observer_protocol.validation import semantic_status_resolver
 from stove0_protocol import (
     ArtifactSelection,
     ArtifactSelectionRef,
@@ -638,6 +639,7 @@ class AcceptedObservationStore:
             subjects=tuple(subject.id for subject in request.subjects),
             ports=subject_ports,
             facts=evidence.result.facts,
+            semantic_status=semantic_status_resolver(semantic_validators),
             evidence_views=self._accepted_input_views(
                 question, interface, predecessor_interfaces or {}
             ),

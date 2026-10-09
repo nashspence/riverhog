@@ -8,14 +8,24 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import TYPE_CHECKING, Any
 
+from stove0_extension_support import ExecutionConsumerOwnership
+
 if TYPE_CHECKING:
-    from stove0_extension_support import ExclusiveStateOwner
+    from stove0_extension_support import ExclusiveStateOwner, ExecutionPermit
     from stove0_extension_support.subprocess import SupervisedProcess
 
 
 class ConsumerScope:
-    def __init__(self, owner: ExclusiveStateOwner, cancellation: threading.Event | None) -> None:
-        self.owner = owner
+    def __init__(
+        self,
+        owner: ExclusiveStateOwner,
+        cancellation: threading.Event | None,
+        permit: ExecutionPermit | None,
+    ) -> None:
+        self.owner: ExclusiveStateOwner = owner
+        self.descriptors: tuple[int, ...] = (owner.descriptor,) + (
+            permit.consumer_descriptors if isinstance(permit, ExecutionConsumerOwnership) else ()
+        )
         self.processes: set[SupervisedProcess[Any]] = set()
         self.lock = threading.Lock()
         self.cancellation = cancellation
@@ -58,12 +68,15 @@ CURRENT_CONSUMERS: ContextVar[ConsumerScope | None] = ContextVar(
 
 @contextmanager
 def consumer_scope(
-    owner: ExclusiveStateOwner | None, cancellation: threading.Event | None = None
+    owner: ExclusiveStateOwner | None,
+    cancellation: threading.Event | None = None,
+    *,
+    permit: ExecutionPermit | None = None,
 ) -> Iterator[None]:
     if owner is None:
         yield
         return
-    scope = ConsumerScope(owner, cancellation)
+    scope = ConsumerScope(owner, cancellation, permit)
     token = CURRENT_CONSUMERS.set(scope)
     try:
         yield

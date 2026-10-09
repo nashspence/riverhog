@@ -17,7 +17,7 @@ from stove0_protocol.compiled_evidence import (
     CompiledFactProofPayload,
 )
 from stove0_protocol.observation_interfaces import GlobalFactsView, SubjectFactsView
-from stove0_protocol.observation_views import SubjectView
+from stove0_protocol.observation_views import SubjectView, evaluate_subject_facts
 from stove0_protocol.predicates import (
     FactsQuantification,
     Truth,
@@ -198,17 +198,8 @@ class CompiledFactEvaluation:
                         )
                     if role not in predicate.roles:
                         continue
-                if (
-                    subject.id not in view.rows
-                    or subject.id not in view.statuses
-                    or view.statuses[subject.id] != "complete"
-                ):
-                    answers.append(Truth.INDETERMINATE)
-                    continue
-                records = view.rows[subject.id]
-                if not records and predicate.quantifier == "every":
-                    answers.append(Truth.FALSE)
-                answers.extend(evaluate_row(predicate.where, record) for record in records)
+                answers.extend(evaluate_subject_facts(predicate, view, subject.id))
+
         positive = row["positive"] or Truth.TRUE in answers
         negative = row["negative"] or Truth.FALSE in answers
         indeterminate = row["indeterminate"] or Truth.INDETERMINATE in answers

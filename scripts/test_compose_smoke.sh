@@ -9,9 +9,15 @@ case "${qualification_lane}" in
   all|storage|ingress-custody|processing-admission|processing-e2e|processing-overlap|review-delivery|witnesses|processing-scale) ;;
   *) printf 'Unknown Compose qualification lane: %s\n' "${qualification_lane}" >&2; exit 2 ;;
 esac
+if [[ "${qualification_lane}" == "all" ]]; then
+  cd "${ROOT_DIR}"
+  exec "${MISE_BIN:-mise}" x -- uv run --locked --all-packages --group dev \
+    python -m scripts.ci_qualification compose-all \
+    --jobs "${LOCAL_QUALIFICATION_JOBS:-2}" \
+    --docker-jobs "${LOCAL_QUALIFICATION_DOCKER_JOBS:-2}"
+fi
 owns_qualification() {
-  [[ "${qualification_lane}" == "$1" ||
-     ( "${qualification_lane}" == "all" && "$1" != "processing-scale" ) ]]
+  [[ "${qualification_lane}" == "$1" ]]
 }
 
 setup_test_compose_project
@@ -21,47 +27,8 @@ export SOURCE_REVISION="${SOURCE_REVISION:-$(git -C "${ROOT_DIR}" rev-parse HEAD
 export RIVERHOG_API_PORT="${RIVERHOG_API_PORT:-0}"
 
 smoke_root="$(mktemp -d "${TMPDIR:-/tmp}/riverhog-compose-smoke.XXXXXX")"
-case "${qualification_lane}" in
-  processing-scale) smoke_file_count="${STOVE0_SMOKE_FILE_COUNT:-128}" ;;
-  processing-e2e) smoke_file_count=4 ;;
-  processing-overlap) smoke_file_count=1 ;;
-  *) smoke_file_count=16 ;;
-esac
-smoke_audio_frames="${STOVE0_SMOKE_AUDIO_FRAMES:-2000}"
-if ! [[ "${smoke_file_count}" =~ ^[0-9]+$ ]] ||
-  (( smoke_file_count < 1 || smoke_file_count > 1000 )); then
-  printf '%s\n' 'STOVE0_SMOKE_FILE_COUNT must be between 1 and 1000.' >&2
-  exit 2
-fi
-if ! [[ "${smoke_audio_frames}" =~ ^[0-9]+$ ]] ||
-  (( smoke_audio_frames < 1 || smoke_audio_frames > 10000000 )); then
-  printf '%s\n' 'STOVE0_SMOKE_AUDIO_FRAMES must be between 1 and 10000000.' >&2
-  exit 2
-fi
-smoke_claim_file_count=$((smoke_file_count + 1))
-# The overlapping-route proof produces four target outputs per fixture input.
-# Allow 120 seconds per output on a shared runner, plus ten minutes for the
-# smaller jobs and complete archive/history publication. The measured default
-# workload needs margin for four serialized target jobs and their shared-history
-# publication. Bulk requests and observation execution account for declared
-# fixture size; each control contact keeps its fixed allowance.
-smoke_completion_timeout=$((600 + 480 * smoke_file_count))
-# Whole-scope observations execute outside control calls. Give the declared
-# fixture one minute per input plus setup margin within the existing attempt budget.
-smoke_observation_timeout=$((300 + 60 * smoke_file_count))
-# A durable admission milestone may await the complete observation attempt.
-smoke_admission_timeout=$((smoke_observation_timeout + 600))
-# Cold provenance membership validation is data access outside the scheduler.
-# Larger fixtures receive an explicit read allowance; small fixtures keep 300s.
-smoke_content_timeout=$((300 + 30 * (smoke_file_count > 16 ? smoke_file_count - 16 : 0)))
-smoke_max_bytes=$((smoke_file_count * (smoke_audio_frames * 2 + 4096) + 16384))
-# Three independent readers exercise each input in this lifecycle. Account for
-# age-unit amplification as well as logical payload so quota policy remains
-# enabled without becoming the scale qualification's limiting resource.
-smoke_download_quota_bytes=$((8 * (smoke_max_bytes + smoke_claim_file_count * 65552)))
-if (( smoke_download_quota_bytes < 16777216 )); then
-  smoke_download_quota_bytes=16777216
-fi
+source "${ROOT_DIR}/scripts/_processing_fixture.sh"
+configure_processing_fixture "${qualification_lane}"
 stove0_project="${COMPOSE_PROJECT_NAME}-stove0"
 stove0_projects=()
 adapter_started=0
@@ -429,13 +396,16 @@ processing_services=(
   a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer
   a-stove0-exiftool-observer a-stove0-opus-target
 )
-{
-  printf '%s\n' 'services:'
-  for service in "${processing_services[@]}"; do
-    printf '  %s:\n    environment:\n      RIVERHOG_HTTP_TIMEOUT_SECONDS: "%s"\n' \
-      "${service}" "${smoke_content_timeout}"
-  done
-} > "${stove0_content_budget_file}"
+write_processing_content_budget() {
+  {
+    printf '%s\n' 'services:'
+    for service in "${processing_services[@]}"; do
+      printf '  %s:\n    environment:\n      RIVERHOG_HTTP_TIMEOUT_SECONDS: "%s"\n' \
+        "${service}" "${smoke_content_timeout}"
+    done
+  } > "${stove0_content_budget_file}"
+}
+write_processing_content_budget
 if owns_qualification processing-admission || owns_qualification processing-e2e ||
   owns_qualification processing-overlap || owns_qualification processing-scale ||
   owns_qualification review-delivery; then
@@ -454,6 +424,8 @@ fi
 
 start_stove0_scope() {
   local scope="$1" database="stove0_${1//-/_}"
+  configure_processing_fixture "${scope}"
+  write_processing_content_budget
   stove0_project="${COMPOSE_PROJECT_NAME}-${scope}"
   stove0_projects+=("${stove0_project}")
   export STOVE0_CONFIG_HOST_PATH="${smoke_root}/${scope}.yaml"
@@ -468,7 +440,7 @@ start_stove0_scope() {
   printf '%s\n' 'recipes:' >> "${STOVE0_CONFIG_HOST_PATH}"
   sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/recipes.yaml" >> "${STOVE0_CONFIG_HOST_PATH}"
   printf '%s\n' 'admissions:' >> "${STOVE0_CONFIG_HOST_PATH}"
-  if [[ "${scope}" == "processing-admission" ]]; then
+  if [[ "${scope}" == "processing-admission" || "${scope}" == "processing-e2e" ]]; then
     jq '{format, policies: [.policies[] | select(.id == "conformance-media")]}' \
       "${ROOT_DIR}/qualification/fixtures/stove0/admissions.json" | \
       sed 's/^/  /' >> "${STOVE0_CONFIG_HOST_PATH}"
@@ -479,11 +451,19 @@ start_stove0_scope() {
   chmod 0640 "${STOVE0_CONFIG_HOST_PATH}"
   ci_phase "${scope}-bootstrap"
   stove0_compose up --detach --wait state api "${processing_services[@]}"
-  if [[ "${scope}" == "processing-admission" ]]; then
+  if [[ "${scope}" == "processing-admission" || "${scope}" == "processing-e2e" ]]; then
     stove0_compose up --detach --wait controller
   elif [[ "${scope}" == "review-delivery" ]]; then
     stove0_compose up --detach --wait controller worker a-review0-opus-sampler
   fi
+}
+
+collect_processing_costs() {
+  stove0_compose logs --no-color api controller worker | \
+    "${MISE_BIN:-mise}" x -- uv run --locked --all-packages --group dev \
+    python "${ROOT_DIR}/scripts/collect_stove0_planning_cost.py" \
+      --lane "${qualification_lane}" --source-sha "${SOURCE_REVISION}" \
+      --output "${ci_timing_file%/*}/planning-cost.json"
 }
 
 finish_stove0_scope() {
@@ -500,6 +480,8 @@ configure_media_ftp() {
   sed \
     -e 's/description: FTP exact-event compose qualification/description: Classified FTP compose qualification/' \
     -e 's/^    tags: \[\]/    tags: [stove0\/conformance]/' \
+    -e "s|^    max_files: .*|    max_files: ${smoke_claim_file_count}|" \
+    -e "s|^    max_bytes: .*|    max_bytes: ${smoke_max_bytes}|" \
     "${adapter_config_base}" > "${next}"
   chmod 0640 "${next}"
   mv "${next}" "${adapter_config}"
@@ -850,7 +832,7 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
 
 run_processing_admission() {
 active_processing_lane=processing-admission
-smoke_file_count=16
+configure_processing_fixture "${active_processing_lane}"
 interrupt_transfer=1
 processing_recipe_id=stove0.conformance-media/v1
 start_stove0_scope "${active_processing_lane}"
@@ -904,11 +886,13 @@ assert matches[0]['state'] == os.environ['EXPECTED_ADMISSION_STATE'], matches[0]
 
 # The controller is offline and no worker is started in this scope.
 for admission_state in intent previewed work_bound; do
+  ci_phase "${active_processing_lane}-admission-${admission_state}"
   stove0_compose exec -T \
     --env "RIVERHOG_SMOKE_SCHEDULER_STEP=${admission_state}" \
     --env "INPUT_COLLECTION_ID=${input_collection_id}" \
     --env "STOVE0_SMOKE_ADMISSION_TIMEOUT=${smoke_admission_timeout}" \
     api python -c "${processing_qualification}" admission
+  ci_phase "${active_processing_lane}-admission-${admission_state}-restart"
   stove0_compose restart api
   stove0_compose up --detach --wait api
   stove0_compose exec -T \
@@ -945,17 +929,19 @@ stove0_work_id="$(stove0_compose exec -T \
   --env "INPUT_COLLECTION_ID=${input_collection_id}" \
   api python -c "${admission_wait_code}")"
 test -n "${stove0_work_id}"
+ci_phase "${active_processing_lane}-manual-convergence"
 expected_work_id="${stove0_work_id}"
 test "$(invoke_processing "${input_receipt_json}" 16 1 ftp)" = "${stove0_work_id}"
 expected_work_id=
 stove0_compose exec -T a-stove0-opus-target \
   python -c "${processing_qualification}" target-records
+collect_processing_costs
 finish_stove0_scope
 }
 
 run_processing_execution() {
 active_processing_lane="$1"
-smoke_file_count="$2"
+configure_processing_fixture "${active_processing_lane}"
 interrupt_transfer=0
 processing_recipe_id=stove0.conformance-media/v1
 processing_target_count=2
@@ -963,12 +949,32 @@ if [[ "${active_processing_lane}" == "processing-scale" ]]; then
   processing_recipe_id=stove0.audio-archive/v1
   processing_target_count=1
 fi
-# Each local proof shares archive/bootstrap resources but has isolated Stove0
-# state. Empty automatic policies prevent old classified fixtures from executing.
+# Each scenario owns its Root fixture and Stove0 state. The E2E policy binds
+# this fixture automatically; its worker remains stopped until recovery is proved.
 start_stove0_scope "${active_processing_lane}"
 upload_media_fixture
 ci_phase "${active_processing_lane}-planning"
-stove0_work_id="$(invoke_processing "${input_receipt_json}" "${smoke_file_count}" 1 ftp)"
+if [[ "${active_processing_lane}" == "processing-e2e" ]]; then
+  # Recover automatically bound FTP work before any worker may execute it.
+  stove0_compose exec -T \
+    --env RIVERHOG_SMOKE_SCHEDULER_STEP=work_bound \
+    --env "INPUT_COLLECTION_ID=${input_collection_id}" \
+    --env "STOVE0_SMOKE_ADMISSION_TIMEOUT=${smoke_admission_timeout}" \
+    api python -c "${processing_qualification}" admission
+  stove0_compose stop controller
+  stove0_work_id="$(stove0_compose exec -T \
+    --env "INPUT_COLLECTION_ID=${input_collection_id}" \
+    api python -c "${processing_qualification}" admission-work)"
+  stove0_compose exec -T a-stove0-opus-target \
+    python -c "${processing_qualification}" target-records
+  stove0_compose restart api
+  stove0_compose up --detach --wait api
+  test "$(stove0_compose exec -T \
+    --env "INPUT_COLLECTION_ID=${input_collection_id}" \
+    api python -c "${processing_qualification}" admission-work)" = "${stove0_work_id}"
+else
+  stove0_work_id="$(invoke_processing "${input_receipt_json}" "${smoke_file_count}" 1 ftp)"
+fi
 processing_work_ids="${stove0_work_id}"
 cache_code="import os
 from riverhog_client import ApiClient
@@ -1224,6 +1230,7 @@ stove0_compose up --detach --wait api controller worker "${processing_services[@
 wait_processing
 test "$(processing_snapshot)" = "${settled_snapshot}"
 verify_target_records
+collect_processing_costs
 finish_stove0_scope
 }
 
@@ -1286,13 +1293,13 @@ if owns_qualification processing-admission; then
   run_processing_admission
 fi
 if owns_qualification processing-e2e; then
-  run_processing_execution processing-e2e 4
+  run_processing_execution processing-e2e
 fi
 if owns_qualification processing-overlap; then
-  run_processing_execution processing-overlap 1
+  run_processing_execution processing-overlap
 fi
 if owns_qualification processing-scale; then
-  run_processing_execution processing-scale "${STOVE0_SMOKE_FILE_COUNT:-128}"
+  run_processing_execution processing-scale
 fi
 
 if owns_qualification review-delivery; then

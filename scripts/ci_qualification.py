@@ -8,9 +8,11 @@ import os
 import subprocess
 import sys
 from collections.abc import Sequence
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any, cast
+from uuid import uuid4
 
 import yaml
 from riverhog_canonical_json import canonical_json_bytes
@@ -284,63 +286,137 @@ def plan(graph: dict[str, Any]) -> dict[str, object]:
     }
 
 
-def independent_proofs(commands: Sequence[Sequence[str]], *, jobs: int) -> None:
-    """Join every started proof, including its fixture cleanup, on failure."""
+def independent_proofs(
+    commands: Sequence[Sequence[str]],
+    *,
+    jobs: int,
+    docker_jobs: int | None = None,
+    images_prepared: bool = False,
+) -> None:
+    """Bound independent work without occupying worker slots on resource waits.
+
+    Compose images must be prepared before this pool. Each scenario owns its
+    project, ephemeral host port, private scratch and persistent fixture state.
+    Every started proof is joined through its own cleanup when any proof fails.
+    """
+    docker_jobs = jobs if docker_jobs is None else docker_jobs
+    if min(jobs, docker_jobs) < 1:
+        raise ValueError("local qualification jobs and Docker jobs must be positive")
+    if not images_prepared and any(command[1] == "compose-shard" for command in commands):
+        raise ValueError("Compose proofs require the prepared image barrier")
+
+    def docker_heavy(command: Sequence[str]) -> bool:
+        return command[1] in DOCKER_TARGETS | {"compose-shard"}
 
     def proof(command: Sequence[str]) -> None:
         lane = command[1]
         if lane == "unit-shard":
             lane = "unit-" + command[2].removeprefix("UNIT_SHARD=")
-        # An aggregate run ID can be shared while every proof and its xdist
-        # workers retain their own timing stream.
-        run(command, env={**os.environ, "RIVERHOG_CI_LANE": lane})
+        if lane != "compose-shard":
+            run(command, env={**os.environ, "RIVERHOG_CI_LANE": lane})
+            return
+        lane = command[2].removeprefix("COMPOSE_LANE=")
+        project = f"riverhog-proof-{lane}-{uuid4().hex[:12]}"
+        with TemporaryDirectory(prefix=f"riverhog-qualification-{lane}-") as temporary:
+            run(
+                command,
+                env={
+                    **os.environ,
+                    "RIVERHOG_CI_LANE": "compose-" + lane,
+                    "RIVERHOG_CI_IMAGES_PREBUILT": "1",
+                    "COMPOSE_PROJECT_NAME": project,
+                    "TEST_COMPOSE_PROJECT_NAME": project,
+                    "RIVERHOG_API_PORT": "0",
+                    "TMPDIR": temporary,
+                },
+            )
 
+    pending = list(commands)
     with ThreadPoolExecutor(max_workers=jobs) as executor:
-        futures = {executor.submit(proof, command): command for command in commands}
+        running: dict[Future[None], Sequence[str]] = {}
         try:
-            for future in as_completed(futures):
-                future.result()
+            while pending or running:
+                while pending and len(running) < jobs:
+                    active_docker = sum(docker_heavy(command) for command in running.values())
+                    eligible = next(
+                        (
+                            index
+                            for index, command in enumerate(pending)
+                            if not docker_heavy(command) or active_docker < docker_jobs
+                        ),
+                        None,
+                    )
+                    if eligible is None:
+                        break
+                    command = pending.pop(eligible)
+                    running[executor.submit(proof, command)] = command
+                completed, _ = wait(running, return_when=FIRST_COMPLETED)
+                for future in completed:
+                    del running[future]
+                    future.result()
         except BaseException:
-            for future in futures:
+            for future in running:
                 future.cancel()
             raise
 
 
-def linux_qualification(*, jobs: int = 2) -> None:
+def compose_qualification(*, jobs: int = 2, docker_jobs: int = 2) -> None:
+    if min(jobs, docker_jobs) < 1:
+        raise ValueError("local qualification jobs and Docker jobs must be positive")
+    graph = bake_graph()
+    prepare_images(compose_targets("all", graph), graph, compose=True)
+    independent_proofs(
+        [["make", "compose-shard", f"COMPOSE_LANE={lane}"] for lane in COMPOSE_LANES],
+        jobs=jobs,
+        docker_jobs=docker_jobs,
+        images_prepared=True,
+    )
+
+
+def linux_qualification(*, jobs: int = 2, docker_jobs: int = 2) -> None:
     if not sys.platform.startswith("linux"):
         raise ValueError("portable Linux qualification must run on Linux")
-    if jobs < 1:
-        raise ValueError("local qualification jobs must be positive")
+    if min(jobs, docker_jobs) < 1:
+        raise ValueError("local qualification jobs and Docker jobs must be positive")
     run(["make", "client-platform-qualification"])
     for target in REPOSITORY_TARGETS:
         run(["make", target])
     run(["make", "unit-shards-check"])
     for group in IMAGE_GROUPS:
         run(["make", "image-qualification", f"IMAGE_GROUP={group}"])
-    # Image qualification owns mutable development tags; complete it before
-    # Compose selects its bundled image. Unit shards use independent fixtures.
+    # Standalone image qualification owns mutable development tags. Build and
+    # verify the composed variant before any independent lifecycle is started.
+    graph = bake_graph()
+    prepare_images(compose_targets("all", graph), graph, compose=True)
     independent_proofs(
         [
-            ["make", "compose-smoke"],
             *(["make", "unit-shard", f"UNIT_SHARD={shard}"] for shard in SHARDS),
+            *(["make", "compose-shard", f"COMPOSE_LANE={lane}"] for lane in COMPOSE_LANES),
         ],
         jobs=jobs,
+        docker_jobs=docker_jobs,
+        images_prepared=True,
     )
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("plan", "images", "compose-prepare", "native", "linux"))
+    parser.add_argument(
+        "command", choices=("plan", "images", "compose-prepare", "compose-all", "native", "linux")
+    )
     parser.add_argument("--group", choices=IMAGE_GROUPS)
     parser.add_argument("--lane", choices=(*COMPOSE_LANES, "processing-scale", "all"))
     parser.add_argument("--jobs", type=int, default=2)
+    parser.add_argument("--docker-jobs", type=int, default=2)
     parser.add_argument("--github-output", type=Path)
     args = parser.parse_args(argv)
     try:
         if args.command == "native":
             native_platform()
         elif args.command == "linux":
-            linux_qualification(jobs=args.jobs)
+            linux_qualification(jobs=args.jobs, docker_jobs=args.docker_jobs)
+        elif args.command == "compose-all":
+            compose_qualification(jobs=args.jobs, docker_jobs=args.docker_jobs)
         else:
             graph = bake_graph()
             if args.command == "images":

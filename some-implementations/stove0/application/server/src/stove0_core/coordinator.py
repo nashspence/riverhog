@@ -66,7 +66,7 @@ from stove0_target_protocol import (
 
 from stove0_core.control_contacts import ControlContacts
 from stove0_core.coordination import project_coordination
-from stove0_core.metadata_steps import planning_control_budget
+from stove0_core.metadata_steps import advance_planning, planning_control_budget
 from stove0_core.observation_state import ObservationDeliveryPort, ObservationOwnerKind
 from stove0_core.planning_progress import PlanningProgress
 from stove0_core.work_state import (
@@ -583,18 +583,30 @@ class Stove0Coordinator:
             assert record.claim is not None
             try:
                 planning = self.planning.for_invocation("work", record.work_id)
-                progress = planning.step(record.work)
-                if progress.state == "question":
+                claim = record.claim
+                assert claim is not None
+
+                def deliver(progress: PlanningProgress) -> None:
                     result = planning.deliver_observation(
                         progress,
                         owner_kind="work",
                         owner_id=record.work_id,
-                        claim=record.claim,
+                        claim=claim,
                         riverhog=self.riverhog,
                         deliveries=self.work.store,
                     )
                     if result is not None:
                         _raise_observation_outcome(result)
+
+                progress = advance_planning(
+                    planning,
+                    record.work,
+                    owner_kind="work",
+                    owner_id=record.work_id,
+                    deliver=deliver,
+                )
+                if progress.state == "question":
+                    deliver(progress)
                     return record
                 if progress.state == "pending":
                     return record

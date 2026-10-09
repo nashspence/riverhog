@@ -168,3 +168,81 @@ def test_retention_protects_exact_nested_dependencies_then_prunes_unused_definit
     assert state.recipe_definitions.load(work.recipe) is not None
     assert state.recipe_definitions.load(child.ref) is not None
     state.engine.dispose()
+
+
+def _retained_fixture(tmp_path):
+    source = RecipeSource.model_validate(
+        {
+            "format": "stove0-recipe/v1",
+            "id": "example.cached/v1",
+            "revision": 1,
+            "fork": {"effect": {"call": {"operation": "effect"}}},
+        }
+    )
+    recipe, closure = compile_recipe(
+        source,
+        RecipeDependencyCatalog(
+            resources={"effect": OperationResource(contract=_operation("example.effect/v1"))}
+        ),
+    )
+    state = SqlAlchemyStateStore(f"sqlite:///{tmp_path / 'cached.db'}")
+    state.recipe_definitions.retain(recipe, closure)
+    return state, recipe, closure
+
+
+def test_repeated_exact_definition_loads_validate_once_and_return_private_mappings(
+    tmp_path, monkeypatch
+):
+    import stove0_core.recipe_definitions as definitions
+
+    state, recipe, closure = _retained_fixture(tmp_path)
+    verify, calls = definitions.verify_compiled_recipe, []
+
+    def counted(*args):
+        calls.append(args[0].sha256)
+        return verify(*args)
+
+    monkeypatch.setattr(definitions, "verify_compiled_recipe", counted)
+    first, _ = state.recipe_definitions.load(recipe.ref)
+    first.branches.clear()
+    for _ in range(3):
+        assert state.recipe_definitions.load(recipe.ref) == (recipe, closure)
+    assert calls == [recipe.sha256]
+    wrong = RecipeIdentityRef(id="example.other/v1", revision="1", sha256=recipe.sha256)
+    with pytest.raises(ValueError, match="queued work"):
+        state.recipe_definitions.load(wrong)
+    state.engine.dispose()
+
+
+@pytest.mark.parametrize("field", ["recipe_json", "closure_json"])
+def test_warm_validation_cache_rejects_changed_stored_preimages(tmp_path, field):
+    from sqlalchemy import update
+
+    state, recipe, closure = _retained_fixture(tmp_path)
+    assert state.recipe_definitions.load(recipe.ref) == (recipe, closure)
+    store = state.recipe_definitions
+    with state.engine.begin() as connection:
+        connection.execute(update(store.table).values({field: "{}"}))
+    with pytest.raises(ValueError):
+        store.load(recipe.ref)
+    state.engine.dispose()
+
+
+def test_valid_definition_larger_than_cache_budget_remains_usable(tmp_path, monkeypatch):
+    import stove0_core.recipe_definitions as definitions
+
+    state, recipe, closure = _retained_fixture(tmp_path)
+    store = state.recipe_definitions
+    store._cache_bytes = 1
+    verify, calls = definitions.verify_compiled_recipe, []
+
+    def counted(*args):
+        calls.append(args[0].sha256)
+        return verify(*args)
+
+    monkeypatch.setattr(definitions, "verify_compiled_recipe", counted)
+    for _ in range(3):
+        assert store.load(recipe.ref) == (recipe, closure)
+    assert len(calls) == 3 and not store._validated
+    assert store._validated_bytes == 0
+    state.engine.dispose()

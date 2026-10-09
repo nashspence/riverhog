@@ -3426,3 +3426,33 @@ def test_staged_preflight_preserves_complete_sealed_plan_and_native_invocation(
     finally:
         client.close()
         binding.metadata.close()
+
+
+def test_live_target_retention_prunes_expired_terminal_records_without_restart(tmp_path):
+    import os
+    import threading
+    import time
+
+    operation, descriptor, request = _request()
+    service = PersistentTargetService(
+        descriptor=descriptor,
+        operations={operation.id: operation},
+        state_root=tmp_path / "state",
+        execute=lambda *_args: pytest.fail("must not execute"),
+        terminal_state_retention_seconds=1,
+    )
+    try:
+        accepted = service.state_root / f"{request.declaration.job_id}.accepted.json"
+        status = service.state_root / f"{request.declaration.job_id}.status.json"
+        with service._lock:
+            _write_model(accepted, request.declaration)
+            _write_model(status, _success_status(operation, request))
+            os.utime(status, (time.time() - 10, time.time() - 10))
+        service._retention.wake()
+        deadline = time.monotonic() + 5
+        while status.exists():
+            assert time.monotonic() < deadline
+            threading.Event().wait(0.01)
+        assert not accepted.exists()
+    finally:
+        service.close()

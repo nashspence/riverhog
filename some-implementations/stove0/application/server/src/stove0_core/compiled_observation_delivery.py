@@ -23,6 +23,7 @@ from stove0_recipe_config.dependencies import RecipeDependencyClosure
 
 from stove0_core.compiled_state_ports import CompiledStatePort
 from stove0_core.coordinator import ObservationAuthorityPort, ObserverPort
+from stove0_core.metadata_steps import planning_cost
 from stove0_core.observation_questions import physical_question
 from stove0_core.observation_state import (
     ObservationDeliveryPort,
@@ -174,23 +175,29 @@ class CompiledObservationDelivery:
         )
 
     def accept(self, work: WorkIdentity, evidence: ContentObservationEvidence) -> None:
-        _, closure = self.planner._definition(work)
-        request = evidence.request
-        resource = closure.interface(id=request.interface.id, sha256=request.interface.sha256)
-        self.state.accepted_observations.accept(
-            evidence,
-            contract=resource.contract,
-            interface=resource.interface,
-            subject_ports=interface_subject_ports(
-                resource.interface, request.subjects, request.options
-            ),
-            predecessor_interfaces={
-                owner.interface.ref: owner.interface for owner in closure.observers
-            },
-            semantic_validators=self.planner.observers.semantic_validators(
-                request.observer_registration_id
-            ),
-        )
+        with planning_cost(
+            "evidence-validation",
+            work_id=work.work_id,
+            task_id=evidence.request.task_id,
+            subjects=len(evidence.request.subjects),
+        ):
+            _, closure = self.planner._definition(work)
+            request = evidence.request
+            resource = closure.interface(id=request.interface.id, sha256=request.interface.sha256)
+            self.state.accepted_observations.accept(
+                evidence,
+                contract=resource.contract,
+                interface=resource.interface,
+                subject_ports=interface_subject_ports(
+                    resource.interface, request.subjects, request.options
+                ),
+                predecessor_interfaces={
+                    owner.interface.ref: owner.interface for owner in closure.observers
+                },
+                semantic_validators=self.planner.observers.semantic_validators(
+                    request.observer_registration_id
+                ),
+            )
 
     def step(
         self,
@@ -229,11 +236,17 @@ class CompiledObservationDelivery:
         )
         status = delivery.status
         if status is None or status.state != "completed":
-            status = self.planner.observers.put_job(
-                request.observer_registration_id,
-                invocation,
-                descriptor=descriptor,
-            )
+            with planning_cost(
+                "observer-contact",
+                work_id=progress.work.work_id,
+                task_id=request.task_id,
+                subjects=len(request.subjects),
+            ):
+                status = self.planner.observers.put_job(
+                    request.observer_registration_id,
+                    invocation,
+                    descriptor=descriptor,
+                )
             deliveries.update_observation_delivery(owner_kind, owner_id, invocation.job_id, status)
         if status.result is None:
             return None

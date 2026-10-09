@@ -2,28 +2,44 @@
 
 from __future__ import annotations
 
+import contextlib
 import sqlite3
+import sys
 from collections.abc import Iterator
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from types import TracebackType
 from typing import Self
 
 from riverhog_protocol import CollectionUploadProvenanceCustodyObjectDocument
 
+from riverhog_core.scratch_workspace import scratch_directory
+
 
 class ProvenanceCustodySet:
     def __init__(self) -> None:
-        self._scratch = TemporaryDirectory(prefix="riverhog-provenance-custody-")
-        self._db = sqlite3.connect(Path(self._scratch.name) / "receipts.sqlite3")
-        self._db.execute("PRAGMA cache_size = -512")
-        self._db.execute("CREATE TABLE receipts (path TEXT PRIMARY KEY, value TEXT)")
+        self._scratch = contextlib.ExitStack()
+        try:
+            scratch = self._scratch.enter_context(
+                scratch_directory(prefix="riverhog-provenance-custody-")
+            )
+            self._db = sqlite3.connect(Path(scratch) / "receipts.sqlite3")
+            self._scratch.callback(self._db.close)
+            self._db.execute("PRAGMA cache_size = -512")
+            self._db.execute("CREATE TABLE receipts (path TEXT PRIMARY KEY, value TEXT)")
+        except BaseException:
+            self._scratch.__exit__(*sys.exc_info())
+            raise
 
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, *_exc: object) -> None:
-        self._db.close()
-        self._scratch.cleanup()
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> bool | None:
+        return self._scratch.__exit__(exc_type, exc, traceback)
 
     def add(self, receipt: CollectionUploadProvenanceCustodyObjectDocument) -> None:
         old = self._db.execute(

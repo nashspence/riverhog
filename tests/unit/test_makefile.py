@@ -585,84 +585,21 @@ def test_bootstrap_garage_is_available_as_a_standalone_target(tmp_path: Path) ->
     assert " exec -T garage /garage -c /etc/garage.toml node id" in docker_log
 
 
-def test_compose_smoke_starts_and_cleans_a_fresh_stack(tmp_path: Path) -> None:
+def test_compose_smoke_forwards_independent_lifecycles_and_resource_budgets(tmp_path: Path) -> None:
     completed, docker_log_path, uv_log_path = _run_make(
         tmp_path,
         "compose-smoke",
-        extra_env={
-            "FAKE_DOCKER_HAVE_IMAGES": "1",
-            "STOVE0_SMOKE_TRANSFER_METRICS": "0",
-        },
+        "LOCAL_QUALIFICATION_JOBS=3",
+        "LOCAL_QUALIFICATION_DOCKER_JOBS=1",
     )
-
     assert completed.returncode == 0, completed.stderr
-    timing_calls = _read_log_lines(uv_log_path)
-    assert any(
-        "scripts.ci_qualification compose-prepare --lane all" in line for line in timing_calls
-    )
-    assert all(
-        "ci_timing.py phase " in line or "scripts.ci_qualification compose-prepare" in line
-        for line in timing_calls
-    )
-    docker_log = "\n".join(_read_log_lines(docker_log_path))
-    assert " build --sbom=" not in docker_log
-    assert " up --detach garage" in docker_log
-    assert docker_log.count(" up --detach garage\n") == 1
-    for phase in (
-        "storage-adapter-qualification",
-        "storage-cache-placement",
-        "ingress-custody",
-        "processing-admission-publication",
-        "processing-e2e-execution",
-        "processing-overlap-execution",
-        "review-delivery",
-        "witnesses",
-    ):
-        assert sum(f"--name {phase} " in line for line in timing_calls) == 1
-    assert not any("--name processing-scale" in line for line in timing_calls)
-    assert "tests.harness.storage_adapter_restart_probe prepare" in docker_log
-    assert " restart archive-adapter" in docker_log
-    assert "tests.harness.storage_adapter_restart_probe resume" in docker_log
-    assert (
-        " up --detach --wait archive-adapter filesystem-cache-adapter elastic-cache-adapter"
-        in docker_log
-    )
-    assert " up --detach --wait app" in docker_log
-    assert "createdb --username riverhog --owner riverhog stove0_processing_admission" in docker_log
-    assert " restart app" in docker_log
-    assert " exec -T --env RIVERHOG_SMOKE_TOKEN=" in docker_log
-    assert " app python -c " in docker_log
-    assert " stop controller" in docker_log
-    assert "RIVERHOG_SMOKE_SCHEDULER_STEP=intent" in docker_log
-    assert "RIVERHOG_SMOKE_SCHEDULER_STEP=previewed" in docker_log
-    assert "RIVERHOG_SMOKE_SCHEDULER_STEP=work_bound" in docker_log
-    assert docker_log.count(" restart api") == 7
-    assert "RIVERHOG_SMOKE_ADMISSION_OUTPUT=ftp" in docker_log
-    assert "RIVERHOG_SMOKE_CLIENT_RECEIPT_OUTPUT=1" in docker_log
-    assert "collection upload start /cli-input" in docker_log
-    assert "--tag stove0/conformance" in docker_log
-    assert "RIVERHOG_SMOKE_INVOCATION_OUTPUT=client" in docker_log
-    assert "EXPECTED_WORK_ID=" in docker_log
-    for name in (
-        "RIVERHOG_INPUT_RECEIPT",
-        "STOVE0_SMOKE_FILE_COUNT",
-        "STOVE0_SMOKE_SIDECAR_COUNT",
-        "STOVE0_SMOKE_RECIPE_ID",
-        "STOVE0_WORK_IDS",
-        "STOVE0_SETTLED_SNAPSHOT",
-    ):
-        assert f"--env {name}=" in docker_log
-    assert "REVIEW_INPUT_RECEIPT=" in docker_log
-    assert "REVIEW_OUTPUT_COLLECTION_ID=4" in docker_log
-    assert "RCLONE_DELIVERY_ID=fixture-delivery" in docker_log
-    assert " down --volumes --remove-orphans" in docker_log
-    smoke = (REPO_ROOT / "scripts" / "test_compose_smoke.sh").read_text(encoding="utf-8")
-    assert "review-input.wav" in smoke
-    assert "FTP listener did not retain the exact interrupted prefix" in smoke
-    assert "/qualification.py minisign prepare" in smoke
-    assert "/qualification.py opentimestamps prepare" in smoke
-    assert "/qualification.py minisign verify" in smoke
-    assert "/qualification.py opentimestamps verify" in smoke
+    assert _read_log_lines(uv_log_path) == [
+        "|x -- uv run --locked --all-packages --group dev "
+        "python -m scripts.ci_qualification compose-all --jobs 3 --docker-jobs 1"
+    ]
+    # The shared runner prepares images and allocates each lifecycle's own
+    # project, ports, scratch and cleanup; this entrypoint creates no fixture.
+    assert not _read_log_lines(docker_log_path)
 
 
 def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
@@ -686,7 +623,9 @@ def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
         for line in timing_calls
     )
     assert all(
-        "ci_timing.py phase " in line or "scripts.ci_qualification compose-prepare" in line
+        "ci_timing.py phase " in line
+        or "scripts.ci_qualification compose-prepare" in line
+        or "scripts/collect_stove0_planning_cost.py" in line
         for line in timing_calls
     )
     docker_log = "\n".join(_read_log_lines(docker_log_path))
@@ -740,12 +679,21 @@ def test_compose_shard_executes_only_its_owned_lifecycle(tmp_path: Path, lane: s
         count = {"processing-admission": 16, "processing-e2e": 4, "processing-overlap": 1}[lane]
         assert f"STOVE0_SMOKE_FILE_COUNT={count}" in log
         if lane == "processing-admission":
+            for name in (
+                "RIVERHOG_INPUT_RECEIPT",
+                "STOVE0_SMOKE_FILE_COUNT",
+                "STOVE0_SMOKE_SIDECAR_COUNT",
+                "STOVE0_SMOKE_RECIPE_ID",
+            ):
+                assert f"--env {name}=" in log
             assert " up --detach --wait controller worker" not in log
             assert " restart api" in log
             assert "STOVE0_SETTLED_SNAPSHOT=" not in log
         else:
             assert " up --detach --wait controller worker" in log
             assert "STOVE0_SETTLED_SNAPSHOT=" in log
+            for name in ("STOVE0_WORK_IDS", "STOVE0_SETTLED_SNAPSHOT"):
+                assert f"--env {name}=" in log
 
 
 def test_compose_rejects_retired_selector_before_starting_fixtures(tmp_path: Path) -> None:
@@ -760,12 +708,15 @@ def test_compose_rejects_retired_selector_before_starting_fixtures(tmp_path: Pat
 
 def test_local_qualification_forwards_host_parallelism_to_the_shared_runner(tmp_path: Path) -> None:
     completed, _, uv_log_path = _run_make(
-        tmp_path, "linux-qualification", "LOCAL_QUALIFICATION_JOBS=3"
+        tmp_path,
+        "linux-qualification",
+        "LOCAL_QUALIFICATION_JOBS=3",
+        "LOCAL_QUALIFICATION_DOCKER_JOBS=1",
     )
     assert completed.returncode == 0, completed.stderr
     assert _read_log_lines(uv_log_path) == [
         "|x -- uv run --locked --all-packages --group dev "
-        "python -m scripts.ci_qualification linux --jobs 3"
+        "python -m scripts.ci_qualification linux --jobs 3 --docker-jobs 1"
     ]
 
 

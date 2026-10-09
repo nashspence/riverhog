@@ -25,6 +25,7 @@ from stove0_protocol.observation_interfaces import (
     SubjectFactsView,
     SubjectPort,
 )
+from stove0_protocol.observation_views import coverage_record_schema
 from stove0_protocol.predicates import (
     Predicate,
     PredicateAll,
@@ -67,6 +68,12 @@ from stove0_recipe_config.dependencies import (
     RecipeDependencyClosure,
     RecipeResource,
 )
+from stove0_recipe_config.diagnostics import (
+    RecipeCompileError,
+    compile_at,
+    compile_value,
+    source_pointer,
+)
 from stove0_recipe_config.source import (
     CallSource,
     ClassificationCase,
@@ -91,6 +98,10 @@ LANGUAGE_VECTORS = {
     ],
     "complete_empty": {"any": False, "every": False, "none": True},
     "missing_comparison": "indeterminate",
+    "fact_inspection": {
+        "records": {"unsupported": "indeterminate"},
+        "status": {"unsupported": "inspectable", "missing": "indeterminate"},
+    },
     "binding": {"insert": "absent", "replace": "present", "merge-object": "explicit-shallow"},
     "child_scope": "exact-parent-selection",
 }
@@ -180,11 +191,13 @@ def _call(call: RecipeCallSource, catalog: RecipeDependencyCatalog) -> CompiledR
 
 def _call(call: CallSource, catalog: RecipeDependencyCatalog) -> CompiledCall:
     if isinstance(call, RecipeCallSource):
-        child = _resource(catalog, call.recipe, RecipeResource)
+        child = compile_value("/recipe", _resource, catalog, call.recipe, RecipeResource)
         return CompiledRecipeCall(
             recipe=child.recipe.ref, intent=call.intent, bind=_bindings(call.bind)
         )
-    operation = _resource(catalog, call.operation, OperationResource).contract
+    operation = compile_value(
+        "/operation", _resource, catalog, call.operation, OperationResource
+    ).contract
     if operation.result_kind == "external-effect" and call.output is not None:
         raise ValueError("external effect call cannot declare output placement")
     return CompiledOperationCall(
@@ -397,7 +410,9 @@ def _condition(
             raise ValueError("facts condition requires a facts view")
         if predicate.scope not in scopes:
             raise ValueError("condition uses an unavailable subject scope")
-        if isinstance(view, GlobalFactsView) and (predicate.scope != "input" or predicate.roles):
+        if isinstance(view, GlobalFactsView) and (
+            predicate.scope != "input" or predicate.roles or predicate.inspect != "records"
+        ):
             raise ValueError("global views cannot become subject-keyed evidence")
         if predicate.roles and not set(predicate.roles) <= set(body.roles):
             raise ValueError("compiled condition has undeclared roles")
@@ -413,7 +428,10 @@ def _condition(
         task = body.observations[task_name]
         resource = closure.interface(id=task.interface.id, sha256=task.interface.sha256)
         validate_row_schema(
-            predicate.where, schema_slice(resource.contract.facts_schema, view.record_schema_at)
+            predicate.where,
+            coverage_record_schema()
+            if predicate.inspect == "status"
+            else schema_slice(resource.contract.facts_schema, view.record_schema_at),
         )
 
 
@@ -500,6 +518,14 @@ def _partial_literal(
 ) -> None:
     for error in Draft202012Validator(schema).iter_errors(document):
         position = tuple(str(part) for part in error.absolute_path)
+        # A binding can change conditional applicability, even when a failing
+        # branch points at an otherwise untouched literal. Such constraints
+        # belong to validation of the final bound invocation.
+        if deferred and any(
+            keyword in error.absolute_schema_path
+            for keyword in ("if", "then", "else", "dependentSchemas")
+        ):
+            continue
         if error.validator == "required":
             missing = [
                 position + (key,) for key in error.validator_value if key not in error.instance
@@ -509,9 +535,20 @@ def _partial_literal(
                 for item in missing
             ):
                 continue
-        if any(position[: len(path)] == path for path in deferred):
+            raise RecipeCompileError(
+                source_pointer(*position),
+                f"literal call arguments contradict the exact schema: {error.message}",
+            )
+        if any(
+            position[: len(path)] == path or path[: len(position)] == position for path in deferred
+        ):
+            # Aggregate constraints can be unresolved at any ancestor of a
+            # destination (anyOf/oneOf/not and object-wide cardinality rules).
             continue
-        raise ValueError(f"literal call arguments contradict the exact schema: {error.message}")
+        raise RecipeCompileError(
+            source_pointer(*position),
+            f"literal call arguments contradict the exact schema: {error.message}",
+        )
 
 
 def _literal_bindings(call: CompiledCall) -> None:
@@ -574,14 +611,16 @@ def validate_compiled_body(body: CompiledRecipeBody, closure: RecipeDependencyCl
         raise ValueError("compiled recipe has no calls or decisions")
     if body.dependencies != full_dependencies(body, closure):
         raise ValueError("compiled dependency commitment differs from its exact transitive closure")
-    observation_order(body, closure)
+    with compile_at("/observe"):
+        observation_order(body, closure)
     roles = set(body.roles)
     if body.classification.otherwise is not None and body.classification.otherwise not in roles:
         raise ValueError("classification otherwise has an undeclared semantic role")
-    for case in body.classification.cases:
+    for index, case in enumerate(body.classification.cases):
         if case.role not in roles:
             raise ValueError("classification assigns an undeclared semantic role")
-        _condition(body, closure, case.when, {"input", "self"})
+        with compile_at(source_pointer("classify", "cases", str(index), "when")):
+            _condition(body, closure, case.when, {"input", "self"})
     for group in body.groups.values():
         if group.attach != tuple(sorted(set(group.attach))):
             raise ValueError("compiled input group roles are not canonical")
@@ -590,8 +629,9 @@ def validate_compiled_body(body: CompiledRecipeBody, closure: RecipeDependencyCl
         for name in group.prefer:
             if not isinstance(_view(body, closure, name), RelationView):
                 raise ValueError("input association requires a relation view")
-    for decision in body.decisions:
-        _condition(body, closure, decision.when, {"input"})
+    for index, decision in enumerate(body.decisions):
+        with compile_at(source_pointer("decisions", str(index), "when")):
+            _condition(body, closure, decision.when, {"input"})
         loss = decision.no_output.source_loss
         if loss is not None:
             keys = [
@@ -604,7 +644,7 @@ def validate_compiled_body(body: CompiledRecipeBody, closure: RecipeDependencyCl
                 if not isinstance(_view(body, closure, slot.view), SubjectFactsView):
                     raise ValueError("source-loss approval must use exact subject-keyed evidence")
     calls = []
-    for branch in body.branches.values():
+    for name, branch in body.branches.items():
         candidate = None
         if isinstance(branch.select, GroupSelection):
             selected_group = body.groups.get(branch.select.groups)
@@ -618,9 +658,13 @@ def validate_compiled_body(body: CompiledRecipeBody, closure: RecipeDependencyCl
             {"input", "candidate"} if candidate is not None else {"input"},
             candidate,
         )
-        calls.append(branch.call)
+        calls.append((source_pointer("fork", name, "call"), branch.call))
     if body.join is not None:
-        calls.append(body.join.call)
+        if body.join.call.evidence:
+            raise ValueError(
+                "join cannot forward original-input observation evidence to derived-output inputs"
+            )
+        calls.append(("/join/call", body.join.call))
         if not isinstance(_call_result(body.join.call, closure), CollectionRecipeOutcome):
             raise ValueError("join must call a collection-producing operation")
         for name, selected_roles in body.join.members.items():
@@ -634,34 +678,37 @@ def validate_compiled_body(body: CompiledRecipeBody, closure: RecipeDependencyCl
                 raise ValueError("join output roles must be a nonempty canonical set")
             if not set(selected_roles) <= {item.role for item in result.artifacts}:
                 raise ValueError("join requests an undeclared output role")
-    for call in calls:
-        validate_bindings(call.bind)
-        if call.bind != _bindings(call.bind):
-            raise ValueError("compiled disjoint bindings are not canonical")
-        if isinstance(call, CompiledRecipeCall) and any(
-            binding.to != "intent" for binding in call.bind
-        ):
-            raise ValueError("child recipe bindings cannot select target options")
-        _literal_bindings(call)
-        deferred = tuple(
-            pointer_parts(binding.at) for binding in call.bind if binding.to == "intent"
-        )
-        if isinstance(call, CompiledRecipeCall):
-            child = closure.recipe(id=call.recipe.id, sha256=call.recipe.sha256)
-            if child.ref != call.recipe:
-                raise ValueError("child recipe revision differs from its exact identity")
-            if any(binding.to != "intent" for binding in call.bind):
-                raise ValueError("child recipe bindings cannot select target options")
-            _partial_literal(call.intent, child.parameters_schema.document, deferred)
-        else:
-            operation = closure.operation(id=call.operation.id, sha256=call.operation.sha256)
-            _partial_literal(call.intent, operation.intent_schema.document, deferred)
-            if call.evidence != tuple(sorted(set(call.evidence))) or not set(call.evidence) <= set(
-                body.observations
+    for pointer, call in calls:
+        with compile_at(pointer):
+            validate_bindings(call.bind)
+            if call.bind != _bindings(call.bind):
+                raise ValueError("compiled disjoint bindings are not canonical")
+            if isinstance(call, CompiledRecipeCall) and any(
+                binding.to != "intent" for binding in call.bind
             ):
-                raise ValueError("call evidence must name canonical declared observation tasks")
-            if operation.result_kind == "external-effect" and call.output is not None:
-                raise ValueError("effect call cannot declare collection placement")
+                raise ValueError("child recipe bindings cannot select target options")
+            _literal_bindings(call)
+            deferred = tuple(
+                pointer_parts(binding.at) for binding in call.bind if binding.to == "intent"
+            )
+            if isinstance(call, CompiledRecipeCall):
+                child = closure.recipe(id=call.recipe.id, sha256=call.recipe.sha256)
+                if child.ref != call.recipe:
+                    raise ValueError("child recipe revision differs from its exact identity")
+                if any(binding.to != "intent" for binding in call.bind):
+                    raise ValueError("child recipe bindings cannot select target options")
+                with compile_at("/intent"):
+                    _partial_literal(call.intent, child.parameters_schema.document, deferred)
+            else:
+                operation = closure.operation(id=call.operation.id, sha256=call.operation.sha256)
+                with compile_at("/intent"):
+                    _partial_literal(call.intent, operation.intent_schema.document, deferred)
+                if call.evidence != tuple(sorted(set(call.evidence))) or not set(
+                    call.evidence
+                ) <= set(body.observations):
+                    raise ValueError("call evidence must name canonical declared observation tasks")
+                if operation.result_kind == "external-effect" and call.output is not None:
+                    raise ValueError("effect call cannot declare collection placement")
     if body.source.retirement.mode == "after-settlement" and not _retirement_capable(body, closure):
         raise ValueError(
             "source retirement is not supported by the exact operation/no-output closure"
@@ -743,36 +790,41 @@ def compile_recipe(
 ) -> tuple[CompiledRecipe, RecipeDependencyClosure]:
     observations = {}
     for task_id, task in source.observe.items():
-        resource = _resource(catalog, task.use, ObserverResource)
-        inputs = task.inputs
-        if inputs is None:
-            if set(resource.interface.inputs) != {"subjects"} or not isinstance(
-                resource.interface.inputs["subjects"], SubjectPort
-            ):
-                raise ValueError("omitted task inputs require exactly one subjects port")
-            inputs = {"subjects": "all"}
-        normalized_inputs: dict[str, Literal["all"] | CompiledRoleSelection | EvidenceInput] = {}
-        for name, binding in inputs.items():
-            if isinstance(binding, RoleSelection):
-                try:
-                    normalized_inputs[name] = CompiledRoleSelection(
-                        roles=tuple(sorted(source.roles[role] for role in binding.roles))
-                    )
-                except KeyError as exc:
-                    raise ValueError("subject input selects an unknown role alias") from exc
-            else:
-                normalized_inputs[name] = binding
-        observations[task_id] = CompiledObservationTask(
-            observer=resource.interface.observer_contract,
-            interface=resource.interface.ref,
-            executor=task.executor,
-            inputs=normalized_inputs,
-            after=tuple(sorted(task.after)),
-            options=task.options,
-            retrieve=task.retrieve,
-        )
-    try:
-        classification = ClassificationSource(
+        with compile_at(source_pointer("observe", task_id)):
+            with compile_at("/use"):
+                resource = _resource(catalog, task.use, ObserverResource)
+            inputs = task.inputs
+            if inputs is None:
+                if set(resource.interface.inputs) != {"subjects"} or not isinstance(
+                    resource.interface.inputs["subjects"], SubjectPort
+                ):
+                    raise ValueError("omitted task inputs require exactly one subjects port")
+                inputs = {"subjects": "all"}
+            normalized_inputs: dict[
+                str, Literal["all"] | CompiledRoleSelection | EvidenceInput
+            ] = {}
+            for name, binding in inputs.items():
+                if isinstance(binding, RoleSelection):
+                    try:
+                        normalized_inputs[name] = CompiledRoleSelection(
+                            roles=tuple(sorted(source.roles[role] for role in binding.roles))
+                        )
+                    except KeyError as exc:
+                        raise ValueError("subject input selects an unknown role alias") from exc
+                else:
+                    normalized_inputs[name] = binding
+            observations[task_id] = CompiledObservationTask(
+                observer=resource.interface.observer_contract,
+                interface=resource.interface.ref,
+                executor=task.executor,
+                inputs=normalized_inputs,
+                after=tuple(sorted(task.after)),
+                options=task.options,
+                retrieve=task.retrieve,
+            )
+    classification = compile_value(
+        "/classify",
+        lambda: ClassificationSource(
             cases=tuple(
                 ClassificationCase(
                     role=source.roles[case.role], when=_roles(case.when, source.roles)
@@ -782,21 +834,18 @@ def compile_recipe(
             otherwise=source.roles[source.classify.otherwise]
             if source.classify.otherwise is not None
             else None,
-        )
-        groups = {
-            name: InputGroupSource(
+        ),
+    )
+    groups = {}
+    for name, group in source.groups.items():
+        with compile_at(source_pointer("groups", name)):
+            groups[name] = InputGroupSource(
                 primary=source.roles[group.primary],
                 attach=tuple(sorted(source.roles[role] for role in group.attach)),
                 prefer=group.prefer,
             )
-            for name, group in source.groups.items()
-        }
-    except KeyError as exc:
-        raise ValueError(
-            f"classification/group names an unknown role alias: {exc.args[0]}"
-        ) from exc
     decisions = []
-    for decision in source.decisions:
+    for index, decision in enumerate(source.decisions):
         output = decision.no_output
         if output.source_loss is not None:
             loss = output.source_loss
@@ -816,7 +865,32 @@ def compile_recipe(
             output = output.model_copy(
                 update={"source_loss": SourceLossRule(id=loss.id, evidence=slots)}
             )
-        decisions.append(DecisionSource(when=_roles(decision.when, source.roles), no_output=output))
+        decisions.append(
+            DecisionSource(
+                when=compile_value(
+                    source_pointer("decisions", str(index), "when"),
+                    _roles,
+                    decision.when,
+                    source.roles,
+                ),
+                no_output=output,
+            )
+        )
+    branches: dict[str, CompiledBranch] = {}
+    for name, branch in source.fork.items():
+        with compile_at(source_pointer("fork", name, "when")):
+            when = _roles(branch.when, source.roles)
+        with compile_at(source_pointer("fork", name, "call")):
+            call = _call(branch.call, catalog)
+        branches[name] = CompiledBranch(select=branch.select, when=when, call=call)
+    join: CompiledJoin | None = None
+    if source.join is not None:
+        with compile_at("/join/call"):
+            join_call = _call(source.join.call, catalog)
+        join = CompiledJoin(
+            members={name: tuple(sorted(roles)) for name, roles in source.join.members.items()},
+            call=join_call,
+        )
     body = CompiledRecipeBody.model_validate(
         {
             "id": source.id,
@@ -828,20 +902,8 @@ def compile_recipe(
             "classification": classification,
             "groups": groups,
             "decisions": tuple(decisions),
-            "branches": {
-                name: CompiledBranch(
-                    select=branch.select,
-                    when=_roles(branch.when, source.roles),
-                    call=_call(branch.call, catalog),
-                )
-                for name, branch in source.fork.items()
-            },
-            "join": CompiledJoin(
-                members={name: tuple(sorted(roles)) for name, roles in source.join.members.items()},
-                call=_call(source.join.call, catalog),
-            )
-            if source.join is not None
-            else None,
+            "branches": branches,
+            "join": join,
             "export": source.export,
             "source": source.source,
             "dependencies": (),
@@ -878,9 +940,10 @@ def compile_recipe_catalog(
     resources = dict(dependencies.resources)
     compiled, closures = {}, {}
     for name in _topological(graph):
-        recipe, closure = compile_recipe(
-            sources[name], RecipeDependencyCatalog(resources=resources)
-        )
+        with compile_at(source_pointer("recipes", name)):
+            recipe, closure = compile_recipe(
+                sources[name], RecipeDependencyCatalog(resources=resources)
+            )
         resources[name] = RecipeResource(recipe=recipe)
         compiled[name], closures[name] = recipe, closure
     return compiled, closures

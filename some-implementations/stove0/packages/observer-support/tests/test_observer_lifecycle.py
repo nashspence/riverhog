@@ -687,3 +687,53 @@ def test_control_refresh_leaves_execution_timeout_and_cleanup_with_the_worker(
     finally:
         release.set()
         service.close()
+
+
+def test_live_observer_retention_removes_expired_completed_cancellation_only(
+    tmp_path,
+    service_factory,
+):
+    observer, admission = Observer(), Admission()
+    service = service_factory(
+        observer,
+        execution_admission=admission,
+        terminal_state_retention_seconds=1,
+    )
+    canceled = invocation(observer)
+    pending = invocation(observer, claim="fixture-still-pending")
+    service.put_job(canceled)
+    service.put_job(pending)
+    assert admission.probed.wait(5)
+    assert service.cancel_job(canceled.accepted()).state == "completed"
+    # The terminal result remains idempotent throughout its configured window.
+    assert service.put_job(canceled).state == "completed"
+    import os
+
+    for item in (canceled, pending):
+        path = service.state_root / f"{item.job_id}.status.json"
+        os.utime(path, (time.time() - 10, time.time() - 10))
+    service._retention.wake()
+    deadline = time.monotonic() + 5
+    while (service.state_root / f"{canceled.job_id}.status.json").exists():
+        assert time.monotonic() < deadline
+        threading.Event().wait(0.01)
+    assert not tuple(service.state_root.glob(f"{canceled.job_id}.*.json"))
+    assert service.get_job(pending.job_id).state == "queued"
+    assert service._dispatch.payload_count == 0
+    assert not observer.calls
+
+
+def test_observer_retention_configuration_is_positive_and_shared(monkeypatch):
+    from stove0_observer_support.configuration import (
+        DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
+        OBSERVER_TERMINAL_STATE_RETENTION_ENV,
+        terminal_state_retention_seconds,
+    )
+
+    assert terminal_state_retention_seconds({}) == DEFAULT_TERMINAL_STATE_RETENTION_SECONDS
+    assert terminal_state_retention_seconds({OBSERVER_TERMINAL_STATE_RETENTION_ENV: "120"}) == 120
+    for value in ("0", "-1", "unknown"):
+        with pytest.raises(ValueError):
+            terminal_state_retention_seconds({OBSERVER_TERMINAL_STATE_RETENTION_ENV: value})
+    monkeypatch.setenv(OBSERVER_TERMINAL_STATE_RETENTION_ENV, "120")
+    assert terminal_state_retention_seconds() == 120

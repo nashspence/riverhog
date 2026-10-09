@@ -14,7 +14,6 @@ from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import Any, cast
 
 from riverhog_archive_contracts import (
@@ -51,6 +50,8 @@ from riverhog_archive_contracts import (
     verify_member_history_sets,
 )
 from riverhog_canonical_json import require_canonical_json
+
+from riverhog_core.scratch_workspace import scratch_directory
 
 ObjectReader = Callable[[str], Iterator[bytes]]
 
@@ -98,7 +99,7 @@ class CanonicalProvenanceArchiveReader:
         The selected root and normal fixity checks remain authoritative. A failed
         or interrupted stream never installs a cache entry.
         """
-        with TemporaryDirectory(prefix="riverhog-provenance-read-") as scratch:
+        with scratch_directory(prefix="riverhog-provenance-read-") as scratch:
             directory = Path(scratch)
 
             def read(path: str) -> Iterator[bytes]:
@@ -132,17 +133,10 @@ class CanonicalProvenanceArchiveReader:
         if self._prepared_db is not None:
             yield self
             return
-        with TemporaryDirectory(prefix="riverhog-provenance-metadata-") as scratch:
+        with scratch_directory(prefix="riverhog-provenance-metadata-") as scratch:
             # The operation owns this index. Its serial HTTP iterator may
             # advance and close on different worker threads.
             db = sqlite3.connect(Path(scratch) / "metadata.sqlite3", check_same_thread=False)
-            db.executescript(
-                "PRAGMA cache_size = -512; PRAGMA temp_store = FILE; "
-                "CREATE TABLE volumes(sequence TEXT PRIMARY KEY, kind TEXT, "
-                "journal TEXT, body BLOB); "
-                "CREATE INDEX volume_journals ON volumes(journal, sequence); "
-                "CREATE INDEX volume_kinds ON volumes(kind, sequence);"
-            )
 
             def remember(document: ProvenanceVolumeDocument | ProvenanceTerminalDocument) -> None:
                 if isinstance(document, ProvenanceTerminalDocument):
@@ -160,6 +154,13 @@ class CanonicalProvenanceArchiveReader:
                 )
 
             try:
+                db.executescript(
+                    "PRAGMA cache_size = -512; PRAGMA temp_store = FILE; "
+                    "CREATE TABLE volumes(sequence TEXT PRIMARY KEY, kind TEXT, "
+                    "journal TEXT, body BLOB); "
+                    "CREATE INDEX volume_journals ON volumes(journal, sequence); "
+                    "CREATE INDEX volume_kinds ON volumes(kind, sequence);"
+                )
                 summary = self._scan(remember)
                 db.commit()
                 db.execute("PRAGMA query_only = ON")

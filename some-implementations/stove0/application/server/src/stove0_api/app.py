@@ -1559,6 +1559,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         require_api_token=args.command == "serve",
     )
     composition = Stove0Composition.build(config)
+    # Runtime diagnostics contain only phase costs and opaque owner identities;
+    # never log request documents, accepted facts, credentials or content.
+    planning_logger = logging.getLogger("stove0_core.planning")
+    planning_logger.setLevel(logging.INFO)
+    planning_logger.propagate = False
+    if not planning_logger.handlers:
+        planning_logger.addHandler(logging.StreamHandler())
     if args.command == "serve":
         uvicorn.run(
             create_app(composition),

@@ -10,6 +10,7 @@ from typing import Any
 
 import pytest
 import riverhog_core.provenance_archive_read as archive_read
+import riverhog_core.scratch_workspace as scratch_workspace
 from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
     MEMBER_HISTORY_IMPORTS_SCHEMA,
@@ -245,7 +246,7 @@ def test_prepared_reader_closes_partly_consumed_cursors_before_directory_cleanup
         return original_connect(*args, **kwargs, factory=TrackedConnection)
 
     monkeypatch.setattr(archive_read.sqlite3, "connect", connect)
-    monkeypatch.setattr(archive_read, "TemporaryDirectory", CheckedDirectory)
+    monkeypatch.setattr(scratch_workspace.tempfile, "TemporaryDirectory", CheckedDirectory)
     with reader.prepared():
         headers = reader.iter_journal_headers()
         next(headers)
@@ -259,14 +260,14 @@ def test_prepared_journal_stream_hands_off_workers_and_cleans_scratch(
 ) -> None:
     reader, _, journal_id, journal_text = _archive()
     scratch_paths: list[Path] = []
-    original_directory = archive_read.TemporaryDirectory
+    original_directory = scratch_workspace.tempfile.TemporaryDirectory
 
     def directory(*args: Any, **kwargs: Any) -> TemporaryDirectory:
         scratch = original_directory(*args, **kwargs)
         scratch_paths.append(Path(scratch.name))
         return scratch
 
-    monkeypatch.setattr(archive_read, "TemporaryDirectory", directory)
+    monkeypatch.setattr(scratch_workspace.tempfile, "TemporaryDirectory", directory)
 
     def body():
         with reader.prepared():

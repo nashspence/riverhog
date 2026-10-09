@@ -34,7 +34,7 @@ def _condition(quantifier, *, roles=None):
     }
 
 
-def _prepared(tmp_path):
+def _prepared(tmp_path, *, decision_condition=None, count=205):
     decisions = [
         {
             "when": _condition(quantifier, roles=roles),
@@ -46,6 +46,16 @@ def _prepared(tmp_path):
         for roles in (None, ["unused"])
         for quantifier in ("every", "any", "none")
     ]
+    if decision_condition is not None:
+        decisions = [
+            {
+                "when": decision_condition,
+                "no_output": {
+                    "code": "example.checked/v1",
+                    "message": "The independent decision was evaluated.",
+                },
+            }
+        ]
     recipe, closure = _program(input_classification=True, decisions=decisions)
     root = CollectionRootIdentityRef(
         collection_id="1", archive_root_sha256="a" * 64, artifact_set_identity="b" * 64
@@ -60,7 +70,7 @@ def _prepared(tmp_path):
             bytes="1",
             sha256="c" * 64,
         )
-        for index in range(205)
+        for index in range(count)
     )
     selection = ArtifactSelection.seal(subjects)
     url = f"sqlite:///{tmp_path / 'state.db'}"
@@ -168,4 +178,60 @@ def test_classification_waits_for_whole_input_and_a_late_negative_changes_every_
     )
     with pytest.raises(ValueError, match="indexed compiled definition"):
         wrong_definition.verify_recipe(recipe)
+    state.engine.dispose()
+
+
+@pytest.mark.parametrize("decision_count", [0, 1, 2, 3])
+def test_classification_cursor_is_reset_before_independent_decisions_and_restart(
+    tmp_path, decision_count
+):
+    conditions = [
+        {
+            "facts": {
+                "view": "first.artifacts",
+                "scope": "input",
+                "quantifier": "every",
+                "where": {
+                    "test": {
+                        "path": "/mime_type",
+                        "op": "ne",
+                        "value": f"application/unrelated-{i}",
+                    }
+                },
+            }
+        }
+        for i in range(decision_count)
+    ]
+    condition = {"all": conditions} if conditions else True
+    url, state, work, recipe, subjects = _prepared(tmp_path, decision_condition=condition, count=3)
+    for _ in range(100):
+        progress = CompiledObservationPlanning(state, object()).step(work)
+        if progress.state == "question":
+            selected = tuple(
+                member
+                for subject in subjects
+                if (
+                    member := state.accepted_observations.selections.member(
+                        progress.question.scope.selection_sha256, subject.id
+                    )
+                )
+                is not None
+            )
+            _answer(state, progress.question, _descriptor(), selected)
+        state.engine.dispose()
+        state = SqlAlchemyStateStore(url)
+        if progress.state == "complete":
+            break
+    else:
+        pytest.fail("classification did not reach its decision boundary")
+    assert state.compiled_planning.ensure(work.work_id, recipe)["input_ordinal"] == 0
+    for _ in range(100):
+        decision = CompiledDecisionPlanning(state).step(work)
+        state.engine.dispose()
+        state = SqlAlchemyStateStore(url)
+        if decision.state != "pending":
+            break
+    assert decision.state == "no-output"
+    assert len(decision.decision.conditions[0].evaluations) == decision_count
+    assert CompiledDecisionPlanning(state).step(work).decision == decision.decision
     state.engine.dispose()

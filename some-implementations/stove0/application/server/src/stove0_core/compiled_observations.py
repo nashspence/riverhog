@@ -75,7 +75,12 @@ class CompiledObservationPlanning:
             if not planning.tasks_complete(work.work_id):
                 return CompiledObservationProgress("pending", scope)
             if row["phase"] not in {"decisions", "complete"}:
-                planning.advance(work.work_id, expected_revision=row["revision"], phase="decisions")
+                planning.advance(
+                    work.work_id,
+                    expected_revision=row["revision"],
+                    phase="decisions",
+                    input_ordinal=0,
+                )
             return CompiledObservationProgress("complete", scope)
         task_id = task_row["task_id"]
         if task_id == "$classify":

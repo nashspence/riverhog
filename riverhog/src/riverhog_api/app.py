@@ -28,6 +28,7 @@ from pydantic import TypeAdapter
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.catalog_db import catalog_state_schema
 from riverhog_core.runtime_document import load_runtime_config
+from riverhog_core.scratch_workspace import process_workspace
 from riverhog_protocol import RIVERHOG_HTTP_ERROR_AUTHORITY
 from riverhog_protocol.errors import RiverhogError, ServiceUnavailable
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -554,14 +555,15 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     if args.command == "index":
-        container = default_container()
-        try:
-            generation_id = container.provenance.rebuild_index(args.collection)
-        except (RiverhogError, RuntimeError, ValueError) as exc:
-            print(str(exc), file=sys.stderr)
-            return 1
-        finally:
-            container.close()
+        with process_workspace():
+            container = default_container()
+            try:
+                generation_id = container.provenance.rebuild_index(args.collection)
+            except (RiverhogError, RuntimeError, ValueError) as exc:
+                print(str(exc), file=sys.stderr)
+                return 1
+            finally:
+                container.close()
         index_payload = {"collection_id": str(args.collection), "index_generation": generation_id}
         print(
             canonical_json_bytes(index_payload).decode()
@@ -594,13 +596,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"({payload['current_revision'] or 'none'} -> {payload['head_revision']})"
             )
         return 0
-    uvicorn.run(
-        "riverhog_api.app:create_app",
-        factory=True,
-        host="0.0.0.0",
-        port=8000,
-        reload=False,
-    )
+    with process_workspace():
+        uvicorn.run(
+            "riverhog_api.app:create_app",
+            factory=True,
+            host="0.0.0.0",
+            port=8000,
+            reload=False,
+            workers=1,
+        )
     return 0
 
 

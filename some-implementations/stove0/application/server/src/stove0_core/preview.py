@@ -40,7 +40,8 @@ from stove0_core.coordinator import (
     TargetPort,
     _raise_observation_outcome,
 )
-from stove0_core.metadata_steps import MetadataSteps, planning_control_budget
+from stove0_core.metadata_steps import MetadataSteps, advance_planning, planning_control_budget
+from stove0_core.planning_progress import PlanningProgress
 from stove0_core.preview_state import InMemoryPreviewStore, PreviewRecord, PreviewStore
 from stove0_core.work_state import (
     ClaimBinding,
@@ -299,18 +300,30 @@ class WorkflowPreviewService:
             return record
         if record.phase in {"observing", "planning"}:
             planning = self.planning.for_invocation("preview", record.job.job_id)
-            progress = planning.step(record.job.work)
-            if progress.state == "question":
+            claim = record.claim
+            assert claim is not None
+
+            def deliver(progress: PlanningProgress) -> None:
                 result = planning.deliver_observation(
                     progress,
                     owner_kind="preview",
                     owner_id=record.job.job_id,
-                    claim=record.claim,
+                    claim=claim,
                     riverhog=self.riverhog,
                     deliveries=self.deliveries,
                 )
                 if result is not None:
                     _raise_observation_outcome(result)
+
+            progress = advance_planning(
+                planning,
+                record.job.work,
+                owner_kind="preview",
+                owner_id=record.job.job_id,
+                deliver=deliver,
+            )
+            if progress.state == "question":
+                deliver(progress)
                 return record
             if progress.state == "pending":
                 return record

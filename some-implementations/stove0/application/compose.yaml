@@ -382,11 +382,13 @@ services:
       A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID: ${A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID:?A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID is required}
       A_STOVE0_NVENC_AV1_OPUS_TARGET_STATE_ROOT: /var/lib/a-stove0-nvenc-av1-opus-target
       A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE: /run/a-stove0-nvenc-av1-opus-target
+      A_STOVE0_NVENC_AV1_OPUS_TARGET_EXECUTION_LEASE_FILE: ${A_STOVE0_NVENC_AV1_OPUS_TARGET_EXECUTION_LEASE_FILE:-/run/stove0-execution-lease/exclusive.lock}
       STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS: ${STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:-2592000}
     secrets: ["a_stove0_nvenc_av1_opus_target_token"]
     networks: ["stove0-internal", "riverhog-control"]
     volumes:
       - a-stove0-nvenc-av1-opus-target-state:/var/lib/a-stove0-nvenc-av1-opus-target
+      - a-stove0-nvenc-av1-opus-execution-lease:/run/stove0-execution-lease
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
       - /run/a-stove0-nvenc-av1-opus-target:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TARGET_TMPFS_SIZE:-32g}
@@ -419,6 +421,7 @@ volumes:
   magic-observer-state:
   exiftool-observer-state:
   ffprobe-observer-state:
+  a-stove0-nvenc-av1-opus-execution-lease:
   a-stove0-nvenc-av1-opus-target-state:
   a-stove0-opus-target-state:
   review0-state:

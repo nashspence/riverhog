@@ -21,13 +21,12 @@ from stove0_api_client import Stove0ApiClient, Stove0ApiError
 from stove0_operator_contracts import PlanningOwnerKind, WorkInitiationStatus
 from stove0_protocol import CollectionRootIdentityRef, canonical_json_bytes
 from stove0_protocol.planning_jobs import PlanningJobStatus
+from stove0_recipe_config.assembly import RecipeInputAssembly, assemble_recipe_inputs
 from stove0_recipe_config.catalog import (
     CompiledRecipeCatalog,
     RecipeCatalogExplanation,
     RecipeCatalogValidation,
-    load_recipe_catalog,
 )
-from stove0_recipe_config.source_map import recipe_source_map
 
 app = typer.Typer(
     help="Operate stove0 collection workflows.",
@@ -308,17 +307,43 @@ def show_departure_effect(context: typer.Context, departure_id: str) -> None:
     _call(state, lambda: state.client.get_departure_effect(departure_id))
 
 
+def _recipe_assembly(
+    path: Path, resources: Path | None, recipes: list[str] | None
+) -> RecipeInputAssembly:
+    selected = {}
+    for entry in recipes or ():
+        alias, separator, source = entry.partition("=")
+        if not separator or not alias or not source:
+            raise ValueError("--recipe requires an explicit NAME=PATH")
+        if alias in selected:
+            raise ValueError(f"local recipe alias is supplied more than once: {alias}")
+        selected[alias] = Path(source)
+    return assemble_recipe_inputs(path, resources_path=resources, recipe_paths=selected)
+
+
 @recipe_app.command("validate")
 def validate_recipe_catalog(
     context: typer.Context,
     path: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
+    resources: Annotated[
+        Path | None,
+        typer.Option(
+            exists=True, dir_okay=False, readable=True, help="Exact local resource document."
+        ),
+    ] = None,
+    recipes: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--recipe", help="Add an exact local recipe as NAME=PATH; repeat for subrecipes."
+        ),
+    ] = None,
 ) -> None:
     """Validate source or compiled catalog documents and their exact offline closure."""
 
     state = _context(context)
     _call(
         state,
-        lambda: load_recipe_catalog(path).validation_document(),
+        lambda: _recipe_assembly(path, resources, recipes).compile().validation_document(),
         table=("recipes", ("id", "revision", "sha256")),
     )
 
@@ -327,6 +352,18 @@ def validate_recipe_catalog(
 def compile_recipe_catalog(
     context: typer.Context,
     path: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
+    resources: Annotated[
+        Path | None,
+        typer.Option(
+            exists=True, dir_okay=False, readable=True, help="Exact local resource document."
+        ),
+    ] = None,
+    recipes: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--recipe", help="Add an exact local recipe as NAME=PATH; repeat for subrecipes."
+        ),
+    ] = None,
     output: Annotated[
         Path | None, typer.Option(help="Write the canonical compiled installation document.")
     ] = None,
@@ -338,10 +375,13 @@ def compile_recipe_catalog(
 
     def compile_document() -> CompiledRecipeCatalog:
         destinations = [target.resolve() for target in (output, source_map) if target is not None]
-        if len(set(destinations)) != len(destinations) or path.resolve() in destinations:
+        assembly = _recipe_assembly(path, resources, recipes)
+        if len(set(destinations)) != len(destinations) or any(
+            source.resolve() in destinations for source in assembly.paths
+        ):
             raise ValueError("compiled output, source map and input paths must be distinct")
-        catalog = load_recipe_catalog(path)
-        locations = recipe_source_map(path) if source_map is not None else None
+        catalog = assembly.compile()
+        locations = assembly.locations if source_map is not None else None
         if output is not None:
             output.write_bytes(
                 canonical_json_bytes(catalog.model_dump(mode="json", by_alias=True)) + b"\n"
@@ -357,9 +397,24 @@ def compile_recipe_catalog(
 def explain_recipe_catalog(
     context: typer.Context,
     path: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
+    resources: Annotated[
+        Path | None,
+        typer.Option(
+            exists=True, dir_okay=False, readable=True, help="Exact local resource document."
+        ),
+    ] = None,
+    recipes: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--recipe", help="Add an exact local recipe as NAME=PATH; repeat for subrecipes."
+        ),
+    ] = None,
 ) -> None:
     """Show normalized semantics, derived boundaries and the required task order."""
-    _call(_context(context), lambda: load_recipe_catalog(path).explanation_document())
+    _call(
+        _context(context),
+        lambda: _recipe_assembly(path, resources, recipes).compile().explanation_document(),
+    )
 
 
 @work_app.command("list")

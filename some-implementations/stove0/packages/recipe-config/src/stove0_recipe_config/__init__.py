@@ -2,6 +2,7 @@
 
 from stove0_recipe_config.catalog import (
     CompiledRecipeCatalog,
+    RecipeResourceCatalog,
     RecipeSourceCatalog,
     load_recipe_catalog,
 )
@@ -21,6 +22,7 @@ __all__ = [
     "RecipeDependencyCatalog",
     "RecipeDependencyClosure",
     "RecipeSource",
+    "RecipeResourceCatalog",
     "RecipeSourceCatalog",
     "compile_recipe",
     "compile_recipe_catalog",

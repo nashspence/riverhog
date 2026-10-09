@@ -157,9 +157,14 @@ class BranchSource(SourceModel):
     call: CallSource
 
 
+class JoinOperationCallSource(OperationCallSource):
+    # Observation tasks cover recipe inputs; join inputs are produced later.
+    evidence: tuple[LocalName, ...] = Field(default=(), max_length=0)
+
+
 class JoinSource(SourceModel):
     members: dict[LocalName, tuple[SemanticId, ...]] = Field(min_length=2)
-    call: OperationCallSource
+    call: JoinOperationCallSource
 
     @model_validator(mode="after")
     def required_output_roles(self) -> Self:

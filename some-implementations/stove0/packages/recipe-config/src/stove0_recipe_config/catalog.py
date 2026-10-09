@@ -137,6 +137,11 @@ class CompiledRecipeCatalog(Stove0ProtocolModel):
         )
 
 
+class RecipeResourceCatalog(Stove0ProtocolModel):
+    format: Literal["stove0-recipe-resources/v1"] = "stove0-recipe-resources/v1"
+    resources: dict[LocalName, RecipeResourceDocument] = Field(default_factory=dict)
+
+
 class RecipeSourceCatalog(Stove0ProtocolModel):
     format: Literal["stove0-recipe-source-catalog/v1"] = "stove0-recipe-source-catalog/v1"
     resources: dict[LocalName, RecipeResourceDocument] = Field(default_factory=dict)
@@ -173,14 +178,15 @@ class RecipeSourceCatalog(Stove0ProtocolModel):
         )
 
 
-def load_recipe_catalog(path: Path) -> CompiledRecipeCatalog:
-    """Validate current authoring or already compiled installation documents offline."""
-    documents = read_source_documents(Path(path))
-    if len(documents) != 1:
-        raise ValueError("recipe catalog must be one closed document")
-    document = documents[0]
-    if document.get("format") == "stove0-recipe-source-catalog/v1":
-        return RecipeSourceCatalog.model_validate(document).compile()
-    if document.get("format") == "stove0-compiled-recipe-catalog/v1":
-        return CompiledRecipeCatalog.model_validate(document)
-    raise ValueError("recipe catalog requires a current source or compiled format")
+def load_recipe_catalog(
+    path: Path,
+    *,
+    resources_path: Path | None = None,
+    recipe_paths: dict[str, Path] | None = None,
+) -> CompiledRecipeCatalog:
+    """Assemble exact local inputs and compile with the sole production compiler."""
+    from stove0_recipe_config.assembly import assemble_recipe_inputs
+
+    return assemble_recipe_inputs(
+        path, resources_path=resources_path, recipe_paths=recipe_paths
+    ).compile()

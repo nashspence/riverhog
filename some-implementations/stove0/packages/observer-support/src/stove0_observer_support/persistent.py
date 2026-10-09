@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from stove0_extension_support import ExclusiveStateOwner, ExecutionAdmission, ExecutionPermit
 from stove0_extension_support.authority import validate_live_root_authority
 from stove0_extension_support.dispatch import BoundedExecutionDispatcher, ExecutionDispatch
+from stove0_extension_support.retention import TerminalStateRetention
 from stove0_extension_support.state import write_state_model
 from stove0_observer_protocol import (
     AcceptedObservationJob,
@@ -26,6 +27,9 @@ from stove0_observer_protocol import (
     validate_observation_status,
 )
 
+from stove0_observer_support.configuration import (
+    terminal_state_retention_seconds as configured_retention_seconds,
+)
 from stove0_observer_support.results import ContentObservationResultBuilder
 from stove0_observer_support.runtime import ContentObservationRuntime, ContentObserver
 
@@ -61,12 +65,21 @@ class PersistentObserverService:
         execution_admission: ExecutionAdmission | None = None,
         admission_probe_seconds: float = 1.0,
         admission_retry_seconds: float = 1.0,
+        terminal_state_retention_seconds: int | None = None,
         runtime_factory: Callable[
             ..., ContentObservationRuntime
         ] = ContentObservationRuntime.from_invocation,
     ) -> None:
         if isinstance(maximum_pending_jobs, bool) or maximum_pending_jobs < 1:
             raise ValueError("observer queue budget must be positive")
+        retention = (
+            configured_retention_seconds()
+            if terminal_state_retention_seconds is None
+            else terminal_state_retention_seconds
+        )
+        if isinstance(retention, bool) or retention < 1:
+            raise ValueError("observer terminal-state retention must be positive")
+        self.terminal_state_retention_seconds = retention
         if state_root.is_symlink():
             raise ValueError("observer state root must not be a symlink")
         self.state_root = state_root.resolve()
@@ -94,12 +107,18 @@ class PersistentObserverService:
                 ObservationJobStatus.model_validate_json(path.read_bytes()).state != "completed"
                 for path in self.state_root.glob("*.status.json")
             )
+            self.prune_terminal_state()
             self._dispatch = BoundedExecutionDispatcher(
                 state_owner=self._owner,
                 maximum_workers=maximum_workers,
                 admission=execution_admission,
                 probe_seconds=admission_probe_seconds,
                 retry_seconds=admission_retry_seconds,
+            )
+            self._retention = TerminalStateRetention(
+                self.state_root,
+                self._prune_terminal_path,
+                interval_seconds=min(60, self.terminal_state_retention_seconds),
             )
         except BaseException:
             self._owner.close()
@@ -370,6 +389,48 @@ class PersistentObserverService:
     def _finished(self, job_id: str) -> None:
         with self._lock:
             self._shutdown.discard(job_id)
+        self._retention.wake()
+
+    def prune_terminal_state(self, *, now: float | None = None) -> dict[str, int]:
+        observed = time.time() if now is None else now
+        totals = {"jobs": 0, "bytes": 0}
+        for path in self.state_root.glob("*.status.json"):
+            removed = self._prune_terminal_path(path, observed)
+            for key in totals:
+                totals[key] += removed[key]
+        return totals
+
+    def _prune_terminal_path(self, path: Path, now: float) -> dict[str, int]:
+        with self._lock:
+            if path.is_symlink():
+                raise ValueError("observer state paths must not be symlinks")
+            try:
+                identity = path.stat()
+            except FileNotFoundError:
+                return {"jobs": 0, "bytes": 0}
+            if identity.st_mtime > now - self.terminal_state_retention_seconds:
+                return {"jobs": 0, "bytes": 0}
+            job_id = path.name.removesuffix(".status.json")
+            dispatch = getattr(self, "_dispatch", None)
+            if dispatch is not None and job_id in dispatch.active_keys:
+                return {"jobs": 0, "bytes": 0}
+            status = self._load(job_id, "status", ObservationJobStatus)
+            if status is None or status.state != "completed":
+                return {"jobs": 0, "bytes": 0}
+            removed = 0
+            for kind in ("status", "accepted", "cancel"):
+                selected = self._path(job_id, kind)
+                if selected.is_symlink():
+                    raise ValueError("observer state paths must not be symlinks")
+                if selected.exists():
+                    removed += selected.stat().st_size
+                    selected.unlink()
+            directory = os.open(self.state_root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+            try:
+                os.fsync(directory)
+            finally:
+                os.close(directory)
+            return {"jobs": 1, "bytes": removed}
 
     def register_metadata_shutdown(self, close: Callable[[], None]) -> None:
         with self._lock:
@@ -381,6 +442,7 @@ class PersistentObserverService:
         with self._lock:
             self._closing = True
             self._shutdown.update(self._dispatch.active_keys)
+        self._retention.close()
         try:
             for close in self._metadata_shutdown:
                 close()

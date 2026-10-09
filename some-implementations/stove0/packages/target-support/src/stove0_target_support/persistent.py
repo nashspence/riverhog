@@ -27,6 +27,7 @@ from stove0_extension_support import (
 )
 from stove0_extension_support.authority import validate_live_root_authority
 from stove0_extension_support.dispatch import BoundedExecutionDispatcher, ExecutionDispatch
+from stove0_extension_support.retention import TerminalStateRetention
 from stove0_target_protocol import (
     EFFECT_TARGET_PROTOCOL,
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
@@ -190,6 +191,11 @@ class PersistentTargetService:
             admission=execution_admission,
             probe_seconds=admission_probe_seconds,
             retry_seconds=admission_retry_seconds,
+        )
+        self._retention = TerminalStateRetention(
+            self.state_root,
+            self._prune_terminal_path,
+            interval_seconds=min(60, self.terminal_state_retention_seconds),
         )
 
     def descriptor(self) -> TargetDescriptor:
@@ -418,6 +424,7 @@ class PersistentTargetService:
             for job_id in self._dispatch.active_keys:
                 if job_id not in self._operator_canceled:
                     self._shutdown_interrupted.add(job_id)
+        self._retention.close()
         for close in self._metadata_shutdown:
             close()
         self._dispatch.close()
@@ -430,81 +437,85 @@ class PersistentTargetService:
         self._state_owner.close()
 
     def prune_terminal_state(self, *, now: float | None = None) -> dict[str, int]:
-        """Remove expired terminal request/status pairs while preserving retryable work."""
+        """Remove expired terminal jobs; one job owns each state critical section."""
+        observed = time.time() if now is None else now
+        totals = {"jobs": 0, "bytes": 0}
+        for path in self.state_root.glob("*.status.json"):
+            removed = self._prune_terminal_path(path, observed)
+            for key in totals:
+                totals[key] += removed[key]
+        return totals
 
-        cutoff = (time.time() if now is None else now) - self.terminal_state_retention_seconds
-        removed_jobs = 0
-        removed_bytes = 0
+    def _prune_terminal_path(self, status_path: Path, now: float) -> dict[str, int]:
+        cutoff = now - self.terminal_state_retention_seconds
+        removed_jobs = removed_bytes = 0
         with self._lock:
-            for status_path in self.state_root.glob("*.status.json"):
-                if status_path.is_symlink():
+            if status_path.is_symlink():
+                raise ValueError("target state paths must not be symlinks")
+            job_id = status_path.name.removesuffix(".status.json")
+            dispatch = getattr(self, "_dispatch", None)
+            if dispatch is not None and job_id in dispatch.active_keys:
+                return {"jobs": 0, "bytes": 0}
+            try:
+                stat = status_path.stat()
+            except FileNotFoundError:
+                return {"jobs": 0, "bytes": 0}
+            if stat.st_mtime > cutoff:
+                return {"jobs": 0, "bytes": 0}
+            status = TargetJobStatus.model_validate_json(status_path.read_text(encoding="utf-8"))
+            if status.state not in _TERMINAL_STATES:
+                return {"jobs": 0, "bytes": 0}
+            if status.protocol == EFFECT_TARGET_PROTOCOL and status.state == "succeeded":
+                return {"jobs": 0, "bytes": 0}
+            completion_path = TargetCompletionCheckpoint.manifest_path(self.state_root, job_id)
+            if status.state != "succeeded" and (
+                completion_path.exists()
+                or TargetOutputCheckpoint.has_job_records(self.state_root, job_id)
+            ):
+                return {"jobs": 0, "bytes": 0}
+            accepted_path = self._accepted_path(job_id)
+            removed_bytes += stat.st_size
+            if accepted_path.exists():
+                if accepted_path.is_symlink():
                     raise ValueError("target state paths must not be symlinks")
-                job_id = status_path.name.removesuffix(".status.json")
-                dispatch = getattr(self, "_dispatch", None)
-                if dispatch is not None and job_id in dispatch.active_keys:
-                    continue
-                try:
-                    stat = status_path.stat()
-                except FileNotFoundError:
-                    continue
-                if stat.st_mtime > cutoff:
-                    continue
-                status = TargetJobStatus.model_validate_json(
-                    status_path.read_text(encoding="utf-8")
-                )
-                if status.state not in _TERMINAL_STATES:
-                    continue
-                if status.protocol == EFFECT_TARGET_PROTOCOL and status.state == "succeeded":
-                    continue
-                completion_path = TargetCompletionCheckpoint.manifest_path(self.state_root, job_id)
-                if status.state != "succeeded" and (
-                    completion_path.exists()
-                    or TargetOutputCheckpoint.has_job_records(self.state_root, job_id)
+                removed_bytes += accepted_path.stat().st_size
+            if completion_path.exists():
+                if completion_path.is_symlink():
+                    raise ValueError("target checkpoint paths must not be symlinks")
+                for checkpoint_path in chain(
+                    (completion_path,), self.state_root.glob(f"{job_id}.execution-*.bin")
                 ):
-                    continue
-                accepted_path = self._accepted_path(job_id)
-                removed_bytes += stat.st_size
-                if accepted_path.exists():
-                    if accepted_path.is_symlink():
-                        raise ValueError("target state paths must not be symlinks")
-                    removed_bytes += accepted_path.stat().st_size
-                if completion_path.exists():
-                    if completion_path.is_symlink():
+                    if checkpoint_path.is_symlink():
                         raise ValueError("target checkpoint paths must not be symlinks")
-                    for checkpoint_path in chain(
-                        (completion_path,), self.state_root.glob(f"{job_id}.execution-*.bin")
-                    ):
-                        if checkpoint_path.is_symlink():
-                            raise ValueError("target checkpoint paths must not be symlinks")
-                        removed_bytes += checkpoint_path.stat().st_size
-                        checkpoint_path.unlink()
-                for checkpoint_path in self.state_root.glob(f"{job_id}.step-*.bin"):
-                    if checkpoint_path.is_symlink() or not checkpoint_path.is_file():
-                        raise ValueError("target step checkpoint must be a regular file")
                     removed_bytes += checkpoint_path.stat().st_size
                     checkpoint_path.unlink()
-                for suffix in ("outputs", "output-members"):
-                    directory = self.state_root / f"{job_id}.{suffix}"
-                    if directory.is_symlink():
-                        raise ValueError("target output checkpoint directory must not be a symlink")
-                    if not directory.exists():
-                        continue
-                    with os.scandir(directory) as checkpoints:
-                        for entry in checkpoints:
-                            if not entry.is_file(follow_symlinks=False):
-                                raise ValueError("target output checkpoint must be a regular file")
-                            removed_bytes += entry.stat(follow_symlinks=False).st_size
-                            os.unlink(entry.path)
-                    directory.rmdir()
-                status_path.unlink(missing_ok=True)
-                accepted_path.unlink(missing_ok=True)
-                cancellation_path = self._cancellation_path(job_id)
-                if cancellation_path.exists():
-                    if cancellation_path.is_symlink():
-                        raise ValueError("target cancellation path must not be a symlink")
-                    removed_bytes += cancellation_path.stat().st_size
-                    cancellation_path.unlink()
-                removed_jobs += 1
+            for checkpoint_path in self.state_root.glob(f"{job_id}.step-*.bin"):
+                if checkpoint_path.is_symlink() or not checkpoint_path.is_file():
+                    raise ValueError("target step checkpoint must be a regular file")
+                removed_bytes += checkpoint_path.stat().st_size
+                checkpoint_path.unlink()
+            for suffix in ("outputs", "output-members"):
+                directory = self.state_root / f"{job_id}.{suffix}"
+                if directory.is_symlink():
+                    raise ValueError("target output checkpoint directory must not be a symlink")
+                if not directory.exists():
+                    continue
+                with os.scandir(directory) as checkpoints:
+                    for entry in checkpoints:
+                        if not entry.is_file(follow_symlinks=False):
+                            raise ValueError("target output checkpoint must be a regular file")
+                        removed_bytes += entry.stat(follow_symlinks=False).st_size
+                        os.unlink(entry.path)
+                directory.rmdir()
+            status_path.unlink(missing_ok=True)
+            accepted_path.unlink(missing_ok=True)
+            cancellation_path = self._cancellation_path(job_id)
+            if cancellation_path.exists():
+                if cancellation_path.is_symlink():
+                    raise ValueError("target cancellation path must not be a symlink")
+                removed_bytes += cancellation_path.stat().st_size
+                cancellation_path.unlink()
+            removed_jobs += 1
             if removed_jobs:
                 directory_descriptor = os.open(
                     self.state_root,
@@ -674,6 +685,7 @@ class PersistentTargetService:
             self._cancel.pop(job_id, None)
             self._operator_canceled.discard(job_id)
             self._shutdown_interrupted.discard(job_id)
+        self._retention.wake()
 
     def _run(
         self,

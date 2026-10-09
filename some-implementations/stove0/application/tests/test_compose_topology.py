@@ -139,6 +139,7 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
         "ffprobe-observer-state",
         "riverhog-provenance-observer-state",
         "filename-prefix-sidecar-observer-state",
+        "a-stove0-nvenc-av1-opus-execution-lease",
         "a-stove0-nvenc-av1-opus-target-state",
         "a-stove0-opus-target-state",
         "review0-state",
@@ -335,3 +336,15 @@ def test_supplied_topology_connects_bounded_operational_state_retention() -> Non
             services[name]["environment"]["STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS"]
             == "${STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:-2592000}"
         )
+
+
+def test_nvenc_execution_consumers_share_a_writable_cooperative_lease_mount() -> None:
+    services = yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))["services"]
+    target = services["a-stove0-nvenc-av1-opus-target"]
+    assert target["environment"]["A_STOVE0_NVENC_AV1_OPUS_TARGET_EXECUTION_LEASE_FILE"] == (
+        "${A_STOVE0_NVENC_AV1_OPUS_TARGET_EXECUTION_LEASE_FILE:-"
+        "/run/stove0-execution-lease/exclusive.lock}"
+    )
+    assert (
+        "a-stove0-nvenc-av1-opus-execution-lease:/run/stove0-execution-lease" in target["volumes"]
+    )

@@ -22,6 +22,7 @@ from http_api_contracts.metadata_binding import read_control_body
 from http_api_contracts.metadata_staging import MetadataStagingError
 from riverhog_canonical_json import canonical_json_bytes
 from stove0_extension_support import subprocess
+from stove0_extension_support.file_admission import FileExecutionAdmission
 from stove0_target_support import (
     TARGET_HTTP_OPERATIONS,
     TargetHttpBinding,
@@ -202,28 +203,41 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--host", default=os.getenv(f"{prefix}_HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.getenv(f"{prefix}_PORT", "8080")))
+    parser.add_argument(
+        "--execution-lease-file",
+        type=Path,
+        default=os.getenv(f"{prefix}_EXECUTION_LEASE_FILE") or None,
+        help="Try an exclusive cooperative lock on a deployment-provided local file.",
+    )
     return parser
 
 
 def target_main(argv: Sequence[str] | None = None) -> int:
     prefix = "A_STOVE0_NVENC_AV1_OPUS_TARGET"
     args = _parser().parse_args(argv)
-    target = NvencAv1OpusTargetService(
-        state_root=Path(
-            os.getenv(f"{prefix}_STATE_ROOT", "/var/lib/a-stove0-nvenc-av1-opus-target")
-        ),
-        workspace_root=Path(
-            os.getenv(f"{prefix}_WORKSPACE", "/run/a-stove0-nvenc-av1-opus-target")
-        ),
-        ffmpeg=os.getenv("STOVE0_FFMPEG_BIN", "ffmpeg"),
-        source_revision=os.getenv(f"{prefix}_SOURCE_REVISION", "unknown"),
-        image_id=_image_id(prefix),
-        terminal_state_retention_seconds=terminal_state_retention_seconds(),
+    resource = (
+        FileExecutionAdmission(args.execution_lease_file)
+        if args.execution_lease_file is not None
+        else contextlib.nullcontext(None)
     )
-    token = _secret(prefix)
-    with contextlib.suppress(KeyError):
-        os.environ.pop(f"{prefix}_TOKEN")
-    uvicorn.run(create_target_app(token=token, target=target), host=args.host, port=args.port)
+    with resource as admission:
+        target = NvencAv1OpusTargetService(
+            state_root=Path(
+                os.getenv(f"{prefix}_STATE_ROOT", "/var/lib/a-stove0-nvenc-av1-opus-target")
+            ),
+            workspace_root=Path(
+                os.getenv(f"{prefix}_WORKSPACE", "/run/a-stove0-nvenc-av1-opus-target")
+            ),
+            ffmpeg=os.getenv("STOVE0_FFMPEG_BIN", "ffmpeg"),
+            source_revision=os.getenv(f"{prefix}_SOURCE_REVISION", "unknown"),
+            image_id=_image_id(prefix),
+            terminal_state_retention_seconds=terminal_state_retention_seconds(),
+            execution_admission=admission,
+        )
+        token = _secret(prefix)
+        with contextlib.suppress(KeyError):
+            os.environ.pop(f"{prefix}_TOKEN")
+        uvicorn.run(create_target_app(token=token, target=target), host=args.host, port=args.port)
     return 0
 
 
