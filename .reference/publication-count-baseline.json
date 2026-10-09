@@ -1,0 +1,99 @@
+{
+  "format": "riverhog-publication-count-reference/v1",
+  "head_sha": "515257eac3d6a2ac8bb17016fa0e052e15bb560f",
+  "publication": [
+    {
+      "audio_files_equivalent": 16,
+      "case": "open-pack",
+      "early_receipts": 0,
+      "elapsed_seconds": 0.02076679000003878,
+      "output_members": 33,
+      "receipt_get_calls": 0,
+      "registered_member_rows": 595,
+      "registration_calls": 85
+    },
+    {
+      "audio_files_equivalent": 32,
+      "case": "open-pack",
+      "early_receipts": 0,
+      "elapsed_seconds": 0.06702936900001077,
+      "output_members": 65,
+      "receipt_get_calls": 0,
+      "registered_member_rows": 2211,
+      "registration_calls": 231
+    },
+    {
+      "audio_files_equivalent": 64,
+      "case": "open-pack",
+      "early_receipts": 0,
+      "elapsed_seconds": 0.14554292200000418,
+      "output_members": 129,
+      "receipt_get_calls": 0,
+      "registered_member_rows": 8515,
+      "registration_calls": 715
+    },
+    {
+      "audio_files_equivalent": 128,
+      "case": "open-pack",
+      "early_receipts": 0,
+      "elapsed_seconds": 0.3610948539999299,
+      "output_members": 257,
+      "receipt_get_calls": 0,
+      "registered_member_rows": 33411,
+      "registration_calls": 2451
+    },
+    {
+      "audio_files_equivalent": 16,
+      "case": "sealed-history-pending",
+      "early_receipts": 0,
+      "elapsed_seconds": 0.033633893999990505,
+      "output_members": 33,
+      "receipt_get_calls": 0,
+      "registered_member_rows": 1155,
+      "registration_calls": 135
+    },
+    {
+      "audio_files_equivalent": 32,
+      "case": "sealed-history-pending",
+      "early_receipts": 0,
+      "elapsed_seconds": 0.07999693199997182,
+      "output_members": 65,
+      "receipt_get_calls": 0,
+      "registered_member_rows": 4355,
+      "registration_calls": 395
+    },
+    {
+      "audio_files_equivalent": 64,
+      "case": "sealed-history-pending",
+      "early_receipts": 0,
+      "elapsed_seconds": 0.25382311700002447,
+      "output_members": 129,
+      "receipt_get_calls": 0,
+      "registered_member_rows": 16899,
+      "registration_calls": 1299
+    },
+    {
+      "audio_files_equivalent": 128,
+      "case": "sealed-history-pending",
+      "early_receipts": 0,
+      "elapsed_seconds": 0.7881378599998925,
+      "output_members": 257,
+      "receipt_get_calls": 0,
+      "registered_member_rows": 66563,
+      "registration_calls": 4643
+    }
+  ],
+  "python": "3.13.5",
+  "repeated_receiver_prefix": {
+    "prefix_streams": 128,
+    "requests": 128,
+    "status_reads": 128,
+    "unselected_tail_chunks_read": 128
+  },
+  "runtime_blob_ids": {
+    "packages/riverhog-client/src/riverhog_client/processing/history_transfer.py": "ab06c069dadab0afc948afd8b0574d48acffd2e9",
+    "packages/riverhog-client/src/riverhog_client/processing/writer.py": "06259f2b2c6bb5f49590b5bf211ac86770ea4044",
+    "packages/riverhog-client/src/riverhog_client/producer.py": "61eabbe994663af5aae133aa9f4a914dfa209cf0"
+  },
+  "scope": "native implementation with deterministic API doubles; no Docker/network/codec"
+}

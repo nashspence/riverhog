@@ -254,6 +254,10 @@ class IncrementalDerivedCollectionWriter:
             },
         )
 
+        # Reuse only authenticated destination-prefix comparisons. Each append
+        # still selects and verifies its own exact, claim-scoped source history.
+        self._history_transfer = CanonicalHistoryTransfer(self.api, self.producer.collection_id)
+
     def heartbeat(self) -> None:
         self.producer.heartbeat()
 
@@ -271,10 +275,11 @@ class IncrementalDerivedCollectionWriter:
     ) -> tuple[ProducerArtifactCustody, ...]:
         if source.artifact_id != identity.artifact_id:
             raise ValueError("incremental transform source artifact differs from its identity")
-        transfer = CanonicalHistoryTransfer(self.api, self.producer.collection_id)
         # This bounded per-output declaration is provided by the selected target;
         # neither workspace names nor provenance lookup choose its causal inputs.
-        imports = tuple(transfer.accept(value, extent=history_extent) for value in source_histories)
+        imports = tuple(
+            self._history_transfer.accept(value, extent=history_extent) for value in source_histories
+        )
         if not imports:
             raise ValueError("a derived output requires explicitly selected input history")
         source = replace(
