@@ -53,6 +53,7 @@ ReadProgress = Callable[[str, int, int], None]
 RangeReader = Callable[[int, int], bytes]
 _STREAM_VERIFY_BLOCK_BYTES = 8 * 1024 * 1024
 COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES = 16
+_CUSTODY_POLL_BATCH_FILES = 16
 
 
 @dataclass(frozen=True, slots=True)
@@ -329,6 +330,10 @@ class IncrementalCollectionProducer:
             completion_requirement=completion_requirement,
         )
         self._sources: dict[ArtifactId, _Source] = {}
+        # Only payload-sealed (or not yet classified) members can gain custody
+        # without another upload. Keep a fair, bounded receipt polling frontier.
+        self._custody_candidates: OrderedDict[ArtifactId, None] = OrderedDict()
+        self._unsealed_sources: OrderedDict[ArtifactId, None] = OrderedDict()
         self._pending_source_resolver: Callable[[ArtifactId], ProducerInput] | None = None
         self._restored_sources: OrderedDict[ArtifactId, _Source] = OrderedDict()
         self._source_lock = threading.RLock()
@@ -416,6 +421,8 @@ class IncrementalCollectionProducer:
         for source in self._sources.values():
             source.close()
         self._sources.clear()
+        self._custody_candidates.clear()
+        self._unsealed_sources.clear()
         for source in self._restored_sources.values():
             source.close()
         self._restored_sources.clear()
@@ -558,6 +565,7 @@ class IncrementalCollectionProducer:
                     f"resumed producer artifact identity changed: {source.artifact_id}"
                 )
             self._sources[source.artifact_id] = source
+            self._unsealed_sources.setdefault(source.artifact_id, None)
         registration = [_source_registration(source) for source in candidates]
         constraints = self.constraints
         if constraints is None:
@@ -686,7 +694,9 @@ class IncrementalCollectionProducer:
             window=configured_upload_window(concurrency=concurrency),
             client_factory=self.api.spawn,
         )
-        receipts = self._reconcile_pending_sources() if reconcile else ()
+        receipts = (
+            (*self._reconcile_pending_sources(), *self.reconcile_custody()) if reconcile else ()
+        )
         self._needs_upload_scan = False
         return receipts
 
@@ -695,7 +705,13 @@ class IncrementalCollectionProducer:
         constraints = self.constraints
         if constraints is None:
             raise RuntimeError("incremental collection producer has no registration constraints")
-        pending = list(self._sources.values())
+        # Previously sealed members only need read-only receipt polling. Do not
+        # re-register their growing prefix whenever a later pack/raw unit seals.
+        pending = [
+            self._sources[artifact_id]
+            for artifact_id in self._unsealed_sources
+            if artifact_id in self._sources
+        ]
         for start in range(0, len(pending), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES):
             source_batch = pending[start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES]
             payload = self.api.register_collection_upload_session_artifacts(
@@ -710,9 +726,31 @@ class IncrementalCollectionProducer:
         return tuple(receipts)
 
     def reconcile_custody(self) -> tuple[ProducerArtifactCustody, ...]:
-        """Poll exact pending identities after accepting their required history."""
+        """Poll a bounded, fair batch of members that can gain full custody.
+
+        An unsealed open-pack member cannot gain custody just because another
+        output's history was accepted. Upload reconciliation refreshes that
+        frontier when payload work completes. A seal is never a safe-release
+        receipt: every returned receipt still passes exact identity, history
+        and completion-requirement validation.
+        """
         self._require_heartbeat()
-        return self._reconcile_pending_sources()
+        if self.constraints is None:
+            raise RuntimeError("incremental collection producer has no registration constraints")
+        receipts: list[ProducerArtifactCustody] = []
+        for _ in range(min(len(self._custody_candidates), _CUSTODY_POLL_BATCH_FILES)):
+            artifact_id = next(iter(self._custody_candidates))
+            source = self._sources.get(artifact_id)
+            if source is None:
+                self._custody_candidates.pop(artifact_id)
+                continue
+            # Leave the member queued if the read or receipt validation fails.
+            # Reads do not re-register metadata or acquire an upload write lock.
+            row = self.api.get_collection_upload_session_artifact(self.collection_id, artifact_id)
+            receipts.extend(self._accept_registered_rows(iter((row,)), expected=(source,)))
+            if artifact_id in self._custody_candidates:
+                self._custody_candidates.move_to_end(artifact_id)
+        return tuple(receipts)
 
     def resume_artifact_custody(
         self, identity: ProducerArtifactIdentity
@@ -785,14 +823,25 @@ class IncrementalCollectionProducer:
                         receipt=receipt,
                     )
                 )
+                self._custody_candidates.pop(source.artifact_id, None)
+                self._unsealed_sources.pop(source.artifact_id, None)
                 owned = self._sources.pop(source.artifact_id, None)
                 if owned is not None:
                     owned.close()
-            elif row.get("payload_sealed") is True:
+            elif source.artifact_id in self._sources:
+                if row.get("payload_sealed") is False:
+                    self._custody_candidates.pop(source.artifact_id, None)
+                    self._unsealed_sources.setdefault(source.artifact_id, None)
+                else:
+                    # Missing seal information is not evidence of an open
+                    # pack. Conservatively keep the member eligible to poll.
+                    self._custody_candidates.setdefault(source.artifact_id, None)
+            if receipt_value is None and row.get("payload_sealed") is True:
                 # Only the internal range reader can be released here. The
                 # adapter retains its source until the full custody receipt.
                 owned = self._sources.get(source.artifact_id)
                 if owned is not None:
+                    self._unsealed_sources.pop(source.artifact_id, None)
                     owned.close()
                     self._sources[source.artifact_id] = replace(
                         owned, reader=None, content=None, raw_digest_spool=None, observation=None

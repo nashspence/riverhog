@@ -757,6 +757,11 @@ class UploadApi:
             "artifacts": [dict(item) for item in self.registered],
         }
 
+    def get_collection_upload_session_artifact(
+        self, _collection_id: int, artifact_id: str
+    ) -> dict[str, Any]:
+        return next(dict(item) for item in self.registered if item["artifact_id"] == artifact_id)
+
     def heartbeat_collection_upload_session(self, _collection_id: int) -> dict[str, Any]:
         return {"state": "open"}
 

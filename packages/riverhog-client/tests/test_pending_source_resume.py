@@ -15,6 +15,8 @@ from riverhog_protocol import ArtifactId
 def _producer(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     producer = object.__new__(owner.IncrementalCollectionProducer)
     producer._sources = {}
+    producer._custody_candidates = OrderedDict()
+    producer._unsealed_sources = OrderedDict()
     producer._restored_sources = OrderedDict()
     producer._source_lock = threading.RLock()
     producer._pending_source_resolver = None

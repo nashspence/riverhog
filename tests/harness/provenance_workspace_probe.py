@@ -12,6 +12,16 @@ from tempfile import gettempdir
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.scratch_workspace import process_workspace, scratch_directory
 
+_HOLD_WORKSPACE = """
+import sys
+from pathlib import Path
+from riverhog_core.scratch_workspace import process_workspace
+
+with process_workspace(Path(sys.argv[1])) as owner:
+    print(owner, flush=True)
+    sys.stdin.readline()
+"""
+
 
 def check() -> dict[str, object]:
     # This fixture exceeds the separate 64 MiB /tmp mount; it is not an
@@ -46,14 +56,17 @@ def check() -> dict[str, object]:
             finally:
                 connection.close()
             child = subprocess.Popen(
-                [sys.executable, __file__, "hold", str(base)],
+                [sys.executable, "-c", _HOLD_WORKSPACE, str(base)],
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 text=True,
             )
             try:
                 assert child.stdout is not None
-                abandoned = Path(child.stdout.readline().strip())
+                receipt = child.stdout.readline().strip()
+                if not receipt:
+                    raise RuntimeError("scratch child exited without its workspace receipt")
+                abandoned = Path(receipt)
                 database.replace(abandoned / "validation.sqlite3")
                 keep = live_owner / "keep"
                 keep.write_bytes(b"live operation")
@@ -83,9 +96,4 @@ def check() -> dict[str, object]:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "hold":
-        with process_workspace(Path(sys.argv[2])) as owner:
-            print(owner, flush=True)
-            sys.stdin.readline()
-    else:
-        print(canonical_json_bytes(check()).decode("utf-8"))
+    print(canonical_json_bytes(check()).decode("utf-8"))

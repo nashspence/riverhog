@@ -185,6 +185,9 @@ def _retained_fixture(tmp_path):
             resources={"effect": OperationResource(contract=_operation("example.effect/v1"))}
         ),
     )
+    from stove0_core.recipe_definitions import _verified_documents
+
+    _verified_documents.cache_clear()
     state = SqlAlchemyStateStore(f"sqlite:///{tmp_path / 'cached.db'}")
     state.recipe_definitions.retain(recipe, closure)
     return state, recipe, closure
@@ -233,7 +236,7 @@ def test_valid_definition_larger_than_cache_budget_remains_usable(tmp_path, monk
 
     state, recipe, closure = _retained_fixture(tmp_path)
     store = state.recipe_definitions
-    store._cache_bytes = 1
+    monkeypatch.setattr(definitions, "_VERIFIED_DOCUMENT_BYTES", 1)
     verify, calls = definitions.verify_compiled_recipe, []
 
     def counted(*args):
@@ -243,6 +246,6 @@ def test_valid_definition_larger_than_cache_budget_remains_usable(tmp_path, monk
     monkeypatch.setattr(definitions, "verify_compiled_recipe", counted)
     for _ in range(3):
         assert store.load(recipe.ref) == (recipe, closure)
-    assert len(calls) == 3 and not store._validated
-    assert store._validated_bytes == 0
+    assert len(calls) == 3
+    assert definitions._verified_documents.cache_info().currsize == 0
     state.engine.dispose()

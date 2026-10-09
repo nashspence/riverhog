@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from collections import OrderedDict
-from threading import Lock
+from copy import deepcopy
+from functools import lru_cache
 
 from sqlalchemy import Column, ForeignKey, Index, MetaData, String, Table, Text, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -15,6 +15,29 @@ from stove0_recipe_config.compiler import verify_compiled_recipe
 from stove0_recipe_config.dependencies import OperationResource, RecipeDependencyClosure
 from stove0_target_protocol import OperationContract
 from time_formats import utc_timestamp_now
+
+# Cache only bounded static documents, not database presence, runtime bindings,
+# permission decisions, or mutable caller-owned models. Larger lawful recipes
+# still validate normally; this is a cache admission policy, not an extent cap.
+_VERIFIED_DOCUMENT_BYTES = 256 * 1024
+
+
+def _validate_documents(
+    recipe_json: str, closure_json: str
+) -> tuple[CompiledRecipe, RecipeDependencyClosure]:
+    recipe = CompiledRecipe.model_validate_json(recipe_json)
+    closure = RecipeDependencyClosure.model_validate_json(closure_json)
+    verify_compiled_recipe(recipe, closure)
+    return recipe, closure
+
+
+@lru_cache(maxsize=8)
+def _verified_documents(
+    recipe_json: str, closure_json: str
+) -> tuple[CompiledRecipe, RecipeDependencyClosure]:
+    # The full database bytes are the key: rebinding a row under its old digest
+    # cannot reuse verification of different bytes. Exceptions are not cached.
+    return _validate_documents(recipe_json, closure_json)
 
 
 def declare_recipe_definitions(metadata: MetaData) -> Table:
@@ -97,13 +120,6 @@ class RetainedRecipeStore:
     ) -> None:
         self.engine, self.table, self.operations = engine, table, operations
         self.dependencies = dependencies
-        self._validated: OrderedDict[
-            tuple[str, str], tuple[CompiledRecipe, RecipeDependencyClosure]
-        ] = OrderedDict()
-        self._validated_lock = Lock()
-        self._validated_bytes = 0
-        self._cache_bytes = 8 * 1024 * 1024
-        self._cache_entries = 32
 
     def retain_tree(self, recipe: CompiledRecipe, closure: RecipeDependencyClosure) -> None:
         exact = exact_closure(recipe, closure)
@@ -207,41 +223,13 @@ class RetainedRecipeStore:
             )
         if row is None:
             return None
-        # Query the current row every time. Exact stored preimages qualify this
-        # disposable validation cache; a changed row cannot borrow old authority.
-        key = (row["recipe_json"], row["closure_json"])
-        with self._validated_lock:
-            retained = self._validated.get(key)
-            if retained is not None:
-                self._validated.move_to_end(key)
-        if retained is None:
-            recipe = CompiledRecipe.model_validate_json(key[0])
-            closure = RecipeDependencyClosure.model_validate_json(key[1])
-            if recipe.ref != reference:
-                raise ValueError("retained recipe differs from the queued work's exact identity")
-            verify_compiled_recipe(recipe, closure)
-            retained = (recipe, closure)
-            size = sum(len(document.encode("utf-8")) for document in key)
-            # A larger valid definition is validated normally, never rejected.
-            # Compute outside the lock so independent owners remain responsive.
-            if size <= self._cache_bytes and self._cache_entries > 0:
-                with self._validated_lock:
-                    if key not in self._validated:
-                        self._validated[key] = retained
-                        self._validated_bytes += size
-                    while (
-                        self._validated_bytes > self._cache_bytes
-                        or len(self._validated) > self._cache_entries
-                    ):
-                        old_key, _ = self._validated.popitem(last=False)
-                        self._validated_bytes -= sum(
-                            len(document.encode("utf-8")) for document in old_key
-                        )
-            else:
-                return retained
-        recipe, closure = retained
+        documents = row["recipe_json"], row["closure_json"]
+        if sum(len(document.encode("utf-8")) for document in documents) <= _VERIFIED_DOCUMENT_BYTES:
+            # Frozen Pydantic models can contain mutable nested JSON. Never
+            # expose the private verified value to a planner or caller.
+            recipe, closure = deepcopy(_verified_documents(*documents))
+        else:
+            recipe, closure = _validate_documents(*documents)
         if recipe.ref != reference:
             raise ValueError("retained recipe differs from the queued work's exact identity")
-        # Frozen documents contain JSON mappings. Do not expose cached mappings
-        # to callers that might accidentally mutate their own returned copy.
-        return recipe.model_copy(deep=True), closure.model_copy(deep=True)
+        return recipe, closure

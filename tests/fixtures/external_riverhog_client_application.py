@@ -426,6 +426,11 @@ class UploadApi(ReadApi):
             "volumes": [],
         }
 
+    def get_collection_upload_session_artifact(
+        self, _collection_id: int, artifact_id: ArtifactId
+    ) -> dict[str, Any]:
+        return {**self.registered[str(artifact_id)], "custody_receipt": None}
+
     def upload_collection_upload_session_provenance_journal(
         self,
         _collection_id: int,

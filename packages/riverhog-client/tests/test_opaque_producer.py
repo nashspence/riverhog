@@ -45,6 +45,15 @@ class _Api:
         self.registered.extend(artifacts)
         return {"artifacts": [{**item, "custody_receipt": None} for item in artifacts]}
 
+    def get_collection_upload_session_artifact(
+        self, collection_id: int, artifact_id: ArtifactId
+    ) -> dict[str, object]:
+        return next(
+            {**item, "custody_receipt": None}
+            for item in self.registered
+            if item["artifact_id"] == artifact_id
+        )
+
     def upload_collection_upload_session_provenance_journal(
         self, collection_id: int, journal_id: str, *, content: object, byte_count: int, sha256: str
     ) -> None:
