@@ -147,6 +147,7 @@ services:
       <<: *riverhog-environment
     command: ["state", "upgrade"]
     volumes:
+      - scratch:/scratch:rw
       - ${RIVERHOG_CONFIG_HOST_PATH:-../qualification/fixtures/riverhog/config.yaml}:/etc/riverhog/config.yaml:ro
       - ${RIVERHOG_DATABASE_URL_HOST_PATH:-../tests/harness/riverhog-database-url}:/run/secrets/riverhog-database-url:ro
 
@@ -168,6 +169,7 @@ services:
         condition: service_completed_successfully
     environment: *riverhog-environment
     volumes:
+      - scratch:/scratch:rw
       - ${RIVERHOG_CONFIG_HOST_PATH:-../qualification/fixtures/riverhog/config.yaml}:/etc/riverhog/config.yaml:ro
       - ${RIVERHOG_DATABASE_URL_HOST_PATH:-../tests/harness/riverhog-database-url}:/run/secrets/riverhog-database-url:ro
       - ${RIVERHOG_BOOTSTRAP_TOKEN_HOST_PATH:-../tests/harness/riverhog-bootstrap-token}:/run/secrets/riverhog-bootstrap-token:ro
@@ -214,6 +216,7 @@ services:
         read_only: true
 
 volumes:
+  scratch:
   filesystem-cache-data:
   garage-data:
   postgres-data:

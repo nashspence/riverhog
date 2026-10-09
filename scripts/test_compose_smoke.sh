@@ -226,6 +226,7 @@ ci_phase riverhog-lifecycle
 compose up --detach --wait app
 compose exec -T app sh -c \
   'test "$(id -u)" = 65532 && test "$(id -g)" = 65532 && test -w /tmp && test ! -w /usr/share/doc/riverhog'
+compose exec -T app python - < "${ROOT_DIR}/tests/harness/provenance_workspace_probe.py"
 
 bootstrap_token="$(cat "${ROOT_DIR}/tests/harness/riverhog-bootstrap-token")"
 create_code="import json, os, urllib.request

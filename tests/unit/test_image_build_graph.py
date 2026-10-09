@@ -581,6 +581,23 @@ def test_production_images_use_the_common_unprivileged_runtime_identity() -> Non
         ]
 
 
+def test_riverhog_validation_workspace_is_private_disk_scratch() -> None:
+    dockerfile = (REPO_ROOT / IMAGE_CONTRACTS["riverhog"]["dockerfile"]).read_text(encoding="utf-8")
+    assert "TMPDIR=/scratch" in dockerfile
+    assert "install -d -o 65532 -g 65532 -m 0700 /scratch" in dockerfile
+    compose = yaml.safe_load((REPO_ROOT / "riverhog/compose.yaml").read_text(encoding="utf-8"))
+    assert compose["volumes"]["scratch"] is None
+    for name in ("state", "app"):
+        service = compose["services"][name]
+        assert "scratch:/scratch:rw" in service["volumes"]
+        assert all(not mount.startswith("/scratch:") for mount in service["tmpfs"])
+    smoke = (REPO_ROOT / "scripts/test_compose_smoke.sh").read_text(encoding="utf-8")
+    assert (
+        'compose exec -T app python - < "${ROOT_DIR}/tests/harness/provenance_workspace_probe.py"'
+        in smoke
+    )
+
+
 def test_container_python_ownership_matches_the_supported_runtime_minor() -> None:
     mise_config = tomllib.loads((REPO_ROOT / "mise.toml").read_text(encoding="utf-8"))
     supported_minor = ".".join(mise_config["tools"]["python"].split(".")[:2])

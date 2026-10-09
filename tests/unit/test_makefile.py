@@ -297,9 +297,13 @@ def test_compose_mounts_document_and_separate_secret_files() -> None:
         bind_targets = {entry["target"] for entry in mounts if isinstance(entry, dict)}
         assert required_targets <= short_targets | bind_targets
     state_mounts = compose["services"]["state"]["volumes"]
-    assert {entry.split(":")[-2] for entry in state_mounts} == {
-        "/etc/riverhog/config.yaml",
-        "/run/secrets/riverhog-database-url",
+    state_modes = {
+        target: mode for _, target, mode in (entry.rsplit(":", 2) for entry in state_mounts)
+    }
+    assert state_modes == {
+        "/etc/riverhog/config.yaml": "ro",
+        "/run/secrets/riverhog-database-url": "ro",
+        "/scratch": "rw",
     }
 
 
