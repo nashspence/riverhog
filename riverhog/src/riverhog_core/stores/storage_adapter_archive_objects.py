@@ -30,6 +30,7 @@ from riverhog_storage_adapter_protocol import (
 from riverhog_core.ports.archive_objects import (
     ArchiveObjectIdentityConflict,
     CompletedObjectReceipt,
+    ImmutableObjectContent,
     ImmutableObjectReceipt,
     ResumableWriteConstraints,
     WriteCompletionPrecondition,
@@ -196,13 +197,25 @@ class StorageAdapterImmutableArchiveObjectStore:
         self,
         *,
         object_path: str,
-        content: bytes,
+        content: ImmutableObjectContent,
         content_type: str,
         required_identity_assertions: dict[str, str],
         placement_policy: ObjectPlacementPolicy,
     ) -> ImmutableObjectReceipt:
         if not object_path or not content or not content_type:
             raise ValueError("immutable archive object identity and content are required")
+        if callable(content):
+            existing = self._find_plaintext_receipt(
+                object_path=object_path,
+                content_type=content_type,
+                required_identity_assertions=required_identity_assertions,
+                placement_policy=placement_policy,
+            )
+            if existing is not None:
+                return existing
+            content = content()
+            if not content:
+                raise ValueError("immutable archive object content must not be empty")
         try:
             receipt = self._adapter.put_small_object(
                 SmallObjectWriteRequest(
@@ -218,31 +231,15 @@ class StorageAdapterImmutableArchiveObjectStore:
             )
         except StorageAdapterRejection as exc:
             if exc.code == "identity_conflict":
-                # Age ciphertext is randomized. The immutable archive identity is
-                # the exact plaintext assertions, type and placement; replay the
-                # original stored receipt rather than replacing its ciphertext.
-                existing = self._adapter.head_object(
-                    ObjectHeadRequest(
-                        object=ObjectLocator(object_path=object_path),
-                        expected_placement_policy=placement_policy,
-                    )
+                # A concurrent create can finish after the initial lookup.
+                existing = self._find_plaintext_receipt(
+                    object_path=object_path,
+                    content_type=content_type,
+                    required_identity_assertions=required_identity_assertions,
+                    placement_policy=placement_policy,
                 )
-                if (
-                    existing is not None
-                    and existing.stored_sha256 is not None
-                    and existing.content_type == content_type
-                    and existing.observed_identity_assertions == required_identity_assertions
-                    and "riverhog-plaintext-bytes" in required_identity_assertions
-                    and "riverhog-plaintext-sha256" in required_identity_assertions
-                ):
-                    return ImmutableObjectReceipt(
-                        object_path=existing.object_path,
-                        revision=existing.revision,
-                        entity_token=existing.entity_token,
-                        stored_bytes=existing.stored_bytes,
-                        stored_sha256=existing.stored_sha256,
-                        completed_at=existing.completed_at,
-                    )
+                if existing is not None:
+                    return existing
             _raise_identity_conflict(exc)
             raise
         return ImmutableObjectReceipt(
@@ -252,6 +249,47 @@ class StorageAdapterImmutableArchiveObjectStore:
             stored_bytes=receipt.stored_bytes,
             stored_sha256=receipt.stored_sha256,
             completed_at=receipt.completed_at,
+        )
+
+    def _find_plaintext_receipt(
+        self,
+        *,
+        object_path: str,
+        content_type: str,
+        required_identity_assertions: dict[str, str],
+        placement_policy: ObjectPlacementPolicy,
+    ) -> ImmutableObjectReceipt | None:
+        # Randomized age ciphertext may be reused only with the same complete
+        # plaintext assertions, content type and verified placement.
+        if (
+            not {
+                "riverhog-plaintext-bytes",
+                "riverhog-plaintext-sha256",
+            }
+            <= required_identity_assertions.keys()
+        ):
+            return None
+        existing = self._adapter.head_object(
+            ObjectHeadRequest(
+                object=ObjectLocator(object_path=object_path),
+                expected_placement_policy=placement_policy,
+            )
+        )
+        if existing is None:
+            return None
+        if (
+            existing.stored_sha256 is None
+            or existing.content_type != content_type
+            or existing.observed_identity_assertions != required_identity_assertions
+        ):
+            raise ArchiveObjectIdentityConflict(object_path)
+        return ImmutableObjectReceipt(
+            object_path=existing.object_path,
+            revision=existing.revision,
+            entity_token=existing.entity_token,
+            stored_bytes=existing.stored_bytes,
+            stored_sha256=existing.stored_sha256,
+            completed_at=existing.completed_at,
         )
 
 

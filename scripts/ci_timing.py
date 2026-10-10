@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import math
 import os
 import subprocess
 import sys
@@ -98,6 +99,16 @@ def pytest_configure(config: pytest.Config) -> None:
     config.pluginmanager.register(PytestTiming(config), "riverhog-ci-timing-recorder")
 
 
+def _positive_seconds(value: str) -> float:
+    try:
+        seconds = float(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be positive finite seconds") from exc
+    if not math.isfinite(seconds) or seconds <= 0:
+        raise argparse.ArgumentTypeError("must be positive finite seconds")
+    return seconds
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -106,6 +117,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     run.add_argument("--lane", required=True)
     run.add_argument("--output", type=Path, required=True)
+    run.add_argument(
+        "--target-seconds",
+        type=_positive_seconds,
+        help="Report an under-duration target without changing the command exit status.",
+    )
     run.add_argument("argv", nargs=argparse.REMAINDER)
     phase = commands.add_parser("phase", help="Append a completed shell lifecycle phase.")
     phase.add_argument("--lane", required=True)
@@ -140,17 +156,35 @@ def main(argv: Sequence[str] | None = None) -> int:
     run_id = uuid4().hex
     env = {**os.environ, "RIVERHOG_CI_LANE": args.lane, "RIVERHOG_CI_RUN_ID": run_id}
     result = subprocess.run(command, env=env, check=False)
-    write_record(
-        args.output,
-        {
-            "format": "riverhog-ci-lane-timing/v1",
-            **identity,
-            "lane": args.lane,
-            "run_id": run_id,
-            "elapsed_seconds": time.monotonic() - started,
-            "exit_status": result.returncode,
-        },
-    )
+    elapsed = time.monotonic() - started
+    record: dict[str, object] = {
+        "format": "riverhog-ci-lane-timing/v1",
+        **identity,
+        "lane": args.lane,
+        "run_id": run_id,
+        "elapsed_seconds": elapsed,
+        "exit_status": result.returncode,
+    }
+    if args.target_seconds is not None:
+        status = (
+            "not-compared"
+            if result.returncode != 0
+            else "met"
+            if elapsed < args.target_seconds
+            else "missed"
+        )
+        record["profiling_target"] = {
+            "report_only": True,
+            "target_seconds": args.target_seconds,
+            "status": status,
+            "reason": "command-failed" if result.returncode != 0 else "completed-command",
+        }
+        print(
+            f"Profiling target {status}: {elapsed:.3f}s observed; "
+            f"under {args.target_seconds:g}s target (report only).",
+            file=sys.stderr,
+        )
+    write_record(args.output, record)
     return result.returncode
 
 

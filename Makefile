@@ -70,7 +70,7 @@ help:
 		'  make documentation-check Check coverage; --candidate requires actual prepared artifact evidence.' \
 		'  make contract-browser  Exercise the generated candidate in Chromium (run MISE_EXPERIMENTAL=1 mise bootstrap --yes, then Playwright install --only-shell chromium).' \
 		'  make contract-browser-docker Run the Chromium checks in a disposable official Playwright container.' \
-		'  make profile           Report target, observed transfer or recovery work, and measured comparison without gating.' \
+		'  make profile           Report transfer, recovery or Stove0 scale measurements against non-failing targets.' \
 		'  make provider-qualification Run the operator/provider qualification command.' \
 		'  make installation-qualification Stage and qualify independent uv-tool installs.' \
 		'  make release-check     Validate the coordinated release-unit contract.' \

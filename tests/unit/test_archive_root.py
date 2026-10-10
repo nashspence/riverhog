@@ -12,7 +12,7 @@ from riverhog_core.domain.archive import (
     StoredArchivePart,
 )
 from riverhog_core.pack_volume import iter_render_pack_upload_unit, plan_pack_volume
-from riverhog_core.ports.archive_objects import ImmutableObjectReceipt
+from riverhog_core.ports.archive_objects import ImmutableObjectContent, ImmutableObjectReceipt
 from riverhog_storage_adapter_protocol import ObjectPlacementPolicy
 
 from tests.fixtures.archive import age_state_json
@@ -33,7 +33,7 @@ class MemoryImmutableStore:
         self,
         *,
         object_path: str,
-        content: bytes,
+        content: ImmutableObjectContent,
         content_type: str,
         required_identity_assertions: dict[str, str],
         placement_policy: ObjectPlacementPolicy,
@@ -44,6 +44,7 @@ class MemoryImmutableStore:
             if existing.identity != required_identity_assertions:
                 raise RuntimeError("identity conflict")
             return existing.receipt
+        content = content() if callable(content) else content
         receipt = ImmutableObjectReceipt(
             object_path=object_path,
             revision="v1",

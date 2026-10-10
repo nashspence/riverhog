@@ -229,14 +229,9 @@ class ArchiveProvenancePublisher:
         storage_format: str,
     ) -> SealedProvenanceObject:
         plaintext_sha256 = hashlib.sha256(content).hexdigest()
-        ciphertext = encrypt_age_scrypt(
-            content,
-            self._passphrase,
-            log_n=self._scrypt_log_n,
-        )
         receipt = self._object_store.put_immutable_object(
             object_path=f"{prefix}/{relative_path}",
-            content=ciphertext,
+            content=lambda: encrypt_age_scrypt(content, self._passphrase, log_n=self._scrypt_log_n),
             content_type=f"application/vnd.{storage_format.replace('/', '.').replace('+', '.')}",
             required_identity_assertions={
                 "riverhog-format": storage_format,

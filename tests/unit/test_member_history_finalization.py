@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 import uuid
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
 from riverhog_age import decrypt_age_scrypt
 from riverhog_archive_contracts import MemberHistoryBinding, MemberHistoryRoot, RecordPage
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
@@ -23,6 +26,7 @@ from riverhog_core.catalog_models import (
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
+from riverhog_core.throughput import ArchiveThroughputTuning, ArchiveTransferResources
 from riverhog_protocol import ArtifactMemberIdentityDocument, collection_tag_set_identity
 from riverhog_provenance import BoundedSourceObserver, BytesSource, create_journal, validate_journal
 from sqlalchemy import select
@@ -31,19 +35,49 @@ from tests.unit.db_helpers import sqlite_url
 from tests.unit.test_archive_root import MemoryImmutableStore
 
 
+@pytest.mark.parametrize("lose_receipt", [False, True])
 def test_final_history_and_encrypted_structure_resume_without_changing_early_primary(
     tmp_path: Path,
+    lose_receipt: bool,
 ) -> None:
     config = RuntimeConfig.for_testing(
         database_url=sqlite_url(tmp_path / "catalog.db"),
         archive_scrypt_work_factor=1,
+        throughput_tuning=replace(ArchiveThroughputTuning(), age_derivation_concurrency=2),
     )
     factory = make_session_factory(config.database_url)
     Base.metadata.create_all(factory.kw["bind"])
-    store = MemoryImmutableStore()
+
+    class CoordinatedStore(MemoryImmutableStore):
+        barrier = threading.Barrier(2)
+        lock = threading.Lock()
+        verify_overlap = True
+        active = 0
+        peak = 0
+        lost = False
+
+        def put_immutable_object(self, **kwargs):
+            with self.lock:
+                self.active += 1
+                self.peak = max(self.peak, self.active)
+            try:
+                if self.verify_overlap:
+                    self.barrier.wait(timeout=5)
+                receipt = super().put_immutable_object(**kwargs)
+                with self.lock:
+                    if lose_receipt and not self.lost:
+                        self.lost = True
+                        raise OSError("lost completed structural receipt")
+                return receipt
+            finally:
+                with self.lock:
+                    self.active -= 1
+
+    store = CoordinatedStore()
     service = object.__new__(SqlAlchemyCollectionUploadService)
     service._session_factory = factory
     service._config = config
+    service._resources = ArchiveTransferResources.from_tuning(config.throughput_tuning)
     service._archive_stores = SimpleNamespace(
         require=lambda _name: SimpleNamespace(immutable_objects=store)
     )
@@ -186,8 +220,27 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
         assert upload is not None
         upload.provenance_closure_validated = True
         staged = {row.object_id: row.content for row in structures}
+    if lose_receipt:
+        with pytest.raises(OSError, match="lost completed structural receipt"):
+            service._finalize(1)
+        with session_scope(factory) as session:
+            upload = session.get(CollectionUploadRecord, 1)
+            assert upload is not None and upload.final_authority_json is None
+            acknowledged = [
+                row
+                for row in session.scalars(select(CollectionUploadProvenanceStructureRecord))
+                if row.receipt_json is not None
+            ]
+            assert len(acknowledged) == 1
+        assert len(store.objects) == 2
+        before_retry = {path: value.content for path, value in store.objects.items()}
+        store.verify_overlap = False
+    else:
+        before_retry = {}
     while service._publish_next_provenance_structure(1):
         pass
+    assert store.peak == 2
+    assert all(store.objects[path].content == content for path, content in before_retry.items())
     assert len(store.objects) == len(staged)
     with session_scope(factory) as session:
         for row in session.scalars(select(CollectionUploadProvenanceStructureRecord)):

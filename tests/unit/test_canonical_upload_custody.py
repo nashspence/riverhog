@@ -36,6 +36,7 @@ from riverhog_core.services.collection_uploads import (
     _custody_stats,
     _record_payload_custody_progress,
 )
+from riverhog_core.throughput import ArchiveTransferResources
 from riverhog_protocol import (
     ArtifactId,
     ArtifactMemberIdentityDocument,
@@ -202,6 +203,7 @@ def _construction(
     service = object.__new__(SqlAlchemyCollectionUploadService)
     service._session_factory = factory
     service._config = config
+    service._resources = ArchiveTransferResources.from_tuning(config.throughput_tuning)
     store = MemoryImmutableStore()
     service._archive_stores = SimpleNamespace(
         require=lambda _name: SimpleNamespace(immutable_objects=store)

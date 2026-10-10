@@ -62,6 +62,7 @@ class PublishedCanonicalProvenance:
         self._objects = ProvenanceReadCache(
             byte_budget=_OBJECT_CACHE_BYTES, entry_budget=_OBJECT_CACHE_ENTRIES
         )
+        self._metadata_indexes = ProvenanceReadCache(byte_budget=8 * 1024 * 1024, entry_budget=128)
 
     def reader(
         self,
@@ -71,6 +72,7 @@ class PublishedCanonicalProvenance:
         fence: Callable[[], None] | None = None,
     ) -> CanonicalProvenanceArchiveReader:
         selected = self._select_copy(collection_id)
+        self._archive_stores.require_incarnation(selected.store_name, selected.incarnation_id)
 
         def read_object(relative_path: str) -> Iterator[bytes]:
             if fence is not None:
@@ -85,6 +87,8 @@ class PublishedCanonicalProvenance:
             expected_root_sha256=selected.provenance_identity,
             archive_generation=selected.archive_generation,
             artifact_set_sha256=selected.artifact_set_identity,
+            metadata_cache=self._metadata_indexes,
+            metadata_cache_key=selected,
         )
 
     def archive_root_preimage(

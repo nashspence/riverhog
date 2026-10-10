@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import os
 import sqlite3
-from collections.abc import Callable, Iterator, Mapping
+from collections.abc import Callable, Hashable, Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -51,6 +51,7 @@ from riverhog_archive_contracts import (
 )
 from riverhog_canonical_json import require_canonical_json
 
+from riverhog_core.provenance_read_cache import ProvenanceReadCache
 from riverhog_core.scratch_workspace import scratch_directory
 
 ObjectReader = Callable[[str], Iterator[bytes]]
@@ -83,11 +84,17 @@ class CanonicalProvenanceArchiveReader:
         expected_root_sha256: str,
         archive_generation: str,
         artifact_set_sha256: str,
+        metadata_cache: ProvenanceReadCache | None = None,
+        metadata_cache_key: Hashable | None = None,
     ) -> None:
+        if (metadata_cache is None) != (metadata_cache_key is None):
+            raise ValueError("metadata cache and exact copy key must be supplied together")
         self._read_object = read_object
         self._expected_root_sha256 = expected_root_sha256
         self._archive_generation = archive_generation
         self._artifact_set_sha256 = artifact_set_sha256
+        self._metadata_cache = metadata_cache
+        self._metadata_cache_key = metadata_cache_key
         self._prepared_db: sqlite3.Connection | None = None
         self._prepared_summary: ProvenanceArchiveSummary | None = None
         self._prepared_cursors: set[sqlite3.Cursor] = set()
@@ -125,6 +132,8 @@ class CanonicalProvenanceArchiveReader:
                 expected_root_sha256=self._expected_root_sha256,
                 archive_generation=self._archive_generation,
                 artifact_set_sha256=self._artifact_set_sha256,
+                metadata_cache=self._metadata_cache,
+                metadata_cache_key=self._metadata_cache_key,
             )
 
     @contextmanager
@@ -136,7 +145,15 @@ class CanonicalProvenanceArchiveReader:
         with scratch_directory(prefix="riverhog-provenance-metadata-") as scratch:
             # The operation owns this index. Its serial HTTP iterator may
             # advance and close on different worker threads.
-            db = sqlite3.connect(Path(scratch) / "metadata.sqlite3", check_same_thread=False)
+            path = Path(scratch) / "metadata.sqlite3"
+            image = (
+                None
+                if self._metadata_cache is None
+                else self._metadata_cache.get(self._metadata_cache_key)
+            )
+            if image is not None:
+                path.write_bytes(image)
+            db = sqlite3.connect(path, check_same_thread=False)
 
             def remember(document: ProvenanceVolumeDocument | ProvenanceTerminalDocument) -> None:
                 if isinstance(document, ProvenanceTerminalDocument):
@@ -154,15 +171,41 @@ class CanonicalProvenanceArchiveReader:
                 )
 
             try:
-                db.executescript(
-                    "PRAGMA cache_size = -512; PRAGMA temp_store = FILE; "
-                    "CREATE TABLE volumes(sequence TEXT PRIMARY KEY, kind TEXT, "
-                    "journal TEXT, body BLOB); "
-                    "CREATE INDEX volume_journals ON volumes(journal, sequence); "
-                    "CREATE INDEX volume_kinds ON volumes(kind, sequence);"
-                )
-                summary = self._scan(remember)
-                db.commit()
+                if image is None:
+                    db.executescript(
+                        "PRAGMA cache_size = -512; PRAGMA temp_store = FILE; "
+                        "CREATE TABLE volumes(sequence TEXT PRIMARY KEY, kind TEXT, "
+                        "journal TEXT, body BLOB); "
+                        "CREATE INDEX volume_journals ON volumes(journal, sequence); "
+                        "CREATE INDEX volume_kinds ON volumes(kind, sequence); "
+                        "CREATE TABLE summary(root BLOB, volume_count INTEGER);"
+                    )
+                    summary = self._scan(remember)
+                    db.execute(
+                        "INSERT INTO summary VALUES (?, ?)",
+                        (summary.root.to_json_bytes(), summary.volume_count),
+                    )
+                    db.commit()
+                    # This committed file is a transient derived index. Large
+                    # valid indexes bypass the cache and retain the same read path.
+                    if (
+                        self._metadata_cache is not None
+                        and path.stat().st_size <= self._metadata_cache.byte_budget
+                    ):
+                        self._metadata_cache.put(self._metadata_cache_key, path.read_bytes())
+                else:
+                    row = db.execute("SELECT root, volume_count FROM summary").fetchone()
+                    if row is None:
+                        raise ProvenanceArchiveReadError("cached metadata lacks its exact root")
+                    root = ProvenanceRootDocument.from_json_bytes(row[0])
+                    if (
+                        root.identity != self._expected_root_sha256
+                        or root.archive_generation != self._archive_generation
+                        or root.artifact_set_sha256 != self._artifact_set_sha256
+                    ):
+                        raise ProvenanceArchiveReadError("cached metadata names another archive")
+                    summary = ProvenanceArchiveSummary(root=root, volume_count=int(row[1]))
+                    db.execute("PRAGMA cache_size = -512")
                 db.execute("PRAGMA query_only = ON")
                 self._prepared_db = db
                 self._prepared_summary = summary

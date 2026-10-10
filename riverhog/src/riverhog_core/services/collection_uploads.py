@@ -8,6 +8,7 @@ import secrets
 import uuid
 from collections import OrderedDict
 from collections.abc import Iterator, Mapping, Sequence
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import timedelta
 from itertools import islice
 from typing import Any, Literal, TypedDict, cast
@@ -260,6 +261,7 @@ from riverhog_core.domain.archive import (
     PackVolumePlan,
     RawVolumePlan,
     SealedPackVolume,
+    SealedProvenanceObject,
     SealedRawVolume,
     StoredArchivePart,
 )
@@ -4007,7 +4009,7 @@ class SqlAlchemyCollectionUploadService:
     def _publish_next_provenance_structure(
         self, collection_id: int, *, selected_object_id: str | None = None
     ) -> bool:
-        """Publish one exact staged structural object and checkpoint its receipt."""
+        """Publish a bounded independent batch and checkpoint each exact receipt."""
 
         with read_snapshot(self._session_factory) as session:
             upload = session.get(CollectionUploadRecord, collection_id)
@@ -4023,12 +4025,26 @@ class SqlAlchemyCollectionUploadService:
                 statement = statement.where(
                     CollectionUploadProvenanceStructureRecord.object_id == selected_object_id
                 )
-            pending = session.scalar(
-                statement.order_by(CollectionUploadProvenanceStructureRecord.object_id).limit(1)
+            batch_size = (
+                1
+                if selected_object_id is not None
+                else min(
+                    16,
+                    self._resources.upload_preparations.capacity,
+                    self._resources.upload_requests.capacity,
+                    self._resources.age_derivations.capacity,
+                )
             )
-            if pending is None:
+            pending = list(
+                session.scalars(
+                    statement.order_by(CollectionUploadProvenanceStructureRecord.object_id).limit(
+                        batch_size
+                    )
+                )
+            )
+            if not pending:
                 return False
-            object_id, kind, content = pending.object_id, pending.kind, pending.content
+            selected = [(row.object_id, row.kind, row.content) for row in pending]
             prefix, store_name = upload.archive_storage_prefix, upload.archive_store
             passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
         publisher = ArchiveProvenancePublisher(
@@ -4036,36 +4052,63 @@ class SqlAlchemyCollectionUploadService:
             passphrase=passphrase,
             scrypt_log_n=self._config.archive_scrypt_work_factor,
         )
-        if kind == "history":
-            history = MemberHistoryDocument.from_json_bytes(content)
-            sealed = publisher.publish_member_history(
-                archive_storage_prefix=prefix,
-                binding=MemberHistoryBinding(
-                    history.artifact_id,
-                    history.bytes,
-                    history.sha256,
-                    history.identity,
-                    len(content),
-                ),
-                content=content,
-            )
-        elif kind == "record-page":
-            sealed = publisher.publish_record_page(
-                archive_storage_prefix=prefix, page=RecordPage.from_json_bytes(content)
-            )
-        elif kind == "source-proof":
-            sealed = publisher.publish_source_binding_proof(
-                archive_storage_prefix=prefix,
-                proof=SourceMemberHistoryBindingProof.from_json_bytes(content),
-            )
+
+        def publish(selected: tuple[str, str, bytes]) -> tuple[str, bytes, SealedProvenanceObject]:
+            object_id, kind, content = selected
+            with self._resources.age_derivations.reserve():
+                if kind == "history":
+                    history = MemberHistoryDocument.from_json_bytes(content)
+                    sealed = publisher.publish_member_history(
+                        archive_storage_prefix=prefix,
+                        binding=MemberHistoryBinding(
+                            history.artifact_id,
+                            history.bytes,
+                            history.sha256,
+                            history.identity,
+                            len(content),
+                        ),
+                        content=content,
+                    )
+                elif kind == "record-page":
+                    sealed = publisher.publish_record_page(
+                        archive_storage_prefix=prefix, page=RecordPage.from_json_bytes(content)
+                    )
+                elif kind == "source-proof":
+                    sealed = publisher.publish_source_binding_proof(
+                        archive_storage_prefix=prefix,
+                        proof=SourceMemberHistoryBindingProof.from_json_bytes(content),
+                    )
+                else:
+                    raise Conflict("unsupported staged provenance structure")
+            return object_id, content, sealed
+
+        def checkpoint(result: tuple[str, bytes, SealedProvenanceObject]) -> None:
+            object_id, content, sealed = result
+            with session_scope(self._session_factory) as session:
+                row = session.get(
+                    CollectionUploadProvenanceStructureRecord, (collection_id, object_id)
+                )
+                if row is None or row.content != content:
+                    raise Conflict("staged provenance structure changed during publication")
+                if row.receipt_json is None:
+                    row.receipt_json = _sealed_provenance_object_json(sealed)
+
+        if len(selected) == 1:
+            checkpoint(publish(selected[0]))
         else:
-            raise Conflict("unsupported staged provenance structure")
-        with session_scope(self._session_factory) as session:
-            row = session.get(CollectionUploadProvenanceStructureRecord, (collection_id, object_id))
-            if row is None or row.content != content:
-                raise Conflict("staged provenance structure changed during publication")
-            if row.receipt_json is None:
-                row.receipt_json = _sealed_provenance_object_json(sealed)
+            # Workers own only encryption and immutable store contacts. Catalog
+            # sessions and each successful receipt checkpoint stay on this thread.
+            failure: Exception | None = None
+            with ThreadPoolExecutor(max_workers=len(selected)) as executor:
+                futures = [executor.submit(publish, row) for row in selected]
+                for future in as_completed(futures):
+                    try:
+                        checkpoint(future.result())
+                    except Exception as exc:
+                        if failure is None:
+                            failure = exc
+            if failure is not None:
+                raise failure
         return True
 
     def _advance_provenance_closure_validation(self, collection_id: int) -> bool:
