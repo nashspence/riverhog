@@ -660,6 +660,9 @@ class RecipePlanner:
                 if work.evaluation is not None
                 else None,
             )
+            support = target.support_for(operation.id)
+            Draft202012Validator(operation.intent_schema.document).validate(intent)
+            Draft202012Validator(support.options_schema.document).validate(options)
             join = JoinDeclaration.seal(
                 recipe=recipe.ref,
                 effective_intent=intent,

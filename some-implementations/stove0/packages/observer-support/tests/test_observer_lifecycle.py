@@ -714,7 +714,8 @@ def test_live_observer_retention_removes_expired_completed_cancellation_only(
         os.utime(path, (time.time() - 10, time.time() - 10))
     service._retention.wake()
     deadline = time.monotonic() + 5
-    while (service.state_root / f"{canceled.job_id}.status.json").exists():
+    # The first unlink does not mean the fenced, multi-file cleanup has finished.
+    while tuple(service.state_root.glob(f"{canceled.job_id}.*.json")):
         assert time.monotonic() < deadline
         threading.Event().wait(0.01)
     assert not tuple(service.state_root.glob(f"{canceled.job_id}.*.json"))

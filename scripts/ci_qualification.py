@@ -219,6 +219,15 @@ def qualify_images(targets: Sequence[str], graph: dict[str, Any]) -> None:
             run([sys.executable, "scripts/test_witness_image.py", target])
         if target.startswith("a-riverhog-") and target != "a-riverhog-ftp-spool":
             run([sys.executable, "scripts/test_runtime_compose.py", target])
+        if target == "a-stove0-nvenc-av1-opus-target":
+            run(
+                [
+                    sys.executable,
+                    "-m",
+                    "scripts.test_nvenc_host_lease",
+                    graph["target"][target]["tags"][0],
+                ]
+            )
         if target != "test":
             run([sys.executable, "scripts/check_runtime_image.py", target])
 

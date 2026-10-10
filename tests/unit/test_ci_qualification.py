@@ -642,3 +642,21 @@ def test_automatic_execution_does_not_substitute_another_input(
     monkeypatch.setattr(processing, "stove", lambda *args, **kwargs: {"admissions": matches})
     with pytest.raises(AssertionError, match="exact input"):
         processing.admission_work()
+
+
+def test_maintained_nvenc_image_requires_the_portable_shared_host_lease_witness(monkeypatch):
+    target = "a-stove0-nvenc-av1-opus-target"
+    graph = {"target": {target: {"tags": ["nvenc:qualification"]}}}
+    commands = []
+    monkeypatch.setattr(qualification, "prepare_images", lambda *_args: None)
+    monkeypatch.setattr(qualification, "run", lambda command: commands.append(command))
+    qualification.qualify_images([target], graph)
+    assert commands == [
+        [
+            qualification.sys.executable,
+            "-m",
+            "scripts.test_nvenc_host_lease",
+            "nvenc:qualification",
+        ],
+        [qualification.sys.executable, "scripts/check_runtime_image.py", target],
+    ]
