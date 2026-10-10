@@ -4,6 +4,7 @@ from collections import OrderedDict
 from collections.abc import Callable, Hashable
 from concurrent.futures import Future
 from threading import Lock
+from typing import overload
 
 
 class ProvenanceReadCache:
@@ -12,7 +13,7 @@ class ProvenanceReadCache:
         self._entry_budget = entry_budget
         self._entries: OrderedDict[Hashable, bytes] = OrderedDict()
         self._bytes = 0
-        self._loads: dict[Hashable, Future[bytes]] = {}
+        self._loads: dict[Hashable, Future[bytes | None]] = {}
         self._lock = Lock()
 
     def get(self, key: Hashable) -> bytes | None:
@@ -22,7 +23,13 @@ class ProvenanceReadCache:
                 self._entries.move_to_end(key)
             return value
 
-    def get_or_load(self, key: Hashable, load: Callable[[], bytes]) -> bytes:
+    @overload
+    def get_or_load(self, key: Hashable, load: Callable[[], bytes]) -> bytes: ...
+
+    @overload
+    def get_or_load(self, key: Hashable, load: Callable[[], bytes | None]) -> bytes | None: ...
+
+    def get_or_load(self, key: Hashable, load: Callable[[], bytes | None]) -> bytes | None:
         """Share a bounded in-flight verified read; failures never become cache entries."""
         with self._lock:
             cached = self._entries.get(key)
@@ -36,13 +43,15 @@ class ProvenanceReadCache:
                 self._loads[key] = future
         if future is None:
             value = load()
-            self.put(key, value)
+            if value is not None:
+                self.put(key, value)
             return value
         if not owner:
             return future.result()
         try:
             value = load()
-            self.put(key, value)
+            if value is not None:
+                self.put(key, value)
             future.set_result(value)
             return value
         except BaseException as exc:

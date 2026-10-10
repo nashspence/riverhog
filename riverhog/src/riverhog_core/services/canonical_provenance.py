@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from typing import Any
 from uuid import uuid4
 
@@ -141,7 +141,7 @@ class SqlAlchemyCanonicalProvenanceService:
             normalized_id, principal, permission=PROVENANCE_READ, expected_root=root_identity
         ) as reader:
             final_binding: MemberHistoryBinding | None = None
-            for value in reader.iter_bindings():
+            for value in reader.iter_bindings(artifact_id=canonical_id):
                 candidate = MemberHistoryBinding.from_mapping(value)
                 if candidate.artifact_id == canonical_id:
                     final_binding = candidate
@@ -415,46 +415,60 @@ class SqlAlchemyCanonicalProvenanceService:
         *,
         root_identity: str,
     ) -> Iterator[MemberHistoryClosure | MemberHistoryMembership]:
-        """Exact retained member closure; each imported extent remains independently sealed."""
-        key = None
-        if principal.has_artifact_scope:
+        """Share immutable selection-qualified membership, never a mutable scoped reader."""
+        with ExitStack() as scratch:
+            closure: MemberHistoryClosure | None = None
+
+            def resolve() -> MemberHistoryClosure:
+                selected_closure = scratch.enter_context(
+                    MemberHistoryClosure(
+                        reader.history_store(),
+                        lambda journal_id, end: reader.iter_journal_range(journal_id, size=end),
+                        member_role=COLLECTION_MEMBER_ROLE,
+                    )
+                )
+                if principal.has_artifact_scope:
+                    allowed = iter(self._scoped_artifacts(collection_id, principal))
+                    wanted = next(allowed, None)
+                    for raw in reader.iter_bindings():
+                        if wanted is None:
+                            break
+                        selected = MemberHistoryBinding.from_mapping(raw)
+                        if selected.artifact_id < wanted:
+                            continue
+                        if selected.artifact_id != wanted:
+                            raise NotFound("archive does not confirm the selected member")
+                        selected_closure.resolve(selected, extent=RETAINED_HISTORY_EXTENT)
+                        wanted = next(allowed, None)
+                    if wanted is not None:
+                        raise NotFound("archive does not confirm the selected member")
+                return selected_closure
+
+            if not principal.has_artifact_scope:
+                yield resolve()
+                return
             self._require_export_root(collection_id, root_identity, principal)
             selection = hashlib.sha256()
             for artifact_id in self._scoped_artifacts(collection_id, principal):
                 selection.update(artifact_id.encode("utf-8") + b"\0")
-            # The archive root commits every H and its separately sealed import
-            # extents. The member selection is recomputed from current authority.
             key = (collection_id, root_identity, RETAINED_HISTORY_EXTENT, selection.hexdigest())
-            image = self._memberships.get(key)
+
+            def build() -> bytes | None:
+                nonlocal closure
+                closure = resolve()
+                image = closure.membership_image(max_bytes=self._memberships.byte_budget)
+                self._require_export_root(collection_id, root_identity, principal)
+                return image
+
+            image = self._memberships.get_or_load(key, build)
+            self._require_export_root(collection_id, root_identity, principal)
             if image is not None:
                 with MemberHistoryMembership(image) as membership:
                     yield membership
-                return
-        with MemberHistoryClosure(
-            reader.history_store(),
-            lambda journal_id, end: reader.iter_journal_range(journal_id, size=end),
-            member_role=COLLECTION_MEMBER_ROLE,
-        ) as closure:
-            if principal.has_artifact_scope:
-                allowed = iter(self._scoped_artifacts(collection_id, principal))
-                wanted = next(allowed, None)
-                for raw in reader.iter_bindings():
-                    if wanted is None:
-                        break
-                    selected = MemberHistoryBinding.from_mapping(raw)
-                    if selected.artifact_id < wanted:
-                        continue
-                    if selected.artifact_id != wanted:
-                        raise NotFound("archive does not confirm the selected member")
-                    closure.resolve(selected, extent=RETAINED_HISTORY_EXTENT)
-                    wanted = next(allowed, None)
-                if wanted is not None:
-                    raise NotFound("archive does not confirm the selected member")
-                image = closure.membership_image(max_bytes=self._memberships.byte_budget)
-                if image is not None:
-                    self._require_export_root(collection_id, root_identity, principal)
-                    self._memberships.put(key, image)
-            yield closure
+            else:
+                # A large valid closure bypasses the bounded image cache.
+                yield closure if closure is not None else resolve()
+            self._require_export_root(collection_id, root_identity, principal)
 
     def _scoped_artifacts(self, collection_id: int, principal: Principal) -> Iterator[str]:
         after = None

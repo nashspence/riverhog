@@ -5,8 +5,11 @@ from __future__ import annotations
 import hashlib
 from collections import Counter
 from collections.abc import Callable, Iterator
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from dataclasses import replace
 from pathlib import Path
+from threading import Barrier, Lock
 from types import SimpleNamespace
 from typing import get_args
 from unittest.mock import Mock
@@ -747,3 +750,107 @@ def test_membership_cache_retains_only_queries_after_complete_closure_validation
             assert not membership.contains_structure_object("unselected-history")
         assert closure.membership_image(max_bytes=1) is None
         assert list(closure.journal_anchors()) == anchors
+
+
+def test_concurrent_authorized_reads_share_immutable_builds_and_own_their_scratch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    payloads = {f"{ordinal + 1:064x}": b"member" for ordinal in range(16)}
+    service, archive, config, _registry, stores, _allowance, *_ = _environment(
+        tmp_path, members=payloads, hints={artifact_id: None for artifact_id in payloads}
+    )
+    principal = persisted_artifact_scope(
+        config.database_url,
+        access=tuple(ApplicationAccess(p) for p in _PERMISSIONS),
+        artifacts=tuple((1, m.artifact_id, m.bytes, m.sha256) for m in archive.history_bindings),
+    )
+    lock = Lock()
+    scans = resolves = 0
+    original_scan = CanonicalProvenanceArchiveReader._scan
+    original_resolve = MemberHistoryClosure.resolve
+    original_prepared = CanonicalProvenanceArchiveReader.prepared
+    connections, scratch_paths = set(), set()
+
+    def scan(self, *args, **kwargs):
+        nonlocal scans
+        with lock:
+            scans += 1
+        return original_scan(self, *args, **kwargs)
+
+    def resolve(self, *args, **kwargs):
+        nonlocal resolves
+        with lock:
+            resolves += 1
+        return original_resolve(self, *args, **kwargs)
+
+    @contextmanager
+    def prepared(self):
+        with original_prepared(self) as ready:
+            cursor = ready._prepared_db.execute("PRAGMA database_list")
+            try:
+                path = Path(cursor.fetchone()[2])
+            finally:
+                cursor.close()
+            with lock:
+                connections.add(id(ready._prepared_db))
+                scratch_paths.add(path)
+            yield ready
+
+    monkeypatch.setattr(CanonicalProvenanceArchiveReader, "_scan", scan)
+    monkeypatch.setattr(MemberHistoryClosure, "resolve", resolve)
+    monkeypatch.setattr(CanonicalProvenanceArchiveReader, "prepared", prepared)
+    for cache in (service._archives._metadata_indexes, service._memberships):
+        barrier = Barrier(4)
+        original = cache.get_or_load
+
+        def together(key, load, *, barrier=barrier, original=original):
+            barrier.wait(timeout=30)
+            return original(key, load)
+
+        monkeypatch.setattr(cache, "get_or_load", together)
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures = [
+            pool.submit(
+                service.list_journals, 1, page_size=1, after_journal_id=None, principal=principal
+            )
+            for _ in range(4)
+        ]
+        results = [future.result(timeout=30) for future in futures]
+    assert results == [results[0]] * 4
+    assert scans == 1 and resolves == 16
+    assert len(connections) == 4
+    assert all(not path.exists() for path in scratch_paths)
+    assert max(stores["preferred"].object_reads.values()) == 1
+
+
+@pytest.mark.parametrize("failed_stage", ["metadata", "history"])
+def test_failed_immutable_build_is_cleaned_and_retried_with_live_authority(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failed_stage: str
+) -> None:
+    service, archive, config, _registry, _stores, _allowance, *_ = _environment(tmp_path)
+    principal = _scope(config, archive)
+    owner = CanonicalProvenanceArchiveReader if failed_stage == "metadata" else MemberHistoryClosure
+    method = "_scan" if failed_stage == "metadata" else "resolve"
+    original = getattr(owner, method)
+    failed = False
+
+    def once(self, *args, **kwargs):
+        nonlocal failed
+        result = original(self, *args, **kwargs)
+        if not failed:
+            failed = True
+            raise OSError("immutable builder interrupted")
+        return result
+
+    monkeypatch.setattr(owner, method, once)
+    with pytest.raises(OSError, match="immutable builder interrupted"):
+        service.list_journals(1, page_size=1, after_journal_id=None, principal=principal)
+    assert service.list_journals(1, page_size=1, after_journal_id=None, principal=principal)[
+        "journals"
+    ]
+    with session_scope(service._session_factory) as session:
+        session.get(
+            CollectionProcessingCapabilityRecord, principal.artifact_scope_capability_id
+        ).state = "revoked"
+    with pytest.raises(NotFound):
+        service.list_journals(1, page_size=1, after_journal_id=None, principal=principal)

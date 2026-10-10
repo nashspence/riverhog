@@ -390,6 +390,21 @@ def test_binding_pages_progress_across_the_bounded_archive_extent() -> None:
     assert [row["artifact_id"] for row in reader.iter_bindings()] == [
         row["artifact_id"] for row in bindings
     ]
+    reads = []
+    original = reader._read_object
+
+    def counted(path):
+        reads.append(path)
+        yield from original(path)
+
+    reader._read_object = counted
+    with reader.prepared():
+        reads.clear()
+        assert list(reader.iter_bindings(artifact_id=bindings[-1]["artifact_id"])) == [bindings[-1]]
+        assert reads == [descriptors[1].payload.path]
+        reads.clear()
+        assert list(reader.iter_bindings(artifact_id="f" * 64)) == []
+        assert reads == []
 
 
 def test_member_history_requires_exact_root_and_terminal_pages() -> None:

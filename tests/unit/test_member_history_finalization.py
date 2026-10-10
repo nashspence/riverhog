@@ -10,13 +10,19 @@ from types import SimpleNamespace
 
 import pytest
 from riverhog_age import decrypt_age_scrypt
-from riverhog_archive_contracts import MemberHistoryBinding, MemberHistoryRoot, RecordPage
+from riverhog_archive_contracts import (
+    MemberHistoryBinding,
+    MemberHistoryRoot,
+    RecordPage,
+    format_archive_sequence,
+)
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
 from riverhog_core.catalog_db import Base, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     CollectionUploadArtifactProvenanceBindingRecord,
     CollectionUploadArtifactRecord,
     CollectionUploadMemberHistoryRecord,
+    CollectionUploadProvenanceArchiveVolumeRecord,
     CollectionUploadProvenanceJournalChunkRecord,
     CollectionUploadProvenanceJournalRecord,
     CollectionUploadProvenanceStructureRecord,
@@ -24,6 +30,8 @@ from riverhog_core.catalog_models import (
     StorageIncarnationRecord,
 )
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
+from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
+from riverhog_core.provenance_read_cache import ProvenanceReadCache
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 from riverhog_core.throughput import ArchiveThroughputTuning, ArchiveTransferResources
@@ -39,6 +47,7 @@ from tests.unit.test_archive_root import MemoryImmutableStore
 def test_final_history_and_encrypted_structure_resume_without_changing_early_primary(
     tmp_path: Path,
     lose_receipt: bool,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     config = RuntimeConfig.for_testing(
         database_url=sqlite_url(tmp_path / "catalog.db"),
@@ -78,6 +87,7 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
     service._session_factory = factory
     service._config = config
     service._resources = ArchiveTransferResources.from_tuning(config.throughput_tuning)
+    service._closure_journal_validations = ProvenanceReadCache(byte_budget=1024, entry_budget=128)
     service._archive_stores = SimpleNamespace(
         require=lambda _name: SimpleNamespace(immutable_objects=store)
     )
@@ -257,3 +267,82 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
             CollectionUploadProvenanceJournalChunkRecord, (1, produced.journal_id, 0)
         )
         assert early is not None and early.content == produced.content
+
+    # Independently completed contacts still commit only an ordered volume prefix.
+    store.verify_overlap = False
+    with session_scope(factory) as session:
+        upload = session.get(CollectionUploadRecord, 1)
+        upload.archive_tree_sha256 = "e" * 64
+        upload.archive_generation = "f" * 64
+    completed_later = threading.Event()
+    failed_volume = False
+    original_put = store.put_immutable_object
+    earlier_path = (
+        "collections/1/provenance/metadata/volume-" + format_archive_sequence(0) + ".json.age"
+    )
+    later_path = (
+        "collections/1/provenance/metadata/volume-" + format_archive_sequence(1) + ".json.age"
+    )
+
+    def reordered(**kwargs):
+        nonlocal failed_volume
+        receipt = original_put(**kwargs)
+        if kwargs["object_path"] == later_path:
+            completed_later.set()
+            if lose_receipt and not failed_volume:
+                failed_volume = True
+                raise OSError("lost completed volume receipt")
+        if kwargs["object_path"] == earlier_path:
+            assert completed_later.wait(timeout=5)
+        return receipt
+
+    monkeypatch.setattr(store, "put_immutable_object", reordered)
+    if lose_receipt:
+        with pytest.raises(OSError, match="lost completed volume receipt"):
+            service._publish_next_provenance_archive_object(1)
+        with session_scope(factory) as session:
+            upload = session.get(CollectionUploadRecord, 1)
+            assert upload.provenance_archive_next_sequence == 1
+            assert upload.provenance_archive_root_receipt_json is None
+            assert upload.provenance_archive_terminal_receipt_json is None
+        retained = {path: value.content for path, value in store.objects.items()}
+    else:
+        retained = {}
+    while service._publish_next_provenance_archive_object(1):
+        pass
+    assert all(store.objects[path].content == content for path, content in retained.items())
+    with session_scope(factory) as session:
+        upload = session.get(CollectionUploadRecord, 1)
+        assert upload.provenance_archive_next_sequence == 3
+        assert upload.provenance_archive_root_receipt_json is not None
+        assert [
+            row.sequence
+            for row in session.scalars(
+                select(CollectionUploadProvenanceArchiveVolumeRecord).order_by(
+                    CollectionUploadProvenanceArchiveVolumeRecord.sequence
+                )
+            )
+        ] == [0, 1, 2]
+
+    def read(path):
+        yield decrypt_age_scrypt(
+            store.objects["collections/1/" + path].content,
+            config.archive_passphrase_for(config.archive_active_passphrase_id),
+        )
+
+    root = decrypt_age_scrypt(
+        store.objects["collections/1/provenance/root.json.age"].content,
+        config.archive_passphrase_for(config.archive_active_passphrase_id),
+    )
+    reader = CanonicalProvenanceArchiveReader(
+        read,
+        expected_root_sha256=hashlib.sha256(root).hexdigest(),
+        archive_generation="f" * 64,
+        artifact_set_sha256="e" * 64,
+    )
+    assert reader.scan().root.journal_count == 2
+    assert (
+        b"".join(reader.iter_journal_range(produced.journal_id, size=len(produced.content)))
+        == produced.content
+    )
+    assert b"".join(reader.iter_journal_range(late_summary.journal_id, size=len(late))) == late
