@@ -1,0 +1,83 @@
+{
+  "analytical_scenarios_not_measured": [
+    {
+      "comparisons_for_one_lookup_each_output": 33153,
+      "incidence_links_if_32_selected_shared_assertions_per_member": 4096,
+      "incidence_links_if_n_selected_shared_assertions_per_member": 16384,
+      "input_files": 128,
+      "output_decisions": 257
+    },
+    {
+      "comparisons_for_one_lookup_each_output": 525825,
+      "incidence_links_if_32_selected_shared_assertions_per_member": 16384,
+      "incidence_links_if_n_selected_shared_assertions_per_member": 262144,
+      "input_files": 512,
+      "output_decisions": 1025
+    },
+    {
+      "comparisons_for_one_lookup_each_output": 2003001,
+      "incidence_links_if_32_selected_shared_assertions_per_member": 32000,
+      "incidence_links_if_n_selected_shared_assertions_per_member": 1000000,
+      "input_files": 1000,
+      "output_decisions": 2001
+    },
+    {
+      "comparisons_for_one_lookup_each_output": 200030001,
+      "incidence_links_if_32_selected_shared_assertions_per_member": 320000,
+      "incidence_links_if_n_selected_shared_assertions_per_member": 100000000,
+      "input_files": 10000,
+      "output_decisions": 20001
+    },
+    {
+      "comparisons_for_one_lookup_each_output": 20000300001,
+      "incidence_links_if_32_selected_shared_assertions_per_member": 3200000,
+      "incidence_links_if_n_selected_shared_assertions_per_member": 10000000000,
+      "input_files": 100000,
+      "output_decisions": 200001
+    }
+  ],
+  "format": "riverhog-external-scaling-source-probe/v1",
+  "observed_native_source_method": [
+    {
+      "declared_output_decisions": 257,
+      "executed_lookup_comparisons": 33153,
+      "illustrative_index_build_and_lookup_seconds": 3e-05,
+      "input_files": 128,
+      "one_pass_linear_lookup_seconds": 0.003625,
+      "status": "source-method-exercised, not full-target-or-docker"
+    },
+    {
+      "declared_output_decisions": 1025,
+      "executed_lookup_comparisons": 525825,
+      "illustrative_index_build_and_lookup_seconds": 0.000107,
+      "input_files": 512,
+      "one_pass_linear_lookup_seconds": 0.063536,
+      "status": "source-method-exercised, not full-target-or-docker"
+    },
+    {
+      "declared_output_decisions": 2001,
+      "executed_lookup_comparisons": 2003001,
+      "illustrative_index_build_and_lookup_seconds": 0.000202,
+      "input_files": 1000,
+      "one_pass_linear_lookup_seconds": 0.23927,
+      "status": "source-method-exercised, not full-target-or-docker"
+    },
+    {
+      "declared_output_decisions": 4097,
+      "executed_lookup_comparisons": 8394753,
+      "illustrative_index_build_and_lookup_seconds": 0.000492,
+      "input_files": 2048,
+      "one_pass_linear_lookup_seconds": 1.092908,
+      "status": "source-method-exercised, not full-target-or-docker"
+    }
+  ],
+  "proof_limits": [
+    "timings depend on Python host; comparisons are deterministically counted",
+    "the incidence models do not measure actual Riverhog relevance semantics or PostgreSQL",
+    "no 10000 or 100000 member runtime was run",
+    "decision_for is only one part of the full accepted target and archive lifecycle",
+    "no deployed images, PostgreSQL, storage provider, CI, or final end-to-end qualification"
+  ],
+  "scope": "AST-matched source lookup and purely illustrative incidence models",
+  "source_revision": "8425e672c60285a549ca4d5aaba15ecbd99e5bf3"
+}

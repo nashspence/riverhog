@@ -1,0 +1,65 @@
+{
+  "format": "riverhog-external-large-collection-research-workloads/v1",
+  "authority": "hypotheses-and-research-only; #964 and #963 own approvals",
+  "base_commit": "8425e672c60285a549ca4d5aaba15ecbd99e5bf3",
+  "approved_numeric_targets": "none; #960's existing 128-file/600-second objective is a separate authority",
+  "candidate_ladder_member_counts": [128, 512, 1000, 10000, 100000],
+  "workload_families": [
+    {
+      "id": "ingress-tiny-sparse",
+      "measure": "exact single collection FTP or client custody, final root, verified independent recovery",
+      "vary": ["member_count", "empty_vs_4kb_vs_mixed_payloads", "duplicate_content_distinct_identity", "pack_boundaries", "restart_checkpoint"],
+      "avoid": "using separate small collections as a substitute for a single large exact collection"
+    },
+    {
+      "id": "discovery-independent-history",
+      "measure": "archive-only index rebuild, search pages and exact result parity",
+      "vary": ["member_count", "distinct_short_journals", "selected_assertion_count", "index_rebuild_restart"],
+      "avoid": "assuming same-document co-residence establishes member attribution"
+    },
+    {
+      "id": "discovery-shared-history",
+      "measure": "shared verified snapshot selection with unique exact member scope and full recorded history",
+      "vary": ["member_count", "fixed_shared_history", "shared_history_grows_with_members", "cold_vs_warm_cache"],
+      "avoid": "omitting required recorded history or counting a cache hit as independent verified authority"
+    },
+    {
+      "id": "discovery-true-dense-relations",
+      "measure": "exact dense causal relationships and complete requested results",
+      "vary": ["member_count", "actual_relation_count", "query_selectivity", "result_cardinality"],
+      "avoid": "demanding linear time in member count when the lawful result is itself quadratic"
+    },
+    {
+      "id": "stove0-tiny-media",
+      "measure": "one real input collection through accepted plan, target, derived collection, lineage, settlement and replay",
+      "vary": ["member_count", "selected_input_groups", "output_expansion", "worker_budget"],
+      "existing_anchor": {"input_wavs": 128, "pcm_frames_per_wav": 2000, "sample_rate": 8000, "sidecars": 1, "output_artifacts": 257}
+    },
+    {
+      "id": "stove0-real-media",
+      "measure": "same exact lifecycle with materially distinct real-duration media and metadata",
+      "vary": ["media_duration", "payload_bytes", "formats", "sidecars", "concurrent_targets"],
+      "avoid": "inferring real-content throughput from quarter-second silent WAVs"
+    },
+    {
+      "id": "read-restart-recovery",
+      "measure": "complete enumeration, scoped retrieval, independent recovery, interruption and repeatable restart",
+      "vary": ["member_count", "total_bytes", "provenance_depth", "key_scope", "consumer_rate", "restart_fraction_completed"]
+    }
+  ],
+  "measurement_fields": [
+    "exact_source_sha", "source_clean", "prepared_image_ids", "execution_conditions",
+    "completed_phase_and_authority", "members", "bytes", "outputs", "unique_journals",
+    "unique_assertions", "selected_history_snapshots", "required_relationships",
+    "index_membership_rows_and_bytes", "sql_calls", "data_read_and_validation_bytes",
+    "api_calls", "crypto_derivations", "encrypted_objects", "cpu_seconds", "elapsed_seconds",
+    "peak_rss", "peak_scratch_bytes", "peak_database_bytes", "p95_unrelated_progress_latency",
+    "replayed_units", "retry_and_revocation_result", "independent_recovery_verified"
+  ],
+  "future_decisions_require": [
+    "post_963_exact_source_and_three_comparable_completed_observations",
+    "maintainer_approved_workload_and_conditions",
+    "maintainer_approved_numerical_targets_and_proof_cadence",
+    "owner_approved_contract_changes_if_required"
+  ]
+}
