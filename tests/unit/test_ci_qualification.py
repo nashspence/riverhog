@@ -374,16 +374,29 @@ def test_processing_wait_retries_a_timed_out_read_before_success(
     )
     calls = []
 
-    def read(path):
+    work_id = "ab" * 32
+
+    def read(path, *, timeout=30):
         calls.append(path)
+        assert timeout == 5
         if len(calls) == 1:
             raise TimeoutError("status read timed out")
-        return {"work": [{"phase": "complete", "output": {"collection_id": "1"}}]}
+        if path.endswith("/progress"):
+            return {
+                "format": "stove0-work-progress/v1",
+                "work_id": work_id,
+                "phase": "complete",
+                "revision": 1,
+            }
+        return {
+            "work": [{"work_id": work_id, "phase": "complete", "output": {"collection_id": "1"}}]
+        }
 
     monkeypatch.setattr(processing, "stove", read)
     processing.wait()
-    assert len(calls) == 2
-    assert calls[0] == calls[1]
+    assert len(calls) == 4
+    assert calls[0] == calls[1] == calls[3]
+    assert calls[2] == "/v1/work/" + work_id + "/progress"
     assert sleeps == [0.5]
 
 
@@ -393,9 +406,21 @@ def test_processing_wait_rejects_terminal_work_after_a_successful_read(
 ) -> None:
     monkeypatch.setenv("STOVE0_SMOKE_COMPLETION_TIMEOUT", "30")
     monkeypatch.setattr(processing, "time", SimpleNamespace(monotonic=lambda: 0))
-    monkeypatch.setattr(
-        processing, "stove", lambda path: {"work": [{"work_id": "work", "phase": phase}]}
-    )
+    work_id = "ab" * 32
+    row = {"work_id": work_id, "phase": phase}
+
+    def read(path, *, timeout=30):
+        assert timeout == 5
+        if path.endswith("/progress"):
+            return {
+                "format": "stove0-work-progress/v1",
+                "work_id": work_id,
+                "phase": phase,
+                "revision": 1,
+            }
+        return {"work": [row]} if path.startswith("/v1/work?") else row
+
+    monkeypatch.setattr(processing, "stove", read)
     with pytest.raises(RuntimeError, match=phase):
         processing.wait()
 
@@ -410,7 +435,8 @@ def test_processing_wait_still_fails_at_its_global_deadline(
     )
     calls = []
 
-    def unavailable(path, payload=None):
+    def unavailable(path, payload=None, *, timeout=30):
+        assert timeout == 5
         calls.append((path, payload))
         if payload is None:
             raise TimeoutError("status read timed out")
@@ -419,8 +445,9 @@ def test_processing_wait_still_fails_at_its_global_deadline(
     monkeypatch.setattr(processing, "stove", unavailable)
     with pytest.raises(TimeoutError, match="observed"):
         processing.wait()
-    assert len(calls) == 2
-    assert calls[1] == ("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25})
+    assert len(calls) == 3
+    assert calls[0] == calls[1]
+    assert calls[2] == ("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25})
 
 
 @pytest.mark.parametrize("initiation", [False, True])
@@ -481,15 +508,24 @@ def test_processing_progress_reports_durable_phases_during_long_waits(
     monkeypatch.setattr(
         processing, "time", SimpleNamespace(monotonic=lambda: next(ticks), sleep=lambda _: None)
     )
-    rows = iter(
-        [
-            {"work_id": "work", "phase": "output_finalizing"},
-            {"work_id": "work", "phase": "output_finalizing"},
-            {"work_id": "work", "phase": "output_finalizing"},
-            {"work_id": "work", "phase": "complete", "output": {"collection_id": "1"}},
-        ]
-    )
-    monkeypatch.setattr(processing, "stove", lambda _: {"work": [next(rows)]})
+    work_id = "ab" * 32
+    phases = iter(["output_finalizing", "output_finalizing", "output_finalizing", "complete"])
+    current = "output_finalizing"
+
+    def read(path, *, timeout=30):
+        nonlocal current
+        assert timeout == 5
+        if path.endswith("/progress"):
+            current = next(phases)
+            return {
+                "format": "stove0-work-progress/v1",
+                "work_id": work_id,
+                "phase": current,
+                "revision": 1,
+            }
+        return {"work": [{"work_id": work_id, "phase": current, "output": {"collection_id": "1"}}]}
+
+    monkeypatch.setattr(processing, "stove", read)
     processing.wait()
     progress = [json.loads(line) for line in capsys.readouterr().err.splitlines()]
     assert len(progress) == 2

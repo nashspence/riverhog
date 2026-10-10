@@ -15,7 +15,7 @@ from pydantic import ValidationError
 from riverhog_client import ApiClient
 from riverhog_protocol import CatalogSyncDescriptor
 from riverhog_protocol.collection_workflows import ArtifactDispositionSetIdentity
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.pool import StaticPool
 from stove0_api.app import Stove0Composition, _log_scheduler_failures, create_app
 from stove0_api.routing import ExactJsonRoute
@@ -34,6 +34,7 @@ from stove0_core import (
     WorkflowPreviewService,
     WorkRecord,
 )
+from stove0_core.metadata_steps import WorkScan
 from stove0_operator_contracts import (
     AdmissionCatalog,
     AdmissionIntent,
@@ -151,6 +152,10 @@ class _LifecycleState:
         if self.work_record is not None and self.work_record.work_id == work_id:
             return self.work_record
         return None
+
+    def load_work_scan(self, work_id: str) -> WorkScan | None:
+        record = self.load(work_id)
+        return WorkScan.from_record(record) if record is not None else None
 
     def list_evaluations(self, **_kwargs: object) -> dict[str, object]:
         return {
@@ -1031,6 +1036,12 @@ def test_stove0_official_client_positive_disposable_lifecycle() -> None:
         assert retried_after_lost_response.work == created
         fetched = client.get_work(created.work_id)
         assert fetched.work_id == created.work_id
+        progress = client.get_work_progress(created.work_id)
+        assert (progress.work_id, progress.phase, progress.revision) == (
+            fetched.work_id,
+            fetched.phase,
+            fetched.revision,
+        )
         assert client.inspect_work_coordination(created.work_id).branch_set_succeeded is False
         selection = _fixture_selection(_fixture_work())
         selection_page = client.get_artifact_selection(selection.selection_sha256)
@@ -1113,7 +1124,7 @@ def test_direct_no_action_work_creation_is_terminal_and_idempotent() -> None:
 
 def test_every_stove0_api_operation_has_one_current_official_client_method() -> None:
     operations = _operator_operations()
-    assert len(operations) == 38
+    assert len(operations) == 39
     assert {
         operation_id
         for operation_id in operations
@@ -1525,3 +1536,82 @@ def test_installed_conformance_catalog_is_exact_through_api_client_and_cli(
     assert "ready" in human.stdout
     assert machine.exit_code == 0, (machine.output, machine.exception)
     assert json.loads(machine.stdout)["result"]["state"] == "ready"
+
+
+def test_work_progress_reads_fresh_metadata_without_loading_large_work_evidence(
+    monkeypatch,
+) -> None:
+    from stove0_core import persistence
+
+    composition = _composition()
+    original = _fixture_work()
+    work = WorkIdentity.seal(
+        WorkPayload(
+            recipe=original.recipe,
+            inputs=tuple(
+                CollectionRootIdentityRef.model_validate(
+                    {**_collection_root().model_dump(mode="json"), "collection_id": str(number)}
+                )
+                for number in range(1, 2049)
+            ),
+        )
+    )
+    record = WorkRecord(work=work)
+    assert len(record.model_dump_json().encode()) > 64 * 1024
+    composition.state.create(record)
+    statements = []
+
+    def capture(_connection, _cursor, statement, _parameters, _context, _many):
+        if statement.lstrip().upper().startswith("SELECT"):
+            statements.append(statement)
+
+    def prohibited_decode(_document):
+        raise AssertionError("progress loaded the complete work evidence")
+
+    event.listen(composition.state.engine, "before_cursor_execute", capture)
+    monkeypatch.setattr(persistence, "_decode_work_record", prohibited_decode)
+    application = create_app(composition)
+    headers = {"Authorization": "Bearer stove0-test-token"}
+    try:
+        with TestClient(application) as transport:
+            path = f"/v1/work/{work.work_id}/progress"
+            assert transport.get(path).status_code == 401
+            first = transport.get(path, headers=headers)
+            assert first.status_code == 200
+            assert first.json() == {
+                "format": "stove0-work-progress/v1",
+                "work_id": work.work_id,
+                "phase": "eligible",
+                "revision": 1,
+            }
+            assert len(first.content) < 256
+            assert len(statements) == 1
+            assert "document_json" not in statements[0]
+            replacement = record.model_copy(update={"revision": 2})
+            composition.state.compare_and_swap(
+                work.work_id, expected_revision=1, replacement=replacement
+            )
+            assert transport.get(path, headers=headers).json()["revision"] == 2
+            assert (
+                transport.get("/v1/work/" + "f" * 64 + "/progress", headers=headers).status_code
+                == 404
+            )
+
+            def cli_client(*_args, **_kwargs):
+                value = Stove0ApiClient(
+                    "http://testserver", "stove0-test-token", allow_insecure_http=True
+                )
+                value._client = cast(Any, TimeoutNeutralTestClient(transport))
+                return value
+
+            monkeypatch.setattr(a_stove0_cli, "Stove0ApiClient", cli_client)
+            runner = CliRunner()
+            machine = runner.invoke(a_stove0_cli.app, ["--json", "work", "progress", work.work_id])
+            assert machine.exit_code == 0, (machine.output, machine.exception)
+            assert json.loads(machine.stdout) == {**first.json(), "revision": 2}
+            human = runner.invoke(a_stove0_cli.app, ["work", "progress", work.work_id])
+            assert human.exit_code == 0, (human.output, human.exception)
+            assert "eligible" in human.stdout
+    finally:
+        event.remove(composition.state.engine, "before_cursor_execute", capture)
+        composition.state.engine.dispose()

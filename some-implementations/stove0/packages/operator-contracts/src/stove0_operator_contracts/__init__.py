@@ -913,6 +913,15 @@ class PreviewAcceptanceView(OperatorModel):
     target_plans: tuple[PreviewTargetExpectationView, ...]
 
 
+class WorkProgress(OperatorModel):
+    """Current scheduling metadata; complete evidence belongs to work inspection."""
+
+    format: Literal["stove0-work-progress/v1"] = "stove0-work-progress/v1"
+    work_id: Sha256
+    phase: WorkPhase
+    revision: int = Field(ge=1)
+
+
 class WorkView(OperatorModel):
     """Operator projection of mutable work; never an execution identity."""
 

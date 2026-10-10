@@ -52,6 +52,7 @@ from stove0_operator_contracts import (
     WorkInitiationStatus,
     WorkPage,
     WorkPhase,
+    WorkProgress,
     WorkSort,
     WorkView,
 )
@@ -340,6 +341,11 @@ class Stove0ApiClient:
     def get_work(self, work_id: str) -> WorkView:
         return WorkView.model_validate(
             self._json("get_work", "GET", f"/v1/work/{quote(work_id, safe='')}")
+        )
+
+    def get_work_progress(self, work_id: str) -> WorkProgress:
+        return WorkProgress.model_validate(
+            self._json("get_work_progress", "GET", f"/v1/work/{quote(work_id, safe='')}/progress")
         )
 
     def inspect_work_coordination(self, work_id: str) -> BranchSetEvaluation:

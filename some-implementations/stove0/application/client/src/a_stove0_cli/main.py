@@ -477,6 +477,13 @@ def create_work(
     )
 
 
+@work_app.command("progress")
+def work_progress(context: typer.Context, work_id: str) -> None:
+    """Read the current phase and revision without fetching the complete work evidence."""
+    state = _context(context)
+    _call(state, lambda: state.client.get_work_progress(work_id))
+
+
 @work_app.command("show")
 def show_work(context: typer.Context, work_id: str) -> None:
     state = _context(context)

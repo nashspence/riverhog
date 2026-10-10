@@ -97,6 +97,7 @@ from stove0_operator_contracts import (
     WorkInitiationStatus,
     WorkPage,
     WorkPhase,
+    WorkProgress,
     WorkSort,
     WorkView,
 )
@@ -924,6 +925,19 @@ def create_app(
         if record is None:
             raise KeyError(work_id)
         return WorkView.from_record(record)
+
+    @app.get(
+        "/v1/work/{work_id}/progress",
+        response_model=WorkProgress,
+        dependencies=[Depends(authorize)],
+        operation_id="get_work_progress",
+        tags=["work"],
+    )
+    def get_work_progress(work_id: str) -> WorkProgress:
+        progress = composition.state.load_work_scan(work_id)
+        if progress is None:
+            raise KeyError(work_id)
+        return WorkProgress.model_validate(progress, from_attributes=True)
 
     @app.get(
         "/v1/work/{work_id}/coordination",

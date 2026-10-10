@@ -65,43 +65,58 @@ def work_diagnostic(row: dict[str, Any]) -> dict[str, Any]:
 
 
 def wait() -> None:
-    # A slow status read does not establish a work outcome. Retry only timed-out
-    # reads within the same finite fixture deadline; terminal work still fails.
+    from stove0_operator_contracts import WorkProgress
+
     started = time.monotonic()
     deadline = started + int(os.environ["STOVE0_SMOKE_COMPLETION_TIMEOUT"])
     rows: list[dict[str, Any]] = []
+    work_ids: tuple[str, ...] = ()
     previous = None
     next_progress = started
     while (now := time.monotonic()) < deadline:
         try:
-            rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc")["work"]
+            if not work_ids:
+                rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
+                work_ids = tuple(row["work_id"] for row in rows)
+            progress = []
+            for work_id in work_ids:
+                status = WorkProgress.model_validate(
+                    stove("/v1/work/" + work_id + "/progress", timeout=5)
+                )
+                assert status.work_id == work_id
+                progress.append(status.model_dump(mode="json"))
         except TimeoutError:
             time.sleep(0.5)
             continue
         terminal_failure = next(
             (
                 row
-                for row in rows
+                for row in progress
                 if row["phase"] in {"failed", "canceled", "inapplicable", "abandon_pending"}
             ),
             None,
         )
         if terminal_failure is not None:
-            raise RuntimeError(canonical_json_bytes(work_diagnostic(terminal_failure)).decode())
-        if rows and all(row["phase"] == "complete" for row in rows):
-            assert any(int((row.get("output") or {}).get("collection_id") or 0) > 0 for row in rows)
-            return
-        current = tuple(
-            (row.get("work_id"), row.get("phase"), (row.get("target_status") or {}).get("state"))
-            for row in rows
-        )
+            exact = stove("/v1/work/" + terminal_failure["work_id"], timeout=5)
+            raise RuntimeError(canonical_json_bytes(work_diagnostic(exact)).decode())
+        if progress and all(row["phase"] == "complete" for row in progress):
+            # Completion still inspects every complete work and its target/output
+            # evidence. Newly created work remains in the wait set.
+            rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
+            work_ids = tuple(row["work_id"] for row in rows)
+            if rows and all(row["phase"] == "complete" for row in rows):
+                assert any(
+                    int((row.get("output") or {}).get("collection_id") or 0) > 0 for row in rows
+                )
+                return
+        current = tuple((row["work_id"], row["phase"]) for row in progress)
         if current != previous or now >= next_progress:
             print(
                 canonical_json_bytes(
                     {
                         "proof": "processing-progress",
                         "elapsed_seconds": int(now - started),
-                        "work": [work_diagnostic(row) for row in rows],
+                        "work": progress,
                     }
                 ).decode(),
                 file=sys.stderr,
@@ -109,10 +124,21 @@ def wait() -> None:
             )
             previous, next_progress = current, now + 60
         time.sleep(0.5)
-    scheduler = stove("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25})
+    read_error = None
+    try:
+        rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
+    except TimeoutError as error:
+        read_error = type(error).__name__
+    scheduler = stove(
+        "/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25}, timeout=5
+    )
     raise TimeoutError(
         canonical_json_bytes(
-            {"work": [work_diagnostic(row) for row in rows], "scheduler": scheduler}
+            {
+                "work": [work_diagnostic(row) for row in rows],
+                "scheduler": scheduler,
+                "read_error": read_error,
+            }
         ).decode()
     )
 
