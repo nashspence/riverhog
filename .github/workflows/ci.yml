@@ -60,7 +60,7 @@ jobs:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
       - name: Install repository toolchain
-        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca
       - name: Derive complete execution matrices from maintained targets
         id: plan
         run: mise x -- uv run --locked --all-packages --group dev python -m scripts.ci_qualification plan --github-output
@@ -81,9 +81,9 @@ jobs:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
       - name: Install repository toolchain
-        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca
       - name: Configure Docker engine
-        uses: docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1
+        uses: docker/setup-docker-action@2bf61fb9464cc67f0cbdeabed6aa0380accd1c70
         with:
           version: v29.3.1
           daemon-config: |
@@ -94,7 +94,7 @@ jobs:
             }
         if: matrix.docker
       - name: Install Docker Compose
-        uses: docker/setup-compose-action@4eb059ff7f16592f9c84d5ca339c53cb7c5064e2
+        uses: docker/setup-compose-action@54042514f505b273907334ae2b9cdbb9a0213c1a
         with:
           version: v5.1.1
         if: matrix.docker
@@ -128,7 +128,7 @@ jobs:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
       - name: Install repository toolchain
-        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca
       - name: Run exact canonical unit shard
         env:
           UNIT_SHARD: ${{ matrix.shard }}
@@ -159,9 +159,9 @@ jobs:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
       - name: Install repository toolchain
-        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca
       - name: Configure Docker engine
-        uses: docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1
+        uses: docker/setup-docker-action@2bf61fb9464cc67f0cbdeabed6aa0380accd1c70
         with:
           version: v29.3.1
           daemon-config: |
@@ -171,11 +171,11 @@ jobs:
               }
             }
       - name: Install Docker Compose
-        uses: docker/setup-compose-action@4eb059ff7f16592f9c84d5ca339c53cb7c5064e2
+        uses: docker/setup-compose-action@54042514f505b273907334ae2b9cdbb9a0213c1a
         with:
           version: v5.1.1
       - name: Configure Docker Buildx
-        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
         with:
           version: v0.36.0
           driver: docker
@@ -184,7 +184,7 @@ jobs:
         run: |
           echo "created=$(git show -s --format=%cI HEAD)" >> "$GITHUB_OUTPUT"
       - name: Build exact lifecycle images from target-scoped caches
-        uses: docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b
+        uses: docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f
         with:
           source: .
           files: docker-bake.hcl
@@ -235,7 +235,7 @@ jobs:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
       - name: Install repository toolchain
-        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca
         with:
           install_args: python uv age
       - name: Qualify native behavior and staged end-user installs
@@ -266,9 +266,9 @@ jobs:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
       - name: Install repository toolchain
-        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca
       - name: Configure Docker engine
-        uses: docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1
+        uses: docker/setup-docker-action@2bf61fb9464cc67f0cbdeabed6aa0380accd1c70
         with:
           version: v29.3.1
           daemon-config: |
@@ -278,11 +278,11 @@ jobs:
               }
             }
       - name: Install Docker Compose
-        uses: docker/setup-compose-action@4eb059ff7f16592f9c84d5ca339c53cb7c5064e2
+        uses: docker/setup-compose-action@54042514f505b273907334ae2b9cdbb9a0213c1a
         with:
           version: v5.1.1
       - name: Configure Docker Buildx
-        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
         with:
           version: v0.36.0
           driver: docker
@@ -291,7 +291,7 @@ jobs:
         run: |
           echo "created=$(git show -s --format=%cI HEAD)" >> "$GITHUB_OUTPUT"
       - name: Build exact image group from target-scoped caches
-        uses: docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b
+        uses: docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f
         with:
           source: .
           files: docker-bake.hcl
