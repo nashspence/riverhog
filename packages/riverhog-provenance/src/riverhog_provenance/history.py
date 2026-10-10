@@ -427,15 +427,33 @@ class MemberHistoryClosure:
         A larger closure remains usable without caching; capacity never limits
         accepted history. No journal graph or causal authority is unioned.
         """
-        pages = self._db.execute("PRAGMA page_count").fetchone()[0]
-        page_bytes = self._db.execute("PRAGMA page_size").fetchone()[0]
-        if pages * page_bytes > max_bytes:
-            return None
         self._db.commit()
         path = Path(self._scratch.name) / "membership.sqlite3"
+        path.unlink(missing_ok=True)
         copy = sqlite3.connect(path)
         try:
-            self._db.backup(copy)
+            copy.executescript(
+                "PRAGMA cache_size = -512; "
+                "CREATE TABLE journals (identity TEXT PRIMARY KEY, anchor BLOB);"
+                "CREATE TABLE objects (path TEXT PRIMARY KEY);"
+            )
+            for query, insert in (
+                ("SELECT identity, anchor FROM journals", "INSERT INTO journals VALUES (?, ?)"),
+                ("SELECT path FROM objects", "INSERT INTO objects VALUES (?)"),
+            ):
+                cursor = self._db.execute(query)
+                try:
+                    while rows := cursor.fetchmany(256):
+                        copy.executemany(insert, rows)
+                        pages = copy.execute("PRAGMA page_count").fetchone()[0]
+                        page_bytes = copy.execute("PRAGMA page_size").fetchone()[0]
+                        if pages * page_bytes > max_bytes:
+                            return None
+                finally:
+                    cursor.close()
+            copy.commit()
+            if path.stat().st_size > max_bytes:
+                return None
         finally:
             copy.close()
         return path.read_bytes()

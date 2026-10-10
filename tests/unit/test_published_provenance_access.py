@@ -718,3 +718,32 @@ def test_warm_metadata_index_does_not_substitute_a_retired_copy(
     assert scans == 2
     assert stores["preferred"].downloaded == preferred_bytes
     assert stores["replica"].downloaded > 0
+
+
+def test_membership_cache_retains_only_queries_after_complete_closure_validation(tmp_path: Path):
+    from riverhog_archive_contracts import provenance_structure_identity
+    from riverhog_provenance import MemberHistoryMembership
+
+    _service, archive, *_ = _environment(tmp_path)
+    store = MemberHistoryStore(lambda path: (archive.history_objects[path],))
+    with MemberHistoryClosure(
+        store,
+        lambda journal, end: (archive.journals[journal][:end],),
+        member_role=COLLECTION_MEMBER_ROLE,
+    ) as closure:
+        for binding in archive.history_bindings:
+            closure.resolve(binding, extent=RETAINED_HISTORY_EXTENT)
+        anchors = list(closure.journal_anchors())
+        paths = [
+            provenance_structure_identity(raw).relative_path for raw in closure.structure_objects()
+        ]
+        image = closure.membership_image(max_bytes=64 * 1024)
+        assert image is not None and len(image) <= 64 * 1024
+        with MemberHistoryMembership(image) as membership:
+            assert list(membership.journal_anchors()) == anchors
+            for anchor in anchors:
+                assert membership.journal_anchor(anchor.journal_id) == anchor
+            assert all(membership.contains_structure_object(path) for path in paths)
+            assert not membership.contains_structure_object("unselected-history")
+        assert closure.membership_image(max_bytes=1) is None
+        assert list(closure.journal_anchors()) == anchors

@@ -79,8 +79,8 @@ def test_batched_hints_equal_single_subject_observations_and_fail_closed():
         _request(observer, tuple(subjects)), cast(ContentObservationRuntime, runtime)
     )
     assert batch.state == "observed"
-    assert runtime.read == subjects
-    assert runtime.heartbeats == 16
+    assert sorted(runtime.read, key=lambda item: item.id) == subjects
+    assert runtime.heartbeats >= 16
     single_facts = []
     for subject in subjects:
         single = observer.observe(
@@ -100,7 +100,7 @@ def test_batched_hints_equal_single_subject_observations_and_fail_closed():
     failed = observer.observe(
         _request(observer, tuple(subjects)), cast(ContentObservationRuntime, failed_runtime)
     )
-    assert failed_runtime.read == subjects[:-1]
+    assert sorted(failed_runtime.read, key=lambda item: item.id) == subjects[:-1]
     assert failed.state == "failed" and failed.facts is None
     assert failed.failure.code == "canonical-occurrence-unavailable"
 
@@ -123,3 +123,60 @@ def test_hint_batch_checks_cancellation_before_each_read():
 
     with pytest.raises(Canceled):
         observer.observe(_request(observer, (subject,)), cast(ContentObservationRuntime, Runtime()))
+
+
+def test_independent_hint_evaluation_overlaps_with_bounded_inflight_work():
+    from threading import Barrier, Lock
+
+    observer = RiverhogProvenanceObserver(image_id="sha256:" + "d" * 64)
+    subjects, provenance = [], {}
+    for index in range(32):
+        subject, binding, summary = _fixture(
+            name=f"/source/{index}.wav",
+            view_id="urn:uuid:11111111-1111-4111-8111-111111111111",
+        )
+        subject = subject.model_copy(
+            update={
+                "id": f"subject-{index:04}",
+                "collection": CollectionRootIdentityRef(
+                    collection_id=str(index + 1),
+                    archive_root_sha256="a" * 64,
+                    artifact_set_identity="b" * 64,
+                ),
+            }
+        )
+        subjects.append(subject)
+        provenance[subject.id] = binding, summary
+    gate, lock = Barrier(4), Lock()
+    active = peak = completed = 0
+
+    def bound_summary(summary):
+        nonlocal active, peak, completed
+        with lock:
+            active += 1
+            peak = max(peak, active)
+        try:
+            gate.wait(timeout=5)
+            return summary
+        finally:
+            with lock:
+                active -= 1
+                completed += 1
+
+    class Runtime:
+        def heartbeat(self):
+            pass
+
+        def open_provenance(self, subject):
+            binding, summary = provenance[subject.id]
+            return SimpleNamespace(binding=binding, bound_summary=lambda: bound_summary(summary))
+
+    result = observer.observe(
+        _request(observer, subjects), cast(ContentObservationRuntime, Runtime())
+    )
+    assert result.state == "observed"
+    assert completed == len(subjects)
+    assert peak == 4
+    assert [fact["subject_id"] for fact in result.facts["artifacts"]] == [
+        subject.id for subject in subjects
+    ]

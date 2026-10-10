@@ -140,34 +140,33 @@ class PublishedCanonicalProvenance:
             selected.incarnation_id,
             object_identity.sha256,
         )
-        cached = self._objects.get(key)
-        if cached is not None:
-            for offset in range(0, len(cached), 128 * 1024):
-                yield cached[offset : offset + 128 * 1024]
+
+        def verified_chunks() -> Iterator[bytes]:
+            digest = hashlib.sha256()
+            received = 0
+            for chunk in binding.store.iter_archive_object(
+                collection_id=selected.collection_id,
+                object=object_identity,
+                passphrase_id=selected.passphrase_id,
+                attribution=attribution,
+            ):
+                received += len(chunk)
+                if received > object_identity.plaintext_bytes:
+                    raise InvalidState("published provenance object exceeds its exact identity")
+                digest.update(chunk)
+                yield chunk
+            if (
+                received != object_identity.plaintext_bytes
+                or digest.hexdigest() != object_identity.sha256
+            ):
+                raise InvalidState("published provenance object differs from its exact identity")
+
+        if object_identity.plaintext_bytes > _OBJECT_CACHE_BYTES:
+            yield from verified_chunks()
             return
-        pending = bytearray() if object_identity.plaintext_bytes <= _OBJECT_CACHE_BYTES else None
-        digest = hashlib.sha256()
-        received = 0
-        for chunk in binding.store.iter_archive_object(
-            collection_id=selected.collection_id,
-            object=object_identity,
-            passphrase_id=selected.passphrase_id,
-            attribution=attribution,
-        ):
-            received += len(chunk)
-            if received > object_identity.plaintext_bytes:
-                raise InvalidState("published provenance object exceeds its exact identity")
-            digest.update(chunk)
-            if pending is not None:
-                pending.extend(chunk)
-            yield chunk
-        if (
-            received != object_identity.plaintext_bytes
-            or digest.hexdigest() != object_identity.sha256
-        ):
-            raise InvalidState("published provenance object differs from its exact identity")
-        if pending is not None:
-            self._objects.put(key, bytes(pending))
+        cached = self._objects.get_or_load(key, lambda: b"".join(verified_chunks()))
+        for offset in range(0, len(cached), 128 * 1024):
+            yield cached[offset : offset + 128 * 1024]
 
     def _select_copy(self, collection_id: int) -> _SelectedCopy:
         with read_snapshot(self._session_factory) as session:
