@@ -207,3 +207,19 @@ def test_projected_frame_views_preserve_exact_bytes_and_checked_intake(monkeypat
         assert frame.sha256 == expected_reference["json_sha256"]
     with pytest.raises(AssertionError, match="byte-intake"):
         _ = direct.document
+
+
+def test_default_core_validation_can_reuse_current_bytes_without_an_explicit_catalog() -> None:
+    raw, _ = _journal()
+    cache = JournalValidationCache()
+    first = validate_journal_chunks((raw,), cache=cache)
+    again = validate_journal_chunks(
+        (raw,), cache=cache, expected_anchor=first.anchor, require_exact_tail=True
+    )
+    assert again.materialize() == first.materialize()
+    assert len(cache._entries) == 1
+    assert (
+        validate_journal_chunks((raw,), catalog=ContractCatalog(), cache=cache).materialize()
+        == first.materialize()
+    )
+    assert len(cache._entries) == 1

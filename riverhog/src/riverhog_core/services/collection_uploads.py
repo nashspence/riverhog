@@ -131,6 +131,7 @@ from riverhog_protocol.transport import (
 )
 from riverhog_provenance import (
     CanonicalCorpusValidator,
+    JournalReferenceCache,
     JournalSummary,
     JournalValidationCache,
     MemberHistoryClosure,
@@ -393,6 +394,7 @@ class SqlAlchemyCollectionUploadService:
         self._resources = transfer_resources or ArchiveTransferResources.from_tuning(tuning)
         self._closure_journal_validations = ProvenanceReadCache(byte_budget=1024, entry_budget=128)
         self._journal_validation_cache = JournalValidationCache(admission_provenance_catalog())
+        self._journal_reference_cache = JournalReferenceCache()
         self._age_sessions = {
             passphrase_id: ResumableAgeSessionCache(
                 passphrase,
@@ -1257,7 +1259,10 @@ class SqlAlchemyCollectionUploadService:
                 authority, _iter_staged_history_pages(session, normalized_id, authority)
             )
             with _staged_history_closure(
-                session, normalized_id, journal_cache=self._journal_validation_cache
+                session,
+                normalized_id,
+                journal_cache=self._journal_validation_cache,
+                reference_cache=self._journal_reference_cache,
             ) as closure:
                 for page in _iter_staged_history_pages(session, normalized_id, authority):
                     for row in page.records:
@@ -2969,7 +2974,10 @@ class SqlAlchemyCollectionUploadService:
             passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
             with (
                 _staged_history_closure(
-                    session, collection_id, journal_cache=self._journal_validation_cache
+                    session,
+                    collection_id,
+                    journal_cache=self._journal_validation_cache,
+                    reference_cache=self._journal_reference_cache,
                 ) as closure,
                 ProvenanceCustodySet() as objects,
             ):
@@ -3436,7 +3444,10 @@ class SqlAlchemyCollectionUploadService:
                 _advance_catalog_artifact_objects(session, upload)
             elif phase == "index":
                 _advance_catalog_canonical_index(
-                    session, upload, journal_cache=self._journal_validation_cache
+                    session,
+                    upload,
+                    journal_cache=self._journal_validation_cache,
+                    reference_cache=self._journal_reference_cache,
                 )
             elif phase == "terminal":
                 self._publish_catalog_collection(session, upload)
@@ -4341,7 +4352,10 @@ class SqlAlchemyCollectionUploadService:
             if upload.provenance_validation_next_artifact_order != upload.artifact_count:
                 raise Conflict("canonical provenance bindings do not cover the artifact set")
             _validate_staged_canonical_journal_set(
-                session, upload, journal_cache=self._journal_validation_cache
+                session,
+                upload,
+                journal_cache=self._journal_validation_cache,
+                reference_cache=self._journal_reference_cache,
             )
             upload.provenance_closure_validated = True
             return True
@@ -5431,6 +5445,7 @@ def _advance_catalog_canonical_index(
     upload: CollectionUploadRecord,
     *,
     journal_cache: JournalValidationCache | None = None,
+    reference_cache: JournalReferenceCache | None = None,
 ) -> None:
     """Stage one member's exact canonical discovery support before publication."""
 
@@ -5534,7 +5549,10 @@ def _advance_catalog_canonical_index(
         raise RuntimeError("canonical discovery member has no exact final history selection")
     with (
         _staged_history_closure(
-            session, upload.collection_id, journal_cache=journal_cache
+            session,
+            upload.collection_id,
+            journal_cache=journal_cache,
+            reference_cache=reference_cache,
         ) as closure,
         member_relevance(
             member=member,
@@ -5961,6 +5979,7 @@ def _staged_history_closure(
     collection_id: int,
     *,
     journal_cache: JournalValidationCache | None = None,
+    reference_cache: JournalReferenceCache | None = None,
 ) -> MemberHistoryClosure:
     def read_structure(path: str) -> Iterator[bytes]:
         row = session.get(
@@ -5983,6 +6002,7 @@ def _staged_history_closure(
         member_role=COLLECTION_MEMBER_ROLE,
         catalog=admission_provenance_catalog(),
         journal_cache=journal_cache,
+        reference_cache=reference_cache,
     )
 
 
@@ -5991,11 +6011,14 @@ def _validate_staged_canonical_journal_set(
     upload: CollectionUploadRecord,
     *,
     journal_cache: JournalValidationCache | None = None,
+    reference_cache: JournalReferenceCache | None = None,
 ) -> None:
     """Resolve explicit member roots/imports and exact documentary dependencies."""
     collection_id = upload.collection_id
     with (
-        _staged_history_closure(session, collection_id, journal_cache=journal_cache) as closure,
+        _staged_history_closure(
+            session, collection_id, journal_cache=journal_cache, reference_cache=reference_cache
+        ) as closure,
         CanonicalCorpusValidator() as corpus,
     ):
         for final in session.scalars(

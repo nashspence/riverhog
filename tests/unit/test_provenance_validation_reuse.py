@@ -21,6 +21,7 @@ from riverhog_protocol import collection_tag_set_identity
 from riverhog_provenance import (
     BoundedSourceObserver,
     BytesSource,
+    JournalReferenceCache,
     JournalValidationCache,
     ProvenanceValidationError,
     create_journal,
@@ -44,6 +45,7 @@ def test_pure_validation_reuse_requires_exact_prefix_context_and_success(tmp_pat
     anchor = HistoryJournalAnchor.from_mapping(summary.anchor)
     service = object.__new__(SqlAlchemyCollectionUploadService)
     service._journal_validation_cache = JournalValidationCache(admission_provenance_catalog())
+    service._journal_reference_cache = JournalReferenceCache()
     service._closure_journal_validations = ProvenanceReadCache(byte_budget=1024, entry_budget=128)
     original_validate = collection_uploads.validate_journal_chunks
     original_catalog = collection_uploads.admission_provenance_catalog()

@@ -53,6 +53,7 @@ from riverhog_protocol.errors import Conflict
 from riverhog_provenance import (
     BoundedSourceObserver,
     BytesSource,
+    JournalReferenceCache,
     JournalValidationCache,
     validate_journal,
 )
@@ -210,6 +211,7 @@ def _construction(
             )
     service = object.__new__(SqlAlchemyCollectionUploadService)
     service._journal_validation_cache = JournalValidationCache(admission_provenance_catalog())
+    service._journal_reference_cache = JournalReferenceCache()
     service._session_factory = factory
     service._config = config
     service._resources = ArchiveTransferResources.from_tuning(config.throughput_tuning)

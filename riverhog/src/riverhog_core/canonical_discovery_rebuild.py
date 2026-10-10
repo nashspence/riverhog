@@ -12,6 +12,7 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_provenance import (
+    JournalReferenceCache,
     JournalSummary,
     JournalValidationCache,
     MemberHistoryClosure,
@@ -92,6 +93,7 @@ def rebuild_canonical_index(
     """
     catalog = admission_provenance_catalog()
     journal_cache = JournalValidationCache(catalog)
+    reference_cache = JournalReferenceCache()
     with session_scope(factory) as session:
         collection = session.get(CollectionRecord, collection_id, with_for_update=True)
         if (
@@ -166,6 +168,7 @@ def rebuild_canonical_index(
                         member_role=COLLECTION_MEMBER_ROLE,
                         catalog=catalog,
                         journal_cache=journal_cache,
+                        reference_cache=reference_cache,
                     ) as closure,
                     member_relevance(
                         member=member,

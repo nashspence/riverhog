@@ -29,7 +29,7 @@ class JournalValidationCache:
 
     def __init__(
         self,
-        catalog: ContractCatalog,
+        catalog: ContractCatalog | None = None,
         *,
         byte_budget: int = 256 * 1024 * 1024,
         entry_budget: int = 1024,

@@ -40,6 +40,7 @@ from riverhog_protocol import ArtifactMemberIdentityDocument, collection_tag_set
 from riverhog_provenance import (
     BoundedSourceObserver,
     BytesSource,
+    JournalReferenceCache,
     JournalValidationCache,
     create_journal,
     validate_journal,
@@ -92,6 +93,7 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
     store = CoordinatedStore()
     service = object.__new__(SqlAlchemyCollectionUploadService)
     service._journal_validation_cache = JournalValidationCache(admission_provenance_catalog())
+    service._journal_reference_cache = JournalReferenceCache()
     service._session_factory = factory
     service._config = config
     service._resources = ArchiveTransferResources.from_tuning(config.throughput_tuning)

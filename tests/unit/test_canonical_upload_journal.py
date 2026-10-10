@@ -37,6 +37,7 @@ from riverhog_protocol.errors import Conflict
 from riverhog_provenance import (
     BoundedSourceObserver,
     BytesSource,
+    JournalReferenceCache,
     JournalValidationCache,
     create_journal,
     validate_journal,
@@ -148,6 +149,7 @@ def test_completion_requirement_and_journal_selection_are_immutable(tmp_path: Pa
         )
     service = object.__new__(SqlAlchemyCollectionUploadService)
     service._journal_validation_cache = JournalValidationCache(admission_provenance_catalog())
+    service._journal_reference_cache = JournalReferenceCache()
     service._session_factory = factory
     service._config = config
     first = "urn:uuid:11111111-1111-4111-8111-111111111111"
