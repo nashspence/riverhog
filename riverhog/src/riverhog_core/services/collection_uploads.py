@@ -2835,8 +2835,9 @@ class SqlAlchemyCollectionUploadService:
     def process_due_custody_receipts(self, *, limit: int = 1) -> int:
         progressed = 0
         with read_snapshot(self._session_factory) as session:
-            candidates = list(
-                session.execute(
+            candidates = [
+                (collection_id, artifact_id)
+                for collection_id, artifact_id in session.execute(
                     select(
                         CollectionUploadArtifactRecord.collection_id,
                         CollectionUploadArtifactRecord.artifact_id,
@@ -2882,18 +2883,36 @@ class SqlAlchemyCollectionUploadService:
                     )
                     .limit(max(0, limit))
                 )
-            )
-        for collection_id, artifact_id in candidates:
+            ]
+
+        def advance(candidate: tuple[int, str]) -> int:
+            collection_id, artifact_id = candidate
             try:
-                progressed += int(
-                    self._advance_artifact_custody(int(collection_id), str(artifact_id))
-                )
+                return int(self._advance_artifact_custody(int(collection_id), str(artifact_id)))
             except Exception:
                 _LOG.exception(
                     "early artifact custody remains pending: collection_id=%s artifact_id=%s",
                     collection_id,
                     artifact_id,
                 )
+                return 0
+
+        capacity = min(
+            16,
+            self._resources.upload_preparations.capacity,
+            self._resources.upload_requests.capacity,
+            self._resources.age_derivations.capacity,
+        )
+        # Independent members retain separate validation scratch and transactions.
+        # The shared transfer gates bound crypto and contacts; receipt publication
+        # still locks and rechecks the owning collection before acknowledging custody.
+        for start in range(0, len(candidates), capacity):
+            batch = candidates[start : start + capacity]
+            if len(batch) == 1:
+                progressed += advance(batch[0])
+            else:
+                with ThreadPoolExecutor(max_workers=capacity) as executor:
+                    progressed += sum(executor.map(advance, batch))
         return progressed
 
     def _advance_artifact_custody(self, collection_id: int, artifact_id: str) -> bool:

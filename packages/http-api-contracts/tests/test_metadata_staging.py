@@ -434,3 +434,55 @@ def test_transport_expiration_reclaims_only_idle_bytes_and_leaves_native_facts(t
         assert result.request_sha256 == original.request_sha256
     finally:
         server.close()
+
+
+def test_typed_owner_handoff_validates_exact_request_once_and_rejects_bad_identity(tmp_path):
+    validations, executions = [], []
+
+    class TypedRequest(Request):
+        @model_validator(mode="after")
+        def counted(self):
+            validations.append(self.request_sha256)
+            return self
+
+    original = TypedRequest.model_validate(request().model_dump(mode="python"))
+    validations.clear()
+    operation = HttpOperationContract("POST", "/v1/facts", TypedRequest, ExactDocument, "json")
+
+    def execute_bytes(*_args):
+        raise AssertionError("a validated owner model must not be serialized and reparsed")
+
+    def execute_model(method, path, model):
+        assert isinstance(model, TypedRequest)
+        assert (method, path) == ("POST", "/v1/facts")
+        executions.append(model)
+        return Reply(200, canonical_json_bytes(model.model_dump(mode="json", exclude={"access"})))
+
+    server = CanonicalMetadataServer(
+        root=tmp_path, operations=(operation,), execute=execute_bytes, execute_model=execute_model
+    )
+    try:
+        result = MetadataExchange(wire_for(server)).call(
+            "POST",
+            "/v1/facts",
+            ExactDocument,
+            original,
+            lambda: {"access": original.access.model_dump(mode="json")},
+        )
+        assert result.records == original.records
+        assert executions == [original]
+        assert validations == [original.request_sha256]
+        assert all(b"test-transient-token" not in path.read_bytes() for path in tmp_path.iterdir())
+        wrong = original.model_copy(update={"request_sha256": "0" * 64})
+        with pytest.raises(MetadataRemoteFailure) as failure:
+            MetadataExchange(wire_for(server)).call(
+                "POST",
+                "/v1/facts",
+                ExactDocument,
+                wrong,
+                lambda: {"access": original.access.model_dump(mode="json")},
+            )
+        assert failure.value.code == "invalid_metadata"
+        assert executions == [original]
+    finally:
+        server.close()

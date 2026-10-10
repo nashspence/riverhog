@@ -3,7 +3,9 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 
+import pytest
 from riverhog_archive_contracts import format_archive_sequence
+from riverhog_core.archive_provenance import ArchiveProvenancePublisher
 from riverhog_core.archive_root import ArchiveRootPublisher
 from riverhog_core.domain.archive import (
     ArchiveArtifact,
@@ -133,3 +135,32 @@ def test_root_publish_is_logically_idempotent_and_never_rewrites_manifest() -> N
     assert first.volume_metadata[1].relative_path == (
         f"metadata/volume-{format_archive_sequence(1)}.json.age"
     )
+
+
+def test_provenance_timings_count_actual_crypto_and_never_claim_failed_custody(monkeypatch):
+    timings = []
+    monkeypatch.setattr("riverhog_core.archive_provenance.log_transfer_timing", timings.append)
+    store = MemoryImmutableStore()
+    publisher = ArchiveProvenancePublisher(
+        object_store=store, passphrase="test archive passphrase", scrypt_log_n=1
+    )
+    first = publisher.publish_journal_segment(archive_storage_prefix="fixture", content=b"facts")
+    ciphertext = next(iter(store.objects.values())).content
+    second = publisher.publish_journal_segment(archive_storage_prefix="fixture", content=b"facts")
+    assert first == second and next(iter(store.objects.values())).content == ciphertext
+    assert len(timings) == 2
+    assert timings[0].crypto_seconds > 0 and timings[1].crypto_seconds == 0
+    assert all(t.operation == "provenance-write-provenance-journal-segment" for t in timings)
+    assert all(t.plaintext_bytes == 5 and t.stored_bytes == len(ciphertext) for t in timings)
+    assert all(
+        min(t.queue_wait_seconds, t.integrity_seconds, t.remote_seconds) >= 0 for t in timings
+    )
+    assert all(t.elapsed_seconds >= t.crypto_seconds for t in timings)
+
+    def interrupted(**_kwargs):
+        raise RuntimeError("owned fixture interrupted its write")
+
+    store.put_immutable_object = interrupted
+    with pytest.raises(RuntimeError, match="interrupted"):
+        publisher.publish_journal_segment(archive_storage_prefix="fixture", content=b"new facts")
+    assert len(timings) == 2

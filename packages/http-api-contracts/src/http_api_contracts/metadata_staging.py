@@ -96,6 +96,7 @@ class CanonicalMetadataServer:
         root: Path,
         operations: Sequence[HttpOperationContract],
         execute: Callable[[str, str, bytes], MetadataResponse],
+        execute_model: Callable[[str, str, BaseModel], MetadataResponse] | None = None,
         maximum_workers: int = 2,
         retention_seconds: float = 24 * 60 * 60,
     ) -> None:
@@ -106,6 +107,7 @@ class CanonicalMetadataServer:
         root.mkdir(mode=0o700, parents=True, exist_ok=True)
         self.root = root.resolve()
         self.operations, self.execute = tuple(operations), execute
+        self.execute_model = execute_model
         self._lock = threading.RLock()
         self._workers = ThreadPoolExecutor(
             max_workers=maximum_workers, thread_name_prefix="metadata"
@@ -327,14 +329,16 @@ class CanonicalMetadataServer:
     ) -> None:
         try:
             raw = b""
+            model: BaseModel | None = None
             if call.document is not None:
                 document = parse_identity_json(self._read_exact(call.document))
                 if not isinstance(document, dict) or set(document) & set(call.transient):
                     raise ValueError("metadata transient fields overlap staged fields")
                 document.update(call.transient)
                 # The actual owner's published parser validates the whole object.
-                model: BaseModel = TypeAdapter(operation.request_type).validate_python(document)
-                raw = canonical_json_bytes(model.model_dump(mode="json", by_alias=True))
+                model = TypeAdapter(operation.request_type).validate_python(document)
+                if self.execute_model is None:
+                    raw = canonical_json_bytes(model.model_dump(mode="json", by_alias=True))
         except (ValueError, TypeError, OSError):
             status = MetadataCallStatus(
                 call_id=call_id,
@@ -347,7 +351,13 @@ class CanonicalMetadataServer:
                 self._save(call_id, "reply.json", status)
             return
         try:
-            response = self.execute(call.method, call.path, raw)
+            # The owner receives its already validated native model directly.
+            # Bytes remain the fallback for owners without a typed handoff.
+            response = (
+                self.execute_model(call.method, call.path, model)
+                if model is not None and self.execute_model is not None
+                else self.execute(call.method, call.path, raw)
+            )
             if response.status >= 400:
                 reply_document = parse_identity_json(response.body)
                 error = reply_document.get("error") if isinstance(reply_document, dict) else None

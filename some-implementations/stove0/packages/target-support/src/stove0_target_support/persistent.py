@@ -11,6 +11,7 @@ import subprocess
 import threading
 import time
 import traceback
+from collections import OrderedDict
 from collections.abc import Callable, Mapping
 from itertools import chain
 from pathlib import Path
@@ -163,6 +164,12 @@ class PersistentTargetService:
         self._state_owner = ExclusiveStateOwner(self.state_root)
         self._execute = execute
         self._lock = threading.RLock()
+        self._accepted_cache: OrderedDict[tuple[str, str], tuple[int, AcceptedTargetJob]] = (
+            OrderedDict()
+        )
+        self._accepted_cache_bytes = 0
+        self._accepted_cache_budget = 8 * 1024 * 1024
+        self._accepted_cache_entries = 16
         self._cancel: dict[str, threading.Event] = {}
         self._operator_canceled: set[str] = set()
         self._shutdown_interrupted: set[str] = set()
@@ -942,11 +949,30 @@ class PersistentTargetService:
 
     def _load_accepted(self, job_id: str) -> AcceptedTargetJob | None:
         path = self._accepted_path(job_id)
-        return (
-            None
-            if not path.exists()
-            else AcceptedTargetJob.model_validate_json(path.read_text(encoding="utf-8"))
-        )
+        if path.is_symlink():
+            raise ValueError("target accepted path must not be a symlink")
+        if not path.exists():
+            return None
+        raw = path.read_bytes()
+        key = (job_id, hashlib.sha256(raw).hexdigest())
+        with self._lock:
+            cached = self._accepted_cache.get(key)
+            if cached is not None:
+                self._accepted_cache.move_to_end(key)
+                # Nested JSON values are mutable even in frozen protocol models.
+                # Each caller owns its view of this exact non-secret declaration.
+                return cached[1].model_copy(deep=True)
+            accepted = AcceptedTargetJob.model_validate_json(raw)
+            if len(raw) <= self._accepted_cache_budget:
+                while self._accepted_cache and (
+                    len(self._accepted_cache) >= self._accepted_cache_entries
+                    or self._accepted_cache_bytes + len(raw) > self._accepted_cache_budget
+                ):
+                    _, (size, _) = self._accepted_cache.popitem(last=False)
+                    self._accepted_cache_bytes -= size
+                self._accepted_cache[key] = (len(raw), accepted.model_copy(deep=True))
+                self._accepted_cache_bytes += len(raw)
+            return accepted
 
     def _load_status(self, job_id: str) -> TargetJobStatus | None:
         path = self._status_path(job_id)

@@ -4,6 +4,7 @@ from collections.abc import AsyncIterator, Callable, Sequence
 from pathlib import Path
 from typing import Any, Protocol
 
+from pydantic import BaseModel
 from riverhog_canonical_json import canonical_json_bytes
 
 from http_api_contracts import HttpOperationContract
@@ -60,6 +61,7 @@ class MetadataHttpBinding[Response: MetadataResponse]:
         operations: Sequence[HttpOperationContract],
         execute: Callable[[str, str, bytes], MetadataResponse],
         response: ResponseFactory[Response],
+        execute_model: Callable[[str, str, BaseModel], MetadataResponse] | None = None,
     ) -> None:
         self._response = response
         self.server: CanonicalMetadataServer | None = None
@@ -68,7 +70,9 @@ class MetadataHttpBinding[Response: MetadataResponse]:
             if root is not None:
                 root = root / "metadata"
         if root is not None:
-            self.server = CanonicalMetadataServer(root=root, operations=operations, execute=execute)
+            self.server = CanonicalMetadataServer(
+                root=root, operations=operations, execute=execute, execute_model=execute_model
+            )
             register = getattr(owner, "register_metadata_shutdown", None)
             if register is not None:
                 register(self.server.close)

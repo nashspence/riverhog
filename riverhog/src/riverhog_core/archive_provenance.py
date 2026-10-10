@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import nullcontext
 from dataclasses import dataclass
@@ -33,7 +34,11 @@ from riverhog_core.archive_formats import (
 )
 from riverhog_core.domain.archive import SealedProvenanceObject
 from riverhog_core.ports.archive_objects import ImmutableArchiveObjectStore
-from riverhog_core.throughput import ArchiveTransferResources
+from riverhog_core.throughput import (
+    ArchiveTransferResources,
+    TransferTiming,
+    log_transfer_timing,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -238,20 +243,33 @@ class ArchiveProvenancePublisher:
         content: bytes,
         storage_format: str,
     ) -> SealedProvenanceObject:
+        started = time.monotonic()
         plaintext_sha256 = hashlib.sha256(content).hexdigest()
+        integrity_seconds = time.monotonic() - started
+        queue_seconds = crypto_seconds = crypto_queue_seconds = 0.0
 
         def encrypt() -> bytes:
+            nonlocal crypto_seconds, crypto_queue_seconds
             with (
-                nullcontext()
+                nullcontext(0.0)
                 if self._resources is None
                 else self._resources.age_derivations.reserve()
-            ):
-                return encrypt_age_scrypt(content, self._passphrase, log_n=self._scrypt_log_n)
+            ) as waited:
+                crypto_queue_seconds += waited
+                crypto_started = time.monotonic()
+                try:
+                    return encrypt_age_scrypt(content, self._passphrase, log_n=self._scrypt_log_n)
+                finally:
+                    crypto_seconds += time.monotonic() - crypto_started
 
         media_type = storage_format.replace("/", ".").replace("+", ".")
         with (
-            nullcontext() if self._resources is None else self._resources.upload_requests.reserve()
-        ):
+            nullcontext(0.0)
+            if self._resources is None
+            else self._resources.upload_requests.reserve()
+        ) as waited:
+            queue_seconds += waited
+            remote_started = time.monotonic()
             receipt = self._object_store.put_immutable_object(
                 object_path=f"{prefix}/{relative_path}",
                 content=encrypt,
@@ -263,6 +281,24 @@ class ArchiveProvenancePublisher:
                 },
                 placement_policy="immediate_default",
             )
+            remote_seconds = max(
+                0.0, time.monotonic() - remote_started - crypto_seconds - crypto_queue_seconds
+            )
+        log_transfer_timing(
+            TransferTiming(
+                operation=f"provenance-write-{kind}",
+                identity=plaintext_sha256,
+                plaintext_bytes=len(content),
+                stored_bytes=receipt.stored_bytes,
+                queue_wait_seconds=queue_seconds + crypto_queue_seconds,
+                source_seconds=0.0,
+                integrity_seconds=integrity_seconds,
+                crypto_seconds=crypto_seconds,
+                remote_seconds=remote_seconds,
+                checkpoint_seconds=0.0,
+                elapsed_seconds=time.monotonic() - started,
+            )
+        )
         return SealedProvenanceObject(
             object_id=object_id,
             kind=kind,

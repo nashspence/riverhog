@@ -3456,3 +3456,80 @@ def test_live_target_retention_prunes_expired_terminal_records_without_restart(t
         assert not accepted.exists()
     finally:
         service.close()
+
+
+def test_accepted_declaration_reuse_hashes_current_bytes_and_isolates_mutable_views(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    operation, target, request = _request()
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=lambda *_args: pytest.fail("reading an accepted declaration must not execute"),
+    )
+    path = service._accepted_path(request.declaration.job_id)
+    service._write_model(path, request.accepted())
+    original = AcceptedTargetJob.model_validate_json
+    calls = []
+
+    def validate(cls, raw, **kwargs):
+        calls.append(hashlib.sha256(raw).hexdigest())
+        return original(raw, **kwargs)
+
+    monkeypatch.setattr(AcceptedTargetJob, "model_validate_json", classmethod(validate))
+    try:
+        first = service._load_accepted(request.declaration.job_id)
+        assert first == request.accepted()
+        assert first is not None
+        first.declaration.plan.intent["suffix"] = "caller mutation"
+        second = service._load_accepted(request.declaration.job_id)
+        assert second == request.accepted() and second is not first
+        assert len(calls) == 1
+        unchanged = path.read_bytes()
+        tampered = json.loads(unchanged)
+        tampered["request_sha256"] = "0" * 64
+        path.write_bytes(json.dumps(tampered).encode())
+        for _ in range(2):
+            with pytest.raises(ValidationError):
+                service._load_accepted(request.declaration.job_id)
+        assert len(calls) == 3  # failures are retried, never installed
+        path.write_bytes(unchanged)
+        assert service._load_accepted(request.declaration.job_id) == request.accepted()
+        assert len(calls) == 3
+        path.unlink()
+        assert service._load_accepted(request.declaration.job_id) is None
+        path.symlink_to(tmp_path / "missing")
+        with pytest.raises(ValueError, match="symlink"):
+            service._load_accepted(request.declaration.job_id)
+    finally:
+        path.unlink(missing_ok=True)
+        service.close()
+
+
+def test_accepted_declaration_cache_capacity_never_limits_valid_input(tmp_path: Path) -> None:
+    operation, target, request = _request()
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=lambda *_args: pytest.fail("loading a declaration must not execute"),
+    )
+    try:
+        service._accepted_cache_budget = 1
+        service._write_model(service._accepted_path(request.declaration.job_id), request.accepted())
+        for _ in range(2):
+            assert service._load_accepted(request.declaration.job_id) == request.accepted()
+        assert not service._accepted_cache and service._accepted_cache_bytes == 0
+        service._accepted_cache_budget = 8 * 1024 * 1024
+        service._accepted_cache_entries = 1
+        second = _request_at_fence(request, 3)
+        service._write_model(service._accepted_path(second.declaration.job_id), second.accepted())
+        assert service._load_accepted(request.declaration.job_id) == request.accepted()
+        assert service._load_accepted(second.declaration.job_id) == second.accepted()
+        assert len(service._accepted_cache) == 1
+        assert service._accepted_cache_bytes <= service._accepted_cache_budget
+        assert next(iter(service._accepted_cache))[0] == second.declaration.job_id
+    finally:
+        service.close()

@@ -70,6 +70,9 @@ class ObserverHttpBinding:
             operations=OBSERVER_HTTP_OPERATIONS,
             execute=lambda method, path, body: self._handle_inline(method, path, body, staged=True),
             response=ObserverHttpResponse,
+            execute_model=lambda method, path, model: self._handle_inline(
+                method, path, b"", staged=True, validated=model
+            ),
         )
 
     def handle(self, method: str, path: str, body: bytes = b"") -> ObserverHttpResponse:
@@ -78,7 +81,13 @@ class ObserverHttpBinding:
         return self._handle_inline(method, path, body)
 
     def _handle_inline(
-        self, method: str, path: str, body: bytes, *, staged: bool = False
+        self,
+        method: str,
+        path: str,
+        body: bytes,
+        *,
+        staged: bool = False,
+        validated: BaseModel | None = None,
     ) -> ObserverHttpResponse:
         normalized_method = method.upper()
         if normalized_method == "GET" and path == "/v1/observer":
@@ -108,7 +117,14 @@ class ObserverHttpBinding:
                 return _error(413, "request_too_large", "observer request exceeds its size limit")
             try:
                 model = AcceptedObservationJob if suffix else ContentObservationInvocation
-                request = model.model_validate(parse_identity_json(body))
+                if validated is not None:
+                    if not staged or not isinstance(validated, model):
+                        raise TypeError(
+                            "metadata handoff differs from the observation request type"
+                        )
+                    request = validated
+                else:
+                    request = model.model_validate(parse_identity_json(body))
             except (ValidationError, ValueError) as exc:
                 return _error(400, "invalid_observation_request", str(exc))
             try:

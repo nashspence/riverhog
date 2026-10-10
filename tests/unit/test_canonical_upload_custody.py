@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import hashlib
+import threading
 import uuid
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -354,3 +356,107 @@ def test_lost_custody_store_response_reuses_durable_bytes(tmp_path: Path) -> Non
     assert {path: value.content for path, value in store.objects.items()} == ciphertexts
     with session_scope(f.factory) as session:
         assert _custody_stats(session, 1) == (1, 3)
+
+
+def test_bounded_parallel_custody_keeps_failed_members_pending_and_retries_exact_bytes(
+    tmp_path: Path,
+) -> None:
+    f = _construction(tmp_path)
+    service, factory = f.service, f.factory
+    models = (
+        CollectionUploadRecord,
+        CollectionUploadArtifactRecord,
+        CollectionUploadProvenanceJournalRecord,
+        CollectionUploadProvenanceJournalChunkRecord,
+        CollectionUploadArtifactProvenanceBindingRecord,
+        CollectionArchiveObjectUploadRecord,
+        CollectionUploadArtifactVolumeRecord,
+    )
+    with session_scope(factory) as session:
+        sources = {model: list(session.scalars(select(model))) for model in models}
+        for collection_id in (2, 3):
+            for model in models:
+                for row in sources[model]:
+                    values = {
+                        column.key: getattr(row, column.key) for column in model.__table__.columns
+                    }
+                    values["collection_id"] = collection_id
+                    if model is CollectionUploadRecord:
+                        values["idempotency_key"] = f"custody-{collection_id}"
+                        values["archive_storage_prefix"] = f"collection/{collection_id}"
+                    elif model is CollectionArchiveObjectUploadRecord:
+                        values["object_path"] = values["object_path"].replace(
+                            "collection/1/", f"collection/{collection_id}/"
+                        )
+                    session.add(model(**values))
+                session.flush()
+        for collection_id in (1, 2, 3):
+            upload = session.get(CollectionUploadRecord, collection_id)
+            for volume in session.scalars(
+                select(CollectionArchiveObjectUploadRecord).where(
+                    CollectionArchiveObjectUploadRecord.collection_id == collection_id
+                )
+            ):
+                volume.state = "sealed"
+                volume.sealed_receipt_json = '{"sealed":true}'
+                _record_payload_custody_progress(
+                    session, upload, volume, now="2026-01-01T00:02:00Z"
+                )
+    tuning = replace(
+        f.config.throughput_tuning,
+        upload_prepare_concurrency=2,
+        upload_request_concurrency=2,
+        age_derivation_concurrency=2,
+    )
+    service._resources = ArchiveTransferResources.from_tuning(tuning)
+    original_put = f.store.put_immutable_object
+    barrier = threading.Barrier(2)
+    lock = threading.Lock()
+    active = peak = 0
+    failed = False
+
+    def put(**kwargs):
+        nonlocal active, peak, failed
+        with lock:
+            active += 1
+            peak = max(peak, active)
+            synchronize = not failed
+        try:
+            if synchronize:
+                barrier.wait(timeout=10)
+            if kwargs["object_path"].startswith("collection/2/") and not failed:
+                with lock:
+                    failed = True
+                raise RuntimeError("owned fixture interrupted its write")
+            return original_put(**kwargs)
+        finally:
+            with lock:
+                active -= 1
+
+    f.store.put_immutable_object = put
+    assert service.process_due_custody_receipts(limit=16) == 2
+    assert peak == 2 and active == 0
+    first_bytes = {path: stored.content for path, stored in f.store.objects.items()}
+    with session_scope(factory) as session:
+        assert all(
+            row.custody_receipt_json is None
+            for row in session.scalars(select(CollectionUploadArtifactRecord))
+        )
+    f.store.put_immutable_object = original_put
+    assert service.process_due_custody_receipts(limit=16) == 3
+    assert service.process_due_custody_receipts(limit=16) == 1
+    assert service.process_due_custody_receipts(limit=16) == 0
+    for path, raw in first_bytes.items():
+        assert f.store.objects[path].content == raw
+    with session_scope(factory) as session:
+        for collection_id in (1, 2, 3):
+            row = session.get(CollectionUploadArtifactRecord, (collection_id, f.member_id))
+            upload = session.get(CollectionUploadRecord, collection_id)
+            assert row.custody_receipt_json is not None
+            receipt = CollectionUploadArtifactCustodyReceiptDocument.model_validate_json(
+                row.custody_receipt_json
+            )
+            assert int(receipt.collection_id) == collection_id
+            assert receipt.primary == f.primary.binding
+            assert _custody_stats(session, collection_id) == (1, 3)
+            assert upload.final_authority_json is None
