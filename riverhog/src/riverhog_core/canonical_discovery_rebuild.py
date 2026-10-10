@@ -11,7 +11,12 @@ from riverhog_protocol import (
     CollectionArtifactProvenanceBindingDocument,
 )
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
-from riverhog_provenance import JournalSummary, MemberHistoryClosure, validate_journal_chunks
+from riverhog_provenance import (
+    JournalSummary,
+    JournalValidationCache,
+    MemberHistoryClosure,
+    validate_journal_chunks,
+)
 from riverhog_provenance_contracts import core_contract
 from sqlalchemy import func, select
 
@@ -47,7 +52,10 @@ from riverhog_core.provenance_catalog import admission_provenance_catalog
 
 
 class _ArchiveCorpus(Mapping[str, JournalSummary]):
-    def __init__(self, reader: CanonicalProvenanceArchiveReader) -> None:
+    def __init__(
+        self, reader: CanonicalProvenanceArchiveReader, journal_cache: JournalValidationCache
+    ) -> None:
+        self.journal_cache = journal_cache
         self.reader = reader
         self.cache: OrderedDict[str, JournalSummary] = OrderedDict()
 
@@ -57,6 +65,7 @@ class _ArchiveCorpus(Mapping[str, JournalSummary]):
                 self.reader.iter_journal_range(journal_id),
                 catalog=admission_provenance_catalog(),
                 require_profiles=False,
+                cache=self.journal_cache,
             )
         self.cache.move_to_end(journal_id)
         result = self.cache[journal_id]
@@ -82,6 +91,7 @@ def rebuild_canonical_index(
     canonical facts.
     """
     catalog = admission_provenance_catalog()
+    journal_cache = JournalValidationCache(catalog)
     with session_scope(factory) as session:
         collection = session.get(CollectionRecord, collection_id, with_for_update=True)
         if (
@@ -123,7 +133,7 @@ def rebuild_canonical_index(
             root = reader.scan().root
             if root.binding_count != count:
                 raise StaleIndexBuild("archive member count differs from its publication")
-            corpus = _ArchiveCorpus(reader)
+            corpus = _ArchiveCorpus(reader, journal_cache)
             for row in reader.iter_bindings():
                 selected = MemberHistoryBinding.from_mapping(row)
                 if after_id is not None and selected.artifact_id <= after_id:
@@ -147,6 +157,7 @@ def rebuild_canonical_index(
                     expected_anchor=binding.journal.model_dump(mode="json"),
                     require_exact_tail=True,
                     require_profiles=False,
+                    cache=journal_cache,
                 )
                 with (
                     MemberHistoryClosure(
@@ -154,6 +165,7 @@ def rebuild_canonical_index(
                         lambda journal_id, size: reader.iter_journal_range(journal_id, size=size),
                         member_role=COLLECTION_MEMBER_ROLE,
                         catalog=catalog,
+                        journal_cache=journal_cache,
                     ) as closure,
                     member_relevance(
                         member=member,

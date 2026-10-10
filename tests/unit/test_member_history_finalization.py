@@ -31,12 +31,19 @@ from riverhog_core.catalog_models import (
 )
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
 from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
+from riverhog_core.provenance_catalog import admission_provenance_catalog
 from riverhog_core.provenance_read_cache import ProvenanceReadCache
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 from riverhog_core.throughput import ArchiveThroughputTuning, ArchiveTransferResources
 from riverhog_protocol import ArtifactMemberIdentityDocument, collection_tag_set_identity
-from riverhog_provenance import BoundedSourceObserver, BytesSource, create_journal, validate_journal
+from riverhog_provenance import (
+    BoundedSourceObserver,
+    BytesSource,
+    JournalValidationCache,
+    create_journal,
+    validate_journal,
+)
 from sqlalchemy import select
 
 from tests.unit.db_helpers import sqlite_url
@@ -84,6 +91,7 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
 
     store = CoordinatedStore()
     service = object.__new__(SqlAlchemyCollectionUploadService)
+    service._journal_validation_cache = JournalValidationCache(admission_provenance_catalog())
     service._session_factory = factory
     service._config = config
     service._resources = ArchiveTransferResources.from_tuning(config.throughput_tuning)

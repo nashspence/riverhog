@@ -35,6 +35,7 @@ from .journal import (
     iter_journal_frames,
     validate_journal_chunks,
 )
+from .journal_cache import JournalValidationCache
 
 
 def _external_references(value: object) -> Iterator[dict[str, Any]]:
@@ -142,11 +143,13 @@ class MemberHistoryClosure:
         *,
         member_role: str,
         catalog: ContractCatalog | None = None,
+        journal_cache: JournalValidationCache | None = None,
     ) -> None:
         self.store = store
         self.read_journal = read_journal
         self.member_role = member_role
         self.catalog = catalog
+        self.journal_cache = journal_cache
         self._summaries: OrderedDict[bytes, JournalSummary] = OrderedDict()
         self._summary_bytes = 0
         self._scratch = TemporaryDirectory(prefix="riverhog-history-closure-")
@@ -222,6 +225,7 @@ class MemberHistoryClosure:
             expected_anchor=anchor.to_mapping(),
             require_exact_tail=True,
             require_profiles=False,
+            cache=self.journal_cache,
         )
         # Cache capacity bounds working state, never accepted journal extents.
         budget = 4 * 1024 * 1024

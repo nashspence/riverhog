@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 from collections.abc import Iterable, Iterator, Mapping, Sequence, Set
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, BinaryIO, cast
 
 from riverhog_provenance_contracts import (
@@ -33,6 +34,7 @@ from .graph import (
     iter_assertions,
     time_ns,
 )
+from .journal_cache import JournalValidationCache
 
 RS, LF = b"\x1e", b"\n"
 
@@ -40,9 +42,27 @@ RS, LF = b"\x1e", b"\n"
 @dataclass(frozen=True, slots=True)
 class JournalFrame:
     json_bytes: bytes
+    _validated_reference: tuple[str, str, str] | None = field(
+        default=None, init=False, repr=False, compare=False
+    )
+
+    @classmethod
+    def _from_validated(cls, json_bytes: bytes, reference: Mapping[str, str]) -> JournalFrame:
+        """Read an exact previously validated immutable store projection."""
+        frame = cls(json_bytes)
+        object.__setattr__(
+            frame,
+            "_validated_reference",
+            (reference["entry_id"], reference["sequence"], reference["json_sha256"]),
+        )
+        return frame
 
     @property
     def document(self) -> dict[str, Any]:
+        # Byte intake checked canonical JSON before this projection was created.
+        # Each view is freshly decoded, so caller mutation cannot change evidence.
+        if self._validated_reference is not None:
+            return cast(dict[str, Any], json.loads(self.json_bytes))
         return decode_document(self.json_bytes)
 
     @property
@@ -51,10 +71,15 @@ class JournalFrame:
 
     @property
     def sha256(self) -> str:
+        if self._validated_reference is not None:
+            return self._validated_reference[2]
         return hashlib.sha256(self.json_bytes).hexdigest()
 
     @property
     def reference(self) -> dict[str, str]:
+        if self._validated_reference is not None:
+            entry_id, sequence, sha256 = self._validated_reference
+            return {"entry_id": entry_id, "sequence": sequence, "json_sha256": sha256}
         document = self.document
         return {
             "entry_id": document["id"],
@@ -200,7 +225,16 @@ def validate_journal_chunks(
     require_profiles: bool = True,
     expected_anchor: Mapping[str, Any] | None = None,
     require_exact_tail: bool = False,
+    cache: JournalValidationCache | None = None,
 ) -> JournalSummary:
+    if cache is not None:
+        return cache.validate(
+            chunks,
+            catalog=catalog,
+            require_profiles=require_profiles,
+            expected_anchor=expected_anchor,
+            require_exact_tail=require_exact_tail,
+        )
     from .journal_store import JournalStore
 
     selected = catalog or ContractCatalog()
