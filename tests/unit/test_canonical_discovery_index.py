@@ -43,7 +43,7 @@ from riverhog_protocol import ArtifactMemberIdentityDocument, collection_tag_set
 from riverhog_protocol.collection_production_provenance import collection_production_contract
 from riverhog_provenance import BoundedSourceObserver, BytesSource, create_journal, validate_journal
 from riverhog_provenance_contracts import ContractCatalog
-from sqlalchemy import func, select
+from sqlalchemy import event, func, select
 from sqlalchemy.orm import Session
 
 from tests.support.member_history import member_history_selection_fixture
@@ -336,4 +336,90 @@ def test_initial_catalog_publication_waits_for_exact_canonical_index() -> None:
             )
             > 0
         )
+    engine.dispose()
+
+
+def test_membership_pages_bound_database_work_and_keep_exact_references_and_fences() -> None:
+    import pytest
+
+    engine = create_catalog_engine("sqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    payload = b"native facts with repeated recorded support"
+    observation = BoundedSourceObserver().observe(BytesSource(payload))
+    summary = validate_journal(
+        create_journal(
+            observation.graph_fragment(), recorded_by_agent_id=observation.observer_agent_id
+        )
+    )
+    assertions = tuple(iter_index_assertions(summary))
+    artifact_ids = [
+        hashlib.sha256(f"member-{ordinal}".encode()).hexdigest() for ordinal in range(128)
+    ]
+    with Session(engine) as session:
+        session.add(_collection())
+        session.commit()
+        build_id = begin_index_build(session, collection_id=1)
+        stage_snapshot_header(session, build_id=build_id, summary=summary)
+        session.flush()
+        stage_entry_page(session, build_id=build_id, summary=summary, start=0)
+        stage_assertion_page(session, build_id=build_id, rows=assertions)
+        for artifact_id in artifact_ids:
+            stage_member(
+                session,
+                build_id=build_id,
+                artifact_id=artifact_id,
+                bytes=len(payload),
+                sha256=hashlib.sha256(payload).hexdigest(),
+                journal_id=summary.journal_id,
+                prefix_sha256=summary.journal_sha256,
+                delivery_association_id="urn:uuid:" + str(uuid.uuid4()),
+            )
+        session.commit()
+        rows = [
+            (artifact_id, row.row_key, scope)
+            for artifact_id in artifact_ids
+            for row in assertions[:2]
+            for scope in ("member", "recorded-history")
+        ]
+        assert len(rows) == 512
+        statements = []
+
+        def record_statement(_connection, _cursor, statement, _parameters, _context, _executemany):
+            statements.append(statement)
+
+        event.listen(engine, "before_cursor_execute", record_statement)
+        try:
+            stage_membership_page(session, build_id=build_id, rows=rows)
+            session.commit()
+            assert len(statements) < 50
+            statements.clear()
+            stage_membership_page(session, build_id=build_id, rows=rows)
+            session.commit()
+            assert len(statements) < 50
+        finally:
+            event.remove(engine, "before_cursor_execute", record_statement)
+        actual = set(
+            session.execute(
+                select(
+                    CollectionProvenanceIndexMembershipRecord.artifact_id,
+                    CollectionProvenanceIndexMembershipRecord.row_key,
+                    CollectionProvenanceIndexMembershipRecord.scope,
+                ).where(CollectionProvenanceIndexMembershipRecord.build_id == build_id)
+            ).tuples()
+        )
+        assert actual == set(rows)
+        with pytest.raises(StaleIndexBuild, match="member"):
+            stage_membership_page(
+                session, build_id=build_id, rows=[("f" * 64, assertions[0].row_key, "member")]
+            )
+        session.rollback()
+        with pytest.raises(StaleIndexBuild, match="assertion"):
+            stage_membership_page(
+                session, build_id=build_id, rows=[(artifact_ids[0], "f" * 64, "member")]
+            )
+        session.rollback()
+        begin_index_build(session, collection_id=1)
+        session.commit()
+        with pytest.raises(StaleIndexBuild, match="fence"):
+            stage_membership_page(session, build_id=build_id, rows=rows)
     engine.dispose()

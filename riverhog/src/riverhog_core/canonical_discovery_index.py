@@ -16,7 +16,7 @@ from typing import Any, cast
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_provenance import JournalSummary
 from riverhog_provenance_contracts import core_contract
-from sqlalchemy import Table, func, select
+from sqlalchemy import Table, func, insert, select, tuple_
 from sqlalchemy.orm import Session
 from time_formats import utc_timestamp_now
 
@@ -398,25 +398,58 @@ def stage_membership_page(
     _require_pending(session, build_id)
     if not 1 <= len(rows) <= 1024 or len(set(rows)) != len(rows):
         raise ValueError("discovery membership page is empty, repeated or too large")
-    for artifact_id, row_key, scope in rows:
-        if scope not in {"member", "input-history", "collection", "recorded-history"}:
-            raise ValueError("discovery relevance scope is invalid")
-        if session.get(CollectionProvenanceIndexMemberRecord, (build_id, artifact_id)) is None:
-            raise StaleIndexBuild("membership has no exact staged member")
-        if session.get(CollectionProvenanceIndexAssertionRecord, (build_id, row_key)) is None:
-            raise StaleIndexBuild("membership has no exact staged assertion")
-        if (
-            session.get(
-                CollectionProvenanceIndexMembershipRecord,
-                (build_id, artifact_id, row_key, scope),
-            )
-            is None
-        ):
-            session.add(
-                CollectionProvenanceIndexMembershipRecord(
-                    build_id=build_id, artifact_id=artifact_id, row_key=row_key, scope=scope
+    if any(
+        scope not in {"member", "input-history", "collection", "recorded-history"}
+        for _, _, scope in rows
+    ):
+        raise ValueError("discovery relevance scope is invalid")
+    for offset in range(0, len(rows), 128):
+        batch = rows[offset : offset + 128]
+        members = {artifact_id for artifact_id, _, _ in batch}
+        assertions = {row_key for _, row_key, _ in batch}
+        staged_members = set(
+            session.scalars(
+                select(CollectionProvenanceIndexMemberRecord.artifact_id).where(
+                    CollectionProvenanceIndexMemberRecord.build_id == build_id,
+                    CollectionProvenanceIndexMemberRecord.artifact_id.in_(members),
                 )
             )
+        )
+        if staged_members != members:
+            raise StaleIndexBuild("membership has no exact staged member")
+        staged_assertions = set(
+            session.scalars(
+                select(CollectionProvenanceIndexAssertionRecord.row_key).where(
+                    CollectionProvenanceIndexAssertionRecord.build_id == build_id,
+                    CollectionProvenanceIndexAssertionRecord.row_key.in_(assertions),
+                )
+            )
+        )
+        if staged_assertions != assertions:
+            raise StaleIndexBuild("membership has no exact staged assertion")
+        existing = set(
+            session.execute(
+                select(
+                    CollectionProvenanceIndexMembershipRecord.artifact_id,
+                    CollectionProvenanceIndexMembershipRecord.row_key,
+                    CollectionProvenanceIndexMembershipRecord.scope,
+                ).where(
+                    CollectionProvenanceIndexMembershipRecord.build_id == build_id,
+                    tuple_(
+                        CollectionProvenanceIndexMembershipRecord.artifact_id,
+                        CollectionProvenanceIndexMembershipRecord.row_key,
+                        CollectionProvenanceIndexMembershipRecord.scope,
+                    ).in_(batch),
+                )
+            ).tuples()
+        )
+        pending = [
+            {"build_id": build_id, "artifact_id": artifact_id, "row_key": row_key, "scope": scope}
+            for artifact_id, row_key, scope in batch
+            if (artifact_id, row_key, scope) not in existing
+        ]
+        if pending:
+            session.execute(insert(CollectionProvenanceIndexMembershipRecord), pending)
 
 
 _DATASET_TABLES = (

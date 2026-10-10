@@ -1,14 +1,17 @@
 """Concurrent reuse of exact immutable reads preserves fixity and retry behavior."""
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from threading import Event, Lock
 
 import pytest
+from riverhog_core import provenance_read_cache
 from riverhog_core.provenance_read_cache import ProvenanceReadCache
 
 
 @pytest.mark.parametrize("failed", [False, True])
-def test_concurrent_cold_reads_share_one_verified_load_and_failure_is_retryable(failed):
+def test_concurrent_cold_reads_share_one_verified_load_and_failure_is_retryable(
+    failed, monkeypatch
+):
     cache = ProvenanceReadCache(byte_budget=64, entry_budget=4)
     started, release, followers_started = Event(), Event(), Event()
     lock = Lock()
@@ -24,12 +27,18 @@ def test_concurrent_cold_reads_share_one_verified_load_and_failure_is_retryable(
             raise ValueError("exact immutable read failed")
         return b"verified bytes"
 
+    class LoadFuture(Future[bytes]):
+        def result(self, timeout=None):
+            nonlocal followers
+            with lock:
+                followers += 1
+                if followers == 8:
+                    followers_started.set()
+            return super().result(timeout)
+
+    monkeypatch.setattr(provenance_read_cache, "Future", LoadFuture)
+
     def follower():
-        nonlocal followers
-        with lock:
-            followers += 1
-            if followers == 8:
-                followers_started.set()
         return cache.get_or_load("exact-root-and-object", load)
 
     with ThreadPoolExecutor(max_workers=9) as pool:
