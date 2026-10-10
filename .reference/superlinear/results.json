@@ -1,0 +1,341 @@
+{
+  "audited_sha": "8425e672c60285a549ca4d5aaba15ecbd99e5bf3",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "sqlite": "3.46.1",
+  "measurement": "source-anchored native internal algorithm probes; not functional qualification",
+  "cases": {
+    "journal_touch_reset": [
+      {
+        "sqlite_vm_steps_rounded_down_100": 38200,
+        "seconds": 0.001057,
+        "n": 128,
+        "plan": [
+          "SCAN assertions"
+        ],
+        "row_count": 128,
+        "touched": 1
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 125700,
+        "seconds": 0.002869,
+        "n": 256,
+        "plan": [
+          "SCAN assertions"
+        ],
+        "row_count": 256,
+        "touched": 1
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 448100,
+        "seconds": 0.009199,
+        "n": 512,
+        "plan": [
+          "SCAN assertions"
+        ],
+        "row_count": 512,
+        "touched": 1
+      }
+    ],
+    "journal_touch_reset_with_full_index": [
+      {
+        "sqlite_vm_steps_rounded_down_100": 16600,
+        "seconds": 0.000951,
+        "n": 128,
+        "plan": [
+          "SEARCH assertions USING INDEX probe_touched (touched=?)"
+        ],
+        "row_count": 128,
+        "touched": 1
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 33200,
+        "seconds": 0.001892,
+        "n": 256,
+        "plan": [
+          "SEARCH assertions USING INDEX probe_touched (touched=?)"
+        ],
+        "row_count": 256,
+        "touched": 1
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 66500,
+        "seconds": 0.003867,
+        "n": 512,
+        "plan": [
+          "SEARCH assertions USING INDEX probe_touched (touched=?)"
+        ],
+        "row_count": 512,
+        "touched": 1
+      }
+    ],
+    "history_pending_queue": [
+      {
+        "sqlite_vm_steps_rounded_down_100": 29600,
+        "seconds": 0.000913,
+        "n": 128,
+        "plan": [
+          "SCAN histories"
+        ],
+        "visited": 128
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 108600,
+        "seconds": 0.002639,
+        "n": 256,
+        "plan": [
+          "SCAN histories"
+        ],
+        "visited": 256
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 413800,
+        "seconds": 0.007136,
+        "n": 512,
+        "plan": [
+          "SCAN histories"
+        ],
+        "visited": 512
+      }
+    ],
+    "history_pending_queue_with_partial_index": [
+      {
+        "sqlite_vm_steps_rounded_down_100": 6400,
+        "seconds": 0.000647,
+        "n": 128,
+        "plan": [
+          "SCAN histories USING INDEX pending_h"
+        ],
+        "visited": 128
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 12700,
+        "seconds": 0.001392,
+        "n": 256,
+        "plan": [
+          "SCAN histories USING INDEX pending_h"
+        ],
+        "visited": 256
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 25500,
+        "seconds": 0.002612,
+        "n": 512,
+        "plan": [
+          "SCAN histories USING INDEX pending_h"
+        ],
+        "visited": 512
+      }
+    ],
+    "snapshot_pending_queue": [
+      {
+        "sqlite_vm_steps_rounded_down_100": 30100,
+        "seconds": 0.001229,
+        "n": 128,
+        "plan": [
+          "SCAN snapshots"
+        ],
+        "visited": 128
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 109500,
+        "seconds": 0.003166,
+        "n": 256,
+        "plan": [
+          "SCAN snapshots"
+        ],
+        "visited": 256
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 415900,
+        "seconds": 0.007517,
+        "n": 512,
+        "plan": [
+          "SCAN snapshots"
+        ],
+        "visited": 512
+      }
+    ],
+    "corpus_chain": [
+      {
+        "sqlite_vm_steps_rounded_down_100": 90300,
+        "seconds": 0.00194,
+        "n": 128,
+        "shape": "chain"
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 344700,
+        "seconds": 0.006442,
+        "n": 256,
+        "shape": "chain"
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 1345000,
+        "seconds": 0.023196,
+        "n": 512,
+        "shape": "chain"
+      }
+    ],
+    "corpus_disjoint_edges": [
+      {
+        "sqlite_vm_steps_rounded_down_100": 30700,
+        "seconds": 0.000718,
+        "n": 128,
+        "shape": "disjoint"
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 110700,
+        "seconds": 0.001797,
+        "n": 256,
+        "shape": "disjoint"
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 418100,
+        "seconds": 0.00559,
+        "n": 512,
+        "shape": "disjoint"
+      }
+    ],
+    "incremental_reverse_chain": [
+      {
+        "sqlite_vm_steps_rounded_down_100": 3672700,
+        "seconds": 0.046898,
+        "n": 128,
+        "edges": 128,
+        "rejects_cycle": true
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 28661100,
+        "seconds": 0.365533,
+        "n": 256,
+        "edges": 256,
+        "rejects_cycle": true
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 226470600,
+        "seconds": 2.86245,
+        "n": 512,
+        "edges": 512,
+        "rejects_cycle": true
+      }
+    ],
+    "lifecycle_shared_state": [
+      {
+        "sqlite_vm_steps_rounded_down_100": 105100,
+        "seconds": 0.043461,
+        "n": 128,
+        "decoded_rows": 16512,
+        "related_rows_decoded": 16384
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 406900,
+        "seconds": 0.166399,
+        "n": 256,
+        "decoded_rows": 65792,
+        "related_rows_decoded": 65536
+      },
+      {
+        "sqlite_vm_steps_rounded_down_100": 1600400,
+        "seconds": 0.683072,
+        "n": 512,
+        "decoded_rows": 262656,
+        "related_rows_decoded": 262144
+      }
+    ],
+    "filename_pairing": [
+      {
+        "n": 128,
+        "members": 256,
+        "comparisons": 16384,
+        "candidate_rows": 128,
+        "seconds": 0.034838
+      },
+      {
+        "n": 256,
+        "members": 512,
+        "comparisons": 65536,
+        "candidate_rows": 256,
+        "seconds": 0.121706
+      },
+      {
+        "n": 512,
+        "members": 1024,
+        "comparisons": 262144,
+        "candidate_rows": 512,
+        "seconds": 0.439316
+      }
+    ],
+    "observer_subject_lookup": [
+      {
+        "n": 128,
+        "subject_visits": 8256,
+        "seconds": 0.000899
+      },
+      {
+        "n": 256,
+        "subject_visits": 32896,
+        "seconds": 0.003306
+      },
+      {
+        "n": 512,
+        "subject_visits": 131328,
+        "seconds": 0.01217
+      }
+    ],
+    "recovery_journal_ranges": [
+      {
+        "n": 128,
+        "descriptors": 33024,
+        "payload_reads": 128,
+        "root_reads": 128,
+        "seconds": 0.053953
+      },
+      {
+        "n": 256,
+        "descriptors": 131584,
+        "payload_reads": 256,
+        "root_reads": 256,
+        "seconds": 0.209276
+      },
+      {
+        "n": 512,
+        "descriptors": 525312,
+        "payload_reads": 512,
+        "root_reads": 512,
+        "seconds": 0.863516
+      }
+    ]
+  },
+  "negative_controls": {
+    "corpus_cycle_rejected": true
+  },
+  "source_hashes": {
+    "packages/riverhog-provenance/src/riverhog_provenance/journal_store.py": {
+      "sha256": "505b389e8a4315c70d4bcb18c4fa87b79852af60826d3f782d6b9720d70ce89d",
+      "git_blob": "cc37e24d54b366db9a40bb7262e105a4e7ff45be"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/corpus.py": {
+      "sha256": "82b651d8976841fbcbfe7b8b128ed693df104ad4f1b9a8d8ffeb70aea0bf0ca4",
+      "git_blob": "e140c100c4291dbd11d34590307bc65d0dd7e120"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/history.py": {
+      "sha256": "fea8999829a3308946b7711db9f602b48fc2ff2a1cec1abe2dc3831bf98f1aca",
+      "git_blob": "72c665c10ac459de589b4df4520c88831f775a55"
+    },
+    "packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/binding.py": {
+      "sha256": "b1ecfa237a5d4cd0d43ca827c86dbea24d56049b2711b2607cae0ddc8200a13c",
+      "git_blob": "6691c0cc078507407b43ffcc103b6bc760edd4bd"
+    },
+    "some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/pairing.py": {
+      "sha256": "003604c6124f63fb39d51ef470aa679950c41c61fee4f747ba8bd1a9b93da140",
+      "git_blob": "dd122cf72ea872bd5b875f5a8664d9ef56af1bb3"
+    },
+    "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py": {
+      "sha256": "c9fd2ff18a93ae7945ca13747a94719b46d6ddcf0bbda46b73e727b338485a75",
+      "git_blob": "7d30409c5fd4ad4ae02d1f552faa7cf46a2e00a6"
+    },
+    "some-implementations/stove0/application/server/src/stove0_core/accepted_observations.py": {
+      "sha256": "36e1211c29aadda9b30bdeedef2b94e814daa63dfbddf5bc7be6bf166fa1bd2e",
+      "git_blob": "f6cb84b0c426388080f4b2d5e0bf6ad1a4429ce3"
+    }
+  }
+}

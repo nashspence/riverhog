@@ -1,0 +1,50 @@
+{
+  "sqlite": "3.46.1",
+  "original_query": "WITH RECURSIVE reachable(node) AS (SELECT ? UNION SELECT edges.target FROM edges JOIN reachable ON edges.source = reachable.node WHERE kind = ?) SELECT 1 FROM reachable WHERE node = ? LIMIT 1",
+  "experimental_query": "WITH RECURSIVE reachable(node) AS (SELECT ? UNION SELECT edges.target FROM reachable CROSS JOIN edges ON edges.source = reachable.node WHERE kind = ?) SELECT 1 FROM reachable WHERE node = ? LIMIT 1",
+  "warning": "Reduces the measured query-plan amplification but retains repeated reachability; not a linear-time production fix.",
+  "rows": [
+    {
+      "sqlite_vm_steps_rounded_down_100": 218500,
+      "seconds": 0.005216,
+      "n": 128,
+      "plan": [
+        "CO-ROUTINE reachable",
+        "SETUP",
+        "SCAN CONSTANT ROW",
+        "RECURSIVE STEP",
+        "SCAN reachable",
+        "SEARCH edges USING COVERING INDEX sqlite_autoindex_edges_1 (kind=? AND source=?)",
+        "SCAN reachable"
+      ]
+    },
+    {
+      "sqlite_vm_steps_rounded_down_100": 863200,
+      "seconds": 0.020183,
+      "n": 256,
+      "plan": [
+        "CO-ROUTINE reachable",
+        "SETUP",
+        "SCAN CONSTANT ROW",
+        "RECURSIVE STEP",
+        "SCAN reachable",
+        "SEARCH edges USING COVERING INDEX sqlite_autoindex_edges_1 (kind=? AND source=?)",
+        "SCAN reachable"
+      ]
+    },
+    {
+      "sqlite_vm_steps_rounded_down_100": 3430300,
+      "seconds": 0.081901,
+      "n": 512,
+      "plan": [
+        "CO-ROUTINE reachable",
+        "SETUP",
+        "SCAN CONSTANT ROW",
+        "RECURSIVE STEP",
+        "SCAN reachable",
+        "SEARCH edges USING COVERING INDEX sqlite_autoindex_edges_1 (kind=? AND source=?)",
+        "SCAN reachable"
+      ]
+    }
+  ]
+}
