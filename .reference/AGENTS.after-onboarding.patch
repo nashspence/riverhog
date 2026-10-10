@@ -1,0 +1,46 @@
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -96,15 +96,29 @@
+ 
+ In short, **give durable state a clear owner and an explicit transition; do not confuse rebuildability with permission to discard it.**
+ 
+-## Measure performance without creating gates
++## Measure performance honestly
+ 
+-A *performance target* is a goal against which measured work can be compared. Riverhog’s `make profile` reports the target, the observed result, and whether a meaningful comparison was possible. A target miss does not fail profiling. An omitted or noncomparable reference means no comparison, not a passed target.
++A *performance target* is a goal for measured work. Record what completed, how long it took, and the conditions of the run. Comparisons between runs require matching conditions and measured results, not theoretical capacity. Incomplete or noncomparable evidence is not a passed target.
+ 
+-Keep actual rates visible. Comparisons require verified useful work, complete timing, and a measured reference under matching conditions—not theoretical capacity. Unverified observations stay identified as unverified. Invalid inputs, failed execution, invalid evidence, and reporting errors remain failures.
++Profiling reports target results without turning a miss into a failed command. Invalid inputs, failed execution, invalid evidence, and reporting errors remain failures. Existing correctness checks and safety limits remain binding.
+ 
+-A blocking performance threshold belongs to the qualification or release check that explicitly owns it, not to the profiler or a separate target registry. Existing correctness and resource-safety checks remain binding. The [measurement rules](scripts/performance_measurement.py) and [profiling tests](tests/unit/test_transfer_profile_script.py) define the precise behavior.
++The [measurement rules](scripts/performance_measurement.py) and [profiling tests](tests/unit/test_transfer_profile_script.py) define the precise behavior.
+ 
+-In short, **profiling reports evidence; it does not create performance obligations or release gates.**
++In short, **report performance honestly; do not confuse a target miss with a functional failure—or functional success with acceptable performance.**
++
++## Account for validation time
++
++Every maintained check-in gate, required CI job, and qualification has a maintainer-approved runtime target in the [shared qualification plan](scripts/ci_qualification.py), alongside the work being measured and the conditions under which the target applies. Local validation, CI, and maintained profiling scenarios use that same definition.
++
++Normal runs automatically record elapsed time, completion status, and the target comparison. Multi-stage qualifications also report phase costs, and complete validation runs report total elapsed time. Measurement is part of running the check, not an optional second task.
++
++Review that evidence before handing work back. Investigate every missed target or unavailable comparison. Do not call the work complete until the applicable targets are demonstrated or the maintainer explicitly approves proceeding with the identified shortfall. Record the evidence, decision, and any follow-up in GitHub; opening a follow-up does not itself grant approval.
++
++Changing a target, its workload, its measured interval, or its execution conditions requires explicit maintainer approval. Do not reset expectations to match a slow run or weaken required proof to improve the result.
++
++Missing or invalid required timing evidence fails validation. A valid timing miss remains report-only; it does not change the functional result or authorize changing a safety timeout.
++
++In short, **measurement and review are mandatory; unresolved misses and changed expectations require explicit approval.**
+ 
+ ## Validate the change you actually deliver
+ 
+@@ -123,7 +137,7 @@
+ 
+ For substantial integration or handoff validation and release-related work, also run `make linux-qualification`, the exhaustive local qualification path. Use `make help` for the current command guidance.
+ 
+-After pushing, watch that exact commit’s required GitHub Actions checks through completion. Fix failures before handing work back. A skipped or blocked check is not a pass; report the gap rather than claiming complete validation. Do not remove required coverage or weaken a check merely to make a result green.
++After pushing, watch that exact commit’s required GitHub Actions checks through completion. Include the timing review and the disposition of every missed target or unavailable comparison in the handoff; green checks alone are not a complete validation report. Fix failures before handing work back. A skipped or blocked check is not a pass; report the gap rather than claiming complete validation. Do not remove required coverage or weaken a check merely to make a result green.
+ 
+ In short, **validate the actual change through every required gate, not a nearby version or a convenient subset.**
+ 
