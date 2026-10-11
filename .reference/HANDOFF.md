@@ -19,14 +19,18 @@ The repository base does not yet contain that onboarding guide. The currently
 approved #961 guide includes the maintainer's pre-v1 hard-cut correction
 ([#961 comment 6112662156](https://github.com/nashspence/riverhog/issues/961#issuecomment-6112662156)).
 AGENTS.growth.patch applies to that corrected prospective guide, NOT the older
-guide snapshot and NOT current AGENTS.md; it adds no migration/compatibility path.
+guide snapshot and NOT current AGENTS.md. This patch adds no transitional
+pre-v1 reader or migration but **retains the intended Alembic v1 baseline,
+explicit upgrades, forward-only framework and synthetic revision tests**.
 Implement #961's existing onboarding/rename work, then apply this exact additional
 delta before updating its integrity and narrow semantic tests. Preserve all other
 approved guide text and links. No declaration of current runtime conformance follows
 from landing developer guidance.
 
 The subsequent #963 guide patch must consume this hard-cut guide and preserve the
-new section. No schema upgrades, transitional old-format readers or adapters. #964 establishes owner-scoped v1 growth declarations and executable
+new section. Preserve Alembic initial upgrade-to-head, forward revision machinery
+and tests; do not preserve prior pre-v1 layouts, transitional readers or adapters.
+#964 establishes owner-scoped v1 growth declarations and executable
 witnesses. Do not move inventories, numeric targets or source-history discussion
 into the guide. #960's explicit time-shortfall closeout disposition stays intact.
 
@@ -36,12 +40,12 @@ into the guide. #960's explicit time-shortfall closeout disposition stays intact
 - verify_guide_patch.py: stdlib scratch-application check; it never modifies input.
 
 Current corrected #961 guide SHA-256:
-871e30337e5452dad2f3ea8377c0139f2b7900036fb14c80ec3fe7397aaeb19b
+b954c2965509ce7e69361dd6663646f8920ed5d707733e671ab2425d7c77cd4b
 Corrected guide with growth section SHA-256:
-8f78a6acba90afb1e300577a5a8d145b69a7597c76e758b5bb84d49780ed8349
+1fe4e9a92c4df98949dfe9b52d9d495f186281502f348151491950b72325d39c
 Old guide/hashes are historical only, not an alternate accepted input.
 
-Run `python .reference/verify_guide_patch.py /path/to/original-approved-AGENTS.md`.
+Run `python .reference/verify_guide_patch.py /path/to/current-issue-approved-AGENTS.md`.
 A changed input is a reconciliation requirement, not permission to suppress guards.
 Do not copy this reference material onto main as another policy authority.
 
@@ -52,8 +56,10 @@ corrected guide SHA-256 and patched output were independently recomputed from th
 current #961 issue-approved text; the growth and post-onboarding patch hunks were
 applied in unique exact context, preserving unrelated guide sections and links
 (the Introduction target uses #961's approved architecture-to-introduction rename).
-Four guide checks passed in the combined revision check, and the standalone verifier
-passed. Python syntax and applied-document whitespace checks passed. Raw patch
+Historical four guide checks and the previous standalone verifier result remain
+source-pinned. For this correction, exact approved-guide input/output hashes and
+unique-context guide patch application were rechecked; the new standalone verifier
+and installed documentation tests must be rerun on the integrated exact source. Raw patch
 context markers are excluded from reference-text whitespace checks. The old timing foundation's
 separate source-extracted checks do not validate this guide's full repo integration.
 

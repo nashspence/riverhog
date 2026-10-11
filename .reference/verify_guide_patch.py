@@ -5,12 +5,12 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-BEFORE = "871e30337e5452dad2f3ea8377c0139f2b7900036fb14c80ec3fe7397aaeb19b"
-AFTER = "8f78a6acba90afb1e300577a5a8d145b69a7597c76e758b5bb84d49780ed8349"
+BEFORE = "b954c2965509ce7e69361dd6663646f8920ed5d707733e671ab2425d7c77cd4b"
+AFTER = "1fe4e9a92c4df98949dfe9b52d9d495f186281502f348151491950b72325d39c"
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("guide", type=Path, help="the current corrected #961 approved onboarding text (no migrations or compatibility)")
+    parser.add_argument("guide", type=Path, help="the current #961 approved onboarding text (Alembic v1 baseline retained; no superseded pre-v1 schema support)")
     args = parser.parse_args()
     data = args.guide.read_bytes()
     if hashlib.sha256(data).hexdigest() != BEFORE:
@@ -23,7 +23,7 @@ def main():
         subprocess.run(["git", "apply", str(patch)], cwd=scratch, check=True)
         if hashlib.sha256(target.read_bytes()).hexdigest() != AFTER:
             raise SystemExit("Patched guide differs from exact approved amendment.")
-    print("Corrected pre-v1 hard-cut guide and growth amendment verified; input was not modified.")
+    print("Approved Alembic-preserving v1 guide and growth amendment verified; input was not modified.")
 
 if __name__ == "__main__":
     main()
