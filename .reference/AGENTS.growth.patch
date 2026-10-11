@@ -1,0 +1,19 @@
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -65,6 +65,16 @@
+ The [*extent contract*](scripts/extent_contract.py) owns these rules about sizes, counts, and capacity.
+ 
+ In short, **limit each step without inventing hidden limits or reporting partial work as complete.**
++
++## Preserve declared growth bounds
++
++Bounded steps and bounded memory do not by themselves establish scalability. Total work must also satisfy the owning operation's declared growth bound. For ordinary streaming and collection traversal, require linear growth in the bytes, members, and necessary metadata processed. Different costs must be explicit and justified.
++
++Support these bounds with algorithmic reasoning and executable tests of the maintained implementation. Exercise adversarial inputs, boundary transitions, cold or capacity-exceeded paths, and interruption and retry. Do not hide repeated whole-resource work behind pagination, batching, concurrency, or caches.
++
++Growth-contract violations are validation failures. Machine-dependent elapsed-time targets remain profiling evidence, not product guarantees. Neither kind of performance work permits incomplete results, weaker custody or authorization, or hidden total-size limits.
++
++In short, **bound total work as well as each step, and test the bound rather than trusting a small successful run.**
+ 
+ ## Keep coordination responsive
+ 
