@@ -46,12 +46,6 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     "printf 'fake-image-id\\n' && exit 0",
                     "  exit 1",
                     "fi",
-                    (
-                        'if [[ "$*" == *'
-                        '" exec -T garage /garage -c /etc/garage.toml node id"* ]]; then'
-                    ),
-                    "  printf 'fake-node@garage\\n'",
-                    "fi",
                     'if [[ "$*" == *"/v1/apps/smoke/keys"* ]]; then',
                     "  printf 'fake-application-token\\n'",
                     "fi",
@@ -243,13 +237,13 @@ def test_compose_services_publish_only_the_config_path() -> None:
         assert names == {"RIVERHOG_CONFIG"}
 
 
-def test_bundled_garage_is_development_only_and_not_an_application_dependency() -> None:
+def test_bundled_s3_fixture_is_development_only_and_not_an_application_dependency() -> None:
     compose = yaml.safe_load(COMPOSE_FILE.read_text(encoding="utf-8"))
 
-    assert compose["services"]["garage"]["profiles"] == ["development"]
-    assert "garage" not in compose["services"]["app"]["depends_on"]
+    assert compose["services"]["s3-fixture"]["profiles"] == ["development"]
+    assert "s3-fixture" not in compose["services"]["app"]["depends_on"]
 
-    bootstrap = (REPO_ROOT / "scripts" / "bootstrap_garage.sh").read_text(encoding="utf-8")
+    bootstrap = (REPO_ROOT / "scripts" / "bootstrap_s3_fixture.sh").read_text(encoding="utf-8")
     smoke = (REPO_ROOT / "scripts" / "test_compose_smoke.sh").read_text(encoding="utf-8")
     assert "export COMPOSE_PROFILES=development" in bootstrap
     assert "export COMPOSE_PROFILES=development" in smoke
@@ -573,16 +567,16 @@ def test_dist_builds_a_clean_complete_artifact_set(tmp_path: Path) -> None:
     ]
 
 
-def test_bootstrap_garage_is_available_as_a_standalone_target(tmp_path: Path) -> None:
+def test_bootstrap_s3_fixture_is_available_as_a_standalone_target(tmp_path: Path) -> None:
     completed, docker_log_path, uv_log_path = _run_make(
-        tmp_path, "bootstrap-garage", extra_env={"FAKE_DOCKER_HAVE_IMAGES": "1"}
+        tmp_path, "bootstrap-s3-fixture", extra_env={"FAKE_DOCKER_HAVE_IMAGES": "1"}
     )
 
     assert completed.returncode == 0, completed.stderr
     assert _read_log_lines(uv_log_path) == []
     docker_log = "\n".join(_read_log_lines(docker_log_path))
-    assert " up --detach garage" in docker_log
-    assert " exec -T garage /garage -c /etc/garage.toml node id" in docker_log
+    assert " up --detach s3-fixture" in docker_log
+    assert "test -m tests.harness.provision_s3_fixture --verify-conditional-writes" in docker_log
 
 
 def test_compose_smoke_forwards_independent_lifecycles_and_resource_budgets(tmp_path: Path) -> None:
@@ -972,7 +966,7 @@ def test_help_describes_make_targets(tmp_path: Path) -> None:
     completed, docker_log_path, uv_log_path = _run_make(tmp_path, "help")
 
     assert completed.returncode == 0, completed.stderr
-    assert "make bootstrap-garage" in completed.stdout
+    assert "make bootstrap-s3-fixture" in completed.stdout
     assert "make build-<bake-target>" in completed.stdout
     assert (
         "make build             Build the docker-bake.hcl default image group." in completed.stdout

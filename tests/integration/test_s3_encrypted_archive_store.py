@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import os
+import threading
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from pathlib import Path
 
@@ -15,6 +17,7 @@ from riverhog_core.archive_formats import (
 from riverhog_core.catalog_db import initialize_db, make_session_factory
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
+    ImmutableObjectReceipt,
     WriteSegmentCursor,
     WriteSession,
 )
@@ -52,21 +55,21 @@ def _client(registration: StorageAdapterRegistration) -> StorageAdapterClient:
     )
 
 
-def test_canonical_archive_capabilities_against_garage_adapter(tmp_path: Path) -> None:
-    if os.environ.get("RIVERHOG_GARAGE_ARCHIVE_INGRESS_TEST") != "1":
-        pytest.skip("set RIVERHOG_GARAGE_ARCHIVE_INGRESS_TEST=1 to run against Garage")
+def test_canonical_archive_capabilities_against_s3_adapter(tmp_path: Path) -> None:
+    if os.environ.get("RIVERHOG_S3_FIXTURE_ARCHIVE_INGRESS_TEST") != "1":
+        pytest.skip("set RIVERHOG_S3_FIXTURE_ARCHIVE_INGRESS_TEST=1 to run against S3")
 
-    prefix = f"garage-archive-ingress-test/{uuid.uuid4().hex}"
+    prefix = f"s3-archive-ingress-test/{uuid.uuid4().hex}"
     archive_prefix = f"archives/{prefix}/opaque"
     passphrase = (
-        os.environ.get("RIVERHOG_GARAGE_ARCHIVE_PASSPHRASE", "").strip()
-        or "garage archive ingress integration passphrase"
+        os.environ.get("RIVERHOG_S3_FIXTURE_ARCHIVE_PASSPHRASE", "").strip()
+        or "s3 archive ingress integration passphrase"
     )
     base = load_runtime_config()
     config = replace(
         base,
-        archive_passphrases={"garage-test-key-v1": passphrase},
-        archive_active_passphrase_id="garage-test-key-v1",
+        archive_passphrases={"integration-key-v1": passphrase},
+        archive_active_passphrase_id="integration-key-v1",
         archive_scrypt_work_factor=12,
     )
     cache_registration = next(iter(config.retrieval_cache_stores.values()))
@@ -112,7 +115,7 @@ def test_canonical_archive_capabilities_against_garage_adapter(tmp_path: Path) -
         session_factory=cache_session_factory,
     )
 
-    plaintext = b"canonical direct-final Garage archive volume"
+    plaintext = b"canonical direct-final S3 archive volume"
     ciphertext = encrypt_age_scrypt(
         plaintext,
         passphrase,
@@ -250,6 +253,60 @@ def test_canonical_archive_capabilities_against_garage_adapter(tmp_path: Path) -
             == root
         )
 
+        # Both callers encrypt the same plaintext independently after finding
+        # no receipt. Only one ciphertext may win; both must recover that exact
+        # durable receipt, which remains readable through ordinary archive checks.
+        ready = threading.Barrier(2)
+        candidates: list[bytes] = []
+
+        def publish() -> ImmutableObjectReceipt:
+            def encrypted_content() -> bytes:
+                value = encrypt_age_scrypt(
+                    manifest_plaintext, passphrase, log_n=config.archive_scrypt_work_factor
+                )
+                candidates.append(value)
+                ready.wait(15)
+                return value
+
+            return immutable.put_immutable_object(
+                object_path=f"{archive_prefix}/concurrent-manifest.json.age",
+                content=encrypted_content,
+                content_type="application/vnd.riverhog.collection-manifest+age",
+                required_identity_assertions={
+                    "riverhog-format": ROOT_MANIFEST_STORAGE_FORMAT,
+                    "riverhog-plaintext-bytes": str(len(manifest_plaintext)),
+                    "riverhog-plaintext-sha256": archive_root_sha256,
+                },
+                placement_policy="immediate_default",
+            )
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            futures = [pool.submit(publish) for _ in range(2)]
+            receipts = [future.result() for future in futures]
+        assert len(candidates) == 2 and candidates[0] != candidates[1]
+        assert receipts[0] == receipts[1]
+        winner = receipts[0]
+        assert winner.stored_sha256 in {hashlib.sha256(value).hexdigest() for value in candidates}
+        assert (
+            b"".join(
+                archive.iter_archive_object(
+                    collection_id=1,
+                    object=ArchiveObjectIdentity(
+                        object_id="concurrent-manifest",
+                        kind="manifest",
+                        object_path=winner.object_path,
+                        plaintext_bytes=len(manifest_plaintext),
+                        stored_bytes=winner.stored_bytes,
+                        sha256=archive_root_sha256,
+                        stored_sha256=winner.stored_sha256,
+                        revision=winner.revision,
+                    ),
+                    passphrase_id="integration-key-v1",
+                )
+            )
+            == manifest_plaintext
+        )
+
         identity = ArchiveObjectIdentity(
             object_id="segment-000000000000",
             kind="segment",
@@ -265,7 +322,7 @@ def test_canonical_archive_capabilities_against_garage_adapter(tmp_path: Path) -
                 archive.iter_archive_object(
                     collection_id=1,
                     object=identity,
-                    passphrase_id="garage-test-key-v1",
+                    passphrase_id="integration-key-v1",
                 )
             )
             == plaintext

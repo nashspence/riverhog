@@ -25,7 +25,7 @@ UV_RUN = "$(MISE_BIN)" x -- uv run --locked --all-packages --group dev
 BAKE_FILE = docker-bake.hcl
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract contract-check contract-diff contract-browser contract-browser-docker profile provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke dist dist-smoke build bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract contract-check contract-diff contract-browser contract-browser-docker profile provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke dist dist-smoke build bootstrap-s3-fixture down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -95,7 +95,7 @@ help:
 		'  make dist-smoke        Install and exercise the Riverhog server and client wheels.' \
 		'  make build-<bake-target> Build one target declared in docker-bake.hcl.' \
 		'  make build             Build the docker-bake.hcl default image group.' \
-		'  make bootstrap-garage  Start Garage and apply the checked-in bucket/key bootstrap.' \
+		'  make bootstrap-s3-fixture  Start the disposable S3 fixture and verify conditional publication.' \
 		'  make down              Tear the compose-managed test stack down.' \
 		'  make test              Run lint, then unit.' \
 		'' \
@@ -278,8 +278,8 @@ a-riverhog-event-relay-smoke:
 build:
 	$(call BAKE_IMAGE,default)
 
-bootstrap-garage:
-	@./scripts/bootstrap_garage.sh
+bootstrap-s3-fixture:
+	@./scripts/bootstrap_s3_fixture.sh
 
 down:
 	@./scripts/compose_down.sh

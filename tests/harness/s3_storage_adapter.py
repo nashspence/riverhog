@@ -1,4 +1,4 @@
-"""Test-only Garage binding for the provider-neutral storage-adapter contract."""
+"""Test-only S3 binding for the provider-neutral storage-adapter contract."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from a_riverhog_s3_store_lib import (
 from riverhog_storage_adapter_asgi_support import create_storage_adapter_app
 from riverhog_storage_adapter_protocol import ReadReadiness, ReadReady
 
-_PREFIX = "RIVERHOG_GARAGE_STORAGE_ADAPTER_"
+_PREFIX = "RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_"
 
 
 class _AlwaysReadyPreparation:
@@ -37,8 +37,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     read_mode = _read_mode(_value("READ_MODE", "immediate"))
     client = create_s3_client(
         S3ClientConfig(
-            endpoint_url=_value("ENDPOINT_URL", "http://garage:3900"),
-            region=_value("REGION", "garage"),
+            endpoint_url=_value("ENDPOINT_URL", "http://s3-fixture:9000"),
+            region=_value("REGION", "us-east-1"),
             access_key_id=_required("ACCESS_KEY_ID"),
             secret_access_key=_required("SECRET_ACCESS_KEY"),
             force_path_style=True,
@@ -47,7 +47,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     adapter = S3StorageAdapter(
         client,
         S3StorageAdapterConfig(
-            implementation_id="riverhog.test-garage/v1",
+            implementation_id="riverhog.test-s3/v1",
             implementation_version="1.0.0",
             bucket=_required("BUCKET"),
             read_mode=read_mode,
@@ -55,7 +55,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         read_preparation=(_AlwaysReadyPreparation() if read_mode == "restore_required" else None),
     )
     app = create_storage_adapter_app(
-        service="riverhog-test-garage-storage-adapter",
+        service="riverhog-test-s3-storage-adapter",
         token=_required("TOKEN"),
         adapter=adapter,
         readiness=lambda: client.head_bucket(Bucket=_required("BUCKET")),

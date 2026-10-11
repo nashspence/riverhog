@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+import threading
+from concurrent.futures import ThreadPoolExecutor
+from datetime import timedelta
 from typing import cast
 
 import pytest
 from http_api_contracts import control
+from sqlalchemy import event, text
 from stove0_core import ClaimBinding, SqlAlchemyStateStore, Stove0Scheduler, WorkRecord
 from stove0_core.scheduler import _phases_for_role
 from stove0_protocol import CollectionRootIdentityRef, RecipeIdentityRef, WorkIdentity, WorkPayload
+from time_formats import format_utc_timestamp, utc_now
 
 
 def _identity(index: int) -> WorkIdentity:
@@ -89,6 +94,60 @@ class _Coordinator:
         if work_id in self.noops:
             return record
         return record.model_copy(update={"revision": record.revision + 1})
+
+
+def test_concurrent_contacts_preserve_backoff_without_read_upgrade_deadlock(tmp_path, monkeypatch):
+    state = SqlAlchemyStateStore(f"sqlite+pysqlite:///{tmp_path / 'contacts.db'}")
+    record = state.create(WorkRecord(work=_identity(1)))
+    now = utc_now()
+    monkeypatch.setattr("stove0_core.persistence.utc_now", lambda: now)
+    ready = threading.Barrier(2)
+
+    def before_update(_connection, _cursor, statement, _parameters, _context, _many):
+        if statement.startswith("UPDATE stove0_work_records ") and "contact_failures" in statement:
+            ready.wait(10)
+
+    def failed_contact():
+        state.record_work_contact(
+            record.work_id, expected_revision=record.revision, failed=True, progressed=False
+        )
+
+    def contact():
+        with state.engine.connect() as connection:
+            return connection.execute(
+                text(
+                    "SELECT contact_failures, contact_at FROM stove0_work_records WHERE work_id=:id"
+                ),
+                {"id": record.work_id},
+            ).one()
+
+    try:
+        event.listen(state.engine, "before_cursor_execute", before_update)
+        try:
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                futures = [pool.submit(failed_contact) for _ in range(2)]
+                for future in futures:
+                    future.result(timeout=15)
+        finally:
+            event.remove(state.engine, "before_cursor_execute", before_update)
+        assert contact() == (2, format_utc_timestamp(now + timedelta(seconds=4)))
+        state.record_work_contact(
+            record.work_id, expected_revision=record.revision - 1, failed=True, progressed=False
+        )
+        assert contact() == (2, format_utc_timestamp(now + timedelta(seconds=4)))
+        for failures, seconds in ((3, 8), (4, 16), (5, 30), (6, 30)):
+            failed_contact()
+            assert contact() == (failures, format_utc_timestamp(now + timedelta(seconds=seconds)))
+        state.record_work_contact(
+            record.work_id, expected_revision=record.revision, failed=False, progressed=False
+        )
+        assert contact() == (0, format_utc_timestamp(now + timedelta(seconds=1)))
+        state.record_work_contact(
+            record.work_id, expected_revision=record.revision, failed=False, progressed=True
+        )
+        assert contact() == (0, format_utc_timestamp(now))
+    finally:
+        state.engine.dispose()
 
 
 def test_claim_maintenance_remains_due_during_durable_contact_backoff(tmp_path) -> None:

@@ -24,6 +24,7 @@ from sqlalchemy import (
     Text,
     and_,
     asc,
+    case,
     create_engine,
     delete,
     desc,
@@ -2161,22 +2162,31 @@ class SqlAlchemyStateStore:
     def record_work_contact(
         self, work_id: str, *, expected_revision: int, failed: bool, progressed: bool
     ) -> None:
+        now = utc_now()
+        contact_at = (
+            case(
+                *(
+                    (
+                        _WorkRow.contact_failures == prior_failures,
+                        format_utc_timestamp(now + timedelta(seconds=2 ** (prior_failures + 1))),
+                    )
+                    for prior_failures in range(4)
+                ),
+                else_=format_utc_timestamp(now + timedelta(seconds=30)),
+            )
+            if failed
+            else format_utc_timestamp(now + timedelta(seconds=0 if progressed else 1))
+        )
+        # One fenced update avoids upgrading a SQLite read transaction while a
+        # metadata worker commits. Concurrent contacts increment the persisted
+        # count atomically, and stale work revisions remain untouched.
         with self.sessions() as session, session.begin():
-            row = session.execute(
-                select(_WorkRow.revision, _WorkRow.contact_failures)
-                .where(_WorkRow.work_id == work_id)
-                .with_for_update()
-            ).first()
-            if row is None or row.revision != expected_revision:
-                return
-            failures = row.contact_failures + 1 if failed else 0
-            delay = min(30, 2 ** min(failures, 5)) if failed else 0 if progressed else 1
             session.execute(
                 update(_WorkRow)
                 .where(_WorkRow.work_id == work_id, _WorkRow.revision == expected_revision)
                 .values(
-                    contact_failures=failures,
-                    contact_at=format_utc_timestamp(utc_now() + timedelta(seconds=delay)),
+                    contact_failures=_WorkRow.contact_failures + 1 if failed else 0,
+                    contact_at=contact_at,
                 )
             )
 

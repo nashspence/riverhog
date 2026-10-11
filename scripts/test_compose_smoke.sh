@@ -124,7 +124,7 @@ ci_phase qualification-images
 )
 export RIVERHOG_QUALIFICATION_IMAGES_READY=1
 ci_phase storage-bootstrap
-"${ROOT_DIR}/scripts/bootstrap_garage.sh"
+"${ROOT_DIR}/scripts/bootstrap_s3_fixture.sh"
 compose up --detach --wait archive-adapter filesystem-cache-adapter elastic-cache-adapter
 if owns_qualification storage; then
 ci_phase storage-adapter-qualification
@@ -167,9 +167,9 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" \
   --entrypoint python \
   test -m tests.harness.storage_adapter_restart_probe resume /continuation/state.json
 compose run --rm \
-  --env RIVERHOG_GARAGE_ARCHIVE_INGRESS_TEST=1 \
+  --env RIVERHOG_S3_FIXTURE_ARCHIVE_INGRESS_TEST=1 \
   --entrypoint python \
-  test -m pytest -q tests/integration/test_garage_encrypted_archive_store.py
+  test -m pytest -q tests/integration/test_s3_encrypted_archive_store.py
 # Keep ambiguous external effects and catalog replay behind deterministic
 # barriers in the installed test image. Ordinary completed-stage restarts below
 # complement these exact interleavings; they do not substitute for them.
