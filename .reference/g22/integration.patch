@@ -1,0 +1,217 @@
+diff --git a/packages/riverhog-provenance/src/riverhog_provenance/journal.py b/packages/riverhog-provenance/src/riverhog_provenance/journal.py
+index fa1d1817..d370b6c7 100644
+--- a/packages/riverhog-provenance/src/riverhog_provenance/journal.py
++++ b/packages/riverhog-provenance/src/riverhog_provenance/journal.py
+@@ -12,7 +12,7 @@ import hashlib
+ import json
+ from collections.abc import Iterable, Iterator, Mapping, Sequence, Set
+ from dataclasses import dataclass, field
+-from typing import Any, BinaryIO, cast
++from typing import TYPE_CHECKING, Any, BinaryIO, cast
+ 
+ from riverhog_provenance_contracts import (
+     ENTRY_SCHEMA,
+@@ -36,6 +36,9 @@ from .graph import (
+ )
+ from .journal_cache import JournalValidationCache
+ 
++if TYPE_CHECKING:
++    from ._journal_epochs import EpochFrames
++
+ RS, LF = b"\x1e", b"\n"
+ 
+ 
+@@ -235,17 +238,31 @@ def validate_journal_chunks(
+             expected_anchor=expected_anchor,
+             require_exact_tail=require_exact_tail,
+         )
+-    from .journal_store import JournalStore
++    from ._journal_epochs import EpochFrames
+ 
+     selected = catalog or ContractCatalog()
++    with EpochFrames(chunks, selected) as frames:
++        return _validate_frames(frames, selected, require_profiles, expected_anchor, require_exact_tail)
++
++
++def _validate_frames(
++    frames: EpochFrames,
++    selected: ContractCatalog,
++    require_profiles: bool,
++    expected_anchor: Mapping[str, Any] | None,
++    require_exact_tail: bool,
++) -> JournalSummary:
++    from .journal_store import JournalStore
++
+     store = JournalStore()
++    store.certificate = frames
+     journal_id: str | None = None
+     previous: JournalFrame | None = None
+     prefix = hashlib.sha256()
+     byte_count = 0
+     matched_anchor = False
+     try:
+-        for sequence, frame in enumerate(iter_journal_frames(chunks)):
++        for sequence, frame in enumerate(frames):
+             document = frame.document
+             try:
+                 selected.validate(ENTRY_SCHEMA, document)
+@@ -306,6 +323,7 @@ def validate_journal_chunks(
+             expected_anchor is None or previous.reference != expected_anchor["through"]
+         ):
+             raise ProvenanceValidationError("an exact tail anchor was required")
++        store.certificate = None
+         store.freeze()
+         return JournalSummary(
+             journal_id,
+diff --git a/packages/riverhog-provenance/src/riverhog_provenance/journal_store.py b/packages/riverhog-provenance/src/riverhog_provenance/journal_store.py
+index cc37e24d..771a5523 100644
+--- a/packages/riverhog-provenance/src/riverhog_provenance/journal_store.py
++++ b/packages/riverhog-provenance/src/riverhog_provenance/journal_store.py
+@@ -18,7 +18,7 @@ from collections.abc import (
+ )
+ from pathlib import Path
+ from tempfile import mkdtemp
+-from typing import Any, cast, overload
++from typing import TYPE_CHECKING, Any, cast, overload
+ 
+ from riverhog_canonical_json import canonical_json_bytes
+ from riverhog_provenance_contracts import ContractCatalog, canonical_document
+@@ -28,6 +28,10 @@ from .errors import ProvenanceValidationError
+ from .graph import GraphValidation, _Validator, iter_assertions, time_ns
+ 
+ 
++if TYPE_CHECKING:
++    from ._journal_epochs import EpochFrames
++
++
+ def _key(value: Any) -> bytes:
+     if isinstance(value, bytes):
+         return b"b" + value
+@@ -402,17 +406,17 @@ class _Edges:
+         source, target = edge
+         if source == target:
+             raise ProvenanceValidationError(f"{self.kind} cannot relate an entity to itself")
+-        reachable = self.store.db.execute(
+-            "WITH RECURSIVE reachable(node) AS (SELECT ? UNION SELECT edges.target "
+-            "FROM edges JOIN reachable ON edges.source = reachable.node WHERE kind = ?) "
+-            "SELECT 1 FROM reachable WHERE node = ? LIMIT 1",
+-            (target, self.kind, source),
+-        ).fetchone()
+-        if reachable:
++        certificate = self.store.certificate
++        verdict = None if certificate is None else certificate.check(self.kind, source, target)
++        if verdict is None:
++            from ._online_dag import OnlineDag
++            OnlineDag(self.store.db, self.kind).add(source, target)
++        elif not verdict:
+             raise ProvenanceValidationError(f"{self.kind} graph contains a cycle")
+-        self.store.db.execute(
+-            "INSERT OR IGNORE INTO edges VALUES (?, ?, ?)", (self.kind, source, target)
+-        )
++        else:
++            self.store.db.execute(
++                "INSERT OR IGNORE INTO edges VALUES (?, ?, ?)", (self.kind, source, target)
++            )
+ 
+ 
+ class _StoredValidator(_Validator):
+@@ -453,9 +457,28 @@ class _StoredValidator(_Validator):
+         derivations: Iterable[tuple[str, str]],
+         specializations: Iterable[tuple[str, str]],
+     ) -> None:
+-        # New immutable rows cannot invalidate existing local references. Only
+-        # lifecycle bounds, external reference types and completeness need
+-        # reverse checks. Corrections rebuild the same indexes from effective rows.
++        # State extrema give the same lifecycle inequalities without decoding
++        # every historical usage for each newly touched event. Corrections
++        # rebuild the extrema from the complete effective rows in this epoch.
++        for (value,) in self.store.db.execute(
++            "SELECT value FROM assertions WHERE active=1 AND touched=1 "
++            "AND type IN ('usage','invalidation')"
++        ):
++            row = json.loads(value)
++            if "at" not in row:
++                continue
++            state, stamp = row["state"]["object_id"], time_ns(row["at"])
++            old = self.store.db.execute(
++                "SELECT earliest,latest_usage FROM lifecycle_bounds WHERE state=?", (state,)
++            ).fetchone()
++            earliest = stamp if old is None else min(stamp, int(old[0]))
++            latest = None if old is None or old[1] is None else int(old[1])
++            if row["type"] == "usage":
++                latest = stamp if latest is None else max(latest, stamp)
++            self.store.db.execute(
++                "INSERT OR REPLACE INTO lifecycle_bounds VALUES (?,?,?)",
++                (state, str(earliest), None if latest is None else str(latest)),
++            )
+         for (value,) in self.store.db.execute(
+             "SELECT value FROM assertions WHERE active = 1 AND touched = 1 ORDER BY assertion_id"
+         ):
+@@ -464,28 +487,13 @@ class _StoredValidator(_Validator):
+             if kind in ("usage", "generation", "invalidation"):
+                 state = row["state"]["object_id"]
+                 generated, ended = generation.get(state), invalidation.get(state)
+-                for (related,) in self.store.db.execute(
+-                    "SELECT value FROM assertions WHERE active = 1 AND state_id = ? "
+-                    "AND type IN ('usage', 'invalidation')",
+-                    (state,),
+-                ):
+-                    item = json.loads(related)
+-                    if "at" not in item:
+-                        continue
+-                    if (
+-                        generated
+-                        and "at" in generated
+-                        and time_ns(item["at"]) < time_ns(generated["at"])
+-                    ):
+-                        raise ProvenanceValidationError(
+-                            "state used or invalidated before known generation"
+-                        )
+-                    if (
+-                        item["type"] == "usage"
+-                        and ended
+-                        and "at" in ended
+-                        and time_ns(item["at"]) > time_ns(ended["at"])
+-                    ):
++                bounds = self.store.db.execute(
++                    "SELECT earliest,latest_usage FROM lifecycle_bounds WHERE state=?", (state,)
++                ).fetchone()
++                if bounds is not None:
++                    if generated and "at" in generated and int(bounds[0]) < time_ns(generated["at"]):
++                        raise ProvenanceValidationError("state used or invalidated before known generation")
++                    if ended and "at" in ended and bounds[1] is not None and int(bounds[1]) > time_ns(ended["at"]):
+                         raise ProvenanceValidationError("state used after known invalidation")
+             if kind == "observation" and row["address_status"] == "known":
+                 if (
+@@ -561,17 +569,21 @@ class JournalStore:
+             "CREATE UNIQUE INDEX objects ON assertions(object_id) WHERE active = 1;"
+             "CREATE INDEX states ON assertions(state_id, type) WHERE active = 1;"
+             "CREATE INDEX observations ON assertions(observation_id, type) WHERE active = 1;"
+-            "CREATE INDEX changes ON assertions(touched) WHERE active = 1;"
++            "CREATE INDEX changes ON assertions(touched);"
+             "CREATE INDEX categories ON assertions(category, assertion_id) WHERE active = 1;"
+             "CREATE TABLE maps(name TEXT, key BLOB, value BLOB, PRIMARY KEY(name, key));"
+             "CREATE INDEX external_types ON maps(name, json_extract(value, '$.object_id'));"
+             "CREATE TABLE edges(kind TEXT, source TEXT, target TEXT, "
+             "PRIMARY KEY(kind, source, target));"
+             "CREATE TABLE findings(key TEXT PRIMARY KEY, value TEXT);"
++            "CREATE TABLE lifecycle_bounds(state TEXT PRIMARY KEY, earliest TEXT, latest_usage TEXT);"
+             "CREATE TABLE fixities(state TEXT, size TEXT, sha256 TEXT, "
+             "PRIMARY KEY(state, size, sha256));"
+         )
++        from ._online_dag import install
++        install(self.db)
+         self.frame_count = 0
++        self.certificate: EpochFrames | None = None
+ 
+     @classmethod
+     def reader_from(cls, source: JournalStore) -> JournalStore:
+@@ -678,7 +690,7 @@ class JournalStore:
+                     "duplicate effective entity/record identity"
+                 ) from exc
+         if correction:
+-            for table in ("maps", "edges", "findings", "fixities"):
++            for table in ("maps", "edges", "findings", "fixities", "lifecycle_bounds", "dag_levels", "dag_incoming", "dag_seen", "dag_queue"):
+                 self.db.execute("DELETE FROM " + table)
+             self.db.execute("UPDATE assertions SET touched = 1 WHERE active = 1")
+         rows = (

@@ -1,0 +1,325 @@
+{
+  "format": "g22-researched-reference-evidence/v1",
+  "status": "native-prototype-not-runtime-qualification",
+  "audited_main": "152d095038df0c0d0ed642cf265d47b11c65a754",
+  "audited_main_tree": "991e994457b487a7dca016b7fc0409485cef25c6",
+  "prototype_source_tree": "b4ac503c05f9c05ff0c39cb4072ba149dee28d2f",
+  "environment": {
+    "python": "3.13.5",
+    "sqlite": "3.46.1",
+    "pytest": "9.0.2",
+    "plugin_autoload": "disabled",
+    "warnings": "repository error policy unchanged",
+    "rfc8785": "exact upstream v0.1.4 fetched externally, not bundled",
+    "rfc8785_impl_git_blob": "3137d3326b98938affadb1be711ee411eb2ab86e",
+    "locked_environment": false,
+    "docker_available": false,
+    "mise_available": false
+  },
+  "test_results": [
+    {
+      "selection": "original provenance suite on unmodified source",
+      "passed": 150,
+      "seconds": 7.85
+    },
+    {
+      "selection": "patched provenance suite, including 37 new cases",
+      "passed": 187,
+      "seconds": 16.97
+    },
+    {
+      "selection": "processing provenance / canonical completion / canonical production / opaque producer client suites",
+      "passed": 21,
+      "seconds": 7.04
+    }
+  ],
+  "test_attempt_note": "One combined invocation hit the external 45-second tool execution limit after printing all test progress but before final summary; not counted as a passed aggregate. Subsequent separate frozen-source invocations completed with the recorded 187 and 21 passes. Earlier test-fixture errors (unclosed SQLite test connections and missing usage roles) were corrected; no warning policy was relaxed.",
+  "coverage": [
+    "720 permutations of all non-self three-vertex edges compared after every attempt to independent Kahn",
+    "12 seeded sequences of 100 online attempts, rejection rollback and incoming/level invariants",
+    "future local reference rejection despite speculative rank",
+    "cyclic prefix rejected despite later correction",
+    "atomic correction reverses edge without false union-cycle rejection",
+    "duplicate edge assertions retained independently across retraction",
+    "late temporal generation/invalidation and retracted extrema",
+    "current-provider late error cannot return success",
+    "scratch cleanup after failure",
+    "existing anchored-prefix, fork, correction, exact bytes, cache and memory tests"
+  ],
+  "lifecycle_control": {
+    "baseline": {
+      "cases": [
+        {
+          "n": 32,
+          "usage_decodes": 592,
+          "result": "complete"
+        },
+        {
+          "n": 64,
+          "usage_decodes": 2208,
+          "result": "complete"
+        },
+        {
+          "n": 128,
+          "usage_decodes": 8512,
+          "result": "complete"
+        }
+      ],
+      "reset_plan": [
+        [
+          4,
+          0,
+          0,
+          "SCAN assertions"
+        ]
+      ]
+    },
+    "prototype": {
+      "cases": [
+        {
+          "n": 32,
+          "usage_decodes": 96,
+          "result": "complete"
+        },
+        {
+          "n": 64,
+          "usage_decodes": 192,
+          "result": "complete"
+        },
+        {
+          "n": 128,
+          "usage_decodes": 384,
+          "result": "complete"
+        }
+      ],
+      "reset_plan": [
+        [
+          5,
+          0,
+          0,
+          "SEARCH assertions USING INDEX changes (touched=?)"
+        ]
+      ]
+    }
+  },
+  "profiles": [
+    {
+      "profile": "complete-append-only-reverse-chain",
+      "edges": 16,
+      "bytes": 30674,
+      "counters": {
+        "staged_frames": 18,
+        "staged_edges": 16,
+        "epochs": 1,
+        "rank_vertices": 17,
+        "rank_edges": 16,
+        "certificate_checks": 16
+      },
+      "native_seconds": 0.06062553499987189,
+      "result": "complete"
+    },
+    {
+      "profile": "true-online-forward-chain",
+      "edges": 16,
+      "counters": {
+        "edge_requests": 16,
+        "queue_pops": 52,
+        "backward_edges": 22,
+        "incoming_removed": 0,
+        "promotions": 14
+      },
+      "result": "complete"
+    },
+    {
+      "profile": "true-online-reverse-chain",
+      "edges": 16,
+      "counters": {
+        "edge_requests": 16,
+        "queue_pops": 16
+      },
+      "result": "complete"
+    },
+    {
+      "profile": "complete-append-only-reverse-chain",
+      "edges": 32,
+      "bytes": 55410,
+      "counters": {
+        "staged_frames": 34,
+        "staged_edges": 32,
+        "epochs": 1,
+        "rank_vertices": 33,
+        "rank_edges": 32,
+        "certificate_checks": 32
+      },
+      "native_seconds": 0.11255171900006644,
+      "result": "complete"
+    },
+    {
+      "profile": "true-online-forward-chain",
+      "edges": 32,
+      "counters": {
+        "edge_requests": 32,
+        "queue_pops": 133,
+        "backward_edges": 71,
+        "incoming_removed": 0,
+        "promotions": 30
+      },
+      "result": "complete"
+    },
+    {
+      "profile": "true-online-reverse-chain",
+      "edges": 32,
+      "counters": {
+        "edge_requests": 32,
+        "queue_pops": 32
+      },
+      "result": "complete"
+    },
+    {
+      "profile": "complete-append-only-reverse-chain",
+      "edges": 64,
+      "bytes": 104882,
+      "counters": {
+        "staged_frames": 66,
+        "staged_edges": 64,
+        "epochs": 1,
+        "rank_vertices": 65,
+        "rank_edges": 64,
+        "certificate_checks": 64
+      },
+      "native_seconds": 0.20344581900008052,
+      "result": "complete"
+    },
+    {
+      "profile": "true-online-forward-chain",
+      "edges": 64,
+      "counters": {
+        "edge_requests": 64,
+        "queue_pops": 336,
+        "backward_edges": 210,
+        "incoming_removed": 0,
+        "promotions": 62
+      },
+      "result": "complete"
+    },
+    {
+      "profile": "true-online-reverse-chain",
+      "edges": 64,
+      "counters": {
+        "edge_requests": 64,
+        "queue_pops": 64
+      },
+      "result": "complete"
+    },
+    {
+      "profile": "complete-append-only-reverse-chain",
+      "edges": 128,
+      "bytes": 203885,
+      "counters": {
+        "staged_frames": 130,
+        "staged_edges": 128,
+        "epochs": 1,
+        "rank_vertices": 129,
+        "rank_edges": 128,
+        "certificate_checks": 128
+      },
+      "native_seconds": 0.39334522600006494,
+      "result": "complete"
+    },
+    {
+      "profile": "true-online-forward-chain",
+      "edges": 128,
+      "counters": {
+        "edge_requests": 128,
+        "queue_pops": 855,
+        "backward_edges": 601,
+        "incoming_removed": 0,
+        "promotions": 126
+      },
+      "result": "complete"
+    },
+    {
+      "profile": "true-online-reverse-chain",
+      "edges": 128,
+      "counters": {
+        "edge_requests": 128,
+        "queue_pops": 128
+      },
+      "result": "complete"
+    },
+    {
+      "profile": "complete-append-only-reverse-chain",
+      "edges": 256,
+      "bytes": 402029,
+      "counters": {
+        "staged_frames": 258,
+        "staged_edges": 256,
+        "epochs": 1,
+        "rank_vertices": 257,
+        "rank_edges": 256,
+        "certificate_checks": 256
+      },
+      "native_seconds": 0.7968319760000213,
+      "result": "complete"
+    },
+    {
+      "profile": "true-online-forward-chain",
+      "edges": 256,
+      "counters": {
+        "edge_requests": 256,
+        "queue_pops": 2275,
+        "backward_edges": 1765,
+        "incoming_removed": 0,
+        "promotions": 254
+      },
+      "result": "complete"
+    },
+    {
+      "profile": "true-online-reverse-chain",
+      "edges": 256,
+      "counters": {
+        "edge_requests": 256,
+        "queue_pops": 256
+      },
+      "result": "complete"
+    }
+  ],
+  "sources": {
+    "packages/riverhog-provenance/src/riverhog_provenance/journal.py": {
+      "prototype_sha256": "0ede4acb5f20d9a2c3e2dd204d3ec38c541b9bd3eaae284b565b0350dbcc7856",
+      "baseline_sha256": "be998b0f8624ac27b37684fedf71bb9381901c9ebe6c0a75a35eb6290c0101f8"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/journal_store.py": {
+      "prototype_sha256": "cce52c20ce338592e95cf7b73f265e5d0a572c4fc6fc9341dd7f9c0e8e74236e",
+      "baseline_sha256": "505b389e8a4315c70d4bcb18c4fa87b79852af60826d3f782d6b9720d70ce89d"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/_journal_epochs.py": {
+      "prototype_sha256": "5e54c9a3d06d61f033fc17321f5ab6bf24238d6ba26fd1e362e5a18b0801f5f6"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/_online_dag.py": {
+      "prototype_sha256": "1b6dd0975643b5628516fa5f7522e33898bae5838934a3b64b58e7011925bed3"
+    },
+    "packages/riverhog-provenance/tests/test_journal_epochs.py": {
+      "prototype_sha256": "e3e27f40ec9a9fccdff74298abdf2e5a24b21f10db9139c60beeb148eb55f31f"
+    },
+    "packages/riverhog-provenance/tests/test_online_dag.py": {
+      "prototype_sha256": "aef2ef7f92c97dea6ae022279ac86f8d8b7b633dd3b47f7c3b808a29ab6e2688"
+    }
+  },
+  "not_run": [
+    "full locked lint/type/format gates",
+    "full canonical workspace unit suite",
+    "Docker/PostgreSQL sealed-upload/scale qualification",
+    "full distribution/image and linux-qualification",
+    "independent exact-SHA CI/CodeQL",
+    "final-image independent recovery / killed-process / quota / Windows validation",
+    "Coq or other machine-checked proof of this SQLite adaptation"
+  ],
+  "limits": [
+    "no G26 changes",
+    "no under-600-second claim",
+    "correction sequences are explicitly repair-weighted, not universally linear",
+    "general online complexity is separately subquadratic with log SQL costs",
+    "no normative public declaration schema changed"
+  ]
+}
