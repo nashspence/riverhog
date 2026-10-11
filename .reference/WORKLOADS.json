@@ -1,5 +1,5 @@
 {
-  "format": "riverhog-external-large-collection-research-workloads/v2",
+  "format": "riverhog-external-large-collection-research-workloads/v3",
   "authority": "hypotheses-and-research-only; #964 and #963 own approvals",
   "base_commit": "8425e672c60285a549ca4d5aaba15ecbd99e5bf3",
   "approved_numeric_targets": "No new large-collection numeric targets approved; existing maintained 128-file/600-second objective remains. #960 closeout timing shortfall is explicitly approved in comment 6102101195; #964 owns remediation.",
@@ -136,9 +136,10 @@
     "index_ordering_and_dynamic_validation_cost_model"
   ],
   "future_decisions_require": [
-    "post_963_exact_source_and_three_comparable_completed_observations",
-    "maintainer_approved_workload_and_conditions",
-    "maintainer_approved_numerical_targets_and_proof_cadence",
+    "reconciled_integrated_source_and_representative_evidence_for_the_claim",
+    "maintainer_approved_operation_dimensions_cost_model_assumptions_and_bounds",
+    "maintainer_approved_exceptions_and_coverage_based_proof_cadence",
+    "comparable_completed_runs_when_establishing_or_revising_applicable_timing_targets",
     "owner_approved_contract_changes_if_required"
   ],
   "growth_objective": "Linear useful-work growth on sparse workloads in required bytes, unique records, real relationships and requested results; no hidden per-member multiplication. Index/ordering and online graph costs must be stated and justified, not silently accepted. An artificially expanded internal table is not necessary output.",
@@ -235,5 +236,17 @@
         "server_independence"
       ]
     }
-  ]
+  ],
+  "acceptance_direction": {
+    "authority_comment": 6104002488,
+    "normative_bounds": "operation-owned; dimensions, cost model, assumptions and approved exceptions",
+    "linear_default": "ordinary byte streaming and collection traversal",
+    "evidence": "algorithmic accounting plus maintained-implementation work counts, adversarial and boundary tests",
+    "sampling_is_not_universal_proof": true,
+    "wall_clock_is_product_guarantee": false,
+    "qualification_strategy": "distinct growth regimes rather than mandatory full lifecycles at every cardinality",
+    "large_sizes": "research/design envelope; retain selected large integration witnesses when needed",
+    "existing_proof_replacement": "requires equivalent coverage and owning approval",
+    "no_new_numeric_targets_approved": true
+  }
 }

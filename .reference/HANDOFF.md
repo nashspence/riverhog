@@ -1,131 +1,99 @@
 # NON-AUTHORITATIVE EXTERNAL REFERENCE
 
-Owning issue: #964 — large-collection scalability
-Convention: #903
-Audited base: `main@8425e672c60285a549ca4d5aaba15ecbd99e5bf3`
-Audited tree: `d18b813a489955b085094765f98282ea2e2276d0`
-Previous reference / intended direct parent: `703ff38fa6c0f50d9954b78503e16c9958b2f46a`
+Owning issue: #964; convention: #903.
+Original audited base: main@8425e672c60285a549ca4d5aaba15ecbd99e5bf3
+Original tree: d18b813a489955b085094765f98282ea2e2276d0
+Previous reference / direct parent: a7f823c7620e68088023c1f651b92010eb7bb687
+Current policy reconciliation checkpoint: main@7aa9997bcf05a50c42d7ecd4767730263a25d381
+Current tree: 6b0cb7a536a768340911b24e9dd92836033a8d5a
+Reference branch: reference/external/964-large-collection-scaling
+Decision: https://github.com/nashspence/riverhog/issues/964#issuecomment-6104002488
 
 Produced by: OpenAI ChatGPT
 Model: GPT-6 Astra Pro
-Configuration: no separately exposed effort setting recorded
+Configuration/effort: not exposed
 Requested by: Riverhog maintainer
-Published by: OpenAI ChatGPT through the connected GitHub integration
-
-This revision is source-controlled research, a reproduced algorithm audit, and an
-integration guide. It is **not a production patch**, successful full qualification,
-or approval of a new public contract. The exact newly published reference SHA in
-#964 is the handoff identity. The branch name is navigation. Preserve the previous
-reference in history; this revision supersedes its start-here and sequencing
-instructions where they differ, and retains its preliminary research evidence.
+Published by: connected GitHub integration; commit metadata is publication metadata.
 
 ## Integration agent: start here
 
-1. Read the current owning-issue decisions, especially the explicit
-   [#960 performance-shortfall disposition](https://github.com/nashspence/riverhog/issues/960#issuecomment-6102101195)
-   and [#963 coordination clarification](https://github.com/nashspence/riverhog/issues/963#issuecomment-6102103067).
-2. Read `SUPERLINEAR_INTEGRATION.md`. It gives the nine known local algorithm
-   candidates (the earlier output-decision lookup plus eight additional findings),
-   distinguishes the conditional discovery-representation risk, and maps each
-   candidate to its owner, acceptance proof, and unsafe shortcuts.
-3. Reproduce `superlinear/` on a separate exact audited-base checkout. Reconcile
-   the findings against the actual integration source before changing runtime
-   code. Drift is not permission to remove a guard and call old evidence current.
-4. Consume #963's shared measurement definition, not a new objective registry.
-   Extend the candidate workloads in `WORKLOADS.json` only through #964's approval
-   checkpoint before installing new maintained targets or large proof cadence.
+Read GROWTH_CONTRACTS.md before the earlier research and fix maps. This revision
+supersedes their acceptance direction where inconsistent: establish tested owner-
+scoped v1 growth commitments, not a collection of numerical speed guarantees or a
+requirement to run full media qualification at every large cardinality.
 
-## Current disposition and sequencing
+Linear is the default for ordinary byte streaming and collection traversal, with
+precise dimensions, cost measures and lifecycle/assumption scope. A different bound
+needs specific justification and approval. Finite samples corroborate algorithmic
+accounting; they do not prove an asymptotic guarantee. A declared growth violation
+or missing applicable proof blocks conformance and v1 qualification. Valid wall-clock
+misses remain diagnostic. Do not treat current known-defective source as conforming.
 
-The maintainer now authorizes #960 to close **with its identified unmet 600-second
-objective**, after applicable complete functional validation, exact-source evidence,
-and fixture cleanup. This is a specific timing exception, not a pass or a waiver
-of correctness, missing evidence, or other targets. Stop expanding #960 through
-performance-only closeout iterations. Preserve its runnable profile, the 600-second
-report-only target, and unchanged workload/interval. #964 owns the residual latency
-and algorithmic scaling work, including whether the full objective is achieved.
+#961's approved section (6103986307) states the working rule without claiming that
+all implementations already satisfy it. #963 (6103991666) carries functional,
+growth and elapsed evidence separately. #469 (6104044650) accounts for actual owner
+declarations/witnesses through existing release machinery. No new global complexity
+registry, speculative public schema or generated declaration authority is approved.
 
-#963 and #964 may be prepared and handled as one coordinated integration effort.
-Their responsibilities stay distinct. #961 remains #963's prerequisite; land the
-#963 measurement foundation before dependent #964 production/target integrations.
-Reconcile against that exact integrated baseline. Keep #964's explicit maintainer
-workload/condition/target/design checkpoint, especially for representation, identity,
-state or protected-boundary changes. Do not use a reference branch as authority.
+## Research and test strategy
 
-## What this revision adds
+Keep the original source-extracted decision lookup and eight superlinear witnesses,
+raw counts, query-plan controls and earlier source hashes unchanged. They remain
+historical evidence at 8425e672, not measured current-main results. Reconcile each
+finding against the integrated source before applying a fix. Preserve source-drift
+guards; an old benchmark is not a current correctness or performance qualification.
 
-- `SUPERLINEAR_INTEGRATION.md`: prioritized implementation and validation map,
-  precise useful-work growth objective, and #960 closeout reconciliation.
-- `superlinear/README.md`: original additional audit, with file/symbol locations,
-  algorithms, measured controls and original limitations. Its statements that no
-  issues were changed describe the original audit, not this later publication.
-- `superlinear/probe_quadratic.py`: exact source-extracted algorithm/SQL probes.
-- `superlinear/probe_query_plan.py`: experimental reachability join-order control;
-  it reduces cubic behavior to quadratic on the audited SQLite plan, **not linear**.
-- `superlinear/test_probes.py`: nine evidence/output/source checks; these are not
-  product regression coverage or full wire-contract tests.
-- `superlinear/results.json`, `reachability_join_order.json`: preserved
-  original measurements. Source files have exact recorded hashes. Seconds are
-  host-specific; operation counts are the useful evidence.
-- Expanded candidate workload/counter dimensions in `WORKLOADS.json`.
-- `HANDOFF.v1.md`: original handoff provenance, retained without rewriting it.
+Use SUPERLINEAR_INTEGRATION.md for owner-level candidate fixes and negative tests.
+Use GROWTH_CONTRACTS.md for the updated declaration/cost/acceptance standard.
+WORKLOADS.json remains a candidate research taxonomy, not a source of product bounds,
+approved numeric targets or mandatory run sizes. It now records the coverage-based
+qualification strategy rather than implying a compulsory 10k/100k media ladder.
 
-The original `RESEARCH.md`, `probe_scaling.py`, `test_probe_scaling.py`, and
-`SOURCE_PROBE.json` remain unchanged as historical research. This revised handoff
-and the newer owning-issue decisions supersede their earlier sequencing.
-None of these reference-only inventories should be copied to main as another
-policy ledger. Production behavior and regressions belong with their current
-owners; decisions and dispositions belong in GitHub.
+Require small/moderate adversarial work-count tests and compact real end-to-end
+boundary witnesses. Exercise cold, warm, cache bypass, page/pack transitions,
+corrections, failures and replay. Retain selected larger integration witnesses where
+actual database plans, working-set/platform behavior or storage need them. Existing
+required proof is not silently dropped; replacements need equivalent coverage and
+owning approval. One collection must remain one exact collection.
 
-## Validation actually performed for this revision
+## Sequencing and authority
 
-- Re-read current main and #963/#964 decisions, #960's latest reported checkpoints,
-  and the published reference tip. Main still names the audited base above.
-- Verified the supplied audited-base clone ZIP SHA-256
-  `0703fe0cbfd2201e8fb0866a271e723a22a43a2b2a99740b28956e3c461df233`
-  and Git commit/tree. Restored ZIP-lost executable bits from Git before comparison.
-- Reconstructed the prior six-file reference tree and verified exact equality to
-  published tree `aafd4d0c0a9e7910f1b6c40435c7d832ba522f75`.
-- Original audit ZIP SHA-256:
-  `5abf3606b0752883877142df47088a55c11ed36d4381ee613b9de70b4c95e30e`.
-  All seven recorded source hashes match both current bytes and the audited Git
-  blobs. The eight findings use these files; hash count is not finding count.
-- Re-ran all twelve probe/control cases at 128/256/512 and the join-order control
-  on Python 3.13.5 / SQLite 3.46.1. All non-time counters, output counts, source
-  identities and query plans reproduced exactly. Host elapsed values varied.
-- All nine additional evidence checks and all four original research tests passed.
-  Retained original measurements were not replaced by rerun timings.
-- Final publication verification checks reference-only changed paths and exact
-  local/published tree identity; the issue publication comment records the outcome.
+The #960 timing-shortfall closeout disposition (6102101195) remains intact. It does
+not waive functional proof, certify the 600-second target, or waive #964's v1 growth
+commitments. Keep the maintained scale profile/fixture/interval and visible miss.
+Do not expand or reopen #960 for these architectural obligations.
 
-## Not validated / limitations
+#963/#964 may be handled together, with #961's guide prerequisite and the shared
+measurement foundation established before dependent conformance acceptance. The
+research checkpoint now approves operation coverage, growth bounds/cost models,
+assumptions, exceptions, designs and proof cadence. Numerical seconds targets are
+separate internal expectations, not prerequisites for every growth declaration.
 
-No runtime fix is implemented by this revision. No locked full lint/unit/dist/build,
-Docker/PostgreSQL scale lifecycle, final-image recovery, CI/CodeQL, or 10k/100k
-qualification was executed. Source-extracted probes use controlled internal records;
-several wire/model boundaries are intentionally outside their scope. Read their
-README before treating them as anything more than algorithm witnesses.
+Compact index representations, graph algorithms, paged plans and durable-state
+changes still need exact owner/protected-boundary review. This reference is neither
+an implementation patch nor a blanket approval of those choices.
 
-The cubic measurement depends on SQLite 3.46.1's query plan in the fresh scratch
-schema. Repeated reachability itself remains quadratic with the tested better plan.
-Dynamic graph validation must preserve every required accepted snapshot; this
-handoff does not claim a universally linear online dynamic-graph algorithm.
+## Validation for this policy revision
 
-Not all eight findings dominate the 128-WAV proof: its one-sidecar fixture hides
-balanced pairing growth; independent recovery is a separate path. They demonstrate
-why a small successful timing alone is insufficient for 100,000-member support.
-There is no established current full-lifecycle lower bound or sub-ten-minute result.
-The #960 recommendation is an engineering disposition, not a mathematical proof
-that 600 seconds is impossible before all #964 changes.
+Reviewed current main, issue decisions, old handoffs and source-controlled probes.
+Checked the amended workload JSON, all preserved historical source evidence, the
+coordinated guide patch chain and prospective timing-applicability checks. The
+13 historical probe/output tests were rerun on their own audited source, not on
+current main; their counters remain labeled historical. No raw timing result was
+rewritten or extrapolation represented as measured qualification.
 
-The available publisher exposes no native GitHub Development/dependency mutation.
-The #963 prerequisite and reference relationship remain textually recorded; a later
-capable publisher may establish native links without rewriting the published SHA.
-No main/release source, protection, issue body or issue state is changed here.
+Not run: new runtime fixes, locked full gates, real Docker/PostgreSQL/FTP/scale or
+independent recovery qualification, large collections, CI/CodeQL or provider/release
+operations. This update defines integration and acceptance input, not conformance.
 
-## Authority
+## Publication
 
-Authority remains with #964, the maintainer's issue comments, applicable component
-contracts, and the repository's normal integration rail. #948/#953 retain separate
-execution/recipe authority. Reuse is an explicit integration act with fresh tests,
-not a mechanical cherry-pick of `.reference` or unreviewed change to commitments.
+Only reference material changes. The exact newly published SHA in #964 is the
+handoff identity; retain a7f823c7 and earlier SHAs in history. Verify reconstructed
+GitHub tree identity against the prepared tree; no local unpublished commit SHA is
+claimed. Do not merge .reference into main or treat an external reference as the
+normal integration rail. Owning issues and approved contracts remain authoritative.
+
+The publisher does not expose native Development or dependency mutation. Markdown
+links and issue comments record the intended relationships, not native links. A
+capable publisher may add them without changing reference provenance.
