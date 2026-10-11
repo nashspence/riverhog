@@ -275,7 +275,7 @@ inspect drift and reconcile explicitly; the reference branch's runtime base is o
    `packages/riverhog-provenance/tests/`.
 3. `git apply --check /reference/g22/integration.patch`, then apply it. It changes
    only `journal.py` and `journal_store.py` at the audited source. No public export,
-   schema, archive byte, SQL application migration or acceptance boundary changes.
+   schema, archive byte, durable application state or acceptance boundary changes.
 4. Run the focused tests and counters below; use the locked toolchain for actual
    integration. Format/type/style checking through that rail remains required.
 5. Register the EXACT public-operation/profile applicability and witnesses with
@@ -310,7 +310,7 @@ Docker, PostgreSQL, wire-contract, full gate or asymptotic machine-checked proof
 
 Still required on the actual integration source: locked lint/type/style/full unit,
 distribution/image builds, exhaustive portable qualification, independent exact-SHA
-CI/CodeQL, real sealed-upload and recovery compatibility, bounded source-spool and
+CI/CodeQL, real sealed-upload and independent recovery functional parity, bounded source-spool and
 killed-owner/capacity tests, and Closure/Audit witness registration. Treat old source
 results as historical; do not call .reference tests a completed integration rail.
 

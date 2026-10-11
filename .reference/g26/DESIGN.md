@@ -6,8 +6,12 @@ Recommended implementation design for #964 under #903. Audited source:
 
 This is a precise design and executable semantic/cost model, NOT a fully wired
 production patch or completed growth qualification. It preserves the supplied G22
-reference unchanged. The index identity/transition decision below requires explicit
-owner approval before the affected protected boundary is changed.
+reference unchanged. The specific derived discovery-index extraction/dataset and
+read-generation identity revision is **explicitly approved by the maintainer**:
+[#964 comment 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478).
+The approval is a pre-v1 hard cut with no migration or backward compatibility.
+It does not certify the implementation or waive owner verification of exact
+current-state and protected-identity evidence.
 
 ## 1. Selected architecture
 
@@ -32,9 +36,9 @@ rules are the current `member_relevance` semantics enumerated below, implemented
 at their existing owners. Private selectors are indexes/access paths for those
 rules, not independently authored user programs or authority.
 
-### Required identity decision
+### Approved derived-index identity hard cut
 
-**Recommend a deliberate pre-v1 derived-index identity revision.** Keep archive
+**Implement the expressly approved pre-v1 derived-index identity revision.** Keep archive
 roots, journal bytes/anchors, member/history identities, source proofs, request
 schemas and the logical discovery result relation unchanged. Change the extraction
 policy/dataset commitment to identify the new deterministic representation.
@@ -46,8 +50,11 @@ This is not a claim of byte-identical old generation IDs. The old SHA-256 digest
 feeds every expanded membership row; retaining that exact computation retains
 work proportional to the expanded relation. Do not replace it with an unreviewed
 commutative checksum or quietly hash a different preimage under the old identity.
-The owning freeze/state review is the one explicit semantic deployment checkpoint
-for this proposal; the source-factored design can otherwise be implemented directly.
+The specific derived index/read-generation identity change is now approved in
+#964; update the owner-reviewed exact freeze expectations from the new source and
+record their evidence. No approval was given for altering archive authority or
+query semantics. **No old-to-new schema migration or identity-translation path is
+required or permitted**; this is a clean current-schema replacement.
 
 ## 2. Exact relation to preserve
 
@@ -80,8 +87,9 @@ attribution merely because the source binding proof is valid.
 
 All production rows are namespaced by `build_id`; source coordinates additionally
 carry the exact archived journal identity. Application owner remains Riverhog.
-The following is the logical schema; map names through existing metadata/migration
-conventions. Strings/integers use the existing protocol domains and key collations.
+The following is the new **current-only** logical schema; map names through
+the owner's current schema definitions, not migration conventions. Strings/integers
+use the existing protocol domains and key collations.
 No new semantic count/depth bound is introduced by a physical SQL column.
 
 | Relation | Primary key after build_id; essential columns and access indexes |
@@ -225,7 +233,8 @@ activity accessors similarly use indexed owner/endpoint plus prefix interval tes
 
 These are private integration names/roles, not additional frozen public exports.
 The integration agent should implement them within the existing owner, replacing
-retired runtime paths in one normal pre-v1 cut after the transition is approved.
+retired runtime paths in one explicit pre-v1 hard cut; the derived-index identity
+change is already approved and must not be implemented as a schema upgrade.
 
 ## 5. Compact commitment and identity transition
 
@@ -262,29 +271,62 @@ restart the whole digest per record. If a crashed private hash state is unavaila
 restart that compact pass once and report its cost; the normal-build growth bound
 is not a claim of finite work under unlimited crashes.
 
-### Operator-owned transition, no implicit data discard
+### Pre-v1 clean hard cut — approved identity, no schema migration
 
-Default recommendation is one new forward-only Riverhog-owned migration from the
-then-current state revision. Add normalized relations and new pending-build state;
-retain archive material, upload receipts, running operation state and old derived
-data until its explicit fenced retirement. Do not rewrite an already deployed
-baseline or delete the database because indexes are rebuildable.
+**Maintainer decision:** [#964 comment 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478).
+The new normalized index tables and versioned extraction/dataset commitment
+replace the retired expanded-membership schema and runtime entirely **before the
+first release candidate**. There is no support for migration of an old DB schema,
+rolling upgrades, old/new index coexistence, dual reading/writing, legacy
+extraction fallback, compatibility adapters, or old-cursor translation.
 
-Deploy with an explicit maintenance/reindex plan: startup validates schema only;
-operator migration and index rebuild are separate actions. New code refuses an old
-incompatible extraction generation using existing unavailable-index behavior. Build
-new generations from archive authority, switch only complete ones, then retire old
-derived tables/data under the declared retention/migration step. Do not silently
-run the obsolete extractor beside the new API as a permanent compatibility layer.
-If availability during transition is required, it needs a separately approved
-rolling transition; this reference does not disguise an outage as zero downtime.
+The index/dataset and read-generation identity change is specifically approved.
+Continue to freeze the new deterministic values through the owning current-source
+contract/tests; the approval is **not** permission to rebaseline archive roots,
+journal octets, member/history IDs, input authority or semantic query results.
 
-Old discovery cursors invalidate when generation/read identity changes. Continue
-existing conflict-and-restart semantics; a cursor must never mix two generations.
-A clean pre-v1 baseline hard cut instead of forward migration is an alternative
-ONLY if the owning maintainer explicitly verifies deployment/state obligations and
-authorizes that different transition. The G22 scratch-table changes do not authorize
-G26 durable application state changes.
+**Exact integration sequence:**
+
+1. Replace existing current schema definitions/DDL and fixtures with the new
+   source-normal tables, indexed selectors and bounded private staging. Remove
+   retired membership tables/extractor runtime paths and their expectations in
+   the same pre-v1 hard cut; do **not** create migration scripts, schema-version
+   bridges or an old-layout load/convert operation. Keep G22 implementation
+   ownership separate.
+2. Current-schema startup validates its declared structure. When pointed at an
+   incompatible old database it **fails closed** with an actionable fresh-state
+   initialization requirement. It never upgrades, dual-reads, rewrites or silently
+   resets it. Requiring explicit operator intervention is not a promise of a
+   supported old-to-new upgrade procedure.
+3. Start with newly initialized **current-schema** state. Regenerate only
+   *rebuildable derived discovery-index state* by running the new extractor over
+   independently validated archived member/history/provenance data, under normal
+   build fencing, source capture, completeness and retry rules. Publish only a
+   fully verified new index generation.
+4. Preserve authoritative archives, documentary evidence, custody receipts and
+   non-rebuildable operational state. Do not call an entire application database
+   disposable because discovery indexes are rebuildable. If pre-v1 saved
+   operational state cannot be reconstructed safely under the new schema, stop
+   and obtain explicit owner/operator disposition; this design supplies **no**
+   migration or compatibility mechanism for that state.
+5. Use the existing generation/read-identity conflict semantics when an old
+   cursor or saved read identity is presented. The old value is invalid and the
+   caller restarts discovery with the new generation. The server does not
+   translate, recognize as compatible, or silently mix old and new cursors.
+6. Confirm current/new-only archive rebuilding, restart/replay, claim/fence,
+   permissions, scope/query equivalence, cleanup, SQL plan/growth constraints,
+   and protected derivative-identity freeze tests on the final source. No
+   zero-downtime or cross-version deployment promise is made.
+
+Any mention in prior reference history of **forward-only migration, rolling
+transition, retirement of a concurrently running old index, or optional hard-cut
+alternative is superseded**. There is only the clean pre-v1 hard cut for this
+G26 integration. A later v1-to-v2 policy is out of scope and not established.
+
+Old discovery cursors still invalidate when generation/read identity changes;
+the existing conflict/restart result is the *current interface behavior*, not a
+compatibility adapter. No reference to an old schema is needed at runtime beyond
+rejecting incompatible current-state validation.
 
 ## 6. Query implementation without reconstructing R
 
@@ -417,7 +459,7 @@ waive the approved whole-lifecycle composition requirement.
 
 | Existing owner/path | Change |
 | --- | --- |
-| `catalog_provenance_index_models.py` | Add normalized source facts/root/import/dependency rows and staged work/terminal records; re-key lexical postings; remove expanded-membership dependency after transition. Preserve build-qualified FKs/inverse indexes. |
+| `catalog_provenance_index_models.py` | Add normalized source facts/root/import/dependency rows and staged work/terminal records; re-key lexical postings; remove the expanded-membership dependency in the same pre-v1 hard cut. Preserve build-qualified FKs/inverse indexes. |
 | `canonical_discovery_rows.py`, `canonical_discovery_extraction.py` | Reuse exact scalar/profile/core-edge extractors; extract raw facts once, attach born/retired coordinates, no latest-head replacement. |
 | `canonical_discovery_relevance.py` | Replace production Mapping that enumerates all member assertion memberships with the fixed source-normal accessors and correlated-scope evaluator. Keep the old implementation only as a TEST oracle during parity work, then remove retired runtime path. |
 | `canonical_discovery_build.py` | One shared source build and bounded stage advancement; no per-member complete closure/materialization loop. |
@@ -426,7 +468,7 @@ waive the approved whole-lifecycle composition requirement.
 | `services/collection_uploads.py` | Replace `_advance_catalog_canonical_index` member/membership counters with build phase/task cursor; same final index readiness before terminal publication. |
 | `canonical_discovery_search.py` | Replace `_matching_members`/`_exact_support` flat joins with exact fact predicates, unary propagation and guarded checks; keep filters, read fence and public response semantics. |
 | neutral provenance/archive libraries | Add a narrow immutable source-fact projection API only where needed, backed by their exact validator. Do NOT import server selectors or interpretation into them; do not bypass current public read checks. |
-| Riverhog state migrations/fixtures | Forward-only owner transition, updated state DDL and native database tests; no startup migration or deleted archive/operation state. |
+| Riverhog current-state schema/fixtures | Replace current owner DDL/schema/model and exact fixtures as a pre-v1 hard cut; no migrations, upgrade paths, legacy readers/writers or startup conversion. Check current-schema initialization, fail-closed old layout, archive-backed rebuild and non-rebuildable operational state. |
 | qualification native discovery plan fixtures | Seed the new truthful source-normal projection; assert relevant indexed paths, including inverse incidence and guarded negatives. Do not merely update old index-name strings to get a green test. |
 | #963/#964 Closure/Audit witness wiring | Declare actual cost profiles, exact source/workload/applicability, counters and completed evidence. No second target or scope registry. |
 
@@ -443,7 +485,7 @@ point traversal, reverse candidates and minimum unguarded support propagation.
 `native_compiler.py` lowers actual validated Riverhog fixtures to that model for
 scope equivalence. It deliberately uses in-memory/per-prefix views and is **not**
 a ready-made production source-normal extractor. Do not inherit that scalability
-limitation. Neither file is a new public API or a complete SQLAlchemy migration.
+limitation. Neither file is a new public API nor the final SQLAlchemy current-schema integration.
 
 Tests cover exact native primary/context/late-bound/retained scopes, corrections,
 multiple exact prefixes, real imported source-binding proofs with/without causal
@@ -465,7 +507,7 @@ Before landing, implement and pass:
   new generation retains applicable previous one; index loss rebuilds from archives.
 - Query ties, generation cursor conflict, revoked key/artifact scope and expiry;
   no cross-member leakage from shared factors or AND operand unions.
-- Owner migration/digest approval, state-fixture integrity and protection checks.
+- Approved derived-index identity hard cut, new-only schema and exact freeze-fixture integrity; no migration/backcompat tests as success paths.
 - Mandatory locked local and exact-SHA remote gates, appropriate final-image full
   publication and independent recovery, source/scratch cleanup and timing review.
 

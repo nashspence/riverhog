@@ -4,11 +4,14 @@ Read [DESIGN.md](DESIGN.md) first. It selects source-normal assertion intervals,
 shared exact-scope relations, compact generation commitments and nonexpanding
 query paths. [RESEARCH.md](RESEARCH.md) records primary sources and alternatives.
 
-The required owner decision is explicit: approve the proposed derived-index
-extraction/digest and durable-state transition before changing that protected
-boundary. Archive/member/journal/history identities and query semantics stay intact;
-old index generation IDs do not. This is a recommended design, not a unilateral
-approval or a completed production implementation.
+**Approved owner decision:** [#964 comment 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478)
+explicitly accepts the derived-index extraction/digest and read-generation identity
+revision. The implementation is a **pre-v1 current-schema hard cut**, with no
+migration, backward compatibility, dual readers/writers or rolling cutover.
+Archived member/journal/history authority and logical query semantics stay intact;
+old index generation and cursor identities do not. This decision approves the
+specific identity change, not a completed production implementation or other
+protected-contract changes.
 
 Executable payload:
 - [factored_index.py](factored_index.py): small SQLite factor/guard/hash/query model.
@@ -34,7 +37,8 @@ PYTHONPATH=/path/to/reference/.reference/g26:$PYTHONPATH \
 
 The producer used a constrained native source-import environment, not the locked
 workspace. Exact reproducibility/qualification details are in evidence.json.
-No production migration, first-page HTTP worker, provider operation or final-image
-integration is claimed. Do not copy this directory into main as a new registry or
+No production current-schema hard cut, first-page HTTP worker, provider operation
+or final-image integration is claimed. An obsolete old-layout compatibility path is
+not part of this design. Do not copy this directory into main as a new registry or
 merge the reference branch mechanically. Reconcile source and implement the mapped
 owner changes from DESIGN.md through the normal integration rail.

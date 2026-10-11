@@ -16,9 +16,11 @@ common non-conformance qualifications; [sources.json](sources.json) supplies
 source hashes. [distributions.json](distributions.json) maps all 86 distributions.
 None of those mappings establishes dynamic method-level Closure coverage.
 
-[load_inventory.py](load_inventory.py) reconstructs the entire original reviewed
-inventory object, restores repeated URLs/default fields, and verifies its exact
-canonical-object SHA-256. Run from any location with Python 3.11 or newer:
+[load_inventory.py](load_inventory.py) reconstructs the **current decision-
+reconciled proposal**, restores repeated URLs/default fields, and verifies its
+exact canonical-object SHA-256. The *previous* reviewed inventory and its digest
+remain recoverable from the earlier #903 commit; this revision deliberately
+changes G08/G26 policy text and the reference inventory digest. Run from any location with Python 3.11 or newer:
 
 ```bash
 python /path/to/reference/.reference/v1_inventory/load_inventory.py
@@ -45,16 +47,22 @@ named maintained schema/query/predicate profiles, and qualified component/
 codec/provider profiles. These directions permit ordinary declarations and
 narrow semantics-preserving fixes to proceed.
 
-**Two design submissions remain** before broad changes: G22 online graph
-acceptance/validation preserving current rejection points, and G26 compact
-shared-history discovery preserving query/scope parity and protected identity/
-state consequences. The preferred directions are not approvals of algorithms,
-schemas, migrations or final bounds. Issue #964 is the decision authority.
+**Both G22 and G26 design submissions have been supplied** as source-pinned
+reference work; G22's online acceptance model and G26's exact shared-history
+query contract still require integrated proof. **For G26 specifically, the
+compact derived-index identity revision and pre-v1 clean schema hard cut are
+explicitly approved** in
+[#964 comment 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478).
+No migration/backward-compatibility route, rolling replacement or old-cursor adapter
+is permitted. Other individual formulas, final production schemas and growth
+qualification remain unestablished. Issue #964 owns the decision.
 
-Original `STRUCTURE.md` and JSON family records remain unmodified as the
-reviewed *proposal*; their statements that all four policy directions are
-unapproved are historical and superseded by the later issue decision. The
-canonical-object inventory digest is unchanged.
+The current `STRUCTURE.md` is a proposal with an approved G26 identity policy
+overlay, and G08/G26 family records explicitly reflect the no-migration decision.
+The original pre-decision inventory and its SHA-256
+`1a4da40cd1fc70490e68b7ec3187667cb4162f7a63487e46af439a7e67e4d62f`
+remain in the parent reference commit. The new inventory digest is checked by
+`load_inventory.py` and is not a runtime conformance claim.
 
 G01–G62 remain proposed public families; G63–G64 are internal engineering
 budgets. Do not freeze sample sizes, specific SQL indexes, source locations or

@@ -13,7 +13,7 @@ All bounds are proposals; current runtime conformance is not established.
 | G05 | Staged metadata and bounded control bindings | [families-G01-G08.json](families-G01-G08.json) |
 | G06 | Official API clients and CLI traversal/presentation | [families-G01-G08.json](families-G01-G08.json) |
 | G07 | Live authorization, claim and fence checks | [families-G01-G08.json](families-G01-G08.json) |
-| G08 | State-schema inspection and declared migrations | [families-G01-G08.json](families-G01-G08.json) |
+| G08 | Current-schema validation and pre-v1 hard cuts | [families-G01-G08.json](families-G01-G08.json) |
 | G09 | Source enumeration and initial identity acquisition | [families-G09-G20.json](families-G09-G20.json) |
 | G10 | Upload registration and canonical construction planning | [families-G09-G20.json](families-G09-G20.json) |
 | G11 | Payload packing and transfer | [families-G09-G20.json](families-G09-G20.json) |

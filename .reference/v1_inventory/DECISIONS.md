@@ -1,6 +1,6 @@
 # Approved growth-contract directions; G22/G26 design briefs
 
-**Authority:** [#964 maintainer approval — issue comment 6111028968](https://github.com/nashspence/riverhog/issues/964#issuecomment-6111028968).
+**Authority:** [#964 cost/profile decisions 6111028968](https://github.com/nashspence/riverhog/issues/964#issuecomment-6111028968) and [explicit G26 identity/hard-cut approval 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478).
 **Status:** authoritative decisions reside in that comment. This is the non-authoritative #903 integration handoff, not frozen v1 product declarations or evidence that existing code conforms.
 **Audits:** historical superlinear probes at `8425e672c60285a549ca4d5aaba15ecbd99e5bf3`; 64-family inventory at `152d095038df0c0d0ed642cf265d47b11c65a754`. The post-#963 implementation baseline remains to be selected and reconciled.
 
@@ -12,7 +12,7 @@
 
 **D3 — Named evaluator profiles.** Preserve maintained schema/query/predicate expressiveness by defining owner-specific, exact supported profiles: e.g. bounded structural schema, simple fixed predicate, indexed lookup, full scan, nested/complex query. Count relevant program/schema sizes, input sizes, candidates actually demanded by public semantics and emitted results; disclose actual cost class and conditions. Do not use "work done by current implementation" as a vacuous cost dimension. A narrower, deliberately tractable expression subset is a serious alternative **only if later separately approved**, not silently authorized by this policy.
 
-**D4 — Compact discovery is the preferred design direction.** Share immutable history/assertions in a derived index, with exact member/scope associations and query-time expansion when required. This is approval to design, prototype, and test alternatives—not approval of a specific table, public schema, corpus/dataset digest change, storage migration, or altered query semantics. **G26 design submission is mandatory before broad representation implementation.** A compact adjacency/on-demand relevance design is a serious alternative to compare.
+**D4 — Compact G26 discovery and approved identity HARD CUT.** Share immutable history/assertions in a derived index, with exact member/scope associations and query-time expansion when required. The maintainer has **explicitly approved** G26's new compact extraction/dataset commitment and derived generation/read identity ([decision 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478)). Implement a **current-schema-only pre-v1 hard cut**; no forward migrations, old cursor adapters, old-version schema support, dual readers/writers, or rolling transitions. The G26 design submission is supplied in [../g26/DESIGN.md](../g26/DESIGN.md). Exact query scopes, archive identities and non-rebuildable state remain protected; its production realization and bounds still need integration proof. The factored design is preferred to on-demand adjacency for the stated profiles; this does not approve unrelated schema/public-authority changes.
 
 **D5 — Qualified component and provider profiles.** Generic Riverhog/Stove0 transport, custody, planning, status and preservation work gets its own bounds. Chosen codec, observer, tool, GPU and provider implementation work gets separately scoped profiles; a composite must account for every reachable delegate, including invocation multiplicity. A narrower set of *qualified* supported profiles is valid when applicability is declared, but missing or incompatible delegate bounds prohibit a composite conformance claim. Count actual calls and bytes; external network/calendar wait is not a file-count work promise. APIs returning entire arrays/bytes incur output-sized memory, not stream-sized memory.
 
@@ -42,10 +42,10 @@ Provide:
 - Sparse, fully shared, partially shared and genuinely dense lawful cases; distinguish unique stored evidence/relations from requested output rows and avoidable member-by-shared-assertion staging.
 - Factorization/index schema and query expansion; compare with adjacency/on-demand alternative on build CPU/work, database rows/bytes, status-read costs, one-result queries, full exports, cache-eviction and reconstruction.
 - Byte-/row-exact parity across old/new builds and retries, generation/dataset commitment identity, stale-worker fencing, live permissions, archive-only recovery and rebuild. Explain any digest change and protected/frozen boundary effects rather than regenerating an expectation to conceal them.
-- Explicit durable operational-state transition, forward-only migration or clean pre-v1 cutover proposed at the correct owner; no discarded archive authority or unauthorized data deletion.
+- **Approved G26 hard cut only:** replace old derived index schema/extraction with the new current-only representation. No schema migrations, rolling/dual format paths, upgrade scripts or compatibility readers. Fail closed on incompatible existing state; preserve archived authority and non-rebuildable operational evidence, and rebuild only derived indexes from authenticated source.
 - Source-executed adversarial work budgets and a compact real PostgreSQL/integration witness. A 128-file proof need not encode 100,000 media files to expose quadratic staging.
 
-**Pending:** representation, transition, index identity treatment and final cost/query declarations; **not approved by this handoff**.
+**Approved identity direction:** compact extraction/dataset/read-generation revision and pre-v1 no-migration hard cut (6112668478). **Pending:** final implemented schema, derived-index query parity, work bounds, state-safety and integrated qualification, not a separate approval of this specific identity change.
 
 ## Parallel work authorized without these designs
 

@@ -1,6 +1,6 @@
 # Proposed v1 growth contract structure
 
-**Status:** proposal for maintainer review, not an approved new contract and not a claim of current conformance.
+**Status:** owner-level growth declaration proposal, not a completed public contract or current runtime conformance. The separate **G26 derived-index/extraction identity revision and pre-v1 no-migration hard cut are now explicitly approved** by [#964 decision 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478). Other individual formulas still need exact owner proof.
 
 **Audited source:** `nashspence/riverhog@152d095038df0c0d0ed642cf265d47b11c65a754`, tree `991e994457b487a7dca016b7fc0409485cef25c6`.
 
@@ -63,7 +63,11 @@ Examples:
 - A constant/error enumeration/schema-only export receives an explicit non-executable disposition. Its validation or serialization operation may inherit a real bound.
 - Arbitrary codec/provider/application behavior is not made linear by a generic adapter declaration.
 
-A new package, a changed externally protected identity or a data-format/state transition still requires the existing authority review. Adding growth declarations is not permission to relax a protected boundary.
+New packages and unrelated protected identities still require owning review.
+The **G26 derived-index identity** change has the specific maintainer approval
+above; implementation must be a pre-v1 hard cut, with new-only current schema,
+fail-closed incompatible-state validation and no migrations or backward compatibility.
+Adding growth declarations does not relax any other protected boundary.
 
 **Composition is an acceptance obligation.** A public linear lifecycle cannot be approved while a reachable delegate has an unresolved or incompatible growth bound. Either establish a compatible algorithm, narrow and explicitly approve the lifecycle's operation model, or publish the actual weaker bound. Merely labeling the expensive work a separate component, cache, validation step or 'required snapshot' does not remove it from end-to-end cost.
 
@@ -160,4 +164,7 @@ Approve the inventory as a scope proposal, then establish the exact cost model a
 
 #961 owns the short developer rule. #963 owns evidence execution/reporting and internal timing applicability. #964 owns these operation-specific growth declarations, implementation corrections and witnesses. #469 consumes the resulting normative declarations and exact executed evidence for v1; #960's timing-shortfall disposition is unchanged.
 
-This is a proposal only. No issues, branches, protected settings or mainline source were changed by this inventory task.
+This remains a proposal for actual owner-level growth declarations. The #964
+maintainer explicitly approved G26's derived-index identity revision and the
+pre-v1 no-migration hard cut. This reference integrates the decision as guidance,
+not a migration, compatibility path or runtime change to main.

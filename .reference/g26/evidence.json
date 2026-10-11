@@ -79,7 +79,7 @@
   "not_run": [
     "full source-normal PostgreSQL production extractor/query implementation",
     "complete HTTP authentication/cursor/rebuild integration",
-    "owner migration/freeze rebaseline and actual index cutover",
+    "approved derived-index identity hard cut, new-only schema validation and archive-backed rebuild",
     "complete full-archive source capture and hard-kill/quota recovery",
     "full locked lint/unit/dist-smoke/build and linux-qualification",
     "G22+G26 combined prototype qualification",
@@ -91,7 +91,7 @@
     "model source counts are not independently authenticated archive completion manifests",
     "native adapter materializes small per-prefix Python views and is not production growth evidence",
     "general guarded query is a separately declared correlated-reachability cost; no universal output-linear guarantee",
-    "new compact digest intentionally differs from old expanded SHA preimage and needs owner approval",
+    "new compact digest intentionally differs from old expanded SHA preimage; explicit approval recorded in #964 comment 6112668478; integration still unverified",
     "no under-600-second claim or release/provider authorization"
   ]
 }

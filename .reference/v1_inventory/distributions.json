@@ -773,7 +773,7 @@
     "name": "state-schema",
     "pyproject": "packages/state-schema/pyproject.toml",
     "scripts": {},
-    "description": "Forward-only relational state schema and migration contracts.",
+    "description": "Owner-defined relational state schemas and current-layout validation; pre-v1 support requires one current schema with clean hard cuts, not historical migration/compatibility APIs.",
     "proposed_growth_families": [
       "G08",
       "G62"

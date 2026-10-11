@@ -240,16 +240,16 @@
   {
     "id": "G08",
     "group": "Shared contracts",
-    "title": "State-schema inspection and declared migrations",
+    "title": "Current-schema validation and pre-v1 clean hard cuts",
     "layer": "public",
     "proposed_owners": [
       "state-schema"
     ],
-    "scope": "Inspect current schema and run one explicitly selected migration.",
-    "proposed_work_bound": "Current-state inspection O(schema metadata + migration-chain metadata), independent of live data rows. A data migration declares O(rows/bytes transformed + index construction), separately for that migration.",
-    "proposed_memory_and_state_bound": "Inspection bounded by schema size; data transforms use bounded batches and explicit checkpoints where supported. No blanket constant-space or linear promise for arbitrary migration code.",
-    "semantic_requirement": "Startup validates rather than silently rebuilding/migrating all data; forward-only owner transitions remain explicit.",
-    "proposed_witness": "Compare empty and large populated databases with identical schema; test incompatible schema detection; qualify each data migration on its own input dimensions.",
+    "scope": "Validate the one current owner-defined state/schema and initialize a fresh current-schema database; no old-schema migration or upgrade surface is within v1.",
+    "proposed_work_bound": "Current-state schema validation O(schema metadata) independent of live data rows; fresh current-schema initialization O(new declared schema/index structures). A separately requested derived-index rebuild has the appropriate G26/G20 source/record work bound, not a prior-version database conversion.",
+    "proposed_memory_and_state_bound": "Validation memory bounded by current schema metadata; current-only initialization bounded by declared DDL; rebuildable derived data may use bounded disk-backed work. No transient old-plus-new schema duplication or compatibility adapter.",
+    "semantic_requirement": "Startup verifies exact current schema and rejects incompatible prior layouts. No migration scripts, old-version readers, rolling upgrades or backward-compatibility support pre-v1; preserve archived bytes, custody and non-rebuildable operational authority.",
+    "proposed_witness": "Current-schema startup and initialization; mismatched schema fail-closed; absence of old-schema upgrade/dual readers; rebuilding genuine derived index state from authorized archive evidence without discarding non-rebuildable outcomes.",
     "source_anchors": [
       {
         "path": "packages/state-schema/src/state_schema/__init__.py",

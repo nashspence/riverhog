@@ -7,7 +7,7 @@
     "tree": "991e994457b487a7dca016b7fc0409485cef25c6",
     "archive_sha256": "cd56d6b467794feabfedc78fcea8c51bb3e192a3ac1ee0c91e3ab588b40a309f"
   },
-  "purpose": "Review proposed owner-scoped v1 growth declarations across the workspace and a structure for integrating them with the existing normative Closure and separate Audit Record.",
+  "purpose": "Reconciled proposed v1 growth declarations; the G26 derived-index identity/current-only pre-v1 hard cut is specifically approved, while actual owner growth conformance remains unestablished.",
   "notation": {
     "N": "Member count of the exact selected collection or stream; not a configured maximum.",
     "B": "Useful selected plaintext/data bytes; reading/writing/encrypting distinct required bytes costs work even when data is identical.",
@@ -82,6 +82,6 @@
       "families-G57-G60.json",
       "families-G61-G64.json"
     ],
-    "reviewed_inventory_canonical_sha256": "1a4da40cd1fc70490e68b7ec3187667cb4162f7a63487e46af439a7e67e4d62f"
+    "reviewed_inventory_canonical_sha256": "5fdc5cfc679eab5f32ef315f67dd05312d96efc534c712169361c3f4a4038be2"
   }
 }

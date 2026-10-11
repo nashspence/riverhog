@@ -118,7 +118,7 @@ proofs and causal/noncausal imports.
 That adapter deliberately retains small Python indexes and per-prefix views. It
 is a semantic model, NOT the production source-normal/bounded-memory builder or
 PostgreSQL implementation. Its successful scope tests do not validate every query,
-foreign-data failure, migration or HTTP access path. The production design explicitly
+foreign-data failure, current-schema hard cut or HTTP access path. The production design explicitly
 requires interval facts and virtual parameterized joins instead of those expanded
 small-fixture views.
 

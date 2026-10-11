@@ -33,7 +33,7 @@
       "stove0-server"
     ],
     "scope": "Validate installation/runtime configuration, load native providers and recover eligible operational work.",
-    "proposed_work_bound": "O(config/schema/provider metadata + actual active recovery records); current startup does not scan/rewrite all archive payload. Migration/full reconciliation costs separately declared by G08/G20.",
+    "proposed_work_bound": "O(config/schema/provider metadata + actual active recovery records); current startup does not scan/rewrite all archive payload. Pre-v1 current-schema initialization is G08; explicit rebuild/reconciliation scans use G20/G26, not an old-version migration path.",
     "proposed_memory_and_state_bound": "Bounded initialization windows; no growing active transaction while waiting for external resources. Explicit full state reconciliation allowed as its own bounded lifecycle.",
     "semantic_requirement": "Exact environment/config/linkage, state ownership and no implicit upgrades; installation failure not partial success.",
     "proposed_witness": "Identical schema/config with growing archived corpus but fixed active jobs; startup after interrupted work and missing provider/config.",

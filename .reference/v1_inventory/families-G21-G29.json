@@ -176,7 +176,7 @@
     "scope": "Construct a query-equivalent derived discovery generation from exact archive evidence.",
     "proposed_work_bound": "Target O(H + V + E + N + A_direct + shared-group links) logical construction for an explicitly declared compact/factorable index profile; arbitrary reachability/query profiles remain G28. Here A_direct means directly attributed assertion links, not all transitive member-history pairs. Construction plus corresponding indexed/order work. An N-by-shared-assertion materialized Cartesian product is NOT a necessary-input dimension. Explicitly requested dense output can cost O(Q).",
     "proposed_memory_and_state_bound": "Bounded RAM and transactions; compact durable index O(unique assertions + explicit scopes/edges + members), except genuine independently required dense relationships.",
-    "semantic_requirement": "Preserve all member/input-history/collection/recorded-history query results, ordering and provenance. Any change to index generation identity or state representation requires owning approval/transition.",
+    "semantic_requirement": "Preserve all member/input-history/collection/recorded-history query results, ordering, provenance and archive identity. The compact extraction/dataset/read-generation identity change is specifically approved; implement one pre-v1 current-schema hard cut, not a migration or compatibility layer. Old cursors conflict/restart; preserve non-rebuildable operational state.",
     "proposed_witness": "Independent, fully shared and partially shared histories; fixed unique corpus with increasing member count; compare all scopes/query results before/after and measure rows/bytes, not only batched insert count.",
     "source_anchors": [
       {

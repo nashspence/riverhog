@@ -40,6 +40,22 @@ class InventoryPackageTests(unittest.TestCase):
         self.assertTrue(all(f["conformance"] == "not-established-by-this-inventory" for f in data["families"]))
         self.assertFalse(data["verification"]["verification_execution"]["stdout"]["runtime_complexity_tested"])
 
+    def test_pre_v1_hard_cut_and_derived_identity_approval(self):
+        data = load_inventory(self.directory)
+        g08 = next(f for f in data["families"] if f["id"] == "G08")
+        g26 = next(f for f in data["families"] if f["id"] == "G26")
+        self.assertIn("hard cuts", g08["title"])
+        self.assertIn("No migration scripts", g08["semantic_requirement"])
+        self.assertIn("specifically approved", g26["semantic_requirement"])
+        self.assertIn("not a migration", g26["semantic_requirement"])
+
+    def test_pre_v1_hard_cut_semantics_have_digest_protection(self):
+        def undo_hard_cut(rows):
+            next(f for f in rows if f["id"] == "G08")["semantic_requirement"] = "Support old schema migration"
+        self.edit("families-G01-G08.json", undo_hard_cut)
+        with self.assertRaisesRegex(ValueError, "differs from the reviewed"):
+            load_inventory(self.directory)
+
     def test_changed_bound_is_rejected(self):
         self.edit("families-G01-G08.json", lambda rows: rows[0].update(proposed_work_bound="O(1)"))
         with self.assertRaisesRegex(ValueError, "differs from the reviewed"):

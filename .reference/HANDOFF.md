@@ -21,7 +21,8 @@ Read [g26/DESIGN.md](g26/DESIGN.md), [g26/RESEARCH.md](g26/RESEARCH.md), and
 [g26/README.md](g26/README.md) for the new source-factored discovery design.
 Read [g22/DESIGN.md](g22/DESIGN.md) for the unchanged exact-prefix validation design.
 The old statement that G26 has not been researched is superseded; this is a design
-submission, not approval of its proposed protected identity/state transition.
+submission with **specific derived-index identity approval** (#964 comment 6112668478),
+not an implemented state change or approval of unrelated frozen identities.
 
 G26 selects a normalized fact ledger (one raw assertion plus birth/retraction
 coordinates), exact snapshot headers, shared roots/imports/documentary dependencies
@@ -33,10 +34,15 @@ current permissions, source binding proofs and archive authority stay intact.
 The proposal deliberately changes the DERIVED discovery extraction/dataset identity
 so sealing hashes compact canonical source facts instead of every expanded logical
 membership. New generation/read identities invalidate old cursors. Archive/member/
-history/journal bytes and commitments do not change. **Obtain the explicit owning
-identity/state approval before that transition; do not silently update a frozen
-expected digest.** The design specifies a forward-only owner migration, rebuild,
-fenced activation, old-state retention/retirement and honest availability behavior.
+history/journal bytes and commitments do not change. **That exact derived-index
+identity change is now approved** by the maintainer;
+rebaseline its own new deterministic identity with current-source freeze tests,
+not by silently updating an expectation. The implementation is an explicitly
+approved **pre-v1 hard cut with no schema migrations or backward compatibility**:
+new current-only database schema and extractor, fail-closed incompatible old
+schemas, new-only archive-backed index rebuilding, no dual readers/writers,
+old cursor translation, rolling transition or legacy extraction runtime.
+Preserve archives, custody receipts and non-rebuildable operational authority.
 
 Common unary/shared-snapshot queries use exact posting predicates and shared reverse
 minimum-support propagation instead of one complete traversal per member. Imported
@@ -52,8 +58,8 @@ query propagation. [g26/native_compiler.py](g26/native_compiler.py) lowers actua
 native journal/history fixtures for differential scope comparison. It deliberately
 uses small in-memory/per-prefix views and is NOT a production source-normal reader
 or bounded-memory implementation. DESIGN.md specifies the production source facts,
-virtual indexed joins, staging protocol, complete manifests, query paths, state
-transition and exact file-level owner map that replace those test conveniences.
+virtual indexed joins, staging protocol, complete manifests, query paths, new-only current-schema hard cut and exact file-level owner map
+that replace those test conveniences.
 
 The two G26 test files, [profile_g26.py](g26/profile_g26.py),
 [counters.json](g26/counters.json) and [evidence.json](g26/evidence.json) make the
@@ -98,7 +104,8 @@ are in g26/evidence.json. Documentation and Git whitespace checks accompany the
 publication; the remote tree must match the prepared reference files.
 
 Not run: production source-normal extraction or PostgreSQL query plans, complete
-HTTP/rebuild/security/cursor integration, actual migration/cutover, full locked gates,
+HTTP/rebuild/security/cursor integration, actual new-schema hard cut and guarded
+archive-backed rebuild, full locked gates,
 final-image 128-file/large-file/recovery qualification, CI/CodeQL, or provider/release
 operations. There is no proof of complete v1 growth conformance in this reference.
 
@@ -106,10 +113,14 @@ operations. There is no proof of complete v1 growth conformance in this referenc
 
 The original reference runtime tree remains pinned to 8425e672, not rebased. Use a
 separate checkout of inspected 152d0950 to reproduce native fixtures; reconcile
-against exact post-#963 source before actual integration. The source inventory,
-its digest, G22 files and earlier superlinear counterexamples are preserved.
+against exact post-#963 source before actual integration. The source inventory's **original** audited view and digest remain in a prior
+reference commit; the **current** decision-reconciled proposal updates G08/G26
+and has a new verified SHA-256. G22 files and earlier superlinear evidence remain
+unmodified.
 Read [v1_inventory/DECISIONS.md](v1_inventory/DECISIONS.md) for approved directions;
-its two future-design briefs are now answered by g22/DESIGN.md and g26/DESIGN.md.
+G22 and G26 designs are supplied and the **G26 derived-identity hard-cut decision
+is now approved** (#964 comment 6112668478). Any former request for separate
+migration/compatibility approval in older reference files is superseded.
 That does not transform research recommendations into approved final declarations.
 
 #961 owns onboarding, #963 evidence, #964 growth design/fixes and #469 v1 accounting.
