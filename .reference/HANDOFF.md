@@ -14,16 +14,19 @@ Published by: connected GitHub integration; commit metadata is publication metad
 
 ## Purpose and application
 
-Add only the approved growth-bounds section to the original approved #961 guide.
-The repository base does not yet contain that onboarding guide; AGENTS.growth.patch
-therefore applies to the issue-approved prospective document, NOT current AGENTS.md.
+Add only the approved growth-bounds section to the **current corrected #961 guide**.
+The repository base does not yet contain that onboarding guide. The currently
+approved #961 guide includes the maintainer's pre-v1 hard-cut correction
+([#961 comment 6112662156](https://github.com/nashspence/riverhog/issues/961#issuecomment-6112662156)).
+AGENTS.growth.patch applies to that corrected prospective guide, NOT the older
+guide snapshot and NOT current AGENTS.md; it adds no migration/compatibility path.
 Implement #961's existing onboarding/rename work, then apply this exact additional
 delta before updating its integrity and narrow semantic tests. Preserve all other
 approved guide text and links. No declaration of current runtime conformance follows
 from landing developer guidance.
 
-The subsequent #963 guide patch must consume this amended document and preserve the
-new section. #964 establishes owner-scoped v1 growth declarations and executable
+The subsequent #963 guide patch must consume this hard-cut guide and preserve the
+new section. No schema upgrades, transitional old-format readers or adapters. #964 establishes owner-scoped v1 growth declarations and executable
 witnesses. Do not move inventories, numeric targets or source-history discussion
 into the guide. #960's explicit time-shortfall closeout disposition stays intact.
 
@@ -32,10 +35,11 @@ into the guide. #960's explicit time-shortfall closeout disposition stays intact
 - AGENTS.growth.patch: exact insertion after Bound the work, not the archive.
 - verify_guide_patch.py: stdlib scratch-application check; it never modifies input.
 
-Original approved guide SHA-256:
-55f9289fd03100d69c9768790754c87931759cd37b572a100a647f6e4194fcdd
-Amended #961 guide SHA-256:
-84595617b207ef5a4ed7ae3703d170a662e59a33531dd018b246f2beee9e365a
+Current corrected #961 guide SHA-256:
+871e30337e5452dad2f3ea8377c0139f2b7900036fb14c80ec3fe7397aaeb19b
+Corrected guide with growth section SHA-256:
+8f78a6acba90afb1e300577a5a8d145b69a7597c76e758b5bb84d49780ed8349
+Old guide/hashes are historical only, not an alternate accepted input.
 
 Run `python .reference/verify_guide_patch.py /path/to/original-approved-AGENTS.md`.
 A changed input is a reconciliation requirement, not permission to suppress guards.
@@ -43,9 +47,10 @@ Do not copy this reference material onto main as another policy authority.
 
 ## Validation actually performed
 
-Verified the original full guide against its previously recorded SHA-256; applied
-this patch and the new #963 guide patch in sequence with git apply --check; compared
-complete outputs; checked preservation of all unrelated guide sections and links
+The previous validation of the original guide is historical. This revision's
+corrected guide SHA-256 and patched output were independently recomputed from the
+current #961 issue-approved text; the growth and post-onboarding patch hunks were
+applied in unique exact context, preserving unrelated guide sections and links
 (the Introduction target uses #961's approved architecture-to-introduction rename).
 Four guide checks passed in the combined revision check, and the standalone verifier
 passed. Python syntax and applied-document whitespace checks passed. Raw patch
