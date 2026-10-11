@@ -2,7 +2,7 @@
 +++ b/AGENTS.md
 @@ -106,15 +106,29 @@
  
- In short, **give durable state a clear owner and an explicit transition; do not confuse rebuildability with permission to discard it.**
+ In short, **replace pre-v1 layouts without legacy support while preserving archive authority and explicitly accounting for non-rebuildable state.**
  
 -## Measure performance without creating gates
 +## Measure performance honestly

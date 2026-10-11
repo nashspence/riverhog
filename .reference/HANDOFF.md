@@ -47,16 +47,22 @@ evidence-complete failed command must still fail its aggregate consumer.
 
 ## Guide delta
 
-Apply AGENTS.after-onboarding.patch only after the #961 guide and approved growth
-amendment (comment 6103986307) are present. It preserves that section, replaces the
+**Pre-v1 migration and backward compatibility are explicitly disallowed.**
+#963 consumes #961 comment 6112662156 and preserves its corrected guide; see
+#963 comment 6112671450. A migration/old-version upgrade path is NOT a valid
+interpretation of the shared timing/failure-evidence machinery.
+
+Apply AGENTS.after-onboarding.patch only after the **current corrected #961 guide**
+(#961 comment 6112662156) and the approved growth amendment (6103986307) are
+present. The obsolete migration/compatibility wording is not a supported input. It preserves that section, replaces the
 measurement sections and adds the updated three-result handoff sentence. Do not
 apply the prior guide patch afterward. Actual integrity, semantic and link tests
 must be reconciled with the installed guide, not just given copied hash constants.
 
-Input guide SHA-256:
-84595617b207ef5a4ed7ae3703d170a662e59a33531dd018b246f2beee9e365a
-Output guide SHA-256:
-654cd31a8850cd7778912d929c6b5294e248ac41df7c61e1b4f844a9c44a2e52
+Current corrected #961 growth-guide input SHA-256:
+8f78a6acba90afb1e300577a5a8d145b69a7597c76e758b5bb84d49780ed8349
+After #963 measurement delta output SHA-256:
+392fc7ad856cede5ff237cbdd06acf7f3ea79ec174fe7d4baea900cb3e3b2fe9
 
 ## Actual validation and reproducibility
 
@@ -70,10 +76,11 @@ Output guide SHA-256:
   combinations, source and command failures, and silent target removal.
 - Run: `TIMING_REFERENCE_WORKSPACE=/path/to/expanded-source python
   <reference>/.reference/verify_timing_policy.py -v`.
-- Four additional guide checks verify exact chained application, preserved sections,
-  growth text and link destinations. All 17 checks passed; changed Python compiled
-  and applied-source whitespace checks passed. Raw patch context markers are
-  excluded from reference-text whitespace checks.
+- The earlier guide's four checks and the 17-test total remain historical to their
+  original approved input. The current #961 guide and growth input/output hashes
+  were recomputed; the updated #963 patch was applied by exact unique-context
+  matching without altering the hard-cut or growth sections. The normal locked
+  guide tests remain required after integration.
 
 These source-extracted checks do not exercise the full module import graph, process
 runner, complete evidence checker, growth artifact consumer, CLI or platform cleanup.
