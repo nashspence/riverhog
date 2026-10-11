@@ -1,0 +1,406 @@
+[
+  {
+    "id": "G09",
+    "group": "Ingest/archive",
+    "title": "Source enumeration and initial identity acquisition",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-client",
+      "a-riverhog-cli",
+      "a-riverhog-ftp-spool"
+    ],
+    "scope": "Enumerate and identify one finite source selection before/while publication.",
+    "proposed_work_bound": "O(N + B + D + directory entries actually selected); add S(N) only for required canonical ordering. A repeated watcher rescan is separately counted, not hidden in a per-file constant.",
+    "proposed_memory_and_state_bound": "O(window) byte buffers; O(N + D) durable/spooled identity inventory permissible; no RAM proportional to total payload.",
+    "semantic_requirement": "Equal bytes do not collapse distinct members; path changes, symlinks and source mutation preserve exact custody semantics.",
+    "proposed_witness": "Vary member count at fixed total bytes and one-file bytes at fixed count; include zero/tiny files, long paths, duplicate content and mutation during hash.",
+    "source_anchors": [
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/source_hashing.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/producer.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/directory_upload.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G10",
+    "group": "Ingest/archive",
+    "title": "Upload registration and canonical construction planning",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-client",
+      "riverhog-protocol"
+    ],
+    "scope": "Complete registration/plan sequence for a one-shot or incremental collection.",
+    "proposed_work_bound": "O(N + O + E + D) logical work plus I(N+O+E,Z) and any one declared initial S(N); no per-append complete registration/plan/inventory rebuild.",
+    "proposed_memory_and_state_bound": "Bounded requests and transactions; disk/durable state O(N+O+E+D). A page size is not a total member limit.",
+    "semantic_requirement": "Equivalent admitted inputs yield exact equivalent construction authority; wrong sessions, identities, continuations and duplicates fail closed.",
+    "proposed_witness": "Count all append/plan operations for growing N, not just one call; cross pack and source-edge boundaries and resume at several frontiers.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/incremental_plan.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/collection_plan.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/producer.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G11",
+    "group": "Ingest/archive",
+    "title": "Payload packing and transfer",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-client"
+    ],
+    "scope": "Upload a complete byte/pack/segment set at fixed configured windows.",
+    "proposed_work_bound": "O(B + N + O); provider contacts O(O + bytes/transfer-unit), plus explicitly counted retries. No whole-pack reserialization or re-encryption after every member.",
+    "proposed_memory_and_state_bound": "O(concurrency * transfer window + bounded unsealed pack workspace), independent of collection bytes; retained source payload belongs to its custody owner.",
+    "semantic_requirement": "Direct-to-final ciphertext and pack/raw exact identity, receipt validation and bounded plaintext exposure remain unchanged.",
+    "proposed_witness": "Counter tests on successive member/segment writes; actual encryption/storage runs across at least three pack seals with failure and lost-receipt recovery.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/pack_upload.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/raw_upload.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/write_segments.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/uploads.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G12",
+    "group": "Ingest/archive",
+    "title": "Per-artifact custody and reconciliation",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-client"
+    ],
+    "scope": "Obtain exact custody for all members and reconcile at publication/retry boundaries.",
+    "proposed_work_bound": "O(N + O + E + D) total productive reconciliation plus I(N+O,Z); explicit status observations add O(p+log Z) each, not O(all pending N) per appended file.",
+    "proposed_memory_and_state_bound": "Bounded ready/pending frontiers; unsealed local source data retained until exact receipt; queue/state totals may be O(N).",
+    "semantic_requirement": "No safe release at registration or pack seal alone; only complete verified receipt authorizes release.",
+    "proposed_witness": "Include history-delayed and payload-delayed members, unsealed packs and fair receipt polling; count rows re-registered and scanned over entire publication.",
+    "source_anchors": [
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/producer.py",
+        "line": 728,
+        "symbol_or_anchor": "def reconcile_custody"
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G13",
+    "group": "Ingest/archive",
+    "title": "Finalization, metadata publication and root commitment",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-archive-contracts"
+    ],
+    "scope": "Finish a collection with all required histories, manifests, roots and discovery readiness accounted.",
+    "proposed_work_bound": "O(N + O + H + E + D) distinct structural work plus I(N+O+E,Z), ordering and declared graph/index costs. Do not multiply a shared completion document by output count.",
+    "proposed_memory_and_state_bound": "Bounded construction windows/transactions, O(N+O+H+E+D) durable/spilled evidence; cryptographic object cost charged by G04.",
+    "semantic_requirement": "Root-last, complete selected closure, producer-authored completion and ordered receipt checkpoints; discovery completion cost stays in the lifecycle.",
+    "proposed_witness": "Trace every finalization phase and unique object/journal validation; shared-completion fixtures and out-of-order publication failures; compare exact roots and independent recovery.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/archive_provenance.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/archive_root.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G14",
+    "group": "Ingest/archive",
+    "title": "Exact retrieval selection and authenticated byte ranges",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-client"
+    ],
+    "scope": "Plan selected members/ranges and deliver authenticated bytes.",
+    "proposed_work_bound": "Warm selection O(k + D_selection + I(k,Z)); range work O(b + touched authentication-unit bytes + selected metadata). Cold archive preparation may add one O(N+O+H) pass, explicitly scoped and shared within a lifecycle.",
+    "proposed_memory_and_state_bound": "Bounded range/cache windows and selection pages; no full-file buffering for a range. O(index size) disk scratch may be required for cold preparation.",
+    "semantic_requirement": "No claim of O(requested bytes) when a whole authenticated segment must be verified; never reread all archive descriptors for every selected member.",
+    "proposed_witness": "Small ranges across segment boundaries in one large file; many members in the same pack; cold/warm/evicted selection, truncation and wrong-root negatives.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/services/retrieval.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/pack_retrieval.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/raw_retrieval.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/downloads.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G15",
+    "group": "Ingest/archive",
+    "title": "Retrieval hydration, placement and accounting",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server"
+    ],
+    "scope": "Hydrate/cache selected immutable objects and maintain exact accounting.",
+    "proposed_work_bound": "O(bytes hydrated + objects affected + lease/accounting changes) plus indexed lookups; one startup/accounting rebuild O(retained records), not a full scan on each access.",
+    "proposed_memory_and_state_bound": "O(configured crypto/transfer/cache budgets); persistent usage O(retained objects + active leases). Capacity bypass/rejection explicit, no silent partial read.",
+    "semantic_requirement": "Replica/incarnation choice, cache receipt authentication, quota and eviction fences remain live.",
+    "proposed_witness": "Vary unrelated cached-object population separately; full-cache eviction, concurrent hydration, partial failure and accounting rebuild.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/services/retrieval_cache.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/retrieval_cache_accounting.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/retrieval.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G16",
+    "group": "Ingest/archive",
+    "title": "Portable path planning and materialization",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-materialization",
+      "a-riverhog-cli",
+      "a-riverhog-filesystem-store",
+      "a-riverhog-recovery-tool"
+    ],
+    "scope": "Plan collision-safe destinations and write a requested selected set.",
+    "proposed_work_bound": "O(path bytes + N + B_written) plus S(N) for deterministic collision/order resolution and indexed lookup; no pairwise path comparison on a sparse set.",
+    "proposed_memory_and_state_bound": "Bounded file buffers; materialized pure helper may use O(path inventory); spooled path planner must not require all members in RAM.",
+    "semantic_requirement": "Preserve platform equivalence, case/Unicode behavior, path safety, deterministic collision names and bytes.",
+    "proposed_witness": "Case/Unicode/prefix collisions and long paths; one large versus many tiny files; compare spooled and in-memory planner outputs.",
+    "source_anchors": [
+      {
+        "path": "packages/riverhog-materialization/src/riverhog_materialization/__init__.py",
+        "line": 213,
+        "symbol_or_anchor": "def plan_materialization_spooled"
+      },
+      {
+        "path": "some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/materialize.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G17",
+    "group": "Ingest/archive",
+    "title": "Archive copy and replication",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-storage-adapter-support"
+    ],
+    "scope": "Copy a selected exact archive closure to requested replicas.",
+    "proposed_work_bound": "O(Copies * (B + O + metadata bytes)) plus per-copy index/receipt work; no rediscovery of the entire object list per copied object.",
+    "proposed_memory_and_state_bound": "Fixed concurrent transfer windows and O(objects) checkpoint records; provider latency excluded, all attempts counted.",
+    "semantic_requirement": "Immutable exact source/copy identity, independent verification, descriptor/root ordering and retry receipt stability.",
+    "proposed_witness": "Increase object count and copy count separately, then combine; fail a late unit and prove bounded replay and unchanged source authority.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/services/archive_copy_jobs.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/archive_copy_job_states.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/archive_records.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G18",
+    "group": "Ingest/archive",
+    "title": "Guarded deletion and copy retirement",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server"
+    ],
+    "scope": "Build and execute an explicit deletion/retirement plan.",
+    "proposed_work_bound": "O(affected objects + metadata + actual guard dependencies) plus indexed access; scalar status/cancel independent of full plan size; no growing-prefix plan rehash each delete.",
+    "proposed_memory_and_state_bound": "Bounded deletion batches and retained operation checkpoints; invalidation/revalidation scopes explicitly sized.",
+    "semantic_requirement": "Fresh challenge/authorization, required remaining-copy checks, exact action set and no destruction of unselected custody.",
+    "proposed_witness": "Unrelated catalog growth, many-object plan, stale challenge, retry after partial deletion and loss of authority.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/services/collection_deletions.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/archive_copy_retirements.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/operation_plans.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G19",
+    "group": "Ingest/archive",
+    "title": "Mutable descriptions and classification tags",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-client"
+    ],
+    "scope": "Change/read description or tag revision independently of immutable inventory.",
+    "proposed_work_bound": "Description O(description bytes + affected copies); tag delta O(delta tag bytes + delta * log(2+T) + affected copy contacts). Full tag enumeration O(tag bytes + T), plus page startup I(pages,Z); independent of N and payload B.",
+    "proposed_memory_and_state_bound": "Working state bounded by mutation/page sizes; retained revisions grow with genuine retained changes, not copies of unchanged collection inventory.",
+    "semantic_requirement": "Exact revision identity, stale-writer fencing, old-head protection and retained-history semantics remain.",
+    "proposed_witness": "Hold tag set/delta fixed while increasing collection members; count inventory visits/hashes (must remain zero for a pure tag update); replay stale writes.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/services/collection_tags.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/collection_descriptions.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/initial_tags.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G20",
+    "group": "Ingest/archive",
+    "title": "Orphans, scratch cleanup, expiry and cache sweeps",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "stove0-target-support",
+      "gogurt-listener-runtime"
+    ],
+    "scope": "Discover due/stale owned work and safely reclaim resources.",
+    "proposed_work_bound": "O(due/abandoned entries + bytes actually reclaimed) plus indexed scheduler/owner lookups; full census, where required, O(retained entries) per explicitly declared sweep, never per completed member.",
+    "proposed_memory_and_state_bound": "Bounded sweep batches, no unbounded transaction; active leases protected. Restart may scan recovery metadata once, not rehash every archived payload.",
+    "semantic_requirement": "Custodied orphan sessions remain resumable; cancellation is not proof work stopped; live scratch not deleted.",
+    "proposed_witness": "Kill owners, retain live owners, grow expired and unrelated active populations separately; count examined entries and replayed units.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/scratch_workspace.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/retrieval.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/packages/target-support/src/stove0_target_support/persistent.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  }
+]

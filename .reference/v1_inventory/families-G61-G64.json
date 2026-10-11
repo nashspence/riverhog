@@ -1,0 +1,150 @@
+[
+  {
+    "id": "G61",
+    "group": "Delivery/tooling",
+    "title": "Package-local documentation adapter APIs",
+    "layer": "public",
+    "proposed_owners": [
+      "release-documentation-lib"
+    ],
+    "scope": "Load verified release prose and attach it to declared CLI/OpenAPI structures.",
+    "proposed_work_bound": "O(document bytes + interface nodes + actual annotations/emitted text) plus required ordering; no repeated whole-document traversal per small annotation.",
+    "proposed_memory_and_state_bound": "O(materialized metadata/output) as explicit API contract, independent of archive corpus.",
+    "semantic_requirement": "Resource digest, exact declared destination ownership and native API/CLI behavior retained.",
+    "proposed_witness": "Many commands/routes and repeated annotations; source identity mismatch, unknown destination and exact rendering output; count structural visits.",
+    "source_anchors": [
+      {
+        "path": "packages/release-documentation-lib/src/release_documentation_lib/__init__.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G62",
+    "group": "Delivery/tooling",
+    "title": "Runtime initialization and installation control",
+    "layer": "public",
+    "proposed_owners": [
+      "state-schema",
+      "gogurt-listener-runtime",
+      "riverhog-server",
+      "stove0-server"
+    ],
+    "scope": "Validate installation/runtime configuration, load native providers and recover eligible operational work.",
+    "proposed_work_bound": "O(config/schema/provider metadata + actual active recovery records); current startup does not scan/rewrite all archive payload. Migration/full reconciliation costs separately declared by G08/G20.",
+    "proposed_memory_and_state_bound": "Bounded initialization windows; no growing active transaction while waiting for external resources. Explicit full state reconciliation allowed as its own bounded lifecycle.",
+    "semantic_requirement": "Exact environment/config/linkage, state ownership and no implicit upgrades; installation failure not partial success.",
+    "proposed_witness": "Identical schema/config with growing archived corpus but fixed active jobs; startup after interrupted work and missing provider/config.",
+    "source_anchors": [
+      {
+        "path": "scripts/release_installation.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "scripts/qualify_installation.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/runtime_config.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/runtime_config.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G63",
+    "group": "Delivery/tooling",
+    "title": "Release artifacts, source discovery and Contract Render",
+    "layer": "internal",
+    "proposed_owners": [
+      "release-documentation-lib"
+    ],
+    "scope": "Repository development/release generation, packaging and source-closure/HTML construction.",
+    "proposed_work_bound": "INTERNAL budget: O(source/dependency/contract bytes + declared references + output bytes), plus explicit sorts/indexes and delegated compiler/build costs. No public bound for a whole CI/build run; generation must not repeatedly expand cross-links or interface descendants.",
+    "proposed_memory_and_state_bound": "Working state bounded or output-sized as appropriate; build tool resource behavior separately measured.",
+    "semantic_requirement": "Do not freeze SQL layout, generator traversal or build seconds as an archive contract. Shipped library APIs are G61; released artifact verification uses its actual public consumer's bounds.",
+    "proposed_witness": "Scale synthetic contract node/ref counts, release-file counts and rendered output; distinguish generated declaration from executed evidence.",
+    "source_anchors": [
+      {
+        "path": "scripts/contract_discovery.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "scripts/contract_freeze.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "scripts/contract_atlas/records.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "scripts/contract_atlas/html_rendering.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "scripts/release.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "internal-budget-not-v1-product-guarantee",
+    "tooling_owner": "repository release/contract/qualification machinery (not a runtime product owner)"
+  },
+  {
+    "id": "G64",
+    "group": "Delivery/tooling",
+    "title": "Qualification, timing and growth-evidence machinery",
+    "layer": "internal",
+    "proposed_owners": [
+      "release-documentation-lib"
+    ],
+    "scope": "Developer/CI test orchestration, measurement and evidence collation.",
+    "proposed_work_bound": "INTERNAL budget: O(test/report/counter-event bytes + workload discovery) plus ordering. Instrumentation O(observed work) with bounded per-event overhead; no separate rerun solely to collect timing or source-sized decode per progress event.",
+    "proposed_memory_and_state_bound": "Bounded logs/counter memory and explicit retained artifacts; peak resource measurement covers children/containers where applicable.",
+    "semantic_requirement": "Functional result, growth conformance and wall time remain separate; missing required evidence fails. A fast mock or family reference does not certify a public growth claim.",
+    "proposed_witness": "Inject absent/stale/partial/cancelled evidence and valid slow runs; verify expected work coverage from owners; measure instrumentation overhead and aggregate wall time.",
+    "source_anchors": [
+      {
+        "path": "scripts/ci_qualification.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "scripts/ci_timing.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "scripts/operation_qualification.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "scripts/extent_contract.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "scripts/extent_witnesses.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "internal-budget-not-v1-product-guarantee",
+    "tooling_owner": "repository release/contract/qualification machinery (not a runtime product owner)"
+  }
+]

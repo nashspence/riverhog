@@ -1,0 +1,267 @@
+[
+  {
+    "id": "G01",
+    "group": "Shared contracts",
+    "title": "Canonical JSON, scalar parsing and hashing",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-canonical-json",
+      "time-formats"
+    ],
+    "scope": "One admitted value; ordered record stream separately from a materialized JSON document.",
+    "proposed_work_bound": "O(D + J(D)); hashing/stream emission O(D). J(D) is explicit object-key ordering cost, not an exemption for array/member traversal. Fixed-width time fields O(1); variable-length scalars charged by encoded length and arithmetic cost.",
+    "proposed_memory_and_state_bound": "Streaming adapter: O(window + nesting state); materialized API may use O(D) for its explicitly materialized input/output. No archive-total-sized intermediate solely for canonicalization.",
+    "semantic_requirement": "Keep RFC 8785 ordering, exact scalar domains and rejection of duplicates/invalid values; do not claim arbitrary key sorting is free or promise fixed stack depth for arbitrary nesting.",
+    "proposed_witness": "Vary arrays, key count, key length, nesting and integer length independently; count bytes/key comparisons and assert exact canonical bytes and invalid-input parity.",
+    "source_anchors": [
+      {
+        "path": "packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py",
+        "line": 126,
+        "symbol_or_anchor": "def canonical_json_bytes"
+      },
+      {
+        "path": "packages/time-formats/src/time_formats/__init__.py",
+        "line": 32,
+        "symbol_or_anchor": "def parse_duration"
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G02",
+    "group": "Shared contracts",
+    "title": "Typed schema and configuration validation",
+    "layer": "public",
+    "proposed_owners": [
+      "config-validation",
+      "riverhog-protocol",
+      "riverhog-provenance-contracts",
+      "stove0-protocol"
+    ],
+    "scope": "Maintained fixed-schema documents versus caller-supplied schema, regular expression and recipe predicates.",
+    "proposed_work_bound": "Fixed declared structural profile: O(D) traversal plus G01 ordering/explicit uniqueness indexing. No unconditional O(D) promise for arbitrary JSON Schema or regular-expression evaluation; such profiles need an explicit algorithm class or a narrower supported profile.",
+    "proposed_memory_and_state_bound": "O(D) for an explicitly materialized document; streaming carriers remain bounded. Alias/recursive expansion and schema recursion must have a documented model, not an accidental total-data ceiling.",
+    "semantic_requirement": "Separate schema acceptance from cost; malformed or deeply nested input may not trigger uncontrolled expansion. A configuration-size bound is not a collection-size bound.",
+    "proposed_witness": "Exercise schema branches, uniqueness, nesting/alias amplification and rejection; benchmark maintained validator bodies, not only parse time.",
+    "source_anchors": [
+      {
+        "path": "packages/config-validation/src/config_validation/__init__.py",
+        "line": 78,
+        "symbol_or_anchor": "def load_yaml_config"
+      },
+      {
+        "path": "some-implementations/stove0/packages/protocol/src/stove0_protocol/interface_schemas.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "approve-profile-specific-bounds-before-freeze"
+  },
+  {
+    "id": "G03",
+    "group": "Shared contracts",
+    "title": "Ordered set identities, archive roots and structural commitments",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-archive-contracts",
+      "riverhog-protocol"
+    ],
+    "scope": "Seal/verify a complete already-ordered inventory, segmented set or root-selected sequence.",
+    "proposed_work_bound": "O(D + N + O) visits for ordered input; unordered admission may add S(N). Incremental checkpoints add O(delta bytes/records), not a fresh whole-prefix hash per segment.",
+    "proposed_memory_and_state_bound": "O(window) working memory plus O(D + N + O) durable or disk-backed state where required; fixed-size root is not permission to omit records.",
+    "semantic_requirement": "Ordering, duplicates, missing terminal, exact parent identity and root-last publication remain enforced.",
+    "proposed_witness": "Count bytes fed to commitments across the entire append sequence; cross pages/segments, then restart before and after root/terminal publication.",
+    "source_anchors": [
+      {
+        "path": "packages/riverhog-archive-contracts/src/riverhog_archive_contracts/structural_record_set.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-archive-contracts/src/riverhog_archive_contracts/archive_manifest.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/checkpoint_sha256.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G04",
+    "group": "Shared contracts",
+    "title": "Age encryption, authenticated ranges and resumable hashing",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-age",
+      "riverhog-server"
+    ],
+    "scope": "Encrypt/decrypt bytes or resume a transfer with fixed cryptographic parameters.",
+    "proposed_work_bound": "O(B + O*kappa); kappa is the declared per-object KDF cost at fixed security settings. Resume adds bytes of bounded replay units, not all prior B after every checkpoint.",
+    "proposed_memory_and_state_bound": "O(concurrency * (crypto window + KDF workspace)); keys/caches separately bounded. In-memory bytes-returning APIs explicitly allow O(B) returned bytes.",
+    "semantic_requirement": "Do not lower work factor, reuse salts incorrectly, skip authentication, or convert a physical object packing change into an unreviewed archive-format change.",
+    "proposed_witness": "Count input/crypto bytes, unique KDF operations and replay bytes; vary object count independently of bytes; verify final and resumed ciphertext/receipts under supported failure models.",
+    "source_anchors": [
+      {
+        "path": "packages/riverhog-age/src/riverhog_age/resumable_age.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/age_range.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/streaming_age.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G05",
+    "group": "Shared contracts",
+    "title": "Staged metadata and bounded control bindings",
+    "layer": "public",
+    "proposed_owners": [
+      "http-api-contracts",
+      "stove0-observer-support",
+      "stove0-target-support",
+      "review0-sampler-lib"
+    ],
+    "scope": "Stage, fetch, validate and bind an exact metadata document or bounded status/control message.",
+    "proposed_work_bound": "O(D) total metadata intake/transfer plus its declared validation cost; per control call O(p + log Z), independent of the referenced D once accepted.",
+    "proposed_memory_and_state_bound": "Bounded transfer windows; O(D) spill/immutable stored representation permitted. Large plans do not get decoded/copied for each status query.",
+    "semantic_requirement": "Fresh grant, claim, root and control fences survive reuse of immutable validated content.",
+    "proposed_witness": "Vary plan size with a fixed number of status polls, then vary poll count; count bytes copied/decoded and prove missing/changed/revoked metadata rejection.",
+    "source_anchors": [
+      {
+        "path": "packages/http-api-contracts/src/http_api_contracts/metadata_staging.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/http-api-contracts/src/http_api_contracts/control.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/packages/target-support/src/stove0_target_support/http_binding.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G06",
+    "group": "Shared contracts",
+    "title": "Official API clients and CLI traversal/presentation",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-client",
+      "a-riverhog-cli",
+      "stove0-api-client",
+      "a-stove0-cli",
+      "stove0-observer-client",
+      "stove0-target-client",
+      "review0-sampler-client",
+      "a-riverhog-ftp-spool-client"
+    ],
+    "scope": "Complete traversal or presentation of a declared remote result.",
+    "proposed_work_bound": "O(D + Q) client work plus O(ceil(Q/p)) contacts; no repeated complete pagination, whole-result sorting or prefix re-rendering unless that command explicitly requests a materialized sorted result.",
+    "proposed_memory_and_state_bound": "Streaming modes O(page/window); explicitly materialized Python/JSON-document output O(D) must be labeled. Terminal rendering work charged to bytes actually emitted.",
+    "semantic_requirement": "Preserve exact continuation, remote errors, complete result identity and human/JSON parity; downstream slowness must not retain an unbounded transaction.",
+    "proposed_witness": "Count pages, decoded records and output bytes with slow consumers, cancellation and truncated final pages; use actual client and console paths.",
+    "source_anchors": [
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/following.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/output.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G07",
+    "group": "Shared contracts",
+    "title": "Live authorization, claim and fence checks",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-application-access",
+      "riverhog-server",
+      "riverhog-client",
+      "stove0-server"
+    ],
+    "scope": "Authorize a bounded request and exact selected members/resources.",
+    "proposed_work_bound": "O(Ap + k + I(k,Z)); Ap is applicable policy expression/encoded policy size, k requested members. Fixed scalar checks independent of collection payload/member total.",
+    "proposed_memory_and_state_bound": "Request/policy-sized working state; bounded caches of immutable facts only. No corpus-wide permission cache required for normal operation.",
+    "semantic_requirement": "No caching permission decisions across required checks; no full collection enumeration merely to authorize one exact member.",
+    "proposed_witness": "Vary unrelated catalog size independently of requested k/policy size; verify late revocation, scope differences and stale claim rejection.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/app_permissions.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/artifact_access.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/processing/capability.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-application-access/src/riverhog_application_access/access.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G08",
+    "group": "Shared contracts",
+    "title": "State-schema inspection and declared migrations",
+    "layer": "public",
+    "proposed_owners": [
+      "state-schema"
+    ],
+    "scope": "Inspect current schema and run one explicitly selected migration.",
+    "proposed_work_bound": "Current-state inspection O(schema metadata + migration-chain metadata), independent of live data rows. A data migration declares O(rows/bytes transformed + index construction), separately for that migration.",
+    "proposed_memory_and_state_bound": "Inspection bounded by schema size; data transforms use bounded batches and explicit checkpoints where supported. No blanket constant-space or linear promise for arbitrary migration code.",
+    "semantic_requirement": "Startup validates rather than silently rebuilding/migrating all data; forward-only owner transitions remain explicit.",
+    "proposed_witness": "Compare empty and large populated databases with identical schema; test incompatible schema detection; qualify each data migration on its own input dimensions.",
+    "source_anchors": [
+      {
+        "path": "packages/state-schema/src/state_schema/__init__.py",
+        "line": 36,
+        "symbol_or_anchor": "class StateSchema"
+      },
+      {
+        "path": "packages/state-schema/src/state_schema/sqlalchemy_schema.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  }
+]

@@ -1,0 +1,306 @@
+[
+  {
+    "id": "G21",
+    "group": "Provenance/discovery",
+    "title": "One sealed journal snapshot: syntax, identity and static semantics",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-provenance",
+      "riverhog-provenance-contracts"
+    ],
+    "scope": "Validate one exact sealed journal prefix and its effective static graph.",
+    "proposed_work_bound": "O(H + V + E) logical traversal, plus G01 canonical ordering and I(V+E,Z_local); decoding/hash work proportional to supplied bytes. No per-assertion scan of every other assertion.",
+    "proposed_memory_and_state_bound": "O(bounded reader windows) RAM with O(H+V+E) disk index, or an explicitly materialized O(H+V+E) API; current content/auth fences not cached away.",
+    "semantic_requirement": "Exact prefix/tail, referent identity, static acyclicity and lifecycle semantics retained.",
+    "proposed_witness": "Chains in both orders, stars, independent edges and many uses of one state; count row/edge visits and reject cycles, changed bytes and temporal conflicts.",
+    "source_anchors": [
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/journal.py",
+        "line": 221,
+        "symbol_or_anchor": "def validate_journal_chunks"
+      },
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/journal_store.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/journal_cache.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G22",
+    "group": "Provenance/discovery",
+    "title": "Append/correction histories and online validation",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-provenance",
+      "riverhog-server"
+    ],
+    "scope": "Sequence of accepted journal appends/corrections, including when each prefix must be valid.",
+    "proposed_work_bound": "Immutable framing/intake O(total newly supplied bytes/records). Static final-view validation uses G21. For arbitrary online edge insertions/corrections requiring immediate global validity: NO claimed aggregate O(H+V+E) until an algorithm and acceptance-boundary proof exists; proposed fallback per distinct required snapshot O(H_i+V_i+E_i) is explicit, not described as linear in final size.",
+    "proposed_memory_and_state_bound": "Bounded intake and durable indexes; corrections may touch genuinely affected dependents. No state-sized reserialization just to checkpoint.",
+    "semantic_requirement": "Do not move cycle rejection from required acceptance to finalization for speed. Repeated internal calls do not become 'new required snapshots' to excuse redundant work.",
+    "proposed_witness": "Adversarial insertion/retraction order and repeated unaffected appends; track per-prefix and total work separately; required design decision before freezing an end-to-end claim.",
+    "source_anchors": [
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/journal_store.py",
+        "line": 609,
+        "symbol_or_anchor": "def accept"
+      },
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/history.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "design-decision-required-online-graph-bound"
+  },
+  {
+    "id": "G23",
+    "group": "Provenance/discovery",
+    "title": "Static cross-journal corpus and external-reference validation",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-provenance",
+      "a-riverhog-recovery-tool",
+      "riverhog-server"
+    ],
+    "scope": "Validate one exact selected set of sealed journals and its cross-journal graph.",
+    "proposed_work_bound": "O(H + V + E) visits plus G01/index overhead; each external edge resolved a bounded number of times and topological elimination does not repeatedly scan the remaining graph.",
+    "proposed_memory_and_state_bound": "O(V+E) working index, permitted on disk; no recursive stack proportional to unbounded depth.",
+    "semantic_requirement": "All external anchors/types and selected-prefix references exact; detect missing references and cycles without provider discovery.",
+    "proposed_witness": "Disjoint pairs, reverse chain, deep DAG, shared roots and explicit cycle; source-driven edge/SQL work tests plus integrated archive-only check.",
+    "source_anchors": [
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/corpus.py",
+        "line": 21,
+        "symbol_or_anchor": "class CanonicalCorpusValidator"
+      },
+      {
+        "path": "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G24",
+    "group": "Provenance/discovery",
+    "title": "Selected member-history closure",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-provenance",
+      "riverhog-archive-contracts"
+    ],
+    "scope": "Resolve bound/retained histories for one exact member selection; batch selection is one operation, not N unrelated cold operations.",
+    "proposed_work_bound": "O(H_U + V_U + E_U + selected members + Q_explicit) logical work over the union of required history; exact shared prefixes/dependencies indexed once per qualification scope. Ordered indexing cost explicit.",
+    "proposed_memory_and_state_bound": "O(H_U+V_U+E_U) disk state with bounded RAM and read windows; eviction does not change semantic completeness or create an unannounced collection ceiling.",
+    "semantic_requirement": "Recorded history is not causal attribution; omitted/imported extents, forks and corrections remain exact; no current permission cached.",
+    "proposed_witness": "Many members sharing history, disjoint histories, cycles/missing imports, warm/cold/evicted working sets; count queue scans, bytes validated and unique dependency visits.",
+    "source_anchors": [
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/history.py",
+        "line": 129,
+        "symbol_or_anchor": "class MemberHistoryClosure"
+      },
+      {
+        "path": "packages/riverhog-archive-contracts/src/riverhog_archive_contracts/history_store.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-archive-contracts/src/riverhog_archive_contracts/member_history.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G25",
+    "group": "Provenance/discovery",
+    "title": "Published provenance reads and claimed history transfer",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-client"
+    ],
+    "scope": "Get a selected binding or export/transfer an authorized history union.",
+    "proposed_work_bound": "Prepared binding lookup O(log Z + returned metadata); first cold index preparation O(N+O+H) explicitly once per session/snapshot. Whole selected export O(H_U + E_U + Q + bytes transferred), not O(N*archive descriptors).",
+    "proposed_memory_and_state_bound": "Bounded network/scratch windows; bounded immutable caches with correct bypass; independent live authorization per request.",
+    "semantic_requirement": "Exact selected-copy/incarnation/root and claimed scope retained; no public fresh-read obligation silently removed by local reuse.",
+    "proposed_witness": "Single-member lookup against growing unrelated inventory; whole export with repeated shared prefixes and late revocation; count descriptor/byte visits.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/services/canonical_provenance.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/provenance_archive_read.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/processing/history_transfer.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/processing/provenance.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G26",
+    "group": "Provenance/discovery",
+    "title": "Discovery build/rebuild and shared-history representation",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server"
+    ],
+    "scope": "Construct a query-equivalent derived discovery generation from exact archive evidence.",
+    "proposed_work_bound": "Target O(H + V + E + N + A_direct + shared-group links) logical construction for an explicitly declared compact/factorable index profile; arbitrary reachability/query profiles remain G28. Here A_direct means directly attributed assertion links, not all transitive member-history pairs. Construction plus corresponding indexed/order work. An N-by-shared-assertion materialized Cartesian product is NOT a necessary-input dimension. Explicitly requested dense output can cost O(Q).",
+    "proposed_memory_and_state_bound": "Bounded RAM and transactions; compact durable index O(unique assertions + explicit scopes/edges + members), except genuine independently required dense relationships.",
+    "semantic_requirement": "Preserve all member/input-history/collection/recorded-history query results, ordering and provenance. Any change to index generation identity or state representation requires owning approval/transition.",
+    "proposed_witness": "Independent, fully shared and partially shared histories; fixed unique corpus with increasing member count; compare all scopes/query results before/after and measure rows/bytes, not only batched insert count.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/canonical_discovery_build.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/canonical_discovery_rebuild.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/canonical_discovery_relevance.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/canonical_discovery_index.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "design-decision-required-index-representation"
+  },
+  {
+    "id": "G27",
+    "group": "Provenance/discovery",
+    "title": "Catalog/inventory point access and complete pagination",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-client",
+      "http-api-contracts"
+    ],
+    "scope": "Exact member/collection lookup, ordered page and complete enumeration.",
+    "proposed_work_bound": "Point O(log Z + returned bytes); indexed page O(log Z + p + page bytes). Complete keyset traversal O(N + returned bytes + ceil(N/p)*log Z); no OFFSET-prefix rescans. Arbitrary filters use a separately declared scan/query profile.",
+    "proposed_memory_and_state_bound": "O(page + cursor/snapshot metadata) working memory; slow consumer releases DB snapshot/connection under declared exact-read lifetime.",
+    "semantic_requirement": "Authorization, exact selector/order and final completeness remain; an empty page is not assumed proof of completion.",
+    "proposed_witness": "Many small pages over a fixed exact inventory, late-page mutations/expiry and slow clients; count rows examined across full traversal.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/browse.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/collections.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/retrieval.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/http-api-contracts/src/http_api_contracts/browse.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G28",
+    "group": "Provenance/discovery",
+    "title": "Discovery/text/predicate query execution",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server"
+    ],
+    "scope": "Named indexed lookups versus an explicitly scoped full search.",
+    "proposed_work_bound": "Indexed equality/prefix profile O(log Z + candidate postings necessary for that declared profile + Q + returned bytes); full text/unindexed fixed predicate O(D_scan + candidates + Q), with S(Q) only if required order lacks an index. No generic O(Q) claim for arbitrary joins/negation/count/sort.",
+    "proposed_memory_and_state_bound": "Bounded result pages with spill for declared sort/join; full exact count charged to actual indexed/scan domain, not a constant.",
+    "semantic_requirement": "Define query cost classes by supported semantics, not chosen inefficient plan. No use of 'candidate count' to relabel a gratuitous cross product. Exact scopes and ambiguity preserved.",
+    "proposed_witness": "Zero-result and sparse-result large domains; ambiguous shared history; matching counts unchanged; plan and examined-row tests on supported DBs.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/canonical_discovery_search.py",
+        "line": 421,
+        "symbol_or_anchor": "def discover_artifacts"
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/search.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_api/routers/search.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "approve-query-profiles-before-freeze"
+  },
+  {
+    "id": "G29",
+    "group": "Provenance/discovery",
+    "title": "Independent archive-only recovery and rebuild",
+    "layer": "public",
+    "proposed_owners": [
+      "a-riverhog-recovery-tool",
+      "riverhog-archive-contracts",
+      "riverhog-provenance",
+      "riverhog-materialization"
+    ],
+    "scope": "Recover complete or selected data/provenance from archive/key material without Riverhog services.",
+    "proposed_work_bound": "Cold descriptor verification O(O+metadata bytes); whole recovery O(B+N+H+V+E+O) visits plus explicit crypto, ordering and index work. Selected reads add only touched payload units after the stated bootstrap; not O(journals*descriptors).",
+    "proposed_memory_and_state_bound": "Bounded streams and disk-backed indexes; storage O(recovered output + required metadata indexes), not all payload in memory.",
+    "semantic_requirement": "No dependence on server/client/database implementations, no provider listing as archive authority; root/terminator and every touched segment verified.",
+    "proposed_witness": "Many tiny journals and one large segmented file; cold recovery, partial selection, wrong key, missing terminal, truncation and process restart.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  }
+]

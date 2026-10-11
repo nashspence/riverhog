@@ -1,0 +1,936 @@
+[
+  {
+    "name": "a-gogurt-linux-listener",
+    "pyproject": "some-implementations/gogurt/listener-host/linux/pyproject.toml",
+    "scripts": {},
+    "description": "Linux systemd user listener for Gogurt.",
+    "proposed_growth_families": [
+      "G58"
+    ]
+  },
+  {
+    "name": "a-gogurt-linux-volume",
+    "pyproject": "some-implementations/gogurt/mounted-volume/linux/pyproject.toml",
+    "scripts": {},
+    "description": "Linux mounted-volume provider for Gogurt.",
+    "proposed_growth_families": [
+      "G58"
+    ]
+  },
+  {
+    "name": "a-gogurt-macos-listener",
+    "pyproject": "some-implementations/gogurt/listener-host/macos/pyproject.toml",
+    "scripts": {},
+    "description": "macOS launchd listener for Gogurt.",
+    "proposed_growth_families": [
+      "G58"
+    ]
+  },
+  {
+    "name": "a-gogurt-macos-volume",
+    "pyproject": "some-implementations/gogurt/mounted-volume/macos/pyproject.toml",
+    "scripts": {},
+    "description": "macOS mounted-volume provider for Gogurt.",
+    "proposed_growth_families": [
+      "G58"
+    ]
+  },
+  {
+    "name": "a-gogurt-path-volume-lib",
+    "pyproject": "some-implementations/gogurt/mounted-volume/path-support/pyproject.toml",
+    "scripts": {},
+    "description": "Path-mounted volume library for Gogurt providers.",
+    "proposed_growth_families": [
+      "G58"
+    ]
+  },
+  {
+    "name": "a-gogurt-windows-listener",
+    "pyproject": "some-implementations/gogurt/listener-host/windows/pyproject.toml",
+    "scripts": {},
+    "description": "Windows Task Scheduler listener for Gogurt.",
+    "proposed_growth_families": [
+      "G58"
+    ]
+  },
+  {
+    "name": "a-gogurt-windows-volume",
+    "pyproject": "some-implementations/gogurt/mounted-volume/windows/pyproject.toml",
+    "scripts": {},
+    "description": "Windows mounted-volume provider for Gogurt.",
+    "proposed_growth_families": [
+      "G58"
+    ]
+  },
+  {
+    "name": "a-review0-nvenc-av1-opus-sampler",
+    "pyproject": "some-implementations/stove0/review0/samplers/nvenc-av1-opus/pyproject.toml",
+    "scripts": {
+      "a-review0-nvenc-av1-opus-sampler": "a_review0_nvenc_av1_opus_sampler.app:main"
+    },
+    "description": "NVENC AV1 and Opus sampler for Review0.",
+    "proposed_growth_families": [
+      "G55"
+    ]
+  },
+  {
+    "name": "a-review0-opus-sampler",
+    "pyproject": "some-implementations/stove0/review0/samplers/opus/pyproject.toml",
+    "scripts": {
+      "a-review0-opus-sampler": "a_review0_opus_sampler.app:main"
+    },
+    "description": "Opus sampler for Review0.",
+    "proposed_growth_families": [
+      "G55"
+    ]
+  },
+  {
+    "name": "a-riverhog-aws-store",
+    "pyproject": "some-implementations/riverhog/storage/aws/pyproject.toml",
+    "scripts": {
+      "a-riverhog-aws-store": "a_riverhog_aws_store.app:main"
+    },
+    "description": "AWS-backed Riverhog archive and retrieval store.",
+    "proposed_growth_families": [
+      "G59"
+    ]
+  },
+  {
+    "name": "a-riverhog-b2-store",
+    "pyproject": "some-implementations/riverhog/storage/backblaze/pyproject.toml",
+    "scripts": {
+      "a-riverhog-b2-store": "a_riverhog_b2_store.app:main"
+    },
+    "description": "Backblaze B2-backed Riverhog archive and retrieval store.",
+    "proposed_growth_families": [
+      "G59"
+    ]
+  },
+  {
+    "name": "a-riverhog-cli",
+    "pyproject": "some-implementations/riverhog/applications/a-riverhog-cli/pyproject.toml",
+    "scripts": {
+      "a-riverhog-cli": "a_riverhog_cli.main:main"
+    },
+    "description": "Command-line client for Riverhog.",
+    "proposed_growth_families": [
+      "G06",
+      "G09",
+      "G16"
+    ]
+  },
+  {
+    "name": "a-riverhog-direct-relations-contract-lib",
+    "pyproject": "some-implementations/riverhog/provenance/contracts/direct-relations/pyproject.toml",
+    "scripts": {},
+    "description": "Selected direct State relation vocabulary for Riverhog producers and consumers.",
+    "proposed_growth_families": [
+      "G47"
+    ]
+  },
+  {
+    "name": "a-riverhog-event-relay",
+    "pyproject": "some-implementations/riverhog/applications/a-riverhog-event-relay/pyproject.toml",
+    "scripts": {
+      "a-riverhog-event-relay": "a_riverhog_event_relay.cli:main"
+    },
+    "description": "Native lifecycle-event to CloudEvents webhook relay.",
+    "proposed_growth_families": [
+      "G31"
+    ]
+  },
+  {
+    "name": "a-riverhog-filesystem-store",
+    "pyproject": "some-implementations/riverhog/storage/filesystem/pyproject.toml",
+    "scripts": {
+      "a-riverhog-filesystem-store": "a_riverhog_filesystem_store.app:main",
+      "a-riverhog-filesystem-store-materialize": "a_riverhog_filesystem_store.materialize_cli:main"
+    },
+    "description": "Filesystem-backed Riverhog archive and retrieval store.",
+    "proposed_growth_families": [
+      "G16",
+      "G59"
+    ]
+  },
+  {
+    "name": "a-riverhog-ftp-spool",
+    "pyproject": "some-implementations/riverhog/ingress/ftp/pyproject.toml",
+    "scripts": {
+      "a-riverhog-ftp-spool": "a_riverhog_ftp_spool.app:main"
+    },
+    "description": "FTP upload spool and ingestion adapter for Riverhog.",
+    "proposed_growth_families": [
+      "G09",
+      "G57"
+    ]
+  },
+  {
+    "name": "a-riverhog-ftp-spool-client",
+    "pyproject": "some-implementations/riverhog/ingress/ftp-api-client/pyproject.toml",
+    "scripts": {},
+    "description": "Client for the Riverhog FTP upload spool.",
+    "proposed_growth_families": [
+      "G06",
+      "G57"
+    ]
+  },
+  {
+    "name": "a-riverhog-linux-provenance-contract-lib",
+    "pyproject": "some-implementations/riverhog/provenance/contracts/linux/pyproject.toml",
+    "scripts": {},
+    "description": "Linux filesystem observation contracts for Riverhog provenance.",
+    "proposed_growth_families": [
+      "G47"
+    ]
+  },
+  {
+    "name": "a-riverhog-linux-provenance-observer",
+    "pyproject": "some-implementations/riverhog/provenance/observers/linux/pyproject.toml",
+    "scripts": {},
+    "description": "Linux filesystem observer for Riverhog provenance.",
+    "proposed_growth_families": [
+      "G47"
+    ]
+  },
+  {
+    "name": "a-riverhog-macos-provenance-contract-lib",
+    "pyproject": "some-implementations/riverhog/provenance/contracts/macos/pyproject.toml",
+    "scripts": {},
+    "description": "macOS filesystem observation contracts for Riverhog provenance.",
+    "proposed_growth_families": [
+      "G47"
+    ]
+  },
+  {
+    "name": "a-riverhog-macos-provenance-observer",
+    "pyproject": "some-implementations/riverhog/provenance/observers/macos/pyproject.toml",
+    "scripts": {},
+    "description": "macOS filesystem observer for Riverhog provenance.",
+    "proposed_growth_families": [
+      "G47"
+    ]
+  },
+  {
+    "name": "a-riverhog-minisign-witness",
+    "pyproject": "some-implementations/riverhog/applications/a-riverhog-minisign-witness/pyproject.toml",
+    "scripts": {
+      "a-riverhog-minisign-witness": "a_riverhog_minisign_witness.cli:main"
+    },
+    "description": "Independent Minisign collection witness for Riverhog.",
+    "proposed_growth_families": [
+      "G60"
+    ]
+  },
+  {
+    "name": "a-riverhog-opentimestamps-witness",
+    "pyproject": "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/pyproject.toml",
+    "scripts": {
+      "a-riverhog-opentimestamps-witness": "a_riverhog_opentimestamps_witness.cli:main"
+    },
+    "description": "Independent OpenTimestamps collection witness for Riverhog.",
+    "proposed_growth_families": [
+      "G60"
+    ]
+  },
+  {
+    "name": "a-riverhog-recovery-tool",
+    "pyproject": "some-implementations/riverhog/recovery/pyproject.toml",
+    "scripts": {
+      "a-riverhog-recovery-tool": "a_riverhog_recovery_tool.cli:main"
+    },
+    "description": "Independent recovery tool for Riverhog archives.",
+    "proposed_growth_families": [
+      "G16",
+      "G23",
+      "G29"
+    ]
+  },
+  {
+    "name": "a-riverhog-s3-store-lib",
+    "pyproject": "some-implementations/riverhog/storage/s3-support/pyproject.toml",
+    "scripts": {},
+    "description": "S3 store library for Riverhog storage adapters.",
+    "proposed_growth_families": [
+      "G59"
+    ]
+  },
+  {
+    "name": "a-riverhog-windows-provenance-contract-lib",
+    "pyproject": "some-implementations/riverhog/provenance/contracts/windows/pyproject.toml",
+    "scripts": {},
+    "description": "Windows filesystem observation contracts for Riverhog provenance.",
+    "proposed_growth_families": [
+      "G47"
+    ]
+  },
+  {
+    "name": "a-riverhog-windows-provenance-observer",
+    "pyproject": "some-implementations/riverhog/provenance/observers/windows/pyproject.toml",
+    "scripts": {},
+    "description": "Windows filesystem observer for Riverhog provenance.",
+    "proposed_growth_families": [
+      "G47"
+    ]
+  },
+  {
+    "name": "a-riverhog-witness-contract-lib",
+    "pyproject": "some-implementations/riverhog/packages/a-riverhog-witness-contract-lib/pyproject.toml",
+    "scripts": {},
+    "description": "Shared collection witness statement for supplied Riverhog witness applications.",
+    "proposed_growth_families": [
+      "G60"
+    ]
+  },
+  {
+    "name": "a-stove0-cli",
+    "pyproject": "some-implementations/stove0/application/client/pyproject.toml",
+    "scripts": {
+      "stove0": "a_stove0_cli.main:main"
+    },
+    "description": "Command-line client for Stove0.",
+    "proposed_growth_families": [
+      "G06"
+    ]
+  },
+  {
+    "name": "a-stove0-exiftool-observer",
+    "pyproject": "some-implementations/stove0/observers/exiftool/pyproject.toml",
+    "scripts": {
+      "a-stove0-exiftool-observer": "a_stove0_exiftool_observer.app:main"
+    },
+    "description": "ExifTool media metadata observer for Stove0.",
+    "proposed_growth_families": [
+      "G48"
+    ]
+  },
+  {
+    "name": "a-stove0-ffprobe-observer",
+    "pyproject": "some-implementations/stove0/observers/ffprobe/pyproject.toml",
+    "scripts": {
+      "a-stove0-ffprobe-observer": "a_stove0_ffprobe_observer.app:main"
+    },
+    "description": "FFprobe stream and sampling observer for Stove0.",
+    "proposed_growth_families": [
+      "G49"
+    ]
+  },
+  {
+    "name": "a-stove0-ffprobe-streams-contract-lib",
+    "pyproject": "some-implementations/stove0/observers/contracts/ffprobe-streams/pyproject.toml",
+    "scripts": {},
+    "description": "FFprobe stream and container observation contract for Stove0.",
+    "proposed_growth_families": [
+      "G49"
+    ]
+  },
+  {
+    "name": "a-stove0-filename-prefix-sidecar-evidence-contract-lib",
+    "pyproject": "some-implementations/stove0/observers/contracts/filename-prefix-sidecars/pyproject.toml",
+    "scripts": {},
+    "description": "Exact accepted-locator filename candidate evidence for Stove0.",
+    "proposed_growth_families": [
+      "G51"
+    ]
+  },
+  {
+    "name": "a-stove0-filename-prefix-sidecar-observer",
+    "pyproject": "some-implementations/stove0/observers/filename-prefix-sidecars/pyproject.toml",
+    "scripts": {
+      "a-stove0-filename-prefix-sidecar-observer": "a_stove0_filename_prefix_sidecar_observer.app:main"
+    },
+    "description": "Exact source-name candidate observations for Stove0.",
+    "proposed_growth_families": [
+      "G51"
+    ]
+  },
+  {
+    "name": "a-stove0-magic-facts-contract-lib",
+    "pyproject": "some-implementations/stove0/observers/contracts/magic/pyproject.toml",
+    "scripts": {},
+    "description": "Bounded byte-classification facts for a selected Stove0 subject.",
+    "proposed_growth_families": [
+      "G49"
+    ]
+  },
+  {
+    "name": "a-stove0-magic-observer",
+    "pyproject": "some-implementations/stove0/observers/magic/pyproject.toml",
+    "scripts": {
+      "a-stove0-magic-observer": "a_stove0_magic_observer.app:main"
+    },
+    "description": "Bounded byte-only file classification observer for Stove0.",
+    "proposed_growth_families": [
+      "G49"
+    ]
+  },
+  {
+    "name": "a-stove0-materialization-hint-evidence-contract-lib",
+    "pyproject": "some-implementations/stove0/observers/contracts/materialization-hint/pyproject.toml",
+    "scripts": {},
+    "description": "Accepted Stove0 evidence for a selected Riverhog Occurrence materialization hint.",
+    "proposed_growth_families": [
+      "G50"
+    ]
+  },
+  {
+    "name": "a-stove0-media-archive-contract-lib",
+    "pyproject": "some-implementations/stove0/targets/media-archive/contracts/pyproject.toml",
+    "scripts": {},
+    "description": "Media archive target contracts for Stove0.",
+    "proposed_growth_families": [
+      "G52"
+    ]
+  },
+  {
+    "name": "a-stove0-media-archive-lib",
+    "pyproject": "some-implementations/stove0/targets/media-archive/support/pyproject.toml",
+    "scripts": {},
+    "description": "Media archive projection library for Stove0.",
+    "proposed_growth_families": [
+      "G52"
+    ]
+  },
+  {
+    "name": "a-stove0-media-metadata-contract-lib",
+    "pyproject": "some-implementations/stove0/observers/contracts/media-metadata/pyproject.toml",
+    "scripts": {},
+    "description": "Media metadata observation contracts for Stove0.",
+    "proposed_growth_families": [
+      "G48"
+    ]
+  },
+  {
+    "name": "a-stove0-media-sampling-contract-lib",
+    "pyproject": "some-implementations/stove0/observers/contracts/media-sampling/pyproject.toml",
+    "scripts": {},
+    "description": "Media sampling contracts for Stove0.",
+    "proposed_growth_families": [
+      "G49",
+      "G54"
+    ]
+  },
+  {
+    "name": "a-stove0-nvenc-av1-opus-target",
+    "pyproject": "some-implementations/stove0/targets/nvenc-av1-opus/target/pyproject.toml",
+    "scripts": {
+      "a-stove0-nvenc-av1-opus-target": "a_stove0_nvenc_av1_opus_target.app:target_main"
+    },
+    "description": "NVENC AV1 and Opus transformation target for Stove0.",
+    "proposed_growth_families": [
+      "G52"
+    ]
+  },
+  {
+    "name": "a-stove0-opus-target",
+    "pyproject": "some-implementations/stove0/targets/opus/target/pyproject.toml",
+    "scripts": {
+      "a-stove0-opus-target": "a_stove0_opus_target.app:target_main"
+    },
+    "description": "Opus transformation target for Stove0.",
+    "proposed_growth_families": [
+      "G52"
+    ]
+  },
+  {
+    "name": "a-stove0-rclone-target",
+    "pyproject": "some-implementations/stove0/targets/rclone/pyproject.toml",
+    "scripts": {
+      "a-stove0-rclone-target": "a_stove0_rclone_target.app:main"
+    },
+    "description": "Generic rclone collection-delivery effect target for Stove0.",
+    "proposed_growth_families": [
+      "G56"
+    ]
+  },
+  {
+    "name": "a-stove0-riverhog-provenance-evidence-contract-lib",
+    "pyproject": "some-implementations/stove0/observers/contracts/riverhog-provenance/pyproject.toml",
+    "scripts": {},
+    "description": "Subject-bound Stove0 observation facts from exact canonical Riverhog provenance.",
+    "proposed_growth_families": [
+      "G50"
+    ]
+  },
+  {
+    "name": "a-stove0-riverhog-provenance-observer",
+    "pyproject": "some-implementations/stove0/observers/riverhog-provenance/pyproject.toml",
+    "scripts": {
+      "a-stove0-riverhog-provenance-observer": "a_stove0_riverhog_provenance_observer.app:main"
+    },
+    "description": "Exact core provenance facts for Stove0 without platform interpretation.",
+    "proposed_growth_families": [
+      "G50"
+    ]
+  },
+  {
+    "name": "config-validation",
+    "pyproject": "packages/config-validation/pyproject.toml",
+    "scripts": {},
+    "description": "Strict YAML and JSON Schema configuration validation.",
+    "proposed_growth_families": [
+      "G02"
+    ]
+  },
+  {
+    "name": "gogurt",
+    "pyproject": "some-implementations/gogurt/application/pyproject.toml",
+    "scripts": {
+      "gogurt": "gogurt.cli:main"
+    },
+    "description": "Mounted-volume ingestion application for Riverhog.",
+    "proposed_growth_families": [
+      "G58"
+    ]
+  },
+  {
+    "name": "gogurt-core",
+    "pyproject": "some-implementations/gogurt/packages/core/pyproject.toml",
+    "scripts": {},
+    "description": "Portable Gogurt marker, routing, action, and watch semantics.",
+    "proposed_growth_families": [
+      "G58"
+    ]
+  },
+  {
+    "name": "gogurt-listener-runtime",
+    "pyproject": "some-implementations/gogurt/packages/listener-runtime/pyproject.toml",
+    "scripts": {},
+    "description": "Portable durable listener runtime and native-platform port for Gogurt.",
+    "proposed_growth_families": [
+      "G20",
+      "G58",
+      "G62"
+    ]
+  },
+  {
+    "name": "http-api-contracts",
+    "pyproject": "packages/http-api-contracts/pyproject.toml",
+    "scripts": {},
+    "description": "Public typed HTTP error, health, client, and operation contracts.",
+    "proposed_growth_families": [
+      "G05",
+      "G27"
+    ]
+  },
+  {
+    "name": "lifecycle-events",
+    "pyproject": "packages/lifecycle-events/pyproject.toml",
+    "scripts": {},
+    "description": "Durable native lifecycle-event log and client primitives.",
+    "proposed_growth_families": [
+      "G31"
+    ]
+  },
+  {
+    "name": "release-documentation-lib",
+    "pyproject": "packages/release-documentation-lib/pyproject.toml",
+    "scripts": {},
+    "description": "Native adapters for package-local release documentation.",
+    "proposed_growth_families": [
+      "G61",
+      "G63",
+      "G64"
+    ]
+  },
+  {
+    "name": "review0",
+    "pyproject": "some-implementations/stove0/review0/application/pyproject.toml",
+    "scripts": {
+      "review0": "review0.app:main"
+    },
+    "description": "Review0 collection materialization for Stove0.",
+    "proposed_growth_families": [
+      "G46"
+    ]
+  },
+  {
+    "name": "review0-contracts",
+    "pyproject": "some-implementations/stove0/review0/contracts/pyproject.toml",
+    "scripts": {},
+    "description": "Review0 materialization semantics and artifact roles.",
+    "proposed_growth_families": [
+      "G46",
+      "G54"
+    ]
+  },
+  {
+    "name": "review0-planner",
+    "pyproject": "some-implementations/stove0/review0/planning/pyproject.toml",
+    "scripts": {
+      "review0-planner": "review0_planner.conformance:main"
+    },
+    "description": "Review0 plan construction for Stove0 workflows.",
+    "proposed_growth_families": [
+      "G46",
+      "G54"
+    ]
+  },
+  {
+    "name": "review0-sampler-client",
+    "pyproject": "some-implementations/stove0/review0/sampler/client/pyproject.toml",
+    "scripts": {},
+    "description": "HTTP client for Review0 samplers.",
+    "proposed_growth_families": [
+      "G06",
+      "G55"
+    ]
+  },
+  {
+    "name": "review0-sampler-lib",
+    "pyproject": "some-implementations/stove0/review0/sampler/support/pyproject.toml",
+    "scripts": {
+      "review0-sampler-conformance": "review0_sampler_lib.conformance:main",
+      "review0-sampler-schemas": "review0_sampler_lib.schemas:main"
+    },
+    "description": "Runtime and conformance support for Review0 samplers.",
+    "proposed_growth_families": [
+      "G05",
+      "G53",
+      "G55"
+    ]
+  },
+  {
+    "name": "review0-sampler-protocol",
+    "pyproject": "some-implementations/stove0/review0/sampler/protocol/pyproject.toml",
+    "scripts": {},
+    "description": "Protocol contracts for Review0 samplers.",
+    "proposed_growth_families": [
+      "G55"
+    ]
+  },
+  {
+    "name": "riverhog-age",
+    "pyproject": "packages/riverhog-age/pyproject.toml",
+    "scripts": {},
+    "description": "Resumable age encryption used by the Riverhog protocol.",
+    "proposed_growth_families": [
+      "G04"
+    ]
+  },
+  {
+    "name": "riverhog-application-access",
+    "pyproject": "packages/riverhog-application-access/pyproject.toml",
+    "scripts": {},
+    "description": "Public Riverhog application-access contracts and canonical grant grammar.",
+    "proposed_growth_families": [
+      "G07",
+      "G32"
+    ]
+  },
+  {
+    "name": "riverhog-archive-contracts",
+    "pyproject": "packages/riverhog-archive-contracts/pyproject.toml",
+    "scripts": {},
+    "description": "Dependency-light immutable Riverhog archive recovery contracts.",
+    "proposed_growth_families": [
+      "G03",
+      "G13",
+      "G24",
+      "G29"
+    ]
+  },
+  {
+    "name": "riverhog-canonical-json",
+    "pyproject": "packages/riverhog-canonical-json/pyproject.toml",
+    "scripts": {},
+    "description": "Shared RFC 8785 JSON value and exact-scalar contracts.",
+    "proposed_growth_families": [
+      "G01"
+    ]
+  },
+  {
+    "name": "riverhog-client",
+    "pyproject": "packages/riverhog-client/pyproject.toml",
+    "scripts": {},
+    "description": "Typed generic Riverhog client and capability-scoped collection-processing runtime.",
+    "proposed_growth_families": [
+      "G06",
+      "G07",
+      "G09",
+      "G10",
+      "G11",
+      "G12",
+      "G14",
+      "G19",
+      "G25",
+      "G27",
+      "G30",
+      "G33",
+      "G45"
+    ]
+  },
+  {
+    "name": "riverhog-materialization",
+    "pyproject": "packages/riverhog-materialization/pyproject.toml",
+    "scripts": {},
+    "description": "Pure local destination planning for Riverhog artifact materialization.",
+    "proposed_growth_families": [
+      "G16",
+      "G29"
+    ]
+  },
+  {
+    "name": "riverhog-protocol",
+    "pyproject": "packages/riverhog-protocol/pyproject.toml",
+    "scripts": {},
+    "description": "Canonical Riverhog wire and identity contracts.",
+    "proposed_growth_families": [
+      "G02",
+      "G03",
+      "G10"
+    ]
+  },
+  {
+    "name": "riverhog-provenance",
+    "pyproject": "packages/riverhog-provenance/pyproject.toml",
+    "scripts": {},
+    "description": "Path-independent opaque-artifact observations, provenance journals and application validation.",
+    "proposed_growth_families": [
+      "G21",
+      "G22",
+      "G23",
+      "G24",
+      "G29"
+    ]
+  },
+  {
+    "name": "riverhog-provenance-contracts",
+    "pyproject": "packages/riverhog-provenance-contracts/pyproject.toml",
+    "scripts": {},
+    "description": "Closed schema packs and formal contracts for path-independent artifact provenance.",
+    "proposed_growth_families": [
+      "G02",
+      "G21"
+    ]
+  },
+  {
+    "name": "riverhog-server",
+    "pyproject": "riverhog/pyproject.toml",
+    "scripts": {
+      "riverhog-api": "riverhog_api.app:main"
+    },
+    "description": "Encrypted archive management, catalog, and retrieval.",
+    "proposed_growth_families": [
+      "G04",
+      "G07",
+      "G10",
+      "G11",
+      "G12",
+      "G13",
+      "G14",
+      "G15",
+      "G17",
+      "G18",
+      "G19",
+      "G20",
+      "G22",
+      "G23",
+      "G25",
+      "G26",
+      "G27",
+      "G28",
+      "G30",
+      "G31",
+      "G32",
+      "G33",
+      "G34",
+      "G35",
+      "G62"
+    ]
+  },
+  {
+    "name": "riverhog-storage-adapter-asgi-support",
+    "pyproject": "packages/riverhog-storage-adapter-asgi-support/pyproject.toml",
+    "scripts": {},
+    "description": "Authenticated ASGI shell for independently scoped Riverhog storage adapters.",
+    "proposed_growth_families": [
+      "G59"
+    ]
+  },
+  {
+    "name": "riverhog-storage-adapter-protocol",
+    "pyproject": "packages/riverhog-storage-adapter-protocol/pyproject.toml",
+    "scripts": {},
+    "description": "Provider-neutral opaque-object capability contracts for Riverhog storage adapters.",
+    "proposed_growth_families": [
+      "G59"
+    ]
+  },
+  {
+    "name": "riverhog-storage-adapter-support",
+    "pyproject": "packages/riverhog-storage-adapter-support/pyproject.toml",
+    "scripts": {
+      "riverhog-storage-adapter-conformance": "riverhog_storage_adapter_support.conformance:main",
+      "riverhog-storage-adapter-schemas": "riverhog_storage_adapter_support.schemas:main"
+    },
+    "description": "HTTP binding and conformance support for Riverhog storage adapters.",
+    "proposed_growth_families": [
+      "G17",
+      "G59"
+    ]
+  },
+  {
+    "name": "state-schema",
+    "pyproject": "packages/state-schema/pyproject.toml",
+    "scripts": {},
+    "description": "Forward-only relational state schema and migration contracts.",
+    "proposed_growth_families": [
+      "G08",
+      "G62"
+    ]
+  },
+  {
+    "name": "stove0-api-client",
+    "pyproject": "some-implementations/stove0/packages/api-client/pyproject.toml",
+    "scripts": {},
+    "description": "Python client for the Stove0 v1 workflow API.",
+    "proposed_growth_families": [
+      "G06",
+      "G43"
+    ]
+  },
+  {
+    "name": "stove0-extension-support",
+    "pyproject": "some-implementations/stove0/packages/extension-support/pyproject.toml",
+    "scripts": {},
+    "description": "Component-local execution admission and state ownership for Stove0 extensions.",
+    "proposed_growth_families": [
+      "G35",
+      "G53"
+    ]
+  },
+  {
+    "name": "stove0-observer-client",
+    "pyproject": "some-implementations/stove0/packages/observer-client/pyproject.toml",
+    "scripts": {},
+    "description": "Narrow HTTP client for Stove0 content observers.",
+    "proposed_growth_families": [
+      "G06",
+      "G38"
+    ]
+  },
+  {
+    "name": "stove0-observer-protocol",
+    "pyproject": "some-implementations/stove0/packages/observer-protocol/pyproject.toml",
+    "scripts": {},
+    "description": "Dependency-light public contracts for external Stove0 content observers.",
+    "proposed_growth_families": [
+      "G38"
+    ]
+  },
+  {
+    "name": "stove0-observer-support",
+    "pyproject": "some-implementations/stove0/packages/observer-support/pyproject.toml",
+    "scripts": {
+      "stove0-observer-conformance": "stove0_observer_support.conformance:main",
+      "stove0-observer-schemas": "stove0_observer_support.schemas:main"
+    },
+    "description": "External-author protocol, runtime, and conformance support for Stove0 content observers.",
+    "proposed_growth_families": [
+      "G05",
+      "G39",
+      "G53"
+    ]
+  },
+  {
+    "name": "stove0-operator-contracts",
+    "pyproject": "some-implementations/stove0/packages/operator-contracts/pyproject.toml",
+    "scripts": {},
+    "description": "Canonical public state contracts for the Stove0 v1 operator surface.",
+    "proposed_growth_families": [
+      "G43"
+    ]
+  },
+  {
+    "name": "stove0-protocol",
+    "pyproject": "some-implementations/stove0/packages/protocol/pyproject.toml",
+    "scripts": {},
+    "description": "Canonical content-opaque collection orchestration contracts for Stove0.",
+    "proposed_growth_families": [
+      "G02",
+      "G36",
+      "G37",
+      "G39",
+      "G40",
+      "G41",
+      "G42",
+      "G45"
+    ]
+  },
+  {
+    "name": "stove0-recipe-config",
+    "pyproject": "some-implementations/stove0/packages/recipe-config/pyproject.toml",
+    "scripts": {},
+    "description": "Portable deployment-owned Stove0 recipe catalog contracts and validation.",
+    "proposed_growth_families": [
+      "G36",
+      "G42"
+    ]
+  },
+  {
+    "name": "stove0-server",
+    "pyproject": "some-implementations/stove0/application/server/pyproject.toml",
+    "scripts": {
+      "stove0-server": "stove0_api.app:main"
+    },
+    "description": "Content-opaque transformation application for Riverhog.",
+    "proposed_growth_families": [
+      "G07",
+      "G35",
+      "G37",
+      "G38",
+      "G39",
+      "G40",
+      "G41",
+      "G42",
+      "G43",
+      "G44",
+      "G45",
+      "G46",
+      "G62"
+    ]
+  },
+  {
+    "name": "stove0-target-client",
+    "pyproject": "some-implementations/stove0/packages/target-client/pyproject.toml",
+    "scripts": {},
+    "description": "Narrow HTTP client for Stove0 transform targets.",
+    "proposed_growth_families": [
+      "G06",
+      "G44"
+    ]
+  },
+  {
+    "name": "stove0-target-protocol",
+    "pyproject": "some-implementations/stove0/packages/target-protocol/pyproject.toml",
+    "scripts": {},
+    "description": "Dependency-light public contracts for external Stove0 targets.",
+    "proposed_growth_families": [
+      "G44"
+    ]
+  },
+  {
+    "name": "stove0-target-support",
+    "pyproject": "some-implementations/stove0/packages/target-support/pyproject.toml",
+    "scripts": {
+      "stove0-target-conformance": "stove0_target_support.conformance:main",
+      "stove0-target-schemas": "stove0_target_support.schemas:main"
+    },
+    "description": "Hardware-neutral target protocol, runtime, and conformance support for Stove0.",
+    "proposed_growth_families": [
+      "G05",
+      "G20",
+      "G44",
+      "G53"
+    ]
+  },
+  {
+    "name": "time-formats",
+    "pyproject": "packages/time-formats/pyproject.toml",
+    "scripts": {},
+    "description": "UTC timestamp and operator duration formats.",
+    "proposed_growth_families": [
+      "G01"
+    ]
+  }
+]

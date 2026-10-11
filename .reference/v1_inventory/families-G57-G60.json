@@ -1,0 +1,138 @@
+[
+  {
+    "id": "G57",
+    "group": "Applications/adapters",
+    "title": "FTP ingress custody and durable completion log",
+    "layer": "public",
+    "proposed_owners": [
+      "a-riverhog-ftp-spool",
+      "a-riverhog-ftp-spool-client"
+    ],
+    "scope": "Accept exact completed uploads, claim them and publish one selected collection.",
+    "proposed_work_bound": "O(B + completed events + path/native-provenance bytes) plus generic publication cost. Process new events from a cursor; no complete intake/log rescan per completion or file.",
+    "proposed_memory_and_state_bound": "Bounded active claims, durable receipts and upload windows; disk may retain uncustodied input by policy but no unbounded per-step memory.",
+    "semantic_requirement": "Same-path reuse, interrupted/resumed upload, completion-log tips and receipt retention exact; delete source only at permitted custody boundary.",
+    "proposed_witness": "Same path distinct bytes, many completed records, interrupted first file and late receipt; compare events processed and log bytes read over the entire ingress sequence.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/completion.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/listener.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/app.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G58",
+    "group": "Applications/adapters",
+    "title": "Gogurt routing, mount providers and listener lifecycle",
+    "layer": "public",
+    "proposed_owners": [
+      "gogurt",
+      "gogurt-core",
+      "gogurt-listener-runtime",
+      "a-gogurt-path-volume-lib",
+      "a-gogurt-linux-listener",
+      "a-gogurt-macos-listener",
+      "a-gogurt-windows-listener",
+      "a-gogurt-linux-volume",
+      "a-gogurt-macos-volume",
+      "a-gogurt-windows-volume"
+    ],
+    "scope": "Read exact marker/configuration, choose a route and react to native volume/listener events.",
+    "proposed_work_bound": "O(config bytes + examined declared routes + enumerated volumes/events); fixed deployment => independent of files stored inside the mounted volume unless the selected action explicitly traverses them.",
+    "proposed_memory_and_state_bound": "Config/volume-sized state and bounded event work; listener state proportional to retained actionable events, not whole payload.",
+    "semantic_requirement": "Provider/marker identity, revalidation, native lifecycle and trusted executable boundaries remain. External invoked command cost is not Gogurt's bound.",
+    "proposed_witness": "Grow route/volume counts independently of files; replay/restart/mount replacement, missing executable and marker change; real OS provider checks.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/gogurt/packages/core/src/gogurt_core/core.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/listener.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G59",
+    "group": "Applications/adapters",
+    "title": "Filesystem, AWS and B2 storage adapters",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-storage-adapter-protocol",
+      "riverhog-storage-adapter-support",
+      "riverhog-storage-adapter-asgi-support",
+      "a-riverhog-s3-store-lib",
+      "a-riverhog-filesystem-store",
+      "a-riverhog-aws-store",
+      "a-riverhog-b2-store"
+    ],
+    "scope": "Execute declared immutable object/segment/multipart/read/retire operations.",
+    "proposed_work_bound": "Adapter-owned work O(bytes transferred + declared objects/parts + response metadata). Contacts O(required objects/parts + retries); no bucket-wide listing per exact object operation. Provider internal algorithm/latency explicitly outside adapter guarantee.",
+    "proposed_memory_and_state_bound": "Bounded streams/concurrency; explicit multipart/checkpoint state; provider capacity never silently truncates an exact collection.",
+    "semantic_requirement": "Create-only/read verification, incarnation identity, remote receipt/race semantics, no public provider-specific ontology changes.",
+    "proposed_witness": "Many tiny objects, one large multipart object, conditional-create races, partial/missing response and resumed reads; count contacts and byte buffering using protocol conformance plus final image.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/riverhog/storage/s3-support/src/a_riverhog_s3_store_lib/adapter.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/adapter.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-storage-adapter-asgi-support/src/riverhog_storage_adapter_asgi_support/app.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "adopt-wrapper-bound-and-declare-provider-cost"
+  },
+  {
+    "id": "G60",
+    "group": "Applications/adapters",
+    "title": "Minisign and OpenTimestamps witnesses",
+    "layer": "public",
+    "proposed_owners": [
+      "a-riverhog-minisign-witness",
+      "a-riverhog-opentimestamps-witness",
+      "a-riverhog-witness-contract-lib"
+    ],
+    "scope": "Verify/sign/publish exact witness inputs and progress pending timestamp proofs.",
+    "proposed_work_bound": "O(input/proof bytes + signatures or proof nodes + requested/pending items); bounded indexed due-work polling. Calendar/network waits excluded, contacts counted; no rescan of all historic witnesses per pending proof.",
+    "proposed_memory_and_state_bound": "Bounded active proof processing and retained exact evidence; retention does not discard required proof to save time.",
+    "semantic_requirement": "Exact root/digest and independent witness authority; no claim a pending timestamp is finalized evidence.",
+    "proposed_witness": "Grow finalized history at fixed pending set, malformed proof, lost response, retry and changed root; verify signatures/proofs and count historic lookups.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/riverhog/applications/a-riverhog-minisign-witness/src/a_riverhog_minisign_witness/minisign.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/src/a_riverhog_opentimestamps_witness/proof.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  }
+]

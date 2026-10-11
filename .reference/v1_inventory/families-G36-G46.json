@@ -1,0 +1,379 @@
+[
+  {
+    "id": "G36",
+    "group": "Stove0 planning/execution",
+    "title": "Recipe parsing, dependency closure and compilation",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-recipe-config",
+      "stove0-protocol"
+    ],
+    "scope": "Compile one source plus exact semantic dependency catalog, not execute a workflow.",
+    "proposed_work_bound": "O(source/dependency bytes + dependency nodes/edges + emitted compiled bytes), plus G01 canonical ordering and declared validation-profile cost. Explicit expansion charged to output, but repeated copying of shared dependencies is not free.",
+    "proposed_memory_and_state_bound": "Working memory O(source + unique dependency model + compiled output) for materialized API; no exponential expansion of shared reusable definitions.",
+    "semantic_requirement": "Exact operation/interface/subrecipe pins, grammar errors, acyclicity and policy identity unaffected by scheduling choices.",
+    "proposed_witness": "Long chain, diamond/shared dependencies, deeply nested source and repeated observer definitions; count copies and exact compiled bytes/digests.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/packages/recipe-config/src/stove0_recipe_config/compiler.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/packages/recipe-config/src/stove0_recipe_config/dependencies.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G37",
+    "group": "Stove0 planning/execution",
+    "title": "Exact selection and immutable plan storage",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-server",
+      "stove0-protocol"
+    ],
+    "scope": "Build/iterate selected subject, evidence and target-plan sets.",
+    "proposed_work_bound": "O(selection/evidence/plan bytes + members + explicit relation edges) plus indexed/order costs over complete construction. Loading one bounded summary independent of plan total.",
+    "proposed_memory_and_state_bound": "O(window) process state with O(plan data) immutable/disk state; no complete growing plan copy at every update.",
+    "semantic_requirement": "Same declared meaning and exact selected members, complete plan commitment and reject unselected data; selectors retain their own semantics.",
+    "proposed_witness": "Grow N with fixed recipe; count cumulative serialized/hashed bytes across planning checkpoints and status polls; compare exact plan membership after restart.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/metadata_selections.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/work_metadata.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/compiled_planning_state.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G38",
+    "group": "Stove0 planning/execution",
+    "title": "Logical observation delivery and batching",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-server",
+      "stove0-observer-protocol",
+      "stove0-observer-client"
+    ],
+    "scope": "Deliver every selected subject/evidence item for each declared observation task.",
+    "proposed_work_bound": "O(sum task-subject incidences + evidence bytes + deliveries); fixed task graph => linear collection growth. Delivery count O(ceil(subjects/batch)) where independent batching applies; whole-scope semantics are separate.",
+    "proposed_memory_and_state_bound": "Bounded dispatch window, durable accepted-task state O(incidences + results); no in-memory global physical-request list needed.",
+    "semantic_requirement": "No dropped tasks/subjects, repeated tasks keep distinct authority; batching/concurrency do not change semantic recipe/work identity.",
+    "proposed_witness": "Multiple tasks sharing provider, empty selections, 16/17 and 64/65 boundaries, retries and restart; mechanically prove exact once-per-required-incidence coverage.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/compiled_observation_delivery.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/observation_questions.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/compiled_observations.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G39",
+    "group": "Stove0 planning/execution",
+    "title": "Observation acceptance and evidence/view indexing",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-server",
+      "stove0-protocol",
+      "stove0-observer-support"
+    ],
+    "scope": "Validate one result's subject ports, authority, completeness and fact/relation records.",
+    "proposed_work_bound": "O(subjects + evidence bytes + explicit relations) logical checks plus indexed lookups and declared schema cost. Subject lookup built once, not linear scan for every port member.",
+    "proposed_memory_and_state_bound": "Working state bounded by physical carrier or spooled whole-scope input; view rows proportional to accepted records, not task*unrelated members.",
+    "semantic_requirement": "Reject duplicate/missing/replaced subjects and read-policy changes; no unknown evidence interpreted as false.",
+    "proposed_witness": "Whole-scope request with increasing subjects and fixed ports; missing/duplicate/wrong-root result, many batches and idempotent reacceptance.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/accepted_observations.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/accepted_view_queries.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/packages/observer-support/src/stove0_observer_support/http_binding.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G40",
+    "group": "Stove0 planning/execution",
+    "title": "Fact classification and predicate evaluation",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-server",
+      "stove0-protocol"
+    ],
+    "scope": "Evaluate a fixed declared recipe predicate set over accepted facts.",
+    "proposed_work_bound": "Simple per-record predicates: O(P * (fact bytes + subjects)) with P explicitly the predicate size/count; fixed P yields linear collection work. Nested quantifiers/joins need a separate cost profile; cannot claim O(input+output) for every arbitrary predicate.",
+    "proposed_memory_and_state_bound": "Bounded per-record evaluation and disk-backed accepted fact views; no one copied corpus per predicate invocation.",
+    "semantic_requirement": "Missing/partial/ambiguous evidence remains indeterminate or failure; same-record predicate scope and exact source evidence preserved.",
+    "proposed_witness": "Absent matches, many records on one subject, nested predicate variants, fixed recipe vs increasing P separately; count evaluated pairs/records.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/compiled_fact_evaluation.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/compiled_decisions.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/packages/protocol/src/stove0_protocol/predicates.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "approve-predicate-profiles-before-freeze"
+  },
+  {
+    "id": "G41",
+    "group": "Stove0 planning/execution",
+    "title": "Relationship grouping and source association",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-server",
+      "stove0-protocol"
+    ],
+    "scope": "Build declared primary/associated groups from complete accepted relation evidence.",
+    "proposed_work_bound": "O(subjects + supplied relation edges + emitted groups/members) logical traversal per fixed tier/predicate set, plus sorting/index costs. No all-primary*sidecar probe on a sparse exact-key relation.",
+    "proposed_memory_and_state_bound": "Bounded checkpoints with O(groups + actual edges) durable state; ambiguous evidence kept explicitly, not collapsed for speed.",
+    "semantic_requirement": "Tier fallback only on complete negatives, exact multiplicity and unmatched/blocked outcomes preserved.",
+    "proposed_witness": "Sparse one-to-one, ambiguous, shared and genuinely dense relations; no-match stress and interruption at tier/association/sealing boundaries.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/compiled_groups.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/compiled_input_scopes.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/packages/protocol/src/stove0_protocol/input_groups.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G42",
+    "group": "Stove0 planning/execution",
+    "title": "Forks, joins and nested work",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-server",
+      "stove0-recipe-config",
+      "stove0-protocol"
+    ],
+    "scope": "Instantiate and settle an expanded execution tree over exact selected branch inputs.",
+    "proposed_work_bound": "O(expanded invocation nodes + edges + selected input/output incidence bytes) plus indexing. A compact recipe expanding into many actual required calls is charged by expanded work, not misrepresented as linear in recipe text.",
+    "proposed_memory_and_state_bound": "Bounded coordination state per step; persisted state proportional to real invocation/selection tree, not repeated ancestor copies.",
+    "semantic_requirement": "All matching branches, exact joins/export and no-output distinctions remain; one child state change does not force full tree decoding.",
+    "proposed_witness": "Deep chain, broad fork, shared input selection, many completed siblings, join inapplicability and cancellation; count parent/child rows examined per transition.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/compiled_branches.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/coordinator.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/coordination.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G43",
+    "group": "Stove0 planning/execution",
+    "title": "Admission, preview/create binding and reconciliation",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-server",
+      "stove0-api-client",
+      "stove0-operator-contracts"
+    ],
+    "scope": "Automatically admit or manually invoke exact work and converge across restart.",
+    "proposed_work_bound": "O(new event/selection/plan evidence + applicable policy work) plus indexed lookups; same-request idempotency/current fence check must not recompute accepted immutable planning repeatedly.",
+    "proposed_memory_and_state_bound": "Bounded admission stages with durable identity/preview records; resource waits isolated from scheduler.",
+    "semantic_requirement": "Recovered automatically admitted work actually executes and settles; manual convergence is not substitute end-to-end coverage.",
+    "proposed_witness": "Offline catalog follower, intent/preview/work-bound restarts, manual duplicate convergence and one small automatically admitted completion path.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/admission.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/preview.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/preview_state.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/planning_context.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G44",
+    "group": "Stove0 planning/execution",
+    "title": "Target dispatch, leases, callbacks and accepted work",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-server",
+      "stove0-target-support",
+      "stove0-target-protocol",
+      "stove0-target-client"
+    ],
+    "scope": "Accept/queue/execute bounded control transitions around an exact target request.",
+    "proposed_work_bound": "O(accepted declaration bytes once + real transitions/outputs + control observations*p), plus indexed access; no request-sized JSON reconstruction per poll/callback.",
+    "proposed_memory_and_state_bound": "Configured worker/host-lease limits with bounded queued-step processing; immutable declarations held once or spooled, not copied across all active polls.",
+    "semantic_requirement": "Single authority, host execution leases, cancellation and restart fencing; repeated contacts cannot create duplicate execution.",
+    "proposed_witness": "Large accepted declaration with fixed poll count, then increasing polls; lost callback, queued lease/restart, independent host progress.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/packages/target-support/src/stove0_target_support/persistent.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/target_callbacks.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/control_contacts.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G45",
+    "group": "Stove0 planning/execution",
+    "title": "Output settlement, completion and source retirement",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-server",
+      "riverhog-client",
+      "stove0-protocol"
+    ],
+    "scope": "Settle each exact target result and per-member disposition, then authorized root retirement.",
+    "proposed_work_bound": "O(outputs + input-output links + result/evidence bytes + genuine transitions) plus indexed access and shared provenance validation once per exact corpus.",
+    "proposed_memory_and_state_bound": "Bounded settlement pages; persistent dispositions proportional to actual members/links. Parent completion reads maintained state rather than every output each poll.",
+    "semantic_requirement": "No retirement before complete per-member evidence/permissions/grace; no implicit no-output/partial-success conflation.",
+    "proposed_witness": "Many outputs sharing completion history, failed branch, duplicate settlement, late permission loss, restart and unchanged final collection IDs.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/departure.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/source_loss.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/completion_records.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/canonical_completion.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G46",
+    "group": "Stove0 planning/execution",
+    "title": "Evaluation variants and review orchestration",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-server",
+      "review0",
+      "review0-contracts",
+      "review0-planner"
+    ],
+    "scope": "Construct requested variant/sample evaluations and coordinate reviews.",
+    "proposed_work_bound": "O(explicit variants*sample incidences + plan bytes + review records), plus ordering/index costs; independent axes disclosed. No claim linear in N alone if requested variants grow with N.",
+    "proposed_memory_and_state_bound": "Bounded active sample work with persisted evaluations proportional to requested outputs; large score/decision matrices paged.",
+    "semantic_requirement": "Human-selected variants/results, complete samples and exact intent binding preserved; no selecting fewer variants to pass.",
+    "proposed_witness": "Vary variants and samples independently; incomplete/duplicate sample result, rejection, re-review and restart; count matrix expansion and report bytes.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/evaluation.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/review0/planning/src/review0_planner/planning.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/review0/application/src/review0/target.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  }
+]

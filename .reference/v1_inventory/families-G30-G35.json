@@ -1,0 +1,201 @@
+[
+  {
+    "id": "G30",
+    "group": "Coordination/access",
+    "title": "Catalog synchronization and exact change following",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-client"
+    ],
+    "scope": "Initial checkpoint-consistent snapshot followed by retained changes.",
+    "proposed_work_bound": "Initial scan O(N + descriptor bytes + page lookups); follow-up O(delta events + changed metadata + page lookups), independent of unchanged archived bytes/member inventories.",
+    "proposed_memory_and_state_bound": "O(page + bounded cursor state) working memory; retention/reaping proportional to expired history.",
+    "semantic_requirement": "Exact cursor/view/root and access fences, explicit expired/gap errors; no missed changes reported as complete sync.",
+    "proposed_witness": "Fixed delta against growing unchanged catalog, pagination boundaries, cursor expiry, duplicate notifications and restart.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/services/catalog_sync.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/catalog_sync.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/following.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G31",
+    "group": "Coordination/access",
+    "title": "Lifecycle events, cursor stores and relay",
+    "layer": "public",
+    "proposed_owners": [
+      "lifecycle-events",
+      "riverhog-server",
+      "a-riverhog-event-relay"
+    ],
+    "scope": "Append events, consume new events and retire eligible log history.",
+    "proposed_work_bound": "O(events appended/delivered + encoded bytes) plus indexed cursor operations; relay O(deliveries*bounded attempt cost), not a full retained-log rewrite per event.",
+    "proposed_memory_and_state_bound": "O(page/inflight window) RAM; durable state proportional to retention + active delivery checkpoints; remote subscriber delay separately counted.",
+    "semantic_requirement": "Exact durable sequence and at-least-once/duplicate behavior retained; no false acknowledgment on incomplete delivery.",
+    "proposed_witness": "Growing retained log with constant new events, slow receivers, reconnect, duplicate delivery and expired cursor; count scanned events and rewritten bytes.",
+    "source_anchors": [
+      {
+        "path": "packages/lifecycle-events/src/lifecycle_events/sqlite_store.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/lifecycle_events.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G32",
+    "group": "Coordination/access",
+    "title": "Application keys, quotas and usage counters",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-application-access"
+    ],
+    "scope": "Read/change exact key/policy/quota records and account one transfer.",
+    "proposed_work_bound": "O(policy/request bytes + affected counters + log Z); enumerating keys/quotas charged to returned records. No collection-wide byte recount per content chunk or token check.",
+    "proposed_memory_and_state_bound": "Bounded transaction/counter state; periodic full reconciliation has its own O(accounting records) declaration.",
+    "semantic_requirement": "Fresh permission/quota enforcement, exact debit/reservation and idempotent reconciliation retained.",
+    "proposed_witness": "Grow unrelated collections/keys with one active transfer; count accesses; race reservation, expiry, retry and revocation.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/services/app_keys.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/download_allowances.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/app_permissions.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G33",
+    "group": "Coordination/access",
+    "title": "Generic workflows, intents and execution claims",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "riverhog-client"
+    ],
+    "scope": "Create/progress an exact workflow/claim over an explicit selected input/declared output set.",
+    "proposed_work_bound": "O(selected N + E + definition bytes + genuine state transitions) plus indexed writes over lifecycle; scalar heartbeat/state/cancel O(p + log Z), not a full plan traversal.",
+    "proposed_memory_and_state_bound": "Bounded control documents and transactions; growing input/output/relationship sets paged/spooled.",
+    "semantic_requirement": "Only owner-authored completed outputs and valid fences settle work; duplicate requests converge without losing exact semantics.",
+    "proposed_witness": "Grow selection while heartbeat/cancel unchanged; repeated callback, lost receipt, claim refresh/expiry, and source authority mutation.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/services/collection_workflows.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/processing/runtime.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G34",
+    "group": "Coordination/access",
+    "title": "Guarded plans and general collection mutations",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server"
+    ],
+    "scope": "Plan or execute a specific copy/description/tag/deletion mutation under guards.",
+    "proposed_work_bound": "Initial full plan O(affected dependencies + plan bytes); continued bounded step O(delta affected state + log Z). Repeated confirmations cannot re-enumerate everything unless a changed guard actually requires new validation.",
+    "proposed_memory_and_state_bound": "Bounded operation records and step windows; plans may have O(affected set) durable representations.",
+    "semantic_requirement": "No stale plan or current-permission bypass; distinguish planning cost from bounded status operations.",
+    "proposed_witness": "Fixed mutation against growing unrelated collection state, stale guard and lost response; count repeated validation versus changed dependencies.",
+    "source_anchors": [
+      {
+        "path": "riverhog/src/riverhog_core/services/operation_plans.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/collection_mutations.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G35",
+    "group": "Coordination/access",
+    "title": "Due-work scheduling, status and observability",
+    "layer": "public",
+    "proposed_owners": [
+      "riverhog-server",
+      "stove0-server",
+      "stove0-extension-support"
+    ],
+    "scope": "Choose a bounded due batch, report progress and request cancellation.",
+    "proposed_work_bound": "O(log Z + due batch p + transition bytes) per scheduling turn; O(D_report) emission. A reported count must use maintained counters/indexes, not traverse all completed members every poll.",
+    "proposed_memory_and_state_bound": "O(p + configured workers) working state; progress cannot hold payload streams or growing transactions.",
+    "semantic_requirement": "Correct progress, fencing, fairness and cleanup; workload duration and external waits do not block unrelated jobs.",
+    "proposed_witness": "Large completed-work history with a tiny ready queue and many polls; count plan decodes, SQL rows and control message bytes; induce a slow independent job.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/scheduler.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/work_state.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/application/server/src/stove0_core/planning_progress.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "riverhog/src/riverhog_core/services/collection_workflows.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  }
+]

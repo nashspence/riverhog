@@ -1,0 +1,202 @@
+{
+  "status": "illustrative-proposed-declaration-not-current-authority",
+  "source_checkpoint": "152d095038df0c0d0ed642cf265d47b11c65a754",
+  "declaration": {
+    "format": "riverhog-growth-declaration/v1",
+    "id": "riverhog-client.incremental-publication.growth/v1",
+    "authority": "riverhog-client",
+    "subjects": [
+      {
+        "kind": "python-member",
+        "name": "riverhog_client.IncrementalCollectionProducer.append_inputs"
+      },
+      {
+        "kind": "python-member",
+        "name": "riverhog_client.IncrementalCollectionProducer.finish"
+      },
+      {
+        "kind": "python-member",
+        "name": "riverhog_client.IncrementalCollectionProducer.reconcile_custody"
+      }
+    ],
+    "scope": {
+      "kind": "lifecycle",
+      "starts_at": "begin fresh exact upload session",
+      "ends_at": "producer-authored finalized collection is verified and all selected receipts are reconciled",
+      "includes": [
+        "all successful append calls",
+        "implicit metadata/custody reconciliation",
+        "finalization",
+        "mandatory result verification"
+      ],
+      "composition": "both per-call and full-lifecycle bounds; final result does not waive intermediate custody checks"
+    },
+    "cost_model": "riverhog-growth-costs/v1",
+    "dimensions": {
+      "members": {
+        "unit": "count",
+        "meaning": "distinct intended output members, not repeated registrations"
+      },
+      "payload_octets": {
+        "unit": "octets",
+        "meaning": "required output plaintext bytes"
+      },
+      "metadata_octets": {
+        "unit": "octets",
+        "meaning": "unique required exact inventory/provenance/plan encoding"
+      },
+      "archive_units": {
+        "unit": "count",
+        "meaning": "units required by the declared canonical archive construction"
+      },
+      "explicit_links": {
+        "unit": "count",
+        "meaning": "declared direct member/provenance relationships, not expanded intermediate closure"
+      },
+      "index_domain": {
+        "unit": "count",
+        "meaning": "the relevant retained operational index population"
+      },
+      "active_byte_window": {
+        "unit": "octets",
+        "meaning": "configured active payload/replay window"
+      },
+      "active_record_window": {
+        "unit": "count",
+        "meaning": "configured active metadata/receipt window"
+      }
+    },
+    "bounds": [
+      {
+        "metric": "logical_records_visited",
+        "mode": "worst-case-over-the-admitted-lifecycle",
+        "relation": "big_o",
+        "expression": {
+          "op": "sum",
+          "terms": [
+            {
+              "op": "dimension",
+              "name": "members"
+            },
+            {
+              "op": "dimension",
+              "name": "archive_units"
+            },
+            {
+              "op": "dimension",
+              "name": "explicit_links"
+            }
+          ]
+        }
+      },
+      {
+        "metric": "octets_hashed_copied_or_transferred",
+        "mode": "worst-case-over-the-admitted-lifecycle",
+        "relation": "big_o",
+        "expression": {
+          "op": "sum",
+          "terms": [
+            {
+              "op": "dimension",
+              "name": "payload_octets"
+            },
+            {
+              "op": "dimension",
+              "name": "metadata_octets"
+            }
+          ]
+        }
+      },
+      {
+        "metric": "ordered_index_comparisons",
+        "mode": "worst-case",
+        "relation": "big_o",
+        "expression": {
+          "op": "product",
+          "factors": [
+            {
+              "op": "sum",
+              "terms": [
+                {
+                  "op": "dimension",
+                  "name": "members"
+                },
+                {
+                  "op": "dimension",
+                  "name": "archive_units"
+                },
+                {
+                  "op": "dimension",
+                  "name": "explicit_links"
+                }
+              ]
+            },
+            {
+              "op": "log2_ceil",
+              "argument": {
+                "op": "sum",
+                "terms": [
+                  {
+                    "op": "constant",
+                    "value": 2
+                  },
+                  {
+                    "op": "dimension",
+                    "name": "index_domain"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "metric": "peak_active_payload_octets",
+        "mode": "worst-case",
+        "relation": "big_o",
+        "expression": {
+          "op": "dimension",
+          "name": "active_byte_window"
+        }
+      },
+      {
+        "metric": "peak_active_receipt_records",
+        "mode": "worst-case",
+        "relation": "big_o",
+        "expression": {
+          "op": "dimension",
+          "name": "active_record_window"
+        }
+      }
+    ],
+    "fixed_conditions": [
+      "finite successfully completed operation with no external failure; retries are separately declared below",
+      "cryptographic work factors, transfer segmentation and concurrency held fixed for growth comparison",
+      "identifier widths fixed by their contracts; other variable-length metadata charged in metadata_octets",
+      "maintained index assumptions and key-order profile identified in the cost model; comparison cost is not treated as constant"
+    ],
+    "recovery_profile": {
+      "normal_retry": "repeat only the permitted uncommitted transfer/metadata work at its owning checkpoint; already confirmed ciphertext/receipts remain reusable",
+      "loss_of_rebuildable_index": "a separately measured/reasoned metadata-index rebuild may add its declared construction cost",
+      "not_promised": "finite completion under unlimited failures, or O(1) reconstruction of lost metadata indexes"
+    },
+    "delegates": [
+      {
+        "authority": "riverhog-server",
+        "obligation": "matching upload/custody/finalization growth declarations must resolve before any end-to-end composite claim"
+      },
+      {
+        "authority": "selected storage adapter",
+        "obligation": "bounded byte/object contact contract; provider-side elapsed latency is excluded, contacts and bytes remain counted"
+      }
+    ],
+    "invariants": [
+      "current authorization and claim/fence checks on the required boundaries",
+      "complete exact selected members and output identity",
+      "source release only after authenticated complete custody receipt",
+      "no hidden cardinality or payload-size ceiling",
+      "no data loss or omitted history to satisfy the cost bound"
+    ]
+  },
+  "warning": "Metric names and the expression grammar need one approved shared contract definition. This example is not an implementation, executed witness, or assertion that the existing client/server fulfills these bounds."
+}

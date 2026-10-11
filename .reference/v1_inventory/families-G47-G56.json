@@ -1,0 +1,288 @@
+[
+  {
+    "id": "G47",
+    "group": "Supplied components",
+    "title": "Native filesystem provenance observation",
+    "layer": "public",
+    "proposed_owners": [
+      "a-riverhog-linux-provenance-observer",
+      "a-riverhog-macos-provenance-observer",
+      "a-riverhog-windows-provenance-observer",
+      "a-riverhog-linux-provenance-contract-lib",
+      "a-riverhog-macos-provenance-contract-lib",
+      "a-riverhog-windows-provenance-contract-lib",
+      "a-riverhog-direct-relations-contract-lib"
+    ],
+    "scope": "Observe exact selected native files/relations through the Linux, macOS or Windows provider.",
+    "proposed_work_bound": "O(N + selected path/attribute bytes + bytes explicitly hashed/read + actual emitted relations) plus indexed ordering. Cross-file relations must not require all-pairs scans for sparse data.",
+    "proposed_memory_and_state_bound": "O(per-file read window + bounded metadata batches); no whole filesystem inventory unless the declared request is a whole-tree scan.",
+    "semantic_requirement": "Platform-specific file identity, symlink/reparse handling, source-race evidence and exact attribution maintained.",
+    "proposed_witness": "Many zero/tiny files and one large file, duplicate payload different identity, rename/race and unsupported native attributes; real platform qualification supplements counters.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/riverhog/provenance/observers/linux/src/a_riverhog_linux_provenance_observer/__init__.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/riverhog/provenance/observers/macos/src/a_riverhog_macos_provenance_observer/__init__.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/riverhog/provenance/observers/windows/src/a_riverhog_windows_provenance_observer/__init__.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G48",
+    "group": "Supplied components",
+    "title": "ExifTool metadata observation",
+    "layer": "public",
+    "proposed_owners": [
+      "a-stove0-exiftool-observer",
+      "a-stove0-media-metadata-contract-lib"
+    ],
+    "scope": "Orchestrate maintained metadata extraction over an exact selected batch.",
+    "proposed_work_bound": "Repository overhead O(subjects + request/result/metadata bytes), with O(ceil(N/batch)) tool launches. Tool parsing has a pinned format/profile-specific bound to qualify; no universal linear codec/container-parser claim.",
+    "proposed_memory_and_state_bound": "Configured subject/tool/output windows, bounded plaintext per active batch; metadata size included in D.",
+    "semantic_requirement": "Fixed declared metadata fields, conflicts and unsupported outcomes retained; no fabricated complete negatives or provider knowledge in core.",
+    "proposed_witness": "One metadata process per declared transport batch; large metadata, corrupt containers and repeated facts; measure orchestration separately from tool input processing.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/observers/exiftool/src/a_stove0_exiftool_observer/observer.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "adopt-wrapper-bound-and-declare-tool-cost"
+  },
+  {
+    "id": "G49",
+    "group": "Supplied components",
+    "title": "FFprobe, magic and media sampling facts",
+    "layer": "public",
+    "proposed_owners": [
+      "a-stove0-ffprobe-observer",
+      "a-stove0-magic-observer",
+      "a-stove0-ffprobe-streams-contract-lib",
+      "a-stove0-magic-facts-contract-lib",
+      "a-stove0-media-sampling-contract-lib"
+    ],
+    "scope": "Read/probe selected media and present exact stream/type/sampleable-range facts.",
+    "proposed_work_bound": "Wrapper O(subjects + read/result bytes); tool decoding/probing described by admitted format/profile. A fixed-header magic profile may bound inspected bytes per member; full media probing may depend on full B/frames, not the tiny answer size.",
+    "proposed_memory_and_state_bound": "O(configured tools * per-input window) plus declared tool workspace; source plaintext released after each subject when possible.",
+    "semantic_requirement": "No total-size cutoff disguised as complete inspection; malformed/partial/timeout observations cannot authorize fallback.",
+    "proposed_witness": "Header vs tail metadata, sparse stream ranges, corrupt or huge metadata, one large file and many short files; count bytes and tool launches.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/observer.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/observer.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "adopt-wrapper-bound-and-declare-tool-cost"
+  },
+  {
+    "id": "G50",
+    "group": "Supplied components",
+    "title": "Provenance and materialization-hint observers",
+    "layer": "public",
+    "proposed_owners": [
+      "a-stove0-riverhog-provenance-observer",
+      "a-stove0-riverhog-provenance-evidence-contract-lib",
+      "a-stove0-materialization-hint-evidence-contract-lib"
+    ],
+    "scope": "Project facts from an authenticated selected member/history set.",
+    "proposed_work_bound": "O(selected members + unique selected H/V/E + emitted facts) at batch lifecycle scope, plus indexed/canonical costs. Shared history reused without reattributing it; no full collection read per subject.",
+    "proposed_memory_and_state_bound": "Bounded batch/concurrency and shared immutable indexes, with cold/evicted paths still correct and declared.",
+    "semantic_requirement": "Keep member attribution separate from recorded history; fresh per-caller claim/root fences; every selected member covered.",
+    "proposed_witness": "Many members sharing a large history, independent histories, absent hint, forged source, revocation and cache bypass; count real remote and higher-level construction work.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/observer.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "packages/riverhog-client/src/riverhog_client/processing/provenance.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G51",
+    "group": "Supplied components",
+    "title": "Filename-prefix sidecar matching",
+    "layer": "public",
+    "proposed_owners": [
+      "a-stove0-filename-prefix-sidecar-observer",
+      "a-stove0-filename-prefix-sidecar-evidence-contract-lib"
+    ],
+    "scope": "Return all exact filename matches and complete/insufficient source statuses.",
+    "proposed_work_bound": "Propose O(name bytes + S(primary_count+sidecar_count) + Q) deterministic indexed matching, or explicitly expected O(name bytes + primary_count+sidecar_count+Q) with a reviewed hash model. No primary_count*sidecar_count comparisons for one-match-per-sidecar input.",
+    "proposed_memory_and_state_bound": "O(primary_count+sidecar_count+Q) if API materializes its result, or bounded/paged/spooled equivalent where the protocol allows; Q counts real matches.",
+    "semantic_requirement": "Exact naming authority, encoding width, root/parent, full-leaf versus stem precedence and ambiguity preserved.",
+    "proposed_witness": "One sidecar per primary, disjoint names, duplicate stems, mixed naming authorities/encodings, long prefixes and dense legitimate matches.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/pairing.py",
+        "line": 246,
+        "symbol_or_anchor": "def compare_filenames"
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G52",
+    "group": "Supplied components",
+    "title": "Opus and NVENC media targets",
+    "layer": "public",
+    "proposed_owners": [
+      "a-stove0-opus-target",
+      "a-stove0-nvenc-av1-opus-target",
+      "a-stove0-media-archive-contract-lib",
+      "a-stove0-media-archive-lib"
+    ],
+    "scope": "Execute an exact accepted media projection and publish its one derived collection.",
+    "proposed_work_bound": "Repository overhead O(inputs + outputs + metadata/plan bytes + necessary history/links), plus media processing X(profile,frames,samples,resolution) and G10-G13 publication. No scan of all accepted output decisions per output or full accepted-plan rewrite per item.",
+    "proposed_memory_and_state_bound": "Bounded active input/output/pack workspace and configured execution leases; immutable plan O(plan bytes) disk permitted; codec workspace separately declared.",
+    "semantic_requirement": "Exact output policy, metadata sidecars, source selections, operation identity, CPU/GPU lease authority and publication completion preserved.",
+    "proposed_witness": "Growing output decisions, tiny vs long audio, fixed vs varying resolution and metadata, host contention/restart; count lookup/serialized bytes independently of ffmpeg time.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/targets/media-archive/support/src/a_stove0_media_archive_lib/publication.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/targets/opus/target/src/a_stove0_opus_target/target.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/target.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "adopt-wrapper-bound-and-declare-transform-cost"
+  },
+  {
+    "id": "G53",
+    "group": "Supplied components",
+    "title": "Shared extension workspaces and retention",
+    "layer": "public",
+    "proposed_owners": [
+      "stove0-extension-support",
+      "stove0-observer-support",
+      "stove0-target-support",
+      "review0-sampler-lib"
+    ],
+    "scope": "Materialize current work, persist bounded progress and retain/reap accepted/status state.",
+    "proposed_work_bound": "O(bytes actually materialized + output/claim records + expired records) plus indexed lookups. Per-checkpoint state update bounded by delta or explicitly sealed document, not cumulative processed-output bytes.",
+    "proposed_memory_and_state_bound": "Fixed configured active workspace/retention budgets; total operational state proportional to retained/live obligations, never total historic completions by accident.",
+    "semantic_requirement": "Only safe-release receipts permit deletion; leases, failure/cancellation recovery and active readers preserved.",
+    "proposed_witness": "Multiple pack closures, mid-output kill, expired plus live jobs, reader eviction and completed-record retention; measure high-water RAM/disk and rewritten checkpoint bytes.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/packages/target-support/src/stove0_target_support/persistent.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/workspace.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G54",
+    "group": "Supplied components",
+    "title": "Review sample-position planning",
+    "layer": "public",
+    "proposed_owners": [
+      "review0-planner",
+      "review0-contracts",
+      "a-stove0-media-sampling-contract-lib"
+    ],
+    "scope": "Choose explicit evenly spaced windows from admitted sampleable spans.",
+    "proposed_work_bound": "O(total spans + requested windows) after an ordered span input, plus any one S(windows) canonical ordering. Do not rescan all spans for every selected position.",
+    "proposed_memory_and_state_bound": "O(span index + output windows) for current materialized API; bounded/spooled path required if logical totals cross a declared carrier.",
+    "semantic_requirement": "Exact sample positions, disjoint/insufficient spans and variant identity remain deterministic.",
+    "proposed_witness": "One artifact with many spans and many windows; compare exact positions and insufficient-duration errors while counting span visits.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/review0/planning/src/review0_planner/planning.py",
+        "line": 35,
+        "symbol_or_anchor": "def evenly_spaced_sample_plan"
+      }
+    ],
+    "recommendation": "propose-for-v1"
+  },
+  {
+    "id": "G55",
+    "group": "Supplied components",
+    "title": "Opus/NVENC review samplers",
+    "layer": "public",
+    "proposed_owners": [
+      "a-review0-opus-sampler",
+      "a-review0-nvenc-av1-opus-sampler",
+      "review0-sampler-protocol",
+      "review0-sampler-client",
+      "review0-sampler-lib"
+    ],
+    "scope": "Materialize and execute the exact requested sample windows and variants.",
+    "proposed_work_bound": "Wrapper O(window/variant incidences + plan/result bytes); codec work charged to decoded samples/frames including required seeks/preroll. No promise O(output bytes) if container/keyframe semantics require more input. Reuse exact source materialization within declared authority.",
+    "proposed_memory_and_state_bound": "Bounded active sampling/host-resource windows; per-source metadata and temporary media explicitly accounted.",
+    "semantic_requirement": "No dropping difficult samples or variants; exact source root/window/intent and failure state retained.",
+    "proposed_witness": "Many windows in one source, many independent sources, poor-seek containers and host-lease contention; measure decoded/read bytes separately from requested sample duration.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/review0/samplers/opus/src/a_review0_opus_sampler/sampler.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      },
+      {
+        "path": "some-implementations/stove0/review0/samplers/nvenc-av1-opus/src/a_review0_nvenc_av1_opus_sampler/sampler.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "adopt-wrapper-bound-and-declare-transform-cost"
+  },
+  {
+    "id": "G56",
+    "group": "Supplied components",
+    "title": "Rclone delivery target",
+    "layer": "public",
+    "proposed_owners": [
+      "a-stove0-rclone-target"
+    ],
+    "scope": "Deliver an exact selected result set to a configured external destination.",
+    "proposed_work_bound": "O(selected members + manifests/evidence bytes + bytes transferred/verified) wrapper work; actual external transfer/listing/hash obligations and retries explicit, not constant time.",
+    "proposed_memory_and_state_bound": "Configured transfer/checker concurrency and bounded data windows; no whole-collection duplicate plaintext spool merely for scheduling.",
+    "semantic_requirement": "Exact destination policy, source selection, delivery receipt and failure semantics; external effect is not a fabricated archive collection.",
+    "proposed_witness": "Zero/tiny/mixed files, partial external success, resumable transfer, duplicate invocation and destination policy drift; count list/hash/upload operations.",
+    "source_anchors": [
+      {
+        "path": "some-implementations/stove0/targets/rclone/src/a_stove0_rclone_target/target.py",
+        "line": 1,
+        "symbol_or_anchor": null
+      }
+    ],
+    "recommendation": "adopt-wrapper-bound-and-declare-provider-cost"
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "source_sha": "152d095038df0c0d0ed642cf265d47b11c65a754",
+  "source_tree": "991e994457b487a7dca016b7fc0409485cef25c6",
+  "workspace_project_count": 86,
+  "mapped_project_count": 86,
+  "proposal_family_count": 64,
+  "public_proposal_family_count": 62,
+  "internal_budget_family_count": 2,
+  "source_anchor_count": 182,
+  "source_anchor_paths_valid": true,
+  "unmapped_projects": [],
+  "duplicate_family_ids": false,
+  "static_literal_route_declarations": 203,
+  "static_public_export_literal_sites": 341,
+  "static_parse_errors": [],
+  "important_limitation": "Static scope inventory and proposal only. Full dynamic Contract Closure, conformance suite, metadata inheritance/alias resolution and runtime qualification were not executed. No generated element-ID coverage or current complexity conformance is claimed.",
+  "verification_execution": {
+    "exit_status": 0,
+    "stdout": {
+      "anchors_checked": 182,
+      "families": 64,
+      "projects": 86,
+      "runtime_complexity_tested": false,
+      "source_sha": "152d095038df0c0d0ed642cf265d47b11c65a754"
+    },
+    "interpreter": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "command": "python -S verify_inventory.py --repo <audited-checkout>",
+    "note": "Source-reference verifier only; no runtime growth checks executed."
+  }
+}
