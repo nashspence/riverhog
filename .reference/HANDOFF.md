@@ -2,7 +2,8 @@
 
 Owning issue: #964; convention: #903.
 Reference branch: reference/external/964-large-collection-scaling
-Previous reference / direct parent: 830c9ebedc8c37b6a18d4128992f46c4485d550e
+Previous reference / direct parent: 687086133cc59c4577a2b10c165d3f1a537d4f22
+Approved decisions: https://github.com/nashspence/riverhog/issues/964#issuecomment-6111028968
 Original authoritative branch base: main@8425e672c60285a549ca4d5aaba15ecbd99e5bf3
 Original base tree: d18b813a489955b085094765f98282ea2e2276d0
 New inventory audit: main@152d095038df0c0d0ed642cf265d47b11c65a754
@@ -15,6 +16,13 @@ Requested by: Riverhog maintainer, through this conversation
 Published by: connected GitHub integration; commit metadata is publication metadata.
 
 ## Integration agent: start here
+
+**Read the maintainer-approved [v1_inventory/DECISIONS.md](v1_inventory/DECISIONS.md) first.**
+Its five policy directions are approved in #964 comment 6111028968, while the G22
+online-graph and G26 shared-history designs remain pending for subsequent review.
+All per-operation formulas/qualification still need exact owner evidence. The
+approval permits unaffected declarative integration and narrow corrections now;
+it does not authorize either broad semantic or representation redesign.
 
 Read [v1_inventory/README.md](v1_inventory/README.md), then the
 [inventory index](v1_inventory/INVENTORY.md) and
@@ -41,22 +49,26 @@ call multiplicities. No linear composite is accepted with incompatible or
 unresolved reachable work. Include status, authorization, validation, publication,
 discovery readiness, cleanup and replay within their actual lifecycle boundaries.
 
-## Decisions still required before freeze
+## Approved directions; two design submissions remain
 
-- G22: arbitrary online graph updates/corrections are not the same as one static
-  graph check. Preserve required acceptance/rejection boundaries.
-- G02/G28/G40: approve named schema, query and predicate profiles; no variable
-  that merely means whatever work the current evaluator performed.
-- G26: review shared-history representation, exact query scopes, dataset identity
-  and durable-state consequences. Expanded internal rows cannot justify themselves.
-- Indexed/ordered terms: document and approve actual costs. Linear visits plus
-  logarithmic indexing is not strict linear total machine work. Component tool,
-  codec and provider profiles must also be explicit in composed claims.
+The maintainer approved narrow explicit indexing/ordering costs, named
+schema/query/predicate profiles that retain maintained capability, and separately
+qualified component/tool/provider profiles. Do not call an indexed or sorted total
+strictly linear, and do not let an unresolved delegated profile pass a composite
+claim. Materialized-output memory is output-sized where applicable.
 
-Linear streaming/traversal remains the default. Any different bound requires
-specific justification and approval; general agreement does not silently approve
-all exceptions. Preserve materialized-output memory costs rather than promising
-constant memory for APIs returning complete lists or byte strings.
+For **G22**, maintain exact online graph acceptance/rejection semantics and develop
+a semantics-preserving incremental algorithm with a defensible total-sequence
+bound. Atomic staged acceptance is an alternative requiring fresh semantic approval.
+For **G26**, a compact factored shared-history discovery index is the preferred
+design direction; compare indexed adjacency/on-demand relevance, and present
+query/scope equivalence, dataset identity, durable-state transition and growth
+evidence before implementing the broad representation change.
+
+The full [DECISIONS.md](v1_inventory/DECISIONS.md) contains each approved
+disposition, outstanding design deliverables and authorized parallel integration.
+These policy approvals **do not** establish every operation's exact formula,
+schema, index/data migration, or current implementation conformance.
 
 Normative declarations belong in the existing Contract Closure. Source traces,
 algorithm arguments, witness bindings, measured counters and execution status
@@ -94,16 +106,17 @@ timing-shortfall closeout disposition (6102101195) and maintained report-only
 The factored JSON package restores the entire previously reviewed inventory object
 exactly, including source URLs/hashes and per-distribution qualifications. Its
 canonical-object SHA-256 is recorded in metadata.json. This is lossless publication
-of the proposal, not a new product serialization contract. The structure document,
-example and original static verification report are retained verbatim. The shorter
+of the proposal, not a new product serialization contract. The original inventory structure, example and static verification report remain
+retained verbatim as the reviewed proposal; DECISIONS.md supplies the approved
+policy overlay and supersedes their older decision status where inconsistent. The shorter
 INVENTORY.md is a navigation index; complete family detail is in the JSON parts.
 
-Validation for this publication: source-reference verifier passed on the exact
-152d0950 checkout (64 families, 86 distributions, 182 anchors); reconstructed data
-compared equal to the original reviewed object; seven package/integrity tests
-passed; JSON and Python syntax, local document links and Git whitespace checked.
-Published blobs and complete tree are checked against the prepared tree before
-recording the final reference SHA in the issue.
+Original inventory publication validation: source-reference verifier passed on
+exact 152d0950 (64 families, 86 distributions, 182 anchors), original data
+reconstructed exactly, seven package/integrity tests passed. This revision
+adds issue-approved policy and design briefs, **not new runtime qualification**.
+Check the new docs' linkage and the unchanged original inventory digest. The
+exact newly published tree and SHA are recorded in the owning #964 comment.
 
 Not performed: runtime growth/conformance tests, full dynamic Contract Closure
 or public method/route applicability generation, locked full lint/unit/dist/build,
