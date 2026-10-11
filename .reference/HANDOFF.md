@@ -47,22 +47,26 @@ evidence-complete failed command must still fail its aggregate consumer.
 
 ## Guide delta
 
-**Pre-v1 migration and backward compatibility are explicitly disallowed.**
-#963 consumes #961 comment 6112662156 and preserves its corrected guide; see
-#963 comment 6112671450. A migration/old-version upgrade path is NOT a valid
-interpretation of the shared timing/failure-evidence machinery.
+**Preserve intentionally shipped Alembic forward-only v1 migration machinery,
+explicit upgrade-to-head initialization, exact schema validation and synthetic
+post-v1 revision/rollback tests.** The pre-v1 hard cut forbids only compatibility
+with superseded pre-v1 application schemas, not the migration framework itself.
+#963 consumes the newly corrected #961 onboarding guide; see the maintainer's
+subsequent Alembic clarification. Timing policy does not own schema changes.
 
 Apply AGENTS.after-onboarding.patch only after the **current corrected #961 guide**
 (#961 comment 6112662156) and the approved growth amendment (6103986307) are
-present. The obsolete migration/compatibility wording is not a supported input. It preserves that section, replaces the
-measurement sections and adds the updated three-result handoff sentence. Do not
+present. The previous blanket ban on Alembic upgrades is superseded. The patch
+preserves the current guide's v1 Alembic baseline, synthetic migration tests,
+and pre-v1 no-legacy-schema rule while replacing measurement sections and adding
+the updated three-result handoff sentence. Do not
 apply the prior guide patch afterward. Actual integrity, semantic and link tests
 must be reconciled with the installed guide, not just given copied hash constants.
 
 Current corrected #961 growth-guide input SHA-256:
-8f78a6acba90afb1e300577a5a8d145b69a7597c76e758b5bb84d49780ed8349
+1fe4e9a92c4df98949dfe9b52d9d495f186281502f348151491950b72325d39c
 After #963 measurement delta output SHA-256:
-392fc7ad856cede5ff237cbdd06acf7f3ea79ec174fe7d4baea900cb3e3b2fe9
+171747771c4eed8b0bb2d0546398dff4a2cd62461f84b106e633665f74eaf2ee
 
 ## Actual validation and reproducibility
 
@@ -77,9 +81,9 @@ After #963 measurement delta output SHA-256:
 - Run: `TIMING_REFERENCE_WORKSPACE=/path/to/expanded-source python
   <reference>/.reference/verify_timing_policy.py -v`.
 - The earlier guide's four checks and the 17-test total remain historical to their
-  original approved input. The current #961 guide and growth input/output hashes
-  were recomputed; the updated #963 patch was applied by exact unique-context
-  matching without altering the hard-cut or growth sections. The normal locked
+  original approved input. The previous #961 guide hashes and patch checks remain historical. The corrected
+  Alembic-preserving guide hashes and downstream #963 context were recalculated;
+  locked integrated guide qualification remains necessary. The normal locked
   guide tests remain required after integration.
 
 These source-extracted checks do not exercise the full module import graph, process
