@@ -2,13 +2,12 @@
 
 Owning issue: #964. Convention: #903.
 Branch: reference/external/964-large-collection-scaling
-Previous reference / direct parent: 5170378d0c24974d67f80377019fe99c54dd8257
+Previous reference / direct parent: cee4c00f2fb1a5133bee8150f0399d89c9d2c3d9
 Original reference runtime base: main@8425e672c60285a549ca4d5aaba15ecbd99e5bf3
 Original base tree: d18b813a489955b085094765f98282ea2e2276d0
-G22 design/prototype source: main@152d095038df0c0d0ed642cf265d47b11c65a754
-G22 source tree: 991e994457b487a7dca016b7fc0409485cef25c6
-Prepared prototype tree: b4ac503c05f9c05ff0c39cb4072ba149dee28d2f
-Policy approval: #964 comment 6111028968
+G22 and G26 inspected source: main@152d095038df0c0d0ed642cf265d47b11c65a754
+Inspected source tree: 991e994457b487a7dca016b7fc0409485cef25c6
+Approved policy: #964 comment 6111028968; prior G22 publication: 6111500038.
 
 Produced by: OpenAI ChatGPT
 Model: GPT-6 Astra Pro
@@ -16,105 +15,113 @@ Configuration/effort: not exposed
 Requested by: Riverhog maintainer, in this conversation
 Published by: connected GitHub integration; commit metadata is publication metadata.
 
-## Integration agent: G22 now has a concrete design
+## Integration agent: both requested designs are now supplied
 
-Start with [g22/DESIGN.md](g22/DESIGN.md), then
-[g22/RESEARCH.md](g22/RESEARCH.md) and [g22/evidence.json](g22/evidence.json).
-This supplies the requested G22 algorithm, source map, candidate cost profiles,
-prototype, negative tests and exact integration instructions. It replaces the
-older handoff's statement that the G22 design has not yet been supplied.
-**G26 remains deferred and unchanged.** No shared-history index representation,
-query semantics, generation identity or database migration is selected here.
+Read [g26/DESIGN.md](g26/DESIGN.md), [g26/RESEARCH.md](g26/RESEARCH.md), and
+[g26/README.md](g26/README.md) for the new source-factored discovery design.
+Read [g22/DESIGN.md](g22/DESIGN.md) for the unchanged exact-prefix validation design.
+The old statement that G26 has not been researched is superseded; this is a design
+submission, not approval of its proposed protected identity/state transition.
 
-The key distinction is complete-transcript validation versus truly online answers.
-For a complete supplied journal, build disk-backed topological certificates between
-corrections, then validate EVERY original prefix in order. Future ranks never grant
-future object/reference authority. A cyclic prefix cannot be repaired retroactively.
-When no certificate is available, use the tested level/fuel online fallback instead
-of repeated unrestricted reachability. Normal provider, prefix/tail, recorder,
-profile, temporal, identity and custody checks remain at their owners.
+G26 selects a normalized fact ledger (one raw assertion plus birth/retraction
+coordinates), exact snapshot headers, shared roots/imports/documentary dependencies
+and fixed typed scope rules. It avoids materializing member-by-history or prefix-
+by-assertion products. Correlated imported late metadata requires BOTH imported
+history and causal applicability for the SAME member. Public scope semantics,
+current permissions, source binding proofs and archive authority stay intact.
 
-The design explicitly distinguishes:
-- append-only complete transcript: linear graph/record/byte passes, plus declared
-  canonical/schema and SQLite indexing/grouping costs;
-- transcripts with corrections: explicit effective-view repair and epoch costs,
-  not universal linearity in the final graph when correction count grows;
-- genuine online insertion: the researched subquadratic amortized logical bound,
-  with SQL costs and failed attempts separately accounted;
-- APIs returning full prefixes: cost proportional to all supplied/returned bytes,
-  not a fictional delta-only bound across repeated calls.
+The proposal deliberately changes the DERIVED discovery extraction/dataset identity
+so sealing hashes compact canonical source facts instead of every expanded logical
+membership. New generation/read identities invalidate old cursors. Archive/member/
+history/journal bytes and commitments do not change. **Obtain the explicit owning
+identity/state approval before that transition; do not silently update a frozen
+expected digest.** The design specifies a forward-only owner migration, rebuild,
+fenced activation, old-state retention/retirement and honest availability behavior.
 
-No new public schema, acceptance boundary, archive bytes or durable application
-state is proposed by the executable prototype. Its SQLite tables are private
-scratch projections, not archive authority. It includes touched-index and temporal
-extrema fixes so graph improvements are not hidden by those prefix multipliers.
+Common unary/shared-snapshot queries use exact posting predicates and shared reverse
+minimum-support propagation instead of one complete traversal per member. Imported
+late-claim guards retain exact same-member correlation with a separately stated
+G28 query bound. No universal output-linear query, all-operation linearity, or
+under-600-second runtime guarantee is claimed.
 
-## What to apply and validate
+## Concrete material and implementation map
 
-DESIGN.md gives the exact file map. Copy the two private helper modules and two
-new test files into the owning provenance package, then check/apply
-[g22/integration.patch](g22/integration.patch) to journal.py and journal_store.py.
-The patch was checked against 152d0950. The reference branch intentionally retains
-its older runtime tree; reproduce or integrate on a separate appropriate checkout.
-Reconcile against the exact post-#963 source before landing through the normal rail.
+[g26/factored_index.py](g26/factored_index.py) is an executable SQLite relational
+model of compact sealing, interval leaves, guards, deduplicated traversal and common
+query propagation. [g26/native_compiler.py](g26/native_compiler.py) lowers actual
+native journal/history fixtures for differential scope comparison. It deliberately
+uses small in-memory/per-prefix views and is NOT a production source-normal reader
+or bounded-memory implementation. DESIGN.md specifies the production source facts,
+virtual indexed joins, staging protocol, complete manifests, query paths, state
+transition and exact file-level owner map that replace those test conveniences.
 
-Run the focused suites and [profile_g22.py](g22/profile_g22.py); establish declared
-operation applicability through existing Closure/Audit discovery. Native tests are
-not a replacement for locked lint/type/style checks, complete local gates, HTTP/
-worker/DB/final-image compatibility, recovery, killed-process/capacity tests or
-independent exact-SHA CI/CodeQL. Those remain required integration work. The supplied
-code is a tested implementation reference, not already qualified mainline code.
+The two G26 test files, [profile_g26.py](g26/profile_g26.py),
+[counters.json](g26/counters.json) and [evidence.json](g26/evidence.json) make the
+semantic and structural observations reproducible. Do not copy the model into main
+as a new public rule engine, or claim that successful model counters establish the
+SQLAlchemy/PostgreSQL production builder. Production wiring and required witnesses
+are explicitly part of the integration job.
 
-No composite claim passes while a reachable delegate is unresolved or incompatible.
-The current 64-family inventory remains a proposal; actual formulas and witnesses
-must be bound at their owners. This G22 design makes the implementation choices
-precise, but does not waive owner review of the final normative cost declarations.
+The parked discovery experiment described in comment 6102286067 may supply useful
+snapshot-link/capture/fence tests. Its actual private patch must be reconciled by
+its owner; this producer did not inspect that local file. Keeping its expanded
+logical hash would preserve the identified scaling cost and is not the selected
+G26 design.
 
-## Research and validation actually performed
+G22 helper modules, integration patch, tests and raw evidence are unchanged.
+Its original expanded prototype tree remains b4ac503c05f9c05ff0c39cb4072ba149dee28d2f.
+Do not relabel its 187 provenance plus 21 client passes as a combined G22/G26 run.
+G22's online/correction profiles and current validation boundaries remain as stated.
 
-Reviewed exact journal-prefix tests, library acceptance, correction handling,
-server transport append versus seal, immutable validation caches and leased scratch.
-Researched primary online-cycle literature and alternatives; selected the 2019
-level-fuel variant for fallback, not a claim that stronger results are impossible.
-The authors' Coq proof does not certify this independent SQLite adaptation.
+## Validation actually performed for G26
 
-Original provenance suite: 150 passed on untouched 152d0950. Patched suite: 187
-passed, including 37 new cases. Four relevant client selections: 21 passed.
-All 720 orderings of the six non-self three-vertex directed edges and 12 seeded
-100-attempt streams were checked against independent Kahn and rollback invariants.
-Native work counters at 16/32/64/128/256 edges show exactly N certificate checks
-and N ranking-edge visits. A same-state temporal control falls from 8,512 usage
-record decodes to 384 at N=128, preserving results. Full raw counters and environment
-qualifications are in evidence.json. Existing required warning policy was retained.
+34 new native/model tests passed: shared-factor work, exact same-member guards,
+12 seeded fixedpoint controls, diamond/cycle deduplication, minimum witness order,
+immutable/retry/reopen behavior, growing prefix headers, native bound/retained and
+retracted scopes, and genuine source-binding proof imports with/without causal links.
+15 selected unchanged native source tests passed separately; one HTTP case was
+excluded for missing installed distribution metadata. A prior broader selection
+failed six HTTP/rebuild cases during setup for that environment reason and emitted
+an exception-cleanup warning; it is recorded as FAILED, not an aggregate pass.
 
-The test environment was constrained, not the locked workspace. It used native
-Python 3.13.5 / SQLite 3.46.1 and externally fetched exact upstream rfc8785.py 0.1.4;
-no substitute canonicalizer or extra runtime dependency is published. One combined
-tool-limited invocation was interrupted without a final summary and is not counted
-as a passed aggregate; the recorded frozen-source suites completed separately.
+Model counters at N=16/32/64/128/256/512 members and shared assertions show 5N+4
+physical/hash records instead of materializing N*N logical memberships; common
+minimum-support propagation settles N+1 nodes and N edges. The 128-prefix control
+stores 128 raw assertions and 6N+1 total model records. These are exact model work
+counts, NOT full production, valid wire workload, or media timing measurements.
 
-Not performed: full locked gates, full workspace suite, new dynamic Closure,
-Docker/PostgreSQL/FTP/scale/final-image or independent recovery qualification,
-CI/CodeQL, provider/release operations, machine-checked proof, or a completed
-600-second performance witness. No runtime-regression-free claim follows merely
-from this reference publication. Validate the actual integrated change.
+Environment: native Python 3.13.5 / SQLite 3.46.1, not the locked workspace; exact
+upstream rfc8785.py v0.1.4 implementation loaded externally with an export shim.
+No replacement canonicalizer, external dependency copy or warning relaxation is
+included in the published reference. Code/source hashes and exact limitations
+are in g26/evidence.json. Documentation and Git whitespace checks accompany the
+publication; the remote tree must match the prepared reference files.
 
-## Preserved history, authority and publication
+Not run: production source-normal extraction or PostgreSQL query plans, complete
+HTTP/rebuild/security/cursor integration, actual migration/cutover, full locked gates,
+final-image 128-file/large-file/recovery qualification, CI/CodeQL, or provider/release
+operations. There is no proof of complete v1 growth conformance in this reference.
 
-The v1 inventory, its canonical digest, G26 decisions, prior probes and source-pinned
-raw results are unchanged. Read v1_inventory/DECISIONS.md for approved general policy;
-its older G22 future-design brief is now answered by g22/DESIGN.md. Its G26 future
-brief remains pending. Older findings must not be relabeled as current-SHA evidence.
+## Authority, history and sequence
 
-#961 owns onboarding, #963 shared evidence, #964 growth, and #469 v1 accounting.
-#960's explicit timing-shortfall disposition and maintained 600-second profile are
-unchanged. No fixture reduction or hidden semantic limit is introduced.
+The original reference runtime tree remains pinned to 8425e672, not rebased. Use a
+separate checkout of inspected 152d0950 to reproduce native fixtures; reconcile
+against exact post-#963 source before actual integration. The source inventory,
+its digest, G22 files and earlier superlinear counterexamples are preserved.
+Read [v1_inventory/DECISIONS.md](v1_inventory/DECISIONS.md) for approved directions;
+its two future-design briefs are now answered by g22/DESIGN.md and g26/DESIGN.md.
+That does not transform research recommendations into approved final declarations.
 
-Only .reference changes. The exact newly published commit recorded on #964 is the
-handoff identity; retain every prior reference ancestor. Do not merge .reference
-into main. Issue decisions and approved owner contracts remain authoritative; a
-reference request, validation result or branch does not create release authority.
+#961 owns onboarding, #963 evidence, #964 growth design/fixes and #469 v1 accounting.
+Keep #960's explicit timing-shortfall disposition, 600-second maintained profile,
+all functional/security/recovery obligations and existing qualification cadence.
+No composite passes with unresolved or incompatible delegate costs. Prefer cheap
+adversarial growth tests plus real boundary witnesses; do not remove required proof
+or hide source work outside the measured/declared lifecycle.
 
-The publisher cannot establish native Development/dependency relationships. Markdown
-links do not claim those native links. Their prior limitation remains; no main,
-release or protected setting is changed by this publication.
+Only .reference material changes. The exact newly published commit recorded on
+#964 is the durable handoff identity; retain all earlier reference ancestors.
+Issue decisions and approved owner contracts control the normal integration rail.
+No change to main, release/provider authority, or protected settings is made here.
+Native Development/dependency mutation is unavailable through the publisher;
+Markdown references are not claimed to establish those native relationships.

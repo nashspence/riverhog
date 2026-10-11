@@ -1,0 +1,97 @@
+{
+  "format": "g26-researched-design-evidence/v1",
+  "status": "native-relational-prototype-not-production-qualification",
+  "audited_main": "152d095038df0c0d0ed642cf265d47b11c65a754",
+  "audited_main_tree": "991e994457b487a7dca016b7fc0409485cef25c6",
+  "reference_parent": "cee4c00f2fb1a5133bee8150f0399d89c9d2c3d9",
+  "environment": {
+    "python": "3.13.5",
+    "sqlite": "3.46.1",
+    "pytest": "9.0.2",
+    "sqlalchemy": "2.0.50",
+    "pydantic": "2.13.5",
+    "jsonschema": "4.26.0",
+    "plugin_autoload": "disabled",
+    "warnings": "repository error policy unchanged",
+    "rfc8785": "exact upstream v0.1.4 implementation loaded externally with export shim",
+    "rfc8785_git_blob": "3137d3326b98938affadb1be711ee411eb2ab86e",
+    "locked_environment": false,
+    "docker_available": false
+  },
+  "completed_tests": [
+    {
+      "selection": "new SQLite factor/guard/compact hash/common-query model plus native four-scope differential fixtures",
+      "passed": 34,
+      "seconds": 7.84,
+      "command": "python -m pytest -q -o addopts='' /reference/g26/test_factored_index.py /reference/g26/test_native_compiler.py"
+    },
+    {
+      "selection": "unchanged native member history, binding, discovery index and non-HTTP discovery search controls",
+      "passed": 15,
+      "deselected": 1,
+      "seconds": 8.24,
+      "command": "python -m pytest -q -o addopts='' tests/unit/test_member_history_discovery.py tests/unit/test_provenance_binding.py tests/unit/test_canonical_discovery_index.py tests/unit/test_canonical_discovery_search.py -k 'not http_authentication'"
+    }
+  ],
+  "failed_attempts": [
+    {
+      "selection": "broader unchanged native discovery search and archive-only rebuild tests",
+      "passed": 15,
+      "failed": 6,
+      "seconds": 10.68,
+      "reason": "missing installed riverhog-server distribution metadata prevented HTTP/rebuild setup; exception-path cleanup also produced an unclosed SQLite resource warning. Not counted as aggregate pass."
+    }
+  ],
+  "coverage": [
+    "same-member AND guard; reverse OR candidates never sufficient acceptance",
+    "12 seeded fixedpoint signal graphs compared to independent set oracle",
+    "diamond work counted by nodes/edges not exponentially many paths",
+    "exact staging mutations, missing references, incomplete source-count model and frozen state rejection",
+    "retry/input-stage order yields identical compact model digest; reopened sealed database",
+    "raw assertions stored once across 128 increasing prefix snapshots",
+    "native shared bound/retained completion roots; effective/retracted scopes and exact prefix distinctions",
+    "native primary member identity, hinted/unhinted paths",
+    "real source-binding proof imports with/without causal applicability under bound/retained extents",
+    "OR-only first support uses globally smallest witness and cannot call flat relation expansion"
+  ],
+  "counters": "counters.json",
+  "counters_sha256": "4ec88a3a6b75d2e092b467cf76cb5dd7423f2d2fef9955f0b4d4662e8b12c263",
+  "sources": {
+    "riverhog/src/riverhog_core/canonical_discovery_relevance.py": "1a0b7aaf077af700eb8acfcfa05fc6614979f5ca6d13c8ab21ac7bd18e67b770",
+    "riverhog/src/riverhog_core/canonical_discovery_build.py": "5ad6ad01d778f0d32217e84fbab48c65a34cfea1b9cbec6bdd716f31166afd8f",
+    "riverhog/src/riverhog_core/canonical_discovery_index.py": "33c4c969fc768b1d496c5a964916b5da4783b1e57fd4a3d9b21d8fda4a9ba304",
+    "riverhog/src/riverhog_core/canonical_discovery_search.py": "a9896b90c7e9f88f51e34708950783a7aff4b055077f62705c721baf3a4ceea2",
+    "riverhog/src/riverhog_core/canonical_discovery_rebuild.py": "fb02baac1b70163b806b3fb17ca4ac35d7fc8107aba6f5efee0863ad3444c25d",
+    "riverhog/src/riverhog_core/canonical_discovery_rows.py": "6460e4bd8e0307d8878e5262b7d6a7119fed47848ebfc8161f30b590a70f84b7",
+    "riverhog/src/riverhog_core/catalog_provenance_index_models.py": "3d0d1d090592cf15aff3ce1caf1b3963bf8569de756e440f87478b4e358d8721",
+    "riverhog/src/riverhog_core/services/collection_uploads.py": "0ef426f7ea2c6e9b40465e80f8c8fc4a7db4dfb23d297edf6e7614dc373f8281",
+    "packages/riverhog-provenance/src/riverhog_provenance/history.py": "fea8999829a3308946b7711db9f602b48fc2ff2a1cec1abe2dc3831bf98f1aca",
+    "packages/riverhog-archive-contracts/src/riverhog_archive_contracts/history_store.py": "6ecf275138b649c9bc5c38f6d6eedc62b6701eb2f1684db0bae87448dad11942",
+    "packages/riverhog-protocol/src/riverhog_protocol/artifact_discovery.py": "09dae874bd41a4c886282492239e6773ca7a9abada2508191b22103e679e64e3"
+  },
+  "payload_sha256": {
+    "factored_index.py": "356dc5857b10d7cfaac671d45c771d9c88a028377de8c12ea4f98454d5d8bc0e",
+    "native_compiler.py": "6e576cc995ebd383c1eb16923572f2d60751ba2fa66ba5621fba2c02e404cb58",
+    "profile_g26.py": "191f7f7a1e2fddef314cbb35574b6659bf638501ccc54c2e8175230f2465d378",
+    "test_factored_index.py": "d2310478d2f5b1c5b80cb854aa7a163d2d8284ca23ca5e6cbd6cb87b4ae5d8cc",
+    "test_native_compiler.py": "4e70e860af25851270edc846803780bb82be3e49badc71cd4099e0d6aaea59ba"
+  },
+  "not_run": [
+    "full source-normal PostgreSQL production extractor/query implementation",
+    "complete HTTP authentication/cursor/rebuild integration",
+    "owner migration/freeze rebaseline and actual index cutover",
+    "complete full-archive source capture and hard-kill/quota recovery",
+    "full locked lint/unit/dist-smoke/build and linux-qualification",
+    "G22+G26 combined prototype qualification",
+    "independent exact-SHA CI/CodeQL",
+    "128-file or high-cardinality final-image lifecycle"
+  ],
+  "limits": [
+    "G22 and historic inventory remain unchanged",
+    "model source counts are not independently authenticated archive completion manifests",
+    "native adapter materializes small per-prefix Python views and is not production growth evidence",
+    "general guarded query is a separately declared correlated-reachability cost; no universal output-linear guarantee",
+    "new compact digest intentionally differs from old expanded SHA preimage and needs owner approval",
+    "no under-600-second claim or release/provider authorization"
+  ]
+}
