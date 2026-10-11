@@ -1,6 +1,6 @@
 # Proposed v1 growth contract structure
 
-**Status:** owner-level growth declaration proposal, not a completed public contract or current runtime conformance. The separate **G26 derived-index/extraction identity revision and pre-v1 no-migration hard cut are now explicitly approved** by [#964 decision 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478). Other individual formulas still need exact owner proof.
+**Status:** owner-level growth declaration proposal, not a completed public contract or current runtime conformance. The separate **G26 derived-index/extraction identity revision and pre-v1 no-old-schema-migration hard cut are approved, with Alembic intentionally retained** by [#964 decision 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478). Other individual formulas still need exact owner proof.
 
 **Audited source:** `nashspence/riverhog@152d095038df0c0d0ed642cf265d47b11c65a754`, tree `991e994457b487a7dca016b7fc0409485cef25c6`.
 
@@ -65,8 +65,10 @@ Examples:
 
 New packages and unrelated protected identities still require owning review.
 The **G26 derived-index identity** change has the specific maintainer approval
-above; implementation must be a pre-v1 hard cut, with new-only current schema,
-fail-closed incompatible-state validation and no migrations or backward compatibility.
+above; implementation must be a pre-v1 hard cut updating the owning Alembic
+`v1_0001` baseline in place with fail-closed obsolete-state validation and no
+old-to-new pre-v1 compatibility, **retaining** Alembic initialization and future
+forward-only revision/upgrade test coverage.
 Adding growth declarations does not relax any other protected boundary.
 
 **Composition is an acceptance obligation.** A public linear lifecycle cannot be approved while a reachable delegate has an unresolved or incompatible growth bound. Either establish a compatible algorithm, narrow and explicitly approve the lifecycle's operation model, or publish the actual weaker bound. Merely labeling the expensive work a separate component, cache, validation step or 'required snapshot' does not remove it from end-to-end cost.
@@ -166,5 +168,6 @@ Approve the inventory as a scope proposal, then establish the exact cost model a
 
 This remains a proposal for actual owner-level growth declarations. The #964
 maintainer explicitly approved G26's derived-index identity revision and the
-pre-v1 no-migration hard cut. This reference integrates the decision as guidance,
-not a migration, compatibility path or runtime change to main.
+pre-v1 current-baseline hard cut. This reference distinguishes that forbidden
+legacy conversion from the **retained v1 Alembic migration infrastructure**; it
+is guidance, not an old-schema compatibility path or runtime change to main.

@@ -9,7 +9,9 @@ production patch or completed growth qualification. It preserves the supplied G2
 reference unchanged. The specific derived discovery-index extraction/dataset and
 read-generation identity revision is **explicitly approved by the maintainer**:
 [#964 comment 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478).
-The approval is a pre-v1 hard cut with no migration or backward compatibility.
+The approval is a pre-v1 hard cut with no migration from discarded pre-v1 layouts
+or backward compatibility; the Alembic v1 bootstrap and future forward-only
+revision/upgrade machinery remain intentional and must not be removed.
 It does not certify the implementation or waive owner verification of exact
 current-state and protected-identity evidence.
 
@@ -271,14 +273,17 @@ restart the whole digest per record. If a crashed private hash state is unavaila
 restart that compact pass once and report its cost; the normal-build growth bound
 is not a claim of finite work under unlimited crashes.
 
-### Pre-v1 clean hard cut — approved identity, no schema migration
+### Pre-v1 clean hard cut — approved identity, preserve Alembic
 
 **Maintainer decision:** [#964 comment 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478).
 The new normalized index tables and versioned extraction/dataset commitment
 replace the retired expanded-membership schema and runtime entirely **before the
-first release candidate**. There is no support for migration of an old DB schema,
-rolling upgrades, old/new index coexistence, dual reading/writing, legacy
-extraction fallback, compatibility adapters, or old-cursor translation.
+first release candidate**, by editing the **single v1 Alembic baseline** rather
+than adding a second revision for an abandoned pre-v1 schema. There is no support
+for migrating that old layout, rolling upgrades, old/new index coexistence,
+dual reading/writing, legacy extraction fallback, compatibility adapters or
+old-cursor translation. This **does not prohibit the intentional Alembic forward-
+only v1/post-v1 revision machinery or its synthetic upgrade tests**.
 
 The index/dataset and read-generation identity change is specifically approved.
 Continue to freeze the new deterministic values through the owning current-source
@@ -287,18 +292,25 @@ journal octets, member/history IDs, input authority or semantic query results.
 
 **Exact integration sequence:**
 
-1. Replace existing current schema definitions/DDL and fixtures with the new
+1. Update Riverhog's **single current Alembic `v1_0001.py` bootstrap revision**,
+   `state_migrations/v1_ddl.py`, current SQLAlchemy metadata, fixtures and
+   schema/freeze guards together. The fresh v1 database directly gets the new
    source-normal tables, indexed selectors and bounded private staging. Remove
-   retired membership tables/extractor runtime paths and their expectations in
-   the same pre-v1 hard cut; do **not** create migration scripts, schema-version
-   bridges or an old-layout load/convert operation. Keep G22 implementation
-   ownership separate.
+   retired membership tables/extractor runtime paths and expectations in the
+   same pre-v1 cut. Do **not** append `v1_0002`, create an old-layout conversion
+   revision, or add schema-version bridges to preserve an abandoned pre-v1 design.
+   **Retain `StateSchema`, `run_migration_environment`, explicit Alembic upgrade,
+   and forward-only revision/history tests** for actual v1 and subsequent releases.
+   Keep G22 implementation ownership separate.
 2. Current-schema startup validates its declared structure. When pointed at an
-   incompatible old database it **fails closed** with an actionable fresh-state
-   initialization requirement. It never upgrades, dual-reads, rewrites or silently
-   resets it. Requiring explicit operator intervention is not a promise of a
-   supported old-to-new upgrade procedure.
-3. Start with newly initialized **current-schema** state. Regenerate only
+   incompatible discarded pre-v1 database it **fails closed** with an actionable
+   owner/operator disposition; it does not auto-upgrade, dual-read, rewrite or
+   silently reset operational state. Explicit **Alembic upgrade-to-head remains
+   the current supported command to bootstrap an empty database**, as well as the
+   intentional forward-only upgrade mechanism for future supported v1 revisions.
+   It is not a promise to translate this abandoned pre-v1 layout.
+3. Bootstrap an empty database through the **existing Alembic `upgrade` path**
+   using the amended single `v1_0001` baseline. Regenerate only
    *rebuildable derived discovery-index state* by running the new extractor over
    independently validated archived member/history/provenance data, under normal
    build fencing, source capture, completeness and retry rules. Publish only a
@@ -307,8 +319,9 @@ journal octets, member/history IDs, input authority or semantic query results.
    non-rebuildable operational state. Do not call an entire application database
    disposable because discovery indexes are rebuildable. If pre-v1 saved
    operational state cannot be reconstructed safely under the new schema, stop
-   and obtain explicit owner/operator disposition; this design supplies **no**
-   migration or compatibility mechanism for that state.
+   and obtain explicit owner/operator disposition; this G26 hard cut supplies
+   **no adapter or upgrade path from discarded pre-v1 operational layouts**.
+   Ordinary future Alembic revision support is unaffected.
 5. Use the existing generation/read-identity conflict semantics when an old
    cursor or saved read identity is presented. The old value is invalid and the
    caller restarts discovery with the new generation. The server does not
@@ -318,10 +331,12 @@ journal octets, member/history IDs, input authority or semantic query results.
    and protected derivative-identity freeze tests on the final source. No
    zero-downtime or cross-version deployment promise is made.
 
-Any mention in prior reference history of **forward-only migration, rolling
-transition, retirement of a concurrently running old index, or optional hard-cut
-alternative is superseded**. There is only the clean pre-v1 hard cut for this
-G26 integration. A later v1-to-v2 policy is out of scope and not established.
+Prior reference advice to apply a **forward-only migration from the obsolete
+pre-v1 index**, run two index generations concurrently, roll an upgrade through
+old readers, or treat the hard cut as optional is superseded. The specific G26
+change is an in-place edit of the v1 bootstrap definition, **not removal of
+Alembic or its intentionally tested future forward-only migration capability**.
+The scope and approval of future public schema revisions remain with their owner.
 
 Old discovery cursors still invalidate when generation/read identity changes;
 the existing conflict/restart result is the *current interface behavior*, not a
@@ -468,7 +483,7 @@ waive the approved whole-lifecycle composition requirement.
 | `services/collection_uploads.py` | Replace `_advance_catalog_canonical_index` member/membership counters with build phase/task cursor; same final index readiness before terminal publication. |
 | `canonical_discovery_search.py` | Replace `_matching_members`/`_exact_support` flat joins with exact fact predicates, unary propagation and guarded checks; keep filters, read fence and public response semantics. |
 | neutral provenance/archive libraries | Add a narrow immutable source-fact projection API only where needed, backed by their exact validator. Do NOT import server selectors or interpretation into them; do not bypass current public read checks. |
-| Riverhog current-state schema/fixtures | Replace current owner DDL/schema/model and exact fixtures as a pre-v1 hard cut; no migrations, upgrade paths, legacy readers/writers or startup conversion. Check current-schema initialization, fail-closed old layout, archive-backed rebuild and non-rebuildable operational state. |
+| Riverhog Alembic baseline / current state / fixtures | Revise existing `state_migrations/versions/v1_0001.py` and `state_migrations/v1_ddl.py` **in place** with metadata and exact schema fixtures. Preserve shared `state-schema` forward-only Alembic framework, explicit empty bootstrap and synthetic second-revision/interrupt tests. Do not append a prior-layout migration or old-version reader/writer. Check current-schema startup, explicit `upgrade` bootstrap, fail-closed obsolete state, archive-backed rebuild and non-rebuildable operational authority. |
 | qualification native discovery plan fixtures | Seed the new truthful source-normal projection; assert relevant indexed paths, including inverse incidence and guarded negatives. Do not merely update old index-name strings to get a green test. |
 | #963/#964 Closure/Audit witness wiring | Declare actual cost profiles, exact source/workload/applicability, counters and completed evidence. No second target or scope registry. |
 
@@ -507,7 +522,10 @@ Before landing, implement and pass:
   new generation retains applicable previous one; index loss rebuilds from archives.
 - Query ties, generation cursor conflict, revoked key/artifact scope and expiry;
   no cross-member leakage from shared factors or AND operand unions.
-- Approved derived-index identity hard cut, new-only schema and exact freeze-fixture integrity; no migration/backcompat tests as success paths.
+- Approved derived-index identity hard cut, exact current `v1_0001` bootstrap
+  and freeze-fixture integrity. Retain the existing Alembic forward-only/synthetic
+  upgrade interruption tests; **do not** add a successful old-pre-v1-to-new
+  migration or compatibility test. Verify rejection of that obsolete state.
 - Mandatory locked local and exact-SHA remote gates, appropriate final-image full
   publication and independent recovery, source/scratch cleanup and timing review.
 

@@ -53,12 +53,14 @@ query contract still require integrated proof. **For G26 specifically, the
 compact derived-index identity revision and pre-v1 clean schema hard cut are
 explicitly approved** in
 [#964 comment 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478).
-No migration/backward-compatibility route, rolling replacement or old-cursor adapter
+No obsolete pre-v1 schema migration/backward-compatibility route, rolling
+replacement or old-cursor adapter
 is permitted. Other individual formulas, final production schemas and growth
 qualification remain unestablished. Issue #964 owns the decision.
 
 The current `STRUCTURE.md` is a proposal with an approved G26 identity policy
-overlay, and G08/G26 family records explicitly reflect the no-migration decision.
+overlay, and G08/G26 family records explicitly distinguish the forbidden legacy
+bridge from intentional Alembic v1/bootstrap/future forward-only revision support.
 The original pre-decision inventory and its SHA-256
 `1a4da40cd1fc70490e68b7ec3187667cb4162f7a63487e46af439a7e67e4d62f`
 remain in the parent reference commit. The new inventory digest is checked by

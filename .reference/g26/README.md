@@ -6,8 +6,11 @@ query paths. [RESEARCH.md](RESEARCH.md) records primary sources and alternatives
 
 **Approved owner decision:** [#964 comment 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478)
 explicitly accepts the derived-index extraction/digest and read-generation identity
-revision. The implementation is a **pre-v1 current-schema hard cut**, with no
-migration, backward compatibility, dual readers/writers or rolling cutover.
+revision. The implementation is a **pre-v1 current-schema hard cut**: update the
+single Alembic `v1_0001` baseline in place, retaining intentional forward-only
+Alembic revisions, explicit bootstrap and synthetic upgrade tests. There is **no
+migration or compatibility path from an abandoned pre-v1 layout**, dual reader/
+writer implementation or rolling cutover.
 Archived member/journal/history authority and logical query semantics stay intact;
 old index generation and cursor identities do not. This decision approves the
 specific identity change, not a completed production implementation or other

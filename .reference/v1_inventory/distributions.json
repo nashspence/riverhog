@@ -773,7 +773,7 @@
     "name": "state-schema",
     "pyproject": "packages/state-schema/pyproject.toml",
     "scripts": {},
-    "description": "Owner-defined relational state schemas and current-layout validation; pre-v1 support requires one current schema with clean hard cuts, not historical migration/compatibility APIs.",
+    "description": "Owner-defined relational state schemas and exact current-layout validation; preserves deliberate Alembic forward-only revisions, explicit empty v1 baseline bootstrap, and synthetic state-preservation/interruption upgrade tests. Pre-v1 edits replace the single v1_0001 baseline in place without keeping obsolete application schemas or compatibility upgrades.",
     "proposed_growth_families": [
       "G08",
       "G62"

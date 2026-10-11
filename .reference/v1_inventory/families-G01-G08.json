@@ -240,16 +240,16 @@
   {
     "id": "G08",
     "group": "Shared contracts",
-    "title": "Current-schema validation and pre-v1 clean hard cuts",
+    "title": "Current v1 Alembic baseline, forward-only revisions and pre-v1 hard cuts",
     "layer": "public",
     "proposed_owners": [
       "state-schema"
     ],
-    "scope": "Validate the one current owner-defined state/schema and initialize a fresh current-schema database; no old-schema migration or upgrade surface is within v1.",
-    "proposed_work_bound": "Current-state schema validation O(schema metadata) independent of live data rows; fresh current-schema initialization O(new declared schema/index structures). A separately requested derived-index rebuild has the appropriate G26/G20 source/record work bound, not a prior-version database conversion.",
-    "proposed_memory_and_state_bound": "Validation memory bounded by current schema metadata; current-only initialization bounded by declared DDL; rebuildable derived data may use bounded disk-backed work. No transient old-plus-new schema duplication or compatibility adapter.",
-    "semantic_requirement": "Startup verifies exact current schema and rejects incompatible prior layouts. No migration scripts, old-version readers, rolling upgrades or backward-compatibility support pre-v1; preserve archived bytes, custody and non-rebuildable operational authority.",
-    "proposed_witness": "Current-schema startup and initialization; mismatched schema fail-closed; absence of old-schema upgrade/dual readers; rebuilding genuine derived index state from authorized archive evidence without discarding non-rebuildable outcomes.",
+    "scope": "Validate each owner's current schema; initialize an empty database via its explicit Alembic v1_0001 upgrade-to-head baseline. Preserve the forward-only revision mechanism for supported v1/future changes, without migration from abandoned pre-v1 application layouts.",
+    "proposed_work_bound": "Exact current-schema validation O(schema metadata) independent of populated rows. Empty v1 bootstrap processes O(declared DDL/index structures); a separately selected supported forward revision has owner-declared costs in its actually touched rows, bytes, indexes and constraints. A G26 archive-backed derived-index rebuild is charged to required source work, not a legacy-schema conversion.",
+    "proposed_memory_and_state_bound": "Current-schema validation O(schema metadata), fresh initialization as declared by v1 DDL. Supported future forward-only revisions own their own working-memory/scratch/retained-state dimensions; no duplicate old/new pre-v1 compatibility tables are required.",
+    "semantic_requirement": "Preserve forward-only Alembic StateSchema machinery, explicit upgrade-to-head initialization and synthetic later-revision/state-preservation/interruption tests. Before the first v1 RC, update only the application's single v1_0001 baseline/current DDL in place. Startup validates current schema; do not support obsolete pre-v1 migration, aliases or dual layouts. Protect custody and non-rebuildable operational authority.",
+    "proposed_witness": "Current v1_0001 bootstrap from empty and exact schema validation; synthetic v1_0002 explicit forward-upgrade preservation/rollback/reentry; fail-closed obsolete pre-v1 state; protected archive receipts and derived-index-only rebuild without an old-layout upgrade bridge.",
     "source_anchors": [
       {
         "path": "packages/state-schema/src/state_schema/__init__.py",

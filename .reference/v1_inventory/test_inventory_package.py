@@ -45,14 +45,25 @@ class InventoryPackageTests(unittest.TestCase):
         g08 = next(f for f in data["families"] if f["id"] == "G08")
         g26 = next(f for f in data["families"] if f["id"] == "G26")
         self.assertIn("hard cuts", g08["title"])
-        self.assertIn("No migration scripts", g08["semantic_requirement"])
+        self.assertIn("Preserve forward-only Alembic", g08["semantic_requirement"])
+        self.assertIn("synthetic later-revision", g08["semantic_requirement"])
+        self.assertIn("obsolete pre-v1 migration", g08["semantic_requirement"])
         self.assertIn("specifically approved", g26["semantic_requirement"])
-        self.assertIn("not a migration", g26["semantic_requirement"])
+        self.assertIn("retaining forward-only revision machinery", g26["semantic_requirement"])
 
     def test_pre_v1_hard_cut_semantics_have_digest_protection(self):
         def undo_hard_cut(rows):
             next(f for f in rows if f["id"] == "G08")["semantic_requirement"] = "Support old schema migration"
         self.edit("families-G01-G08.json", undo_hard_cut)
+        with self.assertRaisesRegex(ValueError, "differs from the reviewed"):
+            load_inventory(self.directory)
+
+    def test_alembic_retention_semantics_have_digest_protection(self):
+        def erase_framework(rows):
+            next(f for f in rows if f["id"] == "G08")["semantic_requirement"] = (
+                "Remove forward-only Alembic and all future upgrade tests"
+            )
+        self.edit("families-G01-G08.json", erase_framework)
         with self.assertRaisesRegex(ValueError, "differs from the reviewed"):
             load_inventory(self.directory)
 

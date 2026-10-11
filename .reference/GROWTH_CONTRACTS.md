@@ -149,8 +149,10 @@ Protect independent recovery; do not import server implementation authority.
    and lifecycle composition. Retain selected real integration/recovery witnesses.
 5. Project only actual owner declarations into the existing release contract and
    witness machinery. The specific G26 derived-index identity hard cut is now
-   approved (6112668478): **no schema migration or backward-compatibility
-   support**. Preserve unrelated protected-state review and archive custody.
+   approved (6112668478): **no migration or compatibility path from superseded
+   pre-v1 application layouts**. Retain the deliberate forward-only Alembic system,
+   synthetic revision tests and the v1 `v1_0001` baseline updated in place.
+   Preserve unrelated protected-state review and archive custody.
 6. Run applicable locked local and independent exact-SHA GitHub qualification.
    Report functional and growth results separately from times. Missing growth
    proof or a declared violation blocks v1; a timing waiver cannot erase it.

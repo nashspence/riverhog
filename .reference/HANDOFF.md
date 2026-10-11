@@ -38,10 +38,13 @@ history/journal bytes and commitments do not change. **That exact derived-index
 identity change is now approved** by the maintainer;
 rebaseline its own new deterministic identity with current-source freeze tests,
 not by silently updating an expectation. The implementation is an explicitly
-approved **pre-v1 hard cut with no schema migrations or backward compatibility**:
-new current-only database schema and extractor, fail-closed incompatible old
-schemas, new-only archive-backed index rebuilding, no dual readers/writers,
-old cursor translation, rolling transition or legacy extraction runtime.
+approved **pre-v1 hard cut without an old-layout migration or compatibility path**:
+update the owning current Alembic `v1_0001` baseline, its DDL, models and fixtures
+in place. **Keep Alembic, forward-only revision machinery, explicit bootstrap and
+synthetic later-revision/interrupt tests as intentional v1 capabilities.** Reject
+incompatible discarded pre-v1 layouts, rebuild only archive-backed derived indexes,
+and provide no dual readers/writers, legacy cursor translation, rolling transition,
+or obsolete extraction runtime.
 Preserve archives, custody receipts and non-rebuildable operational authority.
 
 Common unary/shared-snapshot queries use exact posting predicates and shared reverse
@@ -58,7 +61,7 @@ query propagation. [g26/native_compiler.py](g26/native_compiler.py) lowers actua
 native journal/history fixtures for differential scope comparison. It deliberately
 uses small in-memory/per-prefix views and is NOT a production source-normal reader
 or bounded-memory implementation. DESIGN.md specifies the production source facts,
-virtual indexed joins, staging protocol, complete manifests, query paths, new-only current-schema hard cut and exact file-level owner map
+virtual indexed joins, staging protocol, complete manifests, query paths, exact current `v1_0001` baseline update and file-level owner map
 that replace those test conveniences.
 
 The two G26 test files, [profile_g26.py](g26/profile_g26.py),
@@ -120,7 +123,8 @@ unmodified.
 Read [v1_inventory/DECISIONS.md](v1_inventory/DECISIONS.md) for approved directions;
 G22 and G26 designs are supplied and the **G26 derived-identity hard-cut decision
 is now approved** (#964 comment 6112668478). Any former request for separate
-migration/compatibility approval in older reference files is superseded.
+old-to-new pre-v1 migration/compatibility approval in older reference files is superseded;
+this does not remove the intentionally retained Alembic v1/future migration API.
 That does not transform research recommendations into approved final declarations.
 
 #961 owns onboarding, #963 evidence, #964 growth design/fixes and #469 v1 accounting.
