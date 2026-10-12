@@ -1,5 +1,16 @@
 # Approved growth-contract directions; G22/G26 design briefs
 
+**Latest owner decision (superseding earlier open-policy wording for these subjects):**
+[#964 comment 6118314165](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118314165) settles G02/G40 expressive-profile
+policy, G63/G64 Closure/Audit/evidence ownership and internal budgets, and
+approves the scoped G38/G39 current-only contract change. See
+[G02_G40_G63_G64_INTEGRATION.md](G02_G40_G63_G64_INTEGRATION.md) and
+[../g38_g39/DESIGN.md](../g38_g39/DESIGN.md). Subsequent statements in this
+historical document about pending designs are superseded by their published
+designs and issue-owned decisions; proposed **exact formulas, final identities,
+runtime evidence and qualifications are not automatically approved**.
+
+
 **Authority:** [#964 cost/profile decisions 6111028968](https://github.com/nashspence/riverhog/issues/964#issuecomment-6111028968) and [explicit G26 identity/hard-cut approval 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478).
 **Status:** authoritative decisions reside in that comment. This is the non-authoritative #903 integration handoff, not frozen v1 product declarations or evidence that existing code conforms.
 **Audits:** historical superlinear probes at `8425e672c60285a549ca4d5aaba15ecbd99e5bf3`; 64-family inventory at `152d095038df0c0d0ed642cf265d47b11c65a754`. The post-#963 implementation baseline remains to be selected and reconciled.

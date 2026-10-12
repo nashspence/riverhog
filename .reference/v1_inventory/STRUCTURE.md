@@ -1,5 +1,15 @@
 # Proposed v1 growth contract structure
 
+**Approved policy, not approved formulas:** [#964 comment 6118314165](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118314165)
+accepts this structure's one source-owned typed closed expression model and
+the existing Closure (normative) / Audit (source/evidence) split. G63/G64 have
+internal engineering budgets, not end-user product cost guarantees.
+G02/G40 preserve maintained expressiveness under named, honest cost profiles.
+See [G02_G40_G63_G64_INTEGRATION.md](G02_G40_G63_G64_INTEGRATION.md).
+All individual owner expressions, profile applicability, measured conditions
+and completed witnesses remain subject to exact-source integration review.
+
+
 **Status:** owner-level growth declaration proposal, not a completed public contract or current runtime conformance. The separate **G26 derived-index/extraction identity revision and pre-v1 no-old-schema-migration hard cut are approved, with Alembic intentionally retained** by [#964 decision 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478). Other individual formulas still need exact owner proof.
 
 **Audited source:** `nashspence/riverhog@152d095038df0c0d0ed642cf265d47b11c65a754`, tree `991e994457b487a7dca016b7fc0409485cef25c6`.

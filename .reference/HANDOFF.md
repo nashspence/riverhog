@@ -2,19 +2,37 @@
 
 Owning issue #964; convention #903.
 Branch: reference/external/964-large-collection-scaling
-Direct reference parent: 4b0b9e2a717a2773f9ee7f68fa33d3fc4a73f176
+Direct reference parent: c1a2abe4abea6676b2af3323e58b6b4a6a47d705
 Audited main: 152d095038df0c0d0ed642cf265d47b11c65a754
 Audited tree: 991e994457b487a7dca016b7fc0409485cef25c6
 Historical runtime base remains 8425e672c60285a549ca4d5aaba15ecbd99e5bf3.
 Use a separate exact audited-source checkout. Reconcile post-#963 before acceptance.
 
 Producer: OpenAI ChatGPT
-Model: GPT-6 Astra Pro
+Model: GPT-6
+Previous G38/G39 reference producer: GPT-6 Astra Pro (retained in prior commit)
 Configuration/effort: not exposed
 Requester: Riverhog maintainer
 Publisher: connected GitHub integration; Git metadata is publication metadata.
 
-## Current addition: G38/G39 whole-scope observation
+## Current issue-owned approvals: G02/G40, G63/G64, G38/G39
+
+The maintainer decision [#964 comment 6118314165](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118314165) approves
+preserving expressive schema/predicate capability with named cost profiles
+(G02/G40), one source-owned growth declaration and separate Closure/Audit/evidence
+system with internal generator/CI budgets (G63/G64), and the **specific current-only
+G38/G39 observer request/result/status/validator/evidence protocol change**
+necessary for exact whole-scope bounded work.
+
+Start with [v1_inventory/G02_G40_G63_G64_INTEGRATION.md](v1_inventory/G02_G40_G63_G64_INTEGRATION.md).
+G38/G39's approved scope is reflected in [g38_g39/DESIGN.md](g38_g39/DESIGN.md)
+and [g38_g39/INTEGRATION.md](g38_g39/INTEGRATION.md). The issue controls
+the decision: this reference mirrors it, not a second authority. No final exact
+operation formulas, byte-cap encoding, resource defaults or conformance passes
+were approved by the decision alone. Preserve all earlier reference evidence
+at its published identity; no runtime tests were run for this prose revision.
+
+## Retained G38/G39 whole-scope observation
 
 Read [g38_g39/DESIGN.md](g38_g39/DESIGN.md),
 [g38_g39/INTEGRATION.md](g38_g39/INTEGRATION.md) and

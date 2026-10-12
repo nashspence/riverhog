@@ -1,7 +1,9 @@
 # G38/G39: one exact question, bounded delivery and acceptance
 
-Recommended design for #964 under #903; not production code or accepted final
-public contracts. Audited main: `152d095038df0c0d0ed642cf265d47b11c65a754`, tree
+Recommended design for #964 under #903; not production code or a completed
+owner-conformance claim. The scoped current-only public/validator contract change
+is explicitly approved by [#964 decision 6118314165](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118314165);
+exact owner schemas, bytes/cap vectors, and integrated evidence remain required. Audited main: `152d095038df0c0d0ed642cf265d47b11c65a754`, tree
 `991e994457b487a7dca016b7fc0409485cef25c6`. Reference parent:
 `4b0b9e2a717a2773f9ee7f68fa33d3fc4a73f176`.
 Reconcile the actual post-#963 source, current #948/#953 decisions and owner
@@ -139,8 +141,11 @@ interpretation. Current authority remains required for disclosure/adoption.
 This explicitly changes request/result/accepted-evidence envelope identities.
 No archive/member/journal commitment or source-loss permission changes. The
 compiled interface and provider pins also change where reader contracts change.
-These require owning acceptance and generated current-baseline vectors, not
-assumed authorization from G26's separate derived-index decision.
+The **scope and current-only identity/validator change are approved** by
+[#964 comment 6118314165](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118314165). Owning contract
+models, exact golden vectors, error and extent behavior still require
+implementation review and qualification; G26's distinct approval is not
+authority for any unrelated scope.
 
 ## 3. Use bounded metadata transport without a bulk handoff
 
@@ -423,8 +428,10 @@ quanta; complete input loss or expired required authority is explicit failure.
 Preserve intentional contract maxima. `maximum_result_bytes` is not automatically
 a page size: selected v2 meaning must charge canonical logical facts, execution
 and required outcome detail bytes once, not merely the small reference envelope.
-This proposed precise accounting is a reviewed current-only contract revision;
-never silently drop a non-null advertised/requested cap. `None` introduces no new
+This logical-size rather than reference-envelope accounting policy is approved
+for the current-only contract; the exact byte-inclusion/encoding formula and
+vectors remain owner-reviewed implementation details. Never silently drop a
+non-null advertised/requested cap. `None` introduces no new
 logical result max. Control/body chunk limits and capacity quotas remain separate.
 Do not hard-code new numerical resource defaults in design prose; bind typed
 configuration authorities and qualify the effective conditions before acceptance.
@@ -432,8 +439,9 @@ configuration authorities and qualify the effective conditions before acceptance
 ## 8. Integration disposition
 
 INTEGRATION.md gives owner files, provider ports, proof gates and commit order.
-The protocol changes, exact envelope/cap identities and neutral resumable validator
-API need owning approval. Source-aware algorithms, state and test obligations are
+The scoped current-only protocol/identity/cap direction and neutral resumable
+validator API are **approved** by #964 comment 6118314165. Precise owning
+models, error cases, frozen vectors, implementation and tests still require review. Source-aware algorithms, state and test obligations are
 specified here; diagnostic SQLite/AST models are not production implementations.
 No separate G-family ledger or policy copy goes into AGENTS.md. Keep Alembic,
 StateSchema, the single current v1_0001 baseline, explicit initialization and

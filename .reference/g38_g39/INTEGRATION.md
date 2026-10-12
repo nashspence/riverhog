@@ -2,11 +2,18 @@
 
 Read DESIGN.md first. This is #903 reference input for #964, not a mainline task
 ledger. Owner decisions and exact integrated source control implementation.
+[#964 approval 6118314165](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118314165) authorizes the
+specified current-only request/result/status/evidence/validator hard cut.
+Treat that scoped policy as settled; exact wire fields, resource/cap vectors,
+owner pins, regression tests, independent validator backends and security/
+custody/authority gates remain normal reviewed integration obligations.
+Do not infer approval for a broad observer language change or new size ceiling.
 
 ## 1. Order and scope of integration
 
-1. Review the new reference-based observer request/result/status models, scoped
-   metadata handoff, result-cap accounting and resumable validator ABI. Preserve
+1. Implement the **approved scoped** reference-based request/result/status,
+   verified metadata handoff, logical result-cap accounting and resumable
+   validator API; review exact models and vectors at their owners. Preserve
    #948's actual integrated control semantics and #953's exact language semantics.
    Enumerate exact Closure operations/delegates from source, not this file's G IDs.
 2. Introduce verified bounded document handles and exact hash continuation in the
