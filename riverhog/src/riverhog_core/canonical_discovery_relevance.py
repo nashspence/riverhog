@@ -26,7 +26,6 @@ from riverhog_protocol.artifact_identity import ArtifactMemberIdentityDocument
 from riverhog_protocol.provenance_transport import CollectionArtifactProvenanceBindingDocument
 from riverhog_provenance import (
     JournalSummary,
-    JournalValidationCache,
     MemberHistoryClosure,
     ProvenanceValidationError,
     external_reference,
@@ -44,8 +43,7 @@ type RelevanceKey = tuple[str, str, str]
 class MemberRelevance(Mapping[RelevanceKey, frozenset[str]]):
     """Persistent member scope and traversal; no in-memory corpus or result set."""
 
-    def __init__(self, journal_cache: JournalValidationCache | None = None) -> None:
-        self.journal_cache = journal_cache
+    def __init__(self) -> None:
         self._scratch = contextlib.ExitStack()
         try:
             scratch = self._scratch.enter_context(
@@ -152,7 +150,6 @@ def _anchored_snapshot(
     anchor: Mapping[str, Any],
     *,
     catalog: ContractCatalog | None,
-    journal_cache: JournalValidationCache | None = None,
 ) -> JournalSummary:
     if full.anchor == anchor:
         return full
@@ -174,7 +171,6 @@ def _anchored_snapshot(
                 require_exact_tail=True,
                 catalog=catalog,
                 require_profiles=False,
-                cache=journal_cache,
             )
     raise ProvenanceValidationError("foreign prefix anchor is absent")
 
@@ -200,7 +196,7 @@ def member_relevance(
     )
     if primary.journal_id not in corpus:
         raise ProvenanceValidationError("primary journal is outside the admitted corpus")
-    found = MemberRelevance(closure.journal_cache)
+    found = MemberRelevance()
     found.remember(primary)
 
     def mark(summary: JournalSummary, row: Mapping[str, Any], scope: str) -> None:
@@ -210,9 +206,7 @@ def member_relevance(
         full = corpus.get(anchor["journal_id"])
         if full is None:
             raise ProvenanceValidationError("referenced journal is outside the admitted corpus")
-        return _anchored_snapshot(
-            full, anchor, catalog=catalog, journal_cache=closure.journal_cache
-        )
+        return _anchored_snapshot(full, anchor, catalog=catalog)
 
     def resolve_state(
         summary: JournalSummary, ref: Mapping[str, Any]
@@ -458,9 +452,7 @@ def snapshots_for_relevance(
         full = corpus.get(anchor["journal_id"])
         if full is None:
             raise ProvenanceValidationError("relevant journal is outside the admitted corpus")
-        yield _anchored_snapshot(
-            full, anchor, catalog=catalog, journal_cache=relevance.journal_cache
-        )
+        yield _anchored_snapshot(full, anchor, catalog=catalog)
 
 
 __all__ = [

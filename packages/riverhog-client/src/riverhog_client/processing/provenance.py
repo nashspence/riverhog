@@ -28,9 +28,7 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_provenance import (
-    JournalReferenceCache,
     JournalSummary,
-    JournalValidationCache,
     MemberHistoryClosure,
     external_reference,
     selected_delivery_occurrence,
@@ -89,15 +87,11 @@ class ClaimedProvenance:
         artifact: ClaimedArtifact,
         verify_root: Callable[[], None],
         heartbeat: Callable[[], None],
-        journal_cache: JournalValidationCache | None = None,
-        reference_cache: JournalReferenceCache | None = None,
     ) -> None:
         self.api = api
         self.artifact = artifact
         self.verify_root = verify_root
         self.heartbeat = heartbeat
-        self.journal_cache = journal_cache or JournalValidationCache()
-        self.reference_cache = reference_cache or JournalReferenceCache()
         self.verify_root()
         self.heartbeat()
         value = api.get_collection_artifact_provenance(
@@ -251,8 +245,6 @@ class ClaimedProvenance:
                 MemberHistoryStore(read_object),
                 self._read_journal,
                 member_role=COLLECTION_MEMBER_ROLE,
-                journal_cache=self.journal_cache,
-                reference_cache=self.reference_cache,
             ) as closure:
                 closure.resolve(self.history_binding, extent=extent)
                 self.verify_root()
@@ -347,7 +339,6 @@ class ClaimedProvenance:
                 expected_anchor=anchor.to_mapping(),
                 require_exact_tail=True,
                 require_profiles=False,
-                cache=self.journal_cache,
             )
 
     def resolve_external_reference(self, reference: Mapping[str, Any]) -> dict[str, Any]:
@@ -361,9 +352,7 @@ class ClaimedProvenance:
         if journal is None:
             raise ValueError("referenced canonical journal is absent from the selected root")
         with self.stream_journal(journal) as chunks:
-            summary = validate_journal_chunks(
-                chunks, require_profiles=False, cache=self.journal_cache
-            )
+            summary = validate_journal_chunks(chunks, require_profiles=False)
         if summary.journal_id != selected.journal_id:
             raise ValueError("referenced canonical journal identity differs")
         expected_entry = selected.entry.model_dump(mode="json")

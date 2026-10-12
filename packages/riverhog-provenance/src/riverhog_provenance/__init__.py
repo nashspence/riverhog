@@ -47,8 +47,6 @@ from .journal import (
     validate_journal_set_chunks,
     write_assertion_batches,
 )
-from .journal_cache import JournalValidationCache
-from .journal_reference_cache import JournalReferenceCache
 from .model import (
     BinaryReadable,
     ObservationPolicy,
@@ -98,8 +96,6 @@ __all__ = [
     "JournalFrame",
     "JournalSetValidation",
     "JournalSummary",
-    "JournalValidationCache",
-    "JournalReferenceCache",
     "RecoveryResult",
     "append_assertion_batches",
     "write_assertion_batches",

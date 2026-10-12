@@ -17,7 +17,6 @@ from riverhog_core.catalog_models import (
     CollectionUploadRecord,
     StorageIncarnationRecord,
 )
-from riverhog_core.provenance_catalog import admission_provenance_catalog
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.collection_uploads import (
     SqlAlchemyCollectionUploadService,
@@ -34,14 +33,7 @@ from riverhog_protocol.collection_completion import (
     CollectionCompletionRequirementDocument,
 )
 from riverhog_protocol.errors import Conflict
-from riverhog_provenance import (
-    BoundedSourceObserver,
-    BytesSource,
-    JournalReferenceCache,
-    JournalValidationCache,
-    create_journal,
-    validate_journal,
-)
+from riverhog_provenance import BoundedSourceObserver, BytesSource, create_journal, validate_journal
 from sqlalchemy.orm import Session
 
 from tests.unit.db_helpers import sqlite_url
@@ -148,8 +140,6 @@ def test_completion_requirement_and_journal_selection_are_immutable(tmp_path: Pa
             )
         )
     service = object.__new__(SqlAlchemyCollectionUploadService)
-    service._journal_validation_cache = JournalValidationCache(admission_provenance_catalog())
-    service._journal_reference_cache = JournalReferenceCache()
     service._session_factory = factory
     service._config = config
     first = "urn:uuid:11111111-1111-4111-8111-111111111111"

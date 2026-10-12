@@ -117,7 +117,11 @@ def _paths(tmp_path: Path) -> ListenerRuntimePaths:
     )
 
 
-def _fixture(tmp_path: Path) -> tuple[ListenerConfig, ListenerRuntimePaths, Path, Path]:
+def _fixture(
+    tmp_path: Path,
+    *,
+    python_options: Sequence[str] = (),
+) -> tuple[ListenerConfig, ListenerRuntimePaths, Path, Path]:
     mount = tmp_path / "mount"
     mount.mkdir()
     counter = tmp_path / "counter.txt"
@@ -130,16 +134,13 @@ def _fixture(tmp_path: Path) -> tuple[ListenerConfig, ListenerRuntimePaths, Path
         encoding="utf-8",
     )
     routes = tmp_path / "routes.yaml"
+    command = [sys.executable, *python_options, str(action), "{mount_point}", str(counter)]
     routes.write_text(
         "schema_version: 1\n"
         "kind: gogurt.routes\n"
         "routes:\n"
         "  camera:\n"
-        "    command:\n"
-        f"      - {json.dumps(sys.executable)}\n"
-        f"      - {json.dumps(str(action))}\n"
-        '      - "{mount_point}"\n'
-        f"      - {json.dumps(str(counter))}\n",
+        "    command:\n" + "".join(f"      - {json.dumps(argument)}\n" for argument in command),
         encoding="utf-8",
     )
     (mount / ".gogurt").write_text("camera\n", encoding="utf-8")
@@ -156,13 +157,23 @@ def _fixture(tmp_path: Path) -> tuple[ListenerConfig, ListenerRuntimePaths, Path
     return config, paths, mount, counter
 
 
-def _wait_for_runs(counter: Path, expected: int) -> None:
+def _wait_for_runs(
+    counter: Path,
+    expected: int,
+    *,
+    completed_by: ListenerRuntime | None = None,
+) -> None:
     deadline = time.monotonic() + 5
+    counts: dict[str, int] = {}
     while time.monotonic() < deadline:
         if counter.is_file() and len(counter.read_text(encoding="utf-8").splitlines()) >= expected:
-            return
+            if completed_by is None:
+                return
+            counts = completed_by.store.summary(timeout_seconds=0.25)["counts"]
+            if counts.get("completed", 0) >= expected:
+                return
         time.sleep(0.02)
-    raise AssertionError(f"Gogurt action did not reach {expected} runs")
+    raise AssertionError(f"Gogurt action did not reach {expected} runs; durable counts={counts}")
 
 
 def _wait_for_published_pid(pid_file: Path) -> int:
@@ -233,8 +244,11 @@ def test_listener_config_json_and_fields_are_strict(tmp_path: Path) -> None:
     assert ListenerConfig.read(paths.config_file).interval_seconds == 3600.0
 
 
-def test_listener_runs_once_across_restart_and_again_after_remount(tmp_path: Path) -> None:
-    config, paths, mount, counter = _fixture(tmp_path)
+def test_listener_runs_once_across_restart_and_again_after_remount(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, paths, mount, counter = _fixture(tmp_path, python_options=("-S",))
     first = ListenerRuntime(
         config,
         paths,
@@ -244,7 +258,7 @@ def test_listener_runs_once_across_restart_and_again_after_remount(tmp_path: Pat
     thread = threading.Thread(target=first.run)
     thread.start()
     try:
-        _wait_for_runs(counter, 1)
+        _wait_for_runs(counter, 1, completed_by=first)
     finally:
         first.request_stop()
         thread.join(timeout=5)
@@ -253,11 +267,11 @@ def test_listener_runs_once_across_restart_and_again_after_remount(tmp_path: Pat
     mounted = threading.Event()
     mounted.set()
     absence_observed = threading.Event()
+    restarted_observation = threading.Event()
 
     def discover() -> list[Path]:
         if mounted.is_set():
             return [mount]
-        absence_observed.set()
         return []
 
     second = ListenerRuntime(
@@ -266,16 +280,29 @@ def test_listener_runs_once_across_restart_and_again_after_remount(tmp_path: Pat
         mounted_volume_provider=_mounted_volume_provider(discover),
         product_version=TEST_PRODUCT_VERSION,
     )
+    run_once = second.run_once
+
+    def observed_cycle() -> None:
+        was_mounted = mounted.is_set()
+        run_once()
+        if was_mounted:
+            restarted_observation.set()
+        else:
+            absence_observed.set()
+
+    monkeypatch.setattr(second, "run_once", observed_cycle)
     thread = threading.Thread(target=second.run)
     thread.start()
     try:
-        time.sleep(0.3)
+        assert restarted_observation.wait(timeout=5)
+        counts = second.store.summary(timeout_seconds=0.25)["counts"]
+        assert counts.get("completed", 0) == 1 and sum(counts.values()) == 1
         assert counter.read_text(encoding="utf-8").splitlines() == ["run"]
 
         mounted.clear()
         assert absence_observed.wait(timeout=5)
         mounted.set()
-        _wait_for_runs(counter, 2)
+        _wait_for_runs(counter, 2, completed_by=second)
     finally:
         second.request_stop()
         thread.join(timeout=5)

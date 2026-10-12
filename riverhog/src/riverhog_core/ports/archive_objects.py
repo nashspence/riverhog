@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator
+from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -124,15 +124,12 @@ class ImmutableObjectReceipt:
     completed_at: str
 
 
-ImmutableObjectContent = bytes | Callable[[], bytes]
-
-
 class ImmutableArchiveObjectStore(Protocol):
     def put_immutable_object(
         self,
         *,
         object_path: str,
-        content: ImmutableObjectContent,
+        content: bytes,
         content_type: str,
         required_identity_assertions: dict[str, str],
         placement_policy: ObjectPlacementPolicy,

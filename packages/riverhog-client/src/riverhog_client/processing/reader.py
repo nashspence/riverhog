@@ -14,7 +14,6 @@ from riverhog_protocol.collection_workflows import CollectionRootIdentity
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.portable_collection import PortableCollectionInventoryPage
-from riverhog_provenance import JournalReferenceCache, JournalValidationCache
 
 from riverhog_client.processing.models import ClaimedArtifact
 from riverhog_client.processing.provenance import ClaimedProvenance, ClaimedProvenanceApi
@@ -152,8 +151,6 @@ class ClaimedCollectionReader:
         self.fence = fence
         self.heartbeat = heartbeat
         self._retrievals: dict[str, ClaimedRetrieval] = {}
-        self._journal_validation_cache = JournalValidationCache()
-        self._journal_reference_cache = JournalReferenceCache()
 
     def replace_api(self, api: ClaimedCollectionApi) -> None:
         self.api = api
@@ -206,8 +203,6 @@ class ClaimedCollectionReader:
             artifact=artifact,
             verify_root=lambda: self._verify_root(artifact.root),
             heartbeat=self.heartbeat or (lambda: None),
-            journal_cache=self._journal_validation_cache,
-            reference_cache=self._journal_reference_cache,
         )
 
     def prepare(

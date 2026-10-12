@@ -7,7 +7,6 @@ import shutil
 import sqlite3
 import weakref
 from collections.abc import (
-    Callable,
     Iterable,
     Iterator,
     Mapping,
@@ -276,19 +275,19 @@ class _Frames(Sequence[Any]):
             return _Slice(self, range(*index.indices(len(self))))
         index = index if index >= 0 else len(self) + index
         row = self.store.db.execute(
-            "SELECT value, reference FROM frames WHERE sequence = ?", (str(index),)
+            "SELECT value FROM frames WHERE sequence = ?", (str(index),)
         ).fetchone()
         if row is None:
             raise IndexError(index)
-        return JournalFrame._from_validated(row[0], json.loads(row[1]))
+        return JournalFrame(row[0])
 
     def __iter__(self) -> Iterator[Any]:
         from .journal import JournalFrame
 
-        for value, reference in self.store.db.execute(
-            "SELECT value, reference FROM frames ORDER BY length(sequence), sequence"
+        for (value,) in self.store.db.execute(
+            "SELECT value FROM frames ORDER BY length(sequence), sequence"
         ):
-            yield JournalFrame._from_validated(value, json.loads(reference))
+            yield JournalFrame(value)
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -530,22 +529,15 @@ def _cleanup_snapshot(connection: sqlite3.Connection, directory: Path) -> None:
     shutil.rmtree(directory)
 
 
-def _cleanup_reader(db: sqlite3.Connection, _owner: JournalStore) -> None:
-    db.close()
-
-
 class JournalStore:
     def __init__(self) -> None:
         directory = Path(mkdtemp(prefix="riverhog-journal-"))
         try:
-            self.path = directory / "snapshot.sqlite3"
-            self.db = sqlite3.connect(self.path, check_same_thread=False)
+            self.db = sqlite3.connect(directory / "snapshot.sqlite3", check_same_thread=False)
         except BaseException:
             shutil.rmtree(directory)
             raise
-        self._cleanup: Callable[[], Any] = weakref.finalize(
-            self, _cleanup_snapshot, self.db, directory
-        )
+        self._cleanup = weakref.finalize(self, _cleanup_snapshot, self.db, directory)
         # This is a disposable validation projection, never journal custody.
         # Failed validation destroys it; preserve disk-backed rollback without
         # synchronizing each temporary schema write to durable storage.
@@ -572,20 +564,6 @@ class JournalStore:
             "PRIMARY KEY(state, size, sha256));"
         )
         self.frame_count = 0
-
-    @classmethod
-    def reader_from(cls, source: JournalStore) -> JournalStore:
-        """Open an independent immutable reader, retaining its exact snapshot owner."""
-        reader = object.__new__(cls)
-        reader.path = source.path
-        reader.db = sqlite3.connect(
-            source.path.as_uri() + "?mode=ro", uri=True, check_same_thread=False
-        )
-        reader.db.execute("PRAGMA cache_size = -32")
-        reader.frame_count = source.frame_count
-        # Retain the owner through connection close, including on Windows.
-        reader._cleanup = weakref.finalize(reader, _cleanup_reader, reader.db, source)
-        return reader
 
     def close(self) -> None:
         self._cleanup()
