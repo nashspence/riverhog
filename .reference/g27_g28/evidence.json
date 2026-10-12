@@ -1,0 +1,112 @@
+{
+  "format": "g27-g28-researched-design-evidence/v1",
+  "status": "native-helper-differential-and-SQLite-model-not-production-qualification",
+  "audited_main": "152d095038df0c0d0ed642cf265d47b11c65a754",
+  "audited_main_tree": "991e994457b487a7dca016b7fc0409485cef25c6",
+  "reference_parent": "6c66476fc88738b51526c2295f95b5720bb60140",
+  "latest_issue_clarification_read": 6114967253,
+  "environment": {
+    "python": "3.13.5",
+    "sqlite": "3.46.1",
+    "sqlalchemy": "2.0.50",
+    "pytest": "9.0.2",
+    "pydantic": "2.13.5",
+    "jsonschema": "4.26.0",
+    "plugin_autoload": "disabled",
+    "warnings": "errors",
+    "locked_environment": false,
+    "docker_available": false,
+    "postgresql_executed": false,
+    "rfc8785": "upstream v0.1.4 exact implementation supplied outside repository with export shim",
+    "rfc8785_verified_git_blob": "3137d3326b98938affadb1be711ee411eb2ab86e"
+  },
+  "completed_tests": [
+    {
+      "selection": "new reference helper differential and SQLite query-state model",
+      "passed": 53,
+      "seconds": 2.58,
+      "command": "python -m pytest -q -W error -o addopts='' $REF/.reference/g27_g28/test_reference.py",
+      "seeded_matcher_comparisons_within_parameterized_tests": 480
+    },
+    {
+      "selection": "unchanged native extraction, discovery search, search service",
+      "passed": 12,
+      "deselected": 1,
+      "seconds": 5.28,
+      "command": "python -m pytest -q -W error -o addopts='' tests/unit/test_canonical_discovery_extraction.py tests/unit/test_canonical_discovery_search.py tests/unit/test_search_service.py -k 'not http_authentication'",
+      "deselected_reason": "HTTP integration depends on installed distribution/runtime; not claimed by native diagnostic selection"
+    }
+  ],
+  "corrected_development_attempts": [
+    {
+      "kind": "model smoke",
+      "failure": "SQLite workspace INSERT had 11 values for 10 columns",
+      "resolution": "corrected placeholder count before suite"
+    },
+    {
+      "kind": "initial new suite",
+      "passed": 38,
+      "failed": 4,
+      "seconds": 2.06,
+      "failure": "random fixture generated forbidden ascii-fold for numeric values",
+      "resolution": "generate only valid text-mode/type combinations; protocol unchanged"
+    },
+    {
+      "kind": "external dependency byte verification",
+      "difference": "initial transcription omitted one blank line",
+      "resolution": "loaded base64 source from connector; exact upstream Git blob verified before final runs"
+    },
+    {
+      "kind": "adversarial physical-plan review before publication",
+      "finding": "redundant NULLS ordering sorted ties; integer-rowid tuple SEARCH could seek only first key",
+      "resolution": "plain ordering only with explicit non-null proof; full-key member-text work controls; tested disjoint-prefix fallback for partial tuple seeks",
+      "earlier_boundary_only_probe": "2048 integer rows in short tie groups: native 632578 versus tuple 54507 VM instructions; superseded as qualification input by retained full-tie and rowid-negative controls"
+    }
+  ],
+  "probes": {
+    "command": "python $REF/.reference/g27_g28/probe.py --repo $AUDITED",
+    "file": "counters.json",
+    "sha256": "471a27a9304a3302016782de0490d5e5ddcca26f12500ce0a820542c87f1316a",
+    "coverage": [
+      "native SQLAlchemy keyset vs full-tuple/plain-order SQL; complete traversal, all-ties, deep-page VM/EXPLAIN; partial-rowid-seek negative controls",
+      "native assertion matcher section comparisons vs one-pass candidate; full zero-result lexical evaluation",
+      "native read-identity helper with controlled collection-header iterator; separately identified SQLite projection model"
+    ],
+    "elapsed_time_target_evaluated": false
+  },
+  "not_validated": [
+    "PostgreSQL query plans and concurrent production writes",
+    "production summary aggregates and mutation parity",
+    "production invalidation trigger coverage and query-lifecycle integration",
+    "G26+G28 production query adapter and factored guard witnesses",
+    "HTTP auth/current capability integration and slow-consumer egress",
+    "full locked lint/unit/dist-smoke/build gates",
+    "Linux/Docker/recovery/security/complete-image lifecycle qualification",
+    "exact-SHA GitHub CI/CodeQL qualification",
+    "wall-time targets and v1 conformance"
+  ],
+  "source_hashes": {
+    "riverhog/src/riverhog_core/browse.py": "1c4afdbfae8e96d9c8b9a53b1d4137a233a91e17dc813af088f7c4b881b82162",
+    "riverhog/src/riverhog_core/canonical_discovery_extraction.py": "b06dba0a7abcc09cf45b8d5960f9ea3ad00903c91b36654476b2eb46c291a4e9",
+    "riverhog/src/riverhog_core/canonical_discovery_search.py": "a9896b90c7e9f88f51e34708950783a7aff4b055077f62705c721baf3a4ceea2",
+    "riverhog/src/riverhog_core/canonical_discovery_index.py": "33c4c969fc768b1d496c5a964916b5da4783b1e57fd4a3d9b21d8fda4a9ba304",
+    "riverhog/src/riverhog_core/catalog_events.py": "18232799e65c26eca5083cf8a511c6bf424ba70517440c9e0a921a51f96c13ee",
+    "riverhog/src/riverhog_core/services/collections.py": "5c90dfb14f1f32c107f9d4987d8375016776576c8dee333bc53ae298eee825d6",
+    "riverhog/src/riverhog_core/services/search.py": "b4a104a984db221c77265e0fc18cee290d306f1aa1301f234a42d050f40250ed",
+    "riverhog/src/riverhog_core/services/retrieval.py": "185281d79510ee36e7364e939149dfb61f2bcbe9b0ec01fa2f68c91aa979ae68",
+    "riverhog/src/riverhog_core/catalog_models.py": "015f87e05fe09a0c066ad5eef6cf96840dad2bb452a3806955d334b27087c1f0",
+    "riverhog/src/riverhog_core/artifact_access.py": "1e2511411a4a29aac8da9c7448e8b5c4fbb81e6336f5a5b320ca244ade24acb1",
+    "riverhog/src/riverhog_api/browse.py": "65cd9760ec67075f75bac46c88b3095a8e79d4f537deeeca1bcf8681e68f2d98",
+    "riverhog/src/riverhog_api/routers/search.py": "e758680a9d7264527ed06696e1cf1c48ad6c14501a3ed841d4ad5729e7e6c978",
+    "packages/http-api-contracts/src/http_api_contracts/browse.py": "1e14702cc9ec74b7e5f239492bd7b6ec9f17595ae0f2c7987fafb71b255b4ded",
+    "packages/riverhog-protocol/src/riverhog_protocol/artifact_discovery.py": "09dae874bd41a4c886282492239e6773ca7a9abada2508191b22103e679e64e3",
+    "packages/state-schema/src/state_schema/__init__.py": "486ac6d74cd280ff36317430d96634a7d0694a4b18fb7e49745c543170d97cc9"
+  },
+  "executable_reference_sha256": {
+    "reference.py": "1a03dd3f0c7835ea0130f59829303c6f5aad8eafb1759f0d179d13bac1863203",
+    "test_reference.py": "15841a22ad6bb31055478eeb2daffc16b3de81f28f3ce429c6c070dfdb04b676",
+    "probe.py": "43e529ed283f28386b0a50aa13228b26b8195979fbbbfe44b2ddddbeee1e89c3"
+  },
+  "unchanged_historical_material": "G22, G26 and inventory JSON/digest retained; no combined historical-test pass claimed",
+  "native_issue_link": "existing branch retained; Development/dependency mutation unavailable; no new native relation claimed"
+}
