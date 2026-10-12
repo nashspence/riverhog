@@ -1,0 +1,92 @@
+{
+  "format": "g27-g28-bounded-work-reference-evidence/v1",
+  "status": "diagnostic-model-and-source-review-not-production-conformance",
+  "reference_parent": "263abca4d8b09f390d90f2b977b10c1557961bc1",
+  "audited_main": "152d095038df0c0d0ed642cf265d47b11c65a754",
+  "audited_tree": "991e994457b487a7dca016b7fc0409485cef25c6",
+  "producer": {
+    "product": "OpenAI ChatGPT",
+    "model": "GPT-6 Astra Pro",
+    "effort": "not exposed",
+    "requester": "Riverhog maintainer"
+  },
+  "environment": {
+    "python": "3.13.5",
+    "sqlite": "3.46.1",
+    "pytest": "9.0.2",
+    "warnings": "errors",
+    "pytest_plugin_autoload": false,
+    "locked_environment": false,
+    "third_party_source_vendored": false
+  },
+  "tests": [
+    {
+      "command": "cd .reference/g27_g28/bounded && PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q -W error -o addopts='' test_model.py",
+      "passed": 47,
+      "seconds": 1.49,
+      "initial_suite": {
+        "passed": 42,
+        "seconds": 1.66,
+        "then": "five extra adversaries added; final 47 passed"
+      }
+    }
+  ],
+  "probe": {
+    "command": "cd .reference/g27_g28/bounded && python probe.py",
+    "file": "counters.json",
+    "sha256": "7606802948921d13d32af2700ee842a2e70afe3fa9cfda4915e133566add455a",
+    "kind": "consecutive-key synthetic SQLite model",
+    "wall_time_target_evaluated": false,
+    "sparse_key_caveat": "General directory visits O(w*C); not the dense fixture 2*C+w envelope."
+  },
+  "source_inventory_check": {
+    "command": "python .reference/v1_inventory/verify_inventory.py --repo /mnt/data/riverhog-source",
+    "families": 64,
+    "projects": 86,
+    "anchors": 182,
+    "canonical_sha256": "0227c947d553539d73ce4530f1a407997dd18d7d5eea5747fb77875a67aac2e7",
+    "runtime_complexity_tested": false
+  },
+  "model_scope": [
+    "immutable path copying and fixed-header pin admission",
+    "bounded resumable CAS quanta without open SQLite read transaction during compute",
+    "continuous writes without restarting query",
+    "actual SQLite WAL checkpoint control and long-reader negative control",
+    "restart, rollback, stale workers, explicit capacity suspension and resume",
+    "current-authority/source failure, cancellation and incremental GC",
+    "sparse radix keys, equal payload/distinct keys, exact order and terminal empty result",
+    "streamed literal KMP at chunk boundaries"
+  ],
+  "limitations": [
+    "Model hash/DDL/authority are diagnostic, not Riverhog canonical identity or security.",
+    "Source leaf values are small; streaming literal tests are separate, not a production large-field store.",
+    "SQLite connections stay open as test fixtures; production borrowed-connection pool release is not exercised.",
+    "No G26+G28 production fact/scopes or both-history-extent differential integration.",
+    "No atomic production descriptor writer/summary/cascade/retention coverage.",
+    "No new HTTP/client/CLI/pending/read/cancel/expiry/support contract implementation.",
+    "No PostgreSQL query plan, lock ordering, resource reclamation or concurrency run.",
+    "No full locked local gates, Linux/image/recovery/security lifecycle or exact-SHA CI/CodeQL.",
+    "No numerical resource defaults, growth-contract acceptance or elapsed-time target established."
+  ],
+  "source_sha256": {
+    "scripts/extent_contract.py": "e4375f906ace60a1bf3bc4133f6e15e022ca88ffd069ef6daf2de85b726aab8f",
+    "packages/state-schema/src/state_schema/__init__.py": "486ac6d74cd280ff36317430d96634a7d0694a4b18fb7e49745c543170d97cc9",
+    "packages/riverhog-protocol/src/riverhog_protocol/artifact_discovery.py": "09dae874bd41a4c886282492239e6773ca7a9abada2508191b22103e679e64e3",
+    "packages/riverhog-protocol/src/riverhog_protocol/collection_tags.py": "84fd0abe870f22d88e83a9f58ca2d8ee11ef078baf9dad5165bdd93f3e8b0ec5",
+    "riverhog/src/riverhog_api/schemas/search.py": "741b5d2268ca6383d79ebdf5fab1eff384be269f76675835a2212e6bbb695f3d",
+    "riverhog/src/riverhog_api/routers/search.py": "e758680a9d7264527ed06696e1cf1c48ad6c14501a3ed841d4ad5729e7e6c978",
+    "riverhog/src/riverhog_core/services/search.py": "b4a104a984db221c77265e0fc18cee290d306f1aa1301f234a42d050f40250ed",
+    "riverhog/src/riverhog_core/catalog_events.py": "18232799e65c26eca5083cf8a511c6bf424ba70517440c9e0a921a51f96c13ee",
+    "riverhog/src/riverhog_core/canonical_discovery_index.py": "33c4c969fc768b1d496c5a964916b5da4783b1e57fd4a3d9b21d8fda4a9ba304",
+    "riverhog/src/riverhog_core/canonical_discovery_search.py": "a9896b90c7e9f88f51e34708950783a7aff4b055077f62705c721baf3a4ceea2",
+    "riverhog/src/riverhog_core/artifact_access.py": "1e2511411a4a29aac8da9c7448e8b5c4fbb81e6336f5a5b320ca244ade24acb1",
+    "riverhog/src/riverhog_core/app_permissions.py": "d451b38244781c7c795ec96eaec53c4794b892016775097bc23468f1c8159e04"
+  },
+  "reference_sha256": {
+    "model.py": "2b789e066fb91ec462a843dfab5bbc43e85ae70acc963db6553b7adf1b68c3e7",
+    "test_model.py": "9b6fd0063b84ebb06330ad83345bfa95a502b41b0cf82c3d48611f7ee95acd1f",
+    "probe.py": "3a8df1c0fadbfc995c971cd91da1e6376709f3733d4a0e0bcdcdcc780b6ebb03",
+    "RESEARCH.md": "0a8c9c589f91f3746a2c1f909f707e5ea171a9874d08bce9f6bc7c0987fc2497"
+  },
+  "historical_evidence": "Parent helper/native counts and G22/G26 evidence retained unchanged; not combined or rerun."
+}

@@ -1,581 +1,666 @@
-# G27/G28: exact bounded traversal and named query execution profiles
+# G27/G28: bounded work over retained exact inputs
 
-**Recommended integration design, not accepted owner declarations or a production
-conformance claim.** Owning issue #964; external-reference convention #903.
-Inspected source: `main@152d095038df0c0d0ed642cf265d47b11c65a754`, tree
-`991e994457b487a7dca016b7fc0409485cef25c6`. Reference parent:
-`6c66476fc88738b51526c2295f95b5720bb60140`. Reconcile with the exact integrated
-post-#963 source. This document supplies the missing G27/G28 recommendations;
-it does not reopen the accepted G26 current-baseline/Alembic decision. The later
-onboarding clarification (comment 6114967253) is preserved: no detailed cost models
-or historical guide snippets are copied into AGENTS.md.
+**Recommended policy and integration design, not deployed behavior or completed
+qualification.** Issue #964; reference convention #903. This revision responds
+to the maintainer's instruction to revisit the earlier design as intent
+calibration, not to preserve its architectural choices merely because they were
+previously recommended. The selected changes and their public consequences are
+explicit below. Existing archive, custody and live-authorization authority are
+not made optional by that instruction.
 
-## 1. Decision and non-decisions
+Audited source: `main@152d095038df0c0d0ed642cf265d47b11c65a754`, tree
+`991e994457b487a7dca016b7fc0409485cef25c6`. Direct reference parent:
+`263abca4d8b09f390d90f2b977b10c1557961bc1`. Reconcile against actual post-#963
+integration source; supplying this design does not close the issue's acceptance
+gates. This document replaces the prior G27/G28 default, including its §§2,5,6,7.
+[ALGORITHMS.md](ALGORITHMS.md) retains the detailed owner algorithms that survive.
 
-Select four complementary changes, in this order:
+## 1. Default policy to adopt
 
-1. Make ordinary non-null keysets perform real composite index seeks; preserve
-   the existing nullable helper and error/token contracts. Separate point,
-   ordered-range, residual-filter and complete-enumeration declarations.
-2. Evaluate an assertion clause once per source fact/query, with one posting
-   traversal and exact same-section semantics, then project through G26's compact
-   scope relation. Do not execute whole-assertion matching once per member.
-3. Prepare a complete, disk-backed **private query result projection** once for an
-   unchanged read/authorization view. Page that projection, rather than rebuilding
-   relational joins and rehashing the entire selected collection set on every page.
-   Use a transactional invalidation fence as a fast *unchanged* test, not as a new
-   public read identity or an authorization cache. Conservative rebuild is the
-   selected policy when the fence changes but the existing public digest does not.
-4. Replace repeated collection-summary aggregate scans with exact transactional
-   delta aggregates. Keep all returned fields and corruption/ambiguity checks.
-   Freeze the point-summary bound only after this owner-level work is qualified.
+**Bound resources by the work step; preserve meaning across steps; charge the
+whole lifecycle.** A finite logical total is not limited by a request, buffer,
+transaction, checkpoint, lease or diagnostic fixture size. A coherent logical
+snapshot is a retained immutable input identity, not a database connection.
 
-There is no new public search DSL, regular-expression feature, prefix operator,
-full-text ranking, count endpoint, snapshot promise for mutable browse, or numerical
-latency target. The existing literal language is sufficient to define tractable
-profiles; do not quietly restrict it. No blanket `O(results)`/"near-linear" claim.
+1. Every operation over an arbitrarily large permitted total uses bounded
+   exchanges and interruptible, checkpointed work quanta. Bound fetched/decoded
+   bytes, physically examined rows/edges, emitted bytes, atomic write sets and
+   continuation state, not only the number of returned hits. A SQL LIMIT after
+   an unrestricted scan/join/sort does not establish bounded work.
+2. Close database cursors, transactions and borrowed connections at a bounded
+   fetch/commit boundary, before evaluation, external I/O, HTTP delivery, sleep
+   or client think time. No full-query or full-export MVCC snapshot. An exact
+   internal generator must not transfer transaction lifetime to its consumer.
+   Small point/page transactions remain appropriate; prove their access plan.
+3. Exact long operations pin immutable inputs once and retain them through
+   completion or explicit termination. Checkpoint progress and bounded state;
+   process restart or ordinary content changes must not restart completed work.
+   No whole-catalog unchanged-fence loop as the default correctness mechanism.
+4. Match each unique fact once within the declared query scope; share immutable
+   source work and factor relationships. Charge indexing, ordering, program
+   size, required dense output and hard correlation separately. Do not rename
+   accidental repeated scans or expanded shared history as necessary input.
+5. Capacities are source-linked operator policy with explicit admission,
+   defer/throttle/failure semantics. Never report partial work as complete or
+   turn a memory/transaction quota into an undocumented logical-total maximum.
+   Large values require segmented processing, not a hidden per-value RAM cap.
+6. Admission and scheduling account for CPU, I/O, scratch, retained versions,
+   active queries, and cleanup. Fair bounded scheduling prevents one query from
+   monopolizing a worker or connection. Retention is finite operational storage,
+   not free merely because it is immutable. Release resources incrementally.
+7. Current authorization is independent of historical content. Pins do not grant
+   permission, extend claims, defeat revocation, or become archive authority.
+8. Declare and measure preparation, all quanta, checkpoint writes, page reads,
+   recovery/replay, cold-cache reads, maintenance and reclamation. Timing misses
+   remain distinct from invalid or missing growth/functional evidence.
 
-A complete-result projection is chosen over a resumable partial result stream:
-it has an unambiguous completeness boundary, exact minimum supports and count,
-and no hidden restart of full query preparation on every page. Its costs are
-higher time-to-first-page and output-sized scratch, both explicit. A stateless
-recompute-on-every-page implementation is simpler but does not meet the selected
-unchanged-view complete-traversal profile. An exported database snapshot held
-open for a client lifetime is rejected. A bitmap/all-pairs precomputed history
-closure is rejected for the G26 storage-amplification reason.
+These are repository-wide default **requirements**, not a universal pagination,
+job, snapshot or component API. Existing owners retain their progression models.
+A justified exception requires an operation-specific owning declaration, reason,
+resource conditions, expiry/cancellation behavior and executed witness. Calling
+an operation "internal", "read-only", "one request" or "bounded-memory" is not
+an exception. A finite test or operator timeout alone is not a complexity proof.
+Do not promise hard real-time completion if storage or the operating system hangs.
 
-## 2. Existing contracts to preserve exactly
+## 2. Selected architecture and deliberate contract changes
 
-### G27 is not one consistency contract
+Select a **private copy-on-write directory of searchable collection versions**,
+short atomic root pinning, leased immutable source generations, and durable
+cooperative query work. This is a concrete Riverhog catalog implementation, not
+a new archive format or a general framework imposed on applications/components.
 
-**Mutable browse.** `http_api_contracts.browse`, `riverhog_api/browse.py`,
-`riverhog_core/browse.py`, `services/collections.py`, `services/search.py`, and
-upload-session browse retain operation/selector/principal/key-bound HMAC tokens,
-current per-request permissions, existing expiration and validation behavior,
-page limits and ordered unique keys. The browse token pins a position, not a
-historical database snapshot. Insert/delete/sort-key mutation between requests
-can change the set; do not describe the sequence as an exact immutable snapshot.
-A quiescent complete traversal must neither omit nor duplicate any selected row.
-No OFFSET or growing `NOT IN(all_previously_seen_ids)` implementation.
+Do NOT select (a) complete evaluation inside one database read snapshot,
+(b) chunking mutable reads and restarting the entire query when a global fence
+changes, (c) copying the complete catalog on every admission, (d) a new whole-
+collection member/history product, or (e) mandatory all-results preparation for
+simple indexed reads. A versioned-row/event-history alternative can be correct,
+but its predecessor lookup, retained-change scans and reclamation costs must be
+proved; it is not the chosen default. Existing catalog-sync's live bootstrap and
+change-feed progression is not repurposed as an exact immutable query view.
 
-**Exact discovery continuation.** Preserve the existing request identity and
-`riverhog-discovery-read/v1` canonical transcript, returned query/read identities,
-three-string position `(read_identity, collection_id, artifact_id)`, order,
-source supports, and stale-view `Conflict` behavior. The request identity includes
-`page_size`; changing it is not equivalent to changing the mutable-browse limit.
-The private workspace ID, attempt, epoch and database row IDs never enter this
-wire contract. Changed public read digest still rejects the cursor; a cache miss
-or irrelevant mutation alone must not invent a new stale-cursor rejection.
+### Exact discovery: snapshot at admission, not latest on every page
 
-**Sealed ordinal authority pages.** `services/retrieval.py:list_plan_artifacts`
-already uses `(plan_id, artifact_order >= ordinal)`, a bounded lookahead and an
-exact sealed ETag/owner/key fence. Preserve this path rather than replacing it
-with the mutable helper. Apply the same classification to existing exact-set and
-exact-authority OpenAPI elements discovered by Contract Closure; do not copy this
-research family inventory into main as another surface registry.
+The first accepted discovery invocation pins one complete searchable directory
+root. Selection uses its exact published collection metadata, member indexes,
+G26 generation identities, and admission authorization policy. Every subsequent
+work step and page uses that same view. A newer description, tag set, added
+collection or reindexed generation does not change or restart the query. A new
+invocation is how the caller asks for newer content.
 
-**Internal complete iterators.** `iter_collections`, `iter_archive_copies`,
-`search.iter_artifacts` and upload `iter_artifacts` currently keep a read snapshot
-through generator consumption. Preserve their exact owner-defined iteration view.
-Use explicit `close`/`finally` on early exit and cancellation. A DB cursor may be
-held during a bounded server-owned capture, not unbounded HTTP consumer waiting.
-At an egress boundary capture into managed disk storage under one snapshot, close
-it, then transmit bounded frames; retain completion/integrity witnesses. Charge
-capture, disk bytes, cleanup and returned bytes, not only the final page read.
-Do not silently split an exact internal iterator into independent snapshots.
+This intentionally replaces the earlier recommendation to preserve
+`riverhog-discovery-read/v1`'s selected-header rehash/stale-current-view behavior.
+It is an observable pre-v1 contract revision, NOT a hidden cache optimization
+and NOT implied by the separate G26 extraction-identity approval. Record the
+selected snapshot/read/token/pending semantics in this issue and owning protocol,
+HTTP/client/CLI contracts before claiming integration acceptance. Reject retired
+read/cursor formats; no compatibility mode or rolling dual interpretation.
 
-### G28 semantics are closed and specific
+Keep query literals, same-assertion/profile correlation, exact source-support
+meaning (with explicitly segmented transport below), numeric collection-ID plus
+artifact-ID ordering, all four provenance scopes,
+current page-size/query maxima and archive/member/history identities unchanged.
+A snapshot identity is a server query-view commitment, not archive authority.
 
-`riverhog_protocol/artifact_discovery.py` supports `equals`, `contains`, and
-`bytes-equals`; `exact` and ASCII-only folding; exact JSON Pointers; optional
-(kind, assertion state, exact profile pin); four distinct scopes. There are at
-most 16 clauses and 16 values per clause in the current request. String values
-are bounded by 256 codepoints and 1024 UTF-8 bytes. These are existing query-size
-limits, not a license to cap assertion/member/result cardinalities.
+### G27: keep distinct consistency contracts
 
-All values of a clause match **one assertion and one declared pinned profile
-section**. Different clauses may have different witnesses for the same member.
-Keep `bool != int`, exact byte representation, native pointer escaping and
-literal `%`, `_`, backslash behavior. ASCII fold is not Unicode casefold. Opaque
-nested profile lookalikes do not become schema-declared sections. Keep scalar
-posting order, first matching posting per predicate, and first complete declared
-profile section; do not choose the section that happens to finish first.
+* Mutable browse stays mutable between logical pages. A non-residual indexed page
+  uses the proven seek helper. If a page requires a potentially unbounded residual
+  scan, pin a private input view for that **one logical page** and expose bounded
+  pending work until it is complete. Its next browse-page token remains only a
+  position; the next logical page selects a new current view. A pending-work token
+  is not the next-page token. The `/search` owner is the concrete initial consumer.
+  This adds an explicit pending outcome where needed without promising a stable
+  whole-browse snapshot or calling repeated per-page scans linear traversal.
+* Exact discovery keeps one pinned view for the whole invocation. Use a streaming
+  indexed plan when order and completeness can be proved incrementally; otherwise
+  use the resumable prepared-query plan in §5. Both have identical view semantics.
+* Sealed ordinal authority pages keep their existing root/ETag/ordinal contracts.
+  Do not replace them with browse tokens or query workspaces.
+* Exact internal enumeration pins its owning immutable source view or captures
+  it through an already proved restartable source-version mechanism. Then release
+  DB resources after bounded loads. A short transaction over a mutable database
+  followed by another is NOT an exact snapshot. Apply this explicitly to searchable
+  catalog enumeration; archive-copy/operational iterators need their own source-
+  version binding and cannot falsely inherit the searchable directory's coverage.
 
-Keep G26's `member`, `input-history`, `collection`, `recorded-history`, effective /
-retracted / any distinctions. Imported late claims need BOTH imported history
-and causal applicability for the **same member**. They are not ordinary OR edges.
-Choose the same minimum support `(journal_id, sequence, assertion_id, scope)`;
-use G26's owner-reviewed tie treatment only where that design requires it.
-Complete all potentially smaller guarded witnesses before accepting a unary
-minimum. Scope indexes are derived from authenticated archive/journal facts,
-not new provenance authority. Query support must identify the original source.
+## 3. Immutable source directory: concrete data and writer protocol
 
-## 3. G27 implementation
+### 3.1 What a leaf commits
 
-### 3.1 Non-null seek fast path
+A private `discovery_collection_version` identifies exactly one searchable
+published collection view: numeric collection ID, catalog incarnation, archive
+root and archive generation, artifact-set and provenance identities, immutable
+member-inventory handle, description revision/identity and bounded-content handle,
+tag revision/set identity and immutable tag-node root, search-normalization
+revision and exact ingest-source/search-text handle, G26 complete-generation handle/core/extraction identity or explicit
+unavailable-index state. Include every field actually read by selection or
+projection; no query-time fallback to mutable `CollectionRecord` or live tag rows.
 
-Extend `keyset_statement` with an owner-explicit keyword such as
-`nonnull_ordering: bool = False`. Keep all native page-size, order and position
-arity checks first. For a nonempty position with all non-null values, and an
-owner-proven non-null ordered tuple, emit:
+The leaf is fixed-shape references and scalars, not embedded member/tag/assertion
+lists or a whole description. A pinned generation's rows and referenced payload
+segments are immutable. Archive-qualified source facts, history extents, supports
+and manifest completeness remain G26's responsibility. A query requiring a missing
+or invalid generation fails explicitly; it does not silently omit that collection.
+Queries without provenance predicates use the independently complete member view.
 
-```sql
-WHERE (k1, k2, unique_id) > (:p1, :p2, :pid) -- asc
-ORDER BY k1 ASC, k2 ASC, unique_id ASC
-LIMIT :page_size_plus_one
+Admission authorization policy is separately bound (§6). Its historical tag
+selection uses the pinned tag view; current permission checks use current state.
+The directory may retain descriptive plaintext already permitted in the server
+catalog, never payload bytes or new provider plaintext custody. Scratch containing
+sensitive evidence stays within the existing protected host boundary, with scoped
+access, cleanup and configured at-rest protection where required by its owner.
+
+### 3.2 Private ordered map
+
+Use a persistent binary radix map over the existing `sequence63` collection-ID
+domain, in numeric bit order. Let `w=63` for that existing codec; it is not a new
+collection-count limit. A branch has depth plus at most two immutable child
+references; a leaf has collection ID and version reference. Empty children are
+null. Root/children are content-addressed and exact immutable-byte equality is
+checked on digest reuse. This map remains private; do not reuse the public tag-set
+codec for differently typed values or change the tag/archive digest domains.
+Existing tag copy-on-write code is implementation precedent, not a new owner.
+
+A single collection replacement/deletion path-copies at most w branches and one
+leaf. Unchanged subtrees are shared. Ordered traversal keeps at most w+1 directory
+frontier entries and visits each reached node once; sparse uncompressed paths
+cost up to O(w*C), not a universal 2C bound. The consecutive-key probe's ~2C+w
+counts are fixture-specific. A B-tree lookup for stored node IDs still costs
+O(log Z) per node; do not call total SQL machine work constant or strict linear.
+Adding unrelated mutations does not add work to an already pinned directory walk.
+
+Concrete private records (names are implementation suggestions):
+
+```
+discovery_head(singleton PK, incarnation, directory_root, publication_counter)
+discovery_node(node_id PK, kind, depth, left_id, right_id, version_id,
+               canonical_node_bytes, direct_refs, allocation_bytes)
+discovery_collection_version(version_id PK, fixed_descriptor_fields...)
+discovery_source_handle(handle_id PK, owner_kind, immutable_identity,
+                        complete, retention_refs, storage_bytes, phase)
+discovery_reap(object_kind, object_id, PK(object_kind,object_id))
 ```
 
-Use `<` and plain DESC for descending order. On proven non-null keys, omit
-redundant NULLS modifiers on BOTH initial and continuation pages: SQLite can
-otherwise introduce a sort. The nullable fallback keeps its native null ordering.
-A one-column key can use a
-scalar comparison. `sqlalchemy.tuple_` is the portable composite implementation
-for the maintained SQLite/PostgreSQL backends. Preserve all base predicates.
-Do not strip conditions from an already-built native statement; construct the
-fast predicate from the original base statement. Do not infer proof from a
-non-null cursor, or from an ORM column subsequently made nullable by an outer join.
-Nullable/unproven keys retain the existing helper, receive a separate scan/index
-profile, and must still pass the native ordering/error oracle. Future optimized
-nullable partitions need their own proof, not sentinel COALESCE values.
+Large source data use G26's indexed facts and bounded segment manifests, not
+`canonical_node_bytes`. Metadata for a handle is fixed-size; its many descendant
+records are retained/reaped by the owning bounded manifest mechanism. Directory
+and query tables are catalog-owned derived/operational state, never archive proof.
 
-Opt in at the actual non-null catalogue/member tuples in `services/collections.py`
-and `services/search.py`, and other proven call sites found during Closure binding.
-Discovery's private result tuple is non-null by DDL. Keep a unique final tie key.
-A matching compound B-tree must have equality-fixed selectors first, then the
-full ordering tuple; reverse scans are acceptable for uniform reverse order.
-Keep key collation the same in index, SQL ordering and cursor interpretation.
-Artifact IDs are fixed lowercase hexadecimal and collection IDs are numeric;
-do not sort serialized collection-ID strings lexicographically.
+### 3.3 Transactional writer coverage and lock order
 
-Current member PK `(collection_id,artifact_id)`, global artifact-order and
-bytes-order indexes cover their named operations. Add a normal B-tree
-`(sha256,collection_id,artifact_id)` for an unscoped exact payload digest lookup;
-the existing `(collection_id,sha256,artifact_id)` is not the same access path.
-Keep the existing indexes needed by other owners. This additional index charges
-one index update per inserted/deleted member. Do not claim every combined sort /
-selector pattern is index-covered: validate the supported combinations, and
-assign the remainder an explicit residual-scan/sort declaration.
+Prepare/seal variable-size description/tag/member/G26 source versions in bounded
+steps first. Then, in the SAME short transaction as the relevant catalog change,
+validate their current archive/root/owner fences, replace the affected descriptor,
+path-copy its directory entry, and switch `discovery_head`. An acknowledged
+searchable publication must not leave a silently stale directory. No async mirror
+that claims it includes a committed catalog mutation before it actually does.
 
-Capture EXPLAIN and actual rows/VM instructions at both the beginning and deep
-inside the key range. An index name in an EXPLAIN output is not proof of a seek:
-`SCAN ... USING INDEX` may still restart at the beginning on every request.
-A nominal tuple SEARCH is also insufficient: on the inspected SQLite engine,
-`(k, integer_rowid_alias) > (...)` can seek only `k` and rescan the entire tied
-prefix. The retained negative probe demonstrates this. Require an all-leading-
-keys-equal adversary and a genuinely deep cursor, not only short tie groups.
+All writers to searchable state take locks in this global order:
+`discovery_head -> collection owners in numeric order -> index-state/summary
+owners -> immutable handle/reference records in deterministic order`. Acquire
+head coordination before changing contributors, not in a cross-table AFTER
+trigger after taking conflicting locks. Reconcile the existing catalog-event
+watermark lock order too; no path may take event/head locks in reverse order.
+Root pin admission takes head then query/pin records; it takes no source-row locks.
+Every mutation of directory references (including GC and resurrection) takes the
+same short head coordination lock before object/handle rows. This deliberately
+simple serialization prevents parent/child lock inversion; it is part of the
+measured write/maintenance cost. Reapers never take collection/event locks or
+acquire head after child locks. Mark a source handle REAPING under that coordinator;
+then its owner deletes descendants in separate bounded units without reacquiring
+head/collection locks. A REAPING handle cannot be newly published or pinned.
+SQLite uses the existing serialized write discipline; PostgreSQL uses explicit
+owner locks. Use bounded lock/statement wait policy, without raising existing
+safety timeouts merely to make a test pass.
 
-For an owner whose tuple plan only partially seeks, select the tested
-`seek_partitions` fallback in `reference.py`: for a d-key boundary, visit disjoint
-ranges in descending prefix length. For `(a,b,c) > (pa,pb,pc)` these are
-`a=pa AND b=pb AND c>pc`, then `a=pa AND b>pb`, then `a>pa`. Reverse the strict
-comparison and ordering for DESC. Order each range by the complete tuple, keep
-all base predicates, and fetch at most p+1 per range. Consume ranges in this
-order in ONE request snapshot; stop once p+1 combined rows exist, then truncate
-to p+1 before normal lookahead handling. The ranges are disjoint and already
-lexicographically ordered, so no global sort or dedup is needed. Retain a unique
-final key. Each physical plan must seek its equality prefix plus scalar range.
-Worst-case page work is `O(d*log Z+d*p+B_fetched)` and bounded `O(d*p)` rows;
-d is the owner's explicit fixed ordering width, not an unbounded hidden constant.
-The matched member-text tuple path and the rowid prefix-partition fallback have
-separate complete-traversal work tests with 512/2048-row tie-heavy inputs, both
-orders. Retain the simpler scalar seek for a one-column integer primary key.
+Update every actual mutation owner: collection publication/import/rebuild/deletion,
+member inventory sealing, description and tag publication, G26
+`publish_index_build` and invalidation, search-normalization/extraction changes,
+source reset, bootstrap, bulk and cascade paths. The existing catalog-event
+watermark alone misses G26 publication and is insufficient. Fail invariant tests
+on a new uncovered mutation. No raw live UPDATE of a sealed view is permitted.
 
-The probe executes the native SQLAlchemy helper and the candidate, not an
-invented OFFSET stand-in. Its rowid tuple runs are retained as UNQUALIFIED
-negative controls, not evidence of the selected indexed-page bound.
+A small one-collection commit writes at most a fixed path plus fixed metadata and
+references. Stage large changes outside that transaction. Do not silently split
+an existing atomic multi-collection contract: use its bounded publication manifest
+or seek specific owning approval. The head serializes final publication, not whole
+preparation/query execution. Declare and qualify this short write bottleneck; if
+it becomes material, use an explicitly proved bulk/path-copy strategy rather than
+unbounded transactions or a global lock around source staging.
 
-### 3.2 Filter and authorization domains
+### 3.4 Atomic pin, reuse and maintenance
 
-`page_size` bounds *returned material*, not all search work. For a scan profile,
-define the examined domain from the authoritative relation after declared fixed
-equality scope, before residual predicate/authorization evaluation. State its
-size and predicate bytes. Do not define it as "whatever rows the planner touched."
-Choose exact artifact-capability membership as a driving relation where narrower;
-use indexed semijoins rather than a large materialized permission IN list.
-Charge the real authorization delegate and check live capability/claim expiration,
-revocation, consumer key and fence on every request, including a cached page.
+In one short transaction, authenticate admission, read and retain the complete
+head root, bind its incarnation and query owner, reserve configured query resources,
+and create the idempotent work record. Admission reads a fixed number of header/
+quota records; it does NOT enumerate C collection headers or pin C generations
+individually. The root retains its descendant source handles transitively.
 
-### 3.3 Collection summaries without hidden fan-out
+Use DAG reference retention: newly interned nodes own their fixed child edges once;
+current-head/query/staging roots own explicit external references. Removing a root
+queues zero-reference objects, not a recursive DELETE CASCADE. Reaping pops at most
+a configured number/byte budget, locks and rechecks zero references, deletes the
+object and releases its fixed outgoing edges. Resurrection and cleanup race under
+the same locks. Source-handle reapers visit bounded pages; a generation row cannot
+cascade-delete millions of facts. Restrictive FKs and phased owner deletion prevent
+`CollectionRecord` removal from bypassing query retention. Deletion still removes
+current visibility/permission immediately; retained bytes grant no access.
 
-The current `_collection_summary_query` performs per-collection copy counts,
-object/publication byte sums, current description/tag coverage, and manifest
-min/max. It is NOT a constant-size point lookup merely because the HTTP result
-is small. Select/filter/page **collection keys first**, then enrich at most the
-returned page plus lookahead; do not evaluate summaries for a skipped prefix.
-Implement these derived relations under the catalogue owner:
+A pin may retain old data for collections later excluded by selection. That cost
+is real: account exact global allocated/retained bytes and operational pin ages.
+Do not compute an expensive exact per-query unique-byte attribution at admission;
+label any per-pin logical reservation conservative, and keep it distinct from
+physical shared-byte totals. Avoid multiplying shared objects by query count.
+Enforce configured global/per-owner admission and retention budgets at allocation,
+not only at final sealing. Under pressure, explicitly expire/defer query work and
+reap bounded state before it obstructs durable custody; do not silently drop a pin
+or invalidate archive facts. No infinite lease, hidden hard total or free cleanup.
 
-- `collection_summary_totals(collection_id PK, archive_copy_count,
-  remote_object_bytes, description_bytes, tag_head_bytes, tag_node_bytes,
-  retained_copy_count)`. Sum remote storage exactly as the present four sums;
-  do not exclude retired/failed/pending rows that the native sum includes.
-- `collection_summary_description(collection_id, published_revision,
-  published_identity, copy_count)` unique on the first three fields.
-- `collection_summary_tags(collection_id, published_revision,
-  published_tag_set_identity, copy_count)` unique on the first three fields.
-- `collection_summary_manifests(collection_id, sha256, object_count)` unique and
-  ordered on `(collection_id,sha256)`; keep only positive counts.
+## 4. Computation and G27 owner optimizations
 
-For each copy `(collection_id,store)`, its retained contribution is precisely
-`copy.state == uploaded AND NOT EXISTS retirement`. Its description contribution
-is one count at the publication's `(published_revision,published_identity)` iff
-retained AND description.state == published. Tag contribution is analogous.
-The read compares the group at the collection's **current** revision+identity
-with retained_copy_count, preserving the existing zero-retained behavior.
-Changing a current collection revision is then a point lookup, not a scan or
-rewrite of all copies. Manifest contribution includes exactly rows with
-`object_id == manifest`, regardless of other state, as the current query does.
-Read ordered first/last manifest groups with LIMIT 1. Preserve missing/ambiguous
-root failure rather than replacing it with `CollectionRecord.archive_root_sha256`.
+Retain the non-null composite seek and tested disjoint-prefix fallback,
+transactional summary deltas, exact one-pass clause matching, minimum-support
+propagation, same-member guards and keyed intersections from ALGORITHMS.md.
+The following conditions replace their earlier memory/transaction assumptions.
 
-Maintain counters from old/new base-row contributions in the SAME transaction.
-For copy/retirement/publication state changes, read at most the affected copy's
-old and new description/tag contribution (point keys); decrement old groups,
-increment new groups, remove zero-count groups. Object/publication byte changes
-add `new - old`; insertion/deletion use zero on the absent side. Enforce positive
-counts/nonnegative totals and bounded integer domains. Acquire the collection owner row locks BEFORE modifying contributors, in
-collection-ID order, then compute old/new contributions and deltas. All writers
-for a collection use that same coordinator; do not wait for an AFTER trigger to
-serialize a stale cross-table snapshot. SQLite uses the existing serialized write
-transaction discipline. Lock affected summary keys in the same order. Exact duplicate retries add no delta;
-conflicting retries must still fail at their current owner boundary.
+### Bounded data operators
 
-Centralize this in catalogue-owned SQLAlchemy helpers plus database-level
-invariant tests covering EVERY write path. The mutation checklist is
-`collection_uploads`, `archive_records`, `archive_copy_jobs`,
-`archive_copy_retirements`, `collection_descriptions`, `collection_tags`,
-`mutable_document_reclamation`, `collection_mutations`, `collection_deletions`,
-and reconstruction/bootstrap paths in `catalog_db`. Bulk deletes and cascades
-must apply grouped deltas or tested triggers; do not only hook ORM instance events.
-Do not replace the selected coordinated owner writes with ORM-only callbacks or
-untested cross-table AFTER triggers. The selected invariant is
-transactional old/new deltas, never asynchronous reconciliation before reads.
+`load_source_chunk(handle, key_or_ordinal, byte_limit, record_limit)` validates the
+query/pin/attempt, reads a bounded detached chunk, then closes its transaction and
+connection. Evaluate outside it. A high-degree node carries an adjacency cursor;
+processing one node cannot mean loading all its edges. Disk-backed queues, dedup
+sets, joins and sort runs persist their own paged state. Checkpoint root references
+and cursors, not full queues/sets/plans. A physical access-plan test must show a
+chunk doesn't scan the whole source before returning a small result.
 
-Initialize from current state once in a bounded grouped scan when explicitly
-rebuilding derived summaries; those source records include local operational
-state and are not replaceable by archives alone. Do not delete receipts, pending
-jobs or other authority to make a rebuild convenient. Missing/inconsistent
-summary state fails closed until rebuilt; no partial zero defaults. Current
-pre-v1 baseline DDL/models/fixtures are edited together, retaining Alembic and
-synthetic forward upgrade/interruption tests. Test against the unchanged native
-aggregate oracle through all mutations, rollback, duplicate retries and restart.
-This part is a precise design, not implemented by `reference.py`.
+Large assertions, profile-section sets, scalar values, UTF-8 strings, descriptions
+and supports are independently varied extents. Extract once into source-normal
+segmented facts. Do not fetch one unbounded ORM Text/BLOB or call `json.loads` on
+an entire unbounded assertion at query time. Stream literal containment with a
+bounded-pattern algorithm such as KMP, preserving ASCII-only folding, exact
+codepoint/byte semantics and chunk-boundary matches. Equality includes exact
+length/representation and streamed verification after any digest candidate check.
+Keep first native posting/first fully satisfied declared section; persist winner
+vectors by section when they exceed a quantum. The old in-memory trie/matcher is
+a semantic oracle/helper, not the proof of this streaming implementation.
 
-## 4. G28 predicate evaluation and query algebra
+Simple ordered member/index lookups may return pages before scanning the whole
+input, but only with proof that no preceding result or smaller support is unseen.
+For ordinary complex provenance queries, choose resumable complete preparation:
+selection -> fact-match -> scope-project -> clause-intersect -> order/seal.
+Persist per-operator frontiers and counts. A pending operation is not an empty
+page. Emit complete results only after all relevant terminal obligations finish.
+No mandatory full-result build for the simple plan and no opportunistic early
+results from an unqualified complex plan.
 
-### 4.1 One exact predicate evaluation per fact
+Factor immutable G26 evidence once per query/profile. Preserve exact
+`bound-and-required-history` versus `complete-retained-history`, accepted inherited
+transfer extents, and the independent meaning of State byte extent. Retained-only
+history is not member attribution; imported late claims require both historical
+inclusion and causal applicability for the SAME member. Different clauses may
+have distinct witnesses. All minimum-support/order checks complete before sealing.
+No restriction of existing literals/scopes or expansion of archive authority.
 
-Use one query-local fact match relation keyed by `(query clause, immutable source
-assertion identity, applicable state/prefix class)`. Reuse the exact payload's
-lexical match across memberships and snapshots, but apply effective/retracted
-intervals separately; different assertion payloads or source journals never alias
-merely because assertion IDs coincide. Identical payload matching may be shared
-by verified payload digest only with source attribution kept separately.
+### Summary and mutable-page work
 
-Replace the pinned-section Cartesian filtering in `assertion_clause_matches`
-with `clause_matches_once` in `reference.py`, adapted into its existing owner.
-Build a character trie for the matching declared section `/data` roots, recording
-the original declared-section ordinal. Walk each posting pointer once, respecting
-path boundaries (`/data` or `/data/`, not `/database`). The current core's declared
-roots are disjoint; add an invariant test over its declared slots. A future core
-schema adding overlapping roots requires owner analysis, not silently choosing
-one trie terminal. For each routed posting update the first unmatched predicate
-winners for that section. After traversal choose the first fully satisfied
-section in native declaration order. Without a profile use one winner vector.
-Preserve the returned native `ScalarPosting` objects exactly.
+Page collection keys before enrichment. Maintain totals, revision-and-identity
+coverage groups, and ordered manifest digest counts by old/new transactional
+contributions, exactly as ALGORITHMS.md specifies. Use the lock order in §3.3.
+Bounded group lookups must preserve zero-retained, missing/ambiguous-root and
+corruption behavior. Rebuilding summaries uses their actual operational source
+records; archives alone cannot replace receipts/jobs/unpublished state.
 
-Costs: input payload parse/portable validation/posting extraction plus key ordering
-already required by the owner; `O(L + d*B_values + d*V_values + G*d)` for routing and
-literal evaluation with `d <= 16`, `L` total constructed/read pointer characters,
-`G` matching declared sections, and the bounded query-literal length retained as
-an explicit condition. Comparison/hash/key bytes are not unit-cost if unbounded.
-Python dictionaries give expected trie edge lookup, not worst-case hashing.
-This removes the `G*V_values` section-filter product. It does NOT replace the
-materialized JSON parser or claim constant memory for an unbounded assertion.
-Peak includes the raw assertion plus winner pointers `O(G*d)` and trie characters.
-A production external-memory parser is a distinct owner change, not required by
-this helper claim. Charge sorting of object keys and pointer construction.
+For `/search`'s unindexed literal or residual filter, select one logical page's
+private immutable input view. Scan bounded source ranges, use a bounded top-p+1
+heap for the requested total ordering where no matching ordered index exists,
+and persist continuation between quanta. Retain only the necessary candidates;
+comparisons/byte work still count. Return the native page only when its next p+1
+results are exact. The following page is a fresh mutable-page view. Its complete
+browse sequence may legitimately pay repeated scans; declare that trade-off and
+prefer exact discovery for a stable full traversal. Do not call trigram or LIKE
+queries universally indexed/output-linear. Keep native normalization semantics.
 
-Keep SQL posting lookup as a candidate superset until exact verification. String
-LIKE/collation, chunk overlap and prefix filtering cannot become an authority
-substitute. For exact typed equality, use a bounded type/representation/value
-hash key and verify exact value/source bytes on collisions; arbitrary long
-TEXT cannot be promised to fit an unlimited B-tree key. For strings folded with
-ASCII mode compute the same native normalization. Fixed-length hashes require
-collision verification, not a mathematical no-collision assumption.
+## 5. Durable work, idempotency, HTTP and completion
 
-Evaluate all predicates within one declared section; SQL must correlate both
-assertion source and section identity. A join of independently satisfied values
-from different assertions or profile sections is wrong even if DISTINCT removes
-result duplicates. Whole raw assertion matching occurs once per source/query,
-not once per output member or once for each page.
+### 5.1 Private execution interface and state
 
-### 4.2 Source-factored query plan
-
-Consume G26's source-normal fact/index adapter. No new rule engine and no copied
-expanded Membership table. Each clause produces one disk-backed relation:
-`clause_member(clause_ordinal,collection_id,member_id,minimum_support_id)`.
-Each support row retains source coordinates, scope and native exact value
-supports, shared by ID instead of copying a large assertion into every member row.
-
-For ordinary unary/shared histories: seed exact matching facts, apply born/
-retired prefix intervals, propagate minimum support through G26's typed reverse
-selectors. Settle a selector once at its smallest key, deduplicate nodes/edges,
-and merge shared roots. The priority queue and visited set spill to indexed disk.
-Do not enumerate paths in a diamond DAG. Charge queue/index comparisons explicitly.
-
-For imported guarded histories: compute a safe OR-relaxed candidate set, then
-run G26's exact same-member AND-guard fixed point on each query-relevant candidate
-slice. A guard activates only when both sides are reached for that member. Never
-use another member's import witness. Memoize/deduplicate `(member,typed selector)`
-within the query; no exponential path recursion. The profile's conservative
-worst case is a sum of candidate slices, bounded by `C_guard*(V+E)` before index
-costs. This is a justified graph/query bound, NOT strict linear or output-linear.
-Sparse zero-output correlated cases must be measured. Do not mask this profile
-as ordinary unary propagation or invent a faster algorithm without proof.
-
-Intersect clauses by `(collection_id,member_id)`, retaining one minimum per clause.
-Implement intersection by ordered merge or keyed semijoins over the clause-member
-relations, not support-tuple cross joins followed by DISTINCT. The output has at
-most `d_clauses` support links per matched member. Scan all potentially smaller
-supports before sealing. A zero-result projection is valid only after terminal
-clause/selection traversal. Exact counts, where an internal consumer needs them,
-count distinct output members, never supports or raw join rows; no new HTTP count
-operation is introduced.
-
-### 4.3 Legacy textual search remains a separate mutable-browse operation
-
-`services/search.py:_search_candidates` currently unions member matches for ID,
-payload digest, collection text/description and tags. Preserve its normalization,
-substring meaning and sort/error behavior. Push explicit collection and admissible
-authorization scope into candidate construction. First find matching collection
-IDs/tag membership, then semijoin member rows once; do not fan out every matching
-tag through all members before deduplication. Keep independent member ID/digest
-matches in the union. Apply the actual principal filter before projecting results.
-
-Named B-tree equality lookup applies only to exact fields/routes that use equality.
-Legacy `%literal%` matching is not a prefix search. SQLite general substring and
-short/nonselective PostgreSQL patterns get a searchable-input scan profile.
-Existing PostgreSQL trigram indexes are useful accelerators, not a universal
-`O(log Z + output)` promise, and their candidate verification/sorting costs count.
-Do not change SQLite's existing LIKE-based public behavior during this performance
-change; canonical discovery's exact native verifier continues to distinguish its
-own literal semantics. Pagination reexecutes mutable query work by design, so a
-full multi-request legacy scan traversal declares the sum of its per-request scan
-costs; it does NOT inherit discovery's prepare-once profile. A quiescent internal
-complete iterator can execute one scan/order, with capture and output charged.
-
-## 5. Private exact query projection and lifecycle
-
-### 5.1 Relational interface (private to server owner)
-
-Add `canonical_discovery_query.py` and `catalog_discovery_query_models.py` (names
-proposed, not cross-package APIs). `SqlAlchemySearchService.discover` orchestrates:
-
-```text
-prepare_query(request, principal, expected_read_identity | None) -> ReadyQuery
-read_query_page(ready_query, after_member, page_size, principal) -> native page
-release_query_attempt(query_id, attempt, reason) -> bounded cleanup
+```
+admit(query, principal, invocation_key) -> query_id, retained_view, work_token
+claim_quantum(query_id, worker) -> attempt_epoch, checkpoint_version
+load_chunk(...) -> detached bounded input
+execute_quantum(detached_input, checkpoint) -> bounded staged delta
+commit_quantum(query_id, epoch, expected_checkpoint, delta_manifest) -> phase
+read_page(query_id, position, limits, live_principal) -> exact page | pending
+cancel(query_id, live_principal) -> bounded cancellation acknowledgement
+reap_query(query_id, quantum_limits) -> remaining | reclaimed
 ```
 
-Suggested persistent records, current baseline only:
+Persistent query metadata includes owner/key, logical request digest, admission
+policy/scope identity, source incarnation, retained root/pin, extraction and
+algorithm revisions, phase, checkpoint version, worker epoch/lease, idle expiry,
+resource reservations/usage and terminal manifests. Result/support rows have
+(query, attempt, exact member/clause/support keys). Queues, captured selections,
+operator state, runs and merge frontiers live in paged tables/segments. No unbounded
+inline manifest, status JSON, IN list, serialized resume token or mutable result
+rewritten once per output. Bind support evidence to exact original source facts.
 
-```text
-discovery_read_fence(singleton PK=1, source_incarnation, revision bigint)
-discovery_query(query_id PK, source_identity, query_identity, principal_binding,
-  authorization_view_identity, algorithm_revision, read_identity,
-  observed_fence_revision, attempt, phase, lease_owner, lease_until,
-  expires_at, result_count, support_count, scratch_bytes, terminal_digest)
-discovery_query_result(query_id, attempt, collection_id, artifact_id, ...small hit...,
-  PK(query_id,attempt,collection_id,artifact_id))
-discovery_query_support(query_id, attempt, support_id, exact_native_support_payload,
-  PK(query_id,attempt,support_id))
-discovery_query_hit_support(query_id,attempt,collection_id,artifact_id,clause_ordinal,
-  support_id, PK(query_id,attempt,collection_id,artifact_id,clause_ordinal))
-```
+Durable work phases: `ADMITTED -> SELECT -> MATCH -> PROJECT -> INTERSECT -> SEAL ->
+READY`; simple ordered plans may instead use `STREAM`. `CAPACITY_BLOCKED` retains
+its checkpoint and suspended phase; `FAILED/CANCELLED/EXPIRED -> REAP -> RECLAIMED`
+are explicit terminal paths. Phase choice doesn't turn a preparation milestone
+into result completeness. Missing required source is a failure, not zero matches.
 
-Index workspace reuse by the full query/source/principal/authorization/algorithm
-binding and phase/expiry. Never alias distinct principals when the optional native
-authorization-view identity is null; always bind the explicit principal and key
-identity as the browse contract does. Support payloads must be self-contained
-native source references/value evidence, or source generations must remain leased
-through use. Choose self-contained support payloads for READY projections so
-routine old-build GC cannot break a valid page. Large raw assertions stay in the
-G26 source store, not each support payload. Result ordering keys are NOT NULL.
+Each quantum first obtains a bounded worker lease, reads its fixed checkpoint,
+loads bounded input, releases source resources and computes outside transactions.
+It writes bounded staged outputs, then commits their manifest and checkpoint using
+compare-and-swap on `(query_id, attempt_epoch, checkpoint_version)`. Duplicate
+identical delta replay is a no-op; conflicting reuse fails. An expired/replaced
+worker cannot publish or delete its successor's state. Checkpoints advance only
+with durable associated output; orphan stages are bounded-reaped. Cancellation
+is checked between small units and again at publication. A process crash repeats
+at most unfinished quanta, not all earlier source work. Large sort/graph operations
+must expose real substeps; naming one whole sort a quantum is forbidden.
 
-`algorithm_revision` is a private cache schema/algorithm discriminator, not a
-public digest extension. Workspaces are rebuildable, never authorization,
-source evidence, receipts or recovery authority. Do not merge `.reference` model
-classes into main or expose their model hash/exception types.
+SEAL hashes ordered bounded result/support segments and validates terminal counts
+incrementally. Its final transaction compares the stored terminal manifest,
+checkpoint/epoch, pin validity and owner/source identity, then changes READY with
+a fixed write set. It does not rescan/hash Q rows while holding the transaction.
+Do NOT require equality with the current directory root or global content counter.
+New content is not a query failure. Corruption, expired retention, changed source
+incarnation or current authorization are different, explicitly failing cases.
 
-### 5.2 Atomic invalidation fence
+Retained sealed segments are one result store; avoid a compulsory second complete
+copy into SQL. SQL tables may themselves be the staged/result store. Account any
+necessary copy rather than hiding it. Reclamation is part of lifecycle work even
+when scheduled after delivery; record both result-complete and resources-released.
 
-Current `CatalogSyncStateRecord.committed_revision` alone is insufficient:
-`canonical_discovery_index.publish_index_build` switches `active_build_id` without
-publishing a catalog event. Add a separate private monotone transactionally
-updated fence; its source_incarnation is the existing catalogue source identity,
-not an independently invented source authority. Do not use a
-PostgreSQL SEQUENCE as a transactional commit clock. A rollback must roll back
-both catalogue change and fence bump. Overflow fails the mutation, not wraparound.
+### 5.2 Concrete public progression (current-only pre-v1 revision)
 
-Install equivalent current-baseline SQLite/PG triggers for any INSERT/DELETE or
-relevant UPDATE to `CollectionRecord`, `CollectionTagMembershipRecord`,
-`CollectionArtifactRecord`, provenance IndexState and Generation header rows,
-and catalogue source-identity reset. Initial correctness-first implementation may
-bump on ANY update to these header/base tables (including pending generations).
-Do NOT bump for query workspace changes or immutable fact staging invisible to
-readers; completed source facts must remain immutable, enforced by the G26 owner.
-Coarse false invalidation is allowed and measured; missing invalidation is not.
-Use exact SQL table names from model metadata when generating DDL; test trigger
-coverage from mapped dependencies, bulk SQL writes and cascades, not only ORM hooks.
-Version the private fence source incarnation on destructive DB reconstruction.
+Use the existing `/v1/artifacts/discover` owner, not a second query language.
+Retain `ArtifactDiscoveryRequest` as the logical predicate document. Introduce an
+invocation envelope containing `query` and an `idempotency_key` using the existing
+canonical-visible-text/max-200 convention at its owning declaration. The key is
+invocation transport identity, not part of `query.identity()`; the client creates
+it once and persists it through admission retries. Unique owner/key/admission-key
+records reject a different logical query. An identical retry resumes the original
+view, never silently starts at a newer root. Retain replay records for the declared
+operator-configured idempotency window; do not claim indefinite replay after that
+window or unlimited tombstone storage. Signed continuation expiry remains binding.
 
-Application access policy and time-dependent capability expiry are checked anew
-through their existing owner before every page; a DB change clock cannot notice
-time passing or replace current key/claim validation. Query-cache lookup takes
-the current authorization fingerprint. Dynamic grant inputs not represented by
-that fingerprint must either participate in invalidation or disqualify reuse.
+`POST /v1/artifacts/discover` accepts that envelope and either no token (admission)
+or the owner-typed continuation/page token. Each invocation drives at most one
+configured quantum or joins existing progress; it does not synchronously wait for
+all preparation. No long HTTP poll or DB session is needed. The server may also
+schedule the same leased quanta fairly; correctness/progress must not depend on
+an undocumented separate daemon or on the client resubmitting the initial query.
 
-A READY query can be reused only if its complete source/principal/query binding
-and its observed `(source_incarnation,revision)` equal the current values in the
-request read snapshot. This is a sufficient unchanged test, not a proof of what
-changed. When different, recompute the **existing** `_read_identity` transcript.
-A different digest -> existing Conflict. Equal digest -> internal cache miss and
-full preparation at that same public digest, not 409. This conservative rebuild
-also covers mutable rows not individually represented by the old transcript;
-do not infer unchanged query results solely from that digest. An irrelevant
-change can cost a rebuild but cannot silently change public invalidation rules.
-`ProjectionStore.RebuildRequired` demonstrates that distinction; it is internal.
+* `202`: a closed `riverhog-artifact-discovery-pending/v1` response with query ID,
+  logical query identity, opaque snapshot/read identities, phase, bounded work
+  token and retained-until time; no artifacts and no `complete:true`. Advertise
+  retry delay using the existing HTTP convention. No growing progress array.
+* `200`: `riverhog-artifact-discovery-page/v2`, same exact hit/support semantics,
+  query/read identities, query ID and retention expiry, bounded artifacts,
+  complete flag and next page token. Use fixed-shape support references as below,
+  rather than forcing an unbounded source pointer/value into one hit. Empty terminal success requires full proof;
+  a pending no-match-so-far state is never this response.
+* `DELETE /v1/artifacts/discover/queries/{query_id}`: owner-authenticated idempotent
+  cancellation. It fences work/releases the root reference in bounded metadata
+  work and acknowledges cancellation; cleanup proceeds in bounded quanta, not a
+  giant cascading delete. It is neither archive deletion nor permission grant.
 
-### 5.3 Preparation, ready publication, serving and recovery
+A logical page retry is position-idempotent; pending-work tokens resume server
+checkpoints and are not client-controlled scan positions. Tokens bind operation,
+owner/key, query ID/digest, pin/source/read identity, page position if any, and
+expiry, with existing cryptographic token discipline and fixed size. Worker
+attempts stay server-side so takeover doesn't invalidate valid client tokens.
+Reject retired token purposes/formats; never reinterpret them as a new snapshot.
 
-1. Validate request/token and current authority with native behavior. Single-flight
-   preparation by full private binding uses a monotone attempt and lease, not a
-   process-global unbounded dictionary. A stale worker cannot publish or delete
-   a later attempt. Join or recompute after lease expiry; no new public async API.
-2. Under one explicit backend read snapshot, capture the source/fence stamp and
-   evaluate selected-collection transcript with the current native validator.
-   Build the complete G26 query projection into **private separate scratch**, so
-   a SQLite read snapshot does not attempt to upgrade itself into a writer. Stream
-   native rows with bounded fetches; spill graph queues/sets, sorting and results.
-   Keep that snapshot through query evaluation for source coherence; it is owned
-   by preparation, never by HTTP page delivery or client think time. A killed or
-   resource-exhausted preparation is incomplete and publishes no READY result.
-3. Close source cursors/snapshot before handing results to HTTP. Copy bounded
-   result/support chunks into the private BUILDING database attempt, charging both
-   scratch and durable bytes. Record terminal traversal and exact row/support
-   counts, plus a deterministic integrity digest over the sorted workspace rows.
-   Retries use unique keys: identical row replay is no-op, conflicting replay fails.
-   Maintain inserted counts by actual inserted-row deltas, not COUNT(*) each batch.
-4. In a short publication transaction, lock the attempt and fence in the declared
-   global lock order; take the fence lock first and the attempt lock second (never lock source rows
-   for update in this transaction), then confirm attempt/lease and that the source fence is unchanged
-   since the read snapshot. Different fence -> abort/restart preparation (after
-   native read-identity check for continuation), even if the public digest happens
-   to be equal. Validate terminal manifests/counts/digest before atomically setting
-   READY. A partially copied file/table is never serveable. Release scratch in a
-   finally path and independently reap abandoned attempts with fenced ownership.
-5. Each page authenticates/checks current permission/capability and validates the
-   signed token first, then reads READY metadata, current fence and `p+1` sorted
-   result rows in one request snapshot. Fetch at most `p*d_clauses` support links
-   by bounded joins; avoid one whole graph query per hit. Serialize bounded material
-   after closing DB resources. More -> next position is last RETURNED member;
-   otherwise complete=true, no token. No page budget may silently skip matches.
-6. Eviction/expiry/missing local workspace is a cache miss, not evidence of an empty
-   result or changed read. Rebuild from source at the cursor's native read identity;
-   normal stale/permission errors still apply. READY data survives process restart
-   if present and valid; no snapshot handle is required. Expired/cancelled workers
-   fail fenced writes. Deleted/corrupt workspace state fails closed and is rebuilt.
+Use `riverhog-discovery-read/v2` over an explicitly specified current canonical
+header: logical query identity, existing catalog incarnation, opaque retained-view
+identity, admission authorization/scope binding and extraction identity. The
+opaque view identity is a server-MAC binding of query ID, incarnation, private
+root and relevant identity domains. Do not expose a globally correlatable raw
+catalog root or a forgeable pin. A query retry has the same read identity; a fresh
+query may have a different identity even for equal logical results. This is stated
+publicly, not confused with archive or result-set equivalence. Initial hashing
+is fixed-header work, not an unbounded selected-header scan.
 
-Quota by bytes, rows, active queries, per-principal and aggregate storage; do not
-use page_size as a result limit. Include raw-row maximum working set, backend
-cursor buffers, DB temp spills, snapshot duration, copy amplification, queued
-attempts and cleanup. Select existing resource/lease configuration patterns in
-RuntimeConfig with explicit validation; no arbitrary new numeric acceptance caps
-or timeout relaxation is proposed here. Capacity rejection uses the existing
-unavailable/resource-failure boundary, not a successful shortened result.
+Expose the equivalent pending-work envelope to `/search` only for its long logical
+page preparation, keeping successful page contents/next mutable position as §2
+specifies. Native client low-level calls expose pending distinctly. Convenience
+iterators persist invocation/work/page tokens, honor retry/backpressure, permit
+cancellation and bound local memory; they never restart admission on a 202 or
+accumulate all hits. CLI traversal writes progressive results and distinguishes
+pending, failed and terminal states. Source-bound OpenAPI/extent/client tests must
+cover the additional outcome and cancellation route; no silent surface exclusion.
 
-## 6. Proposed operation-scoped declarations
 
-Integrate these profiles at their existing owners using #963's common declaration
-and evidence machinery. These labels are research names, not a second registry.
-Let `I(k,Z)=O(k log(2+Z))` fixed-width indexed operations, `S(k)` comparison sorting
-with compared bytes charged, `P` pages, `p` page capacity, `B_out` output bytes,
-`C` selected collection headers, `N` selected members. Add actual authorization
-and delegate costs; no composite passes with a missing delegate.
+### Variable-size supports: bounded transport, unchanged evidence meaning
 
-| Profile | Completion boundary and proposed work | Memory / retained state |
-|---|---|---|
-| G27 point-member / sealed point metadata | one exact response: `I(1,Z)+B_out` plus live access | response + bounded DB page buffers |
-| G27 point-summary, AFTER delta integration | fixed number of aggregate/group/min-max point probes: `I(1,Z_summary)+B_out` plus access; base-row writes pay delta index work | constant number of groups read; retained aggregate groups bounded by base contributors |
-| G27 ordered range, no residual scan | one page `O(log Z+p+B_page)` with real matching seek; quiescent traversal `O(N+B_out+P log Z)` | `O(p+B_page)`; no full seen-ID set |
-| G27 residual-filter page | one declared base-domain scan/seek plus predicate/access costs and optional `S(matches)`; state actual scanned logical domain | bounded page; sort spills; do not relabel as index-only |
-| G27 exact internal enumeration | one snapshot scan/order + capture + output, not the cost of unrelated repeated HTTP calls | bounded RAM + output-sized disk capture if egress requires it |
-| G28 typed indexed fact lookup | exact matching value posting domain, verified source values and interval states + `I` + member projection delegate | bounded candidate batches + query-local disk dedup |
-| G28 literal searchable-input scan | one pass over defined selected unique searchable bytes/values, bounded program multiplier and pointer/key-order costs + projection/order | largest admitted source assertion + configured buffers, spill for joins/results |
-| G28 common unary scope propagation | once per clause: unique relevant facts/typed nodes/edges + queue/index work `I(V+E,Z)` + emitted clause-members | `O(V+E+clause_members)` disk, bounded queue/cache RAM |
-| G28 same-member guard profile | exact sum of member-specific relevant slices; conservative `O(C_guard*(V+E))` plus indexed work and literal costs | reusable scratch per member plus dedup/output relations; not a claimed strict-linear profile |
-| G28 intersect/seal | ordered clause-member intersection or indexed semijoins; `S(Q)` only if order not already available; at most clause-count links per output member | `O(Q+support_payload_bytes+Q*d_clauses)` disk; bounded staging RAM |
-| G28 exact projection pages, unchanged view | preparation ONCE (`C` transcript + selected query profiles + seal/copy), then `O(P log Q+Q+B_out)` plus live auth for all pages | page-sized RAM; complete-result disk charged at preparation |
+The current `DiscoverySupportOut.pointer` is a plain string, not an established
+small carrier bound. A bounded number of hits therefore does not prove bounded
+response bytes. In the new page/v2, each clause/value match is a fixed-shape
+`DiscoverySupportReference` with support identity, exact byte count, media/format
+identity and a bounded first-record-set reference. The referenced current support
+document preserves the exact native fields: journal anchor, entry, assertion and
+referent identity, kind, state, relationship, pointer, representation and value
+digest. No field is dropped, shortened or interpreted as merely advisory.
 
-Changed fences, evictions and retries explicitly repeat preparation. For `R`
-admitted preparations the lifecycle bound is the sum of their actual declared
-input dimensions and profile costs, plus all page reads and cleanup; arbitrary
-unbounded churn has no finite completion bound. No claim that an unrelated
-mutation is free. Metadata-only digest validation is not the entire query cost.
+Use the repository's owned bounded record-set/chunk/terminal mechanisms for this
+query-owned projection, with exact byte and completion commitments. A concrete
+`GET /v1/artifacts/discover/queries/{query_id}/supports/{support_id}` reads a bounded
+chunk page by signed ordinal/token and byte limit. Native 63-bit sequence/carrier
+bounds retain their existing owning meaning; do not add a maximum total support
+size. Validate that the support belongs to a hit currently authorized for this
+query before revealing it; a support shared by several members needs an exact
+bound member context, not 'anyone with the query ID'. Scope its token to that
+member and check current provenance access on every chunk. Keep the source pin
+and support segments until the invocation's declared retention ends.
 
-Searchable bytes and candidate/slice domains are defined from source relations
-before running the query. Output, unique raw facts and shared logical membership
-are distinct. Hash collision checks, JCS/object-key sorting, SQL index maintenance,
-DB row visits, source reads, temp writes, copying and result serialization remain
-visible. Existing page or query-literal maxima are conditions, not proof that an
-algorithm scales in independently varied members/facts/history/program size.
+The client exposes streamed support content and may offer explicitly materialized
+convenience reads whose output-sized memory is honestly declared. A convenience
+iterator claiming bounded memory must not automatically assemble an unbounded
+pointer/support document. This transport revision is explicit additional contract
+work, not preservation of the old inline wire schema. Extent witnesses include
+one single very large support, not just many ordinary supports. The compact query
+literal maxima remain unchanged; they are not maxima on source metadata.
 
-## 7. Landing sequence and acceptance checklist
+### 5.3 Expiry, admission and fairness
 
-**A — pure owner helpers.** Integrate non-null keysets and the one-pass matcher,
-register exact operation bindings and narrow counters, pass native semantic oracles
-and full null/tie/error tests. No query schema dependency. Do not opt in nullable
-or residual-filter statements to the index-only declaration.
+Use validated RuntimeConfig fields for work record/byte budget, memory, active
+quanta, statement/lock wait, scratch and retained-source bytes, worker lease,
+idle retention, query admission counts, idempotency retention and cleanup budgets.
+Choose documented defaults from qualification, not invented throughput promises.
+Exact values are operator capacities, not query/member/history semantic maxima.
+A source statement must have an interruptible bounded plan; timeouts are safeguards
+and do not prove that LIMIT bounds examined work.
 
-**B — owner data paths.** Integrate collection-summary deltas and required member
-lookup indexes in the one current `v1_0001` baseline. Prove native summary parity
-through every listed mutation path and trigger/bulk/cascade/rollback case. No
-old-schema converter, no parallel pre-v1 reader. Keep Alembic intentionally.
+Worker leases are short and renewable per committed progress; query retention is
+separate. A progressing query can renew retention under the declared capacity
+policy without a hidden hard total-duration limit. Idle/explicitly pressure-expired
+queries return a documented expired-view result (recommend HTTP 410); loss of an
+unexpired required pin fails closed, never retargets to latest. Check auth before
+revealing whether another owner's query exists. Capacity admission failure uses
+explicit 429/503 as owned by the existing error framework; suspended capacity work
+is reported separately from executable pending work, with a checkpoint-preserving
+resume path. Do not poll busy or automatically raise limits.
 
-**C — G26 + G28 plan.** On the accepted G26 fact schema, implement fact matching,
-common unary and same-member guard paths, clause-member intersections and exact
-minimum supports. Differential against native expanded semantics on compact
-fixtures: independent/shared/partially shared/dense, effective/retracted prefixes,
-real imported binding proofs, and correlated negative/late-claim cases. Do not
-hide an expanded membership product in staging or in the generation digest.
+An active pin remains retained on ordinary cache eviction. Dropping a page cache
+can reload sealed segments. Destroying operator checkpoints is not ordinary cache
+eviction: either retain/recover the exact checkpoint under its contract or report
+explicit invalidation. Do not advertise bounded crash replay while discarding its
+only durable progress state. Archive-only recovery may discard all derived query
+state; it never relies on a live query to recover custody or meaning.
 
-**D — private result lifecycle.** Install the complete fence trigger coverage,
-query attempts, bounded scratch/staging and ready publication. Integrate with
-`discover_artifacts`, `SqlAlchemySearchService.discover`, API response/token path.
-Keep request schema and supports unchanged. Add source-fence drift, auth expiry,
-ABA/recreate/source reset, GC, copy failure, killed writer, lease replacement,
-rollback and multi-connection tests on SQLite and PostgreSQL. A BUILDING or
-incomplete empty projection cannot serve. An unrelated change may rebuild but
-must not become a new public 409. Check current auth on every cache hit.
+Fair scheduling admits bounded numbers of quanta per owner and rotates runnable
+queries; waiting for I/O does not monopolize a worker/DB connection. A finite
+admitted pinned computation with sufficient retained resources, continuing worker
+service and stable authority can finish while arbitrary *content* updates occur.
+No promise is made under endless revocation, storage loss or capacity denial.
+Measure per-owner progress as well as aggregate throughput.
 
-**E — conformance evidence.** Bind profiles/counters and witnesses in existing
-Closure/Audit/#963 machinery; derive surface coverage. Run both backend query
-plans and work witnesses, cold and warm cache, matching and absent/sparse output,
-first/deep/terminal pages, many ties, all grant patterns, many shared snapshots,
-large individual assertions, and cheap 2x cardinality series. Use absolute semantic
-work counters and generous justified implementation envelopes, not only noisy
-wall-time ratios. The small SQLite/native observations here do not qualify PG.
+## 6. Authorization and semantic invariants
 
-**F — ordinary integration rail.** Locked formatting/type/lint/unit, distribution
-smoke, build, required Linux/image/recovery/security/complete lifecycle proofs and
-exact-SHA CI/CodeQL, with #963 distinct functional/growth/timing outcomes. Carry
-#960's maintained 600-second report-only profile and explicit shortfall disposition;
-do not waive it or claim it met. #469 consumes approved declarations and executed
-witnesses. Full owner approval of formulas/applicability/resource conditions and
-these proposed private schema changes remains an acceptance checkpoint.
+Pin content, NEVER current permission. Every call authenticates the owner/key and
+checks current account permission, claim/capability/fence, expiry and revocation.
+An optional null `authorization_view_identity` is not a cache-reuse proof. Bind the
+server's exact effective grant/config revision or a canonical identity derived by
+its actual authority owner, plus immutable artifact-selection identity. Do not
+create a weaker second authorization interpreter or hash an unbounded access list
+on every page. Mutation of the underlying authority must change its owned binding.
 
-`reference.py` and its 53 tests are executable algorithm/lifecycle input, not the
-production integration described in B–F. `RESEARCH.md`, `counters.json` and
-`evidence.json` distinguish inspected source, controlled native helpers and model
-observations. No runtime/mainline, archive identity, release or provider change
-was made by publishing this reference.
+Admission's policy applied to pinned tags describes the initial selected domain.
+New content or new tag-granted access does not enlarge an old query. On delivery,
+use bounded indexed current collection/tag/capability checks for each returned hit
+(and any lookahead information that would disclose access). A deleted or currently
+forbidden member causes an explicit whole-page access failure; NEVER omit it and
+claim the snapshot result is complete. A changed effective principal/claim binding
+invalidates the invocation. Match/support provenance exposure additionally requires
+current provenance permission. Recheck at the page's authorization/serialization
+boundary; no promise to claw back bytes already lawfully delivered before revocation.
+
+Differentiate content mutation from permission-affecting tag mutation: the former
+doesn't restart computation; the latter can prevent delivery. Do not require a
+whole-catalog global authorization epoch to equal its initial value when bounded
+current owner checks suffice, nor allow old tags to override a current denial.
+The model uses deliberately simplified authority strings and a current-hit check;
+it does not prove production tag/grant/HTTP integration.
+
+The following must remain exact across both history extents and every scope:
+member and payload identities (including distinct members with equal bytes),
+selected prefixes, retractions/forks, imports and inherited extent, sparse and
+truly dense lawful relationships, first profile/posting witnesses, minimum
+supports, order, pagination and complete terminal results. Root/handle digests
+verify derived storage integrity, not archive proof or source-binding authority.
+Independent recovery preserves artifacts, description, tags and selected provenance
+without the directory, query service or database. A query pin never extends a
+custody/claim lease or authorizes source release or archive retention changes.
+
+
+### Correctness argument the integration must preserve
+
+Directory induction: the empty root is complete; one validated atomic descriptor
+replacement path-copies only that key and leaves every other child unchanged.
+The publication transaction commits the source pointer and new directory root
+together. Thus a successfully pinned root names one coherent committed view,
+not a mixture obtained by consulting mutable rows later. All queried children are
+immutable and transitively retained, so independent short loads have the same
+meaning as reading that view together. Ordinary later root changes are irrelevant.
+
+Retention induction: each stored edge owns one child reference; each live pin/head
+owns one root reference. Reaping deletes only a zero-reference object after the
+shared coordination check, and releases only its own outgoing references. No
+object reachable from a live root can be reclaimed. Staged handles are separately
+rooted until publication or explicit abandonment. The argument depends on complete
+writer/GC coverage, not merely an in-memory pointer being present.
+
+Execution induction: a committed checkpoint names durable operator inputs and
+outputs; CAS prevents a stale epoch/version from advancing it. A lost quantum
+leaves that checkpoint unchanged. Operators run deterministic exact semantics
+on the same retained facts; terminal output follows only after every requisite
+operator frontier is exhausted. Bounded replay and no skipped capacity-blocked
+work follow. Native G26 scope/witness equivalence is a separate obligation and
+is not proved by these state-machine arguments.
+
+## 7. Proposed complexity and extent declarations
+
+Bind declarations beside actual operation owners through existing Closure/Audit
+and #963 machinery; this file is NOT another runtime inventory/target authority.
+Use `w` for the owning fixed key width, `C` pinned directory entries, `D` reached
+private nodes, `F/B` unique relevant source facts/bytes, `V/E` lawful graph nodes/
+edges, `d` query-clause/program dimensions, `Q/Bout` exact result cardinality/bytes,
+`K` committed work quanta, `P` output pages, `U` content publications, `Z` indexed
+store size and `L` replayed uncommitted units. Count variable-key comparisons and
+all lower-layer bytes; fixed-size SHA/reference assumptions are explicit.
+
+| Operation | Work and storage obligation |
+|---|---|
+| Admit and pin | Fixed header/retention/quota operations plus actual auth delegate; O(log Z) indexes, no C scan. One retained root, not C per-query generation pins. |
+| Directory replacement | O(w) node reads/new immutable nodes and indexed/reference updates per bounded descriptor change; O(U*w) retained mutation allocation before GC, charged to writes. Global short publication serialization is measured. |
+| Directory walk | O(D), D <= O(w*C), plus node-ID index costs and streamed descriptor bytes; O(w) frontier memory. Fixed consecutive-key tests do not establish a tighter general bound. |
+| Indexed G27/simple G28 pages | O(log Z+p+page bytes) only for proven full-key seeks and bounded current auth. Prefix fallback explicitly charges ordering width. No full-preparation mandate. |
+| Residual mutable page | Declared source-domain scan plus predicates and O(N log(p+1)) bounded top-p ordering if required, in resumable quanta. Repeated mutable pages repeat this cost; no whole-traversal linearity claim. |
+| Literal matching | Unique fact/posting traversal plus segmented B bytes, exact program/pointer/state terms. Query-sized KMP state; unbounded sections/winners spill. Extraction/validation delegate costs remain explicit. |
+| Unary provenance | Per-clause unique typed nodes/edges/facts plus priority/index costs and emitted clause-members. Persist adjacency/frontiers; no member-by-shared-history expansion. |
+| Same-member guarded profile | Sum of member-specific necessary candidate slices, conservatively Cguard*(V+E) before indexes, plus literal cost. Sparse zero-result adversaries required; NOT universally linear. |
+| Intersect/order/seal | Keyed/merge intersection, necessary external ordering O(Q log Q) comparisons with byte costs, O(Q*d) support links and output-sized disk. Every run/merge/seal checkpoint bounded. |
+| Complex query lifecycle | Once-per-retained-view preparation at the selected profile, + K bounded checkpoint overhead + page seeks/Bout + L bounded replays + actual retention/cleanup. Content publications do not multiply completed query work. |
+| Maintenance | Each unreachable immutable node/edge and result segment released once with actual index work; bounded transactions, no recursive cascade or O(total) final cleanup step. |
+
+Per-step RAM, transaction rows/bytes, tokens and checkpoints are independent of
+logical total, apart from explicitly owned representational/key/query constants.
+A quantum may require O(log Z) index work: "bounded" does not pretend an index
+probe takes constant time on all database sizes. Complexity bounds for declarations
+include writer/pin/maintenance amplification and cold data, not only warm readers.
+Output-sized disk is acceptable when explicit; mandatory O(Q) RAM is not.
+No actual default capacity numbers or v1 conformance are established by model runs.
+
+## 8. Integration map, current baseline and acceptance
+
+Implement in this order; do not mark dependent composite declarations conforming
+before their production witnesses exist.
+
+1. Reconcile exact integrated source and decisions. Record the snapshot/read/pending
+   contract revision and default policy in #964. Owner review accepts its public
+   semantic extent and formulas explicitly; prior G27/G28 conversational constraints
+   do not veto the redesign, but a reference is not silent contract authority.
+2. Integrate seek/matcher helpers and delta-summary invariants (ALGORITHMS.md),
+   with source-bound differential tests. Extend current `v1_0001` DDL/models for
+   directory/handles, query state, indexed lookup and summaries. Preserve Alembic,
+   explicit bootstrap and synthetic future forward-revision/interruption tests;
+   no old-pre-v1 conversion, dual reader or automatic destructive state reset.
+3. Wire directory publication at the actual source owners, especially
+   `canonical_discovery_index.publish_index_build`, collection publication,
+   descriptions/tags, deletions and `catalog_db` reconstruction. Update restrictive
+   generation retention/FKs and shared lock ordering, including catalog events.
+   Old roots remain usable while leased; current deletion/access remains effective.
+4. Add catalog-owned `discovery_views` and `canonical_discovery_query` internals
+   (or equivalent focused names), bounded operators/queues/run manifests and query
+   lifecycle models. Adapt `canonical_discovery_search` to retained sources, never
+   live-table fallback. G26 source-normal segments and guarded scope compiler feed
+   these operators. Keep server implementation out of reusable/client packages.
+5. Own envelope/read/pending/expiry/cancel definitions in `riverhog-protocol`,
+   API search schemas/router and existing HTTP contract declaration path. Adapt
+   `riverhog-client/client.py:discover_artifacts`, its tests, CLI consumers and
+   actual reachable callsites discovered by Closure. Bind `/search` pending work
+   separately from its mutable next-page contract. Do not hand-edit generated
+   contract expectations as authorization for the semantics change.
+6. Bind positive/negative/growth/restart/resource witnesses at each owning surface;
+   generate exact scope/evidence through Closure/Audit/#963 and consume it in #469.
+   No duplicate inventory, target registry or detailed policy ledger in AGENTS.md.
+   Keep #961/#963 ownership and #960's report-only 600-second profile/disposition.
+7. Run ordinary locked format/type/lint/unit/dist/build and required local portable
+   Linux/image/recovery/lifecycle/security proof, then independent exact-SHA GitHub
+   checks. Retain interruptions/failures and timing dispositions honestly. No
+   provider/release operations are authorized just to measure these changes.
+
+Mandatory adversaries include: continued content commits during every work unit;
+quiescent equivalent view comparison; pinned-generation replacement and deletion;
+root-pin versus GC races; actual PG row-lock ordering/deadlocks; SQLite WAL progress
+and PG old-version reclamation; source reset; null auth identity; key/claim expiry,
+capability scope changes and tag-based access loss; restart at every operator and
+seal boundary; stale/duplicate workers; chunks crossing large-string/byte/pointer
+boundaries; high-degree/deep graphs; both inherited history extents/all scopes;
+no-match completion; capacity change/resume; idle expiry; large cleanup queues;
+first/deep/terminal pages and slow consumers. Test two backends and real API/client
+behavior, not only an abstract state machine or a synthetic counter threshold.
+
+## 9. Evidence and remaining work
+
+[bounded/model.py](bounded/model.py), [bounded/test_model.py](bounded/test_model.py)
+and [bounded/probe.py](bounded/probe.py) exercise a real SQLite WAL model of
+immutable radix roots, constant-header admission, no open transaction during
+computation, bounded CAS work checkpoints, content changes without restart,
+capacity suspension, source/current-authority failure, cancellation and bounded
+reference cleanup. The independent streaming KMP controls cover chunk boundaries.
+These are synthetic model witnesses, not production G26 queries or public contracts.
+
+[bounded/evidence.json](bounded/evidence.json) records exact executed tests,
+commands/source hashes and gaps; [bounded/counters.json](bounded/counters.json)
+records fixture counts. Earlier 53 helper tests/12 native tests in evidence.json
+remain historical results from the parent handoff, not rerun or combined passes.
+No production directory integration, streaming G26 compiler, summary mutation
+coverage, actual new HTTP/client/CLI contract, PostgreSQL concurrency, full locked
+qualification or timing target is claimed complete. This revision supplies a
+selected algorithm/lifecycle policy and testable integration instructions, not
+an assurance that unexecuted integration is already correct.

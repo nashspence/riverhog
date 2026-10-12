@@ -7,7 +7,7 @@
     "tree": "991e994457b487a7dca016b7fc0409485cef25c6",
     "archive_sha256": "cd56d6b467794feabfedc78fcea8c51bb3e192a3ac1ee0c91e3ab588b40a309f"
   },
-  "purpose": "Reconciled proposed v1 growth declarations: G26 compact derived-index identity and a pre-v1 single-baseline hard cut are approved. Intentionally preserve Alembic v1/future forward-only revision and synthetic interruption-test machinery. Runtime owner growth conformance remains unestablished.",
+  "purpose": "Decision-reconciled proposed v1 growth declarations. G27/G28 now recommend bounded quanta over retained immutable inputs with explicit current-only discovery snapshot/progression changes; owner acceptance and production conformance remain unestablished. Preserve the specifically approved G26 derived-identity hard cut and Alembic forward-only infrastructure.",
   "notation": {
     "N": "Member count of the exact selected collection or stream; not a configured maximum.",
     "B": "Useful selected plaintext/data bytes; reading/writing/encrypting distinct required bytes costs work even when data is identical.",
@@ -82,6 +82,6 @@
       "families-G57-G60.json",
       "families-G61-G64.json"
     ],
-    "reviewed_inventory_canonical_sha256": "6336e1828e1fd7193142ea927c334cfe0246affeedcc1e2181dd3a081bc69e6e"
+    "reviewed_inventory_canonical_sha256": "0227c947d553539d73ce4530f1a407997dd18d7d5eea5747fb77875a67aac2e7"
   }
 }

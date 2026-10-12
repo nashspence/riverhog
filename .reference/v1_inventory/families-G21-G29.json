@@ -212,11 +212,11 @@
       "riverhog-client",
       "http-api-contracts"
     ],
-    "scope": "Exact member/collection lookup, ordered page and complete enumeration.",
-    "proposed_work_bound": "Point O(log Z + returned bytes); indexed page O(log Z + p + page bytes). Complete keyset traversal O(N + returned bytes + ceil(N/p)*log Z); no OFFSET-prefix rescans. Arbitrary filters use a separately declared scan/query profile.",
-    "proposed_memory_and_state_bound": "O(page + cursor/snapshot metadata) working memory; slow consumer releases DB snapshot/connection under declared exact-read lifetime.",
-    "semantic_requirement": "Authorization, exact selector/order and final completeness remain; an empty page is not assumed proof of completion.",
-    "proposed_witness": "Many small pages over a fixed exact inventory, late-page mutations/expiry and slow clients; count rows examined across full traversal.",
+    "scope": "Point and ordered access, mutable logical pages, sealed ordinal pages and exact retained-view enumeration remain separate contracts. See g27_g28/DESIGN.md for the bounded-work revision.",
+    "proposed_work_bound": "Proven indexed point/page costs include log Z, ordering width and returned bytes. Exact traversal loads retained immutable source chunks without a whole-enumeration DB transaction. Residual mutable-page scans/top-p ordering have explicit source-domain and repeated-page costs; pending work is not a result page. Summary writes pay exact transactional delta and directory-publication index work.",
+    "proposed_memory_and_state_bound": "Bounded input/output bytes, physical examined-work quanta, RAM, DB lifetime and checkpoint metadata; retained immutable source and necessary disk state are accounted separately and bounded by explicit operator capacity, not a semantic logical-total ceiling.",
+    "semantic_requirement": "Preserve owner-specific mutable/ordinal/exact progression, current authorization, exact selectors/order, complete results and support meaning. Use explicit pending/cancel/expiry contracts where computation cannot fit one work unit; never silently narrow a page or let an internal generator retain a DB transaction through consumption.",
+    "proposed_witness": "Full-tie/deep seeks, sparse and zero results, actual DB transaction/connection release, bounded logical-page preparation, summary mutation parity, exact retained-view restart, current authority and incremental cleanup; native SQLite and PostgreSQL witnesses required.",
     "source_anchors": [
       {
         "path": "riverhog/src/riverhog_core/browse.py",
@@ -239,7 +239,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "propose-for-v1"
+    "recommendation": "bounded-work-design-supplied-owner-contract-acceptance-required"
   },
   {
     "id": "G28",
@@ -247,13 +247,15 @@
     "title": "Discovery/text/predicate query execution",
     "layer": "public",
     "proposed_owners": [
-      "riverhog-server"
+      "riverhog-server",
+      "riverhog-client",
+      "riverhog-protocol"
     ],
-    "scope": "Named indexed lookups versus an explicitly scoped full search.",
-    "proposed_work_bound": "Indexed equality/prefix profile O(log Z + candidate postings necessary for that declared profile + Q + returned bytes); full text/unindexed fixed predicate O(D_scan + candidates + Q), with S(Q) only if required order lacks an index. No generic O(Q) claim for arbitrary joins/negation/count/sort.",
-    "proposed_memory_and_state_bound": "Bounded result pages with spill for declared sort/join; full exact count charged to actual indexed/scan domain, not a constant.",
-    "semantic_requirement": "Define query cost classes by supported semantics, not chosen inefficient plan. No use of 'candidate count' to relabel a gratuitous cross product. Exact scopes and ambiguity preserved.",
-    "proposed_witness": "Zero-result and sparse-result large domains; ambiguous shared history; matching counts unchanged; plan and examined-row tests on supported DBs.",
+    "scope": "Named literal/indexed and exact factored provenance query profiles over a pinned immutable catalog view; explicit resumable preparation, segmented supports and current authorization.",
+    "proposed_work_bound": "Admission pins a fixed root without scanning all headers. Immutable source matching and typed unary propagation run once per retained query scope; same-member guarded slices, ordering/indexing and required output are separately costed. Directory writes pay O(w) path-copy work and node index costs. Lifecycle includes checkpoint/replay, retained versions and cleanup; ordinary content mutations do not restart completed query work. No prefix-operator or universal output-linear query claim.",
+    "proposed_memory_and_state_bound": "Bounded source loads, streamed large values/supports, paged queues/joins/sort runs and fixed-size checkpoints; no full-query MVCC snapshot or compulsory O(total) RAM. Output-sized disk, immutable version retention and GC are explicit capacities. No all-result preparation for proven simple streaming plans.",
+    "semantic_requirement": "Recommended current-only pre-v1 change to snapshot-at-admission read/token semantics and explicit pending/cancel/expiry/support-chunk transport; not an already approved deployed contract. Preserve exact native query language, both history extents, four scopes, supports and archive identity. Live grants/claims/capabilities still gate every page/chunk; deletion or revocation cannot silently remove hits and report complete.",
+    "proposed_witness": "Continuous mutations with no whole-query restart; actual snapshot-free SQLite/PG work, publication/pin/GC races, sparse radix keys, checkpoint crash and stale-worker controls, huge single values/supports, both history extents and all scopes, native factored-vs-expanded equivalence, current tag/grant/capability and HTTP/client/CLI tests.",
     "source_anchors": [
       {
         "path": "riverhog/src/riverhog_core/canonical_discovery_search.py",
@@ -271,7 +273,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "approve-query-profiles-before-freeze"
+    "recommendation": "bounded-pinned-view-design-supplied-owner-contract-acceptance-required"
   },
   {
     "id": "G29",
