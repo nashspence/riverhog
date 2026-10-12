@@ -14,6 +14,7 @@ from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 if __package__ in (None, ""):
@@ -148,7 +149,7 @@ def _parser() -> argparse.ArgumentParser:
             "receives RIVERHOG_PERFORMANCE_RUN_ID and RIVERHOG_PERFORMANCE_RECEIPT; a successful "
             "exit without an exact verified-completion receipt remains an observation. "
             "A target or comparison is report-only. For the maintained 128-file lifecycle, "
-            "use --scenario stove0-scale; it records a 600-second target and measures image "
+            "use --scenario stove0-scale; it uses the maintained target and measures image "
             "preparation separately."
         ),
     )
@@ -224,6 +225,15 @@ def _profile_stove0_scale(output: Path) -> int:
     """Report the maintained scale fixture against a non-failing duration target."""
     from riverhog_canonical_json import canonical_json_bytes
 
+    if TYPE_CHECKING:
+        from ci_qualification import require_validation_work
+        from ci_timing import check_validation_evidence
+    else:
+        from scripts.ci_qualification import require_validation_work
+        from scripts.ci_timing import check_validation_evidence
+
+    work = require_validation_work(["stove0-scale"])[0]
+    conditions = dict(work.conditions)
     run_id = uuid4().hex
     timing_script = Path(__file__).with_name("ci_timing.py")
     directory = output / run_id
@@ -261,35 +271,36 @@ def _profile_stove0_scale(output: Path) -> int:
                 [
                     sys.executable,
                     str(timing_script),
-                    "run",
-                    "--lane",
-                    "stove0-scale-profile",
+                    "execute",
+                    "--workload",
+                    work.name,
+                    "--run-id",
+                    run_id,
                     "--output",
                     str(directory / "lifecycle.json"),
-                    "--target-seconds",
-                    "600",
-                    "--",
-                    "make",
-                    "--no-print-directory",
-                    "stove0-scale-qualification",
-                    "STOVE0_SCALE_FILES=128",
-                    "STOVE0_SCALE_AUDIO_FRAMES=2000",
-                    "RIVERHOG_CI_IMAGES_PREBUILT=1",
-                    f"RIVERHOG_CI_TIMING_DIR={directory / 'phases'}",
                 ],
                 check=False,
                 stdout=log,
                 stderr=subprocess.STDOUT,
+                env={**os.environ, "RIVERHOG_CI_TIMING_DIR": str(directory / "phases")},
             )
         status = completed.returncode
         lifecycle_timing = json.loads((directory / "lifecycle.json").read_bytes())
+        evidence = check_validation_evidence(
+            [directory / "lifecycle.json"],
+            expected=[work.name],
+            source_sha=image_timing["source_sha"],
+            run_id=run_id,
+        )
+        if (lifecycle_timing["exit_status"] or evidence["qualification_exit_status"]) != status:
+            raise performance.PerformanceError("lifecycle status differs from timing evidence")
     comparison = (
         lifecycle_timing["profiling_target"]
         if lifecycle_timing is not None
         else {
             "status": "not-compared",
             "reason": "image-preparation-failed",
-            "target_seconds": 600,
+            "target_seconds": work.target_seconds,
             "report_only": True,
         }
     )
@@ -303,10 +314,10 @@ def _profile_stove0_scale(output: Path) -> int:
         "target": {
             "scenario": "stove0-scale",
             "workload": "many-small-files",
-            "audio_files": 128,
-            "audio_frames": 2000,
-            "sidecar_files": 1,
-            "elapsed_seconds": 600,
+            "audio_files": int(conditions["audio_files"]),
+            "audio_frames": int(conditions["audio_frames"]),
+            "sidecar_files": int(conditions["sidecar_files"]),
+            "elapsed_seconds": work.target_seconds,
         },
         "observed": {
             "image_preparation_elapsed_seconds": image_timing["elapsed_seconds"],
@@ -318,7 +329,10 @@ def _profile_stove0_scale(output: Path) -> int:
         "comparison": comparison,
     }
     (directory / "profile.json").write_bytes(canonical_json_bytes(report))
-    print(f"Profiling target {comparison['status']} (under 600s; report only).", file=sys.stderr)
+    print(
+        f"Profiling target {comparison['status']} (under {work.target_seconds}s; report only).",
+        file=sys.stderr,
+    )
     print(canonical_json_bytes(report).decode(), flush=True)
     return status
 

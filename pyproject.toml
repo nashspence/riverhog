@@ -130,6 +130,7 @@ filterwarnings = ["error"]
 testpaths = ["packages", "some-implementations", "riverhog", "tests"]
 markers = [
   "integration: requires explicitly provisioned integration infrastructure",
+  "growth_witness(identity, gates): source-owned test association with recorded primitive observations",
 ]
 
 [tool.mypy]

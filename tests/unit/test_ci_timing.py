@@ -16,6 +16,33 @@ from scripts.ci_timing import main
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def test_source_identity_does_not_confuse_failed_status_with_a_clean_checkout(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    results = iter(
+        (
+            subprocess.CompletedProcess(["git"], 0, stdout="a" * 40),
+            subprocess.CompletedProcess(["git"], 128, stdout=""),
+        )
+    )
+    monkeypatch.setattr(ci_timing.subprocess, "run", lambda *_args, **_kwargs: next(results))
+    assert ci_timing.source_identity(ROOT) == {"source_sha": "a" * 40, "source_clean": False}
+
+
+@pytest.mark.parametrize("revision", ["", "main", "a" * 39, "a" * 41])
+def test_source_identity_requires_an_exact_revision(
+    monkeypatch: pytest.MonkeyPatch, revision: str
+) -> None:
+    results = iter(
+        (
+            subprocess.CompletedProcess(["git"], 0, stdout=revision),
+            subprocess.CompletedProcess(["git"], 0, stdout=""),
+        )
+    )
+    monkeypatch.setattr(ci_timing.subprocess, "run", lambda *_args, **_kwargs: next(results))
+    assert ci_timing.source_identity(ROOT) == {"source_sha": "", "source_clean": False}
+
+
 def test_lane_timing_preserves_command_failure_and_writes_canonical_observation(
     tmp_path: Path,
 ) -> None:

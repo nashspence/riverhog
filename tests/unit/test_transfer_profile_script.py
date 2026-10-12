@@ -607,6 +607,8 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
     seconds: int | None,
     comparison: str,
 ) -> None:
+    from scripts.ci_qualification import validation_work
+
     module = load_script()
     calls = []
     outcomes = iter([preparation, lifecycle])
@@ -622,6 +624,23 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
             "exit_status": outcome,
         }
         if len(calls) == 2:
+            timing.update(
+                format="riverhog-ci-validation-evidence/v2",
+                advisory_target=validation_work("stove0-scale").advisory_target(),
+                growth_results={},
+                run_id=arguments[arguments.index("--run-id") + 1],
+                definition=validation_work("stove0-scale").definition(),
+                state="completed",
+                source_end={"source_sha": "a" * 40, "source_clean": True},
+                started_at="2026-01-01T00:00:00+00:00",
+                finished_at="2026-01-01T00:00:01+00:00",
+                started_monotonic_seconds=0,
+                observed_conditions={
+                    "platform": "linux",
+                    "architecture": "x86_64",
+                    "python": "3.12",
+                },
+            )
             timing["profiling_target"] = {
                 "report_only": True,
                 "target_seconds": 600,
@@ -668,14 +687,14 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
         return
     assert len(calls) == 2
     execution = calls[1]
-    assert execution[execution.index("--target-seconds") + 1] == "600"
+    assert "--target-seconds" not in execution and "--" not in execution
+    assert execution[2:5] == ["execute", "--workload", "stove0-scale"]
     assert Path(execution[execution.index("--output") + 1]) == images.parent / "lifecycle.json"
-    assert execution[execution.index("--") + 1 :] == [
+    assert validation_work("stove0-scale").command == (
         "make",
         "--no-print-directory",
         "stove0-scale-qualification",
         "STOVE0_SCALE_FILES=128",
         "STOVE0_SCALE_AUDIO_FRAMES=2000",
         "RIVERHOG_CI_IMAGES_PREBUILT=1",
-        f"RIVERHOG_CI_TIMING_DIR={images.parent / 'phases'}",
-    ]
+    )

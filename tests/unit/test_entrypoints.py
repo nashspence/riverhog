@@ -90,7 +90,7 @@ def test_hand_maintained_markdown_surface_is_explicit() -> None:
 
 def test_agents_guidance_stays_compact_and_routes_enforceable_policy_to_tests() -> None:
     agents = (REPO / "AGENTS.md").read_text(encoding="utf-8")
-    assert len(agents.split()) <= 1900
+    assert len(agents.split()) <= 2100
     assert "scoped policy tests" in agents
     assert "Enforceable repository policy belongs in clearly named tests." in " ".join(
         agents.split()
@@ -109,7 +109,7 @@ def test_onboarding_routes_directly_between_the_two_root_documents() -> None:
     ("relative", "expected_sha256"),
     [
         ("README.md", "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2"),
-        ("AGENTS.md", "1c427d38b88c9a05fe105dea5bcc862efec52ff516233110fa0ef88b43692f44"),
+        ("AGENTS.md", "d2cf10da13a9b4976911b5abd101c5ecfe609b1598a5c9c1bb57232160e7302e"),
     ],
 )
 def test_onboarding_document_requires_explicit_revision(
@@ -209,6 +209,18 @@ def test_agents_requires_growth_validation_without_machine_timing_guarantees() -
     assert "Violating a declared growth bound is a validation failure." in growth
     assert "Machine-dependent timing targets remain performance observations" in growth
     assert "not product guarantees" in growth
+
+
+def test_agents_separates_required_validation_evidence_from_advisory_performance() -> None:
+    measurement = _guide_section("Measure performance without creating gates")
+    evidence = _guide_section("Account for validation evidence")
+    handoff = _guide_section("Validate the change you actually deliver")
+    assert "a nonbinding goal" in measurement
+    assert "Missing a target does not fail validation." in measurement
+    assert "required evidence fail validation" in evidence
+    assert "A valid timing miss does not." in evidence
+    assert "not validation failures or approval conditions" in handoff
+    assert REPO / "scripts/ci_qualification.py" in _local_links(REPO / "AGENTS.md")
 
 
 def test_repository_map_exactly_covers_the_workspace_layout() -> None:

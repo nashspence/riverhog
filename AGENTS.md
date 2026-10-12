@@ -114,13 +114,27 @@ In short, **replace obsolete pre-v1 database structures without sacrificing dura
 
 ## Measure performance without creating gates
 
-A *performance target* is a goal against which measured work can be compared. Riverhog’s `make profile` reports the target, the observed result, and whether a meaningful comparison was possible. A target miss does not fail profiling. An omitted or noncomparable reference means no comparison, not a passed target.
+A performance target is a nonbinding goal for measured speed or elapsed time. Unlike a declared growth bound, it is not a contract. Missing a target does not fail validation.
 
-Keep actual rates visible. Comparisons require verified useful work, complete timing, and a measured reference under matching conditions—not theoretical capacity. Unverified observations stay identified as unverified. Invalid inputs, failed execution, invalid evidence, and reporting errors remain failures.
+Use `make profile` as the shared entry point for maintained profiling scenarios. Add new scenarios there rather than creating separate developer-facing commands. Their implementations remain with their owners.
 
-A blocking performance threshold belongs to the qualification or release check that explicitly owns it, not to the profiler or a separate target registry. Existing correctness and resource-safety checks remain binding. The [measurement rules](scripts/performance_measurement.py) and [profiling tests](tests/unit/test_transfer_profile_script.py) define the precise behavior.
+Report verified work, elapsed time, actual rates, and measurement conditions. Compare only against matching measured references. An unavailable comparison is neither a pass nor a failure. Invalid evidence and failed execution remain errors.
 
-In short, **profiling reports evidence; it does not create performance obligations or release gates.**
+The [measurement rules](scripts/performance_measurement.py) and [profiling tests](tests/unit/test_transfer_profile_script.py) define the precise behavior.
+
+In short, **growth bounds are enforced contracts; performance targets are observations, never gates.**
+
+## Account for validation evidence
+
+Checks record their results and timing as they run, without repeating work just to measure it. The [shared qualification definitions](scripts/ci_qualification.py) identify the work and its conditions without replacing contracts owned by individual operations.
+
+Keep correctness, growth-contract conformance, and elapsed-time observations separate. Correctness failures, growth violations, and invalid required evidence fail validation. A valid timing miss does not.
+
+Report elapsed time even when no numerical target or comparable reference exists. Use credible performance evidence to recommend investigation or improvement. The stronger the evidence and the more serious its likely consequences, the stronger the recommendation may be.
+
+Record significant findings and recommendations in GitHub. Performance targets do not create approval-to-proceed conditions or authorize weakening required tests, workloads, or safety limits.
+
+In short, **validation evidence establishes compliance; performance observations inform judgment.**
 
 ## Validate the change you actually deliver
 
@@ -140,6 +154,8 @@ make build
 For substantial integration or handoff validation and release-related work, also run `make linux-qualification`, the exhaustive local qualification path. Use `make help` for current command guidance.
 
 After pushing, watch that exact commit’s required GitHub Actions checks through completion. Fix failures before handing work back. A skipped or blocked check is not a pass; report the gap rather than claiming complete validation. Do not remove required coverage or weaken a check merely to make a result green.
+
+Include correctness results, required growth evidence, and timing observations in the handoff. Record significant performance concerns as evidence-backed recommendations, not validation failures or approval conditions.
 
 In short, **validate the actual change through every required gate, not a nearby version or a convenient subset.**
 
