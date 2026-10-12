@@ -1,5 +1,19 @@
 # Approved growth-contract directions; G22/G26 design briefs
 
+**Latest issue-owned approvals (G26 and G27/G28):**
+[#964 comment 6118482544](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118482544) explicitly
+approves the source-normal derived G26 **ordered Merkle identity refinement**
+and G27/G28's **snapshot-at-admission exact discovery with current-only public
+read/token/pending/cancel/expiry/support contracts**. These are settled
+maintainer-level architectural decisions. The specified identity direction is
+accepted; exact canonical/golden vectors, executable ownership and production
+qualification remain gates. G22's flat journal SHA-256, archival custody,
+live authorization, unchanged source semantics, Alembic forward-only support,
+and protection of non-rebuildable state remain binding. Historical "pending
+design/identity approval" language below is superseded for these two scopes
+but does not imply approval of unrelated changes or numeric targets.
+
+
 **Latest owner decision (superseding earlier open-policy wording for these subjects):**
 [#964 comment 6118314165](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118314165) settles G02/G40 expressive-profile
 policy, G63/G64 Closure/Audit/evidence ownership and internal budgets, and

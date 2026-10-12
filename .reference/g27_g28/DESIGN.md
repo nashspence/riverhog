@@ -1,7 +1,11 @@
 # G27/G28: bounded work over retained exact inputs
 
-**Recommended policy and integration design, not deployed behavior or completed
-qualification.** Issue #964; reference convention #903. This revision responds
+**Maintainer-approved policy and architecture for integration, not deployed
+behavior or completed qualification.** The exact snapshot-at-admission discovery
+and scoped current-only public contract change were approved in
+[#964 comment 6118482544](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118482544).
+Owning protocol/HTTP/client encodings, resource parameters and actual
+semantic/equivalence/authority proof remain acceptance obligations. Issue #964; reference convention #903. This revision responds
 to the maintainer's instruction to revisit the earlier design as intent
 calibration, not to preserve its architectural choices merely because they were
 previously recommended. The selected changes and their public consequences are
@@ -90,9 +94,11 @@ invocation is how the caller asks for newer content.
 This intentionally replaces the earlier recommendation to preserve
 `riverhog-discovery-read/v1`'s selected-header rehash/stale-current-view behavior.
 It is an observable pre-v1 contract revision, NOT a hidden cache optimization
-and NOT implied by the separate G26 extraction-identity approval. Record the
-selected snapshot/read/token/pending semantics in this issue and owning protocol,
-HTTP/client/CLI contracts before claiming integration acceptance. Reject retired
+and NOT implied by the separate G26 extraction-identity approval. The revised
+snapshot/read/token/pending semantics are now explicitly **approved** by
+[#964 comment 6118482544](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118482544).
+Freeze their exact owner-owned protocol, HTTP/client/CLI fields, formulas and
+test vectors before claiming integration acceptance. Reject retired
 read/cursor formats; no compatibility mode or rolling dual interpretation.
 
 Keep query literals, same-assertion/profile correlation, exact source-support
@@ -600,10 +606,11 @@ No actual default capacity numbers or v1 conformance are established by model ru
 Implement in this order; do not mark dependent composite declarations conforming
 before their production witnesses exist.
 
-1. Reconcile exact integrated source and decisions. Record the snapshot/read/pending
-   contract revision and default policy in #964. Owner review accepts its public
-   semantic extent and formulas explicitly; prior G27/G28 conversational constraints
-   do not veto the redesign, but a reference is not silent contract authority.
+1. Reconcile exact integrated source and issue-owned approvals. The snapshot/read/
+   pending and bounded-work *semantic direction* was expressly approved in #964
+   comment 6118482544; freeze the exact protocol fields, canonical identities,
+   extent/error vectors and tests at the actual owners. The reference remains
+   non-authoritative and is not evidence of runtime conformance.
 2. Integrate seek/matcher helpers and delta-summary invariants (ALGORITHMS.md),
    with source-bound differential tests. Extend current `v1_0001` DDL/models for
    directory/handles, query state, indexed lookup and summaries. Preserve Alembic,

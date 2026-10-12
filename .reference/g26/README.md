@@ -5,10 +5,11 @@ Start with [DESIGN.md](DESIGN.md) for the current segmented/resumable build and
 [../g22/DESIGN.md](../g22/DESIGN.md) owns resumable neutral journal validation;
 [../g27_g28/DESIGN.md](../g27_g28/DESIGN.md) owns retained-view query progression.
 
-The new ordered Merkle dataset commitment is an explicit refinement of the earlier
-flat compact hash proposal. It is not the old digest under another computation,
-and it does not change archive/member/journal/hash authority. The owning issue and
-normal exact identity review control adoption. Retain Alembic and one current
+The new ordered Merkle dataset commitment is an **approved** refinement of the
+earlier flat compact hash proposal ([#964 decision 6118482544](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118482544)).
+It is not the old digest under another computation, and it does not change
+archive/member/journal/hash authority. Owner-specific normal-form encoding,
+golden vectors and implementation/qualification still require exact review. Retain Alembic and one current
 v1_0001 baseline; no compatibility/migration from discarded pre-v1 application state.
 Multiple pinned immutable generations in the current schema are normal retention,
 not obsolete-schema compatibility.

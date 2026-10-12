@@ -2,7 +2,7 @@
 
 Owning issue #964; convention #903.
 Branch: reference/external/964-large-collection-scaling
-Direct reference parent: c1a2abe4abea6676b2af3323e58b6b4a6a47d705
+Direct reference parent: 80c2f6d3815803677134fe9dd0b3bfbab5e14c01
 Audited main: 152d095038df0c0d0ed642cf265d47b11c65a754
 Audited tree: 991e994457b487a7dca016b7fc0409485cef25c6
 Historical runtime base remains 8425e672c60285a549ca4d5aaba15ecbd99e5bf3.
@@ -15,7 +15,26 @@ Configuration/effort: not exposed
 Requester: Riverhog maintainer
 Publisher: connected GitHub integration; Git metadata is publication metadata.
 
-## Current issue-owned approvals: G02/G40, G63/G64, G38/G39
+## Latest issue-owned approvals: G26 and G27/G28
+
+The maintainer's [#964 approval 6118482544](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118482544) **approves**
+G26's selected ordered, domain-separated, resumable Merkle commitment for the
+source-normal derived index (including its proposed 4,096-byte identity fragments)
+and the G27/G28 current-only **snapshot-at-admission** public exact-discovery
+contract: read/token identity revision, pending/resumable pages, cancellation,
+expiry, capacity and segmented support transport. Current authorization remains
+live; pinned content cannot confer permissions or archive authority.
+
+Use [g26/DESIGN.md](g26/DESIGN.md) and
+[g27_g28/DESIGN.md](g27_g28/DESIGN.md) as the now-*approved direction* for
+integration. The owning issue, NOT the reference branch, authorizes those changes.
+Exact owner-local canonical encoding/vectors, public field/error/token schemas,
+resource settings, supported source/backends, implementation proofs and all
+qualification remain mandatory. This approval does not authorize modifying
+archive/journal/source commitments, creating a legacy compatibility chain,
+adding a hidden total-size maximum or claiming a numerical speed SLA.
+
+## Earlier issue-owned approvals: G02/G40, G63/G64, G38/G39
 
 The maintainer decision [#964 comment 6118314165](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118314165) approves
 preserving expressive schema/predicate capability with named cost profiles
@@ -44,8 +63,9 @@ are reused; no new Merkle identity or second scheduler is selected here.
 The new protocol/validator reference recommends current-only request/result/status
 reference envelopes, verified metadata handles, typed port/read views, independent
 controller validation, private acceptance phases and exact source support. It
-specifies live data authority and archive evidence retention. New public envelope,
-validator ABI and result-cap byte-accounting choices require owning acceptance.
+specifies live data authority and archive evidence retention. The scoped
+current-only public envelope, validator ABI and logical result-cap *direction*
+is approved in #964 comment 6118314165; exact owner vectors and tests remain required.
 
 50 new diagnostic tests passed with warnings as errors; evidence and source-bound
 SQL/AST probes are in [g38_g39/evidence.json](g38_g39/evidence.json). They are not a
@@ -80,10 +100,12 @@ new SHA implementation is a diagnostic, not an approved production crypto backen
 G26 keeps source-normal intervals, exact imported-history AND guards and scope
 semantics. It specifies segmented paths/values/postings, independently verified
 source completion, a resumable ordered Merkle dataset commitment, source-publication
-coordination and retained-generation reclamation. The Merkle commitment refines
-the earlier flat compact digest proposal; it needs explicit owner identity review,
-not a silent change under the old digest. It never replaces archive/journal hashes.
-G27/G28 alone owns query invocation, retained views and public support transport.
+coordination and retained-generation reclamation. The Merkle identity refinement
+is now explicitly **approved** by #964 comment 6118482544, with exact owner
+normal-form/digest vectors and production validation still mandatory. It never
+replaces archive/journal hashes. G27/G28's revised admission-pinned invocation,
+current authorization and public support transport are approved in the same
+issue decision and remain subject to exact owner integration proof.
 
 ## Historical G22/G26 verification and limitations
 

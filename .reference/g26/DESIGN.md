@@ -9,8 +9,10 @@ Earlier recommendations are calibration. Retain the exact factored relation in
 [SEMANTICS.md](SEMANTICS.md); replace the old whole-assertion staging, complete
 hash-pass replay allowance, competing query workspace and current-generation
 continuation rules. This is concrete integration input, not implemented production
-or a claim of complete growth conformance. The changed compact commitment below
-is an explicit refinement for owner review, not hidden reuse of the prior digest.
+or a claim of complete growth conformance. The new compact commitment is
+**explicitly approved** by [#964 decision 6118482544](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118482544)
+as a distinct derived identity; exact implementation encodings/golden vectors
+and integrated correctness remain subject to owning review.
 
 ## 1. Decision and boundaries
 
@@ -188,12 +190,14 @@ Use ordinary SHA-256 on bounded leaves/nodes; no custom crypto context codec is
 required for G26. G22 MUST still preserve its existing flat journal/prefix SHA-256.
 These are different commitments at different owners, not interchangeable shortcuts.
 
-This is an explicit refinement of G26's previously proposed flat compact transcript.
-Recommend domain `riverhog-canonical-discovery-factor-merkle/v1` and a distinct
-extraction-policy identity describing the normal form, typed field encoding,
-fragment rule and tree algorithm. Do not hash a changed preimage under an old
-policy/dataset identity or assert that historical G26 identity approval constitutes
-acceptance of every new constant/formula. Rebaseline through exact owner review.
+This is the **approved** refinement of G26's previously proposed flat compact
+transcript ([#964 decision 6118482544](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118482544)).
+Use the selected `riverhog-canonical-discovery-factor-merkle/v1` domain and a
+distinct extraction-policy identity describing the normal form, typed field
+encoding, fragment rule and tree algorithm. The earlier G26 hard-cut approval
+alone did not cover this refinement; the new issue approval specifically does.
+Freeze/check exact canonical encodings and golden vectors through owner review;
+never hash a changed preimage under an old policy/dataset identity.
 No archived member, journal, history, provenance-root or payload digest changes.
 
 ### Normal form and exact tree
@@ -207,8 +211,8 @@ represented by canonical source ordinals/segmented tokens, not truncated names.
 
 For each logical record, stream its deterministic encoding into fixed 4,096-byte
 fragments, with an explicit record terminal committing total bytes and fragment
-count. This is a proposed representation constant, NOT an operational quota or
-semantic total maximum. Empty records have a terminal; no missing tail is silently
+count. This is an approved identity-format representation constant, NOT an operational
+quota or semantic total maximum. Empty records have a terminal; no missing tail is silently
 accepted. Operational reads/writes may subdivide or group fragments without changing
 the identity. A fragment-in-progress has a bounded accumulator and exact offset.
 
@@ -319,8 +323,9 @@ not F whole-source/whole-generation passes. No finite completion promise is infe
 under unlimited faults, revocation, storage exhaustion or arbitrary delegate work.
 
 Implement in this order:
-1. Reconcile exact post-#963 source and obtain owner acceptance of normal form,
-   commitment refinement, session/handle surfaces and operational policy bindings.
+1. Reconcile exact post-#963 source; apply the approved Merkle commitment
+   direction, then freeze its exact normal form, implementation vectors and
+   session/handle and operational-policy bindings at their owning contracts.
 2. canonical_discovery_rows/extraction: resumable source/path/value/profile/edge
    streams; new private staging carriers and direct-source witnesses above every
    prior threshold. Keep test-only native logical oracle, not a legacy runtime.

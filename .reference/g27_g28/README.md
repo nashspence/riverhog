@@ -9,8 +9,10 @@ source audit and primary technical references.
 The previous full-query MVCC snapshot and global unchanged-fence retry lifecycle
 are superseded. Earlier public-identity/no-pending recommendations were intent
 calibration, not a reason to retain an unsuitable default. New snapshot-at-admission,
-pending/cancel/expiry and exact segmented support transport are explicit proposed
-pre-v1 contract changes, not claimed already deployed or approved by a reference.
+pending/cancel/expiry and exact segmented support transport are explicitly
+**approved as current-only pre-v1 contract changes** by
+[#964 decision 6118482544](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118482544),
+not claimed deployed or qualified by this reference.
 Current archive/custody/authorization and G26/Alembic boundaries remain intact.
 
 ## New diagnostic reproduction
