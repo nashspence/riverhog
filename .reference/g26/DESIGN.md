@@ -1,534 +1,352 @@
-# G26: source-factored exact-scope discovery
-
-Recommended implementation design for #964 under #903. Audited source:
-`main@152d095038df0c0d0ed642cf265d47b11c65a754`, tree
-`991e994457b487a7dca016b7fc0409485cef25c6`.
-
-This is a precise design and executable semantic/cost model, NOT a fully wired
-production patch or completed growth qualification. It preserves the supplied G22
-reference unchanged. The specific derived discovery-index extraction/dataset and
-read-generation identity revision is **explicitly approved by the maintainer**:
-[#964 comment 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478).
-The approval is a pre-v1 hard cut with no migration from discarded pre-v1 layouts
-or backward compatibility; the Alembic v1 bootstrap and future forward-only
-revision/upgrade machinery remain intentional and must not be removed.
-It does not certify the implementation or waive owner verification of exact
-current-state and protected-identity evidence.
-
-## 1. Selected architecture
-
-Replace expanded per-member assertion memberships with **source-normal facts and
-fixed, typed scope-selection rules**. Store an assertion and its lexical postings
-once per admitted journal chain, with birth/retraction coordinates. Represent an
-exact snapshot by its authenticated anchor, not by a copy of all preceding rows.
-Represent shared history/import/dependency selections once, preserving the precise
-member root and all four scope rules. Resolve only the memberships a query needs.
-
-The design has three inseparable parts:
-
-1. One source-bound build, rather than a complete closure rebuilt per member.
-2. A compact deterministic dataset commitment, rather than hashing the expanded
-   Cartesian relation after compressing it on disk.
-3. Query execution that retains sharing for common scope/match paths and accounts
-   honestly for correlated/general queries instead of expanding every pair first.
-
-Do not implement a general expression VM, inferred relationship taxonomy, opaque
-query language, alternate provenance interpreter, or new archive format. The only
-rules are the current `member_relevance` semantics enumerated below, implemented
-at their existing owners. Private selectors are indexes/access paths for those
-rules, not independently authored user programs or authority.
-
-### Approved derived-index identity hard cut
-
-**Implement the expressly approved pre-v1 derived-index identity revision.** Keep archive
-roots, journal bytes/anchors, member/history identities, source proofs, request
-schemas and the logical discovery result relation unchanged. Change the extraction
-policy/dataset commitment to identify the new deterministic representation.
-Consequently a newly built `index_generation` and the associated `read_identity`
-will differ from the old expanded generation. Existing cursors must conflict, not
-continue silently. Rebuilds under the SAME new policy/source remain identical.
-
-This is not a claim of byte-identical old generation IDs. The old SHA-256 digest
-feeds every expanded membership row; retaining that exact computation retains
-work proportional to the expanded relation. Do not replace it with an unreviewed
-commutative checksum or quietly hash a different preimage under the old identity.
-The specific derived index/read-generation identity change is now approved in
-#964; update the owner-reviewed exact freeze expectations from the new source and
-record their evidence. No approval was given for altering archive authority or
-query semantics. **No old-to-new schema migration or identity-translation path is
-required or permitted**; this is a clean current-schema replacement.
-
-## 2. Exact relation to preserve
-
-Let `R(member, snapshot, assertion, scope)` be the SET relation returned by current
-`member_relevance`. A snapshot means the complete exact anchor, including journal,
-through-entry/sequence/hash, prefix hash and byte count. It is never a latest head.
-An assertion has its exact original entry and identity, with effective/retracted
-state evaluated at that snapshot. Multiple paths to the same tuple add no copies.
-
-The compiler/evaluator must satisfy the following rules on every admitted source:
-
-| Current operation | Exact meaning retained |
-| --- | --- |
-| Member primary | Verify slot, payload identity, delivery context and association against the selected primary. Seed its State and association as `member`. |
-| Collection | Mark the effective delivery context plus documentary extensions targeting that context in the primary snapshot as `collection`; do not propagate to all co-resident metadata. |
-| State/occurrence/artifact | Mark documentary own-id/subject/target assertions and relevant journal-subject assertions, plus observations/descriptions of the selected State. Context object lookups use that snapshot's effective view. Preserve current treatment of retracted documentary assertions. |
-| State lifecycle | Traverse effective generation, invalidation and derivation-generated endpoints, related activity/context and usage/generation references. Follow a derivation's used State into `input-history` at the exact local or foreign anchor. |
-| Same-artifact continuity | Other effective States for the SAME continuity Artifact in the primary snapshot start as `recorded-history`, not `member`. Their actual causal input traversal retains existing `input-history` behavior. |
-| Own late bound claims | Own history's bound roots can contribute EFFECTIVE extensions targeting the exact primary State, occurrence, Artifact or generating activity. These are `member`. Retained-only roots are not bound roots. |
-| Imported late claims | Import reachability alone is INSUFFICIENT. The imported history's exact primary State must also lie in this member's causal State set. Both conditions must hold for the SAME member; then bound-root endpoint extensions are `input-history`. |
-| Documentary history | Every documentary assertion, effective or retracted, in every exact snapshot selected by retained history/import extents, foreign documentary references or fork dependencies is `recorded-history`. |
-| Opaque metadata | Lexical posting extraction is unchanged. Opaque profile values are not traversed as graph edges; only the existing declared canonical reference grammar creates dependencies. |
-
-Use the existing scalar extraction and exact `assertion_clause_matches`. All tests
-in one clause must still match ONE assertion and, when pinned, ONE profile section.
-Default scopes still exclude `recorded-history`. An imported record is not causal
-attribution merely because the source binding proof is valid.
-
-## 3. Source-normal storage contract
-
-All production rows are namespaced by `build_id`; source coordinates additionally
-carry the exact archived journal identity. Application owner remains Riverhog.
-The following is the new **current-only** logical schema; map names through
-the owner's current schema definitions, not migration conventions. Strings/integers
-use the existing protocol domains and key collations.
-No new semantic count/depth bound is introduced by a physical SQL column.
-
-| Relation | Primary key after build_id; essential columns and access indexes |
-| --- | --- |
-| journal_source | `journal_id`; admitted complete byte identity, length and terminal coordinates, source-capture identity, verified/complete marker. No latest external provider lookup. |
-| entry_fact | `(journal_id, sequence)`; exact entry ID/hash, predecessor/checkpoint identity, prefix SHA/bytes, entry kind. Unique exact entry-id lookup. |
-| assertion_fact | `(journal_id, assertion_id)`; origin entry/sequence, referent ID/type, exact canonical bytes/hash, `born_sequence`, nullable `retired_sequence`. Index `(journal_id,referent_id,born_sequence)` and `(journal_id,born_sequence,assertion_id)`. |
-| scalar/profile/chunk/edge facts | Re-key existing postings by `(journal_id,assertion_id,ordinal/pointer)` instead of duplicated snapshot row_key. Existing bounded lexical/profile extraction remains the owner. Inverse indexes for declared local owners/endpoints and complete foreign-reference coordinates. |
-| snapshot | `(journal_id,prefix_sha256)`; full exact anchor, required extent, source-complete link. Header only; index `(journal_id,through_sequence,prefix_sha256)`. |
-| history | `history_sha256`; complete verified descriptor, primary exact anchor/association, expected root/import set commitments. |
-| history_root | `(root_set_sha256, record_key)`; exact snapshot anchor, bound/retained inclusion and original page/ordinal. `history` references this set authority. Store each authored root-set record once; index snapshot/inclusion back to set. |
-| history_import | `(import_set_sha256, record_key)`; target H, extent, exact input State and source-proof identity, original page/ordinal. `history` references the set authority. Inverse indexes by target H/input State. Preserve source-root membership and import-cycle rejection. |
-| documentary_dependency | `(journal_id,entry_sequence,reference identity)`; exact target snapshot, including documentary retracted assertions and fork anchors. A prefix selects entries up to its through-sequence; do not copy all prior dependencies into each snapshot. |
-| member | Existing member identity plus exact history binding, selected primary and delivery association. Root binding is verified from the archive member-binding tree, not an inferred filename. |
-| source_work | `(build_id,work_kind,exact_source_key,ordinal)`; pending/complete, verified terminal/expected count, checkpoint and fenced epoch. Index PENDING work, not scans through completed rows. Operational only, excluded from dataset digest. |
-
-**Prefix intervals:** an assertion is documentary at prefix `p` when `born <= p`;
-it is effective iff also `retired IS NULL OR p < retired`. Corrections do not erase
-the raw row and an assertion identity is not reused. Keep correction/frame records
-for validation and exact snapshot provenance. A current complete transcript can
-supply these interval facts only after the neutral journal validator has validated
-all relevant prefixes. G22 is the validation owner; this is not a second validator.
-
-**Do not instantiate** `member x shared snapshot`, `snapshot x assertion`, or
-`State x every possible prefix` rows as an optimization. State, activity, owner and
-bound-endpoint selectors are parameterized indexed joins over source facts. An
-exact encountered prefix is a parameter, not permission to clone the entire view.
-The model adapter expands small views solely for differential testing.
-
-### Fixed selector identities and incidence
-
-A selector is identified by its typed exact coordinates, encoded using existing
-canonical JSON, with a domain-separated digest. Compare original coordinates on
-an existing key; never trust a hash collision as equality. Separate graph kinds,
-scopes, history extents, snapshot anchors and source identities.
-
-Implement only these private selectors (or equivalent named SQL accessors):
-`member`, `history-documentary(H,extent)`, `snapshot-documentary(anchor)`,
-`prefix-dependencies(journal,through)`, `State(anchor,id,scope)`,
-`own(anchor,id,scope)`, `observed(anchor,state,scope)`,
-`activity(anchor,id,scope)`, `collection(anchor,context)`,
-`continuity(anchor,artifact)`, `import-reachable(H)`,
-`causal-State(exact external reference)`, and `late-bound(H,scope)`.
-
-Unary incidences propagate reachability. Imported late-bound applicability uses
-ONE fixed binary condition:
-
-`import-reachable(member,H) AND causal-State(member,primary-State(H))`.
-
-It is not valid to OR the inputs, combine reachability of two different members,
-or keep only a union of every member's causal State set. Prefer a direct indexed
-correlated semijoin for this rule; a named private AND gate in the executable model
-makes the same requirement testable. No general configurable rule engine is needed.
-
-For dependency prefixes use per-entry edges plus an indexed predecessor chain or
-range accessor. A traversal marks exact `(kind,coordinates)` once. Do not carry
-path/depth in the deduplication identity: a shared diamond must not enumerate paths.
-
-## 4. Source build and staging sequence
-
-Replace the per-member complete-relevance loop with one resumable generation build:
-
-1. Take existing collection/root/epoch/pending fences and record exact archive,
-   provenance, member-binding and extraction identities. Authenticate the selected
-   immutable source before any stage becomes admissible. Never use provider listing
-   or an old search index to discover authority.
-2. Scan the member binding tree in bounded ordered pages once. Stage exact member
-   bindings and enqueue their H descriptors. Verify tree totals and terminals.
-3. Resolve the union of needed descriptor/root/import/source-proof structures with
-   a disk-backed deduplicated worklist. Every imported source binding and exact
-   input State is validated by the existing neutral owner. Share work by exact
-   source identity, NOT by permission or merely a journal name. Detect cyclic
-   histories independently; fixedpoint termination is not semantic cycle acceptance.
-4. Read and capture each reached admitted journal stream once for this build's
-   source-view, verifying current access/custody/root fences and all bytes through
-   the provider's final fence. Build G22-validated entry/assertion/interval/reference
-   facts and lexical postings. A short or revoked provider aborts the stage; no
-   partially read journal can mark its task complete.
-5. Link required exact prefixes using already verified entry/prefix coordinates.
-   Foreign reference equality includes entry, assertion, referent type and object,
-   not just journal/prefix hash. No repeated full-prefix parse/hash per member.
-6. Publish source stages in bounded transactions. A task's terminal/count/digest
-   attestation and its last rows commit atomically under the current fence. Retry
-   compares exact existing values; INSERT OR IGNORE alone is not sufficient.
-7. Check all source terminals, references, member totals and coverage against the
-   independently authenticated archive manifests, not just the number of rows the
-   builder itself happened to insert. Unfinished/failed work prevents completion.
-8. Commit the compact canonical dataset in a quiescent sealed pending build,
-   produce the generation identity and atomically switch active_build_id under
-   `_require_pending`'s current root/deletion/epoch conditions. Preserve an old
-   applicable active generation on ordinary rebuild failure.
-
-### Capture lifetime, caches and re-authentication
-
-Use a build-scoped verified source projection, not a process-wide authorization
-cache. Successful immutable structural/semantic work may be shared inside one
-exact admitted build while current ownership/root/fence checks continue at each
-transaction and public request. Public provenance API fresh-read obligations remain
-unchanged. This design does not remove `JournalReferenceCache`'s public current-read
-checks or accept a cached history under a new claim.
-
-Perform archive I/O and heavy extraction outside short catalog write transactions;
-then reacquire the fence to publish results. Keep source capture under existing
-scratch ownership/leases and bounded prefetch capacities. No eager copy of unrelated
-whole corpora per member. Durable completed derived facts can resume a fenced build;
-missing disposable capture is reconstructed for the uncommitted source unit rather
-than treated as authority or silently truncating work. Changed roots supersede the
-build, not reuse its validation. Record discarded/repeated work on interruption.
-
-### Private implementation interfaces
-
-Add `canonical_discovery_source.py` for the Riverhog-owned source adapter and
-`canonical_discovery_factors.py` for normalized staging/access. Both upload and
-archive-only rebuild consume these same operations, with no public route changes:
-
-- `begin_source_build(source_identity, expected_member_manifest) -> build_id`:
-  use existing pending generation/fence owner; do not create a competing lifecycle.
-- `advance_source_build(build_id, row_budget, byte_budget) -> progress`:
-  process one bounded source-work batch, outside-transaction reads followed by a
-  fenced stage. Return only stable phase/key/count summaries, not full source rows.
-- `capture_journal(exact_source, required_anchors) -> verified_fact_stream`:
-  neutral G22 validation, one raw assertion ledger, exact reference/anchor directory,
-  terminal provider fence. A reference is resolved against that checked directory.
-- `stage_source_page(build_id, source_key, ordinal, exact_records, terminal_proof)`:
-  compare every duplicate's exact data; atomically advance page and source progress.
-- `complete_source_build(build_id) -> generation_id`: source completeness checks,
-  compact commitment and existing publish fence. No expanded R count or hash.
-- `matching_assertion_facts(build_id, clause) -> bounded ordered iterator`:
-  current SQL predicate plus exact native clause check, interval/profile-aware.
-- `resolve_clause_members(build_id, clause, read_identity) -> query_projection`:
-  unary minimum-support propagation, then exact guarded correlation as needed.
-- `read_projection_page(query_projection, cursor, principal) -> original page`:
-  current scope/read-identity checks, keyset paging, no held client-lifetime snapshot.
-
-Normalize each local/external attachment endpoint once from its immutable origin
-entry/assertion coordinates. An effective-at-snapshot query is an interval filter,
-not a rewritten external-reference identity. A late-bound lookup joins history's
-bound root set to that exact endpoint index; it must not scan the shared snapshot's
-entire extension set for every member. Raw `own`, observation, State/lifecycle and
-activity accessors similarly use indexed owner/endpoint plus prefix interval tests.
-
-These are private integration names/roles, not additional frozen public exports.
-The integration agent should implement them within the existing owner, replacing
-retired runtime paths in one explicit pre-v1 hard cut; the derived-index identity
-change is already approved and must not be implemented as a schema upgrade.
-
-## 5. Compact commitment and identity transition
-
-Replace expanded `_dataset_sha256` input with a **fixed source-normal table stream**.
-Use domain `riverhog-canonical-discovery-factor-dataset/v1\n`, canonical records with
-length framing, deterministic table order and existing canonical scalar encoding.
-Exclude build UUID, epoch, queue state, timestamps, query caches and random SQL IDs.
-Include exact source/member/history/snapshot coordinates, raw assertion identities
-and extraction products, and the versioned fixed selection policy. Necessary
-ordered-index work is accounted separately from linear bytes hashed.
-
-Freeze the extraction normal form: identical admitted source and policy produce
-identical records regardless of concurrency, input-page order, cache state, retries
-or cold rebuild. Do not attempt to make arbitrary semantically equivalent graphs
-share one digest by Boolean minimization. Stored facts are the deterministic output
-of the named extractor, not whatever compressed graph an optimizer happens to pick.
-
-Change existing `_EXTRACTION_POLICY` to a new explicitly versioned policy (recommended
-`riverhog-canonical-discovery-extraction/v2`) identifying the source-normal storage,
-interval state, exact scope rules and support tie order. Its one shared digest
-continues to qualify generation/read applicability. Do not create a second registry.
-The outer API response format can remain unchanged while its opaque generation
-values change. Update owning declared derivation/freeze surfaces where required.
-
-Do not keep an expanded logical membership count as a seal prerequisite. Replace
-`expected_memberships` and the upload cursor's membership total with verified
-physical/source-stage counts and complete manifests. A diagnostic explicit flat
-export may enumerate/count R on request; it is not part of ordinary index building.
-
-A final compact digest pass visits each canonical record once. Store checkpoints
-at deterministic table/key boundaries with a verifiable hasher state or reuse the
-existing neutral incremental commitment abstraction; neither stage nor status may
-restart the whole digest per record. If a crashed private hash state is unavailable,
-restart that compact pass once and report its cost; the normal-build growth bound
-is not a claim of finite work under unlimited crashes.
-
-### Pre-v1 clean hard cut — approved identity, preserve Alembic
-
-**Maintainer decision:** [#964 comment 6112668478](https://github.com/nashspence/riverhog/issues/964#issuecomment-6112668478).
-The new normalized index tables and versioned extraction/dataset commitment
-replace the retired expanded-membership schema and runtime entirely **before the
-first release candidate**, by editing the **single v1 Alembic baseline** rather
-than adding a second revision for an abandoned pre-v1 schema. There is no support
-for migrating that old layout, rolling upgrades, old/new index coexistence,
-dual reading/writing, legacy extraction fallback, compatibility adapters or
-old-cursor translation. This **does not prohibit the intentional Alembic forward-
-only v1/post-v1 revision machinery or its synthetic upgrade tests**.
-
-The index/dataset and read-generation identity change is specifically approved.
-Continue to freeze the new deterministic values through the owning current-source
-contract/tests; the approval is **not** permission to rebaseline archive roots,
-journal octets, member/history IDs, input authority or semantic query results.
-
-**Exact integration sequence:**
-
-1. Update Riverhog's **single current Alembic `v1_0001.py` bootstrap revision**,
-   `state_migrations/v1_ddl.py`, current SQLAlchemy metadata, fixtures and
-   schema/freeze guards together. The fresh v1 database directly gets the new
-   source-normal tables, indexed selectors and bounded private staging. Remove
-   retired membership tables/extractor runtime paths and expectations in the
-   same pre-v1 cut. Do **not** append `v1_0002`, create an old-layout conversion
-   revision, or add schema-version bridges to preserve an abandoned pre-v1 design.
-   **Retain `StateSchema`, `run_migration_environment`, explicit Alembic upgrade,
-   and forward-only revision/history tests** for actual v1 and subsequent releases.
-   Keep G22 implementation ownership separate.
-2. Current-schema startup validates its declared structure. When pointed at an
-   incompatible discarded pre-v1 database it **fails closed** with an actionable
-   owner/operator disposition; it does not auto-upgrade, dual-read, rewrite or
-   silently reset operational state. Explicit **Alembic upgrade-to-head remains
-   the current supported command to bootstrap an empty database**, as well as the
-   intentional forward-only upgrade mechanism for future supported v1 revisions.
-   It is not a promise to translate this abandoned pre-v1 layout.
-3. Bootstrap an empty database through the **existing Alembic `upgrade` path**
-   using the amended single `v1_0001` baseline. Regenerate only
-   *rebuildable derived discovery-index state* by running the new extractor over
-   independently validated archived member/history/provenance data, under normal
-   build fencing, source capture, completeness and retry rules. Publish only a
-   fully verified new index generation.
-4. Preserve authoritative archives, documentary evidence, custody receipts and
-   non-rebuildable operational state. Do not call an entire application database
-   disposable because discovery indexes are rebuildable. If pre-v1 saved
-   operational state cannot be reconstructed safely under the new schema, stop
-   and obtain explicit owner/operator disposition; this G26 hard cut supplies
-   **no adapter or upgrade path from discarded pre-v1 operational layouts**.
-   Ordinary future Alembic revision support is unaffected.
-5. Use the existing generation/read-identity conflict semantics when an old
-   cursor or saved read identity is presented. The old value is invalid and the
-   caller restarts discovery with the new generation. The server does not
-   translate, recognize as compatible, or silently mix old and new cursors.
-6. Confirm current/new-only archive rebuilding, restart/replay, claim/fence,
-   permissions, scope/query equivalence, cleanup, SQL plan/growth constraints,
-   and protected derivative-identity freeze tests on the final source. No
-   zero-downtime or cross-version deployment promise is made.
-
-Prior reference advice to apply a **forward-only migration from the obsolete
-pre-v1 index**, run two index generations concurrently, roll an upgrade through
-old readers, or treat the hard cut as optional is superseded. The specific G26
-change is an in-place edit of the v1 bootstrap definition, **not removal of
-Alembic or its intentionally tested future forward-only migration capability**.
-The scope and approval of future public schema revisions remain with their owner.
-
-Old discovery cursors still invalidate when generation/read identity changes;
-the existing conflict/restart result is the *current interface behavior*, not a
-compatibility adapter. No reference to an old schema is needed at runtime beyond
-rejecting incompatible current-state validation.
-
-## 6. Query implementation without reconstructing R
-
-Keep `_selected_collections`, current catalog/provenance permission checks,
-artifact-scope filters, tag/description filters and source/root/read identity rules.
-The index narrows candidates; it does not grant permissions. Each page checks the
-current authorization and read generation again. Filter before emitting support.
-
-### 6a. Exact assertion predicates and interval selection
-
-Evaluate the existing SQL posting predicate as a candidate filter and then the
-existing exact `assertion_clause_matches` against each distinct raw assertion.
-Never combine different assertions/profile subsections to satisfy one clause.
-Resolve effective/retracted state for an exact prefix with born/retired intervals.
-
-For several requested prefixes of one journal, sweep sorted matching assertion
-birth/retraction events and sorted selected prefix endpoints. Retain an ordered
-index/heap of currently eligible support. Emit the best support per needed
-snapshot/selector, not all matching assertion-by-prefix pairs. For recorded-history
-with assertion_state=any, all born records remain eligible. Retraction queries
-activate at retirement; effective queries deactivate there. Same-page clauses are
-separate exact predicates. This is source/range work plus ordered maintenance, not
-quadratic prefix copying.
-
-The current first-support priority is `(journal_id, sequence, assertion_id, scope)`.
-Retain it; propose `prefix_sha256` as a FINAL deterministic tie-breaker only where
-the current ordering leaves multiple otherwise equal snapshot witnesses. Identify
-this explicitly in the new extraction policy, verify exact API expectations, and
-obtain owner approval if any supported contract pins another tie behavior. Do not
-change which member or clause matches to make support selection cheaper.
-
-### 6b. Common unary/shared-root profile
-
-For exact unguarded scope paths, seed matching snapshot/row selectors with their
-best support keys. Propagate in reverse, using a disk-backed priority worklist.
-Pop the smallest witness key; settle a selector once; propagate the same key to
-its parents. The first settled member root is its globally smallest support on
-those paths. Zero-cost cycles/diamonds terminate by exact selector deduplication,
-not path enumeration. Batch indexed adjacency reads and writes; don't issue one
-network round trip for every fact.
-
-Why this is correct: every unary edge preserves a valid support witness. Processing
-keys in order ensures no larger witness can settle a parent before an available
-smaller one. Later witnesses for a settled selector cannot improve any ancestor.
-For N members sharing A matching facts under one snapshot, query work is O(N+A)
-visits plus sorting/index costs, not N independent traversals of A facts. The
-included model tests this and forbid calling its flat expansion helper.
-
-### 6c. Correlated imported-late-claim profile
-
-An AND guard cannot be traversed as OR and accepted. Reverse OR relaxation supplies
-only a sound candidate superset. For exact guard evaluation intersect **same-member**
-import reachability and causal-State reachability. Reuse exact per-query operand
-projections keyed by history/state, not one projection per raw matching assertion.
-
-Implement exact checking on the query-relevant backward slice using a disk-backed
-per-candidate least-fixed-point frontier: insert each `(kind,coordinates)` once,
-process each incident unary edge and each AND input once; activate a guard only
-when both inputs have been reached for that member. Apply source interval joins
-lazily. For the exact candidate, choose support using the same ordering and exact
-predicate checks. Combine with unguarded best support, selecting the smaller
-verified witness. Do not accept the unguarded witness immediately when an earlier
-possible guarded witness remains unverified.
-
-This is a **separately declared G28 correlated-reachability profile**. A safe bound
-is the sum of relevant slice visits over candidate members, bounded by C times the
-selected source graph/selector domain, plus index/predicate/result costs. It is
-not a universal O(output) or file-linear query guarantee. Profile C from public
-selectors and necessary matching-history/state candidates, not an arbitrary
-unrestricted Cartesian prefilter. Zero-result, ambiguous and broad-match cases
-must be measured. Do not mark a composite strictly linear if it needs this general
-profile; stronger specialized query algorithms can be added with actual evidence.
-
-### 6d. Pagination, counts and query workspace
-
-Join/intersect the per-clause MEMBER result projections; do not join each clause's
-full support-row relation before DISTINCT. Select the first exact support per
-clause only for the bounded returned member set. Keep member order
-`(collection_id, artifact_id)` and existing current-generation cursor fences.
-
-A reusable query projection is bounded disk-backed derived state keyed by exact
-query/read identity (including authorization-view identity), with lease, capacity,
-expiry and cancellation cleanup. It must not store reusable permission decisions.
-Resume complete member results by key; do not recompute all prior pages. A missing
-or expired projection may rebuild with separately reported cold cost or use the
-existing explicit invalidation contract; never return partial work as complete.
-Do not hold a database snapshot/connection throughout a slow client's lifetime.
-
-Exact counts count distinct matching MEMBERS or the specifically requested output,
-not internal factor paths. Explain aggregate query cost separately. An explicitly
-requested full flat provenance relation can require O(|R|) output; ordinary build,
-seal, first-support and member enumeration must not pay that expansion in advance.
-
-## 7. Honest candidate growth declarations
-
-Let H be unique admitted source bytes, A raw authored assertions, D authored
-root/import/dependency/graph incidences and their bytes, N member bindings, S exact
-snapshot headers. U = H+A+D+N+S abbreviates a vector of measured work, not adding
-bytes to SQL time. Source input costs, G22/G23 semantic validation, G01 parsing and
-canonicalization, lexical/profile extraction, encryption and indexed operations
-are separate named delegates. Independently growing pointer depth or parser work
-must be charged to its actual extraction profile; it is not a new unlimited
-"necessary metadata" allowance that can hide internally manufactured products.
-
-- **G26 build/storage/compact seal:** O(U) source/fact visits and compact encoded
-  bytes/state, plus declared O(K log K) indexed/order costs. No term N*shared-A,
-  S*journal-A, or all-member transitive membership materialization is permitted.
-  Holding a complete raw summary per prefix would violate this implementation goal.
-- **Common OR-only scope query:** O(M+F+L+N_q) useful visits over matching source
-  records, reached factor nodes and links, plus exact predicate, sorting/index and
-  result costs. F/L refer to the named unary selection slice, not expanded pairs.
-- **Guarded query:** explicit correlated-slice bound from 6c, not an unconditional
-  linear end-to-end claim. Record member/query dimensions and actual failed probes.
-- **Full explicit output:** add true requested result bytes/tuples, with deduplication
-  and ordering cost. Do not call unused intermediate rows requested results.
-- **Memory:** configured source/page/cache windows and active-query limits. Spill
-  exact frontiers/facts to owned disk. Model Python sets/heaps are not production
-  bounded-memory evidence. Quota failure is explicit, never truncation.
-- **Retry:** committed source units reused under the exact build fence; partially
-  staged work replays only its declared unit. Changed source or deliberately lost
-  derived state requires explicit rebuild accounting. Unlimited failures are not
-  a finite-runtime promise.
-
-No 600-second guarantee is inferred. This design removes the source-independent
-Cartesian construction/sealing cost, but G22 corrections, other owners, cold crypto
-and guarded/general queries retain separately stated costs. G26 does not silently
-waive the approved whole-lifecycle composition requirement.
-
-## 8. File-level integration job
-
-| Existing owner/path | Change |
-| --- | --- |
-| `catalog_provenance_index_models.py` | Add normalized source facts/root/import/dependency rows and staged work/terminal records; re-key lexical postings; remove the expanded-membership dependency in the same pre-v1 hard cut. Preserve build-qualified FKs/inverse indexes. |
-| `canonical_discovery_rows.py`, `canonical_discovery_extraction.py` | Reuse exact scalar/profile/core-edge extractors; extract raw facts once, attach born/retired coordinates, no latest-head replacement. |
-| `canonical_discovery_relevance.py` | Replace production Mapping that enumerates all member assertion memberships with the fixed source-normal accessors and correlated-scope evaluator. Keep the old implementation only as a TEST oracle during parity work, then remove retired runtime path. |
-| `canonical_discovery_build.py` | One shared source build and bounded stage advancement; no per-member complete closure/materialization loop. |
-| `canonical_discovery_index.py` | Preserve `_require_pending`/publication fences; exact bounded staging and retries; complete source manifests; new compact commitment and extraction policy. |
-| `canonical_discovery_rebuild.py` | Archive-only source adapter feeding the SAME build engine; no reconstruction from old search rows. Resume bounded source work, not just max member key. |
-| `services/collection_uploads.py` | Replace `_advance_catalog_canonical_index` member/membership counters with build phase/task cursor; same final index readiness before terminal publication. |
-| `canonical_discovery_search.py` | Replace `_matching_members`/`_exact_support` flat joins with exact fact predicates, unary propagation and guarded checks; keep filters, read fence and public response semantics. |
-| neutral provenance/archive libraries | Add a narrow immutable source-fact projection API only where needed, backed by their exact validator. Do NOT import server selectors or interpretation into them; do not bypass current public read checks. |
-| Riverhog Alembic baseline / current state / fixtures | Revise existing `state_migrations/versions/v1_0001.py` and `state_migrations/v1_ddl.py` **in place** with metadata and exact schema fixtures. Preserve shared `state-schema` forward-only Alembic framework, explicit empty bootstrap and synthetic second-revision/interrupt tests. Do not append a prior-layout migration or old-version reader/writer. Check current-schema startup, explicit `upgrade` bootstrap, fail-closed obsolete state, archive-backed rebuild and non-rebuildable operational authority. |
-| qualification native discovery plan fixtures | Seed the new truthful source-normal projection; assert relevant indexed paths, including inverse incidence and guarded negatives. Do not merely update old index-name strings to get a green test. |
-| #963/#964 Closure/Audit witness wiring | Declare actual cost profiles, exact source/workload/applicability, counters and completed evidence. No second target or scope registry. |
-
-The parked `codex/960-discovery` experiment can contribute snapshot-link staging,
-source capture and negative/fencing tests. Its advertised hash/query expansion is
-NOT the final build/seal strategy. Reconcile its actual patch before reusing code;
-this producer read the issue description, not the private local patch file.
-
-## 9. Executable payload and validation plan
-
-`factored_index.py` is a small SQLite model of exact staging, interval leaves,
-unary edges, same-member AND guards, deterministic compact sealing, least-fixed-
-point traversal, reverse candidates and minimum unguarded support propagation.
-`native_compiler.py` lowers actual validated Riverhog fixtures to that model for
-scope equivalence. It deliberately uses in-memory/per-prefix views and is **not**
-a ready-made production source-normal extractor. Do not inherit that scalability
-limitation. Neither file is a new public API nor the final SQLAlchemy current-schema integration.
-
-Tests cover exact native primary/context/late-bound/retained scopes, corrections,
-multiple exact prefixes, real imported source-binding proofs with/without causal
-links, deterministic retry order, disconnected/diamond/cyclic factor worklists,
-false-positive OR candidates, exact missing/changed inputs, and no flat expansion
-in common search. Private selector cycles in model tests are not lawful provenance
-cycles; the native validator still rejects invalid provenance before extraction.
-
-Before landing, implement and pass:
-- Differential relation and exact-query/support parity for all four scopes, profile
-  pins, assertion states, literals, Unicode/bytes, sparse/dense/import/fork cases.
-- Source-normal production work counts for increasing N, A and S independently,
-  including growing prefixes, small page/pack capacities and cache bypass; do not
-  substitute the model's physical row counts for actual full-builder evidence.
-- Real PostgreSQL EXPLAIN/counter witnesses for staging, unary and guarded search,
-  no-match and paged workloads. Reject a single SQL call hiding a full repeated scan.
-- Mid-source, mid-stage, final-hash and CAS interruptions; missing source terminal;
-  changed bytes/root; late revocation; stale epoch; same-key changed retries; failed
-  new generation retains applicable previous one; index loss rebuilds from archives.
-- Query ties, generation cursor conflict, revoked key/artifact scope and expiry;
-  no cross-member leakage from shared factors or AND operand unions.
-- Approved derived-index identity hard cut, exact current `v1_0001` bootstrap
-  and freeze-fixture integrity. Retain the existing Alembic forward-only/synthetic
-  upgrade interruption tests; **do not** add a successful old-pre-v1-to-new
-  migration or compatibility test. Verify rejection of that obsolete state.
-- Mandatory locked local and exact-SHA remote gates, appropriate final-image full
-  publication and independent recovery, source/scratch cleanup and timing review.
-
-The reference is design/qualification input rather than a claim these production
-integrations have already run. G22 remains unchanged; #960's approved closeout
-and #961/#963/#469 responsibilities remain in force.
+# G26: segmented source facts, resumable sealing, retained generations
+
+Recommended replacement design for #964/#903. Audited source:
+`152d095038df0c0d0ed642cf265d47b11c65a754`, tree
+`991e994457b487a7dca016b7fc0409485cef25c6`. Reference parent:
+`4621be70fe2229ef7de169862ff1ec5274dec00f`.
+
+Earlier recommendations are calibration. Retain the exact factored relation in
+[SEMANTICS.md](SEMANTICS.md); replace the old whole-assertion staging, complete
+hash-pass replay allowance, competing query workspace and current-generation
+continuation rules. This is concrete integration input, not implemented production
+or a claim of complete growth conformance. The changed compact commitment below
+is an explicit refinement for owner review, not hidden reuse of the prior digest.
+
+## 1. Decision and boundaries
+
+Build one source-normal immutable generation from the exact union of selected
+verified archive facts. Every phase, including a single large assertion, long
+value, high-degree dependency, sealing and reclamation, advances through bounded
+physical work. Preserve all four scopes, both history-request extents, independent
+State byte extent, native matching and minimum support. No primary-only shortcut,
+implicit corpus-wide widening, merged effective graph or same-byte attribution.
+
+G26 owns authenticated source extraction, compact index representation, build
+completeness, publication and generation retention. G22 supplies neutral exact
+journal validation; G23/G24 own corpus/history validity. G27/G28 consumes retained
+immutable generations and owns invocation admission, pending/continuation, current
+authorization, result checkpoints and support transport. Do not implement another
+query lifecycle here. Mutable browse and exact discovery remain different owners.
+
+Ordinary content updates do not revoke a pinned immutable generation. Current
+authorization, deletion and retention expiry still govern whether it may be served.
+Pins are not grants and cannot authorize source release or bypass archive authority.
+No long catalog read/write transaction, held source iterator, global-content fence
+retry or whole-generation cleanup is the default implementation.
+
+## 2. Source qualification and normal form
+
+Use SEMANTICS.md's raw assertion birth/retraction intervals, exact snapshot headers,
+shared history/root/import/dependency sets and member bindings. One assertion's
+lexical facts are extracted once for the admitted source union, not once per member
+or prefix. Match effective/retracted status with exact intervals, not latest-head
+state. Forks and foreign references retain their exact original preimages.
+
+Qualify journal keys by the verified source admission and complete chain identity.
+Within one admitted corpus, shared journal IDs require the native shared-prefix
+consistency proof. Never deduplicate across sources merely by UUID, payload hash,
+path or apparent similarity. Identical bytes may have distinct member/record identities.
+Shared validation does not cache current access decisions. G22 source facts are
+usable only after exact validation and source-terminal/fence evidence; speculative
+topology or a partial captured stream cannot be published as a discovery source.
+
+Use a fixed current normal form at canonical_discovery_extraction/rows owners:
+
+- source, entry, assertion, interval, exact snapshot, member/history and typed
+  relationship headers have bounded identifiers or references to segmented values;
+- variable canonical JSON, text, byte values, pointer tokens, native profile names
+  and reference preimages use ordered byte segments plus terminal length/count;
+- path nodes store parent identity and one exact escaped-token stream. Reuse the
+  declared source path prefixes instead of copying a deep pointer into every
+  posting. Posting rows reference path nodes and native ordinal/type/value streams;
+- complete declared profile sections and canonical edges are individually enumerated,
+  not arrays hidden in an assertion-row payload. Opaque profile lookalikes remain
+  ordinary lexical data, never graph edges or declared sections;
+- fixed scalar/index keys retain actual type and collation. Unbounded values are
+  not SQL index keys or giant IN lists. A digest accelerator must verify exact
+  bytes where equality matters and must not become permission or source identity.
+
+Stable path/field ordinals come from the native canonical traversal order, not
+arrival order or random IDs. Ordering JSON keys has an explicit canonicalization
+cost. The maintained parser may materialize one permitted entry under its existing
+entry-byte contract; that does NOT permit a whole journal, all postings, all root
+sets or a state-sized checkpoint. Deep traversal uses an explicit spillable stack,
+not Python recursion proportional to an undeclared extent. New larger-entry profiles
+need their own owner-reviewed parser bounds. No capability is silently restricted.
+
+Preserve native first-posting and first-complete-section semantics. Do not regenerate
+text/bytes value hashes from a preview, encoded substitute or truncated pointer.
+G27/G28's exact pointer predicate walks token identities; only requested support
+needs full pointer reconstruction, streamed through its support transport. Count
+source-token/value bytes and requested pointer bytes separately. Repeatedly expanding
+all pointer prefixes is avoidable internal amplification, not necessary input.
+
+## 3. Large assertions are segmented work, not invalid data
+
+At the audited source, stage_assertion_page rejects >20,000 postings in one
+assertion, >50,000 postings in a page and >10,000 text chunks per posting/page;
+IndexedAssertion also materializes postings/profiles/edges as tuples. Merely raising
+those constants does not fix extent. The generic JSON grammar can contain >20,000
+scalars below the entry-byte limit; full enclosing profile/journal validity is a
+separate obligation, not established by that generic-value diagnostic alone.
+
+Replace the private all-in-one IndexedAssertion staging carrier with:
+
+`begin_assertion(source_key, assertion_key, origin, canonical_stream_ref)`
+`advance_assertion(source_key, assertion_key, extraction_cursor, budget)`
+`stage_fact_segment(build, task, segment_key, exact_bytes, expected_version)`
+`finish_assertion(build, task, source_terminal)`
+
+The extraction cursor includes source byte/token position, category and logical
+ordinal, declared-section position, pending value/path cursor and stream hash state
+or fixed-fragment progress. Large cursor stacks live in paged work relations, not
+one JSON checkpoint field. Do not resume by reparsing the entire assertion and
+skipping every earlier posting; an admitted bounded entry parse replay must be
+explicitly bounded/charged, and completed posting generation is not repeated.
+
+Each segment has source/build/worker bindings, kind, logical record key, ordinal,
+byte length and integrity identity. Retries compare exact existing data and terminal
+metadata; an identical retry advances no counters, and a changed retry fails.
+Reject gaps, conflicting final markers, tails after terminal and changed sources.
+Segment order within a logical stream is contiguous; independent streams may stage
+in any order. Empty values/posting sets have explicit terminals and do not vanish.
+
+Row/byte/work budgets limit ONE call. Exhaustion yields resumable progress, or an
+explicit operational admission/capacity result, not permanent semantic invalidity
+of an otherwise valid assertion. Oversized rows/strings must be split before SQL
+binding; a DB string-size exception is not the intended large-value protocol.
+Treat memory, disk, active jobs and lease duration as source-linked operational
+policy, with distinct capacity/pending/cancelled/expired outcomes. Do not infer
+support ceilings from a benchmark size or test's deliberately tiny segment size.
+
+The native G22 8 MiB default entry limit remains separately owned; this recommendation
+does not remove it. G26 also does not require a new unlimited single-entry format.
+Existing journal/member/history logical totals still progress over bounded entries
+and structural record sets without derived-index-only cardinality maxima.
+
+## 4. One durable build engine for upload and archive-only rebuild
+
+Begin under existing pending collection/root/provenance/epoch fences. Capture the
+exact immutable source and independently authenticated expected member/root/import
+manifests. Admission and source-work registration are idempotent. Both upload and
+archive-only rebuild use the same engine and extraction policy, never prior search
+rows as the source of truth.
+
+The phases are MEMBER_SCAN, SOURCE_DISCOVERY, SOURCE_VALIDATE, FACT_EXTRACT,
+REFERENCE_VERIFY, CANONICAL_ORDER, COMMIT_LEAVES, COMMIT_FOLD, READY_TO_PUBLISH,
+PUBLISHED, with explicit blocked/failed/cancelled/retired cleanup states. Source
+registration/validation/extraction may interleave where dependencies permit.
+Every phase has a saved key/byte/adjacency cursor and bounded substeps; phase names
+alone are not evidence that work is bounded.
+
+Register child obligations in the SAME transaction that advances the parent's
+source cursor. Use exact task identities and an indexed outstanding-work queue;
+retrying task registration does not increment outstanding counts. Mark each terminal
+only after its source coverage, child obligations, actual row/byte totals and exact
+retry evidence agree. Preserve independent archive/member-binding completeness,
+G22 entry/anchor validation and both selected history extents. A count of whatever
+the extractor inserted cannot prove the extractor did not omit required content.
+Semantic source coverage and derived-row enumeration are separate checks.
+
+Resolve large dependency/root/import sets once with a disk-backed deduplicated
+worklist. Keep high-degree adjacency continuation separate from the node's visited
+bit: a node is not complete while its outgoing cursor is unfinished. Native cycle,
+foreign-anchor and same-member source-binding proofs remain required. Retain exact
+bound-versus-documentary membership, not merely the union of observed journal names.
+G23/G24 delegate costs and unresolved qualifications block composite acceptance;
+G26's own bounded loop cannot certify an unbounded delegate.
+
+Load source/database chunks under short operations, release cursors and borrowed
+connections, then evaluate/encode/hash outside them. Commit bounded rows plus the
+next task checkpoint under the same epoch/version CAS. Durable source/segment files
+are synchronized before their DB references. Restore owned work across process
+replacement; do not attach job restart to a process temp directory's survival.
+Ordinary restart replays only unfinished work units. Real loss/corruption of retained
+state has an explicit rebuild/failure disposition and cannot be reported as warm resume.
+
+Native validated summaries already have JournalStore.close support. Consume them
+through G22's explicit handle lifetime, publish exact source facts, and release
+connections before moving to the next source. Do not hold a complete summary for
+each member or every exact prefix. Reused immutable projections remain subordinate
+to archive evidence and current reads/fences. A pin does not override revocation.
+
+Freeze pending fact input only when independent source/semantic obligations are
+complete. Enforce immutable state during canonical ordering and sealing. Concurrent
+new facts belong to a different attempt, not the read transaction of this one.
+External sort/spool uses bounded runs and a persisted merge frontier; neither one
+SQL ORDER BY over an arbitrary unsorted total nor all runs in one checkpoint is
+an automatically bounded step. Prefer producer-assigned canonical keys and verified
+ordered scans where available. Charge sort comparisons, key bytes and index work.
+
+## 5. Deterministic resumable compact commitment
+
+### Selected identity refinement
+
+Select a domain-separated ordered Merkle commitment to the source-normal fact
+stream, rather than a flat SHA state whose loss restarts the entire compact pass.
+Use ordinary SHA-256 on bounded leaves/nodes; no custom crypto context codec is
+required for G26. G22 MUST still preserve its existing flat journal/prefix SHA-256.
+These are different commitments at different owners, not interchangeable shortcuts.
+
+This is an explicit refinement of G26's previously proposed flat compact transcript.
+Recommend domain `riverhog-canonical-discovery-factor-merkle/v1` and a distinct
+extraction-policy identity describing the normal form, typed field encoding,
+fragment rule and tree algorithm. Do not hash a changed preimage under an old
+policy/dataset identity or assert that historical G26 identity approval constitutes
+acceptance of every new constant/formula. Rebaseline through exact owner review.
+No archived member, journal, history, provenance-root or payload digest changes.
+
+### Normal form and exact tree
+
+Table/record order is fixed by the extractor's schema: the source-normal relations
+in SEMANTICS.md, including path/value segments and terminal records, sorted by their
+explicit source-qualified canonical keys. Never include attempt IDs, SQL row IDs,
+queue order, cache state, timestamps, worker epoch or operational page sizes.
+Logical records retain types and exact canonical scalar encodings. Large keys are
+represented by canonical source ordinals/segmented tokens, not truncated names.
+
+For each logical record, stream its deterministic encoding into fixed 4,096-byte
+fragments, with an explicit record terminal committing total bytes and fragment
+count. This is a proposed representation constant, NOT an operational quota or
+semantic total maximum. Empty records have a terminal; no missing tail is silently
+accepted. Operational reads/writes may subdivide or group fragments without changing
+the identity. A fragment-in-progress has a bounded accumulator and exact offset.
+
+Let B(x) be ASCII decimal length, ':' and the exact bytes x. A data-leaf preimage is
+B('data') || B(table code) || B(canonical source/record key) || B(fragment ordinal)
+|| B(fragment bytes). The terminal-leaf preimage is B('end') || B(table code)
+|| B(record key) || B(total canonical bytes) || B(fragment count). Table codes,
+keys and integers have one frozen canonical encoding, not SQL repr/host endianness.
+
+For ordered leaf payloads d[0..n), use SHA256(empty) for n=0, SHA256(0x00 || d)
+for a single leaf, and SHA256(0x01 || left || right) at each internal node with
+the largest-power-of-two split below n (RFC 9162's tree shape). Domain-separated
+leaf/node hashing and ordered keys make boundaries, order, duplicates and empty
+content meaningful. Never use XOR, unordered sums or transport-batch hashes.
+
+The outer dataset identity is SHA256(native canonical JSON of a fixed-shape header
+containing the NEW format/extraction identity, independently verified source-manifest
+identity, logical-record count, leaf count and Merkle root). Existing generation
+identity binds that dataset to the exact archive root, provenance and core contract.
+Generation identity changes deliberately; a rebuild under the same source/policy
+must reproduce it byte-for-byte regardless of scheduling, source arrival, worker
+budgets, segment packing, retries or process restart.
+
+### Bounded carry, fold and finalization
+
+Persist the next canonical record/fragment key and leaf count, a single pending
+carry (digest and level), and a frontier relation keyed by tree level. One step
+hashes bounded fragment bytes outside the catalog transaction or combines a bounded
+number of pairs, then commits its checkpoint. A carry through O(log n) levels is
+itself resumable; it is not hidden inside an indivisible append. The top-level
+checkpoint references the frontier, not an unbounded in-memory array. Store exact
+record terminals and totals through the same replay-safe transitions.
+
+At end of the canonical source stream, fold occupied levels from smallest to
+largest: combine each higher-level subtree on the LEFT of the accumulated right
+suffix. Checkpoint every bounded fold. Final publication reads the completed root
+and fixed terminal header; it does not rehash the dataset or run per-snapshot COUNT
+queries under its lock. Building the tree is O(encoded fact bytes + leaves) hashes
+in total, plus explicit ordered-index access; frontier state O(log leaves) lives
+on disk. Tree shape and final header are independent of work budgets.
+
+A valid root is not source authenticity: source validation/completeness must finish
+before it is publishable. A lost checkpoint cannot be replaced with a caller-asserted
+root. Ordinary crashes resume the committed leaf/carry/fold position. Actual durable
+loss requires an explicit integrity failure/rebuild and is not the ordinary path.
+The model uses shorter fixture fragments and a diagnostic leaf codec; it tests the
+algorithm, not the final production dataset encoding or approved freeze vectors.
+
+## 6. Publication, retained generations and incremental reclamation
+
+Prepare and validate all large source/index/descriptor data before publication.
+In the short existing _require_pending/publication fence, verify attempt epoch,
+archive/provenance identity, source/semantic terminals, completed commitment and
+current authorization/deletion conditions. Publish active_build_id AND the new
+searchable-version descriptor/directory root through G27/G28's common coordinator
+in the SAME transaction. Follow its head -> collection -> index -> reference lock
+order. Include publish_index_build, not just catalog-event writers. Failure leaves
+the previous applicable generation intact; no READY marker for a partial build.
+
+Published fact generations are immutable and addressable by exact content identity.
+A retained query pins G27/G28's directory root, which transitively retains these
+source generations and segments. A new active pointer does not delete or mutate
+an older pinned generation. Multiple immutable generations in the ONE current
+schema are retention, not abandoned-pre-v1 compatibility. Do not retain a legacy
+extractor, dual interpretation or alternate authority. Identical deterministic
+completed generations may share verified data; build-attempt identity remains distinct.
+
+G26 supplies a narrow generation-source accessor returning bounded ordered detached
+facts and source-support references. It does NOT create query workspaces or rebuild
+an expired query itself. G27/G28 owns invocation expiry/new admission, live authority,
+current-content versus pinned-content semantics and exact support chunk delivery.
+Source revocation/deletion blocks serving as its authority requires; a retained old
+root does not restore access. Avoid a global current-root equality test on each
+query or at query READY: ordinary unrelated writes must not restart exact work.
+
+Reclamation uses shared pin/ref coordination: a generation cannot enter deleting
+while any retained head/query/staging root still reaches it. Once atomically marked
+deleting with zero roots, no new pin is admitted. Reclaim source/fact/path/value/
+frontier/segment references in bounded batches with saved cursors, then remove the
+header. Disable or restructure generation-wide ON DELETE CASCADE and large DROP/
+TRUNCATE shortcuts. Shared segments are removed only after their last reference;
+row/object identity and epoch fencing prevent ABA/double decrement. Cancellation
+releases only its own root and schedules incremental cleanup. Existing deletion,
+privacy and custody obligations still control retention and response visibility.
+
+Measure actual unique/shared physical bytes, in-flight allocations, orphan segments,
+old generations and database maintenance. Refcounts/lease limits are not free and
+may need explicit operational backpressure. Archive-backed derived index rebuild
+cannot discard receipts, claims or other non-rebuildable operational state. Pins
+must not turn optional derived state into a new source-release prerequisite.
+
+## 7. Costs, witnesses and integration order
+
+Measure unique admitted source H, authored assertions A, explicit incidences D,
+member bindings N, exact snapshot headers S, path/token/value bytes and canonical
+fact fragments K separately. Build/source visits follow H+A+D+N+S plus declared
+G22/G23/G24, schema/canonicalization, index and ordering costs. Segmentation adds
+linear carrier/terminal overhead, not N*shared-A or S*journal-A. Pointer-prefix
+sharing avoids an internal depth-by-posting product. Requested expanded support
+or a genuinely dense relation has separately declared output cost.
+
+Keep G27/G28's unary/shared minimum-support and same-member guarded-query profiles.
+Guarded candidate slices may be superlinear; do not label them output-linear.
+Memory follows admitted source/entry/fragment windows and bounded operator state.
+Disk includes facts, work, current and retained generations, logs and GC backlog.
+For a retained correct source/attempt, ordinary F crashes add F unfinished quanta,
+not F whole-source/whole-generation passes. No finite completion promise is inferred
+under unlimited faults, revocation, storage exhaustion or arbitrary delegate work.
+
+Implement in this order:
+1. Reconcile exact post-#963 source and obtain owner acceptance of normal form,
+   commitment refinement, session/handle surfaces and operational policy bindings.
+2. canonical_discovery_rows/extraction: resumable source/path/value/profile/edge
+   streams; new private staging carriers and direct-source witnesses above every
+   prior threshold. Keep test-only native logical oracle, not a legacy runtime.
+3. canonical_discovery_source/build/rebuild: one source union and G22 session
+   consumption, durable obligation/progress state and exact source terminals.
+4. canonical_discovery_index plus a private commitment module: immutable ordering,
+   persisted leaf/carry/fold pipeline; constant-size seal/publication checks.
+5. catalog_provenance_index_models, source mutation owners and G27/G28 directory:
+   atomic source publication, retained generation references and bounded GC.
+6. canonical_discovery_relevance/search: G26 exact source accessors into G27/G28,
+   no old current-generation cursor/workspace interpretation; retained-view API
+   changes and transport remain explicitly owned by G27/G28.
+7. Edit the existing v1_0001/v1_ddl/models/fixtures in place. Preserve Alembic,
+   StateSchema, explicit bootstrap and synthetic future forward-upgrade/interruption
+   tests; no migration or compatibility with discarded pre-v1 application layouts.
+8. Register extent/growth/authority evidence through existing Closure/Audit/#963
+   machinery and run the normal locked/local/built/remote qualification rail.
+
+Required production witnesses: valid native large-profile assertion with >20,000
+postings; long text and deep paths with small work budgets; exact both-history-extent
+and all-scope/query/support parity, retractions/imported guards/forks; keyspace and
+zero-result adversaries; per-phase process kill and state corruption; exact digest
+across scheduling/budgets/rebuild; independent source completeness negatives;
+publication/query pin/revocation/GC races and PostgreSQL plans; no unbounded final
+hash/count/delete; source and summary handle release; full archive-only recovery.
+Existing G26 model/native evidence is historical, not evidence these new production
+paths have run. See ../g22_g26/README.md and evidence.json for this revision's actual
+executed diagnostics. Numerical defaults, end-to-end conformance and target timing
+remain subjects of their required owner evidence, not invented passes.

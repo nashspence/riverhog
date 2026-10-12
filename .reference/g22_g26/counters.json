@@ -1,0 +1,47 @@
+{
+  "diagnostic_fragment_bytes": 256,
+  "limits": "Synthetic integer DAG and fact bytes. No native semantic validator, production source adapter, PostgreSQL, pool, fsync power-loss or runtime target qualification.",
+  "observations": [
+    {
+      "dag_edge_visits": 128,
+      "dag_max_transitions_per_quantum": 17,
+      "dag_quanta": 31,
+      "dag_vertices": 129,
+      "merkle_leaves": 128,
+      "merkle_max_transitions_per_quantum": 17,
+      "merkle_quanta": 23,
+      "model_root": "b974be727c5449a5c66cd0773af92c4e2e7860edf8deb391f49ca74cb066bc0d",
+      "n": 128
+    },
+    {
+      "dag_edge_visits": 512,
+      "dag_max_transitions_per_quantum": 17,
+      "dag_quanta": 121,
+      "dag_vertices": 513,
+      "merkle_leaves": 512,
+      "merkle_max_transitions_per_quantum": 17,
+      "merkle_quanta": 91,
+      "model_root": "fe187982f9e97171820ed0de3bc6859cf68f533ca2036770b1bfb83add687ec0",
+      "n": 512
+    },
+    {
+      "dag_edge_visits": 2048,
+      "dag_max_transitions_per_quantum": 17,
+      "dag_quanta": 483,
+      "dag_vertices": 2049,
+      "merkle_leaves": 2048,
+      "merkle_max_transitions_per_quantum": 17,
+      "merkle_quanta": 362,
+      "model_root": "9d3b7ebd1005396dd8a1aab795be66aea8779341de559b0209510daad53268e8",
+      "n": 2048
+    }
+  ],
+  "sha256": {
+    "bytes": 16387,
+    "digest": "7013b79bc788c9702675d036ffc1f59da802b1ab67abad557b7245174553c5af",
+    "max_private_state_bytes": 108,
+    "native_hashlib_equal": true
+  },
+  "sqlite": "3.46.1",
+  "status": "diagnostic-only"
+}

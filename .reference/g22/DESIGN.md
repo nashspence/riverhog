@@ -1,319 +1,238 @@
-# G22: certificate-first exact-prefix validation
+# G22: exact-prefix validation in bounded, recoverable steps
 
-Recommended integration design for #964 under #903. Source audited:
-`152d095038df0c0d0ed642cf265d47b11c65a754` (tree
-`991e994457b487a7dca016b7fc0409485cef25c6`). This is a tested reference design,
-not a claim that main or a released contract already conforms. G26 is untouched.
+Recommended replacement design for #964 under #903. Audited source:
+`152d095038df0c0d0ed642cf265d47b11c65a754`, tree
+`991e994457b487a7dca016b7fc0409485cef25c6`. Reference parent:
+`4621be70fe2229ef7de169862ff1ec5274dec00f`.
 
-## 1. Decision
+Earlier recommendations are calibration, not a requirement to preserve unsuitable
+execution. This document supersedes the former monolithic epoch transactions,
+per-attempt graph-sized savepoints, crash-restart-from-zero default and instruction
+to apply integration.patch as the current implementation. The correctness basis
+and honest cost profiles are retained in [ALGORITHMS.md](ALGORITHMS.md).
+This is a design submission, not a production patch or conformance declaration.
 
-Use **two explicitly different execution profiles**:
+## 1. Decision and acceptance boundaries
 
-1. For a supplied complete finite journal, make one disk-backed topology prepass
-   per correction-delimited epoch, then replay every original frame in order through
-   the normal semantic validator. A strict topological certificate makes each cycle
-   check an indexed rank comparison instead of a new reachability traversal.
-2. When a certificate is unavailable (including a cyclic speculative epoch), use
-   the genuinely online level/fuel algorithm of Gueneau, Jourdan, Chargueraud and
-   Pottier (ITP 2019), adapting Bender et al. No advance final graph size, random
-   priorities, transitive-closure matrix, global order-array rewrite or recursive
-   Python call stack is required.
+Keep certificate-first replay for supplied complete finite journals and the
+level/fuel online algorithm for genuine online operations and invalid-epoch
+replay. Execute BOTH as persisted state machines with bounded loads, computation,
+writes, checkpoints and cleanup. A semantic frame, correction, graph insertion,
+epoch or whole journal is NOT automatically a physical transaction.
 
-Preserve current correction acceptance as an atomic effective-view update. Reset
-its disposable validation aggregates and rebuild them from that effective view,
-just as the existing implementation does. Charge this cost explicitly; do not
-promise linear total work in the final graph for arbitrary many corrections.
+The public distinction is unchanged: transport append acknowledges exact octets;
+semantic sealing and validate_journal_chunks accept only after all required
+prefixes, profiles, identities, provider fences and tail checks succeed. Never
+accept a bad prefix because a later correction repairs the final graph. Speculative
+ranks cannot supply future objects, references, recorder authority or metadata.
+A genuinely online call still returns accepted/rejected at its existing boundary;
+internal suspension is neither provisional acceptance nor a later rejection point.
 
-This recommendation deliberately distinguishes a **complete transcript API** from
-an API returning a separately accepted answer after every arriving edge. Using
-look-ahead inside the former does not create staged public acceptance in the latter.
+Bounded steps do not promise constant-time validation of arbitrary schema programs
+or online graph operations. Large operations can require many steps and more total
+work. Do not relabel capacity failure, cancellation or unavailable input as semantic
+invalidity. Preserve native validation/error order on comparable completed inputs;
+retain earlier semantic failures ahead of later speculative parse/graph findings.
+No graph/cardinality/depth ceiling is added to make an operation fit one step.
 
-## 2. Why the actual maintained interface permits this
+## 2. Owning APIs and checkpoint trust
 
-Audit these exact owners, not inferred acceptance from function names:
+In riverhog-provenance, add a storage-neutral JournalValidationSession with
+`advance(budget) -> progress`, `result() -> JournalSummary`, `close()` and explicit
+attempt identity. The current synchronous validate_journal_chunks wrapper drives
+this session to completion and keeps its existing result meaning. The core library
+has no Riverhog catalog, HTTP, credential or archive-release dependency.
 
-- `packages/riverhog-provenance/src/riverhog_provenance/journal.py`:
-  `validate_journal_chunks` returns one JournalSummary only after all input, every
-  prefix, predecessor/checkpoint and optional exact-tail checks have succeeded.
-  It does not yield intermediate accepted semantic results.
-- `write_assertion_batches` already spools exact complete frames, then validates
-  the complete transcript before returning it to its publisher. Materialized
-  append helpers return the entire resulting journal, not a delta-only resource.
-- `riverhog/src/riverhog_core/services/collection_uploads.py`:
-  `append_collection_provenance_journal` acknowledges exact transport octets and
-  offsets/retry identity. Sealing verifies full byte count/hash, enters validating,
-  calls `_validate_next_upload_journal_entry`, and only then establishes sealed
-  semantic state. A transport append is not semantic acceptance of every prefix.
-- `journal_store.JournalStore.accept` currently checks EVERY frame's effective
-  semantics. Retractions are exact assertion references; IDs/identity domains and
-  retired assertions are not reusable; old canonical frame bytes remain recorded.
+Riverhog's collection_uploads validation owner binds a resumable session to its
+already retained exact uploaded journal, expected root/bytes/anchor, contract/profile
+pins, validation mode and existing job epoch. Archive-only recovery can use the
+same neutral engine with its own authenticated source and local workspace.
+A nonrepeatable caller's stream cannot magically resume across a process death:
+recovery requires an owned durable capture or an exact replay-capable provider.
+Never claim a library iterator alone supplies durable source custody.
 
-**No public boundary moves.** The new validator still rejects a transcript whose
-first invalid prefix is followed by a later repair. It returns no accepted result
-until all framing, current-provider fences, graph semantics and tail checks pass.
-The prepass may consume a finite epoch before reporting its first semantic error;
-there is no new early-rejection latency promise. KeyboardInterrupt/cancellation
-and resource failures never produce acceptance. Resource/transport error precedence
-is not converted into success or hidden evidence.
+Suggested owner-local state, not a universal job API:
 
-The prepass is topology evidence ONLY: it cannot supply future local objects,
-recorder authority, profiles, references, temporal facts, or accepted assertion IDs.
-All those remain checked against the actual current-prefix semantic store.
+- validation_attempt: attempt/source/algorithm/schema identities, worker epoch,
+  phase, version, active epoch/frame/operation IDs, accepted-prefix marker,
+  durable source offset, terminal state and fixed-shape counters;
+- spool_segment: immutable segment ordinal, exact octets/length/digest and source
+  binding; frame_directory maps exact entry positions to segments;
+- epoch_work: bounded scan cursors, separate graph-kind counts, active vertex and
+  adjacency cursor; frame, assertion, object, arc, degree, ready and rank relations
+  are attempt/epoch-qualified;
+- operation_work/undo: phase and indexed first-before-image records for touched
+  rows; no serialized graph, complete visited-ID list or whole context in a row;
+- semantic tables: native exact-prefix identities, active/retracted facts, references,
+  lifecycle extrema, findings and frame records. In-flight state is quarantined.
 
-## 3. Epochs and immutable replay
+Headers have fixed shape. Large sets, deep parser/traversal stacks, variable values
+and undo records use separately paged relations. Counters/ordinals use their actual
+owning scalar domains; decimal text requires numeric ordering, not lexical ordering.
+No diagnostic SQLite integer width is silently made a public total limit.
 
-An epoch is the maximal sequence ending just before the next `correction` frame.
-A correction starts the next epoch, together with all following non-correction
-frames. There is no arbitrary configurable semantic boundary or new total limit.
+Checkpoints are execution evidence, never archive or validation authority. Restore
+only server/owner-created durable state bound to the exact source, profile catalog,
+algorithm, epoch and accepted-prefix marker. Verify storage integrity and manifest
+links before use; a client-supplied pickle, SQLite file or hash context is not an
+admissible shortcut. An ordinary worker/process restart must not imply source loss.
+Corrupt/lost durable storage is an explicit failed/rebuild disposition, outside the
+bounded ordinary-restart promise, not an automatic success or zero-cost cache miss.
 
-A private SQLite scratch database contains:
+## 3. Work-unit protocol and durability
 
-| Table | Keys and purpose |
-| --- | --- |
-| `frames` | position -> original canonical JSON octets, bounded one-frame read window |
-| `active` | assertion ID -> graph kind/source/target; speculative active graph assertions |
-| `arcs` | unique (kind,source,target), including graph carried into this epoch |
-| `degrees` | (kind,vertex) -> remaining indegree |
-| `ready` | indexed (kind,vertex) queue, delete on pop |
-| `ranks` | (kind,vertex) -> strict topological ordinal |
+Each transition loads at most the row and byte budgets using indexed cursors,
+closes source/database resources, computes on detached data, and commits bounded
+writes plus the exact next checkpoint with epoch/version compare-and-swap. A lost
+worker cannot advance or clean up a replacement attempt. Quotas must reserve the
+actual write, undo and segment space before admission; suspension retains completed
+work where the owning lease permits. Include schema/hash CPU delegates and lock
+waits in observation. Cancellation and deadlines are checked between bounded units.
+A wall deadline alone is not evidence that the SQL plan or loop is bounded.
 
-For each epoch:
+Private durable state uses crash-safe transactions and synchronized segment
+publication. The historical scratch `PRAGMA synchronous=OFF` is NOT a resumable
+checkpoint store. Write and synchronize each bounded file segment before atomically
+publishing its DB reference/checkpoint; a pre-commit orphan is reclaimed in bounded
+cleanup. References to missing or changed segments fail closed. Reopening validates
+source/algorithm bindings and progress, not a full graph rescan.
 
-1. Retain exact original frame bytes. Do not normalize, reorder or reauthor them.
-2. If its first frame is a correction, remove its named assertions from the
-   speculative active-edge map before seeding this epoch's arcs. This is NOT
-   permission to retract them: exact references, liveness and identity are still
-   checked during authoritative replay. Duplicate IDs or invalid retractions can
-   at most spoil a speculative certificate; they cannot bypass replay rejection.
-3. Add each encountered derivation/specialization edge to its separate graph.
-   Keep assertion multiplicity in `active`, but graph reachability uses unique
-   edges. Retracting one of two assertions for the same edge must retain the other.
-4. Calculate indegrees and run disk-backed Kahn elimination. Each vertex enters
-   the ready queue once and every arc is visited once. Outgoing selection is
-   indexed by (kind,source,target); ready pops do not scan already completed work.
-   SQL grouping, key comparison and B-tree costs are separately accounted.
-5. Certify a kind only when all its vertices have ranks. Never publish these ranks
-   as archive authority, a public field, or a persisted acceptance checkpoint.
-6. Replay frames in their original order. Run all original schema, time, sequence,
-   predecessor, checkpoint, recorder, reference, profile and lifecycle checks.
-   On an actual edge addition, reject self-edges; for a certified kind require
-   both exact endpoints and rank(source) < rank(target). Record the actual edge
-   only in the semantic store at its original prefix.
-7. If the speculative graph is cyclic, replay with the online algorithm instead
-   of raising a later cycle before an earlier identity/reference failure. It must
-   find the invalid prefix. A later correction cannot forgive that prefix.
-8. Finish the original expected-anchor/exact-tail checks, detach the scratch
-   certificate, freeze the original validated store, and return the same Summary.
+SQLite private state and the Riverhog catalog cannot share an atomic transaction.
+Commit neutral progress first; then publish its token in the catalog under the
+current job fence. Recovery may discover newer neutral progress only for the SAME
+owned attempt; catalog completion is not inferred from a file's existence. A
+process-lifetime scratch lease cannot be presented as durable job retention. Keep
+resumable files in the owning job workspace across worker replacement; process temp
+files remain disposable and separately budgeted. Test both kill and power-loss
+failure models when claiming either; diagnostic exception rollback is not fsync proof.
 
-Parser or source errors encountered while reading are retained until preceding
-readable frames have been replayed, then re-raised; no late provider error is
-swallowed. Resource errors during private SQL work still abort and clean up.
-The context manager owns and releases the stream, connection and directory on
-success and all exception paths. Tests exercise both semantic failure and a late
-provider revocation.
+## 4. Explicit bounded phases
 
-## 4. Correctness argument
+CAPTURE reads bounded exact source ranges into retained segments, carrying a framing
+cursor across segments. Existing entry-byte limits remain genuine contract bounds;
+removing G26 posting limits does not enlarge G22's entry contract. A permitted frame
+may be decoded as an entry-bounded atom outside a DB transaction, with its schema/
+canonicalization cost declared separately. Any permitted larger profile requires
+its own streaming/parser design, not a hidden new rejection. Checkpoint after a
+bounded frame or finer parser unit; at most that admitted atom may need replay.
 
-Within an epoch there are no retractions. For a valid transcript, each effective
-prefix edge set is a subset of the epoch's final edge set. A strict topological
-rank for the union therefore proves acyclicity of every prefix subgraph. Conversely,
-a cyclic effective prefix makes that union cyclic; it is not certified and the
-online checker rejects the actual failing prefix. Splitting BEFORE a correction
-is essential: an edge legally reversed by an atomic correction must not be mixed
-with its retracted predecessor in one union.
+EPOCH_SCAN identifies correction boundaries and captures the topology union, but
+records no accepted semantics. Store original frame offsets, not a second complete
+copy of every cumulative prefix. Seed carried active edges once for the real epoch
+using a keyset cursor. For each unique arc, update endpoint indegrees only when
+that arc first enters the epoch union; duplicate documentary assertions retain
+separate identity/multiplicity. Correction deletions affect the speculative active
+set at the start of its new epoch, while native replay still validates their legality.
 
-The graph certificate is only a sound accelerator for the cycle subcheck. Current-
-prefix object/reference/type checks remain independent, so an edge referring to an
-object declared in a later frame is still rejected even if that object's ID already
-has a speculative rank. Identical topology with distinct assertion IDs retains both
-assertions and exact retraction semantics. Derivation and specialization do not
-share a graph or rank namespace.
+RANK_SEED visits the vertex directory in bounded pages and enqueues zero-degree
+vertices. RANK_POP removes one indexed ready vertex. RANK_EDGES keeps an active
+vertex AND the last outgoing edge key; it processes at most the remaining edge
+budget, updates degrees, and commits its cursor. A million outgoing edges do not
+fit one pop. Track declared/settled counts transactionally; no terminal COUNT scan
+or whole-epoch GROUP BY/INSERT SELECT is hidden inside a small-looking call.
+A cyclic union disables its graph certificate; native replay determines the actual
+earlier error. Rank tables never validate the remainder of the journal by themselves.
 
-Required invariants of accepted output are unchanged: canonical octets and ordered
-frame chain, journal/entry/assertion identities, prefix and root digests, checkpoint
-coverage, exact external anchors, full history/tombstones, every-prefix validity,
-recorder/profile rules and materialized graph/findings. No cache or certificate
-can substitute for the caller's current access/fence checks.
+REPLAY executes native checks in original order. Small entry-local checks may be
+bounded by the existing entry envelope; graph/correction/reference loops must keep
+explicit suboperation cursors. The frame's accepted-prefix marker advances only
+after every subphase succeeds. Source bytes, SHA state, predecessor reference and
+semantic watermark advance together. A crash may leave an in-flight private
+operation but cannot expose it as an accepted prefix.
 
-## 5. Genuine online fallback: exact integration specification
+CORRECTION first verifies every exact retraction reference and uniqueness against
+the previous accepted prefix. It then retires those assertions and rebuilds the
+necessary effective-view aggregates in bounded stages. Retraction lists and active
+rows are paged. Old aggregates are epoch-qualified and incrementally retired, not
+cleared by one graph-sized DELETE. Preserve native within-correction semantics;
+do not validate or expose arbitrary partial subsets as separate corrections.
+The cost still includes the active view rebuilt for each real correction.
 
-Implement the 2019 level-fuel variant, not an ad hoc rank repair. The supplied
-`_online_dag.py` is an independently tested Python/SQLite port; it is NOT covered
-by the authors' OCaml/Coq proof. Research and primary sources are in RESEARCH.md.
+ONLINE uses the selected level/fuel logic with persisted backward frontier, seen
+set, fuel, forward queue and per-vertex adjacency cursor. Clearing a promoted
+vertex's horizontal incoming set is paged or generation-qualified with accounted
+cleanup. One accepted edge may require graph-sized TOTAL work, but not one
+transaction or one unsuspendable adjacency walk. Avoid one complete state clone
+per insertion: log the first old value of each actually touched row. On failure,
+undo those rows in bounded steps before returning a reusable rejected checker.
+The checker is quarantined while mutation/undo is incomplete. No observer sees a
+half-repaired online graph. No next operation is admitted until the previous one
+has committed or rollback has completed. Success advances a marker; reclaim undo
+entries incrementally. A future overlay implementation needs its own lookup-cost
+proof; an ever-growing chain of overlays is not the selected default.
 
-Use existing `edges(kind,source,target)` plus private tables:
-`dag_levels(kind,vertex,level)`, `dag_incoming(kind,target,source)`,
-`dag_seen(vertex)` and `dag_queue(vertex)`. The incoming table contains EXACTLY
-same-level incoming edges. Levels never decrease during one insertion-only run;
-every accepted edge satisfies L(source) <= L(target). The graph stays acyclic.
+TERMINAL verifies exact expected anchors/tail, complete provider fence, zero pending
+obligations and bounded terminal metadata; freeze only then. Normal cleanup removes
+retired epochs, undo entries and source/graph rows in bounded indexed batches.
+Directory unlink, VACUUM and TRUNCATE are not assumed constant-time. A hard-killed
+attempt is fenced and reclaimed by its owner without disturbing a later attempt.
 
-For new edge v->w:
+## 5. Exact SHA-256 continuation, not a different journal hash
 
-- Reject v==w. Ignore a duplicate for graph topology only; normal assertion
-  identity/evidence validation still runs at its owner.
-- Add unknown vertices at level 1. If L(v)<L(w), insert directly.
-- Otherwise search backwards from v over horizontal incoming edges, with fuel
-  L(v). Mark each reached vertex; reaching w rejects the insertion. Count examined
-  edges even when their predecessor is already marked. No deleted/visited-prefix
-  table scan is used to find the next frontier vertex.
-- Completed backward search with L(w)==L(v) permits insertion. If completed at a
-  different level, promote w to L(v). Exhausted search promotes w to L(v)+1.
-- Clear w's horizontal incoming set and propagate forward. A backward-marked node
-  rejects the insertion. Promote successors below the new level, clearing stale
-  incoming sets and enqueueing each promotion once. Record horizontal incoming
-  edges at equal levels, but do not traverse through greater/equal-level nodes.
-- Insert the edge and its horizontal incoming record if appropriate. Clear search
-  scratch. Deterministic queue tie-breaking is not semantic graph order.
+The native validator hashes `frame.encoded` and compares exact prefix SHA-256 values
+at checkpoint/anchor boundaries. Do not replace those values with a chunk tree,
+hash chain or digest of digests. Hashlib.copy() is not a portable durable-state API.
 
-Use a SQLite savepoint around one attempted insertion. Rejection/exception rolls
-back edge, levels and incoming state. This permits testing later requests against
-the exact pre-attempt graph. It does NOT make repeated rejected attempts free:
-retain their measured cost separately. Do not share a mutable scratch connection
-between callers. Use decimal levels or an explicitly checked physical representation;
-no new semantic vertex/edge/depth ceiling or fixed known-final-size parameter.
+Select a reviewed SHA-256 backend exposing a private versioned continuation codec:
+eight chaining words, processed-byte position and at most 63 residual bytes, plus
+algorithm/state-format identity. Resume at the exact original octet offset. Keep
+accepted-frame offset distinct from partially hashed/captured offset. Finalization
+pads a COPY of the state; computing an intermediate prefix digest cannot alter the
+continuation. Bind state and cursor in the same durable checkpoint as the associated
+semantic/source progress. Range-check and authenticate/trust-bind restore through
+the owner; shape checks alone do not prove the state was computed from that source.
 
-Corrections retire assertions before rebuilding active semantic aggregates. Reset
-all online level/incoming/frontier state before replaying the effective graph. The
-monotone insertion bound must NOT be applied across deletions without a reset or a
-separately justified fully dynamic algorithm. The certificate path handles valid
-finite correction epochs without feeding every edge through this fallback.
+`../g22_g26/sha256_state.py` is an independently written diagnostic engine checked
+against native hashlib, not a production backend selection or crypto approval.
+Its RFC message-domain/fixture codec limits must not become a new narrower public
+journal limit. Reconcile the actual native scalar/hash representational envelope at
+the owner. Do not pickle OpenSSL internals or invent portable serialization for an
+opaque hash object. An implementation lacking a reviewed continuation backend cannot
+claim bounded durable restart for this path; restarting the whole journal is not
+the approved default workaround. Backend cost and additional review are explicit.
 
-## 6. Remove two remaining semantic bookkeeping multipliers
+## 6. Explicit resource ownership and downstream consumption
 
-A graph algorithm alone would leave other G22 prefix costs quadratic.
+JournalStore already has close(); the problem is enforcing its use across summary,
+reader, cache and rebuild lifetimes. Make the current JournalSummary closeable and
+context-manageable through its owning frozen store, without changing semantic fields
+or digests. Define owned versus borrowed readers; closing one borrow cannot delete
+a store still used by another owner. Closed views fail explicitly. Finalizers are
+a safety net, not the main policy. Include generator early-exit and Windows tests.
 
-**Touched rows:** replace the partial touched index with a full index matching
-`UPDATE assertions SET touched=0 WHERE touched=1`. The old partial index excludes
-inactive rows but the update does not; do not narrow the update's semantics just
-to enable the index. Verify the actual query plan on supported SQLite builds.
+G26 consumes a retained source-fact directory or explicit bounded summary handle,
+not a dictionary of one live complete summary/connection per snapshot/member.
+After publishing the source's exact facts and checkpoint, release the handle; reopen
+only the exact retained source if needed. Full graph/materialize/states convenience
+results remain materializing operations with output-sized cost, never called inside
+a claimed bounded-source traversal. New close/session surfaces get normal exact
+Python-contract ownership and extent/growth evidence; they are not exempt as internal.
 
-**Lifecycle bounds:** retain per-state (minimum dated usage OR invalidation,
-maximum dated usage). Newly accepted timed events update these extrema once.
-Generation may not be later than that minimum; invalidation may not be earlier
-than that maximum. These are exactly the previous pairwise inequalities, including
-late-arriving generation/invalidation assertions. Preserve same-state generation/
-invalidation uniqueness and within-activity checks at their existing owner.
-Corrections clear/rebuild extrema from the effective rows, so withdrawing an
-extreme usage does not leave a stale bound. Untimed events introduce no fake time.
+## 7. Complexity, implementation and acceptance
 
-Do NOT remove graph-reference, fixity-conflict, known-location or current-recorder
-validation to meet a budget. G02/G01 schema/canonical costs remain separately owned.
+Keep the T0, T1, O and M profiles in ALGORITHMS.md. Bounded scheduling changes neither
+the correction sum nor the online amortized proof. Charge row/key bytes, B-tree work,
+undo traffic, durable writes, input passes, crypto/schema costs and cleanup. With
+retained durable state, F ordinary crashes add at most F unfinished work units (or
+explicit bounded entry-local replay atoms), plus bounded recovery/index lookups.
+State loss, source replacement, unlimited failures and insufficient capacity have
+separate explicit outcomes. Do not manufacture corrections or accepted snapshots
+to rationalize avoidable repeated work.
 
-## 7. Precise candidate growth profiles
+Integration order: (1) owner-reviewed session/checkpoint and hash codec;
+(2) journal.py stateful framing/prefix/tail and deterministic close;
+(3) journal_store.py checkpointed checks/undo/epoch aggregates;
+(4) bounded epoch and online kernels using the retained algorithm witnesses;
+(5) collection_uploads job retention/fences and archive/recovery adapters;
+(6) complete native parity, work-count, kill/restart and ordinary qualification.
+Do not blindly apply the historical integration.patch. Its algorithms remain useful,
+but it does not implement this durability or transaction protocol.
 
-These are RECOMMENDED declarations to bind and qualify through #963/#964, not
-already-approved Closure schema or a speed guarantee. Constants are internal witness
-budgets. H=exact encoded input bytes; A=all assertion records processed; V/E=distinct
-graph endpoints/arcs. Ordered index and canonical/schema work are explicit addends.
-
-### G22-T0: valid complete append-only transcript
-
-No correction frames. Graph/counter work O(H+A+V+E); each graph arc staged once,
-visited once for ranking, and compared once per actual edge assertion. SQL index/
-grouping work O((A+V+E) log(2+A+V+E)), with key lengths charged. Add the existing
-canonical/schema/profile costs for the constant number of passes over each frame.
-
-RAM is bounded by the existing maximum frame/window plus configured SQLite cache,
-not total H or graph size. Private disk is O(H+A+V+E), alongside the existing
-validated-store disk. No caller-visible graph is materialized merely to validate.
-This is the primary bulk-publication fast path, not a claim that all G22 calls have
-that bound.
-
-### G22-T1: valid transcript with C corrections
-
-For each actual correction-delimited epoch i let V_i/E_i be its graph union,
-and A_c the active assertion view actually rebuilt at correction c. Logical work:
-
-`O(H + A + sum_i(V_i+E_i) + sum_c A_c)`
-
-plus indexed/canonical/schema work over those visits. In the worst case this can
-be O(H + C*(A+V+E)); **it is not linear in final graph size when C independently
-grows**. Ordinary append-only production must not be routed through artificial
-corrections/epochs to excuse repeated work. This conservative correction profile
-preserves all semantics and existing capabilities without claiming an unavailable
-fully dynamic bound. Optimizing narrower correction classes later is permitted,
-but cannot be called already established by this patch.
-
-### G22-O: actual online insertions / invalid-epoch diagnostic replay
-
-For one insertion-only run with n vertices and m distinct successful edges, the
-chosen algorithm's abstract amortized work is O(n+m*min(sqrt(m),n^(2/3))). SQL access
-adds its stated log/index cost and clearing work charged to prior insertions.
-An attempted terminal cycle can cost O(n+m); rejected-and-continued requests require
-the sum of their actual attempted work, not a bound in successful m alone. Start
-new accounting after a correction reset. Do not generalize a paper's unit-cost
-operations into constant-time SQLite queries or arbitrary deletion support.
-
-The certificate path prevents this fallback from taxing a valid append-only full
-transcript. Invalid input remains fail-closed; no linear valid-input declaration
-becomes an unlimited denial-of-service or retry guarantee.
-
-### G22-M: materialized append helpers
-
-APIs taking and returning the entire prefix necessarily process/copy those bytes.
-Across calls charge `sum supplied prefix bytes + sum returned prefix bytes`, plus
-the applicable validation profile—not merely final output size. For bulk output,
-use the existing batch/spool interface once. Do not issue N full-prefix append
-calls and declare the resulting lifecycle linear by analyzing one call alone.
-
-### Composition limits
-
-This work does not fix G23 corpus-wide elimination, G24 history traversal, G26
-indexing, arbitrary schema costs, or every other family's counter. A full Riverhog
-lifecycle must account for them independently. No ten-minute result or blanket v1
-linearity follows from these G22 results. #960's existing disposition is unchanged.
-
-## 8. Integration map and exact prototype application
-
-The executable payloads are kept under this reference directory, not on main.
-Use a separate worktree on exact 152d0950 to reproduce. Against post-#963 source,
-inspect drift and reconcile explicitly; the reference branch's runtime base is older.
-
-1. Copy `_journal_epochs.py` and `_online_dag.py` to
-   `packages/riverhog-provenance/src/riverhog_provenance/`.
-2. Copy `test_journal_epochs.py` and `test_online_dag.py` to
-   `packages/riverhog-provenance/tests/`.
-3. `git apply --check /reference/g22/integration.patch`, then apply it. It changes
-   only `journal.py` and `journal_store.py` at the audited source. No public export,
-   schema, archive byte, durable application state or acceptance boundary changes.
-4. Run the focused tests and counters below; use the locked toolchain for actual
-   integration. Format/type/style checking through that rail remains required.
-5. Register the EXACT public-operation/profile applicability and witnesses with
-   #963's evidence machinery and #964's owner declarations; do not copy this
-   review-label taxonomy into main as a new authority/registry.
-6. Validate sealed-upload acceptance/error and current-access fences through the
-   real Riverhog HTTP/worker path; retained client tests supplement, not replace it.
-7. Preserve archive-only recovery independence. The neutral provenance package may
-   use its own private disk indexes, never import server or client implementations.
-
-Do not make online levels, ranks or frontier records durable public authority.
-Server temporary files inherit `scratch_workspace.process_workspace`'s leased
-TMPDIR; preserve its capacity-error mapping and test killed-owner reclamation in
-integration. Native library callers retain their existing temporary-directory
-ownership responsibilities. Normal failure cleanup is covered by this prototype;
-hard-kill, quota, Windows and final-image behavior are still integration obligations.
-
-## 9. Executed evidence and required finish
-
-At the audited source: original provenance suite 150 passed; patched provenance
-suite 187 passed (37 new cases); selected canonical production/completion/claimed
-provenance client suites 21 passed. Online cases include all 720 orders of the six
-non-self directed edges on three vertices, and 12 seeded 100-attempt sequences,
-checked against independent Kahn plus rollback/level/incoming invariants.
-
-The maintained transcript prototype measured 16/32/64/128/256 reverse-chain edges
-with exactly N ranking edge visits and N certificate checks. At 128 timed usages of
-one state, original decoding visits were 8,512 versus 384 after the extrema change;
-complete results match. The touched-reset plan changes from SCAN to indexed SEARCH.
-See evidence.json and profile_g22.py. These are native SQLite/Python tests, not
-Docker, PostgreSQL, wire-contract, full gate or asymptotic machine-checked proof.
-
-Still required on the actual integration source: locked lint/type/style/full unit,
-distribution/image builds, exhaustive portable qualification, independent exact-SHA
-CI/CodeQL, real sealed-upload and independent recovery functional parity, bounded source-spool and
-killed-owner/capacity tests, and Closure/Audit witness registration. Treat old source
-results as historical; do not call .reference tests a completed integration rail.
-
-G22's algorithm choice and file-level implementation are supplied by this design.
-The source must still be reconciled and qualified. G26 remains the next independent
-design, with no schema, query or state-identity choice made here.
+Required witnesses include high-degree and deep graphs; correction storms and legal
+edge reversal; invalid prefix later repaired; earlier non-graph error in a cyclic
+epoch; missing/late source and profile failures; duplicate IDs/parallel assertions;
+large touched-row undo; failpoints in every phase; state/cursor mismatch and stale
+workers; original SHA at every boundary; fair progress and actual connection release;
+full independent recovery with no server dependency. Final locking/SQLite/Windows,
+locked gates, built artifacts and exact-SHA CI remain integration obligations.
+See ../g22_g26/README.md for diagnostics actually run and their deliberate limits.

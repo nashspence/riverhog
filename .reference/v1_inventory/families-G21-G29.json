@@ -42,10 +42,10 @@
       "riverhog-server"
     ],
     "scope": "Sequence of accepted journal appends/corrections, including when each prefix must be valid.",
-    "proposed_work_bound": "Immutable framing/intake O(total newly supplied bytes/records). Static final-view validation uses G21. For arbitrary online edge insertions/corrections requiring immediate global validity: NO claimed aggregate O(H+V+E) until an algorithm and acceptance-boundary proof exists; proposed fallback per distinct required snapshot O(H_i+V_i+E_i) is explicit, not described as linear in final size.",
-    "proposed_memory_and_state_bound": "Bounded intake and durable indexes; corrections may touch genuinely affected dependents. No state-sized reserialization just to checkpoint.",
+    "proposed_work_bound": "Certificate-first exact-prefix replay for complete transcripts: O(H+A+V+E) useful visits plus declared schema/canonical/index costs. Actual correction epochs add sum(V_i+E_i) and sum(active assertions rebuilt); true online level/fuel work retains its separately justified amortized bound. Bounded durable phases/undo/hash state add per-unit writes and at most unfinished-unit replay on ordinary restart; no aggregate linear claim for arbitrary correction/rejection sequences.",
+    "proposed_memory_and_state_bound": "Bounded entry/source windows, paged graph/adjacency/frontier/undo state, durable exact source/hash/checkpoint bindings, deterministic summary-handle release and incremental cleanup. No whole-epoch transaction or graph-sized savepoint/restart default.",
     "semantic_requirement": "Do not move cycle rejection from required acceptance to finalization for speed. Repeated internal calls do not become 'new required snapshots' to excuse redundant work.",
-    "proposed_witness": "Adversarial insertion/retraction order and repeated unaffected appends; track per-prefix and total work separately; required design decision before freezing an end-to-end claim.",
+    "proposed_witness": "Revised g22/DESIGN.md: native exact-prefix/error/SHA parity, high-degree/correction/online adversaries, per-phase restart/rollback/fencing, bounded SQL/resource/undo work, source integrity and independent recovery. New models are diagnostics, not production conformance.",
     "source_anchors": [
       {
         "path": "packages/riverhog-provenance/src/riverhog_provenance/journal_store.py",
@@ -63,7 +63,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "design-decision-required-online-graph-bound"
+    "recommendation": "bounded-resumable-exact-prefix-design-supplied-owner-integration-required"
   },
   {
     "id": "G23",
@@ -174,10 +174,10 @@
       "riverhog-server"
     ],
     "scope": "Construct a query-equivalent derived discovery generation from exact archive evidence.",
-    "proposed_work_bound": "Target O(H + V + E + N + A_direct + shared-group links) logical construction for an explicitly declared compact/factorable index profile; arbitrary reachability/query profiles remain G28. Here A_direct means directly attributed assertion links, not all transitive member-history pairs. Construction plus corresponding indexed/order work. An N-by-shared-assertion materialized Cartesian product is NOT a necessary-input dimension. Explicitly requested dense output can cost O(Q).",
-    "proposed_memory_and_state_bound": "Bounded RAM and transactions; compact durable index O(unique assertions + explicit scopes/edges + members), except genuine independently required dense relationships.",
-    "semantic_requirement": "Preserve all member/input-history/collection/recorded-history query results, ordering, provenance and archive identity. The compact extraction/dataset/read-generation identity change is specifically approved; edit the Alembic v1_0001 current baseline in place, retaining forward-only revision machinery; no migration or compatibility layer from abandoned pre-v1 layouts. Old cursors conflict/restart; preserve non-rebuildable operational state.",
-    "proposed_witness": "Independent, fully shared and partially shared histories; fixed unique corpus with increasing member count; compare all scopes/query results before/after and measure rows/bytes, not only batched insert count.",
+    "proposed_work_bound": "Source-normal construction over unique verified H+A+D+N+S plus lexical/path/value bytes and explicit schema/validation/index/order delegates. Segment large assertions without per-assertion posting or value-total cutoffs; no member-by-shared-assertion or prefix-by-source expansion. Resumable ordered Merkle sealing is linear in encoded fact fragments plus declared index work. G27/G28 owns unary/guarded query and retained-view progression.",
+    "proposed_memory_and_state_bound": "Bounded source/entry/fragment work and transactions; durable obligation/segment/carry/fold checkpoints; retained current-schema generations, transitive pins and incremental GC with actual physical bytes charged. No large-row or whole-generation terminal/hash/delete step.",
+    "semantic_requirement": "Preserve archive/journal/member/history identity, exact four scopes, both history extents, native minimum supports and current authority. The prior compact derived-identity/current-schema hard cut remains specifically approved; the new segmented normal form/Merkle digest is a further explicit recommendation for owner review, not an already approved formula. Consume G27/G28 retained-view lifecycle; no second workspace or old-generation invalidation policy. Edit the current v1_0001 baseline while retaining forward-only revision machinery, explicit bootstrap and synthetic future tests; preserve non-rebuildable state, with no discarded-pre-v1 compatibility.",
+    "proposed_witness": "Revised g26/DESIGN.md: valid large native assertions, exact segmented retry/terminal and native scope/guard parity; identity invariance across scheduling/rebuild; failpoints through source/order/hash/publish; retention/GC/auth races; no whole-finalization SQL work. Model/source-prefix evidence is not native production qualification.",
     "source_anchors": [
       {
         "path": "riverhog/src/riverhog_core/canonical_discovery_build.py",
@@ -200,7 +200,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "design-decision-required-index-representation"
+    "recommendation": "segmented-source-merkle-retention-design-supplied-owner-integration-required"
   },
   {
     "id": "G27",

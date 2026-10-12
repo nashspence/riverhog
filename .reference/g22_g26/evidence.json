@@ -1,0 +1,121 @@
+{
+  "format": "g22-g26-bounded-revision-evidence/v1",
+  "status": "reference-algorithm-diagnostics-not-production-conformance",
+  "reference_parent": "4621be70fe2229ef7de169862ff1ec5274dec00f",
+  "audited_main": "152d095038df0c0d0ed642cf265d47b11c65a754",
+  "audited_tree": "991e994457b487a7dca016b7fc0409485cef25c6",
+  "environment": {
+    "python": "3.13.5",
+    "sqlite": "3.46.1",
+    "pytest": "9.0.2",
+    "jsonschema": "4.26.0",
+    "locked_workspace": false,
+    "pytest_plugin_autoload": "disabled",
+    "warnings": "errors",
+    "postgresql_executed": false
+  },
+  "completed_runs": [
+    {
+      "selection": "new diagnostic SHA/SQLite work and source-guard tests",
+      "command": "RIVERHOG_AUDITED=$AUDITED PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q -W error -o addopts='' $REF/.reference/g22_g26/test_work.py",
+      "passed": 65,
+      "seconds": 4.42,
+      "prior_runs": [
+        {
+          "passed": 65,
+          "seconds": 4.92
+        },
+        {
+          "passed": 65,
+          "seconds": 5.1
+        }
+      ],
+      "distinct_tests_not_sum_of_reruns": 65
+    },
+    {
+      "selection": "unchanged inventory tests",
+      "command": "python -m unittest discover -s $REF/.reference/v1_inventory -p test_inventory_package.py -q",
+      "passed": 10,
+      "seconds": 0.043
+    },
+    {
+      "selection": "source inventory verifier",
+      "command": "python -S $REF/.reference/v1_inventory/verify_inventory.py --repo $AUDITED",
+      "families": 64,
+      "projects": 86,
+      "anchors_checked": 182,
+      "runtime_complexity_tested": false
+    }
+  ],
+  "development_failures": [
+    {
+      "selection": "inventory wording first attempt",
+      "passed": 9,
+      "failed": 1,
+      "cause": "new G26 summary omitted protected historical phrase specifically approved",
+      "resolution": "restore exact existing policy scope; new Merkle formula remains separately proposed"
+    },
+    {
+      "selection": "inventory wording second attempt",
+      "passed": 9,
+      "failed": 1,
+      "cause": "summary omitted retaining forward-only revision machinery phrase",
+      "resolution": "restore current Alembic policy wording; tests unchanged"
+    }
+  ],
+  "probes": {
+    "command": "python $REF/.reference/g22_g26/probe.py",
+    "file": "counters.json",
+    "sha256": "d71a378d8b2213b91c71ac785971a68c12278d877e6a79bd7d62e8c4bd310c6e",
+    "final_rerun_byte_identical": true,
+    "diagnostic_fragment_bytes": 256,
+    "proposed_production_codec_fragment_bytes": 4096,
+    "logical_transitions_not_machine_instruction_bound": true
+  },
+  "source_negative_control": {
+    "native_function": "stage_assertion_page",
+    "executed": "exact AST prefix through per-assertion posting guard with controlled _require_pending",
+    "generic_schema": "actual journal-entry $defs/json",
+    "posting_count": 20001,
+    "full_valid_native_journal_or_endpoint_test": false
+  },
+  "limits": [
+    "The independent SHA-256 implementation is a diagnostic, not a reviewed production crypto backend or safe untrusted checkpoint importer.",
+    "SQLite fixtures reopen connections between work calls; small bounded hashes execute inside model transactions. Production detached evaluation and pool-return instrumentation were not run.",
+    "Graph tests exercise Kahn substeps, not the entire exact-prefix validator, correction rebuild, online first-before-image undo or semantic-state resume.",
+    "Fact fixtures use arbitrary bytes and integer coordinates, not native source-normal leaf encoding or production digest golden vectors.",
+    "Exception rollback is not process-kill, power-loss, filesystem synchronization or concurrent cross-database commit proof.",
+    "Crossing 20000 postings and 10000 fragments proves model extent handling; the source AST/generic schema negative is not full valid profile/journal/custody qualification.",
+    "Historical G22/G26/G27/G28 native and model suites were not rerun or aggregated."
+  ],
+  "not_run": [
+    "Production source capture/semantic checkpoints/reviewed SHA backend",
+    "Native valid large-journal/profile discovery build and both-history-extent/query/support equivalence",
+    "Production source-normal leaf encoding, completion proof and Merkle identity freeze",
+    "PostgreSQL plans/locks/pools/concurrency and reclamation",
+    "Real worker kill/power-loss/storage tamper and cross-store recovery",
+    "Publication-directory pin/refcount/GC/authorization races",
+    "Locked format/type/lint/full unit/dist/build gates",
+    "Final-image security/custody/recovery/lifecycle qualifications",
+    "Independent exact-SHA GitHub CI/CodeQL",
+    "Timing targets or composite v1 growth conformance"
+  ],
+  "source_sha256": {
+    "packages/riverhog-provenance/src/riverhog_provenance/journal.py": "be998b0f8624ac27b37684fedf71bb9381901c9ebe6c0a75a35eb6290c0101f8",
+    "packages/riverhog-provenance/src/riverhog_provenance/journal_store.py": "505b389e8a4315c70d4bcb18c4fa87b79852af60826d3f782d6b9720d70ce89d",
+    "packages/riverhog-provenance/src/riverhog_provenance/constants.py": "770f98f565f62ee582411e9ad81953a60df4f84278eeb8410a7424d404f1fb1d",
+    "packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/riverhog-provenance-v1-journal-entry.schema.json": "f08f077bf99d9059d50004e1630f76f3c50b2058eba06dc420c46991f04d6f96",
+    "riverhog/src/riverhog_core/canonical_discovery_rows.py": "6460e4bd8e0307d8878e5262b7d6a7119fed47848ebfc8161f30b590a70f84b7",
+    "riverhog/src/riverhog_core/canonical_discovery_index.py": "33c4c969fc768b1d496c5a964916b5da4783b1e57fd4a3d9b21d8fda4a9ba304",
+    "riverhog/src/riverhog_core/canonical_discovery_build.py": "5ad6ad01d778f0d32217e84fbab48c65a34cfea1b9cbec6bdd716f31166afd8f",
+    "riverhog/src/riverhog_core/canonical_discovery_rebuild.py": "fb02baac1b70163b806b3fb17ca4ac35d7fc8107aba6f5efee0863ad3444c25d"
+  },
+  "executable_sha256": {
+    "sha256_state.py": "e8326f2eff2fb5094e037c04bdf66e499ed86888b7c543f3ebf81b7f013f1380",
+    "model.py": "f08e2a15246f1c4c6a84e91c604bab6ba10dc63d155899f4a81d6f702f041255",
+    "test_work.py": "4143680424df82f1345790343e90d00efe3a123e868d59bf049ed49564e7bdc9",
+    "probe.py": "7d4766792385a67676376dda1f1157e91bcf582c69d3307aaccd5e9056351540"
+  },
+  "inventory_sha256": "403e4f6a4a665de62cba52a9ed90e2834ad6d686e53d9bb81faa97038407ece6",
+  "publication_scope": "Only .reference; existing issue body/state and main retained; final reference SHA recorded in issue after publication"
+}
