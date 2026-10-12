@@ -1,0 +1,74 @@
+{
+  "purpose": "Focused reconciliation fingerprints, not a test or contract universe.",
+  "audited_base": "152d095038df0c0d0ed642cf265d47b11c65a754",
+  "files": [
+    {
+      "path": "Makefile",
+      "sha256": "30b736900b0e87b3bfea3b769fec7629574fb261fadf0293bf6c94ed5a49c483"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "716646e1057b0bbfaf67c7bce06338b62d3f5d322c575d280cd4052504cc0295"
+    },
+    {
+      "path": "scripts/ci_unit.py",
+      "sha256": "76ba23a2a8c3af633666fbce0c88052ab15c4c1013835db2b4b843b6b7009d7f"
+    },
+    {
+      "path": "scripts/ci_timing.py",
+      "sha256": "9dd7984bb4bb835173e737472d40691c4367dcce2edb7e424baddd7624de0467"
+    },
+    {
+      "path": "scripts/ci_qualification.py",
+      "sha256": "d43731af46a01737a5d690b2a627a8dc496e85e40c13d47784bc02cd60f6afd1"
+    },
+    {
+      "path": "tests/operation_observer.py",
+      "sha256": "5b84e59640a96bec023d4f60609508c04eabdacdc8ea94c077170c7d71058619"
+    },
+    {
+      "path": "tests/unit/test_event_cursor_restart.py",
+      "sha256": "bc904fba0eb22fe2b4927d739cf59db9805512c05d6a66587a53c048ea25915c"
+    },
+    {
+      "path": "tests/unit/test_security_policy.py",
+      "sha256": "663fe45e34eb96141e26249eaddb800d63de95be120df788229d13fed75f6f35"
+    },
+    {
+      "path": "tests/unit/test_contract_review.py",
+      "sha256": "4917850eb47dabad3129657b9c80a32256f860da7f28eea5183a656ed0d8e42d"
+    },
+    {
+      "path": "scripts/operation_qualification.py",
+      "sha256": "b3479614d30777940891bd8dc0751c0549d3d896576b3b1dd8909e2ca6b6eef4"
+    },
+    {
+      "path": ".github/workflows/release-qualification.yml",
+      "sha256": "7b8ca1c99f088e74ca04c58e0a6e555b650c8ba64da1cd73cc290c6ba90514a1"
+    },
+    {
+      "path": "scripts/extent_witnesses.py",
+      "sha256": "55874626aa4303f6b9a2f14c9ae6f44cce86e0be08dece31f8a528f26caac52b"
+    },
+    {
+      "path": "scripts/contract_atlas/records.py",
+      "sha256": "45b3cfe8fde582c217e4abaa0999bcc1680ef65d7e0f2b5f69d5891ba647c819"
+    },
+    {
+      "path": "scripts/contract_atlas/discovery.py",
+      "sha256": "d91c49294626e8d3ef9e0435d2394fe677a9d08b063034c681fd21fec6e9dfdb"
+    },
+    {
+      "path": "tests/unit/test_ci_unit_partition.py",
+      "sha256": "7bd1d00dbe7981c5ba8f4b90e382294d3b881ac999dba941b8ea356f07a01332"
+    },
+    {
+      "path": "tests/unit/test_operation_qualification.py",
+      "sha256": "6f971ae28d6348236edf9f1740a6fec1c274bc74a916a60ebaa31a9405ee5b59"
+    },
+    {
+      "path": "tests/unit/test_contract_records.py",
+      "sha256": "e0fe71266cdc99baca1922428afc37281d9da2483b4dd4f0bed7834d3f736119"
+    }
+  ]
+}

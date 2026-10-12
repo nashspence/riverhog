@@ -1,0 +1,14 @@
+{
+  "format": "riverhog-external-reference-files/v1",
+  "owning_issue": 968,
+  "audited_base": "152d095038df0c0d0ed642cf265d47b11c65a754",
+  "files": {
+    "HANDOFF.md": "eaa329288b8045e9da6cb41c47eb068e49e705c0516333fbfa9ee86110b96bc3",
+    "INTEGRATION.md": "f67f7672171b732ebf05a44dbe55b3e3860c68a47955b244959b8a10e45d5792",
+    "VALIDATION.md": "a861768d4cb6e55e21c41c92f312d310e35004f37fa688c782fa087f6308d223",
+    "claim_projection.py": "9bbc5cbaf5abaa31f0fa911881dd2b9dd6c885079b3ea30765c74fd82b61d5d9",
+    "source-seams.json": "0c4460e6f57fdb406b6bedc5cf9d13415b2d2fe5837bbfc81bb11313719961e5",
+    "test_claim_projection.py": "6ec7e138a612b84b2e6d4d33ec5c6ceb71743ad7f7c04f06cef813a9f3ce71c8",
+    "verify_reference.py": "b0c0e6b9a5f6e029b754cb9ab36b484bcf29ab6f3b5b0d0736776a840d509d08"
+  }
+}
