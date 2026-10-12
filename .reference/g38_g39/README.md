@@ -4,8 +4,9 @@ Owning issue #964; convention #903. Producer: OpenAI ChatGPT / GPT-6 Astra Pro;
 configuration/effort not exposed. Requester: Riverhog maintainer. Publication
 through the connected GitHub integration does not confer contract authority.
 
-Start with [DESIGN.md](DESIGN.md), then [INTEGRATION.md](INTEGRATION.md) and
-[RESEARCH.md](RESEARCH.md). This revision contributes whole-scope observation
+For current integration start with [P10](../integration/packets/P10.md) or
+[P11](../integration/packets/P11.md). Open selected sections of DESIGN.md,
+INTEGRATION.md or RESEARCH.md only as needed. This revision contributes whole-scope observation
 representation, exact incremental acceptance and owner/protocol/provider wiring.
 It preserves the G22/G26/G27/G28 files and their historical evidence.
 
@@ -48,7 +49,8 @@ small; no CPU/SQL worst-case profile is established by row-count assertions alon
 
 Not validated: the integrated protocol/transport/validator/provider design,
 valid native whole-scope results and original support parity, PostgreSQL and
-actual deployment/concurrency/kill/recovery/security/qualification rails. All
-new public envelope/ABI/cap semantics need owner acceptance. Existing named
+actual deployment/concurrency/kill/recovery/security/qualification rails. The scoped
+current-only public envelope/ABI/cap direction is approved in #964 comment
+6118314165; exact vectors and implementation still require owner qualification. Existing named
 extension/schema delegates remain separately qualified; no hidden capability
 restriction or automatic conformance follows from a reference passing tests.

@@ -73,7 +73,7 @@
     "scope": "Prepare and deliver exact named task selections, ports and predecessor disclosures using bounded reference-based observer input; one whole-scope semantic question remains one question.",
     "proposed_work_bound": "O(required task/port-subject incidences + actually delivered input/evidence bytes + physical delivery units), plus declared sorting/index/hash/schema costs. Whole-scope representation is segmented, not independent semantic batching; no repeated full request decode per control contact.",
     "proposed_memory_and_state_bound": "Bounded read/write/parse/dispatch windows; retained immutable documents and durable per-step progress. Scoped metadata handles replace full subject/options/evidence tuples. No full-scope transaction or borrowed connection during evaluation/waiting.",
-    "semantic_requirement": "Exact question/work identity independent of physical transport; request/job/claim identities distinct; whole-scope completeness, current authority, empty-scope rules, source-qualified members and original predecessor support preserved. Proposed v2 reference envelopes/validator ABI need owner acceptance; no extra scheduler or hidden result ceiling.",
+    "semantic_requirement": "Exact question/work identity independent of physical transport; request/job/claim identities distinct; whole-scope completeness, current authority, empty-scope rules, source-qualified members and original predecessor support preserved. The scoped v2 reference-envelope/validator ABI direction is approved by #964 comment 6118314165; exact implementation/vectors remain owner-reviewed; no extra scheduler or hidden result ceiling.",
     "proposed_witness": "Whole-scope provenance/filename pipeline with cross-chunk relations and differing selection/subject order; independent partitions, multiple tasks, empty, large single values, restart/fencing/auth/retention; native AST query and bounded lifecycle diagnostics are not production proof.",
     "source_anchors": [
       {
@@ -92,7 +92,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "integrate-researched-reference-after-owner-contract-review"
+    "recommendation": "approved-scoped-contract-change-implement-and-qualify"
   },
   {
     "id": "G39",
@@ -126,7 +126,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "integrate-researched-reference-after-owner-contract-review"
+    "recommendation": "approved-scoped-contract-change-implement-and-qualify"
   },
   {
     "id": "G40",
@@ -159,7 +159,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "approve-predicate-profiles-before-freeze"
+    "recommendation": "approved-profile-policy-owner-formulas-and-evidence-required"
   },
   {
     "id": "G41",

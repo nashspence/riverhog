@@ -1,152 +1,60 @@
-# NON-AUTHORITATIVE EXTERNAL REFERENCE
+# #964 — start here
 
-Owning issue #964; convention #903.
-Branch: reference/external/964-large-collection-scaling
-Direct reference parent: 80c2f6d3815803677134fe9dd0b3bfbab5e14c01
-Audited main: 152d095038df0c0d0ed642cf265d47b11c65a754
-Audited tree: 991e994457b487a7dca016b7fc0409485cef25c6
-Historical runtime base remains 8425e672c60285a549ca4d5aaba15ecbd99e5bf3.
-Use a separate exact audited-source checkout. Reconcile post-#963 before acceptance.
+**Non-authoritative #903 reference. Issue decisions and the actual integration source govern.**
 
-Producer: OpenAI ChatGPT
-Model: GPT-6
-Previous G38/G39 reference producer: GPT-6 Astra Pro (retained in prior commit)
-Configuration/effort: not exposed
-Requester: Riverhog maintainer
-Publisher: connected GitHub integration; Git metadata is publication metadata.
+Read this file, [the session protocol](integration/SESSION.md), then **P00 only**.
+Do not preload the full issue thread, inventory, design directories or historical tests.
 
-## Latest issue-owned approvals: G26 and G27/G28
+```sh
+python .reference/integration/read.py P00
+python .reference/integration/read.py --list
+```
 
-The maintainer's [#964 approval 6118482544](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118482544) **approves**
-G26's selected ordered, domain-separated, resumable Merkle commitment for the
-source-normal derived index (including its proposed 4,096-byte identity fragments)
-and the G27/G28 current-only **snapshot-at-admission** public exact-discovery
-contract: read/token identity revision, pending/resumable pages, cancellation,
-expiry, capacity and segmented support transport. Current authorization remains
-live; pinned content cannot confer permissions or archive authority.
+The [packet index](integration/README.md) routes 20 small packets; each visit takes
+one implementation slice, not an entire family or all listed files. Use the reader
+for one selected section or G family. Its output is capped at 12,000 characters;
+pagination is explicit. This bounds reference excerpts, not the agent's total context.
+Post durable checkpoints in GitHub before changing owners or resetting context.
 
-Use [g26/DESIGN.md](g26/DESIGN.md) and
-[g27_g28/DESIGN.md](g27_g28/DESIGN.md) as the now-*approved direction* for
-integration. The owning issue, NOT the reference branch, authorizes those changes.
-Exact owner-local canonical encoding/vectors, public field/error/token schemas,
-resource settings, supported source/backends, implementation proofs and all
-qualification remain mandatory. This approval does not authorize modifying
-archive/journal/source commitments, creating a legacy compatibility chain,
-adding a hidden total-size maximum or claiming a numerical speed SLA.
+## What is settled
 
-## Earlier issue-owned approvals: G02/G40, G63/G64, G38/G39
+[Decision directory](integration/DECISIONS.md) links the authoritative approvals:
+G02/G40 preserve expressiveness with named costs; G63/G64 use one source-owned
+Closure/Audit/evidence system; G38/G39 retain one whole-scope question with bounded
+referenced transport and independent acceptance; G26's derived Merkle refinement
+and G27/G28 admission-pinned discovery are approved. G22's semantics-preserving
+bounded validation design is supplied; its production backend/proofs remain work.
+Do not re-open these as speculative intent questions or infer new approval.
 
-The maintainer decision [#964 comment 6118314165](https://github.com/nashspence/riverhog/issues/964#issuecomment-6118314165) approves
-preserving expressive schema/predicate capability with named cost profiles
-(G02/G40), one source-owned growth declaration and separate Closure/Audit/evidence
-system with internal generator/CI budgets (G63/G64), and the **specific current-only
-G38/G39 observer request/result/status/validator/evidence protocol change**
-necessary for exact whole-scope bounded work.
+Still required: exact post-#963 reconciliation, workload/conditions/target-or-no-target
+and proof-cadence decisions where required, executable owner formulas/vectors,
+production integration and complete qualification. Prepare specific evidence-backed
+questions in P02 rather than inventing numerical commitments. #961 precedes #963;
+land the foundation before dependent #964 work under the issue's coordination rules.
 
-Start with [v1_inventory/G02_G40_G63_G64_INTEGRATION.md](v1_inventory/G02_G40_G63_G64_INTEGRATION.md).
-G38/G39's approved scope is reflected in [g38_g39/DESIGN.md](g38_g39/DESIGN.md)
-and [g38_g39/INTEGRATION.md](g38_g39/INTEGRATION.md). The issue controls
-the decision: this reference mirrors it, not a second authority. No final exact
-operation formulas, byte-cap encoding, resource defaults or conformance passes
-were approved by the decision alone. Preserve all earlier reference evidence
-at its published identity; no runtime tests were run for this prose revision.
+## First return to the maintainer
 
-## Retained G38/G39 whole-scope observation
+Use P00 to give a short ready / dependency-blocked / specific-conflict assessment,
+identify the exact source and first useful slice, and state any concrete approval
+needed. Routine schema, index, backend and test implementation remains integration
+work. Do not conduct another broad research campaign before this initial pushback.
 
-Read [g38_g39/DESIGN.md](g38_g39/DESIGN.md),
-[g38_g39/INTEGRATION.md](g38_g39/INTEGRATION.md) and
-[g38_g39/README.md](g38_g39/README.md). One whole-scope question remains exact while
-subject/port/options/evidence transport, execution and acceptance become bounded
-and resumable. Existing metadata SHA/chunks and scoped selection/evidence owners
-are reused; no new Merkle identity or second scheduler is selected here.
+## Provenance and evidence
 
-The new protocol/validator reference recommends current-only request/result/status
-reference envelopes, verified metadata handles, typed port/read views, independent
-controller validation, private acceptance phases and exact source support. It
-specifies live data authority and archive evidence retention. The scoped
-current-only public envelope, validator ABI and logical result-cap *direction*
-is approved in #964 comment 6118314165; exact owner vectors and tests remain required.
+Reference parent: `cac600aeced78973f8f2d94307fbd8adc7dec2e8`.
+Audited source: `152d095038df0c0d0ed642cf265d47b11c65a754`.
+Audited tree: `991e994457b487a7dca016b7fc0409485cef25c6`.
+Historical runtime base: `8425e672c60285a549ca4d5aaba15ecbd99e5bf3`.
+Use a separate authoritative worktree; **do not merge this reference branch**.
+The exact publication SHA is recorded in #964; no reference commit is a release.
 
-50 new diagnostic tests passed with warnings as errors; evidence and source-bound
-SQL/AST probes are in [g38_g39/evidence.json](g38_g39/evidence.json). They are not a
-native full-profile/HTTP/PostgreSQL or production conformance claim. Native AST
-controls confirm unbounded whole-scope subject materialization and repeated
-unresolved-relation status scans; the separate model bounds coverage steps,
-status size, transaction lifetime and cleanup. Detailed limits are recorded.
+Producer of this cleanup: OpenAI ChatGPT / GPT-6 Astra Pro; effort not exposed.
+Requester: Riverhog maintainer. Publisher: connected GitHub integration.
+Prior producer records remain in Git history and original evidence files.
+[History/evidence directory](integration/HISTORY.md) distinguishes diagnostics from
+production proof. [Cleanup validation](integration/VALIDATION.md) records only checks
+actually performed for this navigation revision. No runtime conformance is implied.
 
-Only G38/G39 proposal entries and the existing canonical inventory digest are
-reconciled. G22/G26/G27/G28 designs, code and prior test evidence remain unchanged.
-Their previous test totals below are historical, NOT executed again by this addition.
-
-## Retained G22/G26/G27/G28 entry points
-
-Read [g22/DESIGN.md](g22/DESIGN.md) and [g26/DESIGN.md](g26/DESIGN.md), then
-[g22_g26/README.md](g22_g26/README.md) for reproducible diagnostic evidence.
-The preceding G27/G28 retained-input design remains at
-[g27_g28/DESIGN.md](g27_g28/DESIGN.md).
-
-Earlier recommendations are calibration, not a requirement to retain unsuitable
-lifecycles. The common recommendation is bounded work over exact retained inputs,
-durable progress, live authorization and fully accounted cleanup. The preceding revision
-replaces G22's whole-epoch physical transaction/savepoint model and G26's complete-
-assertion staging, flat-hash restart allowance and competing query lifecycle.
-
-G22 keeps certificate-first exact-prefix validation and honest correction/online
-costs. It adds bounded phase/adjacency/undo progress, durable source/checkpoint
-bindings, explicit summary handles, and exact SHA-256 continuation. No journal,
-archive, correction, prefix or semantic-acceptance meaning is changed. The small
-new SHA implementation is a diagnostic, not an approved production crypto backend.
-
-G26 keeps source-normal intervals, exact imported-history AND guards and scope
-semantics. It specifies segmented paths/values/postings, independently verified
-source completion, a resumable ordered Merkle dataset commitment, source-publication
-coordination and retained-generation reclamation. The Merkle identity refinement
-is now explicitly **approved** by #964 comment 6118482544, with exact owner
-normal-form/digest vectors and production validation still mandatory. It never
-replaces archive/journal hashes. G27/G28's revised admission-pinned invocation,
-current authorization and public support transport are approved in the same
-issue decision and remain subject to exact owner integration proof.
-
-## Historical G22/G26 verification and limitations
-
-65 new diagnostic tests passed with warnings as errors; see
-[g22_g26/evidence.json](g22_g26/evidence.json) for exact commands, environment,
-source hashes and verification records. Tests exercise SHA restart/native parity,
-bounded Kahn work with high-degree/deep/sparse/diamond graphs, transaction rollback,
-stale workers, segmented extent and retry/terminal negatives, deterministic Merkle
-carry/fold and SQLite resource release. A native AST guard/generic JSON schema
-negative control is NOT a complete valid-journal or production endpoint proof.
-
-At 128/512/2048 synthetic edges, Kahn visits exactly that many edges; graph and
-Merkle steps use at most 17 logical transitions per quantum while reopening actual
-connections. Larger posting/chunk diagnostics cross the old 20,000/10,000 limits.
-These are algorithm/component observations, not SQL machine bounds, media timing,
-PostgreSQL qualification or a complete native semantic validator/index integration.
-
-The historical G22 patch/native test evidence, G26 factored-model/native evidence,
-and G27/G28 tests remain at their own source identities. They were not rerun or
-combined into the new test claim. Do not mechanically apply the old G22 patch or
-copy the old G26 compiler's per-prefix in-memory views. Their limits are explicit.
-
-Still required: production resumable semantic phases/undo and reviewed SHA backend,
-large valid native journal/profile fixtures, G26 native source-normal/commitment
-encoding and both-history-extent/query parity, PostgreSQL locks/plans, real job kill
-and power-loss/storage-integrity tests, source handles, publication/pin/GC races,
-full locked/built/recovery/security/local and independent exact-SHA remote gates.
-Numerical resource defaults, timing targets and composite conformance are not invented.
-
-## Authority and retained history
-
-Only .reference material changes; no mainline, issue-body/state or release/provider
-operation is changed. The issue and normal contract/integration rail control adoption.
-Keep #961 onboarding, #963 shared evidence, #964 growth work and #469 qualification
-ownership, plus #960's report-only profile and recorded shortfall disposition.
-Preserve source custody, live grants/claims/fences, archive-only recovery and
-non-rebuildable operational state. Retain Alembic, the single current v1_0001
-bootstrap and synthetic future forward-revision/interruption tests; no abandoned-
-pre-v1 layout migration, dual readers or implicit destructive reset.
-
-The earlier HANDOFF-G22-G26.md is historical. The exact new commit recorded in #964
-is the durable #903 handoff identity; branch history is preserved by fast-forward.
-Native Development/dependency mutation is not exposed by this publisher; existing
-relationships are left intact and Markdown links do not establish new native links.
+Keep work tracking in GitHub, not main's source/docs. These packets remain external
+reference input, not a second operation/target registry. Native Development linking
+is unavailable through this publisher; Markdown links do not create that relation.

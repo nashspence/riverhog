@@ -128,5 +128,6 @@ specific decision to the maintainer instead of silently restricting behavior.
 
 G38/G39's separately approved current-only v2 contract is in
 [../g38_g39/DESIGN.md](../g38_g39/DESIGN.md); its exact source and
-qualification owners remain distinct. Existing G22/G26/G27/G28
-approval gaps are not closed by the above issue decision.
+qualification owners remain distinct. G26 and G27/G28 were subsequently approved in #964 comment 6118482544;
+see [the current decision directory](../integration/DECISIONS.md). G22 design
+is supplied; exact implementation/proof remains integration work.

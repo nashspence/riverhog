@@ -58,11 +58,11 @@ lifecycle and is NOT the implementation to integrate. The seek/matcher portions
 remain useful at their audited source and with the new streaming qualifications.
 G22/G26 executable materials and historical evidence are unchanged.
 
-The existing inventory's G27/G28 proposal entries are reconciled, not treated as
-new runtime authority. Its canonical digest is
-`0227c947d553539d73ce4530f1a407997dd18d7d5eea5747fb77875a67aac2e7`.
-Its source verifier checks 64 families, 86 projects and 182 anchors at the exact
-main source; it does not run growth conformance or dynamic Closure discovery.
+The inventory digest recorded by the initial retained-view revision is historical;
+current recommendation routing and its digest live in ../v1_inventory/metadata.json.
+Use [P07](../integration/packets/P07.md) and [P08](../integration/packets/P08.md)
+for focused integration. Neither source-integrity checks nor these models establish
+dynamic Closure coverage or runtime conformance.
 
 ## Provenance and limits
 

@@ -63,7 +63,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "bounded-resumable-exact-prefix-design-supplied-owner-integration-required"
+    "recommendation": "bounded-design-supplied-implement-and-qualify-exact-prefix-semantics"
   },
   {
     "id": "G23",
@@ -176,7 +176,7 @@
     "scope": "Construct a query-equivalent derived discovery generation from exact archive evidence.",
     "proposed_work_bound": "Source-normal construction over unique verified H+A+D+N+S plus lexical/path/value bytes and explicit schema/validation/index/order delegates. Segment large assertions without per-assertion posting or value-total cutoffs; no member-by-shared-assertion or prefix-by-source expansion. Resumable ordered Merkle sealing is linear in encoded fact fragments plus declared index work. G27/G28 owns unary/guarded query and retained-view progression.",
     "proposed_memory_and_state_bound": "Bounded source/entry/fragment work and transactions; durable obligation/segment/carry/fold checkpoints; retained current-schema generations, transitive pins and incremental GC with actual physical bytes charged. No large-row or whole-generation terminal/hash/delete step.",
-    "semantic_requirement": "Preserve archive/journal/member/history identity, exact four scopes, both history extents, native minimum supports and current authority. The prior compact derived-identity/current-schema hard cut remains specifically approved; the new segmented normal form/Merkle digest is a further explicit recommendation for owner review, not an already approved formula. Consume G27/G28 retained-view lifecycle; no second workspace or old-generation invalidation policy. Edit the current v1_0001 baseline while retaining forward-only revision machinery, explicit bootstrap and synthetic future tests; preserve non-rebuildable state, with no discarded-pre-v1 compatibility.",
+    "semantic_requirement": "Preserve archive/journal/member/history identity, exact four scopes, both history extents, native minimum supports and current authority. The prior compact derived-identity/current-schema hard cut remains specifically approved; the segmented normal form/Merkle identity direction is now specifically approved by #964 comment 6118482544, with exact native encoding/vectors and conformance still subject to owner review. Consume G27/G28 retained-view lifecycle; no second workspace or old-generation invalidation policy. Edit the current v1_0001 baseline while retaining forward-only revision machinery, explicit bootstrap and synthetic future tests; preserve non-rebuildable state, with no discarded-pre-v1 compatibility.",
     "proposed_witness": "Revised g26/DESIGN.md: valid large native assertions, exact segmented retry/terminal and native scope/guard parity; identity invariance across scheduling/rebuild; failpoints through source/order/hash/publish; retention/GC/auth races; no whole-finalization SQL work. Model/source-prefix evidence is not native production qualification.",
     "source_anchors": [
       {
@@ -200,7 +200,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "segmented-source-merkle-retention-design-supplied-owner-integration-required"
+    "recommendation": "approved-merkle-refinement-implement-and-qualify-native-vectors"
   },
   {
     "id": "G27",
@@ -239,7 +239,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "bounded-work-design-supplied-owner-contract-acceptance-required"
+    "recommendation": "approved-current-only-discovery-direction-implement-and-qualify"
   },
   {
     "id": "G28",
@@ -254,7 +254,7 @@
     "scope": "Named literal/indexed and exact factored provenance query profiles over a pinned immutable catalog view; explicit resumable preparation, segmented supports and current authorization.",
     "proposed_work_bound": "Admission pins a fixed root without scanning all headers. Immutable source matching and typed unary propagation run once per retained query scope; same-member guarded slices, ordering/indexing and required output are separately costed. Directory writes pay O(w) path-copy work and node index costs. Lifecycle includes checkpoint/replay, retained versions and cleanup; ordinary content mutations do not restart completed query work. No prefix-operator or universal output-linear query claim.",
     "proposed_memory_and_state_bound": "Bounded source loads, streamed large values/supports, paged queues/joins/sort runs and fixed-size checkpoints; no full-query MVCC snapshot or compulsory O(total) RAM. Output-sized disk, immutable version retention and GC are explicit capacities. No all-result preparation for proven simple streaming plans.",
-    "semantic_requirement": "Recommended current-only pre-v1 change to snapshot-at-admission read/token semantics and explicit pending/cancel/expiry/support-chunk transport; not an already approved deployed contract. Preserve exact native query language, both history extents, four scopes, supports and archive identity. Live grants/claims/capabilities still gate every page/chunk; deletion or revocation cannot silently remove hits and report complete.",
+    "semantic_requirement": "Approved current-only pre-v1 snapshot-at-admission read/token semantics and explicit pending/cancel/expiry/support-chunk direction under #964 comment 6118482544; not a claim of deployment or conformance. Preserve exact native query language, both history extents, four scopes, supports and archive identity. Live grants/claims/capabilities still gate every page/chunk; deletion or revocation cannot silently remove hits and report complete.",
     "proposed_witness": "Continuous mutations with no whole-query restart; actual snapshot-free SQLite/PG work, publication/pin/GC races, sparse radix keys, checkpoint crash and stale-worker controls, huge single values/supports, both history extents and all scopes, native factored-vs-expanded equivalence, current tag/grant/capability and HTTP/client/CLI tests.",
     "source_anchors": [
       {
@@ -273,7 +273,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "bounded-pinned-view-design-supplied-owner-contract-acceptance-required"
+    "recommendation": "approved-admission-pinned-direction-implement-and-qualify"
   },
   {
     "id": "G29",
