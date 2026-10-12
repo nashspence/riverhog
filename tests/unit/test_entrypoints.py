@@ -10,14 +10,12 @@ from tests.workspace import workspace_pyprojects
 
 REPO = Path(__file__).resolve().parents[2]
 ENTRYPOINTS = {REPO / "README.md", REPO / "AGENTS.md"}
-DURABLE_CONTEXT = {REPO / "docs/architecture.md"}
 HAND_MAINTAINED_MARKDOWN = {
     REPO / "AGENTS.md",
     REPO / "LICENSE.md",
     REPO / "README.md",
     REPO / "SECURITY.md",
     REPO / "THIRD_PARTY_NOTICES.md",
-    REPO / "docs/architecture.md",
 }
 REPOSITORY_MAP_TARGETS = {
     REPO / "riverhog",
@@ -57,6 +55,13 @@ def _local_links(path: Path) -> set[Path]:
     return links
 
 
+def _guide_section(heading: str) -> str:
+    text = (REPO / "AGENTS.md").read_text(encoding="utf-8")
+    _, separator, section = text.partition(f"## {heading}\n")
+    assert separator, f"missing developer-guide section: {heading}"
+    return " ".join(section.partition("\n## ")[0].split())
+
+
 def test_all_markdown_is_reachable_and_links_resolve() -> None:
     markdown = _markdown_files()
     reachable: set[Path] = set()
@@ -79,44 +84,35 @@ def test_all_markdown_is_reachable_and_links_resolve() -> None:
 
 
 def test_hand_maintained_markdown_surface_is_explicit() -> None:
-    assert {path for path in _markdown_files()} == HAND_MAINTAINED_MARKDOWN
+    assert _markdown_files() == HAND_MAINTAINED_MARKDOWN
+    assert not (REPO / "docs").exists()
 
 
 def test_agents_guidance_stays_compact_and_routes_enforceable_policy_to_tests() -> None:
     agents = (REPO / "AGENTS.md").read_text(encoding="utf-8")
-    assert len(agents.split()) <= 900
+    assert len(agents.split()) <= 1900
     assert "scoped policy tests" in agents
     assert "Enforceable repository policy belongs in clearly named tests." in " ".join(
         agents.split()
     )
 
 
-def test_main_context_documents_are_exact_and_directly_routed() -> None:
-    assert set((REPO / "docs").glob("*.md")) == DURABLE_CONTEXT
-
+def test_onboarding_routes_directly_between_the_two_root_documents() -> None:
     for entrypoint in ENTRYPOINTS:
-        links = [
-            (entrypoint.parent / target.split("#", 1)[0]).resolve()
-            for target in MARKDOWN_LINK_RE.findall(entrypoint.read_text(encoding="utf-8"))
-            if "://" not in target and not target.startswith("#")
-        ]
-        direct_context = [link for link in links if link.parent == REPO / "docs"]
-        assert len(direct_context) == len(DURABLE_CONTEXT)
-        assert set(direct_context) == DURABLE_CONTEXT
+        targets = MARKDOWN_LINK_RE.findall(entrypoint.read_text(encoding="utf-8"))
+        other = "AGENTS.md" if entrypoint.name == "README.md" else "README.md"
+        assert targets.count(other) == 1
+        assert REPO / other in _local_links(entrypoint)
 
 
 @pytest.mark.parametrize(
     ("relative", "expected_sha256"),
     [
-        # Maintainer-approved briefs: #957 README and #956 architecture (with navigation links).
-        ("README.md", "c6c14c6940b91e43f07907ce229c4c49aa23c3ce182fbe062bf9cc694a373627"),
-        (
-            "docs/architecture.md",
-            "c3be5f420d5306332067f2b1ae9ab516c4080a25db8d137205825e4eaab49dcf",
-        ),
+        ("README.md", "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2"),
+        ("AGENTS.md", "1c427d38b88c9a05fe105dea5bcc862efec52ff516233110fa0ef88b43692f44"),
     ],
 )
-def test_maintained_context_document_requires_explicit_revision(
+def test_onboarding_document_requires_explicit_revision(
     relative: str, expected_sha256: str
 ) -> None:
     actual = hashlib.sha256((REPO / relative).read_bytes()).hexdigest()
@@ -126,11 +122,9 @@ def test_maintained_context_document_requires_explicit_revision(
     )
 
 
-def test_readme_routes_make_target_documentation_to_make_help() -> None:
-    readme = " ".join((REPO / "README.md").read_text(encoding="utf-8").split())
-
-    assert "Use `make help` for development and validation commands." in readme
-    assert re.findall(r"`make\s+([^`]+)`", readme) == ["help"]
+def test_developer_guide_routes_make_target_documentation_to_make_help() -> None:
+    validation = _guide_section("Validate the change you actually deliver")
+    assert "Use `make help` for current command guidance." in validation
 
 
 def test_readme_routes_product_context_licensing_and_security_reporting() -> None:
@@ -138,53 +132,91 @@ def test_readme_routes_product_context_licensing_and_security_reporting() -> Non
     assert _local_links(readme_path) == {
         REPO / "LICENSE.md",
         REPO / "SECURITY.md",
-        REPO / "docs/architecture.md",
+        REPO / "AGENTS.md",
+        REPO / "riverhog",
+        REPO / "packages",
+        REPO / "some-implementations",
+        REPO / "some-implementations/riverhog/recovery",
     }
     assert "https://nashspence.github.io/riverhog/" in readme_path.read_text(encoding="utf-8")
 
 
 def test_agents_requires_precommit_gates_and_exhaustive_integration_qualification() -> None:
-    validation = (REPO / "AGENTS.md").read_text(encoding="utf-8").partition("## Validation\n")[2]
+    agents = (REPO / "AGENTS.md").read_text(encoding="utf-8")
+    validation = _guide_section("Validate the change you actually deliver")
 
-    assert re.findall(r"```bash\n(.*?)\n```", validation, flags=re.DOTALL) == [
+    assert re.findall(r"```bash\n(.*?)\n```", agents, flags=re.DOTALL) == [
         "make lint\nmake unit\nmake dist-smoke\nmake build"
     ]
     assert "`make linux-qualification`" in validation
-    assert "substantial integration/handoff validation and release-related work" in validation
-    assert "exhaustive local qualification rail" in validation
+    assert "substantial integration or handoff validation and release-related work" in validation
+    assert "exhaustive local qualification path" in validation
 
 
 def test_agents_requires_post_push_github_validation() -> None:
-    agents = " ".join((REPO / "AGENTS.md").read_text(encoding="utf-8").split())
-
-    assert "watch the pushed commit's GitHub Actions checks through completion" in agents
-    assert "Required GitHub checks are part of complete validation" in agents
-    assert "`release.toml` owns the release-governance policy" in agents
-    assert "Direct commits to `main`" in agents
+    validation = _guide_section("Validate the change you actually deliver")
     assert (
-        "`release/v1` branch may synchronize to an explicitly approved green main commit" in agents
+        "watch that exact commit’s required GitHub Actions checks through completion" in validation
     )
-    assert "Provider qualification stays disabled" in agents
-    assert "never moves a v1 tag" in agents
-    assert "Changes to root `README.md` or `docs/architecture.md` are exceptional" in agents
+    assert "Fix failures before handing work back." in validation
+    assert "A skipped or blocked check is not a pass" in validation
+    assert "Do not remove required coverage or weaken a check" in validation
 
 
-def test_agents_requires_locked_disposable_container_tool_stages() -> None:
-    agents = " ".join((REPO / "AGENTS.md").read_text(encoding="utf-8").split())
+def test_agents_keeps_release_authorization_separate_from_validation() -> None:
+    authorization = _guide_section("Keep authorization separate from validation")
+    links = _local_links(REPO / "AGENTS.md")
+    assert {REPO / "release.toml", REPO / ".github/workflows"} <= links
+    assert "Direct maintainer commits to `main`" in authorization
+    assert "required checks for every pushed commit" in authorization
+    assert "explicit approval of a fully green commit" in authorization
+    assert "This does not select a *release candidate*" in authorization
+    assert "Provider qualification remains disabled until separately authorized" in authorization
+    assert (
+        "Publication requires protected approval and a complete governance check" in authorization
+    )
+    assert "Published v1 tags are never moved or deleted." in authorization
 
-    assert "mise install --locked" in agents
-    assert "digest-pinned disposable build stage" in agents
-    assert "copy only its required runtime artifacts forward" in agents
+
+def test_onboarding_documents_require_explicit_maintainer_direction_for_broader_edits() -> None:
+    guidance = _guide_section("Start from the source that owns the answer")
+    assert (
+        "Change `README.md` or `AGENTS.md` only to correct material drift or when the maintainer "
+        "explicitly directs broader work."
+    ) in guidance
+
+
+def test_agents_routes_locked_container_tool_policy_to_its_owning_tests() -> None:
+    links = _local_links(REPO / "AGENTS.md")
+    assert {
+        REPO / "tests/unit/test_dependency_policy.py",
+        REPO / "tests/unit/test_image_build_graph.py",
+    } <= links
+
+
+def test_agents_preserves_supported_database_upgrades_and_durable_state() -> None:
+    state = _guide_section("Change durable state deliberately")
+    assert "upgrading databases between supported releases" in state
+    assert "existing data survives" in state
+    assert "interrupted upgrades" in state
+    assert "does not silently upgrade or erase existing data" in state
+    assert REPO / "packages/state-schema" in _local_links(REPO / "AGENTS.md")
+
+
+def test_agents_requires_growth_validation_without_machine_timing_guarantees() -> None:
+    growth = _guide_section("Preserve declared growth bounds")
+    assert "*linear growth*" in growth
+    assert "Violating a declared growth bound is a validation failure." in growth
+    assert "Machine-dependent timing targets remain performance observations" in growth
+    assert "not product guarantees" in growth
 
 
 def test_repository_map_exactly_covers_the_workspace_layout() -> None:
-    architecture_path = REPO / "docs/architecture.md"
-    architecture = architecture_path.read_text(encoding="utf-8")
-    section = architecture.partition("## How this maps to the repository\n")[2].partition("\n## ")[
-        0
-    ]
+    readme_path = REPO / "README.md"
+    readme = readme_path.read_text(encoding="utf-8")
+    section = readme.partition("## How this maps to the repository\n")[2].partition("\n## ")[0]
     targets = [
-        (architecture_path.parent / target.split("#", 1)[0]).resolve()
+        (readme_path.parent / target.split("#", 1)[0]).resolve()
         for target in MARKDOWN_LINK_RE.findall(section)
         if "://" not in target and not target.startswith("#")
     ]
