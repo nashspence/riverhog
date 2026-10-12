@@ -70,11 +70,11 @@
       "stove0-observer-protocol",
       "stove0-observer-client"
     ],
-    "scope": "Deliver every selected subject/evidence item for each declared observation task.",
-    "proposed_work_bound": "O(sum task-subject incidences + evidence bytes + deliveries); fixed task graph => linear collection growth. Delivery count O(ceil(subjects/batch)) where independent batching applies; whole-scope semantics are separate.",
-    "proposed_memory_and_state_bound": "Bounded dispatch window, durable accepted-task state O(incidences + results); no in-memory global physical-request list needed.",
-    "semantic_requirement": "No dropped tasks/subjects, repeated tasks keep distinct authority; batching/concurrency do not change semantic recipe/work identity.",
-    "proposed_witness": "Multiple tasks sharing provider, empty selections, 16/17 and 64/65 boundaries, retries and restart; mechanically prove exact once-per-required-incidence coverage.",
+    "scope": "Prepare and deliver exact named task selections, ports and predecessor disclosures using bounded reference-based observer input; one whole-scope semantic question remains one question.",
+    "proposed_work_bound": "O(required task/port-subject incidences + actually delivered input/evidence bytes + physical delivery units), plus declared sorting/index/hash/schema costs. Whole-scope representation is segmented, not independent semantic batching; no repeated full request decode per control contact.",
+    "proposed_memory_and_state_bound": "Bounded read/write/parse/dispatch windows; retained immutable documents and durable per-step progress. Scoped metadata handles replace full subject/options/evidence tuples. No full-scope transaction or borrowed connection during evaluation/waiting.",
+    "semantic_requirement": "Exact question/work identity independent of physical transport; request/job/claim identities distinct; whole-scope completeness, current authority, empty-scope rules, source-qualified members and original predecessor support preserved. Proposed v2 reference envelopes/validator ABI need owner acceptance; no extra scheduler or hidden result ceiling.",
+    "proposed_witness": "Whole-scope provenance/filename pipeline with cross-chunk relations and differing selection/subject order; independent partitions, multiple tasks, empty, large single values, restart/fencing/auth/retention; native AST query and bounded lifecycle diagnostics are not production proof.",
     "source_anchors": [
       {
         "path": "some-implementations/stove0/application/server/src/stove0_core/compiled_observation_delivery.py",
@@ -92,7 +92,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "propose-for-v1"
+    "recommendation": "integrate-researched-reference-after-owner-contract-review"
   },
   {
     "id": "G39",
@@ -104,11 +104,11 @@
       "stove0-protocol",
       "stove0-observer-support"
     ],
-    "scope": "Validate one result's subject ports, authority, completeness and fact/relation records.",
-    "proposed_work_bound": "O(subjects + evidence bytes + explicit relations) logical checks plus indexed lookups and declared schema cost. Subject lookup built once, not linear scan for every port member.",
-    "proposed_memory_and_state_bound": "Working state bounded by physical carrier or spooled whole-scope input; view rows proportional to accepted records, not task*unrelated members.",
-    "semantic_requirement": "Reject duplicate/missing/replaced subjects and read-policy changes; no unknown evidence interpreted as false.",
-    "proposed_witness": "Whole-scope request with increasing subjects and fixed ports; missing/duplicate/wrong-root result, many batches and idempotent reacceptance.",
+    "scope": "Independently validate exact observer source testimony into private indexed views, then publish acceptance only after complete schema/semantic/coverage checks.",
+    "proposed_work_bound": "O(subjects + facts/source bytes + explicit record/view/edge/support incidences) logical work plus canonical ordering, indexed lookups and named schema/semantic costs. Shared unresolved-relation taint avoids subject*unusable-claim multiplication; no whole-evidence decode/hash/count in every poll or final publication.",
+    "proposed_memory_and_state_bound": "Bounded closeable input/value readers and private attempt/checkpoint state; output-sized source/index storage accounted. Segmented records/support; exact terminal metadata permits short accepted-pointer commit; bounded fenced cleanup.",
+    "semantic_requirement": "Separate transport integrity, observer completion and controller acceptance. Preserve same-scope/global/status/endpoint meanings, source record order versus edge dedup, native selection commitments and scoped original testimony. Missing/invalid/indeterminate evidence is never a complete negative. Reviewed reference ABI retains exact logical JSON and independent validator authority.",
+    "proposed_witness": "Last-page missing/extra/wrong-root, duplicate subjects, multi-record statuses, global subset, ambiguous endpoints, late unresolved-relation taint, exact retries/restarts, live disclosure checks and scoped custody/recovery. Native profiles/PG/runtime proof remains required beyond model and AST diagnostics.",
     "source_anchors": [
       {
         "path": "some-implementations/stove0/application/server/src/stove0_core/accepted_observations.py",
@@ -126,7 +126,7 @@
         "symbol_or_anchor": null
       }
     ],
-    "recommendation": "propose-for-v1"
+    "recommendation": "integrate-researched-reference-after-owner-contract-review"
   },
   {
     "id": "G40",

@@ -1,0 +1,122 @@
+{
+  "format": "g38-g39-diagnostic-counts/v1",
+  "limits": [
+    "model rows are bounded toy identities, not native facts",
+    "SQL machine/PG/workload/time targets not established",
+    "source typed deserialization and physical seal are instrumented boundaries"
+  ],
+  "model": [
+    {
+      "coverage_step_calls": 9,
+      "coverage_subjects_visited": 128,
+      "eager_per_subject_taint_updates": 0,
+      "max_subjects_per_coverage_step": 17,
+      "open_connections_after_step": 0,
+      "relation_records": 128,
+      "status_bytes": 42,
+      "subjects": 128,
+      "whole_scope_taint_markers": 1
+    },
+    {
+      "coverage_step_calls": 32,
+      "coverage_subjects_visited": 512,
+      "eager_per_subject_taint_updates": 0,
+      "max_subjects_per_coverage_step": 17,
+      "open_connections_after_step": 0,
+      "relation_records": 512,
+      "status_bytes": 42,
+      "subjects": 512,
+      "whole_scope_taint_markers": 1
+    },
+    {
+      "coverage_step_calls": 122,
+      "coverage_subjects_visited": 2048,
+      "eager_per_subject_taint_updates": 0,
+      "max_subjects_per_coverage_step": 17,
+      "open_connections_after_step": 0,
+      "relation_records": 2048,
+      "status_bytes": 42,
+      "subjects": 2048,
+      "whole_scope_taint_markers": 1
+    }
+  ],
+  "native_delivery": [
+    {
+      "coverage": "native AST query path; typed/physical seal boundaries instrumented",
+      "input_subjects": 128,
+      "partitioning": "whole-scope",
+      "returned_subjects": 128,
+      "source_sha256": "1df8703c007dd61b9f2cd2a4126e8800fb507506c83916f810e2afb008fc0491",
+      "subject_json_bytes": 19456,
+      "subjects_decoded": 128
+    },
+    {
+      "coverage": "native AST query path; typed/physical seal boundaries instrumented",
+      "input_subjects": 128,
+      "partitioning": "independent-subjects",
+      "returned_subjects": 100,
+      "source_sha256": "1df8703c007dd61b9f2cd2a4126e8800fb507506c83916f810e2afb008fc0491",
+      "subject_json_bytes": 15200,
+      "subjects_decoded": 100
+    },
+    {
+      "coverage": "native AST query path; typed/physical seal boundaries instrumented",
+      "input_subjects": 512,
+      "partitioning": "whole-scope",
+      "returned_subjects": 512,
+      "source_sha256": "1df8703c007dd61b9f2cd2a4126e8800fb507506c83916f810e2afb008fc0491",
+      "subject_json_bytes": 77824,
+      "subjects_decoded": 512
+    },
+    {
+      "coverage": "native AST query path; typed/physical seal boundaries instrumented",
+      "input_subjects": 512,
+      "partitioning": "independent-subjects",
+      "returned_subjects": 100,
+      "source_sha256": "1df8703c007dd61b9f2cd2a4126e8800fb507506c83916f810e2afb008fc0491",
+      "subject_json_bytes": 15200,
+      "subjects_decoded": 100
+    },
+    {
+      "coverage": "native AST query path; typed/physical seal boundaries instrumented",
+      "input_subjects": 2048,
+      "partitioning": "whole-scope",
+      "returned_subjects": 2048,
+      "source_sha256": "1df8703c007dd61b9f2cd2a4126e8800fb507506c83916f810e2afb008fc0491",
+      "subject_json_bytes": 311296,
+      "subjects_decoded": 2048
+    },
+    {
+      "coverage": "native AST query path; typed/physical seal boundaries instrumented",
+      "input_subjects": 2048,
+      "partitioning": "independent-subjects",
+      "returned_subjects": 100,
+      "source_sha256": "1df8703c007dd61b9f2cd2a4126e8800fb507506c83916f810e2afb008fc0491",
+      "subject_json_bytes": 15200,
+      "subjects_decoded": 100
+    }
+  ],
+  "native_taint": [
+    {
+      "coverage": "native relation-loop AST with controlled pointer/predicate fixtures",
+      "native_status_lookups": 16384,
+      "source_sha256": "5f840f5b054b0debf40815cd4c6a06bfe68a781439262f9c2f50c1e6ee46f85c",
+      "subjects": 128,
+      "unresolved_relevant_claims": 128
+    },
+    {
+      "coverage": "native relation-loop AST with controlled pointer/predicate fixtures",
+      "native_status_lookups": 262144,
+      "source_sha256": "5f840f5b054b0debf40815cd4c6a06bfe68a781439262f9c2f50c1e6ee46f85c",
+      "subjects": 512,
+      "unresolved_relevant_claims": 512
+    },
+    {
+      "coverage": "native relation-loop AST with controlled pointer/predicate fixtures",
+      "native_status_lookups": 4194304,
+      "source_sha256": "5f840f5b054b0debf40815cd4c6a06bfe68a781439262f9c2f50c1e6ee46f85c",
+      "subjects": 2048,
+      "unresolved_relevant_claims": 2048
+    }
+  ]
+}

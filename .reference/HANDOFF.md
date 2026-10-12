@@ -2,7 +2,7 @@
 
 Owning issue #964; convention #903.
 Branch: reference/external/964-large-collection-scaling
-Direct reference parent: 4621be70fe2229ef7de169862ff1ec5274dec00f
+Direct reference parent: 4b0b9e2a717a2773f9ee7f68fa33d3fc4a73f176
 Audited main: 152d095038df0c0d0ed642cf265d47b11c65a754
 Audited tree: 991e994457b487a7dca016b7fc0409485cef25c6
 Historical runtime base remains 8425e672c60285a549ca4d5aaba15ecbd99e5bf3.
@@ -14,7 +14,33 @@ Configuration/effort: not exposed
 Requester: Riverhog maintainer
 Publisher: connected GitHub integration; Git metadata is publication metadata.
 
-## Current entry points
+## Current addition: G38/G39 whole-scope observation
+
+Read [g38_g39/DESIGN.md](g38_g39/DESIGN.md),
+[g38_g39/INTEGRATION.md](g38_g39/INTEGRATION.md) and
+[g38_g39/README.md](g38_g39/README.md). One whole-scope question remains exact while
+subject/port/options/evidence transport, execution and acceptance become bounded
+and resumable. Existing metadata SHA/chunks and scoped selection/evidence owners
+are reused; no new Merkle identity or second scheduler is selected here.
+
+The new protocol/validator reference recommends current-only request/result/status
+reference envelopes, verified metadata handles, typed port/read views, independent
+controller validation, private acceptance phases and exact source support. It
+specifies live data authority and archive evidence retention. New public envelope,
+validator ABI and result-cap byte-accounting choices require owning acceptance.
+
+50 new diagnostic tests passed with warnings as errors; evidence and source-bound
+SQL/AST probes are in [g38_g39/evidence.json](g38_g39/evidence.json). They are not a
+native full-profile/HTTP/PostgreSQL or production conformance claim. Native AST
+controls confirm unbounded whole-scope subject materialization and repeated
+unresolved-relation status scans; the separate model bounds coverage steps,
+status size, transaction lifetime and cleanup. Detailed limits are recorded.
+
+Only G38/G39 proposal entries and the existing canonical inventory digest are
+reconciled. G22/G26/G27/G28 designs, code and prior test evidence remain unchanged.
+Their previous test totals below are historical, NOT executed again by this addition.
+
+## Retained G22/G26/G27/G28 entry points
 
 Read [g22/DESIGN.md](g22/DESIGN.md) and [g26/DESIGN.md](g26/DESIGN.md), then
 [g22_g26/README.md](g22_g26/README.md) for reproducible diagnostic evidence.
@@ -23,7 +49,7 @@ The preceding G27/G28 retained-input design remains at
 
 Earlier recommendations are calibration, not a requirement to retain unsuitable
 lifecycles. The common recommendation is bounded work over exact retained inputs,
-durable progress, live authorization and fully accounted cleanup. This revision
+durable progress, live authorization and fully accounted cleanup. The preceding revision
 replaces G22's whole-epoch physical transaction/savepoint model and G26's complete-
 assertion staging, flat-hash restart allowance and competing query lifecycle.
 
@@ -41,7 +67,7 @@ the earlier flat compact digest proposal; it needs explicit owner identity revie
 not a silent change under the old digest. It never replaces archive/journal hashes.
 G27/G28 alone owns query invocation, retained views and public support transport.
 
-## Actual verification and limitations
+## Historical G22/G26 verification and limitations
 
 65 new diagnostic tests passed with warnings as errors; see
 [g22_g26/evidence.json](g22_g26/evidence.json) for exact commands, environment,

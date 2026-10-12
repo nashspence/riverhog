@@ -7,7 +7,7 @@
     "tree": "991e994457b487a7dca016b7fc0409485cef25c6",
     "archive_sha256": "cd56d6b467794feabfedc78fcea8c51bb3e192a3ac1ee0c91e3ab588b40a309f"
   },
-  "purpose": "Decision-reconciled growth proposal. G22/G26 now recommend bounded resumable validation, segmented source facts, explicit compact Merkle commitment refinement and retained current-schema generations feeding G27/G28. New owner acceptance and production conformance remain required. Preserve archive authority, approved current-schema hard-cut scope and Alembic forward-only infrastructure.",
+  "purpose": "Decision-reconciled growth proposal. G22/G26 now recommend bounded resumable validation, segmented source facts, explicit compact Merkle commitment refinement and retained current-schema generations feeding G27/G28. New owner acceptance and production conformance remain required. Preserve archive authority, approved current-schema hard-cut scope and Alembic forward-only infrastructure. G38/G39 now recommend reference-based whole-scope observation inputs, bounded metadata/read-view execution, independent incremental acceptance and scoped original evidence; new envelope/ABI/cap details remain recommended pending owner review.",
   "notation": {
     "N": "Member count of the exact selected collection or stream; not a configured maximum.",
     "B": "Useful selected plaintext/data bytes; reading/writing/encrypting distinct required bytes costs work even when data is identical.",
@@ -82,6 +82,6 @@
       "families-G57-G60.json",
       "families-G61-G64.json"
     ],
-    "reviewed_inventory_canonical_sha256": "403e4f6a4a665de62cba52a9ed90e2834ad6d686e53d9bb81faa97038407ece6"
+    "reviewed_inventory_canonical_sha256": "e5c97570b62b8fe0f4737ffcb4392485ecb81e25f77028b570c0302a59b69b91"
   }
 }

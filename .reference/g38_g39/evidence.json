@@ -1,0 +1,127 @@
+{
+  "format": "g38-g39-researched-design-evidence/v1",
+  "status": "reference-model-and-instrumented-source-not-production-conformance",
+  "reference_parent": "4b0b9e2a717a2773f9ee7f68fa33d3fc4a73f176",
+  "audited_main": "152d095038df0c0d0ed642cf265d47b11c65a754",
+  "audited_tree": "991e994457b487a7dca016b7fc0409485cef25c6",
+  "environment": {
+    "python": "3.13.5",
+    "sqlite": "3.46.1",
+    "pytest": "9.0.2",
+    "sqlalchemy": "2.0.50",
+    "pydantic": "2.13.5",
+    "jsonschema": "4.26.0",
+    "locked_workspace": false,
+    "pytest_plugin_autoload": "disabled",
+    "warnings": "errors",
+    "postgresql_executed": false
+  },
+  "completed_runs": [
+    {
+      "selection": "new transfer/acceptance/authority model plus native AST query and loop controls",
+      "command": "RIVERHOG_AUDITED=$AUDITED PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q -W error -o addopts='' $REF/.reference/g38_g39/test_reference.py",
+      "passed": 50,
+      "seconds": 5.47,
+      "prior_runs": [
+        {
+          "passed": 43,
+          "seconds": 6.39
+        },
+        {
+          "passed": 47,
+          "seconds": 7.34
+        },
+        {
+          "passed": 50,
+          "seconds": 5.35
+        }
+      ],
+      "distinct_tests_not_sum_of_reruns": 50
+    },
+    {
+      "selection": "unchanged inventory package tests",
+      "command": "python -m unittest discover -s $REF/.reference/v1_inventory -p test_inventory_package.py -q",
+      "passed": 10,
+      "seconds": 0.067
+    },
+    {
+      "selection": "source inventory verifier",
+      "command": "python -S $REF/.reference/v1_inventory/verify_inventory.py --repo $AUDITED",
+      "families": 64,
+      "projects": 86,
+      "anchors_checked": 182,
+      "runtime_complexity_tested": false
+    }
+  ],
+  "development_attempts": [
+    {
+      "selection": "optional native dependency installation",
+      "command": "python -m pip install --target /mnt/data/g38_deps rfc8785==0.1.4 --disable-pip-version-check --retries 0 --timeout 8",
+      "status": "failed",
+      "detail": "No matching distribution available from environment index; no fake canonicalizer used to claim native suite success."
+    }
+  ],
+  "probes": {
+    "command": "python $REF/.reference/g38_g39/probe.py --repo $AUDITED",
+    "file": "counters.json",
+    "sha256": "81cc01ff5a0942bfeb074f62fa6598ab6b698754a6e2923f9423a3dcd836cfdd",
+    "final_rerun_byte_identical": true,
+    "coverage_quantum_subjects": 17,
+    "native_source_path": "CompiledObservationDelivery.request AST with real SQLAlchemy/SQLite; typed decoding and physical seal instrumented",
+    "native_relation_loop": "project_interface relation-loop AST; controlled pointers/predicates/lookup fixtures",
+    "fixture_byte_counts_are_not_wire_sizes": true,
+    "logical_transition_counts_are_not_SQL_or_CPU_bounds": true
+  },
+  "limits": [
+    "Model JSON encode is fixture serialization, not JCS or native semantic validation.",
+    "The prior diagnostic SHA continuation is reused only as a model helper, not approved production cryptography.",
+    "Grant flags and independent_semantics boolean stand in for external decisions; they do not implement HTTP authentication, current Riverhog authority or real schema/semantic validation.",
+    "Source query probes use exact extracted AST and real SQLite SQL; controlled fixture adapters replace model construction and semantic sealing.",
+    "Relation-loop probes execute actual source traversal with controlled helper behavior; not valid native profile/journal results.",
+    "Model seeding materializes fixture arrays outside measured work; this is not bounded production source selection proof.",
+    "Coverage quantum bounds logical paired subject checks, not every SQL VM instruction or machine byte.",
+    "Connection-release/WAL checks are SQLite component evidence, not PostgreSQL/pool, true process-kill/power-loss or cross-store durability proof.",
+    "Historical G22/G26/G27/G28 suites and evidence were not rerun or combined into this result."
+  ],
+  "not_run": [
+    "Production exact scope/delivery/metadata verified-handle integration",
+    "Native large valid whole-scope provenance-to-sidecar pipeline and original testimony/support equivalence",
+    "Neutral resumable schema/semantic validator ABI and arbitrary JSON instance/global constraint execution",
+    "Provider descriptor/HTTP/client/poll/input-transfer/cancel/current-capability integration",
+    "PostgreSQL plans/locks/pool-return and concurrent publication/retention/authorization races",
+    "Actual process kill/power loss/cross-store fsync recovery and archival evidence custody",
+    "Locked format/type/lint/full unit/dist-smoke/build/exhaustive local qualification",
+    "Independent exact-SHA CI/CodeQL and release/image/recovery/security qualification",
+    "Numerical timing/resource targets and composite v1 conformance"
+  ],
+  "source_sha256": {
+    "some-implementations/stove0/application/server/src/stove0_core/compiled_observation_delivery.py": "1df8703c007dd61b9f2cd2a4126e8800fb507506c83916f810e2afb008fc0491",
+    "some-implementations/stove0/application/server/src/stove0_core/observation_questions.py": "aecbfebc64913fb63090b6288ba793bf3e71cc3b9459fa0f5a5bf062d00856d1",
+    "some-implementations/stove0/application/server/src/stove0_core/accepted_observations.py": "36e1211c29aadda9b30bdeedef2b94e814daa63dfbddf5bc7be6bf166fa1bd2e",
+    "some-implementations/stove0/application/server/src/stove0_core/compiled_planning_state.py": "8512c2e6246dd2b79d964cfc312ecad7ede85be29a5e8f4b927d11012c2d95d3",
+    "some-implementations/stove0/application/server/src/stove0_core/_checkpoint_sha256.py": "7abc5b5f73c88a95beb9ce196bdd424db6d2f45ac3c29b6e5b062d9fc992d6ab",
+    "some-implementations/stove0/packages/protocol/src/stove0_protocol/models.py": "4663efac69adcbe28e31fb0cd84d78110d3b879fc6504cefb237223b6f21bb81",
+    "some-implementations/stove0/packages/protocol/src/stove0_protocol/accepted_inputs.py": "98e7112c27e2b513307ef44831ea724295012c3e84d009f567265b860f56e3da",
+    "some-implementations/stove0/packages/protocol/src/stove0_protocol/observation_interfaces.py": "5613ec27fa2073a1bbee9e6f49c7adfcaedf5de8678a7122cf4c60bba4792788",
+    "some-implementations/stove0/packages/protocol/src/stove0_protocol/observation_views.py": "5f840f5b054b0debf40815cd4c6a06bfe68a781439262f9c2f50c1e6ee46f85c",
+    "some-implementations/stove0/packages/protocol/src/stove0_protocol/fork_join.py": "40466abbd2fede0981916158bdb6c156d80e26250dee56bb1d96400ca6d25b15",
+    "some-implementations/stove0/packages/observer-support/src/stove0_observer_support/persistent.py": "2ec53c06fcbd7baa8af2bfb2d97fdf4196d6cd0311eee8093bd1929873a5cd11",
+    "some-implementations/stove0/packages/observer-support/src/stove0_observer_support/runtime.py": "89b3eddfe4d1b857bb2b435a53312c5d8916da701f0c2a5f0f2f9ae3790eec04",
+    "some-implementations/stove0/packages/observer-support/src/stove0_observer_support/results.py": "624a1c04098cead3c2e1fe975d460e709c3d403fd3677c7a654ecbd2be0a0ad7",
+    "some-implementations/stove0/packages/observer-support/src/stove0_observer_support/http_binding.py": "8fbc4d170828f717c960a45e294c1a09c9b70625a7b7415a3e057ba4d700e110",
+    "packages/http-api-contracts/src/http_api_contracts/metadata_documents.py": "244f8da2908e8fbfec47eb0a5aeaf92b601f77637585a048e55ec1a337aa8799",
+    "packages/http-api-contracts/src/http_api_contracts/metadata_staging.py": "d0ba665d95ad319c1189b797cf04881038d7e19e209ce7c84967bcfd8773ab3f",
+    "packages/http-api-contracts/src/http_api_contracts/metadata_binding.py": "e56e8d76be1fb3d3fd5c300ac684a4638300428c24647d343e7dd224f6ec8714"
+  },
+  "executable_sha256": {
+    "probe.py": "c23b7013ffeb817e297b38f7185a1f865e7a082da10895e17174d6296939fe5f",
+    "reference.py": "93ecf286eccb07181ddb4c08c297ec44587b05359a77cfac7a9bcae69ee7aca2",
+    "source_probe.py": "dc89eb64e90c6360c438cd3b05daa43b85a954acef56dd705879a98bcc900f4b",
+    "test_reference.py": "bc02a5a8fb5d9bc2e2feddbdce65486059c32fc391f07ad07605f9d41476a743"
+  },
+  "reused_diagnostic_sha256": {
+    ".reference/g22_g26/sha256_state.py": "e8326f2eff2fb5094e037c04bdf66e499ed86888b7c543f3ebf81b7f013f1380"
+  },
+  "inventory_sha256": "e5c97570b62b8fe0f4737ffcb4392485ecb81e25f77028b570c0302a59b69b91",
+  "publication_scope": "Only .reference; prior G designs/code/evidence retained; existing issue body/state and main unchanged. Actual new reference SHA is recorded in issue after publication."
+}
