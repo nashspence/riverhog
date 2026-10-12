@@ -1,47 +1,43 @@
 diff --git a/AGENTS.md b/AGENTS.md
 --- a/AGENTS.md
 +++ b/AGENTS.md
-@@ -112,16 +112,30 @@
+@@ -114,13 +114,27 @@
  
- In short, **replace obsolete pre-v1 database structures without sacrificing durable data or support for future upgrades.**
- 
--## Measure performance without creating gates
-+## Measure performance honestly
+ ## Measure performance without creating gates
  
 -A *performance target* is a goal against which measured work can be compared. Riverhog’s `make profile` reports the target, the observed result, and whether a meaningful comparison was possible. A target miss does not fail profiling. An omitted or noncomparable reference means no comparison, not a passed target.
-+A *performance target* is a goal for measured work, not a product speed guarantee. Record what completed, how long it took, and the conditions of the run. Comparisons require matching conditions and measured results, not theoretical capacity. Incomplete or noncomparable evidence is not a passed target.
++A performance target is a nonbinding goal for measured speed or elapsed time. Unlike a declared growth bound, it is not a contract. Missing a target does not fail validation.
  
 -Keep actual rates visible. Comparisons require verified useful work, complete timing, and a measured reference under matching conditions—not theoretical capacity. Unverified observations stay identified as unverified. Invalid inputs, failed execution, invalid evidence, and reporting errors remain failures.
-+Report functional correctness, applicable growth-contract conformance, and elapsed-time observations separately. A valid timing miss is report-only. A growth-contract violation, failed execution, invalid required evidence, or reporting error remains a validation failure. The profiler cannot downgrade a conformance failure to a timing observation.
++Use `make profile` as the shared entry point for maintained profiling scenarios. Add new scenarios there rather than creating separate developer-facing commands. Their implementations remain with their owners.
  
 -A blocking performance threshold belongs to the qualification or release check that explicitly owns it, not to the profiler or a separate target registry. Existing correctness and resource-safety checks remain binding. The [measurement rules](scripts/performance_measurement.py) and [profiling tests](tests/unit/test_transfer_profile_script.py) define the precise behavior.
-+The [measurement rules](scripts/performance_measurement.py) and [profiling tests](tests/unit/test_transfer_profile_script.py) define the precise reporting behavior; operation owners define growth commitments and their executable witnesses.
++Report verified work, elapsed time, actual rates, and measurement conditions. Compare only against matching measured references. An unavailable comparison is neither a pass nor a failure. Invalid evidence and failed execution remain errors.
  
 -In short, **profiling reports evidence; it does not create performance obligations or release gates.**
-+In short, **keep correctness, growth conformance, and practical speed visible without confusing their meanings.**
- 
++The [measurement rules](scripts/performance_measurement.py) and [profiling tests](tests/unit/test_transfer_profile_script.py) define the precise behavior.
++
++In short, **growth bounds are enforced contracts; performance targets are observations, never gates.**
++
 +## Account for validation evidence
 +
-+Every maintained check-in gate, required CI job, and qualification has an executable work definition in the [shared qualification plan](scripts/ci_qualification.py), with its workload, execution conditions, timing applicability, and applicable growth witnesses. Local validation, CI, and maintained profiling use that same definition without duplicating operation-owned contracts.
++Checks record their results and timing as they run, without repeating work just to measure it. The [shared qualification definitions](scripts/ci_qualification.py) identify the work and its conditions without replacing contracts owned by individual operations.
 +
-+Normal runs automatically record source and workload identity, functional outcome, applicable growth evidence, elapsed time, and any target comparison. Multi-stage qualifications also report phase costs, and complete validation runs report actual total elapsed time. Measurement is part of running the check, not an optional second task.
++Keep correctness, growth-contract conformance, and elapsed-time observations separate. Correctness failures, growth violations, and invalid required evidence fail validation. A valid timing miss does not.
 +
-+An approved numerical timing target is compared when applicable. An explicit maintainer decision that no numerical target applies does not suppress timing or count as a passed target. Unknown applicability, a missing approved target, or missing or invalid required evidence remains unresolved and fails validation where required.
++Report elapsed time even when no numerical target or comparable reference exists. Use credible performance evidence to recommend investigation or improvement. The stronger the evidence and the more serious its likely consequences, the stronger the recommendation may be.
 +
-+Review the evidence before handing work back. Fix functional and growth-contract failures. Investigate timing misses and unavailable comparisons; record the evidence and any explicit maintainer approval to proceed with an identified timing shortfall in GitHub. Opening a follow-up does not grant approval, and timing approval does not waive a growth or correctness obligation.
++Record significant findings and recommendations in GitHub. Performance targets do not create approval-to-proceed conditions or authorize weakening required tests, workloads, or safety limits.
 +
-+Changing a declared growth bound, a reviewed test budget, an approved timing target, its workload, or its applicable conditions requires explicit review and maintainer approval. Do not reset expectations to match a regression, weaken required proof, or change safety timeouts merely to improve a result.
-+
-+In short, **evidence and review are mandatory; conformance failures block validation, while elapsed-time targets remain diagnostic.**
-+
++In short, **validation evidence establishes compliance; performance observations inform judgment.**
+ 
  ## Validate the change you actually deliver
  
- Use the versions of tools and libraries fixed by the repository rather than relying on whatever happens to be installed locally. Follow the [dependency](tests/unit/test_dependency_policy.py) and [image-build policies](tests/unit/test_image_build_graph.py); ship only the runtime content the component needs.
 @@ -141,6 +155,8 @@
  
  After pushing, watch that exact commit’s required GitHub Actions checks through completion. Fix failures before handing work back. A skipped or blocked check is not a pass; report the gap rather than claiming complete validation. Do not remove required coverage or weaken a check merely to make a result green.
  
-+Include functional results, applicable growth-conformance evidence, and the timing review and disposition of every missed target or unavailable comparison in the handoff; green checks alone are not a complete validation report.
++Include correctness results, required growth evidence, and timing observations in the handoff. Record significant performance concerns as evidence-backed recommendations, not validation failures or approval conditions.
 +
  In short, **validate the actual change through every required gate, not a nearby version or a convenient subset.**
  

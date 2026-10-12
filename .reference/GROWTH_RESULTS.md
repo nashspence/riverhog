@@ -1,103 +1,85 @@
-# Integrate functional, growth and timing evidence separately
+# Enforced contracts; advisory performance observations
 
-Authority: #963 comment 6103991666; the current complete #961 issue body
-(two root onboarding documents); #964's owning growth decisions.
-This is a required integration specification, not implemented growth reporting.
-The accompanying source patches implement timing-policy applicability only; they
-do NOT complete growth witness discovery, execution, artifact validation or v1
-qualification. Do not mistake source-extracted patch tests for product conformance.
+The [#963 decision 6125400031](https://github.com/nashspence/riverhog/issues/963#issuecomment-6125400031) and maintainer-approved AGENTS wording supersede earlier
+approved-target / approved-no-target / unresolved policies and target-shortfall
+permission rules. This file explains the corrected implementation boundary.
 
-## Apply source and guide deltas in order
+## Authorities and consequences
 
-The original implementation patch is now `validation-timing.foundation.patch`,
-retained byte-for-byte from reference 832fc5ee. Apply it to its audited source
-63d4a70b, then apply `timing-applicability.patch`. Both are reference input to
-reconcile against current main, not a reason to roll back newer qualification work.
-The old `validation-timing.patch` path is intentionally retired on this revision
-so the obsolete all-work-needs-a-number rule is not applied accidentally.
+| Input or outcome | Meaning | Effect on validation/handoff |
+|---|---|---|
+| Correctness failure | Owned executable requirement violated | Fails |
+| Declared growth-bound violation | Operation contract violated | Fails |
+| Independently declared safety/resource failure | That contract violated | Fails under that owner |
+| Required evidence missing/invalid | Cannot establish the actual required work | Fails |
+| Performance goal missed, even severely | Advisory observation | No failure, hold or permission condition |
+| No numerical goal | Ordinary measurable work | No approval needed; report elapsed time |
+| Comparison unavailable or conditions do not match | Neutral not-compared observation | Neither pass nor failure |
+| Supplied observation fabricated or malformed | Invalid data, not a speed miss | Evidence/reporting error |
+| Incomplete/interrupted execution | Required work not completed | Never a completed correctness/growth pass |
 
-The follow-up replaces `require_runtime_targets` with `require_validation_policy`
-and separates approved-target, approved-no-target and unresolved. The scale work
-retains its approved 600-second target; other real work remains unresolved until
-explicit target/no-target disposition. Test fixtures approve only their test work.
-The reference cannot supply maintainer approvals by creating a default.
+Requiring trustworthy elapsed evidence does not require a goal or a comparison.
+Do not define an optional comparison as required evidence to recreate a speed gate.
+The seriousness of a credible concern controls recommendation strength, never its
+authority. No missed-target waiver, required investigation or resolution, or
+maintainer approval to proceed is required. Significant findings/recommendations
+belong in GitHub; recording them does not create an acceptance obligation.
 
-The **current** `AGENTS.after-onboarding.patch` is rebuilt against the exact
-approved `AGENTS.md` block in #961's current two-root-document issue body.
-First integrate #961's root `README.md` and `AGENTS.md`, removing `docs/`; then
-apply the #963 measurement delta without changing #961's other wording.
-Current approved-guide SHA-256: `1c427d38b88c9a05fe105dea5bcc862efec52ff516233110fa0ef88b43692f44`;
-post-#963 intended SHA-256: `2b951ea6955e15dda3ab30336c0aa623087d8b42e5d819eed0eb1ca2aa5a1df1`.
-Earlier old-guide patches/hashes are historical, not the current patch base.
-Check applicability against the actual installed guide and update executable
-guide integrity, link and policy tests—not just their expected hashes.
+## Executable split in the replacement patch
 
-## Evidence contract to complete in the integrated implementation
+`scripts/ci_qualification.py` remains the shared home of executable work names,
+commands, boundaries and conditions. Internal `scripts/validation_evidence.py`
+contains typed result handling, not another registry or public growth authority.
+`ValidationWork.definition()` excludes the optional target. There is no target
+approval flag, target-presence requirement or unresolved-timing validation state.
+`require_validation_work` checks actual work identity/coverage, not speed goals.
 
-The shared plan identifies required work and references owner declarations and
-witnesses. Owners define normative growth scope, dimensions, assumptions and cost
-bounds. Neither the scheduler nor a generated report is a second declaration
-registry. A newly required operation/witness must not disappear from coverage.
+The run record's optional `advisory_target` is separate from `definition`.
+Changing or removing the current goal cannot invalidate an earlier valid run.
+When present, the recorded goal's number and comparison conditions must be truthful;
+when absent, timing is still reported as not-compared. A supplied comparison is
+checked against its recorded measurement/goal, never treated as a compliance result.
+A matching-condition goal comparison is not a manufactured measured-reference rate.
+Existing make profile measured-reference logic remains with its existing owner.
 
-Record exact source, workload, expected declaration/witness identities and revisions,
-execution conditions, functional exit, each applicable growth witness result,
-measurement completeness, elapsed/phase/aggregate costs and timing comparison.
-Bind evidence to the invocation; reject absent, duplicated, stale, mismatched,
-truncated, malformed or incomplete required growth artifacts. A filename, hash or
-exit 0 alone does not prove the named bound. Consume actual maintained witnesses
-with complete-result and counter assertions at their responsible boundaries.
+The runner executes the work once. Advisory overrun notification recommends
+investigation without interrupting it. `check-evidence` now returns nonzero for
+actual command/growth failures instead of confusing complete failure evidence with
+success. Its `qualification_exit_status` has no data dependency on met/missed/
+not-compared, target seconds, severity or approval. Tests cross these axes.
 
-Growth applicability must be derived/reviewed against owner coverage, not decided
-by the report's author. An explicit no-applicable-growth result is not a claim of
-linear behavior; it cannot hide an in-scope operation lacking a declaration.
-Before declaring v1 acceptance, unresolved owner/declaration coverage is a blocker.
+Growth outcome IDs must match the expected work's `growth_witnesses`. Empty
+bindings do not certify absence of product growth obligations. The injected owner
+collector is an integration seam for verified real artifacts, not arbitrary
+self-reported pass strings. The patch tests coverage/result propagation; integration
+must implement source/condition/declared-witness discovery and verify the actual
+artifacts before calling this seam. False not-applicable cannot hide a required
+bound. #964 supplies the actual operation declarations and counter assertions.
 
-## Required outcome matrix (integration tests, not a new public schema)
+## Preserve these distinctions during integration
 
-| Functional | Required growth/evidence | Timing | Qualification outcome |
-|---|---|---|---|
-| success | complete pass | target met | success |
-| success | complete pass | valid target miss | functional/growth success; timing review required |
-| success | complete pass | explicitly no numerical target | success; record time and not-compared, never target-pass |
-| failure | any | any | failure; never timing-success |
-| success | declared bound violated | any | conformance failure |
-| success | missing/invalid/incomplete witness | any | evidence failure |
-| success | unresolved expected coverage | any | unresolved required validation, not a pass |
-| success | complete pass | missing approved target or unresolved applicability | required policy/evidence failure |
-| interrupted | incomplete | any | incomplete/failure, never target or growth success |
-| success | complete pass | wrong source/workload/conditions | reject required evidence or explicitly not-compare as its owner requires |
+The replacement source patch targets 152d0950 and does not depend on the retired
+patch chain. The guide patch instead targets #961's approved root AGENTS text.
+Do not restore old approvals from historical comments, tests, documentation or
+#964's earlier target/no-target routing. Where those references concern timing
+only, this correction governs; growth/extent/security/release authority is unchanged.
 
-Keep evidence completeness and command/conformance success distinct. The original
-foundation checker returns evidence completeness even for a truthful failed command;
-its consumer MUST continue enforcing the command outcome. Extend consumers so a
-truthfully reported growth failure also cannot pass an aggregate merely because
-its evidence is complete. Timing approval is scoped only to time, not either failure.
+Every maintained check still has known work, automatic trustworthy elapsed data,
+complete execution outcomes, bounded measurement overhead and source/workload
+conditions. Match measured references only when legitimately comparable. Record
+preparation, execution, cleanup and actual parallel aggregate wall time without
+rerunning work just to measure it. Retain failed/interrupted attempts honestly.
+No mandatory numeric target, minimum comparative-run count, target approval status
+or target-miss disposition is needed to begin, validate, hand off or complete work.
+Representative evidence can justify strong recommendations for tuning a goal.
 
-Test altered growth identities, omitted witnesses, no-target claims on targeted
-work, false not-applicable claims, cancellation after partial results, malformed
-counter values, and a timing miss paired with successful/failed growth results.
-Do not let profiler wrappers drop a child growth failure. Functional and growth
-work run once; elapsed measurement wraps them rather than rerunning for profiling.
+The maintained 600-second scale goal and its workload are unchanged and advisory.
+Earlier permission to close despite a miss is historical, not a standing waiver
+mechanism. A miss neither establishes compliance nor prevents it. Targets cannot
+authorize weakening tests, shrinking workloads, hiding phase costs, discarding
+history, raising safety deadlines, or rewriting independently owned resource limits.
 
-## Reporting and adoption
-
-Maintain visible during-run overrun information, summaries and bounded artifacts.
-A target miss never kills work solely because it elapsed. Safety timeouts and
-resource/correctness limits remain independent. Internal timing targets remain
-reviewed, but are not frozen product speed promises. Explicit no-target means
-absence was approved, not that missing evidence is acceptable.
-
-#964 owns algorithmic accounting, counter instrumentation and reviewed work budgets.
-The qualification plan schedules/references these, and normal local/CI runs enforce
-the expected coverage. Keep the large-workload cadence coverage-driven rather than
-making every check run an expensive size ladder. Existing proof stays until its
-owner approves an equivalent replacement.
-
-#961's current two-document onboarding precedes the #963 guide delta.
-Coordinated #963/#964 preparation is allowed; the shared machinery (including
-missing/failed growth-witness propagation) precedes dependent #964 acceptance.
-#964 owns real operation-by-operation bound selection, source counters and
-executable product witnesses; #963 owns their shared evidence-consumption path. #960's timing closeout
-disposition remains limited and its profile/fixture unchanged. Full rollout still
-requires entrypoint/matrix/platform/aggregate integration, approved applicability,
-locked gates and independent exact-SHA checks; none is claimed by this reference.
+Keep #961 -> #963 foundation -> dependent #964 integration. Complete real local/CI/
+phase/aggregate adapters and the operation witness-consumption path, then normal
+source-bound checks. These are implementation/evidence requirements, not a request
+to attain any speed target. Normal independent release/provider permissions remain.

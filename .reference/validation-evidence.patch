@@ -1,0 +1,936 @@
+diff --git a/scripts/ci_qualification.py b/scripts/ci_qualification.py
+index b1eed5884a74c84b06ab45b73184a6dfeb41f0be..e87a887fe742d1ec2348446eb55c8966e1e7c82a 100644
+--- a/scripts/ci_qualification.py
++++ b/scripts/ci_qualification.py
+@@ -18,6 +18,7 @@ import yaml
+ from riverhog_canonical_json import canonical_json_bytes
+ 
+ from scripts.ci_unit import SHARDS
++from scripts.validation_evidence import ValidationWork
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ REPOSITORY_TARGETS = (
+@@ -49,6 +50,68 @@ NATIVE_TESTS = (
+ )
+ 
+ 
++def validation_workloads() -> tuple[ValidationWork, ...]:
++    """Derive required work; optional speed goals do not authorize or gate execution."""
++    work = [ValidationWork(name, ("make", name)) for name in REPOSITORY_TARGETS]
++    work.extend(
++        ValidationWork(f"unit-{name}", ("make", "unit-shard", f"UNIT_SHARD={name}"))
++        for name in SHARDS
++    )
++    work.extend(
++        ValidationWork(f"image-{name}", ("make", "image-qualification", f"IMAGE_GROUP={name}"))
++        for name in IMAGE_GROUPS
++    )
++    work.extend(
++        ValidationWork(f"compose-{name}", ("make", "compose-shard", f"COMPOSE_LANE={name}"))
++        for name in COMPOSE_LANES
++    )
++    work.extend(
++        ValidationWork(name, ("make", name))
++        for name in ("unit", "build", "client-platform-qualification", "linux-qualification")
++    )
++    work.append(
++        ValidationWork("check-in", ("make", "-j1", "lint", "unit", "dist-smoke", "build"))
++    )
++    work.append(
++        ValidationWork(
++            "stove0-scale",
++            (
++                "make",
++                "--no-print-directory",
++                "stove0-scale-qualification",
++                "STOVE0_SCALE_FILES=128",
++                "STOVE0_SCALE_AUDIO_FRAMES=2000",
++                "RIVERHOG_CI_IMAGES_PREBUILT=1",
++            ),
++            target_seconds=600,
++            boundary="complete-lifecycle-after-verified-image-preparation",
++            conditions=(
++                ("audio_files", "128"),
++                ("audio_frames", "2000"),
++                ("sidecar_files", "1"),
++                ("images", "prepared-and-verified-at-the-tested-source"),
++            ),
++        )
++    )
++    if len({item.name for item in work}) != len(work):
++        raise ValueError("each validation workload must have exactly one definition")
++    return tuple(work)
++
++
++def validation_work(name: str) -> ValidationWork:
++    for work in validation_workloads():
++        if work.name == name:
++            return work
++    raise ValueError(f"unknown maintained validation workload: {name}")
++
++
++def require_validation_work(names: Sequence[str]) -> tuple[ValidationWork, ...]:
++    """Require known, unique work identities, never numerical target approval."""
++    if not names or len(set(names)) != len(names):
++        raise ValueError("expected workloads must be nonempty and unique")
++    return tuple(validation_work(name) for name in names)
++
++
+ def run(command: Sequence[str], *, env: dict[str, str] | None = None) -> None:
+     subprocess.run(command, cwd=ROOT, env=env, check=True)
+ 
+diff --git a/scripts/ci_timing.py b/scripts/ci_timing.py
+index 4ed0b91c2bbfbd348d0cfc32d1860443c3504f69..a81e5b8e81c848b181fdb08ef5b958e0833e224d 100644
+--- a/scripts/ci_timing.py
++++ b/scripts/ci_timing.py
+@@ -5,17 +5,23 @@ from __future__ import annotations
+ import argparse
+ import math
+ import os
++import re
+ import subprocess
+ import sys
+ import time
+ from collections.abc import Generator, Sequence
+ from datetime import UTC, datetime
+ from pathlib import Path
++from threading import Timer
+ from typing import Any
+ from uuid import uuid4
+ 
+ import pytest
+-from riverhog_canonical_json import canonical_json_bytes
++from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
++
++
++if __package__ in (None, ""):
++    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+ 
+ 
+ def source_identity(root: Path) -> dict[str, object]:
+@@ -109,6 +115,119 @@ def _positive_seconds(value: str) -> float:
+     return seconds
+ 
+ 
++def validation_comparison(
++    definition: dict[str, object], *, elapsed: object, exit_status: object,
++    source_clean: object, target: object = None,
++) -> dict[str, object]:
++    from scripts.validation_evidence import observe_performance
++
++    return observe_performance(
++        definition, elapsed=elapsed, exit_status=exit_status,
++        source_clean=source_clean, target=target,
++    )
++
++
++def execute_validation(
++    name: str, output: Path, run_id: str, *, growth_collector: Any = None
++) -> int:
++    """Run exactly the shared plan's command and retain start and terminal evidence."""
++    from scripts.ci_qualification import ROOT, validation_work
++
++    if re.fullmatch(r"[A-Za-z0-9_.-]{1,128}", run_id) is None:
++        raise ValueError("invalid validation run identifier")
++    work = validation_work(name)
++    if output.exists():
++        raise ValueError("validation evidence must not overwrite another invocation")
++    source = source_identity(ROOT)
++    definition = work.definition()
++    record: dict[str, object] = {
++        "format": "riverhog-ci-validation-evidence/v2",
++        **source,
++        "run_id": run_id,
++        "definition": definition,
++        "state": "running",
++        "advisory_target": work.advisory_target(),
++    }
++    # A killed parent leaves an incomplete record, not an absent run or false success.
++    write_record(output, record)
++    env = {**os.environ, "RIVERHOG_CI_LANE": name, "RIVERHOG_CI_RUN_ID": run_id}
++    started = time.monotonic()
++    timer = None
++    if work.target_seconds is not None:
++        timer = Timer(
++            work.target_seconds,
++            lambda: print(
++                f"Advisory speed goal exceeded while {name} is running; investigation recommended.",
++                file=sys.stderr,
++                flush=True,
++            ),
++        )
++        timer.daemon = True
++        timer.start()
++    state = "completed"
++    status = 2
++    try:
++        status = subprocess.run(work.command, cwd=ROOT, env=env, check=False).returncode
++    except OSError:
++        state = "launch-failed"
++    except KeyboardInterrupt:
++        state, status = "interrupted", 130
++    finally:
++        if timer is not None:
++            timer.cancel()
++        growth_results = {}
++        if growth_collector is not None:
++            try:
++                growth_results = growth_collector(work, run_id)
++            except Exception:
++                state, status = "evidence-failed", status or 2
++        elapsed = time.monotonic() - started
++        after = source_identity(ROOT)
++        comparison = validation_comparison(
++            definition,
++            elapsed=elapsed,
++            exit_status=status,
++            source_clean=source.get("source_clean") is True and after == source,
++            target=work.advisory_target(),
++        )
++        record.update(
++            growth_results=growth_results,
++            state=state,
++            source_end=after,
++            elapsed_seconds=elapsed,
++            exit_status=status,
++            profiling_target=comparison,
++        )
++        write_record(output, record)
++    print(
++        f"{name}: {elapsed:.3f}s; target {work.target_seconds}; "
++        f"{comparison['status']} ({comparison['reason']}; report only). Evidence: {output}",
++        file=sys.stderr,
++    )
++    if state == "completed":
++        try:
++            report = check_validation_evidence(
++                [output], expected=[name], source_sha=str(source["source_sha"]), run_id=run_id
++            )
++            return status or int(report["qualification_exit_status"])
++        except (ValueError, OSError, KeyError, TypeError):
++            return status or 2
++    return status
++
++
++def check_validation_evidence(
++    paths: Sequence[Path], *, expected: Sequence[str], source_sha: str, run_id: str
++) -> dict[str, object]:
++    """Check required evidence and command/growth outcomes; optional speed is advisory."""
++    from scripts.ci_qualification import require_validation_work
++    from scripts.validation_evidence import validate_evidence_records
++
++    return validate_evidence_records(
++        [require_canonical_json(path.read_bytes()) for path in paths],
++        expected=require_validation_work(expected), source_sha=source_sha, run_id=run_id,
++    )
++
++
+ def main(argv: Sequence[str] | None = None) -> int:
+     parser = argparse.ArgumentParser(description=__doc__)
+     commands = parser.add_subparsers(dest="command", required=True)
+@@ -123,6 +242,15 @@ def main(argv: Sequence[str] | None = None) -> int:
+         help="Report an under-duration target without changing the command exit status.",
+     )
+     run.add_argument("argv", nargs=argparse.REMAINDER)
++    execute = commands.add_parser("execute", help="Run one exact maintained validation workload.")
++    execute.add_argument("--workload", required=True)
++    execute.add_argument("--output", type=Path, required=True)
++    execute.add_argument("--run-id", default=None)
++    check = commands.add_parser("check-evidence", help="Require complete evidence for one run.")
++    check.add_argument("--workload", action="append", required=True)
++    check.add_argument("--source-sha", required=True)
++    check.add_argument("--run-id", required=True)
++    check.add_argument("paths", nargs="+", type=Path)
+     phase = commands.add_parser("phase", help="Append a completed shell lifecycle phase.")
+     phase.add_argument("--lane", required=True)
+     phase.add_argument("--name", required=True)
+@@ -130,6 +258,20 @@ def main(argv: Sequence[str] | None = None) -> int:
+     phase.add_argument("--status", required=True, type=int)
+     phase.add_argument("--output", required=True, type=Path)
+     args = parser.parse_args(argv)
++    if args.command in {"execute", "check-evidence"}:
++        try:
++            if args.command == "execute":
++                return execute_validation(args.workload, args.output, args.run_id or uuid4().hex)
++            report = check_validation_evidence(
++                args.paths, expected=args.workload, source_sha=args.source_sha, run_id=args.run_id
++            )
++            print(canonical_json_bytes(report).decode())
++            return int(report["qualification_exit_status"])
++        except (ValueError, OSError, KeyError, TypeError):
++            print(
++                "validation timing failed: invalid or incomplete required evidence", file=sys.stderr
++            )
++            return 2
+     identity = source_identity(Path(__file__).resolve().parents[1])
+     if args.command == "phase":
+         args.output.parent.mkdir(parents=True, exist_ok=True)
+diff --git a/scripts/transfer_profile.py b/scripts/transfer_profile.py
+index a02fd354978780bc3568c88c53c72567e99a67f0..682525e9a7bd9e2c3b990fa596217a45c1670355 100755
+--- a/scripts/transfer_profile.py
++++ b/scripts/transfer_profile.py
+@@ -148,7 +148,7 @@ def _parser() -> argparse.ArgumentParser:
+             "receives RIVERHOG_PERFORMANCE_RUN_ID and RIVERHOG_PERFORMANCE_RECEIPT; a successful "
+             "exit without an exact verified-completion receipt remains an observation. "
+             "A target or comparison is report-only. For the maintained 128-file lifecycle, "
+-            "use --scenario stove0-scale; it records a 600-second target and measures image "
++            "use --scenario stove0-scale; it uses the maintained target and measures image "
+             "preparation separately."
+         ),
+     )
+@@ -224,6 +224,11 @@ def _profile_stove0_scale(output: Path) -> int:
+     """Report the maintained scale fixture against a non-failing duration target."""
+     from riverhog_canonical_json import canonical_json_bytes
+ 
++    from scripts.ci_qualification import require_validation_work
++    from scripts.ci_timing import check_validation_evidence
++
++    work = require_validation_work(["stove0-scale"])[0]
++    conditions = dict(work.conditions)
+     run_id = uuid4().hex
+     timing_script = Path(__file__).with_name("ci_timing.py")
+     directory = output / run_id
+@@ -261,35 +266,36 @@ def _profile_stove0_scale(output: Path) -> int:
+                 [
+                     sys.executable,
+                     str(timing_script),
+-                    "run",
+-                    "--lane",
+-                    "stove0-scale-profile",
++                    "execute",
++                    "--workload",
++                    work.name,
++                    "--run-id",
++                    run_id,
+                     "--output",
+                     str(directory / "lifecycle.json"),
+-                    "--target-seconds",
+-                    "600",
+-                    "--",
+-                    "make",
+-                    "--no-print-directory",
+-                    "stove0-scale-qualification",
+-                    "STOVE0_SCALE_FILES=128",
+-                    "STOVE0_SCALE_AUDIO_FRAMES=2000",
+-                    "RIVERHOG_CI_IMAGES_PREBUILT=1",
+-                    f"RIVERHOG_CI_TIMING_DIR={directory / 'phases'}",
+                 ],
+                 check=False,
+                 stdout=log,
+                 stderr=subprocess.STDOUT,
++                env={**os.environ, "RIVERHOG_CI_TIMING_DIR": str(directory / "phases")},
+             )
+         status = completed.returncode
+         lifecycle_timing = json.loads((directory / "lifecycle.json").read_bytes())
++        evidence = check_validation_evidence(
++            [directory / "lifecycle.json"],
++            expected=[work.name],
++            source_sha=image_timing["source_sha"],
++            run_id=run_id,
++        )
++        if (lifecycle_timing["exit_status"] or evidence["qualification_exit_status"]) != status:
++            raise performance.PerformanceError("lifecycle status differs from timing evidence")
+     comparison = (
+         lifecycle_timing["profiling_target"]
+         if lifecycle_timing is not None
+         else {
+             "status": "not-compared",
+             "reason": "image-preparation-failed",
+-            "target_seconds": 600,
++            "target_seconds": work.target_seconds,
+             "report_only": True,
+         }
+     )
+@@ -303,10 +309,10 @@ def _profile_stove0_scale(output: Path) -> int:
+         "target": {
+             "scenario": "stove0-scale",
+             "workload": "many-small-files",
+-            "audio_files": 128,
+-            "audio_frames": 2000,
+-            "sidecar_files": 1,
+-            "elapsed_seconds": 600,
++            "audio_files": int(conditions["audio_files"]),
++            "audio_frames": int(conditions["audio_frames"]),
++            "sidecar_files": int(conditions["sidecar_files"]),
++            "elapsed_seconds": work.target_seconds,
+         },
+         "observed": {
+             "image_preparation_elapsed_seconds": image_timing["elapsed_seconds"],
+@@ -318,7 +324,10 @@ def _profile_stove0_scale(output: Path) -> int:
+         "comparison": comparison,
+     }
+     (directory / "profile.json").write_bytes(canonical_json_bytes(report))
+-    print(f"Profiling target {comparison['status']} (under 600s; report only).", file=sys.stderr)
++    print(
++        f"Profiling target {comparison['status']} (under {work.target_seconds}s; report only).",
++        file=sys.stderr,
++    )
+     print(canonical_json_bytes(report).decode(), flush=True)
+     return status
+ 
+diff --git a/scripts/validation_evidence.py b/scripts/validation_evidence.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..93258bbff2cec8c25c8a8e42bbb498360a39fdd9
+--- /dev/null
++++ b/scripts/validation_evidence.py
+@@ -0,0 +1,204 @@
++"""Validation authority and advisory observations have separate data and result paths."""
++
++from __future__ import annotations
++
++import math
++import re
++from collections.abc import Mapping, Sequence
++from dataclasses import dataclass
++
++
++def _seconds(value: object, *, positive: bool) -> int | float:
++    if type(value) not in (int, float):
++        raise ValueError("seconds must be finite numeric measurement data")
++    try:
++        valid = math.isfinite(value) and (value > 0 if positive else value >= 0)
++    except OverflowError:
++        valid = False
++    if not valid:
++        raise ValueError("seconds must be finite and in the measurement domain")
++    return value
++
++
++@dataclass(frozen=True)
++class ValidationWork:
++    """Required work; an optional speed goal never enters its required definition."""
++
++    name: str
++    command: tuple[str, ...]
++    target_seconds: float | None = None
++    boundary: str = "command-including-owned-preparation-and-cleanup"
++    conditions: tuple[tuple[str, str], ...] = ()
++    growth_witnesses: tuple[str, ...] = ()
++
++    def __post_init__(self) -> None:
++        if not isinstance(self.name, str) or not self.name or not self.command or any(
++            not isinstance(item, str) or not item for item in self.command
++        ):
++            raise ValueError("validation work requires a name and a command")
++        if self.target_seconds is not None:
++            _seconds(self.target_seconds, positive=True)
++        if not isinstance(self.boundary, str) or not self.boundary or (
++            len(dict(self.conditions)) != len(self.conditions)
++        ):
++            raise ValueError("validation work requires an exact boundary and unique conditions")
++        if any(not key or not isinstance(value, str) for key, value in self.conditions):
++            raise ValueError("invalid measured-work conditions")
++        if len(set(self.growth_witnesses)) != len(self.growth_witnesses) or any(
++            not isinstance(item, str) or not item for item in self.growth_witnesses
++        ):
++            raise ValueError("growth witness bindings must be nonempty and unique")
++
++    def definition(self) -> dict[str, object]:
++        """Only executable work and independently owned obligations bind coverage."""
++        return {
++            "name": self.name,
++            "command": list(self.command),
++            "boundary": self.boundary,
++            "conditions": dict(self.conditions),
++            "growth_witnesses": list(self.growth_witnesses),
++        }
++
++    def advisory_target(self) -> dict[str, object] | None:
++        if self.target_seconds is None:
++            return None
++        return {
++            "target_seconds": self.target_seconds,
++            "boundary": self.boundary,
++            "conditions": dict(self.conditions),
++        }
++
++
++def observe_performance(
++    definition: Mapping[str, object],
++    *,
++    elapsed: object,
++    exit_status: object,
++    source_clean: object,
++    target: object = None,
++) -> dict[str, object]:
++    """An unavailable comparison is neutral; malformed supplied data is an error."""
++    measured = _seconds(elapsed, positive=False)
++    if type(exit_status) is not int or type(source_clean) is not bool:
++        raise ValueError("invalid validation completion state")
++    seconds = None
++    if target is not None:
++        if not isinstance(target, dict) or set(target) != {
++            "target_seconds", "boundary", "conditions"
++        }:
++            raise ValueError("malformed advisory target observation")
++        seconds = _seconds(target["target_seconds"], positive=True)
++        if not isinstance(target["boundary"], str) or not target["boundary"]:
++            raise ValueError("invalid advisory measurement boundary")
++        conditions = target["conditions"]
++        if not isinstance(conditions, dict) or any(
++            not isinstance(k, str) or not isinstance(v, str) for k, v in conditions.items()
++        ):
++            raise ValueError("invalid advisory comparison conditions")
++    reason = "completed-command"
++    if exit_status:
++        reason = "command-failed"
++    elif not source_clean:
++        reason = "source-unverified"
++    elif target is None:
++        reason = "no-target"
++    elif (
++        target["boundary"] != definition["boundary"]
++        or target["conditions"] != definition["conditions"]
++    ):
++        reason = "conditions-not-comparable"
++    status = "not-compared"
++    if reason == "completed-command":
++        assert seconds is not None
++        status = "met" if measured < seconds else "missed"
++    return {
++        "report_only": True,
++        "target_seconds": seconds,
++        "status": status,
++        "reason": reason,
++    }
++
++
++def validate_evidence_records(
++    records: Sequence[object],
++    *,
++    expected: Sequence[ValidationWork],
++    source_sha: str,
++    run_id: str,
++) -> dict[str, object]:
++    """Validate required evidence and propagate contract outcomes, never target outcomes.
++
++    Growth results enter after the owner adapter has verified its actual artifacts.
++    This checks expected outcome coverage, not the truth of an arbitrary claimed bound.
++    """
++    if re.fullmatch(r"[0-9a-f]{40}", source_sha) is None or not run_id:
++        raise ValueError("exact expected source and run identity are required")
++    definitions = {work.name: work.definition() for work in expected}
++    if not expected or len(definitions) != len(expected):
++        raise ValueError("expected workloads must be nonempty and unique")
++    required_fields = {
++        "format", "source_sha", "source_clean", "source_end", "run_id", "definition",
++        "state", "elapsed_seconds", "exit_status", "growth_results",
++    }
++    advisory_fields = {"advisory_target", "profiling_target"}
++    seen: set[str] = set()
++    comparisons: dict[str, object] = {}
++    functional: dict[str, int] = {}
++    growth: dict[str, object] = {}
++    for row in records:
++        if not isinstance(row, dict) or not required_fields <= row.keys() or (
++            row.keys() - required_fields - advisory_fields
++        ) or row.get("format") != "riverhog-ci-validation-evidence/v2":
++            raise ValueError("invalid validation evidence format")
++        if row["source_sha"] != source_sha or row["run_id"] != run_id:
++            raise ValueError("validation evidence source or run differs")
++        definition = row["definition"]
++        if not isinstance(definition, dict):
++            raise ValueError("missing executable workload definition")
++        name = definition.get("name")
++        if not isinstance(name, str) or name not in definitions or name in seen:
++            raise ValueError("unexpected or duplicate validation workload")
++        if definition != definitions[name]:
++            raise ValueError("required workload, boundary, conditions or growth bindings differ")
++        if row["state"] != "completed":
++            raise ValueError("validation execution is incomplete")
++        if row["source_clean"] is not True or row["source_end"] != {
++            "source_sha": source_sha, "source_clean": True
++        }:
++            raise ValueError("required validation source is unverified or changed")
++        observation = observe_performance(
++            definition,
++            elapsed=row["elapsed_seconds"],
++            exit_status=row["exit_status"],
++            source_clean=row["source_clean"],
++            target=row.get("advisory_target"),
++        )
++        # A supplied observation must be truthful. Its outcome is never a gate.
++        if "profiling_target" in row and (
++            not isinstance(row["profiling_target"], dict)
++            or row["profiling_target"].get("report_only") is not True
++            or row["profiling_target"] != observation
++        ):
++            raise ValueError("supplied advisory observation contradicts measured evidence")
++        outcomes = row["growth_results"]
++        if not isinstance(outcomes, dict) or set(outcomes) != set(definition["growth_witnesses"]):
++            raise ValueError("missing or unexpected required growth evidence")
++        if any(value not in ("pass", "fail") for value in outcomes.values()):
++            raise ValueError("invalid or incomplete required growth result")
++        seen.add(name)
++        functional[name] = row["exit_status"]
++        growth[name] = dict(outcomes)
++        comparisons[name] = observation
++    if seen != definitions.keys():
++        missing = ", ".join(sorted(definitions.keys() - seen))
++        raise ValueError(f"missing validation evidence: {missing}")
++    contract_failed = any(functional.values()) or any(
++        outcome == "fail" for outcomes in growth.values() for outcome in outcomes.values()
++    )
++    return {
++        "evidence_complete": True,
++        "functional_exit_status": functional,
++        "growth_results": growth,
++        "qualification_exit_status": 1 if contract_failed else 0,
++        "comparisons": comparisons,
++    }
+diff --git a/tests/unit/test_transfer_profile_script.py b/tests/unit/test_transfer_profile_script.py
+index ca4a432fe2da226b7d811297c792d0c62613de91..8edac74fc3b13a2ca3f8f52eff1211916f2cc5ef 100644
+--- a/tests/unit/test_transfer_profile_script.py
++++ b/tests/unit/test_transfer_profile_script.py
+@@ -607,6 +607,8 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
+     seconds: int | None,
+     comparison: str,
+ ) -> None:
++    from scripts.ci_qualification import validation_work
++
+     module = load_script()
+     calls = []
+     outcomes = iter([preparation, lifecycle])
+@@ -622,6 +624,15 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
+             "exit_status": outcome,
+         }
+         if len(calls) == 2:
++            timing.update(
++                format="riverhog-ci-validation-evidence/v2",
++                advisory_target=validation_work("stove0-scale").advisory_target(),
++                growth_results={},
++                run_id=arguments[arguments.index("--run-id") + 1],
++                definition=validation_work("stove0-scale").definition(),
++                state="completed",
++                source_end={"source_sha": "a" * 40, "source_clean": True},
++            )
+             timing["profiling_target"] = {
+                 "report_only": True,
+                 "target_seconds": 600,
+@@ -668,14 +679,14 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
+         return
+     assert len(calls) == 2
+     execution = calls[1]
+-    assert execution[execution.index("--target-seconds") + 1] == "600"
++    assert "--target-seconds" not in execution and "--" not in execution
++    assert execution[2:5] == ["execute", "--workload", "stove0-scale"]
+     assert Path(execution[execution.index("--output") + 1]) == images.parent / "lifecycle.json"
+-    assert execution[execution.index("--") + 1 :] == [
++    assert validation_work("stove0-scale").command == (
+         "make",
+         "--no-print-directory",
+         "stove0-scale-qualification",
+         "STOVE0_SCALE_FILES=128",
+         "STOVE0_SCALE_AUDIO_FRAMES=2000",
+         "RIVERHOG_CI_IMAGES_PREBUILT=1",
+-        f"RIVERHOG_CI_TIMING_DIR={images.parent / 'phases'}",
+-    ]
++    )
+diff --git a/tests/unit/test_validation_evidence.py b/tests/unit/test_validation_evidence.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..eb41fb5ae066bb43d04d0c083c0cb8b7c4045c93
+--- /dev/null
++++ b/tests/unit/test_validation_evidence.py
+@@ -0,0 +1,178 @@
++from __future__ import annotations
++
++import copy
++from dataclasses import replace
++
++import pytest
++
++from scripts.validation_evidence import ValidationWork, observe_performance, validate_evidence_records
++
++SOURCE = "a" * 40
++RUN = "fixed-invocation"
++
++
++def row(work, seconds=601, status=0, growth=None):
++    return {
++        "format": "riverhog-ci-validation-evidence/v2",
++        "source_sha": SOURCE, "source_clean": True,
++        "source_end": {"source_sha": SOURCE, "source_clean": True},
++        "run_id": RUN, "definition": work.definition(), "state": "completed",
++        "elapsed_seconds": seconds, "exit_status": status,
++        "growth_results": {} if growth is None else growth,
++        "advisory_target": work.advisory_target(),
++    }
++
++
++def check(work, record):
++    return validate_evidence_records([record], expected=[work], source_sha=SOURCE, run_id=RUN)
++
++
++@pytest.mark.parametrize("target", [None, 1, 600, 1000000000])
++@pytest.mark.parametrize("seconds", [0, 600, 601, 1e12])
++def test_valid_speed_observations_never_change_qualification(target, seconds):
++    work = ValidationWork("test", ("true",), target)
++    result = check(work, row(work, seconds))
++    assert result["qualification_exit_status"] == 0
++    assert result["evidence_complete"] is True
++    comparison = result["comparisons"]["test"]
++    assert comparison["report_only"] is True
++    assert comparison["status"] == (
++        "not-compared" if target is None else "met" if seconds < target else "missed"
++    )
++
++
++def test_goal_does_not_enter_required_work_definition():
++    work = ValidationWork("test", ("true",), 600)
++    assert work.definition() == replace(work, target_seconds=None).definition()
++    assert work.definition() == replace(work, target_seconds=1).definition()
++    assert "target_seconds" not in work.definition()
++    assert "timing_policy" not in work.definition()
++
++
++@pytest.mark.parametrize("new_target", [None, 1, 100000])
++def test_changed_or_removed_current_goal_never_invalidates_prior_evidence(new_target):
++    measured_work = ValidationWork("test", ("true",), 600)
++    result = check(replace(measured_work, target_seconds=new_target), row(measured_work))
++    assert result["qualification_exit_status"] == 0
++    assert result["comparisons"]["test"]["status"] == "missed"
++
++
++def test_target_and_comparison_metadata_are_optional():
++    work = ValidationWork("test", ("true",), 600)
++    record = row(work)
++    del record["advisory_target"]
++    result = check(work, record)
++    assert result["qualification_exit_status"] == 0
++    assert result["comparisons"]["test"]["reason"] == "no-target"
++
++
++@pytest.mark.parametrize("key,value", [("conditions", {"hardware": "different"}), ("boundary", "other-phase")])
++def test_noncomparable_advisory_goal_is_neutral(key, value):
++    work = ValidationWork("test", ("true",), 600)
++    record = row(work)
++    record["advisory_target"][key] = value
++    result = check(work, record)
++    assert result["qualification_exit_status"] == 0
++    assert result["comparisons"]["test"]["reason"] == "conditions-not-comparable"
++
++
++@pytest.mark.parametrize("target", [None, 600])
++@pytest.mark.parametrize("code", [1, 7, -9, 130])
++def test_command_failure_is_independent_of_goal(target, code):
++    work = ValidationWork("test", ("false",), target)
++    result = check(work, row(work, 1, code))
++    assert result["qualification_exit_status"] != 0
++    assert result["functional_exit_status"] == {"test": code}
++    assert result["comparisons"]["test"]["reason"] == "command-failed"
++
++
++@pytest.mark.parametrize("target", [None, 600])
++@pytest.mark.parametrize("outcome", ["pass", "fail"])
++def test_required_growth_result_is_independent_of_goal(target, outcome):
++    work = ValidationWork("test", ("true",), target, growth_witnesses=("owner/bound",))
++    result = check(work, row(work, growth={"owner/bound": outcome}))
++    assert result["qualification_exit_status"] == (1 if outcome == "fail" else 0)
++
++
++@pytest.mark.parametrize("growth", [{}, {"owner/bound": "missing"}, {"owner/bound": "pass", "extra": "pass"}, None])
++def test_missing_or_invalid_required_growth_result_remains_error(growth):
++    work = ValidationWork("test", ("true",), growth_witnesses=("owner/bound",))
++    record = row(work)
++    record["growth_results"] = growth
++    with pytest.raises(ValueError, match="growth"):
++        check(work, record)
++
++
++@pytest.mark.parametrize("field,value", [
++    ("source_sha", "b" * 40), ("run_id", "wrong"), ("source_clean", False),
++    ("state", "running"), ("state", "interrupted"), ("state", "launch-failed"),
++    ("exit_status", True), ("elapsed_seconds", -1), ("elapsed_seconds", True),
++    ("elapsed_seconds", float("nan")), ("elapsed_seconds", float("inf")),
++    ("source_end", {"source_sha": "b" * 40, "source_clean": True}),
++])
++def test_required_execution_measurement_and_identity_integrity_still_fail(field, value):
++    work = ValidationWork("test", ("true",))
++    record = row(work)
++    record[field] = value
++    with pytest.raises(ValueError):
++        check(work, record)
++
++
++@pytest.mark.parametrize("field,value", [
++    ("command", ["different"]), ("boundary", "subset"), ("conditions", {"changed": "yes"}),
++    ("growth_witnesses", ["silently-replaced"]),
++])
++def test_real_work_contract_cannot_be_rewritten(field, value):
++    work = ValidationWork("test", ("true",))
++    record = row(work)
++    record["definition"][field] = value
++    with pytest.raises(ValueError, match="required workload"):
++        check(work, record)
++
++
++@pytest.mark.parametrize("target", [0, -1, True, "600", float("inf"), float("nan"), 10**1000])
++def test_malformed_supplied_target_is_data_error_not_a_miss(target):
++    with pytest.raises(ValueError):
++        ValidationWork("test", ("true",), target)
++
++
++def test_fabricated_successful_comparison_is_invalid_evidence():
++    work = ValidationWork("test", ("true",), 600)
++    record = row(work)
++    record["profiling_target"] = {"report_only": True, "status": "met"}
++    with pytest.raises(ValueError, match="contradicts"):
++        check(work, record)
++
++
++def test_neutral_comparison_is_not_required_evidence_absence():
++    work = ValidationWork("test", ("true",))
++    record = row(work)
++    record["profiling_target"] = observe_performance(
++        work.definition(), elapsed=601, exit_status=0, source_clean=True
++    )
++    assert check(work, record)["qualification_exit_status"] == 0
++    del record["elapsed_seconds"]
++    with pytest.raises(ValueError):
++        check(work, record)
++
++
++def test_exact_work_coverage_and_nonmutation():
++    a, b = ValidationWork("a", ("true",)), ValidationWork("b", ("true",))
++    record = row(a)
++    original = copy.deepcopy(record)
++    with pytest.raises(ValueError, match="missing validation evidence"):
++        validate_evidence_records([record], expected=[a, b], source_sha=SOURCE, run_id=RUN)
++    with pytest.raises(ValueError, match="duplicate"):
++        validate_evidence_records([record, record], expected=[a], source_sha=SOURCE, run_id=RUN)
++    assert record == original
++
++
++def test_bad_report_only_flag_is_data_error_not_target_authority():
++    work = ValidationWork("test", ("true",))
++    record = row(work)
++    record["profiling_target"] = observe_performance(
++        work.definition(), elapsed=601, exit_status=0, source_clean=True
++    )
++    record["profiling_target"]["report_only"] = 1
++    with pytest.raises(ValueError, match="contradicts"):
++        check(work, record)
+diff --git a/tests/unit/test_validation_timing_policy.py b/tests/unit/test_validation_timing_policy.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..7c774795438c5bd880b86f1ca59f16e967ad4147
+--- /dev/null
++++ b/tests/unit/test_validation_timing_policy.py
+@@ -0,0 +1,118 @@
++from __future__ import annotations
++
++import json
++import subprocess
++import sys
++from types import SimpleNamespace
++
++import pytest
++from riverhog_canonical_json import canonical_json_bytes
++
++from scripts import ci_qualification as qualification
++from scripts import ci_timing as timing
++from tests.unit.test_validation_evidence import RUN, SOURCE, row
++
++
++@pytest.mark.parametrize("name", ["lint", "unit", "build", "stove0-scale"])
++def test_required_work_needs_no_target_or_approval_state(name):
++    result = qualification.require_validation_work([name])
++    assert result[0].name == name
++    assert "timing_policy" not in result[0].definition()
++
++
++def test_new_known_work_is_immediately_measurable_without_target(monkeypatch):
++    monkeypatch.setattr(qualification, "REPOSITORY_TARGETS", ("new-proof",))
++    assert qualification.require_validation_work(["new-proof"])[0].target_seconds is None
++
++
++@pytest.mark.parametrize("names", [(), ("lint", "lint"), ("unregistered",)])
++def test_invalid_actual_work_coverage_is_still_rejected(names):
++    with pytest.raises(ValueError):
++        qualification.require_validation_work(names)
++
++
++@pytest.mark.parametrize("seconds", [1, 601, 1e12])
++@pytest.mark.parametrize("target", [None, 600])
++@pytest.mark.parametrize("code,growth", [(0, "pass"), (7, "pass"), (0, "fail")])
++def test_check_cli_never_promotes_target_into_exit_status(tmp_path, monkeypatch, seconds, target, code, growth):
++    work = qualification.ValidationWork("test", ("true",), target, growth_witnesses=("owner/bound",))
++    monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
++    path = tmp_path / "run.json"
++    path.write_bytes(canonical_json_bytes(row(work, seconds, code, {"owner/bound": growth})))
++    status = timing.main([
++        "check-evidence", "--workload", work.name, "--source-sha", SOURCE,
++        "--run-id", RUN, str(path),
++    ])
++    assert status == (1 if code or growth == "fail" else 0)
++
++
++def test_cli_evidence_absence_not_optional_target_absence_fails(tmp_path, monkeypatch):
++    work = qualification.ValidationWork("test", ("true",))
++    monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
++    path = tmp_path / "run.json"
++    path.write_bytes(canonical_json_bytes(row(work)))
++    args = ["check-evidence", "--workload", work.name, "--source-sha", SOURCE, "--run-id", RUN, str(path)]
++    assert timing.main(args) == 0
++    path.unlink()
++    assert timing.main(args) == 2
++
++
++@pytest.mark.parametrize("target", [None, 600])
++@pytest.mark.parametrize("growth", ["pass", "fail", "missing"])
++def test_runner_records_once_without_speed_gate_and_preserves_growth(tmp_path, monkeypatch, target, growth, capsys):
++    work = qualification.ValidationWork("test", ("true",), target, growth_witnesses=("bound",))
++    monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
++    monkeypatch.setattr(timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True})
++    ticks = iter([0.0, 1e9])
++    monkeypatch.setattr(timing, "time", SimpleNamespace(monotonic=lambda: next(ticks)))
++    timers, calls = [], []
++    class InstantTimer:
++        def __init__(self, seconds, callback):
++            self.callback, self.cancelled = callback, False
++            timers.append(self)
++        def start(self): self.callback()
++        def cancel(self): self.cancelled = True
++    def run(command, **kwargs):
++        calls.append(command)
++        return subprocess.CompletedProcess(command, 0)
++    monkeypatch.setattr(timing, "Timer", InstantTimer)
++    monkeypatch.setattr(timing.subprocess, "run", run)
++    result = timing.execute_validation(
++        work.name, tmp_path / "run.json", RUN,
++        growth_collector=lambda *_: {} if growth == "missing" else {"bound": growth},
++    )
++    assert result == {"pass": 0, "fail": 1, "missing": 2}[growth]
++    assert len(calls) == 1
++    assert all(timer.cancelled for timer in timers)
++    data = json.loads((tmp_path / "run.json").read_bytes())
++    assert data["elapsed_seconds"] == 1e9
++    assert data["profiling_target"]["status"] == ("not-compared" if target is None else "missed")
++    assert "approval" not in capsys.readouterr().err.lower()
++
++
++@pytest.mark.parametrize("exception,state,code", [(OSError,"launch-failed",2), (KeyboardInterrupt,"interrupted",130)])
++def test_interrupted_and_failed_launches_are_not_target_outcomes(tmp_path, monkeypatch, exception, state, code):
++    monkeypatch.setattr(timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True})
++    def fail(*_, **__): raise exception()
++    monkeypatch.setattr(timing.subprocess, "run", fail)
++    path = tmp_path / "run.json"
++    assert timing.execute_validation("lint", path, RUN) == code
++    assert json.loads(path.read_bytes())["state"] == state
++
++
++def test_native_subprocess_no_target_executes_once_and_no_comparison_blocks(tmp_path, monkeypatch):
++    marker = tmp_path / "once"
++    work = qualification.ValidationWork(
++        "native", (sys.executable, "-c", f"from pathlib import Path; Path({str(marker)!r}).write_text('once')")
++    )
++    monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
++    monkeypatch.setattr(timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True})
++    assert timing.execute_validation(work.name, tmp_path / "out.json", RUN) == 0
++    assert marker.read_text() == "once"
++
++
++def test_independent_safety_failure_retains_original_exit_not_speed_goal(tmp_path, monkeypatch):
++    work = qualification.ValidationWork("safety", (sys.executable, "-c", "raise SystemExit(8)"), 1e9)
++    monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
++    monkeypatch.setattr(timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True})
++    assert timing.execute_validation(work.name, tmp_path / "out.json", RUN) == 8
