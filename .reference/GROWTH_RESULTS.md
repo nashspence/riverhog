@@ -1,6 +1,7 @@
 # Integrate functional, growth and timing evidence separately
 
-Authority: #963 comment 6103991666; #961 6103986307; #964 6104002488.
+Authority: #963 comment 6103991666; the current complete #961 issue body
+(two root onboarding documents); #964's owning growth decisions.
 This is a required integration specification, not implemented growth reporting.
 The accompanying source patches implement timing-policy applicability only; they
 do NOT complete growth witness discovery, execution, artifact validation or v1
@@ -21,10 +22,15 @@ retains its approved 600-second target; other real work remains unresolved until
 explicit target/no-target disposition. Test fixtures approve only their test work.
 The reference cannot supply maintainer approvals by creating a default.
 
-The revised `AGENTS.after-onboarding.patch` applies AFTER #961's growth amendment.
-It preserves that section, replaces the measurement sections and extends the handoff
-sentence. Do not apply the older guide patch afterward. Update actual guide
-integrity/link/policy tests, not just expected hashes copied from this handoff.
+The **current** `AGENTS.after-onboarding.patch` is rebuilt against the exact
+approved `AGENTS.md` block in #961's current two-root-document issue body.
+First integrate #961's root `README.md` and `AGENTS.md`, removing `docs/`; then
+apply the #963 measurement delta without changing #961's other wording.
+Current approved-guide SHA-256: `1c427d38b88c9a05fe105dea5bcc862efec52ff516233110fa0ef88b43692f44`;
+post-#963 intended SHA-256: `2b951ea6955e15dda3ab30336c0aa623087d8b42e5d819eed0eb1ca2aa5a1df1`.
+Earlier old-guide patches/hashes are historical, not the current patch base.
+Check applicability against the actual installed guide and update executable
+guide integrity, link and policy tests—not just their expected hashes.
 
 ## Evidence contract to complete in the integrated implementation
 
@@ -87,8 +93,11 @@ the expected coverage. Keep the large-workload cadence coverage-driven rather th
 making every check run an expensive size ladder. Existing proof stays until its
 owner approves an equivalent replacement.
 
-#961 precedes the guide delta. Coordinated #963/#964 work is allowed; complete shared
-result handling before claiming dependent growth acceptance. #960's timing closeout
+#961's current two-document onboarding precedes the #963 guide delta.
+Coordinated #963/#964 preparation is allowed; the shared machinery (including
+missing/failed growth-witness propagation) precedes dependent #964 acceptance.
+#964 owns real operation-by-operation bound selection, source counters and
+executable product witnesses; #963 owns their shared evidence-consumption path. #960's timing closeout
 disposition remains limited and its profile/fixture unchanged. Full rollout still
 requires entrypoint/matrix/platform/aggregate integration, approved applicability,
 locked gates and independent exact-SHA checks; none is claimed by this reference.

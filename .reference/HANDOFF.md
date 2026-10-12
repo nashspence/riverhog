@@ -2,17 +2,68 @@
 
 Owning issue: #963; convention: #903.
 Original audited implementation base: main@63d4a70bdd48def676f5d754c41eefe53143d8aa
-Previous reference / direct parent: 832fc5ee502c11c7c9e9c73fc652c3dd55c202f3
-Current reconciliation checkpoint: main@7aa9997bcf05a50c42d7ecd4767730263a25d381
-Current tree: 6b0cb7a536a768340911b24e9dd92836033a8d5a
+Previous reference / direct parent: 3414857ea7f73011467668c17b6ad51d23e1771b
+Historic code-patch reconciliation checkpoint: main@7aa9997bcf05a50c42d7ecd4767730263a25d381
+Current source audit: main@152d095038df0c0d0ed642cf265d47b11c65a754
+Current audited source tree: 991e994457b487a7dca016b7fc0409485cef25c6
 Reference branch: reference/external/963-validation-timing
 Decision: https://github.com/nashspence/riverhog/issues/963#issuecomment-6103991666
 
 Produced by: OpenAI ChatGPT
-Model: GPT-6 Astra Pro
+Model: GPT-6 (this editorial correction; prior model provenance remains in branch history)
 Configuration/effort: not exposed
 Requested by: Riverhog maintainer
 Published by: connected GitHub integration; commit account metadata is not authorship.
+
+## Current integration entry — #961 two-document onboarding
+
+**Authoritative current #961 source:** the two complete approved document blocks
+in [issue #961](https://github.com/nashspence/riverhog/issues/961), updated
+2026-10-12T05:57:18Z. The public introduction is now the root `README.md`; the
+developer guide is root `AGENTS.md`. The `docs/` directory and prospective
+`docs/introduction.md` are **removed**, not renamed or retained as stubs.
+Older #961 comments, reference patches, hashes and three-document diagrams do not
+govern the integrated onboarding. Preserve current root-file integrity/link tests.
+
+The current policy authority is [#963 decision 6103991666](https://github.com/nashspence/riverhog/issues/963#issuecomment-6103991666):
+`approved-target`, `approved-no-target` or `unresolved`. An approved no-target
+still records elapsed evidence and is never a target pass; unresolved applicability
+and missing required evidence cannot silently pass. A **valid timing miss is
+report-only**; a functional or required growth/evidence failure blocks validation.
+Retain #960's original 600-second target and its scoped shortfall disposition.
+The older #963 body wording requiring a numerical seconds target for every work
+item is superseded to this extent only.
+
+**Current guide delta:** `AGENTS.after-onboarding.patch` has been regenerated
+against exactly the current approved #961 `AGENTS.md` block. Its source SHA-256 is
+`1c427d38b88c9a05fe105dea5bcc862efec52ff516233110fa0ef88b43692f44`;
+expected result SHA-256 is
+`2b951ea6955e15dda3ab30336c0aa623087d8b42e5d819eed0eb1ca2aa5a1df1`.
+Only the two measurement sections and prescribed handoff sentence change.
+The source blocks come from #961's current issue body and #963's later approved
+decision, **not** from the earlier three-document #961 snapshot. Check current
+input identity and apply with `git apply --check` after #961 is integrated.
+If later edits make the exact patch inapplicable, reconcile only the two intended
+sections; never revert or edit unrelated onboarding policy to make a patch fit.
+
+**Scope separation:** #963 implements shared work definitions, approved
+timing-applicability and automatic validated functional/growth/timing result
+collection, propagation and local/CI/qualification coverage. #964 supplies
+specific operation-owned growth formulas and runtime counter/witness conformance.
+The #963 foundation must prove real absence/failure/invalid-growth handling using
+an executable fixture/owner seam; it must not wait for every #964 operation to
+be implemented, and a timing-only reference checker is not a complete growth
+foundation. Consume #963 before dependent #964 acceptance.
+
+**Integration sequence:** current #961 approved root documents and tests ->
+the #963 AGENTS-only measurement delta on that integrated guide ->
+source-reconcile the historic foundation + applicability patches to actual
+post-#961 `main` -> finish required validation adapters and growth outcome
+propagation -> qualify and hand off source SHA/evidence to #964. Historical
+source patches were written for main@63d4a70b and **must not** be applied
+mechanically to present main or turned into old schema compatibility code.
+The source/target hashes above prove this reference's approved-guide
+reconciliation only, not finished product integration or locked qualification.
 
 ## Start here: revised policy and patch sequence
 
@@ -45,28 +96,21 @@ coverage, outcomes and adversarial cases still to implement through actual owner
 witnesses. The old evidence checker alone is not a growth-conformance gate and an
 evidence-complete failed command must still fail its aggregate consumer.
 
-## Guide delta
+## Guide delta — use the **current** #961 approved root guide
 
-**Preserve intentionally shipped Alembic forward-only v1 migration machinery,
-explicit upgrade-to-head initialization, exact schema validation and synthetic
-post-v1 revision/rollback tests.** The pre-v1 hard cut forbids only compatibility
-with superseded pre-v1 application schemas, not the migration framework itself.
-#963 consumes the newly corrected #961 onboarding guide; see the maintainer's
-subsequent Alembic clarification. Timing policy does not own schema changes.
+The issue-owned #961 introduction is now root README; root AGENTS is the sole
+developer guide. First integrate those two approved files and tests, without
+reviving `docs/`. Then apply/check the current
+`AGENTS.after-onboarding.patch` described above. It changes the guide's
+measurement text according to #963 comment 6103991666, not the underlying
+archive, state or onboarding rules. Preserve Alembic/StateSchema and future
+forward-only upgrades; discarded pre-v1 layout compatibility stays prohibited.
 
-Apply AGENTS.after-onboarding.patch only after the **current corrected #961 guide**
-(#961 comment 6112662156) and the approved growth amendment (6103986307) are
-present. The previous blanket ban on Alembic upgrades is superseded. The patch
-preserves the current guide's v1 Alembic baseline, synthetic migration tests,
-and pre-v1 no-legacy-schema rule while replacing measurement sections and adding
-the updated three-result handoff sentence. Do not
-apply the prior guide patch afterward. Actual integrity, semantic and link tests
-must be reconciled with the installed guide, not just given copied hash constants.
-
-Current corrected #961 growth-guide input SHA-256:
-1fe4e9a92c4df98949dfe9b52d9d495f186281502f348151491950b72325d39c
-After #963 measurement delta output SHA-256:
-171747771c4eed8b0bb2d0546398dff4a2cd62461f84b106e633665f74eaf2ee
+Earlier #961 hashes (`1fe4e9...` and `171747...`) and earlier copies of this
+patch are **historical** and must not be used as current input/output identities.
+The exact issue-approved input/output digests are at the top of this handoff.
+Recompute them if an authorized later #961 edit is adopted; do not update
+expected hashes to conceal unapproved policy changes.
 
 ## Actual validation and reproducibility
 

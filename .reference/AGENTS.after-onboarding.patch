@@ -1,8 +1,9 @@
+diff --git a/AGENTS.md b/AGENTS.md
 --- a/AGENTS.md
 +++ b/AGENTS.md
-@@ -106,15 +106,29 @@
+@@ -112,16 +112,30 @@
  
- In short, **keep intentional v1 migration infrastructure and tests, without inventing backward compatibility for abandoned pre-v1 schemas or discarding durable authority.**
+ In short, **replace obsolete pre-v1 database structures without sacrificing durable data or support for future upgrades.**
  
 -## Measure performance without creating gates
 +## Measure performance honestly
@@ -18,7 +19,7 @@
  
 -In short, **profiling reports evidence; it does not create performance obligations or release gates.**
 +In short, **keep correctness, growth conformance, and practical speed visible without confusing their meanings.**
-+
+ 
 +## Account for validation evidence
 +
 +Every maintained check-in gate, required CI job, and qualification has an executable work definition in the [shared qualification plan](scripts/ci_qualification.py), with its workload, execution conditions, timing applicability, and applicable growth witnesses. Local validation, CI, and maintained profiling use that same definition without duplicating operation-owned contracts.
@@ -32,15 +33,16 @@
 +Changing a declared growth bound, a reviewed test budget, an approved timing target, its workload, or its applicable conditions requires explicit review and maintainer approval. Do not reset expectations to match a regression, weaken required proof, or change safety timeouts merely to improve a result.
 +
 +In short, **evidence and review are mandatory; conformance failures block validation, while elapsed-time targets remain diagnostic.**
- 
++
  ## Validate the change you actually deliver
  
-@@ -133,7 +147,7 @@
+ Use the versions of tools and libraries fixed by the repository rather than relying on whatever happens to be installed locally. Follow the [dependency](tests/unit/test_dependency_policy.py) and [image-build policies](tests/unit/test_image_build_graph.py); ship only the runtime content the component needs.
+@@ -141,6 +155,8 @@
  
- For substantial integration or handoff validation and release-related work, also run `make linux-qualification`, the exhaustive local qualification path. Use `make help` for the current command guidance.
+ After pushing, watch that exact commit’s required GitHub Actions checks through completion. Fix failures before handing work back. A skipped or blocked check is not a pass; report the gap rather than claiming complete validation. Do not remove required coverage or weaken a check merely to make a result green.
  
--After pushing, watch that exact commit’s required GitHub Actions checks through completion. Fix failures before handing work back. A skipped or blocked check is not a pass; report the gap rather than claiming complete validation. Do not remove required coverage or weaken a check merely to make a result green.
-+After pushing, watch that exact commit’s required GitHub Actions checks through completion. Include functional results, applicable growth-conformance evidence, and the timing review and disposition of every missed target or unavailable comparison in the handoff; green checks alone are not a complete validation report. Fix failures before handing work back. A skipped or blocked check is not a pass; report the gap rather than claiming complete validation. Do not remove required coverage or weaken a check merely to make a result green.
- 
++Include functional results, applicable growth-conformance evidence, and the timing review and disposition of every missed target or unavailable comparison in the handoff; green checks alone are not a complete validation report.
++
  In short, **validate the actual change through every required gate, not a nearby version or a convenient subset.**
  
+ ## Keep authorization separate from validation
