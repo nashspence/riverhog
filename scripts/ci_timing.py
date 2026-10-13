@@ -53,8 +53,9 @@ class PytestTiming:
         self.started = time.monotonic()
         self.fixtures: dict[str, dict[str, int | float]] = {}
         self.tests: dict[str, dict[str, dict[str, object]]] = {}
-        self.growth_witnesses: dict[str, dict[str, str]] = {}
+        self.growth_witnesses: dict[str, dict[str, object]] = {}
         self.growth_observations: dict[str, object] = {}
+        self.growth_samples: dict[str, object] = {}
 
     def pytest_collection_finish(self, session: pytest.Session) -> None:
         import hashlib
@@ -66,6 +67,12 @@ class PytestTiming:
                     "id": marker.args[0],
                     "source_sha256": hashlib.sha256(item.path.read_bytes()).hexdigest(),
                 }
+                operation = marker.kwargs.get("operation")
+                if operation is not None:
+                    from scripts.validation_witnesses import operation_projection
+
+                    _, declaration = operation_projection(operation, root=session.config.rootpath)
+                    self.growth_witnesses[item.nodeid]["declaration"] = declaration
 
     @pytest.hookimpl(optionalhook=True)
     def pytest_configure_node(self, node: Any) -> None:
@@ -96,12 +103,15 @@ class PytestTiming:
             ]
             if len(observations) == 1:
                 self.growth_observations[report.nodeid] = observations[0]
+            samples = [value for name, value in report.user_properties if name == "growth_samples"]
+            if len(samples) == 1:
+                self.growth_samples[report.nodeid] = samples[0]
 
     def pytest_sessionfinish(self, session: pytest.Session, exitstatus: int) -> None:
         write_record(
             self.directory / f"{self.worker_id}.json",
             {
-                "format": "riverhog-ci-pytest-timing/v2",
+                "format": "riverhog-ci-pytest-timing/v3",
                 **self.source,
                 "source_end": source_identity(session.config.rootpath),
                 "lane": self.lane,
@@ -116,6 +126,7 @@ class PytestTiming:
                 "tests": self.tests,
                 "growth_witnesses": self.growth_witnesses,
                 "growth_observations": self.growth_observations,
+                "growth_samples": self.growth_samples,
             },
         )
 
@@ -237,13 +248,21 @@ def execute_validation(
                 timing_root = Path(env.get("RIVERHOG_CI_TIMING_DIR", str(ROOT / "build/ci-timing")))
 
                 def owner_collector(owned: ValidationWork, invocation: str) -> dict[str, str]:
-                    return collect_test_witnesses(
+                    evidence: list[dict[str, object]] = []
+                    results = collect_test_witnesses(
                         tuple((timing_root / "pytest").glob(f"*/{invocation}/*/*.json")),
                         root=ROOT,
                         expected=owned.growth_witnesses,
                         source_sha=str(source["source_sha"]),
                         run_id=invocation,
+                        evidence=evidence,
                     )
+                    if evidence:
+                        write_record(
+                            timing_root / "growth" / f"{invocation}.json",
+                            {"format": "riverhog-growth-execution-bundle/v1", "records": evidence},
+                        )
+                    return results
 
                 growth_collector = owner_collector
             if growth_collector is not None:

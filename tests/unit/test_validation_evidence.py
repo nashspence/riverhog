@@ -264,3 +264,12 @@ def test_missing_malformed_or_contradictory_phase_costs_fail_required_evidence(p
     record["phase_costs"] = phases
     with pytest.raises(ValueError):
         check(work, record)
+
+
+def test_changed_normative_declaration_changes_required_work_identity():
+    work = ValidationWork("test", ("true",), growth_declarations=(("owner.growth/v1", "a" * 64),))
+    changed = replace(work, growth_declarations=(("owner.growth/v1", "b" * 64),))
+    assert work.definition() != changed.definition()
+    with pytest.raises(ValueError):
+        check(changed, row(work))
+    assert work.definition() == replace(work, target_seconds=1).definition()

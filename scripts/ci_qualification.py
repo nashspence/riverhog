@@ -156,14 +156,28 @@ def validation_workloads() -> tuple[ValidationWork, ...]:
     )
     if len({item.name for item in work}) != len(work):
         raise ValueError("each validation workload must have exactly one definition")
-    from scripts.validation_witnesses import discover_test_witnesses
+    from scripts.validation_witnesses import discover_test_witnesses, operation_projection
 
     witnesses = discover_test_witnesses(ROOT)
+    declarations = {}
+    for witness in witnesses:
+        if witness.operation is not None:
+            _, binding = operation_projection(witness.operation, root=ROOT)
+            declarations[witness.id] = (binding["id"], binding["projection_sha256"])
     return tuple(
         replace(
             item,
             growth_witnesses=tuple(
                 witness.id for witness in witnesses if item.name in witness.gates
+            ),
+            growth_declarations=tuple(
+                sorted(
+                    {
+                        declarations[witness.id]
+                        for witness in witnesses
+                        if item.name in witness.gates and witness.id in declarations
+                    }
+                )
             ),
         )
         for item in work

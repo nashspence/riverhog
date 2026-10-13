@@ -8,6 +8,16 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from riverhog_protocol.artifact_identity import ArtifactId
+from riverhog_protocol.growth import (
+    COUNT,
+    OCTETS,
+    OCTETS_PER_COUNT,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    declare_growth,
+)
 
 RAW_SOURCE_DIGEST_SUMMARY_FORMAT = "raw-source-digest-summary/v1"
 RAW_SOURCE_DIGEST_BATCH_MAX = 1024
@@ -34,6 +44,70 @@ def ordered_raw_part_commitment(part_sha256s: Iterable[str]) -> tuple[int, str]:
     return count, state.hex()
 
 
+@declare_growth(
+    Declaration(
+        id="riverhog-protocol.raw-part-commitment.growth/v1",
+        authority="riverhog-protocol",
+        subjects=("riverhog_protocol.raw_ingress.advance_raw_part_commitment",),
+        scope="successful-call-primitive-work",
+        starts_at="validate prior commitment and first-part position",
+        ends_at="return the advanced part count and exact ordered commitment",
+        dimensions=(
+            Dimension("parts", COUNT, "Valid digest records consumed in this successful batch."),
+        ),
+        bounds=(
+            Bound(
+                "hash_input_octets",
+                OCTETS,
+                "equal",
+                Expression(
+                    "product",
+                    terms=(
+                        Expression("constant", value=72, unit=OCTETS_PER_COUNT),
+                        Expression("dimension", name="parts"),
+                    ),
+                ),
+                (
+                    "SHA-256 input octets for ordered commitment steps, "
+                    "including their private helper."
+                ),
+            ),
+            Bound(
+                "commitment_steps",
+                COUNT,
+                "equal",
+                Expression("dimension", name="parts"),
+                "Fixed-width ordered commitment advances.",
+            ),
+        ),
+        conditions=(
+            "Finite successful nonempty batch of lower-case 64-character SHA-256 digests.",
+            (
+                "32-octet SHA-256 state/digest and 8-octet ordinal; every processed ordinal is "
+                "representable."
+            ),
+            "Prior state and first-part position satisfy the existing raw-ingress contract.",
+        ),
+        invariants=(
+            "Preserve digest order, exact first-part position and existing commitment bytes.",
+            "Reject invalid digest/state inputs rather than omit or truncate them.",
+        ),
+        limitations=(
+            (
+                "Caller iterator production is independently owned; this vector counts "
+                "commitment primitives."
+            ),
+            (
+                "No total CPU, elapsed-time, provider-latency or process-memory guarantee "
+                "follows from these counts."
+            ),
+            (
+                "Failed prefixes and repeated calls are separate attempts; unlimited retries "
+                "have no finite completion claim."
+            ),
+        ),
+    )
+)
 def advance_raw_part_commitment(
     prior_sha256: str | None,
     *,

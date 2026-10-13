@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -203,3 +204,16 @@ def test_documentation_authoring_rejects_code_and_shared_ancestry(tmp_path):
     _git(repository, "commit", "-qm", "code fixture")
     with pytest.raises(ContractAtlasError, match="non-documentation path"):
         validate_authoring_tree(repository, _git(repository, "rev-parse", "HEAD"))
+
+
+def test_contract_entrypoint_loads_growth_evidence_without_pytest_import_paths():
+    result = subprocess.run(
+        [sys.executable, "scripts/contract_candidate.py", "generate", "--help"],
+        cwd=ROOT,
+        env={key: value for key, value in os.environ.items() if key != "PYTHONPATH"},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "--growth-evidence" in result.stdout
