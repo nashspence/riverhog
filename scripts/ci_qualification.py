@@ -144,7 +144,7 @@ def validation_environment(work: ValidationWork, run_id: str) -> dict[str, str]:
         raise ValueError("qualified work has selection overrides: " + ", ".join(supplied))
     for variable in ("MAKEFLAGS", "MFLAGS"):
         flags = shlex.split(environment.get(variable, ""))
-        if any(flag not in {"w", "--no-print-directory"} for flag in flags):
+        if any(flag not in {"w", "--no-print-directory", "-j1", "--jobs=1"} for flag in flags):
             raise ValueError("qualified work has Make execution overrides")
         environment.pop(variable, None)
     environment.update(RIVERHOG_CI_LANE=work.name, RIVERHOG_CI_RUN_ID=run_id)

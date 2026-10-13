@@ -23,6 +23,8 @@ from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from scripts.validation_process import ValidationInterrupted, run_validation_child
+
 if TYPE_CHECKING:
     from scripts.validation_evidence import ValidationWork
 
@@ -188,20 +190,21 @@ def execute_validation(
 
     if re.fullmatch(r"[A-Za-z0-9_.-]{1,128}", run_id) is None:
         raise ValueError("invalid validation run identifier")
+    started = time.monotonic()
+    started_at = datetime.now(UTC).isoformat()
     work = validation_work(name)
     if output.exists():
         raise ValueError("validation evidence must not overwrite another invocation")
     env = validation_environment(work, run_id)
     source = source_identity(ROOT)
     definition = work.definition()
-    started = time.monotonic()
     record: dict[str, object] = {
         "format": "riverhog-ci-validation-evidence/v2",
         **source,
         "run_id": run_id,
         "definition": definition,
         "state": "running",
-        "started_at": datetime.now(UTC).isoformat(),
+        "started_at": started_at,
         "started_monotonic_seconds": started,
         "observed_conditions": {
             "platform": sys.platform,
@@ -226,13 +229,17 @@ def execute_validation(
         timer.start()
     state = "completed"
     status = 2
+    execution_started = time.monotonic()
     try:
-        status = subprocess.run(work.command, cwd=ROOT, env=env, check=False).returncode
+        status = run_validation_child(work.command, cwd=ROOT, env=env)
     except OSError:
         state = "launch-failed"
+    except ValidationInterrupted as interrupted:
+        state, status = "interrupted", 128 + interrupted.signum
     except KeyboardInterrupt:
         state, status = "interrupted", 130
     finally:
+        execution_finished = time.monotonic()
         if timer is not None:
             timer.cancel()
         growth_results = {}
@@ -256,8 +263,14 @@ def execute_validation(
                 growth_results = growth_collector(work, run_id)
             except Exception:
                 state, status = "evidence-failed", status or 2
-        elapsed = time.monotonic() - started
         after = source_identity(ROOT)
+        finished = time.monotonic()
+        elapsed = finished - started
+        phase_costs = {
+            "preparation": execution_started - started,
+            "command-including-owner-cleanup": execution_finished - execution_started,
+            "evidence-collection": finished - execution_finished,
+        }
         comparison = validation_comparison(
             definition,
             elapsed=elapsed,
@@ -270,6 +283,7 @@ def execute_validation(
             state=state,
             source_end=after,
             elapsed_seconds=elapsed,
+            phase_costs=phase_costs,
             finished_at=datetime.now(UTC).isoformat(),
             exit_status=status,
             profiling_target=comparison,

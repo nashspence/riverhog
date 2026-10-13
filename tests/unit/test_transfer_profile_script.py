@@ -635,6 +635,11 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
                 started_at="2026-01-01T00:00:00+00:00",
                 finished_at="2026-01-01T00:00:01+00:00",
                 started_monotonic_seconds=0,
+                phase_costs={
+                    "preparation": 0,
+                    "command-including-owner-cleanup": timing["elapsed_seconds"],
+                    "evidence-collection": 0,
+                },
                 observed_conditions={
                     "platform": "linux",
                     "architecture": "x86_64",

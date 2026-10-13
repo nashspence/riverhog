@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
 from types import SimpleNamespace
 
@@ -23,6 +22,17 @@ def test_required_execution_rejects_unrecorded_scope_reduction(
         qualification.validation_environment(work, RUN)
 
 
+@pytest.mark.parametrize("flags", ["-j1", "--jobs=1", "w -j1", "--no-print-directory -j1"])
+def test_sequential_parent_make_flags_do_not_change_required_child_work(monkeypatch, flags):
+    monkeypatch.setenv("MAKEFLAGS", flags)
+    monkeypatch.setenv("MFLAGS", "-j1")
+    work = qualification.ValidationWork("unit", ("make", "unit"))
+    environment = qualification.validation_environment(work, RUN)
+    assert "MAKEFLAGS" not in environment
+    assert "MFLAGS" not in environment
+    assert work.command == ("make", "unit")
+
+
 def test_running_attempt_records_start_and_conditions_before_execution(tmp_path, monkeypatch):
     work = qualification.ValidationWork("start-proof", ("true",))
     monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
@@ -37,9 +47,9 @@ def test_running_attempt_records_start_and_conditions_before_execution(tmp_path,
         assert record["started_at"]
         assert record["started_monotonic_seconds"] >= 0
         assert set(record["observed_conditions"]) == {"platform", "architecture", "python"}
-        return subprocess.CompletedProcess(command, 0)
+        return 0
 
-    monkeypatch.setattr(timing.subprocess, "run", run)
+    monkeypatch.setattr(timing, "run_validation_child", run)
     assert timing.execute_validation(work.name, output, RUN) == 0
 
 
@@ -118,7 +128,7 @@ def test_runner_records_once_without_speed_gate_and_preserves_growth(
     monkeypatch.setattr(
         timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True}
     )
-    ticks = iter([0.0, 1e9])
+    ticks = iter([0.0, 0.0, 1e9, 1e9])
     monkeypatch.setattr(timing, "time", SimpleNamespace(monotonic=lambda: next(ticks)))
     timers, calls = [], []
 
@@ -135,10 +145,10 @@ def test_runner_records_once_without_speed_gate_and_preserves_growth(
 
     def run(command, **kwargs):
         calls.append(command)
-        return subprocess.CompletedProcess(command, 0)
+        return 0
 
     monkeypatch.setattr(timing, "Timer", InstantTimer)
-    monkeypatch.setattr(timing.subprocess, "run", run)
+    monkeypatch.setattr(timing, "run_validation_child", run)
     result = timing.execute_validation(
         work.name,
         tmp_path / "run.json",
@@ -167,7 +177,7 @@ def test_interrupted_and_failed_launches_are_not_target_outcomes(
     def fail(*_, **__):
         raise exception()
 
-    monkeypatch.setattr(timing.subprocess, "run", fail)
+    monkeypatch.setattr(timing, "run_validation_child", fail)
     path = tmp_path / "run.json"
     assert timing.execute_validation("lint", path, RUN) == code
     assert json.loads(path.read_bytes())["state"] == state

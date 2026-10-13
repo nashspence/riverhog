@@ -25,6 +25,11 @@ def row(work, seconds=601, status=0, growth=None):
         "definition": work.definition(),
         "state": "completed",
         "elapsed_seconds": seconds,
+        "phase_costs": {
+            "preparation": 0,
+            "command-including-owner-cleanup": seconds,
+            "evidence-collection": 0,
+        },
         "exit_status": status,
         "growth_results": {} if growth is None else growth,
         "started_at": "2026-01-01T00:00:00+00:00",
@@ -40,7 +45,14 @@ def check(work, record):
 
 
 @pytest.mark.parametrize(
-    "field", ["started_at", "finished_at", "started_monotonic_seconds", "observed_conditions"]
+    "field",
+    [
+        "started_at",
+        "finished_at",
+        "started_monotonic_seconds",
+        "observed_conditions",
+        "phase_costs",
+    ],
 )
 def test_required_measurement_context_cannot_be_omitted(field):
     work = ValidationWork("test", ("true",))
@@ -234,4 +246,21 @@ def test_bad_report_only_flag_is_data_error_not_target_authority():
     )
     record["profiling_target"]["report_only"] = 1
     with pytest.raises(ValueError, match="contradicts"):
+        check(work, record)
+
+
+@pytest.mark.parametrize(
+    "phases",
+    [
+        {},
+        {"preparation": 0},
+        {"preparation": 0, "command-including-owner-cleanup": 1, "evidence-collection": 0},
+        {"preparation": True, "command-including-owner-cleanup": 601, "evidence-collection": 0},
+    ],
+)
+def test_missing_malformed_or_contradictory_phase_costs_fail_required_evidence(phases):
+    work = ValidationWork("test", ("true",))
+    record = row(work)
+    record["phase_costs"] = phases
+    with pytest.raises(ValueError):
         check(work, record)

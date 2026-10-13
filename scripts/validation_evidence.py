@@ -154,6 +154,7 @@ def validate_evidence_records(
         "definition",
         "state",
         "elapsed_seconds",
+        "phase_costs",
         "exit_status",
         "growth_results",
         "started_at",
@@ -190,7 +191,21 @@ def validate_evidence_records(
             value = row[field]
             if not isinstance(value, str) or datetime.fromisoformat(value).utcoffset() is None:
                 raise ValueError("execution timestamps require an explicit timezone")
+        if datetime.fromisoformat(row["finished_at"]) < datetime.fromisoformat(row["started_at"]):
+            raise ValueError("execution finished before it started")
         _seconds(row["started_monotonic_seconds"], positive=False)
+        phases = row["phase_costs"]
+        if not isinstance(phases, dict) or set(phases) != {
+            "preparation",
+            "command-including-owner-cleanup",
+            "evidence-collection",
+        }:
+            raise ValueError("required phase costs are incomplete")
+        costs = [_seconds(value, positive=False) for value in phases.values()]
+        if not math.isclose(
+            sum(costs), _seconds(row["elapsed_seconds"], positive=False), rel_tol=1e-9, abs_tol=1e-9
+        ):
+            raise ValueError("phase costs contradict measured invocation wall time")
         conditions = row["observed_conditions"]
         if (
             not isinstance(conditions, dict)
