@@ -2,10 +2,6 @@ CONTRACT_OUTPUT ?= $(CURDIR)/build/contracts
 SHELL := bash
 .DEFAULT_GOAL := help
 
-.PHONY: documentation-plan documentation-preview documentation-check
-documentation-plan documentation-preview documentation-check:
-	$(call UV_CMD,python scripts/documentation.py $(subst documentation-,,$@) $(args))
-
 MISE_BIN ?= mise
 FILES ?= .
 override CANONICAL_UNIT_TESTS := packages some-implementations riverhog tests/unit
@@ -45,6 +41,33 @@ define BAKE_IMAGE
 		--set "*.args.SOURCE_DATE_EPOCH=0" \
 		--set "*.args.RELEASE_VERSION=development" "$(1)"
 endef
+
+VALIDATION_TARGETS := lint compile unit unit-shards-check unit-shard image-qualification client-platform-qualification linux-qualification dependency-readiness operation-qualification database-qualification contract-check documentation-check contract-browser contract-browser-docker profile provider-qualification installation-qualification release-check release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke compose-shard filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke dist dist-smoke build build-% test
+VALIDATION_MAKEFILE := $(abspath $(firstword $(MAKEFILE_LIST)))
+VALIDATION_REQUESTED := $(filter $(VALIDATION_TARGETS),$(MAKECMDGOALS))
+
+ifneq ($(strip $(RIVERHOG_VALIDATION_MAKE_DIRECTORY)),)
+SHELL := $(RIVERHOG_VALIDATION_MAKE_SHELL)
+.SHELLFLAGS := -c
+export RIVERHOG_VALIDATION_RECIPE_TARGET = $@
+endif
+
+ifneq ($(strip $(VALIDATION_REQUESTED)),)
+ifneq ($(strip $(RIVERHOG_VALIDATION_MAKE_REENTRY)),$(strip $(MAKECMDGOALS)))
+VALIDATION_OUTER := 1
+endif
+endif
+
+ifeq ($(VALIDATION_OUTER),1)
+.PHONY: $(MAKECMDGOALS)
+$(firstword $(MAKECMDGOALS)):
+	$(call UV_CMD,python "$(dir $(VALIDATION_MAKEFILE))scripts/ci_make.py" observe --makefile "$(VALIDATION_MAKEFILE)" $(foreach goal,$(MAKECMDGOALS),--goal "$(goal)"))
+$(filter-out $(firstword $(MAKECMDGOALS)),$(MAKECMDGOALS)): $(firstword $(MAKECMDGOALS))
+else
+# Maintained target recipes.
+.PHONY: documentation-plan documentation-preview documentation-check
+documentation-plan documentation-preview documentation-check:
+	$(call UV_CMD,python scripts/documentation.py $(subst documentation-,,$@) $(args))
 
 help:
 	@printf '%s\n' \
@@ -109,6 +132,8 @@ help:
 		'  STOVE0_SCALE_AUDIO_FRAMES=N Set frames per scale fixture (default: 2000).' \
 		'  LOCAL_QUALIFICATION_JOBS=N Bound independent local proof concurrency (default: 2; 1 is sequential).' \
 		'  LOCAL_QUALIFICATION_DOCKER_JOBS=N Bound concurrent Docker lifecycles (default: 2).' \
+		'  RIVERHOG_VALIDATION_RETAIN_RUNS=N Retain completed automatic evidence runs (default: 32).' \
+		'  RIVERHOG_VALIDATION_MAX_BYTES=N Bound retained validation storage before starting work (default: 67108864).' \
 		'  RELEASE_VERSION=1.0.0 Coordinated version for release-plan and release-dry-run.' \
 		'  RELEASE_OUTPUT=/path   Output/evidence directory for release-evidence or release-verify.' \
 		'  RELEASE_SUMMARY=/path  Write a JSON dry-run or governance summary.' \
@@ -285,3 +310,5 @@ down:
 	@./scripts/compose_down.sh
 
 test: lint unit
+
+endif

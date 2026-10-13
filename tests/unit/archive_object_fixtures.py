@@ -65,7 +65,6 @@ from riverhog_core.pack_volume import iter_render_pack_upload_unit, plan_pack_vo
 from riverhog_core.ports.archive_objects import (
     ArchiveObjectIdentityConflict,
     CompletedObjectReceipt,
-    ImmutableObjectContent,
     ImmutableObjectReceipt,
     ResumableWriteConstraints,
     WriteCompletionPrecondition,
@@ -1051,7 +1050,7 @@ class MemoryArchiveStore:
         self,
         *,
         object_path: str,
-        content: ImmutableObjectContent,
+        content: bytes,
         content_type: str,
         required_identity_assertions: dict[str, str],
         placement_policy: ObjectPlacementPolicy,
@@ -1063,7 +1062,6 @@ class MemoryArchiveStore:
             if self.object_metadata.get(object_path) != required_identity_assertions:
                 raise ArchiveObjectIdentityConflict(object_path)
             return self._immutable_receipt(object_path, existing)
-        content = content() if callable(content) else content
         self.objects[object_path] = content
         self.object_content_types[object_path] = content_type
         self.object_metadata[object_path] = dict(required_identity_assertions)

@@ -1,14 +1,17 @@
 {
-  "format": "riverhog-external-reference-files/v1",
-  "owning_issue": 968,
-  "audited_base": "152d095038df0c0d0ed642cf265d47b11c65a754",
+  "format": "external-reference-integrity/v2",
   "files": {
-    "HANDOFF.md": "eaa329288b8045e9da6cb41c47eb068e49e705c0516333fbfa9ee86110b96bc3",
-    "INTEGRATION.md": "f67f7672171b732ebf05a44dbe55b3e3860c68a47955b244959b8a10e45d5792",
-    "VALIDATION.md": "a861768d4cb6e55e21c41c92f312d310e35004f37fa688c782fa087f6308d223",
+    "ACCEPTANCE.md": "75a4e47f21f31f266523a3752831a821a64d9b6bde7d0f42378b1804a6db645d",
+    "AGENTS.section.md": "5c4c3d46f37e3d437385eadc44a061994915116f31f150fa88d972133840c7f2",
+    "HANDOFF.md": "f536ad836d486f27d0040b2e4aeae11b015c68c4c0c35fd3a1fc9188aaac3933",
+    "INTEGRATION.md": "524c949e852b2673353807eb49d0b2bda55b9588da3d8ea3e962e8c4152bf095",
+    "VALIDATION.md": "342f22bff789626c955f2919693ac2ffec14862cc2bee5369f3f3896d8e70195",
     "claim_projection.py": "9bbc5cbaf5abaa31f0fa911881dd2b9dd6c885079b3ea30765c74fd82b61d5d9",
-    "source-seams.json": "0c4460e6f57fdb406b6bedc5cf9d13415b2d2fe5837bbfc81bb11313719961e5",
+    "onboarding.patch": "5e84d836feefe0f614d2430d9d8f93712d8068219d8a6495856569c757b32519",
+    "qualification_projection.py": "3ee0426e4937968df45ace1571710628019d7254ed84f5750b2b7bb201c10f02",
+    "source-seams.json": "7139aa38522b7023a9bd654fa51f15a6cc3fc94b2d7b2330aceea1d2f68b78cd",
     "test_claim_projection.py": "6ec7e138a612b84b2e6d4d33ec5c6ceb71743ad7f7c04f06cef813a9f3ce71c8",
-    "verify_reference.py": "b0c0e6b9a5f6e029b754cb9ab36b484bcf29ab6f3b5b0d0736776a840d509d08"
+    "test_qualification_projection.py": "8372f7c326092cc429bb1ed9dc6cad05400dd6744a3a5b3807ad992b64b53cc0",
+    "verify_reference.py": "682b5628ab066ba53381386629408bb55c85e07c81c0bcdb0d0bd49a0ae40e94"
   }
 }

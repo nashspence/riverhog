@@ -127,7 +127,7 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
             encoding="utf-8"
         )
     )
-    architecture = (REPO_ROOT / "docs/architecture.md").read_text(encoding="utf-8")
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
 
     assert config["project"]["dependencies"] == [
         "release-documentation-lib>=0.1,<0.2",
@@ -150,7 +150,7 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
     assert config["project"]["scripts"] == {
         "a-riverhog-recovery-tool": "a_riverhog_recovery_tool.cli:main"
     }
-    assert "(../some-implementations/riverhog/recovery/)" in architecture
+    assert "(some-implementations/riverhog/recovery/)" in readme
 
 
 def test_published_images_carry_source_and_license_identity() -> None:

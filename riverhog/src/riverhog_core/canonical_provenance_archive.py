@@ -62,7 +62,6 @@ class PublishedCanonicalProvenance:
         self._objects = ProvenanceReadCache(
             byte_budget=_OBJECT_CACHE_BYTES, entry_budget=_OBJECT_CACHE_ENTRIES
         )
-        self._metadata_indexes = ProvenanceReadCache(byte_budget=8 * 1024 * 1024, entry_budget=128)
 
     def reader(
         self,
@@ -72,7 +71,6 @@ class PublishedCanonicalProvenance:
         fence: Callable[[], None] | None = None,
     ) -> CanonicalProvenanceArchiveReader:
         selected = self._select_copy(collection_id)
-        self._archive_stores.require_incarnation(selected.store_name, selected.incarnation_id)
 
         def read_object(relative_path: str) -> Iterator[bytes]:
             if fence is not None:
@@ -87,8 +85,6 @@ class PublishedCanonicalProvenance:
             expected_root_sha256=selected.provenance_identity,
             archive_generation=selected.archive_generation,
             artifact_set_sha256=selected.artifact_set_identity,
-            metadata_cache=self._metadata_indexes,
-            metadata_cache_key=selected,
         )
 
     def archive_root_preimage(
@@ -140,33 +136,34 @@ class PublishedCanonicalProvenance:
             selected.incarnation_id,
             object_identity.sha256,
         )
-
-        def verified_chunks() -> Iterator[bytes]:
-            digest = hashlib.sha256()
-            received = 0
-            for chunk in binding.store.iter_archive_object(
-                collection_id=selected.collection_id,
-                object=object_identity,
-                passphrase_id=selected.passphrase_id,
-                attribution=attribution,
-            ):
-                received += len(chunk)
-                if received > object_identity.plaintext_bytes:
-                    raise InvalidState("published provenance object exceeds its exact identity")
-                digest.update(chunk)
-                yield chunk
-            if (
-                received != object_identity.plaintext_bytes
-                or digest.hexdigest() != object_identity.sha256
-            ):
-                raise InvalidState("published provenance object differs from its exact identity")
-
-        if object_identity.plaintext_bytes > _OBJECT_CACHE_BYTES:
-            yield from verified_chunks()
+        cached = self._objects.get(key)
+        if cached is not None:
+            for offset in range(0, len(cached), 128 * 1024):
+                yield cached[offset : offset + 128 * 1024]
             return
-        cached = self._objects.get_or_load(key, lambda: b"".join(verified_chunks()))
-        for offset in range(0, len(cached), 128 * 1024):
-            yield cached[offset : offset + 128 * 1024]
+        pending = bytearray() if object_identity.plaintext_bytes <= _OBJECT_CACHE_BYTES else None
+        digest = hashlib.sha256()
+        received = 0
+        for chunk in binding.store.iter_archive_object(
+            collection_id=selected.collection_id,
+            object=object_identity,
+            passphrase_id=selected.passphrase_id,
+            attribution=attribution,
+        ):
+            received += len(chunk)
+            if received > object_identity.plaintext_bytes:
+                raise InvalidState("published provenance object exceeds its exact identity")
+            digest.update(chunk)
+            if pending is not None:
+                pending.extend(chunk)
+            yield chunk
+        if (
+            received != object_identity.plaintext_bytes
+            or digest.hexdigest() != object_identity.sha256
+        ):
+            raise InvalidState("published provenance object differs from its exact identity")
+        if pending is not None:
+            self._objects.put(key, bytes(pending))
 
     def _select_copy(self, collection_id: int) -> _SelectedCopy:
         with read_snapshot(self._session_factory) as session:

@@ -3,9 +3,6 @@
 from __future__ import annotations
 
 import importlib.metadata
-from collections import deque
-from concurrent.futures import Future, ThreadPoolExecutor
-from threading import BoundedSemaphore
 from typing import cast
 
 from a_stove0_materialization_hint_evidence_contract_lib import (
@@ -27,7 +24,6 @@ from stove0_observer_protocol import (
     ObserverContractSupport,
     ObserverDescriptor,
     ObserverDescriptorPayload,
-    WorkArtifactSubject,
     canonical_json_bytes,
 )
 from stove0_observer_support import ContentObservationResultBuilder, ContentObservationRuntime
@@ -44,7 +40,6 @@ def _version() -> str:
 
 class RiverhogProvenanceObserver:
     def __init__(self, *, source_revision: str = "unknown", image_id: str) -> None:
-        self._read_slots = BoundedSemaphore(4)
         self._descriptor = ObserverDescriptor.seal(
             ObserverDescriptorPayload(
                 implementation_id="a-stove0-riverhog-provenance-observer/v1",
@@ -55,7 +50,7 @@ class RiverhogProvenanceObserver:
                     ObserverContractSupport.from_contract(
                         MATERIALIZATION_HINT_OBSERVER_CONTRACT,
                         interfaces=(MATERIALIZATION_HINT_INTERFACE.ref,),
-                        preferred_subject_batch_size=16,
+                        preferred_subject_batch_size=1,
                     ),
                     ObserverContractSupport.from_contract(
                         CORE_PROVENANCE_OBSERVER_CONTRACT,
@@ -80,14 +75,14 @@ class RiverhogProvenanceObserver:
                 if core
                 else None
             )
-
-            def evaluate(subject: WorkArtifactSubject) -> dict[str, JsonValue]:
-                with self._read_slots:
-                    runtime.heartbeat()
-                    claimed = runtime.open_provenance(subject)
-                    summary = claimed.bound_summary()
-                    if core and options is not None:
-                        return extract_core_facts(
+            facts = []
+            for subject in request.subjects:
+                runtime.heartbeat()
+                claimed = runtime.open_provenance(subject)
+                summary = claimed.bound_summary()
+                if core and options is not None:
+                    facts.append(
+                        extract_core_facts(
                             subject,
                             claimed.binding,
                             summary,
@@ -96,18 +91,11 @@ class RiverhogProvenanceObserver:
                             predicates=options.predicates,
                             resolve_external=claimed.resolve_external_reference,
                         )
-                    return extract_materialization_hint_fact(subject, claimed.binding, summary)
-
-            facts = []
-            with ThreadPoolExecutor(max_workers=4) as executor:
-                pending: deque[Future[dict[str, JsonValue]]] = deque()
-                for subject in request.subjects:
-                    runtime.heartbeat()
-                    pending.append(executor.submit(evaluate, subject))
-                    if len(pending) == 4:
-                        facts.append(pending.popleft().result())
-                while pending:
-                    facts.append(pending.popleft().result())
+                    )
+                else:
+                    facts.append(
+                        extract_materialization_hint_fact(subject, claimed.binding, summary)
+                    )
             document = {"artifacts": facts}
             validated = (
                 validate_core_provenance_facts(document, request.subjects, request.options)

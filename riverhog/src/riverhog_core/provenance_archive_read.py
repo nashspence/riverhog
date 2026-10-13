@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import os
 import sqlite3
-from collections.abc import Callable, Hashable, Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -51,7 +51,6 @@ from riverhog_archive_contracts import (
 )
 from riverhog_canonical_json import require_canonical_json
 
-from riverhog_core.provenance_read_cache import ProvenanceReadCache
 from riverhog_core.scratch_workspace import scratch_directory
 
 ObjectReader = Callable[[str], Iterator[bytes]]
@@ -84,17 +83,11 @@ class CanonicalProvenanceArchiveReader:
         expected_root_sha256: str,
         archive_generation: str,
         artifact_set_sha256: str,
-        metadata_cache: ProvenanceReadCache | None = None,
-        metadata_cache_key: Hashable | None = None,
     ) -> None:
-        if (metadata_cache is None) != (metadata_cache_key is None):
-            raise ValueError("metadata cache and exact copy key must be supplied together")
         self._read_object = read_object
         self._expected_root_sha256 = expected_root_sha256
         self._archive_generation = archive_generation
         self._artifact_set_sha256 = artifact_set_sha256
-        self._metadata_cache = metadata_cache
-        self._metadata_cache_key = metadata_cache_key
         self._prepared_db: sqlite3.Connection | None = None
         self._prepared_summary: ProvenanceArchiveSummary | None = None
         self._prepared_cursors: set[sqlite3.Cursor] = set()
@@ -132,101 +125,47 @@ class CanonicalProvenanceArchiveReader:
                 expected_root_sha256=self._expected_root_sha256,
                 archive_generation=self._archive_generation,
                 artifact_set_sha256=self._artifact_set_sha256,
-                metadata_cache=self._metadata_cache,
-                metadata_cache_key=self._metadata_cache_key,
             )
 
     @contextmanager
     def prepared(self) -> Iterator[CanonicalProvenanceArchiveReader]:
-        """Verify once and seek immutable volume metadata through an operation-owned index."""
+        """Verify once and seek immutable volume metadata through a disk index."""
         if self._prepared_db is not None:
             yield self
             return
         with scratch_directory(prefix="riverhog-provenance-metadata-") as scratch:
-            path = Path(scratch) / "metadata.sqlite3"
-            db: sqlite3.Connection | None = None
+            # The operation owns this index. Its serial HTTP iterator may
+            # advance and close on different worker threads.
+            db = sqlite3.connect(Path(scratch) / "metadata.sqlite3", check_same_thread=False)
 
-            def build() -> bytes | None:
-                nonlocal db
-                db = sqlite3.connect(path, check_same_thread=False)
+            def remember(document: ProvenanceVolumeDocument | ProvenanceTerminalDocument) -> None:
+                if isinstance(document, ProvenanceTerminalDocument):
+                    kind, journal_id = "terminal", None
+                else:
+                    kind, journal_id = document.payload.kind, document.journal_id
+                db.execute(
+                    "INSERT INTO volumes VALUES (?, ?, ?, ?)",
+                    (
+                        format_archive_sequence(document.sequence),
+                        kind,
+                        journal_id,
+                        document.to_json_bytes(),
+                    ),
+                )
+
+            try:
                 db.executescript(
                     "PRAGMA cache_size = -512; PRAGMA temp_store = FILE; "
                     "CREATE TABLE volumes(sequence TEXT PRIMARY KEY, kind TEXT, "
-                    "journal TEXT, first_artifact TEXT, last_artifact TEXT, body BLOB); "
+                    "journal TEXT, body BLOB); "
                     "CREATE INDEX volume_journals ON volumes(journal, sequence); "
-                    "CREATE INDEX volume_kinds ON volumes(kind, sequence); "
-                    "CREATE INDEX volume_members ON volumes(kind, first_artifact, last_artifact); "
-                    "CREATE TABLE summary(root BLOB, volume_count INTEGER);"
+                    "CREATE INDEX volume_kinds ON volumes(kind, sequence);"
                 )
-
-                def remember(
-                    document: ProvenanceVolumeDocument | ProvenanceTerminalDocument,
-                ) -> None:
-                    if isinstance(document, ProvenanceTerminalDocument):
-                        kind, journal_id, first, last = "terminal", None, None, None
-                    else:
-                        kind, journal_id = document.payload.kind, document.journal_id
-                        first, last = document.first_artifact_id, document.last_artifact_id
-                    assert db is not None
-                    db.execute(
-                        "INSERT INTO volumes VALUES (?, ?, ?, ?, ?, ?)",
-                        (
-                            format_archive_sequence(document.sequence),
-                            kind,
-                            journal_id,
-                            first,
-                            last,
-                            document.to_json_bytes(),
-                        ),
-                    )
-
                 summary = self._scan(remember)
-                db.execute(
-                    "INSERT INTO summary VALUES (?, ?)",
-                    (summary.root.to_json_bytes(), summary.volume_count),
-                )
                 db.commit()
-                if (
-                    self._metadata_cache is not None
-                    and path.stat().st_size <= self._metadata_cache.byte_budget
-                ):
-                    return path.read_bytes()
-                return None
-
-            try:
-                image = (
-                    None
-                    if self._metadata_cache is None
-                    else self._metadata_cache.get_or_load(self._metadata_cache_key, build)
-                )
-                if db is None:
-                    if image is None:
-                        # Oversize results stay on each caller's normal disk path.
-                        build()
-                    else:
-                        path.write_bytes(image)
-                        db = sqlite3.connect(path, check_same_thread=False)
-                assert db is not None
-                cursor = db.execute("SELECT root, volume_count FROM summary")
-                try:
-                    row = cursor.fetchone()
-                finally:
-                    cursor.close()
-                if row is None:
-                    raise ProvenanceArchiveReadError("cached metadata lacks its exact root")
-                root = ProvenanceRootDocument.from_json_bytes(row[0])
-                if (
-                    root.identity != self._expected_root_sha256
-                    or root.archive_generation != self._archive_generation
-                    or root.artifact_set_sha256 != self._artifact_set_sha256
-                ):
-                    raise ProvenanceArchiveReadError("cached metadata names another archive")
-                db.execute("PRAGMA cache_size = -512")
                 db.execute("PRAGMA query_only = ON")
                 self._prepared_db = db
-                self._prepared_summary = ProvenanceArchiveSummary(
-                    root=root, volume_count=int(row[1])
-                )
+                self._prepared_summary = summary
                 yield self
             finally:
                 self._prepared_db = None
@@ -234,8 +173,7 @@ class CanonicalProvenanceArchiveReader:
                 for cursor in self._prepared_cursors:
                     cursor.close()
                 self._prepared_cursors.clear()
-                if db is not None:
-                    db.close()
+                db.close()
 
     def _history_pages(self, authority: RecordSetRef) -> Iterator[RecordPage]:
         """Read a bounded set through its mandatory terminal, with no total cap."""
@@ -369,7 +307,6 @@ class CanonicalProvenanceArchiveReader:
         *,
         journal_id: str | None = None,
         kind: str | None = None,
-        artifact_id: str | None = None,
     ) -> Iterator[ProvenanceVolumeDocument | ProvenanceTerminalDocument]:
         if self._prepared_db is not None:
             filters = []
@@ -380,9 +317,6 @@ class CanonicalProvenanceArchiveReader:
             if kind is not None:
                 filters.append("kind = ?")
                 values.append(kind)
-            if artifact_id is not None:
-                filters.extend(("first_artifact <= ?", "last_artifact >= ?"))
-                values.extend((artifact_id, artifact_id))
             where = " WHERE " + " AND ".join(filters) if filters else ""
             cursor = self._prepared_db.execute(
                 "SELECT kind, body FROM volumes" + where + " ORDER BY sequence", values
@@ -411,23 +345,14 @@ class CanonicalProvenanceArchiveReader:
                 terminal = ProvenanceTerminalDocument.from_json_bytes(raw)
                 if terminal.sequence != sequence:
                     raise ProvenanceArchiveReadError("provenance terminal sequence changed")
-                if journal_id is None and kind is None and artifact_id is None:
+                if journal_id is None and kind is None:
                     yield terminal
                 return
             document = ProvenanceVolumeDocument.from_json_bytes(raw)
             if document.sequence != sequence:
                 raise ProvenanceArchiveReadError("provenance volume sequence changed")
-            if (
-                (journal_id is None or document.journal_id == journal_id)
-                and (kind is None or document.payload.kind == kind)
-                and (
-                    artifact_id is None
-                    or (
-                        document.first_artifact_id is not None
-                        and document.last_artifact_id is not None
-                        and document.first_artifact_id <= artifact_id <= document.last_artifact_id
-                    )
-                )
+            if (journal_id is None or document.journal_id == journal_id) and (
+                kind is None or document.payload.kind == kind
             ):
                 yield document
             sequence += 1
@@ -616,12 +541,12 @@ class CanonicalProvenanceArchiveReader:
         for journal_id, _bytes, _sha256 in self.iter_journal_headers():
             yield journal_id
 
-    def iter_bindings(self, *, artifact_id: str | None = None) -> Iterator[dict[str, object]]:
+    def iter_bindings(self) -> Iterator[dict[str, object]]:
         """Stream exact member-ordered binding pages from the selected archive."""
 
         self.scan()
         last_id: str | None = None
-        for document in self._descriptors(kind="bindings", artifact_id=artifact_id):
+        for document in self._descriptors(kind="bindings"):
             if isinstance(document, ProvenanceTerminalDocument):
                 return
             if document.payload.kind != "bindings":
@@ -663,8 +588,7 @@ class CanonicalProvenanceArchiveReader:
                 if last_id is not None and binding.artifact_id <= last_id:
                     raise ProvenanceArchiveReadError("provenance bindings are not member ordered")
                 last_id = binding.artifact_id
-                if artifact_id is None or binding.artifact_id == artifact_id:
-                    yield binding.to_mapping()
+                yield binding.to_mapping()
 
 
 __all__ = [

@@ -305,7 +305,13 @@ def test_runtime_image_isolation_is_derived_for_every_runtime_image() -> None:
         for step in workflow["jobs"]["images"]["steps"]
         if step["name"] == "Qualify every selected final image"
     )
-    assert 'make image-qualification IMAGE_GROUP="$IMAGE_GROUP"' in executed["run"]
+    assert 'execute --workload "image-$IMAGE_GROUP"' in executed["run"]
+    for group in ci_qualification.IMAGE_GROUPS:
+        assert ci_qualification.validation_work("image-" + group).command == (
+            "make",
+            "image-qualification",
+            "IMAGE_GROUP=" + group,
+        )
 
     checker = (REPO_ROOT / "scripts/check_runtime_image.py").read_text(encoding="utf-8")
     assert "docker-bake.hcl" in checker

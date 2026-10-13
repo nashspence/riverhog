@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-from collections import OrderedDict
 from collections.abc import Iterator
 
 from riverhog_archive_contracts import HistoryJournalAnchor, MemberHistoryImport
@@ -12,8 +11,6 @@ from riverhog_protocol.errors import NotFound
 from riverhog_client.client import ApiClient
 from riverhog_client.processing.provenance import ClaimedProvenance
 
-_VERIFIED_PREFIX_CACHE_ENTRIES = 128
-
 
 class CanonicalHistoryTransfer:
     """Copy only an explicitly accepted closure; never discover ancestry by names."""
@@ -21,9 +18,6 @@ class CanonicalHistoryTransfer:
     def __init__(self, api: ApiClient, collection_id: int) -> None:
         self.api = api
         self.collection_id = collection_id
-        # Cache only successful byte-prefix authentication within this transfer.
-        # Destination status and source closure/claim checks still run afresh.
-        self._verified_prefixes: OrderedDict[tuple[str, int, str, int, str], None] = OrderedDict()
 
     def accept(self, source: ClaimedProvenance, *, extent: str) -> MemberHistoryImport:
         with source.history_import(extent=extent) as (imported, proof, closure):
@@ -52,16 +46,6 @@ class CanonicalHistoryTransfer:
                 return
             # The same source journal may serve multiple exact selected prefixes.
             # Authenticate overlap, preserving each import's independent extent.
-            key = (
-                selected.journal_id,
-                old.bytes,
-                old.sha256,
-                selected.prefix_bytes,
-                selected.prefix_sha256,
-            )
-            if key in self._verified_prefixes:
-                self._verified_prefixes.move_to_end(key)
-                return
             digest = hashlib.sha256()
             remaining = selected.prefix_bytes
             with self.api.stream_collection_upload_session_provenance_journal(
@@ -75,9 +59,6 @@ class CanonicalHistoryTransfer:
                         break
             if remaining or digest.hexdigest() != selected.prefix_sha256:
                 raise ValueError("imported journal conflicts with an already accepted prefix")
-            self._verified_prefixes[key] = None
-            if len(self._verified_prefixes) > _VERIFIED_PREFIX_CACHE_ENTRIES:
-                self._verified_prefixes.popitem(last=False)
             return
         expected_bytes = selected.prefix_bytes
         expected_sha256 = selected.prefix_sha256

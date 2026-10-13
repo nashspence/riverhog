@@ -4,6 +4,7 @@ import os
 import re
 import shlex
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -121,6 +122,17 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
             )
             + "\n"
         )
+    elif name == "mise":
+        command.write_text(
+            "#!/usr/bin/env bash\nset -euo pipefail\n"
+            'arguments=("$@")\n'
+            "for ((index=0; index < ${#arguments[@]}; index++)); do\n"
+            '  if [[ "${arguments[index]}" == */scripts/ci_make.py ]]; then\n'
+            f"    printf '%s\\n' \"$*\" >> {log_path}.observer\n"
+            f'    exec {sys.executable} "${{arguments[@]:index}}"\n'
+            "  fi\ndone\n"
+            f'printf \'%s|%s\\n\' "${{COMPOSE_PROJECT_NAME:-}}" "$*" >> {log_path}\n'
+        )
     elif name == "pgrep":
         command.write_text(
             "\n".join(
@@ -174,6 +186,8 @@ def _run_make(
     env.pop("POSTGRES_TESTS", None)
     env.pop("TESTS", None)
     env.pop("MISE_BIN", None)
+    env["RIVERHOG_VALIDATION_SCOPE"] = "iteration"
+    env["RIVERHOG_CI_TIMING_DIR"] = str(tmp_path / "timings")
     if extra_env:
         env.update(extra_env)
 

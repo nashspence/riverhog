@@ -5,10 +5,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
+import shlex
 import subprocess
 import sys
 from collections.abc import Sequence
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
+from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, cast
@@ -18,6 +21,7 @@ import yaml
 from riverhog_canonical_json import canonical_json_bytes
 
 from scripts.ci_unit import SHARDS
+from scripts.validation_evidence import ValidationWork
 
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY_TARGETS = (
@@ -47,6 +51,175 @@ NATIVE_TESTS = (
     "some-implementations/gogurt/application/tests",
     "tests/platform/test_end_user_artifacts.py",
 )
+
+
+def validation_workloads() -> tuple[ValidationWork, ...]:
+    """Derive required work; optional speed goals do not authorize or gate execution."""
+    work = [ValidationWork(name, ("make", name)) for name in REPOSITORY_TARGETS]
+    from scripts.ci_make import maintained_make_targets
+
+    direct = maintained_make_targets(ROOT / "Makefile")
+    parameterized = {"unit-shard", "image-qualification", "compose-shard", "build-%"}
+    work.extend(
+        ValidationWork(name, ("make", name))
+        for name in direct
+        if name not in parameterized and name not in REPOSITORY_TARGETS
+    )
+    work.extend(
+        ValidationWork(f"unit-{name}", ("make", "unit-shard", f"UNIT_SHARD={name}"))
+        for name in SHARDS
+    )
+    work.extend(
+        ValidationWork(f"image-{name}", ("make", "image-qualification", f"IMAGE_GROUP={name}"))
+        for name in IMAGE_GROUPS
+    )
+    work.extend(
+        ValidationWork(f"compose-{name}", ("make", "compose-shard", f"COMPOSE_LANE={name}"))
+        for name in COMPOSE_LANES
+    )
+    work.extend(
+        ValidationWork(name, ("make", name))
+        for name in ("unit", "build", "client-platform-qualification", "linux-qualification")
+        if name not in direct
+    )
+    workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
+    for runner in workflow["jobs"]["client-platforms"]["strategy"]["matrix"]["os"]:
+        work.append(
+            ValidationWork(
+                "native-" + runner,
+                (
+                    "mise",
+                    "x",
+                    "python",
+                    "uv",
+                    "age",
+                    "--",
+                    "uv",
+                    "run",
+                    "--locked",
+                    "--all-packages",
+                    "--group",
+                    "dev",
+                    "python",
+                    "-m",
+                    "scripts.ci_qualification",
+                    "native",
+                ),
+                conditions=(("runner_image", runner),),
+            )
+        )
+    work.append(ValidationWork("check-in", ("make", "-j1", "lint", "unit", "dist-smoke", "build")))
+    work.append(
+        ValidationWork(
+            "stove0-scale",
+            (
+                "make",
+                "--no-print-directory",
+                "stove0-scale-qualification",
+                "STOVE0_SCALE_FILES=128",
+                "STOVE0_SCALE_AUDIO_FRAMES=2000",
+                "RIVERHOG_CI_IMAGES_PREBUILT=1",
+            ),
+            target_seconds=600,
+            boundary="complete-lifecycle-after-verified-image-preparation",
+            conditions=(
+                ("audio_files", "128"),
+                ("audio_frames", "2000"),
+                ("sidecar_files", "1"),
+                ("images", "prepared-and-verified-at-the-tested-source"),
+            ),
+        )
+    )
+    work.append(
+        ValidationWork(
+            "stove0-scale-images",
+            (
+                "mise",
+                "x",
+                "--",
+                "uv",
+                "run",
+                "--locked",
+                "--all-packages",
+                "--group",
+                "dev",
+                "python",
+                "-m",
+                "scripts.ci_qualification",
+                "compose-prepare",
+                "--lane",
+                "processing-scale",
+            ),
+            boundary="complete-source-verified-image-preparation",
+            conditions=(("compose_lane", "processing-scale"),),
+        )
+    )
+    if len({item.name for item in work}) != len(work):
+        raise ValueError("each validation workload must have exactly one definition")
+    from scripts.validation_witnesses import discover_test_witnesses
+
+    witnesses = discover_test_witnesses(ROOT)
+    return tuple(
+        replace(
+            item,
+            growth_witnesses=tuple(
+                witness.id for witness in witnesses if item.name in witness.gates
+            ),
+        )
+        for item in work
+    )
+
+
+def validation_work(name: str) -> ValidationWork:
+    from scripts.ci_make import maintained_make_targets
+
+    for work in validation_workloads():
+        if work.name == name:
+            return work
+    if re.fullmatch(r"build-[a-zA-Z0-9_-]+", name) and "build-%" in maintained_make_targets(
+        ROOT / "Makefile"
+    ):
+        return ValidationWork(name, ("make", name))
+    raise ValueError(f"unknown maintained validation workload: {name}")
+
+
+def require_validation_work(names: Sequence[str]) -> tuple[ValidationWork, ...]:
+    """Require known, unique work identities, never numerical target approval."""
+    if not names or len(set(names)) != len(names):
+        raise ValueError("expected workloads must be nonempty and unique")
+    return tuple(validation_work(name) for name in names)
+
+
+def validation_environment(work: ValidationWork, run_id: str) -> dict[str, str]:
+    """Keep qualified work independent of selectors inherited by Make or pytest."""
+    environment = dict(os.environ)
+    selection_variables = (
+        "TESTS",
+        "FILES",
+        "PYTHON_PATHS",
+        "args",
+        "PYTEST_ADDOPTS",
+        "PYTEST_PLUGINS",
+        "UNIT_PYTEST_ARGS",
+        "UNIT_SHARD_PYTEST_ARGS",
+        "UNIT_REPORT_ARGS",
+        "MAKEFILES",
+        "MAKEOVERRIDES",
+        "RIVERHOG_VALIDATION_SCOPE",
+    )
+    supplied = [name for name in selection_variables if environment.get(name)]
+    if supplied:
+        raise ValueError("qualified work has selection overrides: " + ", ".join(supplied))
+    for variable in ("MAKEFLAGS", "MFLAGS"):
+        flags = shlex.split(environment.get(variable, ""))
+        if any(
+            flag not in {"w", "-w", "--print-directory", "--no-print-directory", "-j1", "--jobs=1"}
+            for flag in flags
+        ):
+            raise ValueError("qualified work has Make execution overrides")
+        environment.pop(variable, None)
+    environment.update(RIVERHOG_CI_LANE=work.name, RIVERHOG_CI_RUN_ID=run_id)
+    return environment
 
 
 def run(command: Sequence[str], *, env: dict[str, str] | None = None) -> None:

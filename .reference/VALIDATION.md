@@ -1,52 +1,56 @@
-# Reference validation — not product qualification
+# Reference validation and limits
 
-Producer environment: CPython 3.13.5, Git 2.47.3, 2026-10-12.
-No repository dependency installation or network service was used by these checks.
-The reference uses standard-library Python; its syntax supports Python 3.10+.
-Only the producer's 3.13.5 interpreter was exercised.
+This revision is a non-authoritative integration handoff. The records below are
+reference checks, not product qualification or completion of #968.
 
-## Performed
+## Audited input
 
-1. Verified the full-clone ZIP SHA-256
-   `8bd80d6d717e41dda3cc44c297aab3dc22da2744907d1babcd10953029fd79c7`
-   and embedded manifest SHA-256
-   `5853fefd111344dd35e7892b6cd6f5b85e0b172f5b69027edd8c82a430fc6846`.
-   Git HEAD and tree match the audited identities in HANDOFF. Restored Git file
-   modes after ZIP extraction and confirmed no original source-file changes.
-2. Ran `PYTHONDONTWRITEBYTECODE=1 python .reference/test_claim_projection.py`:
-   **22 tests passed**, including parameterized subcases inside unittest tests.
-3. Parsed all three new Python files, verified local Markdown file links and
-   manifest/file membership, and ran `git diff --cached --check` on the prepared
-   reference additions.
-4. Ran `python .reference/verify_reference.py` against the audited commit:
-   reference integrity and all **17 focused source-file fingerprints matched**.
-5. Exercised the verifier's failure paths with disposable local copies/objects:
-   altered reference bytes were rejected (exit 1); one changed committed source
-   seam was reported for reconciliation (exit 2). Neither is a product test.
-6. Prepared an exact Git tree containing only the eight `.reference/` additions.
-   The actual published commit/parent/tree comparison and native Development-link
-   limitation are recorded in #968; no pre-publication SHA is represented as a
-   published commit.
+Source `e43df5b5acce5d730c28b48b084e87445fbaac3b`, tree
+`9546274bcd5918db378d1d12311e7e9cf06aa309`, and prior reference
+`4916504c9441a1dcde98d9904da6e0dfe9b729e7` were available in a full Git clone.
+The fetched ZIP SHA-256 was
+`12343c3e8c387f4a0d603019786ac7d347803bfd945550de3ecafffe85b1c235`;
+its embedded manifest SHA-256 was
+`2bad19fd9cb6792de97a4044276fc3caede54b01b2951d495e58905f74fbe24d`.
+Both matched the clone service's identities. ZIP extraction did not preserve
+executable modes automatically; tracked file modes were restored from Git's index
+and the clean audited worktree verified before preparing reference additions.
 
-The fixture examples distinguish exact scope and attribution, passing negative
-behavior, mixed purposes, missing candidate results, policy/tooling controls,
-required failures, duplicate/mismatched evidence, skip/xfail/xpass, interruption,
-parameter identity, and advisory metadata outside required-work/claim inputs.
+## Performed on CPython 3.13.5 / Git 2.47.3
 
-## Not performed or established
+- Retained attribution suite: 22 unittest tests passed.
+- Added oracle/sufficiency/two-way accounting suite: 21 unittest tests passed.
+- All 29 focused committed-source byte/mode fingerprints matched.
+- Reference checksum membership, Python syntax and local Markdown links checked.
+- The two-file onboarding patch passed `git apply --check` and applied in an
+  isolated temporary repository. Exact approved section, unchanged other sections,
+  root links, patched test syntax and whole-guide integrity update were checked.
+- Prepared guide: 2,021 words, within the unchanged 2,100-word guard. Its SHA-256 is
+  `a42d88ba06ed5a74a8a2a3ce5ec66611af63281d630743189ed505312a016935`.
+- Negative verifier probes rejected altered reference content and an added
+  unmanifested file; a changed committed source seam required reconciliation.
+- The initial staged whitespace check rejected blank unified-diff context lines in
+  the patch file. Normalizing those blank context lines resolved it; patch
+  application was rechecked. Staged whitespace and absence of source changes
+  outside `.reference/` then passed.
 
-No upstream project code was executed. Repository pytest collection, product
-unit/integration tests, locked lint/type checks, full Linux/image/install/native
-qualification, browser review, provider/release operations and hosted CI were
-not run for this reference. Contract Closure was not regenerated or compared.
+The exact commands are in [HANDOFF.md](HANDOFF.md). Published tree, ordered parents,
+branch lease/readback and comparison with audited main are recorded in #968 after
+publication. These statements do not predeclare the outcome of remote publication.
 
-The example trusts already resolved owner claims and authenticated runner inputs;
-its `valid` flag is a synthetic fixture value, **not artifact verification**.
-It does not parse untrusted wire records, discover tests/contracts, prove fixture
-completeness, validate source checkout custody, aggregate retries, or enforce all
-consumer behavior. The advisory test illustrates separation of inputs; it does
-not validate #963's production wrappers. No test count is product conformance.
+## Not performed
 
-Integration must reproduce the relevant cases through the actual maintained
-collector/runner/consumer and run the current repository gates. Preserve current
-scope, source identity, safety/authorization and truthful unestablished claims.
+No upstream project code was executed. No actual pytest collection, repository
+unit suite, locked lint/type check, full Linux/image/install/native/provider work,
+Contract Closure regeneration, browser reading, or hosted qualification ran here.
+The focused guide test was parsed, not run against the upstream test environment.
+No new binding schema or sample oracle was accepted as a product declaration.
+Synthetic inputs assume reviewed requirements and trusted records; neither Python
+example authenticates artifact custody or proves an expectation is independently
+correct. The assertion-sensitivity example is not arbitrary mutation detection.
+
+All source refresh outside `.reference/` is inherited unchanged from audited main;
+only reference material is authored here. No production branch, release or provider
+control is updated, and no CI success is inferred from publishing this handoff.
+Integration must reproduce relevant cases through actual adapters, close the full
+accounting boundary and obtain its normal final-source evidence.

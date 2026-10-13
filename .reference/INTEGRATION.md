@@ -1,110 +1,161 @@
-# Integration route for #968
+# Integration route — current source, one slice at a time
 
-Concrete implementation guidance, not a second scope or decisions document.
-The [owning issue](https://github.com/nashspence/riverhog/issues/968) controls.
+This is an implementation handoff, not another scope authority. Read current
+AGENTS and #968. Source below is `e43df5b5acce5d730c28b48b084e87445fbaac3b`.
+Do not mechanically apply the reference or treat its sample states as a required schema.
 
-## P00 — begin with the existing restart attribution path
+## P00 — establish the real end-to-end path
 
-Use a separate authoritative worktree at the actual source chosen by integration.
-Read current AGENTS and #968, then reconcile the focused seams below. Do not
-assume the supplied base is post-#961/#963, and do not merge reference branches.
-The reference's Python example is a counterexample set to translate, not a
-production module to adopt or another declaration registry.
+**Deliverable:** one real scoped claim, policy/tooling controls, actual execution,
+machine output, and the existing operation consumer. Keep all four broader
+operation claims unestablished unless their owner independently supplies proof.
 
-Record the exact source/ref, clean/dirty state, applicable #963 implementation,
-and first useful slice in #968. Proceed with routine code and test choices.
-Report only a specific prerequisite, missing owner declaration or semantic
-conflict that actually prevents that slice; no fresh broad design study is needed.
+Read `scripts/ci_unit.py::Collection`, `tests/unit/test_event_cursor_restart.py`,
+`tests/operation_observer.py::pytest_runtest_logreport`,
+`scripts/operation_qualification.py::_event_cursor_restart_claim` and
+`tests/unit/test_operation_qualification.py`.
 
-**First deliverable:** carry the purpose and exact scope of the existing narrow
-SQLite/ASGI event-cursor witness through collection, execution, evidence and its
-actual qualification consumer. Include one policy and one tooling check in the
-same report as negative controls. A source annotation alone is not this slice.
+The real test has three parameterized applications and four groups of expectations:
+retained event identity/content/order; one-event progression; newly appended events;
+and empty terminal-page semantics. It creates fresh Python processes over SQLite,
+with official clients using real ASGI routes. It is not deployed-image, PostgreSQL,
+crash-recovery or durable consumer-checkpoint evidence.
 
-### Read these source seams, not the whole repository
+Resolve the existing owner declaration and asserted meaning first. Reuse its
+source identity; do not invent a normative ID to match a test name. Add purposeful
+attribution at the smallest meaningful group. A whole test can be a group when its
+scope is coherent. This does not require per-assertion instrumentation everywhere.
+Use `test_security_policy.py` and `test_contract_review.py` as controls *for this
+cursor claim*, not a claim that tooling can never have external contracts.
 
-All paths below refer to audited main `152d095038df0c0d0ed642cf265d47b11c65a754`.
-Use source-seams.json to detect drift, not to decide semantic classification.
+Run the collected parameterized witness with the actual observer and existing
+consumer, adding malformed/missing/non-product evidence and failed-teardown cases.
+Replay the actual release predicate without invoking release/provider operations.
+Record exact source, current foundation, changed files, commands and first result
+in #968. Proceed with routine choices; escalate only a specific authority conflict.
 
-| Seam | Existing entry point | Integration use |
-| --- | --- | --- |
-| Collected execution universe | `scripts/ci_unit.py::Collection`, `partition`; `Makefile` canonical roots | Preserve exhaustive nodes and shard locality; do not derive purpose from shard names. |
-| Automatic result transport | `scripts/ci_timing.py::PytestTiming`; `scripts/ci_qualification.py` | Extend/reuse actual #963 adapters and work identity rather than build a competing runner. |
-| Real narrow witness | `tests/unit/test_event_cursor_restart.py::test_event_cursor_continues_across_process_restart` | Three parameterized applications; assertions concern persisted SQLite/ASGI process restart, not deployed-image or PostgreSQL recovery. |
-| Existing attribution | `tests/operation_observer.py::pytest_runtest_logreport`, `timing_evidence` | Attribution currently follows a passed non-xfailed call; the enclosing failed session is rejected downstream. Preserve both boundaries. |
-| Actual claim consumer | `scripts/operation_qualification.py::_event_cursor_restart_claim`, `_load_operation_timings`, `evidence` | Retain narrow success separately from the four broader unestablished claims. Do not manufacture a passed release lifecycle. |
-| Actual release predicate | `.github/workflows/release-qualification.yml`, step `Verify exact-SHA operation evidence` | Exercise its current predicate against positive/negative records without running release operations. |
-| Non-product controls | `tests/unit/test_security_policy.py`; `tests/unit/test_contract_review.py` | Document-content and comparison-tooling assertions must not count as proof of the cursor claim. Their required failures remain failures. |
-| Candidate-only bindings | `scripts/extent_witnesses.py::bind_segmented_decisions` | Symbol existence is a candidate association, never an executed result. |
-| Normative/audit separation | `scripts/contract_atlas/records.py::build_records`; `scripts/contract_atlas/discovery.py::_link_operation_qualification` | Keep evidence-purpose/result changes in audit-owned fields and preserve exact subject links. |
-| Existing regression guards | `tests/unit/test_ci_unit_partition.py`, `test_operation_qualification.py`, `test_contract_records.py` | Extend coverage and failure-propagation guards instead of replacing them. |
+## P01 — cover the real universe without inventing a parallel one
 
-Resolve the actual owner declaration, subject and demonstrated assertion before
-emitting product-support metadata. A symbol or schema-shaped field is not itself
-an independent promise. If a relevant general promise lacks a discovery route,
-record the owning-contract finding rather than invent a synthetic identifier
-or silently reclassify the witness as implementation-only.
+**Deliverable:** reviewed purpose for every maintained check, exact collected nodes
+and non-pytest work identities, mixed cases, and bidirectional relationship accounting.
 
-### Recommended first consumer cases
+Use `Makefile`, `pyproject.toml`, `scripts/ci_unit.py`,
+`scripts/ci_qualification.py::validation_workloads`, and
+`scripts/ci_make.py::maintained_make_targets`. Existing execution groups preserve
+fixture locality; their names do not determine normative purpose.
 
-Use existing operation tests, fixtures and source/run checks. Extend the actual
-collector/observer/report/consumer path, not only a fresh helper's unit tests.
+Prefer explicit local annotations and reviewed module defaults with narrow overrides.
+A newly added, unsupported or ambiguous construct must remain visible rather than
+inherit an unreviewed implementation-only classification. Reconcile source metadata
+with actual pytest collection, including class methods, parameters and applicable
+platform/integration/browser selections. Static AST symbol discovery is not that
+universe: current `validation_witnesses.py` only scans selected roots and top-level
+literal growth markers. Keep valid narrow growth bindings while bridging full
+collection; do not silently generalize its scope.
 
-| Case | Required observation |
-| --- | --- |
-| Existing restart fixture succeeds | Its scoped local witness is attributable; deployed/broader claims remain unestablished. |
-| Same report includes passing policy and tooling checks | They remain visible but add no cursor/lifecycle proof. |
-| One node has policy and product assertion groups | Only the demonstrated product group supports the matched claim. |
-| Successful expected rejection assertion | Can support the exact rejection promise, not a successful positive lifecycle. |
-| Passed call, failed teardown/session | Keep diagnostic observation; reject it as successful required-run qualification. |
-| Skip, xfail, xpass, interruption or missing group result | Do not promote to behavioral qualification. |
-| Wrong parameter, source, run, work, conditions or claim scope | Reject mismatched evidence or leave the required claim unestablished, as the existing consumer requires. |
-| Renamed/removed/unclassified check or new discovered subject | No stale binding, silent noncontractual default or inherited unrelated proof. |
-| Goal absent, severe timing miss or unavailable comparator | No target-driven failure, hold or approval condition; independent failures remain. |
-| Audit-only purpose/result change | Normative Closure meaning/digest stays unchanged. |
+Non-pytest built/script/provider work uses the maintained owner's execution boundary.
+A build, static check or policy check can be required without proving product behavior.
+Classify independent external tooling promises under their actual owner where real.
 
-The synthetic module supplies a subset of these boundaries. It deliberately does
-not implement real discovery, wire parsing, trusted artifact custody, collection,
-run aggregation, rendering, arbitrary scope implication or release permission.
-Translate examples into production regressions; do not use passing examples as
-claims that the current product already satisfies these cases.
+In both directions, surface promises without sufficient witnesses, intended product
+checks without resolved promises, stale nodes/parameters and retired expectations.
+Dispositions are bind/correct or a reviewed owning-contract finding; never silently
+restore an old promise, manufacture one, drop a required check, or count an unmapped
+check as proof. Keep findings/decisions in GitHub and generated audit, not a second
+normative registry. Classification coverage is not behavioral coverage.
 
-## After the first slice
+## P02 — extend the integrated evidence foundation
 
-**Classification coverage.** Extend existing collection/entrypoint discovery to
-maintained pytest and non-pytest work. Prefer explicit source-local purpose and
-reviewed inheritance where correct, with assertion-level overrides for mixed
-checks. Preserve unresolved status until reviewed. Do not infer contractuality
-from names, mock usage or component role. Keep requiredness independent.
+**Deliverable:** purpose, oracle provenance, exact scope and assertion outcomes travel
+through the real #963 transport and actual #873/#964 adapters without changing gates.
 
-**Bound evidence and consumer parity.** Generalize only the records needed by
-the next real owner. Consume source-owned contract identities and existing
-#873/#963/#964 witnesses. Preserve node parameter, work/conditions and selected
-run/attempt identity; do not union stale retries into a pass. Distinguish counts
-of checks, witnesses, obligations and displayed associations. Keep all existing
-required validation failures even when their subject is non-product.
+Use `scripts/ci_timing.py::PytestTiming`, `scripts/validation_witnesses.py`,
+`scripts/validation_evidence.py`, `scripts/ci_make.py::owned_execution_spans`,
+`validate_make_receipt`, `scripts/ci_execution.py`, and
+`scripts/ci_actions.py::verify_ci_artifacts`. Extend existing formats/adapters only
+where needed. No second runner, instrumentation pass, artifact store or target registry.
 
-**Human reading and completion.** Show purpose, actual result, scope and limits
-at the existing local/CI summaries and normal Audit reading path. Validate actual
-rendered output and the release consumer with non-product/missing-proof controls.
-Finish the issue's maintained-universe accounting; do not require proving every
-honestly exposed product obligation to finish this accounting correction.
+Keep discovery, candidates, execution, evidence integrity, sufficient scoped support,
+required validation and advisory observations separate. A growth collector's `pass`
+currently means the owned assertions executed with valid observations; its own
+contract says independent declarations and Audit bindings are still required for
+product conformance. An operation HTTP success and a source-linked extent candidate
+have different meanings. Preserve them, not just their spelling.
 
-No native dependency or milestone is established by this route. Coordinate with
-the actual #963 shared foundation when touching its transport. #873 retains
-operation proof, #964 growth, #469 final release audit, and #961 onboarding.
+Retain source/work/conditions, node parameter, run/session/attempt and artifact origins.
+Do not union convenient successes across stale retries or broaden a local scope.
+Preserve deliberate supported reuse of exact owned job completions across an Actions
+rerun, with their origin attempts; do not turn "same attempt" into a blanket ban.
+Follow the selected qualified Make owner and descendants. A failing negative-test
+child observation is not an independent required owner; a genuine owned failure
+cannot be excluded by relabeling it as a fixture. Skips/xfails/xpasses/incomplete
+runs do not prove required behavior. A valid report of failure is not corrupt
+merely because it reports failure, but the failure must survive every consumer.
 
-## Validation to run during real integration
+Prove against the current raw-payload hashing witness in
+`tests/unit/test_raw_ingress_manifest.py` as well as P00. Preserve its narrow measured
+byte-hashing scope; #964 owns additional growth declarations and composition.
 
-Preserve current AGENTS requirements and use locked tools. Start with the real
-slice plus `test_ci_unit_partition.py`, `test_operation_qualification.py`,
-`test_contract_records.py` and any changed transport/rendering tests. Then run
-applicable full local and independent exact-pushed-SHA checks. Compare normative
-Closure identity for classification-only edits. Required built/platform tests
-stay with their owners; this handoff does not authorize provider/release actions.
+## P03 — prove meaning at consumers and in human output
 
-Before a context reset or hand-back, post to #968: exact source/ref and worktree
-state; changed files and actual contracts, if any; commands/results/artifact
-identities produced; unresolved classification or proof scope; coordination or
-specific blocker; cleanup state; and the next concrete command/slice. Keep that
-progress in GitHub, not in tracked main planning or duplicate policy files.
+**Deliverable:** one exact accounting model drives local/CI summaries, Audit routes
+and each actual qualification consumer, with no stronger downstream claim.
+
+Use `scripts/contract_atlas/records.py::build_records`,
+`discovery.py::_link_operation_qualification`, renderer modules reached by those
+records, `scripts/extent_witnesses.py::bind_segmented_decisions`,
+`operation_qualification.py::evidence`, `ci_actions.py`, and
+`.github/workflows/release-qualification.yml`.
+
+For each relationship show the owning expectation, assertion/group, conditions,
+actual outcome, limitations and remaining requirement. Declarations/structural
+checks may prove a structural promise, but not an unrelated runtime lifecycle.
+A reused normative parser/schema or independently checked vector is not forbidden;
+a second implementation is not mandatory. Ask whether the check would catch the
+relevant error rather than compare two equally wrong projections.
+
+Prove legitimate agreement-only and negative/rejection promises positively. Use
+selected corrupt-output or bypassed-assertion tests to ensure the actual consumer
+loses support or a focused guard fails while unrelated scaffolding stays green.
+No automatic semantic proof checker or repository-wide mutation campaign is required.
+
+Display counts separately for selected/collected checks, executed assertions,
+candidate associations, unique supported obligations and unestablished obligations.
+Repeated links, worker/controller copies or parameter multiplicity do not create
+extra contractual proof. Preserve useful diagnostic observations from failed runs
+without making that run eligible. A metadata or rendering-only change leaves
+normative Closure meaning/digest unchanged. Fix status labels where misleading;
+no compulsory source/file/shard renaming.
+
+## P04 — onboarding and finite closeout
+
+**Deliverable:** approved guide wording, maintained-universe accounting, complete
+consumer challenges and final source-bound integration evidence.
+
+Apply [onboarding.patch](onboarding.patch) deliberately against current source;
+[AGENTS.section.md](AGENTS.section.md) is the exact approved wording from #968's
+maintainer decision. Preserve unrelated sections, the inline link, bold conclusion,
+2,100-word limit, whole-document integrity and all existing guide-policy checks.
+The new guide-policy test is not a product-conformance witness.
+
+Use [ACCEPTANCE.md](ACCEPTANCE.md). Reconcile the final collector/entrypoint inventory,
+all current producers and consuming routes, and all existing mandatory coverage.
+Finish classification and relationship dispositions; do not finish after P00 or
+wait for every honestly exposed product proof gap to close. Update current #968
+with the final source and evidence per acceptance item, remaining owner-linked
+proof gaps, unchanged contract identity or separately approved changes, and the
+actual required local/CI outcomes. Stop once those criteria hold; another speculative
+ontology pass is not a gate.
+
+Focused commands use the maintained locked environment and actual current roots.
+Existing starting tests include `test_ci_unit_partition.py`,
+`test_operation_qualification.py`, `test_validation_witnesses.py`,
+`test_validation_evidence.py`, `test_ci_actions.py`, `test_contract_records.py`,
+`test_entrypoints.py`, and the actual Make/observation regressions affected.
+Then preserve AGENTS' full local and independent exact-pushed-source requirements.
+This does not authorize providers, protected branch changes or release publication.
+
+Before changing owners or handing back, post exact source/ref and worktree state,
+changed files/contract effects, commands/results/artifact identities, residual
+classification or proof findings, cleanup state and the next concrete action.
+The next agent should continue a named slice, not restart research from the chat.

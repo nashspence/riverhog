@@ -130,6 +130,7 @@ filterwarnings = ["error"]
 testpaths = ["packages", "some-implementations", "riverhog", "tests"]
 markers = [
   "integration: requires explicitly provisioned integration infrastructure",
+  "growth_witness(identity, gates): source-owned test association with recorded primitive observations",
 ]
 
 [tool.mypy]
@@ -159,6 +160,8 @@ support_paths = [
   "scripts/run_mypy.py",
   "scripts/ci_timing.py",
   "scripts/ci_qualification.py",
+  "scripts/ci_actions.py",
+  "scripts/ci_execution.py",
 ]
 
 [[tool.mypy.overrides]]

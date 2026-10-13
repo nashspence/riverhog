@@ -1,0 +1,44 @@
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -130,11 +130,13 @@
+
+ Keep correctness, growth-contract conformance, and elapsed-time observations separate. Correctness failures, growth violations, and invalid required evidence fail validation. A valid timing miss does not.
+
++Passing a test establishes only what its checks actually show. Tests can protect public behavior, internal rules, repository policy, or the tools used for validation—sometimes within the same test. Neither a test’s name nor where it runs determines what it proves. Evidence for a public promise must point to its owning contract and demonstrate the relevant behavior under the recorded conditions. Agreement between implementations proves only agreement unless that agreement is itself promised. Keep promises without sufficient proof visible, and preserve other required checks.
++
+ Report elapsed time even when no numerical target or comparable reference exists. Use credible performance evidence to recommend investigation or improvement. The stronger the evidence and the more serious its likely consequences, the stronger the recommendation may be.
+
+ Record significant findings and recommendations in GitHub. Performance targets do not create approval-to-proceed conditions or authorize weakening required tests, workloads, or safety limits.
+
+-In short, **validation evidence establishes compliance; performance observations inform judgment.**
++In short, **evidence establishes only what its checks support; performance observations inform judgment.**
+
+ ## Validate the change you actually deliver
+
+--- a/tests/unit/test_entrypoints.py
++++ b/tests/unit/test_entrypoints.py
+@@ -109,7 +109,7 @@
+     ("relative", "expected_sha256"),
+     [
+         ("README.md", "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2"),
+-        ("AGENTS.md", "d2cf10da13a9b4976911b5abd101c5ecfe609b1598a5c9c1bb57232160e7302e"),
++        ("AGENTS.md", "a42d88ba06ed5a74a8a2a3ce5ec66611af63281d630743189ed505312a016935"),
+     ],
+ )
+ def test_onboarding_document_requires_explicit_revision(
+@@ -244,3 +244,15 @@
+         any(project == target or target in project.parents for target in targets)
+         for project in projects
+     )
++
++
++def test_agents_distinguishes_required_checks_from_public_contract_evidence() -> None:
++    evidence = _guide_section("Account for validation evidence")
++    assert "Passing a test establishes only what its checks actually show." in evidence
++    assert "Neither a test’s name nor where it runs determines what it proves." in evidence
++    assert "Evidence for a public promise must point to its owning contract" in evidence
++    assert "demonstrate the relevant behavior under the recorded conditions" in evidence
++    assert "Agreement between implementations proves only agreement" in evidence
++    assert "unless that agreement is itself promised" in evidence
++    assert "Keep promises without sufficient proof visible" in evidence
++    assert "preserve other required checks" in evidence

@@ -607,6 +607,8 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
     seconds: int | None,
     comparison: str,
 ) -> None:
+    from scripts.ci_qualification import validation_work
+
     module = load_script()
     calls = []
     outcomes = iter([preparation, lifecycle])
@@ -615,35 +617,73 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
         calls.append(arguments)
         outcome = next(outcomes)
         assert kwargs["stdout"].writable() and kwargs["stderr"] == subprocess.STDOUT
+        assert (
+            not {"args", "MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES", "RIVERHOG_VALIDATION_SCOPE"}
+            & kwargs["env"].keys()
+        )
+        assert kwargs["env"]["TESTS"] == "retained-test-selector"
         timing = {
             "source_sha": "a" * 40,
             "source_clean": True,
             "elapsed_seconds": 1000 if len(calls) == 1 else seconds,
             "exit_status": outcome,
         }
-        if len(calls) == 2:
-            timing["profiling_target"] = {
-                "report_only": True,
-                "target_seconds": 600,
-                "status": comparison,
-                "reason": "command-failed" if outcome else "completed-command",
-            }
+        owned_work = validation_work("stove0-scale-images" if len(calls) == 1 else "stove0-scale")
+        timing.update(
+            format="riverhog-ci-validation-evidence/v2",
+            advisory_target=owned_work.advisory_target(),
+            growth_results={},
+            run_id=arguments[arguments.index("--run-id") + 1],
+            definition=owned_work.definition(),
+            state="completed",
+            source_end={"source_sha": "a" * 40, "source_clean": True},
+            started_at="2026-01-01T00:00:00+00:00",
+            finished_at="2026-01-01T00:00:01+00:00",
+            started_monotonic_seconds=0,
+            phase_costs={
+                "preparation": 0,
+                "command-including-owner-cleanup": timing["elapsed_seconds"],
+                "evidence-collection": 0,
+            },
+            observed_conditions={
+                "platform": "linux",
+                "architecture": "x86_64",
+                "python": "3.12",
+            },
+        )
+        timing["profiling_target"] = {
+            "report_only": True,
+            "target_seconds": 600 if len(calls) == 2 else None,
+            "status": comparison if len(calls) == 2 else "not-compared",
+            "reason": "command-failed"
+            if outcome
+            else "completed-command"
+            if len(calls) == 2
+            else "no-target",
+        }
         Path(arguments[arguments.index("--output") + 1]).write_bytes(canonical_json_bytes(timing))
         return subprocess.CompletedProcess(arguments, outcome)
 
     monkeypatch.setattr(module.subprocess, "run", observe)
+    monkeypatch.setenv("args", "--scenario stove0-scale")
+    monkeypatch.setenv("MAKEFLAGS", "w -- args=--scenario\\ stove0-scale")
+    monkeypatch.setenv("MFLAGS", "w")
+    monkeypatch.setenv("MAKEOVERRIDES", "args")
+    monkeypatch.setenv("RIVERHOG_VALIDATION_SCOPE", "iteration")
+    monkeypatch.setenv("TESTS", "retained-test-selector")
     monkeypatch.setenv("STOVE0_SCALE_FILES", "4")
     monkeypatch.setenv("STOVE0_SCALE_AUDIO_FRAMES", "999")
     assert module._profile_stove0_scale(tmp_path) == (preparation or lifecycle)
     assert "--target-seconds" not in calls[0]
-    assert calls[0][calls[0].index("--") + 1 :] == [
-        sys.executable,
+    assert calls[0][2:5] == ["execute", "--workload", "stove0-scale-images"]
+    assert validation_work("stove0-scale-images").command[-6:] == (
+        "python",
         "-m",
         "scripts.ci_qualification",
         "compose-prepare",
         "--lane",
         "processing-scale",
-    ]
+    )
     images = Path(calls[0][calls[0].index("--output") + 1])
     assert images.name == "images.json" and images.parent.parent == tmp_path
     raw = (images.parent / "profile.json").read_bytes()
@@ -668,14 +708,14 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
         return
     assert len(calls) == 2
     execution = calls[1]
-    assert execution[execution.index("--target-seconds") + 1] == "600"
+    assert "--target-seconds" not in execution and "--" not in execution
+    assert execution[2:5] == ["execute", "--workload", "stove0-scale"]
     assert Path(execution[execution.index("--output") + 1]) == images.parent / "lifecycle.json"
-    assert execution[execution.index("--") + 1 :] == [
+    assert validation_work("stove0-scale").command == (
         "make",
         "--no-print-directory",
         "stove0-scale-qualification",
         "STOVE0_SCALE_FILES=128",
         "STOVE0_SCALE_AUDIO_FRAMES=2000",
         "RIVERHOG_CI_IMAGES_PREBUILT=1",
-        f"RIVERHOG_CI_TIMING_DIR={images.parent / 'phases'}",
-    ]
+    )

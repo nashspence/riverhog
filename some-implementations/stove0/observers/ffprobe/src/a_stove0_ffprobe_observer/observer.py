@@ -71,7 +71,7 @@ class FfprobeObserver:
                     ObserverContractSupport.from_contract(
                         FFPROBE_STREAMS_OBSERVER_CONTRACT,
                         interfaces=(FFPROBE_STREAMS_INTERFACE.ref,),
-                        preferred_subject_batch_size=16,
+                        preferred_subject_batch_size=1,
                     ),
                     ObserverContractSupport.from_contract(
                         MEDIA_SAMPLING_OBSERVER_CONTRACT, interfaces=(MEDIA_SAMPLING_INTERFACE.ref,)

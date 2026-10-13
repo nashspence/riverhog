@@ -141,9 +141,6 @@ class TargetHttpBinding:
             operations=TARGET_HTTP_OPERATIONS,
             execute=lambda method, path, body: self._handle_inline(method, path, body, staged=True),
             response=TargetHttpResponse,
-            execute_model=lambda method, path, model: self._handle_inline(
-                method, path, b"", staged=True, validated=model
-            ),
         )
 
     def handle(self, method: str, path: str, body: bytes = b"") -> TargetHttpResponse:
@@ -152,13 +149,7 @@ class TargetHttpBinding:
         return self._handle_inline(method, path, body)
 
     def _handle_inline(
-        self,
-        method: str,
-        path: str,
-        body: bytes,
-        *,
-        staged: bool = False,
-        validated: BaseModel | None = None,
+        self, method: str, path: str, body: bytes, *, staged: bool = False
     ) -> TargetHttpResponse:
         normalized_method = method.upper()
         operation = http_operation_for_request(TARGET_HTTP_OPERATIONS, normalized_method, path)
@@ -168,15 +159,11 @@ class TargetHttpBinding:
                     return _error(400, "bad_request", "GET /v1/target must not include a body")
                 return _model_response(self.target.descriptor())
             if normalized_method == "POST" and path == "/v1/preflight":
-                preflight = self._parse(
-                    body, TargetPreflightRequest, staged=staged, validated=validated
-                )
+                preflight = self._parse(body, TargetPreflightRequest, staged=staged)
                 return _model_response(self.target.preflight(preflight))
             job_match = _JOB_PATH.fullmatch(path)
             if job_match is not None and normalized_method == "PUT":
-                job_request = self._parse(
-                    body, TargetJobRequest, staged=staged, validated=validated
-                )
+                job_request = self._parse(body, TargetJobRequest, staged=staged)
                 job_id = job_match.group(1)
                 if job_request.declaration.job_id != job_id:
                     return _error(
@@ -191,7 +178,7 @@ class TargetHttpBinding:
                 return _model_response(self.target.get_job(job_match.group(1)))
             cancel_match = _CANCEL_PATH.fullmatch(path)
             if cancel_match is not None and normalized_method == "POST":
-                accepted = self._parse(body, AcceptedTargetJob, staged=staged, validated=validated)
+                accepted = self._parse(body, AcceptedTargetJob, staged=staged)
                 if accepted.declaration.job_id != cancel_match.group(1):
                     return _error(
                         409, "job_identity_mismatch", "target cancel path differs from request"
@@ -209,18 +196,7 @@ class TargetHttpBinding:
             _LOG.exception("target execution failed")
             return _error(500, "target_failed", "target execution failed")
 
-    def _parse(
-        self,
-        body: bytes,
-        model: type[ModelT],
-        *,
-        staged: bool = False,
-        validated: BaseModel | None = None,
-    ) -> ModelT:
-        if validated is not None:
-            if not staged or not isinstance(validated, model):
-                raise TypeError("metadata handoff differs from the native request type")
-            return validated
+    def _parse(self, body: bytes, model: type[ModelT], *, staged: bool = False) -> ModelT:
         if not staged and len(body) > self.maximum_request_bytes:
             raise TargetServiceError(
                 413,
@@ -257,9 +233,6 @@ class DepartureEffectHttpBinding:
             operations=DEPARTURE_EFFECT_HTTP_OPERATIONS,
             execute=lambda method, path, body: self._handle_inline(method, path, body, staged=True),
             response=TargetHttpResponse,
-            execute_model=lambda method, path, model: self._handle_inline(
-                method, path, b"", staged=True, validated=model
-            ),
         )
 
     def handle(self, method: str, path: str, body: bytes = b"") -> TargetHttpResponse:
@@ -268,13 +241,7 @@ class DepartureEffectHttpBinding:
         return self._handle_inline(method, path, body)
 
     def _handle_inline(
-        self,
-        method: str,
-        path: str,
-        body: bytes,
-        *,
-        staged: bool = False,
-        validated: BaseModel | None = None,
+        self, method: str, path: str, body: bytes, *, staged: bool = False
     ) -> TargetHttpResponse:
         operation = http_operation_for_request(DEPARTURE_EFFECT_HTTP_OPERATIONS, method, path)
         if method == "GET" and path == "/v1/departure-target" and operation is not None:
@@ -298,12 +265,7 @@ class DepartureEffectHttpBinding:
                     413, "request_too_large", "departure effect request exceeds its limit"
                 )
             try:
-                if validated is not None:
-                    if not staged or not isinstance(validated, DepartureEffectIntent):
-                        raise TypeError("metadata handoff differs from the departure request type")
-                    intent = validated
-                else:
-                    intent = DepartureEffectIntent.model_validate(parse_identity_json(body))
+                intent = DepartureEffectIntent.model_validate(parse_identity_json(body))
             except (ValidationError, ValueError) as exc:
                 return _error(400, "invalid_target_request", str(exc))
             if intent.departure_id != match.group(1):

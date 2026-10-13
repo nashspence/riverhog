@@ -12,7 +12,6 @@ from riverhog_provenance import (
     assertion,
     external_reference,
     history,
-    journal_reference_cache,
     new_id,
     reference,
     validate_journal,
@@ -156,11 +155,7 @@ def test_documentary_reference_index_reuses_parsing_with_complete_fenced_reads(
             member_role="member",
             catalog=catalog,
         ) as closure,
-        patch.object(
-            journal_reference_cache,
-            "iter_journal_frames",
-            wraps=journal_reference_cache.iter_journal_frames,
-        ) as parse,
+        patch.object(history, "iter_journal_frames", wraps=history.iter_journal_frames) as parse,
     ):
         anchors = [closure._reference_anchor(row) for row in references]
         assert [closure._reference_anchor(row) for row in references] == anchors
