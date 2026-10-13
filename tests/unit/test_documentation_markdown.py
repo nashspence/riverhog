@@ -352,3 +352,53 @@ def test_native_defaults_do_not_hide_meaningful_python_parameters(module, name, 
     )
     assert requirements["subjects"][key]["rule"] in {"authored", "reference"}
     assert requirements["subjects"][key]["meaning"]["owned"] in requirements["scopes"]
+
+
+def test_growth_declarations_are_authored_contract_subjects_with_delegate_context():
+    from riverhog_client import hash_raw_source_chunks
+    from riverhog_protocol.growth import growth_binding, project_bindings
+
+    code = closure()
+    projection = project_bindings((growth_binding(hash_raw_source_chunks),))
+    code["external_contract"]["growth"] = projection
+    parent = "riverhog-client.raw-source-hashing.growth/v1"
+    child = "riverhog-protocol.raw-part-commitment.growth/v1"
+    identities = {parent: "growth:parent", child: "growth:child"}
+    code["elements"].append(
+        {
+            "id": "growth:cost-model",
+            "authority": "riverhog-protocol",
+            "interface": "growth",
+            "title": "Primitive cost model",
+            "pointers": [
+                "/external_contract/growth/format",
+                "/external_contract/growth/cost_model",
+            ],
+            "related_element_ids": [],
+        }
+    )
+    for identity, declaration in projection["declarations"].items():
+        code["elements"].append(
+            {
+                "id": identities[identity],
+                "authority": declaration["authority"],
+                "interface": "growth",
+                "title": identity,
+                "pointers": [
+                    "/external_contract/growth/declarations/" + identity.replace("/", "~1")
+                ],
+                "related_element_ids": [identities[child]] if identity == parent else [],
+            }
+        )
+    before = build_requirements(code)
+    key = target_key({"element_id": identities[parent], "pointer": ""})
+    row = before["subjects"][key]
+    assert row["rule"] == "authored" and row["destinations"] == []
+    assert "growth" in before["policy"]["interfaces"]
+    code["external_contract"]["growth"]["declarations"][child]["bounds"]["hash_input_octets"][
+        "expression"
+    ]["terms"][0]["value"] += 1
+    after = build_requirements(code)
+    changed = after["subjects"][key]
+    assert changed["meaning"]["owned"] == row["meaning"]["owned"]
+    assert changed["meaning"]["dependencies"] != row["meaning"]["dependencies"]
