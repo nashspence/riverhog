@@ -9,6 +9,14 @@ from pathlib import Path
 
 def source_identity(root: Path) -> dict[str, object]:
     try:
+        checkout = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if checkout.returncode != 0 or Path(checkout.stdout.strip()).resolve() != root.resolve():
+            return {"source_sha": "", "source_clean": False}
         revision = subprocess.run(
             ["git", "-C", str(root), "rev-parse", "--verify", "HEAD"],
             capture_output=True,
