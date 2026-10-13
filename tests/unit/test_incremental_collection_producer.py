@@ -19,6 +19,12 @@ from riverhog_core.app_permissions import (
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
+from riverhog_core.catalog_models import (
+    CollectionArchiveObjectUploadRecord,
+    CollectionArtifactRecord,
+    CollectionRecord,
+    CollectionUploadRecord,
+)
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
@@ -34,6 +40,7 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.errors import NotFound
 from riverhog_protocol.manifest import artifact_set_identity_ordered
+from sqlalchemy import func, select
 
 from tests.support.upload_api import UploadServiceApi
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
@@ -328,7 +335,9 @@ def test_incremental_producer_keeps_equal_bytes_as_distinct_members(tmp_path):
     assert api.bindings["a" * 64].journal != api.bindings["b" * 64].journal
 
 
-def _bounded_service_api(tmp_path: Path) -> tuple[UploadServiceApi, MemoryArchiveStore]:
+def _bounded_service_api(
+    tmp_path: Path, *, policy: CollectionVolumePolicy | None = None
+) -> tuple[UploadServiceApi, MemoryArchiveStore]:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
     config = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     initialize_db(database_url)
@@ -339,7 +348,8 @@ def _bounded_service_api(tmp_path: Path) -> tuple[UploadServiceApi, MemoryArchiv
     service = SqlAlchemyCollectionUploadService(
         config,
         ArchiveStoreRegistry({"archive": binding}),
-        policy=CollectionVolumePolicy(
+        policy=policy
+        or CollectionVolumePolicy(
             pack_source_bytes=1024,
             pack_artifacts=4,
             pack_member_bytes=1024,
@@ -360,7 +370,7 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("RIVERHOG_UPLOAD_ARTIFACT_CONCURRENCY", "1")
+    monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
     api, store = _bounded_service_api(tmp_path)
     producer = IncrementalCollectionProducer(
         api,  # type: ignore[arg-type]
@@ -414,3 +424,121 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
     assert not any(path.exists() for path in local.values())
     assert len([path for path in store.objects if "/volumes/" in path]) >= 7
     assert api.work_calls < len(local)
+
+
+@pytest.mark.parametrize(
+    "members, append_mode, concurrency",
+    [
+        (15, "batch", 1),
+        (16, "batch", 1),
+        (17, "batch", 1),
+        (15, "repeated", 1),
+        (16, "repeated", 1),
+        (17, "repeated", 1),
+        (17, "batch", 8),
+    ],
+)
+def test_native_ingest_preserves_members_across_registration_and_payload_regimes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    members: int,
+    append_mode: str,
+    concurrency: int,
+) -> None:
+    monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", str(concurrency))
+    api, store = _bounded_service_api(
+        tmp_path,
+        policy=CollectionVolumePolicy(
+            pack_source_bytes=1024,
+            pack_artifacts=4,
+            pack_member_bytes=1024,
+            pack_part_plaintext_bytes=65536,
+            raw_volume_plaintext_bytes=131072,
+            raw_part_plaintext_bytes=65536,
+        ),
+    )
+    real_register = api.register_collection_upload_session_artifacts
+    registration_sizes = []
+    first_registration_sizes = []
+    registered_ids = set()
+
+    def register(collection_id, artifacts, **kwargs):
+        registration_sizes.append(len(artifacts))
+        new_ids = {artifact["artifact_id"] for artifact in artifacts} - registered_ids
+        if new_ids:
+            first_registration_sizes.append(len(new_ids))
+            registered_ids.update(new_ids)
+        return real_register(collection_id, artifacts, **kwargs)
+
+    monkeypatch.setattr(api, "register_collection_upload_session_artifacts", register)
+    real_status = api.get_collection_upload_session
+    committed_totals = []
+
+    def status(collection_id):
+        with session_scope(api.service._session_factory) as session:
+            upload = session.get(CollectionUploadRecord, collection_id)
+            if upload is not None and upload.state == "finalizing":
+                planned = session.scalar(
+                    select(func.sum(CollectionArchiveObjectUploadRecord.plaintext_bytes)).where(
+                        CollectionArchiveObjectUploadRecord.collection_id == collection_id
+                    )
+                )
+                committed_totals.append((upload.uploaded_payload_bytes, planned))
+        return real_status(collection_id)
+
+    monkeypatch.setattr(api, "get_collection_upload_session", status)
+    sizes = (0, 1023, 1024, 1025, 65535, 65536, 65537)
+    inputs = []
+    expected = {}
+    for index in range(members):
+        payload = bytes([index]) * sizes[index % len(sizes)]
+        source = tmp_path / f"member-{index}.bin"
+        source.write_bytes(payload)
+        artifact_id = f"{index:064x}"
+        inputs.append(ProducerFile(source, artifact_id, allow_missing_materialization_hint=True))
+        expected[artifact_id] = (len(payload), hashlib.sha256(payload).hexdigest())
+    producer = IncrementalCollectionProducer(
+        api,
+        producer_app="fixture-target",
+        adapter_id="fixture-target/v1",
+        adapter_version="1.0.0",
+        ingest_source="fixture",
+        source_event_id="regime-fixture",
+    )
+    try:
+        if append_mode == "batch":
+            producer.append_inputs(tuple(inputs))
+        else:
+            for source in inputs:
+                producer.append_inputs((source,))
+        # Original sources remain until complete archive custody is confirmed.
+        assert all(source.source.exists() for source in inputs)
+        result = producer.finish(poll_seconds=0.01, timeout_seconds=300)
+        assert result.archive_root_sha256 is not None and result.receipt["state"] == "finalized"
+        with session_scope(api.service._session_factory) as session:
+            collection = session.get(CollectionRecord, producer.collection_id)
+            assert (
+                collection is not None
+                and collection.archive_root_sha256 == result.archive_root_sha256
+            )
+            rows = list(
+                session.scalars(
+                    select(CollectionArtifactRecord).where(
+                        CollectionArtifactRecord.collection_id == producer.collection_id
+                    )
+                )
+            )
+            assert {row.artifact_id: (row.bytes, row.sha256) for row in rows} == expected
+        assert committed_totals and all(actual == planned for actual, planned in committed_totals)
+        assert registered_ids == set(expected)
+        assert all(1 <= size <= 16 for size in registration_sizes)
+        expected_batches = (
+            [16] * (members // 16) + ([members % 16] if members % 16 else [])
+            if append_mode == "batch"
+            else [1] * members
+        )
+        assert first_registration_sizes == expected_batches
+        assert any("/volumes/" in path for path in store.objects)
+    finally:
+        producer.stop()
+        api.close()

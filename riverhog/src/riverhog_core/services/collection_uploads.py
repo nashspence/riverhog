@@ -135,7 +135,7 @@ from riverhog_provenance import (
     external_reference,
     validate_journal_chunks,
 )
-from sqlalchemy import asc, case, desc, exists, func, insert, or_, select, true
+from sqlalchemy import asc, case, desc, exists, func, insert, or_, select, true, update
 from sqlalchemy.orm import Session, selectinload
 from state_schema import read_snapshot
 from time_formats import (
@@ -7239,11 +7239,29 @@ def _record_payload_custody_progress(
             volume.state != "sealed" or volume.sealed_receipt_json is None for volume in volumes
         ):
             continue
-        artifact.payload_sealed_at = now
-        newly_sealed_artifacts += 1
-        newly_sealed_bytes += artifact.bytes
-    upload.payload_sealed_artifact_count += newly_sealed_artifacts
-    upload.payload_sealed_artifact_bytes += newly_sealed_bytes
+        changed = session.execute(
+            update(CollectionUploadArtifactRecord)
+            .where(
+                CollectionUploadArtifactRecord.collection_id == upload.collection_id,
+                CollectionUploadArtifactRecord.artifact_id == artifact_id,
+                CollectionUploadArtifactRecord.payload_sealed_at.is_(None),
+            )
+            .values(payload_sealed_at=now)
+        ).rowcount
+        if changed == 1:
+            newly_sealed_artifacts += 1
+            newly_sealed_bytes += artifact.bytes
+        elif changed != 0:
+            raise RuntimeError("payload seal transition did not report an exact member count")
+    if newly_sealed_artifacts:
+        # Concurrent volume receipts add their own progress to the durable
+        # counters, even when an application session holds an earlier snapshot.
+        upload.payload_sealed_artifact_count = (
+            CollectionUploadRecord.payload_sealed_artifact_count + newly_sealed_artifacts
+        )
+        upload.payload_sealed_artifact_bytes = (
+            CollectionUploadRecord.payload_sealed_artifact_bytes + newly_sealed_bytes
+        )
 
 
 def _upload_payload(

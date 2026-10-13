@@ -40,6 +40,7 @@ from riverhog_core.catalog_models import (
     CollectionDescriptionPublicationRecord,
     CollectionRecord,
     CollectionTagNodeRecord,
+    CollectionUploadArtifactRecord,
     CollectionUploadProvenanceJournalChunkRecord,
     CollectionUploadProvenanceJournalRecord,
     CollectionUploadRecord,
@@ -60,6 +61,7 @@ from riverhog_core.services.canonical_provenance import SqlAlchemyCanonicalProve
 from riverhog_core.services.catalog_sync import SqlAlchemyCatalogSyncService
 from riverhog_core.services.collection_uploads import (
     SqlAlchemyCollectionUploadService,
+    _record_payload_custody_progress,
 )
 from riverhog_core.services.lifecycle_events import SqlAlchemyLifecycleEventService
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
@@ -1799,3 +1801,105 @@ def test_startup_reconciles_interrupted_finalization_from_its_durable_checkpoint
     assert recovered["latest_failure"] == "archive finalization interrupted before completion"
     assert recovered["archive_next_attempt_at"] is not None
     assert _process_until(service, collection_id)["state"] == "finalized"
+
+
+def test_payload_seal_progress_survives_stale_sessions_and_repeated_receipts(tmp_path):
+    service, _config, _resumable, _root = _service_with_archive_objects(
+        tmp_path,
+        policy=CollectionVolumePolicy(
+            pack_source_bytes=1024,
+            pack_artifacts=1,
+            pack_member_bytes=1024,
+            pack_part_plaintext_bytes=65536,
+            raw_volume_plaintext_bytes=65536,
+            raw_part_plaintext_bytes=65536,
+        ),
+    )
+    opened = service.create_or_resume(
+        idempotency_key="concurrent-payload-seals",
+        ingest_source="fixture",
+        archive_store=None,
+        initiator=_CREATOR,
+        event_context=None,
+    )
+    collection_id = int(opened["collection_id"])
+    service.register_artifacts(
+        collection_id,
+        (
+            {"artifact_id": "a" * 64, "bytes": "2", "sha256": hashlib.sha256(b"aa").hexdigest()},
+            {"artifact_id": "b" * 64, "bytes": "3", "sha256": hashlib.sha256(b"bbb").hexdigest()},
+        ),
+    )
+    service.complete(collection_id)
+    factory = service._session_factory
+    with session_scope(factory) as session:
+        volumes = list(
+            session.scalars(
+                select(CollectionArchiveObjectUploadRecord)
+                .where(CollectionArchiveObjectUploadRecord.collection_id == collection_id)
+                .order_by(CollectionArchiveObjectUploadRecord.sequence)
+            )
+        )
+        assert len(volumes) == 2
+        volume_ids = tuple(volume.object_id for volume in volumes)
+        # This transaction fixture supplies sealed rows to the accounting
+        # boundary; it does not claim a verified archive or custody receipt.
+        for volume in volumes:
+            volume.state = "sealed"
+            volume.sealed_receipt_json = "{}"
+    with factory() as first, factory() as second:
+        first_upload = first.get(CollectionUploadRecord, collection_id)
+        second_upload = second.get(CollectionUploadRecord, collection_id)
+        stale_members = list(
+            second.scalars(
+                select(CollectionUploadArtifactRecord).where(
+                    CollectionUploadArtifactRecord.collection_id == collection_id
+                )
+            )
+        )
+        assert all(member.payload_sealed_at is None for member in stale_members)
+        _record_payload_custody_progress(
+            first,
+            first_upload,
+            first.get(CollectionArchiveObjectUploadRecord, (collection_id, volume_ids[0])),
+            now="2026-01-01T00:00:00Z",
+        )
+        first.commit()
+        assert second_upload.payload_sealed_artifact_count == 0
+        _record_payload_custody_progress(
+            second,
+            second_upload,
+            second.get(CollectionArchiveObjectUploadRecord, (collection_id, volume_ids[1])),
+            now="2026-01-01T00:00:01Z",
+        )
+        second.commit()
+        with session_scope(factory) as observed:
+            upload = observed.get(CollectionUploadRecord, collection_id)
+            assert (upload.payload_sealed_artifact_count, upload.payload_sealed_artifact_bytes) == (
+                2,
+                5,
+            )
+        # The stale member object still says unsealed. The durable conditional
+        # transition must reject accounting the first member a second time.
+        assert stale_members[0].payload_sealed_at is None
+        _record_payload_custody_progress(
+            second,
+            second_upload,
+            second.get(CollectionArchiveObjectUploadRecord, (collection_id, volume_ids[0])),
+            now="2026-01-01T00:00:02Z",
+        )
+        second.commit()
+    with session_scope(factory) as observed:
+        upload = observed.get(CollectionUploadRecord, collection_id)
+        assert (upload.payload_sealed_artifact_count, upload.payload_sealed_artifact_bytes) == (
+            2,
+            5,
+        )
+        assert all(
+            member.payload_sealed_at is not None
+            for member in observed.scalars(
+                select(CollectionUploadArtifactRecord).where(
+                    CollectionUploadArtifactRecord.collection_id == collection_id
+                )
+            )
+        )
