@@ -212,3 +212,33 @@ def test_exhausted_storage_does_not_discard_active_or_incomplete_attempts(tmp_pa
     with pytest.raises(ValueError, match="storage budget"):
         ci_make.retain_completed_runs(tmp_path, "new")
     assert active.read_bytes() == b"retained active evidence"
+
+
+def test_recipe_binds_child_evidence_to_the_owner_and_clears_shell_reentry(tmp_path, monkeypatch):
+    directory = tmp_path / "owned-recipes"
+    result = tmp_path / "child-context.json"
+    monkeypatch.setenv("RIVERHOG_VALIDATION_MAKE_DIRECTORY", str(directory))
+    monkeypatch.setenv("RIVERHOG_VALIDATION_MAKE_SPAN", "actual-owner")
+    monkeypatch.setenv("RIVERHOG_CI_RUN_ID", "actual-recipe")
+    monkeypatch.setenv("RIVERHOG_VALIDATION_MAKE_REENTRY", "old-goal")
+    import shlex
+    import sys
+
+    script = (
+        "import json,os,pathlib; "
+        f"pathlib.Path({str(result)!r}).write_text(json.dumps({{"
+        "name:os.environ.get(name) for name in "
+        "('RIVERHOG_VALIDATION_PARENT_SPAN','RIVERHOG_VALIDATION_ACTIVE_SPAN',"
+        "'RIVERHOG_VALIDATION_MAKE_DIRECTORY','RIVERHOG_VALIDATION_MAKE_REENTRY')"
+        "}))"
+    )
+    assert ci_make.observe_recipe("one", ("-c", shlex.join((sys.executable, "-c", script)))) == 0
+    assert json.loads(result.read_text()) == {
+        "RIVERHOG_VALIDATION_PARENT_SPAN": "actual-owner",
+        "RIVERHOG_VALIDATION_ACTIVE_SPAN": "actual-owner",
+        "RIVERHOG_VALIDATION_MAKE_DIRECTORY": None,
+        "RIVERHOG_VALIDATION_MAKE_REENTRY": None,
+    }
+    receipt = require_canonical_json(next((directory / "recipes").glob("*.json")).read_bytes())
+    assert receipt["run_id"] == "actual-recipe" and receipt["span"] == "actual-owner"
+    assert receipt["state"] == "completed" and receipt["exit_status"] == 0

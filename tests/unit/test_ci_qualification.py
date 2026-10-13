@@ -660,3 +660,26 @@ def test_maintained_nvenc_image_requires_the_portable_shared_host_lease_witness(
         ],
         [qualification.sys.executable, "scripts/check_runtime_image.py", target],
     ]
+
+
+def test_actual_recursive_make_flags_do_not_change_qualified_work(tmp_path) -> None:
+    import shlex
+    import sys
+
+    marker = tmp_path / "qualified.txt"
+    command = shlex.join(
+        (
+            sys.executable,
+            "-c",
+            "from pathlib import Path; "
+            "from scripts.ci_qualification import validation_environment; "
+            "from scripts.validation_evidence import ValidationWork; "
+            "env=validation_environment(ValidationWork('fixture',('make','unit')),'recursive'); "
+            "assert 'MAKEFLAGS' not in env and 'MFLAGS' not in env; "
+            f"Path({str(marker)!r}).write_text('verified')",
+        )
+    )
+    makefile = tmp_path / "recursive.mk"
+    makefile.write_text(f"one:\n\t$(MAKE) -f {shlex.quote(str(makefile))} two\ntwo:\n\t{command}\n")
+    subprocess.run(["make", "-j1", "-f", str(makefile), "one"], cwd=qualification.ROOT, check=True)
+    assert marker.read_text() == "verified"

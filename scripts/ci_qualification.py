@@ -82,6 +82,32 @@ def validation_workloads() -> tuple[ValidationWork, ...]:
         for name in ("unit", "build", "client-platform-qualification", "linux-qualification")
         if name not in direct
     )
+    workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
+    for runner in workflow["jobs"]["client-platforms"]["strategy"]["matrix"]["os"]:
+        work.append(
+            ValidationWork(
+                "native-" + runner,
+                (
+                    "mise",
+                    "x",
+                    "python",
+                    "uv",
+                    "age",
+                    "--",
+                    "uv",
+                    "run",
+                    "--locked",
+                    "--all-packages",
+                    "--group",
+                    "dev",
+                    "python",
+                    "-m",
+                    "scripts.ci_qualification",
+                    "native",
+                ),
+                conditions=(("runner_image", runner),),
+            )
+        )
     work.append(ValidationWork("check-in", ("make", "-j1", "lint", "unit", "dist-smoke", "build")))
     work.append(
         ValidationWork(
@@ -162,7 +188,10 @@ def validation_environment(work: ValidationWork, run_id: str) -> dict[str, str]:
         raise ValueError("qualified work has selection overrides: " + ", ".join(supplied))
     for variable in ("MAKEFLAGS", "MFLAGS"):
         flags = shlex.split(environment.get(variable, ""))
-        if any(flag not in {"w", "--no-print-directory", "-j1", "--jobs=1"} for flag in flags):
+        if any(
+            flag not in {"w", "-w", "--print-directory", "--no-print-directory", "-j1", "--jobs=1"}
+            for flag in flags
+        ):
             raise ValueError("qualified work has Make execution overrides")
         environment.pop(variable, None)
     environment.update(RIVERHOG_CI_LANE=work.name, RIVERHOG_CI_RUN_ID=run_id)

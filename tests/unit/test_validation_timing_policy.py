@@ -210,3 +210,14 @@ def test_independent_safety_failure_retains_original_exit_not_speed_goal(tmp_pat
         timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True}
     )
     assert timing.execute_validation(work.name, tmp_path / "out.json", RUN) == 8
+
+
+def test_recursive_make_directory_flags_are_observations_not_work_selectors(monkeypatch):
+    work = qualification.ValidationWork("fixture", ("make", "unit"))
+    monkeypatch.setenv("MAKEFLAGS", "w -j1")
+    monkeypatch.setenv("MFLAGS", "-w -j1")
+    env = qualification.validation_environment(work, "recursive-make")
+    assert "MAKEFLAGS" not in env and "MFLAGS" not in env
+    monkeypatch.setenv("MFLAGS", "-w -j4")
+    with pytest.raises(ValueError, match="execution overrides"):
+        qualification.validation_environment(work, "recursive-make")
