@@ -68,7 +68,7 @@ def executed_witness(tmp_path_factory):
         check=False,
     )
     assert observed.returncode == 0, observed.stdout + observed.stderr
-    paths = tuple(output.glob(f"*/{RUN}/*.json"))
+    paths = tuple((output / "pytest").glob(f"*/{RUN}/*/*.json"))
     assert len(paths) == 1
     return root, paths, source_sha
 

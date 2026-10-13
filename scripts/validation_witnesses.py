@@ -81,13 +81,21 @@ def collect_test_witnesses(
         row = require_canonical_json(path.read_bytes())
         if (
             not isinstance(row, dict)
-            or row.get("format") != "riverhog-ci-pytest-timing/v1"
+            or row.get("format") != "riverhog-ci-pytest-timing/v2"
             or row.get("run_id") != run_id
         ):
             raise ValueError("invalid or stale growth execution artifact")
         records.append(row)
-    workers = [row for row in records if row.get("worker") != "controller"]
-    selected = workers or records
+    sessions: dict[str, list[dict[str, Any]]] = {}
+    for row in records:
+        identity = row.get("session_id")
+        if not isinstance(identity, str) or not identity:
+            raise ValueError("missing pytest session identity")
+        sessions.setdefault(identity, []).append(row)
+    selected = []
+    for rows in sessions.values():
+        workers = [row for row in rows if row.get("worker") != "controller"]
+        selected.extend(workers or rows)
     observed: dict[str, str] = {}
     for record in selected:
         if record.get("source_sha") != source_sha or record.get("source_clean") is not True:

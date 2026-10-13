@@ -617,6 +617,11 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
         calls.append(arguments)
         outcome = next(outcomes)
         assert kwargs["stdout"].writable() and kwargs["stderr"] == subprocess.STDOUT
+        assert (
+            not {"args", "MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES", "RIVERHOG_VALIDATION_SCOPE"}
+            & kwargs["env"].keys()
+        )
+        assert kwargs["env"]["TESTS"] == "retained-test-selector"
         timing = {
             "source_sha": "a" * 40,
             "source_clean": True,
@@ -656,6 +661,12 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
         return subprocess.CompletedProcess(arguments, outcome)
 
     monkeypatch.setattr(module.subprocess, "run", observe)
+    monkeypatch.setenv("args", "--scenario stove0-scale")
+    monkeypatch.setenv("MAKEFLAGS", "w -- args=--scenario\\ stove0-scale")
+    monkeypatch.setenv("MFLAGS", "w")
+    monkeypatch.setenv("MAKEOVERRIDES", "args")
+    monkeypatch.setenv("RIVERHOG_VALIDATION_SCOPE", "iteration")
+    monkeypatch.setenv("TESTS", "retained-test-selector")
     monkeypatch.setenv("STOVE0_SCALE_FILES", "4")
     monkeypatch.setenv("STOVE0_SCALE_AUDIO_FRAMES", "999")
     assert module._profile_stove0_scale(tmp_path) == (preparation or lifecycle)

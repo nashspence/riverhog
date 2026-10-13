@@ -234,6 +234,10 @@ def _profile_stove0_scale(output: Path) -> int:
 
     work = require_validation_work(["stove0-scale"])[0]
     conditions = dict(work.conditions)
+    # This preset owns its exact command; parent Make's scenario selector is not a child selector.
+    environment = dict(os.environ)
+    for variable in ("args", "MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES", "RIVERHOG_VALIDATION_SCOPE"):
+        environment.pop(variable, None)
     run_id = uuid4().hex
     timing_script = Path(__file__).with_name("ci_timing.py")
     directory = output / run_id
@@ -260,6 +264,7 @@ def _profile_stove0_scale(output: Path) -> int:
             check=False,
             stdout=log,
             stderr=subprocess.STDOUT,
+            env=environment,
         )
     preparation = prepared.returncode
     image_timing = json.loads((directory / "images.json").read_bytes())
@@ -282,7 +287,7 @@ def _profile_stove0_scale(output: Path) -> int:
                 check=False,
                 stdout=log,
                 stderr=subprocess.STDOUT,
-                env={**os.environ, "RIVERHOG_CI_TIMING_DIR": str(directory / "phases")},
+                env={**environment, "RIVERHOG_CI_TIMING_DIR": str(directory / "phases")},
             )
         status = completed.returncode
         lifecycle_timing = json.loads((directory / "lifecycle.json").read_bytes())

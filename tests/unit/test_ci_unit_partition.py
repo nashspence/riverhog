@@ -78,6 +78,7 @@ def test_contract_fixture_consumers_keep_their_whole_module_together() -> None:
 def test_executing_workers_must_collect_their_exact_canonical_shard(
     tmp_path: Path, expected: list[str], repeat_collection: bool
 ) -> None:
+    (tmp_path / "pytest.ini").write_text("[pytest]\n")
     (tmp_path / "test_one.py").write_text("def test_fact():\n    assert True\n")
     if repeat_collection:
         (tmp_path / "conftest.py").write_text(
@@ -108,6 +109,7 @@ def test_executing_workers_must_collect_their_exact_canonical_shard(
 def test_a_collected_shard_must_actually_execute_before_claiming_success(
     tmp_path: Path, mode: str
 ) -> None:
+    (tmp_path / "pytest.ini").write_text("[pytest]\n")
     (tmp_path / "test_one.py").write_text("def test_fact():\n    assert True\n")
     membership = tmp_path / "expected.json"
     membership.write_bytes(canonical_json_bytes({"nodeids": ["test_one.py::test_fact"]}))

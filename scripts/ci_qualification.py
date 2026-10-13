@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -55,6 +56,15 @@ NATIVE_TESTS = (
 def validation_workloads() -> tuple[ValidationWork, ...]:
     """Derive required work; optional speed goals do not authorize or gate execution."""
     work = [ValidationWork(name, ("make", name)) for name in REPOSITORY_TARGETS]
+    from scripts.ci_make import maintained_make_targets
+
+    direct = maintained_make_targets(ROOT / "Makefile")
+    parameterized = {"unit-shard", "image-qualification", "compose-shard", "build-%"}
+    work.extend(
+        ValidationWork(name, ("make", name))
+        for name in direct
+        if name not in parameterized and name not in REPOSITORY_TARGETS
+    )
     work.extend(
         ValidationWork(f"unit-{name}", ("make", "unit-shard", f"UNIT_SHARD={name}"))
         for name in SHARDS
@@ -70,6 +80,7 @@ def validation_workloads() -> tuple[ValidationWork, ...]:
     work.extend(
         ValidationWork(name, ("make", name))
         for name in ("unit", "build", "client-platform-qualification", "linux-qualification")
+        if name not in direct
     )
     work.append(ValidationWork("check-in", ("make", "-j1", "lint", "unit", "dist-smoke", "build")))
     work.append(
@@ -110,9 +121,15 @@ def validation_workloads() -> tuple[ValidationWork, ...]:
 
 
 def validation_work(name: str) -> ValidationWork:
+    from scripts.ci_make import maintained_make_targets
+
     for work in validation_workloads():
         if work.name == name:
             return work
+    if re.fullmatch(r"build-[a-zA-Z0-9_-]+", name) and "build-%" in maintained_make_targets(
+        ROOT / "Makefile"
+    ):
+        return ValidationWork(name, ("make", name))
     raise ValueError(f"unknown maintained validation workload: {name}")
 
 
@@ -138,6 +155,7 @@ def validation_environment(work: ValidationWork, run_id: str) -> dict[str, str]:
         "UNIT_REPORT_ARGS",
         "MAKEFILES",
         "MAKEOVERRIDES",
+        "RIVERHOG_VALIDATION_SCOPE",
     )
     supplied = [name for name in selection_variables if environment.get(name)]
     if supplied:

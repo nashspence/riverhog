@@ -67,9 +67,11 @@ class PytestTiming:
         self.run_id = worker.get(
             "ci_timing_run_id", os.environ.get("RIVERHOG_CI_RUN_ID", uuid4().hex)
         )
+        self.session_id = worker.get("ci_timing_session_id", uuid4().hex)
+        self.execution_span = os.environ.get("RIVERHOG_VALIDATION_ACTIVE_SPAN")
         self.lane = os.environ.get("RIVERHOG_CI_LANE", "unit")
         root = Path(os.environ.get("RIVERHOG_CI_TIMING_DIR", "build/ci-timing"))
-        self.directory = root / self.lane / self.run_id
+        self.directory = root / "pytest" / self.lane / self.run_id / self.session_id
         self.source = source_identity(config.rootpath)
         self.started_at = datetime.now(UTC).isoformat()
         self.started = time.monotonic()
@@ -92,6 +94,7 @@ class PytestTiming:
     @pytest.hookimpl(optionalhook=True)
     def pytest_configure_node(self, node: Any) -> None:
         node.workerinput["ci_timing_run_id"] = self.run_id
+        node.workerinput["ci_timing_session_id"] = self.session_id
 
     @pytest.hookimpl(wrapper=True)
     def pytest_fixture_setup(
@@ -122,12 +125,14 @@ class PytestTiming:
         write_record(
             self.directory / f"{self.worker_id}.json",
             {
-                "format": "riverhog-ci-pytest-timing/v1",
+                "format": "riverhog-ci-pytest-timing/v2",
                 **self.source,
                 "source_end": source_identity(session.config.rootpath),
                 "lane": self.lane,
                 "run_id": self.run_id,
                 "worker": self.worker_id,
+                "session_id": self.session_id,
+                "execution_span": self.execution_span,
                 "started_at": self.started_at,
                 "elapsed_seconds": time.monotonic() - self.started,
                 "exit_status": int(exitstatus),
@@ -188,125 +193,135 @@ def execute_validation(
     else:
         from scripts.ci_qualification import ROOT, validation_environment, validation_work
 
-    if re.fullmatch(r"[A-Za-z0-9_.-]{1,128}", run_id) is None:
-        raise ValueError("invalid validation run identifier")
+    from scripts.validation_evidence import validation_path_identity
+
+    validation_path_identity(run_id)
     started = time.monotonic()
     started_at = datetime.now(UTC).isoformat()
     work = validation_work(name)
     if output.exists():
         raise ValueError("validation evidence must not overwrite another invocation")
     env = validation_environment(work, run_id)
-    source = source_identity(ROOT)
-    definition = work.definition()
-    record: dict[str, object] = {
-        "format": "riverhog-ci-validation-evidence/v2",
-        **source,
-        "run_id": run_id,
-        "definition": definition,
-        "state": "running",
-        "started_at": started_at,
-        "started_monotonic_seconds": started,
-        "observed_conditions": {
-            "platform": sys.platform,
-            "architecture": platform.machine(),
-            "python": platform.python_version(),
-        },
-        "advisory_target": work.advisory_target(),
-    }
-    # A killed parent leaves an incomplete record, not an absent run or false success.
-    write_record(output, record)
-    timer = None
-    if work.target_seconds is not None:
-        timer = Timer(
-            work.target_seconds,
-            lambda: print(
-                f"Advisory speed goal exceeded while {name} is running; investigation recommended.",
-                file=sys.stderr,
-                flush=True,
-            ),
-        )
-        timer.daemon = True
-        timer.start()
-    state = "completed"
-    status = 2
-    execution_started = time.monotonic()
+    timing_root = Path(env.get("RIVERHOG_CI_TIMING_DIR", str(ROOT / "build/ci-timing")))
+    lease = timing_root / "make" / run_id / (".active-" + uuid4().hex)
+    lease.parent.mkdir(parents=True, exist_ok=True)
+    lease.touch(exist_ok=False)
     try:
-        status = run_validation_child(work.command, cwd=ROOT, env=env)
-    except OSError:
-        state = "launch-failed"
-    except ValidationInterrupted as interrupted:
-        state, status = "interrupted", 128 + interrupted.signum
-    except KeyboardInterrupt:
-        state, status = "interrupted", 130
-    finally:
-        execution_finished = time.monotonic()
-        if timer is not None:
-            timer.cancel()
-        growth_results = {}
-        if growth_collector is None and work.growth_witnesses:
-            from scripts.validation_witnesses import collect_test_witnesses
-
-            timing_root = Path(env.get("RIVERHOG_CI_TIMING_DIR", str(ROOT / "build/ci-timing")))
-
-            def owner_collector(owned: ValidationWork, invocation: str) -> dict[str, str]:
-                return collect_test_witnesses(
-                    tuple(timing_root.glob(f"*/{invocation}/*.json")),
-                    root=ROOT,
-                    expected=owned.growth_witnesses,
-                    source_sha=str(source["source_sha"]),
-                    run_id=invocation,
-                )
-
-            growth_collector = owner_collector
-        if growth_collector is not None:
-            try:
-                growth_results = growth_collector(work, run_id)
-            except Exception:
-                state, status = "evidence-failed", status or 2
-        after = source_identity(ROOT)
-        finished = time.monotonic()
-        elapsed = finished - started
-        phase_costs = {
-            "preparation": execution_started - started,
-            "command-including-owner-cleanup": execution_finished - execution_started,
-            "evidence-collection": finished - execution_finished,
+        source = source_identity(ROOT)
+        definition = work.definition()
+        record: dict[str, object] = {
+            "format": "riverhog-ci-validation-evidence/v2",
+            **source,
+            "run_id": run_id,
+            "definition": definition,
+            "state": "running",
+            "started_at": started_at,
+            "started_monotonic_seconds": started,
+            "observed_conditions": {
+                "platform": sys.platform,
+                "architecture": platform.machine(),
+                "python": platform.python_version(),
+            },
+            "advisory_target": work.advisory_target(),
         }
-        comparison = validation_comparison(
-            definition,
-            elapsed=elapsed,
-            exit_status=status,
-            source_clean=source.get("source_clean") is True and after == source,
-            target=work.advisory_target(),
-        )
-        record.update(
-            growth_results=growth_results,
-            state=state,
-            source_end=after,
-            elapsed_seconds=elapsed,
-            phase_costs=phase_costs,
-            finished_at=datetime.now(UTC).isoformat(),
-            exit_status=status,
-            profiling_target=comparison,
-        )
+        # A killed parent leaves an incomplete record, not an absent run or false success.
         write_record(output, record)
-    print(
-        f"{name}: {elapsed:.3f}s; target {work.target_seconds}; "
-        f"{comparison['status']} ({comparison['reason']}; report only). Evidence: {output}",
-        file=sys.stderr,
-    )
-    if state == "completed":
-        try:
-            report = check_validation_evidence(
-                [output], expected=[name], source_sha=str(source["source_sha"]), run_id=run_id
+        timer = None
+        if work.target_seconds is not None:
+            timer = Timer(
+                work.target_seconds,
+                lambda: print(
+                    f"Advisory speed goal exceeded while {name} is running; "
+                    "investigation recommended.",
+                    file=sys.stderr,
+                    flush=True,
+                ),
             )
-            qualified_status = report["qualification_exit_status"]
-            if type(qualified_status) is not int:
-                raise ValueError("invalid qualification result")
-            assert isinstance(qualified_status, int)
-            return status or qualified_status
-        except (ValueError, OSError, KeyError, TypeError):
-            return status or 2
-    return status
+            timer.daemon = True
+            timer.start()
+        state = "completed"
+        status = 2
+        execution_started = time.monotonic()
+        try:
+            status = run_validation_child(work.command, cwd=ROOT, env=env)
+        except OSError:
+            state = "launch-failed"
+        except ValidationInterrupted as interrupted:
+            state, status = "interrupted", 128 + interrupted.signum
+        except KeyboardInterrupt:
+            state, status = "interrupted", 130
+        finally:
+            execution_finished = time.monotonic()
+            if timer is not None:
+                timer.cancel()
+            growth_results = {}
+            if growth_collector is None and work.growth_witnesses:
+                from scripts.validation_witnesses import collect_test_witnesses
+
+                timing_root = Path(env.get("RIVERHOG_CI_TIMING_DIR", str(ROOT / "build/ci-timing")))
+
+                def owner_collector(owned: ValidationWork, invocation: str) -> dict[str, str]:
+                    return collect_test_witnesses(
+                        tuple((timing_root / "pytest").glob(f"*/{invocation}/*/*.json")),
+                        root=ROOT,
+                        expected=owned.growth_witnesses,
+                        source_sha=str(source["source_sha"]),
+                        run_id=invocation,
+                    )
+
+                growth_collector = owner_collector
+            if growth_collector is not None:
+                try:
+                    growth_results = growth_collector(work, run_id)
+                except Exception:
+                    state = "evidence-failed"
+            after = source_identity(ROOT)
+            finished = time.monotonic()
+            elapsed = finished - started
+            phase_costs = {
+                "preparation": execution_started - started,
+                "command-including-owner-cleanup": execution_finished - execution_started,
+                "evidence-collection": finished - execution_finished,
+            }
+            comparison = validation_comparison(
+                definition,
+                elapsed=elapsed,
+                exit_status=status,
+                source_clean=source.get("source_clean") is True and after == source,
+                target=work.advisory_target(),
+            )
+            record.update(
+                growth_results=growth_results,
+                state=state,
+                source_end=after,
+                elapsed_seconds=elapsed,
+                phase_costs=phase_costs,
+                finished_at=datetime.now(UTC).isoformat(),
+                exit_status=status,
+                profiling_target=comparison,
+            )
+            write_record(output, record)
+        print(
+            f"{name}: {elapsed:.3f}s; target {work.target_seconds}; "
+            f"{comparison['status']} ({comparison['reason']}; report only). Evidence: {output}",
+            file=sys.stderr,
+        )
+        if state == "completed":
+            try:
+                report = check_validation_evidence(
+                    [output], expected=[name], source_sha=str(source["source_sha"]), run_id=run_id
+                )
+                qualified_status = report["qualification_exit_status"]
+                if type(qualified_status) is not int:
+                    raise ValueError("invalid qualification result")
+                assert isinstance(qualified_status, int)
+                return status or qualified_status
+            except (ValueError, OSError, KeyError, TypeError):
+                return status or 2
+        return status or 2
+
+    finally:
+        lease.unlink(missing_ok=True)
 
 
 def check_validation_evidence(

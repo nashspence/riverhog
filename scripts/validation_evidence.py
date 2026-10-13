@@ -22,6 +22,40 @@ def _seconds(value: object, *, positive: bool) -> int | float:
     return value
 
 
+def validation_path_identity(value: str) -> str:
+    if re.fullmatch(r"[a-zA-Z0-9_-][a-zA-Z0-9_.-]{0,127}", value) is None:
+        raise ValueError("invalid validation path identity")
+    return value
+
+
+def validate_measurement_context(row: Mapping[str, object]) -> None:
+    for field in ("started_at", "finished_at"):
+        value = row[field]
+        if not isinstance(value, str) or datetime.fromisoformat(value).utcoffset() is None:
+            raise ValueError("execution timestamps require an explicit timezone")
+    start, finish = row["started_at"], row["finished_at"]
+    assert isinstance(start, str) and isinstance(finish, str)
+    if datetime.fromisoformat(finish) < datetime.fromisoformat(start):
+        raise ValueError("execution finished before it started")
+    _seconds(row["elapsed_seconds"], positive=False)
+
+
+def validate_phase_costs(row: Mapping[str, object]) -> None:
+    validate_measurement_context(row)
+    phases = row["phase_costs"]
+    if not isinstance(phases, dict) or set(phases) != {
+        "preparation",
+        "command-including-owner-cleanup",
+        "evidence-collection",
+    }:
+        raise ValueError("required phase costs are incomplete")
+    costs = [_seconds(value, positive=False) for value in phases.values()]
+    if not math.isclose(
+        sum(costs), _seconds(row["elapsed_seconds"], positive=False), rel_tol=1e-9, abs_tol=1e-9
+    ):
+        raise ValueError("phase costs contradict measured invocation wall time")
+
+
 @dataclass(frozen=True)
 class ValidationWork:
     """Required work; an optional speed goal never enters its required definition."""
@@ -187,25 +221,8 @@ def validate_evidence_records(
             raise ValueError("required workload, boundary, conditions or growth bindings differ")
         if row["state"] != "completed":
             raise ValueError("validation execution is incomplete")
-        for field in ("started_at", "finished_at"):
-            value = row[field]
-            if not isinstance(value, str) or datetime.fromisoformat(value).utcoffset() is None:
-                raise ValueError("execution timestamps require an explicit timezone")
-        if datetime.fromisoformat(row["finished_at"]) < datetime.fromisoformat(row["started_at"]):
-            raise ValueError("execution finished before it started")
+        validate_phase_costs(row)
         _seconds(row["started_monotonic_seconds"], positive=False)
-        phases = row["phase_costs"]
-        if not isinstance(phases, dict) or set(phases) != {
-            "preparation",
-            "command-including-owner-cleanup",
-            "evidence-collection",
-        }:
-            raise ValueError("required phase costs are incomplete")
-        costs = [_seconds(value, positive=False) for value in phases.values()]
-        if not math.isclose(
-            sum(costs), _seconds(row["elapsed_seconds"], positive=False), rel_tol=1e-9, abs_tol=1e-9
-        ):
-            raise ValueError("phase costs contradict measured invocation wall time")
         conditions = row["observed_conditions"]
         if (
             not isinstance(conditions, dict)
