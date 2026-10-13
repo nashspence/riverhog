@@ -248,18 +248,13 @@ def _profile_stove0_scale(output: Path) -> int:
             [
                 sys.executable,
                 str(timing_script),
-                "run",
-                "--lane",
+                "execute",
+                "--workload",
                 "stove0-scale-images",
+                "--run-id",
+                run_id + "-images",
                 "--output",
                 str(directory / "images.json"),
-                "--",
-                sys.executable,
-                "-m",
-                "scripts.ci_qualification",
-                "compose-prepare",
-                "--lane",
-                "processing-scale",
             ],
             check=False,
             stdout=log,
@@ -271,6 +266,14 @@ def _profile_stove0_scale(output: Path) -> int:
     lifecycle_timing = None
     status = preparation
     if preparation == 0:
+        image_evidence = check_validation_evidence(
+            [directory / "images.json"],
+            expected=["stove0-scale-images"],
+            source_sha=image_timing["source_sha"],
+            run_id=run_id + "-images",
+        )
+        if image_timing["exit_status"] or image_evidence["qualification_exit_status"]:
+            raise performance.PerformanceError("image preparation evidence contradicts execution")
         with (directory / "lifecycle.log").open("w") as log:
             completed = subprocess.run(
                 [

@@ -258,18 +258,28 @@ def test_codeql_covers_every_governed_branch_with_stable_checks() -> None:
         "matrix": {"language": ["actions", "python"]},
     }
     steps = job["steps"]
-    assert [step["uses"].split("@", 1)[0] for step in steps] == [
+    action_steps = [step for step in steps if "uses" in step]
+    assert [step["uses"].split("@", 1)[0] for step in action_steps] == [
         "actions/checkout",
         "github/codeql-action/init",
         "github/codeql-action/analyze",
+        "actions/upload-artifact",
     ]
-    assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in steps)
-    assert steps[0]["with"] == {"persist-credentials": "false"}
-    assert steps[1]["with"] == {
+    assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in action_steps)
+    assert action_steps[0]["with"] == {"persist-credentials": "false"}
+    assert action_steps[1]["with"] == {
         "languages": "${{ matrix.language }}",
         "queries": "security-extended",
     }
-    assert steps[2]["with"] == {"category": "/language:${{ matrix.language }}"}
+    assert action_steps[2]["with"] == {"category": "/language:${{ matrix.language }}"}
+    start, finish = [step for step in steps if "run" in step]
+    assert "scripts/ci_execution.py start" in start["run"]
+    assert "scripts/ci_execution.py finish" in finish["run"]
+    assert finish["if"] == "always()"
+    assert steps.index(start) < steps.index(action_steps[1])
+    assert steps.index(finish) > steps.index(action_steps[2])
+    assert steps[-1]["if"] == "always()"
+    assert steps[-1]["with"]["retention-days"] == "7"
 
 
 def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
@@ -290,7 +300,8 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
             }
         },
     }
-    assert workflow["permissions"] == {"actions": "read", "contents": "read"}
+    assert workflow["permissions"] == {"contents": "read"}
+    assert workflow["jobs"]["gate"]["permissions"] == {"actions": "read", "contents": "read"}
     assert workflow["concurrency"]["cancel-in-progress"] == "true"
 
     assert set(workflow["jobs"]) == {

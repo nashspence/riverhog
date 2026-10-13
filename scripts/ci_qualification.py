@@ -130,6 +130,30 @@ def validation_workloads() -> tuple[ValidationWork, ...]:
             ),
         )
     )
+    work.append(
+        ValidationWork(
+            "stove0-scale-images",
+            (
+                "mise",
+                "x",
+                "--",
+                "uv",
+                "run",
+                "--locked",
+                "--all-packages",
+                "--group",
+                "dev",
+                "python",
+                "-m",
+                "scripts.ci_qualification",
+                "compose-prepare",
+                "--lane",
+                "processing-scale",
+            ),
+            boundary="complete-source-verified-image-preparation",
+            conditions=(("compose_lane", "processing-scale"),),
+        )
+    )
     if len({item.name for item in work}) != len(work):
         raise ValueError("each validation workload must have exactly one definition")
     from scripts.validation_witnesses import discover_test_witnesses

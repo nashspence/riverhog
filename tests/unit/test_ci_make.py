@@ -242,3 +242,104 @@ def test_recipe_binds_child_evidence_to_the_owner_and_clears_shell_reentry(tmp_p
     receipt = require_canonical_json(next((directory / "recipes").glob("*.json")).read_bytes())
     assert receipt["run_id"] == "actual-recipe" and receipt["span"] == "actual-owner"
     assert receipt["state"] == "completed" and receipt["exit_status"] == 0
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX Make and recipe cancellation")
+@pytest.mark.parametrize("requested_signal", [2, 15])
+def test_actual_make_cancellation_joins_owned_recipe_cleanup(tmp_path, requested_signal):
+    import shlex
+    import subprocess
+    import sys
+
+    leaf = tmp_path / "leaf.py"
+    leaf.write_text(
+        "import signal,time\nfrom pathlib import Path\n"
+        f"root=Path({str(tmp_path)!r})\n"
+        "def stop(*_):\n    time.sleep(0.1)\n"
+        "    (root/'cleaned').write_text('owned cleanup')\n    raise SystemExit(0)\n"
+        "signal.signal(signal.SIGINT,stop)\nsignal.signal(signal.SIGTERM,stop)\n"
+        "(root/'ready').write_text('ready')\n"
+        "deadline=time.monotonic()+20\n"
+        "while time.monotonic()<deadline: time.sleep(0.01)\n"
+    )
+    makefile = tmp_path / "Makefile"
+    makefile.write_text(
+        "SHELL := bash\nVALIDATION_TARGETS := owner\n"
+        "ifneq ($(RIVERHOG_VALIDATION_MAKE_DIRECTORY),)\n"
+        "SHELL := $(RIVERHOG_VALIDATION_MAKE_SHELL)\n.SHELLFLAGS := -c\n"
+        "export RIVERHOG_VALIDATION_RECIPE_TARGET = $@\nendif\n"
+        "# Maintained target recipes.\nowner:\n\t" + shlex.join((sys.executable, str(leaf))) + "\n"
+    )
+    timing = tmp_path / "timings"
+    env = {
+        **os.environ,
+        "RIVERHOG_CI_TIMING_DIR": str(timing),
+        "RIVERHOG_CI_RUN_ID": "cancelled-make",
+    }
+    for name in ("MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES"):
+        env.pop(name, None)
+    with subprocess.Popen(
+        [
+            sys.executable,
+            str(ROOT / "scripts/ci_make.py"),
+            "observe",
+            "--makefile",
+            str(makefile),
+            "--goal",
+            "owner",
+        ],
+        cwd=tmp_path,
+        env=env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    ) as parent:
+        deadline = time.monotonic() + 10
+        while not (tmp_path / "ready").exists():
+            assert parent.poll() is None and time.monotonic() < deadline
+            time.sleep(0.01)
+        os.kill(parent.pid, requested_signal)
+        assert parent.wait(timeout=10) == 128 + requested_signal
+    assert (tmp_path / "cleaned").read_text() == "owned cleanup"
+    manifest = require_canonical_json(
+        next(timing.glob("make/cancelled-make/*/manifest.json")).read_bytes()
+    )
+    assert manifest["state"] == "interrupted"
+    assert manifest["qualification_eligible"] is False
+    assert manifest["recipes"][0]["state"] == "interrupted"
+    assert manifest["elapsed_seconds"] >= 0.1
+
+
+def test_retention_prunes_closed_phase_runs_with_their_owner_but_keeps_active_streams(
+    tmp_path, monkeypatch
+):
+    from riverhog_canonical_json import canonical_json_bytes
+
+    for run, state in (("closed", "completed"), ("active", "running")):
+        group = tmp_path / "make" / run / "span"
+        group.mkdir(parents=True)
+        (group / "manifest.json").write_bytes(
+            canonical_json_bytes(
+                {
+                    "format": "riverhog-make-validation/v1",
+                    "run_id": run,
+                    "state": state,
+                }
+            )
+        )
+        lane = tmp_path / "compose-storage" / run
+        lane.mkdir(parents=True)
+        (lane / "phases.jsonl").write_bytes(
+            canonical_json_bytes(
+                {
+                    "format": "riverhog-ci-phase-timing/v1",
+                    "run_id": run,
+                }
+            )
+            + b"\n"
+        )
+        (lane / "planning-cost.json").write_text("owned diagnostics")
+    monkeypatch.setenv("RIVERHOG_VALIDATION_RETAIN_RUNS", "1")
+    ci_make.retain_completed_runs(tmp_path, "new")
+    assert not (tmp_path / "compose-storage/closed").exists()
+    assert (tmp_path / "compose-storage/active/phases.jsonl").exists()
+    assert (tmp_path / "make/active/span/manifest.json").exists()

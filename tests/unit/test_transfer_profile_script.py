@@ -628,35 +628,39 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
             "elapsed_seconds": 1000 if len(calls) == 1 else seconds,
             "exit_status": outcome,
         }
-        if len(calls) == 2:
-            timing.update(
-                format="riverhog-ci-validation-evidence/v2",
-                advisory_target=validation_work("stove0-scale").advisory_target(),
-                growth_results={},
-                run_id=arguments[arguments.index("--run-id") + 1],
-                definition=validation_work("stove0-scale").definition(),
-                state="completed",
-                source_end={"source_sha": "a" * 40, "source_clean": True},
-                started_at="2026-01-01T00:00:00+00:00",
-                finished_at="2026-01-01T00:00:01+00:00",
-                started_monotonic_seconds=0,
-                phase_costs={
-                    "preparation": 0,
-                    "command-including-owner-cleanup": timing["elapsed_seconds"],
-                    "evidence-collection": 0,
-                },
-                observed_conditions={
-                    "platform": "linux",
-                    "architecture": "x86_64",
-                    "python": "3.12",
-                },
-            )
-            timing["profiling_target"] = {
-                "report_only": True,
-                "target_seconds": 600,
-                "status": comparison,
-                "reason": "command-failed" if outcome else "completed-command",
-            }
+        owned_work = validation_work("stove0-scale-images" if len(calls) == 1 else "stove0-scale")
+        timing.update(
+            format="riverhog-ci-validation-evidence/v2",
+            advisory_target=owned_work.advisory_target(),
+            growth_results={},
+            run_id=arguments[arguments.index("--run-id") + 1],
+            definition=owned_work.definition(),
+            state="completed",
+            source_end={"source_sha": "a" * 40, "source_clean": True},
+            started_at="2026-01-01T00:00:00+00:00",
+            finished_at="2026-01-01T00:00:01+00:00",
+            started_monotonic_seconds=0,
+            phase_costs={
+                "preparation": 0,
+                "command-including-owner-cleanup": timing["elapsed_seconds"],
+                "evidence-collection": 0,
+            },
+            observed_conditions={
+                "platform": "linux",
+                "architecture": "x86_64",
+                "python": "3.12",
+            },
+        )
+        timing["profiling_target"] = {
+            "report_only": True,
+            "target_seconds": 600 if len(calls) == 2 else None,
+            "status": comparison if len(calls) == 2 else "not-compared",
+            "reason": "command-failed"
+            if outcome
+            else "completed-command"
+            if len(calls) == 2
+            else "no-target",
+        }
         Path(arguments[arguments.index("--output") + 1]).write_bytes(canonical_json_bytes(timing))
         return subprocess.CompletedProcess(arguments, outcome)
 
@@ -671,14 +675,15 @@ def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
     monkeypatch.setenv("STOVE0_SCALE_AUDIO_FRAMES", "999")
     assert module._profile_stove0_scale(tmp_path) == (preparation or lifecycle)
     assert "--target-seconds" not in calls[0]
-    assert calls[0][calls[0].index("--") + 1 :] == [
-        sys.executable,
+    assert calls[0][2:5] == ["execute", "--workload", "stove0-scale-images"]
+    assert validation_work("stove0-scale-images").command[-6:] == (
+        "python",
         "-m",
         "scripts.ci_qualification",
         "compose-prepare",
         "--lane",
         "processing-scale",
-    ]
+    )
     images = Path(calls[0][calls[0].index("--output") + 1])
     assert images.name == "images.json" and images.parent.parent == tmp_path
     raw = (images.parent / "profile.json").read_bytes()

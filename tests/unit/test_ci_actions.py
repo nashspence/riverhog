@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import base64
 import copy
 import hashlib
+import json
 import subprocess
 import sys
 import zipfile
 from io import BytesIO
+from pathlib import Path
 
 import pytest
 from riverhog_canonical_json import require_canonical_json
@@ -76,35 +79,88 @@ def job_record(identity=30, start=1, finish=10):
     }
 
 
+def checkout_record(language):
+    return {
+        "format": "riverhog-actions-checkout/v1",
+        "execution": {
+            "repository": "owner/repo",
+            "workflow_ref": "owner/repo/.github/workflows/codeql.yml@refs/heads/main",
+            "workflow_sha": "a" * 40,
+            "run_id": 23,
+            "run_attempt": 2,
+            "work": "codeql-" + language,
+            "github_sha": "a" * 40,
+        },
+        "source": {"source_sha": "a" * 40, "source_clean": True},
+        "source_end": {"source_sha": "a" * 40, "source_clean": True},
+        "state": "completed",
+        "started_at": "2026-10-13T00:00:02Z",
+        "finished_at": "2026-10-13T00:00:08Z",
+        "started_monotonic_ns": "100",
+        "elapsed_ns": "6000000000",
+    }
+
+
 class Remote:
     repository = "owner/repo"
 
     def __init__(self, run=None, jobs=None, artifact=None, archive=b""):
         self.run = run or run_record()
-        self.jobs = jobs or [job_record()]
+        default_jobs = [job_record(), job_record(31)]
+        default_jobs[1]["name"] = "Analyze (actions)"
+        self.jobs = jobs or default_jobs
         if artifact is not None:
             self.jobs[0]["name"] = "actual fixture"
         self.artifacts = [] if artifact is None else [artifact]
         self.archive = archive
+        self.archives = {}
+        if artifact is None and self.run["path"] == ".github/workflows/codeql.yml":
+            for index, language in enumerate(("actions", "python")):
+                record = checkout_record(language)
+                data = zipped(
+                    [
+                        (
+                            "checkout.json",
+                            json.dumps(record, sort_keys=True, separators=(",", ":")).encode(),
+                        )
+                    ]
+                )
+                item = artifact_record(data)
+                item.update(id=40 + index, name=f"validation-codeql-{language}-23-attempt-2")
+                self.artifacts.append(item)
+                self.archives[item["id"]] = data
         self.downloads = 0
         self.calls = []
 
     def api(self, endpoint):
         self.calls.append(endpoint)
+        if endpoint.startswith("contents/"):
+            path = endpoint.removeprefix("contents/").split("?")[0]
+            raw = (ci_actions.ROOT / path).read_bytes()
+            return {
+                "type": "file",
+                "path": path,
+                "encoding": "base64",
+                "size": len(raw),
+                "content": base64.b64encode(raw).decode(),
+                "sha": hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest(),
+            }
         if endpoint == "actions/runs/23":
             return copy.deepcopy(self.run)
         if endpoint == "actions/workflows/7":
             return {"id": 7, "path": self.run["path"]}
-        if endpoint.startswith("actions/runs/23/attempts/2/jobs?"):
+        if endpoint.startswith("actions/runs/23/jobs?filter=all") or endpoint.startswith(
+            "actions/runs/23/attempts/2/jobs?"
+        ):
             return {"total_count": len(self.jobs), "jobs": copy.deepcopy(self.jobs)}
         if endpoint.startswith("actions/runs/23/artifacts?"):
             return {"total_count": len(self.artifacts), "artifacts": copy.deepcopy(self.artifacts)}
         raise AssertionError(endpoint)
 
     def download_workflow_artifact(self, identity, destination):
-        assert identity == 40
+        assert identity in {40, 41}
         self.downloads += 1
-        destination.write_bytes(self.archive)
+        destination.write_bytes(self.archives.get(identity, self.archive))
 
 
 def zipped(files):
@@ -311,19 +367,37 @@ class SourceRemote(Remote):
 
     def api(self, endpoint):
         self.calls.append(endpoint)
+        if endpoint.startswith("contents/"):
+            path = endpoint.removeprefix("contents/").split("?")[0]
+            raw = (ci_actions.ROOT / path).read_bytes()
+            return {
+                "type": "file",
+                "path": path,
+                "encoding": "base64",
+                "size": len(raw),
+                "content": base64.b64encode(raw).decode(),
+                "sha": hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest(),
+            }
         if endpoint.startswith("actions/workflows/"):
             path = endpoint.split("/")[2]
             run = self.runs[24 if path in {"ci.yml", "8"} else 23]
             if "/runs?" in endpoint:
                 return {"total_count": 1, "workflow_runs": [copy.deepcopy(run)]}
             return {"id": run["workflow_id"], "path": run["path"]}
+        if endpoint.startswith("actions/runs/23/artifacts?"):
+            return {"total_count": len(self.artifacts), "artifacts": copy.deepcopy(self.artifacts)}
         if endpoint in {"actions/runs/23", "actions/runs/24"}:
             return copy.deepcopy(self.runs[int(endpoint.split("/")[-1])])
-        if "/attempts/2/jobs?" in endpoint:
+        if "/attempts/2/jobs?" in endpoint or "/jobs?filter=all" in endpoint:
             identity = int(endpoint.split("/")[2])
             job = job_record(30 if identity == 23 else 31, 1, 10 if identity == 23 else 20)
             job.update(run_id=identity, name="Analyze (python)" if identity == 23 else "CI gate")
-            return {"total_count": 1, "jobs": [job]}
+            jobs = [job]
+            if identity == 23:
+                actions = copy.deepcopy(job)
+                actions.update(id=32, name="Analyze (actions)")
+                jobs.append(actions)
+            return {"total_count": len(jobs), "jobs": jobs}
         raise AssertionError(endpoint)
 
 
@@ -372,3 +446,91 @@ def test_completed_cli_keeps_failure_from_another_required_workflow(tmp_path, mo
     assert result["state"] == "completed"
     assert result["result"]["qualification_exit_status"] == 0
     assert result["result"]["required_source_aggregate"]["qualification_exit_status"] == 1
+
+
+def test_source_definitions_are_bound_to_the_observed_revision_not_the_observer_checkout(
+    tmp_path, monkeypatch
+):
+    remote = SourceRemote()
+    paths, identities = ci_actions.required_workflow_paths(remote, "a" * 40)
+    assert paths == ("ci.yml", "codeql.yml")
+    assert {row["source_sha"] for row in identities} == {"a" * 40}
+    assert all("ref=" + "a" * 40 in call for call in remote.calls if call.startswith("contents/"))
+    monkeypatch.setattr(ci_actions, "ROOT", tmp_path)
+    # The source adapter reads GitHub data, never the observer's different worktree.
+    documents = {
+        identity["path"]: (Path(__file__).resolve().parents[2] / identity["path"]).read_bytes()
+        for identity in identities
+    }
+    original_api = remote.api
+
+    def api(endpoint):
+        if endpoint.startswith("contents/"):
+            path = endpoint.removeprefix("contents/").split("?")[0]
+            raw = documents[path]
+            return {
+                "type": "file",
+                "path": path,
+                "encoding": "base64",
+                "size": len(raw),
+                "content": base64.b64encode(raw).decode(),
+                "sha": hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest(),
+            }
+        return original_api(endpoint)
+
+    monkeypatch.setattr(remote, "api", api)
+    assert ci_actions.required_workflow_paths(remote, "a" * 40)[0] == paths
+
+
+def test_ci_gate_rejects_artifacts_from_another_workflow_before_consuming_them(monkeypatch):
+    remote = Remote()
+    monkeypatch.setattr(
+        ci_actions, "source_identity", lambda root: {"source_sha": "a" * 40, "source_clean": True}
+    )
+    with pytest.raises(ValueError, match="maintained CI workflow"):
+        ci_actions.collect_gate(remote, 23, 2)
+    assert remote.downloads == 0
+
+
+def test_native_work_cannot_be_qualified_under_another_platform(actual_execution):
+    from scripts.validation_evidence import validate_evidence_records
+
+    work, raw, sha = actual_execution
+    row = require_canonical_json(raw)
+    wrong = ValidationWork(work.name, work.command, conditions=(("runner_image", "windows-2025"),))
+    row["definition"] = wrong.definition()
+    row["observed_conditions"]["platform"] = "linux"
+    with pytest.raises(ValueError, match="required work conditions"):
+        validate_evidence_records([row], expected=[wrong], source_sha=sha, run_id="23-2")
+
+
+def test_partial_retry_consumes_the_original_completed_receipt_without_reexecution(
+    actual_execution, tmp_path, monkeypatch
+):
+    work, raw, sha = actual_execution
+    row = require_canonical_json(raw)
+    row["run_id"] = "23-1"
+    archive = zipped(
+        [("receipt.json", json.dumps(row, sort_keys=True, separators=(",", ":")).encode())]
+    )
+    artifact = artifact_record(archive)
+    artifact["name"] = "validation-fixture-23-attempt-1"
+    remote = Remote(artifact=artifact, archive=archive)
+    remote.jobs[0]["run_attempt"] = 1
+    monkeypatch.setattr(ci_actions, "ci_execution_work", lambda: {"actual fixture": work})
+    result = ci_actions.verify_ci_artifacts(remote, remote.run, sha, tmp_path)
+    assert result["actual fixture"]["origin_attempt"] == 1
+    assert result["actual fixture"]["reused_completion"] is True
+    assert result["actual fixture"]["result"]["qualification_exit_status"] == 0
+    assert remote.downloads == 1
+
+
+def test_retry_does_not_reuse_an_old_success_when_the_new_execution_failed():
+    remote = Remote()
+    old = copy.deepcopy(remote.jobs[0])
+    old.update(id=20, run_attempt=1, conclusion="success")
+    remote.jobs[0]["conclusion"] = "failure"
+    remote.jobs.append(old)
+    chosen = ci_actions.latest_execution_jobs(remote, remote.run)
+    owner = next(row for row in chosen if row["name"] == "Analyze (python)")
+    assert owner["run_attempt"] == 2 and owner["conclusion"] == "failure"

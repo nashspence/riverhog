@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import os
 import re
@@ -27,6 +28,7 @@ from contract_atlas.github_publication import GitHubPublication
 from contract_atlas.model import ContractAtlasError
 
 if TYPE_CHECKING:
+    from ci_execution import validate_checkout
     from ci_qualification import (
         COMPOSE_LANES,
         IMAGE_GROUPS,
@@ -36,6 +38,7 @@ if TYPE_CHECKING:
     )
     from ci_timing import source_identity, write_record
 else:
+    from scripts.ci_execution import validate_checkout
     from scripts.ci_qualification import (
         COMPOSE_LANES,
         IMAGE_GROUPS,
@@ -47,7 +50,7 @@ else:
 
 from scripts.ci_make import validate_make_receipt
 from scripts.ci_unit import SHARDS
-from scripts.validation_evidence import ValidationWork, validate_evidence_records
+from scripts.validation_evidence import ValidationWork, runner_platform, validate_evidence_records
 from scripts.validation_witnesses import collect_test_witnesses
 
 BUDGET_BYTES = 64 * 1024 * 1024
@@ -115,6 +118,39 @@ def bounded_rows(remote: GitHubPublication, endpoint: str, key: str) -> list[dic
         if not rows or len(result) > response["total_count"]:
             break
     raise ValueError("Actions evidence pagination is incomplete")
+
+
+def latest_execution_jobs(
+    remote: GitHubPublication, run: Mapping[str, Any]
+) -> list[dict[str, Any]]:
+    """Use the most recent actual execution of each dependency, retaining its origin."""
+    rows = bounded_rows(remote, f"actions/runs/{run['id']}/jobs?filter=all", "jobs")
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    seen: set[int] = set()
+    for row in rows:
+        origin = row.get("run_attempt")
+        identity, name = row.get("id"), row.get("name")
+        if (
+            type(origin) is not int
+            or not 1 <= origin <= run["run_attempt"]
+            or type(identity) is not int
+            or identity in seen
+            or not isinstance(name, str)
+            or not name
+            or row.get("run_id") != run["id"]
+            or row.get("head_sha") != run["head_sha"]
+        ):
+            raise ValueError("execution history has duplicate or foreign job provenance")
+        seen.add(identity)
+        grouped.setdefault(name, []).append(row)
+    result = []
+    for candidates in grouped.values():
+        newest = max(row["run_attempt"] for row in candidates)
+        selected = [row for row in candidates if row["run_attempt"] == newest]
+        if len(selected) != 1:
+            raise ValueError("execution history has ambiguous dependency ownership")
+        result.append(selected[0])
+    return result
 
 
 def trusted_attempt(remote: GitHubPublication, run_id: int, attempt: int) -> dict[str, Any]:
@@ -229,8 +265,7 @@ def verify_ci_artifacts(
     cases = ci_execution_work()
     artifacts = bounded_rows(remote, f"actions/runs/{run['id']}/artifacts", "artifacts")
     attempt = run["run_attempt"]
-    jobs = bounded_rows(remote, f"actions/runs/{run['id']}/attempts/{attempt}/jobs", "jobs")
-    run_identity = f"{run['id']}-{attempt}"
+    jobs = latest_execution_jobs(remote, run)
     results: dict[str, object] = {}
     total = 0
     expanded_total = 0
@@ -242,11 +277,14 @@ def verify_ci_artifacts(
         ]
         if len(owned_jobs) != 1:
             raise ValueError("required execution job is missing or duplicated: " + job)
-        job_measurement = measure_jobs(owned_jobs, run)
+        origin = owned_jobs[0]["run_attempt"]
+        origin_run = {**run, "run_attempt": origin}
+        run_identity = f"{run['id']}-{origin}"
+        job_measurement = measure_jobs(owned_jobs, origin_run)
         runner = dict(work.conditions).get("runner_image")
         if runner is not None and runner not in owned_jobs[0]["labels"]:
             raise ValueError("execution ran under a different runner condition")
-        name = f"validation-{work.name}-{run['id']}-attempt-{attempt}"
+        name = f"validation-{work.name}-{run['id']}-attempt-{origin}"
         matches = [row for row in artifacts if row.get("name") == name]
         if len(matches) != 1:
             raise ValueError("required execution artifact is missing or duplicated: " + work.name)
@@ -267,13 +305,7 @@ def verify_ci_artifacts(
         )
         assert isinstance(receipt, dict)
         if runner is not None:
-            expected_platform = (
-                "win32"
-                if runner.startswith("windows-")
-                else "darwin"
-                if runner.startswith("macos-")
-                else "linux"
-            )
+            expected_platform = runner_platform(runner)
             conditions = receipt["observed_conditions"]
             if not isinstance(conditions, dict) or conditions.get("platform") != expected_platform:
                 raise ValueError("native evidence contradicts the actual platform condition")
@@ -321,6 +353,8 @@ def verify_ci_artifacts(
             "work": work.definition(),
             "receipt": receipt,
             "result": report,
+            "origin_attempt": origin,
+            "reused_completion": origin != attempt,
             "job_measurement": job_measurement,
             "job_conclusion": owned_jobs[0]["conclusion"],
             "artifact_id": artifact["id"],
@@ -438,6 +472,15 @@ def collect_gate(remote: GitHubPublication, run_id: int, attempt: int) -> dict[s
     if source["source_clean"] is not True:
         raise ValueError("gate source must be exact and clean")
     run = trusted_attempt(remote, run_id, attempt)
+    owners = {".github/workflows/ci.yml"}
+    for path in (ROOT / ".github/workflows").glob("*.yml"):
+        workflow = yaml.safe_load(path.read_text())
+        if any(
+            job.get("uses") == "./.github/workflows/ci.yml" for job in workflow["jobs"].values()
+        ):
+            owners.add(path.relative_to(ROOT).as_posix())
+    if run["path"] not in owners:
+        raise ValueError("execution artifacts are not owned by a maintained CI workflow")
     with TemporaryDirectory(prefix="riverhog-ci-evidence-") as temporary:
         results = verify_ci_artifacts(remote, run, str(source["source_sha"]), Path(temporary))
     after = trusted_attempt(remote, run_id, attempt)
@@ -461,6 +504,72 @@ def collect_gate(remote: GitHubPublication, run_id: int, attempt: int) -> dict[s
     }
 
 
+def collect_codeql_checkout(
+    remote: GitHubPublication, run: Mapping[str, Any], jobs: Sequence[Mapping[str, Any]]
+) -> dict[str, object]:
+    text, document = source_document(remote, run["head_sha"], run["path"])
+    workflow = yaml.safe_load(text)
+    job_definition = workflow["jobs"]["analyze"]
+    languages = job_definition["strategy"]["matrix"]["language"]
+    if not languages or len(set(languages)) != len(languages):
+        raise ValueError("CodeQL source matrix is empty or duplicated")
+    artifacts = bounded_rows(remote, f"actions/runs/{run['id']}/artifacts", "artifacts")
+    records = {}
+    total = 0
+    with TemporaryDirectory(prefix="riverhog-codeql-source-") as temporary:
+        for language in languages:
+            context = job_definition["name"].replace("${{ matrix.language }}", language)
+            owned = [job for job in jobs if job.get("name") == context]
+            if len(owned) != 1:
+                raise ValueError("CodeQL execution owner is missing or duplicated")
+            work = "codeql-" + language
+            origin = owned[0]["run_attempt"]
+            name = f"validation-{work}-{run['id']}-attempt-{origin}"
+            matches = [row for row in artifacts if row.get("name") == name]
+            if len(matches) != 1:
+                raise ValueError("CodeQL checkout artifact is missing or duplicated")
+            artifact = matches[0]
+            if type(artifact.get("size_in_bytes")) is not int:
+                raise ValueError("CodeQL checkout artifact has no bounded size")
+            total += artifact["size_in_bytes"]
+            if total > BUDGET_BYTES:
+                raise ValueError("CodeQL checkout artifacts exceed the collection budget")
+            destination = Path(temporary) / work
+            extract_artifact(remote, artifact, run, destination)
+            row = require_canonical_json((destination / "checkout.json").read_bytes())
+            source = validate_checkout(
+                row,
+                repository=remote.repository,
+                run_id=run["id"],
+                attempt=origin,
+                work=work,
+            )
+            if source != run["head_sha"]:
+                if run["event"] != "pull_request":
+                    raise ValueError("CodeQL checkout differs from its exact non-PR source")
+                commit = remote.api("git/commits/" + source)
+                if commit.get("sha") != source or run["head_sha"] not in {
+                    parent["sha"] for parent in commit["parents"]
+                }:
+                    raise ValueError("CodeQL merge checkout is not bound to the measured PR head")
+            records[context] = {
+                "checkout": row,
+                "origin_attempt": origin,
+                "reused_completion": origin != run["run_attempt"],
+                "source_sha": source,
+                "artifact_id": artifact["id"],
+                "artifact_sha256": artifact["digest"],
+            }
+    if len({row["source_sha"] for row in records.values()}) != 1:
+        raise ValueError("CodeQL matrix analyzed different checkouts")
+    return {
+        "state": "verified",
+        "source_sha": next(iter(records.values()))["source_sha"],
+        "workflow_document": document,
+        "records": records,
+    }
+
+
 def collect_completed(remote: GitHubPublication, run_id: int, attempt: int) -> dict[str, object]:
     run = trusted_attempt(remote, run_id, attempt)
     if run["status"] != "completed" or run["path"] not in {
@@ -473,6 +582,16 @@ def collect_completed(remote: GitHubPublication, run_id: int, attempt: int) -> d
         raise ValueError("workflow identity differs from the selected run")
     jobs = bounded_rows(remote, f"actions/runs/{run_id}/attempts/{attempt}/jobs", "jobs")
     measurement = measure_jobs(jobs, run)
+    dependencies = latest_execution_jobs(remote, run)
+    reused = []
+    for job in dependencies:
+        if job["run_attempt"] != attempt:
+            reused.append(
+                {
+                    "origin_attempt": job["run_attempt"],
+                    "measurement": measure_jobs([job], {**run, "run_attempt": job["run_attempt"]}),
+                }
+            )
     # The whole workflow includes initial scheduling/preparation and between-job gaps.
     if measurement["finished_at"] is not None:
         start = timestamp(run["run_started_at"])
@@ -486,20 +605,76 @@ def collect_completed(remote: GitHubPublication, run_id: int, attempt: int) -> d
         )
     if trusted_attempt(remote, run_id, attempt) != run:
         raise ValueError("completed attempt changed during observation")
-    return {
+    result: dict[str, object] = {
         "format": "riverhog-actions-complete-run/v1",
         "execution": attempt_identity(run),
         "conclusion": run["conclusion"],
         "measurement": measurement,
+        "reused_dependency_completions": reused,
+        "functional_exit_status": int(run["conclusion"] != "success"),
         "qualification_exit_status": int(run["conclusion"] != "success"),
     }
+    if run["path"] == ".github/workflows/codeql.yml":
+        try:
+            result["source_evidence"] = collect_codeql_checkout(remote, run, dependencies)
+        except (
+            ValueError,
+            OSError,
+            KeyError,
+            TypeError,
+            zipfile.BadZipFile,
+            yaml.YAMLError,
+            subprocess.CalledProcessError,
+            ContractAtlasError,
+        ):
+            result["source_evidence"] = {"state": "invalid", "reason": "required-checkout-evidence"}
+            result["qualification_exit_status"] = result["qualification_exit_status"] or 2
+    return result
 
 
-def required_workflow_paths() -> tuple[str, ...]:
-    """Account for every configured mandatory context using its actual workflow owner."""
-    configuration = tomllib.loads((ROOT / "release.toml").read_text())["governance"]
-    ci = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
-    codeql = yaml.safe_load((ROOT / ".github/workflows/codeql.yml").read_text())
+def source_document(
+    remote: GitHubPublication, source_sha: str, path: str
+) -> tuple[str, dict[str, str]]:
+    """Read bounded data from an exact Git revision without executing its source."""
+    if re.fullmatch(r"[0-9a-f]{40}", source_sha) is None:
+        raise ValueError("source document requires an exact commit")
+    row = remote.api("contents/" + path + "?" + urlencode({"ref": source_sha}))
+    if (
+        row.get("type") != "file"
+        or row.get("path") != path
+        or row.get("encoding") != "base64"
+        or type(row.get("size")) is not int
+        or not 0 < row["size"] <= 1024 * 1024
+        or not isinstance(row.get("content"), str)
+        or re.fullmatch(r"[0-9a-f]{40}", str(row.get("sha"))) is None
+    ):
+        raise ValueError("source document lacks bounded exact-file identity")
+    content = row["content"]
+    if len(content) > 2 * 1024 * 1024:
+        raise ValueError("encoded source document exceeds the collection budget")
+    raw = base64.b64decode("".join(content.splitlines()), validate=True)
+    if (
+        len(raw) != row["size"]
+        or hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() != row["sha"]
+    ):
+        raise ValueError("source document bytes differ from their Git blob identity")
+    return raw.decode(), {"path": path, "source_sha": source_sha, "git_blob_sha": row["sha"]}
+
+
+def required_workflow_paths(
+    remote: GitHubPublication, source_sha: str
+) -> tuple[tuple[str, ...], list[dict[str, str]]]:
+    """Account for mandatory contexts declared by the actual measured source."""
+    documents = []
+    text, identity = source_document(remote, source_sha, "release.toml")
+    configuration = tomllib.loads(text)["governance"]
+    documents.append(identity)
+    text, identity = source_document(remote, source_sha, ".github/workflows/ci.yml")
+    ci = yaml.safe_load(text)
+    documents.append(identity)
+    text, identity = source_document(remote, source_sha, ".github/workflows/codeql.yml")
+    codeql = yaml.safe_load(text)
+    documents.append(identity)
     analyze = codeql["jobs"]["analyze"]
     contexts = {ci["jobs"]["gate"]["name"]} | {
         analyze["name"].replace("${{ matrix.language }}", language)
@@ -507,7 +682,7 @@ def required_workflow_paths() -> tuple[str, ...]:
     }
     if contexts != set(configuration["required_checks"]):
         raise ValueError("mandatory check has no complete-workflow measurement adapter")
-    return ("ci.yml", "codeql.yml")
+    return ("ci.yml", "codeql.yml"), documents
 
 
 def collect_required_source(
@@ -518,7 +693,8 @@ def collect_required_source(
         return {"state": "not-applicable", "boundary": "required-push-checks-at-one-source"}
     measurements = []
     pending: list[dict[str, object]] = []
-    for path in required_workflow_paths():
+    paths, documents = required_workflow_paths(remote, execution["head_sha"])
+    for path in paths:
         workflow = remote.api("actions/workflows/" + path)
         query = urlencode(
             {
@@ -562,6 +738,7 @@ def collect_required_source(
             "source_sha": execution["head_sha"],
             "pending": pending,
             "completed_workflows": measurements,
+            "source_documents": documents,
             "qualification_exit_status": None,
         }
     spans = [row["measurement"] for row in measurements]
@@ -579,6 +756,7 @@ def collect_required_source(
         "state": "completed",
         "source_sha": execution["head_sha"],
         "workflows": measurements,
+        "source_documents": documents,
         "boundary": "first-required-workflow-start-through-last-required-job-cleanup",
         "started_at": min(starts).isoformat() if starts else None,
         "finished_at": max(finishes).isoformat() if finishes else None,
@@ -641,6 +819,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         KeyError,
         TypeError,
         zipfile.BadZipFile,
+        yaml.YAMLError,
         subprocess.CalledProcessError,
         ContractAtlasError,
     ):

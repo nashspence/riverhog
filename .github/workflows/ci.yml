@@ -13,7 +13,6 @@ name: CI
         required: false
         type: string
 permissions:
-  actions: read
   contents: read
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -21,6 +20,9 @@ concurrency:
 jobs:
   gate:
     name: CI gate
+    permissions:
+      actions: read
+      contents: read
     if: always()
     needs:
       - plan

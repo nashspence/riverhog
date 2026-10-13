@@ -28,6 +28,13 @@ def validation_path_identity(value: str) -> str:
     return value
 
 
+def runner_platform(image: str) -> str:
+    for prefix, platform in (("ubuntu-", "linux"), ("macos-", "darwin"), ("windows-", "win32")):
+        if image.startswith(prefix):
+            return platform
+    raise ValueError("runner condition has no observed platform adapter")
+
+
 def validate_measurement_context(row: Mapping[str, object]) -> None:
     for field in ("started_at", "finished_at"):
         value = row[field]
@@ -230,6 +237,9 @@ def validate_evidence_records(
             or any(not isinstance(value, str) or not value for value in conditions.values())
         ):
             raise ValueError("invalid observed execution conditions")
+        runner = definition["conditions"].get("runner_image")
+        if runner is not None and conditions["platform"] != runner_platform(runner):
+            raise ValueError("observed platform contradicts the required work conditions")
         if row["source_clean"] is not True or row["source_end"] != {
             "source_sha": source_sha,
             "source_clean": True,

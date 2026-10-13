@@ -236,6 +236,39 @@ def retain_completed_runs(timing_root: Path, current: str) -> None:
             owned = lane / run
             if owned.is_dir() and not owned.is_symlink():
                 shutil.rmtree(owned)
+        # Shell phase streams and their scoped diagnostics share the same owned run.
+        for lane in timing_root.iterdir():
+            if not lane.is_dir() or lane.is_symlink() or lane.name in {"make", "pytest"}:
+                continue
+            owned = lane / run
+            phase = owned / "phases.jsonl"
+            if (
+                not owned.is_dir()
+                or owned.is_symlink()
+                or not phase.is_file()
+                or phase.is_symlink()
+            ):
+                continue
+            try:
+                valid, seen = True, False
+                with phase.open("rb") as stream:
+                    while line := stream.readline(1024 * 1024 + 1):
+                        if len(line) > 1024 * 1024:
+                            valid = False
+                            break
+                        row = require_canonical_json(line.rstrip(b"\n"))
+                        if (
+                            not isinstance(row, dict)
+                            or row.get("format") != "riverhog-ci-phase-timing/v1"
+                            or row.get("run_id") != run
+                        ):
+                            valid = False
+                            break
+                        seen = True
+                if valid and seen:
+                    shutil.rmtree(owned)
+            except (OSError, ValueError):
+                continue
         size = storage_bytes()
     if size >= budget:
         raise ValueError(

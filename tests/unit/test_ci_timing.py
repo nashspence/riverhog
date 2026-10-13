@@ -192,3 +192,51 @@ def test_profiling_target_rejects_invalid_measurement_budget(tmp_path: Path, tar
             ]
         )
     assert failure.value.code == 2
+
+
+@pytest.mark.parametrize("elapsed", ["-1", "nan", "inf"])
+def test_phase_rejects_invalid_elapsed_without_writing_a_false_observation(tmp_path, elapsed):
+    output = tmp_path / "phases.jsonl"
+    assert (
+        main(
+            (
+                "phase",
+                "--lane",
+                "example",
+                "--name",
+                "cleanup",
+                "--seconds",
+                elapsed,
+                "--status",
+                "0",
+                "--output",
+                str(output),
+            )
+        )
+        == 2
+    )
+    assert not output.exists()
+
+
+def test_phase_storage_limit_preserves_the_existing_attempt(tmp_path, monkeypatch):
+    output = tmp_path / "phases.jsonl"
+    monkeypatch.setenv("RIVERHOG_CI_RUN_ID", "phase-attempt")
+    arguments = (
+        "phase",
+        "--lane",
+        "example",
+        "--name",
+        "cleanup",
+        "--seconds",
+        "1",
+        "--status",
+        "7",
+        "--output",
+        str(output),
+    )
+    assert main(arguments) == 0
+    original = output.read_bytes()
+    assert require_canonical_json(original.rstrip(b"\n"))["exit_status"] == 7
+    monkeypatch.setenv("RIVERHOG_VALIDATION_MAX_BYTES", str(len(original)))
+    assert main(arguments) == 2
+    assert output.read_bytes() == original

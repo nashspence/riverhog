@@ -161,6 +161,7 @@ support_paths = [
   "scripts/ci_timing.py",
   "scripts/ci_qualification.py",
   "scripts/ci_actions.py",
+  "scripts/ci_execution.py",
 ]
 
 [[tool.mypy.overrides]]

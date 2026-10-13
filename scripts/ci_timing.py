@@ -6,7 +6,6 @@ import argparse
 import math
 import os
 import platform
-import re
 import subprocess
 import sys
 import time
@@ -23,34 +22,11 @@ from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from scripts.validation_identity import source_identity as source_identity
 from scripts.validation_process import ValidationInterrupted, run_validation_child
 
 if TYPE_CHECKING:
     from scripts.validation_evidence import ValidationWork
-
-
-def source_identity(root: Path) -> dict[str, object]:
-    try:
-        revision = subprocess.run(
-            ["git", "-C", str(root), "rev-parse", "--verify", "HEAD"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        status = subprocess.run(
-            ["git", "-C", str(root), "status", "--porcelain=v1", "--untracked-files=all"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-    except OSError:
-        return {"source_sha": "", "source_clean": False}
-    sha = revision.stdout.strip()
-    verified = revision.returncode == 0 and re.fullmatch(r"[0-9a-f]{40}", sha) is not None
-    return {
-        "source_sha": sha if verified else "",
-        "source_clean": verified and status.returncode == 0 and not status.stdout.strip(),
-    }
 
 
 def write_record(path: Path, value: dict[str, object]) -> None:
@@ -392,22 +368,31 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 2
     identity = source_identity(Path(__file__).resolve().parents[1])
     if args.command == "phase":
+        if not math.isfinite(args.seconds) or args.seconds < 0:
+            print("validation phase has invalid elapsed-time data", file=sys.stderr)
+            return 2
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        with args.output.open("ab") as destination:
-            destination.write(
-                canonical_json_bytes(
-                    {
-                        "format": "riverhog-ci-phase-timing/v1",
-                        **identity,
-                        "lane": args.lane,
-                        "run_id": os.environ.get("RIVERHOG_CI_RUN_ID", ""),
-                        "phase": args.name,
-                        "elapsed_seconds": args.seconds,
-                        "exit_status": args.status,
-                    }
-                )
-                + b"\n"
+        encoded = (
+            canonical_json_bytes(
+                {
+                    "format": "riverhog-ci-phase-timing/v1",
+                    **identity,
+                    "lane": args.lane,
+                    "run_id": os.environ.get("RIVERHOG_CI_RUN_ID", ""),
+                    "phase": args.name,
+                    "elapsed_seconds": args.seconds,
+                    "exit_status": args.status,
+                }
             )
+            + b"\n"
+        )
+        budget = int(os.environ.get("RIVERHOG_VALIDATION_MAX_BYTES", str(64 * 1024 * 1024)))
+        previous = args.output.stat().st_size if args.output.exists() else 0
+        if budget < 1 or previous + len(encoded) > budget:
+            print("validation phase storage budget is exhausted", file=sys.stderr)
+            return 2
+        with args.output.open("ab") as destination:
+            destination.write(encoded)
         return 0
     command = args.argv[1:] if args.argv[:1] == ["--"] else args.argv
     if not command:
