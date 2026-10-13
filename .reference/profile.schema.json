@@ -1,0 +1,138 @@
+{
+  "notice": "Fixture-only profile schemas; not an adopted production contract.",
+  "schemas": [
+    {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "urn:riverhog:reference:collection-annotations:activity",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "archive_root_sha256",
+        "revision",
+        "operation_id",
+        "operation",
+        "request_sha256",
+        "snapshot_sha256"
+      ],
+      "properties": {
+        "archive_root_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        },
+        "operation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operation": {
+          "enum": [
+            "initial",
+            "tag_add",
+            "tag_remove",
+            "description_set",
+            "description_clear"
+          ]
+        },
+        "request_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "snapshot_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "predecessor": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "enum": [
+                  "tag_add",
+                  "tag_remove",
+                  "description_set"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "value",
+              "predecessor"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "initial"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "value"
+                  ]
+                },
+                {
+                  "required": [
+                    "predecessor"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "description_clear"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "predecessor"
+            ],
+            "not": {
+              "required": [
+                "value"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "urn:riverhog:reference:collection-annotations:context",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "archive_root_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "archive_root_sha256"
+      ]
+    }
+  ]
+}
