@@ -136,6 +136,7 @@ from riverhog_provenance import (
     validate_journal_chunks,
 )
 from sqlalchemy import asc, case, desc, exists, func, insert, or_, select, true, update
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import Session, selectinload
 from state_schema import read_snapshot
 from time_formats import (
@@ -7239,15 +7240,19 @@ def _record_payload_custody_progress(
             volume.state != "sealed" or volume.sealed_receipt_json is None for volume in volumes
         ):
             continue
-        changed = session.execute(
-            update(CollectionUploadArtifactRecord)
-            .where(
-                CollectionUploadArtifactRecord.collection_id == upload.collection_id,
-                CollectionUploadArtifactRecord.artifact_id == artifact_id,
-                CollectionUploadArtifactRecord.payload_sealed_at.is_(None),
-            )
-            .values(payload_sealed_at=now)
-        ).rowcount
+        result = cast(
+            CursorResult[Any],
+            session.execute(
+                update(CollectionUploadArtifactRecord)
+                .where(
+                    CollectionUploadArtifactRecord.collection_id == upload.collection_id,
+                    CollectionUploadArtifactRecord.artifact_id == artifact_id,
+                    CollectionUploadArtifactRecord.payload_sealed_at.is_(None),
+                )
+                .values(payload_sealed_at=now)
+            ),
+        )
+        changed = result.rowcount
         if changed == 1:
             newly_sealed_artifacts += 1
             newly_sealed_bytes += artifact.bytes
