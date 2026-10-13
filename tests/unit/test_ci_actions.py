@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 from riverhog_canonical_json import require_canonical_json
 
-from scripts import ci_actions, ci_qualification, ci_timing
+from scripts import ci_actions, ci_make, ci_qualification, ci_timing
 from scripts.validation_evidence import ValidationWork
 
 
@@ -229,6 +229,124 @@ def actual_execution(tmp_path_factory):
         assert ci_timing.execute_validation("fixture", receipt, "23-2") == 0
     assert outside.read_text() == "executed-once"
     return work, receipt.read_bytes(), ci_timing.source_identity(source)["source_sha"]
+
+
+@pytest.fixture(scope="module")
+def actual_make_execution(tmp_path_factory):
+    root = tmp_path_factory.mktemp("actions-make-execution")
+    source, count, timing = root / "source", root / "count", root / "timings"
+    source.mkdir()
+    makefile = source / "Makefile"
+    makefile.write_text(
+        "SHELL := bash\n"
+        "ifneq ($(RIVERHOG_VALIDATION_MAKE_DIRECTORY),)\n"
+        "SHELL := $(RIVERHOG_VALIDATION_MAKE_SHELL)\n"
+        ".SHELLFLAGS := -c\n"
+        "export RIVERHOG_VALIDATION_RECIPE_TARGET = $@\n"
+        "endif\n"
+        "# Maintained target recipes.\n"
+        ".PHONY: compile\n"
+        "compile:\n"
+        f"\t@printf 'executed-once' > {str(count)!r}\n"
+    )
+    subprocess.run(["git", "init", "-q", str(source)], check=True)
+    subprocess.run(["git", "-C", str(source), "add", "Makefile"], check=True)
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(source),
+            "-c",
+            "user.name=Fixture",
+            "-c",
+            "user.email=fixture@example.invalid",
+            "commit",
+            "-qm",
+            "fixture",
+        ],
+        check=True,
+    )
+    work = ValidationWork("fixture", ("make", "compile"))
+    receipt = root / "receipt.json"
+    with pytest.MonkeyPatch.context() as patch:
+        patch.chdir(source)
+        patch.setattr(ci_make, "ROOT", source)
+        patch.setattr(ci_qualification, "ROOT", source)
+        patch.setattr(ci_qualification, "validation_work", lambda name: work)
+        patch.setattr(
+            ci_make, "make_work_definitions", lambda goals, parameters: [work.definition()]
+        )
+        patch.setenv("RIVERHOG_CI_TIMING_DIR", str(timing))
+        patch.setenv("RIVERHOG_CI_RUN_ID", "23-2")
+        for name in (
+            "MAKEFLAGS",
+            "MFLAGS",
+            "MAKEOVERRIDES",
+            "RIVERHOG_VALIDATION_SCOPE",
+            "RIVERHOG_VALIDATION_PARENT_SPAN",
+            "RIVERHOG_VALIDATION_ACTIVE_SPAN",
+        ):
+            patch.delenv(name, raising=False)
+        patch.setattr(
+            ci_timing,
+            "run_validation_child",
+            lambda command, *, cwd, env: ci_make.observe_make(makefile, command[1:]),
+        )
+        assert ci_timing.execute_validation("fixture", receipt, "23-2") == 0
+    assert count.read_text() == "executed-once"
+    (manifest,) = timing.glob("make/23-2/*/manifest.json")
+    return work, receipt.read_bytes(), require_canonical_json(manifest.read_bytes()), source
+
+
+@pytest.mark.parametrize(
+    "case", ["owner", "iteration", "descendant-failure", "foreign", "incomplete", "missing-owner"]
+)
+def test_ci_consumer_requires_the_qualified_owner_and_its_descendants(
+    actual_make_execution, tmp_path, monkeypatch, case
+):
+    work, receipt, owner, source = actual_make_execution
+    files = [("receipt.json", receipt)]
+    manifests = [copy.deepcopy(owner)]
+    if case not in {"owner", "missing-owner"}:
+        child = copy.deepcopy(owner)
+        child.update(span="child", parent_span=owner["span"])
+        for recipe in child["recipes"]:
+            recipe["span"] = "child"
+        if case == "iteration":
+            child.update(qualification_eligible=False, work_definitions=[], source_sha="b" * 40)
+        elif case == "descendant-failure":
+            child["exit_status"] = 7
+            child["recipes"][0]["exit_status"] = 7
+        elif case == "foreign":
+            child["source_sha"] = "b" * 40
+        else:
+            child["state"] = "running"
+        manifests.append(child)
+    if case == "missing-owner":
+        manifests = []
+    for manifest in manifests:
+        files.append(
+            (
+                f"make/23-2/{manifest['span']}/manifest.json",
+                json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode(),
+            )
+        )
+    archive = zipped(files)
+    remote = Remote(artifact=artifact_record(archive), archive=archive)
+    monkeypatch.setattr(ci_actions, "ROOT", source)
+    monkeypatch.setattr(ci_actions, "ci_execution_work", lambda: {"actual fixture": work})
+    monkeypatch.setattr(
+        ci_make, "make_work_definitions", lambda goals, parameters: [work.definition()]
+    )
+    if case in {"foreign", "incomplete", "missing-owner"}:
+        with pytest.raises(ValueError):
+            ci_actions.verify_ci_artifacts(remote, remote.run, owner["source_sha"], tmp_path)
+    else:
+        result = ci_actions.verify_ci_artifacts(remote, remote.run, owner["source_sha"], tmp_path)
+        assert result["actual fixture"]["result"]["qualification_exit_status"] == (
+            1 if case == "descendant-failure" else 0
+        )
+        assert remote.downloads == 1
 
 
 def test_consumer_uses_bound_real_execution_and_never_repeats_it(

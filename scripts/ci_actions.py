@@ -48,7 +48,7 @@ else:
     )
     from scripts.ci_timing import source_identity, write_record
 
-from scripts.ci_make import validate_make_receipt
+from scripts.ci_make import owned_execution_spans, validate_make_receipt
 from scripts.ci_unit import SHARDS
 from scripts.validation_evidence import ValidationWork, runner_platform, validate_evidence_records
 from scripts.validation_witnesses import collect_test_witnesses
@@ -319,7 +319,10 @@ def verify_ci_artifacts(
             ]
             if len(roots) != 1 or roots[0].get("work_definitions") != [work.definition()]:
                 raise ValueError("required command has no exact owning Make execution")
+            spans = owned_execution_spans(owned, run_identity, str(roots[0]["span"]), source_sha)
             for row in manifests:
+                if isinstance(row, dict) and row.get("span") not in spans:
+                    continue
                 if not isinstance(row, dict):
                     raise ValueError("invalid owned Make execution")
                 goals, parameters = row["goals"], row["parameters"]
@@ -330,7 +333,7 @@ def verify_ci_artifacts(
                     or any(not isinstance(value, str) for value in parameters.values())
                 ):
                     raise ValueError("invalid owned Make selectors")
-                validate_make_receipt(
+                make_report = validate_make_receipt(
                     row,
                     makefile=ROOT / "Makefile",
                     goals=cast(list[str], goals),
@@ -338,6 +341,9 @@ def verify_ci_artifacts(
                     source={"source_sha": source_sha, "source_clean": True},
                     run_id=run_identity,
                     require_qualification=True,
+                )
+                report["qualification_exit_status"] = (
+                    report["qualification_exit_status"] or make_report["qualification_exit_status"]
                 )
         if work.growth_witnesses:
             actual = collect_test_witnesses(

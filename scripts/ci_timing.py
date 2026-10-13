@@ -250,7 +250,8 @@ def execute_validation(
                 try:
                     growth_results = growth_collector(work, run_id)
                 except Exception:
-                    state = "evidence-failed"
+                    if state == "completed":
+                        state = "evidence-failed"
             after = source_identity(ROOT)
             finished = time.monotonic()
             elapsed = finished - started

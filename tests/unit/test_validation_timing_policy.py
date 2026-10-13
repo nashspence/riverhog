@@ -177,8 +177,9 @@ def test_runner_records_once_without_speed_gate_and_preserves_growth(
 @pytest.mark.parametrize(
     "exception,state,code", [(OSError, "launch-failed", 2), (KeyboardInterrupt, "interrupted", 130)]
 )
+@pytest.mark.parametrize("collection_error", [False, True])
 def test_interrupted_and_failed_launches_are_not_target_outcomes(
-    tmp_path, monkeypatch, exception, state, code
+    tmp_path, monkeypatch, exception, state, code, collection_error
 ):
     monkeypatch.setattr(
         timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True}
@@ -188,8 +189,14 @@ def test_interrupted_and_failed_launches_are_not_target_outcomes(
         raise exception()
 
     monkeypatch.setattr(timing, "run_validation_child", fail)
+
+    def collect(*_):
+        if collection_error:
+            raise ValueError("incomplete owner growth evidence")
+        return {}
+
     path = tmp_path / "run.json"
-    assert timing.execute_validation("lint", path, RUN) == code
+    assert timing.execute_validation("lint", path, RUN, growth_collector=collect) == code
     assert json.loads(path.read_bytes())["state"] == state
 
 
