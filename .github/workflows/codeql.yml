@@ -29,7 +29,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      VALIDATION_CHECKOUT: ${{ runner.temp }}/codeql-validation/checkout.json
       VALIDATION_WORK: codeql-${{ matrix.language }}
     strategy:
       fail-fast: false
@@ -43,6 +42,8 @@ jobs:
         with:
           persist-credentials: false
       - name: Record exact checkout before analysis
+        env:
+          VALIDATION_CHECKOUT: ${{ runner.temp }}/codeql-validation/checkout.json
         run: python3 scripts/ci_execution.py start --work "$VALIDATION_WORK" --output "$VALIDATION_CHECKOUT"
       - name: Initialize CodeQL
         uses: github/codeql-action/init@5595ccaf912efad79be6eef63a5619ff05969be3 # v4
@@ -54,6 +55,8 @@ jobs:
         with:
           category: /language:${{ matrix.language }}
       - name: Close exact checkout after analysis
+        env:
+          VALIDATION_CHECKOUT: ${{ runner.temp }}/codeql-validation/checkout.json
         if: always()
         run: python3 scripts/ci_execution.py finish --work "$VALIDATION_WORK" --output "$VALIDATION_CHECKOUT"
       - name: Retain exact analysis source evidence

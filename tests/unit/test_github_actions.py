@@ -275,6 +275,12 @@ def test_codeql_covers_every_governed_branch_with_stable_checks() -> None:
     start, finish = [step for step in steps if "run" in step]
     assert "scripts/ci_execution.py start" in start["run"]
     assert "scripts/ci_execution.py finish" in finish["run"]
+    assert job["env"] == {"VALIDATION_WORK": "codeql-${{ matrix.language }}"}
+    for recorder in (start, finish):
+        assert recorder["env"] == {
+            "VALIDATION_CHECKOUT": "${{ runner.temp }}/codeql-validation/checkout.json"
+        }
+    assert action_steps[-1]["with"]["path"] == "${{ runner.temp }}/codeql-validation"
     assert finish["if"] == "always()"
     assert steps.index(start) < steps.index(action_steps[1])
     assert steps.index(finish) > steps.index(action_steps[2])
