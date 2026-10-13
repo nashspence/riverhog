@@ -10,7 +10,7 @@ import shutil
 import sys
 import time
 from collections import Counter
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -155,6 +155,7 @@ def witness_ids(definition: dict[str, object]) -> tuple[str, ...]:
 
 def owned_execution_spans(timing_root: Path, run_id: str, span: str, source_sha: str) -> set[str]:
     children: dict[str, list[str]] = {}
+    descendants: dict[str, Mapping[str, object]] = {}
     for path in (timing_root / "make" / run_id).glob("*/manifest.json"):
         row = require_canonical_json(path.read_bytes())
         if not isinstance(row, dict) or row.get("run_id") != run_id:
@@ -164,12 +165,9 @@ def owned_execution_spans(timing_root: Path, run_id: str, span: str, source_sha:
             raise ValueError("missing descendant execution identity")
         if identity == span or row.get("qualification_eligible") is not True:
             continue
-        if (
-            row.get("source_sha") != source_sha
-            or row.get("source_clean") is not True
-            or row.get("source_end") != {"source_sha": source_sha, "source_clean": True}
-        ):
-            raise ValueError("descendant execution is not bound to the tested source")
+        if identity in descendants:
+            raise ValueError("duplicate descendant execution identity")
+        descendants[identity] = row
         parent = row.get("parent_span")
         if isinstance(parent, str):
             children.setdefault(parent, []).append(identity)
@@ -179,6 +177,14 @@ def owned_execution_spans(timing_root: Path, run_id: str, span: str, source_sha:
         current = pending.pop()
         if current in visited:
             raise ValueError("duplicate or cyclic execution ancestry")
+        if current != span:
+            descendant = descendants[current]
+            if (
+                descendant.get("source_sha") != source_sha
+                or descendant.get("source_clean") is not True
+                or descendant.get("source_end") != {"source_sha": source_sha, "source_clean": True}
+            ):
+                raise ValueError("descendant execution is not bound to the tested source")
         visited.add(current)
         pending.extend(children.get(current, ()))
     return visited

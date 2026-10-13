@@ -343,3 +343,60 @@ def test_retention_prunes_closed_phase_runs_with_their_owner_but_keeps_active_st
     assert not (tmp_path / "compose-storage/closed").exists()
     assert (tmp_path / "compose-storage/active/phases.jsonl").exists()
     assert (tmp_path / "make/active/span/manifest.json").exists()
+
+
+@pytest.fixture
+def nested_qualified_spans(tmp_path):
+    source = {"source_sha": "a" * 40, "source_clean": True}
+    rows = {
+        "parent": {"parent_span": None},
+        "child": {"parent_span": "parent", "source_end": source},
+        "grandchild": {"parent_span": "child", "source_end": source},
+        "sibling": {"parent_span": "parent"},
+        "unrelated": {"parent_span": None, "source_sha": "b" * 40},
+    }
+    for identity, fields in rows.items():
+        rows[identity] = {
+            **source,
+            "run_id": "nested-qualified",
+            "span": identity,
+            "qualification_eligible": True,
+            **fields,
+        }
+        ci_make.write_record(
+            tmp_path / "make" / "nested-qualified" / identity / "manifest.json", rows[identity]
+        )
+    return tmp_path, rows
+
+
+def test_completed_child_collects_only_owned_spans_while_parent_and_sibling_run(
+    nested_qualified_spans,
+):
+    timing, _rows = nested_qualified_spans
+    assert ci_make.owned_execution_spans(timing, "nested-qualified", "child", "a" * 40) == {
+        "child",
+        "grandchild",
+    }
+
+
+@pytest.mark.parametrize("defect", ["missing-end", "changed-source", "dirty-source", "wrong-end"])
+def test_reachable_descendant_still_requires_complete_exact_source(nested_qualified_spans, defect):
+    timing, rows = nested_qualified_spans
+    row = rows["grandchild"]
+    if defect == "missing-end":
+        row.pop("source_end")
+    elif defect == "changed-source":
+        row["source_sha"] = "b" * 40
+    elif defect == "dirty-source":
+        row["source_clean"] = False
+    else:
+        row["source_end"] = {"source_sha": "b" * 40, "source_clean": True}
+    ci_make.write_record(timing / "make/nested-qualified/grandchild/manifest.json", row)
+    with pytest.raises(ValueError, match="descendant execution is not bound"):
+        ci_make.owned_execution_spans(timing, "nested-qualified", "child", "a" * 40)
+
+
+def test_parent_cannot_consume_a_still_running_descendant(nested_qualified_spans):
+    timing, _rows = nested_qualified_spans
+    with pytest.raises(ValueError, match="descendant execution is not bound"):
+        ci_make.owned_execution_spans(timing, "nested-qualified", "parent", "a" * 40)
