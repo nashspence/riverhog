@@ -1864,6 +1864,10 @@ def test_payload_seal_progress_survives_stale_sessions_and_repeated_receipts(tmp
             first.get(CollectionArchiveObjectUploadRecord, (collection_id, volume_ids[0])),
             now="2026-01-01T00:00:00Z",
         )
+        assert (
+            first_upload.payload_sealed_artifact_count,
+            first_upload.payload_sealed_artifact_bytes,
+        ) == (1, 2)
         first.commit()
         assert second_upload.payload_sealed_artifact_count == 0
         _record_payload_custody_progress(
@@ -1872,6 +1876,10 @@ def test_payload_seal_progress_survives_stale_sessions_and_repeated_receipts(tmp
             second.get(CollectionArchiveObjectUploadRecord, (collection_id, volume_ids[1])),
             now="2026-01-01T00:00:01Z",
         )
+        assert (
+            second_upload.payload_sealed_artifact_count,
+            second_upload.payload_sealed_artifact_bytes,
+        ) == (2, 5)
         second.commit()
         with session_scope(factory) as observed:
             upload = observed.get(CollectionUploadRecord, collection_id)

@@ -7267,6 +7267,12 @@ def _record_payload_custody_progress(
         upload.payload_sealed_artifact_bytes = (
             CollectionUploadRecord.payload_sealed_artifact_bytes + newly_sealed_bytes
         )
+        # Custody checks in this transaction consume ordinary integer progress.
+        session.flush()
+        session.refresh(
+            upload,
+            attribute_names=["payload_sealed_artifact_count", "payload_sealed_artifact_bytes"],
+        )
 
 
 def _upload_payload(
