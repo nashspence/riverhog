@@ -12,6 +12,36 @@ Configuration/effort: not exposed
 Requested by: Riverhog maintainer, in the conversation commissioning #969
 Published by: the producer through the maintainer-connected GitHub interface
 
+## Current supplement: growth-safe representation
+
+The maintainer requested a researched growth supplement after the first handoff.
+Read [GROWTH.md sections 1-3](GROWTH.md) before choosing persisted representation,
+then its [first integration slice](GROWTH.md#9-first-integration-slice-and-stopping-rule)
+and the existing [INTEGRATION.md](INTEGRATION.md). The issue's additive growth
+comment is controlling scope; the reference remains input only.
+
+This supplement preserves `a493d050ed486cb8bbb8193bb04e18d550216c75` as its ancestor.
+The original authoritative base/tree above are unchanged. A fresh read-only audit
+of `main@9a485bc174b7b8d703ac05159e3df9be4f36be98` found new shared growth-declaration
+machinery; the studied tag/journal/recovery owners were unchanged. The reference
+is not rebased to that newer main. Reconcile then-current authoritative source in
+a separate worktree and reuse the integrated declaration/evidence owners.
+
+The new [32 diagnostic challenges](growth/test_growth.py) and
+[measured primitive counts](growth/results.json) cover exact prefix hashing,
+the existing digest-key radix kernel, historical-state replay, SQLite-spooled
+shared closure, bounded restart progress, and exact checkpoint suffix discovery.
+The existing G22 SHA diagnostic is reused at its pinned source, not replaced.
+These are scoped experiments, not product/storage/crypto qualification. See the
+[new validation record](growth/VALIDATION.md) for commands, limits and unavailable
+gates. The original model/schema files and their validation record are unchanged;
+the older results below describe the first handoff, not a rerun by this supplement.
+
+Producer/requester/model/publication attribution above also applies to this
+supplement. Earlier conversation remains intent calibration. The exact new
+reference commit and verification are recorded in the owning issue at publication;
+the branch name is navigation, not acceptance or an integration branch.
+
 ## Authority and first action
 
 This branch is externally produced reference material for the owning issue.
@@ -36,7 +66,7 @@ product slice is initial annotation establishment, one tag/description change,
 one conditional selector publication, and database-free recovery of the exact
 selected history. Escalate a concrete semantic conflict, not another broad study.
 
-## Contents
+## Original contents
 
 - `annotation_reference.py`: small-fixture model of staged immutable evidence,
   one conditional selector, historical replay/retention, ancestry comparison and
@@ -49,7 +79,7 @@ selected history. Escalate a concrete semantic conflict, not another broad study
   optional check using the real canonical runtime. It never substitutes a stub.
 - `VALIDATION.md`: exact commands, observed scope and unperformed qualification.
 
-## Validation and limits
+## Original validation and limits
 
 The final model run passed 26 tests. Nine journal frames and eight profile values
 passed schema validation with the five relevant installed schema-library versions

@@ -1,0 +1,397 @@
+{
+  "environment": {
+    "python": "3.13.5",
+    "sqlite": "3.46.1"
+  },
+  "format": "reference-annotation-growth-observations/v0",
+  "limitations": [
+    "Native tag AST slice only; no module/API/backend conformance.",
+    "Fixed-width hash probes are algorithm counterexamples, not a replay of every old-model call.",
+    "SQLite DFS uses toy structural identities and trusted job state; no archive or power-loss proof.",
+    "Counts exclude fixture generation and oracle checks unless separately named.",
+    "No claims for encryption, provider durability, full core validation, total machine cost or pinned product qualification."
+  ],
+  "production_conformance": false,
+  "records": {
+    "g22_continuation": {
+      "input_octets": 1664,
+      "largest_state_octets": 108,
+      "scope": "existing diagnostic codec and native hash parity; NOT production restart/crypto qualification",
+      "source_sha256": "e8326f2eff2fb5094e037c04bdf66e499ed86888b7c543f3ebf81b7f013f1380",
+      "state_restores": 13,
+      "status": "passed"
+    },
+    "hashes": [
+      {
+        "entries": 16,
+        "input_octets": 1024,
+        "naive_recovery_hash_octets": 8704,
+        "repeated_bad_recovery_hash_octets": 52224,
+        "streamed_hash_octets": 1024
+      },
+      {
+        "entries": 32,
+        "input_octets": 2048,
+        "naive_recovery_hash_octets": 33792,
+        "repeated_bad_recovery_hash_octets": 382976,
+        "streamed_hash_octets": 2048
+      },
+      {
+        "entries": 64,
+        "input_octets": 4096,
+        "naive_recovery_hash_octets": 133120,
+        "repeated_bad_recovery_hash_octets": 2928640,
+        "streamed_hash_octets": 4096
+      },
+      {
+        "entries": 128,
+        "input_octets": 8192,
+        "naive_recovery_hash_octets": 528384,
+        "repeated_bad_recovery_hash_octets": 22896640,
+        "streamed_hash_octets": 8192
+      }
+    ],
+    "shared_dag": [
+      {
+        "budget": 7,
+        "completed_nodes": 33,
+        "edge_visits": 62,
+        "largest_step": 7,
+        "layers": 16,
+        "node_visits": 33,
+        "reopen_count": 0,
+        "root_selections": 2,
+        "source_binding_checks": 1,
+        "sqlite_vm_steps": 10799,
+        "step_calls": 19,
+        "unique_edges": 62,
+        "unique_nodes": 33,
+        "work_units": 130
+      },
+      {
+        "budget": 7,
+        "completed_nodes": 33,
+        "edge_visits": 62,
+        "largest_step": 7,
+        "layers": 16,
+        "node_visits": 33,
+        "reopen_count": 18,
+        "root_selections": 2,
+        "source_binding_checks": 19,
+        "sqlite_vm_steps": 10853,
+        "step_calls": 19,
+        "unique_edges": 62,
+        "unique_nodes": 33,
+        "work_units": 130
+      },
+      {
+        "budget": 7,
+        "completed_nodes": 129,
+        "edge_visits": 254,
+        "largest_step": 7,
+        "layers": 64,
+        "node_visits": 129,
+        "reopen_count": 0,
+        "root_selections": 2,
+        "source_binding_checks": 1,
+        "sqlite_vm_steps": 42471,
+        "step_calls": 74,
+        "unique_edges": 254,
+        "unique_nodes": 129,
+        "work_units": 514
+      },
+      {
+        "budget": 7,
+        "completed_nodes": 129,
+        "edge_visits": 254,
+        "largest_step": 7,
+        "layers": 64,
+        "node_visits": 129,
+        "reopen_count": 73,
+        "root_selections": 2,
+        "source_binding_checks": 74,
+        "sqlite_vm_steps": 42690,
+        "step_calls": 74,
+        "unique_edges": 254,
+        "unique_nodes": 129,
+        "work_units": 514
+      },
+      {
+        "budget": 7,
+        "completed_nodes": 513,
+        "edge_visits": 1022,
+        "largest_step": 7,
+        "layers": 256,
+        "node_visits": 513,
+        "reopen_count": 0,
+        "root_selections": 2,
+        "source_binding_checks": 1,
+        "sqlite_vm_steps": 169165,
+        "step_calls": 293,
+        "unique_edges": 1022,
+        "unique_nodes": 513,
+        "work_units": 2050
+      },
+      {
+        "budget": 7,
+        "completed_nodes": 513,
+        "edge_visits": 1022,
+        "largest_step": 7,
+        "layers": 256,
+        "node_visits": 513,
+        "reopen_count": 292,
+        "root_selections": 2,
+        "source_binding_checks": 293,
+        "sqlite_vm_steps": 170041,
+        "step_calls": 293,
+        "unique_edges": 1022,
+        "unique_nodes": 513,
+        "work_units": 2050
+      }
+    ],
+    "suffix": [
+      {
+        "checkpoint_reads": 0,
+        "history": 4096,
+        "lag": 0
+      },
+      {
+        "checkpoint_reads": 1,
+        "history": 4096,
+        "lag": 1
+      },
+      {
+        "checkpoint_reads": 16,
+        "history": 4096,
+        "lag": 16
+      },
+      {
+        "checkpoint_reads": 128,
+        "history": 4096,
+        "lag": 128
+      }
+    ],
+    "tag_history": [
+      {
+        "baseline": {
+          "node_gets": 153,
+          "node_read_octets": 13556
+        },
+        "edits": 16,
+        "incremental_replay": {
+          "node_gets": 24,
+          "node_put_octets": 54256,
+          "node_puts": 24,
+          "node_read_octets": 54256
+        },
+        "initial_tags": 128,
+        "repeated_snapshot_validation": {
+          "node_gets": 2609,
+          "node_read_octets": 231140
+        }
+      },
+      {
+        "baseline": {
+          "node_gets": 153,
+          "node_read_octets": 13556
+        },
+        "edits": 32,
+        "incremental_replay": {
+          "node_gets": 48,
+          "node_put_octets": 108512,
+          "node_puts": 48,
+          "node_read_octets": 108512
+        },
+        "initial_tags": 128,
+        "repeated_snapshot_validation": {
+          "node_gets": 5065,
+          "node_read_octets": 448724
+        }
+      },
+      {
+        "baseline": {
+          "node_gets": 153,
+          "node_read_octets": 13556
+        },
+        "edits": 64,
+        "incremental_replay": {
+          "node_gets": 96,
+          "node_put_octets": 217024,
+          "node_puts": 96,
+          "node_read_octets": 217024
+        },
+        "initial_tags": 128,
+        "repeated_snapshot_validation": {
+          "node_gets": 9977,
+          "node_read_octets": 883892
+        }
+      },
+      {
+        "baseline": {
+          "node_gets": 153,
+          "node_read_octets": 13556
+        },
+        "edits": 128,
+        "incremental_replay": {
+          "node_gets": 192,
+          "node_put_octets": 434048,
+          "node_puts": 192,
+          "node_read_octets": 434048
+        },
+        "initial_tags": 128,
+        "repeated_snapshot_validation": {
+          "node_gets": 19801,
+          "node_read_octets": 1754228
+        }
+      }
+    ],
+    "tags": [
+      {
+        "fixture_candidates": 16,
+        "fixture_digest_prefix_bytes": 0,
+        "initial_tags": 16,
+        "insert": {
+          "new_node_octets": 655,
+          "new_nodes": 2,
+          "node_gets": 1,
+          "node_put_octets": 655,
+          "node_puts": 2,
+          "node_read_octets": 543
+        },
+        "operand_utf8_octets": 32,
+        "remove": {
+          "node_gets": 2,
+          "node_put_octets": 543,
+          "node_puts": 1,
+          "node_read_octets": 655
+        },
+        "setup": {
+          "new_node_octets": 5848,
+          "new_nodes": 31,
+          "node_gets": 15,
+          "node_put_octets": 5921,
+          "node_puts": 32,
+          "node_read_octets": 4210
+        }
+      },
+      {
+        "fixture_candidates": 128,
+        "fixture_digest_prefix_bytes": 0,
+        "initial_tags": 128,
+        "insert": {
+          "new_node_octets": 3712,
+          "new_nodes": 4,
+          "node_gets": 2,
+          "node_put_octets": 3712,
+          "node_puts": 4,
+          "node_read_octets": 3553
+        },
+        "operand_utf8_octets": 32,
+        "remove": {
+          "node_gets": 4,
+          "node_put_octets": 3553,
+          "node_puts": 2,
+          "node_read_octets": 3712
+        },
+        "setup": {
+          "new_node_octets": 253955,
+          "new_nodes": 296,
+          "node_gets": 150,
+          "node_put_octets": 254028,
+          "node_puts": 297,
+          "node_read_octets": 239604
+        }
+      },
+      {
+        "fixture_candidates": 1024,
+        "fixture_digest_prefix_bytes": 0,
+        "initial_tags": 1024,
+        "insert": {
+          "new_node_octets": 8563,
+          "new_nodes": 4,
+          "node_gets": 2,
+          "node_put_octets": 8563,
+          "node_puts": 4,
+          "node_read_octets": 8404
+        },
+        "operand_utf8_octets": 32,
+        "remove": {
+          "node_gets": 4,
+          "node_put_octets": 8404,
+          "node_puts": 2,
+          "node_read_octets": 8563
+        },
+        "setup": {
+          "new_node_octets": 6757634,
+          "new_nodes": 3076,
+          "node_gets": 1809,
+          "node_put_octets": 6757707,
+          "node_puts": 3077,
+          "node_read_octets": 6638272
+        }
+      },
+      {
+        "fixture_candidates": 128,
+        "fixture_digest_prefix_bytes": 0,
+        "initial_tags": 128,
+        "insert": {
+          "new_node_octets": 69216,
+          "new_nodes": 4,
+          "node_gets": 2,
+          "node_put_octets": 69216,
+          "node_puts": 4,
+          "node_read_octets": 3553
+        },
+        "operand_utf8_octets": 65536,
+        "remove": {
+          "node_gets": 4,
+          "node_put_octets": 3553,
+          "node_puts": 2,
+          "node_read_octets": 69216
+        },
+        "setup": {
+          "new_node_octets": 253955,
+          "new_nodes": 296,
+          "node_gets": 150,
+          "node_put_octets": 254028,
+          "node_puts": 297,
+          "node_read_octets": 239604
+        }
+      },
+      {
+        "fixture_candidates": 32237,
+        "fixture_digest_prefix_bytes": 1,
+        "initial_tags": 128,
+        "insert": {
+          "new_node_octets": 3573,
+          "new_nodes": 4,
+          "node_gets": 2,
+          "node_put_octets": 3573,
+          "node_puts": 4,
+          "node_read_octets": 3421
+        },
+        "operand_utf8_octets": 26,
+        "remove": {
+          "node_gets": 4,
+          "node_put_octets": 3421,
+          "node_puts": 2,
+          "node_read_octets": 3573
+        },
+        "setup": {
+          "new_node_octets": 249083,
+          "new_nodes": 307,
+          "node_gets": 154,
+          "node_put_octets": 249083,
+          "node_puts": 307,
+          "node_read_octets": 234502
+        }
+      }
+    ]
+  },
+  "source": {
+    "g22_ref": "e35bddf8f1bb72ca3f0046b597d5966cd5a08312",
+    "packages/riverhog-protocol/src/riverhog_protocol/collection_tags.py": "84fd0abe870f22d88e83a9f58ca2d8ee11ef078baf9dad5165bdd93f3e8b0ec5",
+    "probe_sha256": "c4a0afe1703c911c1027fc7faf3fe6ff6c47102ecf37cfe530f901c3cb03b269",
+    "tests_sha256": "9da3e959e65f04279bd7357899c2de533d7b7912070597237b6727cb3b3deb24"
+  }
+}
