@@ -12,7 +12,17 @@ from scripts import ci_timing as timing
 from tests.unit.test_validation_evidence import RUN, SOURCE, row
 
 
-@pytest.mark.parametrize("variable", ["TESTS", "args", "PYTEST_ADDOPTS", "MAKEFILES", "MAKEFLAGS"])
+@pytest.fixture(autouse=True)
+def isolated_make_execution_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Each case supplies its own parent flags, independent of the invoking shard."""
+
+    for variable in ("MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES"):
+        monkeypatch.delenv(variable, raising=False)
+
+
+@pytest.mark.parametrize(
+    "variable", ["TESTS", "args", "PYTEST_ADDOPTS", "MAKEFILES", "MAKEFLAGS", "MAKEOVERRIDES"]
+)
 def test_required_execution_rejects_unrecorded_scope_reduction(
     monkeypatch: pytest.MonkeyPatch, variable: str
 ) -> None:

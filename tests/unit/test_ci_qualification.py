@@ -662,10 +662,12 @@ def test_maintained_nvenc_image_requires_the_portable_shared_host_lease_witness(
     ]
 
 
-def test_actual_recursive_make_flags_do_not_change_qualified_work(tmp_path) -> None:
+def test_actual_recursive_make_flags_do_not_change_qualified_work(tmp_path, monkeypatch) -> None:
     import shlex
     import sys
 
+    for variable in ("MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES"):
+        monkeypatch.delenv(variable, raising=False)
     marker = tmp_path / "qualified.txt"
     command = shlex.join(
         (
