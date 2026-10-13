@@ -1,0 +1,61 @@
+{
+  "audited_main": "9a485bc174b7b8d703ac05159e3df9be4f36be98",
+  "environment": {
+    "pinned_environment": false,
+    "python": "3.13.5"
+  },
+  "exact_prefix_hash": {
+    "checkpoints": 128,
+    "every_anchor_equal": true,
+    "incremental_hash_input_octets": 8192,
+    "repeated_prefix_hash_input_octets": 528384,
+    "selected_octets": 8192
+  },
+  "format": "reference-exact-growth-observations/v0",
+  "limitations": [
+    "Arithmetic bases are normalized class expressions, not measured product ceilings.",
+    "Finite samples do not establish asymptotic proofs.",
+    "Native tag execution uses the previous exact source-pinned AST slice, not the full module/backend.",
+    "Generated-profile shape check is not canonical runtime validation.",
+    "Prefix and counting-sink tests do not prove storage, encryption, authorization or installed recovery.",
+    "No complete pinned toolchain, full product gates, or new backend conformance is claimed."
+  ],
+  "native_tag_slice": {
+    "insert": {
+      "new_node_octets": 129,
+      "new_nodes": 2,
+      "node_gets": 1,
+      "node_put_octets": 65712,
+      "node_puts": 3,
+      "node_read_octets": 65583
+    },
+    "old_root_preserved": true,
+    "operand_octets": 1,
+    "remove": {
+      "node_gets": 3,
+      "node_put_octets": 65583,
+      "node_puts": 1,
+      "node_read_octets": 65712
+    },
+    "surviving_tag_octets": 65536
+  },
+  "production_conformance": false,
+  "reference_parent": "ce0d34fa8da9e423adcf681c30f518d5949042f8",
+  "source_sha256": {
+    ".reference/EXACT_GROWTH.md": "a21c9c59af5703327db93dc2cfb58dc6c72ac67a2a2ee888132f1d2452282525",
+    ".reference/annotation_reference.py": "18a7d6b42574a9ae1ade45b2806154816af984c70ca78b6d3c19fa56b1f0a057",
+    ".reference/exact-growth/basis.py": "23c7f4f4fae71bf64f46584602c03eec4d8fbc71e1ea88e9933cb72a8570c9d7",
+    ".reference/exact-growth/run.py": "0f40da39259a5fee6217691f14f7504e7f5e7c03892b58421e02b1f8050bdd62",
+    ".reference/exact-growth/test_contract.py": "ba88588cab489cd87508aadd4f11ecaca75a1999fb840cd2ac9022d473cd7d6f",
+    ".reference/growth/probe.py": "c4a0afe1703c911c1027fc7faf3fe6ff6c47102ecf37cfe530f901c3cb03b269",
+    "packages/riverhog-protocol/src/riverhog_protocol/collection_tags.py": "84fd0abe870f22d88e83a9f58ca2d8ee11ef078baf9dad5165bdd93f3e8b0ec5"
+  },
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "passed": true,
+    "run": 20,
+    "skipped": 0,
+    "wall_seconds": 0.27729611100005513
+  }
+}
