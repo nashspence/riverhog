@@ -7,9 +7,17 @@ settlement verification. It never receives or exposes archive credentials.
 
 from __future__ import annotations
 
-import secrets
 from collections.abc import Iterable, Mapping, Sequence
-from typing import Any, Literal, Protocol
+from typing import TYPE_CHECKING, Any, Literal, Protocol
+
+from http_api_contracts.metadata_exchange import MetadataPreparationPending
+from riverhog_protocol.collection_workflow_transport import ProcessingClaimPlanDocument
+from stove0_protocol import ArtifactSelectionRef
+
+from stove0_core.riverhog_transfers import RiverhogTransferStore
+
+if TYPE_CHECKING:
+    from stove0_core.persistence import SqlAlchemyStateStore
 
 from riverhog_canonical_json import canonical_json_bytes as riverhog_canonical_json_bytes
 from riverhog_protocol import Conflict, NotFound, OutputCollectionPolicy
@@ -18,6 +26,7 @@ from riverhog_protocol.collection_workflow_transport import (
     ArtifactDispositionOutputPageDocument,
     ArtifactDispositionPageDocument,
     ArtifactDispositionSetDocument,
+    ArtifactReceivingSetDocument,
     CapabilityAction,
     CollectionArtifactPageDocument,
     CollectionDerivationResponseDocument,
@@ -25,9 +34,9 @@ from riverhog_protocol.collection_workflow_transport import (
     ProcessingCapabilityDocument,
     ProcessingClaimDocument,
     ProcessingOutcomePageDocument,
+    ReceivingSetDocument,
 )
 from riverhog_protocol.collection_workflows import (
-    ArtifactDiscardApproval,
     ArtifactDisposition,
     ArtifactDispositionOutput,
     ArtifactDispositionSetIdentity,
@@ -51,6 +60,7 @@ from stove0_observer_protocol import (
     ObserverRuntimeAuthority,
 )
 from stove0_protocol import (
+    ArtifactSelection,
     BranchSetEvaluation,
     ControllerEvidence,
     TargetPlanBinding,
@@ -60,7 +70,7 @@ from stove0_protocol import (
     WorkflowPreviewRequest,
     WorkIdentity,
 )
-from stove0_recipe_config import RecipeNoAction, RecipeSourceLossRule
+from stove0_protocol.recipe_outcomes import NoOutputDefinition
 from stove0_target_protocol import (
     InputArtifact,
     OperationContract,
@@ -80,13 +90,13 @@ from stove0_core.coordinator import (
     ParentOutcomeBinding,
     TargetInvocationAuthority,
 )
+from stove0_core.source_loss import SourceLossEvaluation, planning_root
 from stove0_core.work_state import (
     ClaimBinding,
     ConcurrentWorkUpdate,
     TargetSettlementSealCheckpoint,
     TargetSettlementSealRecord,
     WorkRecord,
-    WorkStore,
 )
 
 
@@ -100,7 +110,7 @@ class RiverhogApi(Protocol):
         work_id: str,
         work_document: Mapping[str, Any],
         work_document_sha256: str,
-        inputs: Iterable[Mapping[str, Any]],
+        inputs: Iterable[Mapping[str, Any]] | None = None,
         lease_seconds: int = 1800,
         purpose: str = "collection-work/v1",
     ) -> ProcessingClaimDocument: ...
@@ -115,6 +125,65 @@ class RiverhogApi(Protocol):
 
     def get_processing_claim(self, claim_id: str) -> ProcessingClaimDocument: ...
 
+    def append_processing_claim_inputs(
+        self,
+        claim_id: str,
+        *,
+        fence: int,
+        start_ordinal: int,
+        inputs: Sequence[Mapping[str, Any]],
+    ) -> ReceivingSetDocument: ...
+
+    def seal_processing_claim_inputs(
+        self,
+        claim_id: str,
+        *,
+        fence: int,
+    ) -> ReceivingSetDocument: ...
+
+    def append_processing_claim_artifacts(
+        self,
+        claim_id: str,
+        *,
+        fence: int,
+        start_ordinal: int,
+        artifacts: Sequence[Mapping[str, Any]],
+    ) -> ArtifactReceivingSetDocument: ...
+
+    def seal_processing_claim_artifacts(
+        self,
+        claim_id: str,
+        *,
+        fence: int,
+    ) -> ArtifactReceivingSetDocument: ...
+
+    def append_processing_capability_artifacts(
+        self,
+        claim_id: str,
+        capability_id: str,
+        *,
+        fence: int,
+        start_ordinal: int,
+        artifacts: Sequence[Mapping[str, Any]],
+    ) -> ArtifactReceivingSetDocument: ...
+
+    def seal_processing_capability_artifacts(
+        self,
+        claim_id: str,
+        capability_id: str,
+        *,
+        fence: int,
+    ) -> ArtifactReceivingSetDocument: ...
+
+    def refresh_processing_capability(
+        self,
+        claim_id: str,
+        capability_id: str,
+        *,
+        fence: int,
+        ttl_seconds: int = 900,
+    ) -> ProcessingCapabilityDocument: ...
+
     def list_processing_claim_artifacts(
         self, claim_id: str, *, identity_sha256: str, start_ordinal: int = 0
     ) -> CollectionArtifactPageDocument: ...
@@ -126,7 +195,7 @@ class RiverhogApi(Protocol):
         fence: int,
         audience: str,
         actions: Sequence[CapabilityAction] = ("read-inputs",),
-        artifacts: Iterable[Mapping[str, Any]],
+        artifacts: Iterable[Mapping[str, Any]] | None = None,
         ttl_seconds: int = 900,
     ) -> ProcessingCapabilityDocument: ...
 
@@ -140,7 +209,7 @@ class RiverhogApi(Protocol):
         controller_evidence_sha256: str,
         operation_id: str,
         operation_sha256: str,
-        input_artifacts: Iterable[Mapping[str, Any]],
+        input_artifacts: Iterable[Mapping[str, Any]] | None = None,
         result_kind: Literal["collection", "external-effect", "no-output"] = "collection",
         operation_contract: Mapping[str, Any] | None = None,
         output_policy: OutputCollectionPolicy | None = None,
@@ -329,7 +398,7 @@ class Stove0RiverhogClient:
         capability_ttl_seconds: int = 15 * 60,
         declared_workspace_protection: DeclaredWorkspaceProtection,
         claim_purpose: str = "stove0-collection-work/v1",
-        state: WorkStore | None = None,
+        state: SqlAlchemyStateStore | None = None,
         authority_batch_size: int = 100,
     ) -> None:
         if claim_lease_seconds < 30 or capability_ttl_seconds < 30:
@@ -397,25 +466,28 @@ class Stove0RiverhogClient:
             raise RuntimeError(status.failure or "Riverhog did not seal derivation evidence")
         return ArtifactDispositionSetIdentity.from_mapping(status.identity.model_dump(mode="json"))
 
-    def acquire_claim(self, work: WorkIdentity) -> ClaimBinding:
+    def acquire_claim(self, work: WorkIdentity) -> ClaimBinding | None:
         return self._acquire_document_claim(
             identity=work.work_id,
             document=work.model_dump(mode="json", by_alias=True, exclude_none=True),
             inputs=[item.model_dump(mode="json") for item in work.inputs],
             purpose=self.claim_purpose,
+            owner_kind="work",
+            owner_id=work.work_id,
         )
 
-    def acquire_preview_claim(self, request: WorkflowPreviewRequest) -> ClaimBinding:
+    def acquire_preview_claim(
+        self, request: WorkflowPreviewRequest, *, invocation_id: str
+    ) -> ClaimBinding | None:
         # The preview result identity is semantic and repeatable, but each read-only
         # execution receives a distinct Riverhog claim. A completed preview abandons
         # its claim, so reusing the semantic preview ID as claim work identity would
         # collide with that terminal claim on a later preview invocation.
-        attempt_id = secrets.token_hex(16)
         claim_work_id = riverhog_canonical_json_sha256(
             {
                 "format": "stove0-workflow-preview-claim/v1",
                 "preview_id": request.preview_id,
-                "attempt_id": attempt_id,
+                "invocation_id": invocation_id,
             }
         )
         return self._acquire_document_claim(
@@ -423,7 +495,28 @@ class Stove0RiverhogClient:
             document=request.model_dump(mode="json", by_alias=True, exclude_none=True),
             inputs=[item.model_dump(mode="json") for item in request.work.inputs],
             purpose="stove0-workflow-preview/v1",
+            owner_kind="preview",
+            owner_id=invocation_id,
         )
+
+    def renew_preview_claim(
+        self, request: WorkflowPreviewRequest, claim: ClaimBinding, *, invocation_id: str
+    ) -> ClaimBinding:
+        try:
+            result = self.api.renew_processing_claim(
+                claim.claim_id, fence=claim.fence, lease_seconds=self.claim_lease_seconds
+            )
+        except Conflict as exc:
+            recovered = self.acquire_preview_claim(request, invocation_id=invocation_id)
+            if recovered is None:
+                raise MetadataPreparationPending(
+                    "preview claim recovery is staging its exact scope"
+                ) from exc
+            return recovered
+        renewed = _claim_binding(result)
+        if renewed != claim:
+            raise RuntimeError("Riverhog renewed a different preview claim generation")
+        return renewed
 
     def renew_claim(
         self,
@@ -448,6 +541,10 @@ class Stove0RiverhogClient:
                 # settlement instead of trying to reacquire a terminal claim.
                 return claim
             recovered = self.acquire_claim(work)
+            if recovered is None:
+                raise MetadataPreparationPending(
+                    "claim recovery is staging its exact scope"
+                ) from exc
             if recovered.claim_id != claim.claim_id or recovered.fence <= claim.fence:
                 raise RuntimeError(
                     "Riverhog did not recover the expired claim with a newer fence"
@@ -471,6 +568,10 @@ class Stove0RiverhogClient:
             )
         except Conflict as exc:
             recovered = self.acquire_claim(work)
+            if recovered is None:
+                raise MetadataPreparationPending(
+                    "claim recovery is staging its exact scope"
+                ) from exc
             if recovered.claim_id != claim.claim_id or recovered.fence <= claim.fence:
                 raise RuntimeError(
                     "Riverhog did not reconcile the restarted claim with a newer fence"
@@ -485,14 +586,10 @@ class Stove0RiverhogClient:
         self,
         claim: ClaimBinding,
         request: ContentObservationRequest,
-    ) -> ObserverRuntimeAuthority:
-        if request.timeout_seconds > min(
-            self.claim_lease_seconds,
-            self.capability_ttl_seconds,
-        ):
-            raise ValueError(
-                "synchronous observation timeout exceeds its claim/capability lifetime"
-            )
+        *,
+        owner_kind: str,
+        owner_id: str,
+    ) -> ObserverRuntimeAuthority | None:
         audience = f"stove0.observer/{request.observer_registration_id}"
         read_action = request.read_actions[0]
         if read_action == "read-evidence":
@@ -501,6 +598,10 @@ class Stove0RiverhogClient:
             actions = ("read-provenance",)
         else:
             actions = ("read-inputs",)
+        selection = ArtifactSelection.seal(tuple(request.subjects))
+        if self.state is None:
+            raise RuntimeError("observation scopes require durable metadata state")
+        self.state.retain_selection(selection)
         capability = self._capability(
             claim,
             audience=audience,
@@ -508,8 +609,12 @@ class Stove0RiverhogClient:
             # Observation subjects are semantically ordered by their request-scoped
             # IDs.  Capability scope is a different, generic Riverhog authority and
             # must be projected into immutable collection-artifact order.
-            artifacts=tuple(sorted(_artifact_identity(item) for item in request.subjects)),
+            scope=selection.ref(),
+            owner_kind=owner_kind,
+            owner_id=owner_id,
         )
+        if capability is None:
+            return None
         return ObserverRuntimeAuthority(
             riverhog_base_url=self.api.base_url,
             capability_token=_token(capability),
@@ -525,7 +630,7 @@ class Stove0RiverhogClient:
         target_plan: TargetPlan,
         inputs: Iterable[WorkArtifactSubject],
         operation: OperationContract,
-    ) -> None:
+    ) -> bool:
         envelope = evidence.execution_envelope
         if envelope.workflow_plan != plan:
             raise ValueError("controller evidence does not contain the selected workflow plan")
@@ -540,6 +645,16 @@ class Stove0RiverhogClient:
         ):
             raise ValueError("selected operation declaration differs from the sealed workflow")
         document = evidence.model_dump(mode="json", by_alias=True, exclude_none=True)
+        if (
+            self._stage_artifacts(
+                claim,
+                target_plan.inputs.selection,
+                owner_kind="work",
+                owner_id=plan.work.work_id,
+            )
+            is None
+        ):
+            return False
         payload = self.api.seal_processing_claim_plan(
             claim.claim_id,
             fence=claim.fence,
@@ -553,7 +668,7 @@ class Stove0RiverhogClient:
             output_policy=plan.output_policy,
             operation_id=plan.operation.id,
             operation_sha256=plan.operation.sha256,
-            input_artifacts=(_artifact_identity(item).as_dict() for item in inputs),
+            input_artifacts=None,
             source_collection_retirement_policy=plan.source_collection_retirement_policy,
             source_collection_retirement_grace_seconds=plan.source_collection_retirement_grace_seconds,
         )
@@ -563,6 +678,7 @@ class Stove0RiverhogClient:
         sealed = payload.get("plan")
         if sealed is None or sealed.get("execution_id") != envelope.execution_envelope_sha256:
             raise RuntimeError("Riverhog did not retain the sealed execution identity")
+        return True
 
     def target_authority(
         self,
@@ -570,7 +686,7 @@ class Stove0RiverhogClient:
         evidence: ControllerEvidence,
         target_plan: TargetPlan,
         inputs: Iterable[WorkArtifactSubject],
-    ) -> TargetInvocationAuthority:
+    ) -> TargetInvocationAuthority | None:
         envelope = evidence.execution_envelope
         if envelope.claim_id != claim.claim_id or envelope.fence != claim.fence:
             raise ValueError("target evidence differs from the current Riverhog claim")
@@ -586,8 +702,12 @@ class Stove0RiverhogClient:
             claim,
             audience=("stove0.target/" + envelope.workflow_plan.target_registration_id),
             actions=actions,
-            artifacts=(_artifact_identity(item) for item in inputs),
+            scope=target_plan.inputs.selection,
+            owner_kind="work",
+            owner_id=envelope.workflow_plan.work.work_id,
         )
+        if capability is None:
+            return None
         principal = capability.get("principal_id")
         expected_principal = (
             f"claim:{claim.claim_id}"
@@ -924,7 +1044,7 @@ class Stove0RiverhogClient:
     def verify_and_settle_no_output(
         self,
         record: WorkRecord,
-        no_action: RecipeNoAction,
+        no_action: NoOutputDefinition,
         source_collection_retirement_policy: SourceCollectionRetirementPolicy,
         source_collection_retirement_grace_seconds: int,
         parent_outcome: ParentOutcomeBinding | None = None,
@@ -943,7 +1063,18 @@ class Stove0RiverhogClient:
         claim = self.api.get_processing_claim(record.claim.claim_id)
         if _claim_binding(claim) != record.claim:
             raise RuntimeError("Riverhog no-output claim generation changed")
-        operation = _no_output_operation(record.work, preview, no_action)
+        loss = None
+        if no_action.source_loss is not None:
+            if self.state is None or preview.no_output_decision is None:
+                raise ValueError(
+                    "source loss requires the retained exact decision and accepted views"
+                )
+            loss = SourceLossEvaluation(
+                planning_root(self.state, record.work),
+                record.work,
+                preview.no_output_decision,
+            )
+        operation = _no_output_operation(record.work, preview, no_action, loss=loss)
         operation_sha256 = riverhog_canonical_json_sha256(operation)
         decision = _no_output_decision(preview)
         decision_sha256 = riverhog_canonical_json_sha256(decision)
@@ -958,6 +1089,18 @@ class Stove0RiverhogClient:
             record, operation_sha256=operation_sha256, decision_sha256=decision_sha256
         )
         if claim.plan is None:
+            if preview.no_output_decision is None:
+                raise ValueError("no-output settlement lacks its exact inventory decision")
+            if (
+                self._stage_artifacts(
+                    record.claim,
+                    preview.no_output_decision.inventory,
+                    owner_kind="work",
+                    owner_id=record.work_id,
+                )
+                is None
+            ):
+                return None
             claim = self.api.seal_processing_claim_plan(
                 record.claim.claim_id,
                 fence=record.claim.fence,
@@ -967,7 +1110,7 @@ class Stove0RiverhogClient:
                 operation_id=str(operation["id"]),
                 operation_sha256=operation_sha256,
                 operation_contract=operation,
-                input_artifacts=self._no_output_artifacts(record.work),
+                input_artifacts=None,
                 result_kind="no-output",
                 source_collection_retirement_policy=source_collection_retirement_policy,
                 source_collection_retirement_grace_seconds=(
@@ -986,105 +1129,9 @@ class Stove0RiverhogClient:
         ):
             raise RuntimeError("Riverhog no-output plan differs from the accepted decision")
         if claim.state == "active":
-            consideration_index = (
-                _consideration_index(no_action.source_loss, preview)
-                if no_action.source_loss is not None
-                else None
-            )
-            if no_action.source_loss is not None:
-                selected = {
-                    (slot.observation_contract_id, slot.facts_profile_sha256)
-                    for slot in no_action.source_loss.evidence_slots
-                }
-                for observation in preview.observations:
-                    profile = observation.result.facts_schema
-                    if (
-                        profile is None
-                        or (
-                            observation.request.observer_contract_id,
-                            profile.profile_sha256,
-                        )
-                        not in selected
-                    ):
-                        continue
-                    evidence_document = {
-                        "request": observation.request.model_dump(
-                            mode="json", by_alias=True, exclude_none=True
-                        ),
-                        "result": observation.result.model_dump(
-                            mode="json", by_alias=True, exclude_none=True
-                        ),
-                    }
-                    observation_sha256 = riverhog_canonical_json_sha256(evidence_document)
-                    retained = self.api.record_processing_claim_consideration_evidence(
-                        record.claim.claim_id,
-                        fence=record.claim.fence,
-                        document=evidence_document,
-                        sha256=observation_sha256,
-                    )
-                    if retained.sha256 != observation_sha256:
-                        raise RuntimeError("Riverhog retained another consideration document")
-            ordinal = 0
-            while True:
-                page = self.api.list_processing_claim_artifacts(
-                    record.claim.claim_id,
-                    identity_sha256=plan.artifacts.sha256,
-                    start_ordinal=ordinal,
-                )
-                if (
-                    page.start_ordinal != ordinal
-                    or page.identity.sha256 != plan.artifacts.sha256
-                    or not page.artifacts
-                ):
-                    raise RuntimeError("Riverhog no-output input scope changed")
-                dispositions: list[dict[str, object]] = []
-                for item in page.artifacts:
-                    subject = CollectionArtifactIdentity(
-                        collection=CollectionRootIdentity(
-                            item.collection.collection_id,
-                            item.collection.archive_root_sha256,
-                            item.collection.artifact_set_identity,
-                        ),
-                        artifact_id=item.artifact_id,
-                        bytes=item.bytes,
-                        sha256=item.sha256,
-                    )
-                    approval = (
-                        _no_output_discard_approval(
-                            subject,
-                            no_action.source_loss,
-                            preview,
-                            controller_id=claim.consumer.app,
-                            reason=no_action.message,
-                            index=consideration_index,
-                        )
-                        if no_action.source_loss is not None
-                        else None
-                    )
-                    dispositions.append(
-                        ArtifactDisposition(
-                            input_collection_id=item.collection.collection_id,
-                            input_archive_root_sha256=item.collection.archive_root_sha256,
-                            input_artifact_id=item.artifact_id,
-                            status="not-carried-forward",
-                            code=preview.outcome.code,
-                            message=preview.outcome.message,
-                            discard_approval=approval,
-                        ).as_dict()
-                    )
-                self.api.record_processing_claim_dispositions(
-                    record.claim.claim_id,
-                    fence=record.claim.fence,
-                    dispositions=dispositions,
-                )
-                if page.next_ordinal is None:
-                    break
-                if page.next_ordinal != ordinal + len(page.artifacts):
-                    raise RuntimeError("Riverhog no-output input scope has a gap")
-                ordinal = page.next_ordinal
-            status = self.api.seal_processing_claim_dispositions(
-                record.claim.claim_id, fence=record.claim.fence
-            )
+            status = self._advance_no_output_dispositions(record, claim, plan, loss, no_action)
+            if status is None:
+                return None
         else:
             status = self.api.get_processing_claim_dispositions(record.claim.claim_id)
         if status.state == "sealing":
@@ -1122,43 +1169,102 @@ class Stove0RiverhogClient:
             raise RuntimeError("Riverhog did not settle the exact no-output decision")
         return document.sha256
 
-    def _no_output_artifacts(self, work: WorkIdentity) -> Iterable[Mapping[str, object]]:
-        for root in work.inputs:
-            current = self.api.get_collection(root.collection_id)
-            if (
-                current.get("archive_root_sha256") != root.archive_root_sha256
-                or current.get("artifact_set_identity") != root.artifact_set_identity
-            ):
-                raise RuntimeError("no-output source collection root changed")
-            identity: str | None = None
-            cursor: str | None = None
-            while True:
-                page = self.api.get_portable_collection_inventory(
-                    root.collection_id,
-                    cursor=cursor,
-                    limit=1000,
-                    inventory_identity=identity,
+    def _advance_no_output_dispositions(
+        self,
+        record: WorkRecord,
+        claim: ProcessingClaimDocument,
+        plan: ProcessingClaimPlanDocument,
+        loss: SourceLossEvaluation | None,
+        no_action: NoOutputDefinition,
+    ) -> ArtifactDispositionSetDocument | None:
+        _, transfers = self._transfer_store("work", record.work_id)
+        row, checkpoint = transfers.ensure(
+            {
+                "kind": "no-output-dispositions",
+                "claim_id": claim.id,
+                "fence": claim.fence,
+                "execution_id": plan.execution_id,
+            }
+        )
+        ordinal = checkpoint.disposition_ordinal
+        if ordinal == plan.artifacts.count:
+            return self.api.seal_processing_claim_dispositions(claim.id, fence=claim.fence)
+        page = self.api.list_processing_claim_artifacts(
+            claim.id,
+            identity_sha256=plan.artifacts.sha256,
+            start_ordinal=ordinal,
+        )
+        if (
+            page.start_ordinal != ordinal
+            or page.identity.sha256 != plan.artifacts.sha256
+            or not page.artifacts
+        ):
+            raise RuntimeError("Riverhog no-output input scope changed")
+        items = (
+            page.artifacts[:1] if loss is not None else page.artifacts[: self.authority_batch_size]
+        )
+        dispositions = []
+        for item in items:
+            subject = CollectionArtifactIdentity(
+                collection=CollectionRootIdentity(
+                    item.collection.collection_id,
+                    item.collection.archive_root_sha256,
+                    item.collection.artifact_set_identity,
+                ),
+                artifact_id=item.artifact_id,
+                bytes=item.bytes,
+                sha256=item.sha256,
+            )
+            approval = None
+            if loss is not None:
+                approval, documents = loss.approval(
+                    subject,
+                    controller_id=claim.consumer.app,
+                    reason=no_action.message,
                 )
-                if identity is None:
-                    identity = page.authority.inventory_identity
-                elif page.authority.inventory_identity != identity:
-                    raise RuntimeError("no-output source inventory changed")
-                for item in page.artifacts:
-                    yield CollectionArtifactIdentity(
-                        collection=CollectionRootIdentity(
-                            root.collection_id,
-                            root.archive_root_sha256,
-                            root.artifact_set_identity,
-                        ),
-                        artifact_id=item.artifact_id,
-                        bytes=item.bytes,
-                        sha256=item.sha256,
-                    ).as_dict()
-                if page.complete:
-                    break
-                if page.next_cursor is None:
-                    raise RuntimeError("no-output source inventory continuation is missing")
-                cursor = page.next_cursor
+                following = next(
+                    (
+                        (digest, document)
+                        for digest, document in documents
+                        if digest > checkpoint.evidence_after_sha256
+                    ),
+                    None,
+                )
+                if following is not None:
+                    digest, document = following
+                    retained = self.api.record_processing_claim_consideration_evidence(
+                        claim.id,
+                        fence=claim.fence,
+                        document=document,
+                        sha256=digest,
+                    )
+                    if retained.sha256 != digest:
+                        raise RuntimeError("Riverhog retained another consideration document")
+                    transfers.advance(row, checkpoint, evidence_after_sha256=digest)
+                    return None
+            dispositions.append(
+                ArtifactDisposition(
+                    input_collection_id=item.collection.collection_id,
+                    input_archive_root_sha256=item.collection.archive_root_sha256,
+                    input_artifact_id=item.artifact_id,
+                    status="not-carried-forward",
+                    code=no_action.code,
+                    message=no_action.message,
+                    discard_approval=approval,
+                ).as_dict()
+            )
+        self.api.record_processing_claim_dispositions(
+            claim.id,
+            fence=claim.fence,
+            dispositions=dispositions,
+        )
+        transfers.advance(
+            row,
+            checkpoint,
+            disposition_ordinal=ordinal + len(items),
+            evidence_after_sha256="",
+        )
+        return None
 
     def settle_outcomes(
         self,
@@ -1467,14 +1573,16 @@ class Stove0RiverhogClient:
         *,
         identity: str,
         document: Mapping[str, object],
-        inputs: Iterable[Mapping[str, object]],
+        inputs: Sequence[Mapping[str, object]],
         purpose: str,
-    ) -> ClaimBinding:
+        owner_kind: str,
+        owner_id: str,
+    ) -> ClaimBinding | None:
         payload = self.api.create_or_resume_processing_claim(
             work_id=identity,
             work_document=dict(document),
             work_document_sha256=riverhog_canonical_json_sha256(document),
-            inputs=(dict(item) for item in inputs),
+            inputs=None,
             lease_seconds=self.claim_lease_seconds,
             purpose=purpose,
         )
@@ -1483,7 +1591,170 @@ class Stove0RiverhogClient:
         state = str(payload.get("state") or "")
         if state != "active":
             raise RuntimeError(f"Riverhog processing claim is terminal: {state or 'unknown'}")
+        if payload.inputs.state == "receiving":
+            _, transfers = self._transfer_store(owner_kind, owner_id)
+            binding = {
+                "kind": "claim-inputs",
+                "claim_id": payload.id,
+                "fence": payload.fence,
+                "work_id": identity,
+            }
+            row, checkpoint = transfers.ensure(binding, domain=b"riverhog-claim-inputs/v1\0")
+            page = inputs[checkpoint.count : checkpoint.count + self.authority_batch_size]
+            if page:
+                digest = CheckpointSHA256.from_state(checkpoint.hash_state)
+                for item in page:
+                    encoded = riverhog_canonical_json_bytes(item)
+                    digest.update(len(encoded).to_bytes(8, "big"))
+                    digest.update(encoded)
+                staged = self.api.append_processing_claim_inputs(
+                    payload.id,
+                    fence=payload.fence,
+                    start_ordinal=checkpoint.count,
+                    inputs=page,
+                )
+                if staged.count < checkpoint.count + len(page):
+                    raise RuntimeError("Riverhog root staging lost the accepted prefix")
+                transfers.advance(
+                    row,
+                    checkpoint,
+                    count=checkpoint.count + len(page),
+                    hash_state=digest.export_state(),
+                )
+                return None
+            sealed = self.api.seal_processing_claim_inputs(payload.id, fence=payload.fence)
+            if (
+                sealed.identity is None
+                or sealed.identity.count != checkpoint.count
+                or sealed.identity.sha256
+                != CheckpointSHA256.from_state(checkpoint.hash_state).hexdigest()
+            ):
+                raise RuntimeError("Riverhog sealed another exact root scope")
+        elif payload.inputs.count != len(inputs):
+            raise RuntimeError("Riverhog retained another claim root count")
         return _claim_binding(payload)
+
+    def _transfer_store(
+        self, owner_kind: str, owner_id: str
+    ) -> tuple[SqlAlchemyStateStore, RiverhogTransferStore]:
+        if self.state is None:
+            raise RuntimeError("resumable Riverhog control needs its durable metadata state")
+        scoped = self.state.planning_context(owner_kind, owner_id)
+        return scoped, scoped.riverhog_transfers
+
+    def _stage_artifacts(
+        self,
+        claim: ClaimBinding,
+        scope: ArtifactSelectionRef,
+        *,
+        owner_kind: str,
+        owner_id: str,
+        audience: str | None = None,
+        actions: Sequence[CapabilityAction] = (),
+    ) -> str | bool | None:
+        state, transfers = self._transfer_store(owner_kind, owner_id)
+        binding = {
+            "kind": "capability-artifacts" if audience is not None else "plan-artifacts",
+            "claim_id": claim.claim_id,
+            "fence": claim.fence,
+            "selection_sha256": scope.selection_sha256,
+            "audience": audience,
+            "actions": list(actions),
+        }
+        row, checkpoint = transfers.ensure(binding)
+        capability_id = checkpoint.receiving_id
+        if audience is not None and capability_id is None:
+            receiving = self.api.create_processing_capability(
+                claim.claim_id,
+                fence=claim.fence,
+                audience=audience,
+                actions=tuple(actions),
+                artifacts=None,
+                ttl_seconds=self.capability_ttl_seconds,
+            )
+            if (
+                receiving.claim_id != claim.claim_id
+                or receiving.fence != claim.fence
+                or receiving.audience != audience
+                or tuple(receiving.actions) != tuple(actions)
+                or receiving.state != "receiving"
+            ):
+                raise RuntimeError("Riverhog created another receiving capability scope")
+            transfers.advance(row, checkpoint, receiving_id=receiving.id)
+            return None
+        if checkpoint.stage == "collecting":
+            page = state.native_selection_page(
+                scope.selection_sha256,
+                after_collection_id=checkpoint.after_collection_id,
+                after_artifact_id=checkpoint.after_artifact_id,
+                limit=self.authority_batch_size,
+            )
+            if not page:
+                if checkpoint.count != scope.artifact_count:
+                    raise RuntimeError("Riverhog transfer lost selection members")
+                transfers.advance(row, checkpoint, stage="sealing")
+                return None
+            values = [_artifact_identity(subject).as_dict() for subject in page]
+            digest = CheckpointSHA256.from_state(checkpoint.hash_state)
+            for value in values:
+                encoded = riverhog_canonical_json_bytes(value)
+                digest.update(len(encoded).to_bytes(8, "big"))
+                digest.update(encoded)
+            if audience is not None:
+                if capability_id is None:
+                    raise RuntimeError("capability staging lost its exact receiving ID")
+                staged = self.api.append_processing_capability_artifacts(
+                    claim.claim_id,
+                    capability_id,
+                    fence=claim.fence,
+                    start_ordinal=checkpoint.count,
+                    artifacts=values,
+                )
+            else:
+                staged = self.api.append_processing_claim_artifacts(
+                    claim.claim_id,
+                    fence=claim.fence,
+                    start_ordinal=checkpoint.count,
+                    artifacts=values,
+                )
+            count = checkpoint.count + len(page)
+            total_bytes = checkpoint.total_bytes + sum(subject.bytes for subject in page)
+            if staged.count < count or staged.total_bytes < total_bytes:
+                raise RuntimeError("Riverhog artifact staging lost the accepted prefix")
+            transfers.advance(
+                row,
+                checkpoint,
+                count=count,
+                total_bytes=total_bytes,
+                hash_state=digest.export_state(),
+                after_collection_id=page[-1].collection.collection_id,
+                after_artifact_id=page[-1].artifact_id,
+                stage="sealing" if count == scope.artifact_count else "collecting",
+            )
+            return None
+        if checkpoint.stage == "sealing":
+            if audience is not None and capability_id is None:
+                raise RuntimeError("capability sealing lost its exact receiving ID")
+            sealed = (
+                self.api.seal_processing_capability_artifacts(
+                    claim.claim_id, capability_id, fence=claim.fence
+                )
+                if capability_id is not None and audience is not None
+                else self.api.seal_processing_claim_artifacts(claim.claim_id, fence=claim.fence)
+            )
+            identity = sealed.identity
+            if (
+                identity is None
+                or identity.count != scope.artifact_count
+                or identity.total_bytes != scope.total_bytes
+                or identity.count != checkpoint.count
+                or identity.total_bytes != checkpoint.total_bytes
+                or identity.sha256 != CheckpointSHA256.from_state(checkpoint.hash_state).hexdigest()
+            ):
+                raise RuntimeError("Riverhog sealed another exact artifact scope")
+            transfers.advance(row, checkpoint, stage="complete")
+            return None
+        return capability_id if audience is not None else True
 
     def _capability(
         self,
@@ -1491,14 +1762,26 @@ class Stove0RiverhogClient:
         *,
         audience: str,
         actions: Sequence[CapabilityAction],
-        artifacts: Iterable[CollectionArtifactIdentity],
-    ) -> ProcessingCapabilityDocument:
-        payload = self.api.create_processing_capability(
-            claim.claim_id,
-            fence=claim.fence,
+        scope: ArtifactSelectionRef,
+        owner_kind: str,
+        owner_id: str,
+    ) -> ProcessingCapabilityDocument | None:
+        capability_id = self._stage_artifacts(
+            claim,
+            scope,
+            owner_kind=owner_kind,
+            owner_id=owner_id,
             audience=audience,
-            actions=tuple(actions),
-            artifacts=(item.as_dict() for item in artifacts),
+            actions=actions,
+        )
+        if capability_id is None:
+            return None
+        if not isinstance(capability_id, str):
+            raise RuntimeError("capability staging returned no exact capability ID")
+        payload = self.api.refresh_processing_capability(
+            claim.claim_id,
+            capability_id,
+            fence=claim.fence,
             ttl_seconds=self.capability_ttl_seconds,
         )
         if (
@@ -1527,173 +1810,46 @@ def _artifact_identity(
 
 
 def _no_output_operation(
-    work: WorkIdentity, preview: WorkflowPreview, no_action: RecipeNoAction
+    work: WorkIdentity,
+    preview: WorkflowPreview,
+    no_action: NoOutputDefinition,
+    *,
+    loss: SourceLossEvaluation | None = None,
 ) -> dict[str, object]:
-    outcome = preview.outcome
-    assert outcome is not None
+    decision = preview.no_output_decision
+    if (
+        decision is None
+        or decision.work_id != work.work_id
+        or (
+            riverhog_canonical_json_bytes(
+                decision.definition.model_dump(mode="json", by_alias=True)
+            )
+            != riverhog_canonical_json_bytes(no_action.model_dump(mode="json", by_alias=True))
+        )
+    ):
+        raise ValueError("no-output operation lacks its exact indexed definition")
+    if (loss is None) != (no_action.source_loss is None):
+        raise ValueError("no-output operation lacks its named accepted source-loss views")
     operation: dict[str, object] = {
         "id": "stove0.no-action/v1",
         "result_kind": "no-output",
         "source_collection_retirement_permitted": no_action.source_loss is not None,
         "recipe": work.recipe.model_dump(mode="json"),
-        "decision_code": outcome.code,
+        "decision_sha256": decision.decision_sha256,
     }
-    if no_action.source_loss is not None:
-        operation["source_loss"] = {
-            "rule_sha256": no_action.source_loss.sha256,
-            "rule": no_action.source_loss.model_dump(mode="json", exclude_none=True),
-            "evidence_slots": [
-                {
-                    "id": slot.observation_contract_id,
-                    "contract_sha256": slot.observation_contract_sha256,
-                    "profile_sha256": slot.facts_profile_sha256,
-                }
-                for slot in no_action.source_loss.evidence_slots
-            ],
-        }
+    if loss is not None:
+        operation["source_loss"] = loss.declaration
     return operation
 
 
 def _no_output_decision(preview: WorkflowPreview) -> dict[str, object]:
-    outcome = preview.outcome
-    assert outcome is not None
+    if preview.no_output_decision is None:
+        raise ValueError("no-output settlement lacks its exact indexed decision")
     return {
         "format": "stove0-no-output-decision/v1",
         "preview_sha256": preview.preview_sha256,
-        "outcome": {"code": outcome.code, "message": outcome.message},
+        "decision": preview.no_output_decision.model_dump(mode="json", by_alias=True),
     }
-
-
-def _no_output_discard_approval(
-    subject: CollectionArtifactIdentity,
-    rule: RecipeSourceLossRule,
-    preview: WorkflowPreview,
-    *,
-    controller_id: str,
-    reason: str,
-    index: dict[
-        tuple[str, str, CollectionArtifactIdentity],
-        list[tuple[str, list[dict[str, object]]]],
-    ]
-    | None = None,
-) -> ArtifactDiscardApproval | None:
-    """Endorse only a universal, exact subject-keyed decision under the selected rule."""
-
-    matches_by_subject = index if index is not None else _consideration_index(rule, preview)
-    slots: list[dict[str, object]] = []
-    for required in rule.evidence_slots:
-        matches = matches_by_subject.get(
-            (required.observation_contract_id, required.facts_profile_sha256, subject), []
-        )
-        if len(matches) != 1:
-            return None
-        document_sha256, matching_records = matches[0]
-        if len(matching_records) != 1:
-            return None
-        present, verdict = _consideration_pointer(matching_records[0], required.verdict_pointer)
-        if not present or riverhog_canonical_json_bytes(verdict) != riverhog_canonical_json_bytes(
-            required.verdict_value
-        ):
-            return None
-        slots.append(
-            {
-                "id": required.observation_contract_id,
-                "contract_sha256": required.observation_contract_sha256,
-                "profile_sha256": required.facts_profile_sha256,
-                "document_sha256": document_sha256,
-            }
-        )
-    evidence = {
-        "format": "riverhog-artifact-consideration/v1",
-        "subject": subject.as_dict(),
-        "slots": slots,
-        "reason": reason,
-    }
-    return ArtifactDiscardApproval(
-        controller_id=controller_id,
-        rule_sha256=rule.sha256,
-        evidence_json=riverhog_canonical_json_bytes(evidence).decode("utf-8"),
-        evidence_sha256=riverhog_canonical_json_sha256(evidence),
-    )
-
-
-def _consideration_index(
-    rule: RecipeSourceLossRule, preview: WorkflowPreview
-) -> dict[
-    tuple[str, str, CollectionArtifactIdentity],
-    list[tuple[str, list[dict[str, object]]]],
-]:
-    index: dict[
-        tuple[str, str, CollectionArtifactIdentity],
-        list[tuple[str, list[dict[str, object]]]],
-    ] = {}
-    document_hashes: dict[str, str] = {}
-    for required in rule.evidence_slots:
-        for observation in preview.observations:
-            profile = observation.result.facts_schema
-            if (
-                observation.request.observer_contract_id != required.observation_contract_id
-                or observation.request.observer_contract_sha256
-                != required.observation_contract_sha256
-                or profile is None
-                or profile.profile_sha256 != required.facts_profile_sha256
-            ):
-                continue
-            facts = observation.result.facts
-            if facts is None:
-                continue
-            present, records = _consideration_pointer(
-                facts, required.artifact_facts.records_pointer
-            )
-            if not present or not isinstance(records, list):
-                continue
-            document_sha256 = document_hashes.get(observation.request.request_id)
-            if document_sha256 is None:
-                document_sha256 = riverhog_canonical_json_sha256(
-                    {
-                        "request": observation.request.model_dump(
-                            mode="json", by_alias=True, exclude_none=True
-                        ),
-                        "result": observation.result.model_dump(
-                            mode="json", by_alias=True, exclude_none=True
-                        ),
-                    }
-                )
-                document_hashes[observation.request.request_id] = document_sha256
-            records_by_id: dict[str, list[dict[str, object]]] = {}
-            for record in records:
-                if not isinstance(record, dict):
-                    continue
-                present, artifact_id = _consideration_pointer(
-                    record, required.artifact_facts.artifact_id_pointer
-                )
-                if present and isinstance(artifact_id, str):
-                    records_by_id.setdefault(artifact_id, []).append(record)
-            for candidate in observation.request.subjects:
-                key = (
-                    required.observation_contract_id,
-                    required.facts_profile_sha256,
-                    _artifact_identity(candidate),
-                )
-                index.setdefault(key, []).append(
-                    (document_sha256, records_by_id.get(candidate.id, []))
-                )
-    return index
-
-
-def _consideration_pointer(document: object, pointer: str) -> tuple[bool, object]:
-    current = document
-    if pointer == "":
-        return True, current
-    for raw in pointer.split("/")[1:]:
-        token = raw.replace("~1", "/").replace("~0", "~")
-        if isinstance(current, dict) and token in current:
-            current = current[token]
-        elif isinstance(current, list) and token.isdigit() and int(token) < len(current):
-            current = current[int(token)]
-        else:
-            return False, None
-    return True, current
 
 
 def _no_output_execution_id(

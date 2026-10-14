@@ -5,11 +5,11 @@ from __future__ import annotations
 import importlib.metadata
 import json
 import os
-import subprocess
 from pathlib import Path
 from typing import Any
 
 from a_stove0_ffprobe_streams_contract_lib import (
+    FFPROBE_STREAMS_INTERFACE,
     FFPROBE_STREAMS_OBSERVATION_ID,
     FFPROBE_STREAMS_OBSERVER_CONTRACT,
     FFprobeStreamFacts,
@@ -17,12 +17,14 @@ from a_stove0_ffprobe_streams_contract_lib import (
     validate_ffprobe_stream_facts,
 )
 from a_stove0_media_sampling_contract_lib import (
+    MEDIA_SAMPLING_INTERFACE,
     MEDIA_SAMPLING_OBSERVER_CONTRACT,
     MediaSamplingArtifactFacts,
     MediaSamplingFacts,
     SampleableRange,
     validate_media_sampling_facts,
 )
+from stove0_extension_support import subprocess
 from stove0_observer_protocol import (
     ContentObservationRequest,
     ContentObservationResult,
@@ -67,9 +69,13 @@ class FfprobeObserver:
                 image_id=image_id,
                 contracts=(
                     ObserverContractSupport.from_contract(
-                        FFPROBE_STREAMS_OBSERVER_CONTRACT, preferred_subject_batch_size=1
+                        FFPROBE_STREAMS_OBSERVER_CONTRACT,
+                        interfaces=(FFPROBE_STREAMS_INTERFACE.ref,),
+                        preferred_subject_batch_size=1,
                     ),
-                    ObserverContractSupport.from_contract(MEDIA_SAMPLING_OBSERVER_CONTRACT),
+                    ObserverContractSupport.from_contract(
+                        MEDIA_SAMPLING_OBSERVER_CONTRACT, interfaces=(MEDIA_SAMPLING_INTERFACE.ref,)
+                    ),
                 ),
             )
         )
@@ -150,17 +156,22 @@ class FfprobeObserver:
                     workspace=workspace,
                     relative_path=f"input/{subject.id}",
                 )
-                raw = bounded_ffprobe_report(
-                    self.ffprobe, source, timeout_seconds=min(request.timeout_seconds, 300)
-                )
-                facts.append(
-                    artifact_facts(
-                        subject.id,
-                        raw,
-                        ffprobe_version=version,
-                        executable_sha256=executable_sha256,
+                try:
+                    raw = bounded_ffprobe_report(
+                        self.ffprobe, source, timeout_seconds=min(request.timeout_seconds, 300)
                     )
-                )
+                    facts.append(
+                        artifact_facts(
+                            subject.id,
+                            raw,
+                            ffprobe_version=version,
+                            executable_sha256=executable_sha256,
+                        )
+                    )
+                finally:
+                    # Physical batching must not accumulate a whole batch of
+                    # potentially large source files in the observer workspace.
+                    source.unlink(missing_ok=True)
             document = FFprobeStreamFacts(artifacts=tuple(facts)).model_dump(mode="json")
             validate_ffprobe_stream_facts(document, request.subjects)
             return builder.observed(document, execution_evidence=evidence)

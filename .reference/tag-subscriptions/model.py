@@ -11,6 +11,7 @@ import hashlib
 import json
 import re
 import sqlite3
+from itertools import islice
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -152,7 +153,13 @@ class Position:
 
 
 class ModelStore:
-    """Small transaction model. It is deliberately not production DDL or an ORM."""
+    """Small transaction model, not production DDL.
+
+    A root retains at most one compact observation per distinct collection.
+    Generation is a fence on that row, not a multiplying storage key. Immutable
+    identity and suppression records survive rebaseline; there is no unsafe TTL
+    on replay guards. Lifetime distinct identities remain a real growth dimension.
+    """
 
     @classmethod
     def initialize(cls, path: Path, *, source: str, view: str, tag: str,
@@ -178,7 +185,7 @@ class ModelStore:
                 CREATE TABLE observed (
                     generation INTEGER NOT NULL, collection_id TEXT NOT NULL,
                     revision INTEGER NOT NULL, authority TEXT NOT NULL, matched INTEGER NOT NULL,
-                    PRIMARY KEY (generation, collection_id)
+                    PRIMARY KEY (collection_id)
                 );
                 CREATE TABLE identity (
                     collection_id TEXT PRIMARY KEY, archive_root TEXT NOT NULL,
@@ -230,7 +237,8 @@ class ModelStore:
         The production equivalent receives a validated CatalogFollowBatch. This
         model checks only the invariants directly under test, not the full wire.
         """
-        items = tuple(observations)
+        # Reject after one bounded lookahead, even for an unbounded iterator.
+        items = tuple(islice(iter(observations), 101))
         if len(items) > 100:
             raise ValueError("reference page exceeds the catalog page bound")
         if not isinstance(next_cursor, str) or not next_cursor:

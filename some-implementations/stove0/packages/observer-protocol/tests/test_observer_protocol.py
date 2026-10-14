@@ -11,7 +11,6 @@ from stove0_observer_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     CollectionRootIdentityRef,
     ContentObservationRequest,
-    ContentObservationRequestPayload,
     JsonSchemaValidationProfile,
     ObserverContract,
     ObserverContractPayload,
@@ -24,6 +23,8 @@ from stove0_observer_protocol import (
     validate_observation_request,
 )
 from stove0_protocol import models as shared_models
+
+from tests.stove0_observation_fixtures import fixture_interface, observation_payload
 
 _OBSERVER_AUTHOR_SYMBOLS = frozenset(
     {
@@ -108,7 +109,9 @@ def test_observer_read_authority_is_explicit_and_contract_bound() -> None:
         ObserverContractPayload(**shared, read_actions=("read-provenance",))
     )
     assert payload.contract_sha256 != provenance.contract_sha256
-    assert ObserverContractSupport.from_contract(provenance).read_actions == ("read-provenance",)
+    assert ObserverContractSupport.from_contract(
+        provenance, interfaces=(fixture_interface(provenance).ref,)
+    ).read_actions == ("read-provenance",)
     with pytest.raises(ValueError):
         ObserverContractPayload(**shared, read_actions=("read-inputs", "read-provenance"))
     descriptor = ObserverDescriptor.seal(
@@ -117,7 +120,11 @@ def test_observer_read_authority_is_explicit_and_contract_bound() -> None:
             implementation_version="1",
             source_revision="fixture",
             image_id="sha256:" + "a" * 64,
-            contracts=(ObserverContractSupport.from_contract(provenance),),
+            contracts=(
+                ObserverContractSupport.from_contract(
+                    provenance, interfaces=(fixture_interface(provenance).ref,)
+                ),
+            ),
         )
     )
     subject = WorkArtifactSubject(
@@ -137,7 +144,8 @@ def test_observer_read_authority_is_explicit_and_contract_bound() -> None:
         subject.collection
     )
     correct = ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=provenance,
             work_id="1" * 64,
             observer_registration_id="fixture",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -149,7 +157,8 @@ def test_observer_read_authority_is_explicit_and_contract_bound() -> None:
     )
     assert validate_observation_request(correct, descriptor).read_actions == ("read-provenance",)
     forged = ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=provenance,
             work_id=correct.work_id,
             observer_registration_id=correct.observer_registration_id,
             observer_descriptor_sha256=correct.observer_descriptor_sha256,

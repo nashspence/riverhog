@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import os
-import subprocess
 import tempfile
 import threading
 from collections import defaultdict
@@ -25,6 +24,7 @@ from riverhog_materialization import (
     plan_materialization,
 )
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
+from stove0_extension_support import ExecutionAdmission, subprocess
 from stove0_observer_protocol import ContentObservationEvidence
 from stove0_protocol import (
     ArtifactSelection,
@@ -152,6 +152,7 @@ class RcloneEffectTargetService(PersistentTargetService):
         image_id: str,
         implementation_version: str,
         terminal_state_retention_seconds: int = DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
+        execution_admission: ExecutionAdmission | None = None,
     ) -> None:
         self.destination = destination
         self.workspace_root = workspace_root.resolve()
@@ -181,6 +182,7 @@ class RcloneEffectTargetService(PersistentTargetService):
             state_root=state_root,
             execute=self._execute,
             terminal_state_retention_seconds=terminal_state_retention_seconds,
+            execution_admission=execution_admission,
         )
 
     def preflight(self, request: TargetPreflightRequest) -> TargetPreflightResponse:

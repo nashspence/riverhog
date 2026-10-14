@@ -1,18 +1,23 @@
 from __future__ import annotations
 
 import hashlib
+import time
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from copy import deepcopy
+from pathlib import Path
 from threading import Event, Lock
 from types import SimpleNamespace
 from typing import Any, cast
 
 import pytest
 from a_stove0_materialization_hint_evidence_contract_lib import (
+    MATERIALIZATION_HINT_INTERFACE,
     MATERIALIZATION_HINT_OBSERVER_CONTRACT,
     validate_materialization_hint_facts,
 )
 from a_stove0_riverhog_provenance_evidence_contract_lib import (
+    CORE_PROVENANCE_INTERFACE,
     CORE_PROVENANCE_OBSERVER_CONTRACT,
     validate_core_provenance_facts,
 )
@@ -45,12 +50,16 @@ from stove0_observer_protocol import (
     CollectionRootIdentityRef,
     ContentObservationInvocation,
     ContentObservationRequest,
-    ContentObservationRequestPayload,
     ObserverRuntimeAuthority,
     WorkArtifactSubject,
 )
-from stove0_observer_support import ContentObservationResultBuilder, ContentObservationRuntime
+from stove0_observer_support import (
+    ContentObservationResultBuilder,
+    ContentObservationRuntime,
+    PersistentObserverService,
+)
 
+from tests.stove0_observation_fixtures import observation_payload
 from tests.support.member_history import member_history_fixture
 
 
@@ -159,7 +168,9 @@ def _fixture(
     return subject, binding, summary
 
 
-def test_service_bounds_parallel_provenance_reads_with_request_local_results() -> None:
+def test_service_bounds_parallel_provenance_reads_with_request_local_results(
+    tmp_path: Path, monkeypatch
+) -> None:
     subject, _, _ = _fixture(
         name="/source/clip.wav", view_id="urn:uuid:11111111-1111-4111-8111-111111111111"
     )
@@ -195,7 +206,9 @@ def test_service_bounds_parallel_provenance_reads_with_request_local_results() -
     invocations = tuple(
         ContentObservationInvocation(
             request=ContentObservationRequest.seal(
-                ContentObservationRequestPayload(
+                observation_payload(
+                    contract=MATERIALIZATION_HINT_OBSERVER_CONTRACT,
+                    interface=MATERIALIZATION_HINT_INTERFACE,
                     work_id=f"{index:064x}",
                     observer_registration_id="canonical-hint",
                     observer_descriptor_sha256=observer.descriptor().descriptor_sha256,
@@ -215,12 +228,28 @@ def test_service_bounds_parallel_provenance_reads_with_request_local_results() -
         )
         for index in range(7)
     )
-    with TestClient(create_app(token="fixture", observer=observer)) as client:
+
+    @contextmanager
+    def runtime(invocation, *, cancellation_check):
+        yield SimpleNamespace(heartbeat=cancellation_check)
+
+    monkeypatch.setattr(
+        PersistentObserverService, "_validate_live_authority", lambda *args, **kwargs: None
+    )
+    monkeypatch.setattr(
+        "a_stove0_riverhog_provenance_observer.app.PersistentObserverService",
+        lambda observer, **kwargs: PersistentObserverService(
+            observer, runtime_factory=runtime, **kwargs
+        ),
+    )
+    with TestClient(
+        create_app(token="fixture", observer=observer, state_root=tmp_path / "state")
+    ) as client:
         with ThreadPoolExecutor(max_workers=7) as callers:
             responses = [
                 callers.submit(
-                    client.post,
-                    "/v1/observe",
+                    client.put,
+                    f"/v1/observations/{invocation.job_id}",
                     headers={"Authorization": "Bearer fixture"},
                     content=invocation.model_dump_json(exclude_none=True),
                 )
@@ -234,7 +263,19 @@ def test_service_bounds_parallel_provenance_reads_with_request_local_results() -
             for invocation, pending in zip(invocations, responses, strict=True):
                 response = pending.result(timeout=5)
                 assert response.status_code == 200, response.text
-                result = response.json()
+                assert response.json()["state"] == "queued"
+                deadline = time.monotonic() + 5
+                while time.monotonic() < deadline:
+                    status = client.get(
+                        f"/v1/observations/{invocation.job_id}",
+                        headers={"Authorization": "Bearer fixture"},
+                    ).json()
+                    if status["state"] == "completed":
+                        break
+                    time.sleep(0.01)
+                else:
+                    raise AssertionError("provenance observation did not complete")
+                result = status["result"]
                 assert result["request_id"] == invocation.request.request_id
                 assert (
                     result["facts"]["artifacts"][0]["subject_id"]
@@ -267,7 +308,9 @@ def test_core_observation_exposes_only_requested_predicates_at_exact_anchor() ->
     observer = RiverhogProvenanceObserver(image_id="sha256:" + "f" * 64)
     support = observer.descriptor().support_for(CORE_PROVENANCE_OBSERVER_CONTRACT.id)
     request = ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=CORE_PROVENANCE_OBSERVER_CONTRACT,
+            interface=CORE_PROVENANCE_INTERFACE,
             work_id="a" * 64,
             observer_registration_id="canonical-provenance",
             observer_descriptor_sha256=observer.descriptor().descriptor_sha256,
@@ -347,7 +390,9 @@ def test_observer_fails_when_exact_primary_provenance_is_unavailable() -> None:
     observer = RiverhogProvenanceObserver(image_id="sha256:" + "f" * 64)
     support = observer.descriptor().support_for(MATERIALIZATION_HINT_OBSERVER_CONTRACT.id)
     request = ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=MATERIALIZATION_HINT_OBSERVER_CONTRACT,
+            interface=MATERIALIZATION_HINT_INTERFACE,
             work_id="a" * 64,
             observer_registration_id="canonical-hint",
             observer_descriptor_sha256=observer.descriptor().descriptor_sha256,

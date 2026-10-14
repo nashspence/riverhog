@@ -39,8 +39,8 @@ def _support_keys(rows: Sequence[AssertionSupport]) -> tuple[bytes, ...]:
 
 class FilenameQuestion(_Model):
     provenance_slots: tuple[str, ...] = Field(min_length=1)
-    primary_ids: tuple[str, ...] = Field(min_length=1)
-    sidecar_ids: tuple[str, ...] = Field(min_length=1)
+    primary_ids: tuple[str, ...]
+    sidecar_ids: tuple[str, ...]
     sidecar_suffixes: tuple[str, ...] = Field(min_length=1)
 
     @model_validator(mode="after")
@@ -86,28 +86,18 @@ class FilenameCandidate(_Model):
     support: tuple[AssertionSupport, ...] = Field(min_length=1)
 
 
-class FilenameProvenanceResult(_Model):
-    request_id: str
-    result_sha256: str
-
-    @model_validator(mode="after")
-    def exact_digests(self) -> Self:
-        if (
-            _DIGEST.fullmatch(self.request_id) is None
-            or _DIGEST.fullmatch(self.result_sha256) is None
-        ):
-            raise ValueError("filename evidence requires exact predecessor identities")
-        return self
+class FilenameProvenanceInput(_Model):
+    accepted_input_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
 class FilenameFacts(_Model):
-    provenance_results: tuple[FilenameProvenanceResult, ...] = Field(min_length=1)
+    provenance_inputs: tuple[FilenameProvenanceInput, ...] = Field(min_length=1)
     statuses: tuple[FilenameSourceStatus, ...]
     candidates: tuple[FilenameCandidate, ...]
 
     @model_validator(mode="after")
     def canonical_rows(self) -> Self:
-        request_ids = tuple(item.request_id for item in self.provenance_results)
+        request_ids = tuple(item.accepted_input_sha256 for item in self.provenance_inputs)
         if request_ids != tuple(sorted(set(request_ids))):
             raise ValueError("filename predecessor identities must be unique and ordered")
         status_ids = tuple(item.subject_id for item in self.statuses)
@@ -158,8 +148,8 @@ def validate_filename_facts(
             or any(
                 item.observer_contract_id != CORE_PROVENANCE_OBSERVER_CONTRACT.id for item in slots
             )
-            or tuple((item.request_id, item.result_sha256) for item in slots)
-            != tuple((item.request_id, item.result_sha256) for item in document.provenance_results)
+            or tuple(item.accepted_input_sha256 for item in slots)
+            != tuple(item.accepted_input_sha256 for item in document.provenance_inputs)
         ):
             raise ValueError("filename facts differ from the accepted provenance slot")
     return document
@@ -204,7 +194,7 @@ FILENAME_CONFORMANCE_VECTORS = SemanticFactsConformanceVectors.model_validate(
                 "subjects": [_SAMPLE_SUBJECT, _SAMPLE_SIDECAR],
                 "options": _SAMPLE_OPTIONS,
                 "facts": {
-                    "provenance_results": [{"request_id": "f" * 64, "result_sha256": "0" * 64}],
+                    "provenance_inputs": [{"accepted_input_sha256": "f" * 64}],
                     "statuses": [
                         {"subject_id": "sample", "status": "no-locator", "support": []},
                         {"subject_id": "sidecar", "status": "no-locator", "support": []},
@@ -218,7 +208,7 @@ FILENAME_CONFORMANCE_VECTORS = SemanticFactsConformanceVectors.model_validate(
                 "subjects": [_SAMPLE_SUBJECT, _SAMPLE_SIDECAR],
                 "options": _SAMPLE_OPTIONS,
                 "facts": {
-                    "provenance_results": [{"request_id": "f" * 64, "result_sha256": "0" * 64}],
+                    "provenance_inputs": [{"accepted_input_sha256": "f" * 64}],
                     "statuses": [{"subject_id": "sample", "status": "no-locator", "support": []}],
                     "candidates": [],
                 },
@@ -247,7 +237,6 @@ FILENAME_OBSERVER_CONTRACT = ObserverContract.seal(
         options_schema=FILENAME_OPTIONS_SCHEMA,
         facts_schema=FILENAME_FACTS_SCHEMA,
         facts_semantics=FILENAME_FACTS_SEMANTICS,
-        maximum_result_bytes=64 * 1024 * 1024,
     )
 )
 
@@ -262,7 +251,7 @@ __all__ = [
     "FILENAME_SEMANTIC_VALIDATOR",
     "FilenameCandidate",
     "FilenameFacts",
-    "FilenameProvenanceResult",
+    "FilenameProvenanceInput",
     "FilenameQuestion",
     "FilenameSourceStatus",
     "validate_filename_facts",

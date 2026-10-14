@@ -15,7 +15,7 @@ from pydantic import ValidationError
 from riverhog_client import ApiClient
 from riverhog_protocol import CatalogSyncDescriptor
 from riverhog_protocol.collection_workflows import ArtifactDispositionSetIdentity
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.pool import StaticPool
 from stove0_api.app import Stove0Composition, _log_scheduler_failures, create_app
 from stove0_api.routing import ExactJsonRoute
@@ -26,7 +26,6 @@ from stove0_core import (
     EvaluationRecord,
     EvaluationService,
     PreviewAcceptance,
-    RecipeCatalog,
     SqlAlchemyStateStore,
     Stove0Coordinator,
     Stove0RuntimeConfig,
@@ -35,6 +34,7 @@ from stove0_core import (
     WorkflowPreviewService,
     WorkRecord,
 )
+from stove0_core.metadata_steps import WorkScan
 from stove0_operator_contracts import (
     AdmissionCatalog,
     AdmissionIntent,
@@ -67,7 +67,9 @@ from stove0_protocol import (
     EvaluationMatrixPayload,
     EvaluationVariant,
     OperationIdentityRef,
-    PreviewOutcome,
+    PlanningJobPayload,
+    PlanningJobRequest,
+    PlanningJobStatus,
     RecipeIdentityRef,
     TargetPlanBinding,
     WorkArtifactSubject,
@@ -79,6 +81,7 @@ from stove0_protocol import (
     WorkIdentity,
     WorkPayload,
 )
+from stove0_recipe_config import CompiledRecipeCatalog, load_recipe_catalog
 from stove0_target_client import TargetCallbackClient
 from stove0_target_protocol import (
     DepartureEffectIntent,
@@ -149,6 +152,10 @@ class _LifecycleState:
         if self.work_record is not None and self.work_record.work_id == work_id:
             return self.work_record
         return None
+
+    def load_work_scan(self, work_id: str) -> WorkScan | None:
+        record = self.load(work_id)
+        return WorkScan.from_record(record) if record is not None else None
 
     def list_evaluations(self, **_kwargs: object) -> dict[str, object]:
         return {
@@ -241,6 +248,9 @@ class _LifecycleCoordinator:
         )
         return self.state.work_record
 
+    def maintain(self, work_id: str) -> WorkRecord:
+        return self._load(work_id)
+
     def step(self, work_id: str) -> WorkRecord:
         current = self._load(work_id)
         if current.phase == "no_action":
@@ -307,24 +317,54 @@ class _LifecycleCoordinator:
 
 
 class _LifecyclePreview:
+    def __init__(self, coordinator: _LifecycleCoordinator) -> None:
+        self.coordinator = coordinator
+        self.jobs: dict[str, PlanningJobRequest] = {}
+        self.statuses: dict[str, PlanningJobStatus] = {}
+
+    def submit(
+        self, work: WorkIdentity, *, invocation_id: str, accepted_preview_sha256: str | None = None
+    ) -> PlanningJobStatus:
+        job = PlanningJobRequest.seal(
+            PlanningJobPayload(
+                work=work,
+                invocation_id=invocation_id,
+                accepted_preview_sha256=accepted_preview_sha256,
+            )
+        )
+        result = self.preview(work)
+        self.jobs[job.job_id] = job
+        status = PlanningJobStatus(
+            job_id=job.job_id, work_id=work.work_id, state="completed", result=result
+        )
+        self.statuses[job.job_id] = status
+        if accepted_preview_sha256 == result.preview_sha256:
+            self.coordinator.create_or_resume(work, preview=result)
+        return status
+
+    def get(self, job_id: str) -> PlanningJobStatus:
+        return self.statuses[job_id]
+
+    def request(self, job_id: str) -> PlanningJobRequest:
+        return self.jobs[job_id]
+
+    def cancel(self, job_id: str) -> PlanningJobStatus:
+        return self.get(job_id)
+
     def preview(self, identity: object) -> WorkflowPreview:
         return _ready_preview(WorkIdentity.model_validate(identity))
 
 
-class _NoActionPreview:
+class _NoActionPreview(_LifecyclePreview):
     def preview(self, identity: object) -> WorkflowPreview:
         work = WorkIdentity.model_validate(identity)
-        request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
-        return WorkflowPreview.seal(
-            WorkflowPreviewPayload(
-                preview_id=request.preview_id,
-                state="no_action",
-                work=work,
-                outcome=PreviewOutcome(
-                    code="fixture.already-complete/v1",
-                    message="The observations require no target execution.",
-                ),
-            )
+        from planning_fixture import no_output_preview
+
+        return no_output_preview(
+            work,
+            _fixture_selection(work).ref(),
+            code="fixture.already-complete/v1",
+            message="The observations require no target execution.",
         )
 
 
@@ -380,6 +420,8 @@ class _LifecycleEvaluations:
 
 
 class _LifecycleScheduler:
+    metadata_steps = None
+
     def run_once(self, **_kwargs: object) -> dict[str, object]:
         return {
             "pruning": None,
@@ -548,6 +590,7 @@ class _LifecycleDeparture:
 def _lifecycle_composition() -> Stove0Composition:
     state = _LifecycleState()
     fixture_path = Path(__file__).parents[4] / "qualification/fixtures/stove0/recipes.yaml"
+    coordinator = _LifecycleCoordinator(state)
     return Stove0Composition(
         config=Stove0RuntimeConfig(
             database_url="sqlite+pysqlite:///:memory:",
@@ -555,7 +598,7 @@ def _lifecycle_composition() -> Stove0Composition:
             riverhog_base_url="https://riverhog.invalid",
             riverhog_token="riverhog-test-token",
             riverhog_allow_insecure_http=False,
-            recipes=RecipeCatalog.load(fixture_path),
+            recipes=load_recipe_catalog(fixture_path),
             observers={},
             targets={},
             target_callback_base_url="https://stove0.invalid",
@@ -571,10 +614,10 @@ def _lifecycle_composition() -> Stove0Composition:
         ),
         riverhog_api=cast(ApiClient, _LifecycleCatalogApi()),
         state=cast(SqlAlchemyStateStore, state),
-        recipes=RecipeCatalog.load(fixture_path),
+        recipes=load_recipe_catalog(fixture_path),
         work=cast(Stove0WorkService, object()),
-        coordinator=cast(Stove0Coordinator, _LifecycleCoordinator(state)),
-        preview=cast(WorkflowPreviewService, _LifecyclePreview()),
+        coordinator=cast(Stove0Coordinator, coordinator),
+        preview=cast(WorkflowPreviewService, _LifecyclePreview(coordinator)),
         evaluations=cast(EvaluationService, _LifecycleEvaluations(state)),
         scheduler=cast(Stove0Scheduler, _LifecycleScheduler()),
         admission=cast(Any, _LifecycleAdmission()),
@@ -760,7 +803,7 @@ def _composition(database_url: str = "sqlite+pysqlite:///:memory:") -> Stove0Com
             riverhog_base_url="https://riverhog.invalid",
             riverhog_token="riverhog-test-token",
             riverhog_allow_insecure_http=False,
-            recipes=RecipeCatalog(operations=(), recipes=()),
+            recipes=CompiledRecipeCatalog(),
             observers={},
             targets={},
             target_callback_base_url="https://stove0.invalid",
@@ -776,7 +819,7 @@ def _composition(database_url: str = "sqlite+pysqlite:///:memory:") -> Stove0Com
         ),
         riverhog_api=cast(ApiClient, CatalogApi()),
         state=state,
-        recipes=RecipeCatalog(operations=(), recipes=()),
+        recipes=CompiledRecipeCatalog(),
         work=work,
         coordinator=cast(Stove0Coordinator, object()),
         preview=cast(WorkflowPreviewService, object()),
@@ -971,21 +1014,34 @@ def test_stove0_official_client_positive_disposable_lifecycle() -> None:
             client.get_departure_effect(effects.effects[0].intent.departure_id).state == "complete"
         )
         assert client.list_work().work == ()
-        preview = client.preview_workflow("stove0.conformance-media/v1", [_collection_root()])
-        created = client.create_work(
+        planning = client.preview_workflow("stove0.conformance-media/v1", [_collection_root()])
+        assert client.get_workflow_preview(planning.job_id) == planning
+        assert client.cancel_workflow_preview(planning.job_id) == planning
+        preview = planning.result
+        assert preview is not None
+        initiation = client.create_work(
             "stove0.conformance-media/v1",
             [_collection_root()],
             preview_sha256=preview.preview_sha256,
         )
+        assert client.get_work_initiation(initiation.job.job_id) == initiation
+        created = initiation.work
+        assert created is not None
         retried_after_lost_response = client.create_work(
             "stove0.conformance-media/v1",
             [_collection_root()],
             preview_sha256=preview.preview_sha256,
         )
         assert created.work_id == _fixture_work().work_id
-        assert retried_after_lost_response == created
+        assert retried_after_lost_response.work == created
         fetched = client.get_work(created.work_id)
         assert fetched.work_id == created.work_id
+        progress = client.get_work_progress(created.work_id)
+        assert (progress.work_id, progress.phase, progress.revision) == (
+            fetched.work_id,
+            fetched.phase,
+            fetched.revision,
+        )
         assert client.inspect_work_coordination(created.work_id).branch_set_succeeded is False
         selection = _fixture_selection(_fixture_work())
         selection_page = client.get_artifact_selection(selection.selection_sha256)
@@ -1020,15 +1076,24 @@ def test_stove0_official_client_positive_disposable_lifecycle() -> None:
         assert client.run_scheduler(role="combined").work.role == "combined"
         client._client = None
 
-    observer.require(_operator_operations())
+    # Observation inspection has its own persisted, compiler-backed positive lifecycle.
+    observer.require(
+        {
+            key: route
+            for key, route in _operator_operations().items()
+            if not route.startswith("GET /v1/observation-")
+        }
+    )
 
 
 def test_direct_no_action_work_creation_is_terminal_and_idempotent() -> None:
+    original = _lifecycle_composition()
     composition = replace(
-        _lifecycle_composition(),
-        preview=cast(WorkflowPreviewService, _NoActionPreview()),
+        original,
+        preview=cast(WorkflowPreviewService, _NoActionPreview(cast(Any, original.coordinator))),
     )
     request = OperatorWorkflowPreviewRequest(
+        invocation_id="a" * 64,
         recipe_id="stove0.conformance-media/v1",
         inputs=(_collection_root(),),
     ).model_dump(mode="json")
@@ -1036,28 +1101,30 @@ def test_direct_no_action_work_creation_is_terminal_and_idempotent() -> None:
     with TestClient(create_app(composition)) as client:
         preview_response = client.post("/v1/workflow-previews", json=request, headers=headers)
         assert preview_response.status_code == 200
-        preview = WorkflowPreview.model_validate(preview_response.json())
+        planning = PlanningJobStatus.model_validate(preview_response.json())
+        assert planning.result is not None
+        preview = planning.result
         assert preview.state == "no_action"
         assert preview.branch_set_plan is None and preview.target_plans == ()
         body = {**request, "preview_sha256": preview.preview_sha256}
         first = client.post("/v1/work", json=body, headers=headers)
         repeated = client.post("/v1/work", json=body, headers=headers)
-        assert first.status_code == repeated.status_code == 201
+        assert first.status_code == repeated.status_code == 202
         assert repeated.json() == first.json()
-        assert first.json()["phase"] == "no_action"
-        assert first.json()["no_action_preview"]["preview_sha256"] == preview.preview_sha256
-        work_id = first.json()["work_id"]
+        assert first.json()["work"]["phase"] == "no_action"
+        assert first.json()["work"]["no_action_preview"]["preview_sha256"] == preview.preview_sha256
+        work_id = first.json()["work"]["work_id"]
         fetched = client.get(f"/v1/work/{work_id}", headers=headers)
-        assert fetched.json() == first.json()
+        assert fetched.json() == first.json()["work"]
         stepped = client.post(f"/v1/work/{work_id}/step", headers=headers)
-        assert stepped.json() == first.json()
-        assert first.json()["branch_set_plan"] is None
-        assert first.json()["target_request"] is None
+        assert stepped.json() == first.json()["work"]
+        assert first.json()["work"]["branch_set_plan"] is None
+        assert first.json()["work"]["target_request"] is None
 
 
 def test_every_stove0_api_operation_has_one_current_official_client_method() -> None:
     operations = _operator_operations()
-    assert len(operations) == 30
+    assert len(operations) == 39
     assert {
         operation_id
         for operation_id in operations
@@ -1175,6 +1242,7 @@ def test_stove0_request_bodies_have_one_shared_public_contract_owner() -> None:
 
 def test_workflow_request_accepts_the_complete_exact_input_set() -> None:
     request = OperatorWorkflowPreviewRequest(
+        invocation_id="a" * 64,
         recipe_id="fixture.recipe/v1",
         inputs=tuple(_collection_root(index) for index in range(1, 1002)),
     )
@@ -1337,6 +1405,7 @@ def test_workflow_preview_rejects_a_receipt_from_another_riverhog_authority() ->
             "/v1/workflow-previews",
             headers={"Authorization": "Bearer stove0-test-token"},
             json={
+                "invocation_id": "a" * 64,
                 "recipe_id": "stove0.conformance-media/v1",
                 "inputs": [mismatched.model_dump(mode="json")],
             },
@@ -1416,7 +1485,7 @@ def test_installed_conformance_catalog_is_exact_through_api_client_and_cli(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     path = Path(__file__).parents[4] / "qualification/fixtures/stove0/recipes.yaml"
-    catalog = RecipeCatalog.load(path)
+    catalog = load_recipe_catalog(path)
     application = create_app(replace(_lifecycle_composition(), recipes=catalog))
 
     with TestClient(application) as transport:
@@ -1459,10 +1528,90 @@ def test_installed_conformance_catalog_is_exact_through_api_client_and_cli(
         )
 
     assert page.catalog_sha256 == catalog.sha256
-    identity = catalog.recipe("stove0.conformance-media/v1").identity_document()
+    identity = catalog.recipe("stove0.conformance-media/v1").ref.model_dump(mode="json")
     assert recipe.sha256 == identity["sha256"]
-    assert preview.state == "ready"
+    assert preview.state == "completed"
+    assert preview.result is not None and preview.result.state == "ready"
     assert human.exit_code == 0, (human.output, human.exception)
     assert "ready" in human.stdout
     assert machine.exit_code == 0, (machine.output, machine.exception)
-    assert json.loads(machine.stdout)["state"] == "ready"
+    assert json.loads(machine.stdout)["result"]["state"] == "ready"
+
+
+def test_work_progress_reads_fresh_metadata_without_loading_large_work_evidence(
+    monkeypatch,
+) -> None:
+    from stove0_core import persistence
+
+    composition = _composition()
+    original = _fixture_work()
+    work = WorkIdentity.seal(
+        WorkPayload(
+            recipe=original.recipe,
+            inputs=tuple(
+                CollectionRootIdentityRef.model_validate(
+                    {**_collection_root().model_dump(mode="json"), "collection_id": str(number)}
+                )
+                for number in range(1, 2049)
+            ),
+        )
+    )
+    record = WorkRecord(work=work)
+    assert len(record.model_dump_json().encode()) > 64 * 1024
+    composition.state.create(record)
+    statements = []
+
+    def capture(_connection, _cursor, statement, _parameters, _context, _many):
+        if statement.lstrip().upper().startswith("SELECT"):
+            statements.append(statement)
+
+    def prohibited_decode(_document):
+        raise AssertionError("progress loaded the complete work evidence")
+
+    event.listen(composition.state.engine, "before_cursor_execute", capture)
+    monkeypatch.setattr(persistence, "_decode_work_record", prohibited_decode)
+    application = create_app(composition)
+    headers = {"Authorization": "Bearer stove0-test-token"}
+    try:
+        with TestClient(application) as transport:
+            path = f"/v1/work/{work.work_id}/progress"
+            assert transport.get(path).status_code == 401
+            first = transport.get(path, headers=headers)
+            assert first.status_code == 200
+            assert first.json() == {
+                "format": "stove0-work-progress/v1",
+                "work_id": work.work_id,
+                "phase": "eligible",
+                "revision": 1,
+            }
+            assert len(first.content) < 256
+            assert len(statements) == 1
+            assert "document_json" not in statements[0]
+            replacement = record.model_copy(update={"revision": 2})
+            composition.state.compare_and_swap(
+                work.work_id, expected_revision=1, replacement=replacement
+            )
+            assert transport.get(path, headers=headers).json()["revision"] == 2
+            assert (
+                transport.get("/v1/work/" + "f" * 64 + "/progress", headers=headers).status_code
+                == 404
+            )
+
+            def cli_client(*_args, **_kwargs):
+                value = Stove0ApiClient(
+                    "http://testserver", "stove0-test-token", allow_insecure_http=True
+                )
+                value._client = cast(Any, TimeoutNeutralTestClient(transport))
+                return value
+
+            monkeypatch.setattr(a_stove0_cli, "Stove0ApiClient", cli_client)
+            runner = CliRunner()
+            machine = runner.invoke(a_stove0_cli.app, ["--json", "work", "progress", work.work_id])
+            assert machine.exit_code == 0, (machine.output, machine.exception)
+            assert json.loads(machine.stdout) == {**first.json(), "revision": 2}
+            human = runner.invoke(a_stove0_cli.app, ["work", "progress", work.work_id])
+            assert human.exit_code == 0, (human.output, human.exception)
+            assert "eligible" in human.stdout
+    finally:
+        event.remove(composition.state.engine, "before_cursor_execute", capture)
+        composition.state.engine.dispose()

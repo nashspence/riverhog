@@ -14,7 +14,7 @@ authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = ["release-documentation-lib>=0.1,<0.2",
+dependencies = ["riverhog-canonical-json>=0.1,<0.2", "stove0-extension-support>=0.1,<0.2", "release-documentation-lib>=0.1,<0.2",
   "fastapi>=0.111,<1.0",
   "http-api-contracts>=0.1,<0.2",
   "stove0-observer-protocol>=0.1,<0.2",
@@ -28,6 +28,8 @@ dependencies = ["release-documentation-lib>=0.1,<0.2",
 a-stove0-ffprobe-observer = "a_stove0_ffprobe_observer.app:main"
 
 [tool.uv.sources]
+riverhog-canonical-json = { workspace = true }
+stove0-extension-support = { workspace = true }
 release-documentation-lib = { workspace = true }
 http-api-contracts = { workspace = true }
 stove0-observer-protocol = { workspace = true }

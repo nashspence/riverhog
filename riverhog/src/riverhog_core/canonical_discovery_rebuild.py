@@ -51,6 +51,14 @@ class _ArchiveCorpus(Mapping[str, JournalSummary]):
         self.reader = reader
         self.cache: OrderedDict[str, JournalSummary] = OrderedDict()
 
+    def __enter__(self) -> _ArchiveCorpus:
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        for summary in self.cache.values():
+            summary.close()
+        self.cache.clear()
+
     def __getitem__(self, journal_id: str) -> JournalSummary:
         if journal_id not in self.cache:
             self.cache[journal_id] = validate_journal_chunks(
@@ -61,7 +69,8 @@ class _ArchiveCorpus(Mapping[str, JournalSummary]):
         self.cache.move_to_end(journal_id)
         result = self.cache[journal_id]
         if len(self.cache) > 2:
-            self.cache.popitem(last=False)
+            _, removed = self.cache.popitem(last=False)
+            removed.close()
         return result
 
     def __iter__(self) -> Iterator[str]:
@@ -119,11 +128,14 @@ def rebuild_canonical_index(
     try:
         # Rebuild is a server-owned maintenance read: store allowances apply,
         # without assigning maintenance traffic to an application key.
-        with archives.reader(collection_id, attribution=None).cached() as reader, reader.prepared():
+        with (
+            archives.reader(collection_id, attribution=None).cached() as reader,
+            reader.prepared(),
+            _ArchiveCorpus(reader) as corpus,
+        ):
             root = reader.scan().root
             if root.binding_count != count:
                 raise StaleIndexBuild("archive member count differs from its publication")
-            corpus = _ArchiveCorpus(reader)
             for row in reader.iter_bindings():
                 selected = MemberHistoryBinding.from_mapping(row)
                 if after_id is not None and selected.artifact_id <= after_id:
@@ -139,7 +151,7 @@ def rebuild_canonical_index(
                         "sha256": selected.sha256,
                     }
                 )
-                primary = validate_journal_chunks(
+                with validate_journal_chunks(
                     reader.iter_journal_range(
                         binding.journal.journal_id, size=int(binding.journal.prefix_bytes)
                     ),
@@ -147,41 +159,43 @@ def rebuild_canonical_index(
                     expected_anchor=binding.journal.model_dump(mode="json"),
                     require_exact_tail=True,
                     require_profiles=False,
-                )
-                with (
-                    MemberHistoryClosure(
-                        reader.history_store(),
-                        lambda journal_id, size: reader.iter_journal_range(journal_id, size=size),
-                        member_role=COLLECTION_MEMBER_ROLE,
-                        catalog=catalog,
-                    ) as closure,
-                    member_relevance(
-                        member=member,
-                        binding=binding,
-                        primary=primary,
-                        corpus=corpus,
-                        delivery_context_id=root.delivery_context_id,
-                        catalog=catalog,
-                        history_binding=selected,
-                        closure=closure,
-                    ) as relevance,
-                ):
-                    # Finish any required archive reads before taking the write fence.
-                    for _snapshot in snapshots_for_relevance(
-                        relevance, corpus=corpus, catalog=catalog
-                    ):
-                        pass
-                    with session_scope(factory) as session:
-                        stage_relevant_member(
-                            session,
-                            build_id=build_id,
+                ) as primary:
+                    with (
+                        MemberHistoryClosure(
+                            reader.history_store(),
+                            lambda journal_id, size: reader.iter_journal_range(
+                                journal_id, size=size
+                            ),
+                            member_role=COLLECTION_MEMBER_ROLE,
+                            catalog=catalog,
+                        ) as closure,
+                        member_relevance(
                             member=member,
                             binding=binding,
                             primary=primary,
-                            relevance=relevance,
                             corpus=corpus,
+                            delivery_context_id=root.delivery_context_id,
                             catalog=catalog,
-                        )
+                            history_binding=selected,
+                            closure=closure,
+                        ) as relevance,
+                    ):
+                        # Finish any required archive reads before taking the write fence.
+                        for _snapshot in snapshots_for_relevance(
+                            relevance, corpus=corpus, catalog=catalog
+                        ):
+                            pass
+                        with session_scope(factory) as session:
+                            stage_relevant_member(
+                                session,
+                                build_id=build_id,
+                                member=member,
+                                binding=binding,
+                                primary=primary,
+                                relevance=relevance,
+                                corpus=corpus,
+                                catalog=catalog,
+                            )
             with session_scope(factory) as session:
                 counts = [
                     int(

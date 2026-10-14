@@ -770,6 +770,11 @@ def _default_capability_actions() -> list[CapabilityAction]:
     return ["read-inputs"]
 
 
+class ProcessingCapabilityRefreshDocument(RiverhogWorkflowDocument):
+    fence: NonnegativeDecimal = Field(ge=1)
+    ttl_seconds: int = Field(default=900, ge=30, le=86400)
+
+
 class ProcessingCapabilityCreateDocument(RiverhogWorkflowDocument):
     fence: NonnegativeDecimal = Field(ge=1)
     audience: str = Field(pattern=r"^[a-z0-9][a-z0-9._:/-]{0,299}$")
@@ -1289,6 +1294,7 @@ __all__ = [
     "RiverhogWorkflowDocument",
     "ProcessingCapabilityCreateDocument",
     "ProcessingCapabilityDocument",
+    "ProcessingCapabilityRefreshDocument",
     "WORK_DOCUMENT_MAX_BYTES",
     "WORKFLOW_SET_BATCH_MAX",
 ]

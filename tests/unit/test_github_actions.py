@@ -258,18 +258,34 @@ def test_codeql_covers_every_governed_branch_with_stable_checks() -> None:
         "matrix": {"language": ["actions", "python"]},
     }
     steps = job["steps"]
-    assert [step["uses"].split("@", 1)[0] for step in steps] == [
+    action_steps = [step for step in steps if "uses" in step]
+    assert [step["uses"].split("@", 1)[0] for step in action_steps] == [
         "actions/checkout",
         "github/codeql-action/init",
         "github/codeql-action/analyze",
+        "actions/upload-artifact",
     ]
-    assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in steps)
-    assert steps[0]["with"] == {"persist-credentials": "false"}
-    assert steps[1]["with"] == {
+    assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in action_steps)
+    assert action_steps[0]["with"] == {"persist-credentials": "false"}
+    assert action_steps[1]["with"] == {
         "languages": "${{ matrix.language }}",
         "queries": "security-extended",
     }
-    assert steps[2]["with"] == {"category": "/language:${{ matrix.language }}"}
+    assert action_steps[2]["with"] == {"category": "/language:${{ matrix.language }}"}
+    start, finish = [step for step in steps if "run" in step]
+    assert "scripts/ci_execution.py start" in start["run"]
+    assert "scripts/ci_execution.py finish" in finish["run"]
+    assert job["env"] == {"VALIDATION_WORK": "codeql-${{ matrix.language }}"}
+    for recorder in (start, finish):
+        assert recorder["env"] == {
+            "VALIDATION_CHECKOUT": "${{ runner.temp }}/codeql-validation/checkout.json"
+        }
+    assert action_steps[-1]["with"]["path"] == "${{ runner.temp }}/codeql-validation"
+    assert finish["if"] == "always()"
+    assert steps.index(start) < steps.index(action_steps[1])
+    assert steps.index(finish) > steps.index(action_steps[2])
+    assert steps[-1]["if"] == "always()"
+    assert steps[-1]["with"]["retention-days"] == "7"
 
 
 def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
@@ -291,108 +307,82 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         },
     }
     assert workflow["permissions"] == {"contents": "read"}
+    assert workflow["jobs"]["gate"]["permissions"] == {"actions": "read", "contents": "read"}
     assert workflow["concurrency"]["cancel-in-progress"] == "true"
 
     assert set(workflow["jobs"]) == {
+        "gate",
+        "plan",
         "repository",
+        "units",
+        "compose",
         "client-platforms",
         "images",
     }
-    job = workflow["jobs"]["repository"]
-    assert job["runs-on"] == "ubuntu-24.04"
-    assert job["strategy"]["fail-fast"] == "false"
-    matrix = job["strategy"]["matrix"]["include"]
-    assert [entry["target"] for entry in matrix] == [
-        "lint",
-        "compile",
-        "unit",
-        "c2sp-vectors",
-        "postgres-concurrency",
-        "compose-smoke",
-        "filesystem-recovery-qualification",
-        "dist-smoke",
-    ]
-    assert [entry["target"] for entry in matrix if entry.get("docker") == "true"] == [
-        "postgres-concurrency",
-        "compose-smoke",
-        "filesystem-recovery-qualification",
-    ]
-
-    steps = job["steps"]
-    assert [step["uses"].split("@", 1)[0] for step in steps if "uses" in step] == [
-        "actions/checkout",
-        "jdx/mise-action",
-        "docker/setup-docker-action",
-        "docker/setup-compose-action",
-    ]
-    action_steps = [
-        step
-        for workflow_job in workflow["jobs"].values()
-        for step in workflow_job["steps"]
-        if "uses" in step
-    ]
+    jobs = workflow["jobs"]
+    caps = {"repository": "2", "units": "3", "compose": "7", "images": "2", "client-platforms": "3"}
+    assert sum(map(int, caps.values())) == 17
+    for name, cap in caps.items():
+        job = jobs[name]
+        assert job["strategy"]["fail-fast"] == "false"
+        assert job["strategy"]["max-parallel"] == cap
+        if name != "client-platforms":
+            assert job["runs-on"] == "ubuntu-24.04"
+            assert job["needs"] == "plan"
+            assert job["strategy"]["matrix"] == "${{ fromJSON(needs.plan.outputs." + name + ") }}"
+    plan = next(step for step in jobs["plan"]["steps"] if step.get("id") == "plan")
+    assert 'python -m scripts.ci_qualification plan --github-output "$GITHUB_OUTPUT"' in plan["run"]
+    action_steps = [step for job in jobs.values() for step in job["steps"] if "uses" in step]
     assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in action_steps)
-    checkout_steps = [
+    for step in action_steps:
+        if step["uses"].startswith("actions/checkout@"):
+            assert step["with"] == {
+                "persist-credentials": "false",
+                "ref": "${{ inputs.ref || github.sha }}",
+            }
+        if step["uses"].startswith("docker/setup-docker-action@"):
+            assert step["with"]["version"] == "v29.3.1"
+            assert json.loads(step["with"]["daemon-config"]) == {
+                "features": {"containerd-snapshotter": True},
+            }
+        if step["uses"].startswith("docker/setup-compose-action@"):
+            assert step["with"] == {"version": "v5.1.1"}
+    repository = jobs["repository"]
+    run = next(step for step in repository["steps"] if step["name"] == "Run repository target")
+    assert 'python scripts/ci_timing.py execute --workload "$CI_TARGET"' in run["run"]
+    assert '--run-id "${{ github.run_id }}-${{ github.run_attempt }}"' in run["run"]
+    for name in ("repository", "units", "compose", "images"):
+        retained = jobs[name]["steps"][-1]
+        assert retained["if"] == "always()"
+        assert retained["uses"] == UPLOAD_ARTIFACT_USE
+        assert retained["with"]["retention-days"] == "7"
+        assert retained["with"]["path"] == "${{ runner.temp }}/ci-timing"
+    unit_run = next(step for step in jobs["units"]["steps"] if "run" in step)
+    assert 'execute --workload "unit-$UNIT_SHARD"' in unit_run["run"]
+    compose_run = next(
         step
-        for workflow_job in workflow["jobs"].values()
-        for step in workflow_job["steps"]
-        if step.get("uses", "").startswith("actions/checkout@")
-    ]
-    assert all(
-        step["with"]
-        == {
-            "persist-credentials": "false",
-            "ref": "${{ inputs.ref || github.sha }}",
-        }
-        for step in checkout_steps
+        for step in jobs["compose"]["steps"]
+        if step["name"] == "Qualify the complete independent lifecycle"
     )
-    assert steps[2]["if"] == "matrix.docker"
-    assert steps[2]["with"]["version"] == "v29.3.1"
-    assert json.loads(steps[2]["with"]["daemon-config"]) == {
-        "features": {"containerd-snapshotter": True}
-    }
-    assert steps[3]["if"] == "matrix.docker"
-    assert steps[3]["with"] == {"version": "v5.1.1"}
-    assert [step["run"] for step in steps if "run" in step] == ['make "$CI_TARGET"']
-    assert steps[-1]["env"] == {"CI_TARGET": "${{ matrix.target }}"}
-
-    client_platforms = workflow["jobs"]["client-platforms"]
-    assert client_platforms["strategy"] == {
-        "fail-fast": "false",
-        "matrix": {
-            "include": [
-                {"os": "ubuntu-24.04", "listener_repetitions": "12"},
-                {"os": "macos-15", "listener_repetitions": "12"},
-                {"os": "windows-2025", "listener_repetitions": "12"},
-            ],
-        },
-    }
-    assert client_platforms["runs-on"] == "${{ matrix.os }}"
-    assert client_platforms["env"] == {"MISE_AUTO_INSTALL": "0"}
-    assert [
-        step["uses"].split("@", 1)[0] for step in client_platforms["steps"] if "uses" in step
-    ] == ["actions/checkout", "jdx/mise-action", "actions/upload-artifact"]
-    assert client_platforms["steps"][0]["with"]["persist-credentials"] == "false"
-    assert client_platforms["steps"][1]["with"] == {"install_args": "python uv age"}
-    assert [step["run"] for step in client_platforms["steps"] if "run" in step] == [
+    assert 'execute --workload "compose-$COMPOSE_LANE"' in compose_run["run"]
+    client = jobs["client-platforms"]
+    assert client["strategy"]["matrix"] == {"os": ["ubuntu-24.04", "macos-15", "windows-2025"]}
+    assert client["env"] == {"MISE_AUTO_INSTALL": "0"}
+    assert client["steps"][1]["with"] == {"install_args": "python uv age"}
+    native = next(step for step in client["steps"] if "run" in step)
+    assert native["run"] == (
         "mise x python uv age -- uv run --locked --all-packages --group dev "
-        "python -m pytest -q "
-        "tests/platform/test_native_provenance.py "
-        "some-implementations/gogurt/application/tests "
-        "tests/platform/test_end_user_artifacts.py",
-        "mise x python uv age -- uv run --locked --all-packages --group dev "
-        "python scripts/qualify_installation.py --version 1.0.0 --listener-lifecycle "
-        "--listener-lifecycle-repetitions ${{ matrix.listener_repetitions }} "
-        '--gogurt-evidence-dir "${{ runner.temp }}/gogurt-failure-evidence"',
-    ]
-    native_tests = next(
-        step["run"]
-        for step in client_platforms["steps"]
-        if step.get("name") == "Qualify native end-user behavior"
+        'python scripts/ci_timing.py execute --workload "$NATIVE_WORKLOAD" '
+        '--run-id "${{ github.run_id }}-${{ github.run_attempt }}" '
+        '--output "$RIVERHOG_CI_TIMING_DIR/receipt.json"'
     )
-    for path in native_tests.split()[native_tests.split().index("-q") + 1 :]:
-        assert (REPO_ROOT / path).exists(), path
-    evidence_step = client_platforms["steps"][-1]
+    assert native["shell"] == "bash"
+    assert native["env"] == {
+        "GOGURT_FAILURE_EVIDENCE_DIR": "${{ runner.temp }}/gogurt-failure-evidence",
+        "RIVERHOG_CI_TIMING_DIR": "${{ runner.temp }}/ci-timing",
+        "NATIVE_WORKLOAD": "native-${{ matrix.os }}",
+    }
+    evidence_step = client["steps"][-1]
     assert evidence_step["if"] == "failure()"
     assert evidence_step["with"] == {
         "name": "gogurt-lifecycle-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}",
@@ -400,7 +390,37 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "if-no-files-found": "warn",
         "retention-days": "14",
     }
+
     assert "secrets." not in text
+
+
+def test_ci_gate_covers_every_job_and_rejects_non_successful_dependencies() -> None:
+    workflow = yaml.load(CI_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    gate = workflow["jobs"]["gate"]
+    assert gate["name"] == "CI gate"
+    assert gate["if"] == "always()"
+    assert gate["runs-on"] == "ubuntu-24.04"
+    assert set(gate["needs"]) == set(workflow["jobs"]) - {"gate"}
+    step = next(step for step in gate["steps"] if "CI_DEPENDENCIES" in step.get("env", {}))
+    assert step["env"] == {"CI_DEPENDENCIES": "${{ toJSON(needs) }}"}
+
+    def observe(dependencies):
+        return subprocess.run(
+            ["bash", "-c", step["run"]],
+            env={**os.environ, "CI_DEPENDENCIES": json.dumps(dependencies)},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    success = {name: {"result": "success"} for name in gate["needs"]}
+    assert observe(success).returncode == 0
+    assert observe({}).returncode != 0
+    for name in gate["needs"]:
+        for result in ("failure", "cancelled", "skipped", None):
+            observed = observe({**success, name: {"result": result}})
+            assert observed.returncode != 0, (name, result)
+            assert name in observed.stderr
 
 
 def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries() -> None:
@@ -421,7 +441,7 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
         "needs": "resolve",
         "uses": "./.github/workflows/ci.yml",
         "with": {"ref": "${{ needs.resolve.outputs.sha }}"},
-        "permissions": {"contents": "read"},
+        "permissions": {"actions": "read", "contents": "read"},
     }
     audit = workflow["jobs"]["release-audit"]
     assert "environment" not in audit
@@ -639,29 +659,22 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "v1\\.[0-9]+\\.[0-9]+" in text
 
 
-def test_release_required_check_names_are_derived_from_stable_job_names() -> None:
+def test_release_required_checks_bind_the_exhaustive_ci_gate_and_codeql() -> None:
     workflow = yaml.load(CI_WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    codeql = yaml.load(CODEQL_WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
-    repository = workflow["jobs"]["repository"]
-    images = workflow["jobs"]["images"]
-    client_platforms = workflow["jobs"]["client-platforms"]
+    gate = workflow["jobs"]["gate"]
+    assert gate["if"] == "always()"
+    assert set(gate["needs"]) == set(workflow["jobs"]) - {"gate"}
+    analyze = codeql["jobs"]["analyze"]
+    assert analyze["name"] == "Analyze (${{ matrix.language }})"
     actual = {
+        gate["name"],
         *(
-            repository["name"].replace("${{ matrix.target }}", entry["target"])
-            for entry in repository["strategy"]["matrix"]["include"]
+            analyze["name"].replace("${{ matrix.language }}", language)
+            for language in analyze["strategy"]["matrix"]["language"]
         ),
-        *(
-            images["name"].replace("${{ matrix.target }}", target)
-            for target in images["strategy"]["matrix"]["target"]
-        ),
-        *(
-            client_platforms["name"].replace("${{ matrix.os }}", entry["os"])
-            for entry in client_platforms["strategy"]["matrix"]["include"]
-        ),
-        "Analyze (actions)",
-        "Analyze (python)",
     }
-
     assert release["governance"]["required_checks"] == sorted(actual)
 
 
@@ -936,3 +949,34 @@ def test_client_platform_toolchain_is_locked_for_every_matrix_os() -> None:
         windows = platforms["windows-x64"]
         assert windows["url"].startswith("https://github.com/")
         assert re.fullmatch(r"sha256:[0-9a-f]{64}", windows["checksum"])
+
+
+def test_complete_validation_observer_uses_trusted_code_and_read_only_attempt_metadata() -> None:
+    path = REPO_ROOT / ".github/workflows/validation-evidence.yml"
+    workflow = yaml.load(path.read_text(), Loader=yaml.BaseLoader)
+    names = {
+        yaml.load(path.read_text(), Loader=yaml.BaseLoader)["name"]
+        for path in (CI_WORKFLOW, CODEQL_WORKFLOW)
+    }
+    assert set(workflow["on"]) == {"workflow_run"}
+    assert set(workflow["on"]["workflow_run"]["workflows"]) == names
+    assert workflow["on"]["workflow_run"]["types"] == ["completed"]
+    assert workflow["permissions"] == {"actions": "read", "contents": "read"}
+    assert workflow["concurrency"]["cancel-in-progress"] == "false"
+    job = workflow["jobs"]["observe"]
+    checkout = job["steps"][0]
+    assert checkout["with"] == {
+        "persist-credentials": "false",
+        "ref": "${{ github.workflow_sha }}",
+    }
+    observe = next(step for step in job["steps"] if "run" in step)
+    assert "python -m scripts.ci_actions completed" in observe["run"]
+    assert observe["env"]["OBSERVED_RUN_ID"] == "${{ github.event.workflow_run.id }}"
+    assert observe["env"]["OBSERVED_ATTEMPT"] == "${{ github.event.workflow_run.run_attempt }}"
+    assert all(
+        re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in job["steps"] if "uses" in step
+    )
+    retained = job["steps"][-1]
+    assert retained["if"] == "always()"
+    assert retained["with"]["retention-days"] == "7"
+    assert "environment" not in job

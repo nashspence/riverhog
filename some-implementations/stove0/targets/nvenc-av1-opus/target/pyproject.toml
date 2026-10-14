@@ -14,7 +14,8 @@ authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = ["release-documentation-lib>=0.1,<0.2",
+dependencies = ["stove0-extension-support>=0.1,<0.2",
+  "release-documentation-lib>=0.1,<0.2",
   "riverhog-canonical-json>=0.1,<0.2",
   "fastapi>=0.111,<1.0",
   "http-api-contracts>=0.1,<0.2",
@@ -32,6 +33,7 @@ dependencies = ["release-documentation-lib>=0.1,<0.2",
 a-stove0-nvenc-av1-opus-target = "a_stove0_nvenc_av1_opus_target.app:target_main"
 
 [tool.uv.sources]
+stove0-extension-support = { workspace = true }
 release-documentation-lib = { workspace = true }
 riverhog-canonical-json = { workspace = true }
 http-api-contracts = { workspace = true }

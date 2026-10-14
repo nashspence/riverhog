@@ -19,7 +19,10 @@ from fastapi import Depends, FastAPI, Request, Response
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPBearer
 from http_api_contracts import HealthOut, error_payload, operation_openapi
+from http_api_contracts.metadata_binding import read_control_body
+from http_api_contracts.metadata_staging import MetadataStagingError
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_materialization import DestinationRules
 from stove0_target_support import (
     TARGET_HTTP_OPERATIONS,
@@ -145,9 +148,17 @@ def create_app(*, token: str, target: RcloneEffectTargetService) -> FastAPI:
                 status_code=401,
                 media_type="application/json",
             )
-        result = await run_in_threadpool(
-            binding.handle, request.method, request.url.path, await request.body()
-        )
+        try:
+            body = await read_control_body(
+                request, maximum_request_bytes=binding.maximum_request_bytes
+            )
+        except MetadataStagingError as exc:
+            return Response(
+                content=canonical_json_bytes({"error": {"code": exc.code, "message": exc.message}}),
+                status_code=exc.status,
+                media_type="application/json",
+            )
+        result = await run_in_threadpool(binding.handle, request.method, request.url.path, body)
         return Response(
             content=result.body, status_code=result.status, headers=dict(result.headers)
         )

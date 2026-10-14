@@ -111,8 +111,10 @@ class ContentObservationResultBuilder:
         result = ContentObservationResult.seal(
             ContentObservationResultPayload.model_validate(payload)
         )
-        if len(canonical_json_bytes(result.model_dump(mode="json", exclude_none=True))) > (
-            self.request.maximum_result_bytes
+        if (
+            self.request.maximum_result_bytes is not None
+            and len(canonical_json_bytes(result.model_dump(mode="json", exclude_none=True)))
+            > self.request.maximum_result_bytes
         ):
             raise ValueError("observation result exceeds the requested result-size limit")
         return result

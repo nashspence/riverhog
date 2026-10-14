@@ -80,13 +80,15 @@ def _set_current_description(
 
 def _service(
     path: Path,
+    *,
+    database_url: str | None = None,
 ) -> tuple[
     RuntimeConfig,
     MemoryArchiveStore,
     MemoryArchiveStore,
     SqlAlchemyArchiveCopyRetirementService,
 ]:
-    config, archive = seed_archive_copy(path, ARTIFACTS, store="deep")
+    config, archive = seed_archive_copy(path, ARTIFACTS, store="deep", database_url=database_url)
     with session_scope(make_session_factory(config.database_url)) as session:
         add_archive_copy(
             session,

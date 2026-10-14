@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import hashlib
 from functools import lru_cache
-from typing import Annotated, Any, Literal, Self
+from typing import TYPE_CHECKING, Annotated, Any, Literal, Self
 
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
@@ -38,6 +38,9 @@ from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 
 from stove0_protocol.jcs import canonical_json_bytes, canonical_json_sha256
+
+if TYPE_CHECKING:
+    from stove0_protocol.accepted_inputs import AcceptedEvidenceInput
 
 WORK_FORMAT: Literal["stove0-work/v1"] = "stove0-work/v1"
 OBSERVER_PROTOCOL: Literal["stove0-content-observer/v1"] = "stove0-content-observer/v1"
@@ -78,6 +81,7 @@ REGISTRATION_ID_PATTERN = r"^[a-z0-9](?:[a-z0-9.-]{0,118}[a-z0-9])?$"
 Sha256 = Annotated[str, StringConstraints(pattern=SHA256_PATTERN)]
 OciImageId = Annotated[str, StringConstraints(pattern=OCI_IMAGE_ID_PATTERN)]
 SemanticId = Annotated[str, StringConstraints(pattern=SEMANTIC_ID_PATTERN)]
+LocalName = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9_-]*$")]
 RegistrationId = Annotated[str, StringConstraints(pattern=REGISTRATION_ID_PATTERN)]
 ContentObservationState = Literal["observed", "inapplicable", "failed", "canceled"]
 SourceCollectionRetirementPolicy = Literal["retain", "retire-after-settlement"]
@@ -157,6 +161,11 @@ def _validated_schema_profile(preimage: bytes) -> None:
 
 class Stove0ProtocolModel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, populate_by_name=True)
+
+
+class ExactDocumentRef(Stove0ProtocolModel):
+    id: SemanticId
+    sha256: Sha256
 
 
 class JsonSchemaValidationProfile(Stove0ProtocolModel):
@@ -418,7 +427,7 @@ class ObserverContractPayload(Stove0ProtocolModel):
     options_schema: JsonSchemaValidationProfile
     facts_schema: JsonSchemaValidationProfile
     facts_semantics: SemanticValidationProfile
-    maximum_result_bytes: int = Field(default=1024 * 1024, ge=1, le=64 * 1024 * 1024)
+    maximum_result_bytes: int | None = Field(default=None, ge=1)
 
     @model_validator(mode="after")
     def bind_semantic_conformance_vectors(self) -> Self:
@@ -457,7 +466,18 @@ class ObserverContractSupport(Stove0ProtocolModel):
     facts_schema: JsonSchemaValidationProfile
     facts_semantics: SemanticValidationProfile
     preferred_subject_batch_size: int = Field(default=128, ge=1)
-    maximum_result_bytes: int = Field(ge=1, le=64 * 1024 * 1024)
+    maximum_result_bytes: int | None = Field(default=None, ge=1)
+    interfaces: tuple[ExactDocumentRef, ...] = ()
+
+    @field_validator("interfaces")
+    @classmethod
+    def canonical_interfaces(
+        cls, value: tuple[ExactDocumentRef, ...]
+    ) -> tuple[ExactDocumentRef, ...]:
+        keys = [(item.id, item.sha256) for item in value]
+        if keys != sorted(set(keys)):
+            raise ValueError("observer interfaces must be a canonical exact set")
+        return value
 
     @classmethod
     def from_contract(
@@ -465,6 +485,7 @@ class ObserverContractSupport(Stove0ProtocolModel):
         value: ObserverContract,
         *,
         preferred_subject_batch_size: int = 128,
+        interfaces: tuple[ExactDocumentRef, ...] = (),
     ) -> ObserverContractSupport:
         return cls(
             contract_id=value.id,
@@ -475,6 +496,7 @@ class ObserverContractSupport(Stove0ProtocolModel):
             facts_semantics=value.facts_semantics,
             preferred_subject_batch_size=preferred_subject_batch_size,
             maximum_result_bytes=value.maximum_result_bytes,
+            interfaces=interfaces,
         )
 
 
@@ -523,12 +545,14 @@ class ObservationEvidenceSlot(Stove0ProtocolModel):
     """One controller-accepted predecessor selected by a sealed observation request."""
 
     slot: SemanticId
-    request_id: Sha256
-    result_sha256: Sha256
+    accepted_input_sha256: Sha256
     observer_contract_id: SemanticId
 
 
 class ContentObservationRequestPayload(Stove0ProtocolModel):
+    task_id: LocalName
+    question_sha256: Sha256
+    interface: ExactDocumentRef
     format: Literal["stove0-observation-request/v1"] = CONTENT_OBSERVATION_REQUEST_FORMAT
     work_id: Sha256
     observer_registration_id: RegistrationId
@@ -542,7 +566,7 @@ class ContentObservationRequestPayload(Stove0ProtocolModel):
     evidence_slots: tuple[ObservationEvidenceSlot, ...] | None = None
     options: dict[str, JsonValue] = Field(default_factory=dict)
     timeout_seconds: int = Field(default=300, ge=1, le=86400)
-    maximum_result_bytes: int = Field(default=1024 * 1024, ge=1, le=64 * 1024 * 1024)
+    maximum_result_bytes: int | None = Field(default=None, ge=1)
     retrieval_policy: RetrievalPolicy = "available-only"
 
     @field_validator("subjects")
@@ -596,8 +620,8 @@ class ContentObservationInvocation(Stove0ProtocolModel):
     request: ContentObservationRequest
     claim_id: str = Field(min_length=1, max_length=160)
     fence: int = Field(ge=1)
-    runtime: ObserverRuntimeAuthority
-    evidence: tuple[ContentObservationEvidence, ...] = ()
+    runtime: ObserverRuntimeAuthority = Field(json_schema_extra={"x-riverhog-transient": True})
+    evidence: tuple[AcceptedEvidenceInput, ...] = ()
 
     @field_validator("claim_id")
     @classmethod
@@ -608,30 +632,23 @@ class ContentObservationInvocation(Stove0ProtocolModel):
 
     @model_validator(mode="after")
     def exactly_selected_evidence(self) -> Self:
-        selected = {
-            (item.request.request_id, item.result.result_sha256, item.request.observer_contract_id)
-            for item in self.evidence
-        }
-        required = {
-            (item.request_id, item.result_sha256, item.observer_contract_id)
-            for item in self.request.evidence_slots or ()
-        }
-        if len(selected) != len(self.evidence) or selected != required:
-            raise ValueError("invocation evidence differs from the sealed request slots")
-        if any(item.request.work_id != self.request.work_id for item in self.evidence):
-            raise ValueError("invocation evidence belongs to another work identity")
-        subject_keys = {
-            (item.collection, item.artifact_id, item.bytes, item.sha256)
-            for item in self.request.subjects
-        }
-        if any(
-            (subject.collection, subject.artifact_id, subject.bytes, subject.sha256)
-            not in subject_keys
-            for item in self.evidence
-            for subject in item.request.subjects
-        ):
-            raise ValueError("invocation evidence includes an unselected member")
+        _validate_observation_evidence_scope(self.request, self.evidence)
         return self
+
+    def accepted(self) -> AcceptedObservationJob:
+        return AcceptedObservationJob.seal(
+            ObservationJobDeclarationPayload(
+                request=self.request,
+                claim_id=self.claim_id,
+                fence=self.fence,
+                declared_workspace_protection=self.runtime.declared_workspace_protection,
+                evidence=self.evidence,
+            )
+        )
+
+    @property
+    def job_id(self) -> str:
+        return self.accepted().job_id
 
 
 class ObserverImplementation(Stove0ProtocolModel):
@@ -742,7 +759,94 @@ class ContentObservationEvidence(Stove0ProtocolModel):
         return self
 
 
-ContentObservationInvocation.model_rebuild()
+def _validate_observation_evidence_scope(
+    request: ContentObservationRequest, evidence: tuple[AcceptedEvidenceInput, ...]
+) -> None:
+    selected = {
+        (item.authority.input_sha256, item.authority.source.question.observer_contract.id)
+        for item in evidence
+    }
+    required = {
+        (item.accepted_input_sha256, item.observer_contract_id)
+        for item in request.evidence_slots or ()
+    }
+    if len(selected) != len(evidence) or selected != required:
+        raise ValueError("invocation evidence differs from the sealed request slots")
+    if any(item.authority.source.question.work_id != request.work_id for item in evidence):
+        raise ValueError("invocation evidence belongs to another work identity")
+    ids = {subject.id for subject in request.subjects}
+    for item in evidence:
+        if item.authority.selected_scope.artifact_count > len(ids):
+            raise ValueError("invocation evidence exceeds the selected member extent")
+        for page in item.pages:
+            for record in page.records:
+                if record.subject_id is not None and record.subject_id not in ids:
+                    raise ValueError("invocation evidence includes an unselected member")
+                if record.kind == "relation" and (
+                    not isinstance(record.value, dict)
+                    or record.value.get("primary_id") not in ids
+                    or record.value.get("associated_id") not in ids
+                ):
+                    raise ValueError("invocation evidence includes an unselected relation endpoint")
+
+
+class ObservationJobDeclarationPayload(Stove0ProtocolModel):
+    """Immutable invocation binding; credentials remain transient."""
+
+    format: Literal["stove0-observation-job/v1"] = "stove0-observation-job/v1"
+    request: ContentObservationRequest
+    claim_id: str = Field(min_length=1, max_length=160)
+    fence: int = Field(ge=1)
+    declared_workspace_protection: DeclaredWorkspaceProtection
+    evidence: tuple[AcceptedEvidenceInput, ...] = ()
+
+    @field_validator("evidence")
+    @classmethod
+    def canonical_evidence(
+        cls, value: tuple[AcceptedEvidenceInput, ...]
+    ) -> tuple[AcceptedEvidenceInput, ...]:
+        return tuple(sorted(value, key=lambda item: item.authority.input_sha256))
+
+    @model_validator(mode="after")
+    def validate_binding(self) -> Self:
+        if self.claim_id != self.claim_id.strip():
+            raise ValueError("claim id must be canonical")
+        _validate_observation_evidence_scope(self.request, self.evidence)
+        return self
+
+
+class AcceptedObservationJob(ObservationJobDeclarationPayload):
+    job_id: Sha256
+
+    @model_validator(mode="after")
+    def verify_digest(self) -> Self:
+        if canonical_json_sha256(_without_digest(self, "job_id")) != self.job_id:
+            raise ValueError("observation job identity differs from its invocation binding")
+        return self
+
+    @classmethod
+    def seal(cls, payload: ObservationJobDeclarationPayload) -> AcceptedObservationJob:
+        document = payload.model_dump(mode="json", by_alias=True, exclude_none=True)
+        return cls(**document, job_id=canonical_json_sha256(document))
+
+
+class ObservationJobStatus(Stove0ProtocolModel):
+    """Runtime delivery state; only a completed observed result is evidence."""
+
+    format: Literal["stove0-observation-status/v1"] = "stove0-observation-status/v1"
+    job_id: Sha256
+    request_id: Sha256
+    attempt: int = Field(ge=1)
+    state: Literal["queued", "running", "interrupted", "canceling", "completed"]
+    result: ContentObservationResult | None = None
+
+    @model_validator(mode="after")
+    def terminal_result(self) -> Self:
+        if (self.state == "completed") != (self.result is not None):
+            raise ValueError("only completed observer jobs carry a terminal result")
+        if self.result is not None and self.result.request_id != self.request_id:
+            raise ValueError("observation job result differs from its request identity")
+        return self
 
 
 class WorkflowPlanPayload(Stove0ProtocolModel):

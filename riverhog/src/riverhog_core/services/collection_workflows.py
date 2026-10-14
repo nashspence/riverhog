@@ -809,6 +809,71 @@ class SqlAlchemyCollectionWorkflowService:
                 "token": token,
             }
 
+    def refresh_capability(
+        self,
+        claim_id: str,
+        capability_id: str,
+        *,
+        fence: int,
+        ttl_seconds: int,
+        principal: Principal,
+    ) -> dict[str, object]:
+        """Issue a new bearer lease over one already sealed immutable scope."""
+        ttl = _lease_seconds(ttl_seconds)
+        with session_scope(self._session_factory) as session:
+            claim = _owned_claim(session, claim_id, principal, lock=True)
+            _require_live_claim(claim, fence=fence)
+            source = _owned_capability(session, claim, capability_id)
+            if source.state != "active" or source.artifact_set_sha256 is None:
+                raise Conflict("capability refresh requires an active sealed artifact scope")
+            scope_id = source.artifact_scope_capability_id or source.id
+            owner = _owned_capability(session, claim, scope_id)
+            if (
+                owner.state != "active"
+                or owner.artifact_scope_capability_id is not None
+                or owner.artifact_set_sha256 != source.artifact_set_sha256
+                or owner.artifact_count != source.artifact_count
+                or owner.artifact_bytes != source.artifact_bytes
+            ):
+                raise InvalidState("capability scope owner differs from its sealed identity")
+            token = "rhc_" + secrets.token_urlsafe(32)
+            expiry = min(
+                parse_utc_timestamp(claim.expires_at),
+                epoch_ns_from_datetime(utc_now() + timedelta(seconds=ttl)),
+            )
+            lease = CollectionProcessingCapabilityRecord(
+                id=secrets.token_hex(16),
+                claim_id=claim.id,
+                fence=claim.fence,
+                audience=source.audience,
+                actions_json=source.actions_json,
+                token_sha256=hashlib.sha256(token.encode("utf-8")).hexdigest(),
+                artifact_scope_capability_id=scope_id,
+                artifact_count=source.artifact_count,
+                artifact_bytes=source.artifact_bytes,
+                artifact_set_sha256=source.artifact_set_sha256,
+                artifacts_sealed_at=source.artifacts_sealed_at,
+                state="active",
+                expires_at=format_utc_ns(expiry),
+                created_at=utc_timestamp_now(),
+            )
+            session.add(lease)
+            session.flush()
+            actions = tuple(json.loads(lease.actions_json))
+            return {
+                "format": "riverhog-processing-capability/v1",
+                "id": lease.id,
+                "claim_id": claim.id,
+                "fence": format_scalar("nonnegative", lease.fence),
+                "audience": lease.audience,
+                "actions": list(actions),
+                "state": "active",
+                "principal_id": _capability_principal_id(claim, actions),
+                "expires_at": lease.expires_at,
+                "artifacts": _capability_artifact_set_payload(lease),
+                "token": token,
+            }
+
     def append_capability_artifacts(
         self,
         claim_id: str,
@@ -940,14 +1005,13 @@ class SqlAlchemyCollectionWorkflowService:
             actions = tuple(sorted(set(json.loads(capability.actions_json))))
             if "write-output" in actions and claim.plan_sealed_at is None:
                 return None
+            scope_id = capability.artifact_scope_capability_id or capability.id
             grants: set[ApplicationAccess] = set()
             grants.add(ApplicationAccess(COLLECTION_PROCESSING_EXECUTE))
             if {"read-root", "read-inputs", "read-provenance"} & set(actions):
                 collection_ids = session.scalars(
                     select(CollectionProcessingCapabilityArtifactRecord.collection_id)
-                    .where(
-                        CollectionProcessingCapabilityArtifactRecord.capability_id == capability.id
-                    )
+                    .where(CollectionProcessingCapabilityArtifactRecord.capability_id == scope_id)
                     .distinct()
                 )
                 found = False
@@ -975,7 +1039,7 @@ class SqlAlchemyCollectionWorkflowService:
             principal_id = _capability_principal_id(claim, actions)
             has_artifact_scope = session.scalar(
                 select(CollectionProcessingCapabilityArtifactRecord.capability_id)
-                .where(CollectionProcessingCapabilityArtifactRecord.capability_id == capability.id)
+                .where(CollectionProcessingCapabilityArtifactRecord.capability_id == scope_id)
                 .limit(1)
             )
             if {"read-root", "read-inputs", "read-provenance"} & set(

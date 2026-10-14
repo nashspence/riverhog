@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import hashlib
 import sqlite3
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any
 
 import pytest
 import riverhog_core.provenance_archive_read as archive_read
+import riverhog_core.scratch_workspace as scratch_workspace
 from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
     MEMBER_HISTORY_IMPORTS_SCHEMA,
@@ -243,12 +246,49 @@ def test_prepared_reader_closes_partly_consumed_cursors_before_directory_cleanup
         return original_connect(*args, **kwargs, factory=TrackedConnection)
 
     monkeypatch.setattr(archive_read.sqlite3, "connect", connect)
-    monkeypatch.setattr(archive_read, "TemporaryDirectory", CheckedDirectory)
+    monkeypatch.setattr(scratch_workspace.tempfile, "TemporaryDirectory", CheckedDirectory)
     with reader.prepared():
         headers = reader.iter_journal_headers()
         next(headers)
         assert pending and not pending[0].explicitly_closed
     headers.close()
+
+
+@pytest.mark.parametrize("interrupted", [False, True])
+def test_prepared_journal_stream_hands_off_workers_and_cleans_scratch(
+    interrupted: bool, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    reader, _, journal_id, journal_text = _archive()
+    scratch_paths: list[Path] = []
+    original_directory = scratch_workspace.tempfile.TemporaryDirectory
+
+    def directory(*args: Any, **kwargs: Any) -> TemporaryDirectory:
+        scratch = original_directory(*args, **kwargs)
+        scratch_paths.append(Path(scratch.name))
+        return scratch
+
+    monkeypatch.setattr(scratch_workspace.tempfile, "TemporaryDirectory", directory)
+
+    def body():
+        with reader.prepared():
+            yield from reader.iter_journal_range(journal_id)
+
+    stream = body()
+    # A synchronous HTTP body advances serially, but successive calls may run
+    # on different workers. Keep both workers alive to force that handoff.
+    with ThreadPoolExecutor(max_workers=1) as first_worker:
+        with ThreadPoolExecutor(max_workers=1) as second_worker:
+            first = first_worker.submit(next, stream).result()
+            assert first == journal_text.encode()[:12]
+            assert scratch_paths and all(path.is_dir() for path in scratch_paths)
+            if interrupted:
+                second_worker.submit(stream.close).result()
+            else:
+                second = second_worker.submit(next, stream).result()
+                assert first + second == journal_text.encode()
+                done = object()
+                assert second_worker.submit(next, stream, done).result() is done
+    assert all(not path.exists() for path in scratch_paths)
 
 
 def test_member_binding_tree_must_match_the_archived_binding_pages() -> None:

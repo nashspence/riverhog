@@ -159,12 +159,18 @@ class MemberHistoryClosure:
             "CREATE TABLE snapshots (identity TEXT PRIMARY KEY, anchor BLOB, done INTEGER);"
             "CREATE TABLE journals (identity TEXT PRIMARY KEY, size TEXT, anchor BLOB);"
             "CREATE TABLE objects (path TEXT PRIMARY KEY);"
+            "CREATE TABLE reference_journals (identity TEXT PRIMARY KEY, sha256 TEXT, size TEXT);"
+            "CREATE TABLE reference_assertions (journal TEXT, entry TEXT, sequence TEXT, "
+            "json_sha256 TEXT, assertion TEXT, object TEXT, type TEXT, prefix_sha256 TEXT, "
+            "prefix_bytes TEXT, PRIMARY KEY(journal, entry, assertion));"
         )
 
     def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *_exc: object) -> None:
+        for summary in self._summaries.values():
+            summary.close()
         self._summaries.clear()
         self._summary_bytes = 0
         self._db.close()
@@ -197,6 +203,7 @@ class MemberHistoryClosure:
             )
 
     def summary_at(self, anchor: HistoryJournalAnchor) -> JournalSummary:
+        """Return an owned exact snapshot; cache eviction does not close its lease."""
         key = canonical_json_bytes(anchor.to_mapping())
         chunks = _prefix(
             self.read_journal(anchor.journal_id, anchor.prefix_bytes), anchor.prefix_bytes
@@ -211,7 +218,7 @@ class MemberHistoryClosure:
             if digest.hexdigest() != anchor.prefix_sha256:
                 raise ProvenanceValidationError("canonical journal prefix identity changed")
             self._summaries.move_to_end(key)
-            return cached
+            return cached.borrow()
         summary = validate_journal_chunks(
             chunks,
             catalog=self.catalog,
@@ -227,47 +234,95 @@ class MemberHistoryClosure:
             ):
                 _, removed = self._summaries.popitem(last=False)
                 self._summary_bytes -= removed.journal_bytes
+                removed.close()
             self._summaries[key] = summary
             self._summary_bytes += summary.journal_bytes
+            return summary.borrow()
         return summary
 
     def _reference_anchor(self, reference: Mapping[str, Any]) -> HistoryJournalAnchor:
         selected = ExternalReference.model_validate(reference).model_dump(mode="json")
+        journal_id = selected["journal_id"]
+        cached = self._db.execute(
+            "SELECT sha256, size FROM reference_journals WHERE identity = ?", (journal_id,)
+        ).fetchone()
         digest = hashlib.sha256()
         count = 0
-        found: HistoryJournalAnchor | None = None
-        # Consume the authenticated stream even after finding the entry. Its
-        # enclosing provider can verify ciphertext/fixity and the final read fence.
-        for frame in iter_journal_frames(self.read_journal(selected["journal_id"], None)):
-            digest.update(frame.encoded)
-            count += len(frame.encoded)
-            if frame.reference != selected["entry"]:
-                continue
-            rows = (
-                row
-                for _, row in iter_assertions(frame.document["body"].get("assertions", {}))
-                if row["assertion_id"] == selected["assertion_id"]
-            )
-            row = next(rows, None)
-            if (
-                row is None
-                or row["id"] != selected["object_id"]
-                or row["type"] != selected["object_type"]
-            ):
-                raise ProvenanceValidationError(
-                    "foreign reference differs from its exact assertion"
-                )
-            found = HistoryJournalAnchor.from_mapping(
-                {
-                    "journal_id": selected["journal_id"],
-                    "through": frame.reference,
-                    "prefix_sha256": digest.hexdigest(),
-                    "prefix_bytes": str(count),
-                }
-            )
-        if found is None:
-            raise ProvenanceValidationError("required foreign entry is absent")
-        return found
+        # Each lookup consumes the current authenticated provider completely,
+        # including its final read fence. Reuse only the documentary address
+        # projection of the same exact bytes; full journal validation remains
+        # owned by the snapshot worklist. The index lives only in this closure's
+        # disk-backed scratch and has no semantic extent limit.
+        chunks = iter(self.read_journal(journal_id, None))
+        try:
+            if cached is not None:
+                for chunk in chunks:
+                    digest.update(chunk)
+                    count += len(chunk)
+                if (digest.hexdigest(), str(count)) != cached:
+                    raise ProvenanceValidationError("canonical reference journal identity changed")
+            else:
+                try:
+                    for frame in iter_journal_frames(chunks):
+                        document = frame.document
+                        if document["journal_id"] != journal_id:
+                            raise ProvenanceValidationError("foreign journal identity changed")
+                        digest.update(frame.encoded)
+                        count += len(frame.encoded)
+                        entry = frame.reference
+                        for _, row in iter_assertions(document["body"].get("assertions", {})):
+                            if "id" not in row:
+                                continue
+                            self._db.execute(
+                                "INSERT INTO reference_assertions "
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                (
+                                    journal_id,
+                                    entry["entry_id"],
+                                    entry["sequence"],
+                                    entry["json_sha256"],
+                                    row["assertion_id"],
+                                    row["id"],
+                                    row["type"],
+                                    digest.hexdigest(),
+                                    str(count),
+                                ),
+                            )
+                    self._db.execute(
+                        "INSERT INTO reference_journals VALUES (?, ?, ?)",
+                        (journal_id, digest.hexdigest(), str(count)),
+                    )
+                except BaseException:
+                    self._db.execute(
+                        "DELETE FROM reference_assertions WHERE journal = ?", (journal_id,)
+                    )
+                    raise
+        finally:
+            close = getattr(chunks, "close", None)
+            if close is not None:
+                close()
+        row = self._db.execute(
+            "SELECT sequence, json_sha256, object, type, prefix_sha256, prefix_bytes "
+            "FROM reference_assertions WHERE journal = ? AND entry = ? AND assertion = ?",
+            (journal_id, selected["entry"]["entry_id"], selected["assertion_id"]),
+        ).fetchone()
+        if row is None:
+            raise ProvenanceValidationError("required foreign entry or assertion is absent")
+        if row[:4] != (
+            selected["entry"]["sequence"],
+            selected["entry"]["json_sha256"],
+            selected["object_id"],
+            selected["object_type"],
+        ):
+            raise ProvenanceValidationError("foreign reference differs from its exact assertion")
+        return HistoryJournalAnchor.from_mapping(
+            {
+                "journal_id": journal_id,
+                "through": selected["entry"],
+                "prefix_sha256": row[4],
+                "prefix_bytes": row[5],
+            }
+        )
 
     def _visit_history(self, binding: MemberHistoryBinding, extent: str) -> None:
         history = self.store.descriptor(binding)
@@ -297,20 +352,20 @@ class MemberHistoryClosure:
     def _accept_import(self, imported: MemberHistoryImport) -> MemberHistoryBinding:
         proof = self.store.source_proof(imported)
         source = self.store.descriptor(proof.binding)
-        primary = self.summary_at(source.primary.journal)
-        state, _ = selected_delivery_occurrence(
-            primary,
-            binding={"artifact_id": source.artifact_id, **source.primary.to_mapping()},
-            artifact_id=source.artifact_id,
-            byte_count=source.bytes,
-            sha256=source.sha256,
-            member_role=self.member_role,
-        )
-        if external_reference(primary, state["id"]) != imported.input_state:
-            raise ProvenanceValidationError("imported State differs from the source primary")
-        self._object(source_binding_proof_object_path(imported.source_binding_proof_sha256))
-        self._history(proof.binding, imported.extent)
-        return proof.binding
+        with self.summary_at(source.primary.journal) as primary:
+            state, _ = selected_delivery_occurrence(
+                primary,
+                binding={"artifact_id": source.artifact_id, **source.primary.to_mapping()},
+                artifact_id=source.artifact_id,
+                byte_count=source.bytes,
+                sha256=source.sha256,
+                member_role=self.member_role,
+            )
+            if external_reference(primary, state["id"]) != imported.input_state:
+                raise ProvenanceValidationError("imported State differs from the source primary")
+            self._object(source_binding_proof_object_path(imported.source_binding_proof_sha256))
+            self._history(proof.binding, imported.extent)
+            return proof.binding
 
     def resolve_import(self, imported: MemberHistoryImport) -> None:
         """Validate an accepted early input selection, before output H can be sealed."""
@@ -347,18 +402,20 @@ class MemberHistoryClosure:
             if snapshot is None:
                 return
             identity, encoded = snapshot
-            summary = self.summary_at(
+            with self.summary_at(
                 HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
-            )
-            # Inspect documentary assertions, including retracted rows. Required
-            # preimages do not disappear when a later local correction retires a claim.
-            for frame in summary.frames:
-                for reference in _external_references(frame.document["body"].get("assertions", {})):
-                    self._snapshot(self._reference_anchor(reference))
-            parent = summary.frames[0].document["body"]["journal"].get("forked_from")
-            if parent is not None:
-                self._snapshot(HistoryJournalAnchor.from_mapping(parent))
-            self._db.execute("UPDATE snapshots SET done = 1 WHERE identity = ?", (identity,))
+            ) as summary:
+                # Inspect documentary assertions, including retracted rows. Required
+                # preimages do not disappear when a later local correction retires a claim.
+                for frame in summary.frames:
+                    for reference in _external_references(
+                        frame.document["body"].get("assertions", {})
+                    ):
+                        self._snapshot(self._reference_anchor(reference))
+                parent = summary.frames[0].document["body"]["journal"].get("forked_from")
+                if parent is not None:
+                    self._snapshot(HistoryJournalAnchor.from_mapping(parent))
+                self._db.execute("UPDATE snapshots SET done = 1 WHERE identity = ?", (identity,))
 
     def journal_anchors(self) -> Iterator[HistoryJournalAnchor]:
         """Largest required exact prefix per journal, never a substituted current head."""

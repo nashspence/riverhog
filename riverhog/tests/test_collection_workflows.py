@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any, cast
 
 import pytest
@@ -16,6 +15,10 @@ from riverhog_core.app_permissions import (
     Principal,
     tag_resource,
 )
+from riverhog_core.artifact_access import (
+    require_artifact_scope,
+    require_current_artifact_capability,
+)
 from riverhog_core.catalog_base import Base
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.catalog_models import (
@@ -26,6 +29,8 @@ from riverhog_core.catalog_models import (
     CollectionUploadRecord,
 )
 from riverhog_core.catalog_workflow_models import (
+    CollectionProcessingCapabilityArtifactRecord,
+    CollectionProcessingCapabilityRecord,
     CollectionProcessingClaimRecord,
     CollectionProcessingConsiderationEvidenceRecord,
     CollectionProcessingConsiderationSubjectRecord,
@@ -57,14 +62,8 @@ from riverhog_protocol.effect_settlement import ExternalEffectSettlement
 from riverhog_protocol.errors import BadRequest, Conflict, Forbidden, NotFound
 from riverhog_protocol.no_output_settlement import NoOutputSettlement
 from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
-from sqlalchemy import create_engine, delete, select
+from sqlalchemy import create_engine, delete, func, select
 from sqlalchemy.orm import sessionmaker
-from stove0_core.riverhog import _no_output_discard_approval
-from stove0_recipe_config import (
-    ArtifactFactBinding,
-    RecipeSourceLossEvidenceSlot,
-    RecipeSourceLossRule,
-)
 from time_formats import parse_utc_timestamp
 
 from tests.support.completion_receipt_fixtures import published_completion_projection
@@ -1503,41 +1502,16 @@ def test_source_loss_approval_requires_retained_exact_observation(
         _no_output_claim(service, root, approved_loss=True, upload_evidence=False)
 
 
-def test_mismatched_no_output_verdict_cannot_retire_source(
-    tmp_path: Path, request: FixtureRequest
-) -> None:
+def test_unendorsed_no_output_cannot_retire_source(tmp_path: Path, request: FixtureRequest) -> None:
     factory = _session_factory(tmp_path, request)
     root = _setup(factory)
     service = SqlAlchemyCollectionWorkflowService(cast(Any, object()), session_factory=factory)
     subject = _artifact(root)
-    slot = RecipeSourceLossEvidenceSlot(
-        observation_contract_id="fixture.observation/v1",
-        observation_contract_sha256="6" * 64,
-        facts_profile_sha256="5" * 64,
-        artifact_facts=ArtifactFactBinding(records_pointer="/records"),
-        verdict_pointer="/considered",
-        verdict_value=True,
-    )
-    rule = RecipeSourceLossRule(id="fixture.discard/v1", evidence_slots=(slot,))
-    approval = _no_output_discard_approval(
-        subject,
-        rule,
-        cast(Any, SimpleNamespace(observations=())),
-        controller_id="stove0",
-        reason="No successor is needed.",
-        index={
-            (slot.observation_contract_id, slot.facts_profile_sha256, subject): [
-                ("9" * 64, [{"considered": 1}])
-            ]
-        },
-    )
-    assert approval is None
-
     document = _no_output_claim(
         service,
         root,
         approved_loss=True,
-        endorse_loss=approval is not None,
+        endorse_loss=False,
         observation_verdict=1,
     )
     settled = service.settle_claim_no_output(
@@ -2324,3 +2298,71 @@ def test_outcome_append_crosses_transport_boundary_and_replays_after_restart(
         _close_outcomes(resumed, parent_id, expected, retire=False)["outcomes"]["identity"]
         == identity
     )
+
+
+def test_capability_refresh_reuses_exact_scope_without_invalidating_live_bearers(
+    tmp_path: Path,
+    request: FixtureRequest,
+) -> None:
+    factory = _session_factory(tmp_path, request)
+    root = _setup(factory)
+    service = SqlAlchemyCollectionWorkflowService(cast(Any, object()), session_factory=factory)
+    claim = _create_claim(service, work_id=WORK_ID, work_document=_work_document(root), root=root)
+    original = _issue_capability(
+        service,
+        str(claim["id"]),
+        root,
+        audience="fixture.observer/v1",
+        actions=("read-inputs",),
+    )
+    refreshed = service.refresh_capability(
+        str(claim["id"]),
+        str(original["id"]),
+        fence=1,
+        ttl_seconds=600,
+        principal=_principal(),
+    )
+    old_actor = service.authenticate_capability(str(original["token"]))
+    new_actor = service.authenticate_capability(str(refreshed["token"]))
+    assert old_actor is not None and new_actor is not None
+    assert refreshed["id"] != original["id"]
+    with factory() as session:
+        assert (
+            session.scalar(
+                select(func.count()).select_from(CollectionProcessingCapabilityArtifactRecord)
+            )
+            == 1
+        )
+        for actor in (old_actor, new_actor):
+            require_current_artifact_capability(session, actor)
+            require_artifact_scope(session, actor, root.collection_id, _artifact(root).artifact_id)
+            with pytest.raises(NotFound):
+                require_artifact_scope(session, actor, root.collection_id, "f" * 64)
+    # Expiry of the scope's original bearer does not expire a later separate lease.
+    with factory() as session, session.begin():
+        owner = session.get(CollectionProcessingCapabilityRecord, str(original["id"]))
+        assert owner is not None
+        owner.expires_at = NOW
+    assert service.authenticate_capability(str(original["token"])) is None
+    assert service.authenticate_capability(str(refreshed["token"])) is not None
+    with factory() as session:
+        require_current_artifact_capability(session, new_actor)
+        require_artifact_scope(session, new_actor, root.collection_id, _artifact(root).artifact_id)
+    with pytest.raises(NotFound):
+        service.refresh_capability(
+            str(claim["id"]),
+            str(original["id"]),
+            fence=1,
+            ttl_seconds=600,
+            principal=new_actor,
+        )
+    service.restart_claim(str(claim["id"]), fence=1, lease_seconds=600, principal=_principal())
+    assert service.authenticate_capability(str(refreshed["token"])) is None
+    with pytest.raises(Conflict):
+        service.refresh_capability(
+            str(claim["id"]),
+            str(original["id"]),
+            fence=1,
+            ttl_seconds=600,
+            principal=_principal(),
+        )

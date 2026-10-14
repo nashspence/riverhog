@@ -1399,6 +1399,7 @@ def _wait_for_health(
     product_version: str,
     previous_pid: int | None = None,
     terminated_pid: int | None = None,
+    require_custody_released: bool = True,
     timeout_seconds: float = 20,
 ) -> dict[str, object]:
     deadline = time.monotonic() + timeout_seconds
@@ -1419,7 +1420,11 @@ def _wait_for_health(
                 runtime_released = False
         dispatches = status.get("dispatches")
         counts = dispatches.get("counts") if isinstance(dispatches, dict) else None
-        custody_released = not isinstance(counts, dict) or counts.get("running", 0) == 0
+        custody_released = (
+            not require_custody_released
+            or not isinstance(counts, dict)
+            or counts.get("running", 0) == 0
+        )
         if (
             status["health"] in expected
             and (previous_pid is None or current_pid != previous_pid)
@@ -1559,6 +1564,20 @@ def install_listener(
             )
             if current.get("health") == "healthy":
                 return current
+            if wait_for_health:
+                # A heartbeat replacement or a busy state read can briefly
+                # obscure an unchanged live process. Confirm persistent failure
+                # within the existing health deadline before disturbing custody.
+                try:
+                    return _wait_for_health(
+                        frozenset({"healthy"}),
+                        paths=resolved_paths,
+                        adapter=native_adapter,
+                        product_version=expected_product_version,
+                        require_custody_released=False,
+                    )
+                except ListenerError:
+                    pass
     previous_pid = _heartbeat_pid(resolved_paths)
     staged_config = stage_bytes(
         resolved_paths.config_file,

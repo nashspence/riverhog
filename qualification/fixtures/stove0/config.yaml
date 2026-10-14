@@ -63,6 +63,5 @@ target_callback_base_url: http://api:8080
 target_callback_allow_insecure_http: true
 target_callback_signing_key_file: /run/secrets/stove0_target_callback_signing_key
 recipes:
-  format: stove0-recipes/v1
-  operations: []
+  format: stove0-compiled-recipe-catalog/v1
   recipes: []

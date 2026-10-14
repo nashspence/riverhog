@@ -6,6 +6,7 @@ import importlib.metadata
 from typing import cast
 
 from a_stove0_filename_prefix_sidecar_evidence_contract_lib import (
+    FILENAME_INTERFACE,
     FILENAME_OBSERVER_CONTRACT,
     FilenameQuestion,
     validate_filename_facts,
@@ -15,6 +16,7 @@ from a_stove0_riverhog_provenance_evidence_contract_lib import (
     CoreProvenanceOptions,
     validate_core_provenance_facts,
 )
+from a_stove0_riverhog_provenance_evidence_contract_lib.interfaces import CORE_PROVENANCE_INTERFACE
 from pydantic import JsonValue
 from stove0_observer_protocol import (
     ContentObservationRequest,
@@ -46,7 +48,9 @@ class FilenamePrefixSidecarObserver:
                 image_id=image_id,
                 contracts=(
                     ObserverContractSupport.from_contract(
-                        FILENAME_OBSERVER_CONTRACT, preferred_subject_batch_size=2
+                        FILENAME_OBSERVER_CONTRACT,
+                        interfaces=(FILENAME_INTERFACE.ref,),
+                        preferred_subject_batch_size=2,
                     ),
                 ),
             )
@@ -65,29 +69,29 @@ class FilenamePrefixSidecarObserver:
             predecessor_ids: list[dict[str, str]] = []
             for slot in question.provenance_slots:
                 predecessor = runtime.open_evidence(slot)
-                CoreProvenanceOptions.model_validate_json(
-                    canonical_json_bytes(predecessor.request.options)
-                )
+                source = predecessor.authority.source.question
+                CoreProvenanceOptions.model_validate_json(canonical_json_bytes(source.options))
                 if (
-                    predecessor.request.observer_contract_id != CORE_PROVENANCE_OBSERVER_CONTRACT.id
-                    or predecessor.request.observer_contract_sha256
+                    source.observer_contract.id != CORE_PROVENANCE_OBSERVER_CONTRACT.id
+                    or source.observer_contract.sha256
                     != CORE_PROVENANCE_OBSERVER_CONTRACT.contract_sha256
-                    or predecessor.request.read_actions != ("read-provenance",)
-                    or predecessor.result.facts_schema
-                    != CORE_PROVENANCE_OBSERVER_CONTRACT.facts_schema
-                    or predecessor.result.facts is None
+                    or source.read_actions != ("read-provenance",)
+                    or source.interface != CORE_PROVENANCE_INTERFACE.ref
                 ):
                     raise ValueError("filename question requires accepted core locator facts")
                 facts = validate_core_provenance_facts(
-                    predecessor.result.facts,
-                    predecessor.request.subjects,
-                    predecessor.request.options,
+                    {
+                        "artifacts": [
+                            record.value
+                            for record in predecessor.records("artifacts")
+                            if record.kind == "subject"
+                        ]
+                    },
+                    request.subjects,
+                    source.options,
                 )
                 predecessor_ids.append(
-                    {
-                        "request_id": predecessor.request.request_id,
-                        "result_sha256": predecessor.result.result_sha256,
-                    }
+                    {"accepted_input_sha256": predecessor.authority.input_sha256}
                 )
                 for row in facts.artifacts:
                     if row.subject_id in locators:
@@ -112,7 +116,9 @@ class FilenamePrefixSidecarObserver:
                 sidecar_suffixes=question.sidecar_suffixes,
             )
             document = {
-                "provenance_results": sorted(predecessor_ids, key=lambda item: item["request_id"]),
+                "provenance_inputs": sorted(
+                    predecessor_ids, key=lambda item: item["accepted_input_sha256"]
+                ),
                 "statuses": [
                     {
                         "subject_id": row.subject_id,

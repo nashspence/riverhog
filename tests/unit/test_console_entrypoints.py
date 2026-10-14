@@ -47,7 +47,10 @@ BOUNDED_LIST_COMMANDS = (
     ("stove0", "departure", "policy", "list", "--help"),
 )
 
-SIMPLE_PAGED_LIST_COMMANDS = (("stove0", "departure", "list", "--help"),)
+SIMPLE_PAGED_LIST_COMMANDS = (
+    ("stove0", "departure", "list", "--help"),
+    ("stove0", "observation", "list", "--help"),
+)
 
 QUERY_PAGED_LIST_COMMANDS = (("a-riverhog-cli", "tag", "list", "--help"),)
 

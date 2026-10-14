@@ -3,8 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 import threading
+import time
 from collections.abc import Iterator, Mapping, Sequence
-from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
@@ -34,6 +34,7 @@ from stove0_observer_protocol import (
     ContentObservationRequestPayload,
     ContentObservationResult,
     ContentObservationResultPayload,
+    ObservationJobStatus,
     ObserverContract,
     ObserverContractPayload,
     ObserverContractSupport,
@@ -50,6 +51,7 @@ from stove0_observer_support import (
     ContentObservationResultBuilder,
     ContentObservationRuntime,
     ObserverHttpBinding,
+    PersistentObserverService,
     conformance_report,
     observer_schema_bundle,
 )
@@ -61,6 +63,8 @@ from stove0_protocol import (
     WorkArtifactSubject,
     canonical_json_sha256,
 )
+
+from tests.stove0_observation_fixtures import fixture_interface, observation_payload
 
 
 def _sha(character: str) -> str:
@@ -250,7 +254,11 @@ def _descriptor(contract: ObserverContract) -> ObserverDescriptor:
             implementation_version="1.0.0",
             source_revision="fixture",
             image_id="sha256:" + _sha("9"),
-            contracts=(ObserverContractSupport.from_contract(contract),),
+            contracts=(
+                ObserverContractSupport.from_contract(
+                    contract, interfaces=(fixture_interface(contract).ref,)
+                ),
+            ),
         )
     )
 
@@ -261,7 +269,8 @@ def _request(
     api: RetrievalApi,
 ) -> ContentObservationRequest:
     return ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=contract,
             work_id=_sha("a"),
             observer_registration_id="fixture-observer",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -347,6 +356,62 @@ def test_observation_runtime_exposes_only_exact_requested_artifacts(tmp_path: Pa
     assert api.inventory_requests == 0
 
 
+@pytest.fixture(autouse=True)
+def fixture_dispatch_authority(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Synthetic collection claims here exercise protocol/runtime behavior.
+    # Actual authorization uses HTTP fixtures in the lifecycle suite.
+    monkeypatch.setattr(
+        PersistentObserverService, "_validate_live_authority", lambda *args, **kwargs: None
+    )
+
+
+@contextmanager
+def _binding(observer, state_root: Path, **kwargs):
+    def runtime(invocation, *, cancellation_check):
+        return ContentObservationRuntime(
+            RetrievalApi(),
+            request=invocation.request,
+            claim_id=invocation.claim_id,
+            fence=invocation.fence,
+            cancellation_check=cancellation_check,
+            declared_workspace_protection=invocation.runtime.declared_workspace_protection,
+            evidence=invocation.evidence,
+        )
+
+    service = PersistentObserverService(
+        observer, state_root=state_root, runtime_factory=runtime, **kwargs
+    )
+    try:
+        yield ObserverHttpBinding(service)
+    finally:
+        service.close()
+
+
+def _invocation(request):
+    return ContentObservationInvocation(
+        request=request,
+        claim_id="claim-1",
+        fence=3,
+        runtime=ObserverRuntimeAuthority(
+            riverhog_base_url="https://riverhog.invalid",
+            capability_token="secret-capability",
+            declared_workspace_protection="memory-backed",
+        ),
+    )
+
+
+def _wait(binding, invocation):
+    deadline = time.monotonic() + 5
+    while time.monotonic() < deadline:
+        response = binding.handle("GET", f"/v1/observations/{invocation.job_id}")
+        assert response.status == 200
+        status = ObservationJobStatus.model_validate_json(response.body)
+        if status.state == "completed":
+            return status.result
+        time.sleep(0.01)
+    raise AssertionError("observer job did not complete")
+
+
 class FixtureObserverClient:
     def __init__(
         self,
@@ -359,14 +424,20 @@ class FixtureObserverClient:
     def descriptor(self) -> ObserverDescriptor:
         return self._descriptor
 
-    def observe(
+    def put_job(
         self,
         _invocation: ContentObservationInvocation,
         *,
         descriptor: ObserverDescriptor,
     ) -> ContentObservationResult:
         assert descriptor == self._descriptor
-        return self._result
+        return ObservationJobStatus(
+            job_id=_invocation.job_id,
+            request_id=_invocation.request.request_id,
+            attempt=1,
+            state="completed",
+            result=self._result,
+        )
 
 
 def test_conformance_report_checks_contract_schemas_and_result_binding() -> None:
@@ -485,7 +556,7 @@ def test_conformance_report_exercises_semantics_locally_not_as_observer_calls() 
     observed_calls = 0
 
     class CountingClient(FixtureObserverClient):
-        def observe(
+        def put_job(
             self,
             invocation: ContentObservationInvocation,
             *,
@@ -493,7 +564,7 @@ def test_conformance_report_exercises_semantics_locally_not_as_observer_calls() 
         ) -> ContentObservationResult:
             nonlocal observed_calls
             observed_calls += 1
-            return super().observe(invocation, descriptor=descriptor)
+            return super().put_job(invocation, descriptor=descriptor)
 
     def validate_positive(
         _request: ContentObservationRequest,
@@ -564,12 +635,12 @@ def test_result_builder_binds_schema_identity_and_size_limits() -> None:
         builder.observed({"bytes": "not-an-integer"})
 
 
-def test_observer_binding_executes_advertised_request_options_schema() -> None:
+def test_observer_binding_executes_advertised_request_options_schema(tmp_path: Path) -> None:
     api = RetrievalApi()
     contract = _contract()
     descriptor = _descriptor(contract)
     request = _request(contract, descriptor, api)
-    invalid_request = ContentObservationRequest.seal(
+    invalid = ContentObservationRequest.seal(
         ContentObservationRequestPayload.model_validate(
             {
                 **request.model_dump(mode="python", exclude={"request_id"}),
@@ -577,23 +648,13 @@ def test_observer_binding_executes_advertised_request_options_schema() -> None:
             }
         )
     )
-    invocation = ContentObservationInvocation(
-        request=invalid_request,
-        claim_id="claim-1",
-        fence=3,
-        runtime=ObserverRuntimeAuthority(
-            riverhog_base_url="https://riverhog.invalid",
-            capability_token="secret-capability",
-            declared_workspace_protection="memory-backed",
-        ),
-    )
-
-    response = ObserverHttpBinding(BindingObserver(descriptor)).handle(
-        "POST",
-        "/v1/observe",
-        invocation.model_dump_json(exclude_none=True).encode(),
-    )
-
+    invocation = _invocation(invalid)
+    with _binding(BindingObserver(descriptor), tmp_path / "state") as binding:
+        response = binding.handle(
+            "PUT",
+            f"/v1/observations/{invocation.job_id}",
+            invocation.model_dump_json(exclude_none=True).encode(),
+        )
     assert response.status == 400
     assert json.loads(response.body)["error"]["code"] == "invalid_observation_request"
 
@@ -611,6 +672,7 @@ def test_subject_batch_preference_is_not_a_request_limit() -> None:
                 ObserverContractSupport.from_contract(
                     contract,
                     preferred_subject_batch_size=2,
+                    interfaces=(fixture_interface(contract).ref,),
                 ),
             ),
         )
@@ -632,7 +694,8 @@ def test_subject_batch_preference_is_not_a_request_limit() -> None:
         for index in range(3)
     )
     request = ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=contract,
             work_id=_sha("a"),
             observer_registration_id="fixture-observer",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -684,7 +747,16 @@ def test_observer_client_rejects_a_well_formed_result_for_different_work(
     real_client = httpx.Client
 
     def respond(_received: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, json=result.model_dump(mode="json"))
+        return httpx.Response(
+            200,
+            json=ObservationJobStatus(
+                job_id=invocation.job_id,
+                request_id=result.request_id,
+                attempt=1,
+                state="completed",
+                result=result,
+            ).model_dump(mode="json"),
+        )
 
     monkeypatch.setattr(
         httpx,
@@ -693,7 +765,7 @@ def test_observer_client_rejects_a_well_formed_result_for_different_work(
     )
 
     with pytest.raises(ObserverProtocolError, match="inconsistent with the invocation"):
-        ContentObserverClient("https://observer.example").observe(
+        ContentObserverClient("https://observer.example").put_job(
             invocation,
             descriptor=descriptor,
         )
@@ -717,44 +789,35 @@ class BindingObserver:
         )
 
 
-def test_framework_neutral_observer_http_binding() -> None:
+def test_framework_neutral_observer_http_binding(tmp_path: Path) -> None:
     api = RetrievalApi()
     contract = _contract()
     descriptor = _descriptor(contract)
-    request = _request(contract, descriptor, api)
-    invocation = ContentObservationInvocation(
-        request=request,
-        claim_id="claim-1",
-        fence=3,
-        runtime=ObserverRuntimeAuthority(
-            riverhog_base_url="https://riverhog.invalid",
-            capability_token="secret-capability",
-            declared_workspace_protection="memory-backed",
-        ),
-    )
-    binding = ObserverHttpBinding(BindingObserver(descriptor))
-
-    contract_response = binding.handle("GET", "/v1/observer")
-    assert contract_response.status == 200
-    assert ObserverDescriptor.model_validate_json(contract_response.body) == descriptor
-
-    result_response = binding.handle(
-        "POST",
-        "/v1/observe",
-        invocation.model_dump_json(exclude_none=True).encode(),
-    )
-    assert result_response.status == 200
-    result = ContentObservationResult.model_validate_json(result_response.body)
-    assert result.facts == {"bytes": len(api.data)}
-    duplicate = (
-        b'{"claim_id":"claim-1",' + invocation.model_dump_json(exclude_none=True).encode()[1:]
-    )
-    assert binding.handle("POST", "/v1/observe", duplicate).status == 400
-    assert binding.handle("DELETE", "/v1/observer").status == 405
+    invocation = _invocation(_request(contract, descriptor, api))
+    with _binding(BindingObserver(descriptor), tmp_path / "state") as binding:
+        response = binding.handle("GET", "/v1/observer")
+        assert response.status == 200
+        assert ObserverDescriptor.model_validate_json(response.body) == descriptor
+        response = binding.handle(
+            "PUT",
+            f"/v1/observations/{invocation.job_id}",
+            invocation.model_dump_json(exclude_none=True).encode(),
+        )
+        assert response.status == 200
+        assert ObservationJobStatus.model_validate_json(response.body).state == "queued"
+        result = _wait(binding, invocation)
+        assert result.facts == {"bytes": len(api.data)}
+        duplicate = (
+            b'{"claim_id":"claim-1",' + invocation.model_dump_json(exclude_none=True).encode()[1:]
+        )
+        assert (
+            binding.handle("PUT", f"/v1/observations/{invocation.job_id}", duplicate).status == 400
+        )
+        assert binding.handle("DELETE", "/v1/observer").status == 405
 
 
 def test_observer_binding_and_client_execute_the_exact_semantic_profile(
-    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     api = RetrievalApi()
     base = _contract()
@@ -769,106 +832,79 @@ def test_observer_binding_and_client_execute_the_exact_semantic_profile(
     payload["facts_semantics"] = semantics
     contract = ObserverContract.seal(ObserverContractPayload.model_validate(payload))
     descriptor = _descriptor(contract)
+    for registry in (
+        None,
+        SemanticValidatorRegistry(
+            (
+                SemanticValidatorBinding(
+                    profile_id=semantics.id,
+                    profile_sha256="f" * 64,
+                    validator=lambda _request, _facts: None,
+                ),
+            )
+        ),
+        SemanticValidatorRegistry(
+            (
+                SemanticValidatorBinding(
+                    profile_id="fixture.other-semantics/v1",
+                    profile_sha256=semantics.profile_sha256,
+                    validator=lambda _request, _facts: None,
+                ),
+            )
+        ),
+    ):
+        with pytest.raises(ValueError, match="semantic"):
+            with _binding(
+                BindingObserver(descriptor), tmp_path / "state", semantic_validators=registry
+            ):
+                raise AssertionError("unavailable semantics must prevent startup")
+    called = []
 
-    assert (
-        ObserverHttpBinding(BindingObserver(descriptor)).handle("GET", "/v1/observer").status == 500
-    )
-    assert (
-        ObserverHttpBinding(
-            BindingObserver(descriptor),
-            semantic_validators=SemanticValidatorRegistry(
-                (
-                    SemanticValidatorBinding(
-                        profile_id=semantics.id,
-                        profile_sha256="f" * 64,
-                        validator=lambda _request, _facts: None,
-                    ),
-                )
-            ),
-        )
-        .handle("GET", "/v1/observer")
-        .status
-        == 500
-    )
-    assert (
-        ObserverHttpBinding(
-            BindingObserver(descriptor),
-            semantic_validators=SemanticValidatorRegistry(
-                (
-                    SemanticValidatorBinding(
-                        profile_id="fixture.other-semantics/v1",
-                        profile_sha256=semantics.profile_sha256,
-                        validator=lambda _request, _facts: None,
-                    ),
-                )
-            ),
-        )
-        .handle("GET", "/v1/observer")
-        .status
-        == 500
-    )
-
-    called: list[Mapping[str, object]] = []
-
-    def reject_facts(
-        _request: ContentObservationRequest,
-        facts: Mapping[str, object],
-    ) -> None:
+    def reject_facts(_request, facts):
         called.append(facts)
         raise ValueError("fixture semantic policy rejected the facts")
 
-    request = _request(contract, descriptor, api)
-    invocation = ContentObservationInvocation(
-        request=request,
-        claim_id="claim-1",
-        fence=3,
-        runtime=ObserverRuntimeAuthority(
-            riverhog_base_url="https://riverhog.invalid",
-            capability_token="secret-capability",
-            declared_workspace_protection="memory-backed",
-        ),
+    registry = SemanticValidatorRegistry(
+        (SemanticValidatorBinding.from_profile(semantics, reject_facts),)
     )
-    binding = ObserverHttpBinding(
-        BindingObserver(descriptor),
-        semantic_validators=SemanticValidatorRegistry(
-            (SemanticValidatorBinding.from_profile(semantics, reject_facts),)
-        ),
-    )
-
-    assert binding.handle("GET", "/v1/observer").status == 200
-    response = binding.handle(
-        "POST",
-        "/v1/observe",
-        invocation.model_dump_json(exclude_none=True).encode(),
-    )
-    assert response.status == 500
-    assert called == [{"bytes": len(api.data)}]
-
-    result = _result(request, contract, descriptor, len(api.data))
+    invocation = _invocation(_request(contract, descriptor, api))
+    with _binding(
+        BindingObserver(descriptor), tmp_path / "state", semantic_validators=registry
+    ) as binding:
+        assert binding.handle("GET", "/v1/observer").status == 200
+        response = binding.handle(
+            "PUT",
+            f"/v1/observations/{invocation.job_id}",
+            invocation.model_dump_json(exclude_none=True).encode(),
+        )
+        assert response.status == 200
+        failed = _wait(binding, invocation)
+        assert failed.state == "failed"
+        assert called == [{"bytes": len(api.data)}]
+    result = _result(invocation.request, contract, descriptor, len(api.data))
     real_client = httpx.Client
 
-    def respond(received: httpx.Request) -> httpx.Response:
-        if received.method == "GET":
+    def respond(received):
+        if received.url.path == "/v1/observer":
             return httpx.Response(200, json=descriptor.model_dump(mode="json"))
-        return httpx.Response(200, json=result.model_dump(mode="json"))
+        status = ObservationJobStatus(
+            job_id=invocation.job_id,
+            request_id=result.request_id,
+            attempt=1,
+            state="completed",
+            result=result,
+        )
+        return httpx.Response(200, json=status.model_dump(mode="json"))
 
     monkeypatch.setattr(
-        httpx,
-        "Client",
-        lambda **_kwargs: real_client(transport=httpx.MockTransport(respond)),
+        httpx, "Client", lambda **_kwargs: real_client(transport=httpx.MockTransport(respond))
     )
     with pytest.raises(ObserverProtocolError, match="not enabled"):
         ContentObserverClient("https://observer.example").descriptor()
-
-    client = ContentObserverClient(
-        "https://observer.example",
-        semantic_validators=SemanticValidatorRegistry(
-            (SemanticValidatorBinding.from_profile(semantics, reject_facts),)
-        ),
-    )
+    client = ContentObserverClient("https://observer.example", semantic_validators=registry)
     assert client.descriptor() == descriptor
     with pytest.raises(ObserverProtocolError, match="inconsistent with the invocation"):
-        client.observe(invocation, descriptor=descriptor)
+        client.put_job(invocation, descriptor=descriptor)
 
 
 def test_semantic_validator_entry_points_are_loaded_only_by_explicit_name(
@@ -904,115 +940,89 @@ def test_semantic_validator_entry_points_are_loaded_only_by_explicit_name(
 
 
 def test_observer_descriptor_failure_uses_the_public_error_envelope() -> None:
-    class FailingDescriptorObserver:
-        def descriptor(self) -> ObserverDescriptor:
+    class FaultingService:
+        def descriptor(self):
             raise RuntimeError("private descriptor failure")
 
-        def observe(
-            self,
-            _request: ContentObservationRequest,
-            _runtime: ContentObservationRuntime,
-        ) -> ContentObservationResult:
-            raise AssertionError("descriptor endpoint must not execute observation")
-
-    response = ObserverHttpBinding(FailingDescriptorObserver()).handle(
-        "GET",
-        "/v1/observer",
-    )
-
+    response = ObserverHttpBinding(FaultingService()).handle("GET", "/v1/observer")
     assert response.status == 500
     assert json.loads(response.body) == {
-        "error": {
-            "code": "observer_failed",
-            "message": "content observer descriptor failed",
-        }
+        "error": {"code": "observer_failed", "message": "content observer descriptor failed"}
     }
 
 
-def test_observer_implementation_value_error_is_a_server_fault() -> None:
+def test_observer_implementation_value_error_becomes_a_bound_failed_result(tmp_path: Path) -> None:
     api = RetrievalApi()
     contract = _contract()
     descriptor = _descriptor(contract)
-    request = _request(contract, descriptor, api)
-    invocation = ContentObservationInvocation(
-        request=request,
-        claim_id="claim-1",
-        fence=3,
-        runtime=ObserverRuntimeAuthority(
-            riverhog_base_url="https://riverhog.invalid",
-            capability_token="secret-capability",
-            declared_workspace_protection="memory-backed",
-        ),
-    )
+    invocation = _invocation(_request(contract, descriptor, api))
 
     class FaultingObserver(BindingObserver):
-        def observe(
-            self,
-            _request: ContentObservationRequest,
-            _runtime: ContentObservationRuntime,
-        ) -> ContentObservationResult:
+        def observe(self, request, runtime):
             raise ValueError("private observer defect")
 
-    response = ObserverHttpBinding(FaultingObserver(descriptor)).handle(
-        "POST",
-        "/v1/observe",
-        invocation.model_dump_json(exclude_none=True).encode(),
-    )
+    with _binding(FaultingObserver(descriptor), tmp_path / "state") as binding:
+        response = binding.handle(
+            "PUT",
+            f"/v1/observations/{invocation.job_id}",
+            invocation.model_dump_json(exclude_none=True).encode(),
+        )
+        assert response.status == 200
+        failed = _wait(binding, invocation)
+        assert failed.state == "failed" and failed.request_id == invocation.request.request_id
+        assert failed.failure.code == "observer-execution"
+        assert "private observer defect" not in failed.model_dump_json()
 
-    assert response.status == 500
-    assert json.loads(response.body)["error"]["code"] == "observer_failed"
-    assert b"private observer defect" not in response.body
 
-
-def test_observer_binding_serializes_workspace_execution_by_default() -> None:
+def test_observer_control_returns_while_default_payload_capacity_is_occupied(
+    tmp_path: Path,
+) -> None:
     api = RetrievalApi()
     contract = _contract()
     descriptor = _descriptor(contract)
-    request = _request(contract, descriptor, api)
-    invocation = ContentObservationInvocation(
-        request=request,
-        claim_id="claim-1",
-        fence=3,
-        runtime=ObserverRuntimeAuthority(
-            riverhog_base_url="https://riverhog.invalid",
-            capability_token="secret-capability",
-            declared_workspace_protection="memory-backed",
-        ),
-    )
-    entered = threading.Event()
-    release = threading.Event()
-    lock = threading.Lock()
+    invocation = _invocation(_request(contract, descriptor, api))
+    second = invocation.model_copy(update={"claim_id": "second-claim"})
+    entered, release = threading.Event(), threading.Event()
     active = 0
-    active_peak = 0
+    peak = 0
+    lock = threading.Lock()
 
     class BlockingObserver(BindingObserver):
-        def observe(
-            self,
-            observed_request: ContentObservationRequest,
-            runtime: ContentObservationRuntime,
-        ) -> ContentObservationResult:
-            nonlocal active, active_peak
+        def observe(self, request, runtime):
+            nonlocal active, peak
             with lock:
                 active += 1
-                active_peak = max(active_peak, active)
+                peak = max(peak, active)
                 entered.set()
-            assert release.wait(timeout=5)
             try:
-                return super().observe(observed_request, runtime)
+                assert release.wait(timeout=5)
+                return super().observe(request, runtime)
             finally:
                 with lock:
                     active -= 1
 
-    binding = ObserverHttpBinding(BlockingObserver(descriptor))
-    body = invocation.model_dump_json(exclude_none=True).encode()
-    with ThreadPoolExecutor(max_workers=2) as pool:
-        first = pool.submit(binding.handle, "POST", "/v1/observe", body)
-        assert entered.wait(timeout=5)
-        second = pool.submit(binding.handle, "POST", "/v1/observe", body)
-        release.set()
-        assert [first.result(timeout=5).status, second.result(timeout=5).status] == [200, 200]
-
-    assert active_peak == 1
+    with _binding(BlockingObserver(descriptor), tmp_path / "state") as binding:
+        try:
+            first = binding.handle(
+                "PUT",
+                f"/v1/observations/{invocation.job_id}",
+                invocation.model_dump_json(exclude_none=True).encode(),
+            )
+            assert first.status == 200 and entered.wait(timeout=5)
+            started = time.monotonic()
+            response = binding.handle(
+                "PUT",
+                f"/v1/observations/{second.job_id}",
+                second.model_dump_json(exclude_none=True).encode(),
+            )
+            assert time.monotonic() - started < 0.5
+            assert ObservationJobStatus.model_validate_json(response.body).state == "queued"
+            assert binding.service._dispatch.payload_count == 1
+            assert len(binding.service._runtimes) == 1
+        finally:
+            release.set()
+        assert _wait(binding, invocation).state == _wait(binding, second).state == "observed"
+    assert peak == 1 and active == 0
 
 
 def test_observer_schema_bundle_is_deterministic_and_self_validating() -> None:

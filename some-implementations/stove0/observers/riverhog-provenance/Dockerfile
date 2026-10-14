@@ -26,6 +26,7 @@ COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
+COPY packages/riverhog-growth-contracts packages/riverhog-growth-contracts
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol
 COPY packages/riverhog-provenance packages/riverhog-provenance
@@ -35,6 +36,7 @@ COPY packages/time-formats packages/time-formats
 COPY some-implementations/stove0/packages/observer-client some-implementations/stove0/packages/observer-client
 COPY some-implementations/stove0/packages/observer-protocol some-implementations/stove0/packages/observer-protocol
 COPY some-implementations/stove0/packages/observer-support some-implementations/stove0/packages/observer-support
+COPY some-implementations/stove0/packages/extension-support some-implementations/stove0/packages/extension-support
 COPY some-implementations/stove0/packages/protocol some-implementations/stove0/packages/protocol
 COPY some-implementations/stove0/observers/contracts/materialization-hint some-implementations/stove0/observers/contracts/materialization-hint
 COPY some-implementations/stove0/observers/contracts/riverhog-provenance some-implementations/stove0/observers/contracts/riverhog-provenance
@@ -56,6 +58,10 @@ RUN apt-get update \
     && ! command -v mise
 
 COPY --from=build /opt/venv /opt/venv
+
+RUN mkdir -p /var/lib/a-stove0-riverhog-provenance-observer \
+    && chown 65532:65532 /var/lib/a-stove0-riverhog-provenance-observer \
+    && chmod 700 /var/lib/a-stove0-riverhog-provenance-observer
 
 ARG BUILD_CREATED=1970-01-01T00:00:00Z
 ARG RELEASE_VERSION=development

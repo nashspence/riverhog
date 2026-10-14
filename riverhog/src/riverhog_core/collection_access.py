@@ -16,6 +16,7 @@ from riverhog_core.app_permissions import (
     TAG_PREFIX,
     Principal,
 )
+from riverhog_core.artifact_access import artifact_scope_owner
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     CollectionRecord,
@@ -166,7 +167,8 @@ def _capability_contains_collection(
         session.scalar(
             select(CollectionProcessingCapabilityArtifactRecord.capability_id)
             .where(
-                CollectionProcessingCapabilityArtifactRecord.capability_id == capability_id,
+                CollectionProcessingCapabilityArtifactRecord.capability_id
+                == artifact_scope_owner(principal),
                 CollectionProcessingCapabilityArtifactRecord.collection_id == collection_id,
             )
             .limit(1)
@@ -184,7 +186,8 @@ def _capability_collection_filter(
         return None
     return exists(
         select(1).where(
-            CollectionProcessingCapabilityArtifactRecord.capability_id == capability_id,
+            CollectionProcessingCapabilityArtifactRecord.capability_id
+            == artifact_scope_owner(principal),
             CollectionProcessingCapabilityArtifactRecord.collection_id == column,
         )
     )

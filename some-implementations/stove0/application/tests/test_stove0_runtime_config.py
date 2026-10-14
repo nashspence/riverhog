@@ -7,6 +7,8 @@ import pytest
 import yaml
 from stove0_core import database_url_from_config, load_stove0_config
 from stove0_core.runtime_config import generated_config_schema
+from stove0_recipe_config import CompiledRecipeCatalog, RecipeSourceCatalog
+from stove0_recipe_config.reading import read_source_documents
 
 SCHEMA = Path(__file__).parents[1] / "server/src/stove0_core/config.schema.json"
 
@@ -21,7 +23,7 @@ def _config(tmp_path: Path) -> tuple[Path, dict[str, object]]:
     document: dict[str, object] = {
         "riverhog_base_url": "https://riverhog.invalid",
         "declared_workspace_protection": "encrypted-at-rest",
-        "recipes": {"format": "stove0-recipes/v1", "operations": [], "recipes": []},
+        "recipes": CompiledRecipeCatalog().model_dump(mode="json"),
     }
     for name, value in secrets.items():
         path = tmp_path / name
@@ -38,6 +40,23 @@ def _write(path: Path, document: dict[str, object]) -> None:
 
 def test_published_schema_matches_parser() -> None:
     assert json.loads(SCHEMA.read_text(encoding="utf-8")) == generated_config_schema()
+
+
+@pytest.mark.parametrize("catalog_kind", ["source", "compiled"])
+def test_nonempty_catalogs_pass_startup_with_the_same_compiled_identity(
+    tmp_path: Path, catalog_kind: str
+) -> None:
+    path, document = _config(tmp_path)
+    fixture = Path(__file__).parents[4] / "qualification/fixtures/stove0/recipes.yaml"
+    source = read_source_documents(fixture)[0]
+    compiled = RecipeSourceCatalog.model_validate(source).compile()
+    document["recipes"] = (
+        source if catalog_kind == "source" else compiled.model_dump(mode="json", by_alias=True)
+    )
+    _write(path, document)
+
+    assert database_url_from_config(path) == "postgresql+psycopg://stove0@postgres/stove0"
+    assert load_stove0_config(path).recipes == compiled
 
 
 def test_scheduler_configuration_does_not_require_operator_api_secret(tmp_path: Path) -> None:
@@ -62,6 +81,7 @@ def test_runtime_configuration_connects_policy_and_registrations(tmp_path: Path)
         declared_workspace_protection="memory-backed",
         claim_lease_seconds=240,
         capability_ttl_seconds=120,
+        observation_execution_timeout_seconds=7200,
         scheduler_interval_seconds=0.5,
         operational_state_retention_seconds=86400,
         browse_token_lifetime_seconds=7200,
@@ -97,6 +117,7 @@ def test_runtime_configuration_connects_policy_and_registrations(tmp_path: Path)
     assert config.target_authority_batch_size == 17
     assert config.claim_lease_seconds == 240
     assert config.capability_ttl_seconds == 120
+    assert config.observation_execution_timeout_seconds == 7200
     assert config.scheduler_interval_seconds == 0.5
     assert config.operational_state_retention_seconds == 86400
     assert config.browse_token_lifetime_seconds == 7200
@@ -170,3 +191,12 @@ def test_runtime_repr_does_not_emit_secret_material(tmp_path: Path) -> None:
     rendered = repr(load_stove0_config(path))
     assert "role-specific-riverhog-token" not in rendered
     assert "stove0-test-browse-token-signing-key-v1" not in rendered
+
+
+@pytest.mark.parametrize("allowance", [0, 86401])
+def test_observation_execution_allowance_stays_within_the_request_contract(tmp_path, allowance):
+    path, document = _config(tmp_path)
+    document["observation_execution_timeout_seconds"] = allowance
+    _write(path, document)
+    with pytest.raises(ValueError, match="observation_execution_timeout_seconds"):
+        load_stove0_config(path)

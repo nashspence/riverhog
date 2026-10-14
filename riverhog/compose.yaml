@@ -10,12 +10,16 @@ x-riverhog-hardening: &riverhog-hardening
   security_opt: ["no-new-privileges:true"]
 
 services:
-  garage:
+  s3-fixture:
     profiles: ["development"]
-    image: dxflrs/garage:b72b090a097c8ee2711c8fb065d250ed68dcd0bf@sha256:f22f09abe741e54ab244e95638310e040b81eda41e2c6ab9b7373cda4b9e955c
+    image: cgr.dev/chainguard/minio:latest@sha256:7df55d002b698e4494a131b848dd553361bbe58b7e19f62d9623c29af1ba9ccf
+    user: "0:0"
+    command: ["--quiet", "--anonymous", "server", "/data"]
+    environment:
+      MINIO_ROOT_USER: ${RIVERHOG_S3_FIXTURE_ACCESS_KEY_ID:-riverhog-test-key}
+      MINIO_ROOT_PASSWORD: ${RIVERHOG_S3_FIXTURE_SECRET_ACCESS_KEY:-riverhog-test-secret}
     volumes:
-      - garage-data:/var/lib/garage
-      - ../tests/harness/garage.toml:/etc/garage.toml:ro
+      - s3-fixture-data:/data
 
   archive-adapter:
     profiles: ["development"]
@@ -26,15 +30,15 @@ services:
       args:
         SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
     restart: unless-stopped
-    entrypoint: ["python", "-m", "tests.harness.garage_storage_adapter"]
+    entrypoint: ["python", "-m", "tests.harness.s3_storage_adapter"]
     environment:
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_TOKEN: ${RIVERHOG_GARAGE_STORAGE_ADAPTER_TOKEN:-riverhog-development-storage-adapter-token}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_ENDPOINT_URL: ${RIVERHOG_GARAGE_STORAGE_ADAPTER_ENDPOINT_URL:-http://garage:3900}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_REGION: ${RIVERHOG_GARAGE_STORAGE_ADAPTER_REGION:-garage}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_BUCKET: ${RIVERHOG_GARAGE_ARCHIVE_BUCKET:-riverhog-archive}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_ACCESS_KEY_ID: ${RIVERHOG_GARAGE_ARCHIVE_ACCESS_KEY_ID:-GK000000000000000000000002}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_SECRET_ACCESS_KEY: ${RIVERHOG_GARAGE_ARCHIVE_SECRET_ACCESS_KEY:-2222222222222222222222222222222222222222222222222222222222222222}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_READ_MODE: ${RIVERHOG_GARAGE_ARCHIVE_READ_MODE:-restore_required}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_TOKEN: ${RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_TOKEN:-riverhog-development-storage-adapter-token}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_ENDPOINT_URL: ${RIVERHOG_S3_FIXTURE_ENDPOINT_URL:-http://s3-fixture:9000}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_REGION: ${RIVERHOG_S3_FIXTURE_REGION:-us-east-1}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_BUCKET: ${RIVERHOG_S3_FIXTURE_ARCHIVE_BUCKET:-riverhog-archive}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_ACCESS_KEY_ID: ${RIVERHOG_S3_FIXTURE_ACCESS_KEY_ID:-riverhog-test-key}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_SECRET_ACCESS_KEY: ${RIVERHOG_S3_FIXTURE_SECRET_ACCESS_KEY:-riverhog-test-secret}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_READ_MODE: ${RIVERHOG_S3_FIXTURE_ARCHIVE_READ_MODE:-restore_required}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health/ready')"]
       interval: 2s
@@ -74,7 +78,7 @@ services:
     volumes:
       - filesystem-cache-data:/var/lib/riverhog-filesystem
       - type: bind
-        source: ${RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH:-../tests/harness/garage-storage-adapter.token}
+        source: ${RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH:-../tests/harness/s3-storage-adapter.token}
         target: /run/secrets/riverhog-storage-adapter.token
         read_only: true
     healthcheck:
@@ -93,15 +97,15 @@ services:
       args:
         SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
     restart: unless-stopped
-    entrypoint: ["python", "-m", "tests.harness.garage_storage_adapter"]
+    entrypoint: ["python", "-m", "tests.harness.s3_storage_adapter"]
     environment:
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_TOKEN: ${RIVERHOG_GARAGE_STORAGE_ADAPTER_TOKEN:-riverhog-development-storage-adapter-token}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_ENDPOINT_URL: ${RIVERHOG_GARAGE_STORAGE_ADAPTER_ENDPOINT_URL:-http://garage:3900}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_REGION: ${RIVERHOG_GARAGE_STORAGE_ADAPTER_REGION:-garage}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_BUCKET: ${RIVERHOG_GARAGE_CACHE_BUCKET:-riverhog-cache}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_ACCESS_KEY_ID: ${RIVERHOG_GARAGE_CACHE_ACCESS_KEY_ID:-GK000000000000000000000002}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_SECRET_ACCESS_KEY: ${RIVERHOG_GARAGE_CACHE_SECRET_ACCESS_KEY:-2222222222222222222222222222222222222222222222222222222222222222}
-      RIVERHOG_GARAGE_STORAGE_ADAPTER_READ_MODE: immediate
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_TOKEN: ${RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_TOKEN:-riverhog-development-storage-adapter-token}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_ENDPOINT_URL: ${RIVERHOG_S3_FIXTURE_ENDPOINT_URL:-http://s3-fixture:9000}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_REGION: ${RIVERHOG_S3_FIXTURE_REGION:-us-east-1}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_BUCKET: ${RIVERHOG_S3_FIXTURE_CACHE_BUCKET:-riverhog-cache}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_ACCESS_KEY_ID: ${RIVERHOG_S3_FIXTURE_ACCESS_KEY_ID:-riverhog-test-key}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_SECRET_ACCESS_KEY: ${RIVERHOG_S3_FIXTURE_SECRET_ACCESS_KEY:-riverhog-test-secret}
+      RIVERHOG_S3_FIXTURE_STORAGE_ADAPTER_READ_MODE: immediate
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health/ready')"]
       interval: 2s
@@ -147,6 +151,7 @@ services:
       <<: *riverhog-environment
     command: ["state", "upgrade"]
     volumes:
+      - scratch:/scratch:rw
       - ${RIVERHOG_CONFIG_HOST_PATH:-../qualification/fixtures/riverhog/config.yaml}:/etc/riverhog/config.yaml:ro
       - ${RIVERHOG_DATABASE_URL_HOST_PATH:-../tests/harness/riverhog-database-url}:/run/secrets/riverhog-database-url:ro
 
@@ -168,13 +173,14 @@ services:
         condition: service_completed_successfully
     environment: *riverhog-environment
     volumes:
+      - scratch:/scratch:rw
       - ${RIVERHOG_CONFIG_HOST_PATH:-../qualification/fixtures/riverhog/config.yaml}:/etc/riverhog/config.yaml:ro
       - ${RIVERHOG_DATABASE_URL_HOST_PATH:-../tests/harness/riverhog-database-url}:/run/secrets/riverhog-database-url:ro
       - ${RIVERHOG_BOOTSTRAP_TOKEN_HOST_PATH:-../tests/harness/riverhog-bootstrap-token}:/run/secrets/riverhog-bootstrap-token:ro
       - ${RIVERHOG_BROWSE_KEY_HOST_PATH:-../tests/harness/riverhog-browse-key}:/run/secrets/riverhog-browse-key:ro
       - ${RIVERHOG_ARCHIVE_PASSPHRASE_HOST_PATH:-../tests/harness/riverhog-archive-passphrase}:/run/secrets/riverhog-archive-passphrase:ro
       - type: bind
-        source: ${RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH:-../tests/harness/garage-storage-adapter.token}
+        source: ${RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH:-../tests/harness/s3-storage-adapter.token}
         target: /run/secrets/riverhog-storage-adapter.token
         read_only: true
     healthcheck:
@@ -209,11 +215,12 @@ services:
       - ${RIVERHOG_BROWSE_KEY_HOST_PATH:-../tests/harness/riverhog-browse-key}:/run/secrets/riverhog-browse-key:ro
       - ${RIVERHOG_ARCHIVE_PASSPHRASE_HOST_PATH:-../tests/harness/riverhog-archive-passphrase}:/run/secrets/riverhog-archive-passphrase:ro
       - type: bind
-        source: ${RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH:-../tests/harness/garage-storage-adapter.token}
+        source: ${RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH:-../tests/harness/s3-storage-adapter.token}
         target: /run/secrets/riverhog-storage-adapter.token
         read_only: true
 
 volumes:
+  scratch:
   filesystem-cache-data:
-  garage-data:
+  s3-fixture-data:
   postgres-data:

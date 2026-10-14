@@ -318,11 +318,6 @@ def test_release_role_dependency_direction_is_exact() -> None:
         for name, role in roles.items()
         if role in {"application", "component"}
     )
-    architecture = " ".join(
-        (REPO_ROOT / "docs/architecture.md").read_text(encoding="utf-8").split()
-    )
-    assert "Supplied applications own their workflows" in architecture
-    assert "enter Riverhog only through public contracts" in architecture
 
 
 def test_release_contract_rejects_optional_supplied_dependency_from_product(

@@ -18,7 +18,8 @@ classifiers = [
   "Typing :: Typed",
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = ["release-documentation-lib>=0.1,<0.2",
+dependencies = ["stove0-extension-support>=0.1,<0.2",
+  "release-documentation-lib>=0.1,<0.2",
   "stove0-protocol>=0.1,<0.2",
   "a-riverhog-direct-relations-contract-lib>=0.1,<0.2",
   "riverhog-archive-contracts>=0.1,<0.2",
@@ -38,6 +39,7 @@ stove0-target-conformance = "stove0_target_support.conformance:main"
 stove0-target-schemas = "stove0_target_support.schemas:main"
 
 [tool.uv.sources]
+stove0-extension-support = { workspace = true }
 release-documentation-lib = { workspace = true }
 stove0-protocol = { workspace = true }
 a-riverhog-direct-relations-contract-lib = { workspace = true }

@@ -2,14 +2,15 @@ CONTRACT_OUTPUT ?= $(CURDIR)/build/contracts
 SHELL := bash
 .DEFAULT_GOAL := help
 
-.PHONY: documentation-plan documentation-preview documentation-check
-documentation-plan documentation-preview documentation-check:
-	$(call UV_CMD,python scripts/documentation.py $(subst documentation-,,$@) $(args))
-
 MISE_BIN ?= mise
 FILES ?= .
-TESTS ?= packages some-implementations riverhog tests/unit
-UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope --instafail --durations=30 --durations-min=0.25
+override CANONICAL_UNIT_TESTS := packages some-implementations riverhog tests/unit
+TESTS ?= $(CANONICAL_UNIT_TESTS)
+UNIT_REPORT_ARGS ?= --instafail --durations=30 --durations-min=0.25 -p scripts.ci_timing
+UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope $(UNIT_REPORT_ARGS)
+UNIT_SHARD_PYTEST_ARGS ?= $(UNIT_REPORT_ARGS)
+LOCAL_QUALIFICATION_JOBS ?= 2
+LOCAL_QUALIFICATION_DOCKER_JOBS ?= 2
 PYTHON_PATHS ?= packages some-implementations riverhog scripts tests
 RELEASE_VERSION ?= 1.0.0
 RELEASE_OUTPUT ?=
@@ -20,7 +21,7 @@ UV_RUN = "$(MISE_BIN)" x -- uv run --locked --all-packages --group dev
 BAKE_FILE = docker-bake.hcl
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract contract-check contract-diff contract-browser contract-browser-docker profile provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke dist dist-smoke build bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract contract-check contract-diff contract-browser contract-browser-docker profile provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke dist dist-smoke build bootstrap-s3-fixture down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -40,6 +41,33 @@ define BAKE_IMAGE
 		--set "*.args.SOURCE_DATE_EPOCH=0" \
 		--set "*.args.RELEASE_VERSION=development" "$(1)"
 endef
+
+VALIDATION_TARGETS := lint compile unit unit-shards-check unit-shard image-qualification client-platform-qualification linux-qualification dependency-readiness operation-qualification database-qualification contract-check documentation-check contract-browser contract-browser-docker profile provider-qualification installation-qualification release-check release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke compose-shard filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke dist dist-smoke build build-% test
+VALIDATION_MAKEFILE := $(abspath $(firstword $(MAKEFILE_LIST)))
+VALIDATION_REQUESTED := $(filter $(VALIDATION_TARGETS),$(MAKECMDGOALS))
+
+ifneq ($(strip $(RIVERHOG_VALIDATION_MAKE_DIRECTORY)),)
+SHELL := $(RIVERHOG_VALIDATION_MAKE_SHELL)
+.SHELLFLAGS := -c
+export RIVERHOG_VALIDATION_RECIPE_TARGET = $@
+endif
+
+ifneq ($(strip $(VALIDATION_REQUESTED)),)
+ifneq ($(strip $(RIVERHOG_VALIDATION_MAKE_REENTRY)),$(strip $(MAKECMDGOALS)))
+VALIDATION_OUTER := 1
+endif
+endif
+
+ifeq ($(VALIDATION_OUTER),1)
+.PHONY: $(MAKECMDGOALS)
+$(firstword $(MAKECMDGOALS)):
+	$(call UV_CMD,python "$(dir $(VALIDATION_MAKEFILE))scripts/ci_make.py" observe --makefile "$(VALIDATION_MAKEFILE)" $(foreach goal,$(MAKECMDGOALS),--goal "$(goal)"))
+$(filter-out $(firstword $(MAKECMDGOALS)),$(MAKECMDGOALS)): $(firstword $(MAKECMDGOALS))
+else
+# Maintained target recipes.
+.PHONY: documentation-plan documentation-preview documentation-check
+documentation-plan documentation-preview documentation-check:
+	$(call UV_CMD,python scripts/documentation.py $(subst documentation-,,$@) $(args))
 
 help:
 	@printf '%s\n' \
@@ -65,7 +93,7 @@ help:
 		'  make documentation-check Check coverage; --candidate requires actual prepared artifact evidence.' \
 		'  make contract-browser  Exercise the generated candidate in Chromium (run MISE_EXPERIMENTAL=1 mise bootstrap --yes, then Playwright install --only-shell chromium).' \
 		'  make contract-browser-docker Run the Chromium checks in a disposable official Playwright container.' \
-		'  make profile           Report target, observed transfer or recovery work, and measured comparison without gating.' \
+		'  make profile           Report transfer, recovery or Stove0 scale measurements against non-failing targets.' \
 		'  make provider-qualification Run the operator/provider qualification command.' \
 		'  make installation-qualification Stage and qualify independent uv-tool installs.' \
 		'  make release-check     Validate the coordinated release-unit contract.' \
@@ -76,7 +104,13 @@ help:
 		'  make release-verify    Verify a generated release evidence directory.' \
 		'  make c2sp-vectors      Download and run the pinned C2SP age conformance corpus.' \
 		'  make postgres-concurrency Run database concurrency tests against disposable Postgres.' \
+		'  make unit-shards-check Verify exhaustive ownership of collected unit tests.' \
+		'  make unit-shard UNIT_SHARD=<release|contract|unit> Reproduce a measured CI shard.' \
+		'  make image-qualification IMAGE_GROUP=<core|observers|targets|companions> Build and qualify a complete image group.' \
+		'  make client-platform-qualification Qualify native behavior and staged end-user installation on this host.' \
+		'  make linux-qualification Run the complete portable Linux CI qualification for integration/handoff.' \
 		'  make compose-smoke     Verify disposable adapter, Riverhog, cache, and stove0 lifecycle.' \
+		'  make compose-shard COMPOSE_LANE=<storage|ingress-custody|processing-admission|processing-e2e|processing-overlap|review-delivery|witnesses> Reproduce one complete CI lifecycle.' \
 		'  make filesystem-recovery-qualification Prove built-service recovery from filesystem storage.' \
 		'  make stove0-scale-qualification Run the final-image lifecycle with a 128-file workload.' \
 		'  make a-riverhog-event-relay-smoke  Exercise the already-built final Riverhog event relay image.' \
@@ -84,7 +118,7 @@ help:
 		'  make dist-smoke        Install and exercise the Riverhog server and client wheels.' \
 		'  make build-<bake-target> Build one target declared in docker-bake.hcl.' \
 		'  make build             Build the docker-bake.hcl default image group.' \
-		'  make bootstrap-garage  Start Garage and apply the checked-in bucket/key bootstrap.' \
+		'  make bootstrap-s3-fixture  Start the disposable S3 fixture and verify conditional publication.' \
 		'  make down              Tear the compose-managed test stack down.' \
 		'  make test              Run lint, then unit.' \
 		'' \
@@ -96,12 +130,18 @@ help:
 		"  POSTGRES_TESTS='...'   Select disposable Postgres test files." \
 		'  STOVE0_SCALE_FILES=N  Set the scale-qualification file count (default: 128).' \
 		'  STOVE0_SCALE_AUDIO_FRAMES=N Set frames per scale fixture (default: 2000).' \
+		'  LOCAL_QUALIFICATION_JOBS=N Bound independent local proof concurrency (default: 2; 1 is sequential).' \
+		'  LOCAL_QUALIFICATION_DOCKER_JOBS=N Bound concurrent Docker lifecycles (default: 2).' \
+		'  RIVERHOG_VALIDATION_RETAIN_RUNS=N Retain completed automatic evidence runs (default: 32).' \
+		'  RIVERHOG_VALIDATION_MAX_BYTES=N Bound retained validation storage before starting work (default: 67108864).' \
 		'  RELEASE_VERSION=1.0.0 Coordinated version for release-plan and release-dry-run.' \
 		'  RELEASE_OUTPUT=/path   Output/evidence directory for release-evidence or release-verify.' \
 		'  RELEASE_SUMMARY=/path  Write a JSON dry-run or governance summary.' \
 		'  RELEASE_SIGNING_KEY=/path Offline minisign secret key for release-evidence.' \
 		'  RELEASE_PUBLIC_KEY=/path Minisign public key for release-evidence or release-verify.' \
 		'  MISE_BIN=/abs/path/to/mise Use a specific mise binary instead of mise on PATH.' \
+		'  RIVERHOG_QUALIFICATION_MOUNT_FIXTURE=/path/to/fixture.json Select Linux listener mount_point and setup/teardown argv.' \
+		'  RIVERHOG_QUALIFICATION_MOUNT_LOCK=/path/to/fixture.lock Hold the shared fixture lock through listener settling and teardown.' \
 		'  COMPOSE_ENV_FILE=/abs/path/to/overrides.env' \
 		'  TEST_COMPOSE_PROJECT_NAME=riverhog-shared'
 
@@ -132,6 +172,23 @@ compile:
 
 unit:
 	$(call UV_CMD,python -m pytest -q $(UNIT_PYTEST_ARGS) $(TESTS) $(args))
+
+.PHONY: unit-shards-check unit-shard
+unit-shards-check:
+	$(call UV_CMD,python scripts/ci_unit.py check $(CANONICAL_UNIT_TESTS) $(args))
+
+unit-shard:
+	$(call UV_CMD,python scripts/ci_unit.py run --shard "$(UNIT_SHARD)" $(CANONICAL_UNIT_TESTS) -- $(UNIT_SHARD_PYTEST_ARGS) $(args))
+
+.PHONY: image-qualification client-platform-qualification linux-qualification
+image-qualification:
+	$(call UV_CMD,python -m scripts.ci_qualification images --group "$(IMAGE_GROUP)")
+
+client-platform-qualification:
+	"$(MISE_BIN)" x python uv age -- uv run --locked --all-packages --group dev python -m scripts.ci_qualification native
+
+linux-qualification:
+	$(call UV_CMD,python -m scripts.ci_qualification linux --jobs "$(LOCAL_QUALIFICATION_JOBS)" --docker-jobs "$(LOCAL_QUALIFICATION_DOCKER_JOBS)")
 
 dependency-readiness:
 	$(call UV_CMD,python scripts/check_dependency_readiness.py $(args))
@@ -202,7 +259,11 @@ postgres-concurrency:
 	@POSTGRES_TESTS="$(POSTGRES_TESTS)" ./scripts/test_postgres_concurrency.sh
 
 compose-smoke:
-	@./scripts/test_compose_smoke.sh
+	@LOCAL_QUALIFICATION_JOBS="$(LOCAL_QUALIFICATION_JOBS)" LOCAL_QUALIFICATION_DOCKER_JOBS="$(LOCAL_QUALIFICATION_DOCKER_JOBS)" ./scripts/test_compose_smoke.sh
+
+.PHONY: compose-shard
+compose-shard:
+	@./scripts/test_compose_smoke.sh "$(COMPOSE_LANE)"
 
 filesystem-recovery-qualification:
 	@./scripts/test_filesystem_recovery_qualification.sh
@@ -210,7 +271,7 @@ filesystem-recovery-qualification:
 stove0-scale-qualification:
 	@STOVE0_SMOKE_FILE_COUNT="$${STOVE0_SCALE_FILES:-128}" \
 		STOVE0_SMOKE_AUDIO_FRAMES="$${STOVE0_SCALE_AUDIO_FRAMES:-2000}" \
-		./scripts/test_compose_smoke.sh
+		./scripts/test_compose_smoke.sh processing-scale
 
 dist:
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -242,10 +303,12 @@ a-riverhog-event-relay-smoke:
 build:
 	$(call BAKE_IMAGE,default)
 
-bootstrap-garage:
-	@./scripts/bootstrap_garage.sh
+bootstrap-s3-fixture:
+	@./scripts/bootstrap_s3_fixture.sh
 
 down:
 	@./scripts/compose_down.sh
 
 test: lint unit
+
+endif

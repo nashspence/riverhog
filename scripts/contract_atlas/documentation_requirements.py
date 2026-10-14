@@ -78,6 +78,7 @@ _INTERFACES = frozenset(
         "configuration-environment",
         "durable-state",
         "extent",
+        "growth",
         "http-operations",
         "http-schemas",
         "http-security-schemes",

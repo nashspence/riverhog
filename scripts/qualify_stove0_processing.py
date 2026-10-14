@@ -1,0 +1,555 @@
+"""Assert exact processing plans and settled identities in the built Compose services.
+
+The Compose harness executes this source inside the API or Opus container.
+Only maintained contract models and the published operator API establish proof.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import sys
+import time
+import urllib.error
+import urllib.request
+from collections.abc import Iterator
+from contextlib import contextmanager
+from pathlib import Path
+from typing import Any
+
+from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
+from stove0_protocol import CollectionRootIdentityRef, PlanningJobStatus
+from stove0_target_protocol import AcceptedTargetJob, TargetJobStatus, TransformPlan
+
+
+def stove(path: str, payload: Any = None, *, timeout: float = 30) -> dict[str, Any]:
+    request = urllib.request.Request(
+        "http://127.0.0.1:8080" + path,
+        data=None if payload is None else canonical_json_bytes(payload),
+        headers={
+            "Authorization": "Bearer stove0-compose-smoke-token",
+            "Content-Type": "application/json",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        document = json.load(response)
+    assert isinstance(document, dict)
+    return document
+
+
+def recipe_id() -> str:
+    return os.environ.get("STOVE0_SMOKE_RECIPE_ID", "stove0.conformance-media/v1")
+
+
+def route_ids() -> set[str]:
+    if recipe_id() == "stove0.audio-archive/v1":
+        return {"archive-audio"}
+    assert recipe_id() == "stove0.conformance-media/v1"
+    return {"archive-audio", "archive-audio-overlap"}
+
+
+def work_diagnostic(row: dict[str, Any]) -> dict[str, Any]:
+    target = row.get("target_status") or {}
+    return {
+        "work_id": row.get("work_id"),
+        "phase": row.get("phase"),
+        "revision": row.get("revision"),
+        "failure": row.get("failure"),
+        "inapplicable": row.get("inapplicable"),
+        "abandon_outcome": row.get("abandon_outcome"),
+        "target_state": target.get("state"),
+        "target_attempt": target.get("attempt"),
+        "target_failure": target.get("failure"),
+        "target_inapplicable": target.get("inapplicable"),
+    }
+
+
+def wait() -> None:
+    from stove0_operator_contracts import WorkProgress
+
+    started = time.monotonic()
+    deadline = started + int(os.environ["STOVE0_SMOKE_COMPLETION_TIMEOUT"])
+    rows: list[dict[str, Any]] = []
+    work_ids: tuple[str, ...] = ()
+    previous = None
+    next_progress = started
+    while (now := time.monotonic()) < deadline:
+        try:
+            if not work_ids:
+                rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
+                work_ids = tuple(row["work_id"] for row in rows)
+            progress = []
+            for work_id in work_ids:
+                status = WorkProgress.model_validate(
+                    stove("/v1/work/" + work_id + "/progress", timeout=5)
+                )
+                assert status.work_id == work_id
+                progress.append(status.model_dump(mode="json"))
+        except TimeoutError:
+            time.sleep(0.5)
+            continue
+        terminal_failure = next(
+            (
+                row
+                for row in progress
+                if row["phase"] in {"failed", "canceled", "inapplicable", "abandon_pending"}
+            ),
+            None,
+        )
+        if terminal_failure is not None:
+            exact = stove("/v1/work/" + terminal_failure["work_id"], timeout=5)
+            raise RuntimeError(canonical_json_bytes(work_diagnostic(exact)).decode())
+        if progress and all(row["phase"] == "complete" for row in progress):
+            # Completion still inspects every complete work and its target/output
+            # evidence. Newly created work remains in the wait set.
+            rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
+            work_ids = tuple(row["work_id"] for row in rows)
+            if rows and all(row["phase"] == "complete" for row in rows):
+                assert any(
+                    int((row.get("output") or {}).get("collection_id") or 0) > 0 for row in rows
+                )
+                return
+        current = tuple((row["work_id"], row["phase"]) for row in progress)
+        if current != previous or now >= next_progress:
+            print(
+                canonical_json_bytes(
+                    {
+                        "proof": "processing-progress",
+                        "elapsed_seconds": int(now - started),
+                        "work": progress,
+                    }
+                ).decode(),
+                file=sys.stderr,
+                flush=True,
+            )
+            previous, next_progress = current, now + 60
+        time.sleep(0.5)
+    read_error = None
+    try:
+        rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
+    except TimeoutError as error:
+        read_error = type(error).__name__
+    scheduler = stove(
+        "/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25}, timeout=5
+    )
+    raise TimeoutError(
+        canonical_json_bytes(
+            {
+                "work": [work_diagnostic(row) for row in rows],
+                "scheduler": scheduler,
+                "read_error": read_error,
+            }
+        ).decode()
+    )
+
+
+def declared_values(actual: Any, declared: Any) -> None:
+    """Check every explicit route value while allowing typed contract defaults."""
+
+    if isinstance(declared, dict):
+        assert isinstance(actual, dict)
+        for name, value in declared.items():
+            declared_values(actual[name], value)
+    else:
+        assert actual == declared
+
+
+def await_admission() -> None:
+    """Observe exact admission milestones without bounding observation work by a control call."""
+    collection_id = os.environ["INPUT_COLLECTION_ID"]
+    expected = os.environ["RIVERHOG_SMOKE_SCHEDULER_STEP"]
+    state_order = {"intent": 0, "previewed": 1, "work_bound": 2}
+    started = time.monotonic()
+    deadline = started + int(os.environ["STOVE0_SMOKE_ADMISSION_TIMEOUT"])
+    previous = None
+    next_progress = started
+    preview_ids: tuple[str, ...] = ()
+    diagnostic: dict[str, Any] = {"expected": expected}
+    while (now := time.monotonic()) < deadline:
+        result = stove(
+            "/v1/admin/scheduler/run", {"role": "controller", "work_limit": 1}, timeout=5
+        )
+        if result["admission"] is not None:
+            assert result["admission"]["failures"] == [], result
+        previews = result.get("previews") or {}
+        if previews.get("progressed"):
+            preview_ids = tuple(dict.fromkeys(previews["progressed"]))
+        payload = stove("/v1/admissions?page_size=100&sort=admission_id&order=asc", timeout=5)
+        matches = [
+            row
+            for row in payload["admissions"]
+            if row["intent"]["collection"]["collection_id"] == collection_id
+        ]
+        assert len(matches) <= 1, matches
+        row = matches[0] if matches else {}
+        current = row.get("state")
+        if current == expected:
+            return
+        if current is not None:
+            assert current in state_order, row
+            assert state_order[current] < state_order[expected], row
+        if current != previous or now >= next_progress:
+            planning = []
+            for job_id in preview_ids:
+                try:
+                    status = stove("/v1/workflow-previews/" + job_id, timeout=5)
+                except (TimeoutError, urllib.error.HTTPError) as error:
+                    planning.append(
+                        {"job_id": job_id, "diagnostic_read_error": type(error).__name__}
+                    )
+                else:
+                    planning.append(
+                        {
+                            "job_id": job_id,
+                            "state": status["state"],
+                            "outcome": (status.get("result") or {}).get("state"),
+                        }
+                    )
+            diagnostic = {
+                "proof": "admission-progress",
+                "elapsed_seconds": int(now - started),
+                "expected": expected,
+                "state": current,
+                "admission_id": row.get("intent", {}).get("admission_id"),
+                "attempt_count": row.get("attempt_count"),
+                "failure": row.get("failure"),
+                "planning": planning,
+                "preview_failures": previews.get("failures", []),
+            }
+            print(canonical_json_bytes(diagnostic).decode(), file=sys.stderr, flush=True)
+            previous, next_progress = current, now + 60
+        time.sleep(0.5)
+    raise AssertionError(canonical_json_bytes(diagnostic).decode())
+
+
+def admission_work() -> None:
+    """Require the exact automatically bound input/work pair to survive recovery."""
+    collection_id = os.environ["INPUT_COLLECTION_ID"]
+    payload = stove("/v1/admissions?page_size=100&sort=admission_id&order=asc", timeout=5)
+    matches = [
+        row
+        for row in payload["admissions"]
+        if row["intent"]["collection"]["collection_id"] == collection_id
+    ]
+    assert len(matches) == 1, "expected one automatic admission for the exact input"
+    row = matches[0]
+    assert row["state"] == "work_bound", "automatic admission must be durably work_bound"
+    assert row["intent"]["policy_id"] == "conformance-media"
+    work_id = row["work_id"]
+    assert isinstance(work_id, str) and work_id
+    work = stove("/v1/work/" + work_id, timeout=5)
+    assert work["work_id"] == work_id, "bound work must exist with the exact identity"
+    print(work_id)
+
+
+def await_planning(path: str, *, initiation: bool = False) -> dict[str, Any]:
+    """Drive bounded planning while the fixture's controller is deliberately offline."""
+    started = time.monotonic()
+    deadline = started + int(os.environ.get("STOVE0_SMOKE_COMPLETION_TIMEOUT", "900"))
+    last: dict[str, Any] = {}
+    previous = None
+    next_progress = started
+    while time.monotonic() < deadline:
+        stove("/v1/admin/scheduler/run", {"role": "controller", "work_limit": 25})
+        last = stove(path)
+        state = last["state"]
+        job = last["job"] if initiation else last
+        current = (state, job["state"])
+        now = time.monotonic()
+        if current != previous or now >= next_progress:
+            print(
+                canonical_json_bytes(
+                    {
+                        "proof": "planning-progress",
+                        "kind": "work-initiation" if initiation else "workflow-preview",
+                        "elapsed_seconds": int(now - started),
+                        "job_id": job["job_id"],
+                        "work_id": job["work_id"],
+                        "state": job["state"],
+                        "outcome": state,
+                    }
+                ).decode(),
+                file=sys.stderr,
+                flush=True,
+            )
+            previous, next_progress = current, now + 60
+        if state == "completed":
+            return last
+        if initiation and state == "rejected":
+            raise RuntimeError(canonical_json_bytes(last).decode())
+        time.sleep(0.5)
+    raise TimeoutError(canonical_json_bytes({"path": path, "state": last.get("state")}).decode())
+
+
+@contextmanager
+def processing_phase_cost(phase: str) -> Iterator[None]:
+    started = time.monotonic()
+    try:
+        yield
+    finally:
+        print(
+            canonical_json_bytes(
+                {
+                    "proof": "processing-phase-cost",
+                    "phase": phase,
+                    "seconds": time.monotonic() - started,
+                }
+            ).decode(),
+            file=sys.stderr,
+            flush=True,
+        )
+
+
+def invoke() -> None:
+    from stove0_operator_contracts import (
+        OperatorWorkflowPreviewRequest,
+        RecipeCatalogView,
+        WorkCreateRequest,
+        WorkInitiationStatus,
+    )
+
+    receipt = json.loads(os.environ["RIVERHOG_INPUT_RECEIPT"])
+    root = CollectionRootIdentityRef.model_validate(
+        {
+            name: receipt[name]
+            for name in ("collection_id", "archive_root_sha256", "artifact_set_identity")
+        }
+    )
+    catalog = RecipeCatalogView.model_validate(stove("/v1/recipes"))
+    recipe = next(row for row in catalog.recipes if row.definition.id == recipe_id())
+    invocation = {
+        "recipe": {
+            "id": recipe.definition.id,
+            "revision": recipe.definition.model_dump(mode="json")["revision"],
+            "sha256": recipe.sha256,
+        },
+        "inputs": [root.model_dump(mode="json")],
+    }
+    with processing_phase_cost("accepted-preview"):
+        preview_status = PlanningJobStatus.model_validate(
+            stove(
+                "/v1/workflow-previews",
+                OperatorWorkflowPreviewRequest(
+                    invocation_id=canonical_json_sha256(
+                        {"purpose": "qualification-preview", **invocation}
+                    ),
+                    recipe_id=recipe_id(),
+                    inputs=(root,),
+                ).model_dump(mode="json", exclude_none=True),
+            )
+        )
+        preview = PlanningJobStatus.model_validate(
+            await_planning("/v1/workflow-previews/" + preview_status.job_id)
+        ).result
+    assert preview is not None
+    assert preview.state == "ready", canonical_json_bytes(
+        {
+            "state": preview.state,
+            "outcome": preview.outcome.model_dump(mode="json", exclude_none=True)
+            if preview.outcome is not None
+            else None,
+        }
+    ).decode()
+    assert preview.work.recipe.id == recipe.definition.id
+    assert preview.work.recipe.revision == recipe.definition.revision
+    assert preview.work.recipe.sha256 == recipe.sha256
+    assert preview.work.inputs == (root,)
+    assert preview.branch_set_plan is not None
+    branches = {row.branch_id: row for row in preview.branch_set_plan.branches}
+    assert set(branches) == route_ids(), set(branches)
+    targets = {row.branch_id: row for row in preview.target_plans}
+    assert set(targets) == route_ids(), set(targets)
+    assert len({row.work_id for row in targets.values()}) == len(targets)
+    selections = {row.selection_sha256: row for row in preview.selections}
+    expected_audio = int(os.environ["STOVE0_SMOKE_FILE_COUNT"])
+    expected_sidecars = int(os.environ.get("STOVE0_SMOKE_SIDECAR_COUNT", "1"))
+    plans = {}
+    for branch_id, declared_branch in recipe.definition.branches.items():
+        if branch_id not in targets:
+            continue
+        operation = declared_branch.call
+        assert operation.kind == "operation"
+        branch = branches[branch_id]
+        assert branch.kind == "leaf"
+        selection = selections[branch.artifact_selection.selection_sha256]
+        assert selection.artifact_count == expected_audio + expected_sidecars
+        assert all(row.collection == root for row in selection.artifacts)
+        roles = [row.role for row in selection.artifacts]
+        assert roles.count("stove0.media.source/v1") == expected_audio
+        assert roles.count("stove0.media.xmp-source/v1") == expected_sidecars
+        target = targets[branch_id]
+        assert target.work_id == branch.workflow_plan.work.work_id
+        assert target.workflow_plan_sha256 == branch.workflow_plan.workflow_plan_sha256
+        plan = TransformPlan.model_validate(
+            {**target.target_plan.plan, "plan_sha256": target.target_plan.plan_sha256}
+        )
+        assert plan.operation_id == operation.operation.id
+        assert plan.inputs.selection == selection.ref()
+        assert plan.intent == branch.workflow_plan.work.effective_intent
+        assert plan.input_groups == branch.workflow_plan.input_groups
+        assert len(plan.input_groups) == expected_audio
+        assert sum(len(group.associated_ids) for group in plan.input_groups) == expected_sidecars
+        assert {group.primary_id for group in plan.input_groups} == {
+            row.id for row in selection.artifacts if row.role == "stove0.media.source/v1"
+        }
+        assert {subject for group in plan.input_groups for subject in group.associated_ids} == {
+            row.id for row in selection.artifacts if row.role == "stove0.media.xmp-source/v1"
+        }
+        assert branch.workflow_plan.input_retrieval_policy == operation.retrieve
+        for name, value in operation.intent.items():
+            declared_values(plan.intent[name], value)
+        projection = plan.execution_parameters["media_projection"]
+        assert isinstance(projection, dict)
+        assert isinstance(projection["items"], list)
+        assert isinstance(projection["retained_xmp_sidecars"], list)
+        assert len(projection["items"]) == expected_audio
+        assert len(projection["retained_xmp_sidecars"]) == expected_sidecars
+        plans[branch_id] = {
+            "work_id": target.work_id,
+            "plan_sha256": plan.plan_sha256,
+            "bitrate_kbps": plan.intent["bitrate_kbps"],
+        }
+    if len(plans) == 2:
+        assert plans["archive-audio"]["bitrate_kbps"] == 128
+        assert plans["archive-audio-overlap"]["bitrate_kbps"] == 96
+        assert len({row["plan_sha256"] for row in plans.values()}) == 2
+    with processing_phase_cost("work-initiation"):
+        initiation = WorkInitiationStatus.model_validate(
+            stove(
+                "/v1/work",
+                WorkCreateRequest(
+                    invocation_id=canonical_json_sha256(
+                        {"purpose": "qualification-acceptance", **invocation}
+                    ),
+                    recipe_id=recipe_id(),
+                    inputs=(root,),
+                    preview_sha256=preview.preview_sha256,
+                ).model_dump(mode="json", exclude_none=True),
+            )
+        )
+        work = WorkInitiationStatus.model_validate(
+            await_planning("/v1/work-initiations/" + initiation.job.job_id, initiation=True)
+        ).work
+    assert work is not None
+    expected_work = os.environ.get("EXPECTED_WORK_ID")
+    if expected_work:
+        assert work.work_id == expected_work
+    assert work.work == preview.work
+    assert work.preview_acceptance is not None
+    assert work.preview_acceptance.preview_sha256 == preview.preview_sha256
+    assert {
+        row.branch_id: (row.work_id, row.plan_sha256)
+        for row in work.preview_acceptance.target_plans
+    } == {name: (row["work_id"], row["plan_sha256"]) for name, row in plans.items()}
+    print(
+        canonical_json_bytes(
+            {
+                "proof": "accepted-processing-plan",
+                "recipe": preview.work.recipe.model_dump(mode="json"),
+                "audio_inputs": expected_audio,
+                "sidecars": expected_sidecars,
+                "targets": plans,
+            }
+        ).decode(),
+        file=sys.stderr,
+    )
+    print(work.work_id)
+
+
+def snapshot() -> None:
+    from stove0_operator_contracts import WorkView
+
+    parents = os.environ["STOVE0_WORK_IDS"].split(",")
+    assert len(parents) == len(set(parents))
+    result: dict[str, dict[str, Any]] = {"parents": {}, "children": {}}
+    for work_id in parents:
+        parent = WorkView.model_validate(stove("/v1/work/" + work_id))
+        assert parent.phase == "complete"
+        assert parent.work.recipe.id == recipe_id()
+        assert parent.coordination_settlement is not None
+        assert parent.preview_acceptance is not None
+        assert {row.branch_id for row in parent.preview_acceptance.target_plans} == route_ids()
+        result["parents"][work_id] = parent.coordination_settlement.model_dump(mode="json")
+        for target in parent.preview_acceptance.target_plans:
+            child = WorkView.model_validate(stove("/v1/work/" + target.work_id))
+            assert child.phase == "complete"
+            assert child.target_plan is not None
+            assert child.target_plan.plan_sha256 == target.plan_sha256
+            assert child.target_settlement is not None
+            assert child.target_request is not None
+            assert child.target_status is not None and child.target_status.state == "succeeded"
+            assert child.output is not None
+            assert child.work_id not in result["children"]
+            result["children"][child.work_id] = {
+                "branch_id": target.branch_id,
+                "job_id": child.target_request.declaration.job_id,
+                "request_sha256": child.target_request.request_sha256,
+                "plan_sha256": target.plan_sha256,
+                "target_status_sha256": canonical_json_sha256(
+                    child.target_status.model_dump(mode="json", exclude_none=True)
+                ),
+                "output": child.output.model_dump(mode="json"),
+                "settlement": child.target_settlement.model_dump(mode="json"),
+            }
+    assert len(result["children"]) == len(parents) * len(route_ids())
+    assert len({row["job_id"] for row in result["children"].values()}) == len(result["children"])
+    assert len({row["output"]["collection_id"] for row in result["children"].values()}) == len(
+        result["children"]
+    )
+    # An extra work/target would reveal an accidentally active admission policy
+    # or replay duplication, even if the intended parents still complete.
+    page = stove("/v1/work?page_size=100&sort=work_id&order=asc")
+    assert page.get("next_page_token") is None
+    assert {row["work_id"] for row in page["work"]} == set(parents) | set(result["children"])
+    print(canonical_json_bytes(result).decode())
+
+
+def target_records() -> None:
+    state = Path("/var/lib/a-stove0-opus-target")
+    accepted = {
+        path.name.removesuffix(".accepted.json"): AcceptedTargetJob.model_validate_json(
+            path.read_bytes()
+        )
+        for path in state.glob("*.accepted.json")
+    }
+    statuses = {
+        path.name.removesuffix(".status.json"): TargetJobStatus.model_validate_json(
+            path.read_bytes()
+        )
+        for path in state.glob("*.status.json")
+    }
+    snapshot_json = os.environ.get("STOVE0_SETTLED_SNAPSHOT")
+    if snapshot_json is None:
+        assert not accepted and not statuses, (tuple(accepted), tuple(statuses))
+        print("preflight-only: zero accepted target jobs")
+        return
+    expected = json.loads(snapshot_json)["children"]
+    jobs = {row["job_id"]: row for row in expected.values()}
+    assert set(accepted) == set(statuses) == set(jobs)
+    for job_id, row in jobs.items():
+        assert accepted[job_id].declaration.job_id == job_id
+        assert accepted[job_id].request_sha256 == row["request_sha256"]
+        status = statuses[job_id]
+        assert status.job_id == job_id and status.state == "succeeded"
+        assert status.request_sha256 == row["request_sha256"]
+        assert status.plan_sha256 == row["plan_sha256"]
+        assert (
+            canonical_json_sha256(status.model_dump(mode="json", exclude_none=True))
+            == row["target_status_sha256"]
+        )
+    print(f"settled target queue: {len(jobs)} distinct successful jobs")
+
+
+def main() -> None:
+    {
+        "admission": await_admission,
+        "admission-work": admission_work,
+        "invoke": invoke,
+        "wait": wait,
+        "snapshot": snapshot,
+        "target-records": target_records,
+    }[sys.argv[1]]()
+
+
+if __name__ == "__main__":
+    main()

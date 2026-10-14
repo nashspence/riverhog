@@ -5,6 +5,19 @@ issue linked from `../HANDOFF.md` owns scope, decisions and acceptance. This map
 is not a production interface inventory and must not be copied to main as one.
 The branch changes only `.reference/`; **the product feature is not implemented**.
 
+## Extent/growth supplement
+
+Read [GROWTH.md](GROWTH.md) and the owning issue's 2026-10-14 supplement before
+implementing the original sequence. Current audited main is
+`e0036f80410a83cc5eaa9d63c17650ffae72e2bd`; the historical 2026-10-04 reference
+commit remains an ancestor, not a source tree to merge into main.
+
+The supplement makes receipt-based incremental reconciliation distinct from an
+explicit byte audit, adds range/verification turn budgets using the maintained
+client, fixes generation-multiplying observation state, specifies capacity and
+byte retention, and binds growth proof to current operation owners. The exact
+state owner is `a-riverhog-cli-materialization`; there is no legacy alias.
+
 ## Start here
 
 1. Read the owning issue and subsequent maintainer decisions, then current
@@ -17,12 +30,14 @@ The branch changes only `.reference/`; **the product feature is not implemented*
    lifecycle work (#515); do not create a second integration rail.
 
 ```sh
-python -m unittest discover -s .reference/tag-subscriptions -p 'test_*.py' -v
+python .reference/tag-subscriptions/run_growth_checks.py --output /tmp/955-growth-evidence.json
 python -m compileall -q .reference/tag-subscriptions
 ```
 
-The model has no third-party dependencies. It opens only caller-created local
-SQLite files in its tests. It does not read credentials, contact Riverhog,
+The original model remains dependency-free. Growth tests use the actual current
+`riverhog-growth-contracts` and `riverhog-canonical-json` source plus the locked
+`rfc8785` dependency. Run in a prepared repository environment. They open only
+caller-created local SQLite files and in-memory byte streams in their tests. It does not read credentials, contact Riverhog,
 materialize payloads, install a provider, schedule a task, or modify production
 files. `placement-vectors.json` contains hand-authored golden paths and negative
 syntax/calendar cases. No reference test is a substitute for the gates below.
@@ -188,6 +203,10 @@ Start at:
 - `release.toml` state owners, component roles, installation and qualification;
 - `scripts/release.py`, `release_installation.py`, `qualify_installation.py`;
 - `scripts/contract_discovery.py`, `contract_freeze.py`, `extent_witnesses.py`;
+- `packages/riverhog-growth-contracts`, `scripts/growth_contract.py`,
+  `scripts/validation_witnesses.py`, `scripts/ci_qualification.py`;
+- `tests/unit/test_growth_declarations.py`, `test_private_growth_discovery.py`,
+  `test_staged_journal_range.py`, `test_validation_witnesses.py`;
 - `scripts/documentation_readouts.py` and current contract/render machinery;
 - `tests/unit/test_dependency_policy.py`, `test_workspace_boundaries.py`,
   `test_release.py`, `test_release_installation.py`, `test_qualify_installation.py`,
@@ -213,7 +232,10 @@ pinned base, AGENTS names `make lint`, `make unit`, `make dist-smoke`, `make bui
 CI also includes compile, c2sp vectors, PostgreSQL concurrency, Compose smoke,
 filesystem recovery, native client platforms and CodeQL/image checks. Reconcile
 required scope against then-current policy and validate the actual integration
-SHA. Do not enable external provider-resource provisioning/publication.
+SHA. Current policy also requires `make linux-qualification` for substantial
+handoff/integration validation and source-bound growth evidence. The reference
+has not run that gate or native CI. Do not enable external provider-resource
+provisioning/publication.
 
 ## What this reference has and has not proved
 

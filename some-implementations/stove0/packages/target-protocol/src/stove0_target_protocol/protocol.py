@@ -775,8 +775,8 @@ class TargetJobRequest(TargetProtocolModel):
     """Secret-bearing target invocation; never store this document durably."""
 
     declaration: TargetJobDeclaration
-    runtime: TargetRuntimeAuthority
-    callback_access: TargetCallbackAccess
+    runtime: TargetRuntimeAuthority = Field(json_schema_extra={"x-riverhog-transient": True})
+    callback_access: TargetCallbackAccess = Field(json_schema_extra={"x-riverhog-transient": True})
     request_sha256: Sha256
 
     @model_validator(mode="after")

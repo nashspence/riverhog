@@ -119,6 +119,252 @@ def test_distribution_builds_are_serialized_into_a_clean_output(
     ]
 
 
+@pytest.mark.parametrize("mount_result", [0, 1])
+def test_linux_qualification_mount_requires_unattended_privilege_and_settled_cleanup(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mount_result: int
+) -> None:
+    module = load_script()
+    commands = []
+
+    def run(command, **options):
+        assert options["stdin"] == subprocess.DEVNULL
+        assert options["timeout"] == 30
+        commands.append(command)
+        return subprocess.CompletedProcess(command, mount_result, "", "mount denied")
+
+    monkeypatch.setattr(module.sys, "platform", "linux")
+    monkeypatch.setattr(module.subprocess, "run", run)
+    if mount_result:
+        with pytest.raises(module.QualificationError, match="mount failed with exit 1"):
+            with module._qualification_mount(tmp_path):
+                pytest.fail("a denied mount cannot qualify a listener")
+    else:
+        with module._qualification_mount(tmp_path) as mounted:
+            assert mounted == tmp_path / "gogurt-listener-volume"
+            assert len(commands) == 1
+        assert commands[-1] == ["sudo", "-n", "umount", str(mounted)]
+    assert commands[0][:6] == ["sudo", "-n", "mount", "-t", "tmpfs", "-o"]
+
+
+def test_qualification_mount_reports_bounded_operation_timeouts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = load_script()
+
+    def run(command, **options):
+        assert options["timeout"] == 30
+        raise subprocess.TimeoutExpired(command, options["timeout"])
+
+    monkeypatch.setattr(module.subprocess, "run", run)
+    with pytest.raises(module.QualificationError, match="mount timed out after 30 seconds"):
+        module._qualification_mount_operation("mount", ["mount", "fixture"], cwd=tmp_path)
+
+
+def test_qualification_mount_cannot_wait_for_terminal_input(tmp_path: Path) -> None:
+    module = load_script()
+    module._qualification_mount_operation(
+        "stdin closure",
+        [sys.executable, "-c", "import sys; assert sys.stdin.read() == ''"],
+        cwd=tmp_path,
+    )
+
+
+@pytest.mark.parametrize("invalid", [None, "relative", "setup", "teardown", "extra", "alias"])
+def test_operator_mount_fixture_has_a_canonical_point_and_exact_argument_lists(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, invalid: str | None
+) -> None:
+    module = load_script()
+    backing = tmp_path / "volume"
+    backing.mkdir()
+    config = {
+        "mount_point": str(backing),
+        "setup": ["fixture-helper", "mount"],
+        "teardown": ["fixture-helper", "unmount"],
+    }
+    if invalid == "relative":
+        config["mount_point"] = "relative"
+    elif invalid == "setup":
+        config["setup"] = "fixture-helper mount"
+    elif invalid == "teardown":
+        config["teardown"] = []
+    elif invalid == "extra":
+        config["extra"] = True
+    elif invalid == "alias":
+        alias = tmp_path / "alias"
+        alias.symlink_to(backing)
+        config["mount_point"] = str(alias)
+    filename = tmp_path / "fixture.json"
+    filename.write_text(json.dumps(config), encoding="utf-8")
+    monkeypatch.setattr(module.sys, "platform", "linux")
+    if invalid:
+        with pytest.raises(module.QualificationError):
+            module._load_listener_mount_fixture(filename)
+    else:
+        fixture = module._load_listener_mount_fixture(filename)
+        assert fixture.mount_point == backing
+        assert fixture.setup == ("fixture-helper", "mount")
+        assert fixture.teardown == ("fixture-helper", "unmount")
+
+
+@pytest.mark.parametrize("failure", [None, "setup", "body", "unmount"])
+def test_operator_mount_is_exclusive_fresh_and_settled_on_every_exit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str | None
+) -> None:
+    module = load_script()
+    backing = tmp_path / "volume"
+    backing.mkdir()
+    fixture = module.ListenerMountFixture(backing, ("setup",), ("teardown",))
+    events = []
+    mounted = False
+
+    def operation(name, command, *, cwd):
+        nonlocal mounted
+        assert cwd == tmp_path
+        events.append(command[0])
+        if command == ["setup"]:
+            mounted = True
+            if failure == "setup":
+                raise module.QualificationError("setup failed after attachment")
+        else:
+            assert command == ["teardown"]
+            if failure == "unmount":
+                return
+            mounted = False
+            for path in backing.iterdir():
+                path.unlink()
+
+    monkeypatch.setattr(module.sys, "platform", "linux")
+    monkeypatch.setattr(Path, "is_mount", lambda self: self == backing and mounted)
+    monkeypatch.setattr(module, "_qualification_mount_operation", operation)
+
+    def exercise():
+        with module._qualification_listener_mount(
+            tmp_path,
+            observe_failure=lambda exc: events.append("observe"),
+            settle_listener=lambda: events.append("settle"),
+            fixture=fixture,
+        ) as mount:
+            assert mount == backing and list(mount.iterdir()) == []
+            with pytest.raises(module.QualificationError, match="already in use"):
+                with module._qualification_mount(tmp_path, fixture=fixture):
+                    pytest.fail("one fixed fixture cannot qualify concurrent listeners")
+            (mount / ".gogurt").write_text("qualification", encoding="utf-8")
+            if failure == "body":
+                raise RuntimeError("listener failed")
+
+    if failure == "body":
+        with pytest.raises(RuntimeError, match="listener failed"):
+            exercise()
+    elif failure:
+        with pytest.raises(module.QualificationError):
+            exercise()
+    else:
+        exercise()
+    if failure == "setup":
+        assert events == ["setup", "teardown"]
+    elif failure == "body":
+        assert events == ["setup", "observe", "settle", "teardown"]
+    else:
+        assert events == ["setup", "settle", "teardown"]
+    assert mounted == (failure == "unmount")
+
+
+@pytest.mark.parametrize("occupied", ["mounted", "data"])
+def test_operator_fixture_cannot_take_over_an_existing_mount_or_data(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, occupied: str
+) -> None:
+    module = load_script()
+    if occupied == "data":
+        (tmp_path / "existing").write_text("preserve", encoding="utf-8")
+    monkeypatch.setattr(Path, "is_mount", lambda self: occupied == "mounted")
+    monkeypatch.setattr(module.sys, "platform", "linux")
+    monkeypatch.setattr(
+        module, "_qualification_mount_operation", lambda *args, **kwargs: pytest.fail("must stop")
+    )
+    fixture = module.ListenerMountFixture(tmp_path, ("setup",), ("teardown",))
+    with pytest.raises(module.QualificationError, match="unmounted and empty"):
+        with module._qualification_mount(tmp_path, fixture=fixture):
+            pytest.fail("operator fixture was borrowed")
+
+
+def test_shared_operator_lock_spans_listener_settling_and_mount_teardown(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import fcntl
+
+    module = load_script()
+    backing = tmp_path / "volume"
+    backing.mkdir()
+    lock_file = tmp_path / "shared.lock"
+    fixture = module.ListenerMountFixture(backing, ("setup",), ("teardown",), lock_file)
+    mounted = False
+    events = []
+
+    def require_lock():
+        descriptor = os.open(lock_file, os.O_RDWR)
+        try:
+            with pytest.raises(BlockingIOError):
+                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        finally:
+            os.close(descriptor)
+
+    def operation(name, command, *, cwd):
+        nonlocal mounted
+        require_lock()
+        events.append(command[0])
+        mounted = command == ["setup"]
+
+    def settle():
+        require_lock()
+        events.append("settle")
+
+    monkeypatch.setattr(module.sys, "platform", "linux")
+    monkeypatch.setattr(Path, "is_mount", lambda self: self == backing and mounted)
+    monkeypatch.setattr(module, "_qualification_mount_operation", operation)
+    with module._qualification_listener_mount(
+        tmp_path, fixture=fixture, observe_failure=lambda exc: None, settle_listener=settle
+    ):
+        require_lock()
+        events.append("listener")
+    assert events == ["setup", "listener", "settle", "teardown"]
+    descriptor = os.open(lock_file, os.O_RDWR)
+    try:
+        fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    finally:
+        os.close(descriptor)
+
+
+@pytest.mark.parametrize("setup", ["not-mounted", "populated"])
+def test_operator_setup_must_create_a_real_empty_mount(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, setup: str
+) -> None:
+    module = load_script()
+    backing = tmp_path / "volume"
+    backing.mkdir()
+    mounted = False
+    events = []
+
+    def operation(name, command, *, cwd):
+        nonlocal mounted
+        events.append(command[0])
+        if command == ["setup"]:
+            mounted = setup == "populated"
+            if mounted:
+                (backing / "existing").write_text("fixture data", encoding="utf-8")
+        else:
+            mounted = False
+            (backing / "existing").unlink(missing_ok=True)
+
+    monkeypatch.setattr(module.sys, "platform", "linux")
+    monkeypatch.setattr(Path, "is_mount", lambda self: mounted)
+    monkeypatch.setattr(module, "_qualification_mount_operation", operation)
+    fixture = module.ListenerMountFixture(backing, ("setup",), ("teardown",))
+    with pytest.raises(module.QualificationError, match="fresh mounted fixture"):
+        with module._qualification_mount(tmp_path, fixture=fixture):
+            pytest.fail("a nominal setup command cannot waive the mounted-volume proof")
+    assert events == ["setup", "teardown"] and not mounted
+
+
 def test_macos_qualification_mount_reports_the_exact_failed_operation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -392,7 +638,7 @@ def test_listener_is_settled_before_qualification_mount_release(
     events: list[str] = []
 
     @contextmanager
-    def mount(_scratch: Path) -> Iterator[Path]:
+    def mount(_scratch: Path, *, fixture=None) -> Iterator[Path]:
         events.append("attach")
         try:
             yield tmp_path / "mounted"
@@ -419,7 +665,7 @@ def test_listener_failure_is_retained_before_settlement_and_mount_release(
     events: list[str] = []
 
     @contextmanager
-    def mount(_scratch: Path) -> Iterator[Path]:
+    def mount(_scratch: Path, *, fixture=None) -> Iterator[Path]:
         events.append("attach")
         try:
             yield tmp_path / "mounted"

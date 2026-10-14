@@ -266,20 +266,52 @@ PINNED_EXTERNAL_IMAGES = {
 
 PINNED_EXTERNAL_COMPOSE_IMAGES = {
     "alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce",
-    "dxflrs/garage:b72b090a097c8ee2711c8fb065d250ed68dcd0bf@sha256:f22f09abe741e54ab244e95638310e040b81eda41e2c6ab9b7373cda4b9e955c",
+    "cgr.dev/chainguard/minio:latest@sha256:7df55d002b698e4494a131b848dd553361bbe58b7e19f62d9623c29af1ba9ccf",
     "postgres:16-alpine@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777",
 }
 
 
 def test_runtime_image_isolation_is_derived_for_every_runtime_image() -> None:
     workflow = yaml.safe_load(CI_FILE.read_text(encoding="utf-8"))
-    steps = {step["name"]: step for step in workflow["jobs"]["images"]["steps"]}
-    assert steps["Verify runtime image isolation"] == {
-        "name": "Verify runtime image isolation",
-        "if": "matrix.target != 'test'",
-        "env": {"IMAGE_TARGET": "${{ matrix.target }}"},
-        "run": 'python3 scripts/check_runtime_image.py "$IMAGE_TARGET"',
+    from unittest.mock import patch
+
+    from scripts import ci_qualification
+
+    observed = []
+    targets = _bake_graph()["group"]["default"]["targets"]
+    with (
+        patch.object(ci_qualification, "prepare_images"),
+        patch.object(ci_qualification, "run", side_effect=observed.append),
+    ):
+        ci_qualification.qualify_images(targets, _bake_graph())
+    isolated = [command[-1] for command in observed if "scripts/check_runtime_image.py" in command]
+    assert set(isolated) == set(targets) - {"test"}
+    assert len(isolated) == len(set(isolated))
+    composed = [command[-1] for command in observed if "scripts/test_runtime_compose.py" in command]
+    assert set(composed) == {
+        "a-riverhog-aws-store",
+        "a-riverhog-b2-store",
+        "a-riverhog-filesystem-store",
+        "a-riverhog-event-relay",
+        "a-riverhog-minisign-witness",
+        "a-riverhog-opentimestamps-witness",
     }
+    assert len(composed) == len(set(composed))
+    witnesses = [command[-1] for command in observed if "scripts/test_witness_image.py" in command]
+    assert set(witnesses) == {"a-riverhog-minisign-witness", "a-riverhog-opentimestamps-witness"}
+    assert ["make", "a-riverhog-event-relay-smoke"] in observed
+    executed = next(
+        step
+        for step in workflow["jobs"]["images"]["steps"]
+        if step["name"] == "Qualify every selected final image"
+    )
+    assert 'execute --workload "image-$IMAGE_GROUP"' in executed["run"]
+    for group in ci_qualification.IMAGE_GROUPS:
+        assert ci_qualification.validation_work("image-" + group).command == (
+            "make",
+            "image-qualification",
+            "IMAGE_GROUP=" + group,
+        )
 
     checker = (REPO_ROOT / "scripts/check_runtime_image.py").read_text(encoding="utf-8")
     assert "docker-bake.hcl" in checker
@@ -442,8 +474,13 @@ def test_commit_metadata_cannot_invalidate_stable_image_build_steps() -> None:
     provider = (REPO_ROOT / ".github/workflows/provider-qualification.yml").read_text(
         encoding="utf-8"
     )
-    for workflow in (ci, provider):
-        assert ",mode=max,ignore-error=true" in workflow
+    from scripts.ci_qualification import cache_settings
+
+    assert "${{ matrix.cache_settings }}" in ci
+    for setting in cache_settings(_bake_graph()["group"]["default"]["targets"]):
+        if ".cache-to=" in setting:
+            assert setting.endswith(",mode=max,ignore-error=true")
+    assert ",mode=max,ignore-error=true" in provider
 
 
 def test_every_external_image_input_is_versioned_and_digest_pinned() -> None:
@@ -548,6 +585,23 @@ def test_production_images_use_the_common_unprivileged_runtime_identity() -> Non
         assert service["tmpfs"] == [
             "/tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=64m"
         ]
+
+
+def test_riverhog_validation_workspace_is_private_disk_scratch() -> None:
+    dockerfile = (REPO_ROOT / IMAGE_CONTRACTS["riverhog"]["dockerfile"]).read_text(encoding="utf-8")
+    assert "TMPDIR=/scratch" in dockerfile
+    assert "install -d -o 65532 -g 65532 -m 0700 /scratch" in dockerfile
+    compose = yaml.safe_load((REPO_ROOT / "riverhog/compose.yaml").read_text(encoding="utf-8"))
+    assert compose["volumes"]["scratch"] is None
+    for name in ("state", "app"):
+        service = compose["services"][name]
+        assert "scratch:/scratch:rw" in service["volumes"]
+        assert all(not mount.startswith("/scratch:") for mount in service["tmpfs"])
+    smoke = (REPO_ROOT / "scripts/test_compose_smoke.sh").read_text(encoding="utf-8")
+    assert (
+        'compose exec -T app python - < "${ROOT_DIR}/tests/harness/provenance_workspace_probe.py"'
+        in smoke
+    )
 
 
 def test_container_python_ownership_matches_the_supported_runtime_minor() -> None:
@@ -754,48 +808,36 @@ def test_github_image_matrix_uses_bounded_per_image_bake_caches() -> None:
     assert workflow["permissions"] == {"contents": "read"}
 
     job = workflow["jobs"]["images"]
-    assert job["strategy"]["matrix"] == {"target": _bake_graph()["group"]["default"]["targets"]}
+    from scripts.ci_qualification import cache_settings, image_groups
+
+    assert job["strategy"]["matrix"] == "${{ fromJSON(needs.plan.outputs.images) }}"
+    assert job["strategy"]["max-parallel"] == 2
     assert job["env"] == {"DOCKER_BUILD_RECORD_UPLOAD": "false"}
     steps = {step["name"]: step for step in job["steps"]}
-    assert steps["Configure Docker Buildx"] == {
-        "name": "Configure Docker Buildx",
-        "uses": "docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c",
-        "with": {"version": "v0.36.0", "driver": "docker"},
+    assert steps["Configure Docker Buildx"]["with"] == {"version": "v0.36.0", "driver": "docker"}
+    build = steps["Build exact image group from target-scoped caches"]
+    assert build["uses"] == "docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b"
+    assert build["with"] == {
+        "source": ".",
+        "files": "docker-bake.hcl",
+        "targets": "${{ matrix.targets }}",
+        "load": True,
+        "set": (
+            "*.args.SOURCE_REVISION=${{ inputs.ref || github.sha }}\n"
+            "*.args.BUILD_CREATED=${{ steps.image-metadata.outputs.created }}\n"
+            "*.args.SOURCE_DATE_EPOCH=0\n*.args.RELEASE_VERSION=development\n"
+            "${{ matrix.cache_settings }}\n"
+        ),
     }
-    assert steps["Install Riverhog event relay smoke toolchain"] == {
-        "name": "Install Riverhog event relay smoke toolchain",
-        "if": "matrix.target == 'a-riverhog-event-relay'",
-        "uses": "jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14",
-        "with": {"install_args": "python"},
-    }
-    assert steps["Resolve image metadata"] == {
-        "name": "Resolve image metadata",
-        "id": "image-metadata",
-        "run": 'echo "created=$(git show -s --format=%cI HEAD)" >> "$GITHUB_OUTPUT"\n',
-    }
-    assert steps["Build image"] == {
-        "name": "Build image",
-        "uses": "docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b",
-        "with": {
-            "source": ".",
-            "files": "docker-bake.hcl",
-            "targets": "${{ matrix.target }}",
-            "load": True,
-            "set": (
-                "*.args.SOURCE_REVISION=${{ inputs.ref || github.sha }}\n"
-                "*.args.BUILD_CREATED=${{ steps.image-metadata.outputs.created }}\n"
-                "*.args.SOURCE_DATE_EPOCH=0\n"
-                "*.args.RELEASE_VERSION=development\n"
-                "*.cache-from=type=gha,scope=${{ matrix.target }}\n"
-                "*.cache-to=type=gha,scope=${{ matrix.target }},mode=max,ignore-error=true\n"
-            ),
-        },
-    }
-    assert steps["Smoke Riverhog event relay image"] == {
-        "name": "Smoke Riverhog event relay image",
-        "if": "matrix.target == 'a-riverhog-event-relay'",
-        "run": "make a-riverhog-event-relay-smoke",
-    }
+    graph = _bake_graph()
+    grouped = image_groups(graph)
+    targets = [target for group in grouped.values() for target in group]
+    assert sorted(targets) == sorted(graph["group"]["default"]["targets"])
+    for target in targets:
+        assert cache_settings([target]) == [
+            f"{target}.cache-from=type=gha,scope={target}",
+            f"{target}.cache-to=type=gha,scope={target},mode=max,ignore-error=true",
+        ]
 
 
 def test_frozen_image_sync_has_every_selected_workspace_dependency() -> None:

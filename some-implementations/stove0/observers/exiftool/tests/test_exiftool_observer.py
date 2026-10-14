@@ -9,16 +9,19 @@ from a_stove0_exiftool_observer import ExiftoolObserver
 from a_stove0_exiftool_observer import app as observer_app
 from a_stove0_exiftool_observer.app import create_app
 from a_stove0_media_metadata_contract_lib import (
+    MEDIA_METADATA_INTERFACE,
     MEDIA_METADATA_OBSERVER_CONTRACT,
     MediaMetadataFacts,
 )
 from fastapi.testclient import TestClient
-from stove0_observer_protocol import ContentObservationRequest, ContentObservationRequestPayload
+from stove0_observer_protocol import ContentObservationRequest
 from stove0_observer_support import ContentObservationRuntime
 from stove0_protocol import (
     CollectionRootIdentityRef,
     WorkArtifactSubject,
 )
+
+from tests.stove0_observation_fixtures import observation_payload
 
 
 def _sha(character: str) -> str:
@@ -73,7 +76,9 @@ def _request(observer: ExiftoolObserver) -> ContentObservationRequest:
         artifact_set_identity=_sha("3"),
     )
     return ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=MEDIA_METADATA_OBSERVER_CONTRACT,
+            interface=MEDIA_METADATA_INTERFACE,
             work_id=_sha("1"),
             observer_registration_id="exiftool",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -194,9 +199,13 @@ def test_exiftool_observer_preserves_conflicting_exact_field_evidence(
     assert "-GPSLatitude" in probe_commands[0]
 
 
-def test_observer_process_exposes_only_media_metadata_observer_contract() -> None:
+def test_observer_process_exposes_only_media_metadata_observer_contract(tmp_path: Path) -> None:
     observer = ExiftoolObserver(source_revision="fixture", image_id="sha256:" + _sha("9"))
-    client = TestClient(create_app(token="observer-secret", observer=observer))
+    client = TestClient(
+        create_app(
+            token="observer-secret", observer=observer, state_root=tmp_path / "observer-state"
+        )
+    )
 
     response = client.get(
         "/v1/observer",
@@ -213,6 +222,7 @@ def test_observer_process_exposes_only_media_metadata_observer_contract() -> Non
         ).status_code
         == 404
     )
+    client.app.state.observer_service.close()
 
 
 def test_observer_process_environment_is_connected(
@@ -237,9 +247,12 @@ def test_observer_process_environment_is_connected(
     monkeypatch.setenv("A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID", "sha256:" + _sha("8"))
     created: dict[str, object] = {}
 
-    class ConfiguredObserver:
+    monkeypatch.setenv("A_STOVE0_EXIFTOOL_OBSERVER_STATE", str(tmp_path / "state"))
+
+    class ConfiguredObserver(ExiftoolObserver):
         def __init__(self, **kwargs: object) -> None:
             created.update(kwargs)
+            super().__init__(**kwargs)
             self.exiftool = str(kwargs["exiftool"])
 
     def run(_app: object, *, host: str, port: int) -> None:

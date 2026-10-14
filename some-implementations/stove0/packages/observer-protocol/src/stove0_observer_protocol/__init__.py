@@ -6,7 +6,8 @@ the sole top-level observer-author import surface and intentionally excludes the
 HTTP client, Riverhog data plane, and stove0 core.
 """
 
-from http_api_contracts import HttpErrorContract, HttpOperationContract
+from http_api_contracts import HttpErrorContract, HttpOperationContract, HttpPathParameterContract
+from http_api_contracts.metadata_documents import METADATA_HTTP_OPERATIONS
 from stove0_protocol.models import (
     ARTIFACT_ID_PATTERN,
     CONTENT_OBSERVATION_REQUEST_FORMAT,
@@ -15,6 +16,7 @@ from stove0_protocol.models import (
     OBSERVER_PROTOCOL,
     RIVERHOG_CAPABILITY_TRANSPORT,
     SHA256_PATTERN,
+    AcceptedObservationJob,
     CollectionRootIdentityRef,
     ContentObservationEvidence,
     ContentObservationFailure,
@@ -27,6 +29,8 @@ from stove0_protocol.models import (
     ContentObservationState,
     JsonSchemaValidationProfile,
     ObservationEvidenceSlot,
+    ObservationJobDeclarationPayload,
+    ObservationJobStatus,
     ObserverContract,
     ObserverContractPayload,
     ObserverContractSupport,
@@ -56,9 +60,10 @@ from stove0_observer_protocol.validation import (
     require_semantic_validators,
     validate_observation_request,
     validate_observation_result_structure,
+    validate_observation_status,
 )
 
-OBSERVER_HTTP_OPERATIONS = (
+OBSERVER_HTTP_OPERATIONS: tuple[HttpOperationContract, ...] = (
     HttpOperationContract(
         "GET",
         "/v1/observer",
@@ -70,21 +75,60 @@ OBSERVER_HTTP_OPERATIONS = (
         ),
     ),
     HttpOperationContract(
-        "POST",
-        "/v1/observe",
+        "PUT",
+        "/v1/observations/{observation_job_id}",
         ContentObservationInvocation,
-        ContentObservationResult,
+        ObservationJobStatus,
         "json",
         errors=(
             HttpErrorContract("invalid_observation_request", 400),
             HttpErrorContract("unauthorized", 401),
             HttpErrorContract("request_too_large", 413),
             HttpErrorContract("observer_failed", 500),
+            HttpErrorContract("job_identity_mismatch", 409),
+            HttpErrorContract("job_request_mismatch", 409),
+            HttpErrorContract("observer_runtime_mismatch", 409),
+            HttpErrorContract("admission_unavailable", 503),
         ),
+        path_parameters=(HttpPathParameterContract("observation_job_id", Sha256),),
+    ),
+    HttpOperationContract(
+        "GET",
+        "/v1/observations/{observation_job_id}",
+        response_type=ObservationJobStatus,
+        errors=(
+            HttpErrorContract("bad_request", 400),
+            HttpErrorContract("unauthorized", 401),
+            HttpErrorContract("job_not_found", 404),
+            HttpErrorContract("observer_failed", 500),
+        ),
+        path_parameters=(HttpPathParameterContract("observation_job_id", Sha256),),
+    ),
+    HttpOperationContract(
+        "POST",
+        "/v1/observations/{observation_job_id}/cancel",
+        AcceptedObservationJob,
+        ObservationJobStatus,
+        "json",
+        errors=(
+            HttpErrorContract("invalid_observation_request", 400),
+            HttpErrorContract("unauthorized", 401),
+            HttpErrorContract("request_too_large", 413),
+            HttpErrorContract("job_identity_mismatch", 409),
+            HttpErrorContract("job_request_mismatch", 409),
+            HttpErrorContract("observer_failed", 500),
+        ),
+        path_parameters=(HttpPathParameterContract("observation_job_id", Sha256),),
     ),
 )
 
+OBSERVER_HTTP_OPERATIONS += METADATA_HTTP_OPERATIONS
+
 __all__ = [
+    "AcceptedObservationJob",
+    "ObservationJobDeclarationPayload",
+    "ObservationJobStatus",
+    "validate_observation_status",
     "ARTIFACT_ID_PATTERN",
     "OBSERVER_PROTOCOL",
     "OBSERVER_HTTP_OPERATIONS",

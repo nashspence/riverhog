@@ -6,16 +6,21 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
-from a_stove0_magic_facts_contract_lib import MAGIC_OBSERVER_CONTRACT, validate_magic_facts
+from a_stove0_magic_facts_contract_lib import (
+    MAGIC_INTERFACE,
+    MAGIC_OBSERVER_CONTRACT,
+    validate_magic_facts,
+)
 from a_stove0_magic_facts_contract_lib.contracts import MAGIC_CONFORMANCE_VECTORS
 from a_stove0_magic_observer import FileMagic, MagicObserver
 from stove0_observer_protocol import (
     CollectionRootIdentityRef,
     ContentObservationRequest,
-    ContentObservationRequestPayload,
     WorkArtifactSubject,
 )
 from stove0_observer_support import ContentObservationRuntime
+
+from tests.stove0_observation_fixtures import observation_payload
 
 _GIF = b"GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00"
 
@@ -33,7 +38,9 @@ def _request(observer: MagicObserver) -> ContentObservationRequest:
     )
     support = observer.descriptor().support_for(MAGIC_OBSERVER_CONTRACT.id)
     return ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=MAGIC_OBSERVER_CONTRACT,
+            interface=MAGIC_INTERFACE,
             work_id="d" * 64,
             observer_registration_id="magic",
             observer_descriptor_sha256=observer.descriptor().descriptor_sha256,

@@ -4,6 +4,7 @@ import os
 import re
 import shlex
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -31,6 +32,10 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     "#!/usr/bin/env bash",
                     "set -euo pipefail",
                     f'printf \'%s|%s\\n\' "${{COMPOSE_PROJECT_NAME:-}}" "$*" >> {log_path}',
+                    'if [[ -n "${FAKE_DOCKER_CONFIG_CAPTURE:-}" && '
+                    '"$*" == *" up --detach --wait state api "* ]]; then',
+                    '  cp "${STOVE0_CONFIG_HOST_PATH}" "${FAKE_DOCKER_CONFIG_CAPTURE}"',
+                    "fi",
                     'if [[ "$1" == "image" && "$2" == "inspect" ]]; then',
                     '  if [[ "$*" == *"{{.Id}}"* ]]; then',
                     "    printf 'sha256:'; printf 'a%.0s' {1..64}; printf '\\n'; exit 0",
@@ -41,12 +46,6 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     '  [[ "${FAKE_DOCKER_HAVE_IMAGES:-0}" == "1" ]] && '
                     "printf 'fake-image-id\\n' && exit 0",
                     "  exit 1",
-                    "fi",
-                    (
-                        'if [[ "$*" == *'
-                        '" exec -T garage /garage -c /etc/garage.toml node id"* ]]; then'
-                    ),
-                    "  printf 'fake-node@garage\\n'",
                     "fi",
                     'if [[ "$*" == *"/v1/apps/smoke/keys"* ]]; then',
                     "  printf 'fake-application-token\\n'",
@@ -83,14 +82,29 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                         '"4444444444444444444444444444444444444444444444444444444444444444"}\''
                     ),
                     "fi",
+                    'if [[ "$*" == *"collection upload start /witness-input"* ]]; then',
+                    "  printf '%s\\n' '{\"collection_id\":5}'",
+                    "fi",
                     'if [[ "$*" == *"RIVERHOG_SMOKE_ADMISSION_OUTPUT=ftp"* ]]; then',
                     "  printf '%064d\\n' 0",
                     "fi",
                     'if [[ "$*" == *"RIVERHOG_SMOKE_ADMISSION_OUTPUT=client"* ]]; then',
                     "  printf '1%.0s' {1..64}; printf '\\n'",
                     "fi",
-                    'if [[ "$*" == *"RIVERHOG_SMOKE_INVOCATION_OUTPUT=1"* ]]; then',
+                    'if [[ "$*" == *"RIVERHOG_SMOKE_INVOCATION_OUTPUT=ftp"* ]]; then',
                     "  printf '%064d\\n' 0",
+                    "fi",
+                    'if [[ "$*" == *"RIVERHOG_SMOKE_INVOCATION_OUTPUT=client"* ]]; then',
+                    "  printf '1%.0s' {1..64}; printf '\\n'",
+                    "fi",
+                    'if [[ "$*" == *"RIVERHOG_SMOKE_SNAPSHOT_OUTPUT=1"* ]]; then',
+                    "  printf '%s\\n' '{}'",
+                    "fi",
+                    'if [[ "$*" == *"/qualification.py "*" prepare "* ]]; then',
+                    '  printf \'%s\\n\' \'{"digest":"fixture","evidence_sha256":"fixture"}\'',
+                    "fi",
+                    'if [[ "$*" == *"/qualification.py "*" verify "* ]]; then',
+                    "  printf '%s\\n' retained",
                     "fi",
                     'if [[ "$*" == *"RIVERHOG_SMOKE_SETTLEMENT_OUTPUT=1"* ]]; then',
                     "  printf '2\\n'",
@@ -107,6 +121,17 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                 ]
             )
             + "\n"
+        )
+    elif name == "mise":
+        command.write_text(
+            "#!/usr/bin/env bash\nset -euo pipefail\n"
+            'arguments=("$@")\n'
+            "for ((index=0; index < ${#arguments[@]}; index++)); do\n"
+            '  if [[ "${arguments[index]}" == */scripts/ci_make.py ]]; then\n'
+            f"    printf '%s\\n' \"$*\" >> {log_path}.observer\n"
+            f'    exec {sys.executable} "${{arguments[@]:index}}"\n'
+            "  fi\ndone\n"
+            f'printf \'%s|%s\\n\' "${{COMPOSE_PROJECT_NAME:-}}" "$*" >> {log_path}\n'
         )
     elif name == "pgrep":
         command.write_text(
@@ -161,6 +186,8 @@ def _run_make(
     env.pop("POSTGRES_TESTS", None)
     env.pop("TESTS", None)
     env.pop("MISE_BIN", None)
+    env["RIVERHOG_VALIDATION_SCOPE"] = "iteration"
+    env["RIVERHOG_CI_TIMING_DIR"] = str(tmp_path / "timings")
     if extra_env:
         env.update(extra_env)
 
@@ -224,13 +251,13 @@ def test_compose_services_publish_only_the_config_path() -> None:
         assert names == {"RIVERHOG_CONFIG"}
 
 
-def test_bundled_garage_is_development_only_and_not_an_application_dependency() -> None:
+def test_bundled_s3_fixture_is_development_only_and_not_an_application_dependency() -> None:
     compose = yaml.safe_load(COMPOSE_FILE.read_text(encoding="utf-8"))
 
-    assert compose["services"]["garage"]["profiles"] == ["development"]
-    assert "garage" not in compose["services"]["app"]["depends_on"]
+    assert compose["services"]["s3-fixture"]["profiles"] == ["development"]
+    assert "s3-fixture" not in compose["services"]["app"]["depends_on"]
 
-    bootstrap = (REPO_ROOT / "scripts" / "bootstrap_garage.sh").read_text(encoding="utf-8")
+    bootstrap = (REPO_ROOT / "scripts" / "bootstrap_s3_fixture.sh").read_text(encoding="utf-8")
     smoke = (REPO_ROOT / "scripts" / "test_compose_smoke.sh").read_text(encoding="utf-8")
     assert "export COMPOSE_PROFILES=development" in bootstrap
     assert "export COMPOSE_PROFILES=development" in smoke
@@ -278,9 +305,13 @@ def test_compose_mounts_document_and_separate_secret_files() -> None:
         bind_targets = {entry["target"] for entry in mounts if isinstance(entry, dict)}
         assert required_targets <= short_targets | bind_targets
     state_mounts = compose["services"]["state"]["volumes"]
-    assert {entry.split(":")[-2] for entry in state_mounts} == {
-        "/etc/riverhog/config.yaml",
-        "/run/secrets/riverhog-database-url",
+    state_modes = {
+        target: mode for _, target, mode in (entry.rsplit(":", 2) for entry in state_mounts)
+    }
+    assert state_modes == {
+        "/etc/riverhog/config.yaml": "ro",
+        "/run/secrets/riverhog-database-url": "ro",
+        "/scratch": "rw",
     }
 
 
@@ -302,7 +333,7 @@ def test_compose_mounts_document_and_separate_secret_files() -> None:
             "unit",
             ("args=-k entrypoint",),
             "python -m pytest -q -n 4 --dist=loadscope --instafail "
-            "--durations=30 --durations-min=0.25 "
+            "--durations=30 --durations-min=0.25 -p scripts.ci_timing "
             "packages some-implementations riverhog tests/unit -k entrypoint",
         ),
         (
@@ -310,7 +341,7 @@ def test_compose_mounts_document_and_separate_secret_files() -> None:
             ("TESTS=some-implementations/stove0/application/tests/test_stove0_api_parity.py",),
             (
                 "python -m pytest -q -n 4 --dist=loadscope --instafail "
-                "--durations=30 --durations-min=0.25 "
+                "--durations=30 --durations-min=0.25 -p scripts.ci_timing "
                 "some-implementations/stove0/application/"
                 "tests/test_stove0_api_parity.py"
             ),
@@ -550,65 +581,33 @@ def test_dist_builds_a_clean_complete_artifact_set(tmp_path: Path) -> None:
     ]
 
 
-def test_bootstrap_garage_is_available_as_a_standalone_target(tmp_path: Path) -> None:
+def test_bootstrap_s3_fixture_is_available_as_a_standalone_target(tmp_path: Path) -> None:
     completed, docker_log_path, uv_log_path = _run_make(
-        tmp_path, "bootstrap-garage", extra_env={"FAKE_DOCKER_HAVE_IMAGES": "1"}
+        tmp_path, "bootstrap-s3-fixture", extra_env={"FAKE_DOCKER_HAVE_IMAGES": "1"}
     )
 
     assert completed.returncode == 0, completed.stderr
     assert _read_log_lines(uv_log_path) == []
     docker_log = "\n".join(_read_log_lines(docker_log_path))
-    assert " up --detach garage" in docker_log
-    assert " exec -T garage /garage -c /etc/garage.toml node id" in docker_log
+    assert " up --detach s3-fixture" in docker_log
+    assert "test -m tests.harness.provision_s3_fixture --verify-conditional-writes" in docker_log
 
 
-def test_compose_smoke_starts_and_cleans_a_fresh_stack(tmp_path: Path) -> None:
+def test_compose_smoke_forwards_independent_lifecycles_and_resource_budgets(tmp_path: Path) -> None:
     completed, docker_log_path, uv_log_path = _run_make(
         tmp_path,
         "compose-smoke",
-        extra_env={
-            "FAKE_DOCKER_HAVE_IMAGES": "1",
-            "STOVE0_SMOKE_TRANSFER_METRICS": "0",
-            "STOVE0_SMOKE_WITNESS_PROBE": "0",
-        },
+        "LOCAL_QUALIFICATION_JOBS=3",
+        "LOCAL_QUALIFICATION_DOCKER_JOBS=1",
     )
-
     assert completed.returncode == 0, completed.stderr
-    assert _read_log_lines(uv_log_path) == []
-    docker_log = "\n".join(_read_log_lines(docker_log_path))
-    assert f" build --sbom=generator={SBOM_GENERATOR} test" in docker_log
-    assert " up --detach garage" in docker_log
-    assert "tests.harness.storage_adapter_restart_probe prepare" in docker_log
-    assert " restart archive-adapter" in docker_log
-    assert "tests.harness.storage_adapter_restart_probe resume" in docker_log
-    assert f" build --sbom=generator={SBOM_GENERATOR} app" in docker_log
-    assert " up --detach --wait app" in docker_log
-    assert " exec -T postgres createdb --username riverhog --owner riverhog stove0" in docker_log
-    assert " restart app" in docker_log
-    assert " exec -T --env RIVERHOG_SMOKE_TOKEN=" in docker_log
-    assert " app python -c " in docker_log
-    assert " stop controller" in docker_log
-    assert "RIVERHOG_SMOKE_SCHEDULER_STEP=intent" in docker_log
-    assert "RIVERHOG_SMOKE_SCHEDULER_STEP=previewed" in docker_log
-    assert "RIVERHOG_SMOKE_SCHEDULER_STEP=work_bound" in docker_log
-    assert docker_log.count(" restart api") == 5
-    assert "RIVERHOG_SMOKE_ADMISSION_OUTPUT=ftp" in docker_log
-    assert "RIVERHOG_SMOKE_CLIENT_RECEIPT_OUTPUT=1" in docker_log
-    assert "collection upload start /cli-input" in docker_log
-    assert "--tag stove0/conformance" in docker_log
-    assert "RIVERHOG_SMOKE_ADMISSION_OUTPUT=client" in docker_log
-    assert "EXPECTED_WORK_ID=" in docker_log
-    assert "REVIEW_INPUT_RECEIPT=" in docker_log
-    assert "REVIEW_OUTPUT_COLLECTION_ID=4" in docker_log
-    assert "RCLONE_DELIVERY_ID=fixture-delivery" in docker_log
-    assert " down --volumes --remove-orphans" in docker_log
-    smoke = (REPO_ROOT / "scripts" / "test_compose_smoke.sh").read_text(encoding="utf-8")
-    assert "review-input.wav" in smoke
-    assert "FTP listener did not retain the exact interrupted prefix" in smoke
-    assert "/qualification.py minisign prepare" in smoke
-    assert "/qualification.py opentimestamps prepare" in smoke
-    assert "/qualification.py minisign verify" in smoke
-    assert "/qualification.py opentimestamps verify" in smoke
+    assert _read_log_lines(uv_log_path) == [
+        "|x -- uv run --locked --all-packages --group dev "
+        "python -m scripts.ci_qualification compose-all --jobs 3 --docker-jobs 1"
+    ]
+    # The shared runner prepares images and allocates each lifecycle's own
+    # project, ports, scratch and cleanup; this entrypoint creates no fixture.
+    assert not _read_log_lines(docker_log_path)
 
 
 def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
@@ -622,18 +621,111 @@ def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
         extra_env={
             "FAKE_DOCKER_HAVE_IMAGES": "1",
             "STOVE0_SMOKE_TRANSFER_METRICS": "0",
-            "STOVE0_SMOKE_WITNESS_PROBE": "0",
         },
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert _read_log_lines(uv_log_path) == []
+    timing_calls = _read_log_lines(uv_log_path)
+    assert any(
+        "scripts.ci_qualification compose-prepare --lane processing-scale" in line
+        for line in timing_calls
+    )
+    assert all(
+        "ci_timing.py phase " in line
+        or "scripts.ci_qualification compose-prepare" in line
+        or "scripts/collect_stove0_planning_cost.py" in line
+        for line in timing_calls
+    )
     docker_log = "\n".join(_read_log_lines(docker_log_path))
     assert "--env STOVE0_SMOKE_FILE_COUNT=7" in docker_log
     assert "--env STOVE0_SMOKE_AUDIO_FRAMES=4000" in docker_log
-    assert " up --detach --wait state api controller worker" in docker_log
+    assert " up --detach --wait state api a-stove0-ffprobe-observer" in docker_log
+    assert " up --detach --wait controller worker" in docker_log
+    assert "STOVE0_SMOKE_RECIPE_ID=stove0.audio-archive/v1" in docker_log
+    assert "RIVERHOG_SMOKE_PARTITION_OUTPUT=1" not in docker_log
+    assert "REVIEW_INPUT_RECEIPT=" not in docker_log
+    assert "storage-cache-placement" not in "\n".join(timing_calls)
     assert "image inspect --format {{.Id}} a-stove0-opus-target:dev" in docker_log
     assert " down --volumes --remove-orphans" in docker_log
+
+
+@pytest.mark.parametrize(
+    "lane",
+    (
+        "storage",
+        "ingress-custody",
+        "processing-admission",
+        "processing-e2e",
+        "processing-overlap",
+        "review-delivery",
+        "witnesses",
+    ),
+)
+def test_compose_shard_executes_only_its_owned_lifecycle(tmp_path: Path, lane: str) -> None:
+    completed, docker_log_path, uv_log_path = _run_make(
+        tmp_path,
+        "compose-shard",
+        f"COMPOSE_LANE={lane}",
+        extra_env={"FAKE_DOCKER_HAVE_IMAGES": "1", "STOVE0_SMOKE_TRANSFER_METRICS": "0"},
+    )
+    assert completed.returncode == 0, completed.stderr
+    log = "\n".join(_read_log_lines(docker_log_path))
+    timing = "\n".join(_read_log_lines(uv_log_path))
+    assert timing.count(f"compose-prepare --lane {lane}") == 1
+    assert ("RIVERHOG_SMOKE_PARTITION_OUTPUT=1" in log) == (lane == "ingress-custody")
+    assert ("collection upload start /overflow" in log) == (lane == "storage")
+    assert ("RIVERHOG_SMOKE_RECEIPT_OUTPUT=1" in log) == lane.startswith("processing-")
+    assert ("collection upload start /cli-input" in log) == (lane == "processing-overlap")
+    assert ("REVIEW_INPUT_RECEIPT=" in log) == (lane == "review-delivery")
+    assert ("/qualification.py minisign prepare" in log) == (lane == "witnesses")
+    if lane.startswith("processing-"):
+        assert "STOVE0_SMOKE_RECIPE_ID=stove0.conformance-media/v1" in log
+        assert " up --detach --wait review0" not in log
+        assert "a-review0-opus-sampler python" not in log
+        assert "a-stove0-rclone-target python" not in log
+        assert "a-riverhog-minisign-witness:dev" not in log
+        count = {"processing-admission": 16, "processing-e2e": 4, "processing-overlap": 1}[lane]
+        assert f"STOVE0_SMOKE_FILE_COUNT={count}" in log
+        if lane == "processing-admission":
+            for name in (
+                "RIVERHOG_INPUT_RECEIPT",
+                "STOVE0_SMOKE_FILE_COUNT",
+                "STOVE0_SMOKE_SIDECAR_COUNT",
+                "STOVE0_SMOKE_RECIPE_ID",
+            ):
+                assert f"--env {name}=" in log
+            assert " up --detach --wait controller worker" not in log
+            assert " restart api" in log
+            assert "STOVE0_SETTLED_SNAPSHOT=" not in log
+        else:
+            assert " up --detach --wait controller worker" in log
+            assert "STOVE0_SETTLED_SNAPSHOT=" in log
+            for name in ("STOVE0_WORK_IDS", "STOVE0_SETTLED_SNAPSHOT"):
+                assert f"--env {name}=" in log
+
+
+def test_compose_rejects_retired_selector_before_starting_fixtures(tmp_path: Path) -> None:
+    completed, docker_log_path, uv_log_path = _run_make(
+        tmp_path, "compose-shard", "COMPOSE_LANE=processing"
+    )
+    assert completed.returncode != 0
+    assert "Unknown Compose qualification lane" in completed.stderr
+    assert not _read_log_lines(docker_log_path)
+    assert not _read_log_lines(uv_log_path)
+
+
+def test_local_qualification_forwards_host_parallelism_to_the_shared_runner(tmp_path: Path) -> None:
+    completed, _, uv_log_path = _run_make(
+        tmp_path,
+        "linux-qualification",
+        "LOCAL_QUALIFICATION_JOBS=3",
+        "LOCAL_QUALIFICATION_DOCKER_JOBS=1",
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert _read_log_lines(uv_log_path) == [
+        "|x -- uv run --locked --all-packages --group dev "
+        "python -m scripts.ci_qualification linux --jobs 3 --docker-jobs 1"
+    ]
 
 
 def test_a_riverhog_event_relay_smoke_uses_the_repo_python_and_final_image_script(
@@ -870,7 +962,7 @@ def test_test_aggregate_runs_lint_then_unit(tmp_path: Path) -> None:
     assert "python scripts/run_mypy.py" in uv_log_lines[3]
     assert (
         "python -m pytest -q -n 4 --dist=loadscope --instafail "
-        "--durations=30 --durations-min=0.25 "
+        "--durations=30 --durations-min=0.25 -p scripts.ci_timing "
         "packages some-implementations riverhog tests/unit" in uv_log_lines[4]
     )
 
@@ -888,7 +980,7 @@ def test_help_describes_make_targets(tmp_path: Path) -> None:
     completed, docker_log_path, uv_log_path = _run_make(tmp_path, "help")
 
     assert completed.returncode == 0, completed.stderr
-    assert "make bootstrap-garage" in completed.stdout
+    assert "make bootstrap-s3-fixture" in completed.stdout
     assert "make build-<bake-target>" in completed.stdout
     assert (
         "make build             Build the docker-bake.hcl default image group." in completed.stdout
