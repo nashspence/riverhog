@@ -2868,6 +2868,10 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         ROOT,
         cast(Mapping[str, Mapping[str, object]], external["python"]),
         cast(Mapping[str, object], external["growth"]),
+        packages={
+            str(item["module"]): ROOT / str(item["path"])
+            for item in python_package_detections(ROOT, projects)
+        },
     )
     sources: list[dict[str, object]] = [
         {"id": "release:release.toml", "source": {"path": "release.toml"}},
@@ -3038,7 +3042,13 @@ def contract_projection() -> dict[str, object]:
         "python": python_surfaces,
         "durable_state": _state_contract(config),
     }
-    external_contract["growth"] = growth_contract.declaration_projection(python_surfaces)
+    external_contract["growth"] = growth_contract.declaration_projection(
+        python_surfaces,
+        packages={
+            str(item["module"]): ROOT / str(item["path"])
+            for item in python_package_detections(ROOT, projects)
+        },
+    )
     external_contract["extents"] = extent_contract.extent_projection(external_contract)
     boundaries: dict[str, object] = {
         "contract_authorities": config["contract_authorities"],

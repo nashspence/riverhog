@@ -41,19 +41,55 @@ def resolve_operation(subject: str) -> Callable[..., Any]:
     raise ValueError("growth subject has no current import authority")
 
 
-def source_bindings(surfaces: Mapping[str, Mapping[str, object]]) -> tuple[Binding, ...]:
-    result: dict[str, Binding] = {}
+def _declared_operations(packages: Mapping[str, Path]) -> tuple[Callable[..., Any], ...]:
+    """Find declaration-bearing bodies in shipped source, including private bodies."""
+    result = []
+    for package, initializer in sorted(packages.items()):
+        for path in sorted(initializer.parent.glob("*.py")):
+            if b"declare_growth" not in path.read_bytes():
+                continue
+            module_name = package if path.name == "__init__.py" else f"{package}.{path.stem}"
+            module = importlib.import_module(module_name)
+            if Path(str(module.__file__)).resolve() != path.resolve():
+                raise ValueError("growth module is outside its shipped source authority")
+            pending = list(vars(module).values())
+            seen_classes: set[int] = set()
+            while pending:
+                value = pending.pop()
+                if inspect.isclass(value) and value.__module__ == module_name:
+                    if id(value) not in seen_classes:
+                        seen_classes.add(id(value))
+                        pending.extend(vars(value).values())
+                    continue
+                if isinstance(value, (classmethod, staticmethod)):
+                    value = value.__func__
+                elif isinstance(value, property):
+                    value = value.fget
+                if not inspect.isfunction(value) or not hasattr(value, "__riverhog_growth__"):
+                    continue
+                if Path(inspect.getfile(value)).resolve() != path.resolve():
+                    continue
+                result.append(value)
+    return tuple(result)
+
+
+def source_bindings(
+    surfaces: Mapping[str, Mapping[str, object]], *, packages: Mapping[str, Path] | None = None
+) -> tuple[Binding, ...]:
+    operations = []
     for subject, surface in surfaces.items():
         contract = surface["contract"]
-        if not isinstance(contract, Mapping) or contract.get("kind") not in {
+        if isinstance(contract, Mapping) and contract.get("kind") in {
             "function",
             "method",
             "classmethod",
             "staticmethod",
             "property",
         }:
-            continue
-        operation = resolve_operation(subject)
+            operations.append(resolve_operation(subject))
+    operations.extend(_declared_operations(packages or {}))
+    result: dict[str, Binding] = {}
+    for operation in operations:
         if not hasattr(operation, "__riverhog_growth__"):
             continue
         binding = growth_binding(operation)
@@ -64,15 +100,21 @@ def source_bindings(surfaces: Mapping[str, Mapping[str, object]]) -> tuple[Bindi
     return tuple(result[key] for key in sorted(result))
 
 
-def declaration_projection(surfaces: Mapping[str, Mapping[str, object]]) -> dict[str, object]:
-    return project_bindings(source_bindings(surfaces))
+def declaration_projection(
+    surfaces: Mapping[str, Mapping[str, object]], *, packages: Mapping[str, Path] | None = None
+) -> dict[str, object]:
+    return project_bindings(source_bindings(surfaces, packages=packages))
 
 
 def source_analysis(
-    root: Path, surfaces: Mapping[str, Mapping[str, object]], projection: Mapping[str, object]
+    root: Path,
+    surfaces: Mapping[str, Mapping[str, object]],
+    projection: Mapping[str, object],
+    *,
+    packages: Mapping[str, Path] | None = None,
 ) -> dict[str, object]:
-    bindings = source_bindings(surfaces)
-    if declaration_projection(surfaces) != projection:
+    bindings = source_bindings(surfaces, packages=packages)
+    if declaration_projection(surfaces, packages=packages) != projection:
         raise ValueError("growth projection differs from its current source declarations")
     pending = list(bindings)
     owned: dict[str, Binding] = {}
@@ -86,7 +128,7 @@ def source_analysis(
         owned[identity] = binding
         for subject in binding.declaration.subjects:
             if resolve_operation(subject) is not binding.operation:
-                raise ValueError("growth declaration has a stale public subject binding")
+                raise ValueError("growth declaration has a stale subject binding")
         pending.extend(growth_binding(operation) for _, operation in binding.delegates)
     declarations = {}
     for identity, binding in sorted(owned.items()):

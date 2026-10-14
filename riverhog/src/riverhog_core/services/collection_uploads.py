@@ -112,6 +112,16 @@ from riverhog_protocol.errors import (
     MaterializationDecisionRequired,
     NotFound,
 )
+from riverhog_protocol.growth import (
+    COUNT,
+    OCTETS,
+    OCTETS_PER_COUNT,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    declare_growth,
+)
 from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from riverhog_protocol.pack_ingress import canonical_json_bytes
 from riverhog_protocol.paths import (
@@ -6181,6 +6191,130 @@ def _next_provenance_publication_journal(
     return journal
 
 
+@declare_growth(
+    Declaration(
+        id="riverhog-server.sqlite-staged-journal-range.growth/v1",
+        authority="riverhog-server",
+        subjects=("riverhog_core.services.collection_uploads._upload_journal_range_bytes",),
+        scope="native-sqlite-successful-range-read",
+        starts_at="locate one exact byte range in component-owned staged transport chunks",
+        ends_at="return the complete requested range and close its query result",
+        dimensions=(
+            Dimension("range_octets", OCTETS, "Octets requested and returned by this call."),
+            Dimension("overlap_chunks", COUNT, "Ordinals intersecting the requested byte range."),
+            Dimension("staged_chunks", COUNT, "Retained transport chunks in the selected journal."),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "equal",
+                Expression("constant", value=1, unit=COUNT),
+                "Native range SELECT statements issued by this operation.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                Expression("dimension", name="overlap_chunks"),
+                "Native result rows visited; completed-prefix rows are outside the interval.",
+            ),
+            Bound(
+                "loaded_chunk_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        Expression(
+                            "constant",
+                            value=COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
+                            unit=OCTETS_PER_COUNT,
+                        ),
+                        Expression("dimension", name="overlap_chunks"),
+                    ),
+                ),
+                "Transport octets loaded from actual selected rows.",
+            ),
+            Bound(
+                "range_buffer_octets",
+                OCTETS,
+                "upper",
+                Expression("dimension", name="range_octets"),
+                "Peak length of the range assembly buffer.",
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "equal",
+                Expression("dimension", name="range_octets"),
+                "Exact complete returned bytes; neither gaps nor short tails succeed.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        Expression("constant", value=128, unit=COUNT),
+                        Expression(
+                            "product",
+                            terms=(
+                                Expression("constant", value=64),
+                                Expression("dimension", name="overlap_chunks"),
+                            ),
+                        ),
+                        Expression(
+                            "product",
+                            terms=(
+                                Expression("constant", value=64, unit=COUNT),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("constant", value=2, unit=COUNT),
+                                                Expression("dimension", name="staged_chunks"),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Maintained native SQLite instruction envelope for indexed seeks and row "
+                "iteration.",
+            ),
+        ),
+        conditions=(
+            "The private catalog uses its maintained (collection_id, journal_id, "
+            "ordinal) primary key.",
+            "Every non-final transport chunk has the declared append extent; the last "
+            "may be shorter.",
+            "overlap_chunks = floor((offset + range_octets - 1) / append_extent) - "
+            "floor(offset / append_extent) + 1.",
+            "The native SQLite execution profile is exercised by the maintained "
+            "actual-body witness.",
+        ),
+        invariants=(
+            "Selected ordinals and byte offsets agree with the transport geometry.",
+            "The requested bytes remain exact and contiguous, and query ownership "
+            "closes on every exit.",
+        ),
+        limitations=(
+            "Other database engines require their own instruction/index-cost qualification.",
+            "SQLite VM instructions exclude internal B-tree comparisons, page I/O and "
+            "physical CPU costs.",
+            "This range read does not assert semantic journal acceptance, complete "
+            "publication, or permission.",
+            "Physical memory, caller preparation, rejected attempts and retries are "
+            "separately charged.",
+        ),
+    )
+)
 def _upload_journal_range_bytes(
     session: Session,
     collection_id: int,
@@ -6189,36 +6323,53 @@ def _upload_journal_range_bytes(
     offset: int,
     size: int,
 ) -> bytes:
-    if size < 1 or size > PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX:
+    if (
+        type(offset) is not int
+        or offset < 0
+        or type(size) is not int
+        or not 1 <= size <= PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX
+    ):
         raise RuntimeError("provenance journal publication range is invalid")
-    rows = session.execute(
+    extent = COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX
+    first_ordinal = offset // extent
+    last_ordinal = (offset + size - 1) // extent
+    statement = (
         select(
+            CollectionUploadProvenanceJournalChunkRecord.ordinal,
             CollectionUploadProvenanceJournalChunkRecord.byte_offset,
             CollectionUploadProvenanceJournalChunkRecord.content,
         )
         .where(
             CollectionUploadProvenanceJournalChunkRecord.collection_id == collection_id,
             CollectionUploadProvenanceJournalChunkRecord.journal_id == journal_id,
-            CollectionUploadProvenanceJournalChunkRecord.byte_offset
-            + func.length(CollectionUploadProvenanceJournalChunkRecord.content)
-            > offset,
-            CollectionUploadProvenanceJournalChunkRecord.byte_offset < offset + size,
+            CollectionUploadProvenanceJournalChunkRecord.ordinal >= first_ordinal,
+            CollectionUploadProvenanceJournalChunkRecord.ordinal <= last_ordinal,
         )
-        .order_by(CollectionUploadProvenanceJournalChunkRecord.byte_offset)
+        .order_by(CollectionUploadProvenanceJournalChunkRecord.ordinal)
+        .execution_options(yield_per=1)
     )
     content = bytearray()
     expected = offset
-    for row in rows:
-        raw = bytes(row.content)
-        row_offset = int(row.byte_offset)
-        start = max(0, expected - row_offset)
-        if row_offset > expected or start >= len(raw):
-            raise RuntimeError("provenance journal chunks are not contiguous")
-        take = min(len(raw) - start, size - len(content))
-        content.extend(raw[start : start + take])
-        expected += take
-        if len(content) == size:
-            break
+    ordinal = first_ordinal
+    with session.execute(statement) as rows:
+        for row in rows:
+            raw = bytes(row.content)
+            row_offset = int(row.byte_offset)
+            start = max(0, expected - row_offset)
+            if (
+                row.ordinal != ordinal
+                or row_offset != ordinal * extent
+                or not 1 <= len(raw) <= extent
+                or row_offset > expected
+                or start >= len(raw)
+            ):
+                raise RuntimeError("provenance journal chunks are not contiguous")
+            take = min(len(raw) - start, size - len(content))
+            content.extend(raw[start : start + take])
+            expected += take
+            ordinal += 1
+            if len(content) == size:
+                break
     if len(content) != size:
         raise RuntimeError("provenance journal publication range is unavailable")
     return bytes(content)
