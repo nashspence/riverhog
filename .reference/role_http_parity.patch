@@ -1,0 +1,75 @@
+--- a/tests/unit/test_role_service_openapi.py
++++ b/tests/unit/test_role_service_openapi.py
+@@ -10,6 +10,12 @@
+ from a_stove0_exiftool_observer import ExiftoolObserver
+ from a_stove0_exiftool_observer.app import create_app as create_exiftool_app
+ from a_stove0_ffprobe_observer import FfprobeObserver
++from a_stove0_filename_prefix_sidecar_observer import FilenamePrefixSidecarObserver
++from a_stove0_filename_prefix_sidecar_observer.app import create_app as create_filename_app
++from a_stove0_magic_observer import FileMagic, MagicObserver
++from a_stove0_magic_observer.app import create_app as create_magic_app
++from a_stove0_riverhog_provenance_observer import RiverhogProvenanceObserver
++from a_stove0_riverhog_provenance_observer.app import create_app as create_provenance_app
+ from a_stove0_ffprobe_observer.app import create_app as create_ffprobe_app
+ from a_stove0_nvenc_av1_opus_target.app import create_target_app as create_nvenc_target_app
+ from a_stove0_opus_target.app import create_target_app as create_opus_target_app
+@@ -53,6 +59,11 @@
+ ) -> tuple[tuple[FastAPI, tuple[HttpOperationContract, ...], tuple[str, str]], ...]:
+     observer_exif = ExiftoolObserver(exiftool="fixture", image_id="sha256:" + "f" * 64)
+     observer_ffprobe = FfprobeObserver(ffprobe="fixture", image_id="sha256:" + "f" * 64)
++    image_id = "sha256:" + "f" * 64
++    # This fixture establishes HTTP shape, not native file/libmagic correctness.
++    magic = MagicObserver(cast(FileMagic, SimpleNamespace(verify=_close)), image_id=image_id)
++    filename = FilenamePrefixSidecarObserver(image_id=image_id)
++    provenance = RiverhogProvenanceObserver(image_id=image_id)
+     target = cast(Any, SimpleNamespace(ffmpeg="fixture", close=_close))
+     review = cast(Any, SimpleNamespace(close=_close))
+     sampler = cast(Any, SimpleNamespace(ffmpeg="fixture"))
+@@ -76,6 +87,25 @@
+         (
+             create_ffprobe_app(
+                 token="secret", observer=observer_ffprobe, state_root=tmp_path / "ffprobe-state"
++            ),
++            OBSERVER_HTTP_OPERATIONS,
++            ("POST", "/v1/observer"),
++        ),
++        (
++            create_magic_app(token="secret", observer=magic, state_root=tmp_path / "magic-state"),
++            OBSERVER_HTTP_OPERATIONS,
++            ("POST", "/v1/observer"),
++        ),
++        (
++            create_filename_app(
++                token="secret", observer=filename, state_root=tmp_path / "filename-state"
++            ),
++            OBSERVER_HTTP_OPERATIONS,
++            ("POST", "/v1/observer"),
++        ),
++        (
++            create_provenance_app(
++                token="secret", observer=provenance, state_root=tmp_path / "provenance-state"
+             ),
+             OBSERVER_HTTP_OPERATIONS,
+             ("POST", "/v1/observer"),
+@@ -270,3 +300,21 @@
+         "read_expired",
+         "integrity_failure",
+     }
++
++
++def test_magic_readiness_failure_is_an_advertised_http_response(tmp_path: Path) -> None:
++    def unavailable() -> None:
++        raise ValueError("fixture installation changed")
++
++    observer = MagicObserver(
++        cast(FileMagic, SimpleNamespace(verify=unavailable)), image_id="sha256:" + "f" * 64
++    )
++    app = create_magic_app(token="secret", observer=observer, state_root=tmp_path / "state")
++    with TestClient(app) as client:
++        response = client.get("/health/ready")
++        assert response.status_code == 503
++        assert response.json()["error"]["code"] == "service_unavailable"
++        # The owning public endpoint must describe the outcome it actually returns.
++        responses = app.openapi()["paths"]["/health/ready"]["get"]["responses"]
++        assert "503" in responses
++        assert "application/json" in responses["503"]["content"]
