@@ -22,6 +22,16 @@ from threading import Lock
 from typing import Any, cast, overload
 
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_growth_contracts import (
+    COUNT,
+    OCTETS,
+    OCTETS_PER_COUNT,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    declare_growth,
+)
 from riverhog_provenance_contracts import ContractCatalog, canonical_document
 
 from .common import fingerprint
@@ -493,8 +503,9 @@ class _StoredValidator(_Validator):
         # reverse checks. Corrections rebuild the same indexes from effective rows.
         with closing(
             self.store.db.execute(
-                "SELECT value FROM assertions WHERE active = 1 AND touched = 1 "
-                "ORDER BY assertion_id"
+                "SELECT assertions.value FROM changes CROSS JOIN assertions "
+                "WHERE assertions.assertion_id = changes.assertion_id AND active = 1 "
+                "ORDER BY changes.assertion_id"
             )
         ) as rows:
             for (value,) in rows:
@@ -629,11 +640,11 @@ class JournalStore:
                 "CREATE TABLE identities(id TEXT PRIMARY KEY, domain TEXT, value BLOB);"
                 "CREATE TABLE assertions(assertion_id TEXT PRIMARY KEY, object_id TEXT, "
                 "category TEXT, type TEXT, state_id TEXT, observation_id TEXT, sequence TEXT, "
-                "value BLOB, active INTEGER, touched INTEGER);"
+                "value BLOB, active INTEGER);"
                 "CREATE UNIQUE INDEX objects ON assertions(object_id) WHERE active = 1;"
                 "CREATE INDEX states ON assertions(state_id, type) WHERE active = 1;"
                 "CREATE INDEX observations ON assertions(observation_id, type) WHERE active = 1;"
-                "CREATE INDEX changes ON assertions(touched) WHERE active = 1;"
+                "CREATE TABLE changes(assertion_id TEXT PRIMARY KEY);"
                 "CREATE INDEX categories ON assertions(category, assertion_id) WHERE active = 1;"
                 "CREATE TABLE maps(name TEXT, key BLOB, value BLOB, PRIMARY KEY(name, key));"
                 "CREATE INDEX external_types ON maps(name, json_extract(value, '$.object_id'));"
@@ -647,6 +658,120 @@ class JournalStore:
         except BaseException:
             self.close()
             raise
+
+    @declare_growth(
+        Declaration(
+            id="riverhog-provenance.sqlite-changed-assertion-reset.growth/v1",
+            authority="riverhog-provenance",
+            subjects=("riverhog_provenance.journal_store.JournalStore._reset_changed_assertions",),
+            scope="native-sqlite-successful-change-metadata-retirement",
+            starts_at="retire one admitted batch from the owned changed-identity queue",
+            ends_at="return the retired count after closing the native result",
+            dimensions=(
+                Dimension("queued_identities", COUNT, "Identities queued before this unit."),
+                Dimension("row_budget", COUNT, "Maximum identities admitted for this unit."),
+            ),
+            bounds=(
+                Bound(
+                    "sql_statements",
+                    COUNT,
+                    "equal",
+                    Expression("constant", value=1, unit=COUNT),
+                    "One indexed metadata DELETE with an admitted LIMIT and RETURNING.",
+                ),
+                Bound(
+                    "retired_rows",
+                    COUNT,
+                    "upper",
+                    Expression("dimension", name="row_budget"),
+                    "Actual identities retired, including inactive assertions.",
+                ),
+                Bound(
+                    "retired_identity_octets",
+                    OCTETS,
+                    "upper",
+                    Expression(
+                        "product",
+                        terms=(
+                            Expression("constant", value=45, unit=OCTETS_PER_COUNT),
+                            Expression("dimension", name="row_budget"),
+                        ),
+                    ),
+                    "Returned identity text; native assertion identities are UUID URNs.",
+                ),
+                Bound(
+                    "sqlite_vm_instructions",
+                    COUNT,
+                    "upper",
+                    Expression(
+                        "sum",
+                        terms=(
+                            Expression("constant", value=128, unit=COUNT),
+                            Expression(
+                                "product",
+                                terms=(
+                                    Expression("constant", value=128),
+                                    Expression("dimension", name="row_budget"),
+                                ),
+                            ),
+                            Expression(
+                                "product",
+                                terms=(
+                                    Expression("constant", value=64, unit=COUNT),
+                                    Expression(
+                                        "log2_ceil",
+                                        terms=(
+                                            Expression(
+                                                "sum",
+                                                terms=(
+                                                    Expression("constant", value=2, unit=COUNT),
+                                                    Expression(
+                                                        "dimension", name="queued_identities"
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                    "Maintained native SQLite instruction envelope for admitted deletion.",
+                ),
+            ),
+            conditions=(
+                "The component-owned changes queue has its assertion-identity primary key.",
+                "Queue identities come from the native entry schema's canonical UUID URNs.",
+                "row_budget is a positive native SQLite LIMIT admission.",
+            ),
+            invariants=(
+                "Both active and inactive changed identities are retired without changing "
+                "assertion content or liveness.",
+                "Assertion payload rows are not read or rewritten by this primitive.",
+                "Empty and exhausted queues succeed; the result closes on every exit.",
+            ),
+            limitations=(
+                "This private projection is disposable and is not source custody or a "
+                "durable semantic checkpoint.",
+                "Population, correction rebuilds, native graph/schema work, retries and "
+                "cleanup are separately charged.",
+                "SQLite VM instructions exclude internal B-tree operations, page I/O and CPU.",
+            ),
+        )
+    )
+    def _reset_changed_assertions(self, *, row_budget: int) -> int:
+        """Retire metadata without traversing or rewriting assertion payloads."""
+        if type(row_budget) is not int or row_budget < 1:
+            raise ValueError("changed-identity row budget must be positive")
+        with closing(
+            self.db.execute(
+                "DELETE FROM changes WHERE assertion_id IN "
+                "(SELECT assertion_id FROM changes ORDER BY assertion_id LIMIT ?) "
+                "RETURNING assertion_id",
+                (row_budget,),
+            )
+        ) as rows:
+            return sum(1 for _ in rows)
 
     def require_open(self) -> None:
         if not self._cleanup.alive:
@@ -707,7 +832,8 @@ class JournalStore:
         ):
             raise ProvenanceValidationError("entry identity reused or identity domains overlap")
         self._identity(document["id"], "entry", frame.json_bytes)
-        self.db.execute("UPDATE assertions SET touched = 0 WHERE touched = 1")
+        while self._reset_changed_assertions(row_budget=256):
+            pass
         correction = document["entry_kind"] == "correction"
         if correction:
             target_ids: set[str] = set()
@@ -744,7 +870,7 @@ class JournalStore:
             self._identity(row["id"], "referent", _identity_signature(row))
             try:
                 self.db.execute(
-                    "INSERT INTO assertions VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 1)",
+                    "INSERT INTO assertions VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)",
                     (
                         row["assertion_id"],
                         row["id"],
@@ -760,15 +886,19 @@ class JournalStore:
                 raise ProvenanceValidationError(
                     "duplicate effective entity/record identity"
                 ) from exc
+            self.db.execute("INSERT INTO changes VALUES (?)", (row["assertion_id"],))
         if correction:
             for table in ("maps", "edges", "findings", "fixities"):
                 self.db.execute("DELETE FROM " + table)
-            self.db.execute("UPDATE assertions SET touched = 1 WHERE active = 1")
+            self.db.execute(
+                "INSERT OR IGNORE INTO changes SELECT assertion_id FROM assertions WHERE active = 1"
+            )
         rows = (
             json.loads(value)
             for (value,) in self.db.execute(
-                "SELECT value FROM assertions WHERE active = 1 AND touched = 1 "
-                "ORDER BY assertion_id"
+                "SELECT assertions.value FROM changes CROSS JOIN assertions "
+                "WHERE assertions.assertion_id = changes.assertion_id AND active = 1 "
+                "ORDER BY changes.assertion_id"
             )
         )
         validator = _StoredValidator(
