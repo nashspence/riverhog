@@ -130,7 +130,7 @@ def executed_declared_witness(tmp_path_factory):
         "[pytest]\nmarkers =\n    growth_witness(identity, gates, operation): owned observations\n"
     )
     (root / "test_witness_fixture_owner.py").write_text("""
-from riverhog_protocol.growth import (
+from riverhog_growth_contracts import (
     COUNT, Bound, Declaration, Dimension, Expression, declare_growth,
 )
 
@@ -165,7 +165,7 @@ def parent(values):
 import hashlib
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_protocol.growth import growth_binding, project_bindings
+from riverhog_growth_contracts import growth_binding, project_bindings
 from test_witness_fixture_owner import parent, leaf
 
 @pytest.mark.growth_witness(

@@ -12,7 +12,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import ClassVar, Self
 
-from riverhog_protocol.growth import (
+from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
     Bound,

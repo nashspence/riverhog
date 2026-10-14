@@ -80,7 +80,7 @@ def operation_projection(
     subject: str, *, root: Path | None = None
 ) -> tuple[dict[str, object], dict[str, str]]:
     """Resolve the normative owner from trusted source, never from an artifact."""
-    from riverhog_protocol.growth import growth_binding, project_bindings
+    from riverhog_growth_contracts import growth_binding, project_bindings
 
     from scripts.growth_contract import resolve_operation
 
@@ -112,7 +112,7 @@ def validate_growth_execution(
     The collecting gate verifies artifact custody and source-owned test identity;
     this reader preserves their exact association without importing source code.
     """
-    from riverhog_protocol.growth import validate_execution_samples
+    from riverhog_growth_contracts import validate_execution_samples
 
     source_sha = source.get("source_sha")
     fields = {

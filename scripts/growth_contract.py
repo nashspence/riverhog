@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_protocol.growth import Binding, growth_binding, project_bindings
+from riverhog_growth_contracts import Binding, growth_binding, project_bindings
 
 from scripts.validation_identity import source_identity
 

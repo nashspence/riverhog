@@ -59,6 +59,7 @@ from review0_sampler_lib import sampler_schema_bundle
 from review0_sampler_lib.conformance import _parser as sampler_conformance_parser
 from review0_sampler_lib.schemas import _parser as sampler_schemas_parser
 from riverhog_canonical_json import canonical_json_bytes as jcs_bytes
+from riverhog_growth_contracts import Expression
 from riverhog_storage_adapter_support import storage_adapter_schema_bundle
 from riverhog_storage_adapter_support.conformance import _parser as storage_conformance_parser
 from riverhog_storage_adapter_support.schemas import _parser as storage_schemas_parser
@@ -2917,11 +2918,8 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         *_python_trace(python_registry),
         {
             "id": "growth:cost-model",
-            "owner": "riverhog-protocol",
-            "source": {
-                "path": "packages/riverhog-protocol/src/riverhog_protocol/growth.py",
-                "symbol": "Expression",
-            },
+            "owner": "riverhog-growth-contracts",
+            "source": _linked_source_ref(Expression),
         },
         *[
             {"id": f"growth:{identity}", "source": value["source"]}

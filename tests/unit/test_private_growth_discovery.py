@@ -15,7 +15,7 @@ def private_owner(tmp_path, monkeypatch):
     initializer = package / "__init__.py"
     initializer.write_text('PUBLIC_VALUE = 1\n__all__ = ["PUBLIC_VALUE"]\n')
     implementation = package / "_implementation.py"
-    implementation.write_text("""from riverhog_protocol.growth import (
+    implementation.write_text("""from riverhog_growth_contracts import (
     COUNT, Bound, Declaration, Dimension, Expression, declare_growth,
 )
 

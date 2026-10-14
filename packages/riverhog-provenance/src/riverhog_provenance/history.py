@@ -169,6 +169,8 @@ class MemberHistoryClosure:
         return self
 
     def __exit__(self, *_exc: object) -> None:
+        for summary in self._summaries.values():
+            summary.close()
         self._summaries.clear()
         self._summary_bytes = 0
         self._db.close()
@@ -201,6 +203,7 @@ class MemberHistoryClosure:
             )
 
     def summary_at(self, anchor: HistoryJournalAnchor) -> JournalSummary:
+        """Return an owned exact snapshot; cache eviction does not close its lease."""
         key = canonical_json_bytes(anchor.to_mapping())
         chunks = _prefix(
             self.read_journal(anchor.journal_id, anchor.prefix_bytes), anchor.prefix_bytes
@@ -215,7 +218,7 @@ class MemberHistoryClosure:
             if digest.hexdigest() != anchor.prefix_sha256:
                 raise ProvenanceValidationError("canonical journal prefix identity changed")
             self._summaries.move_to_end(key)
-            return cached
+            return cached.borrow()
         summary = validate_journal_chunks(
             chunks,
             catalog=self.catalog,
@@ -231,8 +234,10 @@ class MemberHistoryClosure:
             ):
                 _, removed = self._summaries.popitem(last=False)
                 self._summary_bytes -= removed.journal_bytes
+                removed.close()
             self._summaries[key] = summary
             self._summary_bytes += summary.journal_bytes
+            return summary.borrow()
         return summary
 
     def _reference_anchor(self, reference: Mapping[str, Any]) -> HistoryJournalAnchor:
@@ -347,20 +352,20 @@ class MemberHistoryClosure:
     def _accept_import(self, imported: MemberHistoryImport) -> MemberHistoryBinding:
         proof = self.store.source_proof(imported)
         source = self.store.descriptor(proof.binding)
-        primary = self.summary_at(source.primary.journal)
-        state, _ = selected_delivery_occurrence(
-            primary,
-            binding={"artifact_id": source.artifact_id, **source.primary.to_mapping()},
-            artifact_id=source.artifact_id,
-            byte_count=source.bytes,
-            sha256=source.sha256,
-            member_role=self.member_role,
-        )
-        if external_reference(primary, state["id"]) != imported.input_state:
-            raise ProvenanceValidationError("imported State differs from the source primary")
-        self._object(source_binding_proof_object_path(imported.source_binding_proof_sha256))
-        self._history(proof.binding, imported.extent)
-        return proof.binding
+        with self.summary_at(source.primary.journal) as primary:
+            state, _ = selected_delivery_occurrence(
+                primary,
+                binding={"artifact_id": source.artifact_id, **source.primary.to_mapping()},
+                artifact_id=source.artifact_id,
+                byte_count=source.bytes,
+                sha256=source.sha256,
+                member_role=self.member_role,
+            )
+            if external_reference(primary, state["id"]) != imported.input_state:
+                raise ProvenanceValidationError("imported State differs from the source primary")
+            self._object(source_binding_proof_object_path(imported.source_binding_proof_sha256))
+            self._history(proof.binding, imported.extent)
+            return proof.binding
 
     def resolve_import(self, imported: MemberHistoryImport) -> None:
         """Validate an accepted early input selection, before output H can be sealed."""
@@ -397,18 +402,20 @@ class MemberHistoryClosure:
             if snapshot is None:
                 return
             identity, encoded = snapshot
-            summary = self.summary_at(
+            with self.summary_at(
                 HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
-            )
-            # Inspect documentary assertions, including retracted rows. Required
-            # preimages do not disappear when a later local correction retires a claim.
-            for frame in summary.frames:
-                for reference in _external_references(frame.document["body"].get("assertions", {})):
-                    self._snapshot(self._reference_anchor(reference))
-            parent = summary.frames[0].document["body"]["journal"].get("forked_from")
-            if parent is not None:
-                self._snapshot(HistoryJournalAnchor.from_mapping(parent))
-            self._db.execute("UPDATE snapshots SET done = 1 WHERE identity = ?", (identity,))
+            ) as summary:
+                # Inspect documentary assertions, including retracted rows. Required
+                # preimages do not disappear when a later local correction retires a claim.
+                for frame in summary.frames:
+                    for reference in _external_references(
+                        frame.document["body"].get("assertions", {})
+                    ):
+                        self._snapshot(self._reference_anchor(reference))
+                parent = summary.frames[0].document["body"]["journal"].get("forked_from")
+                if parent is not None:
+                    self._snapshot(HistoryJournalAnchor.from_mapping(parent))
+                self._db.execute("UPDATE snapshots SET done = 1 WHERE identity = ?", (identity,))
 
     def journal_anchors(self) -> Iterator[HistoryJournalAnchor]:
         """Largest required exact prefix per journal, never a substituted current head."""

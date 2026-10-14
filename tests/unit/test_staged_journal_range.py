@@ -19,8 +19,8 @@ from riverhog_core.catalog_models import (
     StorageIncarnationRecord,
 )
 from riverhog_core.services import collection_uploads as owner
+from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_protocol import COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX as EXTENT
-from riverhog_protocol.growth import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import delete, event, update
 from sqlalchemy.orm import Session
 

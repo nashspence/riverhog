@@ -170,33 +170,33 @@ class ClaimedProvenance:
         # fail here, including when the caller chose the broader retained extent.
         with self.history_closure(extent=extent) as closure:
             proof = self.source_binding_proof()
-            primary = closure.summary_at(self.history.primary.journal)
-            state, _ = selected_delivery_occurrence(
-                primary,
-                binding={
-                    "artifact_id": self.history.artifact_id,
-                    **self.history.primary.to_mapping(),
-                },
-                artifact_id=self.history.artifact_id,
-                byte_count=self.history.bytes,
-                sha256=self.history.sha256,
-                member_role=COLLECTION_MEMBER_ROLE,
-            )
-            imported = MemberHistoryImport.from_mapping(
-                {
-                    "source": {
-                        "identity": proof.source_identity,
-                        "collection_id": str(proof.collection_id),
-                        "archive_root_sha256": self.artifact.root.archive_root_sha256,
-                        "artifact_set_identity": self.artifact.root.artifact_set_identity,
-                        "artifact_id": str(self.artifact.artifact_id),
+            with closure.summary_at(self.history.primary.journal) as primary:
+                state, _ = selected_delivery_occurrence(
+                    primary,
+                    binding={
+                        "artifact_id": self.history.artifact_id,
+                        **self.history.primary.to_mapping(),
                     },
-                    "history_sha256": self.history_binding.history_sha256,
-                    "source_binding_proof_sha256": proof.identity,
-                    "extent": extent,
-                    "input_state": external_reference(primary, state["id"]),
-                }
-            )
+                    artifact_id=self.history.artifact_id,
+                    byte_count=self.history.bytes,
+                    sha256=self.history.sha256,
+                    member_role=COLLECTION_MEMBER_ROLE,
+                )
+                imported = MemberHistoryImport.from_mapping(
+                    {
+                        "source": {
+                            "identity": proof.source_identity,
+                            "collection_id": str(proof.collection_id),
+                            "archive_root_sha256": self.artifact.root.archive_root_sha256,
+                            "artifact_set_identity": self.artifact.root.artifact_set_identity,
+                            "artifact_id": str(self.artifact.artifact_id),
+                        },
+                        "history_sha256": self.history_binding.history_sha256,
+                        "source_binding_proof_sha256": proof.identity,
+                        "extent": extent,
+                        "input_state": external_reference(primary, state["id"]),
+                    }
+                )
             yield imported, proof, closure
 
     def _read_journal(self, journal_id: str, end: int | None) -> Iterator[bytes]:

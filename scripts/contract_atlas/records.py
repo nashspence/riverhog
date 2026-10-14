@@ -14,7 +14,7 @@ if str(Path(__file__).resolve().parents[2]) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import extent_contract
-from riverhog_protocol.growth import validate_projection as validate_growth_projection
+from riverhog_growth_contracts import validate_projection as validate_growth_projection
 
 from scripts.validation_witnesses import validate_growth_execution
 

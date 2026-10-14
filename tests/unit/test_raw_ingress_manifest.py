@@ -66,7 +66,7 @@ def test_raw_source_primitive_work_keeps_exact_outputs_and_delegate_composition(
     monkeypatch: pytest.MonkeyPatch, record_property
 ) -> None:
     from riverhog_canonical_json import canonical_json_bytes
-    from riverhog_protocol.growth import (
+    from riverhog_growth_contracts import (
         growth_binding,
         project_bindings,
         validate_execution_samples,

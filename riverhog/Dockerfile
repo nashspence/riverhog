@@ -30,6 +30,7 @@ COPY packages/config-validation packages/config-validation
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
+COPY packages/riverhog-growth-contracts packages/riverhog-growth-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-age packages/riverhog-age
 COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts

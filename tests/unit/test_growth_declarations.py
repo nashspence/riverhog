@@ -4,7 +4,7 @@ from dataclasses import replace
 
 import pytest
 from riverhog_client import hash_raw_source_chunks
-from riverhog_protocol.growth import (
+from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
     OCTETS_PER_COUNT,
@@ -168,7 +168,7 @@ def test_delegate_composition_rejects_incomplete_or_contradictory_mappings(defec
 
 
 def test_standalone_reader_rejects_unused_cyclic_delegate_edges():
-    from riverhog_protocol.growth import project_bindings, validate_projection
+    from riverhog_growth_contracts import project_bindings, validate_projection
 
     operation = attach(declaration(Expression("dimension", name="bytes")))
     projection = project_bindings((growth_binding(operation),))

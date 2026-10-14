@@ -6,9 +6,9 @@ import json
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256 as RiverhogSHA256
+from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_protocol import CheckpointSHA256, sha256_compress
 from riverhog_protocol import checkpoint_sha256 as backend
-from riverhog_protocol.growth import growth_binding, project_bindings, validate_execution_samples
 from stove0_core._checkpoint_sha256 import CheckpointSHA256 as Stove0SHA256
 
 

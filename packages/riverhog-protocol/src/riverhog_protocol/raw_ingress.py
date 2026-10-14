@@ -7,8 +7,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from riverhog_protocol.artifact_identity import ArtifactId
-from riverhog_protocol.growth import (
+from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
     OCTETS_PER_COUNT,
@@ -18,6 +17,8 @@ from riverhog_protocol.growth import (
     Expression,
     declare_growth,
 )
+
+from riverhog_protocol.artifact_identity import ArtifactId
 
 RAW_SOURCE_DIGEST_SUMMARY_FORMAT = "raw-source-digest-summary/v1"
 RAW_SOURCE_DIGEST_BATCH_MAX = 1024

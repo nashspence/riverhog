@@ -356,7 +356,7 @@ def test_native_defaults_do_not_hide_meaningful_python_parameters(module, name, 
 
 def test_growth_declarations_are_authored_contract_subjects_with_delegate_context():
     from riverhog_client import hash_raw_source_chunks
-    from riverhog_protocol.growth import growth_binding, project_bindings
+    from riverhog_growth_contracts import growth_binding, project_bindings
 
     code = closure()
     projection = project_bindings((growth_binding(hash_raw_source_chunks),))
