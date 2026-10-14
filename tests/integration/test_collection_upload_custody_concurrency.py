@@ -11,6 +11,7 @@ from typing import Any
 from uuid import uuid4
 
 import pytest
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client.canonical_production import (
     ProducerAttribution,
     build_member_journal,
@@ -58,7 +59,12 @@ from riverhog_protocol import (
     CollectionUploadProvenanceJournalCreateDocument,
 )
 from riverhog_protocol.errors import Conflict, ServiceUnavailable
-from riverhog_provenance import BoundedSourceObserver, BytesSource
+from riverhog_provenance import (
+    BoundedSourceObserver,
+    BytesSource,
+    create_journal,
+    parse_journal,
+)
 from sqlalchemy import event, func, select, text
 from sqlalchemy.engine import make_url
 
@@ -769,3 +775,86 @@ def test_guarded_discard_and_exact_resume_cannot_both_win_for_old_custody(
         replacement = _create(first)
         assert replacement != collection_id
         assert first.get(replacement)["state"] == "open"
+
+
+@pytest.mark.parametrize("invalid_prefix", [False, True])
+def test_native_journal_validation_releases_catalog_lock_and_fences_replaced_attempt(
+    database_url, monkeypatch, invalid_prefix
+):
+    first, replacement = _services(database_url)
+    collection_id = _create(first)
+    observed = BoundedSourceObserver().observe(BytesSource(b"detached validation"))
+    raw = create_journal(observed.graph_fragment(), recorded_by_agent_id=observed.observer_agent_id)
+    frames = parse_journal(raw)
+    journal_id = frames[0].document["journal_id"]
+    if invalid_prefix:
+        document = frames[0].document
+        document["sequence"] = "1"
+        raw = (
+            b"\x1e"
+            + canonical_json_bytes(document)
+            + b"\n"
+            + b"".join(frame.encoded for frame in frames[1:])
+        )
+    first.create_provenance_journal(
+        collection_id,
+        journal_id,
+        CollectionUploadProvenanceJournalCreateDocument(
+            bytes=str(len(raw)), sha256=hashlib.sha256(raw).hexdigest()
+        ),
+    )
+    first.append_provenance_journal(collection_id, journal_id, offset=0, content=raw)
+    paused, resume = threading.Event(), threading.Event()
+    native = collection_uploads_module.validate_journal_chunks
+    expected_failure = None
+    if invalid_prefix:
+        with pytest.raises(collection_uploads_module.ProvenanceValidationError) as rejected:
+            native(
+                (raw,),
+                catalog=collection_uploads_module.admission_provenance_catalog(),
+                require_profiles=False,
+            )
+        expected_failure = str(rejected.value)[:1000]
+
+    def waiting(chunks, **kwargs):
+        iterator = iter(chunks)
+        initial = next(iterator)
+        assert first._session_factory.kw["bind"].pool.checkedout() == 0
+        paused.set()
+        if not resume.wait(30):
+            raise TimeoutError("native validation was not resumed")
+
+        def continued():
+            yield initial
+            yield from iterator
+
+        return native(continued(), **kwargs)
+
+    monkeypatch.setattr(collection_uploads_module, "validate_journal_chunks", waiting)
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        future = pool.submit(first.seal_provenance_journal, collection_id, journal_id)
+        try:
+            assert paused.wait(10)
+            with session_scope(replacement._session_factory) as session:
+                session.execute(text("SET LOCAL lock_timeout = '2s'"))
+                record = session.scalar(
+                    select(CollectionUploadProvenanceJournalRecord)
+                    .where(
+                        CollectionUploadProvenanceJournalRecord.collection_id == collection_id,
+                        CollectionUploadProvenanceJournalRecord.journal_id == journal_id,
+                    )
+                    .with_for_update()
+                )
+                assert record is not None and record.state == "validating"
+                record.capture_attempt_id = str(uuid4())
+        finally:
+            resume.set()
+        stale = future.result(timeout=30)
+    assert stale["state"] == "validating" and stale["anchor"] is None
+    current = replacement.seal_provenance_journal(collection_id, journal_id)
+    assert current["state"] == ("failed" if invalid_prefix else "sealed")
+    if invalid_prefix:
+        assert current["failure"] == expected_failure
+        assert current["anchor"] is None
+    else:
+        assert current["anchor"] is not None

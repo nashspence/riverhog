@@ -1619,29 +1619,16 @@ class SqlAlchemyCollectionUploadService:
                 return
             if not advance.complete and advance.failure is None:
                 return
-        with session_scope(self._session_factory) as session:
-            record = session.scalar(
-                select(CollectionUploadProvenanceJournalRecord)
-                .where(
-                    CollectionUploadProvenanceJournalRecord.collection_id == collection_id,
-                    CollectionUploadProvenanceJournalRecord.journal_id == journal_id,
-                )
-                .with_for_update(skip_locked=True)
-            )
-            if record is None or record.state != "validating":
-                return
-            _require_upload_journal_capture_binding(record)
-            _require_upload_journal_capture_directory(session, record)
-            if record.capture_phase not in {"complete", "deferred"}:
-                return
-            # Speculative framing findings never replace native error ordering.
-            # Graph/schema execution is outside the capture step's work claim.
-            try:
-                with session.begin_nested():
-                    _validate_next_upload_journal_entry(session, record)
-            except (ProvenanceValidationError, ValueError) as exc:
-                record.state = "failed"
-                record.failure = str(exc)[:1000]
+        validation = _read_upload_journal_validation(
+            self._session_factory, collection_id, journal_id
+        )
+        if validation is None:
+            return
+        try:
+            outcome = _compute_upload_journal_validation(self._session_factory, validation)
+        except _StaleUploadJournalValidation:
+            return
+        _commit_upload_journal_validation(self._session_factory, validation, outcome)
 
     def get_provenance_journal(
         self,
@@ -7063,35 +7050,320 @@ def _commit_upload_journal_capture(
         return True
 
 
-def _validate_next_upload_journal_entry(
-    session: Session,
-    record: CollectionUploadProvenanceJournalRecord,
-) -> None:
-    """Validate the exact staged canonical journal before it can be bound."""
+@dataclass(frozen=True, slots=True)
+class _UploadJournalValidationWork:
+    collection_id: int
+    journal_id: str
+    attempt_id: str
+    directory_id: str
+    version: int
+    source_bytes: int
+    source_sha256: str
+    phase: str
+    cursor: JournalFramingCursor
+    capture_failure: str | None
 
-    if record.state != "validating" or record.accepted_bytes != record.bytes:
-        raise ProvenanceValidationError("canonical journal is not complete for validation")
-    with (
-        closing(_iter_upload_journal_chunks(session, record)) as chunks,
-        validate_journal_chunks(
-            chunks,
-            catalog=admission_provenance_catalog(),
-            require_profiles=False,
-        ) as summary,
+
+@dataclass(frozen=True, slots=True)
+class _UploadJournalValidationOutcome:
+    failure: str | None
+    frame_count: int = 0
+    terminal_entry_id: str | None = None
+    terminal_sequence: int | None = None
+    terminal_json_sha256: str | None = None
+
+
+class _StaleUploadJournalValidation(Exception):
+    """The detached result no longer belongs to the selected owned attempt."""
+
+
+def _upload_journal_validation_fence(work: _UploadJournalValidationWork) -> tuple[Any, ...]:
+    record = CollectionUploadProvenanceJournalRecord
+    return (
+        record.collection_id == work.collection_id,
+        record.journal_id == work.journal_id,
+        record.state == "validating",
+        record.accepted_bytes == work.source_bytes,
+        record.bytes == work.source_bytes,
+        record.sha256 == work.source_sha256,
+        record.capture_source_bytes == work.source_bytes,
+        record.capture_source_sha256 == work.source_sha256,
+        record.capture_attempt_id == work.attempt_id,
+        record.capture_directory_id == work.directory_id,
+        record.capture_algorithm == JOURNAL_FRAMING_ALGORITHM,
+        record.capture_phase == work.phase,
+        record.capture_version == work.version,
+        record.capture_byte_offset == work.cursor.byte_offset,
+        record.capture_frame_start == work.cursor.frame_start,
+        record.capture_frame_count == work.cursor.frame_count,
+        record.capture_failure == work.capture_failure,
+    )
+
+
+def _read_upload_journal_validation(
+    factory: SessionFactory,
+    collection_id: int,
+    journal_id: str,
+) -> _UploadJournalValidationWork | None:
+    with read_snapshot(factory) as session:
+        record = session.get(CollectionUploadProvenanceJournalRecord, (collection_id, journal_id))
+        if record is None or record.state != "validating":
+            return None
+        _require_upload_journal_capture_binding(record)
+        _require_upload_journal_capture_directory(session, record)
+        if record.capture_phase not in {"complete", "deferred"}:
+            return None
+        return _UploadJournalValidationWork(
+            collection_id,
+            journal_id,
+            cast(str, record.capture_attempt_id),
+            cast(str, record.capture_directory_id),
+            record.capture_version,
+            record.bytes,
+            record.sha256,
+            record.capture_phase,
+            JournalFramingCursor(
+                record.capture_byte_offset, record.capture_frame_start, record.capture_frame_count
+            ),
+            record.capture_failure,
+        )
+
+
+@declare_growth(
+    Declaration(
+        id="riverhog-server.sqlite-staged-journal-validation-source.growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            "riverhog_core.services.collection_uploads._read_upload_journal_validation_chunk",
+        ),
+        scope="native-sqlite-successful-fenced-source-unit",
+        starts_at="check the detached attempt and seek one retained source ordinal",
+        ends_at="return that source unit after its catalog snapshot closes",
+        dimensions=(
+            Dimension("staged_chunks", COUNT, "Retained transport chunks in the selected journal."),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "equal",
+                Expression("constant", value=2, unit=COUNT),
+                "One fixed-shape authority probe and one indexed source ordinal probe.",
+            ),
+            Bound(
+                "source_rows",
+                COUNT,
+                "equal",
+                Expression("constant", value=1, unit=COUNT),
+                "One actual retained source row; no earlier chunks are enumerated.",
+            ),
+            Bound(
+                "loaded_chunk_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "constant", value=COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX, unit=OCTETS
+                ),
+                "Octets materialized from the selected transport row.",
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "constant", value=COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX, unit=OCTETS
+                ),
+                "Detached exact source bytes returned to the native validator.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        Expression("constant", value=128, unit=COUNT),
+                        Expression(
+                            "product",
+                            terms=(
+                                Expression("constant", value=64, unit=COUNT),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("constant", value=2, unit=COUNT),
+                                                Expression("dimension", name="staged_chunks"),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Maintained native SQLite instruction envelope for the two point probes.",
+            ),
+        ),
+        conditions=(
+            "The catalog uses its maintained journal and source-ordinal primary keys.",
+            "The owner retains immutable source chunks no larger than the append extent.",
+            "A successful read still belongs to the exact detached source and attempt.",
+        ),
+        invariants=(
+            "Only the requested ordinal and exact next source offset may be returned.",
+            "The result and read-only snapshot close before native computation continues.",
+        ),
+        limitations=(
+            "Other database engines require their own instruction/index-cost qualification.",
+            "SQLite VM instructions exclude internal B-tree comparisons, page I/O and CPU.",
+            "This source unit does not establish semantic acceptance or bounded total native "
+            "graph/schema execution, retries, preparation, terminal publication or cleanup.",
+        ),
+    )
+)
+def _read_upload_journal_validation_chunk(
+    factory: SessionFactory,
+    work: _UploadJournalValidationWork,
+    *,
+    ordinal: int,
+    offset: int,
+) -> bytes:
+    if (
+        type(ordinal) is not int
+        or ordinal < 0
+        or type(offset) is not int
+        or not 0 <= offset < work.source_bytes
     ):
+        raise ValueError("invalid retained journal source position")
+    with read_snapshot(factory) as session:
         if (
-            summary.journal_id != record.journal_id
-            or summary.journal_sha256 != record.sha256
-            or summary.journal_bytes != record.bytes
+            session.scalar(
+                select(CollectionUploadProvenanceJournalRecord.collection_id).where(
+                    *_upload_journal_validation_fence(work)
+                )
+            )
+            is None
         ):
-            raise ProvenanceValidationError("staged canonical journal differs from its authority")
-        record.validation_byte_offset = record.bytes
-        record.validation_sequence = len(summary.frames)
-        record.terminal_entry_id = summary.tail.reference["entry_id"]
-        record.terminal_sequence = int(summary.tail.reference["sequence"])
-        record.terminal_json_sha256 = summary.tail.reference["json_sha256"]
-        record.state = "sealed"
-        record.failure = None
+            raise _StaleUploadJournalValidation
+        chunk = CollectionUploadProvenanceJournalChunkRecord
+        with session.execute(
+            select(chunk.byte_offset, chunk.content).where(
+                chunk.collection_id == work.collection_id,
+                chunk.journal_id == work.journal_id,
+                chunk.ordinal == ordinal,
+            )
+        ) as rows:
+            row = rows.one_or_none()
+            if row is None or row.byte_offset != offset:
+                raise ProvenanceValidationError("staged canonical journal chunks are discontinuous")
+            raw = bytes(row.content)
+            if not 1 <= len(raw) <= COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX:
+                raise ProvenanceValidationError("staged canonical journal chunk extent is invalid")
+            return raw[: work.source_bytes - offset]
+
+
+def _iter_upload_journal_validation_chunks(
+    factory: SessionFactory,
+    work: _UploadJournalValidationWork,
+) -> Generator[bytes]:
+    ordinal = offset = 0
+    while offset < work.source_bytes:
+        raw = _read_upload_journal_validation_chunk(factory, work, ordinal=ordinal, offset=offset)
+        yield raw
+        ordinal += 1
+        offset += len(raw)
+
+
+def _compute_upload_journal_validation(
+    factory: SessionFactory,
+    work: _UploadJournalValidationWork,
+) -> _UploadJournalValidationOutcome:
+    """Run the native pass with no catalog reader or write transaction retained.
+
+    This whole native graph/schema pass remains outside the source-unit work claim.
+    Framing findings are speculative; native replay retains exact error ordering.
+    Its temporary summary is owned here and never becomes a durable checkpoint.
+    """
+    try:
+        with (
+            closing(_iter_upload_journal_validation_chunks(factory, work)) as chunks,
+            validate_journal_chunks(
+                chunks, catalog=admission_provenance_catalog(), require_profiles=False
+            ) as summary,
+        ):
+            if (
+                summary.journal_id != work.journal_id
+                or summary.journal_sha256 != work.source_sha256
+                or summary.journal_bytes != work.source_bytes
+            ):
+                raise ProvenanceValidationError(
+                    "staged canonical journal differs from its authority"
+                )
+            tail = summary.tail.reference
+            return _UploadJournalValidationOutcome(
+                None,
+                len(summary.frames),
+                tail["entry_id"],
+                int(tail["sequence"]),
+                tail["json_sha256"],
+            )
+    except (ProvenanceValidationError, ValueError) as exc:
+        return _UploadJournalValidationOutcome(str(exc)[:1000])
+
+
+def _commit_upload_journal_validation(
+    factory: SessionFactory,
+    work: _UploadJournalValidationWork,
+    outcome: _UploadJournalValidationOutcome,
+) -> bool:
+    """Publish fixed-shape terminal metadata only for the exact selected attempt."""
+    if outcome.failure is None:
+        if (
+            outcome.frame_count < 1
+            or outcome.terminal_entry_id is None
+            or outcome.terminal_sequence != outcome.frame_count - 1
+            or outcome.terminal_json_sha256 is None
+        ):
+            raise RuntimeError("journal validation result has no exact terminal anchor")
+        values: dict[str, Any] = {
+            "state": "sealed",
+            "failure": None,
+            "validation_byte_offset": work.source_bytes,
+            "validation_sequence": outcome.frame_count,
+            "terminal_entry_id": outcome.terminal_entry_id,
+            "terminal_sequence": outcome.terminal_sequence,
+            "terminal_json_sha256": outcome.terminal_json_sha256,
+        }
+    else:
+        if (
+            outcome.frame_count
+            or outcome.terminal_entry_id is not None
+            or outcome.terminal_sequence is not None
+            or outcome.terminal_json_sha256 is not None
+        ):
+            raise RuntimeError("failed journal validation cannot publish a terminal anchor")
+        values = {"state": "failed", "failure": outcome.failure}
+    values["capture_version"] = work.version + 1
+    with session_scope(factory) as session:
+        current = session.scalar(
+            select(CollectionUploadProvenanceJournalRecord)
+            .where(*_upload_journal_validation_fence(work))
+            .with_for_update(skip_locked=True)
+        )
+        if current is None:
+            return False
+        _require_upload_journal_capture_directory(session, current)
+        changed = cast(
+            CursorResult[Any],
+            session.execute(
+                update(CollectionUploadProvenanceJournalRecord)
+                .where(*_upload_journal_validation_fence(work))
+                .values(**values)
+            ),
+        )
+        return changed.rowcount == 1
 
 
 def _volume_summary(plan: PackVolumePlan | RawVolumePlan) -> dict[str, object]:
