@@ -7,7 +7,9 @@ import re
 import secrets
 import uuid
 from collections import OrderedDict
-from collections.abc import Iterator, Mapping, Sequence
+from collections.abc import Generator, Iterator, Mapping, Sequence
+from contextlib import closing
+from dataclasses import dataclass
 from datetime import timedelta
 from itertools import islice
 from typing import Any, Literal, TypedDict, cast
@@ -138,10 +140,14 @@ from riverhog_protocol.transport import (
     COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
 )
 from riverhog_provenance import (
+    JOURNAL_FRAMING_ALGORITHM,
     CanonicalCorpusValidator,
+    JournalFramingAdvance,
+    JournalFramingCursor,
     JournalSummary,
     MemberHistoryClosure,
     ProvenanceValidationError,
+    advance_journal_framing,
     external_reference,
     validate_journal_chunks,
 )
@@ -230,6 +236,7 @@ from riverhog_core.catalog_models import (
     CollectionUploadMemberHistoryRecord,
     CollectionUploadProvenanceArchiveVolumeRecord,
     CollectionUploadProvenanceCustodyObjectRecord,
+    CollectionUploadProvenanceFrameRecord,
     CollectionUploadProvenanceJournalChunkRecord,
     CollectionUploadProvenanceJournalRecord,
     CollectionUploadProvenanceStructureRecord,
@@ -1082,6 +1089,12 @@ class SqlAlchemyCollectionUploadService:
                         raise Conflict("provenance journal authority already differs")
                     # A longer authenticated source snapshot can share an earlier
                     # prefix. Accepted octets and selected anchors stay immutable.
+                    if existing.capture_phase == "complete":
+                        _require_upload_journal_capture_binding(existing)
+                        _require_upload_journal_capture_directory(session, existing)
+                        existing.capture_phase = "extending"
+                    elif existing.capture_phase != "pending":
+                        raise RuntimeError("sealed journal has unfinished capture progress")
                     existing.bytes = authority.bytes
                     existing.sha256 = authority.sha256
                     existing.state = "accepting"
@@ -1587,14 +1600,48 @@ class SqlAlchemyCollectionUploadService:
                 digest = CheckpointSHA256.from_state(record.content_hash_state)
                 if record.accepted_bytes != record.bytes or digest.hexdigest() != record.sha256:
                     raise Conflict("provenance journal content does not match its exact authority")
-                record.state = "validating"
+                _begin_upload_journal_capture(session, record)
+        self._advance_provenance_journal_validation(normalized_id, journal_id)
+        return self.get_provenance_journal(normalized_id, journal_id)
+
+    def _advance_provenance_journal_validation(self, collection_id: int, journal_id: str) -> None:
+        work = _read_upload_journal_capture(self._session_factory, collection_id, journal_id)
+        if work is not None:
+            # Source and catalog readers have closed before this detached scan.
+            advance = advance_journal_framing(
+                work.cursor,
+                work.content,
+                byte_budget=_JOURNAL_CAPTURE_OCTET_BUDGET,
+                frame_budget=_JOURNAL_CAPTURE_FRAME_BUDGET,
+                at_end=work.cursor.byte_offset + len(work.content) == work.source_bytes,
+            )
+            if not _commit_upload_journal_capture(self._session_factory, work, advance):
+                return
+            if not advance.complete and advance.failure is None:
+                return
+        with session_scope(self._session_factory) as session:
+            record = session.scalar(
+                select(CollectionUploadProvenanceJournalRecord)
+                .where(
+                    CollectionUploadProvenanceJournalRecord.collection_id == collection_id,
+                    CollectionUploadProvenanceJournalRecord.journal_id == journal_id,
+                )
+                .with_for_update(skip_locked=True)
+            )
+            if record is None or record.state != "validating":
+                return
+            _require_upload_journal_capture_binding(record)
+            _require_upload_journal_capture_directory(session, record)
+            if record.capture_phase not in {"complete", "deferred"}:
+                return
+            # Speculative framing findings never replace native error ordering.
+            # Graph/schema execution is outside the capture step's work claim.
             try:
                 with session.begin_nested():
                     _validate_next_upload_journal_entry(session, record)
             except (ProvenanceValidationError, ValueError) as exc:
                 record.state = "failed"
                 record.failure = str(exc)[:1000]
-            return _journal_payload(record)
 
     def get_provenance_journal(
         self,
@@ -1630,8 +1677,11 @@ class SqlAlchemyCollectionUploadService:
         processed = 0
         for _ in range(max(0, limit)):
             with session_scope(self._session_factory) as session:
-                record = session.scalar(
-                    select(CollectionUploadProvenanceJournalRecord)
+                selected = session.execute(
+                    select(
+                        CollectionUploadProvenanceJournalRecord.collection_id,
+                        CollectionUploadProvenanceJournalRecord.journal_id,
+                    )
                     .where(CollectionUploadProvenanceJournalRecord.state == "validating")
                     .order_by(
                         CollectionUploadProvenanceJournalRecord.collection_id,
@@ -1639,16 +1689,11 @@ class SqlAlchemyCollectionUploadService:
                     )
                     .with_for_update(skip_locked=True)
                     .limit(1)
-                )
-                if record is None:
-                    break
-                collection_id = record.collection_id
-                try:
-                    with session.begin_nested():
-                        _validate_next_upload_journal_entry(session, record)
-                except (ProvenanceValidationError, ValueError) as exc:
-                    record.state = "failed"
-                    record.failure = str(exc)[:1000]
+                ).first()
+            if selected is None:
+                break
+            collection_id, journal_id = selected
+            self._advance_provenance_journal_validation(collection_id, journal_id)
             self._schedule_finalization_if_ready(collection_id)
             processed += 1
         return processed
@@ -6237,9 +6282,9 @@ def _next_provenance_publication_journal(
             Bound(
                 "sql_statements",
                 COUNT,
-                "equal",
-                Expression("constant", value=1, unit=COUNT),
-                "Native range SELECT statements issued by this operation.",
+                "upper",
+                Expression("constant", value=2, unit=COUNT),
+                "Native source-location and remaining-range SELECT statements.",
             ),
             Bound(
                 "returned_rows",
@@ -6321,15 +6366,15 @@ def _next_provenance_publication_journal(
         conditions=(
             "The private catalog uses its maintained (collection_id, journal_id, "
             "ordinal) primary key.",
-            "Every non-final transport chunk has the declared append extent; the last "
-            "may be shorter.",
-            "overlap_chunks = floor((offset + range_octets - 1) / append_extent) - "
-            "floor(offset / append_extent) + 1.",
+            "The unique source byte-offset index locates the first intersecting chunk.",
+            "Immutable contiguous source chunks are at most the declared append extent; "
+            "completed history prefixes may retain shorter interior chunks.",
+            "overlap_chunks counts actual retained chunks intersecting this range.",
             "The native SQLite execution profile is exercised by the maintained "
             "actual-body witness.",
         ),
         invariants=(
-            "Selected ordinals and byte offsets agree with the transport geometry.",
+            "Selected ordinals and byte offsets remain exact and contiguous.",
             "The requested bytes remain exact and contiguous, and query ownership "
             "closes on every exit.",
         ),
@@ -6359,49 +6404,85 @@ def _upload_journal_range_bytes(
         or not 1 <= size <= PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX
     ):
         raise RuntimeError("provenance journal publication range is invalid")
-    extent = COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX
-    first_ordinal = offset // extent
-    last_ordinal = (offset + size - 1) // extent
-    statement = (
-        select(
-            CollectionUploadProvenanceJournalChunkRecord.ordinal,
-            CollectionUploadProvenanceJournalChunkRecord.byte_offset,
-            CollectionUploadProvenanceJournalChunkRecord.content,
-        )
-        .where(
-            CollectionUploadProvenanceJournalChunkRecord.collection_id == collection_id,
-            CollectionUploadProvenanceJournalChunkRecord.journal_id == journal_id,
-            CollectionUploadProvenanceJournalChunkRecord.ordinal >= first_ordinal,
-            CollectionUploadProvenanceJournalChunkRecord.ordinal <= last_ordinal,
-        )
-        .order_by(CollectionUploadProvenanceJournalChunkRecord.ordinal)
-        .execution_options(yield_per=1)
+    ordinal, row_offset, raw = _upload_journal_chunk_at(
+        session,
+        collection_id,
+        journal_id,
+        offset=offset,
     )
     content = bytearray()
-    expected = offset
-    ordinal = first_ordinal
-    with session.execute(statement) as rows:
-        for row in rows:
-            raw = bytes(row.content)
-            row_offset = int(row.byte_offset)
-            start = max(0, expected - row_offset)
-            if (
-                row.ordinal != ordinal
-                or row_offset != ordinal * extent
-                or not 1 <= len(raw) <= extent
-                or row_offset > expected
-                or start >= len(raw)
-            ):
-                raise RuntimeError("provenance journal chunks are not contiguous")
-            take = min(len(raw) - start, size - len(content))
-            content.extend(raw[start : start + take])
-            expected += take
-            ordinal += 1
-            if len(content) == size:
-                break
+    start = offset - row_offset
+    content.extend(raw[start : start + size])
+    if len(content) < size:
+        statement = (
+            select(
+                CollectionUploadProvenanceJournalChunkRecord.ordinal,
+                CollectionUploadProvenanceJournalChunkRecord.byte_offset,
+                CollectionUploadProvenanceJournalChunkRecord.content,
+            )
+            .where(
+                CollectionUploadProvenanceJournalChunkRecord.collection_id == collection_id,
+                CollectionUploadProvenanceJournalChunkRecord.journal_id == journal_id,
+                CollectionUploadProvenanceJournalChunkRecord.byte_offset > row_offset,
+                CollectionUploadProvenanceJournalChunkRecord.byte_offset < offset + size,
+            )
+            .order_by(CollectionUploadProvenanceJournalChunkRecord.byte_offset)
+            .execution_options(yield_per=1)
+        )
+        expected = offset + len(content)
+        ordinal += 1
+        with session.execute(statement) as rows:
+            for row in rows:
+                raw = bytes(row.content)
+                if (
+                    row.ordinal != ordinal
+                    or row.byte_offset != expected
+                    or not 1 <= len(raw) <= COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX
+                ):
+                    raise RuntimeError("provenance journal chunks are not contiguous")
+                take = min(len(raw), size - len(content))
+                content.extend(raw[:take])
+                expected += take
+                ordinal += 1
+                if len(content) == size:
+                    break
     if len(content) != size:
         raise RuntimeError("provenance journal publication range is unavailable")
     return bytes(content)
+
+
+def _upload_journal_chunk_at(
+    session: Session,
+    collection_id: int,
+    journal_id: str,
+    *,
+    offset: int,
+) -> tuple[int, int, bytes]:
+    """Locate one retained segment without assuming uniform historical chunks."""
+    if type(offset) is not int or offset < 0:
+        raise RuntimeError("provenance journal publication range is invalid")
+    chunk = CollectionUploadProvenanceJournalChunkRecord
+    statement = (
+        select(chunk.ordinal, chunk.byte_offset, chunk.content)
+        .where(
+            chunk.collection_id == collection_id,
+            chunk.journal_id == journal_id,
+            chunk.byte_offset <= offset,
+        )
+        .order_by(chunk.byte_offset.desc())
+        .limit(1)
+        .execution_options(yield_per=1)
+    )
+    with session.execute(statement) as rows:
+        for row in rows:
+            raw = bytes(row.content)
+            if (
+                not 1 <= len(raw) <= COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX
+                or not row.byte_offset <= offset < row.byte_offset + len(raw)
+            ):
+                raise RuntimeError("provenance journal chunks are not contiguous")
+            return int(row.ordinal), int(row.byte_offset), raw
+    raise RuntimeError("provenance journal publication range is unavailable")
 
 
 def _planner_checkpoint(upload: CollectionUploadRecord) -> Any:
@@ -6706,7 +6787,7 @@ def _iter_upload_journal_chunks(
     record: CollectionUploadProvenanceJournalRecord,
     *,
     through_bytes: int | None = None,
-) -> Iterator[bytes]:
+) -> Generator[bytes, None, None]:
     """Read exact contiguous staged octets without constructing a giant byte string."""
 
     limit = record.bytes if through_bytes is None else through_bytes
@@ -6723,18 +6804,263 @@ def _iter_upload_journal_chunks(
     )
     offset = 0
     ordinal = 0
-    for chunk in session.scalars(statement):
-        if offset >= limit:
-            break
-        raw = bytes(chunk.content)
-        if chunk.byte_offset != offset or chunk.ordinal != ordinal or not raw:
-            raise ProvenanceValidationError("staged canonical journal chunks are discontinuous")
-        selected = raw[: limit - offset]
-        yield selected
-        offset += len(selected)
-        ordinal += 1
+    with session.scalars(statement) as chunks:
+        for chunk in chunks:
+            if offset >= limit:
+                break
+            raw = bytes(chunk.content)
+            if chunk.byte_offset != offset or chunk.ordinal != ordinal or not raw:
+                raise ProvenanceValidationError("staged canonical journal chunks are discontinuous")
+            selected = raw[: limit - offset]
+            yield selected
+            offset += len(selected)
+            ordinal += 1
     if offset != limit:
         raise ProvenanceValidationError("staged canonical journal prefix is incomplete")
+
+
+_JOURNAL_CAPTURE_OCTET_BUDGET = 64 * 1024
+_JOURNAL_CAPTURE_FRAME_BUDGET = 64
+
+
+@dataclass(frozen=True, slots=True)
+class _UploadJournalCaptureWork:
+    collection_id: int
+    journal_id: str
+    attempt_id: str
+    directory_id: str
+    version: int
+    source_bytes: int
+    source_sha256: str
+    cursor: JournalFramingCursor
+    content: bytes
+
+
+def _begin_upload_journal_capture(
+    session: Session,
+    record: CollectionUploadProvenanceJournalRecord,
+) -> None:
+    journal = CollectionUploadProvenanceJournalRecord
+    if record.capture_phase not in {"pending", "extending"}:
+        session.refresh(record)
+        return
+    extending = record.capture_phase == "extending"
+    if extending and (
+        not record.capture_directory_id
+        or record.capture_source_bytes != record.capture_byte_offset
+        or record.capture_frame_start is not None
+        or record.capture_byte_offset >= record.bytes
+    ):
+        raise RuntimeError("journal extension differs from its captured prefix")
+    # A new authenticated source snapshot gets a new attempt fence. Immutable
+    # prefix positions retain their directory without copying earlier rows.
+    session.execute(
+        update(journal)
+        .where(
+            journal.collection_id == record.collection_id,
+            journal.journal_id == record.journal_id,
+            journal.state == record.state,
+            journal.capture_phase == record.capture_phase,
+            journal.capture_version == record.capture_version,
+            journal.capture_directory_id == record.capture_directory_id,
+            journal.bytes == record.bytes,
+            journal.sha256 == record.sha256,
+            journal.accepted_bytes == record.bytes,
+        )
+        .values(
+            state="validating",
+            capture_attempt_id=str(uuid.uuid4()),
+            capture_directory_id=record.capture_directory_id if extending else str(uuid.uuid4()),
+            capture_algorithm=JOURNAL_FRAMING_ALGORITHM,
+            capture_source_sha256=record.sha256,
+            capture_source_bytes=record.bytes,
+            capture_version=record.capture_version + 1,
+            capture_byte_offset=record.capture_byte_offset if extending else 0,
+            capture_frame_start=None,
+            capture_frame_count=record.capture_frame_count if extending else 0,
+            capture_phase="scanning",
+            capture_failure=None,
+        )
+        .execution_options(synchronize_session=False)
+    )
+    session.refresh(record)
+
+
+def _require_upload_journal_capture_binding(
+    record: CollectionUploadProvenanceJournalRecord,
+) -> None:
+    if (
+        not record.capture_attempt_id
+        or not record.capture_directory_id
+        or record.capture_algorithm != JOURNAL_FRAMING_ALGORITHM
+        or record.capture_source_sha256 != record.sha256
+        or record.capture_source_bytes != record.bytes
+        or record.accepted_bytes != record.bytes
+        or not 0 <= record.capture_byte_offset <= record.bytes
+    ):
+        raise RuntimeError("journal capture checkpoint differs from its retained source")
+
+
+def _require_upload_journal_capture_directory(
+    session: Session,
+    record: CollectionUploadProvenanceJournalRecord,
+) -> None:
+    """Check the checkpoint's last manifest link with one indexed lookup.
+
+    This is an ordinary-restart integrity check, not source authentication or a
+    full-directory corruption audit. Native validation still rereads exact source.
+    """
+    if record.capture_frame_count:
+        last = session.get(
+            CollectionUploadProvenanceFrameRecord,
+            (
+                record.collection_id,
+                record.journal_id,
+                record.capture_directory_id,
+                record.capture_frame_count - 1,
+            ),
+        )
+        if last is None:
+            raise RuntimeError("journal capture checkpoint has a missing frame position")
+        end = last.byte_offset + last.json_bytes + 2
+    else:
+        end = 0
+    if (
+        end > record.capture_byte_offset
+        or record.capture_phase in {"scanning", "complete"}
+        and (
+            (record.capture_frame_start is None and end != record.capture_byte_offset)
+            or (record.capture_frame_start is not None and end != record.capture_frame_start)
+            or record.capture_failure is not None
+        )
+        or record.capture_phase == "complete"
+        and (record.capture_byte_offset != record.bytes or record.capture_frame_start is not None)
+        or record.capture_phase == "deferred"
+        and record.capture_failure is None
+    ):
+        raise RuntimeError("journal capture checkpoint disagrees with its frame directory")
+
+
+def _read_upload_journal_capture(
+    factory: SessionFactory,
+    collection_id: int,
+    journal_id: str,
+) -> _UploadJournalCaptureWork | None:
+    with read_snapshot(factory) as session:
+        record = session.get(CollectionUploadProvenanceJournalRecord, (collection_id, journal_id))
+        if record is None or record.state != "validating":
+            return None
+        _require_upload_journal_capture_binding(record)
+        _require_upload_journal_capture_directory(session, record)
+        if record.capture_phase in {"complete", "deferred"}:
+            return None
+        if record.capture_phase != "scanning":
+            raise RuntimeError("journal capture checkpoint has no active phase")
+        cursor = JournalFramingCursor(
+            record.capture_byte_offset,
+            record.capture_frame_start,
+            record.capture_frame_count,
+        )
+        size = min(_JOURNAL_CAPTURE_OCTET_BUDGET, record.bytes - cursor.byte_offset)
+        if size:
+            _, offset, raw = _upload_journal_chunk_at(
+                session,
+                collection_id,
+                journal_id,
+                offset=cursor.byte_offset,
+            )
+            start = cursor.byte_offset - offset
+            content = raw[start : start + size]
+        else:
+            content = b""
+        return _UploadJournalCaptureWork(
+            collection_id,
+            journal_id,
+            cast(str, record.capture_attempt_id),
+            cast(str, record.capture_directory_id),
+            record.capture_version,
+            record.bytes,
+            record.sha256,
+            cursor,
+            content,
+        )
+
+
+def _commit_upload_journal_capture(
+    factory: SessionFactory,
+    work: _UploadJournalCaptureWork,
+    advance: JournalFramingAdvance,
+) -> bool:
+    """Publish this bounded private unit and its cursor under the same transaction.
+
+    The exact source, attempt, algorithm, version and old cursor fence the write.
+    An interrupted unit rolls back at most its admitted directory rows. Existing
+    committed rows are retained across ordinary worker replacement.
+    """
+    record = CollectionUploadProvenanceJournalRecord
+    cursor = advance.cursor
+    if (
+        not work.cursor.byte_offset
+        <= cursor.byte_offset
+        <= work.cursor.byte_offset + len(work.content)
+        or cursor.byte_offset > work.source_bytes
+        or len(advance.positions) > _JOURNAL_CAPTURE_FRAME_BUDGET
+        or cursor.frame_count != work.cursor.frame_count + len(advance.positions)
+    ):
+        raise RuntimeError("journal capture transition exceeds its admitted work")
+    with session_scope(factory) as session:
+        changed = cast(
+            CursorResult[Any],
+            session.execute(
+                update(record)
+                .where(
+                    record.collection_id == work.collection_id,
+                    record.journal_id == work.journal_id,
+                    record.state == "validating",
+                    record.accepted_bytes == work.source_bytes,
+                    record.bytes == work.source_bytes,
+                    record.sha256 == work.source_sha256,
+                    record.capture_source_bytes == work.source_bytes,
+                    record.capture_source_sha256 == work.source_sha256,
+                    record.capture_attempt_id == work.attempt_id,
+                    record.capture_directory_id == work.directory_id,
+                    record.capture_algorithm == JOURNAL_FRAMING_ALGORITHM,
+                    record.capture_phase == "scanning",
+                    record.capture_version == work.version,
+                    record.capture_byte_offset == work.cursor.byte_offset,
+                    record.capture_frame_start == work.cursor.frame_start,
+                    record.capture_frame_count == work.cursor.frame_count,
+                )
+                .values(
+                    capture_version=work.version + 1,
+                    capture_byte_offset=cursor.byte_offset,
+                    capture_frame_start=cursor.frame_start,
+                    capture_frame_count=cursor.frame_count,
+                    capture_phase="deferred"
+                    if advance.failure is not None
+                    else ("complete" if advance.complete else "scanning"),
+                    capture_failure=advance.failure,
+                )
+            ),
+        )
+        if changed.rowcount != 1:
+            return False
+        if advance.positions:
+            session.execute(
+                insert(CollectionUploadProvenanceFrameRecord),
+                [
+                    {
+                        "collection_id": work.collection_id,
+                        "journal_id": work.journal_id,
+                        "directory_id": work.directory_id,
+                        "ordinal": position.ordinal,
+                        "byte_offset": position.byte_offset,
+                        "json_bytes": position.json_bytes,
+                    }
+                    for position in advance.positions
+                ],
+            )
+        return True
 
 
 def _validate_next_upload_journal_entry(
@@ -6745,11 +7071,14 @@ def _validate_next_upload_journal_entry(
 
     if record.state != "validating" or record.accepted_bytes != record.bytes:
         raise ProvenanceValidationError("canonical journal is not complete for validation")
-    with validate_journal_chunks(
-        _iter_upload_journal_chunks(session, record),
-        catalog=admission_provenance_catalog(),
-        require_profiles=False,
-    ) as summary:
+    with (
+        closing(_iter_upload_journal_chunks(session, record)) as chunks,
+        validate_journal_chunks(
+            chunks,
+            catalog=admission_provenance_catalog(),
+            require_profiles=False,
+        ) as summary,
+    ):
         if (
             summary.journal_id != record.journal_id
             or summary.journal_sha256 != record.sha256

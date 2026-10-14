@@ -27,9 +27,15 @@ def run_validation_child(command: Sequence[str], *, cwd: Path, env: dict[str, st
     child: subprocess.Popen[bytes] | None = None
     handlers = {}
     signals = (signal.SIGINT, signal.SIGTERM)
+    requested_signal: int | None = None
 
     def interrupt(signum: int, _frame: FrameType | None) -> None:
-        raise ValidationInterrupted(signum)
+        nonlocal requested_signal
+        # Python can deliver a signal between acquiring a subprocess lock and
+        # entering its protected block. Raising there can strand the lock and
+        # deadlock the required join. Record intent; act at a safe boundary.
+        if requested_signal is None:
+            requested_signal = signum
 
     try:
         if threading.current_thread() is threading.main_thread():
@@ -37,7 +43,16 @@ def run_validation_child(command: Sequence[str], *, cwd: Path, env: dict[str, st
                 handlers[installed_signal] = signal.signal(installed_signal, interrupt)
         child = subprocess.Popen(command, cwd=cwd, env=env, start_new_session=os.name == "posix")
         try:
-            return child.wait()
+            while True:
+                if requested_signal is not None:
+                    raise ValidationInterrupted(requested_signal)
+                try:
+                    status = child.wait(timeout=0.1)
+                except subprocess.TimeoutExpired:
+                    continue
+                if requested_signal is not None:
+                    raise ValidationInterrupted(requested_signal)
+                return status
         except KeyboardInterrupt as error:
             signum = error.signum if isinstance(error, ValidationInterrupted) else signal.SIGINT
             # Repeated cancellation cannot skip joining the command's cleanup.

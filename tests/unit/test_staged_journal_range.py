@@ -35,12 +35,12 @@ def chunk_bytes(ordinal, size):
 
 
 @contextmanager
-def staged_transport(root, count, last_octets=EXTENT):
+def staged_transport(root, count, last_octets=EXTENT, *, first_octets=EXTENT):
     """Native contiguous transport bytes; semantic journal acceptance is separate."""
     engine = create_catalog_engine(sqlite_url(root / "ranges.db"))
     try:
         Base.metadata.create_all(engine)
-        total = (count - 1) * EXTENT + last_octets
+        total = (count - 2) * EXTENT + first_octets + last_octets if count > 1 else last_octets
         with Session(engine) as session, session.begin():
             session.add(
                 StorageIncarnationRecord(
@@ -82,30 +82,43 @@ def staged_transport(root, count, last_octets=EXTENT):
             session.add(journal)
             session.flush()
             digest = hashlib.sha256()
+            offset = 0
             for ordinal in range(count):
-                raw = chunk_bytes(ordinal, last_octets if ordinal == count - 1 else EXTENT)
+                width = (
+                    last_octets
+                    if ordinal == count - 1
+                    else first_octets
+                    if ordinal == 0
+                    else EXTENT
+                )
+                raw = chunk_bytes(ordinal, width)
                 digest.update(raw)
                 session.add(
                     Chunk(
                         collection_id=1,
                         journal_id=JOURNAL,
                         ordinal=ordinal,
-                        byte_offset=ordinal * EXTENT,
+                        byte_offset=offset,
                         content=raw,
                     )
                 )
                 session.flush()
+                offset += len(raw)
             journal.sha256 = digest.hexdigest()
         yield engine, total
     finally:
         engine.dispose()
 
 
-def expected_range(offset, size):
+def expected_range(offset, size, *, first_octets=EXTENT):
     pieces = []
     while size:
-        ordinal, start = divmod(offset, EXTENT)
-        take = min(size, EXTENT - start)
+        if offset < first_octets:
+            ordinal, start, width = 0, offset, first_octets
+        else:
+            ordinal, start = divmod(offset - first_octets, EXTENT)
+            ordinal, width = ordinal + 1, EXTENT
+        take = min(size, width - start)
         pieces.append(chunk_bytes(ordinal, take))
         offset += take
         size -= take
@@ -162,8 +175,9 @@ def test_exact_ranges_cross_transport_boundaries_and_close(tmp_path, monkeypatch
         counts = observe_execute(session, monkeypatch)
         actual = owner._upload_journal_range_bytes(session, 1, JOURNAL, offset=offset, size=size)
         assert actual == expected_range(offset, size)
-        assert counts["closed"] is True and counts["sql_statements"] == 1
-        assert counts["returned_rows"] == (offset + size - 1) // EXTENT - offset // EXTENT + 1
+        overlap = (offset + size - 1) // EXTENT - offset // EXTENT + 1
+        assert counts["closed"] is True and counts["sql_statements"] == (1 if overlap == 1 else 2)
+        assert counts["returned_rows"] == overlap
 
 
 @pytest.mark.parametrize("alteration", ["missing", "offset", "oversized", "short", "ordinal"])
@@ -227,15 +241,22 @@ def test_native_indexed_range_records_actual_work(tmp_path, monkeypatch, record_
     projection = project_bindings((binding,))
     declaration = projection["declarations"][binding.declaration.id]
     samples = []
-    for count, offset, size in (
-        (2, EXTENT + 11, 37),
-        (17, 16 * EXTENT + 11, 37),
-        (129, 128 * EXTENT + 11, 37),
-        (17, EXTENT - 13, 8 * EXTENT),
-        (17, 7 * EXTENT, 8 * EXTENT),
+    for count, first_octets, offset, size in (
+        (2, EXTENT, EXTENT + 11, 37),
+        (17, EXTENT, 16 * EXTENT + 11, 37),
+        (129, EXTENT, 128 * EXTENT + 11, 37),
+        (17, EXTENT, EXTENT - 13, 8 * EXTENT),
+        (17, EXTENT, 7 * EXTENT, 8 * EXTENT),
+        (2, 37, 37 + 11, 37),
+        (17, 37, 37 + 15 * EXTENT + 11, 37),
+        (129, 37, 37 + 127 * EXTENT + 11, 37),
     ):
         with (
-            staged_transport(tmp_path / f"{count}-{offset}-{size}", count) as (engine, _),
+            staged_transport(
+                tmp_path / f"{count}-{first_octets}-{offset}-{size}",
+                count,
+                first_octets=first_octets,
+            ) as (engine, _),
             Session(engine) as session,
         ):
             counts = observe_execute(session, monkeypatch)
@@ -277,15 +298,21 @@ def test_native_indexed_range_records_actual_work(tmp_path, monkeypatch, record_
             finally:
                 connection.set_progress_handler(None, 0)
                 event.remove(engine, "before_cursor_execute", statement)
-            assert actual == expected_range(offset, size) and counts["closed"] is True
-            assert len(sql) == 1 and len(buffers) == 1
-            cursor = connection.execute("EXPLAIN QUERY PLAN " + sql[0][0], sql[0][1])
-            try:
-                plan = " ".join(row[3] for row in cursor)
-            finally:
-                cursor.close()
-            assert "SEARCH" in plan and "ordinal>" in plan and "ordinal<" in plan
-            overlap = (offset + size - 1) // EXTENT - offset // EXTENT + 1
+            assert actual == expected_range(offset, size, first_octets=first_octets)
+            assert counts["closed"] is True and len(buffers) == 1
+            for text, parameters in sql:
+                cursor = connection.execute("EXPLAIN QUERY PLAN " + text, parameters)
+                try:
+                    plan = " ".join(row[3] for row in cursor)
+                finally:
+                    cursor.close()
+                assert "SEARCH" in plan and "byte_offset" in plan and "USE TEMP" not in plan
+
+            def source_ordinal(position, first_octets=first_octets):
+                return 0 if position < first_octets else 1 + (position - first_octets) // EXTENT
+
+            overlap = source_ordinal(offset + size - 1) - source_ordinal(offset) + 1
+            assert len(sql) == (1 if overlap == 1 else 2)
             sample = {
                 "declaration": binding.declaration.id,
                 "declaration_sha256": hashlib.sha256(canonical_json_bytes(declaration)).hexdigest(),

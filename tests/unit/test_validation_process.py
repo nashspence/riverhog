@@ -110,3 +110,71 @@ def test_cancelled_validation_joins_child_and_descendant_cleanup(
     assert evidence["finished_at"]
     assert "Advisory speed goal exceeded" in stderr
     assert json.loads(output.read_bytes())["profiling_target"]["report_only"] is True
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX native subprocess wait-lock interruption")
+@pytest.mark.parametrize("signum", [signal.SIGINT, signal.SIGTERM])
+def test_cancellation_inside_native_wait_lock_joins_child_cleanup(
+    tmp_path: Path, signum: int
+) -> None:
+    leaf = tmp_path / "leaf.py"
+    leaf.write_text(
+        "import signal,time\nfrom pathlib import Path\n"
+        f"root=Path({str(tmp_path)!r})\n"
+        "def stop(*_):\n    (root/'cleaned').write_text('joined')\n    raise SystemExit(0)\n"
+        "signal.signal(signal.SIGINT,stop)\nsignal.signal(signal.SIGTERM,stop)\n"
+        "(root/'ready').write_text('ready')\n"
+        "while True: time.sleep(1)\n"
+    )
+    driver = tmp_path / "driver.py"
+    driver.write_text(
+        "import os,signal,subprocess,sys,time\nfrom pathlib import Path\n"
+        "from scripts.validation_process import ValidationInterrupted,run_validation_child\n"
+        f"root=Path({str(tmp_path)!r})\n"
+        "native=subprocess.Popen\n"
+        "class InterruptingLock:\n"
+        "    def __init__(self,lock): self.lock,self.first=lock,True\n"
+        "    def acquire(self,*args,**kwargs):\n"
+        "        acquired=self.lock.acquire(*args,**kwargs)\n"
+        "        if acquired and self.first:\n"
+        "            self.first=False\n"
+        f"            os.kill(os.getpid(),{signum})\n"
+        "        return acquired\n"
+        "    def release(self): self.lock.release()\n"
+        "    def __enter__(self): self.acquire(); return self\n"
+        "    def __exit__(self,*args): self.release()\n"
+        "def start(*args,**kwargs):\n"
+        "    child=native(*args,**kwargs)\n"
+        "    deadline=time.monotonic()+10\n"
+        "    while not (root/'ready').exists():\n"
+        "        assert child.poll() is None and time.monotonic()<deadline\n"
+        "        time.sleep(0.01)\n"
+        "    child._waitpid_lock=InterruptingLock(child._waitpid_lock)\n"
+        "    return child\n"
+        "subprocess.Popen=start\n"
+        "try:\n"
+        f"    run_validation_child([sys.executable,{str(leaf)!r}],cwd=root,env=dict(os.environ))\n"
+        "except ValidationInterrupted as error:\n"
+        "    (root/'interrupted').write_text(str(error.signum))\n"
+        "    raise SystemExit(128+error.signum)\n"
+        "raise AssertionError('cancellation intent was lost')\n"
+    )
+    parent = subprocess.Popen(
+        [sys.executable, str(driver)],
+        cwd=ROOT,
+        env={**os.environ, "PYTHONPATH": str(ROOT)},
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    try:
+        _, stderr = parent.communicate(timeout=10)
+    finally:
+        if parent.poll() is None:
+            parent.kill()
+            parent.wait(timeout=5)
+        if parent.stderr is not None:
+            parent.stderr.close()
+    assert parent.returncode == 128 + signum, stderr
+    assert (tmp_path / "cleaned").read_text() == "joined"
+    assert (tmp_path / "interrupted").read_text() == str(signum)

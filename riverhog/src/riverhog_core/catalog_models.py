@@ -3188,6 +3188,31 @@ class CollectionUploadProvenanceJournalRecord(Base):
     validation_sequence: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
     )
+    capture_attempt_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    capture_directory_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    capture_algorithm: Mapped[str | None] = mapped_column(String, nullable=True)
+    capture_source_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    capture_source_bytes: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    capture_version: Mapped[int] = mapped_column(
+        authority_ordinal_type(),
+        default=0,
+        server_default=text(f"'{_AUTHORITY_ORDINAL_ZERO}'"),
+    )
+    capture_phase: Mapped[str] = mapped_column(
+        String,
+        default="pending",
+        server_default=text("'pending'"),
+    )
+    capture_byte_offset: Mapped[int] = mapped_column(
+        BigInteger, default=0, server_default=text("0")
+    )
+    capture_frame_start: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    capture_frame_count: Mapped[int] = mapped_column(
+        authority_ordinal_type(),
+        default=0,
+        server_default=text(f"'{_AUTHORITY_ORDINAL_ZERO}'"),
+    )
+    capture_failure: Mapped[str | None] = mapped_column(Text, nullable=True)
     validation_previous_entry_id: Mapped[str | None] = mapped_column(String, nullable=True)
     validation_previous_json_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     primary_lineage_id: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -3204,6 +3229,31 @@ class CollectionUploadProvenanceJournalRecord(Base):
             ondelete="CASCADE",
         ),
         CheckConstraint("bytes >= 0", name="ck_upload_provenance_journals_bytes"),
+        CheckConstraint(
+            "capture_phase IN ('pending','extending','scanning','complete','deferred')",
+            name="ck_upload_provenance_journals_capture_phase",
+        ),
+        CheckConstraint(
+            "capture_byte_offset >= 0 AND capture_byte_offset <= accepted_bytes",
+            name="ck_upload_provenance_journals_capture_offset",
+        ),
+        CheckConstraint(
+            "capture_frame_start IS NULL OR capture_frame_start >= 0 AND "
+            "capture_frame_start < capture_byte_offset",
+            name="ck_upload_provenance_journals_capture_start",
+        ),
+        CheckConstraint(
+            "capture_source_bytes IS NULL OR capture_source_bytes >= 0",
+            name="ck_upload_provenance_journals_capture_source_bytes",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("capture_version", 64),
+            name="ck_upload_provenance_journals_capture_version",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("capture_frame_count", 64),
+            name="ck_upload_provenance_journals_capture_count",
+        ),
         CheckConstraint(
             "accepted_bytes >= 0 AND accepted_bytes <= bytes",
             name="ck_upload_provenance_journals_accepted_bytes",
@@ -3229,6 +3279,7 @@ class CollectionUploadProvenanceJournalRecord(Base):
             name="ck_upload_provenance_journals_terminal_sequence",
         ),
         CheckConstraint("length(sha256) = 64", name="ck_upload_provenance_journals_sha256"),
+        Index("ix_upload_provenance_journals_validation", "state", "collection_id", "journal_id"),
     )
 
     upload: Mapped[CollectionUploadRecord] = relationship(back_populates="provenance_journals")
@@ -3266,9 +3317,48 @@ class CollectionUploadProvenanceJournalChunkRecord(Base):
             "length(content) > 0",
             name="ck_upload_provenance_journal_chunks_content",
         ),
+        Index(
+            "ux_upload_provenance_journal_chunk_offsets",
+            "collection_id",
+            "journal_id",
+            "byte_offset",
+            unique=True,
+        ),
     )
 
     journal: Mapped[CollectionUploadProvenanceJournalRecord] = relationship(back_populates="chunks")
+
+
+class CollectionUploadProvenanceFrameRecord(Base):
+    """Private framing positions; no row supplies semantic acceptance authority."""
+
+    __tablename__ = "collection_upload_provenance_frames"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    directory_id: Mapped[str] = mapped_column(String, primary_key=True)
+    ordinal: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    byte_offset: Mapped[int] = mapped_column(BigInteger)
+    json_bytes: Mapped[int] = mapped_column(BigInteger)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("ordinal", 64),
+            name="ck_upload_provenance_frames_ordinal",
+        ),
+        CheckConstraint("byte_offset >= 0", name="ck_upload_provenance_frames_offset"),
+        CheckConstraint(
+            "json_bytes >= 0 AND json_bytes <= 8388608",
+            name="ck_upload_provenance_frames_json_bytes",
+        ),
+    )
 
 
 class CollectionUploadProvenanceCustodyObjectRecord(Base):

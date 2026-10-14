@@ -1679,6 +1679,17 @@ CREATE TABLE collection_upload_provenance_journals (
 	content_hash_state TEXT NOT NULL,
 	validation_byte_offset BIGINT DEFAULT 0 NOT NULL,
 	validation_sequence BIGINT DEFAULT 0 NOT NULL,
+	capture_attempt_id VARCHAR,
+	capture_directory_id VARCHAR,
+	capture_algorithm VARCHAR,
+	capture_source_sha256 VARCHAR(64),
+	capture_source_bytes BIGINT,
+	capture_version VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
+	capture_phase VARCHAR DEFAULT 'pending' NOT NULL,
+	capture_byte_offset BIGINT DEFAULT 0 NOT NULL,
+	capture_frame_start BIGINT,
+	capture_frame_count VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
+	capture_failure TEXT,
 	validation_previous_entry_id VARCHAR,
 	validation_previous_json_sha256 VARCHAR(64),
 	primary_lineage_id VARCHAR,
@@ -1690,6 +1701,12 @@ CREATE TABLE collection_upload_provenance_journals (
 	PRIMARY KEY (collection_id, journal_id),
 	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
 	CONSTRAINT ck_upload_provenance_journals_bytes CHECK (bytes >= 0),
+	CONSTRAINT ck_upload_provenance_journals_capture_phase CHECK (capture_phase IN ('pending','extending','scanning','complete','deferred')),
+	CONSTRAINT ck_upload_provenance_journals_capture_offset CHECK (capture_byte_offset >= 0 AND capture_byte_offset <= accepted_bytes),
+	CONSTRAINT ck_upload_provenance_journals_capture_start CHECK (capture_frame_start IS NULL OR capture_frame_start >= 0 AND capture_frame_start < capture_byte_offset),
+	CONSTRAINT ck_upload_provenance_journals_capture_source_bytes CHECK (capture_source_bytes IS NULL OR capture_source_bytes >= 0),
+	CONSTRAINT ck_upload_provenance_journals_capture_version CHECK (length(capture_version) = 64 AND lower(capture_version) = capture_version AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(capture_version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_provenance_journals_capture_count CHECK (length(capture_frame_count) = 64 AND lower(capture_frame_count) = capture_frame_count AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(capture_frame_count, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_upload_provenance_journals_accepted_bytes CHECK (accepted_bytes >= 0 AND accepted_bytes <= bytes),
 	CONSTRAINT ck_upload_provenance_journals_next_chunk_ordinal CHECK (length(next_chunk_ordinal) = 64 AND lower(next_chunk_ordinal) = next_chunk_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(next_chunk_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_upload_provenance_journals_validation_offset CHECK (validation_byte_offset >= 0 AND validation_byte_offset <= accepted_bytes),
@@ -1698,9 +1715,26 @@ CREATE TABLE collection_upload_provenance_journals (
 	CONSTRAINT ck_upload_provenance_journals_terminal_sequence CHECK (terminal_sequence IS NULL OR terminal_sequence >= 0),
 	CONSTRAINT ck_upload_provenance_journals_sha256 CHECK (length(sha256) = 64),
 	CONSTRAINT ck_collection_upload_provenance_journals_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_35103bcbafcadf05 CHECK (capture_source_sha256 IS NULL OR length(capture_source_sha256) = 64 AND lower(capture_source_sha256) = capture_source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(capture_source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_164241c9bc3b84b3 CHECK (validation_previous_json_sha256 IS NULL OR length(validation_previous_json_sha256) = 64 AND lower(validation_previous_json_sha256) = validation_previous_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(validation_previous_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_079f7a2aeed5fb0d CHECK (terminal_json_sha256 IS NULL OR length(terminal_json_sha256) = 64 AND lower(terminal_json_sha256) = terminal_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
+
+CREATE TABLE collection_upload_provenance_frames (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	directory_id VARCHAR NOT NULL,
+	ordinal VARCHAR(64) NOT NULL,
+	byte_offset BIGINT NOT NULL,
+	json_bytes BIGINT NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, directory_id, ordinal),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_provenance_frames_ordinal CHECK (length(ordinal) = 64 AND lower(ordinal) = ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_provenance_frames_offset CHECK (byte_offset >= 0),
+	CONSTRAINT ck_upload_provenance_frames_json_bytes CHECK (json_bytes >= 0 AND json_bytes <= 8388608)
+);
+
+CREATE INDEX ix_upload_provenance_journals_validation ON collection_upload_provenance_journals (state, collection_id, journal_id);
 
 CREATE TABLE collection_upload_provenance_structure (
 	collection_id BIGINT NOT NULL,
@@ -2061,6 +2095,8 @@ CREATE TABLE collection_upload_provenance_journal_chunks (
 	CONSTRAINT ck_upload_provenance_journal_chunks_offset CHECK (byte_offset >= 0),
 	CONSTRAINT ck_upload_provenance_journal_chunks_content CHECK (length(content) > 0)
 );
+
+CREATE UNIQUE INDEX ux_upload_provenance_journal_chunk_offsets ON collection_upload_provenance_journal_chunks (collection_id, journal_id, byte_offset);
 
 CREATE TABLE collection_upload_raw_part_digests (
 	collection_id BIGINT NOT NULL,
