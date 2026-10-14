@@ -489,7 +489,13 @@ class _StoredValidator(_Validator):
         )
 
     def validation_rows(self) -> Iterable[dict[str, Any]]:
-        return self.rows
+        for row in self.rows:
+            yield row
+            # The native row checks run before this iterator resumes.
+            if row["type"] in ("usage", "invalidation") and "at" in row:
+                self.store._record_lifecycle_time(
+                    row["state"]["object_id"], row["type"], time_ns(row["at"])
+                )
 
     def finish(
         self,
@@ -515,35 +521,41 @@ class _StoredValidator(_Validator):
                 if kind in ("usage", "generation", "invalidation"):
                     state = row["state"]["object_id"]
                     generated, ended = generation.get(state), invalidation.get(state)
-                    with closing(
-                        self.store.db.execute(
-                            "SELECT value FROM assertions WHERE active = 1 AND state_id = ? "
-                            "AND type IN ('usage', 'invalidation')",
-                            (state,),
-                        )
-                    ) as rows:
-                        for (related,) in rows:
-                            self.store.require_open()
-                            item = json.loads(related)
-                            if "at" not in item:
-                                continue
-                            if (
-                                generated
-                                and "at" in generated
-                                and time_ns(item["at"]) < time_ns(generated["at"])
-                            ):
-                                raise ProvenanceValidationError(
-                                    "state used or invalidated before known generation"
-                                )
-                            if (
-                                item["type"] == "usage"
-                                and ended
-                                and "at" in ended
-                                and time_ns(item["at"]) > time_ns(ended["at"])
-                            ):
-                                raise ProvenanceValidationError(
-                                    "state used after known invalidation"
-                                )
+                    if not self.store._lifecycle_bounds_hold(
+                        state,
+                        generated_at=generated.get("at") if generated else None,
+                        invalidated_at=ended.get("at") if ended else None,
+                    ):
+                        # Preserve native diagnostic selection on a violation.
+                        with closing(
+                            self.store.db.execute(
+                                "SELECT value FROM assertions WHERE active = 1 AND state_id = ? "
+                                "AND type IN ('usage', 'invalidation')",
+                                (state,),
+                            )
+                        ) as rows:
+                            for (related,) in rows:
+                                self.store.require_open()
+                                item = json.loads(related)
+                                if "at" not in item:
+                                    continue
+                                if (
+                                    generated
+                                    and "at" in generated
+                                    and time_ns(item["at"]) < time_ns(generated["at"])
+                                ):
+                                    raise ProvenanceValidationError(
+                                        "state used or invalidated before known generation"
+                                    )
+                                if (
+                                    item["type"] == "usage"
+                                    and ended
+                                    and "at" in ended
+                                    and time_ns(item["at"]) > time_ns(ended["at"])
+                                ):
+                                    raise ProvenanceValidationError(
+                                        "state used after known invalidation"
+                                    )
                 if kind == "observation" and row["address_status"] == "known":
                     if (
                         self.store.db.execute(
@@ -645,6 +657,8 @@ class JournalStore:
                 "CREATE INDEX states ON assertions(state_id, type) WHERE active = 1;"
                 "CREATE INDEX observations ON assertions(observation_id, type) WHERE active = 1;"
                 "CREATE TABLE changes(assertion_id TEXT PRIMARY KEY);"
+                "CREATE TABLE lifecycle_extrema(state_id TEXT PRIMARY KEY, "
+                "earliest TEXT NOT NULL, latest_usage TEXT);"
                 "CREATE INDEX categories ON assertions(category, assertion_id) WHERE active = 1;"
                 "CREATE TABLE maps(name TEXT, key BLOB, value BLOB, PRIMARY KEY(name, key));"
                 "CREATE INDEX external_types ON maps(name, json_extract(value, '$.object_id'));"
@@ -658,6 +672,128 @@ class JournalStore:
         except BaseException:
             self.close()
             raise
+
+    def _record_lifecycle_time(self, state: str, kind: str, instant: int) -> None:
+        with closing(
+            self.db.execute(
+                "SELECT earliest, latest_usage FROM lifecycle_extrema WHERE state_id = ?",
+                (state,),
+            )
+        ) as rows:
+            prior = rows.fetchone()
+        earliest = min(instant, int(prior[0])) if prior else instant
+        latest = int(prior[1]) if prior and prior[1] is not None else None
+        if kind == "usage":
+            latest = max(instant, latest) if latest is not None else instant
+        self.db.execute(
+            "INSERT INTO lifecycle_extrema VALUES (?, ?, ?) "
+            "ON CONFLICT(state_id) DO UPDATE SET "
+            "earliest = excluded.earliest, latest_usage = excluded.latest_usage",
+            (state, str(earliest), str(latest) if latest is not None else None),
+        ).close()
+
+    @declare_growth(
+        Declaration(
+            id="riverhog-provenance.sqlite-lifecycle-extrema-check.growth/v1",
+            authority="riverhog-provenance",
+            subjects=("riverhog_provenance.journal_store.JournalStore._lifecycle_bounds_hold",),
+            scope="native-sqlite-effective-lifecycle-metadata-check",
+            starts_at="check one state against its effective dated extrema",
+            ends_at="return the inequality result after closing the native cursor",
+            dimensions=(Dimension("indexed_states", COUNT, "States with dated extrema."),),
+            bounds=(
+                Bound(
+                    "sql_statements",
+                    COUNT,
+                    "equal",
+                    Expression("constant", value=1, unit=COUNT),
+                    "One primary-key metadata lookup.",
+                ),
+                Bound(
+                    "returned_rows",
+                    COUNT,
+                    "upper",
+                    Expression("constant", value=1, unit=COUNT),
+                    "At most the selected state's extrema.",
+                ),
+                Bound(
+                    "returned_time_octets",
+                    OCTETS,
+                    "upper",
+                    Expression("constant", value=42, unit=OCTETS),
+                    "Two exact decimal nanosecond values from native four-digit UTC years.",
+                ),
+                Bound(
+                    "sqlite_vm_instructions",
+                    COUNT,
+                    "upper",
+                    Expression(
+                        "sum",
+                        terms=(
+                            Expression("constant", value=128, unit=COUNT),
+                            Expression(
+                                "product",
+                                terms=(
+                                    Expression("constant", value=64, unit=COUNT),
+                                    Expression(
+                                        "log2_ceil",
+                                        terms=(
+                                            Expression(
+                                                "sum",
+                                                terms=(
+                                                    Expression("constant", value=2, unit=COUNT),
+                                                    Expression("dimension", name="indexed_states"),
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                    "Maintained native SQLite instruction envelope for indexed metadata.",
+                ),
+            ),
+            conditions=(
+                "The component-owned extrema table has its state-identity primary key.",
+                "Extrema contain only effective natively checked dated usage/invalidation rows.",
+                "Known bounds use the native canonical UTC instant interpretation.",
+            ),
+            invariants=(
+                "Untimed events supply no synthetic timestamp or bound.",
+                "The earliest dated usage/invalidation and latest dated usage preserve the "
+                "native generation/invalidation inequalities, including equality.",
+                "No assertion payload is read by this primitive; missing dated extrema succeed.",
+                "Real corrections clear and rebuild extrema from their effective view.",
+            ),
+            limitations=(
+                "Population, native row/uniqueness/activity checks, violation diagnostic scans, "
+                "graph work, retries and cleanup are separately charged.",
+                "This disposable projection is not source custody or a durable "
+                "semantic checkpoint.",
+                "SQLite VM instructions exclude internal B-tree operations, page I/O and CPU.",
+            ),
+        )
+    )
+    def _lifecycle_bounds_hold(
+        self, state: str, *, generated_at: str | None, invalidated_at: str | None
+    ) -> bool:
+        with closing(
+            self.db.execute(
+                "SELECT earliest, latest_usage FROM lifecycle_extrema WHERE state_id = ?",
+                (state,),
+            )
+        ) as rows:
+            extrema = rows.fetchone()
+        if extrema is None:
+            return True
+        if generated_at is not None and int(extrema[0]) < time_ns(generated_at):
+            return False
+        return not (
+            extrema[1] is not None
+            and invalidated_at is not None
+            and int(extrema[1]) > time_ns(invalidated_at)
+        )
 
     @declare_growth(
         Declaration(
@@ -888,7 +1024,7 @@ class JournalStore:
                 ) from exc
             self.db.execute("INSERT INTO changes VALUES (?)", (row["assertion_id"],))
         if correction:
-            for table in ("maps", "edges", "findings", "fixities"):
+            for table in ("maps", "edges", "findings", "fixities", "lifecycle_extrema"):
                 self.db.execute("DELETE FROM " + table)
             self.db.execute(
                 "INSERT OR IGNORE INTO changes SELECT assertion_id FROM assertions WHERE active = 1"
