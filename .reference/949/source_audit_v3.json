@@ -1,0 +1,141 @@
+{
+  "format": "non-authoritative-reference-source-audit/v1",
+  "audited_main": "e0036f80410a83cc5eaa9d63c17650ffae72e2bd",
+  "reference_parent": "705cd8c79e48c190fedece4105f2f6e9345994c7",
+  "statement": "Selected-source identity audit, not complete product coverage or test evidence.",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "reference_parent_blob": "6c2ad90111bc6f58c5fc82e25700beffb028e9d9",
+      "audited_main_blob": "01df0ab48d6c6960b71e879d5d3049c1f6fead1f",
+      "unchanged": false,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/AGENTS.md"
+    },
+    {
+      "path": "README.md",
+      "reference_parent_blob": "dffa206adef52b0700f8175ac34ceb2c374e9a40",
+      "audited_main_blob": "3a045b5713a34daf7a3f1a7c0b6b6543a45989bc",
+      "unchanged": false,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/README.md"
+    },
+    {
+      "path": "scripts/extent_contract.py",
+      "reference_parent_blob": "6d52e14284cfae432f92d02fac0946887b3cdfa5",
+      "audited_main_blob": "6d52e14284cfae432f92d02fac0946887b3cdfa5",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/scripts/extent_contract.py"
+    },
+    {
+      "path": "tests/unit/test_extent_contract.py",
+      "reference_parent_blob": "ab56a21febffcbc578de749499a1bee75d451a08",
+      "audited_main_blob": "9ef09953b13dc389da99b25b304d8784710db203",
+      "unchanged": false,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/tests/unit/test_extent_contract.py"
+    },
+    {
+      "path": "packages/http-api-contracts/src/http_api_contracts/control.py",
+      "reference_parent_blob": null,
+      "audited_main_blob": "b5bbf90a1eca8ab93cc6d0a80746177b08fe48c0",
+      "unchanged": false,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/packages/http-api-contracts/src/http_api_contracts/control.py"
+    },
+    {
+      "path": "riverhog/src/riverhog_api/routers/collections.py",
+      "reference_parent_blob": "241c8d267121314f0772064c597e5542c391ee70",
+      "audited_main_blob": "fbf7fd56670da27367cf417ece8080b29d26d918",
+      "unchanged": false,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/riverhog/src/riverhog_api/routers/collections.py"
+    },
+    {
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+      "reference_parent_blob": "e82b76cfafe40020690c1135ccec4cf3f8f5801c",
+      "audited_main_blob": "b7c72153672771fb29c8665d6c2d08e4481c142e",
+      "unchanged": false,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/riverhog/src/riverhog_core/services/collection_uploads.py"
+    },
+    {
+      "path": "riverhog/src/riverhog_core/raw_upload.py",
+      "reference_parent_blob": "303cbf5d314363b55804af3082bfd319c6914c23",
+      "audited_main_blob": "303cbf5d314363b55804af3082bfd319c6914c23",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/riverhog/src/riverhog_core/raw_upload.py"
+    },
+    {
+      "path": "riverhog/src/riverhog_core/pack_upload.py",
+      "reference_parent_blob": "1da66fe23b802695127d1beb2c97778a4828b729",
+      "audited_main_blob": "1da66fe23b802695127d1beb2c97778a4828b729",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/riverhog/src/riverhog_core/pack_upload.py"
+    },
+    {
+      "path": "riverhog/src/riverhog_core/streaming_age.py",
+      "reference_parent_blob": "43f4759b2dd47b5a4a93a9bdd8534e09cb6d5e50",
+      "audited_main_blob": "43f4759b2dd47b5a4a93a9bdd8534e09cb6d5e50",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/riverhog/src/riverhog_core/streaming_age.py"
+    },
+    {
+      "path": "riverhog/src/riverhog_core/throughput.py",
+      "reference_parent_blob": "0601c5f3d6d3d513dce30be27a4ebe549cd2b794",
+      "audited_main_blob": "0601c5f3d6d3d513dce30be27a4ebe549cd2b794",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/riverhog/src/riverhog_core/throughput.py"
+    },
+    {
+      "path": "riverhog/src/riverhog_core/services/retrieval.py",
+      "reference_parent_blob": "f84188c908b3c357aca7b121e9a4673e8eb65844",
+      "audited_main_blob": "a03df1422687e3cfa6d8ce25b8b8de08c7b32ed7",
+      "unchanged": false,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/riverhog/src/riverhog_core/services/retrieval.py"
+    },
+    {
+      "path": "riverhog/src/riverhog_core/services/archive_copy_jobs.py",
+      "reference_parent_blob": "62f54867342b9d2b27059d5e023e72a8cccf432b",
+      "audited_main_blob": "62f54867342b9d2b27059d5e023e72a8cccf432b",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/riverhog/src/riverhog_core/services/archive_copy_jobs.py"
+    },
+    {
+      "path": "riverhog/src/riverhog_core/stores/storage_adapter_archive_store.py",
+      "reference_parent_blob": "f7711b46a632ae65a70e56f4803462c00f30e4f3",
+      "audited_main_blob": "f7711b46a632ae65a70e56f4803462c00f30e4f3",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/riverhog/src/riverhog_core/stores/storage_adapter_archive_store.py"
+    },
+    {
+      "path": "packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/protocol.py",
+      "reference_parent_blob": "7d173691694723173749a91b452027cff9d554c1",
+      "audited_main_blob": "7d173691694723173749a91b452027cff9d554c1",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/protocol.py"
+    },
+    {
+      "path": "packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/http_binding.py",
+      "reference_parent_blob": "ff53c4aa7b97f17ffae23ceaafff3c68c2318f7b",
+      "audited_main_blob": "ff53c4aa7b97f17ffae23ceaafff3c68c2318f7b",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/http_binding.py"
+    },
+    {
+      "path": "packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/client.py",
+      "reference_parent_blob": "99ad71c5d10ce4f9e344f62781711ede7cfe9caa",
+      "audited_main_blob": "99ad71c5d10ce4f9e344f62781711ede7cfe9caa",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/client.py"
+    },
+    {
+      "path": "packages/riverhog-client/src/riverhog_client/producer.py",
+      "reference_parent_blob": "61eabbe994663af5aae133aa9f4a914dfa209cf0",
+      "audited_main_blob": "61eabbe994663af5aae133aa9f4a914dfa209cf0",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/packages/riverhog-client/src/riverhog_client/producer.py"
+    },
+    {
+      "path": "tests/unit/test_throughput.py",
+      "reference_parent_blob": "afc99966f6324de6e74002453dc8daa4d8ca53fb",
+      "audited_main_blob": "afc99966f6324de6e74002453dc8daa4d8ca53fb",
+      "unchanged": true,
+      "source_url": "https://github.com/nashspence/riverhog/blob/e0036f80410a83cc5eaa9d63c17650ffae72e2bd/tests/unit/test_throughput.py"
+    }
+  ]
+}

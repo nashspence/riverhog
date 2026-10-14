@@ -1,0 +1,113 @@
+{
+  "format": "non-authoritative-reference-validation/v1",
+  "date": "2026-10-14",
+  "python": "3.13.5",
+  "sqlite": "3.46.1",
+  "reference_parent": "705cd8c79e48c190fedece4105f2f6e9345994c7",
+  "audited_main": "e0036f80410a83cc5eaa9d63c17650ffae72e2bd",
+  "suite": {
+    "command": "python3 -m unittest discover -s .reference/949 -p 'test_*.py' -v",
+    "tests": 123,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "elapsed_seconds": 1.121309,
+    "compiled": true
+  },
+  "transfer_growth": {
+    "units": [
+      64,
+      128,
+      256
+    ],
+    "columns": [
+      "source_bytes",
+      "source_calls",
+      "receipt_lookups",
+      "admissions",
+      "effects",
+      "peak_reserved_bytes"
+    ],
+    "observations": [
+      [
+        16384,
+        256,
+        64,
+        64,
+        64,
+        128
+      ],
+      [
+        32768,
+        512,
+        128,
+        128,
+        128,
+        128
+      ],
+      [
+        65536,
+        1024,
+        256,
+        256,
+        256,
+        128
+      ]
+    ],
+    "interpretation": "linear counted payload/operation work; reservation bytes constant; not process RSS"
+  },
+  "due_selection": {
+    "retained_rows": [
+      32,
+      512,
+      2048
+    ],
+    "processed_each": 4,
+    "sqlite_vm_steps": [
+      170,
+      170,
+      170
+    ],
+    "interpretation": "indexed fixture VM evidence; not all internal B-tree comparisons/page I/O"
+  },
+  "churn": {
+    "consumers": 1000,
+    "peak_exact_records": 1,
+    "retired_through": 1000,
+    "remaining": 0
+  },
+  "current_source_characterization": {
+    "source_ref": "e0036f80410a83cc5eaa9d63c17650ffae72e2bd",
+    "path": "riverhog/src/riverhog_api/routers/collections.py",
+    "git_blob": "fbf7fd56670da27367cf417ece8080b29d26d918",
+    "function": "put_collection_upload_session_unit",
+    "lines": [
+      849,
+      886
+    ],
+    "events": [
+      "authorize",
+      "get-unit-metadata",
+      "source-read:32",
+      "storage-unavailable"
+    ],
+    "consumed_before_storage_wait": 32,
+    "interpretation": "current gap; NOT a no-consumption acceptance pass"
+  },
+  "product_collection_attempt": {
+    "status": "blocked",
+    "exit_code": 2,
+    "missing_dependency": "rfc8785",
+    "command": "PYTHONPATH=packages/riverhog-storage-adapter-protocol/src:packages/riverhog-canonical-json/src:packages/time-formats/src python -m pytest -o addopts='' --confcutdir=packages/riverhog-storage-adapter-protocol/tests packages/riverhog-storage-adapter-protocol/tests -q",
+    "reported_elapsed_seconds": 2.62,
+    "test_body_passes": 0
+  },
+  "not_validated": [
+    "full repository lint/unit/dist-smoke/build/linux-qualification",
+    "live HTTP/ASGI/proxy and aggregate process memory",
+    "physical provider I/O and encryption",
+    "production database concurrency/worker fencing/process-kill recovery",
+    "whole-feature production growth conformance"
+  ],
+  "timing": "observations only; no performance target or comparable baseline asserted"
+}
