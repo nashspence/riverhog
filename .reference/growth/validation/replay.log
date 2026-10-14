@@ -1,0 +1,27 @@
+Preparing worktree (detached HEAD e0036f80)
+HEAD is now at e0036f80 Persist bounded journal capture and preserve authenticated prefix extensions
+Audited base: e0036f80410a83cc5eaa9d63c17650ffae72e2bd
+Prepared worktree: /mnt/data/riverhog-growth-work/replay
+........................................................................ [ 22%]
+........................................................................ [ 45%]
+.......................................ssssssssssssssssss............... [ 68%]
+........................................................................ [ 91%]
+...........................                                              [100%]
+=========================== short test summary info ============================
+SKIPPED [2] some-implementations/riverhog/recovery/tests/test_recovery.py:58: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:83: official age and age-plugin-batchpass are required
+SKIPPED [2] some-implementations/riverhog/recovery/tests/test_recovery.py:97: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:121: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:166: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:183: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:198: official age and age-plugin-batchpass are required
+SKIPPED [2] some-implementations/riverhog/recovery/tests/test_recovery.py:234: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:255: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:266: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:277: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:296: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:320: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:332: official age and age-plugin-batchpass are required
+SKIPPED [1] some-implementations/riverhog/recovery/tests/test_recovery.py:352: official age and age-plugin-batchpass are required
+297 passed, 18 skipped in 19.68s
+Worktree retained: /mnt/data/riverhog-growth-work/replay

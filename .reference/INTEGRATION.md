@@ -1,3 +1,15 @@
+> **Growth-closure revision:** use [growth/README.md](growth/README.md),
+> [growth/CONTRACT.md](growth/CONTRACT.md), and `growth/verify.py` for the current
+> append-only #958 handoff. It targets audited main
+> `e0036f80410a83cc5eaa9d63c17650ffae72e2bd` and preserves reference
+> `eb9264132ba150426f804d96b7bd5d1ba7e26365` in history.
+> Produced by OpenAI ChatGPT; model GPT-6 Astra Pro; no separate effort/mode
+> configuration exposed. Requested by the Riverhog maintainer; published by
+> the same producer through connected GitHub tools. The record below is the
+> **earlier handoff**, retained with its original provenance and limitations.
+> Current material remains non-authoritative under #903; normal integration
+> and current #958 decisions control. No main/release changes are included.
+
 # Integration guide for #958 reference material
 
 Read `HANDOFF.md` first. The issue controls scope and decisions; this file is

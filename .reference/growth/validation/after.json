@@ -1,0 +1,101 @@
+{
+  "checkpoint_cleanup": [
+    {
+      "active_rows_preserved": true,
+      "rows_per_generation_per_table": 1,
+      "sqlite_vm_instructions": 164
+    },
+    {
+      "active_rows_preserved": true,
+      "rows_per_generation_per_table": 512,
+      "sqlite_vm_instructions": 25712
+    },
+    {
+      "active_rows_preserved": true,
+      "rows_per_generation_per_table": 2048,
+      "sqlite_vm_instructions": 102614
+    },
+    {
+      "active_rows_preserved": true,
+      "rows_per_generation_per_table": 8192,
+      "sqlite_vm_instructions": 410222
+    }
+  ],
+  "provenance": [
+    {
+      "descriptor_reads": 5,
+      "journals": 1,
+      "nonterminal_descriptors": 4,
+      "payload_reads": 3,
+      "root_reads": 1,
+      "segments_per_journal": 3
+    },
+    {
+      "descriptor_reads": 14,
+      "journals": 4,
+      "nonterminal_descriptors": 13,
+      "payload_reads": 12,
+      "root_reads": 1,
+      "segments_per_journal": 3
+    },
+    {
+      "descriptor_reads": 50,
+      "journals": 16,
+      "nonterminal_descriptors": 49,
+      "payload_reads": 48,
+      "root_reads": 1,
+      "segments_per_journal": 3
+    },
+    {
+      "descriptor_reads": 194,
+      "journals": 64,
+      "nonterminal_descriptors": 193,
+      "payload_reads": 192,
+      "root_reads": 1,
+      "segments_per_journal": 3
+    }
+  ],
+  "python": "3.13.5",
+  "scope": "source primitives; synthetic structural journals; not whole-operation qualification",
+  "sequence_domain": [
+    {
+      "encoded_index_bytes": 477,
+      "ordinal": "0",
+      "sequence_encoding": "0000000000000000000000000000000000000000000000000000000000000000",
+      "writer": "accepted"
+    },
+    {
+      "encoded_index_bytes": 492,
+      "ordinal": "9007199254740991",
+      "sequence_encoding": "000000000000000000000000000000000000000000000000001fffffffffffff",
+      "writer": "accepted"
+    },
+    {
+      "encoded_index_bytes": 492,
+      "ordinal": "9007199254740992",
+      "sequence_encoding": "0000000000000000000000000000000000000000000000000020000000000000",
+      "writer": "accepted"
+    },
+    {
+      "exception": "CanonicalJsonError",
+      "ordinal": "9007199254740993",
+      "reason": "numeric: integer is not exact in binary64",
+      "sequence_encoding": "0000000000000000000000000000000000000000000000000020000000000001",
+      "writer": "rejected"
+    },
+    {
+      "exception": "CanonicalJsonError",
+      "ordinal": "115792089237316195423570985008687907853269984665640564039457584007913129639934",
+      "reason": "numeric: integer is not exact in binary64",
+      "sequence_encoding": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe",
+      "writer": "rejected"
+    }
+  ],
+  "source_sha256": {
+    "riverhog/src/riverhog_core/pack_volume.py": "63bba09e7e6aeac10be257aebcae4d606180c8341fe71e75e1b6f1ff1701a3f3",
+    "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_archive_io.py": "649814651932c97627a746c078e06ef79c4a0dd8fd66e03a200aa58170008bf2",
+    "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py": "759f4af724dfdf34508c65d162b570041c54f5605103f9153f173c485957a66f",
+    "some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/materialize.py": "4d1cf5740f574f933588e29f80d01f8f3b354c6e27eb8cb64f8c0214b3e80b19"
+  },
+  "sqlite": "3.46.1"
+}

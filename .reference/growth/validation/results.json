@@ -1,0 +1,71 @@
+{
+  "additional_checks": [
+    "patch series applied cleanly on pinned e003 source",
+    "modified Python files compile",
+    "edited TOML parses",
+    "git diff --check"
+  ],
+  "audit_main": "e0036f80410a83cc5eaa9d63c17650ffae72e2bd",
+  "dependencies": {
+    "cryptography": "46.0.4",
+    "pydantic": "2.13.5",
+    "pytest": "9.0.2",
+    "sqlalchemy": "2.0.50"
+  },
+  "excluded": [
+    "locked installation and resolver regeneration",
+    "full lint/type check",
+    "full repository unit suite",
+    "image/distribution/Linux qualification",
+    "release/atlas generation",
+    "official age/batchpass recovery",
+    "Windows subprocess behavior",
+    "live providers",
+    "global CPU/RSS/scratch bound proofs"
+  ],
+  "new_cases": {
+    "filesystem_cleanup": 4,
+    "recovery": 34
+  },
+  "patch_sha256": {
+    "03-recovery-growth.patch": "e90753b096c32c6afd36791bcc88e29da10ed15689d657b56cf04ee63b618dcd",
+    "04-materialization-cleanup.patch": "31b64ae025f574dbefed76cd28fc6b7b38c57e45c887944160f069e979426df2"
+  },
+  "previous_reference": "eb9264132ba150426f804d96b7bd5d1ba7e26365",
+  "python": "3.13.5",
+  "rfc8785": {
+    "committed": false,
+    "method": "test-only local transcription, not byte-identical or installed distribution",
+    "sha256": "85e78a9059667e739d2a4513408cefba6dd9fe093297bfc2d8626d1bf514833b",
+    "source": "https://github.com/trailofbits/rfc8785.py/blob/v0.1.4/src/rfc8785/_impl.py"
+  },
+  "runs": [
+    {
+      "kind": "selected-suite",
+      "log": "focused-tests.log",
+      "passed": 297,
+      "seconds": 18.46,
+      "skipped": 18
+    },
+    {
+      "kind": "fresh-worktree-replay",
+      "log": "replay.log",
+      "passed": 297,
+      "seconds": 19.68,
+      "skipped": 18
+    }
+  ],
+  "scope": "non-authoritative external reference; not full issue completion",
+  "source_sha256": {
+    "some-implementations/riverhog/recovery/pyproject.toml": "93544d14a440a07aff70395f6f0312e052ff21a9383a0d665857ba3acd34df31",
+    "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_archive_io.py": "649814651932c97627a746c078e06ef79c4a0dd8fd66e03a200aa58170008bf2",
+    "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py": "759f4af724dfdf34508c65d162b570041c54f5605103f9153f173c485957a66f",
+    "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py": "3b7c7622d04f32770ad7c3d9041c5532241726a4a133a9b997b287842b8f5ed3",
+    "some-implementations/riverhog/recovery/tests/test_recovery_growth.py": "e3605c877fe4228fca4c727966b05cfea1d678a259abf1c4c73d8b51ad15b43d",
+    "some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/materialize.py": "4d1cf5740f574f933588e29f80d01f8f3b354c6e27eb8cb64f8c0214b3e80b19",
+    "some-implementations/riverhog/storage/filesystem/tests/test_materialize_growth.py": "6550e84ae739a288148d47970f14105f2594ef394c013c4650132eb4cbe5be33",
+    "tests/unit/test_archive_payload_domains.py": "57ad188cde7a06ba2ee515a0a17e609a798c3a8bc528f1d66494ed0b61ea18d4",
+    "uv.lock": "f88dcf5a83e7a17fe6882d769653234f6e100f82bcf57c5e09ca307264c94d36"
+  },
+  "sqlite": "3.46.1"
+}

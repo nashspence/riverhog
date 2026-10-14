@@ -1,0 +1,931 @@
+diff --git a/some-implementations/riverhog/recovery/pyproject.toml b/some-implementations/riverhog/recovery/pyproject.toml
+--- a/some-implementations/riverhog/recovery/pyproject.toml
++++ b/some-implementations/riverhog/recovery/pyproject.toml
+@@ -21,6 +21,7 @@
+ dependencies = ["release-documentation-lib>=0.1,<0.2",
+   "riverhog-archive-contracts>=0.1,<0.2",
+   "riverhog-canonical-json>=0.1,<0.2",
++  "riverhog-growth-contracts>=0.1,<0.2",
+   "riverhog-materialization>=0.1,<0.2",
+   "riverhog-provenance>=0.1,<0.2",
+   "riverhog-protocol>=0.1,<0.2",
+@@ -30,6 +31,7 @@
+ release-documentation-lib = { workspace = true }
+ riverhog-archive-contracts = { workspace = true }
+ riverhog-canonical-json = { workspace = true }
++riverhog-growth-contracts = { workspace = true }
+ riverhog-materialization = { workspace = true }
+ riverhog-provenance = { workspace = true }
+ riverhog-protocol = { workspace = true }
+diff --git a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_archive_io.py b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_archive_io.py
+--- a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_archive_io.py
++++ b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_archive_io.py
+@@ -7,7 +7,20 @@
+ import subprocess
+ import tempfile
+ from collections.abc import Iterator
++from contextlib import contextmanager
+ from pathlib import Path, PurePosixPath
++from typing import BinaryIO
++
++from riverhog_growth_contracts import (
++    OCTETS,
++    Bound,
++    Declaration,
++    Dimension,
++    Expression,
++    declare_growth,
++)
++
++_PLAINTEXT_READ_BYTES = 128 * 1024
+ 
+ 
+ def archive_file(root: Path, relative: str) -> Path:
+@@ -40,9 +53,14 @@
+     return byte_count, digest.hexdigest()
+ 
+ 
+-def age_decrypt(source: Path, destination: Path, *, passphrase: str, command: str) -> None:
+-    """Use the official batchpass plugin without a command-line secret."""
++@contextmanager
++def _age_stdout(source: Path, *, passphrase: str, command: str) -> Iterator[BinaryIO]:
++    """Own one child; successful exhaustion requires authenticated EOF and exit zero.
+ 
++    Diagnostics never accumulate in RAM or a temporary file. A short/failed
++    consumer closes the pipe, kills the child if needed, and reaps it. Resource
++    limits for the child (including header/KDF work) belong to its execution policy.
++    """
+     environment = os.environ.copy()
+     environment.pop("AGE_PASSPHRASE", None)
+     environment.pop("AGE_PASSPHRASE_FD", None)
+@@ -57,25 +75,69 @@
+             os.close(write_fd)
+         environment["AGE_PASSPHRASE_FD"] = str(read_fd)
+     try:
+-        arguments = [command, "--decrypt", "-j", "batchpass", "-o", str(destination), str(source)]
+-        if read_fd is None:
+-            completed = subprocess.run(
+-                arguments, check=False, capture_output=True, text=True, env=environment
+-            )
+-        else:
+-            completed = subprocess.run(
+-                arguments,
+-                check=False,
+-                capture_output=True,
+-                text=True,
+-                env=environment,
+-                pass_fds=(read_fd,),
+-            )
++        arguments = [command, "--decrypt", "-j", "batchpass", str(source)]
++        options = {"pass_fds": (read_fd,)} if read_fd is not None else {}
++        process = subprocess.Popen(
++            arguments, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
++            stderr=subprocess.DEVNULL, env=environment, **options,
++        )
+     finally:
+         if read_fd is not None:
+             os.close(read_fd)
+-    if completed.returncode != 0 or not destination.is_file():
+-        raise ValueError(f"age decryption failed for {source.name}")
++    assert process.stdout is not None
++    try:
++        yield process.stdout
++        if process.wait() != 0:
++            raise ValueError(f"age decryption failed for {source.name}")
++    finally:
++        process.stdout.close()
++        if process.poll() is None:
++            process.kill()
++        process.wait()
++
++
++@declare_growth(Declaration(
++    id="riverhog-recovery-bounded-plaintext/v1",
++    authority="a-riverhog-recovery-tool",
++    subjects=("a_riverhog_recovery_tool._archive_io._bounded_plaintext",),
++    scope="successful-or-rejected-finite-stream",
++    starts_at="Read an already-open child stdout with a caller-supplied byte budget.",
++    ends_at="Return bounded content or reject on the first over-budget byte.",
++    dimensions=(Dimension("maximum", OCTETS, "Inclusive plaintext byte budget."),),
++    bounds=(
++        Bound("read_octets", OCTETS, "upper", Expression("sum", terms=(
++            Expression("dimension", name="maximum"),
++            Expression("constant", value=1, unit=OCTETS))),
++              "At most the accepted budget plus one rejection sentinel is pulled."),
++        Bound("scratch_octets", OCTETS, "equal", Expression("constant", value=0, unit=OCTETS),
++              "The bounded consumer never writes plaintext to temporary disk."),
++    ),
++    conditions=("A binary stream honors each requested read size.",
++                "The caller supplies a nonnegative integer carrier limit."),
++    invariants=("An over-budget prefix is rejected, never truncated into success.",),
++    limitations=("Excludes child KDF/header work, kernel buffers, and interpreter overhead.",
++                 "Authenticated EOF/exit and subprocess cleanup are caller obligations.",
++                 "No time bound is claimed for a blocked or stalled stream."),
++))
++def _bounded_plaintext(source: BinaryIO, maximum: int) -> bytes:
++    if type(maximum) is not int or maximum < 0:
++        raise ValueError("archive read bound is invalid")
++    content = bytearray()
++    while True:
++        chunk = source.read(min(_PLAINTEXT_READ_BYTES, maximum + 1 - len(content)))
++        if not chunk:
++            return bytes(content)
++        if len(content) + len(chunk) > maximum:
++            raise ValueError("archive object exceeds its plaintext bound")
++        content.extend(chunk)
++
++
++def age_decrypt(source: Path, destination: Path, *, passphrase: str, command: str) -> None:
++    """Spool one payload through the official plugin without buffering diagnostics."""
++    with _age_stdout(source, passphrase=passphrase, command=command) as stream:
++        with destination.open("wb") as output:
++            while chunk := stream.read(_PLAINTEXT_READ_BYTES):
++                output.write(chunk)
+ 
+ 
+ class EncryptedArchive:
+@@ -106,20 +168,18 @@
+         return destination
+ 
+     def read_bounded(self, relative: str, maximum: int) -> bytes:
+-        if maximum < 0:
++        if type(maximum) is not int or maximum < 0:
+             raise ValueError("archive read bound is invalid")
+-        with tempfile.TemporaryDirectory(dir=self.scratch, prefix=".read-") as directory:
+-            path = self.decrypt_to(relative, Path(directory) / "plaintext")
+-            if path.stat().st_size > maximum:
+-                raise ValueError(f"archive object exceeds its bound: {relative}")
+-            return path.read_bytes()
++        source = archive_file(self.root, relative)
++        with _age_stdout(source, passphrase=self.passphrase, command=self.age_command) as stream:
++            content = _bounded_plaintext(stream, maximum)
++        return content
+ 
+     def iter_plaintext(self, relative: str) -> Iterator[bytes]:
+-        with tempfile.TemporaryDirectory(dir=self.scratch, prefix=".stream-") as directory:
+-            path = self.decrypt_to(relative, Path(directory) / "plaintext")
+-            with path.open("rb") as source:
+-                while chunk := source.read(8 * 1024 * 1024):
+-                    yield chunk
++        source = archive_file(self.root, relative)
++        with _age_stdout(source, passphrase=self.passphrase, command=self.age_command) as stream:
++            while chunk := stream.read(_PLAINTEXT_READ_BYTES):
++                yield chunk
+ 
+ 
+ __all__ = ["EncryptedArchive", "age_decrypt", "archive_file", "sha256_file"]
+diff --git a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py
+--- a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py
++++ b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py
+@@ -8,8 +8,12 @@
+ from __future__ import annotations
+ 
+ import hashlib
++import sqlite3
++import tempfile
+ from collections.abc import Callable, Iterator, Mapping
++from contextlib import contextmanager
+ from dataclasses import dataclass
++from pathlib import Path
+ from typing import Any, cast
+ 
+ from riverhog_archive_contracts import (
+@@ -30,6 +34,14 @@
+     validate_member_history_binding_page,
+ )
+ from riverhog_canonical_json import require_canonical_json
++from riverhog_growth_contracts import (
++    COUNT,
++    Bound,
++    Declaration,
++    Dimension,
++    Expression,
++    declare_growth,
++)
+ 
+ ObjectReader = Callable[[str], Iterator[bytes]]
+ 
+@@ -46,11 +58,16 @@
+ 
+ def _read_bounded(chunks: Iterator[bytes], maximum: int) -> bytes:
+     content = bytearray()
+-    for chunk in chunks:
+-        if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
+-            raise ProvenanceArchiveReadError("provenance object exceeds its bounded contract")
+-        content.extend(chunk)
+-    return bytes(content)
++    try:
++        for chunk in chunks:
++            if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
++                raise ProvenanceArchiveReadError("provenance object exceeds its bounded contract")
++            content.extend(chunk)
++        return bytes(content)
++    finally:
++        close = getattr(chunks, "close", None)
++        if close is not None:
++            close()
+ 
+ 
+ class CanonicalProvenanceArchiveReader:
+@@ -66,8 +83,60 @@
+         self._expected_root_sha256 = expected_root_sha256
+         self._archive_generation = archive_generation
+         self._artifact_set_sha256 = artifact_set_sha256
++        self._prepared_db: sqlite3.Connection | None = None
++        self._prepared_summary: ProvenanceArchiveSummary | None = None
++        self._prepared_cursors: set[sqlite3.Cursor] = set()
++
++    @contextmanager
++    def prepared(self, *, scratch: Path) -> Iterator[CanonicalProvenanceArchiveReader]:
++        """Verify once; keep an operation-local, read-only descriptor index on disk.
++
++        This is a disposable interpretation of one root, not a new archive authority
++        or a resumable checkpoint. Nothing can read it until the terminal commitment
++        has been checked. A later context always revalidates the source.
++        """
++        if self._prepared_db is not None:
++            yield self
++            return
++        with tempfile.TemporaryDirectory(dir=scratch, prefix="provenance-index-") as directory:
++            db = sqlite3.connect(Path(directory) / "metadata.sqlite3")
++
++            def remember(document: ProvenanceVolumeDocument | ProvenanceTerminalDocument) -> None:
++                if isinstance(document, ProvenanceTerminalDocument):
++                    kind, journal_id = "terminal", None
++                else:
++                    kind, journal_id = document.payload.kind, document.journal_id
++                db.execute(
++                    "INSERT INTO volumes VALUES (?, ?, ?, ?)",
++                    (format_archive_sequence(document.sequence), kind, journal_id,
++                     document.to_json_bytes()),
++                )
++
++            try:
++                db.executescript(
++                    "PRAGMA cache_size = -512; PRAGMA temp_store = FILE; "
++                    "CREATE TABLE volumes(sequence TEXT PRIMARY KEY, kind TEXT, "
++                    "journal TEXT, body BLOB); "
++                    "CREATE INDEX volume_journals ON volumes(journal, kind, sequence); "
++                    "CREATE INDEX volume_kinds ON volumes(kind, sequence);"
++                )
++                summary = self._scan(remember)
++                db.commit()
++                db.execute("PRAGMA query_only = ON")
++                self._prepared_db = db
++                self._prepared_summary = summary
++                yield self
++            finally:
++                self._prepared_db = None
++                self._prepared_summary = None
++                for cursor in self._prepared_cursors:
++                    cursor.close()
++                self._prepared_cursors.clear()
++                db.close()
+ 
+     def _root(self) -> ProvenanceRootDocument:
++        if self._prepared_summary is not None:
++            return self._prepared_summary.root
+         raw = _read_bounded(
+             self._read_object("provenance/root.json.age"), PROVENANCE_METADATA_BYTES_MAX
+         )
+@@ -83,7 +152,36 @@
+ 
+     def _descriptors(
+         self,
++        *,
++        journal_id: str | None = None,
++        kind: str | None = None,
+     ) -> Iterator[ProvenanceVolumeDocument | ProvenanceTerminalDocument]:
++        if self._prepared_db is not None:
++            filters: list[str] = []
++            values: list[str] = []
++            if journal_id is not None:
++                filters.append("journal = ?")
++                values.append(journal_id)
++            if kind is not None:
++                filters.append("kind = ?")
++                values.append(kind)
++            where = " WHERE " + " AND ".join(filters) if filters else ""
++            cursor = self._prepared_db.execute(
++                "SELECT kind, body FROM volumes" + where + " ORDER BY sequence", values
++            )
++            self._prepared_cursors.add(cursor)
++            try:
++                for selected_kind, raw in cursor:
++                    yield (
++                        ProvenanceTerminalDocument.from_json_bytes(raw)
++                        if selected_kind == "terminal"
++                        else ProvenanceVolumeDocument.from_json_bytes(raw)
++                    )
++            finally:
++                if cursor in self._prepared_cursors:
++                    self._prepared_cursors.remove(cursor)
++                    cursor.close()
++            return
+         sequence = 0
+         while True:
+             path = f"provenance/metadata/volume-{format_archive_sequence(sequence)}.json.age"
+@@ -95,17 +193,54 @@
+                 terminal = ProvenanceTerminalDocument.from_json_bytes(raw)
+                 if terminal.sequence != sequence:
+                     raise ProvenanceArchiveReadError("provenance terminal sequence changed")
+-                yield terminal
++                if journal_id is None and kind is None:
++                    yield terminal
+                 return
+             document = ProvenanceVolumeDocument.from_json_bytes(raw)
+             if document.sequence != sequence:
+                 raise ProvenanceArchiveReadError("provenance volume sequence changed")
+-            yield document
++            if (journal_id is None or document.journal_id == journal_id) and (
++                kind is None or document.payload.kind == kind
++            ):
++                yield document
+             sequence += 1
+ 
+     def scan(self) -> ProvenanceArchiveSummary:
+         """Verify the complete root-selected descriptor sequence without payload reads."""
+ 
++        if self._prepared_summary is not None:
++            return self._prepared_summary
++        return self._scan()
++
++    @declare_growth(Declaration(
++        id="riverhog-recovery-descriptor-scan/v1",
++        authority="a-riverhog-recovery-tool",
++        subjects=("a_riverhog_recovery_tool._provenance_reader.CanonicalProvenanceArchiveReader._scan",),
++        scope="successful-cold-scan",
++        starts_at="Open the root-selected provenance root.",
++        ends_at="Validate the terminal commitment and return the complete summary.",
++        dimensions=(Dimension("volumes", COUNT, "Nonterminal descriptors in the selected sequence."),),
++        bounds=(
++            Bound("root_reads", COUNT, "equal", Expression("constant", value=1, unit=COUNT),
++                  "Logical provenance-root opens, not provider requests."),
++            Bound("descriptor_reads", COUNT, "equal", Expression("sum", terms=(
++                Expression("dimension", name="volumes"),
++                Expression("constant", value=1, unit=COUNT))),
++                  "Each descriptor and the mandatory terminal is read once."),
++            Bound("payload_reads", COUNT, "equal", Expression("constant", value=0, unit=COUNT),
++                  "Payloads are not read while establishing descriptor authority."),
++        ),
++        conditions=("Finite valid sequence on a quiescent source; one cold scan.",
++                    "An optional remember callback does not recursively read the archive."),
++        invariants=("No indexed read is exposed before the complete commitment verifies.",),
++        limitations=("Counts do not prove CPU, SQLite page I/O, RSS or elapsed time.",
++                     "KDF work and failed attempts require separate resource accounting.",
++                     "Index construction and other recovery phases are outside this metric scope."),
++    ))
++    def _scan(
++        self,
++        remember: Callable[[ProvenanceVolumeDocument | ProvenanceTerminalDocument], None] | None = None,
++    ) -> ProvenanceArchiveSummary:
+         root = self._root()
+         digest = hashlib.sha256(PROVENANCE_SEQUENCE_DOMAIN)
+         expected = 0
+@@ -117,6 +252,8 @@
+         current_journal_bytes = 0
+         current_journal_sha256: str | None = None
+         for document in self._descriptors():
++            if remember is not None:
++                remember(document)
+             if document.sequence != expected or (
+                 document.archive_generation,
+                 document.artifact_set_sha256,
+@@ -194,7 +331,7 @@
+         journal_sha256: str | None = None
+         full_digest = hashlib.sha256() if offset == 0 and size is None else None
+         emitted = 0
+-        for document in self._descriptors():
++        for document in self._descriptors(journal_id=journal_id, kind="journal"):
+             if isinstance(document, ProvenanceTerminalDocument):
+                 break
+             if document.payload.kind != "journal" or document.journal_id != journal_id:
+@@ -238,7 +375,7 @@
+ 
+         self.scan()
+         result: tuple[int, str] | None = None
+-        for document in self._descriptors():
++        for document in self._descriptors(kind="journal"):
+             if isinstance(document, ProvenanceTerminalDocument):
+                 break
+             if document.payload.kind != "journal" or document.journal_id != journal_id:
+@@ -258,7 +395,7 @@
+ 
+         self.scan()
+         previous: str | None = None
+-        for document in self._descriptors():
++        for document in self._descriptors(kind="journal"):
+             if isinstance(document, ProvenanceTerminalDocument):
+                 return
+             if document.payload.kind != "journal" or document.journal_id == previous:
+@@ -294,7 +431,7 @@
+ 
+     def _iter_bindings(self) -> Iterator[MemberHistoryBinding]:
+         last_id: str | None = None
+-        for document in self._descriptors():
++        for document in self._descriptors(kind="bindings"):
+             if isinstance(document, ProvenanceTerminalDocument):
+                 return
+             if document.payload.kind != "bindings":
+diff --git a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py
+--- a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py
++++ b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py
+@@ -3,6 +3,7 @@
+ from __future__ import annotations
+ 
+ import hashlib
++from contextlib import contextmanager
+ import json
+ import os
+ import shutil
+@@ -233,63 +234,68 @@
+             yield chunk
+ 
+ 
++@contextmanager
+ def _stage_provenance(
+     selection: _ArchiveSelection,
+     *,
+     staging: Path,
+     scratch: Path,
+-) -> tuple[CanonicalProvenanceArchiveReader, sqlite3.Connection, int]:
++) -> Iterator[tuple[CanonicalProvenanceArchiveReader, sqlite3.Connection, int]]:
+     reader = CanonicalProvenanceArchiveReader(
+         selection.encrypted.iter_plaintext,
+         expected_root_sha256=selection.manifest.provenance.identity,
+         archive_generation=selection.manifest.archive_generation,
+         artifact_set_sha256=selection.manifest.artifact_set_sha256,
+     )
+-    scanned = reader.scan()
+-    if scanned.root.binding_count != selection.manifest.artifacts:
+-        raise RecoveryError("provenance binding coverage differs from artifact set")
+-    root_raw = selection.encrypted.read_bounded(
+-        selection.manifest.provenance.root.path, PROVENANCE_METADATA_BYTES_MAX
+-    )
+-    _write_exact(staging, ("structure", "provenance-root.json"), root_raw)
+-    journals = sqlite3.connect(scratch / "journals.sqlite3")
+-    journals.execute("DROP TABLE IF EXISTS journals")
+-    journals.execute(
+-        "CREATE TABLE journals (journal_id TEXT PRIMARY KEY, bytes INTEGER NOT NULL, "
+-        "sha256 TEXT NOT NULL, path TEXT NOT NULL)"
+-    )
+-    count = 0
+-    for journal_id, byte_count, sha256 in reader.iter_journal_headers():
+-        components = shared_journal_components(sha256)
+-        output = staging.joinpath(*components)
+-        output.parent.mkdir(parents=True, exist_ok=True)
+-        digest = hashlib.sha256()
+-        copied = 0
+-        with output.open("xb") as stream:
+-            for chunk in reader.iter_journal_range(journal_id):
+-                stream.write(chunk)
+-                copied += len(chunk)
+-                digest.update(chunk)
+-            stream.flush()
+-            os.fsync(stream.fileno())
+-        if (copied, digest.hexdigest()) != (byte_count, sha256):
+-            raise RecoveryError("canonical journal differs from selected archive")
+-        journals.execute(
+-            "INSERT INTO journals VALUES (?, ?, ?, ?)",
+-            (journal_id, byte_count, sha256, str(output)),
++    with reader.prepared(scratch=scratch):
++        scanned = reader.scan()
++        if scanned.root.binding_count != selection.manifest.artifacts:
++            raise RecoveryError("provenance binding coverage differs from artifact set")
++        root_raw = selection.encrypted.read_bounded(
++            selection.manifest.provenance.root.path, PROVENANCE_METADATA_BYTES_MAX
+         )
+-        count += 1
+-    journals.commit()
+-    # The entire selected set must resolve exact foreign/fork references. Unknown
+-    # optional profile payloads remain exact even without their application code.
+-    with CanonicalCorpusValidator() as corpus:
+-        for (path,) in journals.execute("SELECT path FROM journals ORDER BY journal_id"):
+-            with validate_journal_chunks(
+-                _file_chunks(Path(path)), require_profiles=False
+-            ) as summary:
+-                corpus.add(summary)
+-        corpus.validate()
+-    return reader, journals, count
++        _write_exact(staging, ("structure", "provenance-root.json"), root_raw)
++        journals = sqlite3.connect(scratch / "journals.sqlite3")
++        try:
++            journals.execute("DROP TABLE IF EXISTS journals")
++            journals.execute(
++                "CREATE TABLE journals (journal_id TEXT PRIMARY KEY, bytes INTEGER NOT NULL, "
++                "sha256 TEXT NOT NULL, path TEXT NOT NULL)"
++            )
++            count = 0
++            for journal_id, byte_count, sha256 in reader.iter_journal_headers():
++                components = shared_journal_components(sha256)
++                output = staging.joinpath(*components)
++                output.parent.mkdir(parents=True, exist_ok=True)
++                digest = hashlib.sha256()
++                copied = 0
++                with output.open("xb") as stream:
++                    for chunk in reader.iter_journal_range(journal_id):
++                        stream.write(chunk)
++                        copied += len(chunk)
++                        digest.update(chunk)
++                    stream.flush()
++                    os.fsync(stream.fileno())
++                if (copied, digest.hexdigest()) != (byte_count, sha256):
++                    raise RecoveryError("canonical journal differs from selected archive")
++                journals.execute(
++                    "INSERT INTO journals VALUES (?, ?, ?, ?)",
++                    (journal_id, byte_count, sha256, str(output)),
++                )
++                count += 1
++            journals.commit()
++            # The entire selected set must resolve exact foreign/fork references. Unknown
++            # optional profile payloads remain exact even without their application code.
++            with CanonicalCorpusValidator() as corpus:
++                for (path,) in journals.execute("SELECT path FROM journals ORDER BY journal_id"):
++                    with validate_journal_chunks(
++                        _file_chunks(Path(path)), require_profiles=False
++                    ) as summary:
++                        corpus.add(summary)
++                corpus.validate()
++            yield reader, journals, count
++        finally:
++            journals.close()
+ 
+ 
+ def _file_chunks(path: Path) -> Iterator[bytes]:
+@@ -565,21 +571,21 @@
+             and selected_metadata.head_sha256 != expected_tag_head_sha256
+         ):
+             raise RecoveryError("selected tag head differs from trusted expectation")
+-        reader, journal_state, journal_count = _stage_provenance(
++        with _stage_provenance(
+             selection, staging=staging, scratch=scratch
+-        )
+-        payload_summary, payload_state = stage_payloads(
+-            selection.encrypted, manifest=selection.manifest, scratch=scratch
+-        )
+-        covered, mapped = _stage_mapping(
+-            payloads=payload_state,
+-            reader=reader,
+-            journals=journal_state,
+-            staging=staging,
+-            scratch=scratch,
+-            rules=rules,
+-            mode=layout_mode,
+-        )
++        ) as (reader, journal_state, journal_count):
++            payload_summary, payload_state = stage_payloads(
++                selection.encrypted, manifest=selection.manifest, scratch=scratch
++            )
++            covered, mapped = _stage_mapping(
++                payloads=payload_state,
++                reader=reader,
++                journals=journal_state,
++                staging=staging,
++                scratch=scratch,
++                rules=rules,
++                mode=layout_mode,
++            )
+         if covered != payload_summary.artifacts or mapped != covered:
+             raise RecoveryError("recovery mapping does not cover every artifact")
+         _write_exact(staging, ("structure", "archive.json"), selection.manifest_bytes)
+diff --git a/some-implementations/riverhog/recovery/tests/test_recovery_growth.py b/some-implementations/riverhog/recovery/tests/test_recovery_growth.py
+new file mode 100644
+--- /dev/null
++++ b/some-implementations/riverhog/recovery/tests/test_recovery_growth.py
+@@ -0,0 +1,289 @@
++"""Primitive counts and lifetime witnesses for independent recovery operations."""
++from __future__ import annotations
++
++import hashlib
++import io
++import sqlite3
++import subprocess
++import sys
++from collections import Counter
++from contextlib import contextmanager
++from pathlib import Path
++
++import pytest
++import a_riverhog_recovery_tool._archive_io as archive_io
++from a_riverhog_recovery_tool._provenance_reader import (
++    CanonicalProvenanceArchiveReader, ProvenanceArchiveReadError,
++)
++from riverhog_archive_contracts import (
++    MemberHistoryBinding, ProvenancePayload, ProvenanceRootDocument,
++    ProvenanceTerminalDocument, ProvenanceVolumeDocument,
++    binding_tree_commitment, ordered_provenance_commitment,
++)
++from riverhog_canonical_json import canonical_json_bytes
++from riverhog_growth_contracts import growth_binding, project_bindings, validate_sample
++
++
++def digest(raw: bytes) -> str:
++    return hashlib.sha256(raw).hexdigest()
++
++
++def corpus(journals: int, segments: int):
++    """Exact structural custody; synthetic journal bytes are not semantic journals."""
++    generation, artifacts = "a" * 64, "b" * 64
++    member = MemberHistoryBinding("c" * 64, 0, digest(b""), "d" * 64, 1)
++    bindings = canonical_json_bytes({
++        "format": "riverhog-archive-member-history-bindings/v1",
++        "bindings": [member.to_mapping()],
++    })
++    first = ProvenancePayload("bindings", 0, len(bindings), digest(bindings))
++    documents = [ProvenanceVolumeDocument(
++        generation, artifacts, 0, first, first_artifact_id=member.artifact_id,
++        last_artifact_id=member.artifact_id, binding_count=1,
++    )]
++    objects = {first.path: bindings}
++    expected = {}
++    for ordinal in range(journals):
++        journal_id = f"urn:uuid:00000000-0000-4000-8000-{ordinal:012x}"
++        chunks = [f"journal {ordinal} segment {i}\n".encode() for i in range(segments)]
++        raw = b"".join(chunks)
++        expected[journal_id] = raw
++        offset = 0
++        for chunk in chunks:
++            sequence = len(documents)
++            payload = ProvenancePayload("journal", sequence, len(chunk), digest(chunk))
++            documents.append(ProvenanceVolumeDocument(
++                generation, artifacts, sequence, payload, journal_id=journal_id,
++                journal_offset=offset, journal_bytes=len(raw), journal_sha256=digest(raw),
++            ))
++            objects[payload.path] = chunk
++            offset += len(chunk)
++    terminal = ProvenanceTerminalDocument(generation, artifacts, len(documents))
++    root = ProvenanceRootDocument(
++        generation, artifacts, "urn:uuid:00000000-0000-4000-8000-000000000fff",
++        1, binding_tree_commitment((member,)).root_sha256, journals,
++        ordered_provenance_commitment((*documents, terminal)),
++    )
++    objects["provenance/root.json.age"] = root.to_json_bytes()
++    for document in (*documents, terminal):
++        objects[document.metadata_path] = document.to_json_bytes()
++    return root, objects, expected
++
++
++def reader_for(root, objects, reads):
++    def read(path):
++        reads[path] += 1
++        yield objects[path]
++    return CanonicalProvenanceArchiveReader(
++        read, expected_root_sha256=root.identity,
++        archive_generation=root.archive_generation, artifact_set_sha256=root.artifact_set_sha256,
++    )
++
++
++@pytest.mark.parametrize("journals", [1, 4, 16, 64])
++@pytest.mark.parametrize("segments", [1, 3])
++def test_prepared_journal_recovery_has_one_cold_descriptor_pass(tmp_path, journals, segments):
++    root, objects, expected = corpus(journals, segments)
++    reads = Counter()
++    reader = reader_for(root, objects, reads)
++    with reader.prepared(scratch=tmp_path):
++        summary = reader.scan()
++        cold_reads = reads.copy()
++        for journal_id, byte_count, sha in reader.iter_journal_headers():
++            raw = b"".join(reader.iter_journal_range(journal_id))
++            assert raw == expected[journal_id] and (len(raw), digest(raw)) == (byte_count, sha)
++        assert len(list(reader.iter_bindings())) == 1
++        with reader.prepared(scratch=tmp_path):
++            assert reader.scan() == summary
++        assert reader._prepared_db is not None
++        plan = reader._prepared_db.execute(
++            "EXPLAIN QUERY PLAN SELECT kind,body FROM volumes "
++            "WHERE journal=? AND kind=? ORDER BY sequence", (next(iter(expected)), "journal")
++        ).fetchall()
++        assert any("SEARCH" in row[3] and "volume_journals" in row[3] for row in plan)
++        assert not any("TEMP B-TREE" in row[3] for row in plan)
++        with pytest.raises(sqlite3.OperationalError):
++            reader._prepared_db.execute("DELETE FROM volumes")
++        binding = growth_binding(CanonicalProvenanceArchiveReader._scan)
++        validate_sample(project_bindings((binding,)), binding.declaration.id,
++            {"volumes": 1 + journals * segments},
++            {"root_reads": cold_reads["provenance/root.json.age"],
++             "descriptor_reads": sum(n for p,n in cold_reads.items() if "/metadata/" in p),
++             "payload_reads": sum(n for p,n in cold_reads.items() if "/payloads/" in p)})
++    assert reader._prepared_db is None and not reader._prepared_cursors
++    assert not list(tmp_path.iterdir())
++    assert all(reads[p] == 1 for p in objects if "/metadata/" in p or p.endswith("root.json.age"))
++
++
++def test_partial_iterator_closes_and_next_context_revalidates(tmp_path):
++    root, objects, expected = corpus(4, 2)
++    reads = Counter()
++    reader = reader_for(root, objects, reads)
++    with reader.prepared(scratch=tmp_path):
++        rows = reader._descriptors(kind="journal")
++        next(rows)
++        assert reader._prepared_cursors
++    rows.close()
++    assert not reader._prepared_cursors
++    terminal = sorted(p for p in objects if "/metadata/" in p)[-1]
++    objects[terminal] = objects[terminal].replace(b'"terminal"', b'"invalid"')
++    with pytest.raises(ValueError):
++        with reader.prepared(scratch=tmp_path):
++            pytest.fail("unverified index was exposed")
++    assert reads["provenance/root.json.age"] == 2
++    assert reader._prepared_db is None and not list(tmp_path.iterdir())
++
++
++def test_preparation_does_not_cache_or_trust_changed_payloads(tmp_path):
++    root, objects, expected = corpus(1, 1)
++    reader = reader_for(root, objects, Counter())
++    with reader.prepared(scratch=tmp_path):
++        raw = next(iter(expected.values()))
++        path = next(p for p,v in objects.items() if v == raw)
++        objects[path] = b"z" * len(raw)
++        with pytest.raises(ProvenanceArchiveReadError, match="segment changed"):
++            list(reader.iter_journal_range(next(iter(expected))))
++
++
++@pytest.mark.parametrize("maximum", [0, 1, 127, 128 * 1024, 128 * 1024 + 7])
++@pytest.mark.parametrize("extra", [0, 1, 1000000])
++def test_bounded_consumer_pulls_at_most_one_rejection_sentinel(maximum, extra):
++    class Observed(io.BytesIO):
++        count = 0
++        def read(self, size=-1):
++            assert 0 < size <= archive_io._PLAINTEXT_READ_BYTES
++            chunk = super().read(size)
++            self.count += len(chunk)
++            return chunk
++    source = Observed(b"x" * (maximum + extra))
++    if extra:
++        with pytest.raises(ValueError, match="plaintext bound"):
++            archive_io._bounded_plaintext(source, maximum)
++        assert source.count == maximum + 1
++    else:
++        assert archive_io._bounded_plaintext(source, maximum) == b"x" * maximum
++        assert source.count == maximum
++    binding = growth_binding(archive_io._bounded_plaintext)
++    validate_sample(project_bindings((binding,)), binding.declaration.id,
++                    {"maximum": maximum}, {"read_octets": source.count, "scratch_octets": 0})
++
++
++@pytest.mark.parametrize("maximum", [True, -1, 1.0])
++def test_invalid_bound_never_pulls_a_stream(maximum):
++    class Unreadable:
++        def read(self, *args):
++            pytest.fail("invalid bound reached reader")
++    with pytest.raises(ValueError):
++        archive_io._bounded_plaintext(Unreadable(), maximum)
++
++
++def child_archive(tmp_path, monkeypatch, program):
++    source = tmp_path / "archive"
++    source.mkdir()
++    (source / "object.age").write_bytes(b"test child, not ciphertext")
++    processes = []
++    popen = subprocess.Popen
++    def launch(args, **kwargs):
++        assert kwargs["stderr"] == subprocess.DEVNULL
++        assert kwargs["stdout"] == subprocess.PIPE
++        assert "secret" not in repr(args)
++        child = popen([sys.executable, "-c", program], **kwargs)
++        processes.append(child)
++        return child
++    monkeypatch.setattr(archive_io.subprocess, "Popen", launch)
++    encrypted = archive_io.EncryptedArchive(
++        source, passphrase="secret", age_command="controlled-test-child", scratch=tmp_path / "scratch"
++    )
++    return encrypted, processes
++
++
++def test_over_budget_child_is_killed_without_plaintext_scratch(tmp_path, monkeypatch):
++    encrypted, children = child_archive(tmp_path, monkeypatch,
++        'import os,time; os.write(1,b"x"*10000); time.sleep(60)')
++    with pytest.raises(ValueError, match="plaintext bound"):
++        encrypted.read_bounded("object.age", 7)
++    assert children[0].poll() is not None
++    assert not list(encrypted.scratch.iterdir())
++
++
++def test_small_stdout_with_large_diagnostics_does_not_accumulate_or_deadlock(tmp_path, monkeypatch):
++    encrypted, children = child_archive(tmp_path, monkeypatch,
++        'import os; os.write(2,b"z"*2000000); os.write(1,b"exact")')
++    assert encrypted.read_bounded("object.age", 5) == b"exact"
++    assert children[0].poll() == 0
++    assert not list(encrypted.scratch.iterdir())
++
++
++def test_late_child_authentication_failure_never_returns_content(tmp_path, monkeypatch):
++    encrypted, children = child_archive(tmp_path, monkeypatch,
++        'import os; os.write(1,b"prefix"); raise SystemExit(7)')
++    with pytest.raises(ValueError, match="age decryption failed"):
++        encrypted.read_bounded("object.age", 100)
++    destination = tmp_path / "destination"
++    destination.write_bytes(b"keep")
++    with pytest.raises(ValueError):
++        encrypted.decrypt_to("object.age", destination)
++    assert destination.read_bytes() == b"keep"
++    assert not list(tmp_path.glob('.decrypt-*'))
++    assert all(p.poll() == 7 for p in children)
++
++
++def test_abandoned_plaintext_iterator_reaps_its_child(tmp_path, monkeypatch):
++    encrypted, children = child_archive(tmp_path, monkeypatch,
++        'import os,time; os.write(1,b"x"*262144); time.sleep(60)')
++    stream = encrypted.iter_plaintext("object.age")
++    assert len(next(stream)) == archive_io._PLAINTEXT_READ_BYTES
++    stream.close()
++    assert children[0].poll() is not None
++
++
++def test_complete_recovery_uses_prepared_reader_through_mapping(tmp_path, monkeypatch):
++    from riverhog_age import decrypt_age_scrypt
++    from tests.support.qualification.recovery_archive import write_archive, PASSPHRASE_ID, PASSPHRASE
++    from a_riverhog_recovery_tool.recovery import recover_archive
++    archive = tmp_path / "archive"
++    fixture = write_archive(archive, late_shared_history=True, tags=("growth:witness",))
++    reads = Counter()
++    @contextmanager
++    def python_stdout(source, *, passphrase, command):
++        reads[source.relative_to(archive).as_posix()] += 1
++        yield io.BytesIO(decrypt_age_scrypt(source.read_bytes(), passphrase))
++    monkeypatch.setattr(archive_io, "_age_stdout", python_stdout)
++    output = tmp_path / "output"
++    result = recover_archive(archive, output,
++        passphrases={PASSPHRASE_ID: PASSPHRASE}, layout_mode="id-layout")
++    assert result.artifacts == len(fixture.members)
++    assert (output / "recovery.json").is_file()
++    assert all(n == 1 for p,n in reads.items() if p.startswith('provenance/metadata/'))
++    assert not (tmp_path / ".output.riverhog-recovery").exists()
++
++
++def test_growth_declarations_use_existing_private_source_discovery_and_exact_samples():
++    import a_riverhog_recovery_tool
++    from scripts.growth_contract import declaration_projection, source_analysis
++    from riverhog_growth_contracts import validate_execution_samples
++
++    initializer = Path(a_riverhog_recovery_tool.__file__).resolve()
++    repository = next(parent for parent in initializer.parents if (parent / 'release.toml').is_file())
++    packages = {'a_riverhog_recovery_tool': initializer}
++    projection = declaration_projection({}, packages=packages)
++    analysis = source_analysis(repository, {}, projection, packages=packages)
++    for name in ('riverhog-recovery-descriptor-scan/v1', 'riverhog-recovery-bounded-plaintext/v1'):
++        assert name in projection['declarations']
++        assert name in analysis['declarations']
++    identity = 'riverhog-recovery-bounded-plaintext/v1'
++    sample = {
++        'declaration': identity,
++        'declaration_sha256': digest(canonical_json_bytes(projection['declarations'][identity])),
++        'dimensions': {'maximum': 7},
++        'metrics': {'read_octets': 8, 'scratch_octets': 0},
++        'delegates': {},
++    }
++    validate_execution_samples(projection, identity, [sample])
++    sample['metrics']['read_octets'] = 9
++    with pytest.raises(ValueError, match='violate'):
++        validate_execution_samples(projection, identity, [sample])
++    sample['metrics']['read_octets'] = 8
++    sample['declaration_sha256'] = '0' * 64
++    with pytest.raises(ValueError, match='stale'):
++        validate_execution_samples(projection, identity, [sample])
+diff --git a/tests/unit/test_archive_payload_domains.py b/tests/unit/test_archive_payload_domains.py
+--- a/tests/unit/test_archive_payload_domains.py
++++ b/tests/unit/test_archive_payload_domains.py
+@@ -4,9 +4,10 @@
+ 
+ import hashlib
+ import json
++import io
+ import sqlite3
+ from collections.abc import Iterator
+-from contextlib import closing
++from contextlib import closing, contextmanager
+ from pathlib import Path
+ 
+ import a_riverhog_recovery_tool._archive_io as archive_io
+@@ -201,6 +202,12 @@
+         archive, passphrase=passphrase, age_command="test-boundary", scratch=scratch / "crypto",
+     )
+     monkeypatch.setattr(archive_io, "age_decrypt", _python_age)
++
++    @contextmanager
++    def python_stdout(source: Path, *, passphrase: str, command: str):
++        yield io.BytesIO(decrypt_age_scrypt(source.read_bytes(), passphrase))
++
++    monkeypatch.setattr(archive_io, "_age_stdout", python_stdout)
+     summary, state = payloads.stage_payloads(encrypted, manifest=manifest, scratch=scratch)
+     state.close()
+     assert summary.artifact_set_sha256 == set_id
+diff --git a/uv.lock b/uv.lock
+--- a/uv.lock
++++ b/uv.lock
+@@ -648,6 +648,7 @@
+     { name = "release-documentation-lib" },
+     { name = "riverhog-archive-contracts" },
+     { name = "riverhog-canonical-json" },
++    { name = "riverhog-growth-contracts" },
+     { name = "riverhog-materialization" },
+     { name = "riverhog-protocol" },
+     { name = "riverhog-provenance" },
+@@ -658,6 +659,7 @@
+     { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
+     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
++    { name = "riverhog-growth-contracts", editable = "packages/riverhog-growth-contracts" },
+     { name = "riverhog-materialization", editable = "packages/riverhog-materialization" },
+     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
+     { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
