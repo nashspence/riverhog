@@ -95,6 +95,14 @@ def _begin_scan(
             row.topology_next_frame = 0
             row.topology_state = "scanning"
             row.topology_cursor_json = '{"active":null,"facts":"0","last":null}'
+            row.union_algorithm = "riverhog-journal-epoch-union/v1"
+            row.union_next_frame = 0
+            row.union_state = "building"
+            row.union_cursor_json = (
+                '{"active":"0","consumed":"0","epoch":"0","item":"0",'
+                '"last_arc":null,"last_source":null,"phase":"frame",'
+                '"seed_after":null,"seeded":"0"}'
+            )
         if (
             row.directory_id != source.directory_id
             or row.algorithm != JOURNAL_EPOCH_BOUNDARY_ALGORITHM

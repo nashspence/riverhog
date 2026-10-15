@@ -3385,6 +3385,18 @@ class CollectionUploadProvenanceEpochScanRecord(Base):
         Text, default='{"active":null,"facts":"0","last":null}'
     )
 
+    union_algorithm: Mapped[str] = mapped_column(String, default="riverhog-journal-epoch-union/v1")
+    union_next_frame: Mapped[int] = mapped_column(authority_ordinal_type(), default=0)
+    union_state: Mapped[str] = mapped_column(String, default="building")
+    union_cursor_json: Mapped[str] = mapped_column(
+        Text,
+        default=(
+            '{"active":"0","consumed":"0","epoch":"0","item":"0",'
+            '"last_arc":null,"last_source":null,"phase":"frame",'
+            '"seed_after":null,"seeded":"0"}'
+        ),
+    )
+
     __table_args__ = (
         ForeignKeyConstraint(
             ["collection_id", "journal_id"],
@@ -3404,6 +3416,12 @@ class CollectionUploadProvenanceEpochScanRecord(Base):
             _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_epoch_ordinal"
         ),
         CheckConstraint("byte_offset >= 0", name="ck_upload_epoch_offset"),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("union_next_frame", 64), name="ck_upload_union_frame"
+        ),
+        CheckConstraint(
+            "union_state IN ('building','complete','deferred')", name="ck_upload_union_state"
+        ),
         CheckConstraint(
             _fixed_lowercase_integer_check("topology_next_frame", 64),
             name="ck_upload_topology_frame",
@@ -3518,6 +3536,150 @@ class CollectionUploadProvenanceTopologyFactRecord(Base):
             "AND target_id IS NULL OR kind IN ('derivation','specialization') "
             "AND array_kind = 'relations' AND source_id IS NOT NULL AND target_id IS NOT NULL",
             name="ck_upload_topology_fact_binding",
+        ),
+    )
+
+
+class CollectionUploadProvenanceActiveEdgeRecord(Base):
+    """Private documentary edge identities, retained after speculative retirement."""
+
+    __tablename__ = "collection_upload_provenance_active_edges"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    assertion_id: Mapped[str] = mapped_column(String, primary_key=True)
+    frame_ordinal: Mapped[int] = mapped_column(authority_ordinal_type())
+    item_ordinal: Mapped[int] = mapped_column(authority_ordinal_type())
+    kind: Mapped[str] = mapped_column(String)
+    source_id: Mapped[str] = mapped_column(String)
+    target_id: Mapped[str] = mapped_column(String)
+    active: Mapped[bool] = mapped_column(Boolean)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("frame_ordinal", 64), name="ck_upload_active_edge_frame"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("item_ordinal", 64), name="ck_upload_active_edge_item"
+        ),
+        CheckConstraint(
+            "kind IN ('derivation','specialization')", name="ck_upload_active_edge_kind"
+        ),
+        Index(
+            "ix_upload_active_edge_seed",
+            "collection_id",
+            "journal_id",
+            "attempt_id",
+            "active",
+            "assertion_id",
+        ),
+    )
+
+
+class CollectionUploadProvenanceEpochGraphRecord(Base):
+    """Private union counters; completion does not accept journal semantics."""
+
+    __tablename__ = "collection_upload_provenance_epoch_graphs"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    kind: Mapped[str] = mapped_column(String, primary_key=True)
+    vertex_count: Mapped[int] = mapped_column(authority_ordinal_type())
+    arc_count: Mapped[int] = mapped_column(authority_ordinal_type())
+    state: Mapped[str] = mapped_column(String)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_epoch_graph_ordinal"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("vertex_count", 64),
+            name="ck_upload_epoch_graph_vertices",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("arc_count", 64), name="ck_upload_epoch_graph_arcs"
+        ),
+        CheckConstraint(
+            "kind IN ('derivation','specialization')", name="ck_upload_epoch_graph_kind"
+        ),
+        CheckConstraint("state IN ('building','complete')", name="ck_upload_epoch_graph_state"),
+    )
+
+
+class CollectionUploadProvenanceEpochArcRecord(Base):
+    """One unique private directed arc in one real correction epoch."""
+
+    __tablename__ = "collection_upload_provenance_epoch_arcs"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    kind: Mapped[str] = mapped_column(String, primary_key=True)
+    source_id: Mapped[str] = mapped_column(String, primary_key=True)
+    target_id: Mapped[str] = mapped_column(String, primary_key=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_epoch_arc_ordinal"
+        ),
+        CheckConstraint("kind IN ('derivation','specialization')", name="ck_upload_epoch_arc_kind"),
+    )
+
+
+class CollectionUploadProvenanceEpochVertexRecord(Base):
+    """Private endpoint degrees updated only for newly unique arcs."""
+
+    __tablename__ = "collection_upload_provenance_epoch_vertices"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    kind: Mapped[str] = mapped_column(String, primary_key=True)
+    vertex_id: Mapped[str] = mapped_column(String, primary_key=True)
+    indegree: Mapped[int] = mapped_column(authority_ordinal_type())
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_epoch_vertex_ordinal"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("indegree", 64), name="ck_upload_epoch_vertex_degree"
+        ),
+        CheckConstraint(
+            "kind IN ('derivation','specialization')", name="ck_upload_epoch_vertex_kind"
         ),
     )
 

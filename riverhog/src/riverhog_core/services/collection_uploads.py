@@ -1633,6 +1633,10 @@ class SqlAlchemyCollectionUploadService:
 
         if not advance_upload_journal_topology_capture(self._session_factory, validation):
             return
+        from .upload_journal_union import advance_upload_journal_epoch_union
+
+        if not advance_upload_journal_epoch_union(self._session_factory, validation):
+            return
         try:
             outcome = _compute_upload_journal_validation(self._session_factory, validation)
         except _StaleUploadJournalValidation:
