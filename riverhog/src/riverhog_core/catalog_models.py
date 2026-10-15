@@ -3436,11 +3436,11 @@ class CollectionUploadProvenanceFrameRecord(Base):
             name="ck_upload_provenance_frames_epoch",
         ),
         CheckConstraint(
-            "(epoch_attempt_id IS NULL AND epoch_ordinal IS NULL AND "
-            "epoch_entry_kind IS NULL AND epoch_json_sha256 IS NULL) OR "
-            "(epoch_attempt_id IS NOT NULL AND epoch_ordinal IS NOT NULL AND "
+            "epoch_attempt_id IS NULL AND epoch_ordinal IS NULL AND "
+            "epoch_entry_kind IS NULL AND epoch_json_sha256 IS NULL OR "
+            "epoch_attempt_id IS NOT NULL AND epoch_ordinal IS NOT NULL AND "
             "epoch_json_sha256 IS NOT NULL AND epoch_entry_kind IS NOT NULL AND "
-            "epoch_entry_kind IN ('journal_init','assertion','correction','checkpoint'))",
+            "epoch_entry_kind IN ('journal_init','assertion','correction','checkpoint')",
             name="ck_upload_provenance_frames_epoch_binding",
         ),
         CheckConstraint(
