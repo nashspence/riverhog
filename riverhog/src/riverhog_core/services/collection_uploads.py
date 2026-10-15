@@ -9,7 +9,7 @@ import uuid
 from collections import OrderedDict
 from collections.abc import Generator, Iterator, Mapping, Sequence
 from contextlib import closing
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import timedelta
 from itertools import islice
 from typing import Any, Literal, TypedDict, cast
@@ -235,6 +235,7 @@ from riverhog_core.catalog_models import (
     CollectionUploadCopyIntentRecord,
     CollectionUploadMemberHistoryRecord,
     CollectionUploadProvenanceArchiveVolumeRecord,
+    CollectionUploadProvenanceCaptureSegmentRecord,
     CollectionUploadProvenanceCustodyObjectRecord,
     CollectionUploadProvenanceFrameRecord,
     CollectionUploadProvenanceJournalChunkRecord,
@@ -6806,6 +6807,7 @@ def _iter_upload_journal_chunks(
         raise ProvenanceValidationError("staged canonical journal prefix is incomplete")
 
 
+_JOURNAL_CAPTURE_SEGMENT_OCTETS = 64 * 1024
 _JOURNAL_CAPTURE_OCTET_BUDGET = 64 * 1024
 _JOURNAL_CAPTURE_FRAME_BUDGET = 64
 
@@ -6821,6 +6823,15 @@ class _UploadJournalCaptureWork:
     source_sha256: str
     cursor: JournalFramingCursor
     content: bytes
+    tail_content: bytes = b""
+
+    @property
+    def phase(self) -> str:
+        return "scanning"
+
+    @property
+    def capture_failure(self) -> None:
+        return None
 
 
 def _begin_upload_journal_capture(
@@ -6960,7 +6971,7 @@ def _read_upload_journal_capture(
             content = raw[start : start + size]
         else:
             content = b""
-        return _UploadJournalCaptureWork(
+        work = _UploadJournalCaptureWork(
             collection_id,
             journal_id,
             cast(str, record.capture_attempt_id),
@@ -6971,6 +6982,38 @@ def _read_upload_journal_capture(
             cursor,
             content,
         )
+
+    tail = _check_upload_journal_capture_segment(factory, work)
+    if tail is None:
+        return None
+    return replace(
+        work,
+        tail_content=tail if work.cursor.byte_offset % _JOURNAL_CAPTURE_SEGMENT_OCTETS else b"",
+    )
+
+
+def _prepare_upload_journal_capture_segments(
+    work: _UploadJournalCaptureWork, advance: JournalFramingAdvance
+) -> tuple[tuple[int, bytes, str], ...]:
+    """Prepare at most two bounded pages without a catalog transaction."""
+    extent = _JOURNAL_CAPTURE_SEGMENT_OCTETS
+    admitted = advance.cursor.byte_offset - work.cursor.byte_offset
+    if not 0 <= admitted <= len(work.content) <= _JOURNAL_CAPTURE_OCTET_BUDGET:
+        raise RuntimeError("journal capture source exceeds its admitted octets")
+    if len(work.tail_content) != work.cursor.byte_offset % extent:
+        raise RuntimeError("journal capture source tail differs from its checkpoint")
+    if not admitted:
+        return ()
+    raw = work.tail_content + work.content[:admitted]
+    first = work.cursor.byte_offset // extent
+    return tuple(
+        (
+            first + offset // extent,
+            raw[offset : offset + extent],
+            hashlib.sha256(raw[offset : offset + extent]).hexdigest(),
+        )
+        for offset in range(0, len(raw), extent)
+    )
 
 
 def _commit_upload_journal_capture(
@@ -6995,6 +7038,7 @@ def _commit_upload_journal_capture(
         or cursor.frame_count != work.cursor.frame_count + len(advance.positions)
     ):
         raise RuntimeError("journal capture transition exceeds its admitted work")
+    segments = _prepare_upload_journal_capture_segments(work, advance)
     with session_scope(factory) as session:
         changed = cast(
             CursorResult[Any],
@@ -7047,6 +7091,39 @@ def _commit_upload_journal_capture(
                     for position in advance.positions
                 ],
             )
+        segment_type = CollectionUploadProvenanceCaptureSegmentRecord
+        for ordinal, raw, digest in segments:
+            if (
+                ordinal == work.cursor.byte_offset // _JOURNAL_CAPTURE_SEGMENT_OCTETS
+                and work.tail_content
+            ):
+                page_changed = cast(
+                    CursorResult[Any],
+                    session.execute(
+                        update(segment_type)
+                        .where(
+                            segment_type.collection_id == work.collection_id,
+                            segment_type.journal_id == work.journal_id,
+                            segment_type.directory_id == work.directory_id,
+                            segment_type.ordinal == ordinal,
+                            segment_type.content == work.tail_content,
+                        )
+                        .values(content=raw, sha256=digest)
+                    ),
+                )
+                if page_changed.rowcount != 1:
+                    raise RuntimeError("journal capture source tail changed before publication")
+            else:
+                session.add(
+                    segment_type(
+                        collection_id=work.collection_id,
+                        journal_id=work.journal_id,
+                        directory_id=work.directory_id,
+                        ordinal=ordinal,
+                        content=raw,
+                        sha256=digest,
+                    )
+                )
         return True
 
 
@@ -7077,7 +7154,9 @@ class _StaleUploadJournalValidation(Exception):
     """The detached result no longer belongs to the selected owned attempt."""
 
 
-def _upload_journal_validation_fence(work: _UploadJournalValidationWork) -> tuple[Any, ...]:
+def _upload_journal_validation_fence(
+    work: _UploadJournalCaptureWork | _UploadJournalValidationWork,
+) -> tuple[Any, ...]:
     record = CollectionUploadProvenanceJournalRecord
     return (
         record.collection_id == work.collection_id,
@@ -7113,7 +7192,7 @@ def _read_upload_journal_validation(
         _require_upload_journal_capture_directory(session, record)
         if record.capture_phase not in {"complete", "deferred"}:
             return None
-        return _UploadJournalValidationWork(
+        work = _UploadJournalValidationWork(
             collection_id,
             journal_id,
             cast(str, record.capture_attempt_id),
@@ -7127,6 +7206,159 @@ def _read_upload_journal_validation(
             ),
             record.capture_failure,
         )
+
+    if _check_upload_journal_capture_segment(factory, work) is None:
+        return None
+    return work
+
+
+def _check_upload_journal_capture_segment(
+    factory: SessionFactory,
+    work: _UploadJournalCaptureWork | _UploadJournalValidationWork,
+) -> bytes | None:
+    if not work.cursor.byte_offset:
+        return b""
+    return _read_upload_journal_capture_segment(
+        factory,
+        work,
+        ordinal=(work.cursor.byte_offset - 1) // _JOURNAL_CAPTURE_SEGMENT_OCTETS,
+    )
+
+
+@declare_growth(
+    Declaration(
+        id="riverhog-server.sqlite-journal-capture-segment.growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            "riverhog_core.services.collection_uploads._read_upload_journal_capture_segment",
+        ),
+        scope="native-sqlite-successful-fenced-captured-source-page",
+        starts_at="check the owned source/attempt and seek one captured page",
+        ends_at="verify and return exact page octets after closing the catalog snapshot",
+        dimensions=(
+            Dimension("captured_segments", COUNT, "Pages retained in this source directory."),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "equal",
+                Expression("constant", value=2, unit=COUNT),
+                "One fixed-shape attempt probe and one source-page primary-key probe.",
+            ),
+            Bound(
+                "source_rows",
+                COUNT,
+                "equal",
+                Expression("constant", value=1, unit=COUNT),
+                "Only the requested captured source page is loaded.",
+            ),
+            Bound(
+                "loaded_segment_octets",
+                OCTETS,
+                "upper",
+                Expression("constant", value=_JOURNAL_CAPTURE_SEGMENT_OCTETS, unit=OCTETS),
+                "A fixed-size page or its final exact partial extent.",
+            ),
+            Bound(
+                "hashed_octets",
+                OCTETS,
+                "upper",
+                Expression("constant", value=_JOURNAL_CAPTURE_SEGMENT_OCTETS, unit=OCTETS),
+                "Actual bytes verified outside the catalog snapshot.",
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "upper",
+                Expression("constant", value=_JOURNAL_CAPTURE_SEGMENT_OCTETS, unit=OCTETS),
+                "Detached exact source octets.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        Expression("constant", value=128, unit=COUNT),
+                        Expression(
+                            "product",
+                            terms=(
+                                Expression("constant", value=64, unit=COUNT),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("constant", value=2, unit=COUNT),
+                                                Expression("dimension", name="captured_segments"),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Maintained native SQLite point-lookup instruction envelope.",
+            ),
+        ),
+        conditions=(
+            "The owner retains its source-directory/ordinal primary key and exact page digests.",
+            "The read belongs to the current source, framing algorithm, attempt and cursor.",
+        ),
+        invariants=(
+            "Missing, changed or incorrectly sized pages fail closed.",
+            "Neither this page nor its checkpoint establishes semantic or archive authority.",
+            "The result and read-only snapshot close before page hashing and return.",
+        ),
+        limitations=(
+            "SQLite VM instructions exclude internal B-tree operations, page I/O and CPU.",
+            "Page preparation, partial-page writes, graph/schema work, retries, terminal "
+            "publication and reclamation are separately charged.",
+            "Other database engines require their own instruction/index-cost qualification.",
+        ),
+    )
+)
+def _read_upload_journal_capture_segment(
+    factory: SessionFactory,
+    work: _UploadJournalCaptureWork | _UploadJournalValidationWork,
+    *,
+    ordinal: int,
+) -> bytes | None:
+    extent = _JOURNAL_CAPTURE_SEGMENT_OCTETS
+    if type(ordinal) is not int or ordinal < 0 or ordinal * extent >= work.cursor.byte_offset:
+        raise ValueError("invalid captured journal source position")
+    with read_snapshot(factory) as session:
+        if (
+            session.scalar(
+                select(CollectionUploadProvenanceJournalRecord.collection_id).where(
+                    *_upload_journal_validation_fence(work)
+                )
+            )
+            is None
+        ):
+            return None
+        segment = CollectionUploadProvenanceCaptureSegmentRecord
+        with session.execute(
+            select(segment.content, segment.sha256).where(
+                segment.collection_id == work.collection_id,
+                segment.journal_id == work.journal_id,
+                segment.directory_id == work.directory_id,
+                segment.ordinal == ordinal,
+            )
+        ) as rows:
+            row = rows.one_or_none()
+            if row is None:
+                raise RuntimeError("journal capture checkpoint has a missing source page")
+            raw, digest = bytes(row.content), row.sha256
+    if len(raw) != min(extent, work.cursor.byte_offset - ordinal * extent):
+        raise RuntimeError("journal capture source page differs from its checkpoint")
+    if hashlib.sha256(raw).hexdigest() != digest:
+        raise RuntimeError("journal capture source page digest differs from its octets")
+    return raw
 
 
 @declare_growth(
@@ -7346,6 +7578,8 @@ def _commit_upload_journal_validation(
             raise RuntimeError("failed journal validation cannot publish a terminal anchor")
         values = {"state": "failed", "failure": outcome.failure}
     values["capture_version"] = work.version + 1
+    if _check_upload_journal_capture_segment(factory, work) is None:
+        return False
     with session_scope(factory) as session:
         current = session.scalar(
             select(CollectionUploadProvenanceJournalRecord)

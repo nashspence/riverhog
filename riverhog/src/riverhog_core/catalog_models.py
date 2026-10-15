@@ -3329,6 +3329,39 @@ class CollectionUploadProvenanceJournalChunkRecord(Base):
     journal: Mapped[CollectionUploadProvenanceJournalRecord] = relationship(back_populates="chunks")
 
 
+class CollectionUploadProvenanceCaptureSegmentRecord(Base):
+    """Private exact source pages retained with the framing checkpoint."""
+
+    __tablename__ = "collection_upload_provenance_capture_segments"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    directory_id: Mapped[str] = mapped_column(String, primary_key=True)
+    ordinal: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    content: Mapped[bytes] = mapped_column(LargeBinary)
+    sha256: Mapped[str] = mapped_column(String(64))
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("ordinal", 64), name="ck_upload_capture_segments_ordinal"
+        ),
+        CheckConstraint(
+            "length(content) > 0 AND length(content) <= 65536",
+            name="ck_upload_capture_segments_extent",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("sha256", 64), name="ck_upload_capture_segments_digest"
+        ),
+    )
+
+
 class CollectionUploadProvenanceFrameRecord(Base):
     """Private framing positions; no row supplies semantic acceptance authority."""
 

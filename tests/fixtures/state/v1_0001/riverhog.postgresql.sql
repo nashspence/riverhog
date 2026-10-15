@@ -2416,4 +2416,19 @@ CREATE INDEX ix_collection_artifacts_sha_trgm ON collection_artifacts USING gin 
 
 CREATE INDEX ix_collection_processing_capability_scope_owner ON collection_processing_capabilities (artifact_scope_capability_id, id);
 
+CREATE TABLE collection_upload_provenance_capture_segments (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	directory_id VARCHAR NOT NULL,
+	ordinal VARCHAR(64) NOT NULL,
+	content BYTEA NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, directory_id, ordinal),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_capture_segments_ordinal CHECK (length(ordinal) = 64 AND lower(ordinal) = ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_capture_segments_extent CHECK (length(content) > 0 AND length(content) <= 65536),
+	CONSTRAINT ck_upload_capture_segments_digest CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_upload_provenance_capture_segments_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');
