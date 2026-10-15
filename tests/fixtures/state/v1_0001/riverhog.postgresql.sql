@@ -2457,7 +2457,11 @@ CREATE TABLE collection_upload_provenance_epoch_scans (
 	union_next_frame VARCHAR(64) NOT NULL,
 	union_state VARCHAR NOT NULL,
 	union_cursor_json TEXT NOT NULL,
+	rank_algorithm VARCHAR NOT NULL,
+	rank_state VARCHAR NOT NULL,
+	rank_cursor_json TEXT NOT NULL,
 	PRIMARY KEY (collection_id, journal_id),
+	CONSTRAINT ck_upload_rank_state CHECK (rank_state IN ('ranking','complete')),
 	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
 	CONSTRAINT ck_upload_epoch_version CHECK (length(version) = 64 AND lower(version) = version AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_upload_epoch_frame CHECK (length(next_frame) = 64 AND lower(next_frame) = next_frame AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(next_frame, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
@@ -2563,5 +2567,47 @@ CREATE TABLE collection_upload_provenance_epoch_vertices (
 	CONSTRAINT ck_upload_epoch_vertex_degree CHECK (length(indegree) = 64 AND lower(indegree) = indegree AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(indegree, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_upload_epoch_vertex_kind CHECK (kind IN ('derivation','specialization'))
 );
+
+CREATE TABLE collection_upload_provenance_epoch_rank_graphs (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	vertex_count VARCHAR(64) NOT NULL,
+	arc_count VARCHAR(64) NOT NULL,
+	settled_vertices VARCHAR(64) NOT NULL,
+	visited_arcs VARCHAR(64) NOT NULL,
+	state VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, attempt_id, epoch, kind),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_rank_graph_epoch CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_graph_vertices CHECK (length(vertex_count) = 64 AND lower(vertex_count) = vertex_count AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(vertex_count, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_graph_arcs CHECK (length(arc_count) = 64 AND lower(arc_count) = arc_count AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(arc_count, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_graph_settled CHECK (length(settled_vertices) = 64 AND lower(settled_vertices) = settled_vertices AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(settled_vertices, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_graph_visited CHECK (length(visited_arcs) = 64 AND lower(visited_arcs) = visited_arcs AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(visited_arcs, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_graph_kind CHECK (kind IN ('derivation','specialization')),
+	CONSTRAINT ck_upload_rank_graph_state CHECK (state IN ('acyclic','cyclic'))
+);
+
+CREATE TABLE collection_upload_provenance_epoch_rank_vertices (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	vertex_id VARCHAR NOT NULL,
+	remaining_degree VARCHAR(64) NOT NULL,
+	rank VARCHAR(64),
+	ready BOOLEAN NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, attempt_id, epoch, kind, vertex_id),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_rank_vertex_epoch CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_vertex_degree CHECK (length(remaining_degree) = 64 AND lower(remaining_degree) = remaining_degree AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(remaining_degree, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_vertex_rank CHECK (rank IS NULL OR length(rank) = 64 AND lower(rank) = rank AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(rank, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_vertex_kind CHECK (kind IN ('derivation','specialization'))
+);
+
+CREATE INDEX ix_upload_epoch_rank_ready ON collection_upload_provenance_epoch_rank_vertices (collection_id, journal_id, attempt_id, epoch, kind, ready, vertex_id);
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

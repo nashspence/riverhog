@@ -103,6 +103,14 @@ def _begin_scan(
                 '"last_arc":null,"last_source":null,"phase":"frame",'
                 '"seed_after":null,"seeded":"0"}'
             )
+            row.rank_algorithm = "riverhog-journal-epoch-rank/v1"
+            row.rank_state = "ranking"
+            row.rank_cursor_json = (
+                '{"active":null,"arcs":"0","edge_after":null,"epoch":"0",'
+                '"kind":"derivation","last_arc":null,"last_graph":null,'
+                '"last_vertex":null,"phase":"graph","ready":"0","seed_after":null,'
+                '"seeded":"0","settled":"0","vertices":"0","visited":"0"}'
+            )
         if (
             row.directory_id != source.directory_id
             or row.algorithm != JOURNAL_EPOCH_BOUNDARY_ALGORITHM

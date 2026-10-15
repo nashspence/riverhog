@@ -3397,7 +3397,15 @@ class CollectionUploadProvenanceEpochScanRecord(Base):
         ),
     )
 
+    rank_algorithm: Mapped[str] = mapped_column(String, default="riverhog-journal-epoch-rank/v1")
+    rank_state: Mapped[str] = mapped_column(String, default="ranking")
+    rank_cursor_json: Mapped[str] = mapped_column(
+        Text,
+        default='{"active":null,"arcs":"0","edge_after":null,"epoch":"0","kind":"derivation","last_arc":null,"last_graph":null,"last_vertex":null,"phase":"graph","ready":"0","seed_after":null,"seeded":"0","settled":"0","vertices":"0","visited":"0"}',
+    )
+
     __table_args__ = (
+        CheckConstraint("rank_state IN ('ranking','complete')", name="ck_upload_rank_state"),
         ForeignKeyConstraint(
             ["collection_id", "journal_id"],
             [
@@ -3680,6 +3688,103 @@ class CollectionUploadProvenanceEpochVertexRecord(Base):
         ),
         CheckConstraint(
             "kind IN ('derivation','specialization')", name="ck_upload_epoch_vertex_kind"
+        ),
+    )
+
+
+class CollectionUploadProvenanceEpochRankGraphRecord(Base):
+    """Completed private Kahn work, including cyclic unions with no usable rank."""
+
+    __tablename__ = "collection_upload_provenance_epoch_rank_graphs"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    kind: Mapped[str] = mapped_column(String, primary_key=True)
+    vertex_count: Mapped[int] = mapped_column(authority_ordinal_type())
+    arc_count: Mapped[int] = mapped_column(authority_ordinal_type())
+    settled_vertices: Mapped[int] = mapped_column(authority_ordinal_type())
+    visited_arcs: Mapped[int] = mapped_column(authority_ordinal_type())
+    state: Mapped[str] = mapped_column(String)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_rank_graph_epoch"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("vertex_count", 64), name="ck_upload_rank_graph_vertices"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("arc_count", 64), name="ck_upload_rank_graph_arcs"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("settled_vertices", 64),
+            name="ck_upload_rank_graph_settled",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("visited_arcs", 64), name="ck_upload_rank_graph_visited"
+        ),
+        CheckConstraint(
+            "kind IN ('derivation','specialization')", name="ck_upload_rank_graph_kind"
+        ),
+        CheckConstraint("state IN ('acyclic','cyclic')", name="ck_upload_rank_graph_state"),
+    )
+
+
+class CollectionUploadProvenanceEpochRankVertexRecord(Base):
+    """Private remaining degree, indexed readiness and quarantined rank per vertex."""
+
+    __tablename__ = "collection_upload_provenance_epoch_rank_vertices"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    kind: Mapped[str] = mapped_column(String, primary_key=True)
+    vertex_id: Mapped[str] = mapped_column(String, primary_key=True)
+    remaining_degree: Mapped[int] = mapped_column(authority_ordinal_type())
+    rank: Mapped[int | None] = mapped_column(authority_ordinal_type(), nullable=True)
+    ready: Mapped[bool] = mapped_column(Boolean)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_rank_vertex_epoch"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("remaining_degree", 64),
+            name="ck_upload_rank_vertex_degree",
+        ),
+        CheckConstraint(
+            "rank IS NULL OR " + _fixed_lowercase_integer_check("rank", 64),
+            name="ck_upload_rank_vertex_rank",
+        ),
+        CheckConstraint(
+            "kind IN ('derivation','specialization')", name="ck_upload_rank_vertex_kind"
+        ),
+        Index(
+            "ix_upload_epoch_rank_ready",
+            "collection_id",
+            "journal_id",
+            "attempt_id",
+            "epoch",
+            "kind",
+            "ready",
+            "vertex_id",
         ),
     )
 
