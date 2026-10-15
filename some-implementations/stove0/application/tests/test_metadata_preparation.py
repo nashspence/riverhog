@@ -42,7 +42,7 @@ def test_large_preparation_preserves_scheduler_fairness_and_independent_claim_ma
             work=identity(2), phase="claimed", claim=ClaimBinding(claim_id="healthy", fence=1)
         )
     )
-    entered, release = threading.Event(), threading.Event()
+    entered, release, held_finished = (threading.Event() for _ in range(3))
     starts, renewals, scanned = [], [], []
     main_thread = threading.get_ident()
 
@@ -53,12 +53,16 @@ def test_large_preparation_preserves_scheduler_fairness_and_independent_claim_ma
 
     class Coordinator:
         def step(self, work_id):
+            assert threading.get_ident() != main_thread
             record = state.load(work_id)
             starts.append(work_id)
             if work_id == held.work_id:
                 assert len(record.work.effective_intent["records"]) == len(records)
                 entered.set()
-                assert release.wait(10)
+                try:
+                    assert release.wait(10)
+                finally:
+                    held_finished.set()
             return state.compare_and_swap(
                 work_id,
                 expected_revision=record.revision,
@@ -66,16 +70,16 @@ def test_large_preparation_preserves_scheduler_fairness_and_independent_claim_ma
             )
 
         def maintain(self, work_id):
+            assert threading.get_ident() != main_thread
             renewals.append(work_id)
             return state.load(work_id)
 
     steps = MetadataSteps(wait_seconds=0.01)
     scheduler = Stove0Scheduler(coordinator=Coordinator(), state=state, metadata_steps=steps)
     try:
-        started = time.monotonic()
         scheduler.advance(role="controller", limit=10)
-        assert time.monotonic() - started < 0.5
         assert entered.wait(3)
+        assert not held_finished.is_set()
         deadline = time.monotonic() + 5
         while state.load_work_scan(healthy.work_id).revision == 1:
             assert time.monotonic() < deadline
@@ -86,6 +90,7 @@ def test_large_preparation_preserves_scheduler_fairness_and_independent_claim_ma
             scheduler.advance(role="controller", limit=10)
         assert starts.count(held.work_id) == 1
         assert scanned and all("document_json" not in statement for statement in scanned)
+        assert not held_finished.is_set()
         release.set()
         deadline = time.monotonic() + 5
         while state.load_work_scan(held.work_id).revision == 1:
