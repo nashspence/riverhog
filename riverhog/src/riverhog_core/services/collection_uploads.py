@@ -1625,6 +1625,10 @@ class SqlAlchemyCollectionUploadService:
         )
         if validation is None:
             return
+        from .upload_journal_epochs import advance_upload_journal_epoch_scan
+
+        if not advance_upload_journal_epoch_scan(self._session_factory, validation):
+            return
         try:
             outcome = _compute_upload_journal_validation(self._session_factory, validation)
         except _StaleUploadJournalValidation:

@@ -3362,6 +3362,46 @@ class CollectionUploadProvenanceCaptureSegmentRecord(Base):
     )
 
 
+class CollectionUploadProvenanceEpochScanRecord(Base):
+    """Attempt-fenced private boundary progress, never semantic acceptance."""
+
+    __tablename__ = "collection_upload_provenance_epoch_scans"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String)
+    directory_id: Mapped[str] = mapped_column(String)
+    algorithm: Mapped[str] = mapped_column(String)
+    version: Mapped[int] = mapped_column(authority_ordinal_type())
+    next_frame: Mapped[int] = mapped_column(authority_ordinal_type())
+    byte_offset: Mapped[int] = mapped_column(BigInteger)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type())
+    state: Mapped[str] = mapped_column(String)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("version", 64), name="ck_upload_epoch_version"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("next_frame", 64), name="ck_upload_epoch_frame"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_epoch_ordinal"
+        ),
+        CheckConstraint("byte_offset >= 0", name="ck_upload_epoch_offset"),
+        CheckConstraint(
+            "state IN ('scanning','complete','deferred')", name="ck_upload_epoch_state"
+        ),
+    )
+
+
 class CollectionUploadProvenanceFrameRecord(Base):
     """Private framing positions; no row supplies semantic acceptance authority."""
 
@@ -3372,6 +3412,10 @@ class CollectionUploadProvenanceFrameRecord(Base):
     ordinal: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
     byte_offset: Mapped[int] = mapped_column(BigInteger)
     json_bytes: Mapped[int] = mapped_column(BigInteger)
+    epoch_attempt_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    epoch_ordinal: Mapped[int | None] = mapped_column(authority_ordinal_type(), nullable=True)
+    epoch_entry_kind: Mapped[str | None] = mapped_column(String, nullable=True)
+    epoch_json_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -3387,6 +3431,18 @@ class CollectionUploadProvenanceFrameRecord(Base):
             name="ck_upload_provenance_frames_ordinal",
         ),
         CheckConstraint("byte_offset >= 0", name="ck_upload_provenance_frames_offset"),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch_ordinal", 64),
+            name="ck_upload_provenance_frames_epoch",
+        ),
+        CheckConstraint(
+            "(epoch_attempt_id IS NULL AND epoch_ordinal IS NULL AND "
+            "epoch_entry_kind IS NULL AND epoch_json_sha256 IS NULL) OR "
+            "(epoch_attempt_id IS NOT NULL AND epoch_ordinal IS NOT NULL AND "
+            "epoch_json_sha256 IS NOT NULL AND epoch_entry_kind IS NOT NULL AND "
+            "epoch_entry_kind IN ('journal_init','assertion','correction','checkpoint'))",
+            name="ck_upload_provenance_frames_epoch_binding",
+        ),
         CheckConstraint(
             "json_bytes >= 0 AND json_bytes <= 8388608",
             name="ck_upload_provenance_frames_json_bytes",

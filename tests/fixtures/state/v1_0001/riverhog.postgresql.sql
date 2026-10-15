@@ -1727,11 +1727,18 @@ CREATE TABLE collection_upload_provenance_frames (
 	ordinal VARCHAR(64) NOT NULL,
 	byte_offset BIGINT NOT NULL,
 	json_bytes BIGINT NOT NULL,
+	epoch_attempt_id VARCHAR,
+	epoch_ordinal VARCHAR(64),
+	epoch_entry_kind VARCHAR,
+	epoch_json_sha256 VARCHAR(64),
 	PRIMARY KEY (collection_id, journal_id, directory_id, ordinal),
 	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
 	CONSTRAINT ck_upload_provenance_frames_ordinal CHECK (length(ordinal) = 64 AND lower(ordinal) = ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_upload_provenance_frames_offset CHECK (byte_offset >= 0),
-	CONSTRAINT ck_upload_provenance_frames_json_bytes CHECK (json_bytes >= 0 AND json_bytes <= 8388608)
+	CONSTRAINT ck_upload_provenance_frames_epoch CHECK (length(epoch_ordinal) = 64 AND lower(epoch_ordinal) = epoch_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_provenance_frames_epoch_binding CHECK ((epoch_attempt_id IS NULL AND epoch_ordinal IS NULL AND epoch_entry_kind IS NULL AND epoch_json_sha256 IS NULL) OR (epoch_attempt_id IS NOT NULL AND epoch_ordinal IS NOT NULL AND epoch_json_sha256 IS NOT NULL AND epoch_entry_kind IS NOT NULL AND epoch_entry_kind IN ('journal_init','assertion','correction','checkpoint'))),
+	CONSTRAINT ck_upload_provenance_frames_json_bytes CHECK (json_bytes >= 0 AND json_bytes <= 8388608),
+	CONSTRAINT ck_collection_upload_provenance_frames_epoch_json_sha256_hex CHECK (epoch_json_sha256 IS NULL OR length(epoch_json_sha256) = 64 AND lower(epoch_json_sha256) = epoch_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE INDEX ix_upload_provenance_journals_validation ON collection_upload_provenance_journals (state, collection_id, journal_id);
@@ -2429,6 +2436,26 @@ CREATE TABLE collection_upload_provenance_capture_segments (
 	CONSTRAINT ck_upload_capture_segments_extent CHECK (length(content) > 0 AND length(content) <= 65536),
 	CONSTRAINT ck_upload_capture_segments_digest CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_collection_upload_provenance_capture_segments_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE collection_upload_provenance_epoch_scans (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	directory_id VARCHAR NOT NULL,
+	algorithm VARCHAR NOT NULL,
+	version VARCHAR(64) NOT NULL,
+	next_frame VARCHAR(64) NOT NULL,
+	byte_offset BIGINT NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	state VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id, journal_id),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_epoch_version CHECK (length(version) = 64 AND lower(version) = version AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_frame CHECK (length(next_frame) = 64 AND lower(next_frame) = next_frame AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(next_frame, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_ordinal CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_offset CHECK (byte_offset >= 0),
+	CONSTRAINT ck_upload_epoch_state CHECK (state IN ('scanning','complete','deferred'))
 );
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');
