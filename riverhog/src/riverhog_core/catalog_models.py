@@ -3363,7 +3363,7 @@ class CollectionUploadProvenanceCaptureSegmentRecord(Base):
 
 
 class CollectionUploadProvenanceEpochScanRecord(Base):
-    """Attempt-fenced private boundary progress, never semantic acceptance."""
+    """Attempt-fenced private epoch and topology progress, never semantic acceptance."""
 
     __tablename__ = "collection_upload_provenance_epoch_scans"
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
@@ -3376,6 +3376,14 @@ class CollectionUploadProvenanceEpochScanRecord(Base):
     byte_offset: Mapped[int] = mapped_column(BigInteger)
     epoch: Mapped[int] = mapped_column(authority_ordinal_type())
     state: Mapped[str] = mapped_column(String)
+    topology_algorithm: Mapped[str] = mapped_column(
+        String, default="riverhog-journal-topology-facts/v1"
+    )
+    topology_next_frame: Mapped[int] = mapped_column(authority_ordinal_type(), default=0)
+    topology_state: Mapped[str] = mapped_column(String, default="scanning")
+    topology_cursor_json: Mapped[str] = mapped_column(
+        Text, default='{"active":null,"facts":"0","last":null}'
+    )
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -3396,6 +3404,14 @@ class CollectionUploadProvenanceEpochScanRecord(Base):
             _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_epoch_ordinal"
         ),
         CheckConstraint("byte_offset >= 0", name="ck_upload_epoch_offset"),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("topology_next_frame", 64),
+            name="ck_upload_topology_frame",
+        ),
+        CheckConstraint(
+            "topology_state IN ('scanning','complete','deferred')",
+            name="ck_upload_topology_state",
+        ),
         CheckConstraint(
             "state IN ('scanning','complete','deferred')", name="ck_upload_epoch_state"
         ),
@@ -3446,6 +3462,62 @@ class CollectionUploadProvenanceFrameRecord(Base):
         CheckConstraint(
             "json_bytes >= 0 AND json_bytes <= 8388608",
             name="ck_upload_provenance_frames_json_bytes",
+        ),
+    )
+
+
+class CollectionUploadProvenanceTopologyFactRecord(Base):
+    """Private documentary occurrences and original positions, never acceptance."""
+
+    __tablename__ = "collection_upload_provenance_topology_facts"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    frame_ordinal: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    array_kind: Mapped[str] = mapped_column(String, primary_key=True)
+    item_ordinal: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    directory_id: Mapped[str] = mapped_column(String)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type())
+    byte_offset: Mapped[int] = mapped_column(BigInteger)
+    json_bytes: Mapped[int] = mapped_column(BigInteger)
+    json_sha256: Mapped[str] = mapped_column(String(64))
+    assertion_id: Mapped[str] = mapped_column(String)
+    kind: Mapped[str] = mapped_column(String)
+    source_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    target_id: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("frame_ordinal", 64),
+            name="ck_upload_topology_fact_frame",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("item_ordinal", 64),
+            name="ck_upload_topology_fact_item",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_topology_fact_epoch"
+        ),
+        CheckConstraint(
+            "byte_offset >= 0 AND json_bytes > 0 AND json_bytes <= 8388608",
+            name="ck_upload_topology_fact_extent",
+        ),
+        CheckConstraint(
+            "array_kind IN ('retracts','relations')", name="ck_upload_topology_fact_array"
+        ),
+        CheckConstraint(
+            "kind = 'retraction' AND array_kind = 'retracts' AND source_id IS NULL "
+            "AND target_id IS NULL OR kind IN ('derivation','specialization') "
+            "AND array_kind = 'relations' AND source_id IS NOT NULL AND target_id IS NOT NULL",
+            name="ck_upload_topology_fact_binding",
         ),
     )
 

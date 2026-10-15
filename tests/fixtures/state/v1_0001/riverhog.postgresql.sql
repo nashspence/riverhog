@@ -2449,13 +2449,46 @@ CREATE TABLE collection_upload_provenance_epoch_scans (
 	byte_offset BIGINT NOT NULL,
 	epoch VARCHAR(64) NOT NULL,
 	state VARCHAR NOT NULL,
+	topology_algorithm VARCHAR NOT NULL,
+	topology_next_frame VARCHAR(64) NOT NULL,
+	topology_state VARCHAR NOT NULL,
+	topology_cursor_json TEXT NOT NULL,
 	PRIMARY KEY (collection_id, journal_id),
 	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
 	CONSTRAINT ck_upload_epoch_version CHECK (length(version) = 64 AND lower(version) = version AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_upload_epoch_frame CHECK (length(next_frame) = 64 AND lower(next_frame) = next_frame AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(next_frame, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_upload_epoch_ordinal CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_upload_epoch_offset CHECK (byte_offset >= 0),
+	CONSTRAINT ck_upload_topology_frame CHECK (length(topology_next_frame) = 64 AND lower(topology_next_frame) = topology_next_frame AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(topology_next_frame, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_topology_state CHECK (topology_state IN ('scanning','complete','deferred')),
 	CONSTRAINT ck_upload_epoch_state CHECK (state IN ('scanning','complete','deferred'))
+);
+
+CREATE TABLE collection_upload_provenance_topology_facts (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	frame_ordinal VARCHAR(64) NOT NULL,
+	array_kind VARCHAR NOT NULL,
+	item_ordinal VARCHAR(64) NOT NULL,
+	directory_id VARCHAR NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	byte_offset BIGINT NOT NULL,
+	json_bytes BIGINT NOT NULL,
+	json_sha256 VARCHAR(64) NOT NULL,
+	assertion_id VARCHAR NOT NULL,
+	kind VARCHAR NOT NULL,
+	source_id VARCHAR,
+	target_id VARCHAR,
+	PRIMARY KEY (collection_id, journal_id, attempt_id, frame_ordinal, array_kind, item_ordinal),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_topology_fact_frame CHECK (length(frame_ordinal) = 64 AND lower(frame_ordinal) = frame_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(frame_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_topology_fact_item CHECK (length(item_ordinal) = 64 AND lower(item_ordinal) = item_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(item_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_topology_fact_epoch CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_topology_fact_extent CHECK (byte_offset >= 0 AND json_bytes > 0 AND json_bytes <= 8388608),
+	CONSTRAINT ck_upload_topology_fact_array CHECK (array_kind IN ('retracts','relations')),
+	CONSTRAINT ck_upload_topology_fact_binding CHECK (kind = 'retraction' AND array_kind = 'retracts' AND source_id IS NULL AND target_id IS NULL OR kind IN ('derivation','specialization') AND array_kind = 'relations' AND source_id IS NOT NULL AND target_id IS NOT NULL),
+	CONSTRAINT ck_sha256_7a53648bf3dd0cbd CHECK (length(json_sha256) = 64 AND lower(json_sha256) = json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

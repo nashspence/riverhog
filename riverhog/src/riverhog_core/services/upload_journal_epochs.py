@@ -91,6 +91,10 @@ def _begin_scan(
             row.algorithm = JOURNAL_EPOCH_BOUNDARY_ALGORITHM
             row.version = row.next_frame = row.byte_offset = row.epoch = 0
             row.state = "scanning"
+            row.topology_algorithm = "riverhog-journal-topology-facts/v1"
+            row.topology_next_frame = 0
+            row.topology_state = "scanning"
+            row.topology_cursor_json = '{"active":null,"facts":"0","last":null}'
         if (
             row.directory_id != source.directory_id
             or row.algorithm != JOURNAL_EPOCH_BOUNDARY_ALGORITHM
