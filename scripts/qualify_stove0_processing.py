@@ -17,9 +17,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-from http_api_contracts import parse_operation_error_payload
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
-from stove0_operator_contracts import STOVE0_HTTP_ERROR_AUTHORITY
 from stove0_protocol import CollectionRootIdentityRef, PlanningJobStatus
 from stove0_target_protocol import AcceptedTargetJob, TargetJobStatus, TransformPlan
 
@@ -158,6 +156,9 @@ def declared_values(actual: Any, declared: Any) -> None:
 
 def await_admission() -> None:
     """Observe exact admission milestones without bounding observation work by a control call."""
+    from http_api_contracts import parse_operation_error_payload
+    from stove0_operator_contracts import STOVE0_HTTP_ERROR_AUTHORITY
+
     collection_id = os.environ["INPUT_COLLECTION_ID"]
     expected = os.environ["RIVERHOG_SMOKE_SCHEDULER_STEP"]
     state_order = {"intent": 0, "previewed": 1, "work_bound": 2}
