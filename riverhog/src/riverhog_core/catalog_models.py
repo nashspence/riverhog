@@ -3404,6 +3404,8 @@ class CollectionUploadProvenanceEpochScanRecord(Base):
         default='{"active":null,"arcs":"0","edge_after":null,"epoch":"0","kind":"derivation","last_arc":null,"last_graph":null,"last_vertex":null,"phase":"graph","ready":"0","seed_after":null,"seeded":"0","settled":"0","vertices":"0","visited":"0"}',
     )
 
+    replay_binding_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+
     __table_args__ = (
         CheckConstraint("rank_state IN ('ranking','complete')", name="ck_upload_rank_state"),
         ForeignKeyConstraint(

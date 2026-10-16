@@ -111,6 +111,7 @@ def _begin_scan(
                 '"last_vertex":null,"phase":"graph","ready":"0","seed_after":null,'
                 '"seeded":"0","settled":"0","vertices":"0","visited":"0"}'
             )
+            row.replay_binding_json = None
         if (
             row.directory_id != source.directory_id
             or row.algorithm != JOURNAL_EPOCH_BOUNDARY_ALGORITHM

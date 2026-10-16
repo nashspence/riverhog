@@ -2460,6 +2460,7 @@ CREATE TABLE collection_upload_provenance_epoch_scans (
 	rank_algorithm VARCHAR NOT NULL,
 	rank_state VARCHAR NOT NULL,
 	rank_cursor_json TEXT NOT NULL,
+	replay_binding_json TEXT,
 	PRIMARY KEY (collection_id, journal_id),
 	CONSTRAINT ck_upload_rank_state CHECK (rank_state IN ('ranking','complete')),
 	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,

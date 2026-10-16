@@ -1641,6 +1641,12 @@ class SqlAlchemyCollectionUploadService:
 
         if not advance_upload_journal_epoch_rank(self._session_factory, validation):
             return
+        from .upload_journal_replay import prepare_upload_journal_replay
+
+        if not prepare_upload_journal_replay(
+            self._session_factory, validation, catalog=admission_provenance_catalog()
+        ):
+            return
         try:
             outcome = _compute_upload_journal_validation(self._session_factory, validation)
         except _StaleUploadJournalValidation:
@@ -7534,12 +7540,15 @@ def _compute_upload_journal_validation(
     Framing findings are speculative; native replay retains exact error ordering.
     Its temporary summary is owned here and never becomes a durable checkpoint.
     """
+    from .upload_journal_replay import verify_upload_journal_replay_binding
+
     try:
+        selected = admission_provenance_catalog()
+        if not verify_upload_journal_replay_binding(factory, work, selected):
+            raise _StaleUploadJournalValidation
         with (
             closing(_iter_upload_journal_validation_chunks(factory, work)) as chunks,
-            validate_journal_chunks(
-                chunks, catalog=admission_provenance_catalog(), require_profiles=False
-            ) as summary,
+            validate_journal_chunks(chunks, catalog=selected, require_profiles=False) as summary,
         ):
             if (
                 summary.journal_id != work.journal_id
@@ -7594,6 +7603,10 @@ def _commit_upload_journal_validation(
             raise RuntimeError("failed journal validation cannot publish a terminal anchor")
         values = {"state": "failed", "failure": outcome.failure}
     values["capture_version"] = work.version + 1
+    from .upload_journal_replay import verify_upload_journal_replay_binding
+
+    if not verify_upload_journal_replay_binding(factory, work, admission_provenance_catalog()):
+        return False
     if _check_upload_journal_capture_segment(factory, work) is None:
         return False
     with session_scope(factory) as session:

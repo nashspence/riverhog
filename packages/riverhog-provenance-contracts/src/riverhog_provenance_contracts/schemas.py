@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections.abc import Iterable, Mapping
 from functools import lru_cache
@@ -11,6 +12,7 @@ from typing import Any
 from jsonschema import Draft202012Validator
 from referencing import Registry
 from referencing.jsonschema import DRAFT202012
+from riverhog_canonical_json import canonical_json_bytes
 
 from ._vocabulary import ENTRY_SCHEMA, PROFILE
 from .binding import ProvenanceContractBinding
@@ -62,6 +64,25 @@ class ContractCatalog:
         self._validators = {
             key: Draft202012Validator(value, registry=registry) for key, value in schemas.items()
         }
+
+        checkpoint = hashlib.sha256(b"riverhog-provenance-catalog-checkpoint/v1\n")
+        for contract_id, contract_sha256 in self._bindings:
+            checkpoint.update(
+                canonical_json_bytes(
+                    {"contract_id": contract_id, "contract_sha256": contract_sha256}
+                )
+            )
+            checkpoint.update(b"\n")
+        self._checkpoint_sha256 = checkpoint.hexdigest()
+
+    def checkpoint_sha256(self) -> str:
+        """Return the cached exact identity of this constructed sealed catalog.
+
+        Core and external binding identities retain their constructed order;
+        repeated identical identities are coalesced by the owning registry.
+        This execution pin carries no validation or archive acceptance.
+        """
+        return self._checkpoint_sha256
 
     def with_contracts(self, contracts: Iterable[ProvenanceContractBinding]) -> ContractCatalog:
         return ContractCatalog((*self.external_contracts, *contracts))
