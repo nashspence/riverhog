@@ -212,7 +212,15 @@ def test_unrelated_catalog_work_progresses_during_native_computation(
         assert terminal(factory)["state"] == ("validating" if replace_attempt else "sealed")
         if replace_attempt:
             assert terminal(factory)["anchor"] is None
-            service_for(factory)._advance_provenance_journal_validation(1, JOURNAL)
+            for _ in range(32):
+                service_for(factory)._advance_provenance_journal_validation(1, JOURNAL)
+                assert engine.pool.checkedout() == 0
+                if terminal(factory)["state"] == "sealed":
+                    break
+                assert terminal(factory)["state"] == "validating"
+                assert terminal(factory)["anchor"] is None
+            else:
+                pytest.fail("replacement validation stopped making bounded progress")
             assert terminal(factory)["state"] == "sealed"
 
 

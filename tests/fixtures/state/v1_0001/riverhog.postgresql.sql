@@ -2611,4 +2611,18 @@ CREATE TABLE collection_upload_provenance_epoch_rank_vertices (
 
 CREATE INDEX ix_upload_epoch_rank_ready ON collection_upload_provenance_epoch_rank_vertices (collection_id, journal_id, attempt_id, epoch, kind, ready, vertex_id);
 
+CREATE TABLE collection_upload_provenance_retired_preparations (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	retired_attempt_id VARCHAR NOT NULL,
+	directory_id VARCHAR NOT NULL,
+	algorithm VARCHAR NOT NULL,
+	version VARCHAR(64) NOT NULL,
+	phase INTEGER NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, retired_attempt_id),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_retired_preparation_version CHECK (length(version) = 64 AND lower(version) = version AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_retired_preparation_phase CHECK (phase >= 0 AND phase < 7)
+);
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

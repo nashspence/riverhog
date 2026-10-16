@@ -36,6 +36,7 @@ from riverhog_core.catalog_models import (
 )
 
 from . import collection_uploads as source_owner
+from .upload_journal_cleanup import advance_retired_upload_journal_preparation, enqueue_retirement
 
 _FRAME_BUDGET = 64
 _OCTET_BUDGET = 64 * 1024
@@ -86,6 +87,8 @@ def _begin_scan(
             row = Scan(collection_id=source.collection_id, journal_id=source.journal_id)
             session.add(row)
         if row.attempt_id != source.attempt_id:
+            if row.attempt_id is not None:
+                enqueue_retirement(session, row)
             row.attempt_id = source.attempt_id
             row.directory_id = source.directory_id
             row.algorithm = JOURNAL_EPOCH_BOUNDARY_ALGORITHM
@@ -418,6 +421,8 @@ def advance_upload_journal_epoch_scan(
     """Publish one bounded private boundary batch; return readiness for native replay."""
     work = _begin_scan(factory, source)
     if work is None:
+        return False
+    if not advance_retired_upload_journal_preparation(factory, source):
         return False
     if work.state in {"complete", "deferred"}:
         return True
