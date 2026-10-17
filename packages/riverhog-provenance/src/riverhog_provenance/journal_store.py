@@ -37,6 +37,8 @@ from riverhog_provenance_contracts import ContractCatalog, canonical_document
 
 from ._correction_projection import CorrectionWork
 from ._correction_projection import install as install_correction_projection
+from ._correction_targets import CorrectionTargets
+from ._correction_targets import install as install_correction_targets
 from ._journal_prefix import install as install_journal_prefix
 from ._online_dag import OnlineDag
 from ._online_dag import install as install_online_dag
@@ -668,6 +670,7 @@ class JournalStore:
             )
             install_journal_prefix(self.db)
             install_correction_projection(self.db)
+            install_correction_targets(self.db)
             install_online_dag(self.db)
             self._dag_runs = {
                 "derivation": uuid4().hex,
@@ -979,26 +982,16 @@ class JournalStore:
             pass
         correction = document["entry_kind"] == "correction"
         if correction:
-            target_ids: set[str] = set()
-            for target in document["body"]["retracts"]:
-                identity = target["assertion_id"]
-                if identity in target_ids:
-                    raise ProvenanceValidationError("duplicate correction target")
-                target_ids.add(identity)
-                prior = self.db.execute(
-                    "SELECT sequence, active FROM assertions WHERE assertion_id = ?", (identity,)
-                ).fetchone()
-                if prior is None or self.frames[int(prior[0])].reference != target["entry"]:
-                    raise ProvenanceValidationError(
-                        "correction target has no exact earlier assertion"
-                    )
-                if not prior[1]:
-                    raise ProvenanceValidationError(
-                        "correction cannot reactivate or retract an already retired assertion"
-                    )
-                self.db.execute(
-                    "UPDATE assertions SET active = 0 WHERE assertion_id = ?", (identity,)
-                )
+            # Entry identity staging is private; target units own fresh transactions.
+            self.db.commit()
+            correction_attempt = uuid4().hex
+            targets = CorrectionTargets(self.db, attempt_id=correction_attempt, frame=frame)
+            targets.initialize()
+            # Existing rows originate in admitted entries; charge their actual
+            # logical bytes without fetching or rehashing historical payloads.
+            atom_admission = 2 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 4096
+            while not targets.advance(byte_budget=atom_admission).done:
+                pass
         for category, row in iter_assertions(_body_assertions(document)):
             if (
                 self.db.execute(
@@ -1034,7 +1027,6 @@ class JournalStore:
             # Earlier native checks/staging remain entry-local, private work.
             # Each projection phase starts without inheriting that transaction.
             self.db.commit()
-            correction_attempt = uuid4().hex
             correction_source = frame.sha256
             retirement = CorrectionWork(
                 self.db,
@@ -1043,9 +1035,6 @@ class JournalStore:
                 source_binding=correction_source,
             )
             retirement.initialize()
-            # A native key and its value each originate in an admitted entry.
-            # Reserve one such row atom plus fixed metadata; no archive cap is added.
-            atom_admission = 2 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 4096
             while not retirement.retire(byte_budget=atom_admission).done:
                 pass
             for kind, run in self._dag_runs.items():
