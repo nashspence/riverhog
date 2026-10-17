@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sha256-continuation"
+version = "0.1.0"
+description = "Exact SHA-256 continuation and owner-bound checkpoint codecs."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Exact SHA-256 continuation and owner-bound checkpoint codecs.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = ["release-documentation-lib>=0.1,<0.2", "riverhog-growth-contracts>=0.1,<0.2"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sha256_continuation"]
+
+[tool.uv.sources]
+release-documentation-lib = { workspace = true }
+riverhog-growth-contracts = { workspace = true }

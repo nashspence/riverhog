@@ -4,11 +4,11 @@ import hashlib
 import json
 
 import pytest
+import sha256_continuation as backend
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256 as RiverhogSHA256
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_protocol import CheckpointSHA256, sha256_compress
-from riverhog_protocol import checkpoint_sha256 as backend
 from stove0_core._checkpoint_sha256 import CheckpointSHA256 as Stove0SHA256
 
 
@@ -171,7 +171,7 @@ def test_message_domain_rejection_does_not_change_the_continuation():
 @pytest.mark.growth_witness(
     "riverhog-sha256-continuation-primitive-work/v1",
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_protocol.CheckpointSHA256.update_bytes",
+    operation="sha256_continuation.CheckpointSHA256.update_bytes",
 )
 def test_bounded_sha256_update_records_actual_compression_and_buffer_work(
     monkeypatch, record_property
@@ -268,3 +268,25 @@ def test_bounded_sha256_update_records_actual_compression_and_buffer_work(
         assert digest.digest() == hashlib.sha256(prefix + payload).digest()
         assert digest._buffer.peak <= 64 and len(digest._buffer) == (prefix_size + size) % 64
     record_property("growth_samples", samples)
+
+
+def test_protocol_exports_share_the_neutral_backend_and_preserve_default_checkpoint_bytes():
+    from riverhog_protocol.checkpoint_sha256 import CheckpointSHA256 as ProtocolModuleSHA256
+
+    assert CheckpointSHA256 is ProtocolModuleSHA256 is backend.CheckpointSHA256
+    assert sha256_compress is backend.sha256_compress
+    assert (
+        RiverhogSHA256.update_bytes
+        is Stove0SHA256.update_bytes
+        is backend.CheckpointSHA256.update_bytes
+    )
+    expected = (
+        '{"buffer_hex":"404142434445464748494a4b4c","format":"private-sha256-checkpoint/v1",'
+        '"h":[4237927135,2297703034,2075775360,869123746,39220575,2640026192,1151978545,1522435239],'
+        '"total_bytes":77}'
+    )
+    assert backend.CheckpointSHA256(bytes(range(77))).export_state() == expected
+    assert (
+        CheckpointSHA256.from_state(expected).hexdigest()
+        == hashlib.sha256(bytes(range(77))).hexdigest()
+    )

@@ -35,6 +35,7 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import ContractCatalog, canonical_document
 
+from ._journal_prefix import install as install_journal_prefix
 from ._online_dag import OnlineDag
 from ._online_dag import install as install_online_dag
 from .common import fingerprint
@@ -645,7 +646,6 @@ class JournalStore:
             self.db.execute("PRAGMA cache_size = -512")
             self.db.execute("PRAGMA temp_store = FILE")
             self.db.executescript(
-                "CREATE TABLE frames(sequence TEXT PRIMARY KEY, value BLOB, reference BLOB);"
                 "CREATE TABLE identities(id TEXT PRIMARY KEY, domain TEXT, value BLOB);"
                 "CREATE TABLE assertions(assertion_id TEXT PRIMARY KEY, object_id TEXT, "
                 "category TEXT, type TEXT, state_id TEXT, observation_id TEXT, sequence TEXT, "
@@ -663,6 +663,7 @@ class JournalStore:
                 "CREATE TABLE fixities(state TEXT, size TEXT, sha256 TEXT, "
                 "PRIMARY KEY(state, size, sha256));"
             )
+            install_journal_prefix(self.db)
             install_online_dag(self.db)
             self._dag_runs = {
                 "derivation": uuid4().hex,
@@ -1056,11 +1057,6 @@ class JournalStore:
             context = self.objects.get(document["recording_context_id"])
             if context is None or context["type"] != "context":
                 raise ProvenanceValidationError("recording context does not resolve")
-        self.db.execute(
-            "INSERT INTO frames VALUES (?, ?, ?)",
-            (document["sequence"], frame.json_bytes, canonical_document(frame.reference)),
-        )
-        self.frame_count += 1
 
     @property
     def frames(self) -> Sequence[Any]:

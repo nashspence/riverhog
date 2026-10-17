@@ -41,7 +41,6 @@ from .graph import (
     _acyclic,
     graph_from_assertions,
     iter_assertions,
-    time_ns,
 )
 
 if TYPE_CHECKING:
@@ -298,85 +297,41 @@ def validate_journal_chunks(
     expected_anchor: Mapping[str, Any] | None = None,
     require_exact_tail: bool = False,
 ) -> JournalSummary:
+    from uuid import uuid4
+
+    from ._journal_prefix import JournalPrefix
     from .journal_store import JournalStore
 
     selected = catalog or ContractCatalog()
     store = JournalStore()
-    journal_id: str | None = None
-    previous: JournalFrame | None = None
-    prefix = hashlib.sha256()
-    byte_count = 0
-    matched_anchor = False
     try:
-        for sequence, frame in enumerate(iter_journal_frames(chunks)):
-            document = frame.document
-            try:
-                selected.validate(ENTRY_SCHEMA, document)
-                time_ns(document["recorded_at"])
-            except (ValueError, TypeError) as exc:
-                raise ProvenanceValidationError(f"entry {sequence}: {exc}") from exc
-            if int(document["sequence"]) != sequence:
-                raise ProvenanceValidationError("noncontiguous journal sequence")
-            if journal_id is None:
-                journal_id = document["journal_id"]
-                if (
-                    document["entry_kind"] != "journal_init"
-                    or document["body"]["journal"]["id"] != journal_id
-                ):
-                    raise ProvenanceValidationError("first entry must initialize this journal")
-                parent = document["body"]["journal"].get("forked_from")
-                if parent and parent["journal_id"] == journal_id:
-                    raise ProvenanceValidationError(
-                        "independent journal fork requires a distinct journal identity"
-                    )
-            else:
-                if document["journal_id"] != journal_id or document["entry_kind"] == "journal_init":
-                    raise ProvenanceValidationError("journal identity or initialization changed")
-                if previous is None or document["previous_entry"] != previous.reference:
-                    raise ProvenanceValidationError(
-                        "predecessor does not match exact previous JSON text"
-                    )
-            if document["entry_kind"] == "checkpoint":
-                body = document["body"]
-                if previous is None or body["covered_through"] != previous.reference:
-                    raise ProvenanceValidationError(
-                        "checkpoint must cover the immediately preceding entry"
-                    )
-                if (
-                    body["prefix_sha256"] != prefix.hexdigest()
-                    or int(body["prefix_bytes"]) != byte_count
-                ):
-                    raise ProvenanceValidationError("checkpoint prefix commitment mismatch")
-            store.accept(document, frame, catalog=selected, require_profiles=require_profiles)
-            previous = frame
-            prefix.update(frame.encoded)
-            byte_count += len(frame.encoded)
-            if expected_anchor and document["id"] == expected_anchor["through"]["entry_id"]:
-                candidate = {
-                    "journal_id": journal_id,
-                    "through": frame.reference,
-                    "prefix_sha256": prefix.hexdigest(),
-                    "prefix_bytes": str(byte_count),
-                }
-                if candidate != dict(expected_anchor):
-                    raise ProvenanceValidationError("externally supplied prefix anchor mismatch")
-                matched_anchor = True
-        if previous is None or journal_id is None:
-            raise ProvenanceValidationError("journal is empty")
-        if expected_anchor and not matched_anchor:
-            raise ProvenanceValidationError("journal does not contain the expected anchored prefix")
-        if require_exact_tail and (
-            expected_anchor is None or previous.reference != expected_anchor["through"]
-        ):
-            raise ProvenanceValidationError("an exact tail anchor was required")
+        attempt = uuid4().hex
+        prefix = JournalPrefix(
+            store.db,
+            attempt_id=attempt,
+            source_binding="disposable-stream:" + attempt,
+            catalog=selected,
+            require_profiles=require_profiles,
+            expected_anchor=expected_anchor,
+            require_exact_tail=require_exact_tail,
+        )
+        prefix.initialize()
+        for frame in iter_journal_frames(chunks):
+            prepared = prefix.prepare(frame, selected)
+            store.accept(
+                prepared.document, frame, catalog=selected, require_profiles=require_profiles
+            )
+            state = prefix.commit(prepared)
+            store.frame_count = state.frame_count
+        state = prefix.finish()
         store.freeze()
         summary = JournalSummary(
-            journal_id,
+            cast(str, state.journal_id),
             store.frames,
             store.graph_validation,
             store.retired,
-            prefix.hexdigest(),
-            byte_count,
+            state.hexdigest,
+            state.byte_count,
             store.origins,
         )
         object.__setattr__(summary, "_store", store)

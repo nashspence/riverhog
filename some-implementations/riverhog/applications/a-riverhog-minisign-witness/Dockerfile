@@ -33,6 +33,7 @@ COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
 COPY packages/riverhog-growth-contracts packages/riverhog-growth-contracts
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol
+COPY packages/sha256-continuation packages/sha256-continuation
 COPY packages/riverhog-provenance packages/riverhog-provenance
 COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts

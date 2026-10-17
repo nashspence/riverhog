@@ -93,6 +93,7 @@ review0-sampler-lib = { workspace = true }
 stove0-target-client = { workspace = true }
 stove0-target-protocol = { workspace = true }
 stove0-target-support = { workspace = true }
+sha256-continuation = { workspace = true }
 time-formats = { workspace = true }
 
 [dependency-groups]
