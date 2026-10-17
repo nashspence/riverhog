@@ -35,10 +35,13 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import ContractCatalog, canonical_document
 
+from ._correction_projection import CorrectionWork
+from ._correction_projection import install as install_correction_projection
 from ._journal_prefix import install as install_journal_prefix
 from ._online_dag import OnlineDag
 from ._online_dag import install as install_online_dag
 from .common import fingerprint
+from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import ProvenanceValidationError
 from .graph import GraphValidation, _Validator, iter_assertions, time_ns
 
@@ -664,6 +667,7 @@ class JournalStore:
                 "PRIMARY KEY(state, size, sha256));"
             )
             install_journal_prefix(self.db)
+            install_correction_projection(self.db)
             install_online_dag(self.db)
             self._dag_runs = {
                 "derivation": uuid4().hex,
@@ -1027,17 +1031,37 @@ class JournalStore:
                 ) from exc
             self.db.execute("INSERT INTO changes VALUES (?)", (row["assertion_id"],))
         if correction:
-            for table in ("maps", "findings", "fixities", "lifecycle_extrema"):
-                self.db.execute("DELETE FROM " + table)
+            # Earlier native checks/staging remain entry-local, private work.
+            # Each projection phase starts without inheriting that transaction.
             self.db.commit()
+            correction_attempt = uuid4().hex
+            correction_source = frame.sha256
+            retirement = CorrectionWork(
+                self.db,
+                operation="retire",
+                attempt_id=correction_attempt,
+                source_binding=correction_source,
+            )
+            retirement.initialize()
+            # A native key and its value each originate in an admitted entry.
+            # Reserve one such row atom plus fixed metadata; no archive cap is added.
+            atom_admission = 2 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 4096
+            while not retirement.retire(byte_budget=atom_admission).done:
+                pass
             for kind, run in self._dag_runs.items():
                 checker = OnlineDag(self.db, kind, run).replace_run(uuid4().hex)
                 self._dag_runs[kind] = checker.run_id
                 while checker.retire():
                     pass
-            self.db.execute(
-                "INSERT OR IGNORE INTO changes SELECT assertion_id FROM assertions WHERE active = 1"
+            seeding = CorrectionWork(
+                self.db,
+                operation="seed",
+                attempt_id=correction_attempt,
+                source_binding=correction_source,
             )
+            seeding.initialize()
+            while not seeding.seed().done:
+                pass
         rows = (
             json.loads(value)
             for (value,) in self.db.execute(
