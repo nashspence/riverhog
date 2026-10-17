@@ -20,6 +20,7 @@ from pathlib import Path
 from tempfile import mkdtemp
 from threading import Lock
 from typing import Any, cast, overload
+from uuid import uuid4
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import (
@@ -34,6 +35,8 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import ContractCatalog, canonical_document
 
+from ._online_dag import OnlineDag
+from ._online_dag import install as install_online_dag
 from .common import fingerprint
 from .errors import ProvenanceValidationError
 from .graph import GraphValidation, _Validator, iter_assertions, time_ns
@@ -442,22 +445,16 @@ class _Findings(MutableSequence[str]):
 class _Edges:
     def __init__(self, store: JournalStore, kind: str) -> None:
         self.store, self.kind = store, kind
+        self.checker = OnlineDag(store.db, kind, store._dag_runs[kind])
 
     def append(self, edge: tuple[str, str]) -> None:
         source, target = edge
         if source == target:
             raise ProvenanceValidationError(f"{self.kind} cannot relate an entity to itself")
-        reachable = self.store.db.execute(
-            "WITH RECURSIVE reachable(node) AS (SELECT ? UNION SELECT edges.target "
-            "FROM edges JOIN reachable ON edges.source = reachable.node WHERE kind = ?) "
-            "SELECT 1 FROM reachable WHERE node = ? LIMIT 1",
-            (target, self.kind, source),
-        ).fetchone()
-        if reachable:
-            raise ProvenanceValidationError(f"{self.kind} graph contains a cycle")
-        self.store.db.execute(
-            "INSERT OR IGNORE INTO edges VALUES (?, ?, ?)", (self.kind, source, target)
-        )
+        # The projection stays private until the whole native result is frozen.
+        # Each graph transition owns a separate bounded checkpoint transaction.
+        self.store.db.commit()
+        self.checker.add(source, target)
 
 
 class _StoredValidator(_Validator):
@@ -662,12 +659,17 @@ class JournalStore:
                 "CREATE INDEX categories ON assertions(category, assertion_id) WHERE active = 1;"
                 "CREATE TABLE maps(name TEXT, key BLOB, value BLOB, PRIMARY KEY(name, key));"
                 "CREATE INDEX external_types ON maps(name, json_extract(value, '$.object_id'));"
-                "CREATE TABLE edges(kind TEXT, source TEXT, target TEXT, "
-                "PRIMARY KEY(kind, source, target));"
                 "CREATE TABLE findings(key TEXT PRIMARY KEY, value TEXT);"
                 "CREATE TABLE fixities(state TEXT, size TEXT, sha256 TEXT, "
                 "PRIMARY KEY(state, size, sha256));"
             )
+            install_online_dag(self.db)
+            self._dag_runs = {
+                "derivation": uuid4().hex,
+                "specialization": uuid4().hex,
+            }
+            for kind, run in self._dag_runs.items():
+                OnlineDag(self.db, kind, run).bind()
             self.frame_count = 0
         except BaseException:
             self.close()
@@ -1024,8 +1026,14 @@ class JournalStore:
                 ) from exc
             self.db.execute("INSERT INTO changes VALUES (?)", (row["assertion_id"],))
         if correction:
-            for table in ("maps", "edges", "findings", "fixities", "lifecycle_extrema"):
+            for table in ("maps", "findings", "fixities", "lifecycle_extrema"):
                 self.db.execute("DELETE FROM " + table)
+            self.db.commit()
+            for kind, run in self._dag_runs.items():
+                checker = OnlineDag(self.db, kind, run).replace_run(uuid4().hex)
+                self._dag_runs[kind] = checker.run_id
+                while checker.retire():
+                    pass
             self.db.execute(
                 "INSERT OR IGNORE INTO changes SELECT assertion_id FROM assertions WHERE active = 1"
             )
