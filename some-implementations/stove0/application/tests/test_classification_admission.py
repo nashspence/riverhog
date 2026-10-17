@@ -23,7 +23,12 @@ from stove0_core import (
     SqlAlchemyStateStore,
     Stove0WorkService,
 )
-from stove0_core.persistence import _AdmissionCandidateRow, _AdmissionPolicyRow
+from stove0_core.persistence import (
+    _AdmissionCandidateRow,
+    _AdmissionMatchRow,
+    _AdmissionObservedRevisionRow,
+    _AdmissionPolicyRow,
+)
 from stove0_core.scheduler import Stove0Scheduler
 from stove0_operator_contracts import AdmissionCatalog, AdmissionIntent, AdmissionPolicy, WorkView
 from stove0_protocol import (
@@ -1018,3 +1023,111 @@ def test_admission_metadata_backpressure_is_pending_without_failure_or_retry(
         assert accepted.intent == before.intent
     else:
         assert service.policies().policies[0].phase == "baseline"
+
+
+@pytest.mark.parametrize("phase", ["baseline", "following"])
+@pytest.mark.parametrize("advances", [2, 3])
+@pytest.mark.parametrize("authority", ["same", "source_identity", "authorization_view_identity"])
+def test_delayed_policy_page_cannot_overwrite_further_same_generation_progress(
+    monkeypatch: pytest.MonkeyPatch, phase: str, advances: int, authority: str
+) -> None:
+    state, policy = _state(), _policy()
+    api = _CatalogApi(
+        _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1"),
+        {"camera", "workflow/archive"},
+    )
+    service = _service(state=state, api=api, policy=policy)
+    assert service._advance_policy(policy)
+    if phase == "following":
+        assert service._advance_policy(policy)
+    with state.sessions() as session:
+        row = session.get(_AdmissionPolicyRow, policy.id)
+        assert row is not None
+        generation, cursor = row.generation, row.cursor
+    pages = []
+    for index in range(advances):
+        if phase == "baseline":
+            pages.append(
+                CatalogSyncCollectionPage(
+                    source_identity=api.source_identity,
+                    authorization_view_identity=api.view_identity,
+                    collections=[
+                        _descriptor(
+                            tag_revision=1,
+                            tag_identity="6" * 64,
+                            revision=str(index + 2),
+                            collection_id=index + 7,
+                        )
+                    ],
+                    next_cursor=f"baseline-{index}" if index + 1 < advances else None,
+                    changes_cursor="following-after-baseline" if index + 1 == advances else None,
+                )
+            )
+        else:
+            pages.append(
+                CatalogSyncChangePage(
+                    source_identity=api.source_identity,
+                    authorization_view_identity=api.view_identity,
+                    changes=[],
+                    next_cursor=f"following-{index}",
+                    through_revision=str(index + 2),
+                    caught_up=True,
+                )
+            )
+
+    def snapshot():
+        with state.sessions() as session:
+            return [
+                list(
+                    session.execute(
+                        table.__table__.select().order_by(*table.__table__.primary_key.columns)
+                    ).mappings()
+                )
+                for table in (
+                    _AdmissionPolicyRow,
+                    _AdmissionMatchRow,
+                    _AdmissionObservedRevisionRow,
+                    _AdmissionCandidateRow,
+                )
+            ]
+
+    committed = []
+
+    def delayed(current_cursor: str, *, limit: int):
+        assert current_cursor == cursor
+        assert limit == (100 if phase == "baseline" else 1)
+        for page in pages:
+            if phase == "baseline":
+                assert service._commit_baseline_page(
+                    policy,
+                    cursor=current_cursor,
+                    page=page,
+                    matches=[(descriptor, True) for descriptor in page.collections],
+                    expected_generation=generation,
+                )
+                current_cursor = page.next_cursor or page.changes_cursor
+            else:
+                assert service._commit_change_page(
+                    policy,
+                    cursor=current_cursor,
+                    page=page,
+                    evaluated=None,
+                    expected_generation=generation,
+                )
+                current_cursor = page.next_cursor
+        committed.append(snapshot())
+        page = pages[0]
+        return page if authority == "same" else page.model_copy(update={authority: "9" * 64})
+
+    monkeypatch.setattr(
+        api,
+        "list_catalog_sync_collections" if phase == "baseline" else "list_catalog_sync_changes",
+        delayed,
+    )
+    result = service.advance(limit=1)
+    assert len(committed) == 1 and snapshot() == committed[0]
+    if authority == "same":
+        assert result.failures == () and result.progressed == ()
+    else:
+        assert len(result.failures) == 1
+        assert "authority changed; rebaseline is required" in result.failures[0].error
