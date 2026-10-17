@@ -42,7 +42,8 @@ from ._correction_targets import install as install_correction_targets
 from ._journal_prefix import install as install_journal_prefix
 from ._online_dag import OnlineDag
 from ._online_dag import install as install_online_dag
-from .common import fingerprint
+from ._semantic_finish import SemanticFinish
+from ._semantic_finish import install as install_semantic_finish
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import ProvenanceValidationError
 from .graph import GraphValidation, _Validator, iter_assertions, time_ns
@@ -472,8 +473,9 @@ class _StoredValidator(_Validator):
         catalog: ContractCatalog,
         journal_id: str,
         require_profiles: bool,
+        frame: Any,
     ) -> None:
-        self.store, self.rows = store, rows
+        self.store, self.rows, self.frame = store, rows, frame
         self.catalog, self.journal_id, self.require_profiles = catalog, journal_id, require_profiles
         self.objects = store.objects
         self.externals = _Map(store, "externals")
@@ -507,98 +509,20 @@ class _StoredValidator(_Validator):
         derivations: Iterable[tuple[str, str]],
         specializations: Iterable[tuple[str, str]],
     ) -> None:
-        # New immutable rows cannot invalidate existing local references. Only
-        # lifecycle bounds, external reference types and completeness need
-        # reverse checks. Corrections rebuild the same indexes from effective rows.
-        with closing(
-            self.store.db.execute(
-                "SELECT assertions.value FROM changes CROSS JOIN assertions "
-                "WHERE assertions.assertion_id = changes.assertion_id AND active = 1 "
-                "ORDER BY changes.assertion_id"
-            )
-        ) as rows:
-            for (value,) in rows:
-                self.store.require_open()
-                row = json.loads(value)
-                kind = row["type"]
-                if kind in ("usage", "generation", "invalidation"):
-                    state = row["state"]["object_id"]
-                    generated, ended = generation.get(state), invalidation.get(state)
-                    if not self.store._lifecycle_bounds_hold(
-                        state,
-                        generated_at=generated.get("at") if generated else None,
-                        invalidated_at=ended.get("at") if ended else None,
-                    ):
-                        # Preserve native diagnostic selection on a violation.
-                        with closing(
-                            self.store.db.execute(
-                                "SELECT value FROM assertions WHERE active = 1 AND state_id = ? "
-                                "AND type IN ('usage', 'invalidation')",
-                                (state,),
-                            )
-                        ) as rows:
-                            for (related,) in rows:
-                                self.store.require_open()
-                                item = json.loads(related)
-                                if "at" not in item:
-                                    continue
-                                if (
-                                    generated
-                                    and "at" in generated
-                                    and time_ns(item["at"]) < time_ns(generated["at"])
-                                ):
-                                    raise ProvenanceValidationError(
-                                        "state used or invalidated before known generation"
-                                    )
-                                if (
-                                    item["type"] == "usage"
-                                    and ended
-                                    and "at" in ended
-                                    and time_ns(item["at"]) > time_ns(ended["at"])
-                                ):
-                                    raise ProvenanceValidationError(
-                                        "state used after known invalidation"
-                                    )
-                if kind == "observation" and row["address_status"] == "known":
-                    if (
-                        self.store.db.execute(
-                            "SELECT 1 FROM assertions WHERE active = 1 AND observation_id = ? "
-                            "AND type = 'locator_binding' LIMIT 1",
-                            (row["id"],),
-                        ).fetchone()
-                        is None
-                    ):
-                        raise ProvenanceValidationError(
-                            "known address requires an observed locator binding"
-                        )
-                if kind in ("observation", "reported_description") and "content" in row:
-                    state = row["state"]["object_id"]
-                    fixity = fingerprint(row["content"])
-                    self.store.db.execute(
-                        "INSERT OR IGNORE INTO fixities VALUES (?, ?, ?)",
-                        (state, str(fixity[0]), fixity[1]),
-                    )
-                    if (
-                        self.store.db.execute(
-                            "SELECT count(*) FROM (SELECT 1 FROM fixities WHERE state = ? LIMIT 2)",
-                            (state,),
-                        ).fetchone()[0]
-                        > 1
-                    ):
-                        self.findings.append(
-                            f"{state}: conflicting primary-content descriptions; no value selected"
-                        )
-                with closing(
-                    self.store.db.execute(
-                        "SELECT value FROM maps WHERE name = 'externals' "
-                        "AND json_extract(value, '$.object_id') = ?",
-                        (row["id"],),
-                    )
-                ) as rows:
-                    for (external,) in rows:
-                        self.store.require_open()
-                        reference = json.loads(external)
-                        self.node(reference["object_id"], reference["object_type"])
+        # Native row checks precede these reverse checks. Each post-row unit
+        # owns its transaction and remains private until prefix publication.
+        self.store.db.commit()
+        work = SemanticFinish(
+            self.store,
+            attempt_id=uuid4().hex,
+            frame=self.frame,
+            catalog_sha256=self.catalog.checkpoint_sha256(),
+            require_profiles=self.require_profiles,
+        )
+        work.initialize()
+        atom_admission = 2 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 4096
+        while not work.advance(byte_budget=atom_admission).done:
+            pass
 
 
 def _cleanup_snapshot(connection: sqlite3.Connection, directory: Path) -> None:
@@ -671,6 +595,7 @@ class JournalStore:
             install_journal_prefix(self.db)
             install_correction_projection(self.db)
             install_correction_targets(self.db)
+            install_semantic_finish(self.db)
             install_online_dag(self.db)
             self._dag_runs = {
                 "derivation": uuid4().hex,
@@ -1060,7 +985,12 @@ class JournalStore:
             )
         )
         validator = _StoredValidator(
-            self, rows, catalog=catalog, journal_id=journal_id, require_profiles=require_profiles
+            self,
+            rows,
+            catalog=catalog,
+            journal_id=journal_id,
+            require_profiles=require_profiles,
+            frame=frame,
         )
         validator.run()
         recorder = self.objects.get(document["recorded_by_agent_id"])

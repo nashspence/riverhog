@@ -220,6 +220,10 @@ class _Validator:
         value = self.objects.get(identity)
         if value is None:
             raise ProvenanceValidationError(f"unresolved local identity: {identity}")
+        return self._node_type(value, *types)
+
+    @staticmethod
+    def _node_type(value: dict[str, Any], *types: str) -> dict[str, Any]:
         if types and value["type"] not in types:
             raise ProvenanceValidationError(
                 f"wrong reference type: {value['type']}; expected {types}"
