@@ -41,6 +41,8 @@ from ._correction_projection import CorrectionWork
 from ._correction_projection import install as install_correction_projection
 from ._correction_targets import CorrectionTargets
 from ._correction_targets import install as install_correction_targets
+from ._entry_preparation import EntryPreparation
+from ._entry_preparation import install as install_entry_preparation
 from ._generic_semantics import GenericAtom, GenericSemantics
 from ._generic_semantics import install as install_generic_semantics
 from ._journal_prefix import install as install_journal_prefix
@@ -647,6 +649,7 @@ class JournalStore:
             install_correction_projection(self.db)
             install_correction_targets(self.db)
             install_semantic_finish(self.db)
+            install_entry_preparation(self.db)
             install_assertion_staging(self.db)
             install_semantic_source(self.db)
             install_semantic_edges(self.db)
@@ -928,18 +931,6 @@ class JournalStore:
         self.db.execute("PRAGMA query_only = ON")
         self._frozen = True
 
-    def _identity(self, identity: str, domain: str, value: bytes) -> None:
-        old = self.db.execute(
-            "SELECT domain, value FROM identities WHERE id = ?", (identity,)
-        ).fetchone()
-        if old is not None and old != (domain, value):
-            raise ProvenanceValidationError(
-                "an immutable referent or identity domain was redefined"
-            )
-        self.db.execute(
-            "INSERT OR IGNORE INTO identities VALUES (?, ?, ?)", (identity, domain, value)
-        )
-
     def accept(
         self,
         document: Mapping[str, Any],
@@ -949,15 +940,18 @@ class JournalStore:
         require_profiles: bool,
     ) -> None:
         journal_id = document["journal_id"]
-        self._identity(journal_id, "journal", b"")
-        if (
-            self.db.execute("SELECT 1 FROM identities WHERE id = ?", (document["id"],)).fetchone()
-            is not None
-        ):
-            raise ProvenanceValidationError("entry identity reused or identity domains overlap")
-        self._identity(document["id"], "entry", frame.json_bytes)
-        while self._reset_changed_assertions(row_budget=256):
+        self.db.commit()
+        preparation = EntryPreparation(
+            self,
+            attempt_id=uuid4().hex,
+            frame=frame,
+            catalog_sha256=catalog.checkpoint_sha256(),
+            require_profiles=require_profiles,
+        )
+        preparation.initialize()
+        while not preparation.advance().done:
             pass
+        preparation.result()
         correction = document["entry_kind"] == "correction"
         if correction:
             # Entry identity staging is private; target units own fresh transactions.
