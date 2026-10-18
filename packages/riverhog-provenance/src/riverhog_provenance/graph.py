@@ -25,6 +25,7 @@ from riverhog_provenance_contracts import (
     canonical_document,
 )
 
+from ._semantic_program import ROW_TYPES
 from .common import fingerprint
 from .constants import PRIMARY_CONTENT_CATEGORY
 from .errors import ProvenanceValidationError
@@ -306,6 +307,11 @@ class _Validator:
 
         walk(self, "generic", value)
 
+    def row_semantics(self, value: Mapping[str, Any]) -> None:
+        from ._semantic_program import walk
+
+        walk(self, "row", value)
+
     def aggregates(self) -> tuple[Any, ...]:
         return {}, {}, [], [], {}, set(), set()
 
@@ -319,36 +325,8 @@ class _Validator:
         for row in self.validation_rows():
             self.generic(row)
             kind = row["type"]
-            if kind == "occurrence":
-                self.node(row["artifact_id"], "artifact")
-                if "source_context_id" in row:
-                    self.node(row["source_context_id"], "context")
-            elif kind == "state":
-                self.node(row["occurrence_id"], "occurrence")
-                extent = row["extent"]
-                if extent["kind"] == "segment":
-                    self.typed(extent["start_boundary"])
-                    self.typed(extent["end_boundary"])
-            elif kind == "activity":
-                for field in ("started_at", "ended_at"):
-                    if field in row:
-                        time_ns(row[field])
-                if "started_at" in row and "ended_at" in row:
-                    if time_ns(row["started_at"]) > time_ns(row["ended_at"]):
-                        raise ProvenanceValidationError("activity ends before it starts")
-                for association in row["associations"]:
-                    self.node(association["agent_id"], "agent")
-                for context in row.get("contexts", []):
-                    self.node(context["context_id"], "context")
-                for profile in row.get("details", []):
-                    self.profile(profile)
-                if "configuration" in row:
-                    self.profile(row["configuration"])
-                    actual = hashlib.sha256(
-                        canonical_document(row["configuration"]["data"])
-                    ).hexdigest()
-                    if row["configuration_sha256"] != actual:
-                        raise ProvenanceValidationError("capture configuration digest mismatch")
+            if kind in ROW_TYPES:
+                self.row_semantics(row)
             elif kind in ("observation", "reported_description"):
                 state = self.reference(row["state"], "state")
                 if "source_context_id" in row:
@@ -473,11 +451,6 @@ class _Validator:
                 self.reference(row["specific"], *ENTITY_TYPES)
                 self.reference(row["general"], *ENTITY_TYPES)
                 specializations.append((row["specific"]["object_id"], row["general"]["object_id"]))
-            elif kind == "continuity":
-                self.reference(row["earlier_state"], "state")
-                self.reference(row["later_state"], "state")
-                if row["earlier_state"]["object_id"] == row["later_state"]["object_id"]:
-                    raise ProvenanceValidationError("continuity relates distinct state entities")
             elif kind == "content_comparison":
                 self._comparison(row)
             elif kind == "locator_binding":
@@ -512,26 +485,6 @@ class _Validator:
                         "duplicate delivery slot in one delivery instance"
                     )
                 slots.add(slot)
-            elif kind == "custody_assertion":
-                self.reference(row["target"], "artifact", "occurrence")
-                self.node(row["custodian_agent_id"], "agent")
-                if "context_id" in row:
-                    self.node(row["context_id"], "context")
-            elif kind == "availability_assertion":
-                self.reference(row["occurrence"], "occurrence")
-                if "context_id" in row:
-                    self.node(row["context_id"], "context")
-                if "activity_id" in row:
-                    self.node(row["activity_id"], "activity")
-            elif kind == "journal_subject":
-                self.reference(row["artifact"], "artifact")
-                if self.journal_id and row["journal_id"] != self.journal_id:
-                    raise ProvenanceValidationError(
-                        "journal subject assertion names another journal"
-                    )
-            elif kind == "extension":
-                self.reference(row["subject"])
-                self.typed(row["value"])
         self.finish(generation, invalidation, derivations, specializations)
 
     def finish(

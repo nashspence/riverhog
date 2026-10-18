@@ -36,18 +36,21 @@ from riverhog_provenance_contracts import (
 )
 
 from ._journal_prefix import PrefixState
-from ._semantic_program import Frame, MemoryStack, Nodes, Program, Stack
+from ._semantic_program import ROW_STAGES, ROW_TYPES, Frame, MemoryStack, Nodes, Program, Stack
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .graph import _Validator
 
-ALGORITHM = "riverhog-generic-semantics/v1"
+ALGORITHM = "riverhog-generic-semantics/v2"
 MAX_STEPS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
 _FRAME_OCTETS = 512
 _DEFAULT_BYTES = 8 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
 _STAGES = {
+    "row": max(ROW_STAGES.values()),
+    "association": 1,
+    "activity_context": 1,
     "generic": 6,
     "evidence": 3,
     "identifier": 2,
@@ -207,6 +210,12 @@ def _decode_frame(raw: str, nodes: Nodes) -> Frame:
         source = nodes.values[frame.node]
         if type(source) is not dict:
             raise ValueError("semantic frame does not identify an object")
+        if frame.operation == "row" and (
+            source.get("type") not in ROW_TYPES
+            or frame.stage > ROW_STAGES[source["type"]]
+            or frame.node != 0
+        ):
+            raise ValueError("semantic row frame differs from its admitted subject")
         arrays = {
             "generic": {0: "evidence", 1: "identifiers", 2: "profiles", 3: "metadata"},
             "filesystem": {
@@ -218,6 +227,8 @@ def _decode_frame(raw: str, nodes: Nodes) -> Frame:
             "native": {4: "interpretations"},
         }
         array = arrays.get(frame.operation, {}).get(frame.stage)
+        if frame.operation == "row" and source["type"] == "activity":
+            array = {3: "associations", 4: "contexts", 5: "details"}.get(frame.stage)
         maximum = (
             len(source.get(array, []))
             if array is not None
@@ -583,6 +594,7 @@ class GenericSemantics:
         source_binding: SemanticSource,
         atom: GenericAtom,
         catalog: ContractCatalog,
+        operation: str = "generic",
     ) -> None:
         if type(attempt_id) is not str or not attempt_id:
             raise ValueError("an explicit generic semantic attempt is required")
@@ -598,10 +610,16 @@ class GenericSemantics:
             catalog,
         )
         row = atom.nodes.values[0]
+        if operation not in {"generic", "row"} or (
+            operation == "row" and row["type"] not in ROW_TYPES
+        ):
+            raise ValueError("an exact supported semantic root operation is required")
+        self.operation = operation
         self.assertion_id, self.object_id, self.kind = row["assertion_id"], row["id"], row["type"]
         self.binding = canonical_json_bytes(
             {
                 "algorithm": ALGORITHM,
+                "operation": operation,
                 "source_sha256": source_binding.sha256,
                 "catalog_sha256": source_binding.catalog_sha256,
                 "require_profiles": source_binding.require_profiles,
@@ -691,7 +709,7 @@ class GenericSemantics:
             ).close()
             self.db.execute(
                 "INSERT INTO generic_semantic_frames VALUES (?,?,?,?)",
-                (self.attempt_id, 0, None, _encode_frame(Frame("generic", 0))),
+                (self.attempt_id, 0, None, _encode_frame(Frame(self.operation, 0))),
             ).close()
             self.db.commit()
         except BaseException:

@@ -510,7 +510,7 @@ class _StoredValidator(_Validator):
         self.profiles = _Map(store, "profiles")
         self.findings = _Findings(store)
 
-    def generic(self, value: Mapping[str, Any]) -> None:
+    def _semantics(self, value: Mapping[str, Any], operation: str) -> None:
         self.store.db.commit()
         work = GenericSemantics(
             self.store.db,
@@ -518,11 +518,18 @@ class _StoredValidator(_Validator):
             source_binding=self.semantic_source,
             atom=GenericAtom.admit(value),
             catalog=self.catalog,
+            operation=operation,
         )
         work.initialize()
         while not work.advance().done:
             pass
         work.result()
+
+    def generic(self, value: Mapping[str, Any]) -> None:
+        self._semantics(value, "generic")
+
+    def row_semantics(self, value: Mapping[str, Any]) -> None:
+        self._semantics(value, "row")
 
     def aggregates(self) -> tuple[Any, ...]:
         return (

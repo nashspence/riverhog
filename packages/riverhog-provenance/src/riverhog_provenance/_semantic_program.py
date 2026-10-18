@@ -7,6 +7,7 @@ owners; neither traversal depends on replaying earlier transitions.
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Mapping, MutableSet
 from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING, Any, Protocol
@@ -26,6 +27,18 @@ from .errors import ProvenanceValidationError, UnresolvedContractError
 
 if TYPE_CHECKING:
     from .graph import _Validator
+
+ROW_STAGES = {
+    "occurrence": 2,
+    "state": 3,
+    "activity": 8,
+    "continuity": 3,
+    "custody_assertion": 3,
+    "availability_assertion": 3,
+    "journal_subject": 2,
+    "extension": 2,
+}
+ROW_TYPES = frozenset(ROW_STAGES)
 
 
 @dataclass(frozen=True)
@@ -185,6 +198,121 @@ class Program:
         else:
             self._next(frame)
 
+    def _row(self, frame: Frame, value: Mapping[str, Any]) -> None:
+        from .graph import time_ns
+
+        validator, stage, kind = self.validator, frame.stage, value["type"]
+        if kind == "occurrence":
+            if stage == 0:
+                validator.node(value["artifact_id"], "artifact")
+            elif stage == 1:
+                if "source_context_id" in value:
+                    validator.node(value["source_context_id"], "context")
+            else:
+                self.stack.pop()
+                return
+        elif kind == "state":
+            if stage == 0:
+                validator.node(value["occurrence_id"], "occurrence")
+            elif stage in (1, 2):
+                extent = value["extent"]
+                if extent["kind"] == "segment":
+                    key = "start_boundary" if stage == 1 else "end_boundary"
+                    self._child(frame, "typed", extent[key])
+                    return
+            else:
+                self.stack.pop()
+                return
+        elif kind == "activity":
+            if stage < 2:
+                key = "started_at" if stage == 0 else "ended_at"
+                if key in value:
+                    time_ns(value[key])
+            elif stage == 2:
+                if "started_at" in value and "ended_at" in value:
+                    if time_ns(value["started_at"]) > time_ns(value["ended_at"]):
+                        raise ProvenanceValidationError("activity ends before it starts")
+            elif stage in (3, 4, 5):
+                key, operation = (
+                    ("associations", "association"),
+                    ("contexts", "activity_context"),
+                    ("details", "profile"),
+                )[stage - 3]
+                self._items(
+                    frame, value[key] if key == "associations" else value.get(key, []), operation
+                )
+                return
+            elif stage == 6:
+                if "configuration" in value:
+                    self._child(frame, "profile", value["configuration"])
+                    return
+            elif stage == 7:
+                if "configuration" in value:
+                    actual = hashlib.sha256(
+                        canonical_document(value["configuration"]["data"])
+                    ).hexdigest()
+                    if value["configuration_sha256"] != actual:
+                        raise ProvenanceValidationError("capture configuration digest mismatch")
+            else:
+                self.stack.pop()
+                return
+        elif kind == "continuity":
+            if stage < 2:
+                key = "earlier_state" if stage == 0 else "later_state"
+                validator.reference(value[key], "state")
+            elif stage == 2:
+                if value["earlier_state"]["object_id"] == value["later_state"]["object_id"]:
+                    raise ProvenanceValidationError("continuity relates distinct state entities")
+            else:
+                self.stack.pop()
+                return
+        elif kind == "custody_assertion":
+            if stage == 0:
+                validator.reference(value["target"], "artifact", "occurrence")
+            elif stage == 1:
+                validator.node(value["custodian_agent_id"], "agent")
+            elif stage == 2:
+                if "context_id" in value:
+                    validator.node(value["context_id"], "context")
+            else:
+                self.stack.pop()
+                return
+        elif kind == "availability_assertion":
+            if stage == 0:
+                validator.reference(value["occurrence"], "occurrence")
+            elif stage in (1, 2):
+                key, expected = (
+                    ("context_id", "context") if stage == 1 else ("activity_id", "activity")
+                )
+                if key in value:
+                    validator.node(value[key], expected)
+            else:
+                self.stack.pop()
+                return
+        elif kind == "journal_subject":
+            if stage == 0:
+                validator.reference(value["artifact"], "artifact")
+            elif stage == 1:
+                if validator.journal_id and value["journal_id"] != validator.journal_id:
+                    raise ProvenanceValidationError(
+                        "journal subject assertion names another journal"
+                    )
+            else:
+                self.stack.pop()
+                return
+        elif kind == "extension":
+            if stage == 0:
+                validator.reference(value["subject"])
+            elif stage == 1:
+                self._child(frame, "typed", value["value"])
+                return
+            else:
+                self.stack.pop()
+                return
+        else:
+            raise RuntimeError("unknown semantic row operation")
+        self._next(frame)
+
     def step(self) -> None:
         # Runtime import keeps the shared interpreter independent of construction
         # order while retaining the native timestamp and identity helpers.
@@ -196,7 +324,20 @@ class Program:
         value = self.nodes.values[frame.node]
         validator, stage = self.validator, frame.stage
         operation = frame.operation
-        if operation == "generic":
+        if operation == "row":
+            self._row(frame, value)
+        elif operation in {"association", "activity_context"}:
+            if stage == 0:
+                key, expected = (
+                    ("agent_id", "agent")
+                    if operation == "association"
+                    else ("context_id", "context")
+                )
+                validator.node(value[key], expected)
+                self._next(frame)
+            else:
+                self.stack.pop()
+        elif operation == "generic":
             if stage < 3:
                 key, child = (
                     ("evidence", "evidence"),
