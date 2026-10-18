@@ -33,8 +33,10 @@ from riverhog_growth_contracts import (
     Expression,
     declare_growth,
 )
-from riverhog_provenance_contracts import ContractCatalog, canonical_document
+from riverhog_provenance_contracts import ContractCatalog
 
+from ._assertion_staging import AssertionStaging
+from ._assertion_staging import install as install_assertion_staging
 from ._correction_projection import CorrectionWork
 from ._correction_projection import install as install_correction_projection
 from ._correction_targets import CorrectionTargets
@@ -46,7 +48,7 @@ from ._semantic_finish import SemanticFinish
 from ._semantic_finish import install as install_semantic_finish
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import ProvenanceValidationError
-from .graph import GraphValidation, _Validator, iter_assertions, time_ns
+from .graph import GraphValidation, _Validator, time_ns
 
 
 def _key(value: Any) -> bytes:
@@ -596,6 +598,7 @@ class JournalStore:
             install_correction_projection(self.db)
             install_correction_targets(self.db)
             install_semantic_finish(self.db)
+            install_assertion_staging(self.db)
             install_online_dag(self.db)
             self._dag_runs = {
                 "derivation": uuid4().hex,
@@ -893,8 +896,6 @@ class JournalStore:
         catalog: ContractCatalog,
         require_profiles: bool,
     ) -> None:
-        from .journal import _body_assertions, _identity_signature
-
         journal_id = document["journal_id"]
         self._identity(journal_id, "journal", b"")
         if (
@@ -917,37 +918,20 @@ class JournalStore:
             atom_admission = 2 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 4096
             while not targets.advance(byte_budget=atom_admission).done:
                 pass
-        for category, row in iter_assertions(_body_assertions(document)):
-            if (
-                self.db.execute(
-                    "SELECT 1 FROM identities WHERE id = ?", (row["assertion_id"],)
-                ).fetchone()
-                is not None
-            ):
-                raise ProvenanceValidationError(
-                    "assertion identities cannot be reused or overlap another domain"
-                )
-            self._identity(row["assertion_id"], "assertion", b"")
-            self._identity(row["id"], "referent", _identity_signature(row))
-            try:
-                self.db.execute(
-                    "INSERT INTO assertions VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)",
-                    (
-                        row["assertion_id"],
-                        row["id"],
-                        category,
-                        row["type"],
-                        row.get("state", {}).get("object_id"),
-                        row.get("observation_id"),
-                        document["sequence"],
-                        canonical_document(row),
-                    ),
-                )
-            except sqlite3.IntegrityError as exc:
-                raise ProvenanceValidationError(
-                    "duplicate effective entity/record identity"
-                ) from exc
-            self.db.execute("INSERT INTO changes VALUES (?)", (row["assertion_id"],))
+        # Each source-ordered staging page owns its identities, facts and cursor.
+        # All work remains private until subsequent native semantics accept it.
+        self.db.commit()
+        staging = AssertionStaging(
+            self.db,
+            attempt_id=uuid4().hex,
+            frame=frame,
+            catalog_sha256=catalog.checkpoint_sha256(),
+            require_profiles=require_profiles,
+        )
+        staging.initialize()
+        staging_admission = 4 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 8192
+        while not staging.advance(byte_budget=staging_admission).done:
+            pass
         if correction:
             # Earlier native checks/staging remain entry-local, private work.
             # Each projection phase starts without inheriting that transaction.
