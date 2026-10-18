@@ -21,7 +21,7 @@ DOCUMENTATION_WORKFLOW = REPO_ROOT / ".github/workflows/documentation-check.yml"
 PROVIDER_QUALIFICATION_COMPOSE = REPO_ROOT / "tests/harness/provider-qualification.compose.yaml"
 MISE_LOCK = REPO_ROOT / "mise.lock"
 DATABASE_QUALIFICATION_SCRIPT = REPO_ROOT / "scripts/database_qualification.py"
-UPLOAD_ARTIFACT_USE = "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
+UPLOAD_ARTIFACT_USE = "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
 
 
 def test_artifact_uploads_use_one_pinned_node24_action() -> None:
