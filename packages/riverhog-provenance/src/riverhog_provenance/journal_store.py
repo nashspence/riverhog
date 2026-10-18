@@ -41,13 +41,17 @@ from ._correction_projection import CorrectionWork
 from ._correction_projection import install as install_correction_projection
 from ._correction_targets import CorrectionTargets
 from ._correction_targets import install as install_correction_targets
+from ._generic_semantics import GenericAtom, GenericSemantics
+from ._generic_semantics import install as install_generic_semantics
 from ._journal_prefix import install as install_journal_prefix
 from ._online_dag import OnlineDag
 from ._online_dag import install as install_online_dag
-from ._semantic_edge import SemanticEdge, SemanticEdgeSource
+from ._semantic_edge import SemanticEdge
 from ._semantic_edge import install as install_semantic_edges
 from ._semantic_finish import SemanticFinish
 from ._semantic_finish import install as install_semantic_finish
+from ._semantic_source import SemanticSource
+from ._semantic_source import install as install_semantic_source
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import ProvenanceValidationError
 from .graph import GraphValidation, _Validator, time_ns
@@ -472,7 +476,7 @@ class _Edges:
             kind=self.kind,
             run_id=store._dag_runs[self.kind],
             attempt_id=uuid4().hex,
-            source_binding=self.validator.edge_source,
+            source_binding=self.validator.semantic_source,
             assertion_id=row["assertion_id"],
             object_id=row["id"],
             source=source,
@@ -498,13 +502,27 @@ class _StoredValidator(_Validator):
         self.store, self.rows, self.frame = store, rows, frame
         self.catalog, self.journal_id, self.require_profiles = catalog, journal_id, require_profiles
         self.current_row: dict[str, Any] | None = None
-        self.edge_source = SemanticEdgeSource.from_frame(
+        self.semantic_source = SemanticSource.from_frame(
             frame, catalog_sha256=catalog.checkpoint_sha256(), require_profiles=require_profiles
         )
         self.objects = store.objects
         self.externals = _Map(store, "externals")
         self.profiles = _Map(store, "profiles")
         self.findings = _Findings(store)
+
+    def generic(self, value: Mapping[str, Any]) -> None:
+        self.store.db.commit()
+        work = GenericSemantics(
+            self.store.db,
+            attempt_id=uuid4().hex,
+            source_binding=self.semantic_source,
+            atom=GenericAtom.admit(value),
+            catalog=self.catalog,
+        )
+        work.initialize()
+        while not work.advance().done:
+            pass
+        work.result()
 
     def aggregates(self) -> tuple[Any, ...]:
         return (
@@ -623,7 +641,9 @@ class JournalStore:
             install_correction_targets(self.db)
             install_semantic_finish(self.db)
             install_assertion_staging(self.db)
+            install_semantic_source(self.db)
             install_semantic_edges(self.db)
+            install_generic_semantics(self.db)
             install_online_dag(self.db)
             self._dag_runs = {
                 "derivation": uuid4().hex,

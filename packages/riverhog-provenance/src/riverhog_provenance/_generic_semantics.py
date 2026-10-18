@@ -1,0 +1,1061 @@
+"""Private, source-fenced continuation for common assertion checks.
+
+The admitted row is one existing entry-bounded atom. Its immutable container index
+is prepared once outside transactions. Variable traversal frames and duplicate
+metadata keys live in indexed rows. Semantic outputs and progress commit together;
+an invalid row quarantines this attempt without publishing an accepted prefix.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import re
+import sqlite3
+from collections.abc import Iterator, Mapping, MutableSet
+from contextlib import closing
+from dataclasses import dataclass, replace
+from typing import Any
+
+from riverhog_canonical_json import canonical_json_bytes
+from riverhog_growth_contracts import (
+    COUNT,
+    OCTETS,
+    OCTETS_PER_COUNT,
+    SCALAR,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    declare_growth,
+)
+from riverhog_provenance_contracts import (
+    ContractCatalog,
+    canonical_document,
+    require_canonical_uuid_urn,
+)
+
+from ._journal_prefix import PrefixState
+from ._semantic_program import Frame, MemoryStack, Nodes, Program, Stack
+from ._semantic_source import SemanticSource
+from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+from .graph import _Validator
+
+ALGORITHM = "riverhog-generic-semantics/v1"
+MAX_STEPS = 64
+_HEADER_OCTETS = 2048
+_BINDING_OCTETS = 8192
+_FRAME_OCTETS = 512
+_DEFAULT_BYTES = 8 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
+_STAGES = {
+    "generic": 6,
+    "evidence": 3,
+    "identifier": 2,
+    "source": 2,
+    "profile": 1,
+    "filesystem": 6,
+    "principal": 3,
+    "stamp": 4,
+    "native": 5,
+    "interpretation": 2,
+    "typed": 1,
+}
+
+
+class StaleGenericSemantics(RuntimeError):
+    """The source, semantic subject, prefix, worker or proposal was replaced."""
+
+
+class GenericSemanticsCapacity(RuntimeError):
+    """The next existing atom requires more byte admission."""
+
+
+@dataclass(frozen=True)
+class GenericAtom:
+    encoded: bytes
+    sha256: str
+    nodes: Nodes
+
+    @classmethod
+    def admit(cls, row: Mapping[str, Any]) -> GenericAtom:
+        require_canonical_uuid_urn(row["assertion_id"])
+        require_canonical_uuid_urn(row["id"])
+        encoded = canonical_document(row)
+        if len(encoded) > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
+            raise ValueError("semantic row exceeds its owning entry envelope")
+        # The caller cannot mutate the admitted tree through its original row.
+        return cls(encoded, hashlib.sha256(encoded).hexdigest(), Nodes(json.loads(encoded)))
+
+
+@dataclass(frozen=True)
+class GenericState:
+    phase: str = "walk"
+    top: int | None = 0
+    serial: int = 1
+    version: int = 0
+    error_sha256: str | None = None
+    failure: str | None = None
+
+    @property
+    def done(self) -> bool:
+        return self.phase in {"done", "rejected"}
+
+    def to_json(self) -> str:
+        return canonical_json_bytes(
+            {
+                "phase": self.phase,
+                "top": None if self.top is None else str(self.top),
+                "serial": str(self.serial),
+                "version": str(self.version),
+                "error_sha256": self.error_sha256,
+                "failure": self.failure,
+            }
+        ).decode()
+
+    @classmethod
+    def from_json(cls, raw: str) -> GenericState:
+        try:
+            if type(raw) is not str or len(raw) > _HEADER_OCTETS:
+                raise ValueError("checkpoint envelope")
+            value = json.loads(raw)
+            if (
+                type(value) is not dict
+                or set(value) != {"phase", "top", "serial", "version", "error_sha256", "failure"}
+                or value["phase"]
+                not in {
+                    "walk",
+                    "keys",
+                    "outputs",
+                    "reject-frames",
+                    "reject-keys",
+                    "reject-outputs",
+                    "done",
+                    "rejected",
+                }
+            ):
+                raise ValueError("checkpoint shape")
+            for key in ("serial", "version", "top"):
+                item = value[key]
+                if key == "top" and item is None:
+                    continue
+                if type(item) is not str or re.fullmatch(r"0|[1-9][0-9]*", item) is None:
+                    raise ValueError("checkpoint cursor")
+            state = cls(
+                value["phase"],
+                None if value["top"] is None else int(value["top"]),
+                int(value["serial"]),
+                int(value["version"]),
+                value["error_sha256"],
+                value["failure"],
+            )
+            if state.serial < 1 or state.serial > 64 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
+                raise ValueError("entry-local frame allocation")
+            if state.top is not None and not 0 <= state.top < state.serial:
+                raise ValueError("stack cursor")
+            if (state.phase == "walk") != (state.top is not None):
+                raise ValueError("stack phase")
+            if state.phase.startswith("reject"):
+                if (
+                    type(state.error_sha256) is not str
+                    or re.fullmatch(r"[0-9a-f]{64}", state.error_sha256) is None
+                ):
+                    raise ValueError("rejection identity")
+                if type(state.failure) is not str or len(state.failure) > _FRAME_OCTETS:
+                    raise ValueError("retained failing frame")
+            elif state.error_sha256 is not None or state.failure is not None:
+                raise ValueError("unexpected rejection")
+            if state.to_json() != raw:
+                raise ValueError("noncanonical checkpoint")
+            return state
+        except (ValueError, TypeError, KeyError) as exc:
+            raise RuntimeError("corrupt generic semantic checkpoint") from exc
+
+
+def _encode_frame(frame: Frame) -> str:
+    return canonical_json_bytes(
+        {
+            "operation": frame.operation,
+            "node": str(frame.node),
+            "stage": str(frame.stage),
+            "cursor": str(frame.cursor),
+        }
+    ).decode()
+
+
+def _decode_frame(raw: str, nodes: Nodes) -> Frame:
+    try:
+        if type(raw) is not str or len(raw) > _FRAME_OCTETS:
+            raise ValueError("frame envelope")
+        value = json.loads(raw)
+        if type(value) is not dict or set(value) != {"operation", "node", "stage", "cursor"}:
+            raise ValueError("frame shape")
+        for key in ("node", "stage", "cursor"):
+            if type(value[key]) is not str or re.fullmatch(r"0|[1-9][0-9]*", value[key]) is None:
+                raise ValueError("frame cursor")
+        frame = Frame(
+            value["operation"], int(value["node"]), int(value["stage"]), int(value["cursor"])
+        )
+        if (
+            frame.operation not in _STAGES
+            or not 0 <= frame.stage <= _STAGES[frame.operation]
+            or not 0 <= frame.node < len(nodes.values)
+            or not 0 <= frame.cursor <= PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+        ):
+            raise ValueError("frame identity")
+        if _encode_frame(frame) != raw:
+            raise ValueError("noncanonical frame")
+        source = nodes.values[frame.node]
+        if type(source) is not dict:
+            raise ValueError("semantic frame does not identify an object")
+        arrays = {
+            "generic": {0: "evidence", 1: "identifiers", 2: "profiles", 3: "metadata"},
+            "filesystem": {
+                0: "identifiers",
+                1: "native_identifiers",
+                2: "principals",
+                3: "timestamps",
+            },
+            "native": {4: "interpretations"},
+        }
+        array = arrays.get(frame.operation, {}).get(frame.stage)
+        maximum = (
+            len(source.get(array, []))
+            if array is not None
+            else 4
+            if frame.operation == "filesystem" and frame.stage == 5
+            else 0
+        )
+        if frame.cursor > maximum:
+            raise ValueError("semantic cursor differs from its source collection")
+        return frame
+    except (ValueError, TypeError, KeyError) as exc:
+        raise RuntimeError("corrupt generic semantic frame") from exc
+
+
+def _error_identity(error: ValueError) -> str:
+    return hashlib.sha256(
+        canonical_json_bytes(
+            {"type": type(error).__module__ + "." + type(error).__qualname__, "message": str(error)}
+        )
+    ).hexdigest()
+
+
+def _declaration() -> Declaration:
+    budget = Expression("dimension", name="step_budget")
+
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    def linear(fixed: int, multiplier: int) -> Expression:
+        return Expression(
+            "sum",
+            terms=(
+                count(fixed),
+                Expression(
+                    "product",
+                    terms=(
+                        Expression("constant", value=multiplier, unit=SCALAR),
+                        budget,
+                    ),
+                ),
+            ),
+        )
+
+    statements, returned = linear(64, 16), linear(32, 4)
+    width = Expression("dimension", name="metadata_row_octets")
+    return Declaration(
+        id="riverhog-provenance.sqlite-generic-semantics.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance._generic_semantics.GenericSemantics.advance",),
+        scope="native-sqlite-source-fenced-common-semantic-unit",
+        starts_at="load the exact admitted row, source, accepted prefix and common semantic cursor",
+        ends_at="commit bounded native checks or rejection undo/reclamation with their checkpoint",
+        dimensions=(
+            Dimension("retained_rows", COUNT, "Rows retained in the owned private workspace."),
+            Dimension("step_budget", COUNT, "One to 64 control/reference or cleanup steps."),
+            Dimension(
+                "byte_budget", OCTETS, "Admission for variable key/output atoms and control work."
+            ),
+            Dimension(
+                "metadata_row_octets",
+                OCTETS_PER_COUNT,
+                "Actual scalar/control column envelope including identifiers and headers.",
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                statements,
+                "Indexed frame/reference/key work, checkpoint fences and output undo.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                returned,
+                "Each step visits a fixed number of indexed control/reference records.",
+            ),
+            Bound(
+                "changed_rows",
+                COUNT,
+                "upper",
+                linear(16, 8),
+                "Frame changes, semantic outputs/undo, key retirement and one checkpoint.",
+            ),
+            Bound(
+                "returned_metadata_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        returned,
+                        width,
+                    ),
+                ),
+                "Returned columns retain their actual scalar envelope.",
+            ),
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        Expression(
+                            "product",
+                            terms=(
+                                Expression("constant", value=2, unit=SCALAR),
+                                Expression("dimension", name="byte_budget"),
+                            ),
+                        ),
+                        Expression("product", terms=(statements, width)),
+                    ),
+                ),
+                "Admitted key/output arguments and actual control scalar widths.",
+            ),
+            Bound(
+                "adjacency_rows",
+                COUNT,
+                "equal",
+                count(0),
+                "Common checks do not traverse graph adjacency.",
+            ),
+            Bound(
+                "source_payload_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "Covering identity/type and subject indexes return no assertion/frame payload.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        linear(8192, 2048),
+                        Expression(
+                            "product",
+                            terms=(
+                                Expression("constant", value=512, unit=SCALAR),
+                                linear(1, 1),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                count(2),
+                                                Expression("dimension", name="retained_rows"),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Bounded indexed checks; B-tree byte comparisons stay separate.",
+            ),
+        ),
+        conditions=(
+            "The owner retains the exact immutable admitted row/source, sealed catalog and modes.",
+            "Covering active-object/subject indexes and indexed variable state are installed.",
+            "The source admission index is constructed once outside checkpoint transactions.",
+            "The metadata envelope accounts for actual identifier, cursor and control widths.",
+            "Close owner transactions before planning; this phase owns its atomic unit.",
+        ),
+        invariants=(
+            "Original common check order is shared with the native validator.",
+            "Outputs, undo ownership and progress share the exact source/prefix fence.",
+            "Rejection restores new outputs and reclaims variable state in bounded steps.",
+            "Restoration loads retained progress; it never initializes that operation again.",
+            "This private phase publishes no accepted prefix and releases no source custody.",
+        ),
+        limitations=(
+            "Admission/indexing and existing local schema/byte/hash atoms are separate delegates.",
+            "Row-specific, graph and post-row checks remain separate semantic phases.",
+            "Allocation, B-tree byte comparisons, physical I/O, waits and fsync stay separate.",
+            "Whole-session recovery needs an owner-retained crash-safe workspace and source.",
+        ),
+    )
+
+
+def install(db: sqlite3.Connection) -> None:
+    db.execute(
+        "CREATE TABLE journal_generic_semantics(singleton INTEGER PRIMARY KEY CHECK(singleton=1), "
+        "algorithm TEXT NOT NULL, attempt_id TEXT NOT NULL, binding BLOB NOT NULL, "
+        "prefix_attempt TEXT NOT NULL, prefix_binding BLOB NOT NULL, prefix TEXT NOT NULL, "
+        "checkpoint TEXT NOT NULL)"
+    ).close()
+    db.execute(
+        "CREATE TABLE generic_semantic_frames(attempt_id TEXT, frame_id INTEGER, parent INTEGER, "
+        "value TEXT NOT NULL, PRIMARY KEY(attempt_id,frame_id))"
+    ).close()
+    db.execute(
+        "CREATE TABLE generic_semantic_keys(id INTEGER PRIMARY KEY, attempt_id TEXT, "
+        "key BLOB NOT NULL, UNIQUE(attempt_id,key))"
+    ).close()
+    db.execute(
+        "CREATE INDEX generic_semantic_cleanup ON generic_semantic_keys(attempt_id,id)"
+    ).close()
+    db.execute(
+        "CREATE TABLE generic_semantic_outputs(id INTEGER PRIMARY KEY, attempt_id TEXT, "
+        "name TEXT NOT NULL,key BLOB NOT NULL,UNIQUE(attempt_id,name,key))"
+    ).close()
+    db.execute(
+        "CREATE INDEX generic_semantic_output_cleanup ON generic_semantic_outputs(attempt_id,id)"
+    ).close()
+
+
+class _Meter:
+    def __init__(self, budget: int) -> None:
+        self.budget, self.used = budget, 0
+
+    def claim(self, octets: int) -> None:
+        if self.used + octets > self.budget:
+            raise GenericSemanticsCapacity("byte budget does not admit the next semantic atom")
+        self.used += octets
+
+
+class _Objects(Mapping[str, dict[str, Any]]):
+    def __init__(self, owner: GenericSemantics, meter: _Meter) -> None:
+        self.owner, self.meter = owner, meter
+
+    def __contains__(self, key: object) -> bool:
+        return (
+            self.owner._one(
+                "SELECT 1 FROM assertions INDEXED BY semantic_reference_type "
+                "WHERE object_id=? AND active=1",
+                (key,),
+            )
+            is not None
+        )
+
+    def __getitem__(self, key: str) -> dict[str, Any]:
+        row = self.owner._one(
+            "SELECT object_id,type FROM assertions INDEXED BY semantic_reference_type "
+            "WHERE object_id=? AND active=1",
+            (key,),
+        )
+        if row is None:
+            raise KeyError(key)
+        self.meter.claim(sum(len(value.encode()) for value in row))
+        # Common checks consume reference identity/type only. Row-specific
+        # semantics retain their own full referent access after this phase.
+        return {"id": row[0], "type": row[1]}
+
+    def __iter__(self) -> Iterator[str]:
+        raise RuntimeError("semantic units do not enumerate the active view")
+
+    def __len__(self) -> int:
+        raise RuntimeError("semantic units do not count the active view")
+
+
+class _Output(dict[Any, Any]):
+    def __init__(self, name: str, meter: _Meter, writes: dict[tuple[str, bytes], bytes]) -> None:
+        self.name, self.meter, self.writes = name, meter, writes
+
+    def __setitem__(self, key: bytes, value: Any) -> None:
+        encoded = canonical_document(value)
+        if key != encoded:
+            raise RuntimeError("common semantic output differs from its immutable identity")
+        self.meter.claim(4 * len(key) + len(encoded))
+        self.writes[self.name, key] = encoded
+
+
+class _Keys(MutableSet[bytes]):
+    def __init__(self, owner: GenericSemantics, meter: _Meter) -> None:
+        self.owner, self.meter = owner, meter
+        self.pending: set[bytes] = set()
+
+    def __contains__(self, value: object) -> bool:
+        if not isinstance(value, bytes):
+            return False
+        self.meter.claim(len(value))
+        return (
+            value in self.pending
+            or self.owner._one(
+                "SELECT 1 FROM generic_semantic_keys WHERE attempt_id=? AND key=?",
+                (self.owner.attempt_id, value),
+            )
+            is not None
+        )
+
+    def add(self, value: bytes) -> None:
+        self.meter.claim(len(value))
+        self.pending.add(value)
+
+    def discard(self, value: bytes) -> None:
+        raise RuntimeError("semantic key cleanup owns bounded removal")
+
+    def __iter__(self) -> Iterator[bytes]:
+        raise RuntimeError("semantic units do not enumerate metadata keys")
+
+    def __len__(self) -> int:
+        raise RuntimeError("semantic units do not count metadata keys")
+
+
+class _Stack:
+    def __init__(self, owner: GenericSemantics, state: GenericState, meter: _Meter) -> None:
+        self.owner, self.top, self.serial, self.meter = owner, state.top, state.serial, meter
+        self.cache: dict[int, tuple[int | None, Frame]] = {}
+        self.changes: dict[int, tuple[int | None, Frame] | None] = {}
+
+    def _row(self, identity: int) -> tuple[int | None, Frame]:
+        if identity not in self.cache:
+            row = self.owner._one(
+                "SELECT parent,substr(value,1,?) FROM generic_semantic_frames "
+                "WHERE attempt_id=? AND frame_id=?",
+                (_FRAME_OCTETS + 1, self.owner.attempt_id, identity),
+            )
+            if row is None or row[0] is not None and not 0 <= row[0] < identity:
+                raise RuntimeError("missing or invalid generic semantic stack frame")
+            self.cache[identity] = row[0], _decode_frame(row[1], self.owner.atom.nodes)
+        return self.cache[identity]
+
+    def peek(self) -> Frame | None:
+        return None if self.top is None else self._row(self.top)[1]
+
+    def replace(self, frame: Frame) -> None:
+        if self.top is None:
+            raise RuntimeError("empty semantic stack")
+        self.meter.claim(_FRAME_OCTETS)
+        row = self._row(self.top)[0], frame
+        self.cache[self.top] = self.changes[self.top] = row
+
+    def push(self, operation: str, node: int) -> None:
+        self.meter.claim(_FRAME_OCTETS)
+        identity = self.serial
+        self.serial += 1
+        row = self.top, Frame(operation, node)
+        self.cache[identity] = self.changes[identity] = row
+        self.top = identity
+
+    def pop(self) -> None:
+        if self.top is None:
+            raise RuntimeError("empty semantic stack")
+        self.meter.claim(_FRAME_OCTETS)
+        identity, self.top = self.top, self._row(self.top)[0]
+        self.changes[identity] = None
+
+
+@dataclass(frozen=True)
+class GenericBatch:
+    binding: bytes
+    attempt_id: str
+    prefix: tuple[str, bytes, str]
+    before_json: str
+    after: GenericState
+    writes: tuple[tuple[str, tuple[Any, ...]], ...]
+
+
+class GenericSemantics:
+    def __init__(
+        self,
+        db: sqlite3.Connection,
+        *,
+        attempt_id: str,
+        source_binding: SemanticSource,
+        atom: GenericAtom,
+        catalog: ContractCatalog,
+    ) -> None:
+        if type(attempt_id) is not str or not attempt_id:
+            raise ValueError("an explicit generic semantic attempt is required")
+        if type(source_binding) is not SemanticSource or type(atom) is not GenericAtom:
+            raise ValueError("exact admitted semantic source and row are required")
+        if catalog.checkpoint_sha256() != source_binding.catalog_sha256:
+            raise StaleGenericSemantics("semantic catalog differs from its execution pin")
+        self.db, self.attempt_id, self.source, self.atom, self.catalog = (
+            db,
+            attempt_id,
+            source_binding,
+            atom,
+            catalog,
+        )
+        row = atom.nodes.values[0]
+        self.assertion_id, self.object_id, self.kind = row["assertion_id"], row["id"], row["type"]
+        self.binding = canonical_json_bytes(
+            {
+                "algorithm": ALGORITHM,
+                "source_sha256": source_binding.sha256,
+                "catalog_sha256": source_binding.catalog_sha256,
+                "require_profiles": source_binding.require_profiles,
+                "assertion_id": self.assertion_id,
+                "object_id": self.object_id,
+                "kind": self.kind,
+                "row_sha256": atom.sha256,
+            }
+        )
+
+    def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
+        with closing(self.db.execute(sql, parameters)) as rows:
+            return rows.fetchone()
+
+    def _detached(self) -> None:
+        if self.db.in_transaction:
+            raise RuntimeError("generic semantic units require a closed owner transaction")
+
+    def _prefix(self) -> tuple[str, bytes, str]:
+        row = self._one(
+            "SELECT substr(attempt_id,1,?),substr(binding,1,?),substr(checkpoint,1,?) "
+            "FROM journal_prefix WHERE singleton=1",
+            (_HEADER_OCTETS + 1, _BINDING_OCTETS + 1, _HEADER_OCTETS + 1),
+        )
+        if (
+            row is None
+            or type(row[0]) is not str
+            or not row[0]
+            or len(row[0]) > _HEADER_OCTETS
+            or type(row[1]) is not bytes
+            or len(row[1]) > _BINDING_OCTETS
+        ):
+            raise RuntimeError("missing or invalid semantic accepted-prefix manifest")
+        prefix = PrefixState.from_json(row[2])
+        if str(prefix.frame_count) != self.source.sequence or prefix.journal_id not in (
+            None,
+            self.source.journal_id,
+        ):
+            raise StaleGenericSemantics("semantic frame differs from its accepted prefix")
+        return row[0], row[1], row[2]
+
+    def _subject(self) -> None:
+        row = self._one(
+            "SELECT a.object_id,a.type,a.active FROM changes c LEFT JOIN assertions a "
+            "INDEXED BY semantic_subject ON a.assertion_id=c.assertion_id "
+            "WHERE c.assertion_id=?",
+            (self.assertion_id,),
+        )
+        if row != (self.object_id, self.kind, 1):
+            raise StaleGenericSemantics("common semantic subject is missing or changed")
+        if self.catalog.checkpoint_sha256() != self.source.catalog_sha256:
+            raise StaleGenericSemantics("semantic catalog was replaced")
+
+    def initialize(self) -> GenericState:
+        self._detached()
+        self.db.execute("BEGIN IMMEDIATE").close()
+        try:
+            prefix = self._prefix()
+            self._subject()
+            old = self._one(
+                "SELECT algorithm,attempt_id,substr(checkpoint,1,?) "
+                "FROM journal_generic_semantics WHERE singleton=1",
+                (_HEADER_OCTETS + 1,),
+            )
+            version = 0
+            if old is not None:
+                if old[0] != ALGORITHM:
+                    raise RuntimeError("unknown common semantic algorithm")
+                prior = GenericState.from_json(old[2])
+                if old[1] == self.attempt_id or prior.phase != "done":
+                    raise StaleGenericSemantics("common semantic attempt is already bound")
+                version = prior.version + 1
+            if (
+                self._one("SELECT 1 FROM generic_semantic_frames LIMIT 1") is not None
+                or self._one("SELECT 1 FROM generic_semantic_keys LIMIT 1") is not None
+                or self._one("SELECT 1 FROM generic_semantic_outputs LIMIT 1") is not None
+            ):
+                raise RuntimeError("common semantic state was not reclaimed")
+            state = GenericState(version=version)
+            self.db.execute(
+                "INSERT INTO journal_generic_semantics VALUES (1,?,?,?,?,?,?,?) "
+                "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
+                "attempt_id=excluded.attempt_id,binding=excluded.binding, "
+                "prefix_attempt=excluded.prefix_attempt,prefix_binding=excluded.prefix_binding, "
+                "prefix=excluded.prefix,checkpoint=excluded.checkpoint",
+                (ALGORITHM, self.attempt_id, self.binding, *prefix, state.to_json()),
+            ).close()
+            self.db.execute(
+                "INSERT INTO generic_semantic_frames VALUES (?,?,?,?)",
+                (self.attempt_id, 0, None, _encode_frame(Frame("generic", 0))),
+            ).close()
+            self.db.commit()
+        except BaseException:
+            self.db.rollback()
+            raise
+        return state
+
+    def _load(self) -> tuple[GenericState, tuple[str, bytes, str]]:
+        self._detached()
+        row = self._one(
+            "SELECT algorithm,substr(prefix_attempt,1,?),substr(prefix_binding,1,?), "
+            "substr(prefix,1,?),substr(checkpoint,1,?) FROM journal_generic_semantics "
+            "WHERE singleton=1 AND attempt_id=? AND binding=?",
+            (
+                _HEADER_OCTETS + 1,
+                _BINDING_OCTETS + 1,
+                _HEADER_OCTETS + 1,
+                _HEADER_OCTETS + 1,
+                self.attempt_id,
+                self.binding,
+            ),
+        )
+        if row is None:
+            raise StaleGenericSemantics("common semantic inputs were superseded")
+        if row[0] != ALGORITHM:
+            raise RuntimeError("unknown common semantic algorithm")
+        prefix = self._prefix()
+        if row[1:4] != prefix:
+            raise StaleGenericSemantics("accepted prefix changed during common semantics")
+        self._subject()
+        return GenericState.from_json(row[4]), prefix
+
+    def load(self) -> GenericState:
+        return self._load()[0]
+
+    def _program(
+        self, stack: Stack, meter: _Meter, keys: _Keys, outputs: dict[tuple[str, bytes], bytes]
+    ) -> Program:
+        validator = object.__new__(_Validator)
+        validator.catalog, validator.journal_id = self.catalog, self.source.journal_id
+        validator.require_profiles = self.source.require_profiles
+        validator.objects = _Objects(self, meter)
+        validator.externals = _Output("externals", meter, outputs)
+        validator.profiles = _Output("profiles", meter, outputs)
+        return Program(validator, self.atom.nodes, stack, keys)
+
+    def prepare(
+        self, *, step_budget: int = MAX_STEPS, byte_budget: int = _DEFAULT_BYTES
+    ) -> GenericBatch:
+        if type(step_budget) is not int or not 1 <= step_budget <= MAX_STEPS:
+            raise ValueError("semantic step budget must be one to 64")
+        if type(byte_budget) is not int or byte_budget < 16384:
+            raise ValueError("semantic byte budget must admit fixed control metadata")
+        state, prefix = self._load()
+        after = state
+        writes: list[tuple[str, tuple[Any, ...]]] = []
+        meter = _Meter(byte_budget)
+        meter.claim(
+            8192
+            + 2
+            * (
+                len(self.binding)
+                + sum(
+                    len(value.encode()) if isinstance(value, str) else len(value)
+                    for value in prefix
+                )
+            )
+        )
+        if state.phase == "walk":
+            stack = _Stack(self, state, meter)
+            outputs: dict[tuple[str, bytes], bytes] = {}
+            keys = _Keys(self, meter)
+            program = self._program(stack, meter, keys, outputs)
+            phase, error_hash, failure = "walk", None, None
+            for completed in range(step_budget):
+                if stack.peek() is None:
+                    break
+                snapshot = (
+                    stack.top,
+                    stack.serial,
+                    dict(stack.cache),
+                    dict(stack.changes),
+                    set(keys.pending),
+                    dict(outputs),
+                )
+                try:
+                    program.step()
+                except (GenericSemanticsCapacity, ValueError) as error:
+                    stack.top, stack.serial, stack.cache, stack.changes = snapshot[:4]
+                    keys.pending.clear()
+                    keys.pending.update(snapshot[4])
+                    outputs.clear()
+                    outputs.update(snapshot[5])
+                    if isinstance(error, GenericSemanticsCapacity):
+                        if completed == 0:
+                            raise
+                        break
+                    failed_frame = stack.peek()
+                    if failed_frame is None:
+                        raise RuntimeError("semantic rejection lost its current atom") from error
+                    phase, error_hash = "reject-frames", _error_identity(error)
+                    failure = _encode_frame(failed_frame)
+                    break
+            if phase == "walk" and stack.top is None:
+                phase = "keys"
+            after = replace(
+                state,
+                phase=phase,
+                top=stack.top if phase == "walk" else None,
+                serial=stack.serial,
+                error_sha256=error_hash,
+                failure=failure,
+                version=state.version + 1,
+            )
+            for identity, item in stack.changes.items():
+                if item is None:
+                    writes.append(
+                        (
+                            "DELETE FROM generic_semantic_frames WHERE attempt_id=? AND frame_id=?",
+                            (self.attempt_id, identity),
+                        )
+                    )
+                else:
+                    parent, frame = item
+                    writes.append(
+                        (
+                            "INSERT INTO generic_semantic_frames VALUES (?,?,?,?) "
+                            "ON CONFLICT(attempt_id,frame_id) DO UPDATE SET "
+                            "parent=excluded.parent,value=excluded.value",
+                            (self.attempt_id, identity, parent, _encode_frame(frame)),
+                        )
+                    )
+            for key in keys.pending:
+                writes.append(
+                    (
+                        "INSERT INTO generic_semantic_keys(attempt_id,key) VALUES (?,?)",
+                        (self.attempt_id, key),
+                    )
+                )
+            for (name, key), value in outputs.items():
+                writes.append(("@output", (name, key, value)))
+        elif state.phase == "reject-frames":
+            with closing(
+                self.db.execute(
+                    "SELECT frame_id FROM generic_semantic_frames WHERE attempt_id=? "
+                    "ORDER BY frame_id LIMIT ?",
+                    (self.attempt_id, step_budget + 1),
+                )
+            ) as rows:
+                values = rows.fetchall()
+            for (identity,) in values[:step_budget]:
+                try:
+                    meter.claim(_FRAME_OCTETS)
+                except GenericSemanticsCapacity:
+                    if not writes:
+                        raise
+                    break
+                writes.append(
+                    (
+                        "DELETE FROM generic_semantic_frames WHERE attempt_id=? AND frame_id=?",
+                        (self.attempt_id, identity),
+                    )
+                )
+            after = replace(
+                state,
+                phase="reject-keys" if len(writes) == len(values) else "reject-frames",
+                version=state.version + 1,
+            )
+        elif state.phase in {"keys", "reject-keys"}:
+            with closing(
+                self.db.execute(
+                    "SELECT id,length(key) FROM generic_semantic_keys "
+                    "INDEXED BY generic_semantic_cleanup WHERE attempt_id=? ORDER BY id LIMIT ?",
+                    (self.attempt_id, step_budget + 1),
+                )
+            ) as rows:
+                values = rows.fetchall()
+            for identity, length in values[:step_budget]:
+                try:
+                    meter.claim(length + 512)
+                except GenericSemanticsCapacity:
+                    if not writes:
+                        raise
+                    break
+                writes.append(
+                    (
+                        "DELETE FROM generic_semantic_keys WHERE attempt_id=? AND id=?",
+                        (self.attempt_id, identity),
+                    )
+                )
+            phase = (
+                ("outputs" if state.phase == "keys" else "reject-outputs")
+                if (len(writes) == len(values))
+                else state.phase
+            )
+            after = replace(state, phase=phase, version=state.version + 1)
+        elif state.phase in {"outputs", "reject-outputs"}:
+            with closing(
+                self.db.execute(
+                    "SELECT id,length(key) FROM generic_semantic_outputs "
+                    "INDEXED BY generic_semantic_output_cleanup WHERE attempt_id=? "
+                    "ORDER BY id LIMIT ?",
+                    (self.attempt_id, step_budget + 1),
+                )
+            ) as rows:
+                values = rows.fetchall()
+            for identity, length in values[:step_budget]:
+                try:
+                    meter.claim((5 if state.phase == "reject-outputs" else 2) * length + 512)
+                except GenericSemanticsCapacity:
+                    if not writes:
+                        raise
+                    break
+                writes.append(
+                    (
+                        "@rollback-output" if state.phase == "reject-outputs" else "@retire-output",
+                        (identity,),
+                    )
+                )
+            phase = (
+                ("done" if state.phase == "outputs" else "rejected")
+                if (len(writes) == len(values))
+                else state.phase
+            )
+            after = replace(state, phase=phase, version=state.version + 1)
+        return GenericBatch(
+            self.binding, self.attempt_id, prefix, state.to_json(), after, tuple(writes)
+        )
+
+    def commit(self, batch: GenericBatch) -> GenericState:
+        self._detached()
+        if (batch.binding, batch.attempt_id) != (self.binding, self.attempt_id):
+            raise StaleGenericSemantics("common semantic proposal belongs to another input")
+        self.db.execute("BEGIN IMMEDIATE").close()
+        try:
+            if self._prefix() != batch.prefix:
+                raise StaleGenericSemantics("accepted prefix changed before semantic commit")
+            self._subject()
+            if batch.after == GenericState.from_json(batch.before_json):
+                if batch.writes:
+                    raise RuntimeError("completed semantic proposal contains writes")
+                row = self._one(
+                    "SELECT 1 FROM journal_generic_semantics WHERE singleton=1 "
+                    "AND algorithm=? AND attempt_id=? AND binding=? AND prefix_attempt=? "
+                    "AND prefix_binding=? AND prefix=? AND checkpoint=?",
+                    (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before_json),
+                )
+                if row is None:
+                    raise StaleGenericSemantics("finished common semantic worker was replaced")
+                self.db.commit()
+                return batch.after
+            with closing(
+                self.db.execute(
+                    "UPDATE journal_generic_semantics SET checkpoint=? WHERE singleton=1 "
+                    "AND algorithm=? AND attempt_id=? AND binding=? AND prefix_attempt=? "
+                    "AND prefix_binding=? AND prefix=? AND checkpoint=?",
+                    (
+                        batch.after.to_json(),
+                        ALGORITHM,
+                        self.attempt_id,
+                        self.binding,
+                        *batch.prefix,
+                        batch.before_json,
+                    ),
+                )
+            ) as cursor:
+                if cursor.rowcount != 1:
+                    raise StaleGenericSemantics("common semantic checkpoint changed")
+            for sql, parameters in batch.writes:
+                if sql == "@output":
+                    name, key, value = parameters
+                    with closing(
+                        self.db.execute(
+                            "INSERT INTO maps VALUES (?,?,?) ON CONFLICT(name,key) DO NOTHING",
+                            parameters,
+                        )
+                    ) as cursor:
+                        inserted = cursor.rowcount
+                    if inserted:
+                        self.db.execute(
+                            "INSERT INTO generic_semantic_outputs(attempt_id,name,key) "
+                            "VALUES (?,?,?)",
+                            (self.attempt_id, name, key),
+                        ).close()
+                    elif (
+                        self._one(
+                            "SELECT 1 FROM maps WHERE name=? AND key=? AND value=?",
+                            (name, key, value),
+                        )
+                        is None
+                    ):
+                        raise RuntimeError("retained semantic output differs from its identity")
+                elif sql in {"@rollback-output", "@retire-output"}:
+                    if sql == "@rollback-output":
+                        with closing(
+                            self.db.execute(
+                                "DELETE FROM maps WHERE (name,key)=(SELECT name,key "
+                                "FROM generic_semantic_outputs WHERE id=? AND attempt_id=?)",
+                                (*parameters, self.attempt_id),
+                            )
+                        ) as cursor:
+                            if cursor.rowcount != 1:
+                                raise RuntimeError("semantic undo no longer owns its output")
+                    with closing(
+                        self.db.execute(
+                            "DELETE FROM generic_semantic_outputs WHERE id=? AND attempt_id=?",
+                            (*parameters, self.attempt_id),
+                        )
+                    ) as cursor:
+                        if cursor.rowcount != 1:
+                            raise RuntimeError("semantic output reclamation lost its row")
+                else:
+                    self.db.execute(sql, parameters).close()
+            self.db.commit()
+        except BaseException:
+            self.db.rollback()
+            raise
+        return batch.after
+
+    @declare_growth(_declaration())
+    def advance(
+        self, *, step_budget: int = MAX_STEPS, byte_budget: int = _DEFAULT_BYTES
+    ) -> GenericState:
+        return self.commit(self.prepare(step_budget=step_budget, byte_budget=byte_budget))
+
+    def result(self) -> None:
+        state, _prefix = self._load()
+        if not state.done:
+            raise RuntimeError("common semantics remain quarantined")
+        if (
+            self._one(
+                "SELECT 1 FROM generic_semantic_frames WHERE attempt_id=? LIMIT 1",
+                (self.attempt_id,),
+            )
+            is not None
+            or self._one(
+                "SELECT 1 FROM generic_semantic_keys WHERE attempt_id=? LIMIT 1", (self.attempt_id,)
+            )
+            is not None
+            or self._one(
+                "SELECT 1 FROM generic_semantic_outputs WHERE attempt_id=? LIMIT 1",
+                (self.attempt_id,),
+            )
+            is not None
+        ):
+            raise RuntimeError("common semantic completion retains pending obligations")
+        if state.phase == "rejected":
+            meter = _Meter(8 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 8192)
+            if state.failure is None:
+                raise RuntimeError("semantic rejection lost its failing frame")
+            frame = _decode_frame(state.failure, self.atom.nodes)
+            stack = MemoryStack(frame.operation)
+            stack.frames = [frame]
+            keys = _Keys(self, meter)
+            if frame.operation == "generic" and frame.stage == 3:
+                value = self.atom.nodes.values[frame.node]["metadata"][frame.cursor]
+                keys.pending.add(Program.metadata_key(value))
+            program = self._program(stack, meter, keys, {})
+            try:
+                program.step()
+            except ValueError as error:
+                if _error_identity(error) != state.error_sha256:
+                    raise RuntimeError(
+                        "retained semantic rejection differs from its atom"
+                    ) from error
+                raise
+            raise RuntimeError("retained semantic rejection no longer fails")

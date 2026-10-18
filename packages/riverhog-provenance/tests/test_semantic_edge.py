@@ -24,9 +24,9 @@ from riverhog_provenance._online_dag import OnlineDag
 from riverhog_provenance._semantic_edge import (
     EdgeState,
     SemanticEdge,
-    SemanticEdgeSource,
     StaleSemanticEdge,
 )
+from riverhog_provenance._semantic_source import SemanticSource
 from riverhog_provenance.constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from riverhog_provenance.errors import ProvenanceValidationError
 from riverhog_provenance.journal import JournalFrame
@@ -46,7 +46,7 @@ def connect(path, **options):
 
 
 def descriptor(**options):
-    return SemanticEdgeSource(
+    return SemanticSource(
         **{
             "sha256": "a" * 64,
             "sequence": "1",
@@ -405,7 +405,8 @@ def position(current, phase, *, budget=1):
 
 CRASH_PROGRAM = r"""
 import os,sqlite3,sys
-from riverhog_provenance._semantic_edge import SemanticEdge,SemanticEdgeSource
+from riverhog_provenance._semantic_edge import SemanticEdge
+from riverhog_provenance._semantic_source import SemanticSource
 class CrashConnection(sqlite3.Connection):
     armed=False
     def execute(self,sql,parameters=()):
@@ -425,7 +426,7 @@ db.execute('PRAGMA synchronous=FULL').close()
 run=db.execute("SELECT run_id FROM dag_runs WHERE kind='derivation'").fetchone()[0]
 def identity(n): return f'urn:uuid:00000000-0000-4000-8000-{n:012x}'
 current=SemanticEdge(db,kind='derivation',run_id=run,attempt_id='semantic-attempt',
-    source_binding=SemanticEdgeSource('a'*64,'1',identity(2),'b'*64,False),
+    source_binding=SemanticSource('a'*64,'1',identity(2),'b'*64,False),
     assertion_id=identity(10),object_id=identity(11),source=identity(2000),target=identity(3000))
 batch=current.prepare(row_budget=1)
 if sys.argv[2]=='prepared': os._exit(73)
@@ -618,7 +619,7 @@ class WorkConnection(sqlite3.Connection):
                     plan,
                 )
                 if sql.startswith("SELECT a.object_id,a.type,a.active FROM changes"):
-                    assert "COVERING INDEX semantic_edge_subject" in plan, plan
+                    assert "COVERING INDEX semantic_subject" in plan, plan
 
 
 def seeded(db, count, cycle):

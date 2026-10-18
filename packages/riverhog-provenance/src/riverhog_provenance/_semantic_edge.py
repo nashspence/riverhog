@@ -13,7 +13,7 @@ import re
 import sqlite3
 from contextlib import closing
 from dataclasses import dataclass, replace
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import (
@@ -31,11 +31,8 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from ._journal_prefix import PrefixState
 from ._online_dag import OnlineDag, _Plan, _Snapshot, _Work
-from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+from ._semantic_source import SemanticSource
 from .errors import ProvenanceValidationError
-
-if TYPE_CHECKING:
-    from .journal import JournalFrame
 
 ALGORITHM = "riverhog-semantic-edge/v1"
 _HEADER_OCTETS = 2048
@@ -44,40 +41,6 @@ _BINDING_OCTETS = 8192
 
 class StaleSemanticEdge(RuntimeError):
     """The exact semantic input, prefix, graph run or operation was replaced."""
-
-
-@dataclass(frozen=True)
-class SemanticEdgeSource:
-    sha256: str
-    sequence: str
-    journal_id: str
-    catalog_sha256: str
-    require_profiles: bool
-
-    def __post_init__(self) -> None:
-        for digest in (self.sha256, self.catalog_sha256):
-            if type(digest) is not str or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
-                raise ValueError("an exact semantic source/catalog identity is required")
-        if type(self.sequence) is not str or re.fullmatch(r"0|[1-9][0-9]*", self.sequence) is None:
-            raise ValueError("an exact semantic source sequence is required")
-        require_canonical_uuid_urn(self.journal_id)
-        if type(self.require_profiles) is not bool:
-            raise ValueError("an exact profile mode is required")
-
-    @classmethod
-    def from_frame(
-        cls, frame: JournalFrame, *, catalog_sha256: str, require_profiles: bool
-    ) -> SemanticEdgeSource:
-        if len(frame.json_bytes) > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
-            raise ValueError("semantic source exceeds its owning entry envelope")
-        document = frame.document
-        return cls(
-            frame.sha256,
-            document["sequence"],
-            document["journal_id"],
-            catalog_sha256,
-            require_profiles,
-        )
 
 
 @dataclass(frozen=True)
@@ -130,9 +93,6 @@ def install(db: sqlite3.Connection) -> None:
         "CREATE TABLE journal_semantic_edges(kind TEXT PRIMARY KEY, algorithm TEXT NOT NULL, "
         "attempt_id TEXT NOT NULL, binding BLOB NOT NULL, prefix_attempt TEXT NOT NULL, "
         "prefix_binding BLOB NOT NULL, prefix TEXT NOT NULL, checkpoint TEXT NOT NULL)"
-    ).close()
-    db.execute(
-        "CREATE INDEX semantic_edge_subject ON assertions(assertion_id,object_id,type,active)"
     ).close()
 
 
@@ -276,7 +236,7 @@ class SemanticEdge:
         kind: str,
         run_id: str,
         attempt_id: str,
-        source_binding: SemanticEdgeSource,
+        source_binding: SemanticSource,
         assertion_id: str,
         object_id: str,
         source: str,
@@ -284,7 +244,7 @@ class SemanticEdge:
     ) -> None:
         if type(attempt_id) is not str or not attempt_id:
             raise ValueError("an explicit semantic graph attempt is required")
-        if type(source_binding) is not SemanticEdgeSource:
+        if type(source_binding) is not SemanticSource:
             raise ValueError("an exact semantic source descriptor is required")
         for identity in (assertion_id, object_id, source, target):
             require_canonical_uuid_urn(identity)
@@ -346,7 +306,7 @@ class SemanticEdge:
     def _subject(self) -> None:
         row = self._one(
             "SELECT a.object_id,a.type,a.active FROM changes c LEFT JOIN assertions a "
-            "INDEXED BY semantic_edge_subject "
+            "INDEXED BY semantic_subject "
             "ON a.assertion_id=c.assertion_id WHERE c.assertion_id=?",
             (self.assertion_id,),
         )

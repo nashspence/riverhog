@@ -27,7 +27,7 @@ from riverhog_provenance_contracts import (
 
 from .common import fingerprint
 from .constants import PRIMARY_CONTENT_CATEGORY
-from .errors import ProvenanceValidationError, UnresolvedContractError
+from .errors import ProvenanceValidationError
 
 ENTITY_TYPES = frozenset(
     {"artifact", "occurrence", "state", "context", "observation", "reported_description"}
@@ -245,49 +245,19 @@ class _Validator:
         return None
 
     def profile(self, value: Mapping[str, Any]) -> None:
-        if not self.catalog.validate_profile(value["profile"], value["data"]):
-            if self.require_profiles:
-                raise UnresolvedContractError("exact metadata profile contract is unavailable")
-            self.profiles[canonical_document(value["profile"])] = dict(value["profile"])
-            return
-        schema_id = value["profile"]["schema_id"]
-        if schema_id in {
-            PROFILE + "/profiles/" + name + ".schema.json"
-            for name in ("filesystem-observation", "filesystem-context", "execution-environment")
-        }:
-            self.filesystem_values(value["data"])
+        from ._semantic_program import walk
+
+        walk(self, "profile", value)
 
     def filesystem_values(self, value: Any) -> None:
-        """Apply only declared built-in profile semantics, not arbitrary JSON keys."""
-        if not isinstance(value, dict):
-            return
-        for identifier in value.get("identifiers", []):
-            self.identifier(identifier)
-        for identifier in value.get("native_identifiers", []):
-            self.identifier(identifier)
-        for principal in value.get("principals", []):
-            self.identifier(principal["identifier"])
-            if "display_name" in principal:
-                self.name(principal["display_name"])
-            self.source(principal["source"])
-        for stamp in value.get("timestamps", []):
-            self.source(stamp["source"])
-            if "value" in stamp:
-                time_ns(stamp["value"])
-            if "raw" in stamp:
-                self.typed(stamp["raw"]["value"])
-                if "epoch" in stamp["raw"]:
-                    time_ns(stamp["raw"]["epoch"])
-        if "posix_mode" in value:
-            self.source(value["posix_mode"]["source"])
-        for key in ("operating_system", "kernel", "runtime", "host"):
-            if key in value:
-                self.filesystem_values(value[key])
+        from ._semantic_program import walk
+
+        walk(self, "filesystem", value)
 
     def source(self, value: Mapping[str, Any]) -> None:
-        self.name(value["field"])
-        if "context_id" in value:
-            self.node(value["context_id"], "context")
+        from ._semantic_program import walk
+
+        walk(self, "source", value)
 
     def bytes(self, value: Mapping[str, Any]) -> bytes:
         try:
@@ -309,9 +279,9 @@ class _Validator:
             self.bytes(value["bytes"])
 
     def identifier(self, value: Mapping[str, Any]) -> None:
-        self.name(value["value"])
-        if "authority_id" in value:
-            self.node(value["authority_id"], "context", "agent")
+        from ._semantic_program import walk
+
+        walk(self, "identifier", value)
 
     def content(self, value: Mapping[str, Any]) -> None:
         seen: set[tuple[str, str]] = set()
@@ -322,64 +292,19 @@ class _Validator:
             seen.add(key)
 
     def typed(self, value: Mapping[str, Any]) -> None:
-        kind, data = value["type"], value["value"]
-        if kind == "bytes":
-            self.bytes(data)
-        elif kind == "reference":
-            self.reference(data)
-        elif kind == "timestamp":
-            time_ns(data)
-        elif kind == "json":
-            self.profile(data)
-        elif kind == "digest":
-            self.content(data)
+        from ._semantic_program import walk
+
+        walk(self, "typed", value)
 
     def native(self, value: Mapping[str, Any]) -> None:
-        self.name(value["name"])
-        self.source(value["source"])
-        if "value" in value:
-            self.typed(value["value"])
-            content = value["value"]["value"]
-            if value["value"]["type"] in ("bytes", "digest") and "observed_byte_length" in value:
-                key = "byte_length" if value["value"]["type"] == "bytes" else "size_bytes"
-                if int(value["observed_byte_length"]) != int(content[key]):
-                    raise ProvenanceValidationError(
-                        "metadata observed length differs from evidence"
-                    )
-        for item in value.get("interpretations", []):
-            self.node(item["asserted_by_agent_id"], "agent")
-            self.typed(item["value"])
+        from ._semantic_program import walk
+
+        walk(self, "native", value)
 
     def generic(self, value: Mapping[str, Any]) -> None:
-        for ev in value["evidence"]:
-            self.node(ev["asserted_by_agent_id"], "agent")
-            if "source" in ev:
-                self.reference(ev["source"])
-            if "source_identifier" in ev:
-                self.identifier(ev["source_identifier"])
-        for identifier in value.get("identifiers", []):
-            self.identifier(identifier)
-        for profile in value.get("profiles", []):
-            self.profile(profile)
-        native_keys: set[bytes] = set()
-        for item in value.get("metadata", []):
-            key = canonical_document(
-                {
-                    "profile_id": item["profile_id"],
-                    "category": item["category"],
-                    "namespace": item.get("namespace", ""),
-                    "name": _name_identity(item["name"]),
-                    "source": _source_identity(item["source"]),
-                }
-            )
-            if key in native_keys:
-                raise ProvenanceValidationError("duplicate source-qualified native metadata row")
-            native_keys.add(key)
-            self.native(item)
-        if "temporal_scope" in value:
-            temporal_scope(value["temporal_scope"])
-        if "at" in value:
-            time_ns(value["at"])
+        from ._semantic_program import walk
+
+        walk(self, "generic", value)
 
     def aggregates(self) -> tuple[Any, ...]:
         return {}, {}, [], [], {}, set(), set()
