@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import Body, Header, HTTPException, Query, Request, Response
+from fastapi import Header, HTTPException, Query, Request, Response
 from http_api_contracts import (
     QuotedSha256Identity,
     mutable_browse_operation,
@@ -101,6 +101,14 @@ _CLIENT_BINARY_OPERATION = {
             "schema": {"type": "integer", "minimum": 0},
         }
     ],
+    "requestBody": {
+        "required": True,
+        "content": {
+            "application/octet-stream": {
+                "schema": {"type": "string", "format": "binary", "title": "Content"}
+            }
+        },
+    },
 }
 _CLIENT_PROVENANCE_BINARY_OPERATION = {
     **operation_interface("client-only-primitive"),
@@ -843,13 +851,6 @@ async def put_collection_upload_session_unit(
     volume_id: CollectionUploadVolumeId,
     unit: CollectionUploadUnitNumber,
     request: Request,
-    content: Annotated[
-        bytes,
-        Body(
-            media_type="application/octet-stream",
-            json_schema_extra={"format": "binary"},
-        ),
-    ],
     container: ContainerDep,
     principal: CollectionCreator,
     if_match: Annotated[QuotedSha256Identity, Header(alias="If-Match")],
@@ -865,13 +866,22 @@ async def put_collection_upload_session_unit(
         raise RuntimeError("collection upload unit payload size is invalid") from exc
     if int(declared) != expected_bytes:
         raise HTTPException(status_code=400, detail="Content-Length does not match the upload unit")
+    content = bytearray()
+    async for chunk in request.stream():
+        if len(content) + len(chunk) > expected_bytes:
+            raise HTTPException(
+                status_code=400, detail="Content-Length does not match the upload unit"
+            )
+        content.extend(chunk)
+    if len(content) != expected_bytes:
+        raise HTTPException(status_code=400, detail="Content-Length does not match the upload unit")
     payload = await run_in_threadpool(
         container.collection_uploads.upload_unit,
         collection_id,
         volume_id,
         unit,
         plan_sha256=parse_quoted_sha256_identity(if_match),
-        content=content,
+        content=bytes(content),
     )
     return CollectionUploadUnitOut.model_validate(payload)
 

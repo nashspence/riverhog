@@ -5,6 +5,7 @@ import json
 import tarfile
 import threading
 import time
+from contextlib import ExitStack
 from pathlib import Path
 from typing import Any
 
@@ -55,6 +56,7 @@ def test_actual_nvenc_payload_waits_for_a_component_owned_permit_and_releases_af
     from fastapi.testclient import TestClient
 
     probed, entered, released = (threading.Event() for _ in range(3))
+    resume_payload = threading.Event()
     allowed, activations, executions, withdrawn = set(), [], [], []
     owners = []
     active = []
@@ -89,6 +91,8 @@ def test_actual_nvenc_payload_waits_for_a_component_owned_permit_and_releases_af
         assert len(active) == 1
         executions.append(active[0].invocation_id)
         entered.set()
+        if not resume_payload.wait(30):
+            raise TimeoutError("fixture native boundary was not resumed")
         raise TargetExecutionInapplicable(
             "fixture-stop", "The guarded native boundary was reached."
         )
@@ -130,17 +134,19 @@ def test_actual_nvenc_payload_waits_for_a_component_owned_permit_and_releases_af
     headers = {"Authorization": "Bearer fixture-target"}
 
     def put(client, request):
-        before = time.monotonic()
         response = client.put(
             f"/v1/jobs/{request.declaration.job_id}",
             json=request.model_dump(mode="json"),
             headers=headers,
         )
         assert response.status_code == 200, response.text
-        assert time.monotonic() - before < 1
         return response.json()
 
-    with TestClient(create_target_app(token="fixture-target", target=service)) as client:
+    with (
+        TestClient(create_target_app(token="fixture-target", target=service)) as client,
+        ExitStack() as barriers,
+    ):
+        barriers.callback(resume_payload.set)
         for request in requests:
             assert put(client, request)["state"] == "queued"
         assert probed.wait(5)
@@ -160,7 +166,11 @@ def test_actual_nvenc_payload_waits_for_a_component_owned_permit_and_releases_af
             target_app._parser().parse_args(["--version"])
         assert version.value.code == 0 and not activations
         allowed.add(requests[1].request_sha256)
-        assert entered.wait(5) and released.wait(5)
+        assert entered.wait(5) and not released.is_set()
+        assert put(client, requests[0])["state"] == "queued"
+        assert not released.is_set()
+        resume_payload.set()
+        assert released.wait(5)
         assert (
             client.get(f"/v1/jobs/{requests[0].declaration.job_id}", headers=headers).json()[
                 "state"
@@ -172,7 +182,12 @@ def test_actual_nvenc_payload_waits_for_a_component_owned_permit_and_releases_af
     service = service_at_state()
     entered.clear()
     released.clear()
-    with TestClient(create_target_app(token="fixture-target", target=service)) as client:
+    resume_payload.clear()
+    with (
+        TestClient(create_target_app(token="fixture-target", target=service)) as client,
+        ExitStack() as barriers,
+    ):
+        barriers.callback(resume_payload.set)
         for index in (0, 2):
             assert service.get_job(requests[index].declaration.job_id).state == "queued"
         assert not service._dispatch.payload_count and not service._sessions
@@ -187,7 +202,11 @@ def test_actual_nvenc_payload_waits_for_a_component_owned_permit_and_releases_af
         assert response.status_code == 200 and response.json()["state"] == "canceled"
         allowed.update((requests[0].request_sha256, canceled.request_sha256))
         assert put(client, canceled)["state"] == "canceled"
-        assert entered.wait(5) and released.wait(5)
+        assert entered.wait(5) and not released.is_set()
+        assert put(client, canceled)["state"] == "canceled"
+        assert not released.is_set()
+        resume_payload.set()
+        assert released.wait(5)
         assert service.get_job(requests[0].declaration.job_id).state == "inapplicable"
         assert not active
     assert executions == [requests[1].request_sha256, requests[0].request_sha256]

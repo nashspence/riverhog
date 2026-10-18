@@ -253,8 +253,8 @@ def test_canonical_archive_capabilities_against_s3_adapter(tmp_path: Path) -> No
             == root
         )
 
-        # Both callers encrypt the same plaintext independently after finding
-        # no receipt. Only one ciphertext may win; both must recover that exact
+        # Both callers encrypt the same plaintext independently before their
+        # synchronized create-only writes. Both must recover the exact winning
         # durable receipt, which remains readable through ordinary archive checks.
         ready = threading.Barrier(2)
         candidates: list[bytes] = []
@@ -270,7 +270,7 @@ def test_canonical_archive_capabilities_against_s3_adapter(tmp_path: Path) -> No
 
             return immutable.put_immutable_object(
                 object_path=f"{archive_prefix}/concurrent-manifest.json.age",
-                content=encrypted_content,
+                content=encrypted_content(),
                 content_type="application/vnd.riverhog.collection-manifest+age",
                 required_identity_assertions={
                     "riverhog-format": ROOT_MANIFEST_STORAGE_FORMAT,

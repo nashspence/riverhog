@@ -125,6 +125,7 @@ jobs:
     with:
       ref: ${{ needs.resolve.outputs.sha }}
     permissions:
+      actions: read
       contents: read
 
   release-audit:

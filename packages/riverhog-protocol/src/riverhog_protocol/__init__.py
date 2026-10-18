@@ -1,3 +1,4 @@
+from riverhog_protocol.checkpoint_sha256 import CheckpointSHA256, sha256_compress
 from riverhog_protocol.errors import (
     RIVERHOG_ERROR_TYPES_BY_CODE,
     BadRequest,
@@ -458,3 +459,6 @@ __all__ += [
     "ValuePredicate",
     "SortOrder",
 ]
+
+
+__all__ += ["CheckpointSHA256", "sha256_compress"]

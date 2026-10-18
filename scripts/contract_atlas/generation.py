@@ -10,7 +10,7 @@ import re
 import subprocess
 import tarfile
 import tempfile
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from functools import cache
 from pathlib import Path
@@ -34,7 +34,13 @@ from .documentation_audit import (
 from .documentation_native import expected_outputs, native_slots
 from .html_rendering import render_contract, validate_render
 from .model import ContractAtlasError, DiscoveredContract, canonical_bytes, canonical_sha256
-from .records import AUDIT_FILENAME, ContractBundle, build_records, load_bundle
+from .records import (
+    AUDIT_FILENAME,
+    ContractBundle,
+    bind_growth_execution,
+    build_records,
+    load_bundle,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = ROOT / "build/contracts"
@@ -220,6 +226,7 @@ def build_candidate(
     initial_documentation_review: bool = False,
     documentation_baseline: dict[str, object] | None = None,
     baseline_custody: dict[str, object] | None = None,
+    growth_evidence: Sequence[Mapping[str, object]] = (),
 ) -> GeneratedCandidate:
     """Discover from executable authorities without reading prior contract products."""
 
@@ -235,6 +242,8 @@ def build_candidate(
     trace = contract_freeze.trace_projection(projection)
     discovered = build_discovered_contract(projection, trace)
     closure, audit = build_records(discovered)
+    if growth_evidence:
+        audit = bind_growth_execution(closure, audit, growth_evidence)
     document = None
     binding = None
     extras: dict[str, bytes] = {}

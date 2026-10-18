@@ -442,6 +442,7 @@ reusable_library = [
   "packages/riverhog-age",
   "packages/riverhog-archive-contracts",
   "packages/riverhog-canonical-json",
+  "packages/riverhog-growth-contracts",
   "packages/riverhog-client",
   "packages/riverhog-materialization",
   "packages/riverhog-protocol",
@@ -461,6 +462,7 @@ reusable_library = [
   "some-implementations/stove0/packages/target-client",
   "some-implementations/stove0/packages/target-protocol",
   "some-implementations/stove0/packages/target-support",
+  "packages/sha256-continuation",
   "packages/time-formats",
 ]
 internal_build_unit = [

@@ -20,6 +20,9 @@ concurrency:
 jobs:
   gate:
     name: CI gate
+    permissions:
+      actions: read
+      contents: read
     if: always()
     needs:
       - plan
@@ -31,6 +34,27 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          ref: ${{ inputs.ref || github.sha }}
+      - name: Install repository toolchain
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+      - name: Verify required exact-attempt execution evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RIVERHOG_CI_EVIDENCE_OUTPUT: ${{ runner.temp }}/validation-gate.json
+        run: mise x -- uv run --locked --all-packages --group dev python -m scripts.ci_actions gate
+          --output "$RIVERHOG_CI_EVIDENCE_OUTPUT"
+      - name: Retain the execution-evidence gate result
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: validation-gate-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/validation-gate.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Require every mandatory qualification to succeed
         env:
           CI_DEPENDENCIES: ${{ toJSON(needs) }}
@@ -102,15 +126,15 @@ jobs:
         env:
           CI_TARGET: ${{ matrix.target }}
           RIVERHOG_CI_TIMING_DIR: ${{ runner.temp }}/ci-timing
-        run: mise x -- uv run --locked --all-packages --group dev python scripts/ci_timing.py run --lane "$CI_TARGET" --output
-          "$RIVERHOG_CI_TIMING_DIR/$CI_TARGET/lane.json" -- make "$CI_TARGET"
+        run: mise x -- uv run --locked --all-packages --group dev python scripts/ci_timing.py execute --workload "$CI_TARGET"
+          --run-id "${{ github.run_id }}-${{ github.run_attempt }}" --output "$RIVERHOG_CI_TIMING_DIR/receipt.json"
       - name: Retain machine-readable qualification timings
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: ci-timing-${{ matrix.target }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          name: validation-${{ matrix.target }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ci-timing
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 7
   units:
     name: unit ${{ matrix.shard }}
@@ -133,15 +157,15 @@ jobs:
         env:
           UNIT_SHARD: ${{ matrix.shard }}
           RIVERHOG_CI_TIMING_DIR: ${{ runner.temp }}/ci-timing
-        run: mise x -- uv run --locked --all-packages --group dev python scripts/ci_timing.py run --lane "unit-$UNIT_SHARD"
-          --output "$RIVERHOG_CI_TIMING_DIR/unit-$UNIT_SHARD/lane.json" -- make unit-shard UNIT_SHARD="$UNIT_SHARD"
+        run: mise x -- uv run --locked --all-packages --group dev python scripts/ci_timing.py execute --workload "unit-$UNIT_SHARD"
+          --run-id "${{ github.run_id }}-${{ github.run_attempt }}" --output "$RIVERHOG_CI_TIMING_DIR/receipt.json"
       - name: Retain unit coverage and fixture timings
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: ci-timing-unit-${{ matrix.shard }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          name: validation-unit-${{ matrix.shard }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ci-timing
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 7
   compose:
     name: compose ${{ matrix.lane }}
@@ -202,15 +226,15 @@ jobs:
           COMPOSE_LANE: ${{ matrix.lane }}
           RIVERHOG_CI_IMAGES_PREBUILT: '1'
           RIVERHOG_CI_TIMING_DIR: ${{ runner.temp }}/ci-timing
-        run: mise x -- uv run --locked --all-packages --group dev python scripts/ci_timing.py run --lane "compose-$COMPOSE_LANE"
-          --output "$RIVERHOG_CI_TIMING_DIR/compose-$COMPOSE_LANE/lane.json" -- make compose-shard COMPOSE_LANE="$COMPOSE_LANE"
+        run: mise x -- uv run --locked --all-packages --group dev python scripts/ci_timing.py execute --workload "compose-$COMPOSE_LANE"
+          --run-id "${{ github.run_id }}-${{ github.run_attempt }}" --output "$RIVERHOG_CI_TIMING_DIR/receipt.json"
       - name: Retain lifecycle phase timings
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: ci-timing-compose-${{ matrix.lane }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          name: validation-compose-${{ matrix.lane }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ci-timing
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 7
     env:
       DOCKER_BUILD_RECORD_UPLOAD: 'false'
@@ -241,7 +265,20 @@ jobs:
       - name: Qualify native behavior and staged end-user installs
         env:
           GOGURT_FAILURE_EVIDENCE_DIR: ${{ runner.temp }}/gogurt-failure-evidence
-        run: mise x python uv age -- uv run --locked --all-packages --group dev python -m scripts.ci_qualification native
+          RIVERHOG_CI_TIMING_DIR: ${{ runner.temp }}/ci-timing
+          NATIVE_WORKLOAD: native-${{ matrix.os }}
+        run: mise x python uv age -- uv run --locked --all-packages --group dev python scripts/ci_timing.py execute
+          --workload "$NATIVE_WORKLOAD" --run-id "${{ github.run_id }}-${{ github.run_attempt }}"
+          --output "$RIVERHOG_CI_TIMING_DIR/receipt.json"
+        shell: bash
+      - name: Retain native qualification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: validation-native-${{ matrix.os }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-timing
+          if-no-files-found: error
+          retention-days: 7
       - name: Retain bounded Gogurt lifecycle failure evidence
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -308,15 +345,15 @@ jobs:
           IMAGE_GROUP: ${{ matrix.group }}
           RIVERHOG_CI_IMAGES_PREBUILT: '1'
           RIVERHOG_CI_TIMING_DIR: ${{ runner.temp }}/ci-timing
-        run: mise x -- uv run --locked --all-packages --group dev python scripts/ci_timing.py run --lane "images-$IMAGE_GROUP"
-          --output "$RIVERHOG_CI_TIMING_DIR/images-$IMAGE_GROUP/lane.json" -- make image-qualification IMAGE_GROUP="$IMAGE_GROUP"
+        run: mise x -- uv run --locked --all-packages --group dev python scripts/ci_timing.py execute --workload "image-$IMAGE_GROUP"
+          --run-id "${{ github.run_id }}-${{ github.run_attempt }}" --output "$RIVERHOG_CI_TIMING_DIR/receipt.json"
       - name: Retain image qualification timings
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: ci-timing-images-${{ matrix.group }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          name: validation-image-${{ matrix.group }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ci-timing
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 7
     env:
       DOCKER_BUILD_RECORD_UPLOAD: 'false'

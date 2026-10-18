@@ -5,11 +5,8 @@ from __future__ import annotations
 import hashlib
 from collections import Counter
 from collections.abc import Callable, Iterator
-from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
 from dataclasses import replace
 from pathlib import Path
-from threading import Barrier, Lock
 from types import SimpleNamespace
 from typing import get_args
 from unittest.mock import Mock
@@ -53,8 +50,6 @@ from riverhog_core.catalog_workflow_models import (
     CollectionProcessingCapabilityRecord,
     CollectionProcessingClaimRecord,
 )
-from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
-from riverhog_core.provenance_read_cache import ProvenanceReadCache
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.app_keys import SqlAlchemyAppKeyService
 from riverhog_core.services.canonical_provenance import SqlAlchemyCanonicalProvenanceService
@@ -557,15 +552,6 @@ def test_scoped_pages_and_ranges_reuse_verified_history_without_repeat_downloads
         access=tuple(ApplicationAccess(p) for p in _PERMISSIONS),
         artifacts=tuple((1, m.artifact_id, m.bytes, m.sha256) for m in archive.history_bindings),
     )
-    scans = 0
-    original_scan = CanonicalProvenanceArchiveReader._scan
-
-    def scan(self, *args, **kwargs):
-        nonlocal scans
-        scans += 1
-        return original_scan(self, *args, **kwargs)
-
-    monkeypatch.setattr(CanonicalProvenanceArchiveReader, "_scan", scan)
     resolved = 0
     original = MemberHistoryClosure.resolve
 
@@ -582,7 +568,6 @@ def test_scoped_pages_and_ranges_reuse_verified_history_without_repeat_downloads
     assert initial_bytes > 0 and initial_reads > members
     assert max(stores["preferred"].object_reads.values()) == 1
     assert resolved == members
-    assert scans == 1
     assert allowance.get_key_quota(key_id=principal.key_id)["accounted_bytes"] == initial_bytes
     assert (
         service.list_journals(1, page_size=1, after_journal_id=None, principal=principal) == first
@@ -605,7 +590,6 @@ def test_scoped_pages_and_ranges_reuse_verified_history_without_repeat_downloads
         == archive.journals[journal["journal_id"]][:1]
     )
     assert resolved == members
-    assert scans == 1
     assert sum(store.downloaded for store in stores.values()) == initial_bytes
     assert sum(sum(store.object_reads.values()) for store in stores.values()) == initial_reads
     assert allowance.get_key_quota(key_id=principal.key_id)["accounted_bytes"] == initial_bytes
@@ -669,188 +653,3 @@ def test_one_byte_http_range_shares_metadata_and_body_membership_work(tmp_path: 
         assert sum(sum(store.object_reads.values()) for store in stores.values()) == reads
         assert sum(store.downloaded for store in stores.values()) == downloaded
         assert allowance.get_key_quota(key_id=principal.key_id)["accounted_bytes"] == downloaded
-
-
-def test_metadata_index_cache_budget_never_limits_valid_history(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    service, archive, config, *_ = _environment(tmp_path)
-    principal = _scope(config, archive)
-    service._archives._metadata_indexes = ProvenanceReadCache(byte_budget=1, entry_budget=1)
-    scans = 0
-    original = CanonicalProvenanceArchiveReader._scan
-
-    def scan(self, *args, **kwargs):
-        nonlocal scans
-        scans += 1
-        return original(self, *args, **kwargs)
-
-    monkeypatch.setattr(CanonicalProvenanceArchiveReader, "_scan", scan)
-    first = service.list_journals(1, page_size=200, after_journal_id=None, principal=principal)
-    assert (
-        service.list_journals(1, page_size=200, after_journal_id=None, principal=principal) == first
-    )
-    assert scans == 2
-
-
-def test_warm_metadata_index_does_not_substitute_a_retired_copy(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    service, archive, config, _registry, stores, *_ = _environment(tmp_path)
-    principal = _scope(config, archive)
-    scans = 0
-    original = CanonicalProvenanceArchiveReader._scan
-
-    def scan(self, *args, **kwargs):
-        nonlocal scans
-        scans += 1
-        return original(self, *args, **kwargs)
-
-    monkeypatch.setattr(CanonicalProvenanceArchiveReader, "_scan", scan)
-    first = service.list_journals(1, page_size=200, after_journal_id=None, principal=principal)
-    preferred_bytes = stores["preferred"].downloaded
-    assert preferred_bytes > 0 and scans == 1
-    with session_scope(service._session_factory) as session:
-        for name in ("preferred", "creation"):
-            copy = session.get(CollectionArchiveCopyRecord, (1, name))
-            assert copy is not None
-            copy.last_verified_at = None
-    assert (
-        service.list_journals(1, page_size=200, after_journal_id=None, principal=principal) == first
-    )
-    assert scans == 2
-    assert stores["preferred"].downloaded == preferred_bytes
-    assert stores["replica"].downloaded > 0
-
-
-def test_membership_cache_retains_only_queries_after_complete_closure_validation(tmp_path: Path):
-    from riverhog_archive_contracts import provenance_structure_identity
-    from riverhog_provenance import MemberHistoryMembership
-
-    _service, archive, *_ = _environment(tmp_path)
-    store = MemberHistoryStore(lambda path: (archive.history_objects[path],))
-    with MemberHistoryClosure(
-        store,
-        lambda journal, end: (archive.journals[journal][:end],),
-        member_role=COLLECTION_MEMBER_ROLE,
-    ) as closure:
-        for binding in archive.history_bindings:
-            closure.resolve(binding, extent=RETAINED_HISTORY_EXTENT)
-        anchors = list(closure.journal_anchors())
-        paths = [
-            provenance_structure_identity(raw).relative_path for raw in closure.structure_objects()
-        ]
-        image = closure.membership_image(max_bytes=64 * 1024)
-        assert image is not None and len(image) <= 64 * 1024
-        with MemberHistoryMembership(image) as membership:
-            assert list(membership.journal_anchors()) == anchors
-            for anchor in anchors:
-                assert membership.journal_anchor(anchor.journal_id) == anchor
-            assert all(membership.contains_structure_object(path) for path in paths)
-            assert not membership.contains_structure_object("unselected-history")
-        assert closure.membership_image(max_bytes=1) is None
-        assert list(closure.journal_anchors()) == anchors
-
-
-def test_concurrent_authorized_reads_share_immutable_builds_and_own_their_scratch(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    payloads = {f"{ordinal + 1:064x}": b"member" for ordinal in range(16)}
-    service, archive, config, _registry, stores, _allowance, *_ = _environment(
-        tmp_path, members=payloads, hints={artifact_id: None for artifact_id in payloads}
-    )
-    principal = persisted_artifact_scope(
-        config.database_url,
-        access=tuple(ApplicationAccess(p) for p in _PERMISSIONS),
-        artifacts=tuple((1, m.artifact_id, m.bytes, m.sha256) for m in archive.history_bindings),
-    )
-    lock = Lock()
-    scans = resolves = 0
-    original_scan = CanonicalProvenanceArchiveReader._scan
-    original_resolve = MemberHistoryClosure.resolve
-    original_prepared = CanonicalProvenanceArchiveReader.prepared
-    connections, scratch_paths = set(), set()
-
-    def scan(self, *args, **kwargs):
-        nonlocal scans
-        with lock:
-            scans += 1
-        return original_scan(self, *args, **kwargs)
-
-    def resolve(self, *args, **kwargs):
-        nonlocal resolves
-        with lock:
-            resolves += 1
-        return original_resolve(self, *args, **kwargs)
-
-    @contextmanager
-    def prepared(self):
-        with original_prepared(self) as ready:
-            cursor = ready._prepared_db.execute("PRAGMA database_list")
-            try:
-                path = Path(cursor.fetchone()[2])
-            finally:
-                cursor.close()
-            with lock:
-                connections.add(id(ready._prepared_db))
-                scratch_paths.add(path)
-            yield ready
-
-    monkeypatch.setattr(CanonicalProvenanceArchiveReader, "_scan", scan)
-    monkeypatch.setattr(MemberHistoryClosure, "resolve", resolve)
-    monkeypatch.setattr(CanonicalProvenanceArchiveReader, "prepared", prepared)
-    for cache in (service._archives._metadata_indexes, service._memberships):
-        barrier = Barrier(4)
-        original = cache.get_or_load
-
-        def together(key, load, *, barrier=barrier, original=original):
-            barrier.wait(timeout=30)
-            return original(key, load)
-
-        monkeypatch.setattr(cache, "get_or_load", together)
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        futures = [
-            pool.submit(
-                service.list_journals, 1, page_size=1, after_journal_id=None, principal=principal
-            )
-            for _ in range(4)
-        ]
-        results = [future.result(timeout=30) for future in futures]
-    assert results == [results[0]] * 4
-    assert scans == 1 and resolves == 16
-    assert len(connections) == 4
-    assert all(not path.exists() for path in scratch_paths)
-    assert max(stores["preferred"].object_reads.values()) == 1
-
-
-@pytest.mark.parametrize("failed_stage", ["metadata", "history"])
-def test_failed_immutable_build_is_cleaned_and_retried_with_live_authority(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failed_stage: str
-) -> None:
-    service, archive, config, _registry, _stores, _allowance, *_ = _environment(tmp_path)
-    principal = _scope(config, archive)
-    owner = CanonicalProvenanceArchiveReader if failed_stage == "metadata" else MemberHistoryClosure
-    method = "_scan" if failed_stage == "metadata" else "resolve"
-    original = getattr(owner, method)
-    failed = False
-
-    def once(self, *args, **kwargs):
-        nonlocal failed
-        result = original(self, *args, **kwargs)
-        if not failed:
-            failed = True
-            raise OSError("immutable builder interrupted")
-        return result
-
-    monkeypatch.setattr(owner, method, once)
-    with pytest.raises(OSError, match="immutable builder interrupted"):
-        service.list_journals(1, page_size=1, after_journal_id=None, principal=principal)
-    assert service.list_journals(1, page_size=1, after_journal_id=None, principal=principal)[
-        "journals"
-    ]
-    with session_scope(service._session_factory) as session:
-        session.get(
-            CollectionProcessingCapabilityRecord, principal.artifact_scope_capability_id
-        ).state = "revoked"
-    with pytest.raises(NotFound):
-        service.list_journals(1, page_size=1, after_journal_id=None, principal=principal)

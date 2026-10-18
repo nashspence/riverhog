@@ -7,7 +7,6 @@ import shutil
 import sqlite3
 import weakref
 from collections.abc import (
-    Callable,
     Iterable,
     Iterator,
     Mapping,
@@ -16,16 +15,42 @@ from collections.abc import (
     MutableSet,
     Sequence,
 )
+from contextlib import closing
 from pathlib import Path
 from tempfile import mkdtemp
+from threading import Lock
 from typing import Any, cast, overload
+from uuid import uuid4
 
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_provenance_contracts import ContractCatalog, canonical_document
+from riverhog_growth_contracts import (
+    COUNT,
+    OCTETS,
+    OCTETS_PER_COUNT,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    declare_growth,
+)
+from riverhog_provenance_contracts import ContractCatalog
 
-from .common import fingerprint
+from ._assertion_staging import AssertionStaging
+from ._assertion_staging import install as install_assertion_staging
+from ._correction_projection import CorrectionWork
+from ._correction_projection import install as install_correction_projection
+from ._correction_targets import CorrectionTargets
+from ._correction_targets import install as install_correction_targets
+from ._journal_prefix import install as install_journal_prefix
+from ._online_dag import OnlineDag
+from ._online_dag import install as install_online_dag
+from ._semantic_edge import SemanticEdge, SemanticEdgeSource
+from ._semantic_edge import install as install_semantic_edges
+from ._semantic_finish import SemanticFinish
+from ._semantic_finish import install as install_semantic_finish
+from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import ProvenanceValidationError
-from .graph import GraphValidation, _Validator, iter_assertions, time_ns
+from .graph import GraphValidation, _Validator, time_ns
 
 
 def _key(value: Any) -> bytes:
@@ -61,8 +86,12 @@ class _Map[T](MutableMapping[Any, T]):
             raise KeyError(key)
 
     def __iter__(self) -> Iterator[Any]:
-        for (key,) in self.store.db.execute("SELECT key FROM maps WHERE name = ?", (self.name,)):
-            yield key[1:] if key.startswith(b"b") else json.loads(key[1:])
+        with closing(
+            self.store.db.execute("SELECT key FROM maps WHERE name = ?", (self.name,))
+        ) as rows:
+            for (key,) in rows:
+                self.store.require_open()
+                yield key[1:] if key.startswith(b"b") else json.loads(key[1:])
 
     def __len__(self) -> int:
         return int(
@@ -72,12 +101,14 @@ class _Map[T](MutableMapping[Any, T]):
         )
 
     def values(self) -> Any:
-        return (
-            json.loads(row[0])
-            for row in self.store.db.execute(
+        with closing(
+            self.store.db.execute(
                 "SELECT value FROM maps WHERE name = ? ORDER BY key", (self.name,)
             )
-        )
+        ) as rows:
+            for row in rows:
+                self.store.require_open()
+                yield json.loads(row[0])
 
 
 class _Set(MutableSet[Any]):
@@ -127,7 +158,7 @@ class _Values[T](Sequence[T]):
 
     def __getitem__(self, index: int | slice) -> T | Sequence[T]:
         if isinstance(index, slice):
-            return _Slice(self, range(*index.indices(len(self))))
+            return _Slice(self, range(*index.indices(len(self))), store=self.values.store)
         position = index if index >= 0 else len(self) + index
         if position < 0:
             raise IndexError(index)
@@ -141,10 +172,11 @@ class _Values[T](Sequence[T]):
 
 
 class _Slice[T](Sequence[T]):
-    def __init__(self, source: Sequence[T], indices: range) -> None:
-        self.source, self.indices = source, indices
+    def __init__(self, source: Sequence[T], indices: range, *, store: JournalStore) -> None:
+        self.source, self.indices, self.store = source, indices, store
 
     def __len__(self) -> int:
+        self.store.require_open()
         return len(self.indices)
 
     @overload
@@ -155,7 +187,8 @@ class _Slice[T](Sequence[T]):
 
     def __getitem__(self, index: int | slice) -> T | Sequence[T]:
         if isinstance(index, slice):
-            return _Slice(self.source, self.indices[index])
+            self.store.require_open()
+            return _Slice(self.source, self.indices[index], store=self.store)
         return self.source[self.indices[index]]
 
 
@@ -172,10 +205,14 @@ class _Objects(Mapping[str, dict[str, Any]]):
         return cast(dict[str, Any], json.loads(row[0]))
 
     def __iter__(self) -> Iterator[str]:
-        for (identity,) in self.store.db.execute(
-            "SELECT object_id FROM assertions WHERE active = 1 ORDER BY assertion_id"
-        ):
-            yield identity
+        with closing(
+            self.store.db.execute(
+                "SELECT object_id FROM assertions WHERE active = 1 ORDER BY assertion_id"
+            )
+        ) as rows:
+            for (identity,) in rows:
+                self.store.require_open()
+                yield identity
 
     def __len__(self) -> int:
         return int(
@@ -183,12 +220,14 @@ class _Objects(Mapping[str, dict[str, Any]]):
         )
 
     def values(self) -> Any:
-        return (
-            json.loads(row[0])
-            for row in self.store.db.execute(
+        with closing(
+            self.store.db.execute(
                 "SELECT value FROM assertions WHERE active = 1 ORDER BY assertion_id"
             )
-        )
+        ) as rows:
+            for row in rows:
+                self.store.require_open()
+                yield json.loads(row[0])
 
 
 class _Rows(Sequence[dict[str, Any]]):
@@ -211,7 +250,7 @@ class _Rows(Sequence[dict[str, Any]]):
 
     def __getitem__(self, index: int | slice) -> Any:
         if isinstance(index, slice):
-            return _Slice(self, range(*index.indices(len(self))))
+            return _Slice(self, range(*index.indices(len(self))), store=self.store)
         index = index if index >= 0 else len(self) + index
         if index < 0:
             raise IndexError(index)
@@ -225,11 +264,16 @@ class _Rows(Sequence[dict[str, Any]]):
         return json.loads(row[0])
 
     def __iter__(self) -> Iterator[dict[str, Any]]:
-        for (value,) in self.store.db.execute(
-            "SELECT value FROM assertions WHERE active = 1 AND category = ? ORDER BY assertion_id",
-            (self.category,),
-        ):
-            yield json.loads(value)
+        with closing(
+            self.store.db.execute(
+                "SELECT value FROM assertions WHERE active = 1 AND category = ? "
+                "ORDER BY assertion_id",
+                (self.category,),
+            )
+        ) as rows:
+            for (value,) in rows:
+                self.store.require_open()
+                yield json.loads(value)
 
 
 class _Graph(Mapping[str, Sequence[dict[str, Any]]]):
@@ -247,10 +291,14 @@ class _Graph(Mapping[str, Sequence[dict[str, Any]]]):
         return _Rows(self.store, category)
 
     def __iter__(self) -> Iterator[str]:
-        for (category,) in self.store.db.execute(
-            "SELECT DISTINCT category FROM assertions WHERE active = 1 ORDER BY category"
-        ):
-            yield category
+        with closing(
+            self.store.db.execute(
+                "SELECT DISTINCT category FROM assertions WHERE active = 1 ORDER BY category"
+            )
+        ) as rows:
+            for (category,) in rows:
+                self.store.require_open()
+                yield category
 
     def __len__(self) -> int:
         return sum(1 for _ in self)
@@ -261,6 +309,7 @@ class _Frames(Sequence[Any]):
         self.store = store
 
     def __len__(self) -> int:
+        self.store.require_open()
         return self.store.frame_count
 
     @overload
@@ -273,22 +322,24 @@ class _Frames(Sequence[Any]):
         from .journal import JournalFrame
 
         if isinstance(index, slice):
-            return _Slice(self, range(*index.indices(len(self))))
+            return _Slice(self, range(*index.indices(len(self))), store=self.store)
         index = index if index >= 0 else len(self) + index
         row = self.store.db.execute(
-            "SELECT value, reference FROM frames WHERE sequence = ?", (str(index),)
+            "SELECT value FROM frames WHERE sequence = ?", (str(index),)
         ).fetchone()
         if row is None:
             raise IndexError(index)
-        return JournalFrame._from_validated(row[0], json.loads(row[1]))
+        return JournalFrame(row[0])
 
     def __iter__(self) -> Iterator[Any]:
         from .journal import JournalFrame
 
-        for value, reference in self.store.db.execute(
-            "SELECT value, reference FROM frames ORDER BY length(sequence), sequence"
-        ):
-            yield JournalFrame._from_validated(value, json.loads(reference))
+        with closing(
+            self.store.db.execute("SELECT value FROM frames ORDER BY length(sequence), sequence")
+        ) as rows:
+            for (value,) in rows:
+                self.store.require_open()
+                yield JournalFrame(value)
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -313,10 +364,12 @@ class _Origins(Mapping[str, dict[str, str]]):
         return cast(dict[str, str], json.loads(row[0]))
 
     def __iter__(self) -> Iterator[str]:
-        for (identity,) in self.store.db.execute(
-            "SELECT assertion_id FROM assertions ORDER BY assertion_id"
-        ):
-            yield identity
+        with closing(
+            self.store.db.execute("SELECT assertion_id FROM assertions ORDER BY assertion_id")
+        ) as rows:
+            for (identity,) in rows:
+                self.store.require_open()
+                yield identity
 
     def __len__(self) -> int:
         return int(self.store.db.execute("SELECT count(*) FROM assertions").fetchone()[0])
@@ -336,10 +389,14 @@ class _Retired(MutableSet[str]):
         )
 
     def __iter__(self) -> Iterator[str]:
-        for (identity,) in self.store.db.execute(
-            "SELECT assertion_id FROM assertions WHERE active = 0 ORDER BY assertion_id"
-        ):
-            yield identity
+        with closing(
+            self.store.db.execute(
+                "SELECT assertion_id FROM assertions WHERE active = 0 ORDER BY assertion_id"
+            )
+        ) as rows:
+            for (identity,) in rows:
+                self.store.require_open()
+                yield identity
 
     def __len__(self) -> int:
         return int(
@@ -378,8 +435,10 @@ class _Findings(MutableSequence[str]):
         return row[0]
 
     def __iter__(self) -> Iterator[str]:
-        for (value,) in self.store.db.execute("SELECT value FROM findings ORDER BY key"):
-            yield value
+        with closing(self.store.db.execute("SELECT value FROM findings ORDER BY key")) as rows:
+            for (value,) in rows:
+                self.store.require_open()
+                yield value
 
     def __setitem__(self, index: Any, value: Any) -> None:
         raise TypeError("findings are append-only")
@@ -395,24 +454,34 @@ class _Findings(MutableSequence[str]):
 
 
 class _Edges:
-    def __init__(self, store: JournalStore, kind: str) -> None:
-        self.store, self.kind = store, kind
+    def __init__(self, validator: _StoredValidator, kind: str) -> None:
+        self.validator, self.kind = validator, kind
 
     def append(self, edge: tuple[str, str]) -> None:
         source, target = edge
         if source == target:
             raise ProvenanceValidationError(f"{self.kind} cannot relate an entity to itself")
-        reachable = self.store.db.execute(
-            "WITH RECURSIVE reachable(node) AS (SELECT ? UNION SELECT edges.target "
-            "FROM edges JOIN reachable ON edges.source = reachable.node WHERE kind = ?) "
-            "SELECT 1 FROM reachable WHERE node = ? LIMIT 1",
-            (target, self.kind, source),
-        ).fetchone()
-        if reachable:
-            raise ProvenanceValidationError(f"{self.kind} graph contains a cycle")
-        self.store.db.execute(
-            "INSERT OR IGNORE INTO edges VALUES (?, ?, ?)", (self.kind, source, target)
+        row = self.validator.current_row
+        if row is None:
+            raise RuntimeError("semantic graph insertion requires its current assertion")
+        store = self.validator.store
+        # Native checks precede insertion; the private child owns each graph unit.
+        store.db.commit()
+        work = SemanticEdge(
+            store.db,
+            kind=self.kind,
+            run_id=store._dag_runs[self.kind],
+            attempt_id=uuid4().hex,
+            source_binding=self.validator.edge_source,
+            assertion_id=row["assertion_id"],
+            object_id=row["id"],
+            source=source,
+            target=target,
         )
+        work.initialize()
+        while not work.advance().done:
+            pass
+        work.result()
 
 
 class _StoredValidator(_Validator):
@@ -424,9 +493,14 @@ class _StoredValidator(_Validator):
         catalog: ContractCatalog,
         journal_id: str,
         require_profiles: bool,
+        frame: Any,
     ) -> None:
-        self.store, self.rows = store, rows
+        self.store, self.rows, self.frame = store, rows, frame
         self.catalog, self.journal_id, self.require_profiles = catalog, journal_id, require_profiles
+        self.current_row: dict[str, Any] | None = None
+        self.edge_source = SemanticEdgeSource.from_frame(
+            frame, catalog_sha256=catalog.checkpoint_sha256(), require_profiles=require_profiles
+        )
         self.objects = store.objects
         self.externals = _Map(store, "externals")
         self.profiles = _Map(store, "profiles")
@@ -436,15 +510,23 @@ class _StoredValidator(_Validator):
         return (
             _Map(self.store, "generation"),
             _Map(self.store, "invalidation"),
-            _Edges(self.store, "derivation"),
-            _Edges(self.store, "specialization"),
+            _Edges(self, "derivation"),
+            _Edges(self, "specialization"),
             _Map(self.store, "captures"),
             _Set(self.store, "ends"),
             _Set(self.store, "slots"),
         )
 
     def validation_rows(self) -> Iterable[dict[str, Any]]:
-        return self.rows
+        for row in self.rows:
+            self.current_row = row
+            yield row
+            # The native row checks run before this iterator resumes.
+            if row["type"] in ("usage", "invalidation") and "at" in row:
+                self.store._record_lifecycle_time(
+                    row["state"]["object_id"], row["type"], time_ns(row["at"])
+                )
+            self.current_row = None
 
     def finish(
         self,
@@ -453,76 +535,20 @@ class _StoredValidator(_Validator):
         derivations: Iterable[tuple[str, str]],
         specializations: Iterable[tuple[str, str]],
     ) -> None:
-        # New immutable rows cannot invalidate existing local references. Only
-        # lifecycle bounds, external reference types and completeness need
-        # reverse checks. Corrections rebuild the same indexes from effective rows.
-        for (value,) in self.store.db.execute(
-            "SELECT value FROM assertions WHERE active = 1 AND touched = 1 ORDER BY assertion_id"
-        ):
-            row = json.loads(value)
-            kind = row["type"]
-            if kind in ("usage", "generation", "invalidation"):
-                state = row["state"]["object_id"]
-                generated, ended = generation.get(state), invalidation.get(state)
-                for (related,) in self.store.db.execute(
-                    "SELECT value FROM assertions WHERE active = 1 AND state_id = ? "
-                    "AND type IN ('usage', 'invalidation')",
-                    (state,),
-                ):
-                    item = json.loads(related)
-                    if "at" not in item:
-                        continue
-                    if (
-                        generated
-                        and "at" in generated
-                        and time_ns(item["at"]) < time_ns(generated["at"])
-                    ):
-                        raise ProvenanceValidationError(
-                            "state used or invalidated before known generation"
-                        )
-                    if (
-                        item["type"] == "usage"
-                        and ended
-                        and "at" in ended
-                        and time_ns(item["at"]) > time_ns(ended["at"])
-                    ):
-                        raise ProvenanceValidationError("state used after known invalidation")
-            if kind == "observation" and row["address_status"] == "known":
-                if (
-                    self.store.db.execute(
-                        "SELECT 1 FROM assertions WHERE active = 1 AND observation_id = ? "
-                        "AND type = 'locator_binding' LIMIT 1",
-                        (row["id"],),
-                    ).fetchone()
-                    is None
-                ):
-                    raise ProvenanceValidationError(
-                        "known address requires an observed locator binding"
-                    )
-            if kind in ("observation", "reported_description") and "content" in row:
-                state = row["state"]["object_id"]
-                fixity = fingerprint(row["content"])
-                self.store.db.execute(
-                    "INSERT OR IGNORE INTO fixities VALUES (?, ?, ?)",
-                    (state, str(fixity[0]), fixity[1]),
-                )
-                if (
-                    self.store.db.execute(
-                        "SELECT count(*) FROM (SELECT 1 FROM fixities WHERE state = ? LIMIT 2)",
-                        (state,),
-                    ).fetchone()[0]
-                    > 1
-                ):
-                    self.findings.append(
-                        f"{state}: conflicting primary-content descriptions; no value selected"
-                    )
-            for (external,) in self.store.db.execute(
-                "SELECT value FROM maps WHERE name = 'externals' "
-                "AND json_extract(value, '$.object_id') = ?",
-                (row["id"],),
-            ):
-                reference = json.loads(external)
-                self.node(reference["object_id"], reference["object_type"])
+        # Native row checks precede these reverse checks. Each post-row unit
+        # owns its transaction and remains private until prefix publication.
+        self.store.db.commit()
+        work = SemanticFinish(
+            self.store,
+            attempt_id=uuid4().hex,
+            frame=self.frame,
+            catalog_sha256=self.catalog.checkpoint_sha256(),
+            require_profiles=self.require_profiles,
+        )
+        work.initialize()
+        atom_admission = 2 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 4096
+        while not work.advance(byte_budget=atom_admission).done:
+            pass
 
 
 def _cleanup_snapshot(connection: sqlite3.Connection, directory: Path) -> None:
@@ -530,69 +556,350 @@ def _cleanup_snapshot(connection: sqlite3.Connection, directory: Path) -> None:
     shutil.rmtree(directory)
 
 
-def _cleanup_reader(db: sqlite3.Connection, _owner: JournalStore) -> None:
-    db.close()
+class _SnapshotStorage:
+    """One frozen projection shared by independently owned reader leases."""
+
+    def __init__(self, connection: sqlite3.Connection, directory: Path) -> None:
+        self.connection = connection
+        self.directory = directory
+        self._lock = Lock()
+        self._readers = 0
+        self._closed = False
+
+    def retain(self, owner: JournalStore | None = None) -> None:
+        with self._lock:
+            if self._closed or (owner is not None and not owner._cleanup.alive):
+                raise RuntimeError("journal summary is closed")
+            self._readers += 1
+
+    def release(self) -> None:
+        with self._lock:
+            self._readers -= 1
+            if self._readers:
+                return
+            self._closed = True
+        _cleanup_snapshot(self.connection, self.directory)
 
 
 class JournalStore:
     def __init__(self) -> None:
         directory = Path(mkdtemp(prefix="riverhog-journal-"))
         try:
-            self.path = directory / "snapshot.sqlite3"
-            self.db = sqlite3.connect(self.path, check_same_thread=False)
+            connection = sqlite3.connect(directory / "snapshot.sqlite3", check_same_thread=False)
         except BaseException:
             shutil.rmtree(directory)
             raise
-        self._cleanup: Callable[[], Any] = weakref.finalize(
-            self, _cleanup_snapshot, self.db, directory
-        )
-        # This is a disposable validation projection, never journal custody.
-        # Failed validation destroys it; preserve disk-backed rollback without
-        # synchronizing each temporary schema write to durable storage.
-        self.db.execute("PRAGMA synchronous = OFF")
-        self.db.execute("PRAGMA cache_size = -512")
-        self.db.execute("PRAGMA temp_store = FILE")
-        self.db.executescript(
-            "CREATE TABLE frames(sequence TEXT PRIMARY KEY, value BLOB, reference BLOB);"
-            "CREATE TABLE identities(id TEXT PRIMARY KEY, domain TEXT, value BLOB);"
-            "CREATE TABLE assertions(assertion_id TEXT PRIMARY KEY, object_id TEXT, "
-            "category TEXT, type TEXT, state_id TEXT, observation_id TEXT, sequence TEXT, "
-            "value BLOB, active INTEGER, touched INTEGER);"
-            "CREATE UNIQUE INDEX objects ON assertions(object_id) WHERE active = 1;"
-            "CREATE INDEX states ON assertions(state_id, type) WHERE active = 1;"
-            "CREATE INDEX observations ON assertions(observation_id, type) WHERE active = 1;"
-            "CREATE INDEX changes ON assertions(touched) WHERE active = 1;"
-            "CREATE INDEX categories ON assertions(category, assertion_id) WHERE active = 1;"
-            "CREATE TABLE maps(name TEXT, key BLOB, value BLOB, PRIMARY KEY(name, key));"
-            "CREATE INDEX external_types ON maps(name, json_extract(value, '$.object_id'));"
-            "CREATE TABLE edges(kind TEXT, source TEXT, target TEXT, "
-            "PRIMARY KEY(kind, source, target));"
-            "CREATE TABLE findings(key TEXT PRIMARY KEY, value TEXT);"
-            "CREATE TABLE fixities(state TEXT, size TEXT, sha256 TEXT, "
-            "PRIMARY KEY(state, size, sha256));"
-        )
-        self.frame_count = 0
+        self._storage = _SnapshotStorage(connection, directory)
+        self._storage.retain()
+        self._cleanup = weakref.finalize(self, self._storage.release)
+        self._frozen = False
+        try:
+            # This is a disposable validation projection, never journal custody.
+            # Failed validation destroys it; preserve disk-backed rollback without
+            # synchronizing each temporary schema write to durable storage.
+            self.db.execute("PRAGMA synchronous = OFF")
+            self.db.execute("PRAGMA cache_size = -512")
+            self.db.execute("PRAGMA temp_store = FILE")
+            self.db.executescript(
+                "CREATE TABLE identities(id TEXT PRIMARY KEY, domain TEXT, value BLOB);"
+                "CREATE TABLE assertions(assertion_id TEXT PRIMARY KEY, object_id TEXT, "
+                "category TEXT, type TEXT, state_id TEXT, observation_id TEXT, sequence TEXT, "
+                "value BLOB, active INTEGER);"
+                "CREATE UNIQUE INDEX objects ON assertions(object_id) WHERE active = 1;"
+                "CREATE INDEX states ON assertions(state_id, type) WHERE active = 1;"
+                "CREATE INDEX observations ON assertions(observation_id, type) WHERE active = 1;"
+                "CREATE TABLE changes(assertion_id TEXT PRIMARY KEY);"
+                "CREATE TABLE lifecycle_extrema(state_id TEXT PRIMARY KEY, "
+                "earliest TEXT NOT NULL, latest_usage TEXT);"
+                "CREATE INDEX categories ON assertions(category, assertion_id) WHERE active = 1;"
+                "CREATE TABLE maps(name TEXT, key BLOB, value BLOB, PRIMARY KEY(name, key));"
+                "CREATE INDEX external_types ON maps(name, json_extract(value, '$.object_id'));"
+                "CREATE TABLE findings(key TEXT PRIMARY KEY, value TEXT);"
+                "CREATE TABLE fixities(state TEXT, size TEXT, sha256 TEXT, "
+                "PRIMARY KEY(state, size, sha256));"
+            )
+            install_journal_prefix(self.db)
+            install_correction_projection(self.db)
+            install_correction_targets(self.db)
+            install_semantic_finish(self.db)
+            install_assertion_staging(self.db)
+            install_semantic_edges(self.db)
+            install_online_dag(self.db)
+            self._dag_runs = {
+                "derivation": uuid4().hex,
+                "specialization": uuid4().hex,
+            }
+            for kind, run in self._dag_runs.items():
+                OnlineDag(self.db, kind, run).bind()
+            self.frame_count = 0
+        except BaseException:
+            self.close()
+            raise
 
-    @classmethod
-    def reader_from(cls, source: JournalStore) -> JournalStore:
-        """Open an independent immutable reader, retaining its exact snapshot owner."""
-        reader = object.__new__(cls)
-        reader.path = source.path
-        reader.db = sqlite3.connect(
-            source.path.as_uri() + "?mode=ro", uri=True, check_same_thread=False
+    def _record_lifecycle_time(self, state: str, kind: str, instant: int) -> None:
+        with closing(
+            self.db.execute(
+                "SELECT earliest, latest_usage FROM lifecycle_extrema WHERE state_id = ?",
+                (state,),
+            )
+        ) as rows:
+            prior = rows.fetchone()
+        earliest = min(instant, int(prior[0])) if prior else instant
+        latest = int(prior[1]) if prior and prior[1] is not None else None
+        if kind == "usage":
+            latest = max(instant, latest) if latest is not None else instant
+        self.db.execute(
+            "INSERT INTO lifecycle_extrema VALUES (?, ?, ?) "
+            "ON CONFLICT(state_id) DO UPDATE SET "
+            "earliest = excluded.earliest, latest_usage = excluded.latest_usage",
+            (state, str(earliest), str(latest) if latest is not None else None),
+        ).close()
+
+    @declare_growth(
+        Declaration(
+            id="riverhog-provenance.sqlite-lifecycle-extrema-check.growth/v1",
+            authority="riverhog-provenance",
+            subjects=("riverhog_provenance.journal_store.JournalStore._lifecycle_bounds_hold",),
+            scope="native-sqlite-effective-lifecycle-metadata-check",
+            starts_at="check one state against its effective dated extrema",
+            ends_at="return the inequality result after closing the native cursor",
+            dimensions=(Dimension("indexed_states", COUNT, "States with dated extrema."),),
+            bounds=(
+                Bound(
+                    "sql_statements",
+                    COUNT,
+                    "equal",
+                    Expression("constant", value=1, unit=COUNT),
+                    "One primary-key metadata lookup.",
+                ),
+                Bound(
+                    "returned_rows",
+                    COUNT,
+                    "upper",
+                    Expression("constant", value=1, unit=COUNT),
+                    "At most the selected state's extrema.",
+                ),
+                Bound(
+                    "returned_time_octets",
+                    OCTETS,
+                    "upper",
+                    Expression("constant", value=42, unit=OCTETS),
+                    "Two exact decimal nanosecond values from native four-digit UTC years.",
+                ),
+                Bound(
+                    "sqlite_vm_instructions",
+                    COUNT,
+                    "upper",
+                    Expression(
+                        "sum",
+                        terms=(
+                            Expression("constant", value=128, unit=COUNT),
+                            Expression(
+                                "product",
+                                terms=(
+                                    Expression("constant", value=64, unit=COUNT),
+                                    Expression(
+                                        "log2_ceil",
+                                        terms=(
+                                            Expression(
+                                                "sum",
+                                                terms=(
+                                                    Expression("constant", value=2, unit=COUNT),
+                                                    Expression("dimension", name="indexed_states"),
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                    "Maintained native SQLite instruction envelope for indexed metadata.",
+                ),
+            ),
+            conditions=(
+                "The component-owned extrema table has its state-identity primary key.",
+                "Extrema contain only effective natively checked dated usage/invalidation rows.",
+                "Known bounds use the native canonical UTC instant interpretation.",
+            ),
+            invariants=(
+                "Untimed events supply no synthetic timestamp or bound.",
+                "The earliest dated usage/invalidation and latest dated usage preserve the "
+                "native generation/invalidation inequalities, including equality.",
+                "No assertion payload is read by this primitive; missing dated extrema succeed.",
+                "Real corrections clear and rebuild extrema from their effective view.",
+            ),
+            limitations=(
+                "Population, native row/uniqueness/activity checks, violation diagnostic scans, "
+                "graph work, retries and cleanup are separately charged.",
+                "This disposable projection is not source custody or a durable "
+                "semantic checkpoint.",
+                "SQLite VM instructions exclude internal B-tree operations, page I/O and CPU.",
+            ),
         )
-        reader.db.execute("PRAGMA cache_size = -32")
-        reader.frame_count = source.frame_count
-        # Retain the owner through connection close, including on Windows.
-        reader._cleanup = weakref.finalize(reader, _cleanup_reader, reader.db, source)
-        return reader
+    )
+    def _lifecycle_bounds_hold(
+        self, state: str, *, generated_at: str | None, invalidated_at: str | None
+    ) -> bool:
+        with closing(
+            self.db.execute(
+                "SELECT earliest, latest_usage FROM lifecycle_extrema WHERE state_id = ?",
+                (state,),
+            )
+        ) as rows:
+            extrema = rows.fetchone()
+        if extrema is None:
+            return True
+        if generated_at is not None and int(extrema[0]) < time_ns(generated_at):
+            return False
+        return not (
+            extrema[1] is not None
+            and invalidated_at is not None
+            and int(extrema[1]) > time_ns(invalidated_at)
+        )
+
+    @declare_growth(
+        Declaration(
+            id="riverhog-provenance.sqlite-changed-assertion-reset.growth/v1",
+            authority="riverhog-provenance",
+            subjects=("riverhog_provenance.journal_store.JournalStore._reset_changed_assertions",),
+            scope="native-sqlite-successful-change-metadata-retirement",
+            starts_at="retire one admitted batch from the owned changed-identity queue",
+            ends_at="return the retired count after closing the native result",
+            dimensions=(
+                Dimension("queued_identities", COUNT, "Identities queued before this unit."),
+                Dimension("row_budget", COUNT, "Maximum identities admitted for this unit."),
+            ),
+            bounds=(
+                Bound(
+                    "sql_statements",
+                    COUNT,
+                    "equal",
+                    Expression("constant", value=1, unit=COUNT),
+                    "One indexed metadata DELETE with an admitted LIMIT and RETURNING.",
+                ),
+                Bound(
+                    "retired_rows",
+                    COUNT,
+                    "upper",
+                    Expression("dimension", name="row_budget"),
+                    "Actual identities retired, including inactive assertions.",
+                ),
+                Bound(
+                    "retired_identity_octets",
+                    OCTETS,
+                    "upper",
+                    Expression(
+                        "product",
+                        terms=(
+                            Expression("constant", value=45, unit=OCTETS_PER_COUNT),
+                            Expression("dimension", name="row_budget"),
+                        ),
+                    ),
+                    "Returned identity text; native assertion identities are UUID URNs.",
+                ),
+                Bound(
+                    "sqlite_vm_instructions",
+                    COUNT,
+                    "upper",
+                    Expression(
+                        "sum",
+                        terms=(
+                            Expression("constant", value=128, unit=COUNT),
+                            Expression(
+                                "product",
+                                terms=(
+                                    Expression("constant", value=128),
+                                    Expression("dimension", name="row_budget"),
+                                ),
+                            ),
+                            Expression(
+                                "product",
+                                terms=(
+                                    Expression("constant", value=64, unit=COUNT),
+                                    Expression(
+                                        "log2_ceil",
+                                        terms=(
+                                            Expression(
+                                                "sum",
+                                                terms=(
+                                                    Expression("constant", value=2, unit=COUNT),
+                                                    Expression(
+                                                        "dimension", name="queued_identities"
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                    "Maintained native SQLite instruction envelope for admitted deletion.",
+                ),
+            ),
+            conditions=(
+                "The component-owned changes queue has its assertion-identity primary key.",
+                "Queue identities come from the native entry schema's canonical UUID URNs.",
+                "row_budget is a positive native SQLite LIMIT admission.",
+            ),
+            invariants=(
+                "Both active and inactive changed identities are retired without changing "
+                "assertion content or liveness.",
+                "Assertion payload rows are not read or rewritten by this primitive.",
+                "Empty and exhausted queues succeed; the result closes on every exit.",
+            ),
+            limitations=(
+                "This private projection is disposable and is not source custody or a "
+                "durable semantic checkpoint.",
+                "Population, correction rebuilds, native graph/schema work, retries and "
+                "cleanup are separately charged.",
+                "SQLite VM instructions exclude internal B-tree operations, page I/O and CPU.",
+            ),
+        )
+    )
+    def _reset_changed_assertions(self, *, row_budget: int) -> int:
+        """Retire metadata without traversing or rewriting assertion payloads."""
+        if type(row_budget) is not int or row_budget < 1:
+            raise ValueError("changed-identity row budget must be positive")
+        with closing(
+            self.db.execute(
+                "DELETE FROM changes WHERE assertion_id IN "
+                "(SELECT assertion_id FROM changes ORDER BY assertion_id LIMIT ?) "
+                "RETURNING assertion_id",
+                (row_budget,),
+            )
+        ) as rows:
+            return sum(1 for _ in rows)
+
+    def require_open(self) -> None:
+        if not self._cleanup.alive:
+            raise RuntimeError("journal summary is closed")
+
+    @property
+    def db(self) -> sqlite3.Connection:
+        self.require_open()
+        return self._storage.connection
 
     def close(self) -> None:
         self._cleanup()
 
+    def borrow(self) -> JournalStore:
+        self.require_open()
+        if not self._frozen:
+            raise RuntimeError("only a frozen journal summary can be borrowed")
+        reader = object.__new__(JournalStore)
+        reader._storage = self._storage
+        reader._storage.retain(self)
+        reader._cleanup = weakref.finalize(reader, reader._storage.release)
+        reader._frozen = True
+        reader.frame_count = self.frame_count
+        return reader
+
     def freeze(self) -> None:
         self.db.commit()
         self.db.execute("PRAGMA query_only = ON")
+        self._frozen = True
 
     def _identity(self, identity: str, domain: str, value: bytes) -> None:
         old = self.db.execute(
@@ -614,8 +921,6 @@ class JournalStore:
         catalog: ContractCatalog,
         require_profiles: bool,
     ) -> None:
-        from .journal import _body_assertions, _identity_signature
-
         journal_id = document["journal_id"]
         self._identity(journal_id, "journal", b"")
         if (
@@ -624,72 +929,77 @@ class JournalStore:
         ):
             raise ProvenanceValidationError("entry identity reused or identity domains overlap")
         self._identity(document["id"], "entry", frame.json_bytes)
-        self.db.execute("UPDATE assertions SET touched = 0 WHERE touched = 1")
+        while self._reset_changed_assertions(row_budget=256):
+            pass
         correction = document["entry_kind"] == "correction"
         if correction:
-            target_ids: set[str] = set()
-            for target in document["body"]["retracts"]:
-                identity = target["assertion_id"]
-                if identity in target_ids:
-                    raise ProvenanceValidationError("duplicate correction target")
-                target_ids.add(identity)
-                prior = self.db.execute(
-                    "SELECT sequence, active FROM assertions WHERE assertion_id = ?", (identity,)
-                ).fetchone()
-                if prior is None or self.frames[int(prior[0])].reference != target["entry"]:
-                    raise ProvenanceValidationError(
-                        "correction target has no exact earlier assertion"
-                    )
-                if not prior[1]:
-                    raise ProvenanceValidationError(
-                        "correction cannot reactivate or retract an already retired assertion"
-                    )
-                self.db.execute(
-                    "UPDATE assertions SET active = 0 WHERE assertion_id = ?", (identity,)
-                )
-        for category, row in iter_assertions(_body_assertions(document)):
-            if (
-                self.db.execute(
-                    "SELECT 1 FROM identities WHERE id = ?", (row["assertion_id"],)
-                ).fetchone()
-                is not None
-            ):
-                raise ProvenanceValidationError(
-                    "assertion identities cannot be reused or overlap another domain"
-                )
-            self._identity(row["assertion_id"], "assertion", b"")
-            self._identity(row["id"], "referent", _identity_signature(row))
-            try:
-                self.db.execute(
-                    "INSERT INTO assertions VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 1)",
-                    (
-                        row["assertion_id"],
-                        row["id"],
-                        category,
-                        row["type"],
-                        row.get("state", {}).get("object_id"),
-                        row.get("observation_id"),
-                        document["sequence"],
-                        canonical_document(row),
-                    ),
-                )
-            except sqlite3.IntegrityError as exc:
-                raise ProvenanceValidationError(
-                    "duplicate effective entity/record identity"
-                ) from exc
+            # Entry identity staging is private; target units own fresh transactions.
+            self.db.commit()
+            correction_attempt = uuid4().hex
+            targets = CorrectionTargets(self.db, attempt_id=correction_attempt, frame=frame)
+            targets.initialize()
+            # Existing rows originate in admitted entries; charge their actual
+            # logical bytes without fetching or rehashing historical payloads.
+            atom_admission = 2 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 4096
+            while not targets.advance(byte_budget=atom_admission).done:
+                pass
+        # Each source-ordered staging page owns its identities, facts and cursor.
+        # All work remains private until subsequent native semantics accept it.
+        self.db.commit()
+        staging = AssertionStaging(
+            self.db,
+            attempt_id=uuid4().hex,
+            frame=frame,
+            catalog_sha256=catalog.checkpoint_sha256(),
+            require_profiles=require_profiles,
+        )
+        staging.initialize()
+        staging_admission = 4 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 8192
+        while not staging.advance(byte_budget=staging_admission).done:
+            pass
         if correction:
-            for table in ("maps", "edges", "findings", "fixities"):
-                self.db.execute("DELETE FROM " + table)
-            self.db.execute("UPDATE assertions SET touched = 1 WHERE active = 1")
+            # Earlier native checks/staging remain entry-local, private work.
+            # Each projection phase starts without inheriting that transaction.
+            self.db.commit()
+            correction_source = frame.sha256
+            retirement = CorrectionWork(
+                self.db,
+                operation="retire",
+                attempt_id=correction_attempt,
+                source_binding=correction_source,
+            )
+            retirement.initialize()
+            while not retirement.retire(byte_budget=atom_admission).done:
+                pass
+            for kind, run in self._dag_runs.items():
+                checker = OnlineDag(self.db, kind, run).replace_run(uuid4().hex)
+                self._dag_runs[kind] = checker.run_id
+                while checker.retire():
+                    pass
+            seeding = CorrectionWork(
+                self.db,
+                operation="seed",
+                attempt_id=correction_attempt,
+                source_binding=correction_source,
+            )
+            seeding.initialize()
+            while not seeding.seed().done:
+                pass
         rows = (
             json.loads(value)
             for (value,) in self.db.execute(
-                "SELECT value FROM assertions WHERE active = 1 AND touched = 1 "
-                "ORDER BY assertion_id"
+                "SELECT assertions.value FROM changes CROSS JOIN assertions "
+                "WHERE assertions.assertion_id = changes.assertion_id AND active = 1 "
+                "ORDER BY changes.assertion_id"
             )
         )
         validator = _StoredValidator(
-            self, rows, catalog=catalog, journal_id=journal_id, require_profiles=require_profiles
+            self,
+            rows,
+            catalog=catalog,
+            journal_id=journal_id,
+            require_profiles=require_profiles,
+            frame=frame,
         )
         validator.run()
         recorder = self.objects.get(document["recorded_by_agent_id"])
@@ -699,11 +1009,6 @@ class JournalStore:
             context = self.objects.get(document["recording_context_id"])
             if context is None or context["type"] != "context":
                 raise ProvenanceValidationError("recording context does not resolve")
-        self.db.execute(
-            "INSERT INTO frames VALUES (?, ?, ?)",
-            (document["sequence"], frame.json_bytes, canonical_document(frame.reference)),
-        )
-        self.frame_count += 1
 
     @property
     def frames(self) -> Sequence[Any]:
@@ -738,11 +1043,15 @@ class JournalStore:
         return _Findings(self)
 
     def iter_assertions(self) -> Iterable[tuple[str, dict[str, Any]]]:
-        for category, value in self.db.execute(
-            "SELECT category, value FROM assertions WHERE active = 1 "
-            "ORDER BY category, assertion_id"
-        ):
-            yield category, json.loads(value)
+        with closing(
+            self.db.execute(
+                "SELECT category, value FROM assertions WHERE active = 1 "
+                "ORDER BY category, assertion_id"
+            )
+        ) as rows:
+            for category, value in rows:
+                self.require_open()
+                yield category, json.loads(value)
 
     @property
     def graph_validation(self) -> GraphValidation:

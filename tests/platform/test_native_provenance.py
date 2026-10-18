@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
+import pytest
 from riverhog_provenance import create_journal, new_id, validate_journal
 
 from tests.provenance_observer import native_provenance_observer
@@ -19,20 +20,32 @@ def test_live_platform_observer_records_exact_opaque_state(tmp_path: Path) -> No
     journal = create_journal(
         graph, recorded_by_agent_id=result.observer_agent_id, catalog=result.catalog
     )
-    summary = validate_journal(journal, catalog=result.catalog)
+    with validate_journal(journal, catalog=result.catalog) as summary:
+        assert summary.graph == graph
+        assert len(summary.states) == 1
+        assert summary.states[0]["id"] == result.state_id
+        assert summary.states[0]["occurrence_id"] == result.occurrence_id
+        assert result.occurrence["artifact_id"] == result.artifact_id
+        assert result.observation["content"] == {
+            "size_bytes": str(len(content)),
+            "digests": [{"algorithm": "sha-256", "value": hashlib.sha256(content).hexdigest()}],
+        }
+        assert result.observation["consistency"]["level"] == "verified_unchanged"
+        assert result.observation["profiles"]
+        assert graph["contexts"]
+        assert graph["locator_bindings"]
+        assert "path" not in result.artifact
+        assert "path" not in result.occurrence
 
-    assert summary.graph == graph
-    assert len(summary.states) == 1
-    assert summary.states[0]["id"] == result.state_id
-    assert summary.states[0]["occurrence_id"] == result.occurrence_id
-    assert result.occurrence["artifact_id"] == result.artifact_id
-    assert result.observation["content"] == {
-        "size_bytes": str(len(content)),
-        "digests": [{"algorithm": "sha-256", "value": hashlib.sha256(content).hexdigest()}],
-    }
-    assert result.observation["consistency"]["level"] == "verified_unchanged"
-    assert result.observation["profiles"]
-    assert graph["contexts"]
-    assert graph["locator_bindings"]
-    assert "path" not in result.artifact
-    assert "path" not in result.occurrence
+        directory = summary._store._storage.directory
+        borrowed = summary.borrow()
+        expected = summary.anchor
+    with borrowed:
+        assert borrowed.anchor == expected and directory.exists()
+        frames = iter(borrowed.frames)
+        next(frames)
+        frames.close()
+        assert borrowed.anchor == expected
+        with pytest.raises(RuntimeError, match="closed"):
+            len(summary.frames)
+    assert not directory.exists()

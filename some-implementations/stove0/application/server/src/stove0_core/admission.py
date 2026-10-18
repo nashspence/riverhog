@@ -430,14 +430,15 @@ class ClassificationAdmissionService:
                             "admission baseline replay differs from committed authority"
                         )
                 return False
-            self._require_page_authority(
+            if not self._require_page_authority(
                 row,
                 policy,
                 cursor,
                 page,
                 expected_generation=expected_generation,
                 expected_phase="baseline",
-            )
+            ):
+                return False
             assert row is not None
             for descriptor, matched in matches:
                 recorded = self._record_match(session, row, descriptor, matched)
@@ -478,14 +479,15 @@ class ClassificationAdmissionService:
                             "admission change replay differs from committed authority"
                         )
                 return False
-            self._require_page_authority(
+            if not self._require_page_authority(
                 row,
                 policy,
                 cursor,
                 page,
                 expected_generation=expected_generation,
                 expected_phase="following",
-            )
+            ):
+                return False
             assert row is not None
             if len(page.changes) > 1:
                 raise RuntimeError("admission change step exceeded its one-change transaction")
@@ -865,19 +867,28 @@ class ClassificationAdmissionService:
         *,
         expected_generation: str,
         expected_phase: Literal["baseline", "following"],
-    ) -> None:
+    ) -> bool:
+        """Admit the current checkpoint or discard a superseded exact-authority proposal."""
         if (
             row is None
             or row.policy_sha256 != policy.policy_sha256
             or row.generation != expected_generation
-            or row.phase != expected_phase
-            or row.cursor != cursor
             or row.source_identity != page.source_identity
             or row.authorization_view_identity != page.authorization_view_identity
         ):
             raise _AdmissionAuthorityChanged(
                 "admission catalog authority changed; rebaseline is required"
             )
+
+        if row.phase == expected_phase and row.cursor == cursor:
+            return True
+        if row.phase == expected_phase or (
+            expected_phase == "baseline" and row.phase == "following"
+        ):
+            return False
+        raise _AdmissionAuthorityChanged(
+            "admission catalog authority changed; rebaseline is required"
+        )
 
     def _require_rebaseline(
         self, policy_id: str, *, generation: str, phase: str, cursor: str

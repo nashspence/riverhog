@@ -391,6 +391,15 @@ _INTERFACE_DESCRIPTORS = (
         "release",
     ),
     InterfaceDescriptor(
+        "growth",
+        "Growth",
+        "Source-owned operation scopes, primitive bounds and explicit cost composition.",
+        18,
+        ("make unit", "make contract-check"),
+        "atomic",
+        "atomic",
+    ),
+    InterfaceDescriptor(
         "python",
         "Python",
         "Declared public imports and their selected exact structural contracts.",

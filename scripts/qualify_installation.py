@@ -1604,8 +1604,9 @@ def _run_gogurt_listener_lifecycle(
                         f"Gogurt listener replayed a completed observation after {operation}"
                     )
 
-            before_reinstall = _listener_status(
+            before_reinstall = _wait_for_listener(
                 executable,
+                lambda status: status.get("health") == "healthy",
                 scratch=scratch,
                 environment=environment,
             )
@@ -1631,12 +1632,18 @@ def _run_gogurt_listener_lifecycle(
                 raise QualificationError("same-version listener reinstall did not become healthy")
             before_heartbeat = before_reinstall.get("heartbeat")
             after_heartbeat = reinstalled.get("heartbeat")
+            before_pid = before_heartbeat.get("pid") if isinstance(before_heartbeat, dict) else None
+            after_pid = after_heartbeat.get("pid") if isinstance(after_heartbeat, dict) else None
             if (
                 not isinstance(before_heartbeat, dict)
                 or not isinstance(after_heartbeat, dict)
-                or before_heartbeat.get("pid") != after_heartbeat.get("pid")
+                or before_pid != after_pid
             ):
-                raise QualificationError("exact healthy listener reinstall churned its process")
+                raise QualificationError(
+                    "exact healthy listener reinstall churned its process "
+                    f"(before_health={before_reinstall.get('health')}, "
+                    f"before_pid={before_pid}, after_pid={after_pid})"
+                )
             time.sleep(0.5)
             if sentinel.read_text(encoding="utf-8").splitlines() != ["run"]:
                 raise QualificationError("same-version listener reinstall replayed completed work")

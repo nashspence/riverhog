@@ -1,9 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import time
-from concurrent.futures import ThreadPoolExecutor
-from contextlib import nullcontext
 from dataclasses import dataclass
 
 from riverhog_age import encrypt_age_scrypt
@@ -34,11 +31,6 @@ from riverhog_core.archive_formats import (
 )
 from riverhog_core.domain.archive import SealedProvenanceObject
 from riverhog_core.ports.archive_objects import ImmutableArchiveObjectStore
-from riverhog_core.throughput import (
-    ArchiveTransferResources,
-    TransferTiming,
-    log_transfer_timing,
-)
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,14 +55,12 @@ class ArchiveProvenancePublisher:
         object_store: ImmutableArchiveObjectStore,
         passphrase: str,
         scrypt_log_n: int,
-        transfer_resources: ArchiveTransferResources | None = None,
     ) -> None:
         if not passphrase:
             raise ValueError("archive passphrase must not be empty")
         self._object_store = object_store
         self._passphrase = passphrase
         self._scrypt_log_n = scrypt_log_n
-        self._resources = transfer_resources
 
     def publish_volume(
         self,
@@ -85,35 +75,30 @@ class ArchiveProvenancePublisher:
             or hashlib.sha256(payload).hexdigest() != document.payload.sha256
         ):
             raise ValueError("provenance payload identity changed before publication")
-        with ThreadPoolExecutor(max_workers=2) as executor:
-            payload_future = executor.submit(
-                self._put,
-                prefix=prefix,
-                object_id=f"provenance-payload-{document.payload.sha256}",
-                kind=(
-                    "provenance-bindings"
-                    if document.payload.kind == "bindings"
-                    else "provenance-journal-segment"
-                ),
-                relative_path=document.payload.path,
-                content=payload,
-                storage_format=(
-                    PROVENANCE_BINDING_SEGMENT_STORAGE_FORMAT
-                    if document.payload.kind == "bindings"
-                    else PROVENANCE_JOURNAL_SEGMENT_STORAGE_FORMAT
-                ),
-            )
-            metadata_future = executor.submit(
-                self._put,
-                prefix=prefix,
-                object_id=f"provenance-volume-{format_archive_sequence(document.sequence)}",
-                kind="provenance-volume-metadata",
-                relative_path=document.metadata_path,
-                content=document.to_json_bytes(),
-                storage_format=PROVENANCE_VOLUME_METADATA_STORAGE_FORMAT,
-            )
-            payload_object = payload_future.result()
-            metadata_object = metadata_future.result()
+        payload_object = self._put(
+            prefix=prefix,
+            object_id=f"provenance-payload-{document.payload.sha256}",
+            kind=(
+                "provenance-bindings"
+                if document.payload.kind == "bindings"
+                else "provenance-journal-segment"
+            ),
+            relative_path=document.payload.path,
+            content=payload,
+            storage_format=(
+                PROVENANCE_BINDING_SEGMENT_STORAGE_FORMAT
+                if document.payload.kind == "bindings"
+                else PROVENANCE_JOURNAL_SEGMENT_STORAGE_FORMAT
+            ),
+        )
+        metadata_object = self._put(
+            prefix=prefix,
+            object_id=f"provenance-volume-{format_archive_sequence(document.sequence)}",
+            kind="provenance-volume-metadata",
+            relative_path=document.metadata_path,
+            content=document.to_json_bytes(),
+            storage_format=PROVENANCE_VOLUME_METADATA_STORAGE_FORMAT,
+        )
         return SealedArchiveProvenanceVolume(
             sequence=document.sequence,
             payload=payload_object,
@@ -243,61 +228,22 @@ class ArchiveProvenancePublisher:
         content: bytes,
         storage_format: str,
     ) -> SealedProvenanceObject:
-        started = time.monotonic()
         plaintext_sha256 = hashlib.sha256(content).hexdigest()
-        integrity_seconds = time.monotonic() - started
-        queue_seconds = crypto_seconds = crypto_queue_seconds = 0.0
-
-        def encrypt() -> bytes:
-            nonlocal crypto_seconds, crypto_queue_seconds
-            with (
-                nullcontext(0.0)
-                if self._resources is None
-                else self._resources.age_derivations.reserve()
-            ) as waited:
-                crypto_queue_seconds += waited
-                crypto_started = time.monotonic()
-                try:
-                    return encrypt_age_scrypt(content, self._passphrase, log_n=self._scrypt_log_n)
-                finally:
-                    crypto_seconds += time.monotonic() - crypto_started
-
-        media_type = storage_format.replace("/", ".").replace("+", ".")
-        with (
-            nullcontext(0.0)
-            if self._resources is None
-            else self._resources.upload_requests.reserve()
-        ) as waited:
-            queue_seconds += waited
-            remote_started = time.monotonic()
-            receipt = self._object_store.put_immutable_object(
-                object_path=f"{prefix}/{relative_path}",
-                content=encrypt,
-                content_type=f"application/vnd.{media_type}",
-                required_identity_assertions={
-                    "riverhog-format": storage_format,
-                    "riverhog-plaintext-bytes": str(len(content)),
-                    "riverhog-plaintext-sha256": plaintext_sha256,
-                },
-                placement_policy="immediate_default",
-            )
-            remote_seconds = max(
-                0.0, time.monotonic() - remote_started - crypto_seconds - crypto_queue_seconds
-            )
-        log_transfer_timing(
-            TransferTiming(
-                operation=f"provenance-write-{kind}",
-                identity=plaintext_sha256,
-                plaintext_bytes=len(content),
-                stored_bytes=receipt.stored_bytes,
-                queue_wait_seconds=queue_seconds + crypto_queue_seconds,
-                source_seconds=0.0,
-                integrity_seconds=integrity_seconds,
-                crypto_seconds=crypto_seconds,
-                remote_seconds=remote_seconds,
-                checkpoint_seconds=0.0,
-                elapsed_seconds=time.monotonic() - started,
-            )
+        ciphertext = encrypt_age_scrypt(
+            content,
+            self._passphrase,
+            log_n=self._scrypt_log_n,
+        )
+        receipt = self._object_store.put_immutable_object(
+            object_path=f"{prefix}/{relative_path}",
+            content=ciphertext,
+            content_type=f"application/vnd.{storage_format.replace('/', '.').replace('+', '.')}",
+            required_identity_assertions={
+                "riverhog-format": storage_format,
+                "riverhog-plaintext-bytes": str(len(content)),
+                "riverhog-plaintext-sha256": plaintext_sha256,
+            },
+            placement_policy="immediate_default",
         )
         return SealedProvenanceObject(
             object_id=object_id,

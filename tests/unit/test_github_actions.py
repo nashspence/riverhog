@@ -258,18 +258,34 @@ def test_codeql_covers_every_governed_branch_with_stable_checks() -> None:
         "matrix": {"language": ["actions", "python"]},
     }
     steps = job["steps"]
-    assert [step["uses"].split("@", 1)[0] for step in steps] == [
+    action_steps = [step for step in steps if "uses" in step]
+    assert [step["uses"].split("@", 1)[0] for step in action_steps] == [
         "actions/checkout",
         "github/codeql-action/init",
         "github/codeql-action/analyze",
+        "actions/upload-artifact",
     ]
-    assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in steps)
-    assert steps[0]["with"] == {"persist-credentials": "false"}
-    assert steps[1]["with"] == {
+    assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in action_steps)
+    assert action_steps[0]["with"] == {"persist-credentials": "false"}
+    assert action_steps[1]["with"] == {
         "languages": "${{ matrix.language }}",
         "queries": "security-extended",
     }
-    assert steps[2]["with"] == {"category": "/language:${{ matrix.language }}"}
+    assert action_steps[2]["with"] == {"category": "/language:${{ matrix.language }}"}
+    start, finish = [step for step in steps if "run" in step]
+    assert "scripts/ci_execution.py start" in start["run"]
+    assert "scripts/ci_execution.py finish" in finish["run"]
+    assert job["env"] == {"VALIDATION_WORK": "codeql-${{ matrix.language }}"}
+    for recorder in (start, finish):
+        assert recorder["env"] == {
+            "VALIDATION_CHECKOUT": "${{ runner.temp }}/codeql-validation/checkout.json"
+        }
+    assert action_steps[-1]["with"]["path"] == "${{ runner.temp }}/codeql-validation"
+    assert finish["if"] == "always()"
+    assert steps.index(start) < steps.index(action_steps[1])
+    assert steps.index(finish) > steps.index(action_steps[2])
+    assert steps[-1]["if"] == "always()"
+    assert steps[-1]["with"]["retention-days"] == "7"
 
 
 def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
@@ -291,6 +307,7 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         },
     }
     assert workflow["permissions"] == {"contents": "read"}
+    assert workflow["jobs"]["gate"]["permissions"] == {"actions": "read", "contents": "read"}
     assert workflow["concurrency"]["cancel-in-progress"] == "true"
 
     assert set(workflow["jobs"]) == {
@@ -332,8 +349,8 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
             assert step["with"] == {"version": "v5.1.1"}
     repository = jobs["repository"]
     run = next(step for step in repository["steps"] if step["name"] == "Run repository target")
-    assert 'python scripts/ci_timing.py run --lane "$CI_TARGET"' in run["run"]
-    assert '-- make "$CI_TARGET"' in run["run"]
+    assert 'python scripts/ci_timing.py execute --workload "$CI_TARGET"' in run["run"]
+    assert '--run-id "${{ github.run_id }}-${{ github.run_attempt }}"' in run["run"]
     for name in ("repository", "units", "compose", "images"):
         retained = jobs[name]["steps"][-1]
         assert retained["if"] == "always()"
@@ -341,13 +358,13 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         assert retained["with"]["retention-days"] == "7"
         assert retained["with"]["path"] == "${{ runner.temp }}/ci-timing"
     unit_run = next(step for step in jobs["units"]["steps"] if "run" in step)
-    assert 'make unit-shard UNIT_SHARD="$UNIT_SHARD"' in unit_run["run"]
+    assert 'execute --workload "unit-$UNIT_SHARD"' in unit_run["run"]
     compose_run = next(
         step
         for step in jobs["compose"]["steps"]
         if step["name"] == "Qualify the complete independent lifecycle"
     )
-    assert 'make compose-shard COMPOSE_LANE="$COMPOSE_LANE"' in compose_run["run"]
+    assert 'execute --workload "compose-$COMPOSE_LANE"' in compose_run["run"]
     client = jobs["client-platforms"]
     assert client["strategy"]["matrix"] == {"os": ["ubuntu-24.04", "macos-15", "windows-2025"]}
     assert client["env"] == {"MISE_AUTO_INSTALL": "0"}
@@ -355,10 +372,15 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
     native = next(step for step in client["steps"] if "run" in step)
     assert native["run"] == (
         "mise x python uv age -- uv run --locked --all-packages --group dev "
-        "python -m scripts.ci_qualification native"
+        'python scripts/ci_timing.py execute --workload "$NATIVE_WORKLOAD" '
+        '--run-id "${{ github.run_id }}-${{ github.run_attempt }}" '
+        '--output "$RIVERHOG_CI_TIMING_DIR/receipt.json"'
     )
+    assert native["shell"] == "bash"
     assert native["env"] == {
-        "GOGURT_FAILURE_EVIDENCE_DIR": "${{ runner.temp }}/gogurt-failure-evidence"
+        "GOGURT_FAILURE_EVIDENCE_DIR": "${{ runner.temp }}/gogurt-failure-evidence",
+        "RIVERHOG_CI_TIMING_DIR": "${{ runner.temp }}/ci-timing",
+        "NATIVE_WORKLOAD": "native-${{ matrix.os }}",
     }
     evidence_step = client["steps"][-1]
     assert evidence_step["if"] == "failure()"
@@ -379,7 +401,7 @@ def test_ci_gate_covers_every_job_and_rejects_non_successful_dependencies() -> N
     assert gate["if"] == "always()"
     assert gate["runs-on"] == "ubuntu-24.04"
     assert set(gate["needs"]) == set(workflow["jobs"]) - {"gate"}
-    step = gate["steps"][0]
+    step = next(step for step in gate["steps"] if "CI_DEPENDENCIES" in step.get("env", {}))
     assert step["env"] == {"CI_DEPENDENCIES": "${{ toJSON(needs) }}"}
 
     def observe(dependencies):
@@ -419,7 +441,7 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
         "needs": "resolve",
         "uses": "./.github/workflows/ci.yml",
         "with": {"ref": "${{ needs.resolve.outputs.sha }}"},
-        "permissions": {"contents": "read"},
+        "permissions": {"actions": "read", "contents": "read"},
     }
     audit = workflow["jobs"]["release-audit"]
     assert "environment" not in audit
@@ -927,3 +949,34 @@ def test_client_platform_toolchain_is_locked_for_every_matrix_os() -> None:
         windows = platforms["windows-x64"]
         assert windows["url"].startswith("https://github.com/")
         assert re.fullmatch(r"sha256:[0-9a-f]{64}", windows["checksum"])
+
+
+def test_complete_validation_observer_uses_trusted_code_and_read_only_attempt_metadata() -> None:
+    path = REPO_ROOT / ".github/workflows/validation-evidence.yml"
+    workflow = yaml.load(path.read_text(), Loader=yaml.BaseLoader)
+    names = {
+        yaml.load(path.read_text(), Loader=yaml.BaseLoader)["name"]
+        for path in (CI_WORKFLOW, CODEQL_WORKFLOW)
+    }
+    assert set(workflow["on"]) == {"workflow_run"}
+    assert set(workflow["on"]["workflow_run"]["workflows"]) == names
+    assert workflow["on"]["workflow_run"]["types"] == ["completed"]
+    assert workflow["permissions"] == {"actions": "read", "contents": "read"}
+    assert workflow["concurrency"]["cancel-in-progress"] == "false"
+    job = workflow["jobs"]["observe"]
+    checkout = job["steps"][0]
+    assert checkout["with"] == {
+        "persist-credentials": "false",
+        "ref": "${{ github.workflow_sha }}",
+    }
+    observe = next(step for step in job["steps"] if "run" in step)
+    assert "python -m scripts.ci_actions completed" in observe["run"]
+    assert observe["env"]["OBSERVED_RUN_ID"] == "${{ github.event.workflow_run.id }}"
+    assert observe["env"]["OBSERVED_ATTEMPT"] == "${{ github.event.workflow_run.run_attempt }}"
+    assert all(
+        re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in job["steps"] if "uses" in step
+    )
+    retained = job["steps"][-1]
+    assert retained["if"] == "always()"
+    assert retained["with"]["retention-days"] == "7"
+    assert "environment" not in job

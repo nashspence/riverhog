@@ -73,6 +73,7 @@ members = [
     "riverhog-archive-contracts",
     "riverhog-canonical-json",
     "riverhog-client",
+    "riverhog-growth-contracts",
     "riverhog-materialization",
     "riverhog-protocol",
     "riverhog-provenance",
@@ -81,6 +82,7 @@ members = [
     "riverhog-storage-adapter-asgi-support",
     "riverhog-storage-adapter-protocol",
     "riverhog-storage-adapter-support",
+    "sha256-continuation",
     "state-schema",
     "stove0-api-client",
     "stove0-extension-support",
@@ -2979,6 +2981,7 @@ dependencies = [
     { name = "riverhog-application-access" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
+    { name = "riverhog-growth-contracts" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance" },
     { name = "riverhog-provenance-contracts" },
@@ -2994,10 +2997,26 @@ requires-dist = [
     { name = "riverhog-application-access", editable = "packages/riverhog-application-access" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+    { name = "riverhog-growth-contracts", editable = "packages/riverhog-growth-contracts" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
     { name = "time-formats", editable = "packages/time-formats" },
+]
+
+[[package]]
+name = "riverhog-growth-contracts"
+version = "0.1.0"
+source = { editable = "packages/riverhog-growth-contracts" }
+dependencies = [
+    { name = "release-documentation-lib" },
+    { name = "riverhog-canonical-json" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
 ]
 
 [[package]]
@@ -3030,7 +3049,9 @@ dependencies = [
     { name = "release-documentation-lib" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
+    { name = "riverhog-growth-contracts" },
     { name = "riverhog-provenance-contracts" },
+    { name = "sha256-continuation" },
     { name = "time-formats" },
 ]
 
@@ -3042,7 +3063,9 @@ requires-dist = [
     { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+    { name = "riverhog-growth-contracts", editable = "packages/riverhog-growth-contracts" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
+    { name = "sha256-continuation", editable = "packages/sha256-continuation" },
     { name = "time-formats", editable = "packages/time-formats" },
 ]
 
@@ -3055,7 +3078,9 @@ dependencies = [
     { name = "release-documentation-lib" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
+    { name = "riverhog-growth-contracts" },
     { name = "riverhog-provenance-contracts" },
+    { name = "sha256-continuation" },
     { name = "time-formats" },
 ]
 
@@ -3073,7 +3098,9 @@ requires-dist = [
     { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+    { name = "riverhog-growth-contracts", editable = "packages/riverhog-growth-contracts" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
+    { name = "sha256-continuation", editable = "packages/sha256-continuation" },
     { name = "time-formats", editable = "packages/time-formats" },
 ]
 provides-extras = ["test"]
@@ -3116,6 +3143,7 @@ dependencies = [
     { name = "riverhog-application-access" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
+    { name = "riverhog-growth-contracts" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance" },
     { name = "riverhog-provenance-contracts" },
@@ -3142,6 +3170,7 @@ requires-dist = [
     { name = "riverhog-application-access", editable = "packages/riverhog-application-access" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+    { name = "riverhog-growth-contracts", editable = "packages/riverhog-growth-contracts" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
@@ -3371,6 +3400,21 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f6/94/dcdaeb1713cab9c84def276cfac7388b17c7d9855bbcfe88d77e4dbafd44/s3transfer-0.19.0.tar.gz", hash = "sha256:ce436931687addc4c1712d52d40b32f53e88315723f107ffa20ba82b05a0f685", size = 165171, upload-time = "2026-06-16T19:44:51.599Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/46/5f/4c174edad94f82de888ac00a5ddd8d07b35609b6c94f0bdf4d74af57703e/s3transfer-0.19.0-py3-none-any.whl", hash = "sha256:777cc2415536f1debadb5c2ef7779275d0fc0fe0e042411cdd6caebeb2685262", size = 90101, upload-time = "2026-06-16T19:44:50.439Z" },
+]
+
+[[package]]
+name = "sha256-continuation"
+version = "0.1.0"
+source = { editable = "packages/sha256-continuation" }
+dependencies = [
+    { name = "release-documentation-lib" },
+    { name = "riverhog-growth-contracts" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+    { name = "riverhog-growth-contracts", editable = "packages/riverhog-growth-contracts" },
 ]
 
 [[package]]

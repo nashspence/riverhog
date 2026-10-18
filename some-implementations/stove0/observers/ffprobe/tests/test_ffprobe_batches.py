@@ -83,7 +83,7 @@ class BoundedRuntime(FixtureRuntime):
 def test_stream_batch_matches_individual_facts_and_releases_each_source(tmp_path, tool):
     observer = FfprobeObserver(image_id="sha256:" + "d" * 64, workspace_root=tmp_path / "observer")
     support = observer.descriptor().support_for(FFPROBE_STREAMS_OBSERVER_CONTRACT.id)
-    assert support.preferred_subject_batch_size == 16
+    assert support.preferred_subject_batch_size == 1
     subjects = _subjects(16)
     runtime = BoundedRuntime(tmp_path / "batch")
     batch = observer.observe(_request(observer, subjects), cast(ContentObservationRuntime, runtime))

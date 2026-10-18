@@ -21,6 +21,13 @@ from .errors import (
     ProvenanceValidationError,
     UnresolvedContractError,
 )
+from .framing import (
+    JOURNAL_FRAMING_ALGORITHM,
+    JournalFramePosition,
+    JournalFramingAdvance,
+    JournalFramingCursor,
+    advance_journal_framing,
+)
 from .graph import GraphValidation, validate_graph
 from .history import MemberHistoryClosure, MemberHistoryMembership
 from .interface import ObservationSource, StateObserver
@@ -47,8 +54,6 @@ from .journal import (
     validate_journal_set_chunks,
     write_assertion_batches,
 )
-from .journal_cache import JournalValidationCache
-from .journal_reference_cache import JournalReferenceCache
 from .model import (
     BinaryReadable,
     ObservationPolicy,
@@ -95,11 +100,14 @@ __all__ = [
     "validate_graph",
     "ObservationSource",
     "StateObserver",
+    "JOURNAL_FRAMING_ALGORITHM",
+    "JournalFramePosition",
+    "JournalFramingAdvance",
+    "JournalFramingCursor",
+    "advance_journal_framing",
     "JournalFrame",
     "JournalSetValidation",
     "JournalSummary",
-    "JournalValidationCache",
-    "JournalReferenceCache",
     "RecoveryResult",
     "append_assertion_batches",
     "write_assertion_batches",
