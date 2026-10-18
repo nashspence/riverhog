@@ -412,30 +412,37 @@ class OnlineDag:
     def progress(self) -> Progress:
         return self._progress(self._load())
 
+    def _apply(self, plan: _Plan) -> bool:
+        """Apply one prepared unit inside its owner's checkpoint transaction."""
+        if not self.db.in_transaction:
+            raise RuntimeError("online graph application requires an owner transaction")
+        with closing(
+            self.db.execute(
+                "UPDATE dag_runs SET version = ?, work = ? "
+                "WHERE kind = ? AND run_id = ? AND version = ?",
+                (
+                    str(plan.before.version + 1),
+                    plan.work.encoded(),
+                    self.kind,
+                    self.run_id,
+                    str(plan.before.version),
+                ),
+            )
+        ) as cursor:
+            changed = cursor.rowcount
+        if changed:
+            for statement, parameters in plan.writes:
+                self.db.execute(statement, parameters).close()
+        return bool(changed)
+
     def _commit(self, plan: _Plan) -> Progress:
         if self.db.in_transaction:
             raise RuntimeError("online graph commit requires a closed source transaction")
         self.db.execute("BEGIN IMMEDIATE").close()
         try:
-            with closing(
-                self.db.execute(
-                    "UPDATE dag_runs SET version = ?, work = ? "
-                    "WHERE kind = ? AND run_id = ? AND version = ?",
-                    (
-                        str(plan.before.version + 1),
-                        plan.work.encoded(),
-                        self.kind,
-                        self.run_id,
-                        str(plan.before.version),
-                    ),
-                )
-            ) as cursor:
-                changed = cursor.rowcount
-            if not changed:
+            if not self._apply(plan):
                 self.db.rollback()
                 return self._progress(self._load(), stale=True)
-            for statement, parameters in plan.writes:
-                self.db.execute(statement, parameters).close()
             self.db.commit()
         except BaseException:
             self.db.rollback()
@@ -444,8 +451,7 @@ class OnlineDag:
             _Snapshot(plan.before.version + 1, plan.work), visits=plan.adjacency_visits
         )
 
-    def start(self, operation_id: str, source: str, target: str) -> Progress:
-        """Admit exactly one native edge operation; repetition retains its continuation."""
+    def _prepare_start(self, operation_id: str, source: str, target: str) -> _Plan:
         if not isinstance(operation_id, str) or not operation_id:
             raise ValueError("online graph operation requires an exact identity")
         require_canonical_uuid_urn(source)
@@ -455,7 +461,7 @@ class OnlineDag:
         if work.operation_id == operation_id:
             if (work.source, work.target) != (source, target):
                 raise RuntimeError("online graph operation inputs changed")
-            return self._progress(before)
+            return _Plan(before, replace(work))
         if work.phase not in ("idle", "complete"):
             raise RuntimeError("online graph operation is still quarantined")
         next_work = _Work(
@@ -468,7 +474,14 @@ class OnlineDag:
             (self.kind, self.run_id, source, target),
         ):
             next_work.phase, next_work.outcome = "complete", "accepted"
-        return self._commit(_Plan(before, next_work))
+        return _Plan(before, next_work)
+
+    def start(self, operation_id: str, source: str, target: str) -> Progress:
+        """Admit exactly one native edge operation; repetition retains its continuation."""
+        plan = self._prepare_start(operation_id, source, target)
+        if plan.work == plan.before.work:
+            return self._progress(plan.before)
+        return self._commit(plan)
 
     def _undo(self, plan: _Plan, relation: str, first: str, second: str, old: str | None) -> None:
         plan.write(

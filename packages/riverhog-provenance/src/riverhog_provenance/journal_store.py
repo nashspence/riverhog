@@ -44,6 +44,8 @@ from ._correction_targets import install as install_correction_targets
 from ._journal_prefix import install as install_journal_prefix
 from ._online_dag import OnlineDag
 from ._online_dag import install as install_online_dag
+from ._semantic_edge import SemanticEdge, SemanticEdgeSource
+from ._semantic_edge import install as install_semantic_edges
 from ._semantic_finish import SemanticFinish
 from ._semantic_finish import install as install_semantic_finish
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
@@ -452,18 +454,34 @@ class _Findings(MutableSequence[str]):
 
 
 class _Edges:
-    def __init__(self, store: JournalStore, kind: str) -> None:
-        self.store, self.kind = store, kind
-        self.checker = OnlineDag(store.db, kind, store._dag_runs[kind])
+    def __init__(self, validator: _StoredValidator, kind: str) -> None:
+        self.validator, self.kind = validator, kind
 
     def append(self, edge: tuple[str, str]) -> None:
         source, target = edge
         if source == target:
             raise ProvenanceValidationError(f"{self.kind} cannot relate an entity to itself")
-        # The projection stays private until the whole native result is frozen.
-        # Each graph transition owns a separate bounded checkpoint transaction.
-        self.store.db.commit()
-        self.checker.add(source, target)
+        row = self.validator.current_row
+        if row is None:
+            raise RuntimeError("semantic graph insertion requires its current assertion")
+        store = self.validator.store
+        # Native checks precede insertion; the private child owns each graph unit.
+        store.db.commit()
+        work = SemanticEdge(
+            store.db,
+            kind=self.kind,
+            run_id=store._dag_runs[self.kind],
+            attempt_id=uuid4().hex,
+            source_binding=self.validator.edge_source,
+            assertion_id=row["assertion_id"],
+            object_id=row["id"],
+            source=source,
+            target=target,
+        )
+        work.initialize()
+        while not work.advance().done:
+            pass
+        work.result()
 
 
 class _StoredValidator(_Validator):
@@ -479,6 +497,10 @@ class _StoredValidator(_Validator):
     ) -> None:
         self.store, self.rows, self.frame = store, rows, frame
         self.catalog, self.journal_id, self.require_profiles = catalog, journal_id, require_profiles
+        self.current_row: dict[str, Any] | None = None
+        self.edge_source = SemanticEdgeSource.from_frame(
+            frame, catalog_sha256=catalog.checkpoint_sha256(), require_profiles=require_profiles
+        )
         self.objects = store.objects
         self.externals = _Map(store, "externals")
         self.profiles = _Map(store, "profiles")
@@ -488,8 +510,8 @@ class _StoredValidator(_Validator):
         return (
             _Map(self.store, "generation"),
             _Map(self.store, "invalidation"),
-            _Edges(self.store, "derivation"),
-            _Edges(self.store, "specialization"),
+            _Edges(self, "derivation"),
+            _Edges(self, "specialization"),
             _Map(self.store, "captures"),
             _Set(self.store, "ends"),
             _Set(self.store, "slots"),
@@ -497,12 +519,14 @@ class _StoredValidator(_Validator):
 
     def validation_rows(self) -> Iterable[dict[str, Any]]:
         for row in self.rows:
+            self.current_row = row
             yield row
             # The native row checks run before this iterator resumes.
             if row["type"] in ("usage", "invalidation") and "at" in row:
                 self.store._record_lifecycle_time(
                     row["state"]["object_id"], row["type"], time_ns(row["at"])
                 )
+            self.current_row = None
 
     def finish(
         self,
@@ -599,6 +623,7 @@ class JournalStore:
             install_correction_targets(self.db)
             install_semantic_finish(self.db)
             install_assertion_staging(self.db)
+            install_semantic_edges(self.db)
             install_online_dag(self.db)
             self._dag_runs = {
                 "derivation": uuid4().hex,
