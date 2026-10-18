@@ -17,7 +17,7 @@ SBOM_GENERATOR = (
     "sha256:79e7b013cbec16bbb436f312819a49a4a57752b2270c1a9332ae1a10fcc82a68"
 )
 MISE_IMAGE = (
-    "jdxcode/mise:2026.7.13@sha256:7fe9145156e33f95f7712632dbadb418592ed0f60fb46e5bcc8c113d372ad8a3"
+    "jdxcode/mise:2026.9.16@sha256:ba8323458e59bb82d3132bc15f7a59a8ac9a88c6202286a2fc56507aab0094d2"
 )
 MISE_CONTAINER_TOOLS = {
     "riverhog": {"uv"},
