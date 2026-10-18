@@ -1,10 +1,17 @@
 from __future__ import annotations
 
+import threading
+from concurrent.futures import ThreadPoolExecutor
+from datetime import timedelta
 from typing import cast
 
-from stove0_core import ClaimBinding, Stove0Scheduler, WorkRecord
+import pytest
+from http_api_contracts import control
+from sqlalchemy import event, text
+from stove0_core import ClaimBinding, SqlAlchemyStateStore, Stove0Scheduler, WorkRecord
 from stove0_core.scheduler import _phases_for_role
 from stove0_protocol import CollectionRootIdentityRef, RecipeIdentityRef, WorkIdentity, WorkPayload
+from time_formats import format_utc_timestamp, utc_now
 
 
 def _identity(index: int) -> WorkIdentity:
@@ -29,7 +36,15 @@ class _State:
         self.scan_calls: list[dict[str, object]] = []
         self.prune_calls: list[str] = []
 
+    def record_work_contact(self, *_args: object, **_kwargs: object) -> None:
+        pass
+
+    def record_work_maintenance(self, *_args: object, **_kwargs: object) -> None:
+        pass
+
     def scan_work(self, **kwargs: object) -> tuple[list[WorkRecord], str]:
+        if kwargs.get("maintenance"):
+            return [], ""
         self.scan_calls.append(kwargs)
         phases = cast(tuple[str, ...], kwargs["phases"])
         after = cast(str, kwargs["after_work_id"])
@@ -79,6 +94,131 @@ class _Coordinator:
         if work_id in self.noops:
             return record
         return record.model_copy(update={"revision": record.revision + 1})
+
+
+def test_concurrent_contacts_preserve_backoff_without_read_upgrade_deadlock(tmp_path, monkeypatch):
+    state = SqlAlchemyStateStore(f"sqlite+pysqlite:///{tmp_path / 'contacts.db'}")
+    record = state.create(WorkRecord(work=_identity(1)))
+    now = utc_now()
+    monkeypatch.setattr("stove0_core.persistence.utc_now", lambda: now)
+    ready = threading.Barrier(2)
+
+    def before_update(_connection, _cursor, statement, _parameters, _context, _many):
+        if statement.startswith("UPDATE stove0_work_records ") and "contact_failures" in statement:
+            ready.wait(10)
+
+    def failed_contact():
+        state.record_work_contact(
+            record.work_id, expected_revision=record.revision, failed=True, progressed=False
+        )
+
+    def contact():
+        with state.engine.connect() as connection:
+            return connection.execute(
+                text(
+                    "SELECT contact_failures, contact_at FROM stove0_work_records WHERE work_id=:id"
+                ),
+                {"id": record.work_id},
+            ).one()
+
+    try:
+        event.listen(state.engine, "before_cursor_execute", before_update)
+        try:
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                futures = [pool.submit(failed_contact) for _ in range(2)]
+                for future in futures:
+                    future.result(timeout=15)
+        finally:
+            event.remove(state.engine, "before_cursor_execute", before_update)
+        assert contact() == (2, format_utc_timestamp(now + timedelta(seconds=4)))
+        state.record_work_contact(
+            record.work_id, expected_revision=record.revision - 1, failed=True, progressed=False
+        )
+        assert contact() == (2, format_utc_timestamp(now + timedelta(seconds=4)))
+        for failures, seconds in ((3, 8), (4, 16), (5, 30), (6, 30)):
+            failed_contact()
+            assert contact() == (failures, format_utc_timestamp(now + timedelta(seconds=seconds)))
+        state.record_work_contact(
+            record.work_id, expected_revision=record.revision, failed=False, progressed=False
+        )
+        assert contact() == (0, format_utc_timestamp(now + timedelta(seconds=1)))
+        state.record_work_contact(
+            record.work_id, expected_revision=record.revision, failed=False, progressed=True
+        )
+        assert contact() == (0, format_utc_timestamp(now))
+    finally:
+        state.engine.dispose()
+
+
+def test_claim_maintenance_remains_due_during_durable_contact_backoff(tmp_path) -> None:
+    record = WorkRecord(
+        work=_identity(1), phase="executing", claim=ClaimBinding(claim_id="claim", fence=1)
+    )
+    database = f"sqlite+pysqlite:///{tmp_path / 'state.db'}"
+    state = SqlAlchemyStateStore(database)
+    state.create(record)
+    state.record_work_contact(record.work_id, expected_revision=1, failed=True, progressed=False)
+    restarted = SqlAlchemyStateStore(database, initialize=False)
+    contacts, _ = restarted.scan_work(phases=("executing",), after_work_id="", limit=1)
+    maintenance, _ = restarted.scan_work(
+        phases=("executing",), after_work_id="", limit=1, maintenance=True
+    )
+    assert contacts == []
+    assert [item.work_id for item in maintenance] == [record.work_id]
+
+    class Renewing(_Coordinator):
+        def __init__(self) -> None:
+            super().__init__((record,))
+            self.renewals = []
+
+        def maintain(self, work_id: str) -> WorkRecord:
+            self.renewals.append(work_id)
+            return record
+
+    coordinator = Renewing()
+    scheduler = Stove0Scheduler(coordinator=coordinator, state=restarted)  # type: ignore[arg-type]
+    scheduler.advance(role="controller")
+    assert coordinator.renewals == [record.work_id]
+    assert coordinator.steps == []
+    maintenance, _ = restarted.scan_work(
+        phases=("executing",), after_work_id="", limit=1, maintenance=True
+    )
+    assert maintenance == []
+    state.engine.dispose()
+    restarted.engine.dispose()
+
+
+def test_aggregate_budget_preserves_cursor_for_work_not_yet_visited(monkeypatch) -> None:
+    clock = [0.0]
+    monkeypatch.setattr(control.time, "monotonic", lambda: clock[0])
+    records = tuple(
+        sorted(
+            (WorkRecord(work=_identity(n)) for n in range(1, 4)), key=lambda record: record.work_id
+        )
+    )
+    state = _State(records)
+
+    class SlowMetadata(_Coordinator):
+        def step(self, work_id: str) -> WorkRecord:
+            clock[0] += 0.6
+            return super().step(work_id)
+
+    coordinator = SlowMetadata(records)
+    scheduler = Stove0Scheduler(coordinator=coordinator, state=state, control_seconds=1.0)  # type: ignore[arg-type]
+    first = scheduler.advance(role="controller", limit=3)
+    assert coordinator.steps == [item.work_id for item in records[:2]]
+    assert first["next_cursor"] == records[1].work_id
+    second = scheduler.advance(role="controller", limit=3)
+    assert second["progressed"] == [records[2].work_id]
+
+
+def test_scheduler_rejects_unbounded_control_allowances() -> None:
+    with pytest.raises(ValueError, match="finite"):
+        Stove0Scheduler(
+            coordinator=_Coordinator(()),
+            state=_State(()),  # type: ignore[arg-type]
+            control_seconds=float("inf"),
+        )
 
 
 def test_controller_and_worker_advance_disjoint_phases_of_one_work_authority() -> None:

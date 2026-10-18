@@ -15,7 +15,6 @@ import re
 import shlex
 import shutil
 import struct
-import subprocess
 import sys
 import tarfile
 import tempfile
@@ -27,6 +26,8 @@ from typing import (
     TypedDict,
     cast,
 )
+
+from stove0_extension_support import subprocess
 
 SOURCE_ARTIFACTS_SUFFIX = ".source-artifacts.tar.zst"
 SOURCE_ARTIFACTS_ZSTD_LEVEL = "19"
@@ -1986,7 +1987,7 @@ def _canonical_tar_info(info: tarfile.TarInfo) -> tarfile.TarInfo:
     return info
 
 
-def _finish_zstd_process(proc: subprocess.Popen[bytes], label: str) -> None:
+def _finish_zstd_process(proc: subprocess.Process[bytes], label: str) -> None:
     if proc.stdin is not None and not proc.stdin.closed:
         proc.stdin.close()
     if proc.stdout is not None and not proc.stdout.closed:

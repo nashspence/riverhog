@@ -7,6 +7,7 @@ import secrets
 from datetime import timedelta
 from typing import Any, Literal, Protocol, cast
 
+from http_api_contracts.control import ControlBudgetExhausted
 from riverhog_canonical_json import canonical_json_sha256
 from riverhog_client import ApiClient
 from riverhog_protocol import (
@@ -37,10 +38,12 @@ from stove0_target_protocol import (
     DepartureEffectIntent,
     DepartureEffectIntentPayload,
     DepartureEffectReceipt,
+    DepartureEffectStatus,
 )
 from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
 
 from stove0_core.catalog_predicate import catalog_selector_matches
+from stove0_core.control_contacts import ControlContacts
 from stove0_core.persistence import (
     SqlAlchemyStateStore,
     _DepartureEffectRow,
@@ -64,23 +67,30 @@ _RESET_ERRORS = frozenset(
 
 
 class DepartureTargetPort(Protocol):
+    def close(self) -> None: ...
+
     def put_effect(
         self, registration_id: str, intent: DepartureEffectIntent
-    ) -> DepartureEffectReceipt: ...
+    ) -> DepartureEffectStatus: ...
 
 
 class HttpDepartureTargetPort:
     def __init__(self, registrations: dict[str, DepartureEffectClient]) -> None:
         self._registrations = dict(registrations)
+        self._contacts = ControlContacts(registrations)
+
+    def close(self) -> None:
+        for client in self._registrations.values():
+            client.close()
 
     def put_effect(
         self, registration_id: str, intent: DepartureEffectIntent
-    ) -> DepartureEffectReceipt:
+    ) -> DepartureEffectStatus:
         try:
             target = self._registrations[registration_id]
         except KeyError as exc:
             raise KeyError(f"unknown departure target registration: {registration_id}") from exc
-        return target.put_effect(intent)
+        return self._contacts.call(registration_id, lambda: target.put_effect(intent))
 
     def has_registration(self, registration_id: str) -> bool:
         return registration_id in self._registrations
@@ -131,6 +141,8 @@ class DepartureEffectService:
                     try:
                         self._advance_effect(departure_id)
                         progressed.append(f"effect:{departure_id}")
+                    except ControlBudgetExhausted:
+                        raise
                     except Exception as exc:
                         self._record_effect_failure(departure_id, exc)
                         failures.append(
@@ -149,6 +161,8 @@ class DepartureEffectService:
                     advanced = self._advance_policy(policy)
                     if advanced:
                         progressed.append(f"policy:{policy.id}")
+                except ControlBudgetExhausted:
+                    raise
                 except Exception as exc:
                     failures.append(
                         SchedulerFailure(
@@ -590,7 +604,23 @@ class DepartureEffectService:
             if row is None or row.state == "complete":
                 return
             intent = DepartureEffectIntent.model_validate_json(row.document_json)
-        receipt = self.targets.put_effect(intent.target_registration_id, intent)
+        status = self.targets.put_effect(intent.target_registration_id, intent)
+        if (
+            status.departure_id != intent.departure_id
+            or status.target_identity != intent.target_identity
+        ):
+            raise ValueError("departure target status differs from sealed intent")
+        if status.state != "completed":
+            if status.state in {"interrupted", "canceled"}:
+                raise RuntimeError(f"departure effect requires reconciliation: {status.state}")
+            with self.state.sessions() as session, session.begin():
+                row = session.get(_DepartureEffectRow, departure_id, with_for_update=True)
+                if row is not None and row.state != "complete":
+                    row.next_attempt_at = format_utc_timestamp(utc_now() + timedelta(seconds=2))
+                    row.updated_at = utc_timestamp_now()
+            return
+        assert status.receipt is not None
+        receipt = status.receipt
         if (
             receipt.departure_id != intent.departure_id
             or receipt.target_identity != intent.target_identity

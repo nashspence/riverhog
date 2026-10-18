@@ -23,18 +23,21 @@ COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 
 COPY pyproject.toml uv.lock ./
+COPY packages/release-documentation-lib packages/release-documentation-lib
 COPY riverhog/pyproject.toml riverhog/pyproject.toml
 COPY riverhog/src riverhog/src
 COPY packages/config-validation packages/config-validation
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
+COPY packages/riverhog-growth-contracts packages/riverhog-growth-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-age packages/riverhog-age
 COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/riverhog-provenance packages/riverhog-provenance
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
 COPY packages/riverhog-protocol packages/riverhog-protocol
+COPY packages/sha256-continuation packages/sha256-continuation
 COPY packages/riverhog-storage-adapter-protocol packages/riverhog-storage-adapter-protocol
 COPY packages/riverhog-storage-adapter-support packages/riverhog-storage-adapter-support
 COPY packages/state-schema packages/state-schema
@@ -46,6 +49,7 @@ FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dc
 
 ENV DEBIAN_FRONTEND=noninteractive \
     HOME=/tmp \
+    TMPDIR=/scratch \
     PATH=/opt/venv/bin:$PATH \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
@@ -61,6 +65,8 @@ RUN ! command -v mise \
     && ! command -v minisign
 
 COPY --from=build /opt/venv /opt/venv
+
+RUN install -d -o 65532 -g 65532 -m 0700 /scratch
 
 ARG BUILD_CREATED=1970-01-01T00:00:00Z
 ARG RELEASE_VERSION=development

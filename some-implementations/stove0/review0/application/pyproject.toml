@@ -14,7 +14,7 @@ authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = [
+dependencies = ["release-documentation-lib>=0.1,<0.2",
   "riverhog-canonical-json>=0.1,<0.2",
   "config-validation>=0.1,<0.2",
   "fastapi>=0.111,<1.0",
@@ -35,6 +35,7 @@ dependencies = [
 review0 = "review0.app:main"
 
 [tool.uv.sources]
+release-documentation-lib = { workspace = true }
 riverhog-canonical-json = { workspace = true }
 config-validation = { workspace = true }
 riverhog-client = { workspace = true }

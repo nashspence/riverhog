@@ -18,12 +18,13 @@ classifiers = [
   "Typing :: Typed",
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = ["riverhog-provenance-contracts>=0.1,<0.2"]
+dependencies = ["release-documentation-lib>=0.1,<0.2", "riverhog-provenance-contracts>=0.1,<0.2"]
 
 [project.entry-points."riverhog.provenance-contracts"]
 a-riverhog-macos-provenance-contract-lib = "a_riverhog_macos_provenance_contract_lib:CONTRACT_BINDING"
 
 [tool.uv.sources]
+release-documentation-lib = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
 
 [tool.hatch.build.targets.wheel]

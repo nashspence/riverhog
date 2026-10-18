@@ -531,15 +531,24 @@ def test_release_qualification_record_uses_current_artifact_identities(
         summary.write_text(json.dumps({"fixture": name}))
         summaries[name] = summary
     step = _release_qualification_step("Record the completed qualification")
-    # Bind fixture inputs while executing the real producer in its locked project.
-    step = step.replace("build/contracts/", str(artifact.parent) + "/")
+    # Keep source inputs separate from the real producer's locked project.
     environment = {
         **os.environ,
         "SOURCE_REF": "refs/heads/release/v1",
         "QUALIFICATION_MODE": "prospective",
         "SOURCE_SHA": "a" * 40,
+        "SOURCE_DIR": str(tmp_path),
         "RELEASE_VERSION": "1.0.0",
         "QUALIFICATION_DIR": str(tmp_path),
+        "GITHUB_REPOSITORY": "nashspence/riverhog",
+        "GITHUB_WORKFLOW_REF": (
+            "nashspence/riverhog/.github/workflows/release-qualification.yml@refs/heads/main"
+        ),
+        "GITHUB_WORKFLOW_SHA": "b" * 40,
+        "GITHUB_REF": "refs/heads/main",
+        "GITHUB_EVENT_NAME": "workflow_dispatch",
+        "GITHUB_RUN_ID": "11",
+        "GITHUB_RUN_ATTEMPT": "2",
         **{f"{name.upper()}_SUMMARY": str(path) for name, path in summaries.items()},
     }
 
@@ -566,6 +575,12 @@ def test_release_qualification_record_uses_current_artifact_identities(
     assert qualification["extent_analysis_sha256"] == frozen["extent_analysis"]["source_sha256"]
     assert qualification["source_sha"] == environment["SOURCE_SHA"]
     assert qualification["published"] is False
+    assert qualification["workflow_execution"] == json.loads(
+        (tmp_path / "execution.json").read_bytes()
+    )
+    assert qualification["workflow_execution"]["workflow_sha"] == "b" * 40
+    assert qualification["workflow_execution"]["source_sha"] == "a" * 40
+    assert qualification["workflow_execution"]["run_attempt"] == 2
     for name, path in summaries.items():
         assert (
             qualification[f"{name.removesuffix('s')}_evidence_sha256"]

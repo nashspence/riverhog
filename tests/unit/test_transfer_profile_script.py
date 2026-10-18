@@ -545,3 +545,177 @@ def test_impossible_measurement_fails_profiling(
     )
     result = json.loads(capsys.readouterr().out)
     assert result["comparison"]["reason"] == "measurement-unavailable"
+
+
+@pytest.mark.parametrize("exit_status", [0, 7])
+def test_profile_entrypoint_runs_maintained_scale_scenario(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    exit_status: int,
+) -> None:
+    module = load_script()
+    observed = []
+
+    def profile(output):
+        observed.append(output)
+        return exit_status
+
+    monkeypatch.setattr(module, "_profile_stove0_scale", profile)
+    assert module.main(["--scenario", "stove0-scale", "--output", str(tmp_path)]) == exit_status
+    assert observed == [tmp_path]
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        ["--items", "4"],
+        ["--payload-bytes", "100"],
+        ["--workload", "large-file"],
+        ["--target-ratio", "0.5"],
+        ["--", "arbitrary-command"],
+    ],
+)
+def test_scale_profile_preserves_maintained_workload_and_command(extra: list[str]) -> None:
+    module = load_script()
+    with pytest.raises(SystemExit) as failure:
+        module.main(["--scenario", "stove0-scale", *extra])
+    assert failure.value.code == 2
+
+
+def test_transfer_profile_still_requires_its_measured_workload() -> None:
+    module = load_script()
+    with pytest.raises(SystemExit) as failure:
+        module.main(["--scenario", "riverhog-ingress", "--", "true"])
+    assert failure.value.code == 2
+
+
+@pytest.mark.parametrize(
+    ("preparation", "lifecycle", "seconds", "comparison"),
+    [
+        (0, 0, 590, "met"),
+        (0, 0, 650, "missed"),
+        (0, 7, 650, "not-compared"),
+        (3, None, None, "not-compared"),
+    ],
+)
+def test_scale_profile_separates_preparation_and_retains_fixed_lifecycle_proof(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    preparation: int,
+    lifecycle: int | None,
+    seconds: int | None,
+    comparison: str,
+) -> None:
+    from scripts.ci_qualification import validation_work
+
+    module = load_script()
+    calls = []
+    outcomes = iter([preparation, lifecycle])
+
+    def observe(arguments, **kwargs):
+        calls.append(arguments)
+        outcome = next(outcomes)
+        assert kwargs["stdout"].writable() and kwargs["stderr"] == subprocess.STDOUT
+        assert (
+            not {"args", "MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES", "RIVERHOG_VALIDATION_SCOPE"}
+            & kwargs["env"].keys()
+        )
+        assert kwargs["env"]["TESTS"] == "retained-test-selector"
+        timing = {
+            "source_sha": "a" * 40,
+            "source_clean": True,
+            "elapsed_seconds": 1000 if len(calls) == 1 else seconds,
+            "exit_status": outcome,
+        }
+        owned_work = validation_work("stove0-scale-images" if len(calls) == 1 else "stove0-scale")
+        timing.update(
+            format="riverhog-ci-validation-evidence/v2",
+            advisory_target=owned_work.advisory_target(),
+            growth_results={},
+            run_id=arguments[arguments.index("--run-id") + 1],
+            definition=owned_work.definition(),
+            state="completed",
+            source_end={"source_sha": "a" * 40, "source_clean": True},
+            started_at="2026-01-01T00:00:00+00:00",
+            finished_at="2026-01-01T00:00:01+00:00",
+            started_monotonic_seconds=0,
+            phase_costs={
+                "preparation": 0,
+                "command-including-owner-cleanup": timing["elapsed_seconds"],
+                "evidence-collection": 0,
+            },
+            observed_conditions={
+                "platform": "linux",
+                "architecture": "x86_64",
+                "python": "3.12",
+            },
+        )
+        timing["profiling_target"] = {
+            "report_only": True,
+            "target_seconds": 600 if len(calls) == 2 else None,
+            "status": comparison if len(calls) == 2 else "not-compared",
+            "reason": "command-failed"
+            if outcome
+            else "completed-command"
+            if len(calls) == 2
+            else "no-target",
+        }
+        Path(arguments[arguments.index("--output") + 1]).write_bytes(canonical_json_bytes(timing))
+        return subprocess.CompletedProcess(arguments, outcome)
+
+    monkeypatch.setattr(module.subprocess, "run", observe)
+    monkeypatch.setenv("args", "--scenario stove0-scale")
+    monkeypatch.setenv("MAKEFLAGS", "w -- args=--scenario\\ stove0-scale")
+    monkeypatch.setenv("MFLAGS", "w")
+    monkeypatch.setenv("MAKEOVERRIDES", "args")
+    monkeypatch.setenv("RIVERHOG_VALIDATION_SCOPE", "iteration")
+    monkeypatch.setenv("TESTS", "retained-test-selector")
+    monkeypatch.setenv("STOVE0_SCALE_FILES", "4")
+    monkeypatch.setenv("STOVE0_SCALE_AUDIO_FRAMES", "999")
+    assert module._profile_stove0_scale(tmp_path) == (preparation or lifecycle)
+    assert "--target-seconds" not in calls[0]
+    assert calls[0][2:5] == ["execute", "--workload", "stove0-scale-images"]
+    assert validation_work("stove0-scale-images").command[-6:] == (
+        "python",
+        "-m",
+        "scripts.ci_qualification",
+        "compose-prepare",
+        "--lane",
+        "processing-scale",
+    )
+    images = Path(calls[0][calls[0].index("--output") + 1])
+    assert images.name == "images.json" and images.parent.parent == tmp_path
+    raw = (images.parent / "profile.json").read_bytes()
+    assert raw == canonical_json_bytes(json.loads(raw))
+    report = json.loads(raw)
+    assert report["target"] == {
+        "scenario": "stove0-scale",
+        "workload": "many-small-files",
+        "audio_files": 128,
+        "audio_frames": 2000,
+        "sidecar_files": 1,
+        "elapsed_seconds": 600,
+    }
+    assert report["comparison"]["status"] == comparison
+    assert report["comparison"]["report_only"] is True
+    assert report["observed"]["image_preparation_elapsed_seconds"] == 1000
+    assert report["observed"]["elapsed_seconds"] == seconds
+    assert report["observed"]["completion_verified"] is (preparation == 0 and lifecycle == 0)
+    assert capsys.readouterr().out.encode() == raw + b"\n"
+    if preparation:
+        assert len(calls) == 1
+        return
+    assert len(calls) == 2
+    execution = calls[1]
+    assert "--target-seconds" not in execution and "--" not in execution
+    assert execution[2:5] == ["execute", "--workload", "stove0-scale"]
+    assert Path(execution[execution.index("--output") + 1]) == images.parent / "lifecycle.json"
+    assert validation_work("stove0-scale").command == (
+        "make",
+        "--no-print-directory",
+        "stove0-scale-qualification",
+        "STOVE0_SCALE_FILES=128",
+        "STOVE0_SCALE_AUDIO_FRAMES=2000",
+        "RIVERHOG_CI_IMAGES_PREBUILT=1",
+    )

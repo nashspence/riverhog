@@ -245,7 +245,7 @@ def _build_default_container(
     retrieval_cache = (
         SqlAlchemyRetrievalCache(
             cache_stores,
-            {name: config.retrieval_cache_stores[name] for name in cache_stores},
+            config.retrieval_cache_stores,
             session_factory=session_factory,
         )
         if config.retrieval_cache_stores
@@ -337,7 +337,6 @@ def _build_default_container(
                     retrieval_cache.admit_store(
                         candidate,
                         cache_binding,
-                        config.retrieval_cache_stores[candidate],
                     )
                     cache_clients[candidate] = client
                 observations[key] = descriptor.storage_incarnation_id
@@ -422,6 +421,7 @@ def _build_default_container(
         archive_copy_retirements=SqlAlchemyArchiveCopyRetirementService(
             config,
             archive_stores,
+            retrieval_cache=retrieval_cache,
             session_factory=session_factory,
         ),
         archive_stores=SqlAlchemyArchiveStoreService(

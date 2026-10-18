@@ -999,7 +999,17 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         actions=("read-inputs", "write-output"),
         artifacts=(source_artifact,),
     )
-    payload_reader = _api(transport, str(payload_capability["token"]), observer=observer)
+    refreshed_payload = operator.refresh_processing_capability(
+        claim_id, payload_capability.id, fence=claim_fence, ttl_seconds=900
+    )
+    assert refreshed_payload.id != payload_capability.id
+    assert refreshed_payload.claim_id == payload_capability.claim_id
+    assert refreshed_payload.fence == payload_capability.fence
+    assert refreshed_payload.audience == payload_capability.audience
+    assert refreshed_payload.state == "active"
+    assert refreshed_payload.artifacts == payload_capability.artifacts
+    assert refreshed_payload.actions == payload_capability.actions
+    payload_reader = _api(transport, refreshed_payload.token, observer=observer)
     with pytest.raises(Forbidden, match="provenance:read"):
         payload_reader.get_collection_artifact_provenance(collection_id, SOURCE_ID)
     payload_reader.close()

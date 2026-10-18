@@ -6,16 +6,19 @@ import json
 import logging
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal, Protocol, TypeVar
 
 from http_api_contracts import http_operation_for_request
+from http_api_contracts.metadata_binding import MetadataHttpBinding
 from pydantic import BaseModel, ValidationError
 from riverhog_canonical_json import parse_identity_json
 from stove0_target_protocol import (
     DEPARTURE_EFFECT_HTTP_OPERATIONS,
     TARGET_HTTP_OPERATIONS,
+    AcceptedTargetJob,
     DepartureEffectIntent,
-    DepartureEffectReceipt,
+    DepartureEffectStatus,
     DepartureEffectTargetDescriptor,
     TargetDescriptor,
     TargetJobRequest,
@@ -30,10 +33,12 @@ _DEFAULT_MAX_REQUEST_BYTES = 16 * 1024 * 1024
 _JOB_PATH = re.compile(r"^/v1/jobs/([0-9a-f]{64})$")
 _CANCEL_PATH = re.compile(r"^/v1/jobs/([0-9a-f]{64})/cancel$")
 _DEPARTURE_PATH = re.compile(r"^/v1/departure-effects/([0-9a-f]{64})$")
+_DEPARTURE_CANCEL_PATH = re.compile(r"^/v1/departure-effects/([0-9a-f]{64})/cancel$")
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
 type TargetHttpErrorCode = Literal[
+    "admission_unavailable",
     "bad_request",
     "invalid_target_request",
     "job_identity_mismatch",
@@ -53,6 +58,7 @@ type TargetHttpErrorCode = Literal[
 ]
 
 _TARGET_HTTP_ERROR_STATUS: dict[str, int] = {
+    "admission_unavailable": 503,
     "bad_request": 400,
     "invalid_target_request": 400,
     "job_identity_mismatch": 409,
@@ -83,13 +89,17 @@ class TargetService(Protocol):
 
     def get_job(self, job_id: str) -> TargetJobStatus: ...
 
-    def cancel_job(self, job_id: str) -> TargetJobStatus: ...
+    def cancel_job(self, request: AcceptedTargetJob) -> TargetJobStatus: ...
 
 
 class DepartureEffectTargetService(Protocol):
     def descriptor(self) -> DepartureEffectTargetDescriptor: ...
 
-    def put_departure_effect(self, intent: DepartureEffectIntent) -> DepartureEffectReceipt: ...
+    def put_departure_effect(self, intent: DepartureEffectIntent) -> DepartureEffectStatus: ...
+
+    def get_departure_effect(self, departure_id: str) -> DepartureEffectStatus: ...
+
+    def cancel_departure_effect(self, intent: DepartureEffectIntent) -> DepartureEffectStatus: ...
 
 
 class TargetServiceError(RuntimeError):
@@ -119,13 +129,28 @@ class TargetHttpBinding:
         target: TargetService,
         *,
         maximum_request_bytes: int = _DEFAULT_MAX_REQUEST_BYTES,
+        metadata_root: Path | None = None,
     ) -> None:
         if maximum_request_bytes < 1:
             raise ValueError("target HTTP request limit must be positive")
         self.target = target
         self.maximum_request_bytes = maximum_request_bytes
+        self.metadata = MetadataHttpBinding(
+            owner=target,
+            root=metadata_root,
+            operations=TARGET_HTTP_OPERATIONS,
+            execute=lambda method, path, body: self._handle_inline(method, path, body, staged=True),
+            response=TargetHttpResponse,
+        )
 
     def handle(self, method: str, path: str, body: bytes = b"") -> TargetHttpResponse:
+        if path.startswith("/v1/metadata/"):
+            return self.metadata.handle(method, path, body)
+        return self._handle_inline(method, path, body)
+
+    def _handle_inline(
+        self, method: str, path: str, body: bytes, *, staged: bool = False
+    ) -> TargetHttpResponse:
         normalized_method = method.upper()
         operation = http_operation_for_request(TARGET_HTTP_OPERATIONS, normalized_method, path)
         try:
@@ -134,11 +159,11 @@ class TargetHttpBinding:
                     return _error(400, "bad_request", "GET /v1/target must not include a body")
                 return _model_response(self.target.descriptor())
             if normalized_method == "POST" and path == "/v1/preflight":
-                preflight = self._parse(body, TargetPreflightRequest)
+                preflight = self._parse(body, TargetPreflightRequest, staged=staged)
                 return _model_response(self.target.preflight(preflight))
             job_match = _JOB_PATH.fullmatch(path)
             if job_match is not None and normalized_method == "PUT":
-                job_request = self._parse(body, TargetJobRequest)
+                job_request = self._parse(body, TargetJobRequest, staged=staged)
                 job_id = job_match.group(1)
                 if job_request.declaration.job_id != job_id:
                     return _error(
@@ -153,9 +178,12 @@ class TargetHttpBinding:
                 return _model_response(self.target.get_job(job_match.group(1)))
             cancel_match = _CANCEL_PATH.fullmatch(path)
             if cancel_match is not None and normalized_method == "POST":
-                if body:
-                    return _error(400, "bad_request", "target cancellation must not include a body")
-                return _model_response(self.target.cancel_job(cancel_match.group(1)))
+                accepted = self._parse(body, AcceptedTargetJob, staged=staged)
+                if accepted.declaration.job_id != cancel_match.group(1):
+                    return _error(
+                        409, "job_identity_mismatch", "target cancel path differs from request"
+                    )
+                return _model_response(self.target.cancel_job(accepted))
             if path == "/v1/target" or path == "/v1/preflight" or job_match or cancel_match:
                 return _error(405, "method_not_allowed", "target endpoint method is not allowed")
             return _error(404, "not_found", "target endpoint not found")
@@ -168,8 +196,8 @@ class TargetHttpBinding:
             _LOG.exception("target execution failed")
             return _error(500, "target_failed", "target execution failed")
 
-    def _parse(self, body: bytes, model: type[ModelT]) -> ModelT:
-        if len(body) > self.maximum_request_bytes:
+    def _parse(self, body: bytes, model: type[ModelT], *, staged: bool = False) -> ModelT:
+        if not staged and len(body) > self.maximum_request_bytes:
             raise TargetServiceError(
                 413,
                 "request_too_large",
@@ -186,20 +214,35 @@ class TargetHttpBinding:
 
 
 class DepartureEffectHttpBinding:
-    """One bounded PUT endpoint; the target owns durable idempotency by departure ID."""
+    """Bounded delivery, poll and cancellation; the component owns exact effects."""
 
     def __init__(
         self,
         target: DepartureEffectTargetService,
         *,
         maximum_request_bytes: int = _DEFAULT_MAX_REQUEST_BYTES,
+        metadata_root: Path | None = None,
     ) -> None:
         if maximum_request_bytes < 1:
             raise ValueError("departure effect HTTP request limit must be positive")
         self.target = target
         self.maximum_request_bytes = maximum_request_bytes
+        self.metadata = MetadataHttpBinding(
+            owner=target,
+            root=metadata_root,
+            operations=DEPARTURE_EFFECT_HTTP_OPERATIONS,
+            execute=lambda method, path, body: self._handle_inline(method, path, body, staged=True),
+            response=TargetHttpResponse,
+        )
 
     def handle(self, method: str, path: str, body: bytes = b"") -> TargetHttpResponse:
+        if path.startswith("/v1/metadata/"):
+            return self.metadata.handle(method, path, body)
+        return self._handle_inline(method, path, body)
+
+    def _handle_inline(
+        self, method: str, path: str, body: bytes, *, staged: bool = False
+    ) -> TargetHttpResponse:
         operation = http_operation_for_request(DEPARTURE_EFFECT_HTTP_OPERATIONS, method, path)
         if method == "GET" and path == "/v1/departure-target" and operation is not None:
             if body:
@@ -209,11 +252,15 @@ class DepartureEffectHttpBinding:
             except Exception:
                 _LOG.exception("departure target descriptor failed")
                 return _error(500, "target_failed", "departure target failed")
-        match = _DEPARTURE_PATH.fullmatch(path)
-        if method != "PUT" or match is None or operation is None:
+        match = _DEPARTURE_PATH.fullmatch(path) or _DEPARTURE_CANCEL_PATH.fullmatch(path)
+        if method not in {"PUT", "GET", "POST"} or match is None or operation is None:
             return _error(404, "not_found", "departure effect endpoint not found")
         try:
-            if len(body) > self.maximum_request_bytes:
+            if method == "GET":
+                if body:
+                    return _error(400, "bad_request", "departure GET must not include a body")
+                return _model_response(self.target.get_departure_effect(match.group(1)))
+            if not staged and len(body) > self.maximum_request_bytes:
                 return _error(
                     413, "request_too_large", "departure effect request exceeds its limit"
                 )
@@ -227,10 +274,17 @@ class DepartureEffectHttpBinding:
                 return _error(
                     409, "target_descriptor_mismatch", "departure target identity differs"
                 )
-            receipt = self.target.put_departure_effect(intent)
-            if receipt.departure_id != intent.departure_id:
-                raise RuntimeError("departure target returned a receipt for another intent")
-            return _model_response(receipt)
+            status = (
+                self.target.cancel_departure_effect(intent)
+                if method == "POST"
+                else self.target.put_departure_effect(intent)
+            )
+            if (
+                status.departure_id != intent.departure_id
+                or status.target_identity != intent.target_identity
+            ):
+                raise RuntimeError("departure target returned status for another intent")
+            return _model_response(status)
         except TargetServiceError as exc:
             if not operation.accepts_error(status=exc.status, code=exc.code):
                 _LOG.exception("departure target emitted an undeclared error")

@@ -94,6 +94,7 @@ def test_retrieval_plan_and_job_schemas_bind_exact_versions() -> None:
         "failure",
         "lease_seconds",
         "restore_policy",
+        "source_store",
         "requires_restore",
         "artifact_count",
         "etag",

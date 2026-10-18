@@ -55,6 +55,8 @@ class CanonicalHistoryTransfer:
                     prefix = chunk[:remaining]
                     digest.update(prefix)
                     remaining -= len(prefix)
+                    if remaining == 0:
+                        break
             if remaining or digest.hexdigest() != selected.prefix_sha256:
                 raise ValueError("imported journal conflicts with an already accepted prefix")
             return

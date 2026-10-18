@@ -110,6 +110,10 @@ class DirectArchiveStore(MemoryArchiveStore):
 
 
 class MemoryRetrievalCache:
+    @property
+    def store_names(self) -> tuple[str, ...]:
+        return ("memory",)
+
     def __init__(self) -> None:
         self.objects: dict[tuple[str, str | None], bytes] = {}
         self.range_requests: list[tuple[str, int, int]] = []
@@ -654,6 +658,7 @@ def test_retrieval_plan_accepts_the_exact_capability_artifact(tmp_path: Path) ->
             "sha256": hashlib.sha256(
                 files["0000000000000000000000000000000000000000000000000000000000000004"]
             ).hexdigest(),
+            "source_store": "archive",
             "requires_restore": False,
         }
     ]

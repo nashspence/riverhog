@@ -213,7 +213,6 @@ MATERIALIZATION_HINT_OBSERVER_CONTRACT = ObserverContract.seal(
         options_schema=MATERIALIZATION_HINT_OPTIONS_SCHEMA,
         facts_schema=MATERIALIZATION_HINT_FACTS_SCHEMA,
         facts_semantics=MATERIALIZATION_HINT_FACTS_SEMANTICS,
-        maximum_result_bytes=1024 * 1024,
     )
 )
 

@@ -21,15 +21,18 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
 COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
+COPY packages/release-documentation-lib packages/release-documentation-lib
 COPY some-implementations/stove0/targets/opus/target some-implementations/stove0/targets/opus/target
 COPY some-implementations/stove0/review0/samplers/opus some-implementations/stove0/review0/samplers/opus
 COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
+COPY packages/riverhog-growth-contracts packages/riverhog-growth-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol
+COPY packages/sha256-continuation packages/sha256-continuation
 COPY some-implementations/riverhog/provenance/contracts/direct-relations some-implementations/riverhog/provenance/contracts/direct-relations
 COPY packages/riverhog-provenance packages/riverhog-provenance
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
@@ -38,6 +41,7 @@ COPY some-implementations/stove0/targets/media-archive/support some-implementati
 COPY some-implementations/stove0/observers/contracts/materialization-hint some-implementations/stove0/observers/contracts/materialization-hint
 COPY some-implementations/stove0/observers/contracts/media-metadata some-implementations/stove0/observers/contracts/media-metadata
 COPY some-implementations/stove0/packages/observer-protocol some-implementations/stove0/packages/observer-protocol
+COPY some-implementations/stove0/packages/extension-support some-implementations/stove0/packages/extension-support
 COPY some-implementations/stove0/packages/protocol some-implementations/stove0/packages/protocol
 COPY some-implementations/stove0/review0/contracts some-implementations/stove0/review0/contracts
 COPY some-implementations/stove0/review0/sampler/client some-implementations/stove0/review0/sampler/client

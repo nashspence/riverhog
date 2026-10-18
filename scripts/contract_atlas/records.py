@@ -4,12 +4,19 @@ from __future__ import annotations
 
 import copy
 import json
+import sys
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
 
+if str(Path(__file__).resolve().parents[2]) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 import extent_contract
+from riverhog_growth_contracts import validate_projection as validate_growth_projection
+
+from scripts.validation_witnesses import validate_growth_execution
 
 from .model import ContractAtlasError, DiscoveredContract, canonical_sha256, pointer_value
 
@@ -88,6 +95,8 @@ _AUDIT_FIELDS = frozenset(
         "source_projection_unsafe_integer_paths",
         "source_elements_sha256",
         "extent_analysis",
+        "growth_analysis",
+        "growth_execution",
         "trace",
         "trace_unsafe_integer_paths",
         "sources",
@@ -225,6 +234,10 @@ def build_records(discovered: DiscoveredContract) -> tuple[dict[str, object], di
                 if key in declared_rule_ids and "requirement" in value
             },
         },
+        "growth_analysis": copy.deepcopy(
+            cast(Mapping[str, object], root["trace"])["growth_registry"]
+        ),
+        "growth_execution": {"status": "not-executed", "records": []},
         "trace": copy.deepcopy(root["trace"]),
         "trace_unsafe_integer_paths": copy.deepcopy(root["trace_unsafe_integer_paths"]),
         "sources": copy.deepcopy(root["sources"]),
@@ -268,6 +281,10 @@ def validate_closure(closure: Mapping[str, object]) -> None:
     external = closure["external_contract"]
     if not isinstance(external, Mapping):
         raise ContractAtlasError("contract closure has no external contract")
+    try:
+        validate_growth_projection(external["growth"])
+    except (ValueError, KeyError, TypeError) as error:
+        raise ContractAtlasError("contract closure has invalid growth declarations") from error
     extents = external.get("extents")
     if not isinstance(extents, Mapping) or set(extents) != {"format", "principles", "rules"}:
         raise ContractAtlasError("contract closure mixes extent declarations and analysis")
@@ -326,6 +343,7 @@ def validate_audit_record(closure: Mapping[str, object], audit: Mapping[str, obj
         raise ContractAtlasError("audit record is not bound to this contract closure")
     if audit["presentation"] != AUDIT_PRESENTATION:
         raise ContractAtlasError("audit presentation differs from its declared meaning")
+    _validate_growth_analysis(closure, audit)
     analysis = cast(Mapping[str, object], audit["extent_analysis"])
     if not isinstance(analysis, Mapping) or set(analysis) != _EXTENT_ANALYSIS_FIELDS:
         raise ContractAtlasError("audit extent analysis has an unreviewed field role")
@@ -405,3 +423,99 @@ def validate_audit_record(closure: Mapping[str, object], audit: Mapping[str, obj
             )
         ):
             raise ContractAtlasError("audit witness has an unbound contract subject or result")
+
+
+def _validate_growth_analysis(closure: Mapping[str, object], audit: Mapping[str, object]) -> None:
+    external = cast(Mapping[str, object], closure["external_contract"])
+    growth = cast(Mapping[str, object], external["growth"])
+    declarations = cast(Mapping[str, Mapping[str, object]], growth["declarations"])
+    analysis = audit.get("growth_analysis")
+    if (
+        not isinstance(analysis, Mapping)
+        or set(analysis)
+        != {
+            "format",
+            "projection_sha256",
+            "declarations",
+            "coverage",
+            "evidence_status",
+            "source_identity",
+        }
+        or analysis["format"] != "riverhog-growth-source-analysis/v1"
+        or analysis["projection_sha256"] != canonical_sha256(growth)
+        or analysis["evidence_status"] != "not-executed"
+        or analysis != cast(Mapping[str, object], audit["trace"])["growth_registry"]
+    ):
+        raise ContractAtlasError("growth audit has unbound declarations or source trace")
+    execution = audit.get("growth_execution")
+    if not isinstance(execution, Mapping) or set(execution) != {"status", "records"}:
+        raise ContractAtlasError("growth audit execution evidence has missing or unknown fields")
+    rows = execution["records"]
+    if (
+        not isinstance(rows, list)
+        or execution["status"] not in {"not-executed", "recorded"}
+        or (bool(rows) != (execution["status"] == "recorded"))
+    ):
+        raise ContractAtlasError("growth audit execution status contradicts retained observations")
+    seen = set()
+    try:
+        for record in rows:
+            validate_growth_execution(growth, record, source=analysis["source_identity"])
+            key = (record["run_id"], record["session_id"], record["node_id"])
+            if key in seen:
+                raise ValueError("duplicate growth execution evidence")
+            seen.add(key)
+    except (ValueError, KeyError, TypeError) as error:
+        raise ContractAtlasError(f"growth audit has invalid execution evidence: {error}") from error
+    source_rows = analysis["declarations"]
+    coverage = analysis["coverage"]
+    if (
+        not isinstance(source_rows, Mapping)
+        or set(source_rows) != set(declarations)
+        or not isinstance(coverage, Mapping)
+        or set(coverage) != set(cast(Mapping[str, object], external["python"]))
+    ):
+        raise ContractAtlasError("growth audit omits operations or discovered Python surfaces")
+    for identity, declaration in declarations.items():
+        row = source_rows[identity]
+        if not isinstance(row, Mapping) or row.get("declaration_sha256") != canonical_sha256(
+            declaration
+        ):
+            raise ContractAtlasError("growth audit declaration digest is stale or contradictory")
+        expected = {
+            name: child["declaration"]
+            for name, child in cast(
+                Mapping[str, Mapping[str, object]], declaration["delegates"]
+            ).items()
+        }
+        if row.get("delegates") != expected:
+            raise ContractAtlasError("growth audit has unbound delegate composition")
+    for subject, row in coverage.items():
+        if not isinstance(row, Mapping) or row.get("status") not in {
+            "owns",
+            "inherits",
+            "nonexecutable",
+            "unestablished",
+        }:
+            raise ContractAtlasError("growth audit coverage has an unknown disposition")
+        if row["status"] in {"owns", "inherits"}:
+            owner_identity = row.get("declaration")
+            if not isinstance(owner_identity, str) or owner_identity not in declarations:
+                raise ContractAtlasError("growth audit operation has no declared owner")
+            if row["status"] == "owns" and subject not in cast(
+                Sequence[str], declarations[owner_identity]["subjects"]
+            ):
+                raise ContractAtlasError("growth audit owner has a stale public subject")
+
+
+def bind_growth_execution(
+    closure: Mapping[str, object],
+    audit: Mapping[str, object],
+    records: Sequence[Mapping[str, object]],
+) -> dict[str, object]:
+    """Attach retained execution evidence without changing a normative Closure."""
+    validate_audit_record(closure, audit)
+    result = copy.deepcopy(dict(audit))
+    result["growth_execution"] = {"status": "recorded", "records": copy.deepcopy(list(records))}
+    validate_audit_record(closure, result)
+    return result

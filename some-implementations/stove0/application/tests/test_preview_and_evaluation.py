@@ -1,12 +1,19 @@
 from __future__ import annotations
 
+import secrets
+import time
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from threading import Barrier, Event, Lock
 from typing import cast
 
 import pytest
+from planning_fixture import (
+    FixturePlanningRuntime,
+    fixture_interface,
+    no_output_decision,
+    no_output_preview,
+    observation_headers,
+)
 from stove0_core import (
     ClaimBinding,
     EvaluationChild,
@@ -23,6 +30,7 @@ from stove0_core import (
 )
 from stove0_core.evaluation import _evaluation_phase
 from stove0_observer_protocol import (
+    AcceptedObservationJob,
     ContentObservationEvidence,
     ContentObservationFailure,
     ContentObservationInapplicable,
@@ -31,6 +39,7 @@ from stove0_observer_protocol import (
     ContentObservationRequestPayload,
     ContentObservationResult,
     ContentObservationResultPayload,
+    ObservationJobStatus,
     ObserverContract,
     ObserverContractPayload,
     ObserverContractSupport,
@@ -56,15 +65,11 @@ from stove0_protocol import (
     EvaluationVariant,
     JsonSchemaValidationProfile,
     OperationIdentityRef,
-    PreviewOutcome,
     RecipeIdentityRef,
     WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
     WorkflowPreview,
-    WorkflowPreviewPayload,
-    WorkflowPreviewRequest,
-    WorkflowPreviewRequestPayload,
     WorkIdentity,
     WorkPayload,
     canonical_json_sha256,
@@ -89,6 +94,11 @@ from stove0_target_support import (
     TransformPlan,
     TransformPlanPayload,
 )
+
+
+def _preview_service(**kwargs):
+    kwargs["planning"].observers = kwargs["observers"]
+    return WorkflowPreviewService(**kwargs)
 
 
 def _sha(character: str) -> str:
@@ -190,13 +200,17 @@ def _observer() -> tuple[ObserverContract, ObserverDescriptor]:
             implementation_version="1.0.0",
             source_revision="fixture",
             image_id="sha256:" + _sha("9"),
-            contracts=(ObserverContractSupport.from_contract(contract),),
+            contracts=(
+                ObserverContractSupport.from_contract(
+                    contract, interfaces=(fixture_interface(contract).ref,)
+                ),
+            ),
         )
     )
     return contract, descriptor
 
 
-class PreviewPlanning:
+class PreviewPlanning(FixturePlanningRuntime):
     def __init__(
         self,
         operation: OperationContract,
@@ -207,43 +221,45 @@ class PreviewPlanning:
         self.target = target
         self.observer = observer
 
-    def observation_requests(
+    def fixture_requests(
         self, work: WorkIdentity, observations: tuple[ContentObservationEvidence, ...] = ()
     ) -> tuple[ContentObservationRequest, ...]:
         if observations:
             return ()
         contract, descriptor = self.observer
+        subject = WorkArtifactSubject(
+            id="source",
+            role="fixture.source/v1",
+            collection=_root(),
+            artifact_id="1" * 64,
+            bytes="12",
+            sha256=_sha("4"),
+        )
         return (
             ContentObservationRequest.seal(
                 ContentObservationRequestPayload(
+                    **observation_headers(
+                        work_id=work.work_id, contract=contract, subjects=(subject,)
+                    ),
                     work_id=work.work_id,
                     observer_registration_id="fixture-observer",
                     observer_descriptor_sha256=descriptor.descriptor_sha256,
                     observer_contract_id=contract.id,
                     observer_contract_sha256=contract.contract_sha256,
-                    subjects=(
-                        WorkArtifactSubject(
-                            id="source",
-                            role="fixture.source/v1",
-                            collection=_root(),
-                            artifact_id="1" * 64,
-                            bytes=str(12),
-                            sha256=_sha("4"),
-                        ),
-                    ),
+                    subjects=(subject,),
                 )
             ),
         )
 
-    def workflow_plan(
+    def fixture_decision(
         self,
         work: WorkIdentity,
         observations: tuple[ContentObservationEvidence, ...],
         *,
-        nested_observer: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
+        accepted_for: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
         | None = None,
     ) -> BranchSetDecision:
-        assert nested_observer is not None
+        assert accepted_for is not None
         selection = ArtifactSelection.seal(observations[0].request.subjects)
         branch = BranchPlan.build(
             parent_work=work,
@@ -278,6 +294,8 @@ class PreviewPlanning:
         self,
         _plan: WorkflowPlan,
         _selections: dict[str, ArtifactSelection],
+        *,
+        descriptor: TargetDescriptor,
     ) -> TargetPreflightRequest:
         selection = ArtifactSelection.seal(
             (
@@ -307,15 +325,15 @@ class PreviewPlanning:
 
 
 class NestedPreviewPlanning(PreviewPlanning):
-    def workflow_plan(
+    def fixture_decision(
         self,
         work: WorkIdentity,
         observations: tuple[ContentObservationEvidence, ...],
         *,
-        nested_observer: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
+        accepted_for: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
         | None = None,
     ) -> BranchSetDecision:
-        assert nested_observer is not None
+        assert accepted_for is not None
         selection = ArtifactSelection.seal(observations[0].request.subjects)
         child_work = CoordinationBranchPlan.build_work(
             parent_work=work,
@@ -325,7 +343,7 @@ class NestedPreviewPlanning(PreviewPlanning):
             recipe=RecipeIdentityRef(id="fixture.child/v1", revision="1", sha256=_sha("5")),
             effective_intent={"suffix": ".copy"},
         )
-        child_evidence = nested_observer(child_work)
+        child_evidence = accepted_for(child_work)
         leaf = BranchPlan.build(
             parent_work=child_work,
             branch_id="leaf",
@@ -379,15 +397,24 @@ class PreviewRiverhog:
         self.abandoned: list[tuple[str, int]] = []
         self.actions: list[str] = []
 
-    def acquire_preview_claim(self, request: object) -> ClaimBinding:
+    def acquire_preview_claim(self, request: object, *, invocation_id: str) -> ClaimBinding:
         self.next_fence += 1
         self.actions.append("acquire-read-only-preview")
         return ClaimBinding(claim_id=f"preview-{self.next_fence}", fence=self.next_fence)
+
+    def renew_preview_claim(
+        self, request: object, claim: ClaimBinding, *, invocation_id: str
+    ) -> ClaimBinding:
+        self.actions.append("renew-read-only-preview")
+        return claim
 
     def observation_authority(
         self,
         claim: ClaimBinding,
         request: ContentObservationRequest,
+        *,
+        owner_kind: str,
+        owner_id: str,
     ) -> ObserverRuntimeAuthority:
         assert request.work_id
         self.actions.append("read-inputs")
@@ -411,7 +438,52 @@ class PreviewObserver:
         assert registration_id == "fixture-observer"
         return self.value
 
-    def observe(
+    def put_job(
+        self,
+        registration_id: str,
+        invocation: ContentObservationInvocation,
+        *,
+        descriptor: ObserverDescriptor,
+    ) -> ObservationJobStatus:
+        return ObservationJobStatus(
+            job_id=invocation.job_id,
+            request_id=invocation.request.request_id,
+            attempt=1,
+            state="completed",
+            result=self.result_for(registration_id, invocation, descriptor=descriptor),
+        )
+
+    def cancel_job(
+        self,
+        registration_id: str,
+        accepted: AcceptedObservationJob,
+        *,
+        descriptor: ObserverDescriptor,
+    ) -> ObservationJobStatus:
+        result = ContentObservationResult.seal(
+            ContentObservationResultPayload(
+                request_id=accepted.request.request_id,
+                state="canceled",
+                observer=ObserverImplementation(
+                    id=descriptor.implementation_id,
+                    version=descriptor.implementation_version,
+                    source_revision=descriptor.source_revision,
+                    descriptor_sha256=descriptor.descriptor_sha256,
+                ),
+                observer_contract_id=accepted.request.observer_contract_id,
+                observer_contract_sha256=accepted.request.observer_contract_sha256,
+                subjects=accepted.request.subjects,
+            )
+        )
+        return ObservationJobStatus(
+            job_id=accepted.job_id,
+            request_id=accepted.request.request_id,
+            attempt=1,
+            state="completed",
+            result=result,
+        )
+
+    def result_for(
         self,
         registration_id: str,
         invocation: ContentObservationInvocation,
@@ -489,6 +561,16 @@ class PreviewTarget:
         raise AssertionError("workflow preview must not create target jobs")
 
 
+def _complete_preview(service: WorkflowPreviewService, work: WorkIdentity) -> WorkflowPreview:
+    status = service.submit(work, invocation_id=secrets.token_hex(32))
+    for _ in range(100):
+        if status.state == "completed":
+            assert status.result is not None
+            return status.result
+        status = service.step(status.job_id)
+    raise AssertionError(f"preview did not complete: {status}")
+
+
 def test_workflow_preview_is_deterministic_across_claim_generations() -> None:
     operation = _operation()
     target = _target(operation)
@@ -496,15 +578,15 @@ def test_workflow_preview_is_deterministic_across_claim_generations() -> None:
     riverhog = PreviewRiverhog()
     observer = PreviewObserver(observer_value)
     target_port = PreviewTarget(operation, target)
-    service = WorkflowPreviewService(
+    service = _preview_service(
         riverhog=riverhog,
         planning=PreviewPlanning(operation, target, observer_value),
         observers=observer,
         targets=target_port,
     )
 
-    first = service.preview(_work())
-    second = service.preview(_work())
+    first = _complete_preview(service, _work())
+    second = _complete_preview(service, _work())
 
     assert first.state == second.state == "ready", first.outcome
     assert first.preview_id == second.preview_id
@@ -519,70 +601,98 @@ def test_workflow_preview_is_deterministic_across_claim_generations() -> None:
     assert target_port.preflights == 2
 
 
-def test_failed_preview_drains_bounded_reads_before_abandoning_claim() -> None:
-    operation = _operation()
+def test_failed_preview_cancels_durable_deliveries_before_abandoning_claim() -> None:
+    operation, observer_value = _operation(), _observer()
     target = _target(operation)
-    observer_value = _observer()
-    contract, descriptor = observer_value
     work = _work()
-    template = PreviewPlanning(operation, target, observer_value).observation_requests(work)[0]
-    requests = tuple(
-        ContentObservationRequest.seal(
+    template = PreviewPlanning(operation, target, observer_value).fixture_requests(work)[0]
+
+    def question(index):
+        subjects = (template.subjects[0].model_copy(update={"id": f"source-{index}"}),)
+        return ContentObservationRequest.seal(
             ContentObservationRequestPayload(
-                work_id=work.work_id,
-                observer_registration_id=template.observer_registration_id,
-                observer_descriptor_sha256=descriptor.descriptor_sha256,
-                observer_contract_id=contract.id,
-                observer_contract_sha256=contract.contract_sha256,
-                subjects=(template.subjects[0].model_copy(update={"id": f"source-{index}"}),),
+                **template.model_dump(
+                    mode="python",
+                    exclude={
+                        "request_id",
+                        "subjects",
+                        "task_id",
+                        "question_sha256",
+                        "interface",
+                    },
+                ),
+                **observation_headers(
+                    work_id=work.work_id,
+                    contract=observer_value[0],
+                    subjects=subjects,
+                    task_id=f"question-{index}",
+                ),
+                subjects=subjects,
             )
         )
-        for index in range(7)
+
+    questions = tuple(
+        sorted(
+            (question(index) for index in range(7)),
+            key=lambda item: item.request_id,
+        )
     )
-    wave = Barrier(4)
-    failed = Event()
-    release = Event()
-    lock = Lock()
-    started: list[str] = []
     riverhog = PreviewRiverhog()
 
     class Planning(PreviewPlanning):
-        def observation_requests(self, *_args: object) -> tuple[ContentObservationRequest, ...]:
-            return requests
+        def fixture_requests(self, *_args: object):
+            return questions
 
     class Observer(PreviewObserver):
-        def observe(self, registration_id, invocation, *, descriptor):
-            with lock:
-                started.append(invocation.request.request_id)
-            wave.wait(timeout=5)
-            if invocation.request == requests[0]:
-                failed.set()
-                raise RuntimeError("fixture observer transport failed")
-            assert release.wait(timeout=5)
-            assert riverhog.abandoned == []
-            return super().observe(registration_id, invocation, descriptor=descriptor)
+        stopped = False
+        calls = 0
 
-    service = WorkflowPreviewService(
+        def put_job(self, registration_id, invocation, *, descriptor):
+            self.calls += 1
+            if self.calls == 2:
+                raise TimeoutError("fixture observer response lost")
+            self.invocations.append(invocation)
+            return ObservationJobStatus(
+                job_id=invocation.job_id,
+                request_id=invocation.request.request_id,
+                attempt=1,
+                state="running",
+            )
+
+        def cancel_job(self, registration_id, accepted, *, descriptor):
+            if not self.stopped:
+                return ObservationJobStatus(
+                    job_id=accepted.job_id,
+                    request_id=accepted.request.request_id,
+                    attempt=1,
+                    state="canceling",
+                )
+            return super().cancel_job(registration_id, accepted, descriptor=descriptor)
+
+    observer = Observer(observer_value)
+    service = _preview_service(
         riverhog=riverhog,
         planning=Planning(operation, target, observer_value),
-        observers=Observer(observer_value),
+        observers=observer,
         targets=PreviewTarget(operation, target),
     )
-    with ThreadPoolExecutor(max_workers=1) as caller:
-        result = caller.submit(service.preview, work)
-        try:
-            assert failed.wait(timeout=5)
-            assert riverhog.abandoned == [] and not result.done()
-        finally:
-            release.set()
-        preview = result.result(timeout=5)
-    assert preview.state == "failed"
-    assert (
-        preview.outcome is not None
-        and "fixture observer transport failed" in preview.outcome.message
-    )
-    assert set(started) == {request.request_id for request in requests[:4]}
+    submitted = service.submit(work, invocation_id="a" * 64)
+    assert service.step(submitted.job_id).state == "observing"
+    assert service.step(submitted.job_id).state == "observing"
+    assert service.step(submitted.job_id).state == "canceling"
+    begin = time.monotonic()
+    assert service.step(submitted.job_id).state == "canceling"
+    assert time.monotonic() - begin < 0.5
+    assert riverhog.abandoned == []
+    assert len(observer.invocations) == 1
+    observer.stopped = True
+    for _ in range(10):
+        status = service.step(submitted.job_id)
+        if status.state == "completed":
+            break
+    assert status.result is not None and status.result.state == "failed"
     assert len(riverhog.abandoned) == 1
+    assert observer.calls == 2
 
 
 def test_no_action_preview_retains_observations_without_target_preflight() -> None:
@@ -594,35 +704,39 @@ def test_no_action_preview_retains_observations_without_target_preflight() -> No
     target_port = PreviewTarget(operation, target)
     delegate = PreviewPlanning(operation, target, observer_value)
 
-    class NoActionPlanning:
-        def observation_requests(
+    class NoActionPlanning(FixturePlanningRuntime):
+        def fixture_requests(
             self, work: WorkIdentity, observations: tuple[ContentObservationEvidence, ...] = ()
         ) -> tuple[ContentObservationRequest, ...]:
-            return delegate.observation_requests(work, observations)
+            return delegate.fixture_requests(work, observations)
 
-        def workflow_plan(
+        def fixture_decision(
             self,
             work: WorkIdentity,
             observations: tuple[ContentObservationEvidence, ...],
             *,
-            nested_observer: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
+            accepted_for: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
             | None = None,
         ) -> WorkNoAction:
             assert work == _work() and len(observations) == 1
             assert observations[0].result.state == "observed"
             return WorkNoAction(
-                code="fixture.already-complete/v1",
-                message="The exact observation requires no target execution.",
+                decision=no_output_decision(
+                    work,
+                    ArtifactSelection.seal(observations[0].request.subjects).ref(),
+                    code="fixture.already-complete/v1",
+                    message="The exact observation requires no target execution.",
+                ),
             )
 
-    service = WorkflowPreviewService(
+    service = _preview_service(
         riverhog=riverhog,
         planning=cast(PlanningPort, NoActionPlanning()),
         observers=observer,
         targets=target_port,
     )
-    preview = service.preview(_work())
-    assert preview.state == "no_action"
+    preview = _complete_preview(service, _work())
+    assert preview.state == "no_action", preview.outcome
     assert preview.outcome is not None and preview.outcome.code == "fixture.already-complete/v1"
     assert len(preview.observations) == 1
     assert preview.branch_set_plan is None and preview.target_plans == ()
@@ -647,17 +761,19 @@ def test_planned_no_action_requires_riverhog_settlement_before_terminal_success(
             claim=ClaimBinding(claim_id="fixture-claim", fence=1),
         )
     )
-    request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
-    preview = WorkflowPreview.seal(
-        WorkflowPreviewPayload(
-            preview_id=request.preview_id,
-            state="no_action",
-            work=work,
-            outcome=PreviewOutcome(
-                code="fixture.already-complete/v1",
-                message="The exact observation requires no target execution.",
-            ),
-        )
+    subject = WorkArtifactSubject(
+        id="source",
+        role="fixture.source/v1",
+        collection=_root(),
+        artifact_id="1" * 64,
+        bytes="12",
+        sha256=_sha("4"),
+    )
+    preview = no_output_preview(
+        work,
+        ArtifactSelection.seal((subject,)).ref(),
+        code="fixture.already-complete/v1",
+        message="The exact observation requires no target execution.",
     )
     pending = service.mark_no_action(work.work_id, preview, expected_revision=record.revision)
     assert pending.phase == "no_output_pending" and pending.abandon_outcome is None
@@ -679,15 +795,7 @@ def test_no_output_retirement_waits_for_settlement_and_exact_collection_deletion
             claim=ClaimBinding(claim_id="fixture-claim", fence=1),
         )
     )
-    request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
-    preview = WorkflowPreview.seal(
-        WorkflowPreviewPayload(
-            preview_id=request.preview_id,
-            state="no_action",
-            work=work,
-            outcome=PreviewOutcome(code="fixture.no-output/v1", message="No output is required."),
-        )
-    )
+    preview = no_output_preview(work, ArtifactSelection.seal(()).ref())
     pending = service.mark_no_action(
         work.work_id,
         preview,
@@ -724,15 +832,15 @@ def test_workflow_preview_recursively_binds_nested_observation_and_leaf_prefligh
     riverhog = PreviewRiverhog()
     observer = PreviewObserver(observer_value)
     target_port = PreviewTarget(operation, target)
-    service = WorkflowPreviewService(
+    service = _preview_service(
         riverhog=riverhog,
         planning=NestedPreviewPlanning(operation, target, observer_value),
         observers=observer,
         targets=target_port,
     )
 
-    first = service.preview(_work())
-    second = service.preview(_work())
+    first = _complete_preview(service, _work())
+    second = _complete_preview(service, _work())
 
     assert first.state == second.state == "ready"
     assert first.preview_sha256 == second.preview_sha256
@@ -1042,14 +1150,14 @@ def test_workflow_preview_rejects_observer_result_that_does_not_bind_request() -
     riverhog = PreviewRiverhog()
 
     class InvalidObserver(PreviewObserver):
-        def observe(
+        def result_for(
             self,
             registration_id: str,
             invocation: ContentObservationInvocation,
             *,
             descriptor: ObserverDescriptor,
         ) -> ContentObservationResult:
-            result = super().observe(
+            result = super().result_for(
                 registration_id,
                 invocation,
                 descriptor=descriptor,
@@ -1072,14 +1180,14 @@ def test_workflow_preview_rejects_observer_result_that_does_not_bind_request() -
                 )
             )
 
-    service = WorkflowPreviewService(
+    service = _preview_service(
         riverhog=riverhog,
         planning=PreviewPlanning(operation, target, observer_value),
         observers=InvalidObserver(observer_value),
         targets=PreviewTarget(operation, target),
     )
 
-    preview = service.preview(_work())
+    preview = _complete_preview(service, _work())
 
     assert preview.state == "failed"
     assert preview.outcome is not None
@@ -1122,14 +1230,14 @@ def test_workflow_preview_surfaces_each_terminal_observer_result(
     riverhog = PreviewRiverhog()
 
     class TerminalObserver(PreviewObserver):
-        def observe(
+        def result_for(
             self,
             registration_id: str,
             invocation: ContentObservationInvocation,
             *,
             descriptor: ObserverDescriptor,
         ) -> ContentObservationResult:
-            observed = super().observe(
+            observed = super().result_for(
                 registration_id,
                 invocation,
                 descriptor=descriptor,
@@ -1153,14 +1261,14 @@ def test_workflow_preview_surfaces_each_terminal_observer_result(
             )
 
     target_port = PreviewTarget(operation, target)
-    service = WorkflowPreviewService(
+    service = _preview_service(
         riverhog=riverhog,
         planning=PreviewPlanning(operation, target, observer_value),
         observers=TerminalObserver(observer_value),
         targets=target_port,
     )
 
-    preview = service.preview(_work())
+    preview = _complete_preview(service, _work())
 
     assert preview.state == state
     assert preview.outcome is not None

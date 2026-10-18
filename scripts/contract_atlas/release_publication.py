@@ -10,6 +10,7 @@ from typing import Any
 from .github_publication import GitHubPublication, select_products
 from .model import ContractAtlasError, canonical_bytes
 from .publication import directory_files, file_sha256
+from .workflow_evidence import collect_workflow_artifact
 
 
 def validate_qualification(record: dict[str, Any], source_sha: str, version: str) -> None:
@@ -39,30 +40,24 @@ def collect_qualification(
     source_sha: str,
     version: str,
     destination: Path,
+    *,
+    authority_sha: str | None = None,
 ) -> Path:
-    run = remote.api(f"actions/runs/{run_id}")
-    if (
-        run.get("path") != ".github/workflows/release-qualification.yml"
-        or run.get("status") != "completed"
-        or run.get("conclusion") != "success"
-        or run.get("repository", {}).get("full_name") != remote.repository
-    ):
-        raise ContractAtlasError(
-            "selected qualification run is not a successful repository qualification"
-        )
-    remote.command(
-        "run",
-        "download",
-        str(run_id),
-        "--repo",
-        remote.repository,
-        "--name",
-        "release-qualification-" + source_sha,
-        "--dir",
-        str(destination),
+    proof = collect_workflow_artifact(
+        remote,
+        run_id,
+        "qualification",
+        source_sha,
+        version,
+        destination,
+        authority_sha=authority_sha,
     )
     path = destination / "qualification.json"
-    validate_qualification(json.loads(path.read_bytes()), source_sha, version)
+    raw = path.read_bytes()
+    record = json.loads(raw)
+    validate_qualification(record, source_sha, version)
+    if raw != canonical_bytes(record) or record.get("workflow_execution") != proof["execution"]:
+        raise ContractAtlasError("qualification lacks its exact trusted workflow execution")
     return path
 
 
@@ -150,16 +145,7 @@ def publish_prepared_release(
             "product publication must run from its tag in the protected release workflow"
         )
     github_governance.check(scope="complete")
-    preparation = selected.api(f"actions/runs/{preparation_run}")
-    if (
-        preparation.get("path") != ".github/workflows/release-preparation.yml"
-        or preparation.get("conclusion") != "success"
-        or preparation.get("status") != "completed"
-        or preparation.get("repository", {}).get("full_name") != selected.repository
-    ):
-        raise ContractAtlasError(
-            "prepared artifacts lack successful repository preparation provenance"
-        )
+    authority_sha = selected.api("git/ref/heads/main")["object"]["sha"]
     if release._source_sha(root) != source_sha or selected.tag_commit(tag) != source_sha:
         raise ContractAtlasError("prepared source differs from the publication checkout/tag")
     with tempfile.TemporaryDirectory(prefix="riverhog-publication-proof-") as temporary:
@@ -170,16 +156,14 @@ def publish_prepared_release(
                 "publication predecessor differs from immutable product history"
             )
         expected_previous, historical_manifests = previous, history
-        selected.command(
-            "run",
-            "download",
-            str(preparation_run),
-            "--repo",
-            selected.repository,
-            "--name",
-            "release-preparation-" + source_sha,
-            "--dir",
-            str(scratch / "prepared"),
+        preparation = collect_workflow_artifact(
+            selected,
+            preparation_run,
+            "preparation",
+            source_sha,
+            version,
+            scratch / "prepared",
+            authority_sha=authority_sha,
         )
         trusted = directory_files(scratch / "prepared/evidence")
         observed = directory_files(evidence)
@@ -198,7 +182,12 @@ def publish_prepared_release(
             historical_manifest_paths=historical_manifests,
         )
         qualified = collect_qualification(
-            selected, qualification_run, source_sha, version, scratch / "qualified"
+            selected,
+            qualification_run,
+            source_sha,
+            version,
+            scratch / "qualified",
+            authority_sha=authority_sha,
         )
         recorded = manifest["qualification"]
         if (
@@ -237,12 +226,17 @@ def publish_prepared_release(
             "pinned render and qualification evidence.\n",
             encoding="utf-8",
         )
+        if selected.api("git/ref/heads/main")["object"]["sha"] != authority_sha:
+            raise ContractAtlasError("approved workflow authority changed before publication")
         result = selected.publish_asset_set(
             tag, source_sha, assets, title="Riverhog " + tag, notes=notes, latest=True
         )
+        pages_request = selected.request_product_pages(result)
     return {
         **result,
         "preparation_run_id": preparation_run,
+        "preparation_proof": preparation,
+        "pages_request": pages_request,
         "qualification_run_id": qualification_run,
         "release_manifest_sha256": file_sha256(evidence / "release-manifest.json"),
     }

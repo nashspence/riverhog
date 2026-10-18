@@ -178,6 +178,7 @@ def plan_retrieval(
             timedelta(seconds=request.lease_seconds) if request.lease_seconds is not None else None
         ),
         restore_policy=request.restore_policy,
+        source_store=request.source_store,
         principal=principal,
     )
     return RetrievalPlanOut.model_validate(payload)

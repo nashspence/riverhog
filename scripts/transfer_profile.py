@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import os
 import re
@@ -13,6 +14,7 @@ from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 if __package__ in (None, ""):
@@ -139,20 +141,27 @@ def summarize_transfer_log(
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Run one supported transfer or recovery command and emit a secret-free JSON "
-            "performance profile. The command and its arguments are never copied into the result."
+            "Run a transfer, recovery or Stove0 scale profile. "
+            "Commands and arguments are excluded from measurement records."
         ),
         epilog=(
             "For comparable goodput, supply --context and a measured --reference. The command "
             "receives RIVERHOG_PERFORMANCE_RUN_ID and RIVERHOG_PERFORMANCE_RECEIPT; a successful "
             "exit without an exact verified-completion receipt remains an observation. "
-            "A target or comparison is report-only."
+            "A target or comparison is report-only. For the maintained 128-file lifecycle, "
+            "use --scenario stove0-scale; it uses the maintained target and measures image "
+            "preparation separately."
         ),
     )
-    parser.add_argument("--scenario", choices=sorted(SCENARIO_OPERATIONS), required=True)
-    parser.add_argument("--workload", choices=WORKLOADS, required=True)
-    parser.add_argument("--payload-bytes", type=_positive_int, required=True)
-    parser.add_argument("--items", type=_positive_int, default=1)
+    parser.add_argument(
+        "--scenario", choices=sorted([*SCENARIO_OPERATIONS, "stove0-scale"]), required=True
+    )
+    parser.add_argument("--workload", choices=WORKLOADS, help="transfer or recovery workload")
+    parser.add_argument("--payload-bytes", type=_positive_int)
+    parser.add_argument("--items", type=_positive_int)
+    parser.add_argument(
+        "--output", type=Path, help="directory for retained Stove0 scale profiling records"
+    )
     parser.add_argument(
         "--context",
         type=Path,
@@ -182,6 +191,25 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) -> list[str]:
+    if args.scenario == "stove0-scale":
+        transfer_fields = (
+            "workload",
+            "payload_bytes",
+            "items",
+            "context",
+            "reference",
+            "target_ratio",
+            "transfer_log",
+        )
+        if args.command or any(getattr(args, field) is not None for field in transfer_fields):
+            parser.error("stove0-scale uses the maintained 128-file workload and lifecycle command")
+        return []
+    if args.output is not None:
+        parser.error("--output selects a retained Stove0 scale profile directory")
+    if args.workload is None or args.payload_bytes is None:
+        parser.error("transfer and recovery profiles require --workload and --payload-bytes")
+    if args.items is None:
+        args.items = 1
     command = list(args.command)
     if command and command[0] == "--":
         command.pop(0)
@@ -193,6 +221,130 @@ def _validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
     return command
 
 
+def _profile_stove0_scale(output: Path) -> int:
+    """Report the maintained scale fixture against a non-failing duration target."""
+    from riverhog_canonical_json import canonical_json_bytes
+
+    if TYPE_CHECKING:
+        from ci_qualification import require_validation_work
+        from ci_timing import check_validation_evidence
+    else:
+        from scripts.ci_qualification import require_validation_work
+        from scripts.ci_timing import check_validation_evidence
+
+    work = require_validation_work(["stove0-scale"])[0]
+    conditions = dict(work.conditions)
+    # This preset owns its exact command; parent Make's scenario selector is not a child selector.
+    environment = dict(os.environ)
+    for variable in ("args", "MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES", "RIVERHOG_VALIDATION_SCOPE"):
+        environment.pop(variable, None)
+    run_id = uuid4().hex
+    timing_script = Path(__file__).with_name("ci_timing.py")
+    directory = output / run_id
+    directory.mkdir(parents=True)
+    print(f"Scale profiling records: {directory}", file=sys.stderr)
+    with (directory / "images.log").open("w") as log:
+        prepared = subprocess.run(
+            [
+                sys.executable,
+                str(timing_script),
+                "execute",
+                "--workload",
+                "stove0-scale-images",
+                "--run-id",
+                run_id + "-images",
+                "--output",
+                str(directory / "images.json"),
+            ],
+            check=False,
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            env=environment,
+        )
+    preparation = prepared.returncode
+    image_timing = json.loads((directory / "images.json").read_bytes())
+    lifecycle_timing = None
+    status = preparation
+    if preparation == 0:
+        image_evidence = check_validation_evidence(
+            [directory / "images.json"],
+            expected=["stove0-scale-images"],
+            source_sha=image_timing["source_sha"],
+            run_id=run_id + "-images",
+        )
+        if image_timing["exit_status"] or image_evidence["qualification_exit_status"]:
+            raise performance.PerformanceError("image preparation evidence contradicts execution")
+        with (directory / "lifecycle.log").open("w") as log:
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(timing_script),
+                    "execute",
+                    "--workload",
+                    work.name,
+                    "--run-id",
+                    run_id,
+                    "--output",
+                    str(directory / "lifecycle.json"),
+                ],
+                check=False,
+                stdout=log,
+                stderr=subprocess.STDOUT,
+                env={**environment, "RIVERHOG_CI_TIMING_DIR": str(directory / "phases")},
+            )
+        status = completed.returncode
+        lifecycle_timing = json.loads((directory / "lifecycle.json").read_bytes())
+        evidence = check_validation_evidence(
+            [directory / "lifecycle.json"],
+            expected=[work.name],
+            source_sha=image_timing["source_sha"],
+            run_id=run_id,
+        )
+        if (lifecycle_timing["exit_status"] or evidence["qualification_exit_status"]) != status:
+            raise performance.PerformanceError("lifecycle status differs from timing evidence")
+    comparison = (
+        lifecycle_timing["profiling_target"]
+        if lifecycle_timing is not None
+        else {
+            "status": "not-compared",
+            "reason": "image-preparation-failed",
+            "target_seconds": work.target_seconds,
+            "report_only": True,
+        }
+    )
+    source = {key: image_timing[key] for key in ("source_sha", "source_clean")}
+    if lifecycle_timing is not None and any(lifecycle_timing[key] != source[key] for key in source):
+        comparison = {**comparison, "status": "not-compared", "reason": "source-changed"}
+    report = {
+        "format": "riverhog-stove0-scale-profile/v1",
+        **source,
+        "run_id": run_id,
+        "target": {
+            "scenario": "stove0-scale",
+            "workload": "many-small-files",
+            "audio_files": int(conditions["audio_files"]),
+            "audio_frames": int(conditions["audio_frames"]),
+            "sidecar_files": int(conditions["sidecar_files"]),
+            "elapsed_seconds": work.target_seconds,
+        },
+        "observed": {
+            "image_preparation_elapsed_seconds": image_timing["elapsed_seconds"],
+            "image_preparation_exit_code": preparation,
+            "elapsed_seconds": lifecycle_timing["elapsed_seconds"] if lifecycle_timing else None,
+            "command_exit_code": lifecycle_timing["exit_status"] if lifecycle_timing else None,
+            "completion_verified": lifecycle_timing is not None and status == 0,
+        },
+        "comparison": comparison,
+    }
+    (directory / "profile.json").write_bytes(canonical_json_bytes(report))
+    print(
+        f"Profiling target {comparison['status']} (under {work.target_seconds}s; report only).",
+        file=sys.stderr,
+    )
+    print(canonical_json_bytes(report).decode(), flush=True)
+    return status
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     from riverhog_canonical_json import canonical_json_bytes
 
@@ -200,6 +352,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     command = _validate_args(args, parser)
     try:
+        if args.scenario == "stove0-scale":
+            output = (
+                args.output or Path(__file__).resolve().parents[1] / "build/stove0-scale-profile"
+            )
+            return _profile_stove0_scale(output)
         context = (
             performance.validate_context(performance.read_json(args.context))
             if args.context is not None

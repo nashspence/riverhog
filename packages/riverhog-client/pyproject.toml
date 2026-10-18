@@ -18,7 +18,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = [
+dependencies = ["release-documentation-lib>=0.1,<0.2",
   "riverhog-archive-contracts>=0.1,<0.2",
   "riverhog-application-access>=0.1,<0.2",
   "http-api-contracts>=0.1,<0.2",
@@ -26,17 +26,20 @@ dependencies = [
   "pydantic>=2.7,<3.0",
   "riverhog-protocol>=0.1,<0.2",
   "riverhog-canonical-json>=0.1,<0.2",
+  "riverhog-growth-contracts>=0.1,<0.2",
   "riverhog-provenance-contracts>=0.1,<0.2",
   "riverhog-provenance>=0.1,<0.2",
   "time-formats>=0.1,<0.2",
 ]
 
 [tool.uv.sources]
+release-documentation-lib = { workspace = true }
 riverhog-archive-contracts = { workspace = true }
 riverhog-application-access = { workspace = true }
 http-api-contracts = { workspace = true }
 riverhog-protocol = { workspace = true }
 riverhog-canonical-json = { workspace = true }
+riverhog-growth-contracts = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
 riverhog-provenance = { workspace = true }
 time-formats = { workspace = true }

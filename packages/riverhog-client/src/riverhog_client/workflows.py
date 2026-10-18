@@ -44,6 +44,7 @@ from riverhog_protocol.collection_workflow_transport import (
     OperationIdentityDocument,
     ProcessingCapabilityCreateDocument,
     ProcessingCapabilityDocument,
+    ProcessingCapabilityRefreshDocument,
     ProcessingClaimAbandonDocument,
     ProcessingClaimCreateDocument,
     ProcessingClaimDocument,
@@ -153,7 +154,7 @@ class CollectionWorkflowMethods:
         work_id: str,
         work_document: Mapping[str, Any],
         work_document_sha256: str,
-        inputs: Iterable[RootInput],
+        inputs: Iterable[RootInput] | None = None,
         lease_seconds: int = 1800,
         purpose: str = "collection-work/v1",
     ) -> ProcessingClaimDocument:
@@ -172,7 +173,9 @@ class CollectionWorkflowMethods:
                 json=_dump(request),
             )
         )
-        ordinal = claim.inputs.count
+        if inputs is None:
+            return claim
+        ordinal = 0
         if claim.inputs.state == "receiving":
             for chunk in _chunks(inputs, maximum=WORKFLOW_SET_BATCH_MAX):
                 staged = self.append_processing_claim_inputs(
@@ -328,7 +331,7 @@ class CollectionWorkflowMethods:
         controller_evidence_sha256: str,
         operation_id: str,
         operation_sha256: str,
-        input_artifacts: Iterable[ArtifactInput],
+        input_artifacts: Iterable[ArtifactInput] | None = None,
         result_kind: Literal["collection", "external-effect", "no-output"] = "collection",
         operation_contract: Mapping[str, Any] | None = None,
         output_policy: OutputCollectionPolicy | None = None,
@@ -339,7 +342,7 @@ class CollectionWorkflowMethods:
         artifact_ordinal = 0
         artifact_bytes = 0
         digest = hashlib.sha256(b"riverhog-claim-artifacts/v1\0")
-        for chunk in _chunks(input_artifacts, maximum=WORKFLOW_SET_BATCH_MAX):
+        for chunk in _chunks(input_artifacts or (), maximum=WORKFLOW_SET_BATCH_MAX):
             for value in chunk:
                 artifact = CollectionArtifactIdentityDocument.model_validate(value)
                 encoded = canonical_json_bytes(artifact.model_dump(mode="json"))
@@ -360,7 +363,7 @@ class CollectionWorkflowMethods:
             if claim.plan is not None
             else self.seal_processing_claim_artifacts(claim_id, fence=fence).identity
         )
-        if (
+        if input_artifacts is not None and (
             identity is None
             or identity.count != artifact_ordinal
             or identity.total_bytes != artifact_bytes
@@ -450,7 +453,7 @@ class CollectionWorkflowMethods:
         fence: int,
         audience: str,
         actions: Sequence[CapabilityAction] = ("read-inputs",),
-        artifacts: Iterable[ArtifactInput],
+        artifacts: Iterable[ArtifactInput] | None = None,
         ttl_seconds: int = 900,
     ) -> ProcessingCapabilityDocument:
         request = _exact_request(
@@ -468,6 +471,8 @@ class CollectionWorkflowMethods:
                 json=_dump(request),
             )
         )
+        if artifacts is None:
+            return capability
         ordinal = capability.artifacts.count
         for chunk in _chunks(artifacts, maximum=WORKFLOW_SET_BATCH_MAX):
             staged = self.append_processing_capability_artifacts(
@@ -484,6 +489,27 @@ class CollectionWorkflowMethods:
             fence=fence,
         )
         return capability.model_copy(update={"state": "active", "artifacts": sealed})
+
+    def refresh_processing_capability(
+        self,
+        claim_id: ProcessingClaimId,
+        capability_id: str,
+        *,
+        fence: int,
+        ttl_seconds: int = 900,
+    ) -> ProcessingCapabilityDocument:
+        request = _exact_request(
+            ProcessingCapabilityRefreshDocument, fence=fence, ttl_seconds=ttl_seconds
+        )
+        return ProcessingCapabilityDocument.model_validate(
+            self._json(
+                "refresh_processing_capability",
+                "POST",
+                f"/v1/collection-processing-claims/{_claim_id(claim_id)}"
+                f"/capabilities/{capability_id}/refresh",
+                json=_dump(request),
+            )
+        )
 
     def append_processing_capability_artifacts(
         self,

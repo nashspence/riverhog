@@ -198,6 +198,7 @@ def _seed(
     path: Path | None,
     *,
     database_url: str | None = None,
+    cache_placement: bool = True,
 ) -> tuple[RuntimeConfig, object, MemoryArchiveStore, ArchiveStoreRegistry]:
     if database_url is None:
         if path is None:
@@ -297,23 +298,24 @@ def _seed(
                 added_at=NOW,
             )
         )
-        session.add(
-            RetrievalCacheObjectRecord(
-                source_store="archive",
-                source_incarnation_id=seed_storage_incarnation(session, "archive", "archive"),
-                collection_id=1,
-                object_id="manifest",
-                cache_store="local",
-                cache_incarnation_id=seed_storage_incarnation(session, "cache", "local"),
-                object_path="cache/1/manifest.json.age",
-                revision="cache-revision",
-                stored_bytes=1,
-                stored_sha256="6" * 64,
-                cached_at=NOW,
-                verified_at=NOW,
-                state="ready",
+        if cache_placement:
+            session.add(
+                RetrievalCacheObjectRecord(
+                    source_store="archive",
+                    source_incarnation_id=seed_storage_incarnation(session, "archive", "archive"),
+                    collection_id=1,
+                    object_id="manifest",
+                    cache_store="local",
+                    cache_incarnation_id=seed_storage_incarnation(session, "cache", "local"),
+                    object_path="cache/1/manifest.json.age",
+                    revision="cache-revision",
+                    stored_bytes=1,
+                    stored_sha256="6" * 64,
+                    cached_at=NOW,
+                    verified_at=NOW,
+                    state="ready",
+                )
             )
-        )
         session.add(
             CollectionArtifactRecord(
                 collection_id=1,
@@ -1403,7 +1405,9 @@ def test_description_revision_reclamation_resumes_after_interrupted_provider_eff
 def test_superseded_document_cleanup_receipt_survives_collection_retirement(
     tmp_path: Path,
 ) -> None:
-    config, factory, _initial, _registry = _seed(tmp_path / "catalog.sqlite3")
+    config, factory, _initial, _registry = _seed(
+        tmp_path / "catalog.sqlite3", cache_placement=False
+    )
     store = VersionedDescriptionStore()
     service = SqlAlchemyCollectionDescriptionService(
         config,

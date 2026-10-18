@@ -153,7 +153,6 @@ MAGIC_OBSERVER_CONTRACT = ObserverContract.seal(
         options_schema=MAGIC_OPTIONS_SCHEMA,
         facts_schema=MAGIC_FACTS_SCHEMA,
         facts_semantics=MAGIC_FACTS_SEMANTICS,
-        maximum_result_bytes=1024 * 1024,
     )
 )
 

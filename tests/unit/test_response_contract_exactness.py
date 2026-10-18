@@ -826,7 +826,7 @@ def test_artifact_and_access_set_responses_reuse_their_canonical_owners() -> Non
     )
     assert (
         RetrievalPlanArtifactOut.model_validate(
-            {**identity, "collection_id": "1", "requires_restore": False}
+            {**identity, "collection_id": "1", "source_store": "archive", "requires_restore": False}
         ).bytes
         == 42
     )

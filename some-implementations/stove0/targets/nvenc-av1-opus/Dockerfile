@@ -101,15 +101,18 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
 COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
+COPY packages/release-documentation-lib packages/release-documentation-lib
 COPY some-implementations/stove0/targets/nvenc-av1-opus/target some-implementations/stove0/targets/nvenc-av1-opus/target
 COPY some-implementations/stove0/review0/samplers/nvenc-av1-opus some-implementations/stove0/review0/samplers/nvenc-av1-opus
 COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
+COPY packages/riverhog-growth-contracts packages/riverhog-growth-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol
+COPY packages/sha256-continuation packages/sha256-continuation
 COPY some-implementations/riverhog/provenance/contracts/direct-relations some-implementations/riverhog/provenance/contracts/direct-relations
 COPY packages/riverhog-provenance packages/riverhog-provenance
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
@@ -118,6 +121,7 @@ COPY some-implementations/stove0/targets/media-archive/support some-implementati
 COPY some-implementations/stove0/observers/contracts/materialization-hint some-implementations/stove0/observers/contracts/materialization-hint
 COPY some-implementations/stove0/observers/contracts/media-metadata some-implementations/stove0/observers/contracts/media-metadata
 COPY some-implementations/stove0/packages/observer-protocol some-implementations/stove0/packages/observer-protocol
+COPY some-implementations/stove0/packages/extension-support some-implementations/stove0/packages/extension-support
 COPY some-implementations/stove0/packages/protocol some-implementations/stove0/packages/protocol
 COPY some-implementations/stove0/review0/contracts some-implementations/stove0/review0/contracts
 COPY some-implementations/stove0/review0/sampler/client some-implementations/stove0/review0/sampler/client
@@ -146,7 +150,7 @@ RUN apt-get update --snapshot "${UBUNTU_APT_SNAPSHOT}" \
     libfontconfig1 libfreetype6 libfribidi0 libharfbuzz0b libopus0 \
  && ln -s /usr/bin/python3 /usr/local/bin/python3 \
  && python3 -c 'import sys; assert sys.version_info[:2] == (3, 12)' \
- && install -d -o 65532 -g 65532 -m 0700 /var/lib/a-stove0-nvenc-av1-opus-target \
+ && install -d -o 65532 -g 65532 -m 0700 /var/lib/a-stove0-nvenc-av1-opus-target /run/stove0-execution-lease \
  && rm -rf /var/lib/apt/lists/* \
  && ! command -v mise
 

@@ -199,6 +199,7 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
                 for name in sorted(
                     {
                         "config-validation",
+                        "release-documentation-lib",
                         "gogurt-core",
                         selection["listener_host_distribution"],
                         "gogurt-listener-runtime",

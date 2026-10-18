@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 import re
+import subprocess
 import tomllib
 from pathlib import Path
 
@@ -14,6 +16,8 @@ CODEQL_WORKFLOW = REPO_ROOT / ".github/workflows/codeql.yml"
 QUALIFICATION_WORKFLOW = REPO_ROOT / ".github/workflows/release-qualification.yml"
 PROVIDER_QUALIFICATION_WORKFLOW = REPO_ROOT / ".github/workflows/provider-qualification.yml"
 CONTRACT_PAGES_WORKFLOW = REPO_ROOT / ".github/workflows/contract-pages.yml"
+PREPARATION_WORKFLOW = REPO_ROOT / ".github/workflows/release-preparation.yml"
+DOCUMENTATION_WORKFLOW = REPO_ROOT / ".github/workflows/documentation-check.yml"
 PROVIDER_QUALIFICATION_COMPOSE = REPO_ROOT / "tests/harness/provider-qualification.compose.yaml"
 MISE_LOCK = REPO_ROOT / "mise.lock"
 DATABASE_QUALIFICATION_SCRIPT = REPO_ROOT / "scripts/database_qualification.py"
@@ -34,15 +38,20 @@ def test_artifact_uploads_use_one_pinned_node24_action() -> None:
 
 def test_contract_pages_uses_exact_green_main_and_protected_publication_environment() -> None:
     workflow = yaml.load(CONTRACT_PAGES_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
-    assert set(workflow["on"]) == {"workflow_dispatch", "workflow_run", "release"}
+    assert set(workflow["on"]) == {"workflow_dispatch", "workflow_run"}
     assert workflow["jobs"]["build"]["permissions"] == {"actions": "read", "contents": "read"}
     build = workflow["jobs"]["build"]["steps"]
     assert all(
         re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in build if "uses" in step
     )
-    gate = next(step for step in build if step["name"] == "Require a green commit on main")
+    readiness = workflow["jobs"]["readiness"]
+    gate = next(
+        step for step in readiness["steps"] if step["name"] == "Require a green commit on main"
+    )
     assert "git merge-base --is-ancestor" in gate["run"]
-    assert "ci.yml codeql.yml" in gate["run"]
+    assert "--workflow ci.yml --workflow codeql.yml" in gate["run"]
+    assert "--allow-pending --github-output" in gate["run"]
+    assert workflow["jobs"]["build"]["if"] == "needs.readiness.outputs.ready == 'true'"
     assert "make contract-check" in next(
         step["run"] for step in build if step["name"].startswith("Generate and independently check")
     )
@@ -73,6 +82,98 @@ def test_every_buildx_setup_uses_the_pinned_docker_engine() -> None:
         assert all(
             step["with"] == {"version": "v0.36.0", "driver": "docker"} for step in buildx_steps
         )
+
+
+def test_pages_dispatch_enters_the_environment_through_main_instead_of_a_product_tag() -> None:
+    workflow = yaml.load(CONTRACT_PAGES_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    readiness = workflow["jobs"]["readiness"]
+    guard = readiness["steps"][0]["run"]
+    assert readiness["permissions"]["checks"] == "read"
+    assert "release" not in workflow["on"]
+    for ref, status in (("refs/tags/v1.0.0", 1), ("refs/heads/main", 0)):
+        observed = subprocess.run(
+            ["bash", "-e", "-c", guard],
+            env={**os.environ, "GITHUB_REF": ref},
+            capture_output=True,
+        )
+        assert observed.returncode == status
+    assert workflow["jobs"]["deploy"]["environment"]["name"] == "github-pages"
+    assert workflow["jobs"]["deploy"]["needs"] == "build"
+
+
+def test_preparation_separates_trusted_authority_from_the_exact_qualified_source() -> None:
+    workflow = yaml.load(PREPARATION_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    assert set(workflow["on"]) == {"workflow_dispatch"}
+    assert workflow["permissions"] == {"actions": "read", "contents": "read"}
+    job = workflow["jobs"]["prepare"]
+    guard = job["steps"][0]["run"]
+    for ref, status in (("refs/heads/main", 0), ("refs/tags/v1.0.0", 1)):
+        result = subprocess.run(
+            ["bash", "-e", "-c", guard],
+            env={**os.environ, "GITHUB_REF": ref},
+            capture_output=True,
+        )
+        assert result.returncode == status
+    checkouts = [
+        step["with"]
+        for step in job["steps"]
+        if step.get("uses", "").startswith("actions/checkout@")
+    ]
+    assert [(c["path"], c["ref"]) for c in checkouts] == [
+        ("coordinator", "${{ github.workflow_sha }}"),
+        ("source", "${{ inputs.source_sha }}"),
+    ]
+    assert all(c["persist-credentials"] == "false" and c["fetch-depth"] == "0" for c in checkouts)
+    preparation = next(step for step in job["steps"] if step.get("working-directory"))
+    assert preparation["working-directory"] == "coordinator"
+    assert preparation["env"]["GH_TOKEN"] == "${{ github.token }}"
+    assert "--source-directory ../source" in preparation["run"]
+    assert 'test "$(git -C ../source rev-parse HEAD)" = "$SOURCE_SHA"' in preparation["run"]
+    assert 'test "$(git rev-parse HEAD)" = "$GITHUB_WORKFLOW_SHA"' in preparation["run"]
+    assert "--qualification-run" in preparation["run"]
+    assert "secrets." not in PREPARATION_WORKFLOW.read_text()
+    assert "environment" not in job
+    assert all(
+        re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in job["steps"] if "uses" in step
+    )
+
+
+def test_documentation_validation_has_read_only_authoring_access() -> None:
+    workflow = yaml.load(DOCUMENTATION_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    assert set(workflow["on"]) == {"workflow_dispatch"}
+    assert workflow["permissions"] == {"contents": "read"}
+    job = workflow["jobs"]["validate"]
+    assert "environment" not in job
+    validation = next(step for step in job["steps"] if "run" in step)
+    assert validation["env"]["GH_TOKEN"] == "${{ github.token }}"
+    assert "validate-authoring" in validation["run"]
+    assert "--coordinate-baseline" in validation["run"]
+    assert "secrets." not in DOCUMENTATION_WORKFLOW.read_text()
+
+
+def test_prepared_native_extraction_is_called_by_the_trusted_coordinator() -> None:
+    tree = ast.parse((REPO_ROOT / "scripts/release.py").read_text())
+    preparation = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "build_release_evidence"
+    )
+    imports = {
+        (node.module, alias.name)
+        for node in ast.walk(preparation)
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
+    assert ("contract_atlas.documentation_artifacts", "inspect_prepared_artifacts") in imports
+    extractor = [
+        node
+        for node in ast.walk(preparation)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "inspect_prepared_artifacts"
+    ]
+    assert len(extractor) == 1
+    assert {k.arg for k in extractor[0].keywords} >= {"baseline", "custody", "image_records"}
 
 
 def test_provider_qualification_runs_isolated_storage_adapter_images() -> None:
@@ -157,18 +258,34 @@ def test_codeql_covers_every_governed_branch_with_stable_checks() -> None:
         "matrix": {"language": ["actions", "python"]},
     }
     steps = job["steps"]
-    assert [step["uses"].split("@", 1)[0] for step in steps] == [
+    action_steps = [step for step in steps if "uses" in step]
+    assert [step["uses"].split("@", 1)[0] for step in action_steps] == [
         "actions/checkout",
         "github/codeql-action/init",
         "github/codeql-action/analyze",
+        "actions/upload-artifact",
     ]
-    assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in steps)
-    assert steps[0]["with"] == {"persist-credentials": "false"}
-    assert steps[1]["with"] == {
+    assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in action_steps)
+    assert action_steps[0]["with"] == {"persist-credentials": "false"}
+    assert action_steps[1]["with"] == {
         "languages": "${{ matrix.language }}",
         "queries": "security-extended",
     }
-    assert steps[2]["with"] == {"category": "/language:${{ matrix.language }}"}
+    assert action_steps[2]["with"] == {"category": "/language:${{ matrix.language }}"}
+    start, finish = [step for step in steps if "run" in step]
+    assert "scripts/ci_execution.py start" in start["run"]
+    assert "scripts/ci_execution.py finish" in finish["run"]
+    assert job["env"] == {"VALIDATION_WORK": "codeql-${{ matrix.language }}"}
+    for recorder in (start, finish):
+        assert recorder["env"] == {
+            "VALIDATION_CHECKOUT": "${{ runner.temp }}/codeql-validation/checkout.json"
+        }
+    assert action_steps[-1]["with"]["path"] == "${{ runner.temp }}/codeql-validation"
+    assert finish["if"] == "always()"
+    assert steps.index(start) < steps.index(action_steps[1])
+    assert steps.index(finish) > steps.index(action_steps[2])
+    assert steps[-1]["if"] == "always()"
+    assert steps[-1]["with"]["retention-days"] == "7"
 
 
 def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
@@ -190,108 +307,82 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         },
     }
     assert workflow["permissions"] == {"contents": "read"}
+    assert workflow["jobs"]["gate"]["permissions"] == {"actions": "read", "contents": "read"}
     assert workflow["concurrency"]["cancel-in-progress"] == "true"
 
     assert set(workflow["jobs"]) == {
+        "gate",
+        "plan",
         "repository",
+        "units",
+        "compose",
         "client-platforms",
         "images",
     }
-    job = workflow["jobs"]["repository"]
-    assert job["runs-on"] == "ubuntu-24.04"
-    assert job["strategy"]["fail-fast"] == "false"
-    matrix = job["strategy"]["matrix"]["include"]
-    assert [entry["target"] for entry in matrix] == [
-        "lint",
-        "compile",
-        "unit",
-        "c2sp-vectors",
-        "postgres-concurrency",
-        "compose-smoke",
-        "filesystem-recovery-qualification",
-        "dist-smoke",
-    ]
-    assert [entry["target"] for entry in matrix if entry.get("docker") == "true"] == [
-        "postgres-concurrency",
-        "compose-smoke",
-        "filesystem-recovery-qualification",
-    ]
-
-    steps = job["steps"]
-    assert [step["uses"].split("@", 1)[0] for step in steps if "uses" in step] == [
-        "actions/checkout",
-        "jdx/mise-action",
-        "docker/setup-docker-action",
-        "docker/setup-compose-action",
-    ]
-    action_steps = [
-        step
-        for workflow_job in workflow["jobs"].values()
-        for step in workflow_job["steps"]
-        if "uses" in step
-    ]
+    jobs = workflow["jobs"]
+    caps = {"repository": "2", "units": "3", "compose": "7", "images": "2", "client-platforms": "3"}
+    assert sum(map(int, caps.values())) == 17
+    for name, cap in caps.items():
+        job = jobs[name]
+        assert job["strategy"]["fail-fast"] == "false"
+        assert job["strategy"]["max-parallel"] == cap
+        if name != "client-platforms":
+            assert job["runs-on"] == "ubuntu-24.04"
+            assert job["needs"] == "plan"
+            assert job["strategy"]["matrix"] == "${{ fromJSON(needs.plan.outputs." + name + ") }}"
+    plan = next(step for step in jobs["plan"]["steps"] if step.get("id") == "plan")
+    assert 'python -m scripts.ci_qualification plan --github-output "$GITHUB_OUTPUT"' in plan["run"]
+    action_steps = [step for job in jobs.values() for step in job["steps"] if "uses" in step]
     assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in action_steps)
-    checkout_steps = [
+    for step in action_steps:
+        if step["uses"].startswith("actions/checkout@"):
+            assert step["with"] == {
+                "persist-credentials": "false",
+                "ref": "${{ inputs.ref || github.sha }}",
+            }
+        if step["uses"].startswith("docker/setup-docker-action@"):
+            assert step["with"]["version"] == "v29.3.1"
+            assert json.loads(step["with"]["daemon-config"]) == {
+                "features": {"containerd-snapshotter": True},
+            }
+        if step["uses"].startswith("docker/setup-compose-action@"):
+            assert step["with"] == {"version": "v5.1.1"}
+    repository = jobs["repository"]
+    run = next(step for step in repository["steps"] if step["name"] == "Run repository target")
+    assert 'python scripts/ci_timing.py execute --workload "$CI_TARGET"' in run["run"]
+    assert '--run-id "${{ github.run_id }}-${{ github.run_attempt }}"' in run["run"]
+    for name in ("repository", "units", "compose", "images"):
+        retained = jobs[name]["steps"][-1]
+        assert retained["if"] == "always()"
+        assert retained["uses"] == UPLOAD_ARTIFACT_USE
+        assert retained["with"]["retention-days"] == "7"
+        assert retained["with"]["path"] == "${{ runner.temp }}/ci-timing"
+    unit_run = next(step for step in jobs["units"]["steps"] if "run" in step)
+    assert 'execute --workload "unit-$UNIT_SHARD"' in unit_run["run"]
+    compose_run = next(
         step
-        for workflow_job in workflow["jobs"].values()
-        for step in workflow_job["steps"]
-        if step.get("uses", "").startswith("actions/checkout@")
-    ]
-    assert all(
-        step["with"]
-        == {
-            "persist-credentials": "false",
-            "ref": "${{ inputs.ref || github.sha }}",
-        }
-        for step in checkout_steps
+        for step in jobs["compose"]["steps"]
+        if step["name"] == "Qualify the complete independent lifecycle"
     )
-    assert steps[2]["if"] == "matrix.docker"
-    assert steps[2]["with"]["version"] == "v29.3.1"
-    assert json.loads(steps[2]["with"]["daemon-config"]) == {
-        "features": {"containerd-snapshotter": True}
-    }
-    assert steps[3]["if"] == "matrix.docker"
-    assert steps[3]["with"] == {"version": "v5.1.1"}
-    assert [step["run"] for step in steps if "run" in step] == ['make "$CI_TARGET"']
-    assert steps[-1]["env"] == {"CI_TARGET": "${{ matrix.target }}"}
-
-    client_platforms = workflow["jobs"]["client-platforms"]
-    assert client_platforms["strategy"] == {
-        "fail-fast": "false",
-        "matrix": {
-            "include": [
-                {"os": "ubuntu-24.04", "listener_repetitions": "12"},
-                {"os": "macos-15", "listener_repetitions": "12"},
-                {"os": "windows-2025", "listener_repetitions": "12"},
-            ],
-        },
-    }
-    assert client_platforms["runs-on"] == "${{ matrix.os }}"
-    assert client_platforms["env"] == {"MISE_AUTO_INSTALL": "0"}
-    assert [
-        step["uses"].split("@", 1)[0] for step in client_platforms["steps"] if "uses" in step
-    ] == ["actions/checkout", "jdx/mise-action", "actions/upload-artifact"]
-    assert client_platforms["steps"][0]["with"]["persist-credentials"] == "false"
-    assert client_platforms["steps"][1]["with"] == {"install_args": "python uv age"}
-    assert [step["run"] for step in client_platforms["steps"] if "run" in step] == [
+    assert 'execute --workload "compose-$COMPOSE_LANE"' in compose_run["run"]
+    client = jobs["client-platforms"]
+    assert client["strategy"]["matrix"] == {"os": ["ubuntu-24.04", "macos-15", "windows-2025"]}
+    assert client["env"] == {"MISE_AUTO_INSTALL": "0"}
+    assert client["steps"][1]["with"] == {"install_args": "python uv age"}
+    native = next(step for step in client["steps"] if "run" in step)
+    assert native["run"] == (
         "mise x python uv age -- uv run --locked --all-packages --group dev "
-        "python -m pytest -q "
-        "tests/platform/test_native_provenance.py "
-        "some-implementations/gogurt/application/tests "
-        "tests/platform/test_end_user_artifacts.py",
-        "mise x python uv age -- uv run --locked --all-packages --group dev "
-        "python scripts/qualify_installation.py --version 1.0.0 --listener-lifecycle "
-        "--listener-lifecycle-repetitions ${{ matrix.listener_repetitions }} "
-        '--gogurt-evidence-dir "${{ runner.temp }}/gogurt-failure-evidence"',
-    ]
-    native_tests = next(
-        step["run"]
-        for step in client_platforms["steps"]
-        if step.get("name") == "Qualify native end-user behavior"
+        'python scripts/ci_timing.py execute --workload "$NATIVE_WORKLOAD" '
+        '--run-id "${{ github.run_id }}-${{ github.run_attempt }}" '
+        '--output "$RIVERHOG_CI_TIMING_DIR/receipt.json"'
     )
-    for path in native_tests.split()[native_tests.split().index("-q") + 1 :]:
-        assert (REPO_ROOT / path).exists(), path
-    evidence_step = client_platforms["steps"][-1]
+    assert native["shell"] == "bash"
+    assert native["env"] == {
+        "GOGURT_FAILURE_EVIDENCE_DIR": "${{ runner.temp }}/gogurt-failure-evidence",
+        "RIVERHOG_CI_TIMING_DIR": "${{ runner.temp }}/ci-timing",
+        "NATIVE_WORKLOAD": "native-${{ matrix.os }}",
+    }
+    evidence_step = client["steps"][-1]
     assert evidence_step["if"] == "failure()"
     assert evidence_step["with"] == {
         "name": "gogurt-lifecycle-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}",
@@ -299,7 +390,37 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "if-no-files-found": "warn",
         "retention-days": "14",
     }
+
     assert "secrets." not in text
+
+
+def test_ci_gate_covers_every_job_and_rejects_non_successful_dependencies() -> None:
+    workflow = yaml.load(CI_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    gate = workflow["jobs"]["gate"]
+    assert gate["name"] == "CI gate"
+    assert gate["if"] == "always()"
+    assert gate["runs-on"] == "ubuntu-24.04"
+    assert set(gate["needs"]) == set(workflow["jobs"]) - {"gate"}
+    step = next(step for step in gate["steps"] if "CI_DEPENDENCIES" in step.get("env", {}))
+    assert step["env"] == {"CI_DEPENDENCIES": "${{ toJSON(needs) }}"}
+
+    def observe(dependencies):
+        return subprocess.run(
+            ["bash", "-c", step["run"]],
+            env={**os.environ, "CI_DEPENDENCIES": json.dumps(dependencies)},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    success = {name: {"result": "success"} for name in gate["needs"]}
+    assert observe(success).returncode == 0
+    assert observe({}).returncode != 0
+    for name in gate["needs"]:
+        for result in ("failure", "cancelled", "skipped", None):
+            observed = observe({**success, name: {"result": result}})
+            assert observed.returncode != 0, (name, result)
+            assert name in observed.stderr
 
 
 def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries() -> None:
@@ -320,7 +441,7 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
         "needs": "resolve",
         "uses": "./.github/workflows/ci.yml",
         "with": {"ref": "${{ needs.resolve.outputs.sha }}"},
-        "permissions": {"contents": "read"},
+        "permissions": {"actions": "read", "contents": "read"},
     }
     audit = workflow["jobs"]["release-audit"]
     assert "environment" not in audit
@@ -467,17 +588,39 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
         step for step in audit["steps"] if step["name"] == "Check out workflow authority"
     )
     assert audit_checkout["with"] == {
+        "ref": "${{ github.workflow_sha }}",
+        "path": "coordinator",
         "fetch-depth": "0",
         "persist-credentials": "false",
     }
     exact_checkout = next(
         step for step in audit["steps"] if step["name"] == "Check out verified exact source"
     )
-    assert exact_checkout["run"] == (
-        'git fetch --force --no-tags origin "$SOURCE_SHA"\n'
-        'git checkout --detach "$SOURCE_SHA"\n'
+    assert exact_checkout["with"] == {
+        "ref": "${{ needs.resolve.outputs.sha }}",
+        "path": "source",
+        "fetch-depth": "0",
+        "persist-credentials": "false",
+    }
+    assert audit["defaults"] == {"run": {"working-directory": "source"}}
+    assert audit["env"]["SOURCE_DIR"] == "${{ github.workspace }}/source"
+    verification = next(step for step in audit["steps"] if step["name"] == "Verify exact checkouts")
+    assert verification["run"] == (
         'test "$(git rev-parse --verify HEAD)" = "$SOURCE_SHA"\n'
+        'test "$(git -C ../coordinator rev-parse --verify HEAD)" = "$GITHUB_WORKFLOW_SHA"\n'
     )
+    toolchains = {
+        step["name"]: step["with"]
+        for step in audit["steps"]
+        if step.get("uses", "").startswith("jdx/mise-action@")
+    }
+    assert toolchains == {
+        "Install workflow verification tools": {
+            "working_directory": "coordinator",
+            "install_args": "python uv",
+        },
+        "Install repository toolchain": {"working_directory": "source"},
+    }
     assert all(
         re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"])
         for step in workflow["jobs"]["resolve"]["steps"] + audit["steps"]
@@ -487,6 +630,8 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     record = next(
         step for step in audit["steps"] if step["name"] == "Record the completed qualification"
     )
+    assert record["working-directory"] == "coordinator"
+    assert '"$SOURCE_DIR/build/contracts/' in record["run"]
     assert '> "$QUALIFICATION_DIR/qualification.json"' in record["run"]
     assert "contract_closure_sha256" in record["run"]
     assert "contract_audit_sha256" in record["run"]
@@ -506,34 +651,30 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "riverhog-release-qualification/v1" in text
     assert 'operation_matrix: "passed"' in text
     assert 'database_contract: "passed"' in text
-    assert "Analyze (actions)" in text and "Analyze (python)" in text
+    assert "scripts/workflow_evidence.py checks" in text
+    assert '--branch "$branch" --workflow codeql.yml' in text
+    assert "-attempt-${{ github.run_attempt }}" in upload["with"]["name"]
+    assert 'record["workflow_execution"]' in record["run"]
     assert "release/v1" in text
     assert "v1\\.[0-9]+\\.[0-9]+" in text
 
 
-def test_release_required_check_names_are_derived_from_stable_job_names() -> None:
+def test_release_required_checks_bind_the_exhaustive_ci_gate_and_codeql() -> None:
     workflow = yaml.load(CI_WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    codeql = yaml.load(CODEQL_WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
-    repository = workflow["jobs"]["repository"]
-    images = workflow["jobs"]["images"]
-    client_platforms = workflow["jobs"]["client-platforms"]
+    gate = workflow["jobs"]["gate"]
+    assert gate["if"] == "always()"
+    assert set(gate["needs"]) == set(workflow["jobs"]) - {"gate"}
+    analyze = codeql["jobs"]["analyze"]
+    assert analyze["name"] == "Analyze (${{ matrix.language }})"
     actual = {
+        gate["name"],
         *(
-            repository["name"].replace("${{ matrix.target }}", entry["target"])
-            for entry in repository["strategy"]["matrix"]["include"]
+            analyze["name"].replace("${{ matrix.language }}", language)
+            for language in analyze["strategy"]["matrix"]["language"]
         ),
-        *(
-            images["name"].replace("${{ matrix.target }}", target)
-            for target in images["strategy"]["matrix"]["target"]
-        ),
-        *(
-            client_platforms["name"].replace("${{ matrix.os }}", entry["os"])
-            for entry in client_platforms["strategy"]["matrix"]["include"]
-        ),
-        "Analyze (actions)",
-        "Analyze (python)",
     }
-
     assert release["governance"]["required_checks"] == sorted(actual)
 
 
@@ -808,3 +949,34 @@ def test_client_platform_toolchain_is_locked_for_every_matrix_os() -> None:
         windows = platforms["windows-x64"]
         assert windows["url"].startswith("https://github.com/")
         assert re.fullmatch(r"sha256:[0-9a-f]{64}", windows["checksum"])
+
+
+def test_complete_validation_observer_uses_trusted_code_and_read_only_attempt_metadata() -> None:
+    path = REPO_ROOT / ".github/workflows/validation-evidence.yml"
+    workflow = yaml.load(path.read_text(), Loader=yaml.BaseLoader)
+    names = {
+        yaml.load(path.read_text(), Loader=yaml.BaseLoader)["name"]
+        for path in (CI_WORKFLOW, CODEQL_WORKFLOW)
+    }
+    assert set(workflow["on"]) == {"workflow_run"}
+    assert set(workflow["on"]["workflow_run"]["workflows"]) == names
+    assert workflow["on"]["workflow_run"]["types"] == ["completed"]
+    assert workflow["permissions"] == {"actions": "read", "contents": "read"}
+    assert workflow["concurrency"]["cancel-in-progress"] == "false"
+    job = workflow["jobs"]["observe"]
+    checkout = job["steps"][0]
+    assert checkout["with"] == {
+        "persist-credentials": "false",
+        "ref": "${{ github.workflow_sha }}",
+    }
+    observe = next(step for step in job["steps"] if "run" in step)
+    assert "python -m scripts.ci_actions completed" in observe["run"]
+    assert observe["env"]["OBSERVED_RUN_ID"] == "${{ github.event.workflow_run.id }}"
+    assert observe["env"]["OBSERVED_ATTEMPT"] == "${{ github.event.workflow_run.run_attempt }}"
+    assert all(
+        re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in job["steps"] if "uses" in step
+    )
+    retained = job["steps"][-1]
+    assert retained["if"] == "always()"
+    assert retained["with"]["retention-days"] == "7"
+    assert "environment" not in job

@@ -1973,6 +1973,7 @@ class RetrievalPlanRecord(Base):
     request_json: Mapped[str] = mapped_column(Text)
     lease_seconds: Mapped[int] = mapped_column(BigInteger)
     restore_policy: Mapped[str] = mapped_column(String)
+    source_store: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[str] = mapped_column(String)
     ready_at: Mapped[str | None] = mapped_column(String, nullable=True)
     expires_at: Mapped[str] = mapped_column(String)
@@ -2065,6 +2066,8 @@ class RetrievalPlanObjectRecord(Base):
     read_mode: Mapped[str] = mapped_column(String)
     cache_store: Mapped[str | None] = mapped_column(String, nullable=True)
     cache_incarnation_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    cache_source_store: Mapped[str | None] = mapped_column(String, nullable=True)
+    cache_source_incarnation_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     retrieval_bytes: Mapped[int] = mapped_column(authority_ordinal_type(), default=0)
 
     __table_args__ = (
@@ -2074,6 +2077,10 @@ class RetrievalPlanObjectRecord(Base):
         ),
         ForeignKeyConstraint(
             ["cache_incarnation_id", "cache_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
+        ForeignKeyConstraint(
+            ["cache_source_incarnation_id", "cache_source_store"],
             ["storage_incarnations.id", "storage_incarnations.name"],
         ),
         ForeignKeyConstraint(["plan_id"], ["retrieval_plans.id"], ondelete="CASCADE"),
@@ -2092,6 +2099,13 @@ class RetrievalPlanObjectRecord(Base):
             "source_store",
             "plan_id",
         ),
+        Index(
+            "ix_retrieval_plan_objects_cache_source",
+            "collection_id",
+            "cache_source_store",
+            "plan_id",
+        ),
+        Index("ix_retrieval_plan_objects_object", "collection_id", "object_id", "plan_id"),
         CheckConstraint("kind IN ('pack','segment')", name="ck_retrieval_plan_objects_kind"),
         CheckConstraint(
             "read_mode IN ('immediate','restore_required','cache')",
@@ -2099,6 +2113,14 @@ class RetrievalPlanObjectRecord(Base):
         ),
         CheckConstraint("plaintext_bytes >= 0", name="ck_retrieval_plan_objects_plaintext"),
         CheckConstraint("stored_bytes > 0", name="ck_retrieval_plan_objects_stored"),
+        CheckConstraint(
+            "read_mode = 'cache' AND cache_store IS NOT NULL AND "
+            "cache_incarnation_id IS NOT NULL AND cache_source_store IS NOT NULL AND "
+            "cache_source_incarnation_id IS NOT NULL OR "
+            "read_mode <> 'cache' AND cache_store IS NULL AND cache_incarnation_id IS NULL "
+            "AND cache_source_store IS NULL AND cache_source_incarnation_id IS NULL",
+            name="ck_retrieval_plan_objects_cache_identity",
+        ),
     )
 
     plan: Mapped[RetrievalPlanRecord] = relationship(back_populates="objects")
@@ -2248,7 +2270,7 @@ class RetrievalCacheObjectRecord(Base):
                 "collection_archive_objects.store",
                 "collection_archive_objects.object_id",
             ],
-            ondelete="CASCADE",
+            ondelete="RESTRICT",
         ),
         Index("ix_retrieval_cache_objects_cleanup", "state", "cached_at"),
         Index(
@@ -3166,6 +3188,31 @@ class CollectionUploadProvenanceJournalRecord(Base):
     validation_sequence: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
     )
+    capture_attempt_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    capture_directory_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    capture_algorithm: Mapped[str | None] = mapped_column(String, nullable=True)
+    capture_source_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    capture_source_bytes: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    capture_version: Mapped[int] = mapped_column(
+        authority_ordinal_type(),
+        default=0,
+        server_default=text(f"'{_AUTHORITY_ORDINAL_ZERO}'"),
+    )
+    capture_phase: Mapped[str] = mapped_column(
+        String,
+        default="pending",
+        server_default=text("'pending'"),
+    )
+    capture_byte_offset: Mapped[int] = mapped_column(
+        BigInteger, default=0, server_default=text("0")
+    )
+    capture_frame_start: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    capture_frame_count: Mapped[int] = mapped_column(
+        authority_ordinal_type(),
+        default=0,
+        server_default=text(f"'{_AUTHORITY_ORDINAL_ZERO}'"),
+    )
+    capture_failure: Mapped[str | None] = mapped_column(Text, nullable=True)
     validation_previous_entry_id: Mapped[str | None] = mapped_column(String, nullable=True)
     validation_previous_json_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     primary_lineage_id: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -3182,6 +3229,31 @@ class CollectionUploadProvenanceJournalRecord(Base):
             ondelete="CASCADE",
         ),
         CheckConstraint("bytes >= 0", name="ck_upload_provenance_journals_bytes"),
+        CheckConstraint(
+            "capture_phase IN ('pending','extending','scanning','complete','deferred')",
+            name="ck_upload_provenance_journals_capture_phase",
+        ),
+        CheckConstraint(
+            "capture_byte_offset >= 0 AND capture_byte_offset <= accepted_bytes",
+            name="ck_upload_provenance_journals_capture_offset",
+        ),
+        CheckConstraint(
+            "capture_frame_start IS NULL OR capture_frame_start >= 0 AND "
+            "capture_frame_start < capture_byte_offset",
+            name="ck_upload_provenance_journals_capture_start",
+        ),
+        CheckConstraint(
+            "capture_source_bytes IS NULL OR capture_source_bytes >= 0",
+            name="ck_upload_provenance_journals_capture_source_bytes",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("capture_version", 64),
+            name="ck_upload_provenance_journals_capture_version",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("capture_frame_count", 64),
+            name="ck_upload_provenance_journals_capture_count",
+        ),
         CheckConstraint(
             "accepted_bytes >= 0 AND accepted_bytes <= bytes",
             name="ck_upload_provenance_journals_accepted_bytes",
@@ -3207,6 +3279,7 @@ class CollectionUploadProvenanceJournalRecord(Base):
             name="ck_upload_provenance_journals_terminal_sequence",
         ),
         CheckConstraint("length(sha256) = 64", name="ck_upload_provenance_journals_sha256"),
+        Index("ix_upload_provenance_journals_validation", "state", "collection_id", "journal_id"),
     )
 
     upload: Mapped[CollectionUploadRecord] = relationship(back_populates="provenance_journals")
@@ -3244,9 +3317,507 @@ class CollectionUploadProvenanceJournalChunkRecord(Base):
             "length(content) > 0",
             name="ck_upload_provenance_journal_chunks_content",
         ),
+        Index(
+            "ux_upload_provenance_journal_chunk_offsets",
+            "collection_id",
+            "journal_id",
+            "byte_offset",
+            unique=True,
+        ),
     )
 
     journal: Mapped[CollectionUploadProvenanceJournalRecord] = relationship(back_populates="chunks")
+
+
+class CollectionUploadProvenanceCaptureSegmentRecord(Base):
+    """Private exact source pages retained with the framing checkpoint."""
+
+    __tablename__ = "collection_upload_provenance_capture_segments"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    directory_id: Mapped[str] = mapped_column(String, primary_key=True)
+    ordinal: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    content: Mapped[bytes] = mapped_column(LargeBinary)
+    sha256: Mapped[str] = mapped_column(String(64))
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("ordinal", 64), name="ck_upload_capture_segments_ordinal"
+        ),
+        CheckConstraint(
+            "length(content) > 0 AND length(content) <= 65536",
+            name="ck_upload_capture_segments_extent",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("sha256", 64), name="ck_upload_capture_segments_digest"
+        ),
+    )
+
+
+class CollectionUploadProvenanceEpochScanRecord(Base):
+    """Attempt-fenced private epoch and topology progress, never semantic acceptance."""
+
+    __tablename__ = "collection_upload_provenance_epoch_scans"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String)
+    directory_id: Mapped[str] = mapped_column(String)
+    algorithm: Mapped[str] = mapped_column(String)
+    version: Mapped[int] = mapped_column(authority_ordinal_type())
+    next_frame: Mapped[int] = mapped_column(authority_ordinal_type())
+    byte_offset: Mapped[int] = mapped_column(BigInteger)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type())
+    state: Mapped[str] = mapped_column(String)
+    topology_algorithm: Mapped[str] = mapped_column(
+        String, default="riverhog-journal-topology-facts/v1"
+    )
+    topology_next_frame: Mapped[int] = mapped_column(authority_ordinal_type(), default=0)
+    topology_state: Mapped[str] = mapped_column(String, default="scanning")
+    topology_cursor_json: Mapped[str] = mapped_column(
+        Text, default='{"active":null,"facts":"0","last":null}'
+    )
+
+    union_algorithm: Mapped[str] = mapped_column(String, default="riverhog-journal-epoch-union/v1")
+    union_next_frame: Mapped[int] = mapped_column(authority_ordinal_type(), default=0)
+    union_state: Mapped[str] = mapped_column(String, default="building")
+    union_cursor_json: Mapped[str] = mapped_column(
+        Text,
+        default=(
+            '{"active":"0","consumed":"0","epoch":"0","item":"0",'
+            '"last_arc":null,"last_source":null,"phase":"frame",'
+            '"seed_after":null,"seeded":"0"}'
+        ),
+    )
+
+    rank_algorithm: Mapped[str] = mapped_column(String, default="riverhog-journal-epoch-rank/v1")
+    rank_state: Mapped[str] = mapped_column(String, default="ranking")
+    rank_cursor_json: Mapped[str] = mapped_column(
+        Text,
+        default='{"active":null,"arcs":"0","edge_after":null,"epoch":"0","kind":"derivation","last_arc":null,"last_graph":null,"last_vertex":null,"phase":"graph","ready":"0","seed_after":null,"seeded":"0","settled":"0","vertices":"0","visited":"0"}',
+    )
+
+    replay_binding_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    __table_args__ = (
+        CheckConstraint("rank_state IN ('ranking','complete')", name="ck_upload_rank_state"),
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("version", 64), name="ck_upload_epoch_version"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("next_frame", 64), name="ck_upload_epoch_frame"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_epoch_ordinal"
+        ),
+        CheckConstraint("byte_offset >= 0", name="ck_upload_epoch_offset"),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("union_next_frame", 64), name="ck_upload_union_frame"
+        ),
+        CheckConstraint(
+            "union_state IN ('building','complete','deferred')", name="ck_upload_union_state"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("topology_next_frame", 64),
+            name="ck_upload_topology_frame",
+        ),
+        CheckConstraint(
+            "topology_state IN ('scanning','complete','deferred')",
+            name="ck_upload_topology_state",
+        ),
+        CheckConstraint(
+            "state IN ('scanning','complete','deferred')", name="ck_upload_epoch_state"
+        ),
+    )
+
+
+class CollectionUploadProvenanceRetiredPreparationRecord(Base):
+    """Private attempt retirement queue; source custody is retained separately."""
+
+    __tablename__ = "collection_upload_provenance_retired_preparations"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    retired_attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    directory_id: Mapped[str] = mapped_column(String)
+    algorithm: Mapped[str] = mapped_column(String)
+    version: Mapped[int] = mapped_column(authority_ordinal_type(), default=0)
+    phase: Mapped[int] = mapped_column(Integer, default=0)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("version", 64),
+            name="ck_upload_retired_preparation_version",
+        ),
+        CheckConstraint("phase >= 0 AND phase < 7", name="ck_upload_retired_preparation_phase"),
+    )
+
+
+class CollectionUploadProvenanceFrameRecord(Base):
+    """Private framing positions; no row supplies semantic acceptance authority."""
+
+    __tablename__ = "collection_upload_provenance_frames"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    directory_id: Mapped[str] = mapped_column(String, primary_key=True)
+    ordinal: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    byte_offset: Mapped[int] = mapped_column(BigInteger)
+    json_bytes: Mapped[int] = mapped_column(BigInteger)
+    epoch_attempt_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    epoch_ordinal: Mapped[int | None] = mapped_column(authority_ordinal_type(), nullable=True)
+    epoch_entry_kind: Mapped[str | None] = mapped_column(String, nullable=True)
+    epoch_json_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("ordinal", 64),
+            name="ck_upload_provenance_frames_ordinal",
+        ),
+        CheckConstraint("byte_offset >= 0", name="ck_upload_provenance_frames_offset"),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch_ordinal", 64),
+            name="ck_upload_provenance_frames_epoch",
+        ),
+        CheckConstraint(
+            "epoch_attempt_id IS NULL AND epoch_ordinal IS NULL AND "
+            "epoch_entry_kind IS NULL AND epoch_json_sha256 IS NULL OR "
+            "epoch_attempt_id IS NOT NULL AND epoch_ordinal IS NOT NULL AND "
+            "epoch_json_sha256 IS NOT NULL AND epoch_entry_kind IS NOT NULL AND "
+            "epoch_entry_kind IN ('journal_init','assertion','correction','checkpoint')",
+            name="ck_upload_provenance_frames_epoch_binding",
+        ),
+        CheckConstraint(
+            "json_bytes >= 0 AND json_bytes <= 8388608",
+            name="ck_upload_provenance_frames_json_bytes",
+        ),
+    )
+
+
+class CollectionUploadProvenanceTopologyFactRecord(Base):
+    """Private documentary occurrences and original positions, never acceptance."""
+
+    __tablename__ = "collection_upload_provenance_topology_facts"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    frame_ordinal: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    array_kind: Mapped[str] = mapped_column(String, primary_key=True)
+    item_ordinal: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    directory_id: Mapped[str] = mapped_column(String)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type())
+    byte_offset: Mapped[int] = mapped_column(BigInteger)
+    json_bytes: Mapped[int] = mapped_column(BigInteger)
+    json_sha256: Mapped[str] = mapped_column(String(64))
+    assertion_id: Mapped[str] = mapped_column(String)
+    kind: Mapped[str] = mapped_column(String)
+    source_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    target_id: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("frame_ordinal", 64),
+            name="ck_upload_topology_fact_frame",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("item_ordinal", 64),
+            name="ck_upload_topology_fact_item",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_topology_fact_epoch"
+        ),
+        CheckConstraint(
+            "byte_offset >= 0 AND json_bytes > 0 AND json_bytes <= 8388608",
+            name="ck_upload_topology_fact_extent",
+        ),
+        CheckConstraint(
+            "array_kind IN ('retracts','relations')", name="ck_upload_topology_fact_array"
+        ),
+        CheckConstraint(
+            "kind = 'retraction' AND array_kind = 'retracts' AND source_id IS NULL "
+            "AND target_id IS NULL OR kind IN ('derivation','specialization') "
+            "AND array_kind = 'relations' AND source_id IS NOT NULL AND target_id IS NOT NULL",
+            name="ck_upload_topology_fact_binding",
+        ),
+    )
+
+
+class CollectionUploadProvenanceActiveEdgeRecord(Base):
+    """Private documentary edge identities, retained after speculative retirement."""
+
+    __tablename__ = "collection_upload_provenance_active_edges"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    assertion_id: Mapped[str] = mapped_column(String, primary_key=True)
+    frame_ordinal: Mapped[int] = mapped_column(authority_ordinal_type())
+    item_ordinal: Mapped[int] = mapped_column(authority_ordinal_type())
+    kind: Mapped[str] = mapped_column(String)
+    source_id: Mapped[str] = mapped_column(String)
+    target_id: Mapped[str] = mapped_column(String)
+    active: Mapped[bool] = mapped_column(Boolean)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("frame_ordinal", 64), name="ck_upload_active_edge_frame"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("item_ordinal", 64), name="ck_upload_active_edge_item"
+        ),
+        CheckConstraint(
+            "kind IN ('derivation','specialization')", name="ck_upload_active_edge_kind"
+        ),
+        Index(
+            "ix_upload_active_edge_seed",
+            "collection_id",
+            "journal_id",
+            "attempt_id",
+            "active",
+            "assertion_id",
+        ),
+    )
+
+
+class CollectionUploadProvenanceEpochGraphRecord(Base):
+    """Private union counters; completion does not accept journal semantics."""
+
+    __tablename__ = "collection_upload_provenance_epoch_graphs"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    kind: Mapped[str] = mapped_column(String, primary_key=True)
+    vertex_count: Mapped[int] = mapped_column(authority_ordinal_type())
+    arc_count: Mapped[int] = mapped_column(authority_ordinal_type())
+    state: Mapped[str] = mapped_column(String)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_epoch_graph_ordinal"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("vertex_count", 64),
+            name="ck_upload_epoch_graph_vertices",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("arc_count", 64), name="ck_upload_epoch_graph_arcs"
+        ),
+        CheckConstraint(
+            "kind IN ('derivation','specialization')", name="ck_upload_epoch_graph_kind"
+        ),
+        CheckConstraint("state IN ('building','complete')", name="ck_upload_epoch_graph_state"),
+    )
+
+
+class CollectionUploadProvenanceEpochArcRecord(Base):
+    """One unique private directed arc in one real correction epoch."""
+
+    __tablename__ = "collection_upload_provenance_epoch_arcs"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    kind: Mapped[str] = mapped_column(String, primary_key=True)
+    source_id: Mapped[str] = mapped_column(String, primary_key=True)
+    target_id: Mapped[str] = mapped_column(String, primary_key=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_epoch_arc_ordinal"
+        ),
+        CheckConstraint("kind IN ('derivation','specialization')", name="ck_upload_epoch_arc_kind"),
+    )
+
+
+class CollectionUploadProvenanceEpochVertexRecord(Base):
+    """Private endpoint degrees updated only for newly unique arcs."""
+
+    __tablename__ = "collection_upload_provenance_epoch_vertices"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    kind: Mapped[str] = mapped_column(String, primary_key=True)
+    vertex_id: Mapped[str] = mapped_column(String, primary_key=True)
+    indegree: Mapped[int] = mapped_column(authority_ordinal_type())
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_epoch_vertex_ordinal"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("indegree", 64), name="ck_upload_epoch_vertex_degree"
+        ),
+        CheckConstraint(
+            "kind IN ('derivation','specialization')", name="ck_upload_epoch_vertex_kind"
+        ),
+    )
+
+
+class CollectionUploadProvenanceEpochRankGraphRecord(Base):
+    """Completed private Kahn work, including cyclic unions with no usable rank."""
+
+    __tablename__ = "collection_upload_provenance_epoch_rank_graphs"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    kind: Mapped[str] = mapped_column(String, primary_key=True)
+    vertex_count: Mapped[int] = mapped_column(authority_ordinal_type())
+    arc_count: Mapped[int] = mapped_column(authority_ordinal_type())
+    settled_vertices: Mapped[int] = mapped_column(authority_ordinal_type())
+    visited_arcs: Mapped[int] = mapped_column(authority_ordinal_type())
+    state: Mapped[str] = mapped_column(String)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_rank_graph_epoch"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("vertex_count", 64), name="ck_upload_rank_graph_vertices"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("arc_count", 64), name="ck_upload_rank_graph_arcs"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("settled_vertices", 64),
+            name="ck_upload_rank_graph_settled",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("visited_arcs", 64), name="ck_upload_rank_graph_visited"
+        ),
+        CheckConstraint(
+            "kind IN ('derivation','specialization')", name="ck_upload_rank_graph_kind"
+        ),
+        CheckConstraint("state IN ('acyclic','cyclic')", name="ck_upload_rank_graph_state"),
+    )
+
+
+class CollectionUploadProvenanceEpochRankVertexRecord(Base):
+    """Private remaining degree, indexed readiness and quarantined rank per vertex."""
+
+    __tablename__ = "collection_upload_provenance_epoch_rank_vertices"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
+    epoch: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    kind: Mapped[str] = mapped_column(String, primary_key=True)
+    vertex_id: Mapped[str] = mapped_column(String, primary_key=True)
+    remaining_degree: Mapped[int] = mapped_column(authority_ordinal_type())
+    rank: Mapped[int | None] = mapped_column(authority_ordinal_type(), nullable=True)
+    ready: Mapped[bool] = mapped_column(Boolean)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("epoch", 64), name="ck_upload_rank_vertex_epoch"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("remaining_degree", 64),
+            name="ck_upload_rank_vertex_degree",
+        ),
+        CheckConstraint(
+            "rank IS NULL OR " + _fixed_lowercase_integer_check("rank", 64),
+            name="ck_upload_rank_vertex_rank",
+        ),
+        CheckConstraint(
+            "kind IN ('derivation','specialization')", name="ck_upload_rank_vertex_kind"
+        ),
+        Index(
+            "ix_upload_epoch_rank_ready",
+            "collection_id",
+            "journal_id",
+            "attempt_id",
+            "epoch",
+            "kind",
+            "ready",
+            "vertex_id",
+        ),
+    )
 
 
 class CollectionUploadProvenanceCustodyObjectRecord(Base):

@@ -4,6 +4,8 @@ from types import SimpleNamespace
 from typing import Any, cast
 
 import pytest
+from metadata_contact_fixture import occupied_metadata_contact
+from planning_fixture import no_output_preview
 from riverhog_client import ApiClient
 from riverhog_protocol import (
     CatalogSyncChangePage,
@@ -21,7 +23,13 @@ from stove0_core import (
     SqlAlchemyStateStore,
     Stove0WorkService,
 )
-from stove0_core.persistence import _AdmissionCandidateRow, _AdmissionPolicyRow
+from stove0_core.persistence import (
+    _AdmissionCandidateRow,
+    _AdmissionMatchRow,
+    _AdmissionObservedRevisionRow,
+    _AdmissionPolicyRow,
+)
+from stove0_core.scheduler import Stove0Scheduler
 from stove0_operator_contracts import AdmissionCatalog, AdmissionIntent, AdmissionPolicy, WorkView
 from stove0_protocol import (
     ArtifactSelection,
@@ -30,6 +38,7 @@ from stove0_protocol import (
     BranchTargetPreview,
     CollectionRootIdentityRef,
     OperationIdentityRef,
+    PlanningJobStatus,
     PreviewOutcome,
     RecipeIdentityRef,
     TargetPlanBinding,
@@ -282,16 +291,31 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
 
 
 class _Preview:
-    def preview(self, work: WorkIdentity) -> WorkflowPreview:
+    def submit(self, work: WorkIdentity, *, invocation_id: str) -> PlanningJobStatus:
+        return PlanningJobStatus(
+            job_id=invocation_id,
+            work_id=work.work_id,
+            state="completed",
+            result=self.result_for(work),
+        )
+
+    def result_for(self, work: WorkIdentity) -> WorkflowPreview:
         return _ready_preview(work)
 
 
-class _TerminalPreview:
+class _TerminalPreview(_Preview):
     def __init__(self, state: str, *, retryable: bool | None = None) -> None:
         self.state = state
         self.retryable = retryable
 
-    def preview(self, work: WorkIdentity) -> WorkflowPreview:
+    def result_for(self, work: WorkIdentity) -> WorkflowPreview:
+        if self.state == "no_action":
+            return no_output_preview(
+                work,
+                ArtifactSelection.seal(()).ref(),
+                code="fixture.outcome/v1",
+                message="The exact observation resolved this intent.",
+            )
         request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
         return WorkflowPreview.seal(
             WorkflowPreviewPayload(
@@ -307,11 +331,11 @@ class _TerminalPreview:
         )
 
 
-class _SelectivePreview:
+class _SelectivePreview(_Preview):
     def __init__(self, failing_collection_id: int) -> None:
         self.failing_collection_id = failing_collection_id
 
-    def preview(self, work: WorkIdentity) -> WorkflowPreview:
+    def result_for(self, work: WorkIdentity) -> WorkflowPreview:
         if work.inputs[0].collection_id == self.failing_collection_id:
             raise RuntimeError("permanent candidate failure")
         return _ready_preview(work)
@@ -946,3 +970,164 @@ def test_committed_admission_survives_later_policy_edit() -> None:
     assert admission.intent.policy_revision == 1
     assert admission.intent.effective_intent == {"quality": "archive"}
     assert coordinator.calls[0][0].effective_intent == {"quality": "archive"}
+
+
+@pytest.mark.parametrize("lane", ["policy", "candidate"])
+def test_admission_metadata_backpressure_is_pending_without_failure_or_retry(
+    monkeypatch: pytest.MonkeyPatch, lane: str
+) -> None:
+    state = _state()
+    descriptor = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
+    api = _CatalogApi(descriptor, {"camera", "workflow/archive"})
+    policy, preview = _policy(), _Preview()
+    service = _service(state=state, api=api, policy=policy, preview=preview)
+    scheduler = Stove0Scheduler(coordinator=cast(Any, object()), state=state, admission=service)
+    item_id = None
+    if lane == "candidate":
+        service.rebaseline(policy.id, mode="backfill")
+        assert service.advance(limit=1).failures == ()
+        item_id = AdmissionIntent.seal(policy=policy, collection=descriptor).admission_id
+        before = service.get_admission(item_id)
+        assert before.state == "intent" and before.attempt_count == 0
+    else:
+        before = service.policies()
+
+    origin = "fixture-admission-metadata"
+    with occupied_metadata_contact(origin) as contacts:
+        if lane == "candidate":
+            submit = preview.submit
+            monkeypatch.setattr(
+                preview,
+                "submit",
+                lambda work, *, invocation_id: contacts.call(
+                    origin, lambda: submit(work, invocation_id=invocation_id)
+                ),
+            )
+        else:
+            checkpoint = api.create_catalog_sync_checkpoint
+            monkeypatch.setattr(
+                api, "create_catalog_sync_checkpoint", lambda: contacts.call(origin, checkpoint)
+            )
+        run = scheduler.run_once(role="controller", work_limit=1)
+        assert run["admission"] is None
+        assert cast(dict[str, Any], run["work"])["failures"] == []
+        current = service.get_admission(item_id) if item_id else service.policies()
+        assert current == before
+
+    resumed = scheduler.run_once(role="controller", work_limit=1)
+    assert cast(dict[str, Any], resumed["admission"])["failures"] == ()
+    if item_id:
+        accepted = service.get_admission(item_id)
+        assert accepted.state == "previewed"
+        assert accepted.attempt_count == 0 and accepted.failure is None
+        assert accepted.intent == before.intent
+    else:
+        assert service.policies().policies[0].phase == "baseline"
+
+
+@pytest.mark.parametrize("phase", ["baseline", "following"])
+@pytest.mark.parametrize("advances", [2, 3])
+@pytest.mark.parametrize("authority", ["same", "source_identity", "authorization_view_identity"])
+def test_delayed_policy_page_cannot_overwrite_further_same_generation_progress(
+    monkeypatch: pytest.MonkeyPatch, phase: str, advances: int, authority: str
+) -> None:
+    state, policy = _state(), _policy()
+    api = _CatalogApi(
+        _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1"),
+        {"camera", "workflow/archive"},
+    )
+    service = _service(state=state, api=api, policy=policy)
+    assert service._advance_policy(policy)
+    if phase == "following":
+        assert service._advance_policy(policy)
+    with state.sessions() as session:
+        row = session.get(_AdmissionPolicyRow, policy.id)
+        assert row is not None
+        generation, cursor = row.generation, row.cursor
+    pages = []
+    for index in range(advances):
+        if phase == "baseline":
+            pages.append(
+                CatalogSyncCollectionPage(
+                    source_identity=api.source_identity,
+                    authorization_view_identity=api.view_identity,
+                    collections=[
+                        _descriptor(
+                            tag_revision=1,
+                            tag_identity="6" * 64,
+                            revision=str(index + 2),
+                            collection_id=index + 7,
+                        )
+                    ],
+                    next_cursor=f"baseline-{index}" if index + 1 < advances else None,
+                    changes_cursor="following-after-baseline" if index + 1 == advances else None,
+                )
+            )
+        else:
+            pages.append(
+                CatalogSyncChangePage(
+                    source_identity=api.source_identity,
+                    authorization_view_identity=api.view_identity,
+                    changes=[],
+                    next_cursor=f"following-{index}",
+                    through_revision=str(index + 2),
+                    caught_up=True,
+                )
+            )
+
+    def snapshot():
+        with state.sessions() as session:
+            return [
+                list(
+                    session.execute(
+                        table.__table__.select().order_by(*table.__table__.primary_key.columns)
+                    ).mappings()
+                )
+                for table in (
+                    _AdmissionPolicyRow,
+                    _AdmissionMatchRow,
+                    _AdmissionObservedRevisionRow,
+                    _AdmissionCandidateRow,
+                )
+            ]
+
+    committed = []
+
+    def delayed(current_cursor: str, *, limit: int):
+        assert current_cursor == cursor
+        assert limit == (100 if phase == "baseline" else 1)
+        for page in pages:
+            if phase == "baseline":
+                assert service._commit_baseline_page(
+                    policy,
+                    cursor=current_cursor,
+                    page=page,
+                    matches=[(descriptor, True) for descriptor in page.collections],
+                    expected_generation=generation,
+                )
+                current_cursor = page.next_cursor or page.changes_cursor
+            else:
+                assert service._commit_change_page(
+                    policy,
+                    cursor=current_cursor,
+                    page=page,
+                    evaluated=None,
+                    expected_generation=generation,
+                )
+                current_cursor = page.next_cursor
+        committed.append(snapshot())
+        page = pages[0]
+        return page if authority == "same" else page.model_copy(update={authority: "9" * 64})
+
+    monkeypatch.setattr(
+        api,
+        "list_catalog_sync_collections" if phase == "baseline" else "list_catalog_sync_changes",
+        delayed,
+    )
+    result = service.advance(limit=1)
+    assert len(committed) == 1 and snapshot() == committed[0]
+    if authority == "same":
+        assert result.failures == () and result.progressed == ()
+    else:
+        assert len(result.failures) == 1
+        assert "authority changed; rebaseline is required" in result.failures[0].error

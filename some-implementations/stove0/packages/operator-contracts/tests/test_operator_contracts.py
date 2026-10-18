@@ -166,6 +166,7 @@ def test_operator_requests_share_one_exact_canonical_collection_contract() -> No
     preview = OperatorWorkflowPreviewRequest(
         recipe_id="fixture.recipe/v1",
         inputs=roots,
+        invocation_id="a" * 64,
     )
     created = WorkCreateRequest(
         **preview.model_dump(mode="python"),
@@ -174,7 +175,9 @@ def test_operator_requests_share_one_exact_canonical_collection_contract() -> No
 
     assert created.inputs == roots
     with pytest.raises(ValidationError, match="unique and canonically ordered"):
-        OperatorWorkflowPreviewRequest(recipe_id="fixture.recipe/v1", inputs=tuple(reversed(roots)))
+        OperatorWorkflowPreviewRequest(
+            recipe_id="fixture.recipe/v1", inputs=tuple(reversed(roots)), invocation_id="a" * 64
+        )
 
 
 def test_stove0_events_use_one_closed_typed_operator_vocabulary() -> None:

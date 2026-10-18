@@ -7,7 +7,7 @@ name = "time-formats"
 version = "0.1.0"
 description = "UTC timestamp and operator duration formats."
 requires-python = ">=3.12"
-dependencies = ["pydantic>=2.12,<3.0"]
+dependencies = ["release-documentation-lib>=0.1,<0.2", "pydantic>=2.12,<3.0"]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 readme = { text = "UTC timestamp and operator duration formats.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
@@ -25,3 +25,6 @@ modules = ["time_formats"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/time_formats"]
+
+[tool.uv.sources]
+release-documentation-lib = { workspace = true }

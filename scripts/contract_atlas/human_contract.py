@@ -867,6 +867,10 @@ def render_human(
         parent = next(iter(parents))
         record = {_parts(pointer)[-1]: value for pointer, value in values}
         body = _cli(record, parent)
+    elif interface == "growth" and len(values) > 1:
+        body = _simple(
+            {_parts(pointer)[-1]: value for pointer, value in values}, "Primitive cost model"
+        )
     elif interface == "durable-state":
         body = _durable(values, references)
     elif interface in {"http-service-declaration", "process-protocol"} and len(values) > 1:
@@ -901,6 +905,8 @@ def render_human(
             "versioning-tags",
         }:
             body = _release(value)
+        elif interface == "growth" and isinstance(value, Mapping):
+            body = _growth(value)
         elif interface == "extent":
             body = _simple(value, "Extent commitment")
         elif interface == "process-protocol":
@@ -914,6 +920,55 @@ def render_human(
     return '<div class="human-contract">' + body + "</div>"
 
 
+def _growth(value: Mapping[str, object]) -> str:
+    scope = cast(Mapping[str, object], value["scope"])
+    body = (
+        "<h2>Declared growth scope</h2><p>"
+        + _esc(scope["kind"])
+        + "</p><p><strong>Starts:</strong> "
+        + _esc(scope["starts_at"])
+        + "</p><p><strong>Completes:</strong> "
+        + _esc(scope["ends_at"])
+        + "</p>"
+    )
+    dimensions = cast(Mapping[str, Mapping[str, object]], value["dimensions"])
+    body += "<h3>Independent dimensions</h3>" + _table(
+        ("Dimension", "Unit", "Counting meaning"),
+        [
+            (_code(name), _code(row["unit"]), _esc(row["meaning"]))
+            for name, row in dimensions.items()
+        ],
+    )
+    bounds = cast(Mapping[str, Mapping[str, object]], value["bounds"])
+    body += "<h3>Primitive bounds</h3>" + _table(
+        ("Metric", "Relation", "Unit", "Expression", "Meaning"),
+        [
+            (
+                _code(name),
+                _esc(row["relation"]),
+                _code(row["unit"]),
+                _code(row["expression"]),
+                _esc(row["meaning"]),
+            )
+            for name, row in bounds.items()
+        ],
+    )
+    for field, label in (
+        ("conditions", "Conditions"),
+        ("invariants", "Preserved results"),
+        ("limitations", "Scope limitations"),
+    ):
+        body += (
+            "<h3>"
+            + label
+            + "</h3><ul>"
+            + "".join("<li>" + _esc(item) + "</li>" for item in cast(Sequence[str], value[field]))
+            + "</ul>"
+        )
+    body += "<h3>Explicit delegates</h3>" + _simple(value["delegates"], "Cost contributions")
+    return body
+
+
 def inventory_fact(interface: str, value: object, pointer: str) -> str:
     """Small owned comparison facts at the real interface selection scope."""
 
@@ -923,6 +978,9 @@ def inventory_fact(interface: str, value: object, pointer: str) -> str:
         return _esc(value)
     if not isinstance(value, Mapping):
         return _code(value)
+    if interface == "growth":
+        scope = value.get("scope", {})
+        return _esc(scope.get("kind", "")) if isinstance(scope, Mapping) else ""
     if interface == "python":
         contract = cast(Mapping[str, object], value.get("contract", {}))
         return _code(contract.get("kind", ""))

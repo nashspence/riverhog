@@ -244,6 +244,7 @@ def branch_set_fixture(
         evidence_sha256s=(digest("observation"), digest("review")),
         branches=tuple(reversed(tuple(plans.values()))),
         join=join,
+        export="join" if join is not None else None,
         source_collection_retirement_policy="retain" if evaluation else "retire-after-settlement",
         selections=selections,
     )
@@ -529,6 +530,7 @@ def test_nested_join_result_is_consumed_through_coordination_and_leaf_settlement
         decision_sha256=digest("child-decision"),
         branches=tuple(child_branches.values()),
         join=child_join,
+        export="join",
         selections={selection.selection_sha256: selection},
     )
     nested = CoordinationBranchPlan(
@@ -563,6 +565,7 @@ def test_nested_join_result_is_consumed_through_coordination_and_leaf_settlement
         decision_sha256=digest("top-decision"),
         branches=(direct, nested),
         join=top_join,
+        export="join",
         selections={selection.selection_sha256: selection},
         branch_sets={child_plan.branch_set_sha256: child_plan},
     )
@@ -633,7 +636,9 @@ def test_nested_join_result_is_consumed_through_coordination_and_leaf_settlement
     top_join_plan, _ = top_resolution
     nested_input = next(item for item in top_join_plan.inputs if item.branch_id == "nested")
     assert nested_input.settlement_sha256 == coordination.settlement_sha256
-    assert nested_input.producer_settlement_sha256 == child_join_settlement.settlement_sha256
+    assert (
+        nested_input.producer_settlement_sha256 == child_join_settlement.producer_settlement_sha256
+    )
 
 
 def test_deep_coordination_tree_is_validated_iteratively_without_a_protocol_ceiling() -> None:
@@ -699,6 +704,7 @@ def test_branch_set_identity_and_bytes_ignore_declaration_order() -> None:
         evidence_sha256s=tuple(reversed(plan.evidence_sha256s)),
         branches=(branches["metadata"], branches["video"], branches["audio"]),
         join=plan.join,
+        export=plan.export,
         source_collection_retirement_policy=plan.source_collection_retirement_policy,
         selections=selections,
     )
@@ -721,6 +727,7 @@ def test_semantic_declaration_changes_change_branch_set_identity() -> None:
         evidence_sha256s=plan.evidence_sha256s,
         branches=(branches["audio"], branches["metadata"], changed_branch),
         join=plan.join,
+        export=plan.export,
         source_collection_retirement_policy=plan.source_collection_retirement_policy,
         selections=selections,
     )

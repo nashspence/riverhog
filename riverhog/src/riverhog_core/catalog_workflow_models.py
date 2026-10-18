@@ -472,6 +472,11 @@ class CollectionProcessingCapabilityRecord(Base):
     audience: Mapped[str] = mapped_column(String(300), nullable=False)
     token_sha256: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
     actions_json: Mapped[str] = mapped_column(Text, nullable=False)
+    artifact_scope_capability_id: Mapped[str | None] = mapped_column(
+        String(32),
+        ForeignKey("collection_processing_capabilities.id", ondelete="CASCADE"),
+        nullable=True,
+    )
     artifact_count: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     artifact_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     artifact_hash_state: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -497,6 +502,9 @@ class CollectionProcessingCapabilityRecord(Base):
             "claim_id",
             "state",
             "expires_at",
+        ),
+        Index(
+            "ix_collection_processing_capability_scope_owner", "artifact_scope_capability_id", "id"
         ),
     )
 

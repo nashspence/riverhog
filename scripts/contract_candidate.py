@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import subprocess
 import sys
 import tempfile
@@ -25,6 +26,8 @@ from contract_atlas.model import ContractAtlasError, canonical_bytes
 from contract_atlas.records import load_bundle
 from contract_atlas.review import compare_revisions
 from contract_atlas.review import summary as comparison_summary
+from documentation import resolve_baseline
+from riverhog_canonical_json import require_canonical_json
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -37,9 +40,13 @@ def _parser() -> argparse.ArgumentParser:
         command.add_argument("--release")
         command.add_argument("--documentation-commit")
         command.add_argument("--replace", action="store_true")
+        command.add_argument("--growth-evidence", type=Path, action="append", default=[])
         command.add_argument("--source-repository", type=Path)
         command.add_argument("--release-version")
         command.add_argument("--source-archive", type=Path)
+        command.add_argument("--initial-review", action="store_true")
+        command.add_argument("--baseline", type=Path)
+        command.add_argument("--stage-documentation", action="store_true", help=argparse.SUPPRESS)
     for name in ("summary", "list", "show"):
         command = commands.add_parser(name)
         command.add_argument("--candidate", type=Path, default=DEFAULT_OUTPUT)
@@ -126,10 +133,83 @@ def main(argv: list[str] | None = None) -> int:
                 if args.release
                 else None
             )
-            candidate = build_candidate(
-                revision=revision, documentation=document, preparation=preparation
+            baseline, custody = (
+                resolve_baseline(args.baseline, initial=args.initial_review)
+                if document
+                else (None, None)
             )
-            candidate.write(args.output, replace=args.replace)
+            growth_evidence = []
+            for path in args.growth_evidence:
+                try:
+                    bundle = require_canonical_json(path.read_bytes())
+                except (OSError, ValueError) as error:
+                    raise ContractAtlasError(
+                        "growth evidence bundle is unavailable or invalid"
+                    ) from error
+                if (
+                    not isinstance(bundle, dict)
+                    or set(bundle) != {"format", "records"}
+                    or bundle["format"] != "riverhog-growth-execution-bundle/v1"
+                    or not isinstance(bundle["records"], list)
+                    or not bundle["records"]
+                ):
+                    raise ContractAtlasError(
+                        "growth evidence bundle has no retained execution records"
+                    )
+                growth_evidence.extend(bundle["records"])
+            candidate = build_candidate(
+                revision=revision,
+                documentation=document,
+                preparation=preparation,
+                initial_documentation_review=args.initial_review,
+                documentation_baseline=baseline,
+                baseline_custody=custody,
+                growth_evidence=growth_evidence,
+            )
+            if args.stage_documentation:
+                if document is None or args.command != "generate" or preparation is None:
+                    raise ContractAtlasError(
+                        "native documentation staging requires exact prepared source and corpus"
+                    )
+                from contract_atlas.documentation_artifacts import (
+                    native_request,
+                    source_native_semantics,
+                )
+                from contract_atlas.documentation_preparation import (
+                    preparation_plan,
+                    stage_documentation,
+                )
+
+                compiled = json.loads(candidate.files["documentation-record.json"])["compiled"]
+                requirements = json.loads(candidate.files["documentation-record.json"])[
+                    "requirements"
+                ]
+                if compiled["coverage"]["missing"]:
+                    raise ContractAtlasError(
+                        "prepared source has unresolved mandatory documentation"
+                    )
+                plan = preparation_plan(
+                    ROOT, candidate.bundle.closure, compiled, requirements, document.tag
+                )
+                from contract_atlas.documentation import source_ledger
+
+                plan["source_capture"] = {
+                    "commit": document.commit,
+                    "tag": document.tag,
+                    "files": source_ledger(document.files),
+                }
+                request = native_request(candidate.bundle.closure, plan)
+                candidate.files["documentation-preparation-plan.json"] = canonical_bytes(plan)
+                candidate.files["native-source-semantics.json"] = canonical_bytes(
+                    source_native_semantics(candidate.bundle.closure, request)
+                )
+                candidate.manifest["files"] = {
+                    name: hashlib.sha256(raw).hexdigest() for name, raw in candidate.files.items()
+                }
+                candidate.write(args.output, replace=args.replace)
+                stage_documentation(ROOT, plan, source_files=document.files)
+            else:
+                candidate.write(args.output, replace=args.replace)
             if args.command == "check":
                 # A fresh process uses this checkout's own interpreter and locked environment.
                 with tempfile.TemporaryDirectory(prefix="riverhog-contract-check-") as temporary:
@@ -155,6 +235,10 @@ def main(argv: list[str] | None = None) -> int:
                             )
                         )
                     if args.release:
+                        if args.initial_review:
+                            command.append("--initial-review")
+                        if args.baseline:
+                            command.extend(("--baseline", str(args.baseline)))
                         command.extend(
                             (
                                 "--release",

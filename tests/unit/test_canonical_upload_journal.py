@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 from riverhog_core.catalog_db import (
     Base,
-    create_catalog_engine,
     make_session_factory,
     session_scope,
 )
@@ -17,11 +16,10 @@ from riverhog_core.catalog_models import (
     CollectionUploadRecord,
     StorageIncarnationRecord,
 )
+from riverhog_core.checkpoint_sha256 import CheckpointSHA256
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.collection_uploads import (
     SqlAlchemyCollectionUploadService,
-    _journal_payload,
-    _validate_next_upload_journal_entry,
 )
 from riverhog_protocol import (
     CollectionUploadProvenanceJournalCreateDocument,
@@ -39,14 +37,15 @@ from sqlalchemy.orm import Session
 from tests.unit.db_helpers import sqlite_url
 
 
-def test_staged_canonical_journal_seals_to_its_exact_tail() -> None:
+def test_staged_canonical_journal_seals_to_its_exact_tail(tmp_path: Path) -> None:
     observed = BoundedSourceObserver().observe(BytesSource(b"canonical content"))
     raw = create_journal(
         observed.graph_fragment(),
         recorded_by_agent_id=observed.observer_agent_id,
     )
     expected = validate_journal(raw)
-    engine = create_catalog_engine("sqlite+pysqlite:///:memory:")
+    factory = make_session_factory(sqlite_url(tmp_path / "catalog.db"))
+    engine = factory.kw["bind"]
     Base.metadata.create_all(engine)
     with Session(engine) as session, session.begin():
         incarnation_id = str(uuid.uuid4())
@@ -83,9 +82,9 @@ def test_staged_canonical_journal_seals_to_its_exact_tail() -> None:
             journal_id=expected.journal_id,
             bytes=len(raw),
             sha256=hashlib.sha256(raw).hexdigest(),
-            state="validating",
+            state="accepting",
             accepted_bytes=len(raw),
-            content_hash_state="{}",
+            content_hash_state=CheckpointSHA256(raw).export_state(),
         )
         session.add(record)
         session.flush()
@@ -101,9 +100,15 @@ def test_staged_canonical_journal_seals_to_its_exact_tail() -> None:
                 )
             )
         session.flush()
-        _validate_next_upload_journal_entry(session, record)
-        assert record.state == "sealed"
-        assert _journal_payload(record)["anchor"] == expected.anchor
+    service = object.__new__(SqlAlchemyCollectionUploadService)
+    service._session_factory = factory
+    status = service.seal_provenance_journal(1, expected.journal_id)
+    while status["state"] == "validating":
+        status = service.seal_provenance_journal(1, expected.journal_id)
+    assert status["state"] == "sealed"
+    assert status["anchor"] == expected.anchor
+    expected.close()
+    engine.dispose()
 
 
 def test_completion_requirement_and_journal_selection_are_immutable(tmp_path: Path) -> None:

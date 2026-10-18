@@ -24,7 +24,10 @@ from riverhog_core.services.retrieval_cache import SqlAlchemyRetrievalCache
 from riverhog_storage_adapter_protocol import StorageAdapterRejection
 
 from tests.unit.db_helpers import sqlite_url
-from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
+from tests.unit.storage_incarnation_fixtures import (
+    fixture_storage_incarnation_id,
+    seed_storage_incarnation,
+)
 
 
 class _Candidate:
@@ -41,6 +44,9 @@ class _Candidate:
 
     def find_completed_population(self, **_: object) -> None:
         return None
+
+    def is_current_incarnation(self, incarnation_id: str) -> bool:
+        return incarnation_id == fixture_storage_incarnation_id("cache", self.name)
 
     def begin_population(
         self,

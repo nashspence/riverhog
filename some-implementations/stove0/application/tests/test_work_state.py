@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import httpx
 import pytest
+from planning_fixture import fixture_interface, observation_headers
 from pydantic import ValidationError
 from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
 from riverhog_protocol.collection_workflows import (
@@ -150,7 +151,11 @@ def _observer() -> tuple[ObserverContract, ObserverDescriptor]:
             implementation_version="1.0.0",
             source_revision="fixture",
             image_id="sha256:" + _sha("9"),
-            contracts=(ObserverContractSupport.from_contract(contract),),
+            contracts=(
+                ObserverContractSupport.from_contract(
+                    contract, interfaces=(fixture_interface(contract).ref,)
+                ),
+            ),
         )
     )
     return contract, descriptor
@@ -171,6 +176,7 @@ def _observation(
     )
     request = ContentObservationRequest.seal(
         ContentObservationRequestPayload(
+            **observation_headers(work_id=work.work_id, contract=contract, subjects=(subject,)),
             work_id=work.work_id,
             observer_registration_id="fixture-observer",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -292,6 +298,8 @@ def _target_plan(
 def _branch_decision(
     work: WorkIdentity,
     selection: ArtifactSelection | None = None,
+    *,
+    observations=(),
 ) -> BranchSetDecision:
     operation = _operation()
     target = _target(operation)
@@ -321,11 +329,13 @@ def _branch_decision(
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retain",
         ),
+        observations=observations,
     )
     return BranchSetDecision(
         plan=BranchSetPlan.seal(
             parent_work=work,
             decision_sha256=_sha("d"),
+            evidence_sha256s=tuple(item.result.result_sha256 for item in observations),
             branches=(branch,),
             selections={selection.selection_sha256: selection},
         ),
@@ -337,6 +347,7 @@ def _queued_target_callback_execution(
     selection: ArtifactSelection | None = None,
     *,
     seal_batch_size: int = 100,
+    observations=(),
 ) -> tuple[
     InMemoryWorkStore,
     Stove0WorkService,
@@ -359,7 +370,7 @@ def _queued_target_callback_execution(
         parent.work_id,
         expected_revision=parent_record.revision,
     )
-    decision = _branch_decision(parent, selection)
+    decision = _branch_decision(parent, selection, observations=observations)
     service.admit_branch_set(
         parent.work_id,
         decision,
@@ -386,6 +397,9 @@ def _queued_target_callback_execution(
             target,
             invocation_sha256=record.workflow_plan.workflow_plan_sha256,
             selection=decision.selections[0],
+            observation_result_sha256s=tuple(
+                sorted(item.result.result_sha256 for item in observations)
+            ),
         ),
         expected_revision=record.revision,
     )
@@ -803,86 +817,20 @@ def _nested_branch_decision(work: WorkIdentity) -> BranchSetDecision:
 
 
 def test_one_record_carries_observation_plan_execution_verification_and_completion() -> None:
-    store = InMemoryWorkStore()
-    service = Stove0WorkService(store)
-    work = _work()
-    operation = _operation()
-    target = _target(operation)
+    parent = _work()
     contract, descriptor = _observer()
-    request, result = _observation(work, contract, descriptor)
-
-    record = service.create_or_resume(work)
+    request, result = _observation(parent, contract, descriptor)
+    evidence = ContentObservationEvidence(request=request, result=result)
+    store, service, record, operation, _callbacks, _access = _queued_target_callback_execution(
+        ArtifactSelection.seal(request.subjects),
+        observations=(evidence,),
+    )
+    work, workflow = record.work, record.workflow_plan
+    assert workflow.observations == (evidence,)
     assert service.create_or_resume(work) == record
-    record = service.bind_claim(
-        work.work_id,
-        claim_id=work.work_id,
-        fence=1,
-        expected_revision=record.revision,
-    )
-    record = service.begin_observations(
-        work.work_id,
-        (request,),
-        expected_revision=record.revision,
-    )
-    record = service.record_observation(
-        work.work_id,
-        result,
-        expected_revision=record.revision,
-    )
-    assert record.phase == "planning"
-
-    workflow = WorkflowPlan.seal(
-        WorkflowPlanPayload(
-            work=work,
-            observations=(ContentObservationEvidence(request=request, result=result),),
-            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
-            target_registration_id="fixture-target",
-            target_descriptor_sha256=target.descriptor_sha256,
-            source_collection_retirement_policy="retain",
-        )
-    )
-    record = service.seal_workflow_plan(
-        work.work_id,
-        workflow,
-        expected_revision=record.revision,
-    )
-    plan = _target_plan(
-        operation,
-        target,
-        invocation_sha256=workflow.workflow_plan_sha256,
-        observation_result_sha256s=(result.result_sha256,),
-    )
-    record = service.seal_target_plan(
-        work.work_id,
-        target=target,
-        plan=plan,
-        expected_revision=record.revision,
-    )
-    assert record.controller_evidence is not None
-    declaration = TargetJobDeclaration(
-        job_id=record.controller_evidence.execution_envelope.execution_envelope_sha256,
-        claim_id=work.work_id,
-        fence=1,
-        controller_evidence=record.controller_evidence,
-        plan=plan,
-        declared_workspace_protection="memory-backed",
-    )
-    target_request = TargetJobRequest.seal(
-        declaration,
-        TargetRuntimeAuthority(
-            riverhog_base_url="https://riverhog.invalid",
-            capability_token="secret",
-        ),
-        TargetCallbackAccess(
-            stove0_base_url="https://stove0.invalid",
-            token="callback-secret",
-        ),
-    )
-    record = service.bind_target_request(
-        work.work_id,
-        target_request,
-        expected_revision=record.revision,
-    )
+    plan, target_request = record.target_plan, record.target_request
+    target = _target(operation)
+    declaration = target_request.declaration
     running = TargetJobStatus(
         job_id=declaration.job_id,
         state="running",
@@ -1002,39 +950,9 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
 
 
 def test_new_claim_fence_resets_unsettled_execution_authorities() -> None:
-    store = InMemoryWorkStore()
-    service = Stove0WorkService(store)
-    work = _work()
-    record = service.create_or_resume(work)
-    record = service.bind_claim(
-        work.work_id,
-        claim_id=work.work_id,
-        fence=1,
-        expected_revision=record.revision,
-    )
-    record = service.begin_planning(work.work_id, expected_revision=record.revision)
-    operation = _operation()
+    store, service, record, operation, _callbacks, _access = _queued_target_callback_execution()
+    work, workflow = record.work, record.workflow_plan
     target = _target(operation)
-    workflow = WorkflowPlan.seal(
-        WorkflowPlanPayload(
-            work=work,
-            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
-            target_registration_id="fixture-target",
-            target_descriptor_sha256=target.descriptor_sha256,
-            source_collection_retirement_policy="retain",
-        )
-    )
-    record = service.seal_workflow_plan(
-        work.work_id,
-        workflow,
-        expected_revision=record.revision,
-    )
-    record = service.seal_target_plan(
-        work.work_id,
-        target=target,
-        plan=_target_plan(operation, target, invocation_sha256=workflow.workflow_plan_sha256),
-        expected_revision=record.revision,
-    )
     stale_execution_id = record.controller_evidence.execution_envelope.execution_envelope_sha256
     stale_output = OutputArtifact(
         id="result",
@@ -1055,16 +973,11 @@ def test_new_claim_fence_resets_unsettled_execution_authorities() -> None:
 
     assert rebound.phase == "claimed"
     assert rebound.claim == ClaimBinding(claim_id=work.work_id, fence=2)
-    assert rebound.workflow_plan is None
+    assert rebound.workflow_plan == workflow
     assert rebound.target_plan is None
     assert rebound.controller_evidence is None
 
-    rebound = service.begin_planning(work.work_id, expected_revision=rebound.revision)
-    rebound = service.seal_workflow_plan(
-        work.work_id,
-        workflow,
-        expected_revision=rebound.revision,
-    )
+    rebound = service.activate_preplanned(work.work_id, expected_revision=rebound.revision)
     rebound = service.seal_target_plan(
         work.work_id,
         target=target,
@@ -1124,55 +1037,74 @@ def test_new_claim_fence_resets_unsettled_execution_authorities() -> None:
         ("canceled", {}, "abandon_pending", "canceled"),
     ],
 )
-def test_terminal_observation_results_converge_without_entering_planning(
+def test_terminal_observation_results_converge_without_target_execution(
     state: str,
     outcome: dict[str, object],
     expected_phase: str,
     expected_abandon: str | None,
 ) -> None:
-    service = Stove0WorkService(InMemoryWorkStore())
-    work = _work()
-    contract, descriptor = _observer()
-    request, observed = _observation(work, contract, descriptor)
-    record = service.create_or_resume(work)
-    record = service.bind_claim(
-        work.work_id,
-        claim_id=work.work_id,
-        fence=1,
-        expected_revision=record.revision,
+    from test_coordinator import (
+        FixtureObservers,
+        FixturePlanning,
+        FixtureRiverhog,
+        FixtureTarget,
+        FixtureTargetCallbacks,
+        _coordinator,
     )
-    record = service.begin_observations(
-        work.work_id,
-        (request,),
-        expected_revision=record.revision,
+    from test_coordinator import (
+        _observer as controller_observer,
     )
-    result = ContentObservationResult.seal(
-        ContentObservationResultPayload(
-            **observed.model_dump(
-                mode="python",
-                exclude_none=True,
-                exclude={
-                    "result_sha256",
-                    "state",
-                    "facts_schema",
-                    "facts",
-                    "facts_sha256",
-                },
-            ),
-            state=state,  # type: ignore[arg-type]
-            **outcome,
-        )
+    from test_coordinator import (
+        _operation as controller_operation,
+    )
+    from test_coordinator import (
+        _target as controller_target,
     )
 
-    record = service.record_observation(
-        work.work_id,
-        result,
-        expected_revision=record.revision,
-    )
+    operation, observer = controller_operation(), controller_observer()
+    descriptor = controller_target(operation)
+    store = InMemoryWorkStore()
+    service = Stove0WorkService(store)
 
-    assert record.phase == expected_phase
-    assert record.observation_results == (result,)
-    assert record.abandon_outcome == expected_abandon
+    class TerminalObserver(FixtureObservers):
+        def put_job(self, registration_id, invocation, *, descriptor):
+            status = super().put_job(registration_id, invocation, descriptor=descriptor)
+            result = ContentObservationResult.seal(
+                ContentObservationResultPayload(
+                    **status.result.model_dump(
+                        mode="python",
+                        exclude_none=True,
+                        exclude={
+                            "result_sha256",
+                            "state",
+                            "facts_schema",
+                            "facts",
+                            "facts_sha256",
+                        },
+                    ),
+                    state=state,
+                    **outcome,
+                )
+            )
+            return status.model_copy(update={"result": result})
+
+    coordinator = _coordinator(
+        service,
+        riverhog=FixtureRiverhog(),
+        planning=FixturePlanning(operation, descriptor, observer),
+        observers=TerminalObserver(observer),
+        targets=FixtureTarget(operation, descriptor),
+        target_callbacks=FixtureTargetCallbacks(store),
+    )
+    record = coordinator.create_or_resume(_work())
+    for _ in range(8):
+        record = coordinator.step(record.work_id)
+        if record.phase == expected_phase:
+            break
+    assert record.phase == expected_phase and record.abandon_outcome == expected_abandon
+    deliveries = store.scan_observation_deliveries("work", record.work_id, limit=100)
+    assert len(deliveries) == 1 and deliveries[0].status.result.state == state
+    assert record.target_plan is None
 
 
 def test_stale_revision_and_invalid_success_order_fail_closed() -> None:
@@ -1452,13 +1384,21 @@ def test_sql_browse_preserves_accepted_facts_and_validates_current_documents(
     work = _work()
     contract, descriptor = _observer()
     request, result = _observation(work, contract, descriptor)
+    workflow = WorkflowPlan.seal(
+        WorkflowPlanPayload(
+            work=work,
+            observations=(ContentObservationEvidence(request=request, result=result),),
+            operation=OperationIdentityRef(id=_operation().id, sha256=_operation().contract_sha256),
+            target_registration_id="fixture-target",
+            target_descriptor_sha256=_target(_operation()).descriptor_sha256,
+        )
+    )
     record = store.create(
         WorkRecord(
             work=work,
             phase="planning",
             claim=ClaimBinding(claim_id=work.work_id, fence=1),
-            observation_requests=(request,),
-            observation_results=(result,),
+            workflow_plan=workflow,
         )
     )
     payload = store.list_work()
@@ -1472,14 +1412,14 @@ def test_sql_browse_preserves_accepted_facts_and_validates_current_documents(
     # complete fact corpus at each browse. Returned nested facts remain isolated.
     rows = payload["work"]
     assert isinstance(rows, list) and isinstance(rows[0], WorkRecord)
-    assert projected.observation_results[0] is rows[0].observation_results[0]
-    assert projected.observation_results[0].facts is not None
-    projected.observation_results[0].facts["kind"] = "changed locally"
+    assert projected.workflow_plan.observations[0] is rows[0].workflow_plan.observations[0]
+    assert projected.workflow_plan.observations[0].result.facts is not None
+    projected.workflow_plan.observations[0].result.facts["kind"] = "changed locally"
     assert store.load(record.work_id) == record
 
     # An unchanged row identity cannot make altered sealed evidence trustworthy.
     invalid = record.model_dump(mode="json", by_alias=True, exclude_none=True)
-    invalid["observation_results"][0]["facts"]["kind"] = "changed durably"
+    invalid["workflow_plan"]["observations"][0]["result"]["facts"]["kind"] = "changed durably"
     with store.engine.begin() as connection:
         connection.execute(
             text(
@@ -1551,7 +1491,9 @@ def test_sql_runnable_scan_ignores_terminal_history_and_uses_a_keyset(
         limit=1,
     )
 
-    assert records == [runnable]
+    assert [(item.work_id, item.phase, item.revision) for item in records] == [
+        (runnable.work_id, runnable.phase, runnable.revision)
+    ]
     assert cursor == runnable.work_id
 
 

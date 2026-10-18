@@ -8,6 +8,7 @@ from collections.abc import Sequence
 from datetime import timedelta
 from typing import Any, Literal, cast
 
+from http_api_contracts.control import ControlBudgetExhausted
 from riverhog_canonical_json import canonical_json_sha256
 from riverhog_client import ApiClient
 from riverhog_protocol import (
@@ -117,6 +118,8 @@ class ClassificationAdmissionService:
                     try:
                         self._advance_candidate(admission_id)
                         progressed.append(f"admission:{admission_id}")
+                    except ControlBudgetExhausted:
+                        raise
                     except Exception as exc:
                         self._record_candidate_failure(admission_id, exc)
                         failures.append(
@@ -136,6 +139,8 @@ class ClassificationAdmissionService:
                     advanced = self._advance_policy(policy)
                     if advanced:
                         progressed.append(f"policy:{policy.id}")
+                except ControlBudgetExhausted:
+                    raise
                 except Exception as exc:
                     failures.append(
                         SchedulerFailure(
@@ -425,14 +430,15 @@ class ClassificationAdmissionService:
                             "admission baseline replay differs from committed authority"
                         )
                 return False
-            self._require_page_authority(
+            if not self._require_page_authority(
                 row,
                 policy,
                 cursor,
                 page,
                 expected_generation=expected_generation,
                 expected_phase="baseline",
-            )
+            ):
+                return False
             assert row is not None
             for descriptor, matched in matches:
                 recorded = self._record_match(session, row, descriptor, matched)
@@ -473,14 +479,15 @@ class ClassificationAdmissionService:
                             "admission change replay differs from committed authority"
                         )
                 return False
-            self._require_page_authority(
+            if not self._require_page_authority(
                 row,
                 policy,
                 cursor,
                 page,
                 expected_generation=expected_generation,
                 expected_phase="following",
-            )
+            ):
+                return False
             assert row is not None
             if len(page.changes) > 1:
                 raise RuntimeError("admission change step exceeded its one-change transaction")
@@ -648,6 +655,7 @@ class ClassificationAdmissionService:
             state = row.state
             intent = AdmissionIntent.model_validate_json(row.document_json)
             preview_json = row.preview_json
+            attempt_count = row.attempt_count
         work = self.planner.create_work(
             intent.recipe_id,
             (
@@ -685,7 +693,20 @@ class ClassificationAdmissionService:
             )
             return
         if state == "intent":
-            preview = self.preview.preview(work)
+            pending = self.preview.submit(
+                work,
+                invocation_id=canonical_json_sha256(
+                    {
+                        "format": "stove0-admission-preview/v1",
+                        "admission_id": admission_id,
+                        "attempt": attempt_count,
+                    }
+                ),
+            )
+            if pending.state != "completed":
+                return
+            assert pending.result is not None
+            preview = pending.result
             if preview.work != work:
                 raise RuntimeError("automatic preview differs from the admission work intent")
             if preview.state == "inapplicable":
@@ -846,19 +867,28 @@ class ClassificationAdmissionService:
         *,
         expected_generation: str,
         expected_phase: Literal["baseline", "following"],
-    ) -> None:
+    ) -> bool:
+        """Admit the current checkpoint or discard a superseded exact-authority proposal."""
         if (
             row is None
             or row.policy_sha256 != policy.policy_sha256
             or row.generation != expected_generation
-            or row.phase != expected_phase
-            or row.cursor != cursor
             or row.source_identity != page.source_identity
             or row.authorization_view_identity != page.authorization_view_identity
         ):
             raise _AdmissionAuthorityChanged(
                 "admission catalog authority changed; rebaseline is required"
             )
+
+        if row.phase == expected_phase and row.cursor == cursor:
+            return True
+        if row.phase == expected_phase or (
+            expected_phase == "baseline" and row.phase == "following"
+        ):
+            return False
+        raise _AdmissionAuthorityChanged(
+            "admission catalog authority changed; rebaseline is required"
+        )
 
     def _require_rebaseline(
         self, policy_id: str, *, generation: str, phase: str, cursor: str

@@ -127,8 +127,11 @@ class SqlAlchemyArchiveUploadCheckpointStore:
                 .where(CollectionUploadRecord.collection_id == collection_id)
                 .with_for_update()
             )
-            if upload is not None:
-                upload.uploaded_payload_bytes += merged_payload_bytes - previous_payload_bytes
+            added_payload_bytes = merged_payload_bytes - previous_payload_bytes
+            if upload is not None and added_payload_bytes:
+                upload.uploaded_payload_bytes = (
+                    CollectionUploadRecord.uploaded_payload_bytes + added_payload_bytes
+                )
             return encoded
 
     def _delete(self, *, collection_id: int, volume_id: str, kind: str) -> None:

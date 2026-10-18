@@ -31,10 +31,20 @@ class RetrievalPlanRequest(RetrievalArtifactReferenceSetDocument):
     idempotency_key: CanonicalVisibleText = Field(max_length=200)
     lease_seconds: int | None = Field(default=None, ge=1)
     restore_policy: Literal["allow", "never"] = "allow"
+    source_store: ArchiveStoreName | None = Field(
+        default=None,
+        description=(
+            "Strict archive fallback source for cache misses; verified equivalent cache remains "
+            "preferred. Omitted uses archive_read_order."
+        ),
+    )
 
 
 class RetrievalPlanArtifactOut(ArtifactMemberIdentityDocument):
     collection_id: CollectionId
+    source_store: ArchiveStoreName = Field(
+        description="Pinned archive fallback source; equivalent cache may supply the bytes."
+    )
     requires_restore: bool
 
 
@@ -48,6 +58,9 @@ class RetrievalPlanOut(RiverhogModel):
     failure: str | None = Field(min_length=1)
     lease_seconds: int
     restore_policy: Literal["allow", "never"]
+    source_store: ArchiveStoreName | None = Field(
+        description="Requested archive fallback source; null uses configured archive_read_order."
+    )
     requires_restore: bool
     artifact_count: int = Field(ge=1, le=RETRIEVAL_ARTIFACT_BATCH_MAX)
     etag: Sha256Identity | None

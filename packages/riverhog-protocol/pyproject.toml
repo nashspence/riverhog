@@ -18,13 +18,15 @@ classifiers = [
   "Typing :: Typed",
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = [
+dependencies = ["release-documentation-lib>=0.1,<0.2",
   "http-api-contracts>=0.1,<0.2",
   "lifecycle-events>=0.1,<0.2",
   "pydantic>=2.12,<3.0",
   "riverhog-archive-contracts>=0.1,<0.2",
   "riverhog-canonical-json>=0.1,<0.2",
+  "riverhog-growth-contracts>=0.1,<0.2",
   "riverhog-provenance-contracts>=0.1,<0.2",
+  "sha256-continuation>=0.1,<0.2",
   "time-formats>=0.1,<0.2",
 ]
 
@@ -32,11 +34,14 @@ dependencies = [
 collection-production = "riverhog_protocol.collection_production_provenance:CONTRACT_BINDING"
 
 [tool.uv.sources]
+release-documentation-lib = { workspace = true }
 http-api-contracts = { workspace = true }
 lifecycle-events = { workspace = true }
 riverhog-archive-contracts = { workspace = true }
 riverhog-canonical-json = { workspace = true }
+riverhog-growth-contracts = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
+sha256-continuation = { workspace = true }
 time-formats = { workspace = true }
 
 [tool.hatch.build.targets.wheel]

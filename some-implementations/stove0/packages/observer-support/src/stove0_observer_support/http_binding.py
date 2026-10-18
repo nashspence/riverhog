@@ -4,25 +4,20 @@ from __future__ import annotations
 
 import json
 import logging
-import threading
+import re
 from dataclasses import dataclass
+from pathlib import Path
 
+from http_api_contracts.metadata_binding import MetadataHttpBinding
 from pydantic import BaseModel, ValidationError
 from riverhog_canonical_json import parse_identity_json
 from stove0_observer_protocol import (
     OBSERVER_HTTP_OPERATIONS,
+    AcceptedObservationJob,
     ContentObservationInvocation,
-    ObserverDescriptor,
-    SemanticValidatorProvider,
-    accept_observation_result,
-    require_semantic_validators,
-    validate_observation_request,
 )
 
-from stove0_observer_support.runtime import (
-    ContentObservationRuntime,
-    ContentObserver,
-)
+from stove0_observer_support.persistent import ObserverServiceError, PersistentObserverService
 
 _JSON_CONTENT_TYPE = "application/json"
 _LOG = logging.getLogger(__name__)
@@ -35,6 +30,11 @@ _OBSERVER_HTTP_ERROR_STATUS = {
     "observer_failed": 500,
     "request_too_large": 413,
     "unauthorized": 401,
+    "job_identity_mismatch": 409,
+    "job_request_mismatch": 409,
+    "observer_runtime_mismatch": 409,
+    "admission_unavailable": 503,
+    "job_not_found": 404,
 }
 
 
@@ -46,7 +46,7 @@ class ObserverHttpResponse:
 
 
 class ObserverHttpBinding:
-    """Translate the two v1 observer endpoints into a content-observer object.
+    """Translate bounded control calls into a component-owned observer service.
 
     The binding is deliberately independent of any web framework. External
     maintainers may adapt :meth:`handle` to ASGI, WSGI, aiohttp, Flask, FastAPI,
@@ -55,66 +55,78 @@ class ObserverHttpBinding:
 
     def __init__(
         self,
-        observer: ContentObserver,
+        service: PersistentObserverService,
         *,
-        semantic_validators: SemanticValidatorProvider | None = None,
         maximum_request_bytes: int = _DEFAULT_MAX_REQUEST_BYTES,
-        maximum_concurrency: int = 1,
+        metadata_root: Path | None = None,
     ) -> None:
         if maximum_request_bytes < 1:
             raise ValueError("observer HTTP request limit must be positive")
-        if isinstance(maximum_concurrency, bool) or maximum_concurrency < 1:
-            raise ValueError("observer execution concurrency must be positive")
-        self.observer = observer
-        self._semantic_validators = semantic_validators
+        self.service = service
         self.maximum_request_bytes = maximum_request_bytes
-        self.maximum_concurrency = maximum_concurrency
-        self._execution_slots = threading.BoundedSemaphore(maximum_concurrency)
+        self.metadata = MetadataHttpBinding(
+            owner=service,
+            root=metadata_root,
+            operations=OBSERVER_HTTP_OPERATIONS,
+            execute=lambda method, path, body: self._handle_inline(method, path, body, staged=True),
+            response=ObserverHttpResponse,
+        )
 
     def handle(self, method: str, path: str, body: bytes = b"") -> ObserverHttpResponse:
+        if path.startswith("/v1/metadata/"):
+            return self.metadata.handle(method, path, body)
+        return self._handle_inline(method, path, body)
+
+    def _handle_inline(
+        self, method: str, path: str, body: bytes, *, staged: bool = False
+    ) -> ObserverHttpResponse:
         normalized_method = method.upper()
         if normalized_method == "GET" and path == "/v1/observer":
             if body:
                 return _error(400, "bad_request", "GET /v1/observer must not include a body")
             try:
-                descriptor = ObserverDescriptor.model_validate(self.observer.descriptor())
-                require_semantic_validators(self._semantic_validators, descriptor)
-                return _model_response(descriptor)
+                return _model_response(self.service.descriptor())
             except Exception:
                 _LOG.exception("content observer descriptor failed")
                 return _error(500, "observer_failed", "content observer descriptor failed")
-        if normalized_method == "POST" and path == "/v1/observe":
-            if len(body) > self.maximum_request_bytes:
+        match = re.fullmatch(r"/v1/observations/([a-f0-9]{64})(/cancel)?", path)
+        if match:
+            job_id, suffix = match.groups()
+            if normalized_method == "GET" and suffix is None:
+                if body:
+                    return _error(400, "bad_request", "observer status GET must not include a body")
+                try:
+                    return _model_response(self.service.get_job(job_id))
+                except ObserverServiceError as exc:
+                    return _error(exc.status, exc.code, exc.message)
+                except Exception:
+                    _LOG.exception("observer status failed")
+                    return _error(500, "observer_failed", "observer status failed")
+            if (normalized_method, suffix) not in {("PUT", None), ("POST", "/cancel")}:
+                return _error(405, "method_not_allowed", "observer endpoint method is not allowed")
+            if not staged and len(body) > self.maximum_request_bytes:
                 return _error(413, "request_too_large", "observer request exceeds its size limit")
             try:
-                invocation = ContentObservationInvocation.model_validate(parse_identity_json(body))
+                model = AcceptedObservationJob if suffix else ContentObservationInvocation
+                request = model.model_validate(parse_identity_json(body))
             except (ValidationError, ValueError) as exc:
                 return _error(400, "invalid_observation_request", str(exc))
             try:
-                descriptor = ObserverDescriptor.model_validate(self.observer.descriptor())
-                require_semantic_validators(self._semantic_validators, descriptor)
+                if request.job_id != job_id:
+                    return _error(
+                        409, "job_identity_mismatch", "observer path differs from its invocation"
+                    )
+                if isinstance(request, AcceptedObservationJob):
+                    status = self.service.cancel_job(request)
+                else:
+                    status = self.service.put_job(request)
+                return _model_response(status)
+            except ObserverServiceError as exc:
+                return _error(exc.status, exc.code, exc.message)
             except Exception:
-                _LOG.exception("content observer descriptor failed")
-                return _error(500, "observer_failed", "content observer descriptor failed")
-            try:
-                validate_observation_request(invocation.request, descriptor)
-            except ValueError as exc:
-                return _error(400, "invalid_observation_request", str(exc))
-            try:
-                with self._execution_slots:
-                    with ContentObservationRuntime.from_invocation(invocation) as runtime:
-                        result = self.observer.observe(invocation.request, runtime)
-                accept_observation_result(
-                    result,
-                    invocation.request,
-                    descriptor,
-                    self._semantic_validators,
-                )
-                return _model_response(result)
-            except Exception:
-                _LOG.exception("content observer execution failed")
-                return _error(500, "observer_failed", "content observer execution failed")
-        if path in {"/v1/observer", "/v1/observe"}:
+                _LOG.exception("content observer control failed")
+                return _error(500, "observer_failed", "content observer control failed")
+        if path == "/v1/observer":
             return _error(405, "method_not_allowed", "observer endpoint method is not allowed")
         return _error(404, "not_found", "observer endpoint not found")
 

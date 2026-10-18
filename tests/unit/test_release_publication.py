@@ -22,6 +22,8 @@ from contract_atlas.release_publication import (  # noqa: E402
     validate_qualification,
 )
 
+from tests.actions_evidence import ArtifactRemote, execution  # noqa: E402
+
 
 def _qualified():
     return {
@@ -35,6 +37,7 @@ def _qualified():
         "database_contract": "passed",
         "release_evidence": "passed",
         "github_governance": "actions-observable-passed",
+        "workflow_execution": execution("qualification"),
     }
 
 
@@ -66,25 +69,23 @@ def test_release_assets_cannot_silently_flatten_colliding_paths(tmp_path):
         publication_assets(tmp_path)
 
 
-class _TrustedArtifacts:
-    repository = "nashspence/riverhog"
-
+class _TrustedArtifacts(ArtifactRemote):
     def __init__(self, prepared, qualified):
+        super().__init__(prepared.parent / "artifacts")
         self.prepared = prepared
         self.qualified = qualified
         self.publications = []
         self.qualification_path = ".github/workflows/release-qualification.yml"
+        if prepared.exists():
+            self.register("preparation", prepared)
+        if qualified.exists():
+            self.register("qualification", qualified)
 
     def api(self, endpoint):
-        run = int(endpoint.rsplit("/", 1)[1])
-        return {
-            "path": self.qualification_path
-            if run == 11
-            else ".github/workflows/release-preparation.yml",
-            "status": "completed",
-            "conclusion": "success",
-            "repository": {"full_name": self.repository},
-        }
+        result = super().api(endpoint)
+        if endpoint == "actions/runs/11":
+            result["path"] = self.qualification_path
+        return result
 
     def tag_commit(self, tag):
         return "1" * 40
@@ -92,15 +93,12 @@ class _TrustedArtifacts:
     def releases(self):
         return []
 
-    def command(self, *args):
-        assert args[:2] == ("run", "download")
-        source = self.qualified if args[2] == "11" else self.prepared
-        shutil.copytree(source, Path(args[args.index("--dir") + 1]))
-        return b""
-
     def publish_asset_set(self, *args, **kwargs):
         self.publications.append(args)
         return {"immutable": True}
+
+    def request_product_pages(self, result):
+        return {"source_sha": "3" * 40}
 
 
 @pytest.mark.parametrize(
@@ -250,8 +248,11 @@ def test_publication_workflow_uses_only_the_offline_signature_and_protected_publ
 
 
 def test_qualification_rejects_success_from_an_unrelated_workflow(tmp_path):
-    remote = _TrustedArtifacts(tmp_path / "unused", tmp_path / "unused")
+    qualified = tmp_path / "qualified"
+    qualified.mkdir()
+    (qualified / "qualification.json").write_bytes(canonical_bytes(_qualified()))
+    remote = _TrustedArtifacts(tmp_path / "unused", qualified)
     remote.qualification_path = ".github/workflows/unrelated.yml"
-    with pytest.raises(ContractAtlasError, match="repository qualification"):
+    with pytest.raises(ContractAtlasError, match="trusted successful"):
         collect_qualification(remote, 11, "1" * 40, "1.0.0", tmp_path / "download")
     assert not (tmp_path / "download").exists()

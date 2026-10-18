@@ -8,7 +8,6 @@ import importlib.metadata
 import json
 import os
 import secrets
-import subprocess
 from collections.abc import AsyncIterator, Callable, Sequence
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -19,6 +18,11 @@ from fastapi import Depends, FastAPI, Request, Response
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPBearer
 from http_api_contracts import ErrorOut, HealthOut, error_payload, operation_openapi
+from http_api_contracts.metadata_binding import read_control_body
+from http_api_contracts.metadata_staging import MetadataStagingError
+from riverhog_canonical_json import canonical_json_bytes
+from stove0_extension_support import subprocess
+from stove0_extension_support.file_admission import FileExecutionAdmission
 from stove0_target_support import (
     TARGET_HTTP_OPERATIONS,
     TargetHttpBinding,
@@ -94,11 +98,19 @@ def _create_app(
         scheme, _, supplied = request.headers.get("authorization", "").partition(" ")
         if scheme.casefold() != "bearer" or not secrets.compare_digest(supplied, credential):
             return _error(401, "unauthorized", "Bearer credential is not authorized")
+        try:
+            body = await read_control_body(
+                request, maximum_request_bytes=binding.maximum_request_bytes
+            )
+        except MetadataStagingError as exc:
+            return Response(
+                content=canonical_json_bytes({"error": {"code": exc.code, "message": exc.message}}),
+                status_code=exc.status,
+                media_type="application/json",
+            )
         result = cast(
             TargetHttpResponse,
-            await run_in_threadpool(
-                binding.handle, request.method, request.url.path, await request.body()
-            ),
+            await run_in_threadpool(binding.handle, request.method, request.url.path, body),
         )
         return Response(
             content=result.body, status_code=result.status, headers=dict(result.headers)
@@ -191,28 +203,41 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--host", default=os.getenv(f"{prefix}_HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.getenv(f"{prefix}_PORT", "8080")))
+    parser.add_argument(
+        "--execution-lease-file",
+        type=Path,
+        default=os.getenv(f"{prefix}_EXECUTION_LEASE_FILE") or None,
+        help="Try an exclusive cooperative lock on a deployment-provided local file.",
+    )
     return parser
 
 
 def target_main(argv: Sequence[str] | None = None) -> int:
     prefix = "A_STOVE0_NVENC_AV1_OPUS_TARGET"
     args = _parser().parse_args(argv)
-    target = NvencAv1OpusTargetService(
-        state_root=Path(
-            os.getenv(f"{prefix}_STATE_ROOT", "/var/lib/a-stove0-nvenc-av1-opus-target")
-        ),
-        workspace_root=Path(
-            os.getenv(f"{prefix}_WORKSPACE", "/run/a-stove0-nvenc-av1-opus-target")
-        ),
-        ffmpeg=os.getenv("STOVE0_FFMPEG_BIN", "ffmpeg"),
-        source_revision=os.getenv(f"{prefix}_SOURCE_REVISION", "unknown"),
-        image_id=_image_id(prefix),
-        terminal_state_retention_seconds=terminal_state_retention_seconds(),
+    resource = (
+        FileExecutionAdmission(args.execution_lease_file)
+        if args.execution_lease_file is not None
+        else contextlib.nullcontext(None)
     )
-    token = _secret(prefix)
-    with contextlib.suppress(KeyError):
-        os.environ.pop(f"{prefix}_TOKEN")
-    uvicorn.run(create_target_app(token=token, target=target), host=args.host, port=args.port)
+    with resource as admission:
+        target = NvencAv1OpusTargetService(
+            state_root=Path(
+                os.getenv(f"{prefix}_STATE_ROOT", "/var/lib/a-stove0-nvenc-av1-opus-target")
+            ),
+            workspace_root=Path(
+                os.getenv(f"{prefix}_WORKSPACE", "/run/a-stove0-nvenc-av1-opus-target")
+            ),
+            ffmpeg=os.getenv("STOVE0_FFMPEG_BIN", "ffmpeg"),
+            source_revision=os.getenv(f"{prefix}_SOURCE_REVISION", "unknown"),
+            image_id=_image_id(prefix),
+            terminal_state_retention_seconds=terminal_state_retention_seconds(),
+            execution_admission=admission,
+        )
+        token = _secret(prefix)
+        with contextlib.suppress(KeyError):
+            os.environ.pop(f"{prefix}_TOKEN")
+        uvicorn.run(create_target_app(token=token, target=target), host=args.host, port=args.port)
     return 0
 
 

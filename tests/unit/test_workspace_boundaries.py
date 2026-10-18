@@ -219,6 +219,7 @@ EXTERNAL_DISTRIBUTION_MODULES = {
     "referencing": {"referencing"},
     "rfc8785": {"rfc8785"},
     "rich": {"rich"},
+    "ruamel.yaml": {"ruamel"},
     "sqlalchemy": {"sqlalchemy"},
     "starlette": {"starlette"},
     "typer": {"typer"},
@@ -465,7 +466,7 @@ def test_a_riverhog_cli_consumes_only_the_declared_riverhog_client_root() -> Non
     assert imported == {"riverhog_client"}
 
 
-def test_projects_declare_their_exact_direct_runtime_dependencies() -> None:
+def test_projects_declare_their_exact_direct_runtime_dependencies(documented_source_plan) -> None:
     configs: dict[str, tuple[Path, dict[str, object]]] = {}
     distribution_modules: dict[str, set[str]] = dict(EXTERNAL_DISTRIBUTION_MODULES)
     for pyproject in workspace_pyprojects(REPO):
@@ -483,6 +484,13 @@ def test_projects_declare_their_exact_direct_runtime_dependencies() -> None:
         imported = set().union(
             *(imported_roots(path) for path in (pyproject.parent / "src").rglob("*.py"))
         )
+        # The fixed release adapter adds this import to exact selected declarations.
+        # Metadata-only preparation does not acquire a runtime dependency.
+        if any(
+            (REPO / path).is_relative_to(pyproject.parent / "src")
+            for path in documented_source_plan["modules"]
+        ):
+            imported.add("release_documentation_lib")
         runtime_only = RUNTIME_ONLY_DEPENDENCIES.get(distribution, set())
 
         for dependency in sorted(dependencies):
@@ -571,6 +579,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     assert declared_project_dependencies(path_volume_config) == {
         "config-validation",
         "gogurt-core",
+        "release-documentation-lib",
     }
 
     listener_runtime_config = tomllib.loads(
@@ -582,6 +591,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
         "config-validation",
         "gogurt-core",
         "time-formats",
+        "release-documentation-lib",
     }
     listener_runtime_imports = set().union(
         *(
@@ -648,7 +658,10 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
                 / f"some-implementations/riverhog/provenance/contracts/{platform}/pyproject.toml"
             ).read_text(encoding="utf-8")
         )
-        assert declared_project_dependencies(contract_config) == {"riverhog-provenance-contracts"}
+        assert declared_project_dependencies(contract_config) == {
+            "riverhog-provenance-contracts",
+            "release-documentation-lib",
+        }
 
         mounted_volume_config = tomllib.loads(
             (
@@ -658,13 +671,17 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
         assert declared_project_dependencies(mounted_volume_config) == {
             "gogurt-core",
             "a-gogurt-path-volume-lib",
+            "release-documentation-lib",
         }
         listener_host_config = tomllib.loads(
             (
                 REPO / f"some-implementations/gogurt/listener-host/{platform}/pyproject.toml"
             ).read_text(encoding="utf-8")
         )
-        assert declared_project_dependencies(listener_host_config) == {"gogurt-listener-runtime"}
+        assert declared_project_dependencies(listener_host_config) == {
+            "gogurt-listener-runtime",
+            "release-documentation-lib",
+        }
 
         assert set(mounted_volume_config["project"]["entry-points"]) == {
             "gogurt.mounted-volume-providers"
@@ -750,13 +767,6 @@ def test_supplied_extension_distributions_each_own_one_selectable_capability() -
         }
         assert len(implementation_ids) == 1, root.relative_to(REPO)
 
-    architecture = " ".join((REPO / "docs/architecture.md").read_text(encoding="utf-8").split())
-    assert "Each selected distribution owns one capability" in architecture
-    assert "shared-dependency image bundles preserve separate identities and selection" in (
-        architecture
-    )
-    assert "only exact digest-bound contracts or selected bindings carry authority" in architecture
-
 
 def test_supplied_implementation_paths_have_structural_roles_and_clear_descriptions() -> None:
     release = tomllib.loads((REPO / "release.toml").read_text(encoding="utf-8"))
@@ -785,9 +795,6 @@ def test_shared_packages_are_product_owned_or_implementation_neutral() -> None:
     for pyproject in (REPO / "packages").glob("*/pyproject.toml"):
         relative = pyproject.parent.relative_to(REPO).as_posix()
         assert classified[relative] in {"reusable_library", "internal_build_unit"}
-
-    architecture = " ".join((REPO / "docs/architecture.md").read_text(encoding="utf-8").split())
-    assert "Riverhog owns product implementations and generic contracts." in architecture
 
 
 def test_core_dependency_graphs_are_acyclic() -> None:

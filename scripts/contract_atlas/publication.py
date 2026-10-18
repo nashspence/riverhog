@@ -12,8 +12,9 @@ import tempfile
 from pathlib import Path, PurePosixPath
 from typing import Any
 
+from .documentation import DOCUMENTATION_FILENAME, source_ledger
 from .generation import BUILD_FILENAME, BUILD_FORMAT
-from .model import ContractAtlasError, canonical_bytes
+from .model import ContractAtlasError, canonical_bytes, canonical_sha256
 
 DEFAULT_SITE_BUDGET = 900_000_000
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
@@ -114,22 +115,52 @@ def verify_published_candidate(root: Path, *, source_sha: str | None = None) -> 
         binding = build.get("documentation")
         if binding is None:
             if render["documentation_sha256"] is not None or any(
-                name in files for name in ("documentation.json", "documentation-record.json")
+                name in files
+                for name in (
+                    DOCUMENTATION_FILENAME,
+                    "documentation-record.json",
+                    "documentation-audit.json",
+                )
             ):
                 raise ContractAtlasError("published base render carries unbound documentation")
         elif (
             not isinstance(binding, dict)
             or binding["source_sha"] != build["source_sha"]
-            or binding["path"] != binding["tag"] + "/documentation.json"
+            or binding["path"] != binding["tag"] + "/"
             or not re.fullmatch(r"[0-9a-f]{40}", binding["commit"])
             or binding["closure_sha256"] != build["closure_sha256"]
             or binding["audit_sha256"] != build["audit_sha256"]
-            or binding["sha256"] != build["files"].get("documentation.json")
+            or binding["sha256"] != build["files"].get(DOCUMENTATION_FILENAME)
             or binding["documentation_record_sha256"]
             != build["files"].get("documentation-record.json")
             or render["documentation_sha256"] != binding["documentation_record_sha256"]
         ):
             raise ContractAtlasError("published documentation binding differs from exact bytes")
+        if binding is not None:
+            captured = {
+                name.removeprefix("documentation-source/"): path.read_bytes()
+                for name, path in files.items()
+                if name.startswith("documentation-source/")
+            }
+            document = json.loads(files["documentation-record.json"].read_bytes())
+            record = json.loads(files["documentation-audit.json"].read_bytes())
+            if (
+                source_ledger(captured) != binding["source_files"]
+                or canonical_sha256(document["compiled"]) != binding["compiled_sha256"]
+                or canonical_sha256(document["requirements"]) != binding["requirements_sha256"]
+                or binding["documentation_audit_sha256"]
+                != build["files"].get("documentation-audit.json")
+                or render.get("documentation_audit_sha256") != binding["documentation_audit_sha256"]
+                or record.get("format") != "riverhog-documentation-audit/v1"
+                or record["current"]["compiled_sha256"] != binding["compiled_sha256"]
+                or record["current"]["requirements_sha256"] != binding["requirements_sha256"]
+                or record["current"]["identity"]["source_sha"] != build["source_sha"]
+                or record["current"]["identity"]["documentation_commit"] != binding["commit"]
+            ):
+                raise ContractAtlasError("published documentation/audit/source custody differs")
+            for name, digest in record["current"]["artifacts"].get("readouts", {}).items():
+                if build["files"].get(name) != digest:
+                    raise ContractAtlasError("native prepared readout differs from its audit")
         if (
             not isinstance(build.get("renderer"), dict)
             or not build["renderer"]

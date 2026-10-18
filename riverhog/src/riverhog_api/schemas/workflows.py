@@ -58,6 +58,9 @@ from riverhog_protocol.collection_workflow_transport import (
     ProcessingCapabilityDocument as ProcessingCapabilityOut,
 )
 from riverhog_protocol.collection_workflow_transport import (
+    ProcessingCapabilityRefreshDocument as ProcessingCapabilityRefreshIn,
+)
+from riverhog_protocol.collection_workflow_transport import (
     ProcessingClaimAbandonDocument as ProcessingClaimAbandonIn,
 )
 from riverhog_protocol.collection_workflow_transport import (
@@ -104,6 +107,7 @@ from riverhog_protocol.collection_workflow_transport import (
 )
 
 __all__ = [
+    "ProcessingCapabilityRefreshIn",
     "ProcessingClaimOutcomesAppendIn",
     "ProcessingClaimEffectSettleIn",
     "ProcessingClaimNoOutputSettleIn",

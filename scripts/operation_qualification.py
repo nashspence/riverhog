@@ -43,7 +43,6 @@ from stove0_api.app import create_app as create_stove0_app
 from stove0_api_client import Stove0ApiClient
 from stove0_core import (
     EvaluationService,
-    RecipeCatalog,
     SqlAlchemyStateStore,
     Stove0Coordinator,
     Stove0RuntimeConfig,
@@ -51,6 +50,7 @@ from stove0_core import (
     Stove0WorkService,
     WorkflowPreviewService,
 )
+from stove0_recipe_config import CompiledRecipeCatalog
 from stove0_target_client import TargetCallbackClient
 from time_formats import utc_timestamp_now
 
@@ -126,7 +126,7 @@ def create_stove0_contract_app() -> FastAPI:
                 riverhog_base_url="https://riverhog.invalid",
                 riverhog_token="riverhog-qualification-token",
                 riverhog_allow_insecure_http=False,
-                recipes=RecipeCatalog(operations=(), recipes=()),
+                recipes=CompiledRecipeCatalog(),
                 observers={},
                 targets={},
                 target_callback_base_url="https://stove0.invalid",
@@ -142,7 +142,7 @@ def create_stove0_contract_app() -> FastAPI:
             ),
             riverhog_api=cast(ApiClient, _RiverhogContractApi()),
             state=state,
-            recipes=RecipeCatalog(operations=(), recipes=()),
+            recipes=CompiledRecipeCatalog(),
             work=work,
             coordinator=cast(Stove0Coordinator, object()),
             preview=cast(WorkflowPreviewService, object()),
@@ -187,6 +187,7 @@ class ApplicationSurface:
     client_types: tuple[type[Any], ...]
     cli_commands: tuple[tuple[str, Callable[..., object], bool], ...]
     supplemental_operations: tuple[SupplementalOperation, ...] = ()
+    factory: Callable[..., FastAPI] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -268,7 +269,7 @@ def _callback_has_projection_parity(
             elif mode is not None:
                 human = True
                 machine = True
-        elif name == "dumps":
+        elif name in {"dumps", "canonical_json_bytes"}:
             machine = True
         elif name in {"echo", "print"}:
             human = True
@@ -354,18 +355,21 @@ def application_surfaces() -> tuple[ApplicationSurface, ...]:
             riverhog_app,
             (ApiClient,),
             tuple(_typer_commands(a_riverhog_cli.app)),
+            factory=create_riverhog_app,
         ),
         ApplicationSurface(
             "stove0",
             create_stove0_contract_app(),
             (Stove0ApiClient, TargetCallbackClient),
             tuple(_typer_commands(a_stove0_cli.app)),
+            factory=create_stove0_app,
         ),
         ApplicationSurface(
             "a-riverhog-ftp-spool",
             create_adapter_contract_app(),
             (RiverhogFtpSpoolClient,),
             tuple(_argparse_commands(build_adapter_parser())),
+            factory=create_adapter_app,
         ),
     )
 

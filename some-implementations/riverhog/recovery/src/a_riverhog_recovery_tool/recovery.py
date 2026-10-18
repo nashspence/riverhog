@@ -284,7 +284,10 @@ def _stage_provenance(
     # optional profile payloads remain exact even without their application code.
     with CanonicalCorpusValidator() as corpus:
         for (path,) in journals.execute("SELECT path FROM journals ORDER BY journal_id"):
-            corpus.add(validate_journal_chunks(_file_chunks(Path(path)), require_profiles=False))
+            with validate_journal_chunks(
+                _file_chunks(Path(path)), require_profiles=False
+            ) as summary:
+                corpus.add(summary)
         corpus.validate()
     return reader, journals, count
 
@@ -311,42 +314,42 @@ def _selected_advice(
         raise RecoveryError("primary binding selects a missing journal prefix")
     source = Path(str(journal[1]))
     prefix_bytes = int(binding.journal.prefix_bytes)
-    summary = validate_journal_chunks(
+    with validate_journal_chunks(
         _prefix_chunks(source, prefix_bytes),
         expected_anchor=binding.journal.model_dump(mode="json"),
         require_exact_tail=True,
         require_profiles=False,
-    )
-    state, occurrence = selected_delivery_occurrence(
-        summary,
-        binding=binding.model_dump(mode="json"),
-        artifact_id=binding.artifact_id,
-        byte_count=byte_count,
-        sha256=sha256,
-        member_role=COLLECTION_MEMBER_ROLE,
-    )
-    sidecar = staging.joinpath(*primary_sidecar_components(binding.artifact_id))
-    sidecar.parent.mkdir(parents=True, exist_ok=True)
-    digest = hashlib.sha256()
-    with sidecar.open("xb") as output:
-        for chunk in _prefix_chunks(source, prefix_bytes):
-            output.write(chunk)
-            digest.update(chunk)
-        output.flush()
-        os.fsync(output.fileno())
-    if digest.hexdigest() != binding.journal.prefix_sha256:
-        raise RecoveryError("primary sidecar differs from selected anchor")
-    support = {
-        "journal": binding.journal.model_dump(mode="json"),
-        "delivery_association_id": binding.delivery_association_id,
-        "state_id": state["id"],
-        "occurrence_id": occurrence["id"],
-        "occurrence_assertion_id": occurrence["assertion_id"],
-    }
-    hint = occurrence.get("materialization_hint")
-    if hint is not None and not isinstance(hint, dict):
-        raise RecoveryError("selected occurrence has a malformed materialization hint")
-    return hint, support
+    ) as summary:
+        state, occurrence = selected_delivery_occurrence(
+            summary,
+            binding=binding.model_dump(mode="json"),
+            artifact_id=binding.artifact_id,
+            byte_count=byte_count,
+            sha256=sha256,
+            member_role=COLLECTION_MEMBER_ROLE,
+        )
+        sidecar = staging.joinpath(*primary_sidecar_components(binding.artifact_id))
+        sidecar.parent.mkdir(parents=True, exist_ok=True)
+        digest = hashlib.sha256()
+        with sidecar.open("xb") as output:
+            for chunk in _prefix_chunks(source, prefix_bytes):
+                output.write(chunk)
+                digest.update(chunk)
+            output.flush()
+            os.fsync(output.fileno())
+        if digest.hexdigest() != binding.journal.prefix_sha256:
+            raise RecoveryError("primary sidecar differs from selected anchor")
+        support = {
+            "journal": binding.journal.model_dump(mode="json"),
+            "delivery_association_id": binding.delivery_association_id,
+            "state_id": state["id"],
+            "occurrence_id": occurrence["id"],
+            "occurrence_assertion_id": occurrence["assertion_id"],
+        }
+        hint = occurrence.get("materialization_hint")
+        if hint is not None and not isinstance(hint, dict):
+            raise RecoveryError("selected occurrence has a malformed materialization hint")
+        return hint, support
 
 
 def _stage_mapping(

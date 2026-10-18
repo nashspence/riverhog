@@ -29,6 +29,10 @@ from riverhog_core.catalog_models import (
     CollectionMutableDocumentPublicationAttemptRecord,
     CollectionRecord,
     CollectionTagPublicationRecord,
+    RetrievalCacheLeaseRecord,
+    RetrievalCacheObjectRecord,
+    RetrievalCachePopulationClaimRecord,
+    RetrievalCachePopulationRecord,
     RetrievalJobObjectProgressRecord,
     RetrievalJobRecord,
     RetrievalPlanArtifactRecord,
@@ -37,6 +41,7 @@ from riverhog_core.catalog_models import (
     RetrievalPlanRecord,
 )
 from riverhog_core.ports.archive_store import ArchiveVerificationError
+from riverhog_core.ports.retrieval_cache import RetrievalCache
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.archive_copy_job_states import ARCHIVE_COPY_JOB_BLOCKING_STATES
 from riverhog_core.services.archive_records import (
@@ -52,6 +57,7 @@ from riverhog_core.services.operation_plans import (
     challenge_has_shape,
     plan_challenge,
 )
+from riverhog_core.services.retrieval_selection import plan_object_uses_store
 
 _CHALLENGE_PREFIX = "retire-copy"
 _ACTIVE_RETRIEVAL_STATES = {"requested", "ready"}
@@ -71,10 +77,12 @@ class SqlAlchemyArchiveCopyRetirementService:
         config: RuntimeConfig,
         archive_stores: ArchiveStoreRegistry,
         *,
+        retrieval_cache: RetrievalCache | None = None,
         session_factory: SessionFactory | None = None,
     ) -> None:
         self._config = config
         self._archive_stores = archive_stores
+        self._retrieval_cache = retrieval_cache
         self._session_factory = session_factory or make_session_factory(config.database_url)
 
     def plan(self, collection_id: int, *, store: str) -> dict[str, object]:
@@ -192,6 +200,27 @@ class SqlAlchemyArchiveCopyRetirementService:
             self._clear_active(normalized_id, normalized_store, supplied_challenge)
             raise
 
+        self._purge_terminal_retrieval_plans(normalized_id, normalized_store)
+        with session_scope(self._session_factory) as session:
+            has_cache = any(
+                session.scalar(
+                    select(model.object_id)
+                    .where(
+                        model.collection_id == normalized_id,
+                        model.source_store == normalized_store,
+                    )
+                    .limit(1)
+                )
+                is not None
+                for model in (RetrievalCacheObjectRecord, RetrievalCachePopulationRecord)
+            )
+        if has_cache:
+            if self._retrieval_cache is None:
+                raise Conflict("retrieval-cache state cannot be settled for the selected copy")
+            self._retrieval_cache.settle_source(
+                source_store=normalized_store, collection_id=normalized_id
+            )
+
         with session_scope(self._session_factory) as session:
             target = session.get(
                 CollectionArchiveCopyRecord,
@@ -226,10 +255,6 @@ class SqlAlchemyArchiveCopyRetirementService:
         target_store.delete_collection_archive(
             collection_id=normalized_id,
             objects=target_objects,
-        )
-        self._purge_terminal_retrieval_plans(
-            normalized_id,
-            normalized_store,
         )
         return self._finish(
             normalized_id,
@@ -308,6 +333,11 @@ class SqlAlchemyArchiveCopyRetirementService:
     ) -> dict[str, object]:
         now_text = format_utc_timestamp(utc_now())
         with session_scope(self._session_factory) as session:
+            session.scalar(
+                select(CollectionRecord.id)
+                .where(CollectionRecord.id == collection_id)
+                .with_for_update()
+            )
             active = session.scalar(
                 select(ArchiveCopyRetirementRecord)
                 .where(
@@ -325,7 +355,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                 .join(RetrievalPlanObjectRecord)
                 .where(
                     RetrievalPlanObjectRecord.collection_id == collection_id,
-                    RetrievalPlanObjectRecord.source_store == store,
+                    plan_object_uses_store(store),
                     RetrievalPlanRecord.state.in_({"planning", "ready"}),
                     RetrievalPlanRecord.expires_at > now_text,
                 )
@@ -345,7 +375,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                 )
                 .where(
                     RetrievalPlanObjectRecord.collection_id == collection_id,
-                    RetrievalPlanObjectRecord.source_store == store,
+                    plan_object_uses_store(store),
                     RetrievalJobRecord.state.in_(_ACTIVE_RETRIEVAL_STATES),
                 )
                 .order_by(RetrievalJobRecord.id)
@@ -378,7 +408,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                 .join(RetrievalPlanObjectRecord)
                 .where(
                     RetrievalPlanObjectRecord.collection_id == collection_id,
-                    RetrievalPlanObjectRecord.source_store == store,
+                    plan_object_uses_store(store),
                     (
                         ~RetrievalPlanRecord.state.in_({"planning", "ready"})
                         | (RetrievalPlanRecord.expires_at <= now_text)
@@ -389,6 +419,23 @@ class SqlAlchemyArchiveCopyRetirementService:
             )
             if terminal_plan is not None:
                 raise Conflict("terminal retrieval plan cleanup is incomplete; retry retirement")
+            for model in (
+                RetrievalCacheObjectRecord,
+                RetrievalCachePopulationRecord,
+                RetrievalCachePopulationClaimRecord,
+            ):
+                if (
+                    session.scalar(
+                        select(model.object_id)
+                        .where(
+                            model.collection_id == collection_id,
+                            model.source_store == store,
+                        )
+                        .limit(1)
+                    )
+                    is not None
+                ):
+                    raise Conflict("retrieval-cache source cleanup is incomplete; retry retirement")
             session.delete(active)
             session.flush()
             target = session.get(CollectionArchiveCopyRecord, (collection_id, store))
@@ -408,7 +455,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                     .join(RetrievalPlanObjectRecord)
                     .where(
                         RetrievalPlanObjectRecord.collection_id == collection_id,
-                        RetrievalPlanObjectRecord.source_store == store,
+                        plan_object_uses_store(store),
                         (
                             ~RetrievalPlanRecord.state.in_({"planning", "ready"})
                             | (RetrievalPlanRecord.expires_at <= now_text)
@@ -481,7 +528,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                             case(
                                 (
                                     (RetrievalPlanObjectRecord.collection_id == collection_id)
-                                    & (RetrievalPlanObjectRecord.source_store == store),
+                                    & (plan_object_uses_store(store)),
                                     1,
                                 ),
                                 else_=0,
@@ -565,7 +612,7 @@ def _build_plan(
         )
         .where(
             RetrievalPlanObjectRecord.collection_id == collection_id,
-            RetrievalPlanObjectRecord.source_store == store,
+            plan_object_uses_store(store),
             RetrievalJobRecord.state.in_(_ACTIVE_RETRIEVAL_STATES),
         )
         .order_by(RetrievalJobRecord.id)
@@ -576,7 +623,7 @@ def _build_plan(
         .join(RetrievalPlanObjectRecord)
         .where(
             RetrievalPlanObjectRecord.collection_id == collection_id,
-            RetrievalPlanObjectRecord.source_store == store,
+            plan_object_uses_store(store),
             RetrievalPlanRecord.state.in_({"planning", "ready"}),
             RetrievalPlanRecord.expires_at > now_text,
         )
@@ -611,7 +658,7 @@ def _build_plan(
             )
             .where(
                 RetrievalPlanObjectRecord.collection_id == collection_id,
-                RetrievalPlanObjectRecord.source_store == store,
+                plan_object_uses_store(store),
                 ~RetrievalJobRecord.state.in_(_ACTIVE_RETRIEVAL_STATES),
             )
         )
@@ -619,6 +666,31 @@ def _build_plan(
     )
 
     blockers: list[str] = []
+    if (
+        db.scalar(
+            select(RetrievalCacheLeaseRecord.owner)
+            .where(
+                RetrievalCacheLeaseRecord.source_store == store,
+                RetrievalCacheLeaseRecord.collection_id == collection_id,
+                RetrievalCacheLeaseRecord.expires_at > now_text,
+            )
+            .limit(1)
+        )
+        is not None
+    ):
+        blockers.append("retrieval cache lease is active on the selected copy")
+    if (
+        db.scalar(
+            select(RetrievalCachePopulationClaimRecord.owner)
+            .where(
+                RetrievalCachePopulationClaimRecord.source_store == store,
+                RetrievalCachePopulationClaimRecord.collection_id == collection_id,
+            )
+            .limit(1)
+        )
+        is not None
+    ):
+        blockers.append("retrieval cache population is active on the selected copy")
     if db.get(CollectionDeletionRecord, collection_id) is not None:
         blockers.append(f"collection deletion is active: {collection_id}")
     if collection.description_mutation_state != "idle":

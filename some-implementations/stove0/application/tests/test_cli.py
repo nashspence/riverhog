@@ -87,6 +87,26 @@ def _commands(definition: Path) -> dict[str, list[str]]:
             "a" * 64,
         ],
         "get_work": ["work", "show", "work-1"],
+        "list_observation_tasks": ["observation", "list", "a" * 64],
+        "get_observation_task": ["observation", "show", "a" * 64, "b" * 64, "facts"],
+        "get_observation_results": [
+            "observation",
+            "results",
+            "a" * 64,
+            "b" * 64,
+            "facts",
+            "c" * 64,
+        ],
+        "get_observation_result": ["observation", "result", "a" * 64, "b" * 64],
+        "get_observation_view": [
+            "observation",
+            "view",
+            "a" * 64,
+            "b" * 64,
+            "facts",
+            "artifacts",
+            "c" * 64,
+        ],
         "inspect_work_coordination": ["work", "coordination", "work-1"],
         "get_artifact_selection": ["selection", "show", "a" * 64],
         "step_work": ["work", "step", "work-1"],
@@ -144,6 +164,11 @@ def test_a_stove0_cli_operation_inventory_matches_the_public_surface(tmp_path: P
         "list_work",
         "create_work",
         "get_work",
+        "list_observation_tasks",
+        "get_observation_task",
+        "get_observation_results",
+        "get_observation_result",
+        "get_observation_view",
         "inspect_work_coordination",
         "get_artifact_selection",
         "step_work",
@@ -181,8 +206,8 @@ def test_recipe_validation_reports_only_exact_catalog_identities() -> None:
     payload = json.loads(result.stdout)
     assert payload["format"] == "stove0-recipe-catalog-validation/v1"
     assert len(payload["catalog_sha256"]) == 64
-    assert payload["recipe_count"] == len(payload["recipes"])
-    assert "stove0.conformance-media/v1" in {item["id"] for item in payload["recipes"]}
+    assert int(payload["recipe_count"]) == len(payload["recipes"])
+    assert "stove0.conformance-media/v1" in {item["recipe"]["id"] for item in payload["recipes"]}
     assert set(payload) == {
         "catalog_sha256",
         "format",

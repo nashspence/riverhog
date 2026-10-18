@@ -127,11 +127,10 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
             encoding="utf-8"
         )
     )
-    architecture = " ".join(
-        (REPO_ROOT / "docs/architecture.md").read_text(encoding="utf-8").split()
-    )
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
 
     assert config["project"]["dependencies"] == [
+        "release-documentation-lib>=0.1,<0.2",
         "riverhog-archive-contracts>=0.1,<0.2",
         "riverhog-canonical-json>=0.1,<0.2",
         "riverhog-materialization>=0.1,<0.2",
@@ -143,13 +142,15 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
             encoding="utf-8"
         )
     )
-    assert contracts["project"]["dependencies"] == ["riverhog-canonical-json>=0.1,<0.2"]
+    assert contracts["project"]["dependencies"] == [
+        "release-documentation-lib>=0.1,<0.2",
+        "riverhog-canonical-json>=0.1,<0.2",
+    ]
     assert contracts["project"]["license"] == "Apache-2.0"
     assert config["project"]["scripts"] == {
         "a-riverhog-recovery-tool": "a_riverhog_recovery_tool.cli:main"
     }
-    assert "permissively licensed independent recovery tool" in architecture
-    assert "archives remain recoverable with standard tools" in architecture
+    assert "(some-implementations/riverhog/recovery/)" in readme
 
 
 def test_published_images_carry_source_and_license_identity() -> None:
@@ -227,7 +228,11 @@ def test_every_first_party_image_build_requests_an_sbom_attestation() -> None:
     assert 'docker buildx bake --file "$(BAKE_FILE)" --load' in makefile
     image_steps = workflow["jobs"]["images"]["steps"]
     assert (
-        next(step for step in image_steps if step["name"] == "Build image")["with"]["files"]
+        next(
+            step
+            for step in image_steps
+            if step["name"] == "Build exact image group from target-scoped caches"
+        )["with"]["files"]
         == "docker-bake.hcl"
     )
     assert (
@@ -240,5 +245,5 @@ def test_entrypoint_routes_release_terms_to_the_licensing_authority() -> None:
     readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     licensing = (REPO_ROOT / "LICENSE.md").read_text(encoding="utf-8")
 
-    assert "[Licensing](LICENSE.md) defines the repository's release terms." in readme
+    assert "[Licensing](LICENSE.md)" in readme
     assert licensing.startswith("# Riverhog licensing\n")

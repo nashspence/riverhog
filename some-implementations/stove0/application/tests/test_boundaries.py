@@ -273,12 +273,20 @@ def test_stove0_core_does_not_import_maintained_review_semantics() -> None:
     assert "review0_contracts" not in imports
 
 
-def test_stove0_core_does_not_define_a_second_observer_acceptance_domain() -> None:
-    assert not {
+def test_compiled_task_acceptance_uses_the_shared_observer_protocol_validator() -> None:
+    callers = {
         path
         for path in STOVE0_CORE.rglob("*.py")
         if "accept_observation_result" in _identifiers(path)
     }
+    assert callers == {STOVE0_CORE / "accepted_observations.py"}
+    assert "stove0_observer_protocol" in _import_modules(next(iter(callers)))
+    assert all(
+        node.name != "accept_observation_result"
+        for path in STOVE0_CORE.rglob("*.py")
+        for node in ast.walk(ast.parse(path.read_text()))
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    )
 
 
 def test_stove0_server_consumes_component_boundaries_only_as_protocols_and_callers() -> None:

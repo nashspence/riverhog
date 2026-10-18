@@ -39,6 +39,7 @@ from riverhog_client import ProducerFile
 from riverhog_client.processing import ProcessingWorkspace
 from riverhog_protocol import canonical_json_sha256
 from riverhog_protocol.artifact_identity import ArtifactId
+from stove0_extension_support import ExecutionAdmission
 from stove0_protocol import JsonSchemaValidationProfile
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
@@ -56,6 +57,7 @@ from stove0_target_support import (
     TargetOperationSupport,
     TargetPreflightRequest,
     TargetPreflightResponse,
+    TargetProgress,
     TargetServiceError,
 )
 
@@ -99,6 +101,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
         source_revision: str = "unknown",
         image_id: str,
         terminal_state_retention_seconds: int = DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
+        execution_admission: ExecutionAdmission | None = None,
     ) -> None:
         self.workspace_root = workspace_root.resolve()
         self.workspace_root.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -131,6 +134,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                 )
             },
             terminal_state_retention_seconds=terminal_state_retention_seconds,
+            execution_admission=execution_admission,
         )
 
     def preflight(self, request: TargetPreflightRequest) -> TargetPreflightResponse:
@@ -228,7 +232,15 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                 publication = execution.open_collection_publication(
                     implementation=self.descriptor()
                 )
-                for item in projection.items:
+                for ordinal, item in enumerate(projection.items):
+                    session.report_progress(
+                        TargetProgress(
+                            phase="preparing-media",
+                            completed=ordinal,
+                            total=len(projection.items),
+                            unit="media-items",
+                        )
+                    )
                     check()
                     resumed = self._resume_projection_outputs(
                         item,
@@ -252,6 +264,14 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                         command = self._command(source, destination, intent, preset, item)
                         effective = command
                         try:
+                            session.report_progress(
+                                TargetProgress(
+                                    phase="encoding-media",
+                                    completed=ordinal,
+                                    total=len(projection.items),
+                                    unit="media-items",
+                                )
+                            )
                             run_ffmpeg(
                                 command,
                                 log_root=workspace.root,
@@ -410,7 +430,15 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                         )
                     finally:
                         source.unlink(missing_ok=True)
-                for retained in projection.retained_xmp_sidecars:
+                for ordinal, retained in enumerate(projection.retained_xmp_sidecars):
+                    session.report_progress(
+                        TargetProgress(
+                            phase="publishing-sidecars",
+                            completed=ordinal,
+                            total=len(projection.retained_xmp_sidecars),
+                            unit="sidecars",
+                        )
+                    )
                     retained_output_id = _output_id("source-xmp", (retained.input_artifact_id,))
                     resumed_output = publication.resume_output(
                         retained_output_id,
@@ -471,6 +499,14 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                     declared,
                 )
                 execution_sha256 = hashlib.sha256(execution_preimage).hexdigest()
+                session.report_progress(
+                    TargetProgress(
+                        phase="finalizing-collection",
+                        completed=len(projection.items),
+                        total=len(projection.items),
+                        unit="media-items",
+                    )
+                )
                 return publication.finish_success(
                     operation=AV1_OPUS_ARCHIVE_OPERATION,
                     execution_sha256=execution_sha256,

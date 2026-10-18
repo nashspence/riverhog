@@ -26,6 +26,7 @@ DETECTORS: tuple[dict[str, str], ...] = (
     {"id": "configuration-environment", "authority": "executable environment binding"},
     {"id": "durable-state", "authority": "checked current state baseline"},
     {"id": "extent", "authority": "exhaustive extent classifier"},
+    {"id": "growth-declaration", "authority": "operation-owned typed declarations"},
     {"id": "http-openapi", "authority": "running ASGI app"},
     {"id": "operation-matrix", "authority": "executable operation parity matrix"},
     {
@@ -174,7 +175,7 @@ def _compatibility_policies(interface: str) -> list[str]:
         "versioning-tags": "compatibility/components/v1",
         "schema": "compatibility/components/v1",
     }
-    if interface in {"extent", "compatibility-guarantees", "publication-policies"}:
+    if interface in {"extent", "growth", "compatibility-guarantees", "publication-policies"}:
         return []
     return [mapping[interface]]
 
@@ -890,6 +891,41 @@ def _external_elements(
             str(child["id"]) for child in children
         )
         for child in children:
+            cast(list[str], child["related_element_ids"]).append(str(parent["id"]))
+
+    growth = cast(Mapping[str, object], external["growth"])
+    declarations = cast(Mapping[str, Mapping[str, object]], growth["declarations"])
+    growth_elements: dict[str, dict[str, object]] = {}
+    _add_element(
+        elements,
+        authority="riverhog-protocol",
+        interface="growth",
+        title="Primitive cost model",
+        pointers=["/external_contract/growth/format", "/external_contract/growth/cost_model"],
+        detector="growth-declaration",
+        source_ids=["growth:cost-model"],
+    )
+    for identity, declaration in sorted(declarations.items()):
+        item = _add_element(
+            elements,
+            authority=str(declaration["authority"]),
+            interface="growth",
+            title=identity,
+            pointers=[f"/external_contract/growth/declarations/{_escape_pointer(identity)}"],
+            detector="growth-declaration",
+            source_ids=[f"growth:{identity}"],
+        )
+        growth_elements[identity] = item
+        for subject in cast(Sequence[str], declaration["subjects"]):
+            if subject in python_elements:
+                python_element = python_elements[subject]
+                cast(list[str], item["related_element_ids"]).append(str(python_element["id"]))
+                cast(list[str], python_element["related_element_ids"]).append(str(item["id"]))
+    for identity, declaration in declarations.items():
+        for delegate in cast(Mapping[str, Mapping[str, object]], declaration["delegates"]).values():
+            child = growth_elements[str(delegate["declaration"])]
+            parent = growth_elements[identity]
+            cast(list[str], parent["related_element_ids"]).append(str(child["id"]))
             cast(list[str], child["related_element_ids"]).append(str(parent["id"]))
 
     extents = cast(Mapping[str, object], external["extents"])

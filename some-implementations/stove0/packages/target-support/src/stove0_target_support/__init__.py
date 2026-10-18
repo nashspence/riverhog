@@ -58,6 +58,10 @@ from stove0_target_support.conformance import (
     TargetConformanceResult,
     conformance_report,
 )
+from stove0_target_support.departure import (
+    DepartureExecutionSession,
+    PersistentDepartureEffectService,
+)
 from stove0_target_support.execution import TargetExecutionSession
 from stove0_target_support.http_binding import (
     TARGET_HTTP_OPERATIONS,
@@ -85,6 +89,8 @@ from stove0_target_support.schemas import (
 )
 
 __all__ = [
+    "DepartureExecutionSession",
+    "PersistentDepartureEffectService",
     "DepartureEffectHttpBinding",
     "DepartureEffectTargetService",
     "AcceptedTargetJob",

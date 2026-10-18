@@ -40,28 +40,31 @@ def candidate_site(
     global CANDIDATE_SOURCE
     CANDIDATE_SOURCE = release_contract_factory("0" * 40)
     root = tmp_path_factory.mktemp("contract-site")
-    from contract_atlas.documentation import SOURCE_FORMAT, AuthoredDocumentation
+    from contract_atlas.documentation import AuthoredDocumentation
 
-    authored = AuthoredDocumentation(
-        "v1.10.0",
-        "c" * 40,
-        "v1.10.0/documentation.json",
-        canonical_bytes({"format": SOURCE_FORMAT, "explanations": [], "guides": []}),
-    )
+    from tests.documentation_fixtures import synthetic_corpus
+    from tests.release_index import make_index
+
+    # Browser behavior needs complete development and documented renders. Multiple
+    # immutable versions and semantic ordering are covered by test_contract_pages;
+    # duplicating a second full synthetic release can exceed the hosting budget.
+    bundle = load_bundle(CANDIDATE_SOURCE / "riverhog-v1.json")
+    tag = "v1.10.0"
+    source_sha = "2" * 40
+    authored = AuthoredDocumentation(tag, "c" * 40, synthetic_corpus(bundle.closure))
     entries = [
-        {"root": release_contract_factory("1" * 40), "tag": "v1.2.0", "release_id": 1},
-        {
-            "root": release_contract_factory("2" * 40, documentation=authored),
-            "tag": "v1.10.0",
-            "release_id": 2,
-        },
-    ]
-    for entry in entries:
-        entry.update(
+        dict(
+            root=release_contract_factory(source_sha, documentation=authored),
+            tag=tag,
+            release_id=2,
             release_manifest_sha256="d" * 64,
             attestation_sha256="e" * 64,
             assets={"synthetic-witness": "sha256:" + "f" * 64},
+            installation=make_index(
+                tmp_path_factory.mktemp(f"installation-{tag}"), tag, source_sha
+            )[0],
         )
+    ]
     build_pages(CANDIDATE_SOURCE, root, "0" * 40, releases=entries)
     bundle = load_bundle(CANDIDATE_SOURCE / "riverhog-v1.json")
     element = next(
@@ -72,7 +75,9 @@ def candidate_site(
     selected = copy.deepcopy(bundle.closure)
     selected["elements"] = [element]
     documentation = {
-        "format": "riverhog-contract-documentation-record/v2",
+        "format": "riverhog-contract-documentation-record/v3",
+        "compiled": None,
+        "requirements": None,
         "closure_sha256": canonical_sha256(selected),
         "release_scope": "browser fixture",
         "build_scope": "browser fixture",
@@ -258,7 +263,7 @@ def test_published_cli_help_is_visible_only_in_documentation_mode(
     assert not page.locator("#documentation").is_visible()
     page.locator("#docs-mode").check()
     assert page.locator("#documentation").is_visible()
-    assert "Command-line client for Riverhog." in page.locator("#documentation").inner_text()
+    assert "Synthetic reference for a-riverhog-cli." in page.locator("#documentation").inner_text()
     assert page.locator("#contract").inner_html() == contractual
     page.goto(f"{base}/v1.10.0/riverhog-v1/{_inventory_file('a-riverhog-cli', 'cli')}?docs=1")
     assert page.locator(".command-tree .docs-cue:visible").count() > 0
@@ -412,7 +417,7 @@ def test_aggregate_version_navigation_and_documentation_availability(candidate_s
     page = context.new_page()
     page.goto(base)
     versions = page.get_by_role("navigation", name="Versions")
-    assert versions.get_by_role("link").all_text_contents() == ["development", "v1.10.0", "v1.2.0"]
+    assert versions.get_by_role("link").all_text_contents() == ["development", "v1.10.0"]
     assert (
         page.locator("body").evaluate("node => getComputedStyle(node).colorScheme") == "light dark"
     )
@@ -424,10 +429,48 @@ def test_aggregate_version_navigation_and_documentation_availability(candidate_s
     page.get_by_role("link", name="Documentation", exact=True).click()
     assert page.locator("#docs-mode").is_checked()
     assert page.locator("#authority-cards").is_visible()
-    page.goto(base + "/v1.2.0/")
-    assert page.get_by_role("link", name="Documentation", exact=True).count() == 0
+    page.goto(base + "/v1.10.0/")
     page.get_by_role("link", name="Contract", exact=True).click()
-    assert page.locator("#docs-mode").count() == 0
+    assert not page.locator("#docs-mode").is_checked()
     page.goto(base + "/v1/")
     page.wait_for_url("**/v1.10.0/")
     context.close()
+
+
+def test_documentation_audit_composes_with_existing_cards_and_keeps_contract_values(
+    candidate_site, browser
+):
+    base, element_file, literal = candidate_site
+    path = f"/v1.10.0/riverhog-v1/{element_file}"
+    context = browser.new_context(viewport={"width": 390, "height": 844}, color_scheme="dark")
+    page = context.new_page()
+    page.goto(base + path)
+    original = page.locator("#contract").inner_html()
+    assert literal in page.locator(".human-contract").inner_text()
+    assert page.locator(".documentation-attention").is_visible()
+    assert "REVIEW" in page.locator(".documentation-attention").inner_text()
+    assert not page.locator("#documentation-audit").is_visible()
+    page.locator("#documentation-audit-mode").check()
+    assert "docAudit=1" in page.url
+    assert page.locator("#documentation-audit").is_visible()
+    page.locator("#documentation-audit").get_by_text("Current prose", exact=True).first.click()
+    assert "Synthetic reference" in page.locator("#documentation-audit").inner_text()
+    assert page.locator("#contract").inner_html() == original
+    assert page.evaluate("getComputedStyle(document.documentElement).colorScheme") == "dark"
+    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 2")
+    page.locator("#docs-mode").check()
+    page.locator("#audit-mode").check()
+    assert page.locator("#contract").inner_html() == original
+    assert page.locator("#documentation").is_visible()
+    assert page.locator("#audit").is_visible()
+    page.reload()
+    assert page.locator("#documentation-audit-mode").is_checked()
+    assert page.locator("#contract").inner_html() == original
+    context.close()
+    no_js = browser.new_context(java_script_enabled=False, viewport={"width": 390, "height": 844})
+    page = no_js.new_page()
+    page.goto(base + path)
+    assert page.locator("#documentation-audit").is_visible()
+    assert page.locator("#contract").is_visible()
+    assert literal in page.locator(".human-contract").inner_text()
+    no_js.close()

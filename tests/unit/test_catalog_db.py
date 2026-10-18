@@ -210,6 +210,8 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
         "read_mode",
         "cache_store",
         "cache_incarnation_id",
+        "cache_source_store",
+        "cache_source_incarnation_id",
         "retrieval_bytes",
     }
     assert {

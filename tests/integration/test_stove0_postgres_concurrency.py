@@ -219,7 +219,10 @@ def _work(*, intent: dict[str, Any] | None = None) -> WorkIdentity:
     )
 
 
-def _target_models() -> tuple[OperationContract, TargetDescriptor, TransformPlan]:
+def _target_models(
+    work: WorkIdentity | None = None,
+) -> tuple[OperationContract, TargetDescriptor, TransformPlan]:
+    work = work or _work()
     operation = OperationContract.seal(
         OperationContractPayload(
             id="fixture.copy/v1",
@@ -267,7 +270,7 @@ def _target_models() -> tuple[OperationContract, TargetDescriptor, TransformPlan
     )
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
-            work=_work(),
+            work=work,
             operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
@@ -287,7 +290,7 @@ def _target_models() -> tuple[OperationContract, TargetDescriptor, TransformPlan
                         WorkArtifactSubject(
                             id="source",
                             role="fixture.source/v1",
-                            collection=_work().inputs[0],
+                            collection=work.inputs[0],
                             artifact_id="1" * 64,
                             bytes="12",
                             sha256="d" * 64,
@@ -302,19 +305,76 @@ def _target_models() -> tuple[OperationContract, TargetDescriptor, TransformPlan
     return operation, target, plan
 
 
+def _admit_operation(
+    service: Stove0WorkService,
+    work: WorkIdentity,
+    operation: OperationContract,
+    target: TargetDescriptor,
+    registration: str,
+) -> WorkRecord:
+    """Race witnesses start at the current sealed child-admission boundary."""
+    parent = service.create_or_resume(work)
+    parent = service.bind_claim(
+        work.work_id, claim_id=work.work_id, fence=1, expected_revision=parent.revision
+    )
+    parent = service.begin_planning(work.work_id, expected_revision=parent.revision)
+    selection = ArtifactSelection.seal(
+        (
+            WorkArtifactSubject(
+                id="source",
+                role="fixture.source/v1",
+                collection=work.inputs[0],
+                artifact_id="1" * 64,
+                bytes="12",
+                sha256="d" * 64,
+            ),
+        )
+    )
+    branch = BranchPlan.build(
+        parent_work=work,
+        branch_id="fixture",
+        decision_sha256="e" * 64,
+        selection=selection,
+        recipe=work.recipe,
+        effective_intent=work.effective_intent,
+        workflow_intent=WorkflowPlanIntent(
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
+            target_registration_id=registration,
+            target_descriptor_sha256=target.descriptor_sha256,
+            result_kind=operation.result_kind,
+            source_collection_retirement_policy="retain",
+        ),
+    )
+    service.admit_branch_set(
+        work.work_id,
+        BranchSetDecision(
+            plan=BranchSetPlan.seal(
+                parent_work=work,
+                decision_sha256="e" * 64,
+                evidence_sha256s=(),
+                branches=(branch,),
+                selections={selection.selection_sha256: selection},
+            ),
+            selections=(selection,),
+        ),
+        expected_revision=parent.revision,
+    )
+    record = service.store.load(branch.workflow_plan.work.work_id)
+    assert record is not None
+    record = service.bind_claim(
+        record.work_id, claim_id=record.work_id, fence=1, expected_revision=record.revision
+    )
+    return service.activate_preplanned(record.work_id, expected_revision=record.revision)
+
+
 def _active_target_work(
     service: Stove0WorkService,
 ) -> tuple[WorkRecord, OperationContract, TargetJobStatus, TargetJobStatus]:
     work = _work()
     operation, target, plan = _target_models()
-    record = service.create_or_resume(work)
-    record = service.bind_claim(
-        work.work_id,
-        claim_id=work.work_id,
-        fence=1,
-        expected_revision=record.revision,
-    )
-    record = service.begin_planning(work.work_id, expected_revision=record.revision)
+    record = _admit_operation(service, work, operation, target, "fixture-target")
+    work = record.work
+    operation, target, plan = _target_models(work)
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
             work=work,
@@ -323,11 +383,6 @@ def _active_target_work(
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retain",
         )
-    )
-    record = service.seal_workflow_plan(
-        work.work_id,
-        workflow,
-        expected_revision=record.revision,
     )
     record = service.seal_target_plan(
         work.work_id,
@@ -542,14 +597,8 @@ def _active_effect_work(
             target_options={},
         )
     )
-    record = service.create_or_resume(work)
-    record = service.bind_claim(
-        work.work_id,
-        claim_id=work.work_id,
-        fence=1,
-        expected_revision=record.revision,
-    )
-    record = service.begin_planning(work.work_id, expected_revision=record.revision)
+    record = _admit_operation(service, work, operation, target, "fixture-effect-target")
+    work = record.work
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
             work=work,
@@ -560,10 +609,13 @@ def _active_effect_work(
             source_collection_retirement_policy="retain",
         )
     )
-    record = service.seal_workflow_plan(
-        work.work_id,
-        workflow,
-        expected_revision=record.revision,
+    plan = EffectPlan.seal(
+        EffectPlanPayload.model_validate(
+            {
+                **plan.model_dump(mode="python", exclude={"plan_sha256"}),
+                "invocation_sha256": workflow.workflow_plan_sha256,
+            }
+        )
     )
     record = service.seal_target_plan(
         work.work_id,
@@ -796,6 +848,91 @@ def _nested_branch_decision() -> BranchSetDecision:
         selections=(selection,),
         branch_sets=(child_plan,),
     )
+
+
+def test_postgres_compiled_tasks_keep_dependency_and_reservation_fences(stores):
+    from a_stove0_magic_facts_contract_lib import (
+        MAGIC_INTERFACE,
+        MAGIC_INTERFACE_VECTORS,
+        MAGIC_OBSERVER_CONTRACT,
+    )
+    from a_stove0_magic_facts_contract_lib.contracts import MAGIC_CONFORMANCE_VECTORS
+    from stove0_recipe_config import RecipeSource, compile_recipe
+    from stove0_recipe_config.compiler import observation_dependencies
+    from stove0_recipe_config.dependencies import ObserverResource, RecipeDependencyCatalog
+
+    recipe, closure = compile_recipe(
+        RecipeSource.model_validate(
+            {
+                "format": "stove0-recipe/v1",
+                "id": "fixture.pg-task-graph/v1",
+                "revision": 1,
+                "observe": {
+                    "aaa": {"use": "magic", "after": ["zzz"]},
+                    "bbb": {"use": "magic"},
+                    "zzz": {"use": "magic"},
+                },
+                "decisions": [
+                    {"when": True, "no_output": {"code": "done", "message": "Complete."}}
+                ],
+            }
+        ),
+        RecipeDependencyCatalog(
+            resources={
+                "magic": ObserverResource(
+                    contract=MAGIC_OBSERVER_CONTRACT,
+                    interface=MAGIC_INTERFACE,
+                    interface_vectors=MAGIC_INTERFACE_VECTORS,
+                    facts_vectors=MAGIC_CONFORMANCE_VECTORS,
+                )
+            }
+        ),
+    )
+    work = WorkIdentity.seal(WorkPayload(recipe=recipe.ref, inputs=_work().inputs))
+    first, second = (store.planning_context("work", work.work_id) for store in stores)
+    first.recipe_definitions.retain(recipe, closure)
+    graph = observation_dependencies(recipe, closure)
+    for _ in range(20):
+        row = first.compiled_planning.ensure(work.work_id, recipe)
+        if first.compiled_planning.initialize_tasks(
+            work.work_id, graph, expected_revision=row["revision"]
+        ):
+            break
+    else:
+        pytest.fail("exact graph did not initialize")
+    classified = first.compiled_planning.due_task(work.work_id)
+    assert classified["task_id"] == "$classify"
+    first.compiled_planning.advance_task(classified, state="complete")
+    barrier, reserved, failures = threading.Barrier(2), [], []
+
+    def reserve(store):
+        try:
+            barrier.wait(timeout=5)
+            reserved.append(store.compiled_planning.due_task(work.work_id))
+        except BaseException as exc:
+            failures.append(exc)
+
+    threads = [threading.Thread(target=reserve, args=(store,)) for store in (first, second)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=10)
+    assert not failures and not any(thread.is_alive() for thread in threads)
+    rows = [row for row in reserved if row is not None]
+    if len(rows) == 1:
+        rows.append(first.compiled_planning.due_task(work.work_id))
+    assert {row["task_id"] for row in rows} == {"bbb", "zzz"}
+    assert len({row["checked_turn"] for row in rows}) == 2
+    # A pending question remains eligible; refreshing it invalidates stale CAS.
+    stale = next(row for row in rows if row["task_id"] == "bbb")
+    refreshed = first.compiled_planning.due_task(work.work_id)
+    assert refreshed["task_id"] == "bbb"
+    with pytest.raises(ConcurrentWorkUpdate):
+        second.compiled_planning.advance_task(stale, state="complete")
+    first.compiled_planning.advance_task(refreshed, state="complete")
+    predecessor = next(row for row in rows if row["task_id"] == "zzz")
+    first.compiled_planning.advance_task(predecessor, state="complete")
+    assert second.compiled_planning.due_task(work.work_id)["task_id"] == "aaa"
 
 
 def test_postgres_concurrent_create_converges_and_controller_worker_cas_is_fenced(
@@ -1365,13 +1502,8 @@ def test_postgres_target_declarations_are_isolated_by_fenced_execution_generatio
         fence=record.claim.fence + 1,
         expected_revision=record.revision,
     )
-    rebound = service.begin_planning(record.work_id, expected_revision=rebound.revision)
-    rebound = service.seal_workflow_plan(
-        record.work_id,
-        record.workflow_plan,
-        expected_revision=rebound.revision,
-    )
-    operation, target, plan = _target_models()
+    rebound = service.activate_preplanned(record.work_id, expected_revision=rebound.revision)
+    operation, target, plan = _target_models(rebound.work)
     rebound = service.seal_target_plan(
         record.work_id,
         target=target,
@@ -1547,6 +1679,11 @@ def test_postgres_concurrent_scheduler_ticks_admit_once_and_preserve_terminal_tr
             self.store = store
             self.barrier = barrier
             self.transition = transition
+
+        def maintain(self, work_id: str) -> WorkRecord:
+            current = self.store.load(work_id)
+            assert current is not None
+            return current
 
         def step(self, work_id: str) -> WorkRecord:
             current = self.store.load(work_id)

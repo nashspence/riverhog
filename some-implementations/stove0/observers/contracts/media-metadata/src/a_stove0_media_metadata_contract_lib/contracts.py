@@ -182,7 +182,6 @@ MEDIA_METADATA_OBSERVER_CONTRACT = ObserverContract.seal(
         options_schema=MEDIA_METADATA_OPTIONS_SCHEMA,
         facts_schema=MEDIA_METADATA_FACTS_SCHEMA,
         facts_semantics=MEDIA_METADATA_FACTS_SEMANTICS,
-        maximum_result_bytes=1024 * 1024,
     )
 )
 

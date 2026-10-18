@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from riverhog_api import app as api_app
@@ -20,6 +21,7 @@ from riverhog_core.catalog_provenance_index_models import (
 from riverhog_protocol.errors import ServiceUnavailable
 from sqlalchemy import delete, func, select
 
+from tests.support.qualification import canonical_history_scale as history_scale
 from tests.support.qualification.canonical_history_scale import (
     measure_archive_rebuild,
     publish_shared_history,
@@ -165,5 +167,82 @@ def test_operator_command_restores_a_lost_index_without_upload_scratch(
             "index_generation": fixture.generation_id,
         }
         measure_archive_rebuild(fixture)
+    finally:
+        fixture.container.close()
+
+
+@pytest.mark.parametrize("query_seconds", [0.5, 543.0])
+def test_native_discovery_target_reports_both_queries_without_failing_valid_work(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, query_seconds: float
+) -> None:
+    fixture = publish_shared_history(tmp_path, members=2)
+    times = iter((0.0, 1.0, 2.0, 2.0 + query_seconds, 3.0 + query_seconds, 3.0 + 2 * query_seconds))
+    monkeypatch.setattr(history_scale, "time", SimpleNamespace(perf_counter=lambda: next(times)))
+    try:
+        measured = measure_archive_rebuild(fixture, cold=True)
+        assert measured["archive_object_reads"] > 0
+        assert measured["max_reads_per_object"] == 1
+        assert set(measured["native_http"]) == {"first_read", "repeat_read"}
+        for query in measured["native_http"].values():
+            assert query["elapsed_seconds"] == query_seconds
+            assert query["exact_member_matches"] == 1
+            assert query["profiling_target"] == {
+                "report_only": True,
+                "target_seconds": 5,
+                "status": "met" if query_seconds <= 5 else "missed",
+                "reason": "completed-query",
+            }
+    finally:
+        fixture.container.close()
+
+
+@pytest.mark.parametrize("failure", ["wrong-result", "query-memory", "archive-reread"])
+def test_native_discovery_target_miss_preserves_functional_and_resource_failures(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    fixture = publish_shared_history(tmp_path, members=1)
+    times = iter((0.0, 1.0, 2.0, 545.0, 546.0, 1089.0))
+    monkeypatch.setattr(history_scale, "time", SimpleNamespace(perf_counter=lambda: next(times)))
+    discover = fixture.api.discover_artifacts
+    store = fixture.container.collection_uploads._archive_stores.require("primary").store
+
+    def observe(payload):
+        found = discover(payload)
+        if failure == "wrong-result":
+            return {**found, "artifacts": []}
+        if failure == "archive-reread":
+            with session_scope(fixture.container.session_factory) as session:
+                record = session.scalar(
+                    select(CollectionArchiveObjectRecord)
+                    .where(CollectionArchiveObjectRecord.collection_id == fixture.collection_id)
+                    .limit(1)
+                )
+                assert record is not None
+                assert b"".join(
+                    store.iter_stored_archive_object(
+                        collection_id=fixture.collection_id, object=record
+                    )
+                )
+        return found
+
+    monkeypatch.setattr(fixture.api, "discover_artifacts", observe)
+    if failure == "query-memory":
+        traced = history_scale.tracemalloc
+        samples = 0
+
+        def memory():
+            nonlocal samples
+            samples += 1
+            current, peak = traced.get_traced_memory()
+            return current, peak if samples == 1 else history_scale.MAX_REBUILD_PEAK_BYTES + 1
+
+        monkeypatch.setattr(
+            history_scale,
+            "tracemalloc",
+            SimpleNamespace(start=traced.start, stop=traced.stop, get_traced_memory=memory),
+        )
+    try:
+        with pytest.raises(AssertionError):
+            measure_archive_rebuild(fixture, cold=True)
     finally:
         fixture.container.close()

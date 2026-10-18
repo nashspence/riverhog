@@ -1,0 +1,47 @@
+name: Validation evidence
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+      - CodeQL
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: validation-evidence-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    name: Observe completed validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out trusted observer
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          ref: ${{ github.workflow_sha }}
+      - name: Install repository toolchain
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+      - name: Observe exact completed workflow attempt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OBSERVED_RUN_ID: ${{ github.event.workflow_run.id }}
+          OBSERVED_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          OBSERVATION_OUTPUT: ${{ runner.temp }}/completed-validation.json
+        run: mise x -- uv run --locked --all-packages --group dev python -m scripts.ci_actions completed
+          --run-id "$OBSERVED_RUN_ID" --attempt "$OBSERVED_ATTEMPT" --output "$OBSERVATION_OUTPUT"
+      - name: Retain complete run and collection costs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: validation-completed-${{ github.event.workflow_run.id }}-attempt-${{ github.event.workflow_run.run_attempt }}
+          path: ${{ runner.temp }}/completed-validation.json
+          if-no-files-found: error
+          retention-days: 7

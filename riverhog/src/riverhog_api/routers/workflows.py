@@ -53,6 +53,7 @@ from riverhog_api.schemas.workflows import (
     ConsiderationEvidenceReadOut,
     ProcessingCapabilityCreateIn,
     ProcessingCapabilityOut,
+    ProcessingCapabilityRefreshIn,
     ProcessingClaimAbandonIn,
     ProcessingClaimCreateIn,
     ProcessingClaimEffectSettleIn,
@@ -413,6 +414,29 @@ def create_processing_capability(
             fence=request.fence,
             audience=request.audience,
             actions=request.actions,
+            ttl_seconds=request.ttl_seconds,
+            principal=principal,
+        )
+    )
+
+
+@router.post(
+    "/collection-processing-claims/{claim_id}/capabilities/{capability_id}/refresh",
+    response_model=ProcessingCapabilityOut,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def refresh_processing_capability(
+    claim_id: ProcessingClaimId,
+    capability_id: str,
+    request: ProcessingCapabilityRefreshIn,
+    container: ContainerDep,
+    principal: CollectionProcessingController,
+) -> ProcessingCapabilityOut:
+    return ProcessingCapabilityOut.model_validate(
+        container.collection_workflows.refresh_capability(
+            claim_id,
+            capability_id,
+            fence=request.fence,
             ttl_seconds=request.ttl_seconds,
             principal=principal,
         )

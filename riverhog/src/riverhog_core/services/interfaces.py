@@ -313,6 +313,7 @@ class RetrievalService(Protocol):
         idempotency_key: str | None = None,
         lease: timedelta | None = None,
         restore_policy: str = "allow",
+        source_store: str | None = None,
         principal: Principal | None = None,
     ) -> JsonObject: ...
     def get_plan(

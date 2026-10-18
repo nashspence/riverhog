@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import os
 import re
 import shlex
+import subprocess
 import tomllib
 from pathlib import Path
 
@@ -14,18 +16,28 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _make_words(name: str) -> list[str]:
-    lines = (REPO_ROOT / "Makefile").read_text(encoding="utf-8").splitlines()
-    start = next(
-        index
-        for index, line in enumerate(lines)
-        if re.match(rf"^{re.escape(name)}\s*(?:\?|:) ?=", line)
-        or re.match(rf"^{re.escape(name)}\s*=", line)
+    environment = dict(os.environ)
+    for override in (name, "MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES"):
+        environment.pop(override, None)
+    completed = subprocess.run(
+        [
+            "make",
+            "--no-print-directory",
+            "--silent",
+            "-f",
+            "Makefile",
+            "-f",
+            "-",
+            "_riverhog_policy_words",
+        ],
+        input=f"$(info $({name}))\n.PHONY: _riverhog_policy_words\n_riverhog_policy_words:;\n",
+        cwd=REPO_ROOT,
+        env=environment,
+        text=True,
+        capture_output=True,
+        check=True,
     )
-    value = lines[start].split("=", maxsplit=1)[1].strip()
-    while value.endswith("\\"):
-        value = value[:-1].rstrip() + " " + lines[start + 1].strip()
-        start += 1
-    return shlex.split(value)
+    return shlex.split(completed.stdout)
 
 
 def test_ignore_files_are_concise_and_cover_local_state() -> None:

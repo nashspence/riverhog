@@ -1,0 +1,13 @@
+# Overlay for the supplied Stove0 deployment. Prepare a local shared directory
+# and regular exclusive.lock file writable by the container and host participants.
+# Every participant must lock that same inode; do not unlink or replace it.
+services:
+  a-stove0-nvenc-av1-opus-target:
+    group_add:
+      - ${A_STOVE0_NVENC_AV1_OPUS_TARGET_EXECUTION_LEASE_GID:?shared lease group is required}
+    volumes:
+      - type: bind
+        source: ${A_STOVE0_NVENC_AV1_OPUS_TARGET_EXECUTION_LEASE_DIRECTORY:?shared host lease directory is required}
+        target: /run/stove0-execution-lease
+        bind:
+          create_host_path: false

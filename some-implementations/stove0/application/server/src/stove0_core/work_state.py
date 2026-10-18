@@ -14,9 +14,7 @@ from typing import Any, Literal, Protocol, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from stove0_observer_protocol import (
-    ContentObservationEvidence,
-    ContentObservationRequest,
-    ContentObservationResult,
+    ObservationJobStatus,
 )
 from stove0_operator_contracts import validate_work_state_shape
 from stove0_protocol import (
@@ -44,6 +42,7 @@ from stove0_protocol import (
     WorkIdentity,
     canonical_json_bytes,
 )
+from stove0_protocol.no_output_decisions import CompiledNoOutputDecision
 from stove0_target_protocol import (
     AcceptedTargetJob,
     InputDispositionDeclaration,
@@ -61,10 +60,15 @@ from stove0_target_protocol import (
     validate_status_against_request,
 )
 
+from stove0_core.observation_state import (
+    ObservationDeliveryRecord,
+    ObservationOwnerKind,
+    updated_delivery,
+)
+
 WorkPhase = Literal[
     "eligible",
     "claimed",
-    "observing",
     "planning",
     "target_preflight",
     "queued",
@@ -126,8 +130,15 @@ class WorkInapplicable(Stove0StateModel):
 class WorkNoAction(Stove0StateModel):
     """A recipe-authorized successful decision without target execution."""
 
-    code: str = Field(min_length=1, max_length=160)
-    message: str = Field(min_length=1, max_length=1000)
+    decision: CompiledNoOutputDecision
+
+    @property
+    def code(self) -> str:
+        return self.decision.definition.code
+
+    @property
+    def message(self) -> str:
+        return self.decision.definition.message
 
 
 class PreviewTargetExpectation(Stove0StateModel):
@@ -301,8 +312,6 @@ class WorkRecord(Stove0StateModel):
     no_action_preview: WorkflowPreview | None = None
     no_output_retirement_policy: Literal["retain", "retire-after-settlement"] | None = None
     expected_target_plan_sha256: Sha256 | None = None
-    observation_requests: tuple[ContentObservationRequest, ...] = ()
-    observation_results: tuple[ContentObservationResult, ...] = ()
     branch_set_plan: BranchSetPlan | None = None
     coordination_settlement: CoordinationSettlement | None = None
     join_plan: JoinPlan | None = None
@@ -392,6 +401,29 @@ class WorkRecord(Stove0StateModel):
 
 
 class WorkStore(Protocol):
+    def ensure_observation_delivery(
+        self, record: ObservationDeliveryRecord
+    ) -> ObservationDeliveryRecord: ...
+
+    def update_observation_delivery(
+        self,
+        owner_kind: ObservationOwnerKind,
+        owner_id: str,
+        job_id: str,
+        status: ObservationJobStatus,
+    ) -> ObservationDeliveryRecord: ...
+
+    def scan_observation_deliveries(
+        self,
+        owner_kind: ObservationOwnerKind,
+        owner_id: str,
+        *,
+        after_job_id: str = "",
+        incomplete_only: bool = False,
+        exclude_claim: tuple[str, int] | None = None,
+        limit: int = 100,
+    ) -> tuple[ObservationDeliveryRecord, ...]: ...
+
     def load(self, work_id: str) -> WorkRecord | None: ...
 
     def create(self, record: WorkRecord) -> WorkRecord: ...
@@ -579,6 +611,7 @@ def _admitted_child_records(
                         work=branch.work,
                         observations=branch.observations,
                         outcome=branch.outcome,
+                        no_output_decision=branch.decision,
                     )
                 )
                 records.append(WorkRecord(work=branch.work, no_action_preview=preview))
@@ -598,6 +631,7 @@ class InMemoryWorkStore:
 
     def __init__(self) -> None:
         self._lock = threading.RLock()
+        self._observation_deliveries: dict[tuple[str, str, str], ObservationDeliveryRecord] = {}
         self._records: dict[str, WorkRecord] = {}
         self._selections: dict[str, ArtifactSelection] = {}
         self._branch_sets: dict[str, BranchSetPlan] = {}
@@ -607,6 +641,62 @@ class InMemoryWorkStore:
         self._target_source_edges: dict[tuple[str, str, str, str], OutputSourceEdge] = {}
         self._target_production_seals: dict[tuple[str, str], TargetProductionSealRecord] = {}
         self._target_settlement_seals: dict[tuple[str, str], TargetSettlementSealRecord] = {}
+
+    def ensure_observation_delivery(
+        self, record: ObservationDeliveryRecord
+    ) -> ObservationDeliveryRecord:
+        key = (record.owner_kind, record.owner_id, record.accepted.job_id)
+        with self._lock:
+            existing = self._observation_deliveries.get(key)
+            if existing is not None:
+                if existing.accepted != record.accepted:
+                    raise ValueError("observation invocation changed under its accepted identity")
+                return existing
+            self._observation_deliveries[key] = record
+            return record
+
+    def update_observation_delivery(
+        self,
+        owner_kind: ObservationOwnerKind,
+        owner_id: str,
+        job_id: str,
+        status: ObservationJobStatus,
+    ) -> ObservationDeliveryRecord:
+        key = (owner_kind, owner_id, job_id)
+        with self._lock:
+            record = updated_delivery(self._observation_deliveries[key], status)
+            self._observation_deliveries[key] = record
+            return record
+
+    def scan_observation_deliveries(
+        self,
+        owner_kind: ObservationOwnerKind,
+        owner_id: str,
+        *,
+        after_job_id: str = "",
+        incomplete_only: bool = False,
+        exclude_claim: tuple[str, int] | None = None,
+        limit: int = 100,
+    ) -> tuple[ObservationDeliveryRecord, ...]:
+        if not 1 <= limit <= 100:
+            raise ValueError("observation delivery page budget must be between 1 and 100")
+        with self._lock:
+            return tuple(
+                record
+                for (kind, owner, job), record in sorted(self._observation_deliveries.items())
+                if kind == owner_kind
+                and owner == owner_id
+                and job > after_job_id
+                and (
+                    not incomplete_only
+                    or record.status is None
+                    or record.status.state != "completed"
+                )
+                and (
+                    exclude_claim is None
+                    or (record.accepted.claim_id, record.accepted.fence) != exclude_claim
+                )
+            )[:limit]
 
     def load(self, work_id: str) -> WorkRecord | None:
         with self._lock:
@@ -1271,10 +1361,9 @@ class Stove0WorkService:
     ) -> WorkRecord:
         """Reset unsettled work under a newer Riverhog fencing generation.
 
-        Any observer or target execution authorized by the prior generation is
-        deliberately discarded. The immutable work identity is retained, while
-        planning and execution are repeated to obtain a new fence-bound output
-        intent. A finalized output from the stale generation can never be settled
+        Retain the immutable work and each admitted child's approved invocation.
+        Renew execution authority under the new fence and discard prior target
+        progress. A finalized output from the stale generation cannot be settled
         through this record.
         """
 
@@ -1301,8 +1390,6 @@ class Stove0WorkService:
             record,
             phase="claimed",
             claim=replacement,
-            observation_requests=(),
-            observation_results=(),
             workflow_plan=retained_workflow_plan,
             target_plan=None,
             controller_evidence=None,
@@ -1321,146 +1408,12 @@ class Stove0WorkService:
         *,
         expected_revision: int,
     ) -> WorkRecord:
-        """Advance work that requires no content observation."""
+        """Advance root work into retained compiled planning."""
 
         record = self._load(work_id, expected_revision)
         if record.phase not in {"claimed", "planning"}:
             raise Stove0StateError(f"work cannot begin planning from {record.phase}")
-        if record.observation_requests or record.observation_results:
-            raise Stove0StateError("observed work must complete its observation phase")
         return self._replace(record, phase="planning")
-
-    def begin_observations(
-        self,
-        work_id: str,
-        requests: Sequence[ContentObservationRequest],
-        *,
-        expected_revision: int,
-    ) -> WorkRecord:
-        record = self._load(work_id, expected_revision)
-        if record.phase not in {"claimed", "observing", "planning"} or record.claim is None:
-            raise Stove0StateError(f"work cannot begin observations from {record.phase}")
-        normalized = tuple(sorted(requests, key=lambda item: item.request_id))
-        if not normalized:
-            raise ValueError("observation phase requires at least one request")
-        if len({item.request_id for item in normalized}) != len(normalized):
-            raise ValueError("observation requests must be unique")
-        roots = {
-            (item.collection_id, item.archive_root_sha256, item.artifact_set_identity)
-            for item in record.work.inputs
-        }
-        for request in normalized:
-            if request.work_id != record.work_id:
-                raise ValueError("observation request does not bind the current work")
-            if any(
-                (
-                    subject.collection.collection_id,
-                    subject.collection.archive_root_sha256,
-                    subject.collection.artifact_set_identity,
-                )
-                not in roots
-                for subject in request.subjects
-            ):
-                raise ValueError("observation request references an input outside the work")
-        existing_ids = {item.request_id for item in record.observation_requests}
-        completed_ids = {item.request_id for item in record.observation_results}
-        if record.phase == "observing":
-            if record.observation_requests != normalized:
-                raise Stove0StateError("observation stage request set is already sealed")
-            combined = normalized
-        else:
-            if record.phase == "planning" and completed_ids != existing_ids:
-                raise Stove0StateError("prior observation stage is incomplete")
-            if existing_ids & {item.request_id for item in normalized}:
-                raise Stove0StateError("new observation stage repeats an accepted request")
-            combined = tuple(
-                sorted(
-                    (*record.observation_requests, *normalized), key=lambda item: item.request_id
-                )
-            )
-        return self._replace(
-            record,
-            phase="observing",
-            observation_requests=combined,
-        )
-
-    def record_observation(
-        self,
-        work_id: str,
-        result: ContentObservationResult,
-        *,
-        expected_revision: int,
-    ) -> WorkRecord:
-        record = self._load(work_id, expected_revision)
-        if record.phase != "observing":
-            raise Stove0StateError(f"work cannot record observations from {record.phase}")
-        requests = {item.request_id: item for item in record.observation_requests}
-        request = requests.get(result.request_id)
-        if request is None:
-            raise ValueError("observation result was not requested by this work")
-        results = {item.request_id: item for item in record.observation_results}
-        existing = results.get(result.request_id)
-        if existing is not None and existing != result:
-            raise Stove0StateError("observation result identity changed")
-        results[result.request_id] = result
-        normalized = tuple(results[key] for key in sorted(results))
-        if result.state == "inapplicable":
-            assert result.inapplicable is not None
-            return self._replace(
-                record,
-                phase="abandon_pending",
-                observation_results=normalized,
-                inapplicable=WorkInapplicable(
-                    code=result.inapplicable.code,
-                    message=result.inapplicable.message,
-                ),
-                abandon_outcome="inapplicable",
-            )
-        if result.state == "failed":
-            assert result.failure is not None
-            failure = WorkFailure(
-                code=result.failure.code,
-                message=result.failure.message,
-                retryable=result.failure.retryable,
-            )
-            return self._replace(
-                record,
-                phase="failed" if failure.retryable else "abandon_pending",
-                observation_results=normalized,
-                failure=failure,
-                abandon_outcome=None if failure.retryable else "failed",
-            )
-        if result.state == "canceled":
-            return self._replace(
-                record,
-                phase="abandon_pending",
-                observation_results=normalized,
-                abandon_outcome="canceled",
-            )
-        phase: WorkPhase = "planning" if set(results) == set(requests) else "observing"
-        return self._replace(record, phase=phase, observation_results=normalized)
-
-    def seal_workflow_plan(
-        self,
-        work_id: str,
-        plan: WorkflowPlan,
-        *,
-        expected_revision: int,
-    ) -> WorkRecord:
-        record = self._load(work_id, expected_revision)
-        if record.phase not in {"planning", "target_preflight"}:
-            raise Stove0StateError(f"work cannot seal a workflow plan from {record.phase}")
-        requests = tuple(item.request for item in plan.observations)
-        results = tuple(item.result for item in plan.observations)
-        if (
-            plan.work != record.work
-            or requests != record.observation_requests
-            or results != record.observation_results
-        ):
-            raise ValueError("workflow plan differs from the work or accepted observations")
-        if record.workflow_plan is not None and record.workflow_plan != plan:
-            raise Stove0StateError("workflow plan is already sealed")
-        return self._replace(record, phase="target_preflight", workflow_plan=plan)
 
     def seal_target_plan(
         self,
@@ -1760,8 +1713,6 @@ class Stove0WorkService:
             record,
             phase="claimed",
             claim=replacement,
-            observation_requests=(),
-            observation_results=(),
             workflow_plan=retained_workflow_plan,
             target_plan=None,
             controller_evidence=None,
@@ -1815,7 +1766,6 @@ class Stove0WorkService:
         record = self._load(work_id, expected_revision)
         if record.phase not in {
             "claimed",
-            "observing",
             "planning",
             "target_preflight",
             "coordinating",
@@ -1843,14 +1793,8 @@ class Stove0WorkService:
             raise Stove0StateError(f"work cannot resolve no action from {record.phase}")
         if preview.state != "no_action" or preview.work != record.work:
             raise ValueError("no-action preview differs from the planned work")
-        evidence = tuple(
-            ContentObservationEvidence(request=request, result=result)
-            for request, result in zip(
-                record.observation_requests, record.observation_results, strict=True
-            )
-        )
-        if preview.observations != evidence:
-            raise ValueError("no-action preview differs from the recorded observations")
+        if preview.no_output_decision is None:
+            raise ValueError("no-action preview lacks its exact indexed compiled decision")
         if record.no_action_preview is not None and record.no_action_preview != preview:
             raise ValueError("accepted no-action preview changed before execution")
         return self._replace(

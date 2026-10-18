@@ -516,7 +516,9 @@ def test_documentation_examples_bind_exact_subjects_without_changing_contract_bo
     explanation = "This example links the exact pattern; it adds no new rule."
     guide = "Read the pattern, then check its owning source and qualification evidence."
     documentation = {
-        "format": "riverhog-contract-documentation-record/v2",
+        "format": "riverhog-contract-documentation-record/v3",
+        "compiled": None,
+        "requirements": None,
         "closure_sha256": canonical_sha256(selected),
         "release_scope": "v1 candidate fixture",
         "build_scope": "unit fixture",

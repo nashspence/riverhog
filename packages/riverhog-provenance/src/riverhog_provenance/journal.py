@@ -10,9 +10,19 @@ from __future__ import annotations
 import copy
 import hashlib
 from collections.abc import Iterable, Iterator, Mapping, Sequence, Set
-from dataclasses import dataclass
-from typing import Any, BinaryIO, cast
+from contextlib import ExitStack
+from dataclasses import dataclass, field, replace
+from typing import TYPE_CHECKING, Any, BinaryIO, Self, cast
 
+from riverhog_growth_contracts import (
+    COUNT,
+    OCTETS,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    declare_growth,
+)
 from riverhog_provenance_contracts import (
     ENTRY_SCHEMA,
     PROFILE,
@@ -31,8 +41,10 @@ from .graph import (
     _acyclic,
     graph_from_assertions,
     iter_assertions,
-    time_ns,
 )
+
+if TYPE_CHECKING:
+    from .journal_store import JournalStore
 
 RS, LF = b"\x1e", b"\n"
 
@@ -152,6 +164,90 @@ class JournalSummary:
     journal_sha256: str
     journal_bytes: int
     assertion_entries: Mapping[str, dict[str, str]]
+    _store: JournalStore | None = field(default=None, init=False, repr=False, compare=False)
+
+    def close(self) -> None:
+        """Release this owned handle; its views borrow the same handle's lifetime."""
+        if self._store is not None:
+            self._store.close()
+
+    def __enter__(self) -> Self:
+        if self._store is not None:
+            self._store.require_open()
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        self.close()
+
+    @declare_growth(
+        Declaration(
+            id="riverhog-provenance.frozen-summary-borrow.growth/v1",
+            authority="riverhog-provenance",
+            subjects=("riverhog_provenance.journal.JournalSummary.borrow",),
+            scope="frozen-snapshot-reader-lease",
+            starts_at="borrow an open independently validated frozen summary",
+            ends_at="return one independently closeable handle sharing its exact projection",
+            dimensions=(
+                Dimension("snapshot_octets", OCTETS, "Exact octets validated by the snapshot."),
+            ),
+            bounds=(
+                Bound(
+                    "returned_handles",
+                    COUNT,
+                    "equal",
+                    Expression("constant", value=1, unit=COUNT),
+                    "One new independently closeable summary is returned.",
+                ),
+                Bound(
+                    "sql_statements",
+                    COUNT,
+                    "equal",
+                    Expression("constant", value=0, unit=COUNT),
+                    "Borrowing performs no SQLite statement or snapshot scan.",
+                ),
+                Bound(
+                    "opened_databases",
+                    COUNT,
+                    "equal",
+                    Expression("constant", value=0, unit=COUNT),
+                    "Borrowing retains the existing frozen projection instead of opening a copy.",
+                ),
+            ),
+            conditions=("The input owns an open frozen native journal projection.",),
+            invariants=(
+                "Exact journal bytes, commitments and semantic facts are shared unchanged.",
+                "Closing this lease cannot invalidate a different live owner's lease.",
+            ),
+            limitations=(
+                "This primitive profile excludes validation, caller traversal and materialization.",
+                "Final-owner disposal and filesystem work require separate accounting; "
+                "cleanup is not claimed constant-time.",
+                "Lock wait and physical CPU time are observations, not primitive statement counts.",
+            ),
+        )
+    )
+    def borrow(self) -> JournalSummary:
+        """Return an independently closeable handle to this exact frozen snapshot.
+
+        A reader may close its handle without invalidating another owner. Iterators
+        borrow their handle; closing an iterator never closes the snapshot.
+        """
+        if self._store is None:
+            return replace(self)
+        store = self._store.borrow()
+        try:
+            summary = replace(
+                self,
+                frames=store.frames,
+                graph_validation=store.graph_validation,
+                retracted_assertion_ids=store.retired,
+                assertion_entries=store.origins,
+            )
+            object.__setattr__(summary, "_store", store)
+            return summary
+        except BaseException:
+            store.close()
+            raise
 
     @property
     def tail(self) -> JournalFrame:
@@ -201,87 +297,45 @@ def validate_journal_chunks(
     expected_anchor: Mapping[str, Any] | None = None,
     require_exact_tail: bool = False,
 ) -> JournalSummary:
+    from uuid import uuid4
+
+    from ._journal_prefix import JournalPrefix
     from .journal_store import JournalStore
 
     selected = catalog or ContractCatalog()
     store = JournalStore()
-    journal_id: str | None = None
-    previous: JournalFrame | None = None
-    prefix = hashlib.sha256()
-    byte_count = 0
-    matched_anchor = False
     try:
-        for sequence, frame in enumerate(iter_journal_frames(chunks)):
-            document = frame.document
-            try:
-                selected.validate(ENTRY_SCHEMA, document)
-                time_ns(document["recorded_at"])
-            except (ValueError, TypeError) as exc:
-                raise ProvenanceValidationError(f"entry {sequence}: {exc}") from exc
-            if int(document["sequence"]) != sequence:
-                raise ProvenanceValidationError("noncontiguous journal sequence")
-            if journal_id is None:
-                journal_id = document["journal_id"]
-                if (
-                    document["entry_kind"] != "journal_init"
-                    or document["body"]["journal"]["id"] != journal_id
-                ):
-                    raise ProvenanceValidationError("first entry must initialize this journal")
-                parent = document["body"]["journal"].get("forked_from")
-                if parent and parent["journal_id"] == journal_id:
-                    raise ProvenanceValidationError(
-                        "independent journal fork requires a distinct journal identity"
-                    )
-            else:
-                if document["journal_id"] != journal_id or document["entry_kind"] == "journal_init":
-                    raise ProvenanceValidationError("journal identity or initialization changed")
-                if previous is None or document["previous_entry"] != previous.reference:
-                    raise ProvenanceValidationError(
-                        "predecessor does not match exact previous JSON text"
-                    )
-            if document["entry_kind"] == "checkpoint":
-                body = document["body"]
-                if previous is None or body["covered_through"] != previous.reference:
-                    raise ProvenanceValidationError(
-                        "checkpoint must cover the immediately preceding entry"
-                    )
-                if (
-                    body["prefix_sha256"] != prefix.hexdigest()
-                    or int(body["prefix_bytes"]) != byte_count
-                ):
-                    raise ProvenanceValidationError("checkpoint prefix commitment mismatch")
-            store.accept(document, frame, catalog=selected, require_profiles=require_profiles)
-            previous = frame
-            prefix.update(frame.encoded)
-            byte_count += len(frame.encoded)
-            if expected_anchor and document["id"] == expected_anchor["through"]["entry_id"]:
-                candidate = {
-                    "journal_id": journal_id,
-                    "through": frame.reference,
-                    "prefix_sha256": prefix.hexdigest(),
-                    "prefix_bytes": str(byte_count),
-                }
-                if candidate != dict(expected_anchor):
-                    raise ProvenanceValidationError("externally supplied prefix anchor mismatch")
-                matched_anchor = True
-        if previous is None or journal_id is None:
-            raise ProvenanceValidationError("journal is empty")
-        if expected_anchor and not matched_anchor:
-            raise ProvenanceValidationError("journal does not contain the expected anchored prefix")
-        if require_exact_tail and (
-            expected_anchor is None or previous.reference != expected_anchor["through"]
-        ):
-            raise ProvenanceValidationError("an exact tail anchor was required")
+        attempt = uuid4().hex
+        prefix = JournalPrefix(
+            store.db,
+            attempt_id=attempt,
+            source_binding="disposable-stream:" + attempt,
+            catalog=selected,
+            require_profiles=require_profiles,
+            expected_anchor=expected_anchor,
+            require_exact_tail=require_exact_tail,
+        )
+        prefix.initialize()
+        for frame in iter_journal_frames(chunks):
+            prepared = prefix.prepare(frame, selected)
+            store.accept(
+                prepared.document, frame, catalog=selected, require_profiles=require_profiles
+            )
+            state = prefix.commit(prepared)
+            store.frame_count = state.frame_count
+        state = prefix.finish()
         store.freeze()
-        return JournalSummary(
-            journal_id,
+        summary = JournalSummary(
+            cast(str, state.journal_id),
             store.frames,
             store.graph_validation,
             store.retired,
-            prefix.hexdigest(),
-            byte_count,
+            state.hexdigest,
+            state.byte_count,
             store.origins,
         )
+        object.__setattr__(summary, "_store", store)
+        return summary
     except BaseException:
         store.close()
         raise
@@ -355,7 +409,7 @@ def create_journal(
         entry_id=entry_id,
     )
     raw = encode_entry(document, catalog=catalog)
-    validate_journal(raw, catalog=catalog)
+    validate_journal(raw, catalog=catalog).close()
     return raw
 
 
@@ -369,23 +423,23 @@ def _append(
     recorded_at: str | None,
     catalog: ContractCatalog | None,
 ) -> bytes:
-    summary = validate_journal(raw, catalog=catalog)
-    if expected_tail is not None and dict(expected_tail) != summary.tail.reference:
-        raise ConcurrentJournalChangeError(
-            "expected predecessor differs from supplied journal tail"
+    with validate_journal(raw, catalog=catalog) as summary:
+        if expected_tail is not None and dict(expected_tail) != summary.tail.reference:
+            raise ConcurrentJournalChangeError(
+                "expected predecessor differs from supplied journal tail"
+            )
+        document = _entry(
+            journal_id=summary.journal_id,
+            recorder_id=recorded_by_agent_id,
+            kind=kind,
+            body=body,
+            sequence=len(summary.frames),
+            previous=summary.tail.reference,
+            recorded_at=recorded_at,
         )
-    document = _entry(
-        journal_id=summary.journal_id,
-        recorder_id=recorded_by_agent_id,
-        kind=kind,
-        body=body,
-        sequence=len(summary.frames),
-        previous=summary.tail.reference,
-        recorded_at=recorded_at,
-    )
-    appended = raw + encode_entry(document, catalog=catalog)
-    validate_journal(appended, catalog=catalog)
-    return appended
+        appended = raw + encode_entry(document, catalog=catalog)
+        validate_journal(appended, catalog=catalog).close()
+        return appended
 
 
 def append_assertions(
@@ -417,14 +471,15 @@ def _assertion_batch_entries(
     recorded_at: str | None,
     entry_ids: Iterable[str] | None,
 ) -> Iterator[bytes]:
-    summary = validate_journal(raw, catalog=catalog)
-    previous = summary.tail.reference
-    sequence = len(summary.frames)
+    with validate_journal(raw, catalog=catalog) as summary:
+        previous = summary.tail.reference
+        sequence = len(summary.frames)
+        journal_id = summary.journal_id
     identities = None if entry_ids is None else iter(entry_ids)
     yield raw
     for assertions in batches:
         document = _entry(
-            journal_id=summary.journal_id,
+            journal_id=journal_id,
             recorder_id=recorded_by_agent_id,
             kind="assertion",
             body={"assertions": dict(assertions)},
@@ -472,7 +527,11 @@ def write_assertion_batches(
     summary = validate_journal_chunks(
         iter(lambda: destination.read(1024 * 1024), b""), catalog=catalog
     )
-    destination.seek(0)
+    try:
+        destination.seek(0)
+    except BaseException:
+        summary.close()
+        raise
     return summary
 
 
@@ -496,7 +555,7 @@ def append_assertion_batches(
             entry_ids=entry_ids,
         )
     )
-    validate_journal(result, catalog=catalog)
+    validate_journal(result, catalog=catalog).close()
     return result
 
 
@@ -528,21 +587,21 @@ def append_correction(
 def append_checkpoint(
     raw: bytes, *, recorded_by_agent_id: str, purpose: str, catalog: ContractCatalog | None = None
 ) -> bytes:
-    summary = validate_journal(raw, catalog=catalog)
-    return _append(
-        raw,
-        {
-            "covered_through": summary.tail.reference,
-            "prefix_sha256": summary.journal_sha256,
-            "prefix_bytes": str(summary.journal_bytes),
-            "purpose": purpose,
-        },
-        kind="checkpoint",
-        recorded_by_agent_id=recorded_by_agent_id,
-        expected_tail=summary.tail.reference,
-        recorded_at=None,
-        catalog=catalog,
-    )
+    with validate_journal(raw, catalog=catalog) as summary:
+        return _append(
+            raw,
+            {
+                "covered_through": summary.tail.reference,
+                "prefix_sha256": summary.journal_sha256,
+                "prefix_bytes": str(summary.journal_bytes),
+                "purpose": purpose,
+            },
+            kind="checkpoint",
+            recorded_by_agent_id=recorded_by_agent_id,
+            expected_tail=summary.tail.reference,
+            recorded_at=None,
+            catalog=catalog,
+        )
 
 
 def assertion_reference(summary: JournalSummary, assertion_id: str) -> dict[str, Any]:
@@ -569,6 +628,22 @@ class JournalSetValidation:
     unresolved_references: tuple[dict[str, Any], ...]
     findings: tuple[str, ...]
 
+    def close(self) -> None:
+        for journal in self.journals:
+            journal.close()
+
+    def __enter__(self) -> Self:
+        try:
+            for journal in self.journals:
+                journal.__enter__()
+        except BaseException:
+            self.close()
+            raise
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        self.close()
+
 
 def validate_journal_set(
     journals: Iterable[bytes],
@@ -593,146 +668,161 @@ def validate_journal_set_chunks(
     require_profiles: bool = True,
 ) -> JournalSetValidation:
     """Resolve exact foreign assertions; do not silently import effective graphs."""
-    summaries: dict[str, JournalSummary] = {}
-    for chunks in journals:
-        journal = validate_journal_chunks(
-            chunks, catalog=catalog, require_profiles=require_profiles
-        )
-        old = summaries.get(journal.journal_id)
-        if old:
-            short, long = sorted((old, journal), key=lambda item: len(item.frames))
-            if short.frames != long.frames[: len(short.frames)]:
-                raise ProvenanceValidationError(
-                    "divergent writers reused the same journal identity"
-                )
-            summaries[journal.journal_id] = long
-        else:
-            summaries[journal.journal_id] = journal
-    # Identity immutability applies to the full supplied documentary history,
-    # including retired statements, not only its effective graph.
-    assertion_history: dict[str, bytes] = {}
-    referent_history: dict[str, bytes] = {}
-    entry_history: dict[str, bytes] = {}
-    for summary in summaries.values():
-        for frame in summary.frames:
-            entry_id = frame.document["id"]
-            old_entry = entry_history.setdefault(entry_id, frame.json_bytes)
-            if old_entry != frame.json_bytes:
-                raise ProvenanceValidationError("entry identity reused across journals")
-            for _, row in iter_assertions(_body_assertions(frame.document)):
-                value = canonical_document(row)
-                prior = assertion_history.setdefault(row["assertion_id"], value)
-                if prior != value:
-                    raise ProvenanceValidationError("assertion identity redefined across journals")
-                signature = _identity_signature(row)
-                previous = referent_history.setdefault(row["id"], signature)
-                if previous != signature:
-                    raise ProvenanceValidationError(
-                        "immutable referent redefined across documentary histories"
-                    )
-    domains = [set(summaries), set(entry_history), set(assertion_history), set(referent_history)]
-    if any(left & right for i, left in enumerate(domains) for right in domains[i + 1 :]):
-        raise ProvenanceValidationError(
-            "journal/entry/assertion/referent identity domains overlap across journals"
-        )
-    unresolved: list[dict[str, Any]] = []
-    findings: list[str] = []
-    resolved: dict[bytes, dict[str, Any]] = {}
-    derivations: list[tuple[str, str]] = []
-    specializations: list[tuple[str, str]] = []
-    signatures: dict[str, bytes] = {}
-    for summary in summaries.values():
-        for row in summary.graph_validation.objects.values():
-            signature = _identity_signature(row)
-            if row["id"] in signatures and signatures[row["id"]] != signature:
-                raise ProvenanceValidationError(
-                    "conflicting immutable entity definitions across journals"
-                )
-            signatures[row["id"]] = signature
-            if row["type"] == "derivation":
-                derivations.append(
-                    (row["used_state"]["object_id"], row["generated_state"]["object_id"])
-                )
-            elif row["type"] == "specialization":
-                specializations.append((row["specific"]["object_id"], row["general"]["object_id"]))
-        for reference in summary.graph_validation.external_references:
-            target = summaries.get(reference["journal_id"])
-            if target is None:
-                unresolved.append(reference)
-                continue
-            matches = [f for f in target.frames if f.reference == reference["entry"]]
-            if len(matches) != 1:
-                raise ProvenanceValidationError("foreign entry anchor is not present exactly")
-            rows = [
-                row
-                for _, row in iter_assertions(_body_assertions(matches[0].document))
-                if row["assertion_id"] == reference["assertion_id"]
-            ]
-            if (
-                len(rows) != 1
-                or rows[0]["id"] != reference["object_id"]
-                or rows[0]["type"] != reference["object_type"]
-            ):
-                raise ProvenanceValidationError(
-                    "foreign reference does not match the anchored assertion"
-                )
-            resolved[canonical_document(reference)] = rows[0]
-            if reference["assertion_id"] in target.retracted_assertion_ids:
-                findings.append(
-                    f"{reference['assertion_id']}: referenced historical assertion is retracted "
-                    "at supplied foreign tail"
-                )
-        parent = summary.frames[0].document["body"]["journal"].get("forked_from")
-        if parent:
-            target = summaries.get(parent["journal_id"])
-            if target is None:
-                if require_all_references:
-                    raise ProvenanceValidationError("fork prefix anchor could not be resolved")
-                findings.append("unresolved journal fork prefix anchor")
-            else:
-                validate_journal_chunks(
-                    (frame.encoded for frame in target.frames),
-                    catalog=catalog,
-                    expected_anchor=parent,
-                    require_profiles=require_profiles,
-                )
-    if unresolved and require_all_references:
-        raise ProvenanceValidationError("unresolved external journal references")
-    for summary in summaries.values():
-        objects = summary.graph_validation.objects
-        for row in objects.values():
-            if row["type"] != "content_comparison":
-                continue
-            descriptions = []
-            for key in ("left_description", "right_description"):
-                ref = row[key]
-                descriptions.append(
-                    objects.get(ref["object_id"])
-                    if ref["scope"] == "local"
-                    else resolved.get(canonical_document(ref))
-                )
-            if any(item is None for item in descriptions):
-                continue
-            if any(item is None or "content" not in item for item in descriptions):
-                if row["result"] != "indeterminate":
-                    raise ProvenanceValidationError(
-                        "resolved comparison lacks complete cited fixity"
-                    )
-                continue
-            left_description, right_description = descriptions
-            assert left_description is not None and right_description is not None
-            same = fingerprint(left_description["content"]) == fingerprint(
-                right_description["content"]
+    with ExitStack() as owners:
+        summaries: dict[str, JournalSummary] = {}
+        for chunks in journals:
+            journal = validate_journal_chunks(
+                chunks, catalog=catalog, require_profiles=require_profiles
             )
-            if (row["result"] == "matching_fixity" and not same) or (
-                row["result"] == "different" and same
-            ):
-                raise ProvenanceValidationError(
-                    "comparison contradicts resolved foreign content evidence"
+            owners.enter_context(journal)
+            old = summaries.get(journal.journal_id)
+            if old:
+                short, long = sorted((old, journal), key=lambda item: len(item.frames))
+                if short.frames != long.frames[: len(short.frames)]:
+                    raise ProvenanceValidationError(
+                        "divergent writers reused the same journal identity"
+                    )
+                short.close()
+                summaries[journal.journal_id] = long
+            else:
+                summaries[journal.journal_id] = journal
+        # Identity immutability applies to the full supplied documentary history,
+        # including retired statements, not only its effective graph.
+        assertion_history: dict[str, bytes] = {}
+        referent_history: dict[str, bytes] = {}
+        entry_history: dict[str, bytes] = {}
+        for summary in summaries.values():
+            for frame in summary.frames:
+                entry_id = frame.document["id"]
+                old_entry = entry_history.setdefault(entry_id, frame.json_bytes)
+                if old_entry != frame.json_bytes:
+                    raise ProvenanceValidationError("entry identity reused across journals")
+                for _, row in iter_assertions(_body_assertions(frame.document)):
+                    value = canonical_document(row)
+                    prior = assertion_history.setdefault(row["assertion_id"], value)
+                    if prior != value:
+                        raise ProvenanceValidationError(
+                            "assertion identity redefined across journals"
+                        )
+                    signature = _identity_signature(row)
+                    previous = referent_history.setdefault(row["id"], signature)
+                    if previous != signature:
+                        raise ProvenanceValidationError(
+                            "immutable referent redefined across documentary histories"
+                        )
+        domains = [
+            set(summaries),
+            set(entry_history),
+            set(assertion_history),
+            set(referent_history),
+        ]
+        if any(left & right for i, left in enumerate(domains) for right in domains[i + 1 :]):
+            raise ProvenanceValidationError(
+                "journal/entry/assertion/referent identity domains overlap across journals"
+            )
+        unresolved: list[dict[str, Any]] = []
+        findings: list[str] = []
+        resolved: dict[bytes, dict[str, Any]] = {}
+        derivations: list[tuple[str, str]] = []
+        specializations: list[tuple[str, str]] = []
+        signatures: dict[str, bytes] = {}
+        for summary in summaries.values():
+            for row in summary.graph_validation.objects.values():
+                signature = _identity_signature(row)
+                if row["id"] in signatures and signatures[row["id"]] != signature:
+                    raise ProvenanceValidationError(
+                        "conflicting immutable entity definitions across journals"
+                    )
+                signatures[row["id"]] = signature
+                if row["type"] == "derivation":
+                    derivations.append(
+                        (row["used_state"]["object_id"], row["generated_state"]["object_id"])
+                    )
+                elif row["type"] == "specialization":
+                    specializations.append(
+                        (row["specific"]["object_id"], row["general"]["object_id"])
+                    )
+            for reference in summary.graph_validation.external_references:
+                target = summaries.get(reference["journal_id"])
+                if target is None:
+                    unresolved.append(reference)
+                    continue
+                matches = [f for f in target.frames if f.reference == reference["entry"]]
+                if len(matches) != 1:
+                    raise ProvenanceValidationError("foreign entry anchor is not present exactly")
+                rows = [
+                    row
+                    for _, row in iter_assertions(_body_assertions(matches[0].document))
+                    if row["assertion_id"] == reference["assertion_id"]
+                ]
+                if (
+                    len(rows) != 1
+                    or rows[0]["id"] != reference["object_id"]
+                    or rows[0]["type"] != reference["object_type"]
+                ):
+                    raise ProvenanceValidationError(
+                        "foreign reference does not match the anchored assertion"
+                    )
+                resolved[canonical_document(reference)] = rows[0]
+                if reference["assertion_id"] in target.retracted_assertion_ids:
+                    findings.append(
+                        f"{reference['assertion_id']}: referenced historical assertion "
+                        "is retracted "
+                        "at supplied foreign tail"
+                    )
+            parent = summary.frames[0].document["body"]["journal"].get("forked_from")
+            if parent:
+                target = summaries.get(parent["journal_id"])
+                if target is None:
+                    if require_all_references:
+                        raise ProvenanceValidationError("fork prefix anchor could not be resolved")
+                    findings.append("unresolved journal fork prefix anchor")
+                else:
+                    validate_journal_chunks(
+                        (frame.encoded for frame in target.frames),
+                        catalog=catalog,
+                        expected_anchor=parent,
+                        require_profiles=require_profiles,
+                    ).close()
+        if unresolved and require_all_references:
+            raise ProvenanceValidationError("unresolved external journal references")
+        for summary in summaries.values():
+            objects = summary.graph_validation.objects
+            for row in objects.values():
+                if row["type"] != "content_comparison":
+                    continue
+                descriptions = []
+                for key in ("left_description", "right_description"):
+                    ref = row[key]
+                    descriptions.append(
+                        objects.get(ref["object_id"])
+                        if ref["scope"] == "local"
+                        else resolved.get(canonical_document(ref))
+                    )
+                if any(item is None for item in descriptions):
+                    continue
+                if any(item is None or "content" not in item for item in descriptions):
+                    if row["result"] != "indeterminate":
+                        raise ProvenanceValidationError(
+                            "resolved comparison lacks complete cited fixity"
+                        )
+                    continue
+                left_description, right_description = descriptions
+                assert left_description is not None and right_description is not None
+                same = fingerprint(left_description["content"]) == fingerprint(
+                    right_description["content"]
                 )
-    _acyclic(derivations, "cross-journal derivation")
-    _acyclic(specializations, "cross-journal specialization")
-    return JournalSetValidation(tuple(summaries.values()), tuple(unresolved), tuple(findings))
+                if (row["result"] == "matching_fixity" and not same) or (
+                    row["result"] == "different" and same
+                ):
+                    raise ProvenanceValidationError(
+                        "comparison contradicts resolved foreign content evidence"
+                    )
+        _acyclic(derivations, "cross-journal derivation")
+        _acyclic(specializations, "cross-journal specialization")
+        result = JournalSetValidation(tuple(summaries.values()), tuple(unresolved), tuple(findings))
+        owners.pop_all()
+        return result
 
 
 @dataclass(frozen=True, slots=True)
@@ -751,11 +841,16 @@ def recover_complete_prefix(
         raise ProvenanceValidationError("no complete journal prefix")
     prefix, tail = raw[: last_lf + 1], raw[last_lf + 1 :]
     summary = validate_journal(prefix, catalog=catalog)
-    if tail and (not tail.startswith(RS) or RS in tail[1:]):
-        raise ProvenanceValidationError("tail is not one incomplete RFC 7464 frame")
-    if len(tail) > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 1:
-        raise ProvenanceValidationError("incomplete tail exceeds the frame limit")
-    return RecoveryResult(prefix, tail, summary)
+    try:
+        if tail and (not tail.startswith(RS) or RS in tail[1:]):
+            raise ProvenanceValidationError("tail is not one incomplete RFC 7464 frame")
+        if len(tail) > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 1:
+            raise ProvenanceValidationError("incomplete tail exceeds the frame limit")
+        return RecoveryResult(prefix, tail, summary)
+
+    except BaseException:
+        summary.close()
+        raise
 
 
 def append_observation(
@@ -774,29 +869,29 @@ def append_observation(
 
     if not isinstance(result, ObservationResult):
         raise TypeError("result must be an ObservationResult")
-    summary = validate_journal(raw, catalog=catalog)
-    existing = summary.graph_validation.objects
-    retained: list[tuple[str, dict[str, Any]]] = []
-    for category, row in iter_assertions(result.graph_fragment()):
-        old = existing.get(row["id"])
-        if old is None:
-            retained.append((category, row))
-        elif row["type"] in IDENTITY_TYPES:
-            left = {k: v for k, v in row.items() if k != "assertion_id"}
-            right = {k: v for k, v in old.items() if k != "assertion_id"}
-            if left != right:
+    with validate_journal(raw, catalog=catalog) as summary:
+        existing = summary.graph_validation.objects
+        retained: list[tuple[str, dict[str, Any]]] = []
+        for category, row in iter_assertions(result.graph_fragment()):
+            old = existing.get(row["id"])
+            if old is None:
+                retained.append((category, row))
+            elif row["type"] in IDENTITY_TYPES:
+                left = {k: v for k, v in row.items() if k != "assertion_id"}
+                right = {k: v for k, v in old.items() if k != "assertion_id"}
+                if left != right:
+                    raise ProvenanceValidationError(
+                        "identity descriptions differ; an explicit correction or new identity "
+                        "is required"
+                    )
+            else:
                 raise ProvenanceValidationError(
-                    "identity descriptions differ; an explicit correction or new identity "
-                    "is required"
+                    "observation result reuses an existing non-identity object"
                 )
-        else:
-            raise ProvenanceValidationError(
-                "observation result reuses an existing non-identity object"
-            )
-    return append_assertions(
-        raw,
-        graph_from_assertions(retained),
-        recorded_by_agent_id=result.observer_agent_id,
-        expected_tail=expected_tail,
-        catalog=catalog,
-    )
+        return append_assertions(
+            raw,
+            graph_from_assertions(retained),
+            recorded_by_agent_id=result.observer_agent_id,
+            expected_tail=expected_tail,
+            catalog=catalog,
+        )

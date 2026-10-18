@@ -102,6 +102,7 @@ class FakeApi:
             ],
         )
         self.selected: list[tuple[int, str]] = []
+        self.plan_options: list[dict[str, object]] = []
         self.acknowledged: list[str] = []
 
     def __enter__(self) -> FakeApi:
@@ -215,6 +216,7 @@ class FakeApi:
 
     def plan_retrieval(self, artifacts: list[tuple[int, str]], **_kwargs: object) -> dict[str, Any]:
         self.selected = sorted(artifacts)
+        self.plan_options.append(_kwargs)
         return {
             "id": "plan-1",
             "etag": "f" * 64,
@@ -301,6 +303,37 @@ def test_local_state_baseline_rejects_previous_path_schema(
         columns = {row["name"] for row in db.execute("PRAGMA table_info(desired_artifacts)")}
         assert "artifact_id" in columns
         assert "path" not in columns
+
+
+def test_local_sync_and_repair_forward_archive_source_for_new_plans(
+    local_root: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    artifact = "1" * 64
+    api = FakeApi({artifact: b"payload"}, {artifact: None})
+    monkeypatch.setattr(local, "ApiClient", lambda: api)
+    runner = CliRunner()
+    assert runner.invoke(local.local_app, ["add", "1"]).exit_code == 0
+    synced = runner.invoke(
+        local.local_app,
+        [
+            "sync",
+            "--source-store",
+            "cold",
+            "--restore-policy",
+            "never",
+            "--json",
+        ],
+    )
+    assert synced.exit_code == 0, synced.exception
+    assert api.plan_options[-1]["source_store"] == "cold"
+    assert api.plan_options[-1]["restore_policy"] == "never"
+    destination = local_root / f"1/artifacts/{artifact[:2]}/{artifact}"
+    destination.write_bytes(b"modified")
+    repaired = runner.invoke(local.local_app, ["repair", "--source-store", "warm", "--json"])
+    assert repaired.exit_code == 0, repaired.exception
+    assert api.plan_options[-1]["source_store"] == "warm"
+    assert destination.read_bytes() == b"payload"
 
 
 def test_local_sync_materializes_exact_hint_and_complete_provenance(

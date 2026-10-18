@@ -6,11 +6,13 @@ from typing import Any, cast
 
 import pytest
 from a_stove0_filename_prefix_sidecar_evidence_contract_lib import (
+    FILENAME_INTERFACE,
     FILENAME_OBSERVER_CONTRACT,
     validate_filename_facts,
 )
 from a_stove0_filename_prefix_sidecar_observer import FilenamePrefixSidecarObserver
 from a_stove0_riverhog_provenance_evidence_contract_lib import (
+    CORE_PROVENANCE_INTERFACE,
     CORE_PROVENANCE_OBSERVER_CONTRACT,
 )
 from a_stove0_riverhog_provenance_observer import extract_core_facts
@@ -29,7 +31,6 @@ from stove0_observer_protocol import (
     CollectionRootIdentityRef,
     ContentObservationEvidence,
     ContentObservationRequest,
-    ContentObservationRequestPayload,
     ObservationEvidenceSlot,
     ObserverContractSupport,
     ObserverDescriptor,
@@ -38,6 +39,7 @@ from stove0_observer_protocol import (
 )
 from stove0_observer_support import ContentObservationResultBuilder, ContentObservationRuntime
 
+from tests.stove0_observation_fixtures import accepted_input, observation_payload
 from tests.support.member_history import member_history_fixture
 
 _VIEW = "urn:uuid:11111111-1111-4111-8111-111111111111"
@@ -131,7 +133,9 @@ def _request(
 ) -> ContentObservationRequest:
     contract = CORE_PROVENANCE_OBSERVER_CONTRACT if core else FILENAME_OBSERVER_CONTRACT
     return ContentObservationRequest.seal(
-        ContentObservationRequestPayload(
+        observation_payload(
+            contract=contract,
+            interface=CORE_PROVENANCE_INTERFACE if core else FILENAME_INTERFACE,
             work_id="a" * 64,
             observer_registration_id="core" if core else "filename",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -155,7 +159,11 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
             implementation_version="test",
             source_revision="test",
             image_id="sha256:" + "e" * 64,
-            contracts=(ObserverContractSupport.from_contract(CORE_PROVENANCE_OBSERVER_CONTRACT),),
+            contracts=(
+                ObserverContractSupport.from_contract(
+                    CORE_PROVENANCE_OBSERVER_CONTRACT, interfaces=(CORE_PROVENANCE_INTERFACE.ref,)
+                ),
+            ),
         )
     )
     core_request = _request(
@@ -165,6 +173,9 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
         {"artifacts": [primary_fact, sidecar_fact]}
     )
     evidence = ContentObservationEvidence(request=core_request, result=core_result)
+    forwarded = accepted_input(
+        evidence, contract=CORE_PROVENANCE_OBSERVER_CONTRACT, interface=CORE_PROVENANCE_INTERFACE
+    )
     observer = FilenamePrefixSidecarObserver(image_id="sha256:" + "f" * 64)
     request = _request(
         subjects=subjects,
@@ -178,13 +189,12 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
         evidence_slots=(
             ObservationEvidenceSlot(
                 slot="core",
-                request_id=core_request.request_id,
-                result_sha256=core_result.result_sha256,
+                accepted_input_sha256=forwarded.authority.input_sha256,
                 observer_contract_id=CORE_PROVENANCE_OBSERVER_CONTRACT.id,
             ),
         ),
     )
-    runtime = SimpleNamespace(open_evidence=lambda slot: evidence)
+    runtime = SimpleNamespace(open_evidence=lambda slot: forwarded)
     result = observer.observe(request, cast(ContentObservationRuntime, runtime))
     assert result.state == "observed"
     assert result.facts is not None
@@ -192,7 +202,10 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
     assert [(row.primary_id, row.sidecar_id, row.rule) for row in accepted.candidates] == [
         (primary.id, sidecar.id, "stem")
     ]
-    assert accepted.provenance_results[0].result_sha256 == core_result.result_sha256
+    assert accepted.provenance_inputs[0].accepted_input_sha256 == forwarded.authority.input_sha256
+    assert (
+        next(forwarded.records("artifacts")).support[0].result_sha256 == core_result.result_sha256
+    )
 
     forged_support = accepted.model_dump(mode="json")
     forged_support["candidates"][0]["support"] = forged_support["candidates"][0]["support"][:1]
@@ -204,6 +217,11 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
         {"artifacts": [primary_fact, missing_fact]}
     )
     missing_evidence = ContentObservationEvidence(request=core_request, result=missing_result)
+    missing_forwarded = accepted_input(
+        missing_evidence,
+        contract=CORE_PROVENANCE_OBSERVER_CONTRACT,
+        interface=CORE_PROVENANCE_INTERFACE,
+    )
     missing_request = _request(
         subjects=(primary, missing),
         descriptor=observer.descriptor(),
@@ -211,13 +229,12 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
         evidence_slots=(
             ObservationEvidenceSlot(
                 slot="core",
-                request_id=core_request.request_id,
-                result_sha256=missing_result.result_sha256,
+                accepted_input_sha256=missing_forwarded.authority.input_sha256,
                 observer_contract_id=CORE_PROVENANCE_OBSERVER_CONTRACT.id,
             ),
         ),
     )
-    missing_runtime = SimpleNamespace(open_evidence=lambda slot: missing_evidence)
+    missing_runtime = SimpleNamespace(open_evidence=lambda slot: missing_forwarded)
     missing_observed = observer.observe(
         missing_request, cast(ContentObservationRuntime, missing_runtime)
     )
@@ -232,7 +249,7 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
     assert failed.facts is None
 
 
-def test_observer_combines_exact_core_predecessors_without_reopening_provenance() -> None:
+def test_observer_uses_scoped_original_whole_question_without_reopening_provenance() -> None:
     primary, primary_fact = _fact("c" * 64, "/camera/clip.mov")
     sidecar, sidecar_fact = _fact("d" * 64, "/camera/clip.xmp")
     core_descriptor = ObserverDescriptor.seal(
@@ -241,30 +258,36 @@ def test_observer_combines_exact_core_predecessors_without_reopening_provenance(
             implementation_version="test",
             source_revision="test",
             image_id="sha256:" + "e" * 64,
-            contracts=(ObserverContractSupport.from_contract(CORE_PROVENANCE_OBSERVER_CONTRACT),),
+            contracts=(
+                ObserverContractSupport.from_contract(
+                    CORE_PROVENANCE_OBSERVER_CONTRACT, interfaces=(CORE_PROVENANCE_INTERFACE.ref,)
+                ),
+            ),
         )
     )
-    predecessors = []
-    for subject, fact in ((primary, primary_fact), (sidecar, sidecar_fact)):
-        core_request = _request(
-            subjects=(subject,),
-            descriptor=core_descriptor,
-            options={"predicates": []},
-            core=True,
-        )
-        core_result = ContentObservationResultBuilder(core_descriptor, core_request).observed(
-            {"artifacts": [fact]}
-        )
-        predecessors.append(ContentObservationEvidence(request=core_request, result=core_result))
-    selected = tuple(sorted(predecessors, key=lambda item: item.request.request_id))
-    slots = tuple(
+    other, other_fact = _fact("e" * 64, "/other/unrelated.bin")
+    core_request = _request(
+        subjects=(primary, sidecar, other),
+        descriptor=core_descriptor,
+        options={"predicates": []},
+        core=True,
+    )
+    core_result = ContentObservationResultBuilder(core_descriptor, core_request).observed(
+        {"artifacts": [primary_fact, sidecar_fact, other_fact]}
+    )
+    original = ContentObservationEvidence(request=core_request, result=core_result)
+    forwarded = accepted_input(
+        original,
+        contract=CORE_PROVENANCE_OBSERVER_CONTRACT,
+        interface=CORE_PROVENANCE_INTERFACE,
+        subjects=(primary, sidecar),
+    )
+    slots = (
         ObservationEvidenceSlot(
-            slot="evidence." + item.request.request_id,
-            request_id=item.request.request_id,
-            result_sha256=item.result.result_sha256,
+            slot="core",
+            accepted_input_sha256=forwarded.authority.input_sha256,
             observer_contract_id=CORE_PROVENANCE_OBSERVER_CONTRACT.id,
-        )
-        for item in selected
+        ),
     )
     observer = FilenamePrefixSidecarObserver(image_id="sha256:" + "f" * 64)
     request = _request(
@@ -278,8 +301,7 @@ def test_observer_combines_exact_core_predecessors_without_reopening_provenance(
         },
         evidence_slots=slots,
     )
-    available = dict(zip((item.slot for item in slots), selected, strict=True))
-    runtime = SimpleNamespace(open_evidence=available.__getitem__)
+    runtime = SimpleNamespace(open_evidence=lambda slot: forwarded)
     result = observer.observe(request, cast(ContentObservationRuntime, runtime))
     assert result.state == "observed"
     assert result.facts is not None
@@ -289,6 +311,9 @@ def test_observer_combines_exact_core_predecessors_without_reopening_provenance(
     assert [(row.primary_id, row.sidecar_id, row.rule) for row in accepted.candidates] == [
         (primary.id, sidecar.id, "stem")
     ]
-    assert tuple(item.request_id for item in accepted.provenance_results) == tuple(
-        item.request.request_id for item in selected
-    )
+    assert accepted.provenance_inputs[0].accepted_input_sha256 == forwarded.authority.input_sha256
+    support = next(forwarded.records("artifacts")).support[0]
+    assert support.scope.artifact_count == 3
+    assert support.result_sha256 == original.result.result_sha256
+    assert forwarded.authority.selected_scope.artifact_count == 2
+    assert {row.subject_id for row in forwarded.records("artifacts")} == {primary.id, sidecar.id}

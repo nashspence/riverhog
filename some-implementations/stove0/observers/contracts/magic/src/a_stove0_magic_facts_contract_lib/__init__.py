@@ -15,3 +15,7 @@ __all__ = [
     "MagicFacts",
     "validate_magic_facts",
 ]
+
+from .interfaces import MAGIC_INTERFACE, MAGIC_INTERFACE_VECTORS
+
+__all__ += ["MAGIC_INTERFACE", "MAGIC_INTERFACE_VECTORS"]
