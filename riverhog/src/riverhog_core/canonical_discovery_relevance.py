@@ -152,7 +152,7 @@ def _anchored_snapshot(
     catalog: ContractCatalog | None,
 ) -> JournalSummary:
     if full.anchor == anchor:
-        return full
+        return full.borrow()
     digest = hashlib.sha256()
     size = 0
     for index, frame in enumerate(full.frames):
@@ -197,241 +197,267 @@ def member_relevance(
     if primary.journal_id not in corpus:
         raise ProvenanceValidationError("primary journal is outside the admitted corpus")
     found = MemberRelevance()
-    found.remember(primary)
+    try:
+        found.remember(primary)
 
-    def mark(summary: JournalSummary, row: Mapping[str, Any], scope: str) -> None:
-        found.mark(summary, row, scope)
+        def mark(summary: JournalSummary, row: Mapping[str, Any], scope: str) -> None:
+            found.mark(summary, row, scope)
 
-    def resolve_anchor(anchor: Mapping[str, Any]) -> JournalSummary:
-        full = corpus.get(anchor["journal_id"])
-        if full is None:
-            raise ProvenanceValidationError("referenced journal is outside the admitted corpus")
-        return _anchored_snapshot(full, anchor, catalog=catalog)
+        def resolve_anchor(anchor: Mapping[str, Any]) -> JournalSummary:
+            full = corpus.get(anchor["journal_id"])
+            if full is None:
+                raise ProvenanceValidationError("referenced journal is outside the admitted corpus")
+            return _anchored_snapshot(full, anchor, catalog=catalog)
 
-    def resolve_state(
-        summary: JournalSummary, ref: Mapping[str, Any]
-    ) -> tuple[JournalSummary, dict[str, Any]]:
-        if ref["object_type"] != "state":
-            raise ProvenanceValidationError("input history does not reference a State")
-        if ref["scope"] == "local":
-            row = summary.graph_validation.objects.get(ref["object_id"])
-            target = summary
-        else:
-            foreign = corpus.get(ref["journal_id"])
-            if foreign is None:
-                raise ProvenanceValidationError("input history journal is outside the corpus")
-            through = ref["entry"]
-            digest = hashlib.sha256()
-            size = 0
-            anchor: dict[str, Any] | None = None
-            for frame in foreign.frames:
-                digest.update(frame.encoded)
-                size += len(frame.encoded)
-                if frame.reference == through:
-                    anchor = {
-                        "journal_id": foreign.journal_id,
-                        "through": through,
-                        "prefix_sha256": digest.hexdigest(),
-                        "prefix_bytes": str(size),
-                    }
-                    break
-            if anchor is None:
-                raise ProvenanceValidationError("input history foreign entry is absent")
-            target = resolve_anchor(anchor)
-            row = target.graph_validation.objects.get(ref["object_id"])
-            if row is None or row["assertion_id"] != ref["assertion_id"]:
-                raise ProvenanceValidationError("input history foreign State is not exact")
-        if row is None or row["type"] != "state":
-            raise ProvenanceValidationError("input history State is unresolved")
-        return target, row
+        def resolve_state(
+            summary: JournalSummary, ref: Mapping[str, Any]
+        ) -> tuple[JournalSummary, dict[str, Any]]:
+            if ref["object_type"] != "state":
+                raise ProvenanceValidationError("input history does not reference a State")
+            if ref["scope"] == "local":
+                row = summary.graph_validation.objects.get(ref["object_id"])
+                target = summary.borrow()
+            else:
+                foreign = corpus.get(ref["journal_id"])
+                if foreign is None:
+                    raise ProvenanceValidationError("input history journal is outside the corpus")
+                with foreign.borrow() as foreign:
+                    through = ref["entry"]
+                    digest = hashlib.sha256()
+                    size = 0
+                    anchor: dict[str, Any] | None = None
+                    for frame in foreign.frames:
+                        digest.update(frame.encoded)
+                        size += len(frame.encoded)
+                        if frame.reference == through:
+                            anchor = {
+                                "journal_id": foreign.journal_id,
+                                "through": through,
+                                "prefix_sha256": digest.hexdigest(),
+                                "prefix_bytes": str(size),
+                            }
+                            break
+                    if anchor is None:
+                        raise ProvenanceValidationError("input history foreign entry is absent")
+                target = resolve_anchor(anchor)
+                row = target.graph_validation.objects.get(ref["object_id"])
+                if row is None or row["assertion_id"] != ref["assertion_id"]:
+                    target.close()
+                    raise ProvenanceValidationError("input history foreign State is not exact")
+            if row is None or row["type"] != "state":
+                target.close()
+                raise ProvenanceValidationError("input history State is unresolved")
+            return target, row
 
-    def enqueue_state(summary: JournalSummary, state: Mapping[str, Any], scope: str) -> None:
-        found.remember(summary)
+        def enqueue_state(summary: JournalSummary, state: Mapping[str, Any], scope: str) -> None:
+            found.remember(summary)
+            found.db.execute(
+                "INSERT OR IGNORE INTO states VALUES (?, ?, ?, ?, ?, 0)",
+                (
+                    summary.journal_id,
+                    summary.journal_sha256,
+                    state["id"],
+                    scope,
+                    canonical_json_bytes(state),
+                ),
+            )
+            if scope in {"member", "input-history"}:
+                found.db.execute(
+                    "INSERT OR IGNORE INTO causal VALUES (?)",
+                    (canonical_json_bytes(external_reference(summary, state["id"])),),
+                )
+
+        def state_history(summary: JournalSummary, state: Mapping[str, Any], scope: str) -> None:
+            objects = summary.graph_validation.objects
+            occurrence = objects[state["occurrence_id"]]
+            artifact = objects[occurrence["artifact_id"]]
+            own_ids = {state["id"], occurrence["id"], artifact["id"]}
+            context_ids: set[str] = set()
+            if "source_context_id" in occurrence:
+                context_ids.add(occurrence["source_context_id"])
+            activities: set[str] = set()
+            for row in objects.values():
+                kind = row["type"]
+                if kind in {"generation", "invalidation"} and _matches_local(
+                    row.get("state"), {state["id"]}
+                ):
+                    mark(summary, row, scope)
+                    activities.add(row["activity_id"])
+                elif kind == "derivation" and _matches_local(
+                    row.get("generated_state"), {state["id"]}
+                ):
+                    mark(summary, row, scope)
+                    if "activity_id" in row:
+                        activities.add(row["activity_id"])
+                    for relation_id in (row.get("usage_id"), row.get("generation_id")):
+                        relation = (
+                            objects.get(relation_id) if isinstance(relation_id, str) else None
+                        )
+                        if relation is not None:
+                            mark(summary, relation, scope)
+                    target, source = resolve_state(summary, row["used_state"])
+                    with target:
+                        enqueue_state(target, source, "input-history")
+            for activity_id in activities:
+                activity = objects.get(activity_id)
+                if activity is not None:
+                    mark(summary, activity, scope)
+                    context_ids.update(item["context_id"] for item in activity.get("contexts", ()))
+            own_ids.update(activities)
+            for row in _assertions(summary):
+                kind = row["type"]
+                direct = row["id"] in own_ids
+                attached = _matches_local(row.get("subject", row.get("target")), own_ids)
+                if kind == "journal_subject":
+                    attached = attached or _matches_local(row.get("artifact"), {artifact["id"]})
+                observed = kind in {"observation", "reported_description"} and _matches_local(
+                    row.get("state"), {state["id"]}
+                )
+                if direct or attached or observed:
+                    mark(summary, row, scope)
+                    if (
+                        kind in {"observation", "reported_description"}
+                        and "source_context_id" in row
+                    ):
+                        context_ids.add(row["source_context_id"])
+            for context_id in context_ids:
+                context = objects.get(context_id)
+                if context is not None:
+                    mark(summary, context, scope)
+
+        objects = primary.graph_validation.objects
+        association = objects[binding.delivery_association_id]
+        state = objects[association["state"]["object_id"]]
+        if objects[state["occurrence_id"]]["id"] != verified.occurrence_id:
+            raise ProvenanceValidationError("member relevance selected a different Occurrence")
+        enqueue_state(primary, state, "member")
+        mark(primary, association, "member")
+        context = objects.get(delivery_context_id)
+        if context is not None:
+            mark(primary, context, "collection")
+        for row in _assertions(primary):
+            if row["type"] == "extension" and _matches_local(
+                row.get("subject"), {delivery_context_id}
+            ):
+                mark(primary, row, "collection")
+
+        # Recorded history extends to other States of the same declared continuity
+        # Artifact; physical co-residence alone never adds a sibling's attributes.
+        selected_artifact_id = objects[state["occurrence_id"]]["artifact_id"]
+        for candidate in objects.values():
+            if candidate["type"] != "state" or candidate["id"] == state["id"]:
+                continue
+            occurrence = objects.get(candidate["occurrence_id"])
+            if occurrence is not None and occurrence["artifact_id"] == selected_artifact_id:
+                enqueue_state(primary, candidate, "recorded-history")
+
+        while pending := found.db.execute(
+            "SELECT journal, prefix, state, scope, value FROM states WHERE done = 0 LIMIT 1"
+        ).fetchone():
+            journal_id, prefix_sha256, state_id, scope, encoded = pending
+            (anchor,) = found.db.execute(
+                "SELECT anchor FROM snapshots WHERE journal = ? AND prefix = ?",
+                (journal_id, prefix_sha256),
+            ).fetchone()
+            with resolve_anchor(json.loads(anchor)) as snapshot:
+                state_history(snapshot, json.loads(encoded), scope)
+            found.db.execute(
+                "UPDATE states SET done = 1 WHERE journal = ? AND prefix = ? "
+                "AND state = ? AND scope = ?",
+                (journal_id, prefix_sha256, state_id, scope),
+            )
+
+        history = closure.store.descriptor(history_binding)
+        if (history.artifact_id, history.bytes, history.sha256) != (
+            member.artifact_id,
+            member.bytes,
+            member.sha256,
+        ) or history.primary.to_mapping() != {
+            "journal": binding.journal.model_dump(mode="json"),
+            "delivery_association_id": binding.delivery_association_id,
+        }:
+            raise ProvenanceValidationError(
+                "index history differs from the exact primary/member binding"
+            )
+        closure.resolve(history_binding, extent=RETAINED_HISTORY_EXTENT)
         found.db.execute(
-            "INSERT OR IGNORE INTO states VALUES (?, ?, ?, ?, ?, 0)",
+            "INSERT INTO views VALUES (?, ?, ?, 1, 0)",
             (
-                summary.journal_id,
-                summary.journal_sha256,
-                state["id"],
-                scope,
-                canonical_json_bytes(state),
+                history_binding.history_sha256,
+                RETAINED_HISTORY_EXTENT,
+                canonical_json_bytes(history_binding.to_mapping()),
             ),
         )
-        if scope in {"member", "input-history"}:
+        while pending := found.db.execute(
+            "SELECT history, extent, binding, own FROM views WHERE done = 0 LIMIT 1"
+        ).fetchone():
+            history_id, extent, encoded, own = pending
+            selected_binding = MemberHistoryBinding.from_mapping(json.loads(encoded))
+            selected_history = closure.store.descriptor(selected_binding)
+            with closure.summary_at(selected_history.primary.journal) as selected_primary:
+                selected_state = selected_primary.graph_validation.objects[
+                    selected_primary.graph_validation.objects[
+                        selected_history.primary.delivery_association_id
+                    ]["state"]["object_id"]
+                ]
+                endpoints = [external_reference(selected_primary, selected_state["id"])]
+                occurrence = selected_primary.graph_validation.objects[
+                    selected_state["occurrence_id"]
+                ]
+                endpoints.extend(
+                    external_reference(selected_primary, identity)
+                    for identity in (occurrence["id"], occurrence["artifact_id"])
+                )
+                for row in selected_primary.graph_validation.view.get("relations", ()):
+                    if row["type"] == "generation" and row["state"] == {
+                        "scope": "local",
+                        "object_id": selected_state["id"],
+                        "object_type": "state",
+                    }:
+                        endpoints.append(external_reference(selected_primary, row["activity_id"]))
+                applicable = (
+                    bool(own)
+                    or found.db.execute(
+                        "SELECT 1 FROM causal WHERE reference = ?",
+                        (canonical_json_bytes(endpoints[0]),),
+                    ).fetchone()
+                    is not None
+                )
+                if applicable:
+                    for root in closure.store.roots(selected_binding, extent=BOUND_HISTORY_EXTENT):
+                        with closure.summary_at(root.journal) as selected:
+                            for row in selected.graph_validation.view.get("extensions", ()):
+                                subject = row["subject"]
+                                exact = (
+                                    subject
+                                    if subject["scope"] == "external"
+                                    else external_reference(selected, subject["object_id"])
+                                )
+                                if exact in endpoints:
+                                    mark(selected, row, "member" if own else "input-history")
+            for imported in closure.store.imports(selected_binding):
+                source = closure.store.source_proof(imported).binding
+                found.db.execute(
+                    "INSERT OR IGNORE INTO views VALUES (?, ?, ?, 0, 0)",
+                    (
+                        source.history_sha256,
+                        imported.extent,
+                        canonical_json_bytes(source.to_mapping()),
+                    ),
+                )
             found.db.execute(
-                "INSERT OR IGNORE INTO causal VALUES (?)",
-                (canonical_json_bytes(external_reference(summary, state["id"])),),
+                "UPDATE views SET done = 1 WHERE history = ? AND extent = ?", (history_id, extent)
             )
 
-    def state_history(summary: JournalSummary, state: Mapping[str, Any], scope: str) -> None:
-        objects = summary.graph_validation.objects
-        occurrence = objects[state["occurrence_id"]]
-        artifact = objects[occurrence["artifact_id"]]
-        own_ids = {state["id"], occurrence["id"], artifact["id"]}
-        context_ids: set[str] = set()
-        if "source_context_id" in occurrence:
-            context_ids.add(occurrence["source_context_id"])
-        activities: set[str] = set()
-        for row in objects.values():
-            kind = row["type"]
-            if kind in {"generation", "invalidation"} and _matches_local(
-                row.get("state"), {state["id"]}
-            ):
-                mark(summary, row, scope)
-                activities.add(row["activity_id"])
-            elif kind == "derivation" and _matches_local(row.get("generated_state"), {state["id"]}):
-                mark(summary, row, scope)
-                if "activity_id" in row:
-                    activities.add(row["activity_id"])
-                for relation_id in (row.get("usage_id"), row.get("generation_id")):
-                    relation = objects.get(relation_id) if isinstance(relation_id, str) else None
-                    if relation is not None:
-                        mark(summary, relation, scope)
-                target, source = resolve_state(summary, row["used_state"])
-                enqueue_state(target, source, "input-history")
-        for activity_id in activities:
-            activity = objects.get(activity_id)
-            if activity is not None:
-                mark(summary, activity, scope)
-                context_ids.update(item["context_id"] for item in activity.get("contexts", ()))
-        own_ids.update(activities)
-        for row in _assertions(summary):
-            kind = row["type"]
-            direct = row["id"] in own_ids
-            attached = _matches_local(row.get("subject", row.get("target")), own_ids)
-            if kind == "journal_subject":
-                attached = attached or _matches_local(row.get("artifact"), {artifact["id"]})
-            observed = kind in {"observation", "reported_description"} and _matches_local(
-                row.get("state"), {state["id"]}
-            )
-            if direct or attached or observed:
-                mark(summary, row, scope)
-                if kind in {"observation", "reported_description"} and "source_context_id" in row:
-                    context_ids.add(row["source_context_id"])
-        for context_id in context_ids:
-            context = objects.get(context_id)
-            if context is not None:
-                mark(summary, context, scope)
+        for anchor in closure.snapshots():
+            with closure.summary_at(anchor) as snapshot:
+                for row in _assertions(snapshot):
+                    mark(snapshot, row, "recorded-history")
+        return found
 
-    objects = primary.graph_validation.objects
-    association = objects[binding.delivery_association_id]
-    state = objects[association["state"]["object_id"]]
-    if objects[state["occurrence_id"]]["id"] != verified.occurrence_id:
-        raise ProvenanceValidationError("member relevance selected a different Occurrence")
-    enqueue_state(primary, state, "member")
-    mark(primary, association, "member")
-    context = objects.get(delivery_context_id)
-    if context is not None:
-        mark(primary, context, "collection")
-    for row in _assertions(primary):
-        if row["type"] == "extension" and _matches_local(row.get("subject"), {delivery_context_id}):
-            mark(primary, row, "collection")
-
-    # Recorded history extends to other States of the same declared continuity
-    # Artifact; physical co-residence alone never adds a sibling's attributes.
-    selected_artifact_id = objects[state["occurrence_id"]]["artifact_id"]
-    for candidate in objects.values():
-        if candidate["type"] != "state" or candidate["id"] == state["id"]:
-            continue
-        occurrence = objects.get(candidate["occurrence_id"])
-        if occurrence is not None and occurrence["artifact_id"] == selected_artifact_id:
-            enqueue_state(primary, candidate, "recorded-history")
-
-    while pending := found.db.execute(
-        "SELECT journal, prefix, state, scope, value FROM states WHERE done = 0 LIMIT 1"
-    ).fetchone():
-        journal_id, prefix_sha256, state_id, scope, encoded = pending
-        (anchor,) = found.db.execute(
-            "SELECT anchor FROM snapshots WHERE journal = ? AND prefix = ?",
-            (journal_id, prefix_sha256),
-        ).fetchone()
-        state_history(resolve_anchor(json.loads(anchor)), json.loads(encoded), scope)
-        found.db.execute(
-            "UPDATE states SET done = 1 WHERE journal = ? AND prefix = ? "
-            "AND state = ? AND scope = ?",
-            (journal_id, prefix_sha256, state_id, scope),
-        )
-
-    history = closure.store.descriptor(history_binding)
-    if (history.artifact_id, history.bytes, history.sha256) != (
-        member.artifact_id,
-        member.bytes,
-        member.sha256,
-    ) or history.primary.to_mapping() != {
-        "journal": binding.journal.model_dump(mode="json"),
-        "delivery_association_id": binding.delivery_association_id,
-    }:
-        raise ProvenanceValidationError(
-            "index history differs from the exact primary/member binding"
-        )
-    closure.resolve(history_binding, extent=RETAINED_HISTORY_EXTENT)
-    found.db.execute(
-        "INSERT INTO views VALUES (?, ?, ?, 1, 0)",
-        (
-            history_binding.history_sha256,
-            RETAINED_HISTORY_EXTENT,
-            canonical_json_bytes(history_binding.to_mapping()),
-        ),
-    )
-    while pending := found.db.execute(
-        "SELECT history, extent, binding, own FROM views WHERE done = 0 LIMIT 1"
-    ).fetchone():
-        history_id, extent, encoded, own = pending
-        selected_binding = MemberHistoryBinding.from_mapping(json.loads(encoded))
-        selected_history = closure.store.descriptor(selected_binding)
-        selected_primary = closure.summary_at(selected_history.primary.journal)
-        selected_state = selected_primary.graph_validation.objects[
-            selected_primary.graph_validation.objects[
-                selected_history.primary.delivery_association_id
-            ]["state"]["object_id"]
-        ]
-        endpoints = [external_reference(selected_primary, selected_state["id"])]
-        occurrence = selected_primary.graph_validation.objects[selected_state["occurrence_id"]]
-        endpoints.extend(
-            external_reference(selected_primary, identity)
-            for identity in (occurrence["id"], occurrence["artifact_id"])
-        )
-        for row in selected_primary.graph_validation.view.get("relations", ()):
-            if row["type"] == "generation" and row["state"] == {
-                "scope": "local",
-                "object_id": selected_state["id"],
-                "object_type": "state",
-            }:
-                endpoints.append(external_reference(selected_primary, row["activity_id"]))
-        applicable = (
-            bool(own)
-            or found.db.execute(
-                "SELECT 1 FROM causal WHERE reference = ?", (canonical_json_bytes(endpoints[0]),)
-            ).fetchone()
-            is not None
-        )
-        if applicable:
-            for root in closure.store.roots(selected_binding, extent=BOUND_HISTORY_EXTENT):
-                selected = closure.summary_at(root.journal)
-                for row in selected.graph_validation.view.get("extensions", ()):
-                    subject = row["subject"]
-                    exact = (
-                        subject
-                        if subject["scope"] == "external"
-                        else external_reference(selected, subject["object_id"])
-                    )
-                    if exact in endpoints:
-                        mark(selected, row, "member" if own else "input-history")
-        for imported in closure.store.imports(selected_binding):
-            source = closure.store.source_proof(imported).binding
-            found.db.execute(
-                "INSERT OR IGNORE INTO views VALUES (?, ?, ?, 0, 0)",
-                (source.history_sha256, imported.extent, canonical_json_bytes(source.to_mapping())),
-            )
-        found.db.execute(
-            "UPDATE views SET done = 1 WHERE history = ? AND extent = ?", (history_id, extent)
-        )
-
-    for anchor in closure.snapshots():
-        snapshot = closure.summary_at(anchor)
-        for row in _assertions(snapshot):
-            mark(snapshot, row, "recorded-history")
-    return found
+    except BaseException:
+        found.close()
+        raise
 
 
 def relevance_row_keys(
@@ -452,7 +478,8 @@ def snapshots_for_relevance(
         full = corpus.get(anchor["journal_id"])
         if full is None:
             raise ProvenanceValidationError("relevant journal is outside the admitted corpus")
-        yield _anchored_snapshot(full, anchor, catalog=catalog)
+        with _anchored_snapshot(full, anchor, catalog=catalog) as selected:
+            yield selected
 
 
 __all__ = [

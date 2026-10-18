@@ -156,6 +156,9 @@ def declared_values(actual: Any, declared: Any) -> None:
 
 def await_admission() -> None:
     """Observe exact admission milestones without bounding observation work by a control call."""
+    from http_api_contracts import parse_operation_error_payload
+    from stove0_operator_contracts import STOVE0_HTTP_ERROR_AUTHORITY
+
     collection_id = os.environ["INPUT_COLLECTION_ID"]
     expected = os.environ["RIVERHOG_SMOKE_SCHEDULER_STEP"]
     state_order = {"intent": 0, "previewed": 1, "work_bound": 2}
@@ -164,11 +167,29 @@ def await_admission() -> None:
     previous = None
     next_progress = started
     preview_ids: tuple[str, ...] = ()
-    diagnostic: dict[str, Any] = {"expected": expected}
+    scheduler_conflicts = 0
+    diagnostic: dict[str, Any] = {"expected": expected, "scheduler_conflicts": 0}
     while (now := time.monotonic()) < deadline:
-        result = stove(
-            "/v1/admin/scheduler/run", {"role": "controller", "work_limit": 1}, timeout=5
-        )
+        try:
+            result = stove(
+                "/v1/admin/scheduler/run", {"role": "controller", "work_limit": 1}, timeout=5
+            )
+        except urllib.error.HTTPError as error:
+            if error.code != 409:
+                raise
+            with error:
+                code, _message, _details = parse_operation_error_payload(
+                    STOVE0_HTTP_ERROR_AUTHORITY,
+                    "run_scheduler",
+                    status=error.code,
+                    payload=json.load(error),
+                )
+            assert code == "conflict"
+            # An independent controller may commit progress before this tick loses
+            # its cursor CAS. The durable milestone still establishes completion.
+            scheduler_conflicts += 1
+            result = {"admission": None}
+        diagnostic["scheduler_conflicts"] = scheduler_conflicts
         if result["admission"] is not None:
             assert result["admission"]["failures"] == [], result
         previews = result.get("previews") or {}
@@ -215,6 +236,7 @@ def await_admission() -> None:
                 "failure": row.get("failure"),
                 "planning": planning,
                 "preview_failures": previews.get("failures", []),
+                "scheduler_conflicts": scheduler_conflicts,
             }
             print(canonical_json_bytes(diagnostic).decode(), file=sys.stderr, flush=True)
             previous, next_progress = current, now + 60

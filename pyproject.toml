@@ -47,6 +47,7 @@ a-riverhog-ftp-spool-client = { workspace = true }
 a-riverhog-witness-contract-lib = { workspace = true }
 riverhog-archive-contracts = { workspace = true }
 riverhog-canonical-json = { workspace = true }
+riverhog-growth-contracts = { workspace = true }
 riverhog-materialization = { workspace = true }
 riverhog-provenance = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
@@ -92,6 +93,7 @@ review0-sampler-lib = { workspace = true }
 stove0-target-client = { workspace = true }
 stove0-target-protocol = { workspace = true }
 stove0-target-support = { workspace = true }
+sha256-continuation = { workspace = true }
 time-formats = { workspace = true }
 
 [dependency-groups]
@@ -130,7 +132,7 @@ filterwarnings = ["error"]
 testpaths = ["packages", "some-implementations", "riverhog", "tests"]
 markers = [
   "integration: requires explicitly provisioned integration infrastructure",
-  "growth_witness(identity, gates): source-owned test association with recorded primitive observations",
+  "growth_witness(identity, gates, operation=None): source-owned test and optional declared operation with actual primitive observations",
 ]
 
 [tool.mypy]

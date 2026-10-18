@@ -10,6 +10,7 @@ import importlib
 import inspect
 import json
 import re
+import sys
 import tomllib
 from collections import Counter, defaultdict
 from collections.abc import Callable, Iterator, Mapping, Sequence
@@ -18,6 +19,9 @@ from enum import Enum
 from functools import cache
 from pathlib import Path
 from typing import Any, cast
+
+if str(Path(__file__).resolve().parents[1]) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import extent_contract
 import extent_witnesses
@@ -55,6 +59,7 @@ from review0_sampler_lib import sampler_schema_bundle
 from review0_sampler_lib.conformance import _parser as sampler_conformance_parser
 from review0_sampler_lib.schemas import _parser as sampler_schemas_parser
 from riverhog_canonical_json import canonical_json_bytes as jcs_bytes
+from riverhog_growth_contracts import Expression
 from riverhog_storage_adapter_support import storage_adapter_schema_bundle
 from riverhog_storage_adapter_support.conformance import _parser as storage_conformance_parser
 from riverhog_storage_adapter_support.schemas import _parser as storage_schemas_parser
@@ -65,6 +70,8 @@ from stove0_target_support import target_schema_bundle
 from stove0_target_support.conformance import _parser as target_conformance_parser
 from stove0_target_support.schemas import _parser as target_schemas_parser
 from typer.main import get_command
+
+from scripts import growth_contract
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_FREEZE_EXCEPTIONS = ROOT / "qualification/contract-freeze-exceptions.toml"
@@ -2858,6 +2865,15 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         if CONTRACT_FREEZE_EXCEPTIONS.is_relative_to(ROOT)
         else str(CONTRACT_FREEZE_EXCEPTIONS)
     )
+    growth_registry = growth_contract.source_analysis(
+        ROOT,
+        cast(Mapping[str, Mapping[str, object]], external["python"]),
+        cast(Mapping[str, object], external["growth"]),
+        packages={
+            str(item["module"]): ROOT / str(item["path"])
+            for item in python_package_detections(ROOT, projects)
+        },
+    )
     sources: list[dict[str, object]] = [
         {"id": "release:release.toml", "source": {"path": "release.toml"}},
         *[
@@ -2900,6 +2916,17 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         *_configuration_pattern_trace(),
         *_protocol_trace(),
         *_python_trace(python_registry),
+        {
+            "id": "growth:cost-model",
+            "owner": "riverhog-growth-contracts",
+            "source": _linked_source_ref(Expression),
+        },
+        *[
+            {"id": f"growth:{identity}", "source": value["source"]}
+            for identity, value in cast(
+                Mapping[str, Mapping[str, object]], growth_registry["declarations"]
+            ).items()
+        ],
         *_state_trace(),
     ]
     source_ids = [str(source["id"]) for source in sources]
@@ -2955,6 +2982,7 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         "configuration_registry": configuration_registry,
         "configuration_document_registry": configuration_document_registry,
         "python_registry": python_registry,
+        "growth_registry": growth_registry,
         "console_script_registry": console_script_registry,
         "operation_qualification": {
             "format": operation_qualification.FORMAT,
@@ -3012,6 +3040,13 @@ def contract_projection() -> dict[str, object]:
         "python": python_surfaces,
         "durable_state": _state_contract(config),
     }
+    external_contract["growth"] = growth_contract.declaration_projection(
+        python_surfaces,
+        packages={
+            str(item["module"]): ROOT / str(item["path"])
+            for item in python_package_detections(ROOT, projects)
+        },
+    )
     external_contract["extents"] = extent_contract.extent_projection(external_contract)
     boundaries: dict[str, object] = {
         "contract_authorities": config["contract_authorities"],

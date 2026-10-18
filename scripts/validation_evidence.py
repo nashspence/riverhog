@@ -73,6 +73,7 @@ class ValidationWork:
     boundary: str = "command-including-owned-preparation-and-cleanup"
     conditions: tuple[tuple[str, str], ...] = ()
     growth_witnesses: tuple[str, ...] = ()
+    growth_declarations: tuple[tuple[str, str], ...] = ()
 
     def __post_init__(self) -> None:
         if (
@@ -97,6 +98,12 @@ class ValidationWork:
         ):
             raise ValueError("growth witness bindings must be nonempty and unique")
 
+        if len(dict(self.growth_declarations)) != len(self.growth_declarations) or any(
+            not identity or not re.fullmatch(r"[0-9a-f]{64}", digest)
+            for identity, digest in self.growth_declarations
+        ):
+            raise ValueError("growth declaration references require unique exact digests")
+
     def definition(self) -> dict[str, object]:
         """Only executable work and independently owned obligations bind coverage."""
         return {
@@ -105,6 +112,7 @@ class ValidationWork:
             "boundary": self.boundary,
             "conditions": dict(self.conditions),
             "growth_witnesses": list(self.growth_witnesses),
+            "growth_declarations": dict(self.growth_declarations),
         }
 
     def advisory_target(self) -> dict[str, object] | None:

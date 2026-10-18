@@ -11,6 +11,7 @@ from typing import Any
 from uuid import uuid4
 
 import pytest
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client.canonical_production import (
     ProducerAttribution,
     build_member_journal,
@@ -58,7 +59,12 @@ from riverhog_protocol import (
     CollectionUploadProvenanceJournalCreateDocument,
 )
 from riverhog_protocol.errors import Conflict, ServiceUnavailable
-from riverhog_provenance import BoundedSourceObserver, BytesSource
+from riverhog_provenance import (
+    BoundedSourceObserver,
+    BytesSource,
+    create_journal,
+    parse_journal,
+)
 from sqlalchemy import event, func, select, text
 from sqlalchemy.engine import make_url
 
@@ -769,3 +775,209 @@ def test_guarded_discard_and_exact_resume_cannot_both_win_for_old_custody(
         replacement = _create(first)
         assert replacement != collection_id
         assert first.get(replacement)["state"] == "open"
+
+
+@pytest.mark.parametrize("invalid_prefix", [False, True])
+def test_native_journal_validation_releases_catalog_lock_and_fences_replaced_attempt(
+    database_url, monkeypatch, invalid_prefix
+):
+    first, replacement = _services(database_url)
+    collection_id = _create(first)
+    observed = BoundedSourceObserver().observe(BytesSource(b"detached validation"))
+    raw = create_journal(observed.graph_fragment(), recorded_by_agent_id=observed.observer_agent_id)
+    frames = parse_journal(raw)
+    journal_id = frames[0].document["journal_id"]
+    if invalid_prefix:
+        document = frames[0].document
+        document["sequence"] = "1"
+        raw = (
+            b"\x1e"
+            + canonical_json_bytes(document)
+            + b"\n"
+            + b"".join(frame.encoded for frame in frames[1:])
+        )
+    first.create_provenance_journal(
+        collection_id,
+        journal_id,
+        CollectionUploadProvenanceJournalCreateDocument(
+            bytes=str(len(raw)), sha256=hashlib.sha256(raw).hexdigest()
+        ),
+    )
+    first.append_provenance_journal(collection_id, journal_id, offset=0, content=raw)
+    paused, resume = threading.Event(), threading.Event()
+    native = collection_uploads_module.validate_journal_chunks
+    expected_failure = None
+    if invalid_prefix:
+        with pytest.raises(collection_uploads_module.ProvenanceValidationError) as rejected:
+            native(
+                (raw,),
+                catalog=collection_uploads_module.admission_provenance_catalog(),
+                require_profiles=False,
+            )
+        expected_failure = str(rejected.value)[:1000]
+
+    def waiting(chunks, **kwargs):
+        iterator = iter(chunks)
+        initial = next(iterator)
+        assert first._session_factory.kw["bind"].pool.checkedout() == 0
+        paused.set()
+        if not resume.wait(30):
+            raise TimeoutError("native validation was not resumed")
+
+        def continued():
+            yield initial
+            yield from iterator
+
+        return native(continued(), **kwargs)
+
+    monkeypatch.setattr(collection_uploads_module, "validate_journal_chunks", waiting)
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        future = pool.submit(first.seal_provenance_journal, collection_id, journal_id)
+        try:
+            assert paused.wait(10)
+            with session_scope(replacement._session_factory) as session:
+                session.execute(text("SET LOCAL lock_timeout = '2s'"))
+                record = session.scalar(
+                    select(CollectionUploadProvenanceJournalRecord)
+                    .where(
+                        CollectionUploadProvenanceJournalRecord.collection_id == collection_id,
+                        CollectionUploadProvenanceJournalRecord.journal_id == journal_id,
+                    )
+                    .with_for_update()
+                )
+                assert record is not None and record.state == "validating"
+                record.capture_attempt_id = str(uuid4())
+        finally:
+            resume.set()
+        stale = future.result(timeout=30)
+    assert stale["state"] == "validating" and stale["anchor"] is None
+    for _ in range(32):
+        current = replacement.seal_provenance_journal(collection_id, journal_id)
+        if current["state"] != "validating":
+            break
+        assert current["anchor"] is None
+    else:
+        pytest.fail("replacement validation stopped making bounded progress")
+    assert current["state"] == ("failed" if invalid_prefix else "sealed")
+    if invalid_prefix:
+        assert current["failure"] == expected_failure
+        assert current["anchor"] is None
+    else:
+        assert current["anchor"] is not None
+
+
+@pytest.mark.parametrize("phase", range(7))
+def test_retired_journal_preparation_is_bounded_and_fenced_across_workers(database_url, phase):
+    from riverhog_core.services import upload_journal_cleanup as cleanup
+    from riverhog_core.services import upload_journal_epochs as epochs
+    from sqlalchemy import insert, update
+
+    from tests.unit.test_journal_capture import advance
+    from tests.unit.test_journal_preparation_retirement import rows
+    from tests.unit.test_journal_summary_consumers import source
+
+    first, _second = _services(database_url)
+    collection_id = _create(first)
+    journal_id = "urn:uuid:11111111-1111-4111-8111-111111111111"
+    raw = source(journal_id=journal_id)
+    first.create_provenance_journal(
+        collection_id,
+        journal_id,
+        CollectionUploadProvenanceJournalCreateDocument(
+            bytes=str(len(raw)),
+            sha256=hashlib.sha256(raw).hexdigest(),
+        ),
+    )
+    first.append_provenance_journal(collection_id, journal_id, offset=0, content=raw)
+    factory = make_session_factory(database_url)
+    with factory() as session, session.begin():
+        journal = session.get(CollectionUploadProvenanceJournalRecord, (collection_id, journal_id))
+        assert journal is not None
+        collection_uploads_module._begin_upload_journal_capture(session, journal)
+    while (
+        capture := collection_uploads_module._read_upload_journal_capture(
+            factory, collection_id, journal_id
+        )
+    ) is not None:
+        assert collection_uploads_module._commit_upload_journal_capture(
+            factory, capture, advance(capture)
+        )
+    old = collection_uploads_module._read_upload_journal_validation(
+        factory, collection_id, journal_id
+    )
+    assert old is not None
+    epochs._begin_scan(factory, old)
+    table = cleanup._TABLES[phase]
+
+    def add(attempt, count):
+        values = [
+            dict(row, collection_id=collection_id, journal_id=journal_id)
+            for row in rows(phase, attempt, count, old.directory_id)
+        ]
+        with factory() as session, session.begin():
+            session.execute(insert(table), values)
+
+    def replace_source(work):
+        replacement = replace(work, attempt_id=uuid4().hex)
+        with factory() as session, session.begin():
+            session.execute(
+                update(CollectionUploadProvenanceJournalRecord)
+                .where(
+                    CollectionUploadProvenanceJournalRecord.collection_id == collection_id,
+                    CollectionUploadProvenanceJournalRecord.journal_id == journal_id,
+                )
+                .values(capture_attempt_id=replacement.attempt_id)
+            )
+        epochs._begin_scan(factory, replacement)
+        return replacement
+
+    def count(attempt):
+        with factory() as session:
+            return session.scalar(
+                select(func.count()).select_from(table).where(table.c.attempt_id == attempt)
+            )
+
+    add(old.attempt_id, 129)
+    current = replace_source(old)
+    add(current.attempt_id, 17)
+    with factory() as session, session.begin():
+        session.execute(
+            update(cleanup.Retirement)
+            .where(
+                cleanup.Retirement.collection_id == collection_id,
+                cleanup.Retirement.journal_id == journal_id,
+            )
+            .values(phase=phase)
+        )
+    valid, work = cleanup._begin(factory, current)
+    assert valid and work is not None
+    second_factory = make_session_factory(database_url)
+    results = _race(
+        lambda: cleanup._commit(factory, work), lambda: cleanup._commit(second_factory, work)
+    )
+    assert all(result is None or result == 64 for result in results), results
+    assert results.count(64) == 1
+    assert count(old.attempt_id) == 65 and count(current.attempt_id) == 17
+    _, stale = cleanup._begin(factory, current)
+    assert stale is not None
+    replacement = replace_source(current)
+    add(replacement.attempt_id, 3)
+    assert cleanup._commit(factory, stale) is None
+    assert count(old.attempt_id) == 65 and count(current.attempt_id) == 17
+    for _ in range(64):
+        if cleanup.advance_retired_upload_journal_preparation(second_factory, replacement):
+            break
+    else:
+        pytest.fail("retired attempts stopped making bounded progress")
+    assert count(old.attempt_id) == count(current.attempt_id) == 0
+    assert count(replacement.attempt_id) == 3
+    assert (
+        b"".join(
+            collection_uploads_module._iter_upload_journal_validation_chunks(
+                second_factory, replacement
+            )
+        )
+        == raw
+    )
+    status = first.get_provenance_journal(collection_id, journal_id)
+    assert status["state"] == "validating" and status["anchor"] is None

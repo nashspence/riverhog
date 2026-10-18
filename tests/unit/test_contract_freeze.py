@@ -251,6 +251,7 @@ def test_generated_contract_matches_every_executable_authority(
         "configuration_environment",
         "durable_state",
         "extents",
+        "growth",
         "http_openapi",
         "http_route_supplements",
         "protocol_schemas",

@@ -10,7 +10,11 @@ from riverhog_archive_contracts import HistoryJournalAnchor
 from riverhog_client.client import ApiClient
 from riverhog_client.processing.history_transfer import CanonicalHistoryTransfer
 from riverhog_core.catalog_db import session_scope
-from riverhog_core.catalog_models import CollectionUploadProvenanceJournalChunkRecord
+from riverhog_core.catalog_models import (
+    CollectionUploadProvenanceFrameRecord,
+    CollectionUploadProvenanceJournalChunkRecord,
+    CollectionUploadProvenanceJournalRecord,
+)
 from riverhog_protocol import (
     CollectionUploadProvenanceJournalCreateDocument,
     CollectionUploadProvenanceJournalStatusDocument,
@@ -114,6 +118,19 @@ def test_longer_authenticated_source_prefix_preserves_early_octets_and_upload_bo
         sha256=hashlib.sha256(first).hexdigest(),
         selection_role="history-dependency",
     )
+    with session_scope(f.factory) as session:
+        earlier = session.get(CollectionUploadProvenanceJournalRecord, (1, summary.journal_id))
+        attempt, directory = earlier.capture_attempt_id, earlier.capture_directory_id
+        prefix_positions = [
+            (row.ordinal, row.byte_offset, row.json_bytes)
+            for row in session.scalars(
+                select(CollectionUploadProvenanceFrameRecord)
+                .where(
+                    CollectionUploadProvenanceFrameRecord.directory_id == directory,
+                )
+                .order_by(CollectionUploadProvenanceFrameRecord.ordinal)
+            )
+        ]
     transfer = CanonicalHistoryTransfer(api, 1)
     first_anchor = HistoryJournalAnchor.from_mapping(summary.anchor)
     transfer._journal(None, first_anchor)
@@ -145,6 +162,21 @@ def test_longer_authenticated_source_prefix_preserves_early_octets_and_upload_bo
                 .order_by(CollectionUploadProvenanceJournalChunkRecord.ordinal)
             )
         )
+        current = session.get(CollectionUploadProvenanceJournalRecord, (1, summary.journal_id))
+        assert current.capture_attempt_id != attempt
+        assert current.capture_directory_id == directory
+        assert current.capture_byte_offset == len(later)
+        assert [
+            (row.ordinal, row.byte_offset, row.json_bytes)
+            for row in session.scalars(
+                select(CollectionUploadProvenanceFrameRecord)
+                .where(
+                    CollectionUploadProvenanceFrameRecord.directory_id == directory,
+                    CollectionUploadProvenanceFrameRecord.ordinal < len(prefix_positions),
+                )
+                .order_by(CollectionUploadProvenanceFrameRecord.ordinal)
+            )
+        ] == prefix_positions
         assert chunks[0].content == first
         assert b"".join(row.content for row in chunks) == later
         assert len(chunks[1].content) == 1024 * 1024

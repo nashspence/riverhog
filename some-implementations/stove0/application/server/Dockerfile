@@ -28,9 +28,11 @@ COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/config-validation packages/config-validation
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
+COPY packages/riverhog-growth-contracts packages/riverhog-growth-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol
+COPY packages/sha256-continuation packages/sha256-continuation
 COPY packages/riverhog-provenance packages/riverhog-provenance
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
 COPY some-implementations/stove0/packages/observer-client some-implementations/stove0/packages/observer-client

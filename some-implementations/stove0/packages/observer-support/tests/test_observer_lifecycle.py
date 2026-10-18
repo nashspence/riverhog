@@ -606,6 +606,8 @@ def test_native_staged_whole_question_and_complete_testimony_preserve_identity(
                 time.sleep(0.01)
         assert receipt.job_id == job.job_id and receipt.request_id == job.request.request_id
         wait_completed(service, job)
+        # Upload and execution do not consume the response continuation's watchdog.
+        deadline = time.monotonic() + 90
         while True:
             assert time.monotonic() < deadline
             try:

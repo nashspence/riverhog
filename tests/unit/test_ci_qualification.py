@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import io
 import json
 import re
 import subprocess
+import urllib.error
 from concurrent.futures import ThreadPoolExecutor
 from threading import Event, Lock
 from types import SimpleNamespace
@@ -584,6 +586,135 @@ def test_admission_wait_retains_pending_work_past_the_old_timeout_and_reports_pl
     assert progress[0]["planning"][0]["state"] == "observing"
     assert progress[0]["attempt_count"] == 0 and progress[0]["failure"] is None
     assert all(timeout == 5 for _, timeout in contacts)
+
+
+def _scheduler_conflict_response(payload: bytes | None = None) -> urllib.error.HTTPError:
+    return urllib.error.HTTPError(
+        "http://127.0.0.1:8080/v1/admin/scheduler/run",
+        409,
+        "Conflict",
+        None,
+        io.BytesIO(
+            payload
+            if payload is not None
+            else b'{"error":{"code":"conflict","message":"concurrent scheduler update"}}'
+        ),
+    )
+
+
+@pytest.mark.parametrize("states", [("work_bound",), ("intent", "previewed", "work_bound")])
+def test_admission_wait_observes_durable_progress_after_declared_scheduler_conflicts(
+    monkeypatch: pytest.MonkeyPatch, states: tuple[str, ...]
+) -> None:
+    monkeypatch.setenv("INPUT_COLLECTION_ID", "7")
+    monkeypatch.setenv("RIVERHOG_SMOKE_SCHEDULER_STEP", "work_bound")
+    monkeypatch.setenv("STOVE0_SMOKE_ADMISSION_TIMEOUT", "10")
+    ticks = iter(range(10))
+    monkeypatch.setattr(
+        processing, "time", SimpleNamespace(monotonic=lambda: next(ticks), sleep=lambda _: None)
+    )
+    pending = iter(states)
+    contacts = []
+    responses = []
+
+    def read(path, payload=None, *, timeout=30):
+        assert timeout == 5
+        contacts.append(path)
+        if payload is not None:
+            error = _scheduler_conflict_response()
+            responses.append(error.fp)
+            raise error
+        assert path.startswith("/v1/admissions?")
+        return {
+            "admissions": [
+                {"intent": {"collection": {"collection_id": "7"}}, "state": next(pending)}
+            ]
+        }
+
+    monkeypatch.setattr(processing, "stove", read)
+    processing.await_admission()
+    assert len(contacts) == 2 * len(states)
+    assert all(path == "/v1/admin/scheduler/run" for path in contacts[::2])
+    assert all(path.startswith("/v1/admissions?") for path in contacts[1::2])
+    assert all(response.closed for response in responses)
+
+
+def test_admission_wait_keeps_deadline_and_conflict_count_without_durable_completion(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("INPUT_COLLECTION_ID", "7")
+    monkeypatch.setenv("RIVERHOG_SMOKE_SCHEDULER_STEP", "work_bound")
+    monkeypatch.setenv("STOVE0_SMOKE_ADMISSION_TIMEOUT", "3")
+    ticks = iter([0, 1, 2, 3])
+    monkeypatch.setattr(
+        processing, "time", SimpleNamespace(monotonic=lambda: next(ticks), sleep=lambda _: None)
+    )
+    contacts = []
+
+    def read(path, payload=None, *, timeout=30):
+        assert timeout == 5
+        contacts.append(path)
+        if payload is not None:
+            raise _scheduler_conflict_response()
+        return {
+            "admissions": [{"intent": {"collection": {"collection_id": "7"}}, "state": "intent"}]
+        }
+
+    monkeypatch.setattr(processing, "stove", read)
+    with pytest.raises(AssertionError) as error:
+        processing.await_admission()
+    diagnostic = json.loads(str(error.value))
+    assert diagnostic["state"] == "intent"
+    assert diagnostic["expected"] == "work_bound"
+    assert diagnostic["scheduler_conflicts"] == 2
+    assert len(contacts) == 4
+
+
+@pytest.mark.parametrize(
+    ("status", "payload", "exception"),
+    [
+        (401, b'{"error":{"code":"unauthorized","message":"denied"}}', urllib.error.HTTPError),
+        (500, b'{"error":{"code":"internal_error","message":"failed"}}', urllib.error.HTTPError),
+        (409, b'{"error":{"code":"bad_request","message":"invalid"}}', ValueError),
+        (409, b"not JSON", ValueError),
+        (409, b'{"error":{"code":"conflict"}}', ValueError),
+    ],
+)
+def test_admission_wait_rejects_other_http_errors_and_invalid_conflict_responses(
+    monkeypatch: pytest.MonkeyPatch, status: int, payload: bytes, exception: type[Exception]
+) -> None:
+    monkeypatch.setenv("INPUT_COLLECTION_ID", "7")
+    monkeypatch.setenv("RIVERHOG_SMOKE_SCHEDULER_STEP", "work_bound")
+    monkeypatch.setenv("STOVE0_SMOKE_ADMISSION_TIMEOUT", "3")
+    monkeypatch.setattr(processing, "time", SimpleNamespace(monotonic=lambda: 0))
+    error = _scheduler_conflict_response(payload)
+    error.code = status
+    contacts = []
+
+    def read(path, payload=None, *, timeout=30):
+        contacts.append(path)
+        assert path == "/v1/admin/scheduler/run"
+        raise error
+
+    monkeypatch.setattr(processing, "stove", read)
+    try:
+        with pytest.raises(exception):
+            processing.await_admission()
+        assert len(contacts) == 1
+    finally:
+        error.close()
+
+
+def test_admission_wait_still_rejects_missing_scheduler_result(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("INPUT_COLLECTION_ID", "7")
+    monkeypatch.setenv("RIVERHOG_SMOKE_SCHEDULER_STEP", "work_bound")
+    monkeypatch.setenv("STOVE0_SMOKE_ADMISSION_TIMEOUT", "3")
+    monkeypatch.setattr(processing, "time", SimpleNamespace(monotonic=lambda: 0))
+    monkeypatch.setattr(processing, "stove", lambda *args, **kwargs: {})
+    with pytest.raises(KeyError, match="admission"):
+        processing.await_admission()
 
 
 def test_admission_wait_does_not_retry_a_reported_admission_failure(

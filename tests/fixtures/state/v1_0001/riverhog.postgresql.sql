@@ -1679,6 +1679,17 @@ CREATE TABLE collection_upload_provenance_journals (
 	content_hash_state TEXT NOT NULL,
 	validation_byte_offset BIGINT DEFAULT 0 NOT NULL,
 	validation_sequence BIGINT DEFAULT 0 NOT NULL,
+	capture_attempt_id VARCHAR,
+	capture_directory_id VARCHAR,
+	capture_algorithm VARCHAR,
+	capture_source_sha256 VARCHAR(64),
+	capture_source_bytes BIGINT,
+	capture_version VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
+	capture_phase VARCHAR DEFAULT 'pending' NOT NULL,
+	capture_byte_offset BIGINT DEFAULT 0 NOT NULL,
+	capture_frame_start BIGINT,
+	capture_frame_count VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
+	capture_failure TEXT,
 	validation_previous_entry_id VARCHAR,
 	validation_previous_json_sha256 VARCHAR(64),
 	primary_lineage_id VARCHAR,
@@ -1690,6 +1701,12 @@ CREATE TABLE collection_upload_provenance_journals (
 	PRIMARY KEY (collection_id, journal_id),
 	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
 	CONSTRAINT ck_upload_provenance_journals_bytes CHECK (bytes >= 0),
+	CONSTRAINT ck_upload_provenance_journals_capture_phase CHECK (capture_phase IN ('pending','extending','scanning','complete','deferred')),
+	CONSTRAINT ck_upload_provenance_journals_capture_offset CHECK (capture_byte_offset >= 0 AND capture_byte_offset <= accepted_bytes),
+	CONSTRAINT ck_upload_provenance_journals_capture_start CHECK (capture_frame_start IS NULL OR capture_frame_start >= 0 AND capture_frame_start < capture_byte_offset),
+	CONSTRAINT ck_upload_provenance_journals_capture_source_bytes CHECK (capture_source_bytes IS NULL OR capture_source_bytes >= 0),
+	CONSTRAINT ck_upload_provenance_journals_capture_version CHECK (length(capture_version) = 64 AND lower(capture_version) = capture_version AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(capture_version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_provenance_journals_capture_count CHECK (length(capture_frame_count) = 64 AND lower(capture_frame_count) = capture_frame_count AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(capture_frame_count, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_upload_provenance_journals_accepted_bytes CHECK (accepted_bytes >= 0 AND accepted_bytes <= bytes),
 	CONSTRAINT ck_upload_provenance_journals_next_chunk_ordinal CHECK (length(next_chunk_ordinal) = 64 AND lower(next_chunk_ordinal) = next_chunk_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(next_chunk_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_upload_provenance_journals_validation_offset CHECK (validation_byte_offset >= 0 AND validation_byte_offset <= accepted_bytes),
@@ -1698,9 +1715,33 @@ CREATE TABLE collection_upload_provenance_journals (
 	CONSTRAINT ck_upload_provenance_journals_terminal_sequence CHECK (terminal_sequence IS NULL OR terminal_sequence >= 0),
 	CONSTRAINT ck_upload_provenance_journals_sha256 CHECK (length(sha256) = 64),
 	CONSTRAINT ck_collection_upload_provenance_journals_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_35103bcbafcadf05 CHECK (capture_source_sha256 IS NULL OR length(capture_source_sha256) = 64 AND lower(capture_source_sha256) = capture_source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(capture_source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_164241c9bc3b84b3 CHECK (validation_previous_json_sha256 IS NULL OR length(validation_previous_json_sha256) = 64 AND lower(validation_previous_json_sha256) = validation_previous_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(validation_previous_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_079f7a2aeed5fb0d CHECK (terminal_json_sha256 IS NULL OR length(terminal_json_sha256) = 64 AND lower(terminal_json_sha256) = terminal_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
+
+CREATE TABLE collection_upload_provenance_frames (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	directory_id VARCHAR NOT NULL,
+	ordinal VARCHAR(64) NOT NULL,
+	byte_offset BIGINT NOT NULL,
+	json_bytes BIGINT NOT NULL,
+	epoch_attempt_id VARCHAR,
+	epoch_ordinal VARCHAR(64),
+	epoch_entry_kind VARCHAR,
+	epoch_json_sha256 VARCHAR(64),
+	PRIMARY KEY (collection_id, journal_id, directory_id, ordinal),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_provenance_frames_ordinal CHECK (length(ordinal) = 64 AND lower(ordinal) = ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_provenance_frames_offset CHECK (byte_offset >= 0),
+	CONSTRAINT ck_upload_provenance_frames_epoch CHECK (length(epoch_ordinal) = 64 AND lower(epoch_ordinal) = epoch_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_provenance_frames_epoch_binding CHECK (epoch_attempt_id IS NULL AND epoch_ordinal IS NULL AND epoch_entry_kind IS NULL AND epoch_json_sha256 IS NULL OR epoch_attempt_id IS NOT NULL AND epoch_ordinal IS NOT NULL AND epoch_json_sha256 IS NOT NULL AND epoch_entry_kind IS NOT NULL AND epoch_entry_kind IN ('journal_init','assertion','correction','checkpoint')),
+	CONSTRAINT ck_upload_provenance_frames_json_bytes CHECK (json_bytes >= 0 AND json_bytes <= 8388608),
+	CONSTRAINT ck_collection_upload_provenance_frames_epoch_json_sha256_hex CHECK (epoch_json_sha256 IS NULL OR length(epoch_json_sha256) = 64 AND lower(epoch_json_sha256) = epoch_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_upload_provenance_journals_validation ON collection_upload_provenance_journals (state, collection_id, journal_id);
 
 CREATE TABLE collection_upload_provenance_structure (
 	collection_id BIGINT NOT NULL,
@@ -2062,6 +2103,8 @@ CREATE TABLE collection_upload_provenance_journal_chunks (
 	CONSTRAINT ck_upload_provenance_journal_chunks_content CHECK (length(content) > 0)
 );
 
+CREATE UNIQUE INDEX ux_upload_provenance_journal_chunk_offsets ON collection_upload_provenance_journal_chunks (collection_id, journal_id, byte_offset);
+
 CREATE TABLE collection_upload_raw_part_digests (
 	collection_id BIGINT NOT NULL,
 	artifact_id VARCHAR(64) NOT NULL,
@@ -2379,5 +2422,207 @@ CREATE INDEX ix_collection_artifacts_sha_trgm ON collection_artifacts USING gin 
 ;
 
 CREATE INDEX ix_collection_processing_capability_scope_owner ON collection_processing_capabilities (artifact_scope_capability_id, id);
+
+CREATE TABLE collection_upload_provenance_capture_segments (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	directory_id VARCHAR NOT NULL,
+	ordinal VARCHAR(64) NOT NULL,
+	content BYTEA NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, directory_id, ordinal),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_capture_segments_ordinal CHECK (length(ordinal) = 64 AND lower(ordinal) = ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_capture_segments_extent CHECK (length(content) > 0 AND length(content) <= 65536),
+	CONSTRAINT ck_upload_capture_segments_digest CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_upload_provenance_capture_segments_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE collection_upload_provenance_epoch_scans (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	directory_id VARCHAR NOT NULL,
+	algorithm VARCHAR NOT NULL,
+	version VARCHAR(64) NOT NULL,
+	next_frame VARCHAR(64) NOT NULL,
+	byte_offset BIGINT NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	state VARCHAR NOT NULL,
+	topology_algorithm VARCHAR NOT NULL,
+	topology_next_frame VARCHAR(64) NOT NULL,
+	topology_state VARCHAR NOT NULL,
+	topology_cursor_json TEXT NOT NULL,
+	union_algorithm VARCHAR NOT NULL,
+	union_next_frame VARCHAR(64) NOT NULL,
+	union_state VARCHAR NOT NULL,
+	union_cursor_json TEXT NOT NULL,
+	rank_algorithm VARCHAR NOT NULL,
+	rank_state VARCHAR NOT NULL,
+	rank_cursor_json TEXT NOT NULL,
+	replay_binding_json TEXT,
+	PRIMARY KEY (collection_id, journal_id),
+	CONSTRAINT ck_upload_rank_state CHECK (rank_state IN ('ranking','complete')),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_epoch_version CHECK (length(version) = 64 AND lower(version) = version AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_frame CHECK (length(next_frame) = 64 AND lower(next_frame) = next_frame AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(next_frame, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_ordinal CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_offset CHECK (byte_offset >= 0),
+	CONSTRAINT ck_upload_union_frame CHECK (length(union_next_frame) = 64 AND lower(union_next_frame) = union_next_frame AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(union_next_frame, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_union_state CHECK (union_state IN ('building','complete','deferred')),
+	CONSTRAINT ck_upload_topology_frame CHECK (length(topology_next_frame) = 64 AND lower(topology_next_frame) = topology_next_frame AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(topology_next_frame, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_topology_state CHECK (topology_state IN ('scanning','complete','deferred')),
+	CONSTRAINT ck_upload_epoch_state CHECK (state IN ('scanning','complete','deferred'))
+);
+
+CREATE TABLE collection_upload_provenance_topology_facts (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	frame_ordinal VARCHAR(64) NOT NULL,
+	array_kind VARCHAR NOT NULL,
+	item_ordinal VARCHAR(64) NOT NULL,
+	directory_id VARCHAR NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	byte_offset BIGINT NOT NULL,
+	json_bytes BIGINT NOT NULL,
+	json_sha256 VARCHAR(64) NOT NULL,
+	assertion_id VARCHAR NOT NULL,
+	kind VARCHAR NOT NULL,
+	source_id VARCHAR,
+	target_id VARCHAR,
+	PRIMARY KEY (collection_id, journal_id, attempt_id, frame_ordinal, array_kind, item_ordinal),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_topology_fact_frame CHECK (length(frame_ordinal) = 64 AND lower(frame_ordinal) = frame_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(frame_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_topology_fact_item CHECK (length(item_ordinal) = 64 AND lower(item_ordinal) = item_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(item_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_topology_fact_epoch CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_topology_fact_extent CHECK (byte_offset >= 0 AND json_bytes > 0 AND json_bytes <= 8388608),
+	CONSTRAINT ck_upload_topology_fact_array CHECK (array_kind IN ('retracts','relations')),
+	CONSTRAINT ck_upload_topology_fact_binding CHECK (kind = 'retraction' AND array_kind = 'retracts' AND source_id IS NULL AND target_id IS NULL OR kind IN ('derivation','specialization') AND array_kind = 'relations' AND source_id IS NOT NULL AND target_id IS NOT NULL),
+	CONSTRAINT ck_sha256_7a53648bf3dd0cbd CHECK (length(json_sha256) = 64 AND lower(json_sha256) = json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE collection_upload_provenance_active_edges (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	assertion_id VARCHAR NOT NULL,
+	frame_ordinal VARCHAR(64) NOT NULL,
+	item_ordinal VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	source_id VARCHAR NOT NULL,
+	target_id VARCHAR NOT NULL,
+	active BOOLEAN NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, attempt_id, assertion_id),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_active_edge_frame CHECK (length(frame_ordinal) = 64 AND lower(frame_ordinal) = frame_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(frame_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_active_edge_item CHECK (length(item_ordinal) = 64 AND lower(item_ordinal) = item_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(item_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_active_edge_kind CHECK (kind IN ('derivation','specialization'))
+);
+
+CREATE INDEX ix_upload_active_edge_seed ON collection_upload_provenance_active_edges (collection_id, journal_id, attempt_id, active, assertion_id);
+
+CREATE TABLE collection_upload_provenance_epoch_graphs (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	vertex_count VARCHAR(64) NOT NULL,
+	arc_count VARCHAR(64) NOT NULL,
+	state VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, attempt_id, epoch, kind),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_epoch_graph_ordinal CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_graph_vertices CHECK (length(vertex_count) = 64 AND lower(vertex_count) = vertex_count AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(vertex_count, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_graph_arcs CHECK (length(arc_count) = 64 AND lower(arc_count) = arc_count AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(arc_count, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_graph_kind CHECK (kind IN ('derivation','specialization')),
+	CONSTRAINT ck_upload_epoch_graph_state CHECK (state IN ('building','complete'))
+);
+
+CREATE TABLE collection_upload_provenance_epoch_arcs (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	source_id VARCHAR NOT NULL,
+	target_id VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, attempt_id, epoch, kind, source_id, target_id),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_epoch_arc_ordinal CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_arc_kind CHECK (kind IN ('derivation','specialization'))
+);
+
+CREATE TABLE collection_upload_provenance_epoch_vertices (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	vertex_id VARCHAR NOT NULL,
+	indegree VARCHAR(64) NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, attempt_id, epoch, kind, vertex_id),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_epoch_vertex_ordinal CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_vertex_degree CHECK (length(indegree) = 64 AND lower(indegree) = indegree AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(indegree, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_epoch_vertex_kind CHECK (kind IN ('derivation','specialization'))
+);
+
+CREATE TABLE collection_upload_provenance_epoch_rank_graphs (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	vertex_count VARCHAR(64) NOT NULL,
+	arc_count VARCHAR(64) NOT NULL,
+	settled_vertices VARCHAR(64) NOT NULL,
+	visited_arcs VARCHAR(64) NOT NULL,
+	state VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, attempt_id, epoch, kind),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_rank_graph_epoch CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_graph_vertices CHECK (length(vertex_count) = 64 AND lower(vertex_count) = vertex_count AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(vertex_count, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_graph_arcs CHECK (length(arc_count) = 64 AND lower(arc_count) = arc_count AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(arc_count, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_graph_settled CHECK (length(settled_vertices) = 64 AND lower(settled_vertices) = settled_vertices AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(settled_vertices, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_graph_visited CHECK (length(visited_arcs) = 64 AND lower(visited_arcs) = visited_arcs AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(visited_arcs, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_graph_kind CHECK (kind IN ('derivation','specialization')),
+	CONSTRAINT ck_upload_rank_graph_state CHECK (state IN ('acyclic','cyclic'))
+);
+
+CREATE TABLE collection_upload_provenance_epoch_rank_vertices (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	attempt_id VARCHAR NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	vertex_id VARCHAR NOT NULL,
+	remaining_degree VARCHAR(64) NOT NULL,
+	rank VARCHAR(64),
+	ready BOOLEAN NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, attempt_id, epoch, kind, vertex_id),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_rank_vertex_epoch CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_vertex_degree CHECK (length(remaining_degree) = 64 AND lower(remaining_degree) = remaining_degree AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(remaining_degree, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_vertex_rank CHECK (rank IS NULL OR length(rank) = 64 AND lower(rank) = rank AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(rank, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_rank_vertex_kind CHECK (kind IN ('derivation','specialization'))
+);
+
+CREATE INDEX ix_upload_epoch_rank_ready ON collection_upload_provenance_epoch_rank_vertices (collection_id, journal_id, attempt_id, epoch, kind, ready, vertex_id);
+
+CREATE TABLE collection_upload_provenance_retired_preparations (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	retired_attempt_id VARCHAR NOT NULL,
+	directory_id VARCHAR NOT NULL,
+	algorithm VARCHAR NOT NULL,
+	version VARCHAR(64) NOT NULL,
+	phase INTEGER NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, retired_attempt_id),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_retired_preparation_version CHECK (length(version) = 64 AND lower(version) = version AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_retired_preparation_phase CHECK (phase >= 0 AND phase < 7)
+);
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

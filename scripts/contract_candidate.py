@@ -27,6 +27,7 @@ from contract_atlas.records import load_bundle
 from contract_atlas.review import compare_revisions
 from contract_atlas.review import summary as comparison_summary
 from documentation import resolve_baseline
+from riverhog_canonical_json import require_canonical_json
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -39,6 +40,7 @@ def _parser() -> argparse.ArgumentParser:
         command.add_argument("--release")
         command.add_argument("--documentation-commit")
         command.add_argument("--replace", action="store_true")
+        command.add_argument("--growth-evidence", type=Path, action="append", default=[])
         command.add_argument("--source-repository", type=Path)
         command.add_argument("--release-version")
         command.add_argument("--source-archive", type=Path)
@@ -136,6 +138,25 @@ def main(argv: list[str] | None = None) -> int:
                 if document
                 else (None, None)
             )
+            growth_evidence = []
+            for path in args.growth_evidence:
+                try:
+                    bundle = require_canonical_json(path.read_bytes())
+                except (OSError, ValueError) as error:
+                    raise ContractAtlasError(
+                        "growth evidence bundle is unavailable or invalid"
+                    ) from error
+                if (
+                    not isinstance(bundle, dict)
+                    or set(bundle) != {"format", "records"}
+                    or bundle["format"] != "riverhog-growth-execution-bundle/v1"
+                    or not isinstance(bundle["records"], list)
+                    or not bundle["records"]
+                ):
+                    raise ContractAtlasError(
+                        "growth evidence bundle has no retained execution records"
+                    )
+                growth_evidence.extend(bundle["records"])
             candidate = build_candidate(
                 revision=revision,
                 documentation=document,
@@ -143,6 +164,7 @@ def main(argv: list[str] | None = None) -> int:
                 initial_documentation_review=args.initial_review,
                 documentation_baseline=baseline,
                 baseline_custody=custody,
+                growth_evidence=growth_evidence,
             )
             if args.stage_documentation:
                 if document is None or args.command != "generate" or preparation is None:
