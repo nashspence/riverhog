@@ -36,7 +36,7 @@ from .graph import iter_assertions
 if TYPE_CHECKING:
     from .journal import JournalFrame
 
-ALGORITHM = "riverhog-assertion-staging/v1"
+ALGORITHM = "riverhog-assertion-staging/v2"
 MAX_ROWS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -108,6 +108,7 @@ class StageRow:
     observation_id: str | None
     value: bytes
     signature: bytes
+    activity: tuple[str, str | None, str | None] | None
 
 
 @dataclass(frozen=True)
@@ -121,6 +122,10 @@ class StageBatch:
 
 
 def install(db: sqlite3.Connection) -> None:
+    db.execute(
+        "CREATE TABLE activity_projection(assertion_id TEXT PRIMARY KEY, kind TEXT NOT NULL, "
+        "started_at TEXT, ended_at TEXT)"
+    ).close()
     db.execute(
         "CREATE TABLE journal_assertion_staging(singleton INTEGER PRIMARY KEY CHECK(singleton=1), "
         "algorithm TEXT NOT NULL, attempt_id TEXT NOT NULL, binding BLOB NOT NULL, "
@@ -164,7 +169,7 @@ def _declaration() -> Declaration:
                 "sql_statements",
                 COUNT,
                 "upper",
-                Expression("sum", terms=(count(48), multiple(9, budget))),
+                Expression("sum", terms=(count(48), multiple(10, budget))),
                 "Fixed manifest/boundary checks and indexed per-assertion reads and writes.",
             ),
             Bound(
@@ -178,8 +183,9 @@ def _declaration() -> Declaration:
                 "changed_rows",
                 COUNT,
                 "upper",
-                Expression("sum", terms=(count(1), multiple(4, budget))),
-                "One checkpoint and at most two identities, one assertion and one change per row.",
+                Expression("sum", terms=(count(1), multiple(5, budget))),
+                "One checkpoint, two identities, assertion/change rows, "
+                "and optional activity metadata.",
             ),
             Bound(
                 "metadata_octets",
@@ -499,6 +505,9 @@ class AssertionStaging:
                     source.get("observation_id"),
                     canonical_document(source),
                     _identity_signature(source),
+                    (source["kind"], source.get("started_at"), source.get("ended_at"))
+                    if source["type"] == "activity"
+                    else None,
                 )
                 octets = (
                     len(row.assertion_id.encode()) * 3
@@ -514,6 +523,10 @@ class AssertionStaging:
                     + len("referent")
                     + 1
                 )
+                if row.activity is not None:
+                    octets += len(row.assertion_id.encode()) + sum(
+                        len(value.encode()) for value in row.activity if value is not None
+                    )
                 if admitted + octets > byte_budget:
                     if not rows:
                         raise AssertionStagingCapacity(
@@ -648,6 +661,11 @@ class AssertionStaging:
                     raise ProvenanceValidationError(
                         "duplicate effective entity/record identity"
                     ) from exc
+                if row.activity is not None:
+                    self.db.execute(
+                        "INSERT INTO activity_projection VALUES (?,?,?,?)",
+                        (row.assertion_id, *row.activity),
+                    ).close()
                 self.db.execute("INSERT INTO changes VALUES (?)", (row.assertion_id,)).close()
             self.db.commit()
         except BaseException:

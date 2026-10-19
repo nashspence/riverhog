@@ -223,6 +223,9 @@ class _Validator:
             raise ProvenanceValidationError(f"unresolved local identity: {identity}")
         return self._node_type(value, *types)
 
+    def _lifecycle_activity(self, identity: str) -> dict[str, Any]:
+        return self.node(identity, "activity")
+
     @staticmethod
     def _node_type(value: dict[str, Any], *types: str) -> dict[str, Any]:
         if types and value["type"] not in types:
@@ -415,7 +418,7 @@ class _Validator:
                     self._check_metadata_coverage(row)
             elif kind in ("usage", "generation", "invalidation"):
                 self.reference(row["state"], "state")
-                activity = self.node(row["activity_id"], "activity")
+                activity = self._lifecycle_activity(row["activity_id"])
                 if kind == "generation":
                     if activity["kind"] == "observation":
                         raise ProvenanceValidationError(

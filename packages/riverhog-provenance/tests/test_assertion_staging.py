@@ -88,7 +88,11 @@ def row(ordinal, payload=0):
 
 def frame(rows=(), **fields):
     values = list(rows)
-    category = "extensions" if values and values[0]["type"] == "extension" else "agents"
+    category = (
+        {"extension": "extensions", "activity": "activities"}.get(values[0]["type"], "agents")
+        if values
+        else "agents"
+    )
     return JournalFrame(
         canonical_json_bytes(
             {
@@ -124,6 +128,7 @@ def contents(db):
             "frames",
             "journal_prefix",
             "journal_assertion_staging",
+            "activity_projection",
         )
     }
 
@@ -138,7 +143,7 @@ def logical_octets(values):
 
 def proposed_octets(category, value, sequence="1"):
     signature = _identity_signature(value)
-    return sum(
+    total = sum(
         logical_octets(values)
         for values in (
             (value["assertion_id"], "assertion", b""),
@@ -157,6 +162,16 @@ def proposed_octets(category, value, sequence="1"):
             (value["assertion_id"],),
         )
     )
+    if value["type"] == "activity":
+        total += logical_octets(
+            (
+                value["assertion_id"],
+                value["kind"],
+                value.get("started_at"),
+                value.get("ended_at"),
+            )
+        )
+    return total
 
 
 def test_reopen_each_unit_stages_native_source_order_and_keeps_accepted_prefix(tmp_path):
@@ -803,12 +818,34 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
         (17, 4097, 16, 1, 0, True),
         (17, 0, 16, 0, 65537, True),
     ]
+    activity_start = len(regimes)
+    regimes.extend(
+        [
+            (0, 0, 16, 0, 0, False),
+            (1, 0, 1, 0, 0, False),
+            (15, 0, 16, 0, 0, False),
+            (16, 0, 16, 0, 0, False),
+            (17, 0, 16, 1, 0, False),
+            (129, 0, 64, 17, 0, False),
+            (17, 4097, 16, 0, 0, False),
+            (17, 0, 16, 0, 65537, False),
+        ]
+    )
     for terminal in (False, True):
         for index, (count, history, quantum, resumed, payload, existing) in enumerate(regimes):
             path = tmp_path / f"{terminal}-{index}.sqlite3"
             create(path)
             values = [row(n, payload) for n in range(count)]
             category = "agents"
+            if index >= activity_start:
+                category = "activities"
+                for value in values:
+                    value.update(
+                        type="activity",
+                        kind="materialization",
+                        started_at="0001-01-01T00:00:00Z",
+                        ended_at="9999-12-31T23:59:59.999999999Z",
+                    )
             if existing and payload:
                 category = "extensions"
                 values = [
@@ -861,7 +898,7 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                         current.advance(row_budget=1)
                 retained = sum(
                     db.execute("SELECT count(*) FROM " + name).fetchone()[0]
-                    for name in ("identities", "assertions", "changes")
+                    for name in ("identities", "assertions", "changes", "activity_projection")
                 )
                 maximum = max(
                     (
@@ -873,7 +910,13 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                 )
             with closing(connect(path, factory=WorkConnection)) as db:
                 current = work(db, source)
-                admission = 220000 if payload and existing else 100000 if payload else 65536
+                admission = (
+                    220000
+                    if payload and (existing or index >= activity_start)
+                    else 100000
+                    if payload
+                    else 65536
+                )
                 with db.observe() as metrics:
                     current.advance(row_budget=quantum, byte_budget=admission)
                 sample = {
@@ -892,7 +935,7 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                 }
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 samples.append(sample)
-    assert len(samples) == 24
+    assert len(samples) == 40
     record_property("growth_samples", samples)
 
 

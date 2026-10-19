@@ -54,5 +54,6 @@ def install(db: sqlite3.Connection) -> None:
         "CREATE INDEX semantic_subject ON assertions(assertion_id,object_id,type,active)"
     ).close()
     db.execute(
-        "CREATE INDEX semantic_reference_type ON assertions(object_id,type) WHERE active=1"
+        "CREATE INDEX semantic_reference_type ON assertions(object_id,type,assertion_id) "
+        "WHERE active=1"
     ).close()
