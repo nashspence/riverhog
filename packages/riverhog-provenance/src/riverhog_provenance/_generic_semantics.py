@@ -36,13 +36,14 @@ from riverhog_provenance_contracts import (
 )
 
 from ._activity_projection import read_activity
+from ._binding_projection import read_binding_time
 from ._journal_prefix import PrefixState
 from ._semantic_program import ROW_STAGES, ROW_TYPES, Frame, MemoryStack, Nodes, Program, Stack
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .graph import _Validator
 
-ALGORITHM = "riverhog-generic-semantics/v3"
+ALGORITHM = "riverhog-generic-semantics/v4"
 MAX_STEPS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -399,7 +400,8 @@ def _declaration() -> Declaration:
         conditions=(
             "The owner retains the exact immutable admitted row/source, sealed catalog and modes.",
             "Covering active-object/subject indexes and indexed variable state are installed.",
-            "Staging owns fixed activity fields; lifecycle aggregates retain only "
+            "Staging owns fixed activity and locator-binding fields; "
+            "lifecycle aggregates retain only "
             "canonical activity identity and optional native timestamp metadata.",
             "The source admission index is constructed once outside checkpoint transactions.",
             "The metadata envelope accounts for actual identifier, cursor and control widths.",
@@ -580,6 +582,36 @@ class _Lifecycle(MutableMapping[str, dict[str, Any]]):
         raise RuntimeError("semantic units do not count lifecycle events")
 
 
+class _BindingEnds(MutableSet[str]):
+    def __init__(
+        self, owner: GenericSemantics, meter: _Meter, writes: dict[tuple[str, bytes], bytes]
+    ) -> None:
+        self.owner, self.meter, self.writes = owner, meter, writes
+
+    def __contains__(self, value: object) -> bool:
+        if not isinstance(value, str):
+            return False
+        key = b"j" + canonical_json_bytes(value)
+        self.meter.claim(len(key))
+        return ("ends", key) in self.writes or self.owner._one(
+            "SELECT 1 FROM maps WHERE name='ends' AND key=?", (key,)
+        ) is not None
+
+    def add(self, value: str) -> None:
+        key = b"j" + canonical_json_bytes(value)
+        self.meter.claim(4 * len(key) + 4)
+        self.writes["ends", key] = b"null"
+
+    def discard(self, value: str) -> None:
+        raise RuntimeError("semantic undo owns binding-end removal")
+
+    def __iter__(self) -> Iterator[str]:
+        raise RuntimeError("semantic units do not enumerate binding ends")
+
+    def __len__(self) -> int:
+        raise RuntimeError("semantic units do not count binding ends")
+
+
 class _ProjectedValidator(_Validator):
     def __init__(
         self,
@@ -593,6 +625,7 @@ class _ProjectedValidator(_Validator):
         self.objects = _Objects(owner, meter)
         self.externals = _Output("externals", meter, outputs)
         self.profiles = _Output("profiles", meter, outputs)
+        self.binding_ends = _BindingEnds(owner, meter, outputs)
         self.lifecycle = {
             name: _Lifecycle(owner, name, meter, outputs) for name in ("generation", "invalidation")
         }
@@ -600,6 +633,11 @@ class _ProjectedValidator(_Validator):
     def _lifecycle_activity(self, identity: str) -> dict[str, Any]:
         value = read_activity(self.owner.db, identity)
         self.meter.claim(sum(len(item.encode()) for item in value.values()))
+        return value
+
+    def _binding_time(self, identity: str) -> str | None:
+        value = read_binding_time(self.owner.db, identity)
+        self.meter.claim(len(identity.encode()) + (len(value.encode()) if value is not None else 0))
         return value
 
 

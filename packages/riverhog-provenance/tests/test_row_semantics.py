@@ -90,6 +90,11 @@ def subject(kind, count=3, *, rejected=False):
             activity_id=identity(35),
             at="2025-12-31T00:00:00Z" if rejected else "2026-01-01T12:00:00Z",
         )
+    elif kind == "locator_binding_end":
+        row.update(
+            binding_id=identity(36),
+            at="2025-12-31T00:00:00Z" if rejected else "2026-01-01T12:00:00Z",
+        )
     elif kind == "continuity":
         row.update(earlier_state=reference("state", 33), later_state=reference("state", 34))
     elif kind == "custody_assertion":
@@ -126,6 +131,7 @@ def references():
             ("state", 33),
             ("state", 34),
             ("activity", 35),
+            ("locator_binding", 36),
         )
     ]
     for value in values:
@@ -133,10 +139,12 @@ def references():
             value.update(
                 kind="creation", started_at="2026-01-01T00:00:00Z", ended_at="2026-01-02T00:00:00Z"
             )
+        elif value["type"] == "locator_binding":
+            value["temporal_scope"] = {"kind": "instant", "at": "2026-01-01T00:00:00Z"}
     return values
 
 
-def prepare(path, row, *, retained=0, aggregate_history=0):
+def prepare(path, row, *, retained=0, aggregate_history=0, end_history=0):
     create(path, row)
     with closing(connect(path)) as db:
         for value in references()[1:]:
@@ -164,6 +172,11 @@ def prepare(path, row, *, retained=0, aggregate_history=0):
                         value.get("ended_at"),
                     ),
                 ).close()
+            elif value["type"] == "locator_binding":
+                db.execute(
+                    "INSERT INTO binding_projection VALUES (?,?)",
+                    (value["assertion_id"], value["temporal_scope"]["at"]),
+                ).close()
         for n in range(aggregate_history):
             db.execute(
                 "INSERT INTO maps VALUES (?,?,?)",
@@ -172,6 +185,11 @@ def prepare(path, row, *, retained=0, aggregate_history=0):
                     b"j" + canonical_json_bytes(identity(10000 + n)),
                     canonical_json_bytes({"activity_id": identity(35)}),
                 ),
+            ).close()
+        for n in range(end_history):
+            db.execute(
+                "INSERT INTO maps VALUES ('ends',?,?)",
+                (b"j" + canonical_json_bytes(identity(20000 + n)), b"null"),
             ).close()
         db.executemany(
             "INSERT INTO assertions VALUES (?,?,?,?,?,?,?,?,?)",
@@ -205,20 +223,26 @@ def native(row, catalog):
         require_profiles=False,
     )
     current.row_semantics(row)
-    return sorted(
-        (name, key, canonical_json_bytes(value))
-        for name, values in (("externals", current.externals), ("profiles", current.profiles))
-        for key, value in values.items()
-    ) + sorted(
-        (
-            name,
-            b"j" + canonical_json_bytes(key),
-            canonical_json_bytes(
-                {field: value[field] for field in ("activity_id", "at") if field in value}
-            ),
+    return (
+        sorted(
+            (name, key, canonical_json_bytes(value))
+            for name, values in (("externals", current.externals), ("profiles", current.profiles))
+            for key, value in values.items()
         )
-        for name, values in current.lifecycle.items()
-        for key, value in values.items()
+        + sorted(
+            (
+                name,
+                b"j" + canonical_json_bytes(key),
+                canonical_json_bytes(
+                    {field: value[field] for field in ("activity_id", "at") if field in value}
+                ),
+            )
+            for name, values in current.lifecycle.items()
+            for key, value in values.items()
+        )
+        + sorted(
+            ("ends", b"j" + canonical_json_bytes(key), b"null") for key in current.binding_ends
+        )
     )
 
 
@@ -465,6 +489,8 @@ def growth_samples(tmp_path, catalog):
         for stage in (1, 2, 3)
     ]
     cases += [(kind, 3, True) for kind in ("usage", "generation", "invalidation")]
+    cases += [("locator_binding_end", stage, False) for stage in (1, 2)]
+    cases += [("locator_binding_end", 2, True)]
     for case, (kind, stage, rejected) in enumerate(cases):
         for count, budget in ((1, 1), (15, 16), (16, 16), (17, 16), (129, 16), (1025, 64)):
             row = subject(kind, count, rejected=rejected)
@@ -475,7 +501,18 @@ def growth_samples(tmp_path, catalog):
                 if kind in ("generation", "invalidation") and stage == 2
                 else 0
             )
-            prepare(path, row, retained=retained_history, aggregate_history=aggregate_history)
+            end_history = (
+                (4097 if count == 129 else count if count in (15, 16, 17) else 0)
+                if kind == "locator_binding_end" and stage == 1
+                else 0
+            )
+            prepare(
+                path,
+                row,
+                retained=retained_history,
+                aggregate_history=aggregate_history,
+                end_history=end_history,
+            )
             with closing(sqlite3.connect(":memory:")) as db:
                 with closing(connect(path)) as original:
                     original.backup(db)
@@ -489,6 +526,7 @@ def growth_samples(tmp_path, catalog):
                     "changes",
                     "maps",
                     "activity_projection",
+                    "binding_projection",
                     "journal_prefix",
                     "journal_generic_semantics",
                     "generic_semantic_frames",
@@ -537,6 +575,8 @@ def growth_samples(tmp_path, catalog):
                         message = (
                             "event precedes activity start"
                             if kind in ("usage", "generation", "invalidation")
+                            else "binding end precedes the known binding"
+                            if kind == "locator_binding_end"
                             else "configuration digest mismatch"
                         )
                         with pytest.raises(ProvenanceValidationError, match=message):
@@ -546,7 +586,7 @@ def growth_samples(tmp_path, catalog):
                         suffix.result()
                         assert outputs(suffix_db) == sorted(history_outputs + native(row, catalog))
                     require_reclaimed(suffix_db)
-    assert len(samples) == 174
+    assert len(samples) == 198
     return samples
 
 

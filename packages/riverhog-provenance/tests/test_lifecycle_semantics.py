@@ -139,7 +139,8 @@ def test_observation_activity_rejects_generation_before_uniqueness_and_time(
     monkeypatch,
 ):
     references = rows.references()
-    references[-1]["kind"] = "observation"
+    activity = next(value for value in references if value["type"] == "activity")
+    activity["kind"] = "observation"
     monkeypatch.setattr(rows, "references", lambda: references)
     row = rows.subject("generation", rejected=True)
     path = tmp_path / "capture.sqlite3"

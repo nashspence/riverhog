@@ -36,7 +36,7 @@ from .graph import iter_assertions
 if TYPE_CHECKING:
     from .journal import JournalFrame
 
-ALGORITHM = "riverhog-assertion-staging/v2"
+ALGORITHM = "riverhog-assertion-staging/v3"
 MAX_ROWS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -109,6 +109,7 @@ class StageRow:
     value: bytes
     signature: bytes
     activity: tuple[str, str | None, str | None] | None
+    binding: tuple[str | None] | None
 
 
 @dataclass(frozen=True)
@@ -125,6 +126,9 @@ def install(db: sqlite3.Connection) -> None:
     db.execute(
         "CREATE TABLE activity_projection(assertion_id TEXT PRIMARY KEY, kind TEXT NOT NULL, "
         "started_at TEXT, ended_at TEXT)"
+    ).close()
+    db.execute(
+        "CREATE TABLE binding_projection(assertion_id TEXT PRIMARY KEY, bound_at TEXT)"
     ).close()
     db.execute(
         "CREATE TABLE journal_assertion_staging(singleton INTEGER PRIMARY KEY CHECK(singleton=1), "
@@ -185,7 +189,7 @@ def _declaration() -> Declaration:
                 "upper",
                 Expression("sum", terms=(count(1), multiple(5, budget))),
                 "One checkpoint, two identities, assertion/change rows, "
-                "and optional activity metadata.",
+                "and one optional activity or locator-binding metadata row.",
             ),
             Bound(
                 "metadata_octets",
@@ -508,6 +512,9 @@ class AssertionStaging:
                     (source["kind"], source.get("started_at"), source.get("ended_at"))
                     if source["type"] == "activity"
                     else None,
+                    (source["temporal_scope"].get("at", source["temporal_scope"].get("start")),)
+                    if source["type"] == "locator_binding"
+                    else None,
                 )
                 octets = (
                     len(row.assertion_id.encode()) * 3
@@ -526,6 +533,10 @@ class AssertionStaging:
                 if row.activity is not None:
                     octets += len(row.assertion_id.encode()) + sum(
                         len(value.encode()) for value in row.activity if value is not None
+                    )
+                if row.binding is not None:
+                    octets += len(row.assertion_id.encode()) + sum(
+                        len(value.encode()) for value in row.binding if value is not None
                     )
                 if admitted + octets > byte_budget:
                     if not rows:
@@ -665,6 +676,11 @@ class AssertionStaging:
                     self.db.execute(
                         "INSERT INTO activity_projection VALUES (?,?,?,?)",
                         (row.assertion_id, *row.activity),
+                    ).close()
+                if row.binding is not None:
+                    self.db.execute(
+                        "INSERT INTO binding_projection VALUES (?,?)",
+                        (row.assertion_id, *row.binding),
                     ).close()
                 self.db.execute("INSERT INTO changes VALUES (?)", (row.assertion_id,)).close()
             self.db.commit()

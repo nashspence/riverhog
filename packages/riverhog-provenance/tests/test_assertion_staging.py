@@ -89,7 +89,11 @@ def row(ordinal, payload=0):
 def frame(rows=(), **fields):
     values = list(rows)
     category = (
-        {"extension": "extensions", "activity": "activities"}.get(values[0]["type"], "agents")
+        {
+            "extension": "extensions",
+            "activity": "activities",
+            "locator_binding": "locator_bindings",
+        }.get(values[0]["type"], "agents")
         if values
         else "agents"
     )
@@ -129,6 +133,7 @@ def contents(db):
             "journal_prefix",
             "journal_assertion_staging",
             "activity_projection",
+            "binding_projection",
         )
     }
 
@@ -169,6 +174,13 @@ def proposed_octets(category, value, sequence="1"):
                 value["kind"],
                 value.get("started_at"),
                 value.get("ended_at"),
+            )
+        )
+    if value["type"] == "locator_binding":
+        total += logical_octets(
+            (
+                value["assertion_id"],
+                value["temporal_scope"].get("at", value["temporal_scope"].get("start")),
             )
         )
     return total
@@ -831,13 +843,37 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
             (17, 0, 16, 0, 65537, False),
         ]
     )
+    binding_start = len(regimes)
+    regimes.extend(regimes[activity_start:binding_start])
     for terminal in (False, True):
         for index, (count, history, quantum, resumed, payload, existing) in enumerate(regimes):
             path = tmp_path / f"{terminal}-{index}.sqlite3"
             create(path)
             values = [row(n, payload) for n in range(count)]
             category = "agents"
-            if index >= activity_start:
+            if index >= binding_start:
+                category = "locator_bindings"
+                values = [
+                    assertion(
+                        "locator_binding",
+                        identity(9000000),
+                        object_id=value["id"],
+                        assertion_id=value["assertion_id"],
+                        target=reference(identity(9000001), "state"),
+                        context_id=identity(9000002),
+                        locator={
+                            "kind": "opaque",
+                            "value": {"kind": "text", "text": "x" * (payload or 1)},
+                        },
+                        temporal_scope=(
+                            {"kind": "instant", "at": "0001-01-01T00:00:00Z"}
+                            if ordinal % 2
+                            else {"kind": "interval", "end": "9999-12-31T23:59:59.999999999Z"}
+                        ),
+                    )
+                    for ordinal, value in enumerate(values)
+                ]
+            elif index >= activity_start:
                 category = "activities"
                 for value in values:
                     value.update(
@@ -898,7 +934,13 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                         current.advance(row_budget=1)
                 retained = sum(
                     db.execute("SELECT count(*) FROM " + name).fetchone()[0]
-                    for name in ("identities", "assertions", "changes", "activity_projection")
+                    for name in (
+                        "identities",
+                        "assertions",
+                        "changes",
+                        "activity_projection",
+                        "binding_projection",
+                    )
                 )
                 maximum = max(
                     (
@@ -935,7 +977,7 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                 }
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 samples.append(sample)
-    assert len(samples) == 40
+    assert len(samples) == 56
     record_property("growth_samples", samples)
 
 

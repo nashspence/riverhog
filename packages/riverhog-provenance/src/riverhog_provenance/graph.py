@@ -205,6 +205,7 @@ class _Validator:
         self.externals: MutableMapping[bytes, dict[str, Any]] = {}
         self.profiles: MutableMapping[bytes, dict[str, str]] = {}
         self.findings: MutableSequence[str] = []
+        self.binding_ends: MutableSet[str] = set()
         self.lifecycle: dict[str, MutableMapping[str, dict[str, Any]]] = {
             "generation": {},
             "invalidation": {},
@@ -229,6 +230,10 @@ class _Validator:
 
     def _lifecycle_activity(self, identity: str) -> dict[str, Any]:
         return self.node(identity, "activity")
+
+    def _binding_time(self, identity: str) -> str | None:
+        scope = self.node(identity, "locator_binding")["temporal_scope"]
+        return cast(str | None, scope.get("at", scope.get("start")))
 
     @staticmethod
     def _node_type(value: dict[str, Any], *types: str) -> dict[str, Any]:
@@ -330,6 +335,7 @@ class _Validator:
             self.aggregates()
         )
         self.lifecycle = {"generation": generation, "invalidation": invalidation}
+        self.binding_ends = ends
         for row in self.validation_rows():
             self.generic(row)
             kind = row["type"]
@@ -450,17 +456,6 @@ class _Validator:
                 self._comparison(row)
             elif kind == "locator_binding":
                 self._locator(row)
-            elif kind == "locator_binding_end":
-                binding = self.node(row["binding_id"], "locator_binding")
-                if row["binding_id"] in ends:
-                    raise ProvenanceValidationError(
-                        "duplicate effective end for one locator binding"
-                    )
-                ends.add(row["binding_id"])
-                scope = binding["temporal_scope"]
-                bound = scope.get("at", scope.get("start"))
-                if bound and time_ns(row["at"]) < time_ns(bound):
-                    raise ProvenanceValidationError("binding end precedes the known binding")
             elif kind == "delivery_association":
                 context = self.node(row["delivery_context_id"], "context")
                 if context["kind"] != "delivery":

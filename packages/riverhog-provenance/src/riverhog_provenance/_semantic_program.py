@@ -40,6 +40,7 @@ ROW_STAGES = {
     "usage": 4,
     "generation": 4,
     "invalidation": 4,
+    "locator_binding_end": 3,
 }
 ROW_TYPES = frozenset(ROW_STAGES)
 
@@ -276,6 +277,22 @@ class Program:
                     validator._within_activity(
                         value["at"], validator._lifecycle_activity(value["activity_id"])
                     )
+            else:
+                self.stack.pop()
+                return
+        elif kind == "locator_binding_end":
+            if stage == 0:
+                validator.node(value["binding_id"], "locator_binding")
+            elif stage == 1:
+                if value["binding_id"] in validator.binding_ends:
+                    raise ProvenanceValidationError(
+                        "duplicate effective end for one locator binding"
+                    )
+                validator.binding_ends.add(value["binding_id"])
+            elif stage == 2:
+                bound = validator._binding_time(value["binding_id"])
+                if bound and time_ns(value["at"]) < time_ns(bound):
+                    raise ProvenanceValidationError("binding end precedes the known binding")
             else:
                 self.stack.pop()
                 return
