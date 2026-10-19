@@ -120,10 +120,10 @@ def bounded_rows(remote: GitHubPublication, endpoint: str, key: str) -> list[dic
     raise ValueError("Actions evidence pagination is incomplete")
 
 
-def latest_execution_jobs(
+def _execution_jobs(
     remote: GitHubPublication, run: Mapping[str, Any]
-) -> list[dict[str, Any]]:
-    """Use the most recent actual execution of each dependency, retaining its origin."""
+) -> list[tuple[dict[str, Any], dict[str, Any]]]:
+    """Pair each latest API snapshot with its proven actual execution origin."""
     rows = bounded_rows(remote, f"actions/runs/{run['id']}/jobs?filter=all", "jobs")
     grouped: dict[str, list[dict[str, Any]]] = {}
     seen: set[int] = set()
@@ -145,12 +145,41 @@ def latest_execution_jobs(
         grouped.setdefault(name, []).append(row)
     result = []
     for candidates in grouped.values():
-        newest = max(row["run_attempt"] for row in candidates)
-        selected = [row for row in candidates if row["run_attempt"] == newest]
-        if len(selected) != 1:
+        if len({row["run_attempt"] for row in candidates}) != len(candidates):
             raise ValueError("execution history has ambiguous dependency ownership")
-        result.append(selected[0])
+        newest = max(row["run_attempt"] for row in candidates)
+        selected = next(row for row in candidates if row["run_attempt"] == newest)
+        original = selected
+        if selected.get("status") == "completed" and selected.get("conclusion") == "success":
+            completion = _job_completion(selected, run)
+            start = timestamp(run["run_started_at"])
+            # Actions may relabel an inherited completion with a new ID and attempt.
+            # An actual current execution must start within the current attempt.
+            current = newest == run["run_attempt"]
+            if current and timestamp(selected["started_at"]) >= start:
+                result.append((selected, original))
+                continue
+            matches = [
+                row
+                for row in candidates
+                if row["run_attempt"] < newest
+                and row.get("status") == "completed"
+                and row.get("conclusion") == "success"
+                and _job_completion(row, run) == completion
+            ]
+            if current and (timestamp(selected["completed_at"]) >= start or not matches):
+                raise ValueError("inherited completion lacks an exact original execution")
+            if matches:
+                original = min(matches, key=lambda row: row["run_attempt"])
+        result.append((selected, original))
     return result
+
+
+def latest_execution_jobs(
+    remote: GitHubPublication, run: Mapping[str, Any]
+) -> list[dict[str, Any]]:
+    """Use the most recent actual execution of each dependency, retaining its origin."""
+    return [original for _, original in _execution_jobs(remote, run)]
 
 
 def trusted_attempt(remote: GitHubPublication, run_id: int, attempt: int) -> dict[str, Any]:
@@ -473,6 +502,25 @@ def measure_jobs(jobs: Sequence[Mapping[str, Any]], run: Mapping[str, Any]) -> d
     }
 
 
+def _job_completion(job: Mapping[str, Any], run: Mapping[str, Any]) -> dict[str, Any]:
+    """Compare complete measured work, ignoring only reassigned snapshot identity."""
+    measurement = measure_jobs([job], {**run, "run_attempt": job["run_attempt"]})
+    result = cast(list[dict[str, Any]], measurement["jobs"])[0]
+    del result["job_id"]
+    for key in ("runner_id", "runner_group_id", "runner_group_name"):
+        result[key] = job.get(key)
+    # Actions represents an unassigned runner group as zero or null in snapshots.
+    group = result["runner_group_id"]
+    if group is not None and (type(group) is not int or group < 0):
+        raise ValueError("completion has an invalid runner group identity")
+    result["runner_group_id"] = group or None
+    for row in (result, *result["steps"]):
+        for key in ("started_at", "finished_at"):
+            if row[key] is not None:
+                row[key] = timestamp(row[key]).astimezone(UTC).isoformat()
+    return result
+
+
 def collect_gate(remote: GitHubPublication, run_id: int, attempt: int) -> dict[str, object]:
     source = source_identity(ROOT)
     if source["source_clean"] is not True:
@@ -587,8 +635,22 @@ def collect_completed(remote: GitHubPublication, run_id: int, attempt: int) -> d
     if workflow["path"] != run["path"] or workflow["id"] != run["workflow_id"]:
         raise ValueError("workflow identity differs from the selected run")
     jobs = bounded_rows(remote, f"actions/runs/{run_id}/attempts/{attempt}/jobs", "jobs")
-    measurement = measure_jobs(jobs, run)
-    dependencies = latest_execution_jobs(remote, run)
+    measure_jobs(jobs, run)
+    executions = _execution_jobs(remote, run)
+    snapshots = {snapshot["id"]: (snapshot, original) for snapshot, original in executions}
+    current = []
+    for job in jobs:
+        pair = snapshots.get(job["id"])
+        if pair is None or _job_completion(job, run) != _job_completion(pair[0], run):
+            raise ValueError("current attempt contradicts its execution history")
+        if pair[1]["run_attempt"] == attempt:
+            current.append(pair[1])
+    if {job["id"] for job in current} != {
+        original["id"] for _, original in executions if original["run_attempt"] == attempt
+    }:
+        raise ValueError("current attempt omits an actual execution")
+    measurement = measure_jobs(current, run)
+    dependencies = [original for _, original in executions]
     reused = []
     for job in dependencies:
         if job["run_attempt"] != attempt:

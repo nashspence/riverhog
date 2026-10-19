@@ -49,7 +49,10 @@ def job_record(identity=30, start=1, finish=10):
         "started_at": clock(start),
         "completed_at": clock(finish),
         "labels": ["ubuntu-24.04"],
+        "runner_id": 100,
         "runner_name": "actual-runner",
+        "runner_group_id": 1,
+        "runner_group_name": "Default",
         "steps": [
             {
                 "number": 1,
@@ -108,7 +111,8 @@ class Remote:
         self.run = run or run_record()
         default_jobs = [job_record(), job_record(31)]
         default_jobs[1]["name"] = "Analyze (actions)"
-        self.jobs = jobs or default_jobs
+        self.jobs = default_jobs if jobs is None else jobs
+        self.attempt_jobs = None
         if artifact is not None:
             self.jobs[0]["name"] = "actual fixture"
         self.artifacts = [] if artifact is None else [artifact]
@@ -149,10 +153,11 @@ class Remote:
             return copy.deepcopy(self.run)
         if endpoint == "actions/workflows/7":
             return {"id": 7, "path": self.run["path"]}
-        if endpoint.startswith("actions/runs/23/jobs?filter=all") or endpoint.startswith(
-            "actions/runs/23/attempts/2/jobs?"
-        ):
+        if endpoint.startswith("actions/runs/23/jobs?filter=all"):
             return {"total_count": len(self.jobs), "jobs": copy.deepcopy(self.jobs)}
+        if endpoint.startswith(f"actions/runs/23/attempts/{self.run['run_attempt']}/jobs?"):
+            jobs = self.jobs if self.attempt_jobs is None else self.attempt_jobs
+            return {"total_count": len(jobs), "jobs": copy.deepcopy(jobs)}
         if endpoint.startswith("actions/runs/23/artifacts?"):
             return {"total_count": len(self.artifacts), "artifacts": copy.deepcopy(self.artifacts)}
         raise AssertionError(endpoint)
@@ -622,8 +627,9 @@ def test_native_work_cannot_be_qualified_under_another_platform(actual_execution
         validate_evidence_records([row], expected=[wrong], source_sha=sha, run_id="23-2")
 
 
+@pytest.mark.parametrize("snapshot", ["original", "carried", "chain"])
 def test_partial_retry_consumes_the_original_completed_receipt_without_reexecution(
-    actual_execution, tmp_path, monkeypatch
+    actual_execution, tmp_path, monkeypatch, snapshot
 ):
     work, raw, sha = actual_execution
     row = require_canonical_json(raw)
@@ -635,12 +641,27 @@ def test_partial_retry_consumes_the_original_completed_receipt_without_reexecuti
     artifact["name"] = "validation-fixture-23-attempt-1"
     remote = Remote(artifact=artifact, archive=archive)
     remote.jobs[0]["run_attempt"] = 1
+    remote.jobs = remote.jobs[:1]
+    remote.run["run_started_at"] = "2026-10-13T00:00:20Z"
+    if snapshot != "original":
+        carried = copy.deepcopy(remote.jobs[0])
+        carried.update(id=32, run_attempt=2)
+        remote.jobs.append(carried)
+        for item in (carried, *carried["steps"]):
+            for key in ("started_at", "completed_at"):
+                item[key] = item[key].replace("Z", "+00:00")
+    if snapshot == "chain":
+        remote.run["run_attempt"] = 3
+        carried = copy.deepcopy(remote.jobs[-1])
+        carried.update(id=33, run_attempt=3)
+        remote.jobs.append(carried)
     monkeypatch.setattr(ci_actions, "ci_execution_work", lambda: {"actual fixture": work})
     result = ci_actions.verify_ci_artifacts(remote, remote.run, sha, tmp_path)
     assert result["actual fixture"]["origin_attempt"] == 1
     assert result["actual fixture"]["reused_completion"] is True
     assert result["actual fixture"]["result"]["qualification_exit_status"] == 0
     assert remote.downloads == 1
+    assert result["actual fixture"]["job_measurement"]["jobs"][0]["job_id"] == 30
 
 
 def test_retry_does_not_reuse_an_old_success_when_the_new_execution_failed():
@@ -652,3 +673,167 @@ def test_retry_does_not_reuse_an_old_success_when_the_new_execution_failed():
     chosen = ci_actions.latest_execution_jobs(remote, remote.run)
     owner = next(row for row in chosen if row["name"] == "Analyze (python)")
     assert owner["run_attempt"] == 2 and owner["conclusion"] == "failure"
+
+
+def retry_remote(*, include_inherited=True):
+    run = run_record()
+    run.update(path=".github/workflows/ci.yml", run_started_at="2026-10-13T00:00:20Z")
+    original = job_record(20)
+    original["run_attempt"] = 1
+    original["runner_group_id"] = 0
+    original["steps"].append(
+        {"number": 3, "name": "Optional work", "status": "completed", "conclusion": "skipped"}
+    )
+    carried = copy.deepcopy(original)
+    carried.update(id=30, run_attempt=2, runner_group_id=None)
+    for row in (carried, *carried["steps"]):
+        for key in ("started_at", "completed_at"):
+            if key in row:
+                row[key] = row[key].replace("Z", "+00:00")
+    gate = job_record(31, 21, 30)
+    gate["name"] = "CI gate"
+    remote = Remote(run=run, jobs=[original, carried, gate])
+    remote.attempt_jobs = [carried, gate] if include_inherited else [gate]
+    return remote
+
+
+@pytest.mark.parametrize("include_inherited", [False, True])
+def test_retry_measures_fresh_work_separately_from_retained_completions(include_inherited):
+    remote = retry_remote(include_inherited=include_inherited)
+    result = ci_actions.collect_completed(remote, 23, 2)
+    assert result["qualification_exit_status"] == 0
+    assert result["measurement"]["elapsed_seconds"] == 10
+    assert [row["job_id"] for row in result["measurement"]["jobs"]] == [31]
+    (retained,) = result["reused_dependency_completions"]
+    assert retained["origin_attempt"] == 1
+    assert retained["measurement"]["elapsed_seconds"] == 9
+    assert retained["measurement"]["jobs"][0]["job_id"] == 20
+
+
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "missing",
+        "failed",
+        "runner",
+        "runner-id",
+        "runner-group-id",
+        "runner-group-name",
+        "labels",
+        "step-name",
+        "step-result",
+        "time",
+        "ambiguous",
+    ],
+)
+def test_inherited_snapshot_requires_unique_matching_original_completion(defect):
+    remote = retry_remote()
+    original = remote.jobs[0]
+    if defect == "missing":
+        remote.jobs.pop(0)
+    elif defect == "failed":
+        original["conclusion"] = "failure"
+    elif defect == "runner":
+        original["runner_name"] = "another-runner"
+    elif defect == "runner-id":
+        original["runner_id"] = 101
+    elif defect == "runner-group-id":
+        original["runner_group_id"] = 2
+    elif defect == "runner-group-name":
+        original["runner_group_name"] = "Another group"
+    elif defect == "labels":
+        original["labels"] = ["another-image"]
+    elif defect == "step-name":
+        original["steps"][1]["name"] = "Different work"
+    elif defect == "step-result":
+        original["steps"][1]["conclusion"] = "failure"
+    elif defect == "time":
+        original["steps"][1]["started_at"] = "2026-10-13T00:00:03Z"
+    else:
+        duplicate = copy.deepcopy(original)
+        duplicate["id"] = 21
+        remote.jobs.append(duplicate)
+    with pytest.raises(ValueError, match="original execution|ambiguous dependency"):
+        ci_actions.latest_execution_jobs(remote, remote.run)
+
+
+@pytest.mark.parametrize("conclusion", ["success", "failure"])
+def test_fresh_retry_execution_keeps_its_own_identity_and_result(conclusion):
+    remote = retry_remote()
+    fresh = job_record(30, 21, 29)
+    fresh["conclusion"] = conclusion
+    remote.jobs[1] = fresh
+    remote.attempt_jobs[0] = fresh
+    remote.run["conclusion"] = conclusion
+    chosen = ci_actions.latest_execution_jobs(remote, remote.run)
+    assert chosen[0]["id"] == 30 and chosen[0]["run_attempt"] == 2
+    result = ci_actions.collect_completed(remote, 23, 2)
+    assert result["qualification_exit_status"] == int(conclusion != "success")
+    assert result["reused_dependency_completions"] == []
+    assert {row["job_id"] for row in result["measurement"]["jobs"]} == {30, 31}
+
+
+@pytest.mark.parametrize(
+    "defect", ["missing", "unknown", "runner", "duplicate", "source", "attempt"]
+)
+def test_current_attempt_must_agree_with_complete_execution_history(defect):
+    remote = retry_remote()
+    remote.attempt_jobs = copy.deepcopy(remote.attempt_jobs)
+    if defect == "missing":
+        remote.attempt_jobs.pop()
+    elif defect == "unknown":
+        remote.attempt_jobs[-1]["id"] = 99
+    elif defect == "runner":
+        remote.attempt_jobs[0]["runner_name"] = "another-runner"
+    elif defect == "duplicate":
+        remote.attempt_jobs.append(copy.deepcopy(remote.attempt_jobs[-1]))
+    elif defect == "source":
+        remote.attempt_jobs[0]["head_sha"] = "b" * 40
+    else:
+        remote.attempt_jobs[0]["run_attempt"] = 1
+    with pytest.raises(ValueError):
+        ci_actions.collect_completed(remote, 23, 2)
+
+
+def test_retained_snapshot_chain_resolves_original_when_a_later_retry_omits_it():
+    remote = retry_remote(include_inherited=False)
+    remote.run.update(run_attempt=3, run_started_at="2026-10-13T00:00:40Z")
+    gate = job_record(32, 41, 50)
+    gate.update(name="CI gate", run_attempt=3)
+    remote.jobs.append(gate)
+    remote.attempt_jobs = [gate]
+    result = ci_actions.collect_completed(remote, 23, 3)
+    (retained,) = result["reused_dependency_completions"]
+    assert retained["origin_attempt"] == 1
+    assert retained["measurement"]["jobs"][0]["job_id"] == 20
+    assert result["measurement"]["elapsed_seconds"] == 10
+
+
+def test_codeql_retry_binds_retained_checkout_to_its_actual_origin():
+    run = run_record()
+    run["run_started_at"] = "2026-10-13T00:00:20Z"
+    remote = Remote(run=run)
+    fresh = job_record(30, 21, 29)
+    original = job_record(21)
+    original.update(name="Analyze (actions)", run_attempt=1)
+    carried = copy.deepcopy(original)
+    carried.update(id=31, run_attempt=2)
+    remote.jobs = [original, carried, fresh]
+    remote.attempt_jobs = [carried, fresh]
+    checkout = checkout_record("actions")
+    checkout["execution"]["run_attempt"] = 1
+    archive = zipped(
+        [("checkout.json", json.dumps(checkout, sort_keys=True, separators=(",", ":")).encode())]
+    )
+    artifact = artifact_record(archive)
+    artifact["name"] = "validation-codeql-actions-23-attempt-1"
+    remote.artifacts[0] = artifact
+    remote.archives[40] = archive
+    result = ci_actions.collect_completed(remote, 23, 2)
+    assert result["qualification_exit_status"] == 0
+    records = result["source_evidence"]["records"]
+    assert records["Analyze (actions)"]["origin_attempt"] == 1
+    assert records["Analyze (actions)"]["reused_completion"] is True
+    assert records["Analyze (python)"]["origin_attempt"] == 2
+    assert records["Analyze (python)"]["reused_completion"] is False
+    assert [row["job_id"] for row in result["measurement"]["jobs"]] == [30]
