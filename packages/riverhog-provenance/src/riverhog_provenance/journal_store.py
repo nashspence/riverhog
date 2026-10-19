@@ -931,6 +931,130 @@ class JournalStore:
         self.db.execute("PRAGMA query_only = ON")
         self._frozen = True
 
+    @declare_growth(
+        Declaration(
+            id="riverhog-provenance.sqlite-entry-recording.growth/v1",
+            authority="riverhog-provenance",
+            subjects=("riverhog_provenance.journal_store.JournalStore._check_entry_recording",),
+            scope="native-sqlite-effective-entry-recorder-and-context-check",
+            starts_at="receive one admitted entry and its owner-pinned effective view",
+            ends_at="return native recording checks after closing at most two indexed cursors",
+            dimensions=(
+                Dimension(
+                    "indexed_assertions", COUNT, "Retained active and retired assertion rows."
+                ),
+            ),
+            bounds=(
+                Bound(
+                    "sql_statements",
+                    COUNT,
+                    "upper",
+                    Expression("constant", value=2, unit=COUNT),
+                    "One recorder predicate and at most one recording-context predicate.",
+                ),
+                Bound(
+                    "returned_rows",
+                    COUNT,
+                    "upper",
+                    Expression("constant", value=2, unit=COUNT),
+                    "The unique effective-object index admits at most one row per identity.",
+                ),
+                Bound(
+                    "returned_metadata_octets",
+                    OCTETS,
+                    "upper",
+                    Expression("constant", value=2, unit=OCTETS),
+                    "Each returned predicate is a single SQLite Boolean scalar.",
+                ),
+                Bound(
+                    "bound_parameter_octets",
+                    OCTETS,
+                    "upper",
+                    Expression("constant", value=102, unit=OCTETS),
+                    "Two 45-octet canonical UUID URNs plus the agent and context type names.",
+                ),
+                Bound(
+                    "changed_rows",
+                    COUNT,
+                    "equal",
+                    Expression("constant", value=0, unit=COUNT),
+                    "The fixed unit is read-only and leaves caller transactions unchanged.",
+                ),
+                Bound(
+                    "historical_payload_octets",
+                    OCTETS,
+                    "equal",
+                    Expression("constant", value=0, unit=OCTETS),
+                    "Only indexed type predicates are read; no assertion or frame body is fetched.",
+                ),
+                Bound(
+                    "sqlite_vm_instructions",
+                    COUNT,
+                    "upper",
+                    Expression(
+                        "product",
+                        terms=(
+                            Expression("constant", value=128, unit=COUNT),
+                            Expression(
+                                "log2_ceil",
+                                terms=(
+                                    Expression(
+                                        "sum",
+                                        terms=(
+                                            Expression("dimension", name="indexed_assertions"),
+                                            Expression("constant", value=2, unit=COUNT),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                    "Maintained native instruction envelope for two covering-index point queries.",
+                ),
+            ),
+            conditions=(
+                "The entry has passed its owning schema and preceding native assertion checks.",
+                "Canonical entry identity fields are 45-octet UUID URNs.",
+                "Owner-authenticated staging keeps type metadata equal "
+                "to the admitted payload type.",
+                "The effective-object uniqueness and semantic-reference "
+                "covering indexes are retained.",
+                "The owning session pins one effective view throughout this read-only unit.",
+            ),
+            invariants=(
+                "Recorder resolution precedes optional recording-context resolution.",
+                "Retired assertions do not resolve either effective identity.",
+                "All cursors close before return or semantic rejection; stored state is unchanged.",
+            ),
+            limitations=(
+                "SQLite B-tree work, page I/O and lock waits are separate indexed native costs.",
+                "This fixed unit owns no durable progress; "
+                "session completion checkpoints its result.",
+                "The unit grants no accepted-prefix advance or archive authority.",
+            ),
+        )
+    )
+    def _check_entry_recording(self, document: Mapping[str, Any]) -> None:
+        """Check one entry's effective recorder/context without reading retained bodies."""
+
+        def matches(identity: str, kind: str) -> bool:
+            with closing(
+                self.db.execute(
+                    "SELECT type = ? FROM assertions INDEXED BY semantic_reference_type "
+                    "WHERE object_id = ? AND active = 1",
+                    (kind, identity),
+                )
+            ) as rows:
+                row = rows.fetchone()
+            return row is not None and row[0] == 1
+
+        if not matches(document["recorded_by_agent_id"], "agent"):
+            raise ProvenanceValidationError("entry recorder must resolve to an effective agent")
+        if "recording_context_id" in document and not matches(
+            document["recording_context_id"], "context"
+        ):
+            raise ProvenanceValidationError("recording context does not resolve")
+
     def accept(
         self,
         document: Mapping[str, Any],
@@ -1023,13 +1147,7 @@ class JournalStore:
             frame=frame,
         )
         validator.run()
-        recorder = self.objects.get(document["recorded_by_agent_id"])
-        if recorder is None or recorder["type"] != "agent":
-            raise ProvenanceValidationError("entry recorder must resolve to an effective agent")
-        if "recording_context_id" in document:
-            context = self.objects.get(document["recording_context_id"])
-            if context is None or context["type"] != "context":
-                raise ProvenanceValidationError("recording context does not resolve")
+        self._check_entry_recording(document)
 
     @property
     def frames(self) -> Sequence[Any]:
