@@ -84,6 +84,12 @@ def subject(kind, count=3, *, rejected=False):
         ).hexdigest()
         if rejected:
             row["configuration_sha256"] = "0" * 64
+    elif kind in ("usage", "generation", "invalidation"):
+        row.update(
+            state=reference("state", 33),
+            activity_id=identity(35),
+            at="2025-12-31T00:00:00Z" if rejected else "2026-01-01T12:00:00Z",
+        )
     elif kind == "continuity":
         row.update(earlier_state=reference("state", 33), later_state=reference("state", 34))
     elif kind == "custody_assertion":
@@ -111,7 +117,7 @@ def subject(kind, count=3, *, rejected=False):
 
 
 def references():
-    return [agent()] + [
+    values = [agent()] + [
         {"id": identity(n), "assertion_id": identity(n + 100), "type": kind, "evidence": []}
         for kind, n in (
             ("artifact", 30),
@@ -122,9 +128,15 @@ def references():
             ("activity", 35),
         )
     ]
+    for value in values:
+        if value["type"] == "activity":
+            value.update(
+                kind="creation", started_at="2026-01-01T00:00:00Z", ended_at="2026-01-02T00:00:00Z"
+            )
+    return values
 
 
-def prepare(path, row, *, retained=0):
+def prepare(path, row, *, retained=0, aggregate_history=0):
     create(path, row)
     with closing(connect(path)) as db:
         for value in references()[1:]:
@@ -140,6 +152,25 @@ def prepare(path, row, *, retained=0):
                     "1",
                     canonical_json_bytes(value),
                     1,
+                ),
+            ).close()
+            if value["type"] == "activity":
+                db.execute(
+                    "INSERT INTO activity_projection VALUES (?,?,?,?)",
+                    (
+                        value["assertion_id"],
+                        value["kind"],
+                        value.get("started_at"),
+                        value.get("ended_at"),
+                    ),
+                ).close()
+        for n in range(aggregate_history):
+            db.execute(
+                "INSERT INTO maps VALUES (?,?,?)",
+                (
+                    "generation" if n % 2 else "invalidation",
+                    b"j" + canonical_json_bytes(identity(10000 + n)),
+                    canonical_json_bytes({"activity_id": identity(35)}),
                 ),
             ).close()
         db.executemany(
@@ -177,6 +208,16 @@ def native(row, catalog):
     return sorted(
         (name, key, canonical_json_bytes(value))
         for name, values in (("externals", current.externals), ("profiles", current.profiles))
+        for key, value in values.items()
+    ) + sorted(
+        (
+            name,
+            b"j" + canonical_json_bytes(key),
+            canonical_json_bytes(
+                {field: value[field] for field in ("activity_id", "at") if field in value}
+            ),
+        )
+        for name, values in current.lifecycle.items()
         for key, value in values.items()
     )
 
@@ -418,14 +459,27 @@ def growth_samples(tmp_path, catalog):
     cases = [(kind, 0, False) for kind in sorted(ROW_TYPES)]
     cases += [("activity", stage, False) for stage in (3, 4, 5, 6, 7)]
     cases += [("activity", 7, True)]
+    cases += [
+        (kind, stage, False)
+        for kind in ("usage", "generation", "invalidation")
+        for stage in (1, 2, 3)
+    ]
+    cases += [(kind, 3, True) for kind in ("usage", "generation", "invalidation")]
     for case, (kind, stage, rejected) in enumerate(cases):
         for count, budget in ((1, 1), (15, 16), (16, 16), (17, 16), (129, 16), (1025, 64)):
             row = subject(kind, count, rejected=rejected)
             path = tmp_path / f"row-{case}-{count}.sqlite3"
-            prepare(path, row, retained=4097 if count in (17, 1025) else count)
+            retained_history = 4097 if count in (17, 1025) else count
+            aggregate_history = (
+                (4097 if count == 129 else count if count in (15, 16, 17) else 0)
+                if kind in ("generation", "invalidation") and stage == 2
+                else 0
+            )
+            prepare(path, row, retained=retained_history, aggregate_history=aggregate_history)
             with closing(sqlite3.connect(":memory:")) as db:
                 with closing(connect(path)) as original:
                     original.backup(db)
+                history_outputs = outputs(db)
                 current = work(db, row, catalog, operation="row")
                 current.initialize()
                 if stage:
@@ -434,6 +488,7 @@ def growth_samples(tmp_path, catalog):
                     "assertions",
                     "changes",
                     "maps",
+                    "activity_projection",
                     "journal_prefix",
                     "journal_generic_semantics",
                     "generic_semantic_frames",
@@ -479,16 +534,19 @@ def growth_samples(tmp_path, catalog):
                     suffix = work(suffix_db, row, catalog, operation="row")
                     finish(suffix, budget=64)
                     if rejected:
-                        with pytest.raises(
-                            ProvenanceValidationError, match="configuration digest mismatch"
-                        ):
+                        message = (
+                            "event precedes activity start"
+                            if kind in ("usage", "generation", "invalidation")
+                            else "configuration digest mismatch"
+                        )
+                        with pytest.raises(ProvenanceValidationError, match=message):
                             suffix.result()
-                        assert outputs(suffix_db) == []
+                        assert outputs(suffix_db) == history_outputs
                     else:
                         suffix.result()
-                        assert outputs(suffix_db) == native(row, catalog)
+                        assert outputs(suffix_db) == sorted(history_outputs + native(row, catalog))
                     require_reclaimed(suffix_db)
-    assert len(samples) == 84
+    assert len(samples) == 174
     return samples
 
 

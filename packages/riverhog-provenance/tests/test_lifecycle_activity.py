@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
+from riverhog_provenance import _generic_semantics as semantics
 from riverhog_provenance import create_journal, journal_store, validate_graph, validate_journal
 from riverhog_provenance._activity_projection import read_activity
 from riverhog_provenance._assertion_staging import AssertionStagingCapacity
@@ -208,13 +209,13 @@ def test_public_lifecycle_uses_projection_and_preserves_native_error_order(
     elif fault == "missing-activity":
         row["activity_id"] = identity(999)
     calls = []
-    original = journal_store.read_activity
+    original = semantics.read_activity
 
     def observed(db, identity):
         calls.append(identity)
         return original(db, identity)
 
-    monkeypatch.setattr(journal_store, "read_activity", observed)
+    monkeypatch.setattr(semantics, "read_activity", observed)
     if fault == "valid":
         validate_graph(graph, catalog=catalog)
         raw = create_journal(graph, recorded_by_agent_id=who, catalog=catalog)
@@ -239,7 +240,7 @@ def test_closed_snapshot_refuses_lifecycle_activity_lookup():
     stored.store = store
     store.close()
     with pytest.raises(RuntimeError, match="closed"):
-        stored._lifecycle_activity(identity(1))
+        stored.row_semantics({"type": "usage"})
 
 
 def test_staging_reopen_copies_raw_fields_and_keeps_prefix_private(tmp_path):

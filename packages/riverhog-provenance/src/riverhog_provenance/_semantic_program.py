@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 from collections.abc import Mapping, MutableSet
 from dataclasses import dataclass, replace
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 from riverhog_growth_contracts import (
     COUNT,
@@ -37,6 +37,9 @@ ROW_STAGES = {
     "availability_assertion": 3,
     "journal_subject": 2,
     "extension": 2,
+    "usage": 4,
+    "generation": 4,
+    "invalidation": 4,
 }
 ROW_TYPES = frozenset(ROW_STAGES)
 
@@ -253,6 +256,26 @@ class Program:
                     ).hexdigest()
                     if value["configuration_sha256"] != actual:
                         raise ProvenanceValidationError("capture configuration digest mismatch")
+            else:
+                self.stack.pop()
+                return
+        elif kind in ("usage", "generation", "invalidation"):
+            if stage == 0:
+                validator.reference(value["state"], "state")
+            elif stage == 1:
+                activity = validator._lifecycle_activity(value["activity_id"])
+                if kind == "generation" and activity["kind"] == "observation":
+                    raise ProvenanceValidationError("capture does not generate its observed state")
+            elif stage == 2:
+                if kind != "usage":
+                    validator._unique_lifecycle(
+                        validator.lifecycle[kind], cast(dict[str, Any], value), kind
+                    )
+            elif stage == 3:
+                if "at" in value:
+                    validator._within_activity(
+                        value["at"], validator._lifecycle_activity(value["activity_id"])
+                    )
             else:
                 self.stack.pop()
                 return

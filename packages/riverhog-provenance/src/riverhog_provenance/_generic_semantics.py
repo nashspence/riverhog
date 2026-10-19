@@ -12,7 +12,7 @@ import hashlib
 import json
 import re
 import sqlite3
-from collections.abc import Iterator, Mapping, MutableSet
+from collections.abc import Iterator, Mapping, MutableMapping, MutableSet
 from contextlib import closing
 from dataclasses import dataclass, replace
 from typing import Any
@@ -35,17 +35,20 @@ from riverhog_provenance_contracts import (
     require_canonical_uuid_urn,
 )
 
+from ._activity_projection import read_activity
 from ._journal_prefix import PrefixState
 from ._semantic_program import ROW_STAGES, ROW_TYPES, Frame, MemoryStack, Nodes, Program, Stack
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .graph import _Validator
 
-ALGORITHM = "riverhog-generic-semantics/v2"
+ALGORITHM = "riverhog-generic-semantics/v3"
 MAX_STEPS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
 _FRAME_OCTETS = 512
+# Fixed JSON keys, one 45-octet UUID and an optional 30-octet native UTC timestamp.
+_LIFECYCLE_OCTETS = 128
 _DEFAULT_BYTES = 8 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
 _STAGES = {
     "row": max(ROW_STAGES.values()),
@@ -396,12 +399,14 @@ def _declaration() -> Declaration:
         conditions=(
             "The owner retains the exact immutable admitted row/source, sealed catalog and modes.",
             "Covering active-object/subject indexes and indexed variable state are installed.",
+            "Staging owns fixed activity fields; lifecycle aggregates retain only "
+            "canonical activity identity and optional native timestamp metadata.",
             "The source admission index is constructed once outside checkpoint transactions.",
             "The metadata envelope accounts for actual identifier, cursor and control widths.",
             "Close owner transactions before planning; this phase owns its atomic unit.",
         ),
         invariants=(
-            "Original common check order is shared with the native validator.",
+            "Native common and supported row check order share one interpreter.",
             "Outputs, undo ownership and progress share the exact source/prefix fence.",
             "Rejection restores new outputs and reclaims variable state in bounded steps.",
             "Restoration loads retained progress; it never initializes that operation again.",
@@ -409,7 +414,7 @@ def _declaration() -> Declaration:
         ),
         limitations=(
             "Admission/indexing and existing local schema/byte/hash atoms are separate delegates.",
-            "Row-specific, graph and post-row checks remain separate semantic phases.",
+            "Unsupported row kinds, graph and post-row checks remain separate phases.",
             "Allocation, B-tree byte comparisons, physical I/O, waits and fsync stay separate.",
             "Whole-session recovery needs an owner-retained crash-safe workspace and source.",
         ),
@@ -476,8 +481,8 @@ class _Objects(Mapping[str, dict[str, Any]]):
         if row is None:
             raise KeyError(key)
         self.meter.claim(sum(len(value.encode()) for value in row))
-        # Common checks consume reference identity/type only. Row-specific
-        # semantics retain their own full referent access after this phase.
+        # References consume identity/type only. Lifecycle activity fields
+        # come from the separate fixed metadata projection.
         return {"id": row[0], "type": row[1]}
 
     def __iter__(self) -> Iterator[str]:
@@ -497,6 +502,105 @@ class _Output(dict[Any, Any]):
             raise RuntimeError("common semantic output differs from its immutable identity")
         self.meter.claim(4 * len(key) + len(encoded))
         self.writes[self.name, key] = encoded
+
+
+class _Lifecycle(MutableMapping[str, dict[str, Any]]):
+    """A state's first compatible effective event, without documentary payloads."""
+
+    def __init__(
+        self,
+        owner: GenericSemantics,
+        name: str,
+        meter: _Meter,
+        writes: dict[tuple[str, bytes], bytes],
+    ) -> None:
+        self.owner, self.name, self.meter, self.writes = owner, name, meter, writes
+
+    @staticmethod
+    def _decode(encoded: bytes) -> dict[str, Any]:
+        try:
+            if type(encoded) is not bytes or len(encoded) > _LIFECYCLE_OCTETS:
+                raise ValueError("metadata envelope")
+            value = json.loads(encoded)
+            if type(value) is not dict or set(value) not in (
+                {"activity_id"},
+                {"activity_id", "at"},
+            ):
+                raise ValueError("metadata shape")
+            require_canonical_uuid_urn(value["activity_id"])
+            if "at" in value and (type(value["at"]) is not str or len(value["at"]) > 30):
+                raise ValueError("timestamp envelope")
+            if canonical_document(value) != encoded:
+                raise ValueError("metadata encoding")
+            return value
+        except (ValueError, TypeError, KeyError) as exc:
+            raise RuntimeError("invalid retained lifecycle metadata") from exc
+
+    def __getitem__(self, key: str) -> dict[str, Any]:
+        encoded_key = b"j" + canonical_json_bytes(key)
+        self.meter.claim(len(encoded_key))
+        pending = self.writes.get((self.name, encoded_key))
+        if pending is not None:
+            return self._decode(pending)
+        size = self.owner._one(
+            "SELECT length(value) FROM maps WHERE name=? AND key=?",
+            (self.name, encoded_key),
+        )
+        if size is None:
+            raise KeyError(key)
+        if type(size[0]) is not int or not 0 <= size[0] <= _LIFECYCLE_OCTETS:
+            raise RuntimeError("invalid retained lifecycle metadata envelope")
+        self.meter.claim(size[0])
+        row = self.owner._one(
+            "SELECT value FROM maps WHERE name=? AND key=?",
+            (self.name, encoded_key),
+        )
+        if row is None or len(row[0]) != size[0]:
+            raise RuntimeError("retained lifecycle metadata changed outside its fence")
+        return self._decode(row[0])
+
+    def __setitem__(self, key: str, value: dict[str, Any]) -> None:
+        if key != value["state"]["object_id"]:
+            raise RuntimeError("lifecycle event differs from its state key")
+        encoded_key = b"j" + canonical_json_bytes(key)
+        encoded = canonical_document(
+            {field: value[field] for field in ("activity_id", "at") if field in value}
+        )
+        self._decode(encoded)
+        self.meter.claim(4 * len(encoded_key) + len(encoded))
+        self.writes[self.name, encoded_key] = encoded
+
+    def __delitem__(self, key: str) -> None:
+        raise RuntimeError("semantic undo owns lifecycle removal")
+
+    def __iter__(self) -> Iterator[str]:
+        raise RuntimeError("semantic units do not enumerate lifecycle events")
+
+    def __len__(self) -> int:
+        raise RuntimeError("semantic units do not count lifecycle events")
+
+
+class _ProjectedValidator(_Validator):
+    def __init__(
+        self,
+        owner: GenericSemantics,
+        meter: _Meter,
+        outputs: dict[tuple[str, bytes], bytes],
+    ) -> None:
+        self.owner, self.meter = owner, meter
+        self.catalog, self.journal_id = owner.catalog, owner.source.journal_id
+        self.require_profiles = owner.source.require_profiles
+        self.objects = _Objects(owner, meter)
+        self.externals = _Output("externals", meter, outputs)
+        self.profiles = _Output("profiles", meter, outputs)
+        self.lifecycle = {
+            name: _Lifecycle(owner, name, meter, outputs) for name in ("generation", "invalidation")
+        }
+
+    def _lifecycle_activity(self, identity: str) -> dict[str, Any]:
+        value = read_activity(self.owner.db, identity)
+        self.meter.claim(sum(len(item.encode()) for item in value.values()))
+        return value
 
 
 class _Keys(MutableSet[bytes]):
@@ -748,13 +852,7 @@ class GenericSemantics:
     def _program(
         self, stack: Stack, meter: _Meter, keys: _Keys, outputs: dict[tuple[str, bytes], bytes]
     ) -> Program:
-        validator = object.__new__(_Validator)
-        validator.catalog, validator.journal_id = self.catalog, self.source.journal_id
-        validator.require_profiles = self.source.require_profiles
-        validator.objects = _Objects(self, meter)
-        validator.externals = _Output("externals", meter, outputs)
-        validator.profiles = _Output("profiles", meter, outputs)
-        return Program(validator, self.atom.nodes, stack, keys)
+        return Program(_ProjectedValidator(self, meter, outputs), self.atom.nodes, stack, keys)
 
     def prepare(
         self, *, step_budget: int = MAX_STEPS, byte_budget: int = _DEFAULT_BYTES

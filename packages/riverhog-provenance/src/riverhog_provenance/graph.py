@@ -205,6 +205,10 @@ class _Validator:
         self.externals: MutableMapping[bytes, dict[str, Any]] = {}
         self.profiles: MutableMapping[bytes, dict[str, str]] = {}
         self.findings: MutableSequence[str] = []
+        self.lifecycle: dict[str, MutableMapping[str, dict[str, Any]]] = {
+            "generation": {},
+            "invalidation": {},
+        }
         for _, row in iter_assertions(graph):
             if row["id"] in self.objects:
                 raise ProvenanceValidationError("duplicate effective entity/record identity")
@@ -325,6 +329,7 @@ class _Validator:
         generation, invalidation, derivations, specializations, capture_targets, ends, slots = (
             self.aggregates()
         )
+        self.lifecycle = {"generation": generation, "invalidation": invalidation}
         for row in self.validation_rows():
             self.generic(row)
             kind = row["type"]
@@ -416,19 +421,6 @@ class _Validator:
                             "native evidence contradicts source capability declaration"
                         )
                     self._check_metadata_coverage(row)
-            elif kind in ("usage", "generation", "invalidation"):
-                self.reference(row["state"], "state")
-                activity = self._lifecycle_activity(row["activity_id"])
-                if kind == "generation":
-                    if activity["kind"] == "observation":
-                        raise ProvenanceValidationError(
-                            "capture does not generate its observed state"
-                        )
-                    self._unique_lifecycle(generation, row, "generation")
-                elif kind == "invalidation":
-                    self._unique_lifecycle(invalidation, row, "invalidation")
-                if "at" in row:
-                    self._within_activity(row["at"], activity)
             elif kind == "derivation":
                 self.reference(row["used_state"], "state")
                 self.reference(row["generated_state"], "state")

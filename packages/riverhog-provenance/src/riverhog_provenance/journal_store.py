@@ -35,7 +35,6 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import ContractCatalog
 
-from ._activity_projection import read_activity
 from ._assertion_staging import AssertionStaging
 from ._assertion_staging import install as install_assertion_staging
 from ._correction_projection import CorrectionWork
@@ -512,9 +511,6 @@ class _StoredValidator(_Validator):
         self.externals = _Map(store, "externals")
         self.profiles = _Map(store, "profiles")
         self.findings = _Findings(store)
-
-    def _lifecycle_activity(self, identity: str) -> dict[str, Any]:
-        return read_activity(self.store.db, identity)
 
     def _semantics(self, value: Mapping[str, Any], operation: str) -> None:
         self.store.db.commit()
