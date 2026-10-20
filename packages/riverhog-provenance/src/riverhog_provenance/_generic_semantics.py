@@ -37,13 +37,15 @@ from riverhog_provenance_contracts import (
 
 from ._activity_projection import read_activity
 from ._binding_projection import read_binding_time
+from ._delivery_projection import read_delivery_metadata
+from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
 from ._semantic_program import ROW_STAGES, ROW_TYPES, Frame, MemoryStack, Nodes, Program, Stack
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .graph import _Validator
 
-ALGORITHM = "riverhog-generic-semantics/v4"
+ALGORITHM = "riverhog-generic-semantics/v5"
 MAX_STEPS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -289,7 +291,9 @@ def _declaration() -> Declaration:
             Dimension("retained_rows", COUNT, "Rows retained in the owned private workspace."),
             Dimension("step_budget", COUNT, "One to 64 control/reference or cleanup steps."),
             Dimension(
-                "byte_budget", OCTETS, "Admission for variable key/output atoms and control work."
+                "byte_budget",
+                OCTETS,
+                "Admission for variable key/output atoms and control work.",
             ),
             Dimension(
                 "metadata_row_octets",
@@ -400,7 +404,7 @@ def _declaration() -> Declaration:
         conditions=(
             "The owner retains the exact immutable admitted row/source, sealed catalog and modes.",
             "Covering active-object/subject indexes and indexed variable state are installed.",
-            "Staging owns fixed activity and locator-binding fields; "
+            "Staging owns fixed activity, locator-binding and delivery reference fields; "
             "lifecycle aggregates retain only "
             "canonical activity identity and optional native timestamp metadata.",
             "The source admission index is constructed once outside checkpoint transactions.",
@@ -502,8 +506,9 @@ class _Output(dict[Any, Any]):
         encoded = canonical_document(value)
         if key != encoded:
             raise RuntimeError("common semantic output differs from its immutable identity")
-        self.meter.claim(4 * len(key) + len(encoded))
-        self.writes[self.name, key] = encoded
+        stored_key = encode_index_key(key)
+        self.meter.claim(4 * len(stored_key) + len(encoded))
+        self.writes[self.name, stored_key] = encoded
 
 
 class _Lifecycle(MutableMapping[str, dict[str, Any]]):
@@ -612,6 +617,36 @@ class _BindingEnds(MutableSet[str]):
         raise RuntimeError("semantic units do not count binding ends")
 
 
+class _DeliverySlots(MutableSet[tuple[str, bytes]]):
+    def __init__(
+        self, owner: GenericSemantics, meter: _Meter, writes: dict[tuple[str, bytes], bytes]
+    ) -> None:
+        self.owner, self.meter, self.writes = owner, meter, writes
+
+    def __contains__(self, value: object) -> bool:
+        if not isinstance(value, tuple):
+            return False
+        key = encode_index_key(value)
+        self.meter.claim(len(key))
+        return ("slots", key) in self.writes or self.owner._one(
+            "SELECT 1 FROM maps WHERE name='slots' AND key=?", (key,)
+        ) is not None
+
+    def add(self, value: tuple[str, bytes]) -> None:
+        key = encode_index_key(value)
+        self.meter.claim(4 * len(key) + 4)
+        self.writes["slots", key] = b"null"
+
+    def discard(self, value: tuple[str, bytes]) -> None:
+        raise RuntimeError("semantic undo owns delivery-slot removal")
+
+    def __iter__(self) -> Iterator[tuple[str, bytes]]:
+        raise RuntimeError("semantic units do not enumerate delivery slots")
+
+    def __len__(self) -> int:
+        raise RuntimeError("semantic units do not count delivery slots")
+
+
 class _ProjectedValidator(_Validator):
     def __init__(
         self,
@@ -626,6 +661,7 @@ class _ProjectedValidator(_Validator):
         self.externals = _Output("externals", meter, outputs)
         self.profiles = _Output("profiles", meter, outputs)
         self.binding_ends = _BindingEnds(owner, meter, outputs)
+        self.delivery_slots = _DeliverySlots(owner, meter, outputs)
         self.lifecycle = {
             name: _Lifecycle(owner, name, meter, outputs) for name in ("generation", "invalidation")
         }
@@ -639,6 +675,16 @@ class _ProjectedValidator(_Validator):
         value = read_binding_time(self.owner.db, identity)
         self.meter.claim(len(identity.encode()) + (len(value.encode()) if value is not None else 0))
         return value
+
+    def _delivery_context(self, identity: str) -> dict[str, Any]:
+        value = read_delivery_metadata(self.owner.db, identity, "context")
+        self.meter.claim(len(identity.encode()) + len(value.encode()))
+        return {"id": identity, "kind": value}
+
+    def _delivery_observation(self, identity: str) -> dict[str, Any]:
+        value = read_delivery_metadata(self.owner.db, identity, "observation")
+        self.meter.claim(len(identity.encode()) + len(value.encode()))
+        return {"state": {"object_id": value}}
 
 
 class _Keys(MutableSet[bytes]):

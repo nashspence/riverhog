@@ -201,7 +201,7 @@ def test_reopen_each_committed_common_unit_preserves_native_outputs(tmp_path, ca
     )
     native.generic(row)
     assert result == [
-        ("externals", key, canonical_json_bytes(value))
+        ("externals", b"b" + key, canonical_json_bytes(value))
         for key, value in sorted(native.externals.items())
     ]
 
@@ -223,7 +223,7 @@ def test_late_rejection_undoes_only_new_outputs_and_reclaims_state(tmp_path, cat
     create(path, row)
     with closing(connect(path)) as db:
         key = canonical_json_bytes(external(0))
-        db.execute("INSERT INTO maps VALUES (?,?,?)", ("externals", key, key)).close()
+        db.execute("INSERT INTO maps VALUES (?,?,?)", ("externals", b"b" + key, key)).close()
         db.commit()
         before = outputs(db)
         prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
@@ -889,7 +889,7 @@ def test_actual_cold_common_semantic_units(tmp_path, catalog, record_property):
     from test_row_semantics import growth_samples as row_growth_samples
 
     samples.extend(row_growth_samples(tmp_path, catalog))
-    assert len(samples) == 321
+    assert len(samples) == 357
     record_property("growth_samples", samples)
 
 

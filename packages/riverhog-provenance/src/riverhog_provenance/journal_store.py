@@ -45,6 +45,7 @@ from ._entry_preparation import EntryPreparation
 from ._entry_preparation import install as install_entry_preparation
 from ._generic_semantics import GenericAtom, GenericSemantics
 from ._generic_semantics import install as install_generic_semantics
+from ._index_key import encode_index_key
 from ._journal_prefix import install as install_journal_prefix
 from ._online_dag import OnlineDag
 from ._online_dag import install as install_online_dag
@@ -59,21 +60,14 @@ from .errors import ProvenanceValidationError
 from .graph import GraphValidation, _Validator, time_ns
 
 
-def _key(value: Any) -> bytes:
-    if isinstance(value, bytes):
-        return b"b" + value
-    if isinstance(value, tuple):
-        return b"t" + b"".join(str(len(part)).encode() + b":" + part for part in map(_key, value))
-    return b"j" + canonical_json_bytes(value)
-
-
 class _Map[T](MutableMapping[Any, T]):
     def __init__(self, store: JournalStore, name: str) -> None:
         self.store, self.name = store, name
 
     def __getitem__(self, key: Any) -> T:
         row = self.store.db.execute(
-            "SELECT value FROM maps WHERE name = ? AND key = ?", (self.name, _key(key))
+            "SELECT value FROM maps WHERE name = ? AND key = ?",
+            (self.name, encode_index_key(key)),
         ).fetchone()
         if row is None:
             raise KeyError(key)
@@ -82,12 +76,13 @@ class _Map[T](MutableMapping[Any, T]):
     def __setitem__(self, key: Any, value: T) -> None:
         self.store.db.execute(
             "INSERT OR REPLACE INTO maps VALUES (?, ?, ?)",
-            (self.name, _key(key), canonical_json_bytes(value)),
+            (self.name, encode_index_key(key), canonical_json_bytes(value)),
         )
 
     def __delitem__(self, key: Any) -> None:
         if not self.store.db.execute(
-            "DELETE FROM maps WHERE name = ? AND key = ?", (self.name, _key(key))
+            "DELETE FROM maps WHERE name = ? AND key = ?",
+            (self.name, encode_index_key(key)),
         ).rowcount:
             raise KeyError(key)
 
@@ -124,7 +119,8 @@ class _Set(MutableSet[Any]):
     def __contains__(self, value: object) -> bool:
         return (
             self.store.db.execute(
-                "SELECT 1 FROM maps WHERE name = ? AND key = ?", (self.name, _key(value))
+                "SELECT 1 FROM maps WHERE name = ? AND key = ?",
+                (self.name, encode_index_key(value)),
             ).fetchone()
             is not None
         )
@@ -137,12 +133,14 @@ class _Set(MutableSet[Any]):
 
     def add(self, value: Any) -> None:
         self.store.db.execute(
-            "INSERT OR IGNORE INTO maps VALUES (?, ?, ?)", (self.name, _key(value), b"null")
+            "INSERT OR IGNORE INTO maps VALUES (?, ?, ?)",
+            (self.name, encode_index_key(value), b"null"),
         )
 
     def discard(self, value: Any) -> None:
         self.store.db.execute(
-            "DELETE FROM maps WHERE name = ? AND key = ?", (self.name, _key(value))
+            "DELETE FROM maps WHERE name = ? AND key = ?",
+            (self.name, encode_index_key(value)),
         )
 
 

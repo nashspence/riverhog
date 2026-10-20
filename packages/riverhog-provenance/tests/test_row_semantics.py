@@ -12,6 +12,7 @@ import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import validate_execution_samples
 from riverhog_provenance._generic_semantics import GenericSemantics, StaleGenericSemantics
+from riverhog_provenance._index_key import encode_index_key
 from riverhog_provenance._semantic_program import ROW_TYPES
 from riverhog_provenance.errors import ProvenanceValidationError, UnresolvedContractError
 from riverhog_provenance.graph import _Validator
@@ -95,6 +96,13 @@ def subject(kind, count=3, *, rejected=False):
             binding_id=identity(36),
             at="2025-12-31T00:00:00Z" if rejected else "2026-01-01T12:00:00Z",
         )
+    elif kind == "delivery_association":
+        row.update(
+            delivery_context_id=identity(31),
+            slot={"kind": "text", "text": "slot"},
+            state=reference("state", 34 if rejected else 33),
+            verification_observation_id=identity(37),
+        )
     elif kind == "continuity":
         row.update(earlier_state=reference("state", 33), later_state=reference("state", 34))
     elif kind == "custody_assertion":
@@ -123,7 +131,12 @@ def subject(kind, count=3, *, rejected=False):
 
 def references():
     values = [agent()] + [
-        {"id": identity(n), "assertion_id": identity(n + 100), "type": kind, "evidence": []}
+        {
+            "id": identity(n),
+            "assertion_id": identity(n + 100),
+            "type": kind,
+            "evidence": [],
+        }
         for kind, n in (
             ("artifact", 30),
             ("context", 31),
@@ -132,6 +145,7 @@ def references():
             ("state", 34),
             ("activity", 35),
             ("locator_binding", 36),
+            ("observation", 37),
         )
     ]
     for value in values:
@@ -141,10 +155,14 @@ def references():
             )
         elif value["type"] == "locator_binding":
             value["temporal_scope"] = {"kind": "instant", "at": "2026-01-01T00:00:00Z"}
+        elif value["type"] == "context":
+            value["kind"] = "delivery"
+        elif value["type"] == "observation":
+            value["state"] = reference("state", 33)
     return values
 
 
-def prepare(path, row, *, retained=0, aggregate_history=0, end_history=0):
+def prepare(path, row, *, retained=0, aggregate_history=0, end_history=0, slot_history=0):
     create(path, row)
     with closing(connect(path)) as db:
         for value in references()[1:]:
@@ -177,6 +195,16 @@ def prepare(path, row, *, retained=0, aggregate_history=0, end_history=0):
                     "INSERT INTO binding_projection VALUES (?,?)",
                     (value["assertion_id"], value["temporal_scope"]["at"]),
                 ).close()
+            elif value["type"] in {"context", "observation"}:
+                db.execute(
+                    "INSERT INTO delivery_projection VALUES (?,?)",
+                    (
+                        value["assertion_id"],
+                        value["kind"]
+                        if value["type"] == "context"
+                        else value["state"]["object_id"],
+                    ),
+                ).close()
         for n in range(aggregate_history):
             db.execute(
                 "INSERT INTO maps VALUES (?,?,?)",
@@ -190,6 +218,19 @@ def prepare(path, row, *, retained=0, aggregate_history=0, end_history=0):
             db.execute(
                 "INSERT INTO maps VALUES ('ends',?,?)",
                 (b"j" + canonical_json_bytes(identity(20000 + n)), b"null"),
+            ).close()
+        for n in range(slot_history):
+            db.execute(
+                "INSERT INTO maps VALUES ('slots',?,?)",
+                (
+                    encode_index_key(
+                        (
+                            identity(31),
+                            canonical_json_bytes({"kind": "text", "text": f"old-{n}"}),
+                        )
+                    ),
+                    b"null",
+                ),
             ).close()
         db.executemany(
             "INSERT INTO assertions VALUES (?,?,?,?,?,?,?,?,?)",
@@ -225,8 +266,11 @@ def native(row, catalog):
     current.row_semantics(row)
     return (
         sorted(
-            (name, key, canonical_json_bytes(value))
-            for name, values in (("externals", current.externals), ("profiles", current.profiles))
+            (name, encode_index_key(key), canonical_json_bytes(value))
+            for name, values in (
+                ("externals", current.externals),
+                ("profiles", current.profiles),
+            )
             for key, value in values.items()
         )
         + sorted(
@@ -243,6 +287,7 @@ def native(row, catalog):
         + sorted(
             ("ends", b"j" + canonical_json_bytes(key), b"null") for key in current.binding_ends
         )
+        + sorted(("slots", encode_index_key(key), b"null") for key in current.delivery_slots)
     )
 
 
@@ -281,12 +326,18 @@ def test_reopen_each_row_unit_preserves_native_outputs(tmp_path, catalog, kind, 
         ("state", {"occurrence_id": identity(31)}, "wrong reference type: context"),
         (
             "activity",
-            {"started_at": "2026-02-30T00:00:00Z", "associations": [{"agent_id": identity(999)}]},
+            {
+                "started_at": "2026-02-30T00:00:00Z",
+                "associations": [{"agent_id": identity(999)}],
+            },
             "calendar",
         ),
         (
             "activity",
-            {"ended_at": "2025-12-31T00:00:00Z", "associations": [{"agent_id": identity(999)}]},
+            {
+                "ended_at": "2025-12-31T00:00:00Z",
+                "associations": [{"agent_id": identity(999)}],
+            },
             "ends before",
         ),
         (
@@ -297,8 +348,16 @@ def test_reopen_each_row_unit_preserves_native_outputs(tmp_path, catalog, kind, 
             },
             "wrong reference type: context",
         ),
-        ("activity", {"contexts": [{"context_id": identity(20)}]}, "wrong reference type: agent"),
-        ("activity", {"configuration_sha256": "0" * 64}, "configuration digest mismatch"),
+        (
+            "activity",
+            {"contexts": [{"context_id": identity(20)}]},
+            "wrong reference type: agent",
+        ),
+        (
+            "activity",
+            {"configuration_sha256": "0" * 64},
+            "configuration digest mismatch",
+        ),
         ("continuity", {"later_state": reference("state", 33)}, "distinct state"),
         (
             "custody_assertion",
@@ -491,8 +550,17 @@ def growth_samples(tmp_path, catalog):
     cases += [(kind, 3, True) for kind in ("usage", "generation", "invalidation")]
     cases += [("locator_binding_end", stage, False) for stage in (1, 2)]
     cases += [("locator_binding_end", 2, True)]
+    cases += [("delivery_association", stage, False) for stage in (1, 2, 3, 4)]
+    cases += [("delivery_association", 3, True)]
     for case, (kind, stage, rejected) in enumerate(cases):
-        for count, budget in ((1, 1), (15, 16), (16, 16), (17, 16), (129, 16), (1025, 64)):
+        for count, budget in (
+            (1, 1),
+            (15, 16),
+            (16, 16),
+            (17, 16),
+            (129, 16),
+            (1025, 64),
+        ):
             row = subject(kind, count, rejected=rejected)
             path = tmp_path / f"row-{case}-{count}.sqlite3"
             retained_history = 4097 if count in (17, 1025) else count
@@ -512,6 +580,9 @@ def growth_samples(tmp_path, catalog):
                 retained=retained_history,
                 aggregate_history=aggregate_history,
                 end_history=end_history,
+                slot_history=(4097 if count == 129 else count)
+                if kind == "delivery_association" and stage == 4
+                else 0,
             )
             with closing(sqlite3.connect(":memory:")) as db:
                 with closing(connect(path)) as original:
@@ -527,6 +598,7 @@ def growth_samples(tmp_path, catalog):
                     "maps",
                     "activity_projection",
                     "binding_projection",
+                    "delivery_projection",
                     "journal_prefix",
                     "journal_generic_semantics",
                     "generic_semantic_frames",
@@ -577,6 +649,8 @@ def growth_samples(tmp_path, catalog):
                             if kind in ("usage", "generation", "invalidation")
                             else "binding end precedes the known binding"
                             if kind == "locator_binding_end"
+                            else "delivery association and verification target differ"
+                            if kind == "delivery_association"
                             else "configuration digest mismatch"
                         )
                         with pytest.raises(ProvenanceValidationError, match=message):
@@ -586,7 +660,7 @@ def growth_samples(tmp_path, catalog):
                         suffix.result()
                         assert outputs(suffix_db) == sorted(history_outputs + native(row, catalog))
                     require_reclaimed(suffix_db)
-    assert len(samples) == 198
+    assert len(samples) == 234
     return samples
 
 

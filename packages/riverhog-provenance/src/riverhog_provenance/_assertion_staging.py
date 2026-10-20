@@ -36,7 +36,7 @@ from .graph import iter_assertions
 if TYPE_CHECKING:
     from .journal import JournalFrame
 
-ALGORITHM = "riverhog-assertion-staging/v3"
+ALGORITHM = "riverhog-assertion-staging/v4"
 MAX_ROWS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -110,6 +110,7 @@ class StageRow:
     signature: bytes
     activity: tuple[str, str | None, str | None] | None
     binding: tuple[str | None] | None
+    delivery: str | None
 
 
 @dataclass(frozen=True)
@@ -129,6 +130,9 @@ def install(db: sqlite3.Connection) -> None:
     ).close()
     db.execute(
         "CREATE TABLE binding_projection(assertion_id TEXT PRIMARY KEY, bound_at TEXT)"
+    ).close()
+    db.execute(
+        "CREATE TABLE delivery_projection(assertion_id TEXT PRIMARY KEY, value TEXT NOT NULL)"
     ).close()
     db.execute(
         "CREATE TABLE journal_assertion_staging(singleton INTEGER PRIMARY KEY CHECK(singleton=1), "
@@ -158,14 +162,24 @@ def _declaration() -> Declaration:
         ends_at="commit bounded immutable identities, assertion/change rows and fenced progress",
         dimensions=(
             Dimension(
-                "retained_rows", COUNT, "Resident assertion, immutable identity and change rows."
-            ),
-            Dimension("row_budget", COUNT, "One to 64 source assertions admitted for this unit."),
-            Dimension(
-                "byte_budget", OCTETS, "Logical source/write and existing signature admission."
+                "retained_rows",
+                COUNT,
+                "Resident assertion, immutable identity and change rows.",
             ),
             Dimension(
-                "max_atom_octets", OCTETS, "Largest inspected source/assertion/identity atom."
+                "row_budget",
+                COUNT,
+                "One to 64 source assertions admitted for this unit.",
+            ),
+            Dimension(
+                "byte_budget",
+                OCTETS,
+                "Logical source/write and existing signature admission.",
+            ),
+            Dimension(
+                "max_atom_octets",
+                OCTETS,
+                "Largest inspected source/assertion/identity atom.",
             ),
         ),
         bounds=(
@@ -189,7 +203,7 @@ def _declaration() -> Declaration:
                 "upper",
                 Expression("sum", terms=(count(1), multiple(5, budget))),
                 "One checkpoint, two identities, assertion/change rows, "
-                "and one optional activity or locator-binding metadata row.",
+                "and one optional fixed activity, binding or delivery-reference metadata row.",
             ),
             Bound(
                 "metadata_octets",
@@ -223,7 +237,10 @@ def _declaration() -> Declaration:
                 "inspected_octets",
                 OCTETS,
                 "upper",
-                Expression("sum", terms=(dimension("byte_budget"), dimension("max_atom_octets"))),
+                Expression(
+                    "sum",
+                    terms=(dimension("byte_budget"), dimension("max_atom_octets")),
+                ),
                 "Admitted source/identity atoms and at most one next capacity-boundary atom.",
             ),
             Bound(
@@ -265,7 +282,11 @@ def _declaration() -> Declaration:
                                         "log2_ceil",
                                         terms=(
                                             Expression(
-                                                "sum", terms=(dimension("retained_rows"), count(2))
+                                                "sum",
+                                                terms=(
+                                                    dimension("retained_rows"),
+                                                    count(2),
+                                                ),
                                             ),
                                         ),
                                     ),
@@ -515,6 +536,11 @@ class AssertionStaging:
                     (source["temporal_scope"].get("at", source["temporal_scope"].get("start")),)
                     if source["type"] == "locator_binding"
                     else None,
+                    source["kind"]
+                    if source["type"] == "context"
+                    else source["state"]["object_id"]
+                    if source["type"] == "observation"
+                    else None,
                 )
                 octets = (
                     len(row.assertion_id.encode()) * 3
@@ -538,6 +564,8 @@ class AssertionStaging:
                     octets += len(row.assertion_id.encode()) + sum(
                         len(value.encode()) for value in row.binding if value is not None
                     )
+                if row.delivery is not None:
+                    octets += len(row.assertion_id.encode()) + len(row.delivery.encode())
                 if admitted + octets > byte_budget:
                     if not rows:
                         raise AssertionStagingCapacity(
@@ -681,6 +709,11 @@ class AssertionStaging:
                     self.db.execute(
                         "INSERT INTO binding_projection VALUES (?,?)",
                         (row.assertion_id, *row.binding),
+                    ).close()
+                if row.delivery is not None:
+                    self.db.execute(
+                        "INSERT INTO delivery_projection VALUES (?,?)",
+                        (row.assertion_id, row.delivery),
                     ).close()
                 self.db.execute("INSERT INTO changes VALUES (?)", (row.assertion_id,)).close()
             self.db.commit()

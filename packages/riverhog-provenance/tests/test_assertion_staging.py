@@ -11,8 +11,9 @@ from dataclasses import replace
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
-from riverhog_provenance import _assertion_staging as implementation
 from riverhog_provenance import (
+    BoundedSourceObserver,
+    BytesSource,
     append_correction,
     assertion,
     assertion_reference,
@@ -23,6 +24,7 @@ from riverhog_provenance import (
     reference,
     validate_journal,
 )
+from riverhog_provenance import _assertion_staging as implementation
 from riverhog_provenance._assertion_staging import (
     AssertionStaging,
     AssertionStagingCapacity,
@@ -93,6 +95,8 @@ def frame(rows=(), **fields):
             "extension": "extensions",
             "activity": "activities",
             "locator_binding": "locator_bindings",
+            "context": "contexts",
+            "observation": "descriptions",
         }.get(values[0]["type"], "agents")
         if values
         else "agents"
@@ -134,6 +138,7 @@ def contents(db):
             "journal_assertion_staging",
             "activity_projection",
             "binding_projection",
+            "delivery_projection",
         )
     }
 
@@ -181,6 +186,13 @@ def proposed_octets(category, value, sequence="1"):
             (
                 value["assertion_id"],
                 value["temporal_scope"].get("at", value["temporal_scope"].get("start")),
+            )
+        )
+    if value["type"] in {"context", "observation"}:
+        total += logical_octets(
+            (
+                value["assertion_id"],
+                value["kind"] if value["type"] == "context" else value["state"]["object_id"],
             )
         )
     return total
@@ -845,13 +857,47 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
     )
     binding_start = len(regimes)
     regimes.extend(regimes[activity_start:binding_start])
+    context_start = len(regimes)
+    regimes.extend(regimes[activity_start:binding_start])
+    observation_start = len(regimes)
+    regimes.extend(regimes[activity_start:binding_start])
+    observation_template = BoundedSourceObserver().observe(BytesSource(b"metadata witness"))
+    observation_template = next(
+        value
+        for value in observation_template.graph_fragment()["descriptions"]
+        if value["type"] == "observation"
+    )
     for terminal in (False, True):
         for index, (count, history, quantum, resumed, payload, existing) in enumerate(regimes):
             path = tmp_path / f"{terminal}-{index}.sqlite3"
             create(path)
             values = [row(n, payload) for n in range(count)]
             category = "agents"
-            if index >= binding_start:
+            if index >= observation_start:
+                category = "descriptions"
+                values = [
+                    {
+                        **copy.deepcopy(observation_template),
+                        "id": value["id"],
+                        "assertion_id": value["assertion_id"],
+                        "note": "x" * (payload or 1),
+                    }
+                    for value in values
+                ]
+            elif index >= context_start:
+                category = "contexts"
+                values = [
+                    {
+                        "id": value["id"],
+                        "assertion_id": value["assertion_id"],
+                        "type": "context",
+                        "evidence": [],
+                        "kind": "execution_environment" if ordinal % 2 else "delivery",
+                        "label": "x" * (payload or 1),
+                    }
+                    for ordinal, value in enumerate(values)
+                ]
+            elif index >= binding_start:
                 category = "locator_bindings"
                 values = [
                     assertion(
@@ -940,6 +986,7 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                         "changes",
                         "activity_projection",
                         "binding_projection",
+                        "delivery_projection",
                     )
                 )
                 maximum = max(
@@ -977,7 +1024,7 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                 }
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 samples.append(sample)
-    assert len(samples) == 56
+    assert len(samples) == 88
     record_property("growth_samples", samples)
 
 

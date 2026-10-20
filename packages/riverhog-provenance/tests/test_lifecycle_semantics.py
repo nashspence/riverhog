@@ -211,7 +211,7 @@ def test_late_time_rejection_rolls_back_new_events_and_preserves_old_external_ou
     with closing(connect(path)) as db:
         if preexisting_external:
             value = canonical_json_bytes(row["state"])
-            db.execute("INSERT INTO maps VALUES ('externals',?,?)", (value, value)).close()
+            db.execute("INSERT INTO maps VALUES ('externals',?,?)", (b"b" + value, value)).close()
             db.commit()
         before = outputs(db)
         prefix = snapshot(db)["journal_prefix"]

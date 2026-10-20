@@ -206,6 +206,7 @@ class _Validator:
         self.profiles: MutableMapping[bytes, dict[str, str]] = {}
         self.findings: MutableSequence[str] = []
         self.binding_ends: MutableSet[str] = set()
+        self.delivery_slots: MutableSet[tuple[str, bytes]] = set()
         self.lifecycle: dict[str, MutableMapping[str, dict[str, Any]]] = {
             "generation": {},
             "invalidation": {},
@@ -234,6 +235,12 @@ class _Validator:
     def _binding_time(self, identity: str) -> str | None:
         scope = self.node(identity, "locator_binding")["temporal_scope"]
         return cast(str | None, scope.get("at", scope.get("start")))
+
+    def _delivery_context(self, identity: str) -> dict[str, Any]:
+        return self.node(identity, "context")
+
+    def _delivery_observation(self, identity: str) -> dict[str, Any]:
+        return self.node(identity, "observation")
 
     @staticmethod
     def _node_type(value: dict[str, Any], *types: str) -> dict[str, Any]:
@@ -331,11 +338,18 @@ class _Validator:
         return self.objects.values()
 
     def run(self) -> None:
-        generation, invalidation, derivations, specializations, capture_targets, ends, slots = (
-            self.aggregates()
-        )
+        (
+            generation,
+            invalidation,
+            derivations,
+            specializations,
+            capture_targets,
+            ends,
+            slots,
+        ) = self.aggregates()
         self.lifecycle = {"generation": generation, "invalidation": invalidation}
         self.binding_ends = ends
+        self.delivery_slots = slots
         for row in self.validation_rows():
             self.generic(row)
             kind = row["type"]
@@ -456,25 +470,6 @@ class _Validator:
                 self._comparison(row)
             elif kind == "locator_binding":
                 self._locator(row)
-            elif kind == "delivery_association":
-                context = self.node(row["delivery_context_id"], "context")
-                if context["kind"] != "delivery":
-                    raise ProvenanceValidationError(
-                        "delivery association requires a delivery context"
-                    )
-                self.name(row["slot"])
-                self.reference(row["state"], "state")
-                observation = self.node(row["verification_observation_id"], "observation")
-                if row["state"]["object_id"] != observation["state"]["object_id"]:
-                    raise ProvenanceValidationError(
-                        "delivery association and verification target differ"
-                    )
-                slot = (context["id"], canonical_document(_name_identity(row["slot"])))
-                if slot in slots:
-                    raise ProvenanceValidationError(
-                        "duplicate delivery slot in one delivery instance"
-                    )
-                slots.add(slot)
         self.finish(generation, invalidation, derivations, specializations)
 
     def finish(

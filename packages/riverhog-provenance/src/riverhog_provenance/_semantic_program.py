@@ -41,6 +41,7 @@ ROW_STAGES = {
     "generation": 4,
     "invalidation": 4,
     "locator_binding_end": 3,
+    "delivery_association": 5,
 }
 ROW_TYPES = frozenset(ROW_STAGES)
 
@@ -203,7 +204,7 @@ class Program:
             self._next(frame)
 
     def _row(self, frame: Frame, value: Mapping[str, Any]) -> None:
-        from .graph import time_ns
+        from .graph import _name_identity, time_ns
 
         validator, stage, kind = self.validator, frame.stage, value["type"]
         if kind == "occurrence":
@@ -293,6 +294,36 @@ class Program:
                 bound = validator._binding_time(value["binding_id"])
                 if bound and time_ns(value["at"]) < time_ns(bound):
                     raise ProvenanceValidationError("binding end precedes the known binding")
+            else:
+                self.stack.pop()
+                return
+        elif kind == "delivery_association":
+            if stage == 0:
+                context = validator._delivery_context(value["delivery_context_id"])
+                if context["kind"] != "delivery":
+                    raise ProvenanceValidationError(
+                        "delivery association requires a delivery context"
+                    )
+            elif stage == 1:
+                validator.name(value["slot"])
+            elif stage == 2:
+                validator.reference(value["state"], "state")
+            elif stage == 3:
+                observation = validator._delivery_observation(value["verification_observation_id"])
+                if value["state"]["object_id"] != observation["state"]["object_id"]:
+                    raise ProvenanceValidationError(
+                        "delivery association and verification target differ"
+                    )
+            elif stage == 4:
+                slot = (
+                    value["delivery_context_id"],
+                    canonical_document(_name_identity(value["slot"])),
+                )
+                if slot in validator.delivery_slots:
+                    raise ProvenanceValidationError(
+                        "duplicate delivery slot in one delivery instance"
+                    )
+                validator.delivery_slots.add(slot)
             else:
                 self.stack.pop()
                 return
