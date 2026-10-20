@@ -41,12 +41,14 @@ from ._delivery_projection import read_delivery_metadata
 from ._description_projection import read_description_metadata
 from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
+from ._observation_coverage import ObservationCoverage
+from ._observation_projection import has_observer, read_observation_metadata
 from ._semantic_program import ROW_STAGES, ROW_TYPES, Frame, MemoryStack, Nodes, Program, Stack
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .graph import _Validator
 
-ALGORITHM = "riverhog-generic-semantics/v7"
+ALGORITHM = "riverhog-generic-semantics/v8"
 MAX_STEPS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -54,6 +56,7 @@ _FRAME_OCTETS = 512
 # Fixed JSON keys, one 45-octet UUID and an optional 30-octet native UTC timestamp.
 _LIFECYCLE_OCTETS = 128
 _DEFAULT_BYTES = 8 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
+_RESULT_BYTES = 8 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 8192
 _STAGES = {
     "row": max(ROW_STAGES.values()),
     "association": 1,
@@ -240,8 +243,8 @@ def _decode_frame(raw: str, nodes: Nodes) -> Frame:
         array = arrays.get(frame.operation, {}).get(frame.stage)
         if frame.operation == "row" and source["type"] == "activity":
             array = {3: "associations", 4: "contexts", 5: "details"}.get(frame.stage)
-        elif frame.operation == "row" and source["type"] == "reported_description":
-            array = {4: "coverage", 5: "profiles"}.get(frame.stage)
+        elif frame.operation == "row" and source["type"] in {"reported_description", "observation"}:
+            array = {4: "coverage", 5: "profiles", 12: "evidence", 16: "metadata"}.get(frame.stage)
         maximum = (
             len(source.get(array, []))
             if array is not None
@@ -292,8 +295,8 @@ def _declaration() -> Declaration:
         authority="riverhog-provenance",
         subjects=("riverhog_provenance._generic_semantics.GenericSemantics.advance",),
         scope="native-sqlite-source-fenced-common-semantic-unit",
-        starts_at="load the exact admitted row, source, accepted prefix and common semantic cursor",
-        ends_at="commit bounded native checks or rejection undo/reclamation with their checkpoint",
+        starts_at="load the exact admitted row, source, accepted prefix and semantic cursor",
+        ends_at="commit bounded checks or rejection undo/reclamation with their checkpoint",
         dimensions=(
             Dimension("retained_rows", COUNT, "Rows retained in the owned private workspace."),
             Dimension("step_budget", COUNT, "One to 64 control/reference or cleanup steps."),
@@ -411,7 +414,8 @@ def _declaration() -> Declaration:
         conditions=(
             "The owner retains the exact immutable admitted row/source, sealed catalog and modes.",
             "Covering active-object/subject indexes and indexed variable state are installed.",
-            "Staging owns fixed activity, locator-binding and delivery reference fields; "
+            "Staging owns fixed activity, locator-binding, delivery, observation reference fields "
+            "and raw observer membership; "
             "lifecycle aggregates retain only "
             "canonical activity identity and optional native timestamp metadata.",
             "The source admission index is constructed once outside checkpoint transactions.",
@@ -430,6 +434,39 @@ def _declaration() -> Declaration:
             "Unsupported row kinds, graph and post-row checks remain separate phases.",
             "Allocation, B-tree byte comparisons, physical I/O, waits and fsync stay separate.",
             "Whole-session recovery needs an owner-retained crash-safe workspace and source.",
+        ),
+    )
+
+
+def _result_declaration() -> Declaration:
+    unit = _declaration()
+    return replace(
+        unit,
+        id="riverhog-provenance.sqlite-semantic-result.growth/v1",
+        subjects=("riverhog_provenance._generic_semantics.GenericSemantics.result",),
+        scope="native-sqlite-fenced-semantic-terminal-result",
+        starts_at="load the completed exact-source semantic checkpoint and retained failure frame",
+        ends_at="return success or reconstruct one authentic native error without changing state",
+        bounds=tuple(
+            replace(
+                bound,
+                relation="equal",
+                expression=Expression("constant", value=0, unit=COUNT),
+                meaning="Terminal result reads never change private facts or progress.",
+            )
+            if bound.metric == "changed_rows"
+            else bound
+            for bound in unit.bounds
+        ),
+        conditions=unit.conditions
+        + (
+            "step_budget is one retained failure frame, and byte_budget equals terminal admission.",
+            "Terminal admission is eight native entry envelopes plus 8192 control octets.",
+        ),
+        invariants=unit.invariants
+        + (
+            "Earlier outputs, duplicate keys and traversal frames are reclaimed before rejection.",
+            "The current immutable atom supplies correlations independently of the desired error.",
         ),
     )
 
@@ -654,6 +691,56 @@ class _DeliverySlots(MutableSet[tuple[str, bytes]]):
         raise RuntimeError("semantic units do not count delivery slots")
 
 
+class _CaptureTargets(MutableMapping[str, str]):
+    def __init__(
+        self, owner: GenericSemantics, meter: _Meter, writes: dict[tuple[str, bytes], bytes]
+    ) -> None:
+        self.owner, self.meter, self.writes = owner, meter, writes
+
+    def __getitem__(self, key: str) -> str:
+        encoded_key = b"j" + canonical_json_bytes(key)
+        self.meter.claim(len(encoded_key))
+        pending = self.writes.get(("captures", encoded_key))
+        if pending is None:
+            row = self.owner._one(
+                "SELECT substr(CAST(value AS BLOB),1,48),typeof(value) FROM maps "
+                "WHERE name='captures' AND key=?",
+                (encoded_key,),
+            )
+            if row is None:
+                raise KeyError(key)
+            pending, storage = row
+            if storage != "blob":
+                raise RuntimeError("invalid retained capture target storage")
+        self.meter.claim(len(pending))
+        try:
+            value = json.loads(pending)
+            if type(value) is not str:
+                raise ValueError("capture target must be a UUID string")
+            require_canonical_uuid_urn(value)
+            if canonical_json_bytes(value) != pending:
+                raise ValueError("noncanonical capture target")
+        except (ValueError, TypeError, UnicodeError) as exc:
+            raise RuntimeError("invalid retained capture target metadata") from exc
+        return str(value)
+
+    def __setitem__(self, key: str, value: str) -> None:
+        require_canonical_uuid_urn(key)
+        require_canonical_uuid_urn(value)
+        encoded_key, encoded = b"j" + canonical_json_bytes(key), canonical_json_bytes(value)
+        self.meter.claim(4 * len(encoded_key) + len(encoded))
+        self.writes["captures", encoded_key] = encoded
+
+    def __delitem__(self, key: str) -> None:
+        raise RuntimeError("semantic undo owns capture-target removal")
+
+    def __iter__(self) -> Iterator[str]:
+        raise RuntimeError("semantic units do not enumerate capture targets")
+
+    def __len__(self) -> int:
+        raise RuntimeError("semantic units do not count capture targets")
+
+
 class _ProjectedValidator(_Validator):
     def __init__(
         self,
@@ -667,6 +754,7 @@ class _ProjectedValidator(_Validator):
         self.objects = _Objects(owner, meter)
         self.externals = _Output("externals", meter, outputs)
         self.profiles = _Output("profiles", meter, outputs)
+        self.capture_targets = _CaptureTargets(owner, meter, outputs)
         self.binding_ends = _BindingEnds(owner, meter, outputs)
         self.delivery_slots = _DeliverySlots(owner, meter, outputs)
         self.lifecycle = {
@@ -677,6 +765,21 @@ class _ProjectedValidator(_Validator):
         value = read_description_metadata(self.owner.db, identity, *types)
         self.meter.claim(sum(len(item.encode()) for item in value.values()))
         return value
+
+    def _observation_node(self, identity: str, expected: str) -> dict[str, Any]:
+        value = read_observation_metadata(self.owner.db, identity, expected)
+        self.meter.claim(384)
+        return value
+
+    def _observation_observer(self, identity: str, agent_id: str) -> bool:
+        self.meter.claim(384)
+        return has_observer(self.owner.db, identity, agent_id)
+
+    def _observation_coverage_status(
+        self, coverage: ObservationCoverage, item: Mapping[str, Any]
+    ) -> str | None:
+        self.meter.claim(len(item["profile_id"].encode()) + len(item["category"].encode()))
+        return coverage.status(item)
 
     def _lifecycle_activity(self, identity: str) -> dict[str, Any]:
         value = read_activity(self.owner.db, identity)
@@ -1234,6 +1337,7 @@ class GenericSemantics:
     ) -> GenericState:
         return self.commit(self.prepare(step_budget=step_budget, byte_budget=byte_budget))
 
+    @declare_growth(_result_declaration())
     def result(self) -> None:
         state, _prefix = self._load()
         if not state.done:
@@ -1256,7 +1360,7 @@ class GenericSemantics:
         ):
             raise RuntimeError("common semantic completion retains pending obligations")
         if state.phase == "rejected":
-            meter = _Meter(8 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 8192)
+            meter = _Meter(_RESULT_BYTES)
             if state.failure is None:
                 raise RuntimeError("semantic rejection lost its failing frame")
             frame = _decode_frame(state.failure, self.atom.nodes)
@@ -1274,7 +1378,7 @@ class GenericSemantics:
                 keys.pending.add(Program.content_key(stack.identity(), value))
             elif (
                 frame.operation == "row"
-                and self.kind == "reported_description"
+                and self.kind in {"reported_description", "observation"}
                 and frame.stage == 4
             ):
                 coverage = self.atom.nodes.values[frame.node].get("coverage", [])

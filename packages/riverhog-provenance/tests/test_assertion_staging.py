@@ -140,6 +140,8 @@ def contents(db):
             "binding_projection",
             "delivery_projection",
             "description_projection",
+            "observation_projection",
+            "observation_observers",
         )
     }
 
@@ -194,6 +196,15 @@ def proposed_octets(category, value, sequence="1"):
             (
                 value["assertion_id"],
                 value["kind"] if value["type"] == "context" else value["state"]["object_id"],
+            )
+        )
+    if value["type"] in {"state", "activity"}:
+        total += logical_octets(
+            (
+                value["assertion_id"],
+                value.get("extent", {}).get("kind"),
+                value.get("outcome"),
+                0 if value.get("associations") else 1,
             )
         )
     total += logical_octets(
@@ -760,8 +771,14 @@ class WorkConnection(sqlite3.Connection):
             elif "INTO assertions" in sql:
                 octets += 1
             self.metrics["admitted_octets"] += octets
+            if "INTO observation_observers" in sql:
+                self.metrics["inspected_octets"] += octets
             if cursor.rowcount:
                 self.metrics["written_value_octets"] += octets
+        elif sql.startswith("UPDATE observation_projection"):
+            octets = logical_octets(parameters) + 1
+            self.metrics["admitted_octets"] += octets
+            self.metrics["written_value_octets"] += octets
         elif sql.startswith("SELECT value=?"):
             self.metrics["admitted_octets"] += self.prior_sizes[parameters[1]]
         return cursor
@@ -1008,6 +1025,8 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                         "binding_projection",
                         "delivery_projection",
                         "description_projection",
+                        "observation_projection",
+                        "observation_observers",
                     )
                 )
                 maximum = max(
@@ -1045,7 +1064,10 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                 }
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 samples.append(sample)
-    assert len(samples) == 88
+    from test_observation_staging import growth_samples as observer_growth_samples
+
+    samples.extend(observer_growth_samples(tmp_path))
+    assert len(samples) == 106
     record_property("growth_samples", samples)
 
 

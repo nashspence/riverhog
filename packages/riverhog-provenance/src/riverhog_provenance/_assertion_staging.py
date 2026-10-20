@@ -36,7 +36,7 @@ from .graph import iter_assertions
 if TYPE_CHECKING:
     from .journal import JournalFrame
 
-ALGORITHM = "riverhog-assertion-staging/v5"
+ALGORITHM = "riverhog-assertion-staging/v6"
 MAX_ROWS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -55,6 +55,7 @@ class StageState:
     phase: str = "stage"
     position: int = 0
     version: int = 0
+    observer_cursor: int = 0
 
     @property
     def done(self) -> bool:
@@ -66,6 +67,7 @@ class StageState:
                 "phase": self.phase,
                 "position": str(self.position),
                 "version": str(self.version),
+                "observer_cursor": str(self.observer_cursor),
             }
         ).decode()
 
@@ -75,19 +77,31 @@ class StageState:
             if type(raw) is not str or len(raw) > _HEADER_OCTETS:
                 raise ValueError("checkpoint envelope")
             value = json.loads(raw)
-            if type(value) is not dict or set(value) != {"phase", "position", "version"}:
+            if type(value) is not dict or set(value) != {
+                "phase",
+                "position",
+                "version",
+                "observer_cursor",
+            }:
                 raise ValueError("checkpoint shape")
-            if value["phase"] not in {"stage", "done"}:
+            if value["phase"] not in {"stage", "observers", "done"}:
                 raise ValueError("checkpoint phase")
-            for field in ("position", "version"):
+            for field in ("position", "version", "observer_cursor"):
                 if (
                     type(value[field]) is not str
                     or re.fullmatch(r"0|[1-9][0-9]*", value[field]) is None
                 ):
                     raise ValueError("checkpoint scalar")
-            state = cls(value["phase"], int(value["position"]), int(value["version"]))
+            state = cls(
+                value["phase"],
+                int(value["position"]),
+                int(value["version"]),
+                int(value["observer_cursor"]),
+            )
             if (
                 state.position > count
+                or (state.phase != "observers" and state.observer_cursor != 0)
+                or (state.phase == "observers" and state.position == 0)
                 or state.done
                 and state.position != count
                 or state.to_json() != raw
@@ -112,6 +126,7 @@ class StageRow:
     binding: tuple[str | None] | None
     delivery: str | None
     description: tuple[str | None, str | None, str | None]
+    observation: tuple[str | None, str | None, int] | None
 
 
 @dataclass(frozen=True)
@@ -122,6 +137,8 @@ class StageBatch:
     before_json: str
     after: StageState
     rows: tuple[StageRow, ...]
+    observers: tuple[tuple[str, str], ...] = ()
+    complete_observers: str | None = None
 
 
 def install(db: sqlite3.Connection) -> None:
@@ -138,6 +155,14 @@ def install(db: sqlite3.Connection) -> None:
     db.execute(
         "CREATE TABLE description_projection(assertion_id TEXT PRIMARY KEY, "
         "occurrence_id TEXT, kind TEXT, source_context_id TEXT)"
+    ).close()
+    db.execute(
+        "CREATE TABLE observation_projection(assertion_id TEXT PRIMARY KEY, "
+        "extent_kind TEXT, outcome TEXT, observers_complete INTEGER NOT NULL)"
+    ).close()
+    db.execute(
+        "CREATE TABLE observation_observers(assertion_id TEXT, agent_id TEXT, "
+        "PRIMARY KEY(assertion_id,agent_id))"
     ).close()
     db.execute(
         "CREATE TABLE journal_assertion_staging(singleton INTEGER PRIMARY KEY CHECK(singleton=1), "
@@ -174,7 +199,7 @@ def _declaration() -> Declaration:
             Dimension(
                 "row_budget",
                 COUNT,
-                "One to 64 source assertions admitted for this unit.",
+                "One to 64 source assertion or raw observer-membership rows for this unit.",
             ),
             Dimension(
                 "byte_budget",
@@ -192,7 +217,7 @@ def _declaration() -> Declaration:
                 "sql_statements",
                 COUNT,
                 "upper",
-                Expression("sum", terms=(count(48), multiple(11, budget))),
+                Expression("sum", terms=(count(48), multiple(12, budget))),
                 "Fixed manifest/boundary checks and indexed per-assertion reads and writes.",
             ),
             Bound(
@@ -206,10 +231,10 @@ def _declaration() -> Declaration:
                 "changed_rows",
                 COUNT,
                 "upper",
-                Expression("sum", terms=(count(1), multiple(6, budget))),
+                Expression("sum", terms=(count(1), multiple(7, budget))),
                 "One checkpoint, two identities, assertion/change rows, "
-                "one fixed description-reference projection and one optional activity, "
-                "binding or delivery-reference metadata row.",
+                "fixed description and observation metadata, optional activity, binding or "
+                "delivery metadata, or bounded observer membership/completion rows.",
             ),
             Bound(
                 "metadata_octets",
@@ -329,7 +354,8 @@ def _declaration() -> Declaration:
             "bounded row directory outside the unit.",
             "Source canonicalization and immutable-signature extraction are "
             "measured entry-local CPU/byte delegates.",
-            "With adequate admission, each source row is staged once with indexed "
+            "With adequate admission, each source assertion and association is staged once "
+            "with indexed "
             "history lookups; unit headers, retries, schema, physical pages, lock "
             "waits and fsync remain separately charged.",
             "Boundary links verify source identities, native metadata and "
@@ -509,6 +535,33 @@ class AssertionStaging:
             )
             if metadata != (1,):
                 raise RuntimeError("missing or changed staged description reference metadata")
+            if source["type"] in {"state", "activity"}:
+                associations = source.get("associations", [])
+                incomplete = state.phase == "observers"
+                if incomplete and (
+                    source["type"] != "activity"
+                    or not 0 <= state.observer_cursor < len(associations)
+                ):
+                    raise RuntimeError("staged observer cursor differs from its source")
+                expected_observation = (
+                    source.get("extent", {}).get("kind"),
+                    source.get("outcome"),
+                    0 if incomplete else 1,
+                )
+                if self._one(
+                    "SELECT 1 FROM observation_projection WHERE assertion_id=? "
+                    "AND extent_kind IS ? AND outcome IS ? AND observers_complete=?",
+                    (source["assertion_id"], *expected_observation),
+                ) != (1,):
+                    raise RuntimeError("missing or changed staged observation metadata")
+                cursor = state.observer_cursor if incomplete else len(associations)
+                if cursor and self._one(
+                    "SELECT 1 FROM observation_observers WHERE assertion_id=? AND agent_id=?",
+                    (source["assertion_id"], associations[cursor - 1]["agent_id"]),
+                ) != (1,):
+                    raise RuntimeError("missing staged observer cursor link")
+            elif state.phase == "observers":
+                raise RuntimeError("observer cursor does not identify an activity")
         elif (
             self._one(
                 "SELECT assertion_id FROM changes WHERE assertion_id>'' "
@@ -531,6 +584,44 @@ class AssertionStaging:
             raise ValueError("assertion staging byte budget must be positive")
         state, prefix = self._load()
         position, admitted = state.position, 0
+        if state.phase == "observers":
+            source = self.rows[position - 1][1]
+            associations = source["associations"]
+            cursor = state.observer_cursor
+            observers: list[tuple[str, str]] = []
+            complete = None
+            for _ in range(row_budget):
+                agent = associations[cursor]["agent_id"]
+                final = cursor + 1 == len(associations)
+                octets = len(source["assertion_id"].encode()) + len(agent.encode())
+                if final:
+                    octets += len(source["assertion_id"].encode()) + 1
+                if admitted + octets > byte_budget:
+                    if not observers:
+                        raise AssertionStagingCapacity("next observer membership exceeds admission")
+                    break
+                observers.append((source["assertion_id"], agent))
+                admitted += octets
+                cursor += 1
+                if final:
+                    complete = source["assertion_id"]
+                    break
+            after = StageState(
+                ("done" if position == self.count else "stage") if complete else "observers",
+                position,
+                state.version + 1,
+                0 if complete else cursor,
+            )
+            return StageBatch(
+                self.attempt_id,
+                self.binding,
+                prefix,
+                state.to_json(),
+                after,
+                (),
+                tuple(observers),
+                complete,
+            )
         rows: list[StageRow] = []
         pending: dict[str, tuple[str, bytes]] = {}
         objects: set[str] = set()
@@ -564,6 +655,13 @@ class AssertionStaging:
                         source.get("kind"),
                         source.get("source_context_id"),
                     ),
+                    (
+                        source.get("extent", {}).get("kind"),
+                        source.get("outcome"),
+                        0 if source.get("associations") else 1,
+                    )
+                    if source["type"] in {"state", "activity"}
+                    else None,
                 )
                 octets = (
                     len(row.assertion_id.encode()) * 3
@@ -592,6 +690,12 @@ class AssertionStaging:
                 octets += len(row.assertion_id.encode()) + sum(
                     len(value.encode()) for value in row.description if value is not None
                 )
+                if row.observation is not None:
+                    octets += len(row.assertion_id.encode()) + sum(
+                        len(value.encode()) if isinstance(value, str) else 1
+                        for value in row.observation
+                        if value is not None
+                    )
                 if admitted + octets > byte_budget:
                     if not rows:
                         raise AssertionStagingCapacity(
@@ -655,11 +759,21 @@ class AssertionStaging:
                 rows.append(row)
                 admitted += octets
                 position += 1
+                if source["type"] == "activity" and source.get("associations"):
+                    break
         after = (
             state
             if state.done
             else StageState(
-                "done" if position == self.count else "stage", position, state.version + 1
+                "observers"
+                if rows
+                and rows[-1].activity is not None
+                and self.rows[position - 1][1].get("associations")
+                else "done"
+                if position == self.count
+                else "stage",
+                position,
+                state.version + 1,
             )
         )
         return StageBatch(
@@ -745,7 +859,27 @@ class AssertionStaging:
                     "INSERT INTO description_projection VALUES (?,?,?,?)",
                     (row.assertion_id, *row.description),
                 ).close()
+                if row.observation is not None:
+                    self.db.execute(
+                        "INSERT INTO observation_projection VALUES (?,?,?,?)",
+                        (row.assertion_id, *row.observation),
+                    ).close()
                 self.db.execute("INSERT INTO changes VALUES (?)", (row.assertion_id,)).close()
+            for assertion_id, agent_id in batch.observers:
+                self.db.execute(
+                    "INSERT INTO observation_observers VALUES (?,?) ON CONFLICT DO NOTHING",
+                    (assertion_id, agent_id),
+                ).close()
+            if batch.complete_observers is not None:
+                with closing(
+                    self.db.execute(
+                        "UPDATE observation_projection SET observers_complete=1 "
+                        "WHERE assertion_id=? AND observers_complete=0",
+                        (batch.complete_observers,),
+                    )
+                ) as cursor:
+                    if cursor.rowcount != 1:
+                        raise RuntimeError("observer completion lost its staged activity")
             self.db.commit()
         except BaseException:
             self.db.rollback()

@@ -23,6 +23,7 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import PROFILE, canonical_document
 
+from ._observation_coverage import ObservationCoverage
 from .errors import ProvenanceValidationError, UnresolvedContractError
 
 if TYPE_CHECKING:
@@ -43,6 +44,7 @@ ROW_STAGES = {
     "locator_binding_end": 3,
     "delivery_association": 5,
     "reported_description": 6,
+    "observation": 17,
 }
 ROW_TYPES = frozenset(ROW_STAGES)
 
@@ -133,6 +135,10 @@ class Nodes:
             pending.extend(
                 child for child in reversed(children) if isinstance(child, (Mapping, list))
             )
+
+        self.observation = (
+            ObservationCoverage(value) if value.get("type") == "observation" else None
+        )
 
     def identity(self, value: Any) -> int:
         return self.identities[id(value)]
@@ -229,6 +235,106 @@ class Program:
             self.stack.push(operation, self.nodes.identity(values[frame.cursor]))
         else:
             self._next(frame)
+
+    def _observation(self, frame: Frame, value: Mapping[str, Any]) -> None:
+        validator, stage = self.validator, frame.stage
+        coverage = self.nodes.observation
+        if coverage is None:
+            raise RuntimeError("observation frame has no admitted coverage index")
+        if stage == 6:
+            if (
+                value["state"]["scope"] != "local"
+                or validator._observation_node(value["state"]["object_id"], "state")["extent"][
+                    "kind"
+                ]
+                == "unknown"
+            ):
+                raise ProvenanceValidationError("direct observation requires a local bounded state")
+        elif stage == 7:
+            if (
+                validator._observation_node(value["capture_id"], "activity")["kind"]
+                != "observation"
+            ):
+                raise ProvenanceValidationError(
+                    "observation capture is not an observation activity"
+                )
+        elif stage == 8:
+            if validator._observation_node(value["capture_id"], "activity")["outcome"] not in (
+                "success",
+                "partial",
+            ):
+                raise ProvenanceValidationError(
+                    "a failed capture cannot establish complete primary fixity"
+                )
+        elif stage == 9:
+            state_id = value["state"]["object_id"]
+            if validator.capture_targets.setdefault(value["capture_id"], state_id) != state_id:
+                raise ProvenanceValidationError("one capture cannot observe distinct states")
+        elif stage == 10:
+            if not coverage.primary_complete:
+                raise ProvenanceValidationError(
+                    "direct observation requires complete primary-content coverage"
+                )
+        elif stage == 11:
+            if (
+                coverage.incomplete
+                and validator._observation_node(value["capture_id"], "activity")["outcome"]
+                != "partial"
+            ):
+                raise ProvenanceValidationError(
+                    "incomplete coverage requires partial capture outcome"
+                )
+        elif stage == 12:
+            evidence = value["evidence"]
+            if frame.cursor == len(evidence):
+                raise ProvenanceValidationError(
+                    "observation lacks attributed direct measurement evidence"
+                )
+            item = evidence[frame.cursor]
+            if item["basis"] == "direct_measurement" and validator._observation_observer(
+                value["capture_id"], item["asserted_by_agent_id"]
+            ):
+                self._next(frame)
+            else:
+                self.stack.replace(replace(frame, cursor=frame.cursor + 1))
+            return
+        elif stage == 13:
+            consistency = value["consistency"]
+            if "snapshot_identifier" in consistency:
+                self._child(frame, "identifier", consistency["snapshot_identifier"])
+                return
+        elif stage == 14:
+            if (
+                value["consistency"]["level"] == "immutable_snapshot"
+                and not value["capabilities"]["stable_version_selection"]
+            ):
+                raise ProvenanceValidationError("snapshot claim requires stable-version capability")
+        elif stage == 15:
+            if value.get("metadata") and not value["capabilities"]["native_metadata"]:
+                raise ProvenanceValidationError(
+                    "native evidence contradicts source capability declaration"
+                )
+        elif stage == 16:
+            metadata = value.get("metadata", [])
+            if frame.cursor < len(metadata):
+                item = metadata[frame.cursor]
+                status = validator._observation_coverage_status(coverage, item)
+                if status is None:
+                    raise ProvenanceValidationError(
+                        "native metadata has no declared coverage category"
+                    )
+                if item["status"] == "unreadable" and status not in ("partial", "failed"):
+                    raise ProvenanceValidationError(
+                        "unreadable metadata requires partial/failed coverage"
+                    )
+                if status in ("not_exposed", "not_applicable", "not_requested"):
+                    raise ProvenanceValidationError("metadata contradicts its declared coverage")
+                self.stack.replace(replace(frame, cursor=frame.cursor + 1))
+                return
+        else:
+            self.stack.pop()
+            return
+        self._next(frame)
 
     def _row(self, frame: Frame, value: Mapping[str, Any]) -> None:
         from .graph import _name_identity, time_ns
@@ -354,7 +460,7 @@ class Program:
             else:
                 self.stack.pop()
                 return
-        elif kind == "reported_description":
+        elif kind in {"reported_description", "observation"}:
             local_state = value["state"]["scope"] == "local"
             if stage == 0:
                 validator.reference(value["state"], "state")
@@ -407,6 +513,9 @@ class Program:
                             )
                     self.stack.replace(replace(frame, cursor=frame.cursor + 1))
                     return
+            elif kind == "observation":
+                self._observation(frame, value)
+                return
             else:
                 self.stack.pop()
                 return

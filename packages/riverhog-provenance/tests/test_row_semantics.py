@@ -14,8 +14,10 @@ from riverhog_growth_contracts import validate_execution_samples
 from riverhog_provenance._generic_semantics import GenericSemantics, StaleGenericSemantics
 from riverhog_provenance._index_key import encode_index_key
 from riverhog_provenance._semantic_program import ROW_TYPES
+from riverhog_provenance.constants import PRIMARY_CONTENT_CATEGORY
 from riverhog_provenance.errors import ProvenanceValidationError, UnresolvedContractError
 from riverhog_provenance.graph import _Validator
+from riverhog_provenance_contracts import PROFILE
 from test_generic_semantics import (
     CRASH_PROGRAM,
     CommonWorkConnection,
@@ -104,7 +106,7 @@ def subject(kind, count=3, *, rejected=False):
             state=reference("state", 34 if rejected else 33),
             verification_observation_id=identity(37),
         )
-    elif kind == "reported_description":
+    elif kind in {"reported_description", "observation"}:
         row.update(
             state=reference("state", 33),
             source_context_id=identity(31),
@@ -115,6 +117,22 @@ def subject(kind, count=3, *, rejected=False):
             ],
             profiles=[unknown_profile(n) for n in range(count)],
         )
+        if kind == "observation":
+            for item in row["coverage"]:
+                item["status"] = "complete"
+            row["coverage"].append(
+                {
+                    "profile_id": PROFILE,
+                    "category": PRIMARY_CONTENT_CATEGORY,
+                    "status": "complete",
+                }
+            )
+            row.update(
+                capture_id=identity(38),
+                evidence=[{"basis": "direct_measurement", "asserted_by_agent_id": identity(20)}],
+                consistency={"level": "one_pass"},
+                capabilities={"stable_version_selection": False, "native_metadata": True},
+            )
     elif kind == "continuity":
         row.update(earlier_state=reference("state", 33), later_state=reference("state", 34))
     elif kind == "custody_assertion":
@@ -156,6 +174,7 @@ def references():
             ("state", 33),
             ("state", 34),
             ("activity", 35),
+            ("activity", 38),
             ("locator_binding", 36),
             ("observation", 37),
         )
@@ -163,7 +182,11 @@ def references():
     for value in values:
         if value["type"] == "activity":
             value.update(
-                kind="creation", started_at="2026-01-01T00:00:00Z", ended_at="2026-01-02T00:00:00Z"
+                kind="observation" if value["id"] == identity(38) else "creation",
+                started_at="2026-01-01T00:00:00Z",
+                ended_at="2026-01-02T00:00:00Z",
+                associations=[{"agent_id": identity(20)}],
+                outcome="success",
             )
         elif value["type"] == "state":
             value.update(occurrence_id=identity(32), extent={"kind": "whole"})
@@ -221,6 +244,23 @@ def prepare(path, row, *, retained=0, aggregate_history=0, end_history=0, slot_h
                         else value["state"]["object_id"],
                     ),
                 ).close()
+            if value["type"] in {"state", "activity"}:
+                db.execute(
+                    "INSERT INTO observation_projection VALUES (?,?,?,1)",
+                    (
+                        value["assertion_id"],
+                        value.get("extent", {}).get("kind"),
+                        value.get("outcome"),
+                    ),
+                ).close()
+                for association in value.get("associations", []):
+                    db.execute(
+                        "INSERT OR IGNORE INTO observation_observers VALUES (?,?)",
+                        (
+                            value["assertion_id"],
+                            association["agent_id"],
+                        ),
+                    ).close()
             db.execute(
                 "INSERT INTO description_projection VALUES (?,?,?,?)",
                 (
@@ -313,6 +353,10 @@ def native(row, catalog):
             ("ends", b"j" + canonical_json_bytes(key), b"null") for key in current.binding_ends
         )
         + sorted(("slots", encode_index_key(key), b"null") for key in current.delivery_slots)
+        + sorted(
+            ("captures", encode_index_key(key), canonical_json_bytes(value))
+            for key, value in current.capture_targets.items()
+        )
     )
 
 
@@ -670,7 +714,7 @@ def growth_samples(tmp_path, catalog):
                         suffix.result()
                         assert outputs(suffix_db) == sorted(history_outputs + native(row, catalog))
                     require_reclaimed(suffix_db)
-    assert len(samples) == 240
+    assert len(samples) == 246
     return samples
 
 

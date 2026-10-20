@@ -25,9 +25,9 @@ from riverhog_provenance_contracts import (
     canonical_document,
 )
 
+from ._observation_coverage import ObservationCoverage
 from ._semantic_program import ROW_TYPES
 from .common import fingerprint
-from .constants import PRIMARY_CONTENT_CATEGORY
 from .errors import ProvenanceValidationError
 
 ENTITY_TYPES = frozenset(
@@ -205,6 +205,8 @@ class _Validator:
         self.externals: MutableMapping[bytes, dict[str, Any]] = {}
         self.profiles: MutableMapping[bytes, dict[str, str]] = {}
         self.findings: MutableSequence[str] = []
+        self.capture_targets: MutableMapping[str, str] = {}
+        self._observer_agents: dict[str, set[str]] = {}
         self.binding_ends: MutableSet[str] = set()
         self.delivery_slots: MutableSet[tuple[str, bytes]] = set()
         self.lifecycle: dict[str, MutableMapping[str, dict[str, Any]]] = {
@@ -238,6 +240,20 @@ class _Validator:
 
     def _description_node(self, identity: str, *types: str) -> dict[str, Any]:
         return self.node(identity, *types)
+
+    def _observation_node(self, identity: str, expected: str) -> dict[str, Any]:
+        return self.node(identity, expected)
+
+    def _observation_observer(self, identity: str, agent_id: str) -> bool:
+        if identity not in self._observer_agents:
+            capture = self.node(identity, "activity")
+            self._observer_agents[identity] = {item["agent_id"] for item in capture["associations"]}
+        return agent_id in self._observer_agents[identity]
+
+    def _observation_coverage_status(
+        self, coverage: ObservationCoverage, item: Mapping[str, Any]
+    ) -> str | None:
+        return coverage.status(item)
 
     def _delivery_context(self, identity: str) -> dict[str, Any]:
         return self.node(identity, "context")
@@ -348,6 +364,7 @@ class _Validator:
             slots,
         ) = self.aggregates()
         self.lifecycle = {"generation": generation, "invalidation": invalidation}
+        self.capture_targets = capture_targets
         self.binding_ends = ends
         self.delivery_slots = slots
         for row in self.validation_rows():
@@ -355,92 +372,6 @@ class _Validator:
             kind = row["type"]
             if kind in ROW_TYPES:
                 self.row_semantics(row)
-            elif kind == "observation":
-                state = self.reference(row["state"], "state")
-                if "source_context_id" in row:
-                    self.node(row["source_context_id"], "context")
-                    if state:
-                        occurrence = self.node(state["occurrence_id"], "occurrence")
-                        known_context = occurrence.get("source_context_id")
-                        if known_context and known_context != row["source_context_id"]:
-                            raise ProvenanceValidationError(
-                                "subject context differs from occurrence context"
-                            )
-                if "content" in row:
-                    self.content(row["content"])
-                coverage = row.get("coverage", [])
-                keys = {(item["profile_id"], item["category"]) for item in coverage}
-                if len(keys) != len(coverage):
-                    raise ProvenanceValidationError("duplicate profile-qualified coverage category")
-                for profile in row.get("profiles", []):
-                    if (
-                        profile["profile"]["schema_id"]
-                        == PROFILE + "/profiles/filesystem-observation.schema.json"
-                    ):
-                        if (
-                            state is None
-                            or self.node(state["occurrence_id"])["kind"] != "filesystem_object"
-                        ):
-                            raise ProvenanceValidationError(
-                                "filesystem profile requires a filesystem occurrence"
-                            )
-                if kind == "observation":
-                    if state is None or state["extent"]["kind"] == "unknown":
-                        raise ProvenanceValidationError(
-                            "direct observation requires a local bounded state"
-                        )
-                    capture = self.node(row["capture_id"], "activity")
-                    if capture["kind"] != "observation":
-                        raise ProvenanceValidationError(
-                            "observation capture is not an observation activity"
-                        )
-                    if capture["outcome"] not in ("success", "partial"):
-                        raise ProvenanceValidationError(
-                            "a failed capture cannot establish complete primary fixity"
-                        )
-                    old = capture_targets.setdefault(capture["id"], state["id"])
-                    if old != state["id"]:
-                        raise ProvenanceValidationError(
-                            "one capture cannot observe distinct states"
-                        )
-                    if not any(
-                        c["profile_id"] == PROFILE
-                        and c["category"] == PRIMARY_CONTENT_CATEGORY
-                        and c["status"] == "complete"
-                        for c in coverage
-                    ):
-                        raise ProvenanceValidationError(
-                            "direct observation requires complete primary-content coverage"
-                        )
-                    incomplete = any(c["status"] in ("partial", "failed") for c in coverage)
-                    if incomplete and capture["outcome"] != "partial":
-                        raise ProvenanceValidationError(
-                            "incomplete coverage requires partial capture outcome"
-                        )
-                    observers = {a["agent_id"] for a in capture["associations"]}
-                    if not any(
-                        ev["basis"] == "direct_measurement"
-                        and ev["asserted_by_agent_id"] in observers
-                        for ev in row["evidence"]
-                    ):
-                        raise ProvenanceValidationError(
-                            "observation lacks attributed direct measurement evidence"
-                        )
-                    consistency = row["consistency"]
-                    if "snapshot_identifier" in consistency:
-                        self.identifier(consistency["snapshot_identifier"])
-                    if (
-                        consistency["level"] == "immutable_snapshot"
-                        and not row["capabilities"]["stable_version_selection"]
-                    ):
-                        raise ProvenanceValidationError(
-                            "snapshot claim requires stable-version capability"
-                        )
-                    if row.get("metadata") and not row["capabilities"]["native_metadata"]:
-                        raise ProvenanceValidationError(
-                            "native evidence contradicts source capability declaration"
-                        )
-                    self._check_metadata_coverage(row)
             elif kind == "derivation":
                 self.reference(row["used_state"], "state")
                 self.reference(row["generated_state"], "state")
@@ -522,28 +453,6 @@ class _Validator:
                 and time_ns(row["at"]) > time_ns(ended["at"])
             ):
                 raise ProvenanceValidationError("state used after known invalidation")
-
-    def _check_metadata_coverage(self, observation: Mapping[str, Any]) -> None:
-        rows = observation.get("metadata", [])
-        coverage = observation.get("coverage", [])
-        for row in rows:
-            matches = [
-                c
-                for c in coverage
-                if c["profile_id"] == row["profile_id"] and c["category"] == row["category"]
-            ]
-            if not matches:
-                raise ProvenanceValidationError("native metadata has no declared coverage category")
-            if row["status"] == "unreadable" and not any(
-                c["status"] in ("partial", "failed") for c in matches
-            ):
-                raise ProvenanceValidationError(
-                    "unreadable metadata requires partial/failed coverage"
-                )
-            if any(
-                c["status"] in ("not_exposed", "not_applicable", "not_requested") for c in matches
-            ):
-                raise ProvenanceValidationError("metadata contradicts its declared coverage")
 
     def _comparison(self, row: Mapping[str, Any]) -> None:
         left = self.reference(row["left_description"], "observation", "reported_description")
