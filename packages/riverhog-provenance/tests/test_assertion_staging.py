@@ -139,6 +139,7 @@ def contents(db):
             "activity_projection",
             "binding_projection",
             "delivery_projection",
+            "description_projection",
         )
     }
 
@@ -195,6 +196,14 @@ def proposed_octets(category, value, sequence="1"):
                 value["kind"] if value["type"] == "context" else value["state"]["object_id"],
             )
         )
+    total += logical_octets(
+        (
+            value["assertion_id"],
+            value.get("occurrence_id"),
+            value.get("kind"),
+            value.get("source_context_id"),
+        )
+    )
     return total
 
 
@@ -495,6 +504,8 @@ def test_late_statement_failure_rolls_back_identities_assertions_changes_and_cur
         "checkpoint",
         "position",
         "assertion",
+        "description",
+        "description-value",
         "change",
         "identity",
         "referent",
@@ -521,6 +532,10 @@ def test_corrupt_or_missing_checkpoint_links_fail_without_reset(tmp_path, damage
             )
         elif damage == "active":
             db.execute("UPDATE assertions SET active=0")
+        elif damage == "description":
+            db.execute("DELETE FROM description_projection")
+        elif damage == "description-value":
+            db.execute("UPDATE description_projection SET kind='person'")
         elif damage in {"assertion", "change"}:
             db.execute("DELETE FROM " + ("assertions" if damage == "assertion" else "changes"))
         else:
@@ -624,6 +639,7 @@ class Connection(sqlite3.Connection):
                             ('identity','INSERT INTO identities'),
                             ('referent','INSERT OR IGNORE INTO identities'),
                             ('assertion','INSERT INTO assertions'),
+                            ('description','INSERT INTO description_projection'),
                             ('change','INSERT INTO changes')):
             if self.armed and sys.argv[3]==seam and sql.startswith(prefix): os._exit(73)
         return result
@@ -652,6 +668,7 @@ raise SystemExit(99)
         "identity",
         "referent",
         "assertion",
+        "description",
         "change",
         "before-commit",
         "after-commit",
@@ -675,6 +692,9 @@ def test_real_process_death_preserves_one_atomic_staging_unit(tmp_path, seam, re
         expected = contents(db)
         for value in batch.rows:
             db.execute("DELETE FROM changes WHERE assertion_id=?", (value.assertion_id,))
+            db.execute(
+                "DELETE FROM description_projection WHERE assertion_id=?", (value.assertion_id,)
+            )
             db.execute("DELETE FROM assertions WHERE assertion_id=?", (value.assertion_id,))
             db.execute(
                 "DELETE FROM identities WHERE id IN (?,?)", (value.assertion_id, value.object_id)
@@ -987,6 +1007,7 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                         "activity_projection",
                         "binding_projection",
                         "delivery_projection",
+                        "description_projection",
                     )
                 )
                 maximum = max(

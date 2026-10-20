@@ -37,6 +37,7 @@ from test_generic_semantics import (
     position,
     require_reclaimed,
     snapshot,
+    workspace_rows,
 )
 from test_generic_semantics import (
     work as semantic_work,
@@ -582,18 +583,7 @@ def test_cold_binding_end_step_has_independent_retained_set_history(tmp_path, ca
     binding, projection, digest = binding_projection(GenericSemantics.advance)
     with closing(connect(path, factory=CommonWorkConnection)) as db:
         current = semantic_work(db, row, catalog, operation="row")
-        retained = sum(
-            db.execute("SELECT count(*) FROM " + name).fetchone()[0]
-            for name in (
-                "assertions",
-                "maps",
-                "binding_projection",
-                "journal_generic_semantics",
-                "generic_semantic_frames",
-                "generic_semantic_keys",
-                "generic_semantic_outputs",
-            )
-        )
+        retained = workspace_rows(db)
         before = snapshot(db)["journal_prefix"]
         byte_budget = 16 * 1024 * 1024
         with db.observe() as metrics:

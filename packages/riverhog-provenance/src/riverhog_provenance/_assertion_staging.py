@@ -36,7 +36,7 @@ from .graph import iter_assertions
 if TYPE_CHECKING:
     from .journal import JournalFrame
 
-ALGORITHM = "riverhog-assertion-staging/v4"
+ALGORITHM = "riverhog-assertion-staging/v5"
 MAX_ROWS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -111,6 +111,7 @@ class StageRow:
     activity: tuple[str, str | None, str | None] | None
     binding: tuple[str | None] | None
     delivery: str | None
+    description: tuple[str | None, str | None, str | None]
 
 
 @dataclass(frozen=True)
@@ -133,6 +134,10 @@ def install(db: sqlite3.Connection) -> None:
     ).close()
     db.execute(
         "CREATE TABLE delivery_projection(assertion_id TEXT PRIMARY KEY, value TEXT NOT NULL)"
+    ).close()
+    db.execute(
+        "CREATE TABLE description_projection(assertion_id TEXT PRIMARY KEY, "
+        "occurrence_id TEXT, kind TEXT, source_context_id TEXT)"
     ).close()
     db.execute(
         "CREATE TABLE journal_assertion_staging(singleton INTEGER PRIMARY KEY CHECK(singleton=1), "
@@ -187,7 +192,7 @@ def _declaration() -> Declaration:
                 "sql_statements",
                 COUNT,
                 "upper",
-                Expression("sum", terms=(count(48), multiple(10, budget))),
+                Expression("sum", terms=(count(48), multiple(11, budget))),
                 "Fixed manifest/boundary checks and indexed per-assertion reads and writes.",
             ),
             Bound(
@@ -201,9 +206,10 @@ def _declaration() -> Declaration:
                 "changed_rows",
                 COUNT,
                 "upper",
-                Expression("sum", terms=(count(1), multiple(5, budget))),
+                Expression("sum", terms=(count(1), multiple(6, budget))),
                 "One checkpoint, two identities, assertion/change rows, "
-                "and one optional fixed activity, binding or delivery-reference metadata row.",
+                "one fixed description-reference projection and one optional activity, "
+                "binding or delivery-reference metadata row.",
             ),
             Bound(
                 "metadata_octets",
@@ -491,6 +497,18 @@ class AssertionStaging:
             )
             if link != expected:
                 raise RuntimeError("missing or changed staged assertion cursor link")
+            metadata = self._one(
+                "SELECT 1 FROM description_projection WHERE assertion_id=? "
+                "AND occurrence_id IS ? AND kind IS ? AND source_context_id IS ?",
+                (
+                    source["assertion_id"],
+                    source.get("occurrence_id"),
+                    source.get("kind"),
+                    source.get("source_context_id"),
+                ),
+            )
+            if metadata != (1,):
+                raise RuntimeError("missing or changed staged description reference metadata")
         elif (
             self._one(
                 "SELECT assertion_id FROM changes WHERE assertion_id>'' "
@@ -541,6 +559,11 @@ class AssertionStaging:
                     else source["state"]["object_id"]
                     if source["type"] == "observation"
                     else None,
+                    (
+                        source.get("occurrence_id"),
+                        source.get("kind"),
+                        source.get("source_context_id"),
+                    ),
                 )
                 octets = (
                     len(row.assertion_id.encode()) * 3
@@ -566,6 +589,9 @@ class AssertionStaging:
                     )
                 if row.delivery is not None:
                     octets += len(row.assertion_id.encode()) + len(row.delivery.encode())
+                octets += len(row.assertion_id.encode()) + sum(
+                    len(value.encode()) for value in row.description if value is not None
+                )
                 if admitted + octets > byte_budget:
                     if not rows:
                         raise AssertionStagingCapacity(
@@ -715,6 +741,10 @@ class AssertionStaging:
                         "INSERT INTO delivery_projection VALUES (?,?)",
                         (row.assertion_id, row.delivery),
                     ).close()
+                self.db.execute(
+                    "INSERT INTO description_projection VALUES (?,?,?,?)",
+                    (row.assertion_id, *row.description),
+                ).close()
                 self.db.execute("INSERT INTO changes VALUES (?)", (row.assertion_id,)).close()
             self.db.commit()
         except BaseException:

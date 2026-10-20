@@ -38,6 +38,7 @@ from riverhog_provenance_contracts import (
 from ._activity_projection import read_activity
 from ._binding_projection import read_binding_time
 from ._delivery_projection import read_delivery_metadata
+from ._description_projection import read_description_metadata
 from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
 from ._semantic_program import ROW_STAGES, ROW_TYPES, Frame, MemoryStack, Nodes, Program, Stack
@@ -45,7 +46,7 @@ from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .graph import _Validator
 
-ALGORITHM = "riverhog-generic-semantics/v6"
+ALGORITHM = "riverhog-generic-semantics/v7"
 MAX_STEPS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -239,6 +240,8 @@ def _decode_frame(raw: str, nodes: Nodes) -> Frame:
         array = arrays.get(frame.operation, {}).get(frame.stage)
         if frame.operation == "row" and source["type"] == "activity":
             array = {3: "associations", 4: "contexts", 5: "details"}.get(frame.stage)
+        elif frame.operation == "row" and source["type"] == "reported_description":
+            array = {4: "coverage", 5: "profiles"}.get(frame.stage)
         maximum = (
             len(source.get(array, []))
             if array is not None
@@ -669,6 +672,11 @@ class _ProjectedValidator(_Validator):
         self.lifecycle = {
             name: _Lifecycle(owner, name, meter, outputs) for name in ("generation", "invalidation")
         }
+
+    def _description_node(self, identity: str, *types: str) -> dict[str, Any]:
+        value = read_description_metadata(self.owner.db, identity, *types)
+        self.meter.claim(sum(len(item.encode()) for item in value.values()))
+        return value
 
     def _lifecycle_activity(self, identity: str) -> dict[str, Any]:
         value = read_activity(self.owner.db, identity)
@@ -1264,6 +1272,15 @@ class GenericSemantics:
                     raise RuntimeError("corrupt retained content rejection")
                 value = values[frame.cursor]
                 keys.pending.add(Program.content_key(stack.identity(), value))
+            elif (
+                frame.operation == "row"
+                and self.kind == "reported_description"
+                and frame.stage == 4
+            ):
+                coverage = self.atom.nodes.values[frame.node].get("coverage", [])
+                if frame.cursor >= len(coverage):
+                    raise RuntimeError("corrupt retained coverage rejection")
+                keys.pending.add(Program.coverage_key(stack.identity(), coverage[frame.cursor]))
             program = self._program(stack, meter, keys, {})
             try:
                 program.step()

@@ -42,6 +42,7 @@ ROW_STAGES = {
     "invalidation": 4,
     "locator_binding_end": 3,
     "delivery_association": 5,
+    "reported_description": 6,
 }
 ROW_TYPES = frozenset(ROW_STAGES)
 
@@ -196,6 +197,12 @@ class Program:
         )
 
     @staticmethod
+    def coverage_key(scope: int, item: Mapping[str, Any]) -> bytes:
+        return canonical_document(
+            {"coverage": str(scope), "profile_id": item["profile_id"], "category": item["category"]}
+        )
+
+    @staticmethod
     def metadata_key(item: Mapping[str, Any]) -> bytes:
         from .graph import _name_identity, _source_identity
 
@@ -344,6 +351,62 @@ class Program:
                         "duplicate delivery slot in one delivery instance"
                     )
                 validator.delivery_slots.add(slot)
+            else:
+                self.stack.pop()
+                return
+        elif kind == "reported_description":
+            local_state = value["state"]["scope"] == "local"
+            if stage == 0:
+                validator.reference(value["state"], "state")
+            elif stage == 1:
+                if "source_context_id" in value:
+                    validator.node(value["source_context_id"], "context")
+            elif stage == 2:
+                if "source_context_id" in value and local_state:
+                    state = validator._description_node(value["state"]["object_id"], "state")
+                    occurrence = validator._description_node(state["occurrence_id"], "occurrence")
+                    known_context = occurrence.get("source_context_id")
+                    if known_context and known_context != value["source_context_id"]:
+                        raise ProvenanceValidationError(
+                            "subject context differs from occurrence context"
+                        )
+            elif stage == 3:
+                if "content" in value:
+                    self._child(frame, "content", value["content"])
+                    return
+            elif stage == 4:
+                coverage = value.get("coverage", [])
+                if frame.cursor < len(coverage):
+                    coverage_key = self.coverage_key(self.stack.identity(), coverage[frame.cursor])
+                    if coverage_key in self.native_keys:
+                        raise ProvenanceValidationError(
+                            "duplicate profile-qualified coverage category"
+                        )
+                    self.native_keys.add(coverage_key)
+                    self.stack.replace(replace(frame, cursor=frame.cursor + 1))
+                    return
+            elif stage == 5:
+                profiles = value.get("profiles", [])
+                if frame.cursor < len(profiles):
+                    profile = profiles[frame.cursor]
+                    if (
+                        profile["profile"]["schema_id"]
+                        == PROFILE + "/profiles/filesystem-observation.schema.json"
+                    ):
+                        if not local_state:
+                            raise ProvenanceValidationError(
+                                "filesystem profile requires a filesystem occurrence"
+                            )
+                        state = validator._description_node(value["state"]["object_id"], "state")
+                        if (
+                            validator._description_node(state["occurrence_id"])["kind"]
+                            != "filesystem_object"
+                        ):
+                            raise ProvenanceValidationError(
+                                "filesystem profile requires a filesystem occurrence"
+                            )
+                    self.stack.replace(replace(frame, cursor=frame.cursor + 1))
+                    return
             else:
                 self.stack.pop()
                 return

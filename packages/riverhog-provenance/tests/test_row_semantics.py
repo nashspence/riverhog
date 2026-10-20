@@ -30,6 +30,7 @@ from test_generic_semantics import (
     require_reclaimed,
     snapshot,
     work,
+    workspace_rows,
 )
 
 
@@ -103,6 +104,17 @@ def subject(kind, count=3, *, rejected=False):
             state=reference("state", 34 if rejected else 33),
             verification_observation_id=identity(37),
         )
+    elif kind == "reported_description":
+        row.update(
+            state=reference("state", 33),
+            source_context_id=identity(31),
+            content={"size_bytes": "0", "digests": [{"algorithm": "sha-256", "value": "a" * 64}]},
+            coverage=[
+                {"profile_id": "urn:test:profile", "category": f"urn:test:coverage:{n}"}
+                for n in range(count)
+            ],
+            profiles=[unknown_profile(n) for n in range(count)],
+        )
     elif kind == "continuity":
         row.update(earlier_state=reference("state", 33), later_state=reference("state", 34))
     elif kind == "custody_assertion":
@@ -153,6 +165,10 @@ def references():
             value.update(
                 kind="creation", started_at="2026-01-01T00:00:00Z", ended_at="2026-01-02T00:00:00Z"
             )
+        elif value["type"] == "state":
+            value.update(occurrence_id=identity(32), extent={"kind": "whole"})
+        elif value["type"] == "occurrence":
+            value.update(kind="filesystem_object", source_context_id=identity(31))
         elif value["type"] == "locator_binding":
             value["temporal_scope"] = {"kind": "instant", "at": "2026-01-01T00:00:00Z"}
         elif value["type"] == "context":
@@ -205,6 +221,15 @@ def prepare(path, row, *, retained=0, aggregate_history=0, end_history=0, slot_h
                         else value["state"]["object_id"],
                     ),
                 ).close()
+            db.execute(
+                "INSERT INTO description_projection VALUES (?,?,?,?)",
+                (
+                    value["assertion_id"],
+                    value.get("occurrence_id"),
+                    value.get("kind"),
+                    value.get("source_context_id"),
+                ),
+            ).close()
         for n in range(aggregate_history):
             db.execute(
                 "INSERT INTO maps VALUES (?,?,?)",
@@ -592,22 +617,7 @@ def growth_samples(tmp_path, catalog):
                 current.initialize()
                 if stage:
                     position(current, ("row", str(stage)))
-                tables = (
-                    "assertions",
-                    "changes",
-                    "maps",
-                    "activity_projection",
-                    "binding_projection",
-                    "delivery_projection",
-                    "journal_prefix",
-                    "journal_generic_semantics",
-                    "generic_semantic_frames",
-                    "generic_semantic_keys",
-                    "generic_semantic_outputs",
-                )
-                retained = sum(
-                    db.execute("SELECT count(*) FROM " + name).fetchone()[0] for name in tables
-                )
+                retained = workspace_rows(db)
                 prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
                 envelope = (
                     8192
@@ -660,7 +670,7 @@ def growth_samples(tmp_path, catalog):
                         suffix.result()
                         assert outputs(suffix_db) == sorted(history_outputs + native(row, catalog))
                     require_reclaimed(suffix_db)
-    assert len(samples) == 234
+    assert len(samples) == 240
     return samples
 
 

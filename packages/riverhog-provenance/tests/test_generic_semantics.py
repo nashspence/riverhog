@@ -488,6 +488,20 @@ def position(current, target):
     raise AssertionError("fixture did not reach its selected crash seam")
 
 
+def workspace_rows(db):
+    with closing(
+        db.execute("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+    ) as cursor:
+        names = [row[0] for row in cursor]
+    total = 0
+    for name in names:
+        with closing(
+            db.execute('SELECT count(*) FROM "' + name.replace('"', '""') + '"')
+        ) as cursor:
+            total += cursor.fetchone()[0]
+    return total
+
+
 def snapshot(db):
     return {
         table: db.execute("SELECT * FROM " + table + " ORDER BY 1,2").fetchall()
@@ -830,19 +844,7 @@ def test_actual_cold_common_semantic_units(tmp_path, catalog, record_property):
                     position(current, phase)
                 else:
                     position(current, (phase, "0"))
-                retained = sum(
-                    db.execute("SELECT count(*) FROM " + table).fetchone()[0]
-                    for table in (
-                        "assertions",
-                        "changes",
-                        "maps",
-                        "journal_prefix",
-                        "journal_generic_semantics",
-                        "generic_semantic_frames",
-                        "generic_semantic_keys",
-                        "generic_semantic_outputs",
-                    )
-                )
+                retained = workspace_rows(db)
                 prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
                 envelope = (
                     8192
@@ -892,7 +894,10 @@ def test_actual_cold_common_semantic_units(tmp_path, catalog, record_property):
     from test_content_semantics import growth_samples as content_growth_samples
 
     samples.extend(content_growth_samples(tmp_path, catalog))
-    assert len(samples) == 411
+    from test_description_semantics import growth_samples as description_growth_samples
+
+    samples.extend(description_growth_samples(tmp_path, catalog))
+    assert len(samples) == 459
     record_property("growth_samples", samples)
 
 

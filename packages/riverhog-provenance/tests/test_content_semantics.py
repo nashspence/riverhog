@@ -37,6 +37,7 @@ from test_generic_semantics import (
     snapshot,
     subject,
     work,
+    workspace_rows,
 )
 
 
@@ -462,11 +463,7 @@ def growth_samples(tmp_path, catalog):
                         else 0
                     )
                     content_cursor(current, cursor)
-                retained = (
-                    sum(len(rows) for rows in snapshot(db).values())
-                    + db.execute("SELECT count(*) FROM assertions").fetchone()[0]
-                    + 1
-                )
+                retained = workspace_rows(db)
                 prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
                 envelope = (
                     8192

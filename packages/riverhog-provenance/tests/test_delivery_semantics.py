@@ -55,6 +55,7 @@ from test_generic_semantics import (
     position,
     require_reclaimed,
     snapshot,
+    workspace_rows,
 )
 from test_generic_semantics import work as semantic_work
 
@@ -652,22 +653,7 @@ def test_cold_delivery_uniqueness_uses_only_its_indexed_slot(tmp_path, catalog, 
         current = semantic_work(db, row, catalog, operation="row")
         current.initialize()
         position(current, ("row", "4"))
-        retained = sum(
-            db.execute("SELECT count(*) FROM " + name).fetchone()[0]
-            for name in (
-                "assertions",
-                "changes",
-                "maps",
-                "activity_projection",
-                "binding_projection",
-                "delivery_projection",
-                "journal_prefix",
-                "journal_generic_semantics",
-                "generic_semantic_frames",
-                "generic_semantic_keys",
-                "generic_semantic_outputs",
-            )
-        )
+        retained = workspace_rows(db)
         envelope = 8192 + len(current.binding)
         prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
         envelope += sum(len(v) if isinstance(v, bytes) else len(str(v).encode()) for v in prefix)

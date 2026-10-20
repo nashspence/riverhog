@@ -236,6 +236,9 @@ class _Validator:
         scope = self.node(identity, "locator_binding")["temporal_scope"]
         return cast(str | None, scope.get("at", scope.get("start")))
 
+    def _description_node(self, identity: str, *types: str) -> dict[str, Any]:
+        return self.node(identity, *types)
+
     def _delivery_context(self, identity: str) -> dict[str, Any]:
         return self.node(identity, "context")
 
@@ -352,7 +355,7 @@ class _Validator:
             kind = row["type"]
             if kind in ROW_TYPES:
                 self.row_semantics(row)
-            elif kind in ("observation", "reported_description"):
+            elif kind == "observation":
                 state = self.reference(row["state"], "state")
                 if "source_context_id" in row:
                     self.node(row["source_context_id"], "context")

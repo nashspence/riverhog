@@ -25,6 +25,7 @@ from test_generic_semantics import (
     require_reclaimed,
     snapshot,
     work,
+    workspace_rows,
 )
 
 KINDS = ("usage", "generation", "invalidation")
@@ -419,20 +420,7 @@ def test_cold_lifecycle_unit_uses_metadata_with_independent_aggregate_history(
         current = work(db, row, catalog, operation="row")
         current.initialize()
         position(current, ("row", "2"))
-        retained = sum(
-            db.execute("SELECT count(*) FROM " + name).fetchone()[0]
-            for name in (
-                "assertions",
-                "changes",
-                "maps",
-                "activity_projection",
-                "journal_prefix",
-                "journal_generic_semantics",
-                "generic_semantic_frames",
-                "generic_semantic_keys",
-                "generic_semantic_outputs",
-            )
-        )
+        retained = workspace_rows(db)
         envelope = 8192 + len(current.binding)
         prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
         envelope += sum(len(v) if isinstance(v, bytes) else len(str(v).encode()) for v in prefix)
