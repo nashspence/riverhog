@@ -304,12 +304,9 @@ class _Validator:
         walk(self, "identifier", value)
 
     def content(self, value: Mapping[str, Any]) -> None:
-        seen: set[tuple[str, str]] = set()
-        for digest in value["digests"]:
-            key = digest["algorithm"], digest.get("algorithm_uri", "")
-            if key in seen:
-                raise ProvenanceValidationError("duplicate digest algorithm")
-            seen.add(key)
+        from ._semantic_program import walk
+
+        walk(self, "content", value)
 
     def typed(self, value: Mapping[str, Any]) -> None:
         from ._semantic_program import walk

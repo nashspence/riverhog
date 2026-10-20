@@ -889,7 +889,10 @@ def test_actual_cold_common_semantic_units(tmp_path, catalog, record_property):
     from test_row_semantics import growth_samples as row_growth_samples
 
     samples.extend(row_growth_samples(tmp_path, catalog))
-    assert len(samples) == 357
+    from test_content_semantics import growth_samples as content_growth_samples
+
+    samples.extend(content_growth_samples(tmp_path, catalog))
+    assert len(samples) == 411
     record_property("growth_samples", samples)
 
 

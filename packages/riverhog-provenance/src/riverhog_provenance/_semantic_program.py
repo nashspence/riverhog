@@ -140,6 +140,8 @@ class Nodes:
 class Stack(Protocol):
     def peek(self) -> Frame | None: ...
 
+    def identity(self) -> int: ...
+
     def replace(self, frame: Frame) -> None: ...
 
     def push(self, operation: str, node: int) -> None: ...
@@ -150,18 +152,26 @@ class Stack(Protocol):
 class MemoryStack:
     def __init__(self, operation: str) -> None:
         self.frames = [Frame(operation, 0)]
+        self.identities = [0]
+        self.serial = 1
 
     def peek(self) -> Frame | None:
         return self.frames[-1] if self.frames else None
+
+    def identity(self) -> int:
+        return self.identities[-1]
 
     def replace(self, frame: Frame) -> None:
         self.frames[-1] = frame
 
     def push(self, operation: str, node: int) -> None:
         self.frames.append(Frame(operation, node))
+        self.identities.append(self.serial)
+        self.serial += 1
 
     def pop(self) -> None:
         self.frames.pop()
+        self.identities.pop()
 
 
 class Program:
@@ -174,6 +184,16 @@ class Program:
     ) -> None:
         self.validator, self.nodes, self.stack = validator, nodes, stack
         self.native_keys = native_keys
+
+    @staticmethod
+    def content_key(scope: int, item: Mapping[str, Any]) -> bytes:
+        return canonical_document(
+            {
+                "content": str(scope),
+                "algorithm": item["algorithm"],
+                "algorithm_uri": item.get("algorithm_uri", ""),
+            }
+        )
 
     @staticmethod
     def metadata_key(item: Mapping[str, Any]) -> bytes:
@@ -576,6 +596,19 @@ class Program:
                 self._child(frame, "typed", value["value"])
             else:
                 self.stack.pop()
+        elif operation == "content":
+            if stage == 0:
+                items = value["digests"]
+                if frame.cursor == len(items):
+                    self._next(frame)
+                else:
+                    digest_key = self.content_key(self.stack.identity(), items[frame.cursor])
+                    if digest_key in self.native_keys:
+                        raise ProvenanceValidationError("duplicate digest algorithm")
+                    self.native_keys.add(digest_key)
+                    self.stack.replace(replace(frame, cursor=frame.cursor + 1))
+            else:
+                self.stack.pop()
         elif operation == "typed":
             if stage == 0:
                 kind, data = value["type"], value["value"]
@@ -589,7 +622,8 @@ class Program:
                 elif kind == "timestamp":
                     time_ns(data)
                 elif kind == "digest":
-                    validator.content(data)
+                    self._child(frame, "content", data)
+                    return
             self.stack.pop()
         else:
             raise RuntimeError("unknown semantic program operation")

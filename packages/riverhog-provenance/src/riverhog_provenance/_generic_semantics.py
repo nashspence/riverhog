@@ -45,7 +45,7 @@ from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .graph import _Validator
 
-ALGORITHM = "riverhog-generic-semantics/v5"
+ALGORITHM = "riverhog-generic-semantics/v6"
 MAX_STEPS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -68,6 +68,7 @@ _STAGES = {
     "native": 5,
     "interpretation": 2,
     "typed": 1,
+    "content": 1,
 }
 
 
@@ -216,6 +217,8 @@ def _decode_frame(raw: str, nodes: Nodes) -> Frame:
         source = nodes.values[frame.node]
         if type(source) is not dict:
             raise ValueError("semantic frame does not identify an object")
+        if frame.operation == "content" and type(source.get("digests")) is not list:
+            raise ValueError("semantic content frame does not identify its collection")
         if frame.operation == "row" and (
             source.get("type") not in ROW_TYPES
             or frame.stage > ROW_STAGES[source["type"]]
@@ -231,6 +234,7 @@ def _decode_frame(raw: str, nodes: Nodes) -> Frame:
                 3: "timestamps",
             },
             "native": {4: "interpretations"},
+            "content": {0: "digests"},
         }
         array = arrays.get(frame.operation, {}).get(frame.stage)
         if frame.operation == "row" and source["type"] == "activity":
@@ -739,6 +743,11 @@ class _Stack:
 
     def peek(self) -> Frame | None:
         return None if self.top is None else self._row(self.top)[1]
+
+    def identity(self) -> int:
+        if self.top is None:
+            raise RuntimeError("empty semantic stack")
+        return self.top
 
     def replace(self, frame: Frame) -> None:
         if self.top is None:
@@ -1249,6 +1258,12 @@ class GenericSemantics:
             if frame.operation == "generic" and frame.stage == 3:
                 value = self.atom.nodes.values[frame.node]["metadata"][frame.cursor]
                 keys.pending.add(Program.metadata_key(value))
+            elif frame.operation == "content" and frame.stage == 0:
+                values = self.atom.nodes.values[frame.node]["digests"]
+                if frame.cursor >= len(values):
+                    raise RuntimeError("corrupt retained content rejection")
+                value = values[frame.cursor]
+                keys.pending.add(Program.content_key(stack.identity(), value))
             program = self._program(stack, meter, keys, {})
             try:
                 program.step()
