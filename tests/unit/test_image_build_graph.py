@@ -816,7 +816,7 @@ def test_github_image_matrix_uses_bounded_per_image_bake_caches() -> None:
     steps = {step["name"]: step for step in job["steps"]}
     assert steps["Configure Docker Buildx"]["with"] == {"version": "v0.36.0", "driver": "docker"}
     build = steps["Build exact image group from target-scoped caches"]
-    assert build["uses"] == "docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b"
+    assert build["uses"] == "docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f"
     assert build["with"] == {
         "source": ".",
         "files": "docker-bake.hcl",
