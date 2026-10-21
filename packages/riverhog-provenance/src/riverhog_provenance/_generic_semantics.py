@@ -37,8 +37,9 @@ from riverhog_provenance_contracts import (
 
 from ._activity_projection import read_activity
 from ._binding_projection import read_binding_time
-from ._delivery_projection import read_delivery_metadata
+from ._delivery_projection import read_delivery_metadata, read_locator_observation
 from ._description_projection import read_description_metadata
+from ._fixity_projection import read_fixity_metadata
 from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
 from ._observation_coverage import ObservationCoverage
@@ -50,7 +51,7 @@ from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .graph import _Validator
 
-ALGORITHM = "riverhog-generic-semantics/v9"
+ALGORITHM = "riverhog-generic-semantics/v11"
 MAX_STEPS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -513,7 +514,7 @@ def install(db: sqlite3.Connection) -> None:
     ).close()
     db.execute(
         "CREATE TABLE generic_semantic_outputs(id INTEGER PRIMARY KEY, attempt_id TEXT, "
-        "name TEXT NOT NULL,key BLOB NOT NULL,UNIQUE(attempt_id,name,key))"
+        "name TEXT NOT NULL,key BLOB NOT NULL,finding TEXT,UNIQUE(attempt_id,name,key))"
     ).close()
     db.execute(
         "CREATE INDEX generic_semantic_output_cleanup ON generic_semantic_outputs(attempt_id,id)"
@@ -575,6 +576,16 @@ class _Output(dict[Any, Any]):
         stored_key = encode_index_key(key)
         self.meter.claim(4 * len(stored_key) + len(encoded))
         self.writes[self.name, stored_key] = encoded
+
+
+class _FindingOutput(list[str]):
+    def __init__(self, meter: _Meter, writes: dict[tuple[str, bytes], bytes]) -> None:
+        self.meter, self.writes = meter, writes
+
+    def append(self, value: str) -> None:
+        encoded = canonical_json_bytes(value)
+        self.meter.claim(5 * len(encoded))
+        self.writes["finding", encoded] = encoded
 
 
 class _Lifecycle(MutableMapping[str, dict[str, Any]]):
@@ -778,6 +789,7 @@ class _ProjectedValidator(_Validator):
         self.objects = _Objects(owner, meter)
         self.externals = _Output("externals", meter, outputs)
         self.profiles = _Output("profiles", meter, outputs)
+        self.findings = _FindingOutput(meter, outputs)
         self.capture_targets = _CaptureTargets(owner, meter, outputs)
         self.binding_ends = _BindingEnds(owner, meter, outputs)
         self.delivery_slots = _DeliverySlots(owner, meter, outputs)
@@ -795,6 +807,11 @@ class _ProjectedValidator(_Validator):
         ):
             raise RuntimeError("semantic graph result differs from its admitted row")
         self.edge_result.result()
+
+    def _comparison_node(self, identity: str) -> dict[str, Any]:
+        value = read_fixity_metadata(self.owner.db, identity)
+        self.meter.claim(256)
+        return value
 
     def _relation_node(self, identity: str, expected: str) -> dict[str, Any]:
         activity, state = read_relation_metadata(self.owner.db, identity, expected)
@@ -835,6 +852,11 @@ class _ProjectedValidator(_Validator):
         value = read_delivery_metadata(self.owner.db, identity, "context")
         self.meter.claim(len(identity.encode()) + len(value.encode()))
         return {"id": identity, "kind": value}
+
+    def _locator_observation(self, identity: str) -> dict[str, Any]:
+        value = read_locator_observation(self.owner.db, identity)
+        self.meter.claim(256)
+        return value
 
     def _delivery_observation(self, identity: str) -> dict[str, Any]:
         value = read_delivery_metadata(self.owner.db, identity, "observation")
@@ -1467,6 +1489,37 @@ class GenericSemantics:
             for sql, parameters in batch.writes:
                 if sql == "@output":
                     name, key, value = parameters
+                    if name == "finding":
+                        finding = json.loads(value)
+                        if (
+                            type(finding) is not str
+                            or key != value
+                            or canonical_json_bytes(finding) != value
+                        ):
+                            raise RuntimeError("semantic finding differs from its identity")
+                        with closing(
+                            self.db.execute(
+                                "INSERT INTO findings VALUES (?,?) ON CONFLICT(key) DO NOTHING",
+                                (finding, finding),
+                            )
+                        ) as cursor:
+                            inserted = cursor.rowcount
+                        if inserted:
+                            self.db.execute(
+                                "INSERT INTO generic_semantic_outputs(attempt_id,name,key,finding) "
+                                "VALUES (?,?,?,?)",
+                                (self.attempt_id, name, key, finding),
+                            ).close()
+                        elif (
+                            self._one(
+                                "SELECT 1 FROM findings WHERE key=? AND value=?", (finding, finding)
+                            )
+                            is None
+                        ):
+                            raise RuntimeError(
+                                "retained semantic finding differs from its identity"
+                            )
+                        continue
                     with closing(
                         self.db.execute(
                             "INSERT INTO maps VALUES (?,?,?) ON CONFLICT(name,key) DO NOTHING",
@@ -1490,10 +1543,23 @@ class GenericSemantics:
                         raise RuntimeError("retained semantic output differs from its identity")
                 elif sql in {"@rollback-output", "@retire-output"}:
                     if sql == "@rollback-output":
+                        row = self._one(
+                            "SELECT name FROM generic_semantic_outputs WHERE id=? AND attempt_id=?",
+                            (*parameters, self.attempt_id),
+                        )
+                        if row is None:
+                            raise RuntimeError("semantic undo no longer owns its output")
+                        delete = (
+                            "DELETE FROM findings WHERE key=value AND key=(SELECT finding "
+                            "FROM generic_semantic_outputs WHERE id=? AND attempt_id=? "
+                            "AND name='finding')"
+                            if row[0] == "finding"
+                            else "DELETE FROM maps WHERE (name,key)=(SELECT name,key "
+                            "FROM generic_semantic_outputs WHERE id=? AND attempt_id=?)"
+                        )
                         with closing(
                             self.db.execute(
-                                "DELETE FROM maps WHERE (name,key)=(SELECT name,key "
-                                "FROM generic_semantic_outputs WHERE id=? AND attempt_id=?)",
+                                delete,
                                 (*parameters, self.attempt_id),
                             )
                         ) as cursor:

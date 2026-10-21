@@ -94,10 +94,23 @@ def subject(kind, count=3, *, rejected=False):
             activity_id=identity(35),
             at="2025-12-31T00:00:00Z" if rejected else "2026-01-01T12:00:00Z",
         )
+    elif kind == "content_comparison":
+        row.update(
+            left_description=reference("reported_description", 39),
+            right_description=reference("reported_description", 39),
+            result="matching_fixity",
+        )
     elif kind == "derivation":
         row.update(used_state=reference("state", 33), generated_state=reference("state", 34))
     elif kind == "specialization":
         row.update(specific=reference("state", 33), general=reference("state", 34))
+    elif kind == "locator_binding":
+        row.update(
+            target=reference("state", 33),
+            context_id=identity(31),
+            locator={"kind": "opaque", "value": {"kind": "text", "text": "item"}},
+            temporal_scope={"kind": "instant", "at": "2026-01-01T12:00:00Z"},
+        )
     elif kind == "locator_binding_end":
         row.update(
             binding_id=identity(36),
@@ -163,7 +176,7 @@ def subject(kind, count=3, *, rejected=False):
     return row
 
 
-def references():
+def references(*, comparison=False):
     values = [agent()] + [
         {
             "id": identity(n),
@@ -183,6 +196,20 @@ def references():
             ("observation", 37),
         )
     ]
+    if comparison:
+        values.append(
+            {
+                "id": identity(39),
+                "assertion_id": identity(139),
+                "type": "reported_description",
+                "evidence": [],
+                "state": reference("state", 33),
+                "content": {
+                    "size_bytes": "0",
+                    "digests": [{"algorithm": "sha-256", "value": "a" * 64}],
+                },
+            }
+        )
     for value in values:
         if value["type"] == "activity":
             value.update(
@@ -208,7 +235,7 @@ def references():
 def prepare(path, row, *, retained=0, aggregate_history=0, end_history=0, slot_history=0):
     create(path, row)
     with closing(connect(path)) as db:
-        for value in references()[1:]:
+        for value in references(comparison=row["type"] == "content_comparison")[1:]:
             db.execute(
                 "INSERT INTO assertions VALUES (?,?,?,?,?,?,?,?,?)",
                 (
@@ -223,7 +250,16 @@ def prepare(path, row, *, retained=0, aggregate_history=0, end_history=0, slot_h
                     1,
                 ),
             ).close()
-            if value["type"] == "activity":
+            if value["type"] == "reported_description":
+                db.execute(
+                    "INSERT INTO fixity_projection VALUES (?,?,?)",
+                    (
+                        value["assertion_id"],
+                        value["content"]["size_bytes"],
+                        value["content"]["digests"][0]["value"],
+                    ),
+                ).close()
+            elif value["type"] == "activity":
                 db.execute(
                     "INSERT INTO activity_projection VALUES (?,?,?,?)",
                     (
@@ -240,7 +276,7 @@ def prepare(path, row, *, retained=0, aggregate_history=0, end_history=0, slot_h
                 ).close()
             elif value["type"] in {"context", "observation"}:
                 db.execute(
-                    "INSERT INTO delivery_projection VALUES (?,?)",
+                    "INSERT INTO delivery_projection(assertion_id,value) VALUES (?,?)",
                     (
                         value["assertion_id"],
                         value["kind"]
@@ -327,7 +363,7 @@ def prepare(path, row, *, retained=0, aggregate_history=0, end_history=0, slot_h
 
 def native(row, catalog):
     current = _Validator(
-        {"artifacts": [*references(), row]},
+        {"artifacts": [*references(comparison=row["type"] == "content_comparison"), row]},
         catalog=catalog,
         journal_id=identity(2),
         require_profiles=False,
@@ -718,7 +754,7 @@ def growth_samples(tmp_path, catalog):
                         suffix.result()
                         assert outputs(suffix_db) == sorted(history_outputs + native(row, catalog))
                     require_reclaimed(suffix_db)
-    assert len(samples) == 258
+    assert len(samples) == 270
     return samples
 
 

@@ -36,7 +36,7 @@ from .graph import iter_assertions
 if TYPE_CHECKING:
     from .journal import JournalFrame
 
-ALGORITHM = "riverhog-assertion-staging/v7"
+ALGORITHM = "riverhog-assertion-staging/v9"
 MAX_ROWS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -124,10 +124,11 @@ class StageRow:
     signature: bytes
     activity: tuple[str, str | None, str | None] | None
     binding: tuple[str | None] | None
-    delivery: str | None
+    delivery: tuple[str, str | None, str | None] | None
     description: tuple[str | None, str | None, str | None]
     observation: tuple[str | None, str | None, int] | None
     relation: tuple[str, str] | None
+    fixity: tuple[str | None, str | None] | None
 
 
 @dataclass(frozen=True)
@@ -142,6 +143,17 @@ class StageBatch:
     complete_observers: str | None = None
 
 
+def _raw_fixity(source: dict[str, Any]) -> tuple[str | None, str | None] | None:
+    if source["type"] not in {"observation", "reported_description"}:
+        return None
+    content = source.get("content")
+    if content is None:
+        return None, None
+    return content["size_bytes"], next(
+        item["value"] for item in content["digests"] if item["algorithm"] == "sha-256"
+    )
+
+
 def install(db: sqlite3.Connection) -> None:
     db.execute(
         "CREATE TABLE activity_projection(assertion_id TEXT PRIMARY KEY, kind TEXT NOT NULL, "
@@ -151,11 +163,15 @@ def install(db: sqlite3.Connection) -> None:
         "CREATE TABLE binding_projection(assertion_id TEXT PRIMARY KEY, bound_at TEXT)"
     ).close()
     db.execute(
-        "CREATE TABLE delivery_projection(assertion_id TEXT PRIMARY KEY, value TEXT NOT NULL)"
+        "CREATE TABLE delivery_projection(assertion_id TEXT PRIMARY KEY, value TEXT NOT NULL, "
+        "capture_id TEXT, address_status TEXT)"
     ).close()
     db.execute(
         "CREATE TABLE description_projection(assertion_id TEXT PRIMARY KEY, "
         "occurrence_id TEXT, kind TEXT, source_context_id TEXT)"
+    ).close()
+    db.execute(
+        "CREATE TABLE fixity_projection(assertion_id TEXT PRIMARY KEY, size TEXT, sha256 TEXT)"
     ).close()
     db.execute(
         "CREATE TABLE relation_projection(assertion_id TEXT PRIMARY KEY, "
@@ -356,7 +372,7 @@ def _declaration() -> Declaration:
         ),
         limitations=(
             "Construction decodes one admitted source entry and retains its "
-            "bounded row directory outside the unit.",
+            "bounded row directory and raw fixity index once outside the unit.",
             "Source canonicalization and immutable-signature extraction are "
             "measured entry-local CPU/byte delegates.",
             "With adequate admission, each source assertion and association is staged once "
@@ -396,6 +412,7 @@ class AssertionStaging:
         self.db, self.attempt_id = db, attempt_id
         self.rows = list(iter_assertions(_body_assertions(document)))
         self.count = len(self.rows)
+        self.fixities = [_raw_fixity(value) for _category, value in self.rows]
         self.sequence, self.journal_id = document["sequence"], document["journal_id"]
         self.binding = canonical_json_bytes(
             {
@@ -540,6 +557,29 @@ class AssertionStaging:
             )
             if metadata != (1,):
                 raise RuntimeError("missing or changed staged description reference metadata")
+            if source["type"] in {"context", "observation"}:
+                fields = (
+                    (source["kind"], None, None)
+                    if source["type"] == "context"
+                    else (
+                        source["state"]["object_id"],
+                        source.get("capture_id"),
+                        source.get("address_status"),
+                    )
+                )
+                if self._one(
+                    "SELECT 1 FROM delivery_projection WHERE assertion_id=? "
+                    "AND value IS ? AND capture_id IS ? AND address_status IS ?",
+                    (source["assertion_id"], *fields),
+                ) != (1,):
+                    raise RuntimeError("missing or changed staged delivery reference metadata")
+            fixity = self.fixities[state.position - 1]
+            if fixity is not None and self._one(
+                "SELECT 1 FROM fixity_projection WHERE assertion_id=? "
+                "AND size IS ? AND sha256 IS ?",
+                (source["assertion_id"], *fixity),
+            ) != (1,):
+                raise RuntimeError("missing or changed staged description fixity")
             if source["type"] in {"usage", "generation"} and self._one(
                 "SELECT 1 FROM relation_projection WHERE assertion_id=? "
                 "AND activity_id=? AND state_id=?",
@@ -656,9 +696,13 @@ class AssertionStaging:
                     (source["temporal_scope"].get("at", source["temporal_scope"].get("start")),)
                     if source["type"] == "locator_binding"
                     else None,
-                    source["kind"]
+                    (source["kind"], None, None)
                     if source["type"] == "context"
-                    else source["state"]["object_id"]
+                    else (
+                        source["state"]["object_id"],
+                        source.get("capture_id"),
+                        source.get("address_status"),
+                    )
                     if source["type"] == "observation"
                     else None,
                     (
@@ -676,6 +720,7 @@ class AssertionStaging:
                     (source["activity_id"], source["state"]["object_id"])
                     if source["type"] in {"usage", "generation"}
                     else None,
+                    self.fixities[position],
                 )
                 octets = (
                     len(row.assertion_id.encode()) * 3
@@ -700,10 +745,16 @@ class AssertionStaging:
                         len(value.encode()) for value in row.binding if value is not None
                     )
                 if row.delivery is not None:
-                    octets += len(row.assertion_id.encode()) + len(row.delivery.encode())
+                    octets += len(row.assertion_id.encode()) + sum(
+                        len(value.encode()) for value in row.delivery if value is not None
+                    )
                 octets += len(row.assertion_id.encode()) + sum(
                     len(value.encode()) for value in row.description if value is not None
                 )
+                if row.fixity is not None:
+                    octets += len(row.assertion_id.encode()) + sum(
+                        len(value.encode()) for value in row.fixity if value is not None
+                    )
                 if row.relation is not None:
                     octets += len(row.assertion_id.encode()) + sum(
                         len(value.encode()) for value in row.relation
@@ -870,13 +921,18 @@ class AssertionStaging:
                     ).close()
                 if row.delivery is not None:
                     self.db.execute(
-                        "INSERT INTO delivery_projection VALUES (?,?)",
-                        (row.assertion_id, row.delivery),
+                        "INSERT INTO delivery_projection VALUES (?,?,?,?)",
+                        (row.assertion_id, *row.delivery),
                     ).close()
                 self.db.execute(
                     "INSERT INTO description_projection VALUES (?,?,?,?)",
                     (row.assertion_id, *row.description),
                 ).close()
+                if row.fixity is not None:
+                    self.db.execute(
+                        "INSERT INTO fixity_projection VALUES (?,?,?)",
+                        (row.assertion_id, *row.fixity),
+                    ).close()
                 if row.relation is not None:
                     self.db.execute(
                         "INSERT INTO relation_projection VALUES (?,?,?)",

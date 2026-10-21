@@ -107,7 +107,7 @@ def insert(db, row, *, active=1, projection=True):
     ).close()
     if row["type"] in KINDS and projection:
         db.execute(
-            "INSERT INTO delivery_projection VALUES (?,?)",
+            "INSERT INTO delivery_projection(assertion_id,value) VALUES (?,?)",
             (row["assertion_id"], field(row)),
         ).close()
 
@@ -374,7 +374,12 @@ def test_delivery_row_error_order_and_output_rollback(
         row["verification_observation_id"] = identity(31)
     elif fault == "external":
         row["state"] = rows.reference("state", 33, external=True)
-    monkeypatch.setattr(rows, "references", lambda: referents)
+
+    def selected_references(*, comparison=False):
+        assert not comparison
+        return referents
+
+    monkeypatch.setattr(rows, "references", selected_references)
     native = _Validator(
         {"artifacts": [*referents, row]},
         catalog=catalog,

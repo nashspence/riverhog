@@ -943,5 +943,11 @@ def test_actual_cold_terminal_result_is_read_only_and_reconstructs_native_failur
     from test_edge_row_semantics import terminal_growth_samples
 
     samples.extend(terminal_growth_samples(tmp_path, catalog))
-    assert len(samples) == 72
+    from test_comparison_semantics import terminal_growth_samples as comparison_terminal_samples
+
+    samples.extend(comparison_terminal_samples(tmp_path, catalog))
+    from test_locator_semantics import terminal_growth_samples as locator_terminal_samples
+
+    samples.extend(locator_terminal_samples(tmp_path, catalog))
+    assert len(samples) == 306
     record_property("growth_samples", samples)

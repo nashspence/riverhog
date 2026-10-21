@@ -235,6 +235,9 @@ class _Validator:
     def _graph_edge(self, kind: str, source: str, target: str) -> None:
         self.semantic_edges[kind].append((source, target))
 
+    def _comparison_node(self, identity: str) -> dict[str, Any]:
+        return self.node(identity, "observation", "reported_description")
+
     def _relation_node(self, identity: str, expected: str) -> dict[str, Any]:
         return self.node(identity, expected)
 
@@ -264,6 +267,9 @@ class _Validator:
 
     def _delivery_context(self, identity: str) -> dict[str, Any]:
         return self.node(identity, "context")
+
+    def _locator_observation(self, identity: str) -> dict[str, Any]:
+        return self.node(identity, "observation")
 
     def _delivery_observation(self, identity: str) -> dict[str, Any]:
         return self.node(identity, "observation")
@@ -380,10 +386,6 @@ class _Validator:
             kind = row["type"]
             if kind in ROW_TYPES:
                 self.row_semantics(row)
-            elif kind == "content_comparison":
-                self._comparison(row)
-            elif kind == "locator_binding":
-                self._locator(row)
         self.finish(generation, invalidation, derivations, specializations)
 
     def finish(
@@ -436,70 +438,6 @@ class _Validator:
                 and time_ns(row["at"]) > time_ns(ended["at"])
             ):
                 raise ProvenanceValidationError("state used after known invalidation")
-
-    def _comparison(self, row: Mapping[str, Any]) -> None:
-        left = self.reference(row["left_description"], "observation", "reported_description")
-        right = self.reference(row["right_description"], "observation", "reported_description")
-        if left is None or right is None:
-            if row["result"] != "indeterminate":
-                self.findings.append(
-                    f"{row['id']}: comparison depends on unavailable external content evidence"
-                )
-            return
-        if "content" not in left or "content" not in right:
-            if row["result"] != "indeterminate":
-                raise ProvenanceValidationError(
-                    "content comparison has no cited complete fixity evidence"
-                )
-            return
-        same = fingerprint(left["content"]) == fingerprint(right["content"])
-        if row["result"] == "matching_fixity" and not same:
-            raise ProvenanceValidationError("matching-fixity comparison contradicts cited evidence")
-        if row["result"] == "different" and same:
-            raise ProvenanceValidationError(
-                "different-content comparison contradicts cited SHA-256 evidence"
-            )
-
-    def _locator(self, row: Mapping[str, Any]) -> None:
-        target = self.reference(row["target"], "state", "occurrence")
-        context = self.node(row["context_id"], "context")
-        locator = row["locator"]
-        if locator["kind"] == "filesystem_path":
-            if context["kind"] != "filesystem_namespace":
-                raise ProvenanceValidationError(
-                    "filesystem path requires a filesystem naming context"
-                )
-            self.name(locator["name"])
-        elif locator["kind"] in ("object_key", "repository_id"):
-            required_context = {"object_key": "object_service", "repository_id": "repository"}[
-                locator["kind"]
-            ]
-            if context["kind"] != required_context:
-                raise ProvenanceValidationError("typed locator has an incompatible naming context")
-            key = "key" if locator["kind"] == "object_key" else "identifier"
-            self.name(locator[key])
-            if "version" in locator:
-                self.name(locator["version"])
-        elif locator["kind"] == "database_selector":
-            if context["kind"] != "database":
-                raise ProvenanceValidationError(
-                    "database selector requires a database naming context"
-                )
-            self.profile(locator["selector"])
-        elif locator["kind"] == "opaque":
-            self.name(locator["value"])
-        if "observation_id" in row:
-            observation = self.node(row["observation_id"], "observation")
-            state = self.node(observation["state"]["object_id"], "state")
-            if target is None or target["id"] not in (state["id"], state["occurrence_id"]):
-                raise ProvenanceValidationError(
-                    "locator binding does not identify its observation subject"
-                )
-            if observation["address_status"] != "known":
-                raise ProvenanceValidationError("observed locator contradicts address status")
-            if row["temporal_scope"]["kind"] == "instant":
-                capture = self.node(observation["capture_id"], "activity")
-                self._within_activity(row["temporal_scope"]["at"], capture)
 
     def _address_completeness(self) -> None:
         linked = {

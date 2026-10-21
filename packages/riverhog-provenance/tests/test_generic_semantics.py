@@ -903,7 +903,13 @@ def test_actual_cold_common_semantic_units(tmp_path, catalog, record_property):
     from test_edge_row_semantics import growth_samples as edge_growth_samples
 
     samples.extend(edge_growth_samples(tmp_path, catalog))
-    assert len(samples) == 807
+    from test_comparison_semantics import growth_samples as comparison_growth_samples
+
+    samples.extend(comparison_growth_samples(tmp_path, catalog))
+    from test_locator_semantics import growth_samples as locator_growth_samples
+
+    samples.extend(locator_growth_samples(tmp_path, catalog))
+    assert len(samples) == 1497
     record_property("growth_samples", samples)
 
 

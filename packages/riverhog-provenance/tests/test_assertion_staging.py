@@ -179,6 +179,17 @@ def proposed_octets(category, value, sequence="1"):
         total += logical_octets(
             (value["assertion_id"], value["activity_id"], value["state"]["object_id"])
         )
+    if value["type"] in {"observation", "reported_description"}:
+        content = value.get("content")
+        fields = (
+            (None, None)
+            if content is None
+            else (
+                content["size_bytes"],
+                next(v["value"] for v in content["digests"] if v["algorithm"] == "sha-256"),
+            )
+        )
+        total += logical_octets((value["assertion_id"], *fields))
     if value["type"] == "activity":
         total += logical_octets(
             (
@@ -200,6 +211,8 @@ def proposed_octets(category, value, sequence="1"):
             (
                 value["assertion_id"],
                 value["kind"] if value["type"] == "context" else value["state"]["object_id"],
+                value.get("capture_id") if value["type"] == "observation" else None,
+                value.get("address_status") if value["type"] == "observation" else None,
             )
         )
     if value["type"] in {"state", "activity"}:
@@ -1074,7 +1087,10 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
     from test_edge_row_semantics import staging_growth_samples
 
     samples.extend(staging_growth_samples(tmp_path))
-    assert len(samples) == 142
+    from test_comparison_semantics import staging_growth_samples as comparison_staging_samples
+
+    samples.extend(comparison_staging_samples(tmp_path))
+    assert len(samples) == 196
     record_property("growth_samples", samples)
 
 

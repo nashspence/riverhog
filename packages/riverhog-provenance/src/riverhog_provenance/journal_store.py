@@ -37,6 +37,7 @@ from riverhog_provenance_contracts import ContractCatalog
 
 from ._assertion_staging import AssertionStaging
 from ._assertion_staging import install as install_assertion_staging
+from ._changed_assertions import read_changed_assertion
 from ._correction_projection import CorrectionWork
 from ._correction_projection import install as install_correction_projection
 from ._correction_targets import CorrectionTargets
@@ -1021,6 +1022,16 @@ class JournalStore:
         ):
             raise ProvenanceValidationError("recording context does not resolve")
 
+    def _changed_assertion_rows(self) -> Iterator[dict[str, Any]]:
+        completed: str | None = None
+        admission = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+        while (
+            selected := read_changed_assertion(self.db, after=completed, byte_budget=admission)
+        ) is not None:
+            if selected.raw is not None:
+                yield json.loads(selected.raw)
+            completed = selected.assertion_id
+
     def accept(
         self,
         document: Mapping[str, Any],
@@ -1096,14 +1107,7 @@ class JournalStore:
             seeding.initialize()
             while not seeding.seed().done:
                 pass
-        rows = (
-            json.loads(value)
-            for (value,) in self.db.execute(
-                "SELECT assertions.value FROM changes CROSS JOIN assertions "
-                "WHERE assertions.assertion_id = changes.assertion_id AND active = 1 "
-                "ORDER BY changes.assertion_id"
-            )
-        )
+        rows = self._changed_assertion_rows()
         validator = _StoredValidator(
             self,
             rows,

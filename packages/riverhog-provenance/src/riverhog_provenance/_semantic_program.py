@@ -47,6 +47,8 @@ ROW_STAGES = {
     "observation": 17,
     "derivation": 8,
     "specialization": 3,
+    "content_comparison": 3,
+    "locator_binding": 9,
 }
 ROW_TYPES = frozenset(ROW_STAGES)
 
@@ -338,6 +340,32 @@ class Program:
             return
         self._next(frame)
 
+    def _comparison(self, value: Mapping[str, Any]) -> None:
+        from .common import fingerprint
+
+        validator = self.validator
+        if any(value[key]["scope"] != "local" for key in ("left_description", "right_description")):
+            if value["result"] != "indeterminate":
+                validator.findings.append(
+                    f"{value['id']}: comparison depends on unavailable external content evidence"
+                )
+            return
+        left = validator._comparison_node(value["left_description"]["object_id"])
+        right = validator._comparison_node(value["right_description"]["object_id"])
+        if "content" not in left or "content" not in right:
+            if value["result"] != "indeterminate":
+                raise ProvenanceValidationError(
+                    "content comparison has no cited complete fixity evidence"
+                )
+            return
+        same = fingerprint(left["content"]) == fingerprint(right["content"])
+        if value["result"] == "matching_fixity" and not same:
+            raise ProvenanceValidationError("matching-fixity comparison contradicts cited evidence")
+        if value["result"] == "different" and same:
+            raise ProvenanceValidationError(
+                "different-content comparison contradicts cited SHA-256 evidence"
+            )
+
     def _row(self, frame: Frame, value: Mapping[str, Any]) -> None:
         from .graph import ENTITY_TYPES, _name_identity, time_ns
 
@@ -413,6 +441,83 @@ class Program:
                     validator._within_activity(
                         value["at"], validator._lifecycle_activity(value["activity_id"])
                     )
+            else:
+                self.stack.pop()
+                return
+        elif kind == "locator_binding":
+            locator = value["locator"]
+            naming = locator["kind"]
+            if stage == 0:
+                validator.reference(value["target"], "state", "occurrence")
+            elif stage == 1:
+                context = validator._delivery_context(value["context_id"])
+                required_context = {
+                    "filesystem_path": "filesystem_namespace",
+                    "object_key": "object_service",
+                    "repository_id": "repository",
+                    "database_selector": "database",
+                }.get(naming)
+                if required_context is not None and context["kind"] != required_context:
+                    message = (
+                        "filesystem path requires a filesystem naming context"
+                        if naming == "filesystem_path"
+                        else "database selector requires a database naming context"
+                        if naming == "database_selector"
+                        else "typed locator has an incompatible naming context"
+                    )
+                    raise ProvenanceValidationError(message)
+            elif stage == 2:
+                name_key = {
+                    "filesystem_path": "name",
+                    "object_key": "key",
+                    "repository_id": "identifier",
+                    "opaque": "value",
+                }.get(naming)
+                if name_key is not None:
+                    validator.name(locator[name_key])
+            elif stage == 3:
+                if naming in {"object_key", "repository_id"} and "version" in locator:
+                    validator.name(locator["version"])
+            elif stage == 4:
+                if naming == "database_selector":
+                    self._child(frame, "profile", locator["selector"])
+                    return
+            elif stage == 5:
+                if "observation_id" in value:
+                    validator._locator_observation(value["observation_id"])
+            elif stage == 6:
+                if "observation_id" in value:
+                    observation = validator._locator_observation(value["observation_id"])
+                    state = validator._description_node(observation["state"]["object_id"], "state")
+                    target = value["target"]
+                    if target["scope"] != "local" or target["object_id"] not in (
+                        state["id"],
+                        state["occurrence_id"],
+                    ):
+                        raise ProvenanceValidationError(
+                            "locator binding does not identify its observation subject"
+                        )
+            elif stage == 7:
+                if (
+                    "observation_id" in value
+                    and validator._locator_observation(value["observation_id"])["address_status"]
+                    != "known"
+                ):
+                    raise ProvenanceValidationError("observed locator contradicts address status")
+            elif stage == 8:
+                if "observation_id" in value and value["temporal_scope"]["kind"] == "instant":
+                    observation = validator._locator_observation(value["observation_id"])
+                    capture = validator._lifecycle_activity(observation["capture_id"])
+                    validator._within_activity(value["temporal_scope"]["at"], capture)
+            else:
+                self.stack.pop()
+                return
+        elif kind == "content_comparison":
+            if stage in (0, 1):
+                key = "left_description" if stage == 0 else "right_description"
+                validator.reference(value[key], "observation", "reported_description")
+            elif stage == 2:
+                self._comparison(value)
             else:
                 self.stack.pop()
                 return
