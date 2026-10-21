@@ -19,6 +19,7 @@ from riverhog_provenance import (
     reference,
     validate_journal,
 )
+from riverhog_provenance._generic_semantics import GenericSemantics
 from riverhog_provenance._journal_prefix import PrefixState
 from riverhog_provenance._online_dag import OnlineDag
 from riverhog_provenance._semantic_edge import (
@@ -363,11 +364,11 @@ def test_native_wrapper_drives_fenced_units_without_the_whole_edge_driver(
             general=reference(old["id"], "artifact"),
         )
     seen = []
-    original = SemanticEdge.advance
+    original = GenericSemantics.advance
 
     def advance(self, **options):
         prefix = self.db.execute("SELECT * FROM journal_prefix").fetchall()
-        state = original(self, row_budget=1)
+        state = original(self, step_budget=1)
         assert self.db.execute("SELECT * FROM journal_prefix").fetchall() == prefix
         assert not self.db.in_transaction
         seen.append(state.phase)
@@ -376,7 +377,7 @@ def test_native_wrapper_drives_fenced_units_without_the_whole_edge_driver(
     def unbounded(*args, **options):
         pytest.fail("native semantic insertion used the whole edge driver")
 
-    monkeypatch.setattr(SemanticEdge, "advance", advance)
+    monkeypatch.setattr(GenericSemantics, "advance", advance)
     monkeypatch.setattr(OnlineDag, "add", unbounded)
     raw = append_assertions(
         journal,
@@ -386,7 +387,7 @@ def test_native_wrapper_drives_fenced_units_without_the_whole_edge_driver(
     )
     with validate_journal(raw, catalog=catalog) as summary:
         assert summary.journal_sha256 == hashlib.sha256(raw).hexdigest()
-    assert {"graph", "done"} <= set(seen)
+    assert {"edge", "done"} <= set(seen)
 
 
 def position(current, phase, *, budget=1):

@@ -36,7 +36,7 @@ from .graph import iter_assertions
 if TYPE_CHECKING:
     from .journal import JournalFrame
 
-ALGORITHM = "riverhog-assertion-staging/v6"
+ALGORITHM = "riverhog-assertion-staging/v7"
 MAX_ROWS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -127,6 +127,7 @@ class StageRow:
     delivery: str | None
     description: tuple[str | None, str | None, str | None]
     observation: tuple[str | None, str | None, int] | None
+    relation: tuple[str, str] | None
 
 
 @dataclass(frozen=True)
@@ -155,6 +156,10 @@ def install(db: sqlite3.Connection) -> None:
     db.execute(
         "CREATE TABLE description_projection(assertion_id TEXT PRIMARY KEY, "
         "occurrence_id TEXT, kind TEXT, source_context_id TEXT)"
+    ).close()
+    db.execute(
+        "CREATE TABLE relation_projection(assertion_id TEXT PRIMARY KEY, "
+        "activity_id TEXT NOT NULL, state_id TEXT NOT NULL)"
     ).close()
     db.execute(
         "CREATE TABLE observation_projection(assertion_id TEXT PRIMARY KEY, "
@@ -234,7 +239,7 @@ def _declaration() -> Declaration:
                 Expression("sum", terms=(count(1), multiple(7, budget))),
                 "One checkpoint, two identities, assertion/change rows, "
                 "fixed description and observation metadata, optional activity, binding or "
-                "delivery metadata, or bounded observer membership/completion rows.",
+                "delivery or relation metadata, or bounded observer membership/completion rows.",
             ),
             Bound(
                 "metadata_octets",
@@ -535,6 +540,12 @@ class AssertionStaging:
             )
             if metadata != (1,):
                 raise RuntimeError("missing or changed staged description reference metadata")
+            if source["type"] in {"usage", "generation"} and self._one(
+                "SELECT 1 FROM relation_projection WHERE assertion_id=? "
+                "AND activity_id=? AND state_id=?",
+                (source["assertion_id"], source["activity_id"], source["state"]["object_id"]),
+            ) != (1,):
+                raise RuntimeError("missing or changed staged relation metadata")
             if source["type"] in {"state", "activity"}:
                 associations = source.get("associations", [])
                 incomplete = state.phase == "observers"
@@ -662,6 +673,9 @@ class AssertionStaging:
                     )
                     if source["type"] in {"state", "activity"}
                     else None,
+                    (source["activity_id"], source["state"]["object_id"])
+                    if source["type"] in {"usage", "generation"}
+                    else None,
                 )
                 octets = (
                     len(row.assertion_id.encode()) * 3
@@ -690,6 +704,10 @@ class AssertionStaging:
                 octets += len(row.assertion_id.encode()) + sum(
                     len(value.encode()) for value in row.description if value is not None
                 )
+                if row.relation is not None:
+                    octets += len(row.assertion_id.encode()) + sum(
+                        len(value.encode()) for value in row.relation
+                    )
                 if row.observation is not None:
                     octets += len(row.assertion_id.encode()) + sum(
                         len(value.encode()) if isinstance(value, str) else 1
@@ -859,6 +877,11 @@ class AssertionStaging:
                     "INSERT INTO description_projection VALUES (?,?,?,?)",
                     (row.assertion_id, *row.description),
                 ).close()
+                if row.relation is not None:
+                    self.db.execute(
+                        "INSERT INTO relation_projection VALUES (?,?,?)",
+                        (row.assertion_id, *row.relation),
+                    ).close()
                 if row.observation is not None:
                     self.db.execute(
                         "INSERT INTO observation_projection VALUES (?,?,?,?)",

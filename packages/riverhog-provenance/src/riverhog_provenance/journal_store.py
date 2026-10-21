@@ -49,7 +49,6 @@ from ._index_key import encode_index_key
 from ._journal_prefix import install as install_journal_prefix
 from ._online_dag import OnlineDag
 from ._online_dag import install as install_online_dag
-from ._semantic_edge import SemanticEdge
 from ._semantic_edge import install as install_semantic_edges
 from ._semantic_finish import SemanticFinish
 from ._semantic_finish import install as install_semantic_finish
@@ -457,37 +456,6 @@ class _Findings(MutableSequence[str]):
         self.store.db.execute("INSERT OR IGNORE INTO findings VALUES (?, ?)", (value, value))
 
 
-class _Edges:
-    def __init__(self, validator: _StoredValidator, kind: str) -> None:
-        self.validator, self.kind = validator, kind
-
-    def append(self, edge: tuple[str, str]) -> None:
-        source, target = edge
-        if source == target:
-            raise ProvenanceValidationError(f"{self.kind} cannot relate an entity to itself")
-        row = self.validator.current_row
-        if row is None:
-            raise RuntimeError("semantic graph insertion requires its current assertion")
-        store = self.validator.store
-        # Native checks precede insertion; the private child owns each graph unit.
-        store.db.commit()
-        work = SemanticEdge(
-            store.db,
-            kind=self.kind,
-            run_id=store._dag_runs[self.kind],
-            attempt_id=uuid4().hex,
-            source_binding=self.validator.semantic_source,
-            assertion_id=row["assertion_id"],
-            object_id=row["id"],
-            source=source,
-            target=target,
-        )
-        work.initialize()
-        while not work.advance().done:
-            pass
-        work.result()
-
-
 class _StoredValidator(_Validator):
     def __init__(
         self,
@@ -535,8 +503,8 @@ class _StoredValidator(_Validator):
         return (
             _Map(self.store, "generation"),
             _Map(self.store, "invalidation"),
-            _Edges(self, "derivation"),
-            _Edges(self, "specialization"),
+            (),
+            (),
             _Map(self.store, "captures"),
             _Set(self.store, "ends"),
             _Set(self.store, "slots"),

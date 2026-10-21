@@ -43,12 +43,14 @@ from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
 from ._observation_coverage import ObservationCoverage
 from ._observation_projection import has_observer, read_observation_metadata
+from ._relation_projection import read_relation_metadata
+from ._semantic_edge import EdgeAdmission, EdgeBatch, SemanticEdge
 from ._semantic_program import ROW_STAGES, ROW_TYPES, Frame, MemoryStack, Nodes, Program, Stack
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .graph import _Validator
 
-ALGORITHM = "riverhog-generic-semantics/v8"
+ALGORITHM = "riverhog-generic-semantics/v9"
 MAX_STEPS = 64
 _HEADER_OCTETS = 2048
 _BINDING_OCTETS = 8192
@@ -74,6 +76,10 @@ _STAGES = {
     "typed": 1,
     "content": 1,
 }
+
+
+class _GraphRequest(Exception):
+    """The next native row transition requires an owned graph child."""
 
 
 class StaleGenericSemantics(RuntimeError):
@@ -109,6 +115,7 @@ class GenericState:
     version: int = 0
     error_sha256: str | None = None
     failure: str | None = None
+    edge_run: str | None = None
 
     @property
     def done(self) -> bool:
@@ -123,6 +130,7 @@ class GenericState:
                 "version": str(self.version),
                 "error_sha256": self.error_sha256,
                 "failure": self.failure,
+                "edge_run": self.edge_run,
             }
         ).decode()
 
@@ -134,10 +142,12 @@ class GenericState:
             value = json.loads(raw)
             if (
                 type(value) is not dict
-                or set(value) != {"phase", "top", "serial", "version", "error_sha256", "failure"}
+                or set(value)
+                != {"phase", "top", "serial", "version", "error_sha256", "failure", "edge_run"}
                 or value["phase"]
                 not in {
                     "walk",
+                    "edge",
                     "keys",
                     "outputs",
                     "reject-frames",
@@ -161,13 +171,24 @@ class GenericState:
                 int(value["version"]),
                 value["error_sha256"],
                 value["failure"],
+                value["edge_run"],
             )
             if state.serial < 1 or state.serial > 64 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
                 raise ValueError("entry-local frame allocation")
             if state.top is not None and not 0 <= state.top < state.serial:
                 raise ValueError("stack cursor")
-            if (state.phase == "walk") != (state.top is not None):
+            if (state.phase in {"walk", "edge"}) != (state.top is not None):
                 raise ValueError("stack phase")
+            if state.edge_run is not None and (
+                type(state.edge_run) is not str
+                or not state.edge_run
+                or len(state.edge_run.encode()) > _HEADER_OCTETS
+                or state.phase
+                not in {"edge", "reject-frames", "reject-keys", "reject-outputs", "rejected"}
+            ):
+                raise ValueError("graph child identity")
+            if state.phase == "edge" and state.edge_run is None:
+                raise ValueError("missing graph child")
             if state.phase.startswith("reject"):
                 if (
                     type(state.error_sha256) is not str
@@ -331,7 +352,7 @@ def _declaration() -> Declaration:
                 COUNT,
                 "upper",
                 linear(16, 8),
-                "Frame changes, semantic outputs/undo, key retirement and one checkpoint.",
+                "Frame/output/undo/key work or one graph child, plus their shared checkpoint.",
             ),
             Bound(
                 "returned_metadata_octets",
@@ -368,9 +389,9 @@ def _declaration() -> Declaration:
             Bound(
                 "adjacency_rows",
                 COUNT,
-                "equal",
-                count(0),
-                "Common checks do not traverse graph adjacency.",
+                "upper",
+                budget,
+                "A graph handoff advances at most one admitted native adjacency window.",
             ),
             Bound(
                 "source_payload_octets",
@@ -386,7 +407,7 @@ def _declaration() -> Declaration:
                 Expression(
                     "sum",
                     terms=(
-                        linear(8192, 2048),
+                        linear(16384, 6144),
                         Expression(
                             "product",
                             terms=(
@@ -415,7 +436,7 @@ def _declaration() -> Declaration:
             "The owner retains the exact immutable admitted row/source, sealed catalog and modes.",
             "Covering active-object/subject indexes and indexed variable state are installed.",
             "Staging owns fixed activity, locator-binding, delivery, observation reference fields "
-            "and raw observer membership; "
+            "and raw observer membership and usage/generation correlates; "
             "lifecycle aggregates retain only "
             "canonical activity identity and optional native timestamp metadata.",
             "The source admission index is constructed once outside checkpoint transactions.",
@@ -424,14 +445,15 @@ def _declaration() -> Declaration:
         ),
         invariants=(
             "Native common and supported row check order share one interpreter.",
-            "Outputs, undo ownership and progress share the exact source/prefix fence.",
+            "Outputs, graph-child work, undo ownership and progress share "
+            "the exact source/prefix fence.",
             "Rejection restores new outputs and reclaims variable state in bounded steps.",
             "Restoration loads retained progress; it never initializes that operation again.",
             "This private phase publishes no accepted prefix and releases no source custody.",
         ),
         limitations=(
             "Admission/indexing and existing local schema/byte/hash atoms are separate delegates.",
-            "Unsupported row kinds, graph and post-row checks remain separate phases.",
+            "Unsupported row kinds and post-row checks remain separate phases.",
             "Allocation, B-tree byte comparisons, physical I/O, waits and fsync stay separate.",
             "Whole-session recovery needs an owner-retained crash-safe workspace and source.",
         ),
@@ -452,9 +474,9 @@ def _result_declaration() -> Declaration:
                 bound,
                 relation="equal",
                 expression=Expression("constant", value=0, unit=COUNT),
-                meaning="Terminal result reads never change private facts or progress.",
+                meaning="Terminal results neither change state nor traverse graph adjacency.",
             )
-            if bound.metric == "changed_rows"
+            if bound.metric in {"changed_rows", "adjacency_rows"}
             else bound
             for bound in unit.bounds
         ),
@@ -747,8 +769,10 @@ class _ProjectedValidator(_Validator):
         owner: GenericSemantics,
         meter: _Meter,
         outputs: dict[tuple[str, bytes], bytes],
+        edge_result: SemanticEdge | None = None,
     ) -> None:
         self.owner, self.meter = owner, meter
+        self.edge_result = edge_result
         self.catalog, self.journal_id = owner.catalog, owner.source.journal_id
         self.require_profiles = owner.source.require_profiles
         self.objects = _Objects(owner, meter)
@@ -760,6 +784,22 @@ class _ProjectedValidator(_Validator):
         self.lifecycle = {
             name: _Lifecycle(owner, name, meter, outputs) for name in ("generation", "invalidation")
         }
+
+    def _graph_edge(self, kind: str, source: str, target: str) -> None:
+        if self.edge_result is None:
+            raise _GraphRequest
+        if (kind, source, target) != (
+            self.edge_result.kind,
+            self.edge_result.source,
+            self.edge_result.target,
+        ):
+            raise RuntimeError("semantic graph result differs from its admitted row")
+        self.edge_result.result()
+
+    def _relation_node(self, identity: str, expected: str) -> dict[str, Any]:
+        activity, state = read_relation_metadata(self.owner.db, identity, expected)
+        self.meter.claim(len(activity.encode()) + len(state.encode()) + 128)
+        return {"activity_id": activity, "state": {"object_id": state}}
 
     def _description_node(self, identity: str, *types: str) -> dict[str, Any]:
         value = read_description_metadata(self.owner.db, identity, *types)
@@ -891,6 +931,7 @@ class GenericBatch:
     before_json: str
     after: GenericState
     writes: tuple[tuple[str, tuple[Any, ...]], ...]
+    edge: EdgeAdmission | EdgeBatch | None = None
 
 
 class GenericSemantics:
@@ -1053,10 +1094,86 @@ class GenericSemantics:
     def load(self) -> GenericState:
         return self._load()[0]
 
+    def _edge_work(self, state: GenericState, prefix: tuple[str, bytes, str]) -> SemanticEdge:
+        if (
+            self.operation != "row"
+            or self.kind not in {"derivation", "specialization"}
+            or state.edge_run is None
+        ):
+            raise RuntimeError("common semantic state has no matching graph child")
+        value = self.atom.nodes.values[0]
+        left, right = (
+            ("used_state", "generated_state")
+            if self.kind == "derivation"
+            else ("specific", "general")
+        )
+        attempt = hashlib.sha256(
+            canonical_json_bytes(
+                {
+                    "parent_attempt": self.attempt_id,
+                    "parent_binding_sha256": hashlib.sha256(self.binding).hexdigest(),
+                    "prefix_attempt": prefix[0],
+                    "prefix_binding_sha256": hashlib.sha256(prefix[1]).hexdigest(),
+                    "prefix": prefix[2],
+                }
+            )
+        ).hexdigest()
+        return SemanticEdge(
+            self.db,
+            kind=self.kind,
+            run_id=state.edge_run,
+            attempt_id=attempt,
+            source_binding=self.source,
+            assertion_id=self.assertion_id,
+            object_id=self.object_id,
+            source=value[left]["object_id"],
+            target=value[right]["object_id"],
+        )
+
+    @staticmethod
+    def _charge_edge(meter: _Meter, batch: EdgeAdmission | EdgeBatch, row_budget: int) -> None:
+        # Graph rows contain native UUID keys; actual scalar/control and write
+        # encodings retain their own widths rather than becoming archive caps.
+        values: list[Any] = [
+            batch.binding,
+            batch.attempt_id,
+            *batch.prefix,
+            batch.after.to_json(),
+            batch.graph_before.work.encoded(),
+        ]
+        if isinstance(batch, EdgeAdmission):
+            if batch.prior is not None:
+                values.extend(batch.prior)
+        else:
+            values.append(batch.before_json)
+            if batch.graph_plan is not None:
+                values.append(batch.graph_plan.work.encoded())
+                for _statement, parameters in batch.graph_plan.writes:
+                    values.extend(parameters)
+        meter.claim(
+            4 * 45 * row_budget
+            + sum(
+                len(value)
+                if isinstance(value, bytes)
+                else len(str(value).encode())
+                if value is not None
+                else 0
+                for value in values
+            )
+        )
+
     def _program(
-        self, stack: Stack, meter: _Meter, keys: _Keys, outputs: dict[tuple[str, bytes], bytes]
+        self,
+        stack: Stack,
+        meter: _Meter,
+        keys: _Keys,
+        outputs: dict[tuple[str, bytes], bytes],
+        *,
+        edge_result: SemanticEdge | None = None,
     ) -> Program:
-        return Program(_ProjectedValidator(self, meter, outputs), self.atom.nodes, stack, keys)
+        return Program(
+            _ProjectedValidator(self, meter, outputs, edge_result), self.atom.nodes, stack, keys
+        )
 
     def prepare(
         self, *, step_budget: int = MAX_STEPS, byte_budget: int = _DEFAULT_BYTES
@@ -1068,6 +1185,7 @@ class GenericSemantics:
         state, prefix = self._load()
         after = state
         writes: list[tuple[str, tuple[Any, ...]]] = []
+        edge: EdgeAdmission | EdgeBatch | None = None
         meter = _Meter(byte_budget)
         meter.claim(
             8192
@@ -1086,6 +1204,7 @@ class GenericSemantics:
             keys = _Keys(self, meter)
             program = self._program(stack, meter, keys, outputs)
             phase, error_hash, failure = "walk", None, None
+            edge_run = None
             for completed in range(step_budget):
                 if stack.peek() is None:
                     break
@@ -1099,12 +1218,38 @@ class GenericSemantics:
                 )
                 try:
                     program.step()
-                except (GenericSemanticsCapacity, ValueError) as error:
+                except (GenericSemanticsCapacity, ValueError, _GraphRequest) as error:
                     stack.top, stack.serial, stack.cache, stack.changes = snapshot[:4]
                     keys.pending.clear()
                     keys.pending.update(snapshot[4])
                     outputs.clear()
                     outputs.update(snapshot[5])
+                    if isinstance(error, _GraphRequest):
+                        run = self._one(
+                            "SELECT substr(CAST(run_id AS BLOB),1,?),typeof(run_id) "
+                            "FROM dag_runs WHERE kind=?",
+                            (_HEADER_OCTETS + 1, self.kind),
+                        )
+                        if (
+                            run is None
+                            or type(run[0]) is not bytes
+                            or run[1] != "text"
+                            or not 1 <= len(run[0]) <= _HEADER_OCTETS
+                        ):
+                            raise RuntimeError(
+                                "missing or invalid common semantic graph run"
+                            ) from None
+                        graph_run = run[0].decode("utf-8")
+                        proposed = replace(state, phase="edge", edge_run=graph_run)
+                        admission = self._edge_work(proposed, prefix).prepare_admission()
+                        try:
+                            self._charge_edge(meter, admission, 0)
+                        except GenericSemanticsCapacity:
+                            if completed == 0:
+                                raise
+                            break
+                        phase, edge_run, edge = "edge", graph_run, admission
+                        break
                     if isinstance(error, GenericSemanticsCapacity):
                         if completed == 0:
                             raise
@@ -1120,10 +1265,11 @@ class GenericSemantics:
             after = replace(
                 state,
                 phase=phase,
-                top=stack.top if phase == "walk" else None,
+                top=stack.top if phase in {"walk", "edge"} else None,
                 serial=stack.serial,
                 error_sha256=error_hash,
                 failure=failure,
+                edge_run=edge_run,
                 version=state.version + 1,
             )
             for identity, item in stack.changes.items():
@@ -1153,6 +1299,39 @@ class GenericSemantics:
                 )
             for (name, key), value in outputs.items():
                 writes.append(("@output", (name, key, value)))
+        elif state.phase == "edge":
+            stack = _Stack(self, state, meter)
+            edge_frame = stack.peek()
+            if edge_frame is None or edge_frame != Frame("row", 0, stage=2):
+                raise RuntimeError("graph child differs from its parent continuation")
+            child = self._edge_work(state, prefix)
+            edge = child.prepare(row_budget=step_budget)
+            self._charge_edge(meter, edge, step_budget)
+            after = replace(state, version=state.version + 1)
+            if edge.after.done and edge.after.to_json() == edge.before_json:
+                try:
+                    child.result()
+                except ValueError as error:
+                    after = replace(
+                        after,
+                        phase="reject-frames",
+                        top=None,
+                        error_sha256=_error_identity(error),
+                        failure=_encode_frame(edge_frame),
+                    )
+                else:
+                    writes.append(
+                        (
+                            "UPDATE generic_semantic_frames SET value=? "
+                            "WHERE attempt_id=? AND frame_id=?",
+                            (
+                                _encode_frame(replace(edge_frame, stage=3)),
+                                self.attempt_id,
+                                state.top,
+                            ),
+                        )
+                    )
+                    after = replace(after, phase="walk", edge_run=None)
         elif state.phase == "reject-frames":
             with closing(
                 self.db.execute(
@@ -1238,7 +1417,7 @@ class GenericSemantics:
             )
             after = replace(state, phase=phase, version=state.version + 1)
         return GenericBatch(
-            self.binding, self.attempt_id, prefix, state.to_json(), after, tuple(writes)
+            self.binding, self.attempt_id, prefix, state.to_json(), after, tuple(writes), edge
         )
 
     def commit(self, batch: GenericBatch) -> GenericState:
@@ -1251,7 +1430,7 @@ class GenericSemantics:
                 raise StaleGenericSemantics("accepted prefix changed before semantic commit")
             self._subject()
             if batch.after == GenericState.from_json(batch.before_json):
-                if batch.writes:
+                if batch.writes or batch.edge is not None:
                     raise RuntimeError("completed semantic proposal contains writes")
                 row = self._one(
                     "SELECT 1 FROM journal_generic_semantics WHERE singleton=1 "
@@ -1280,6 +1459,11 @@ class GenericSemantics:
             ) as cursor:
                 if cursor.rowcount != 1:
                     raise StaleGenericSemantics("common semantic checkpoint changed")
+            if isinstance(batch.edge, EdgeAdmission):
+                self._edge_work(batch.after, batch.prefix)._admit(batch.edge)
+            elif isinstance(batch.edge, EdgeBatch):
+                before = GenericState.from_json(batch.before_json)
+                self._edge_work(before, batch.prefix)._apply(batch.edge)
             for sql, parameters in batch.writes:
                 if sql == "@output":
                     name, key, value = parameters
@@ -1385,7 +1569,15 @@ class GenericSemantics:
                 if frame.cursor >= len(coverage):
                     raise RuntimeError("corrupt retained coverage rejection")
                 keys.pending.add(Program.coverage_key(stack.identity(), coverage[frame.cursor]))
-            program = self._program(stack, meter, keys, {})
+            edge_result = self._edge_work(state, _prefix) if state.edge_run is not None else None
+            if (
+                frame.operation == "row"
+                and self.kind in {"derivation", "specialization"}
+                and frame.stage == 2
+                and edge_result is None
+            ):
+                raise RuntimeError("retained graph rejection lost its child")
+            program = self._program(stack, meter, keys, {}, edge_result=edge_result)
             try:
                 program.step()
             except ValueError as error:

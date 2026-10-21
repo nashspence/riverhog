@@ -175,6 +175,10 @@ def proposed_octets(category, value, sequence="1"):
             (value["assertion_id"],),
         )
     )
+    if value["type"] in {"usage", "generation"}:
+        total += logical_octets(
+            (value["assertion_id"], value["activity_id"], value["state"]["object_id"])
+        )
     if value["type"] == "activity":
         total += logical_octets(
             (
@@ -1067,7 +1071,10 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
     from test_observation_staging import growth_samples as observer_growth_samples
 
     samples.extend(observer_growth_samples(tmp_path))
-    assert len(samples) == 106
+    from test_edge_row_semantics import staging_growth_samples
+
+    samples.extend(staging_growth_samples(tmp_path))
+    assert len(samples) == 142
     record_property("growth_samples", samples)
 
 

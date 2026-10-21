@@ -900,7 +900,10 @@ def test_actual_cold_common_semantic_units(tmp_path, catalog, record_property):
     from test_observation_semantics import growth_samples as observation_growth_samples
 
     samples.extend(observation_growth_samples(tmp_path, catalog))
-    assert len(samples) == 555
+    from test_edge_row_semantics import growth_samples as edge_growth_samples
+
+    samples.extend(edge_growth_samples(tmp_path, catalog))
+    assert len(samples) == 807
     record_property("growth_samples", samples)
 
 

@@ -88,6 +88,16 @@ class EdgeBatch:
     graph_plan: _Plan | None
 
 
+@dataclass(frozen=True)
+class EdgeAdmission:
+    binding: bytes
+    attempt_id: str
+    prefix: tuple[str, bytes, str]
+    prior: tuple[Any, ...] | None
+    graph_before: _Snapshot
+    after: EdgeState
+
+
 def install(db: sqlite3.Connection) -> None:
     db.execute(
         "CREATE TABLE journal_semantic_edges(kind TEXT PRIMARY KEY, algorithm TEXT NOT NULL, "
@@ -332,38 +342,69 @@ class SemanticEdge:
             )
         ).hexdigest()
 
-    def initialize(self) -> EdgeState:
-        """Explicitly admit a new operation; restoration calls load/advance instead."""
+    def _admission_row(self) -> tuple[Any, ...] | None:
+        row = self._one(
+            "SELECT algorithm,attempt_id,substr(checkpoint,1,?) "
+            "FROM journal_semantic_edges WHERE kind=?",
+            (_HEADER_OCTETS + 1, self.kind),
+        )
+        return None if row is None else tuple(row)
+
+    def prepare_admission(self) -> EdgeAdmission:
         self._detached()
+        prefix = self._prefix()
+        self._subject()
+        graph = self._dag()
+        if graph.work.phase not in {"idle", "complete"}:
+            raise StaleSemanticEdge("a graph operation is still quarantined")
+        old = self._admission_row()
+        version = 0
+        if old is not None:
+            if old[0] != ALGORITHM:
+                raise RuntimeError("unknown semantic graph algorithm")
+            prior = EdgeState.from_json(old[2])
+            if old[1] == self.attempt_id or not prior.done:
+                raise StaleSemanticEdge("semantic graph operation is already bound")
+            version = prior.version + 1
+        return EdgeAdmission(
+            self.binding, self.attempt_id, prefix, old, graph, EdgeState(version=version)
+        )
+
+    def _admit(self, batch: EdgeAdmission) -> EdgeState:
+        if not self.db.in_transaction:
+            raise RuntimeError("semantic graph admission requires an owner transaction")
+        if (batch.binding, batch.attempt_id) != (self.binding, self.attempt_id):
+            raise StaleSemanticEdge("semantic graph admission belongs to another input")
+        if (
+            self._prefix() != batch.prefix
+            or self._dag() != batch.graph_before
+            or self._admission_row() != batch.prior
+        ):
+            raise StaleSemanticEdge("semantic graph admission was superseded")
+        self._subject()
+        self.db.execute(
+            "INSERT INTO journal_semantic_edges VALUES (?,?,?,?,?,?,?,?) "
+            "ON CONFLICT(kind) DO UPDATE SET algorithm=excluded.algorithm, "
+            "attempt_id=excluded.attempt_id,binding=excluded.binding, "
+            "prefix_attempt=excluded.prefix_attempt,prefix_binding=excluded.prefix_binding, "
+            "prefix=excluded.prefix,checkpoint=excluded.checkpoint",
+            (
+                self.kind,
+                ALGORITHM,
+                self.attempt_id,
+                self.binding,
+                *batch.prefix,
+                batch.after.to_json(),
+            ),
+        ).close()
+        return batch.after
+
+    def initialize(self) -> EdgeState:
+        """Admit a new operation; restoration calls load/advance instead."""
+        batch = self.prepare_admission()
         self.db.execute("BEGIN IMMEDIATE").close()
         try:
-            prefix = self._prefix()
-            self._subject()
-            graph = self._dag()
-            if graph.work.phase not in {"idle", "complete"}:
-                raise StaleSemanticEdge("a graph operation is still quarantined")
-            old = self._one(
-                "SELECT algorithm,attempt_id,substr(checkpoint,1,?) "
-                "FROM journal_semantic_edges WHERE kind=?",
-                (_HEADER_OCTETS + 1, self.kind),
-            )
-            version = 0
-            if old is not None:
-                if old[0] != ALGORITHM:
-                    raise RuntimeError("unknown semantic graph algorithm")
-                prior = EdgeState.from_json(old[2])
-                if old[1] == self.attempt_id or not prior.done:
-                    raise StaleSemanticEdge("semantic graph operation is already bound")
-                version = prior.version + 1
-            state = EdgeState(version=version)
-            self.db.execute(
-                "INSERT INTO journal_semantic_edges VALUES (?,?,?,?,?,?,?,?) "
-                "ON CONFLICT(kind) DO UPDATE SET algorithm=excluded.algorithm, "
-                "attempt_id=excluded.attempt_id,binding=excluded.binding, "
-                "prefix_attempt=excluded.prefix_attempt,prefix_binding=excluded.prefix_binding, "
-                "prefix=excluded.prefix,checkpoint=excluded.checkpoint",
-                (self.kind, ALGORITHM, self.attempt_id, self.binding, *prefix, state.to_json()),
-            ).close()
+            state = self._admit(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
@@ -429,22 +470,40 @@ class SemanticEdge:
             raise StaleSemanticEdge("graph changed during detached semantic planning")
         return EdgeBatch(self.binding, self.attempt_id, prefix, state.to_json(), after, graph, plan)
 
-    def commit(self, batch: EdgeBatch) -> EdgeState:
-        self._detached()
+    def _apply(self, batch: EdgeBatch) -> EdgeState:
+        if not self.db.in_transaction:
+            raise RuntimeError("semantic graph application requires an owner transaction")
         if (batch.binding, batch.attempt_id) != (self.binding, self.attempt_id):
             raise StaleSemanticEdge("semantic graph proposal belongs to another input")
         before = EdgeState.from_json(batch.before_json)
-        self.db.execute("BEGIN IMMEDIATE").close()
-        try:
-            if self._prefix() != batch.prefix or self._dag() != batch.graph_before:
-                raise StaleSemanticEdge("semantic graph or accepted prefix changed before commit")
-            self._subject()
-            if batch.after == before:
-                row = self._one(
-                    "SELECT 1 FROM journal_semantic_edges WHERE kind=? AND attempt_id=? "
+        if self._prefix() != batch.prefix or self._dag() != batch.graph_before:
+            raise StaleSemanticEdge("semantic graph or accepted prefix changed before commit")
+        self._subject()
+        if batch.after == before:
+            row = self._one(
+                "SELECT 1 FROM journal_semantic_edges WHERE kind=? AND attempt_id=? "
+                "AND binding=? AND prefix_attempt=? AND prefix_binding=? AND prefix=? "
+                "AND checkpoint=? AND algorithm=?",
+                (
+                    self.kind,
+                    self.attempt_id,
+                    self.binding,
+                    *batch.prefix,
+                    batch.before_json,
+                    ALGORITHM,
+                ),
+            )
+            if row is None:
+                raise StaleSemanticEdge("finished semantic graph worker was replaced")
+        else:
+            with closing(
+                self.db.execute(
+                    "UPDATE journal_semantic_edges SET checkpoint=? WHERE kind=? "
+                    "AND attempt_id=? "
                     "AND binding=? AND prefix_attempt=? AND prefix_binding=? AND prefix=? "
                     "AND checkpoint=? AND algorithm=?",
                     (
+                        batch.after.to_json(),
                         self.kind,
                         self.attempt_id,
                         self.binding,
@@ -453,35 +512,23 @@ class SemanticEdge:
                         ALGORITHM,
                     ),
                 )
-                if row is None:
-                    raise StaleSemanticEdge("finished semantic graph worker was replaced")
-            else:
-                with closing(
-                    self.db.execute(
-                        "UPDATE journal_semantic_edges SET checkpoint=? WHERE kind=? "
-                        "AND attempt_id=? "
-                        "AND binding=? AND prefix_attempt=? AND prefix_binding=? AND prefix=? "
-                        "AND checkpoint=? AND algorithm=?",
-                        (
-                            batch.after.to_json(),
-                            self.kind,
-                            self.attempt_id,
-                            self.binding,
-                            *batch.prefix,
-                            batch.before_json,
-                            ALGORITHM,
-                        ),
-                    )
-                ) as cursor:
-                    if cursor.rowcount != 1:
-                        raise StaleSemanticEdge("semantic graph checkpoint changed")
-                if batch.graph_plan is not None and not self.checker._apply(batch.graph_plan):
-                    raise StaleSemanticEdge("semantic graph proposal was superseded")
+            ) as cursor:
+                if cursor.rowcount != 1:
+                    raise StaleSemanticEdge("semantic graph checkpoint changed")
+            if batch.graph_plan is not None and not self.checker._apply(batch.graph_plan):
+                raise StaleSemanticEdge("semantic graph proposal was superseded")
+        return batch.after
+
+    def commit(self, batch: EdgeBatch) -> EdgeState:
+        self._detached()
+        self.db.execute("BEGIN IMMEDIATE").close()
+        try:
+            state = self._apply(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
             raise
-        return batch.after
+        return state
 
     @declare_growth(_declaration())
     def advance(self, *, row_budget: int = 64) -> EdgeState:

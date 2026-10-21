@@ -940,5 +940,8 @@ def test_actual_cold_terminal_result_is_read_only_and_reconstructs_native_failur
                 }
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 samples.append(sample)
-    assert len(samples) == 48
+    from test_edge_row_semantics import terminal_growth_samples
+
+    samples.extend(terminal_growth_samples(tmp_path, catalog))
+    assert len(samples) == 72
     record_property("growth_samples", samples)

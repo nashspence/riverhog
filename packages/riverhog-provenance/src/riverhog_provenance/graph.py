@@ -207,6 +207,7 @@ class _Validator:
         self.findings: MutableSequence[str] = []
         self.capture_targets: MutableMapping[str, str] = {}
         self._observer_agents: dict[str, set[str]] = {}
+        self.semantic_edges: dict[str, Any] = {"derivation": [], "specialization": []}
         self.binding_ends: MutableSet[str] = set()
         self.delivery_slots: MutableSet[tuple[str, bytes]] = set()
         self.lifecycle: dict[str, MutableMapping[str, dict[str, Any]]] = {
@@ -230,6 +231,12 @@ class _Validator:
         if value is None:
             raise ProvenanceValidationError(f"unresolved local identity: {identity}")
         return self._node_type(value, *types)
+
+    def _graph_edge(self, kind: str, source: str, target: str) -> None:
+        self.semantic_edges[kind].append((source, target))
+
+    def _relation_node(self, identity: str, expected: str) -> dict[str, Any]:
+        return self.node(identity, expected)
 
     def _lifecycle_activity(self, identity: str) -> dict[str, Any]:
         return self.node(identity, "activity")
@@ -364,6 +371,7 @@ class _Validator:
             slots,
         ) = self.aggregates()
         self.lifecycle = {"generation": generation, "invalidation": invalidation}
+        self.semantic_edges = {"derivation": derivations, "specialization": specializations}
         self.capture_targets = capture_targets
         self.binding_ends = ends
         self.delivery_slots = slots
@@ -372,31 +380,6 @@ class _Validator:
             kind = row["type"]
             if kind in ROW_TYPES:
                 self.row_semantics(row)
-            elif kind == "derivation":
-                self.reference(row["used_state"], "state")
-                self.reference(row["generated_state"], "state")
-                derivations.append(
-                    (row["used_state"]["object_id"], row["generated_state"]["object_id"])
-                )
-                if "activity_id" in row:
-                    self.node(row["activity_id"], "activity")
-                    usage = self.node(row["usage_id"], "usage")
-                    generated = self.node(row["generation_id"], "generation")
-                    for relation, endpoint in (
-                        (usage, "used_state"),
-                        (generated, "generated_state"),
-                    ):
-                        if (
-                            relation["activity_id"] != row["activity_id"]
-                            or relation["state"]["object_id"] != row[endpoint]["object_id"]
-                        ):
-                            raise ProvenanceValidationError(
-                                "qualified derivation does not match usage/generation"
-                            )
-            elif kind == "specialization":
-                self.reference(row["specific"], *ENTITY_TYPES)
-                self.reference(row["general"], *ENTITY_TYPES)
-                specializations.append((row["specific"]["object_id"], row["general"]["object_id"]))
             elif kind == "content_comparison":
                 self._comparison(row)
             elif kind == "locator_binding":

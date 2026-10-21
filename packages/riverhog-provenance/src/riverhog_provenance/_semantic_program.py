@@ -45,6 +45,8 @@ ROW_STAGES = {
     "delivery_association": 5,
     "reported_description": 6,
     "observation": 17,
+    "derivation": 8,
+    "specialization": 3,
 }
 ROW_TYPES = frozenset(ROW_STAGES)
 
@@ -337,7 +339,7 @@ class Program:
         self._next(frame)
 
     def _row(self, frame: Frame, value: Mapping[str, Any]) -> None:
-        from .graph import _name_identity, time_ns
+        from .graph import ENTITY_TYPES, _name_identity, time_ns
 
         validator, stage, kind = self.validator, frame.stage, value["type"]
         if kind == "occurrence":
@@ -411,6 +413,47 @@ class Program:
                     validator._within_activity(
                         value["at"], validator._lifecycle_activity(value["activity_id"])
                     )
+            else:
+                self.stack.pop()
+                return
+        elif kind == "derivation":
+            if stage in (0, 1):
+                key = "used_state" if stage == 0 else "generated_state"
+                validator.reference(value[key], "state")
+            elif stage == 2:
+                validator._graph_edge(
+                    kind, value["used_state"]["object_id"], value["generated_state"]["object_id"]
+                )
+            elif "activity_id" not in value:
+                self.stack.pop()
+                return
+            elif stage == 3:
+                validator.node(value["activity_id"], "activity")
+            elif stage in (4, 5):
+                relation = "usage" if stage == 4 else "generation"
+                validator.node(value[relation + "_id"], relation)
+            elif stage in (6, 7):
+                relation, endpoint = (
+                    ("usage", "used_state") if stage == 6 else ("generation", "generated_state")
+                )
+                record = validator._relation_node(value[relation + "_id"], relation)
+                if (
+                    record["activity_id"] != value["activity_id"]
+                    or record["state"]["object_id"] != value[endpoint]["object_id"]
+                ):
+                    raise ProvenanceValidationError(
+                        "qualified derivation does not match usage/generation"
+                    )
+            else:
+                self.stack.pop()
+                return
+        elif kind == "specialization":
+            if stage in (0, 1):
+                validator.reference(value["specific" if stage == 0 else "general"], *ENTITY_TYPES)
+            elif stage == 2:
+                validator._graph_edge(
+                    kind, value["specific"]["object_id"], value["general"]["object_id"]
+                )
             else:
                 self.stack.pop()
                 return

@@ -94,6 +94,10 @@ def subject(kind, count=3, *, rejected=False):
             activity_id=identity(35),
             at="2025-12-31T00:00:00Z" if rejected else "2026-01-01T12:00:00Z",
         )
+    elif kind == "derivation":
+        row.update(used_state=reference("state", 33), generated_state=reference("state", 34))
+    elif kind == "specialization":
+        row.update(specific=reference("state", 33), general=reference("state", 34))
     elif kind == "locator_binding_end":
         row.update(
             binding_id=identity(36),
@@ -714,7 +718,7 @@ def growth_samples(tmp_path, catalog):
                         suffix.result()
                         assert outputs(suffix_db) == sorted(history_outputs + native(row, catalog))
                     require_reclaimed(suffix_db)
-    assert len(samples) == 246
+    assert len(samples) == 258
     return samples
 
 
