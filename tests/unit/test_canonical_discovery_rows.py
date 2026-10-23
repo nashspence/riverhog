@@ -18,6 +18,8 @@ from riverhog_provenance import (
     validate_journal,
 )
 
+from tests.support.canonical_discovery import native_scalar_fixture
+
 
 def test_index_rows_retain_exact_entry_and_scalar_support() -> None:
     observed = BoundedSourceObserver().observe(BytesSource(b"opaque"))
@@ -189,3 +191,27 @@ def test_discovery_entry_headers_keep_original_support_after_correction_and_chec
         assert selected[old["assertion_id"]].entry_sequence == 0
         assert selected[replacement["assertion_id"]].assertion_state == "effective"
         assert selected[replacement["assertion_id"]].entry_sequence == 1
+
+
+@pytest.mark.parametrize("count", [20_001, 50_001])
+def test_native_large_assertion_retains_all_declared_profile_scalars(count: int) -> None:
+    fixture = native_scalar_fixture(count)
+    assert len(fixture.raw) < 8 * 1024 * 1024
+    with validate_journal(fixture.raw, catalog=fixture.catalog, require_profiles=True) as summary:
+        assert not summary.graph_validation.unresolved_profiles
+        rows = tuple(iter_index_assertions(summary))
+        selected = next(row for row in rows if row.assertion_id == fixture.assertion_id)
+        assert selected.kind == "extension"
+        assert selected.assertion_state == "effective"
+        assert len(selected.profiles) == 1
+        assert selected.profiles[0].profile == fixture.profile
+        values = [
+            posting
+            for posting in selected.postings
+            if posting.pointer.startswith("/value/value/data/")
+        ]
+        assert len(values) == count
+        assert [(posting.pointer, posting.value) for posting in values] == [
+            (f"/value/value/data/{index}", index) for index in range(count)
+        ]
+        assert len(rows) == 7
