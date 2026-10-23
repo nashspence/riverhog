@@ -135,7 +135,12 @@ def make_work_definitions(
         from scripts.ci_qualification import validation_work
 
     definitions = []
+    targets = maintained_make_targets(ROOT / "Makefile")
     for goal in dict.fromkeys(goals):
+        if goal not in targets and not (
+            "build-%" in targets and re.fullmatch(r"build-[a-zA-Z0-9_-]+", goal)
+        ):
+            raise ValueError("unknown maintained Make target")
         selector = {
             "unit-shard": ("UNIT_SHARD", "unit-"),
             "image-qualification": ("IMAGE_GROUP", "image-"),
