@@ -6,9 +6,10 @@ import hashlib
 import sqlite3
 from collections import OrderedDict
 from collections.abc import Callable, Iterable, Iterator, Mapping
+from contextlib import closing
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, Self
+from typing import Any, Self, cast
 
 from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
@@ -24,6 +25,15 @@ from riverhog_archive_contracts import (
     source_binding_proof_object_path,
 )
 from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
+from riverhog_growth_contracts import (
+    COUNT,
+    OCTETS,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    declare_growth,
+)
 from riverhog_provenance_contracts import ContractCatalog, ExternalReference
 
 from .delivery import selected_delivery_occurrence
@@ -35,6 +45,114 @@ from .journal import (
     iter_journal_frames,
     validate_journal_chunks,
 )
+
+
+def _pending_declaration(kind: str) -> Declaration:
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    return Declaration(
+        id=f"riverhog-provenance.history-pending-{kind}.growth/v1",
+        authority="riverhog-provenance",
+        subjects=(f"riverhog_provenance.history.MemberHistoryClosure._pending_{kind}",),
+        scope="native-history-pending-work-point-selection",
+        starts_at="select the first unfinished registered obligation from the owned closure",
+        ends_at="close the SQLite cursor and return at most one detached exact work record",
+        dimensions=(
+            Dimension(
+                "registered_jobs", COUNT, "All retained completed and pending jobs of this kind."
+            ),
+            Dimension(
+                "candidate_octets",
+                OCTETS,
+                "Maximum complete registered record width, measured before selection.",
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "equal",
+                count(1),
+                "One indexed pending selection, including an empty queue.",
+            ),
+            Bound(
+                "returned_rows", COUNT, "upper", count(1), "The exact first pending row or no row."
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "upper",
+                Expression("dimension", name="candidate_octets"),
+                "All detached fields are accounted for without payload abbreviation.",
+            ),
+            Bound(
+                "closed_cursors",
+                COUNT,
+                "upper",
+                count(1),
+                "Any created selection cursor is closed before returning or propagating a failure.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        count(512),
+                        Expression(
+                            "product",
+                            terms=(
+                                count(128),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("dimension", name="registered_jobs"),
+                                                count(2),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "The pending index skips completed work; VM constants depend on the SQLite engine.",
+            ),
+            Bound(
+                "json_calls",
+                COUNT,
+                "equal",
+                count(0),
+                "Selection returns the stored exact binding or anchor without decoding it.",
+            ),
+            Bound(
+                "hashed_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "Selection neither rehashes a source nor establishes source authority.",
+            ),
+        ),
+        conditions=(
+            "The closure owns its current SQLite schema with its pending partial indexes.",
+            "Row-byte input describes complete registered records, including every field.",
+            "SQLite VM counts are engine dependent; lock waits and elapsed time are observations.",
+        ),
+        invariants=(
+            "Previously completed obligations remain in the full deduplication relations.",
+            "Pending rows preserve insertion order, including new dependencies.",
+            "Selection changes no completion, source, import or semantic state.",
+        ),
+        limitations=(
+            "History visits, source validation, imports, writes and cleanup have separate costs.",
+            "This primitive supplies neither a complete closure bound nor fresh authorization.",
+        ),
+    )
 
 
 def _external_references(value: object) -> Iterator[dict[str, Any]]:
@@ -155,8 +273,10 @@ class MemberHistoryClosure:
         self._db.executescript(
             "CREATE TABLE histories (identity TEXT, extent TEXT, binding BLOB, done INTEGER, "
             "PRIMARY KEY(identity, extent));"
+            "CREATE INDEX pending_histories ON histories(done) WHERE done = 0;"
             "CREATE TABLE imports (source TEXT, target TEXT, PRIMARY KEY(source, target));"
             "CREATE TABLE snapshots (identity TEXT PRIMARY KEY, anchor BLOB, done INTEGER);"
+            "CREATE INDEX pending_snapshots ON snapshots(done) WHERE done = 0;"
             "CREATE TABLE journals (identity TEXT PRIMARY KEY, size TEXT, anchor BLOB);"
             "CREATE TABLE objects (path TEXT PRIMARY KEY);"
             "CREATE TABLE reference_journals (identity TEXT PRIMARY KEY, sha256 TEXT, size TEXT);"
@@ -381,11 +501,28 @@ class MemberHistoryClosure:
         self._snapshot(anchor)
         self._drain()
 
+    @declare_growth(_pending_declaration("history"))
+    def _pending_history(self) -> tuple[str, str, bytes] | None:
+        with closing(
+            self._db.execute(
+                "SELECT identity, extent, binding FROM histories "
+                "WHERE done = 0 ORDER BY rowid LIMIT 1"
+            )
+        ) as rows:
+            return cast(tuple[str, str, bytes] | None, rows.fetchone())
+
+    @declare_growth(_pending_declaration("snapshot"))
+    def _pending_snapshot(self) -> tuple[str, bytes] | None:
+        with closing(
+            self._db.execute(
+                "SELECT identity, anchor FROM snapshots WHERE done = 0 ORDER BY rowid LIMIT 1"
+            )
+        ) as rows:
+            return cast(tuple[str, bytes] | None, rows.fetchone())
+
     def _drain(self) -> None:
         while True:
-            pending = self._db.execute(
-                "SELECT identity, extent, binding FROM histories WHERE done = 0 LIMIT 1"
-            ).fetchone()
+            pending = self._pending_history()
             if pending is not None:
                 identity, requested, encoded = pending
                 self._visit_history(
@@ -396,9 +533,7 @@ class MemberHistoryClosure:
                     (identity, requested),
                 )
                 continue
-            snapshot = self._db.execute(
-                "SELECT identity, anchor FROM snapshots WHERE done = 0 LIMIT 1"
-            ).fetchone()
+            snapshot = self._pending_snapshot()
             if snapshot is None:
                 return
             identity, encoded = snapshot

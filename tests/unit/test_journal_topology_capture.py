@@ -7,7 +7,6 @@ from dataclasses import replace
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_core.services import collection_uploads as owner
 from riverhog_core.services import upload_journal_topology as topology
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import parse_journal, validate_journal
@@ -17,7 +16,12 @@ from sqlalchemy import delete, event, select, update
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_epoch_scan import finish as finish_epochs
 from tests.unit.test_journal_summary_consumers import source
-from tests.unit.test_journal_validation_handoff import complete_capture, service_for, terminal
+from tests.unit.test_journal_validation_handoff import (
+    complete_capture,
+    native_outcome,
+    service_for,
+    terminal,
+)
 from tests.unit.test_staged_journal_range import JOURNAL, Journal
 
 Fact, Scan = topology.Fact, topology.Scan
@@ -354,21 +358,29 @@ def test_native_replay_remains_authority_after_topology_capture(tmp_path, monkey
     raw = source(journal_id=JOURNAL)
     with retained(tmp_path, raw) as (engine, factory):
         complete_capture(factory)
-        native = owner._compute_upload_journal_validation
-        seen = []
+        service = service_for(factory)
+        native = service._journal_validation_owner.advance
+        observed = []
 
-        def observed(*args):
+        def detached(*args, **kwargs):
             assert progress(factory)[2] == "complete"
-            assert engine.pool.checkedout() == 0
-            assert terminal(factory)["anchor"] is None
-            seen.append(True)
-            return native(*args)
+            assert engine.pool.checkedout() == 0 and terminal(factory)["anchor"] is None
+            observed.append(True)
+            return native(*args, **kwargs)
 
-        monkeypatch.setattr(owner, "_compute_upload_journal_validation", observed)
-        service_for(factory)._advance_provenance_journal_validation(1, JOURNAL)
-        assert seen == [True]
-        with validate_journal(raw) as expected:
-            assert terminal(factory)["anchor"] == expected.anchor
+        monkeypatch.setattr(service._journal_validation_owner, "advance", detached)
+        try:
+            for _ in range(10000):
+                service._advance_provenance_journal_validation(1, JOURNAL)
+                if terminal(factory)["state"] == "sealed":
+                    break
+            else:
+                pytest.fail("small native handoff did not complete")
+            assert len(observed) > 1
+            with validate_journal(raw) as expected:
+                assert terminal(factory)["anchor"] == expected.anchor
+        finally:
+            service.close()
 
 
 @pytest.mark.parametrize(
@@ -391,9 +403,7 @@ def test_late_topology_failure_never_outranks_an_earlier_native_error(
         work = ready(factory)
         finish(factory, work)
         assert progress(factory)[2] == speculative_state
-        assert owner._compute_upload_journal_validation(factory, work).failure == str(
-            expected.value
-        )
+        assert native_outcome(factory, work).failure == str(expected.value)
 
 
 @pytest.mark.growth_witness(

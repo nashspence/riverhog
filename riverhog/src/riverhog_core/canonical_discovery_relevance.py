@@ -7,7 +7,6 @@ shared context, or matching payload bytes as an attribution to a member.
 from __future__ import annotations
 
 import contextlib
-import hashlib
 import json
 import sqlite3
 import sys
@@ -153,26 +152,20 @@ def _anchored_snapshot(
 ) -> JournalSummary:
     if full.anchor == anchor:
         return full.borrow()
-    digest = hashlib.sha256()
-    size = 0
-    for index, frame in enumerate(full.frames):
-        digest.update(frame.encoded)
-        size += len(frame.encoded)
-        if frame.reference == anchor["through"]:
-            if (
-                digest.hexdigest() != anchor["prefix_sha256"]
-                or size != int(anchor["prefix_bytes"])
-                or full.journal_id != anchor["journal_id"]
-            ):
-                raise ProvenanceValidationError("foreign prefix anchor differs")
-            return validate_journal_chunks(
-                (item.encoded for item in full.frames[: index + 1]),
-                expected_anchor=anchor,
-                require_exact_tail=True,
-                catalog=catalog,
-                require_profiles=False,
-            )
-    raise ProvenanceValidationError("foreign prefix anchor is absent")
+    try:
+        index = int(anchor["through"]["sequence"])
+        selected = full.anchor_at(index)
+    except (IndexError, TypeError, ValueError) as error:
+        raise ProvenanceValidationError("foreign prefix anchor is absent") from error
+    if selected != anchor:
+        raise ProvenanceValidationError("foreign prefix anchor differs")
+    return validate_journal_chunks(
+        (item.encoded for item in full.frames[: index + 1]),
+        expected_anchor=anchor,
+        require_exact_tail=True,
+        catalog=catalog,
+        require_profiles=False,
+    )
 
 
 def member_relevance(
@@ -223,21 +216,13 @@ def member_relevance(
                     raise ProvenanceValidationError("input history journal is outside the corpus")
                 with foreign.borrow() as foreign:
                     through = ref["entry"]
-                    digest = hashlib.sha256()
-                    size = 0
-                    anchor: dict[str, Any] | None = None
-                    for frame in foreign.frames:
-                        digest.update(frame.encoded)
-                        size += len(frame.encoded)
-                        if frame.reference == through:
-                            anchor = {
-                                "journal_id": foreign.journal_id,
-                                "through": through,
-                                "prefix_sha256": digest.hexdigest(),
-                                "prefix_bytes": str(size),
-                            }
-                            break
-                    if anchor is None:
+                    try:
+                        anchor = foreign.anchor_at(int(through["sequence"]))
+                    except (IndexError, TypeError, ValueError) as error:
+                        raise ProvenanceValidationError(
+                            "input history foreign entry is absent"
+                        ) from error
+                    if anchor["through"] != through:
                         raise ProvenanceValidationError("input history foreign entry is absent")
                 target = resolve_anchor(anchor)
                 row = target.graph_validation.objects.get(ref["object_id"])

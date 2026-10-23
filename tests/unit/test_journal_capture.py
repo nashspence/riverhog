@@ -64,6 +64,19 @@ def retained(root, raw):
         yield engine, factory
 
 
+@contextmanager
+def validation_service(factory, root):
+    from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
+
+    service = object.__new__(owner.SqlAlchemyCollectionUploadService)
+    service._session_factory = factory
+    service._journal_validation_owner = UploadJournalValidationOwner(factory, root)
+    try:
+        yield service
+    finally:
+        service.close()
+
+
 def checkpoint(factory):
     with factory() as session:
         record = session.get(Journal, (1, JOURNAL))
@@ -191,11 +204,15 @@ def test_durable_capture_reopens_without_replaying_the_committed_prefix(tmp_path
         saved = checkpoint(factory)
         assert saved[1] == len(raw) and saved[3:6] == (0, "validating", "complete")
         assert saved[2] == saved[6] == len(parse_journal(raw))
-        service = object.__new__(owner.SqlAlchemyCollectionUploadService)
-        service._session_factory = factory
-        status = service.seal_provenance_journal(1, JOURNAL)
-        with validate_journal(raw) as expected:
-            assert status["state"] == "sealed" and status["anchor"] == expected.anchor
+        with validation_service(factory, tmp_path / "native") as service:
+            for _ in range(10000):
+                status = service.seal_provenance_journal(1, JOURNAL)
+                if status["state"] != "validating":
+                    break
+            else:
+                pytest.fail("finite captured journal did not finish native validation")
+            with validate_journal(raw) as expected:
+                assert status["state"] == "sealed" and status["anchor"] == expected.anchor
 
 
 @pytest.mark.parametrize(
@@ -335,17 +352,18 @@ def test_earlier_native_error_precedes_later_speculative_framing_failure(tmp_pat
     with pytest.raises(ProvenanceValidationError) as expected:
         validate_journal(raw)
     with retained(tmp_path, raw) as (_, factory):
-        service = object.__new__(owner.SqlAlchemyCollectionUploadService)
-        service._session_factory = factory
-        while True:
-            status = service.seal_provenance_journal(1, JOURNAL)
-            if status["state"] != "validating":
-                break
+        with validation_service(factory, tmp_path / "native") as service:
+            for _ in range(10000):
+                status = service.seal_provenance_journal(1, JOURNAL)
+                if status["state"] != "validating":
+                    break
+                assert status["anchor"] is None
+            else:
+                pytest.fail("finite invalid journal did not reach its native failure")
+            assert status["state"] == "failed"
+            assert status["failure"] == str(expected.value)
             assert status["anchor"] is None
-        assert status["state"] == "failed"
-        assert status["failure"] == str(expected.value)
-        assert status["anchor"] is None
-        assert checkpoint(factory)[3] == 0
+            assert checkpoint(factory)[3] == 0
 
 
 def test_capture_loads_and_commits_only_admitted_rows_and_closes_readers(tmp_path, monkeypatch):

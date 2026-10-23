@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import sqlite3
 import weakref
 from collections.abc import (
+    Callable,
     Iterable,
     Iterator,
     Mapping,
@@ -19,7 +21,7 @@ from contextlib import closing
 from pathlib import Path
 from tempfile import mkdtemp
 from threading import Lock
-from typing import Any, cast, overload
+from typing import Any, Self, cast, overload
 from uuid import uuid4
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -47,6 +49,7 @@ from ._entry_preparation import install as install_entry_preparation
 from ._generic_semantics import GenericAtom, GenericSemantics
 from ._generic_semantics import install as install_generic_semantics
 from ._index_key import encode_index_key
+from ._journal_prefix import PrefixState
 from ._journal_prefix import install as install_journal_prefix
 from ._online_dag import OnlineDag
 from ._online_dag import install as install_online_dag
@@ -545,6 +548,22 @@ class _StoredValidator(_Validator):
             pass
 
 
+WORKSPACE_FORMAT = "riverhog-retained-journal-source-workspace/v1"
+
+
+class InvalidJournalWorkspace(RuntimeError):
+    """Owned retained state is missing, corrupt, incomplete or incompatible."""
+
+
+def _sync_workspace_directory(directory: Path) -> None:
+    if os.name == "posix":
+        descriptor = os.open(directory, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+
+
 def _cleanup_snapshot(connection: sqlite3.Connection, directory: Path) -> None:
     connection.close()
     shutil.rmtree(directory)
@@ -553,9 +572,13 @@ def _cleanup_snapshot(connection: sqlite3.Connection, directory: Path) -> None:
 class _SnapshotStorage:
     """One frozen projection shared by independently owned reader leases."""
 
-    def __init__(self, connection: sqlite3.Connection, directory: Path) -> None:
+    def __init__(
+        self, connection: sqlite3.Connection, directory: Path, *, remove_on_release: bool = True
+    ) -> None:
         self.connection = connection
         self.directory = directory
+        self.remove_on_release = remove_on_release
+        self.on_close: Callable[[], None] | None = None
         self._lock = Lock()
         self._readers = 0
         self._closed = False
@@ -572,66 +595,199 @@ class _SnapshotStorage:
             if self._readers:
                 return
             self._closed = True
-        _cleanup_snapshot(self.connection, self.directory)
+        if self.remove_on_release:
+            _cleanup_snapshot(self.connection, self.directory)
+        else:
+            self.connection.close()
+        release, self.on_close = self.on_close, None
+        if release is not None:
+            release()
 
 
 class JournalStore:
     def __init__(self) -> None:
-        directory = Path(mkdtemp(prefix="riverhog-journal-"))
+        self._open(Path(mkdtemp(prefix="riverhog-journal-")), retained=False, reopen=False)
+
+    @classmethod
+    def open_retained(
+        cls,
+        directory: Path,
+        *,
+        create: bool = False,
+        read_only: bool = False,
+        on_storage_close: Callable[[], None] | None = None,
+    ) -> Self:
+        """Open an owner-created private directory without deleting it on close.
+
+        The owner retains and authenticates the directory across worker changes.
+        This method does not trust imported databases, arbitrate job ownership,
+        repair lost state or reclaim files. Creation is exclusive; reopening
+        requires the current complete format and never performs an upgrade.
+
+        A successful return transfers the optional owner release callback to the
+        shared storage. It runs once, after the last reader closes its database.
+        On construction failure the caller retains that resource's ownership.
+        Read-only admission opens the existing database with SQLite mode=ro;
+        it never creates, upgrades or advances a checkpoint.
+        """
+        if create and read_only:
+            raise ValueError("read-only journal admission cannot create a workspace")
+        directory = Path(directory)
+        if directory.is_symlink() or not directory.is_dir():
+            raise InvalidJournalWorkspace("retained journal directory is unavailable")
+        path = directory / "snapshot.sqlite3"
+        if path.is_symlink():
+            raise InvalidJournalWorkspace("retained journal database must be owner-created")
+        if create:
+            descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            os.close(descriptor)
+            _sync_workspace_directory(directory)
+        elif not path.is_file():
+            raise InvalidJournalWorkspace("retained journal database is missing")
+        store = cls.__new__(cls)
+        store._open(directory, retained=True, reopen=not create, read_only=read_only)
+        store._storage.on_close = on_storage_close
+        return store
+
+    def _open(
+        self, directory: Path, *, retained: bool, reopen: bool, read_only: bool = False
+    ) -> None:
         try:
-            connection = sqlite3.connect(directory / "snapshot.sqlite3", check_same_thread=False)
+            if retained:
+                connection = sqlite3.connect(
+                    (directory / "snapshot.sqlite3").resolve().as_uri()
+                    + ("?mode=ro" if read_only else "?mode=rw"),
+                    uri=True,
+                    check_same_thread=False,
+                )
+            else:
+                connection = sqlite3.connect(
+                    directory / "snapshot.sqlite3", check_same_thread=False
+                )
         except BaseException:
-            shutil.rmtree(directory)
+            if not retained:
+                shutil.rmtree(directory)
             raise
-        self._storage = _SnapshotStorage(connection, directory)
+        self._storage = _SnapshotStorage(connection, directory, remove_on_release=not retained)
         self._storage.retain()
         self._cleanup = weakref.finalize(self, self._storage.release)
         self._frozen = False
         try:
-            # This is a disposable validation projection, never journal custody.
-            # Failed validation destroys it; preserve disk-backed rollback without
-            # synchronizing each temporary schema write to durable storage.
-            self.db.execute("PRAGMA synchronous = OFF")
-            self.db.execute("PRAGMA cache_size = -512")
-            self.db.execute("PRAGMA temp_store = FILE")
-            self.db.executescript(
-                "CREATE TABLE identities(id TEXT PRIMARY KEY, domain TEXT, value BLOB);"
-                "CREATE TABLE assertions(assertion_id TEXT PRIMARY KEY, object_id TEXT, "
-                "category TEXT, type TEXT, state_id TEXT, observation_id TEXT, sequence TEXT, "
-                "value BLOB, active INTEGER);"
-                "CREATE UNIQUE INDEX objects ON assertions(object_id) WHERE active = 1;"
-                "CREATE INDEX states ON assertions(state_id, type) WHERE active = 1;"
-                "CREATE INDEX observations ON assertions(observation_id, type) WHERE active = 1;"
-                "CREATE TABLE changes(assertion_id TEXT PRIMARY KEY);"
-                "CREATE TABLE lifecycle_extrema(state_id TEXT PRIMARY KEY, "
-                "earliest TEXT NOT NULL, latest_usage TEXT);"
-                "CREATE INDEX categories ON assertions(category, assertion_id) WHERE active = 1;"
-                "CREATE TABLE maps(name TEXT, key BLOB, value BLOB, PRIMARY KEY(name, key));"
-                "CREATE INDEX external_types ON maps(name, json_extract(value, '$.object_id'));"
-                "CREATE TABLE findings(key TEXT PRIMARY KEY, value TEXT);"
-                "CREATE TABLE fixities(state TEXT, size TEXT, sha256 TEXT, "
-                "PRIMARY KEY(state, size, sha256));"
-            )
-            install_journal_prefix(self.db)
-            install_correction_projection(self.db)
-            install_correction_targets(self.db)
-            install_semantic_finish(self.db)
-            install_entry_preparation(self.db)
-            install_assertion_staging(self.db)
-            install_semantic_source(self.db)
-            install_semantic_edges(self.db)
-            install_generic_semantics(self.db)
-            install_online_dag(self.db)
-            self._dag_runs = {
-                "derivation": uuid4().hex,
-                "specialization": uuid4().hex,
-            }
-            for kind, run in self._dag_runs.items():
-                OnlineDag(self.db, kind, run).bind()
-            self.frame_count = 0
+            if reopen:
+                self._restore_workspace()
+            else:
+                if retained:
+                    self.db.execute("PRAGMA auto_vacuum=INCREMENTAL").close()
+                    with closing(self.db.execute("PRAGMA journal_mode=DELETE")) as cursor:
+                        if cursor.fetchone() != ("delete",):
+                            raise InvalidJournalWorkspace("retained journal mode is unavailable")
+                # Disposable projections carry no restart promise. Retained
+                # owner workspaces synchronize each bounded commit instead.
+                self.db.execute("PRAGMA synchronous=" + ("FULL" if retained else "OFF")).close()
+                if retained:
+                    self.db.execute("PRAGMA fullfsync=ON").close()
+                self.db.execute("PRAGMA cache_size=-512").close()
+                self.db.execute("PRAGMA temp_store=FILE").close()
+                self._initialize_schema()
+                if retained:
+                    self.db.execute(
+                        "CREATE TABLE journal_workspace(singleton INTEGER PRIMARY KEY "
+                        "CHECK(singleton=1),format TEXT NOT NULL)"
+                    ).close()
+                    self.db.execute(
+                        "INSERT INTO journal_workspace VALUES(1,?)", (WORKSPACE_FORMAT,)
+                    ).close()
+                    self.db.commit()
+                    _sync_workspace_directory(directory)
         except BaseException:
             self.close()
             raise
+
+    def _initialize_schema(self) -> None:
+        self.db.executescript(
+            "CREATE TABLE identities(id TEXT PRIMARY KEY, domain TEXT, value BLOB);"
+            "CREATE TABLE assertions(assertion_id TEXT PRIMARY KEY, object_id TEXT, "
+            "category TEXT, type TEXT, state_id TEXT, observation_id TEXT, sequence TEXT, "
+            "value BLOB, active INTEGER);"
+            "CREATE UNIQUE INDEX objects ON assertions(object_id) WHERE active = 1;"
+            "CREATE INDEX states ON assertions(state_id, type) WHERE active = 1;"
+            "CREATE INDEX observations ON assertions(observation_id, type) WHERE active = 1;"
+            "CREATE TABLE changes(assertion_id TEXT PRIMARY KEY);"
+            "CREATE TABLE lifecycle_extrema(state_id TEXT PRIMARY KEY, "
+            "earliest TEXT NOT NULL, latest_usage TEXT);"
+            "CREATE INDEX categories ON assertions(category, assertion_id) WHERE active = 1;"
+            "CREATE TABLE maps(name TEXT, key BLOB, value BLOB, PRIMARY KEY(name, key));"
+            "CREATE INDEX external_types ON maps(name, json_extract(value, '$.object_id'));"
+            "CREATE TABLE findings(key TEXT PRIMARY KEY, value TEXT);"
+            "CREATE TABLE fixities(state TEXT, size TEXT, sha256 TEXT, "
+            "PRIMARY KEY(state, size, sha256));"
+        )
+        install_journal_prefix(self.db)
+        install_correction_projection(self.db)
+        install_correction_targets(self.db)
+        install_semantic_finish(self.db)
+        install_entry_preparation(self.db)
+        install_assertion_staging(self.db)
+        install_semantic_source(self.db)
+        install_semantic_edges(self.db)
+        install_generic_semantics(self.db)
+        install_online_dag(self.db)
+        self._dag_runs = {
+            "derivation": uuid4().hex,
+            "specialization": uuid4().hex,
+        }
+        for kind, run in self._dag_runs.items():
+            OnlineDag(self.db, kind, run).bind()
+        self.frame_count = 0
+
+    def _restore_workspace(self) -> None:
+        try:
+            with closing(
+                self.db.execute(
+                    "SELECT substr(format,1,?) FROM journal_workspace WHERE singleton=1",
+                    (len(WORKSPACE_FORMAT) + 1,),
+                )
+            ) as cursor:
+                marker = cursor.fetchone()
+            if marker != (WORKSPACE_FORMAT,):
+                raise InvalidJournalWorkspace(
+                    "retained journal format is incomplete or incompatible"
+                )
+            with closing(self.db.execute("PRAGMA journal_mode")) as cursor:
+                if cursor.fetchone() != ("delete",):
+                    raise InvalidJournalWorkspace(
+                        "retained journal mode differs from its owner protocol"
+                    )
+            with closing(self.db.execute("PRAGMA auto_vacuum")) as cursor:
+                if cursor.fetchone() != (2,):
+                    raise InvalidJournalWorkspace("retained journal reclamation format changed")
+            self.db.execute("PRAGMA synchronous=FULL").close()
+            self.db.execute("PRAGMA fullfsync=ON").close()
+            self.db.execute("PRAGMA cache_size=-512").close()
+            self.db.execute("PRAGMA temp_store=FILE").close()
+            self._dag_runs = {}
+            for kind in ("derivation", "specialization"):
+                with closing(
+                    self.db.execute(
+                        "SELECT substr(run_id,1,33) FROM dag_runs WHERE kind=?", (kind,)
+                    )
+                ) as cursor:
+                    row = cursor.fetchone()
+                if row is None or type(row[0]) is not str or len(row[0]) != 32:
+                    raise InvalidJournalWorkspace("retained journal lost its active graph identity")
+                self._dag_runs[kind] = row[0]
+                OnlineDag(self.db, kind, row[0])._load()
+            with closing(
+                self.db.execute(
+                    "SELECT substr(checkpoint,1,2049) FROM journal_prefix WHERE singleton=1"
+                )
+            ) as cursor:
+                row = cursor.fetchone()
+            self.frame_count = 0 if row is None else PrefixState.from_json(row[0]).frame_count
+        except sqlite3.DatabaseError as exc:
+            raise InvalidJournalWorkspace(
+                "retained journal storage is corrupt or incomplete"
+            ) from exc
 
     def _record_lifecycle_time(self, state: str, kind: str, instant: int) -> None:
         with closing(
@@ -895,7 +1051,7 @@ class JournalStore:
 
     def freeze(self) -> None:
         self.db.commit()
-        self.db.execute("PRAGMA query_only = ON")
+        self.db.execute("PRAGMA query_only = ON").close()
         self._frozen = True
 
     @declare_growth(
@@ -1122,6 +1278,33 @@ class JournalStore:
     @property
     def frames(self) -> Sequence[Any]:
         return _Frames(self)
+
+    def frame_reference(self, index: int) -> dict[str, str]:
+        """Read the indexed fixed reference without decoding its entry payload."""
+        index = index if index >= 0 else self.frame_count + index
+        with closing(
+            self.db.execute("SELECT reference FROM frames WHERE sequence = ?", (str(index),))
+        ) as rows:
+            row = rows.fetchone()
+        if row is None:
+            raise IndexError(index)
+        return cast(dict[str, str], json.loads(row[0]))
+
+    def _frame_prefix(self, sequence: int) -> tuple[bytes, str]:
+        """Detach the exact accepted source header, without loading its frame."""
+        self.require_open()
+        if not self._frozen:
+            raise RuntimeError("source headers require a frozen journal summary")
+        with closing(
+            self.db.execute(
+                "SELECT reference, prefix_state FROM frames WHERE sequence = ?",
+                (str(sequence),),
+            )
+        ) as rows:
+            row = rows.fetchone()
+        if row is None:
+            raise InvalidJournalWorkspace("accepted journal source header is missing")
+        return cast(tuple[bytes, str], row)
 
     @property
     def origins(self) -> Mapping[str, dict[str, str]]:

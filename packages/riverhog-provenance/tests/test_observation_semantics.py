@@ -464,17 +464,18 @@ def memory_copy(path):
     return db
 
 
-def growth_samples(tmp_path, catalog):
+def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
     from riverhog_growth_contracts import validate_execution_samples
     from riverhog_provenance._generic_semantics import GenericSemantics
     from test_generic_semantics import (
         CommonWorkConnection,
         binding_projection,
+        measure_semantic_operation,
         position,
         workspace_rows,
     )
 
-    binding, projection, digest = binding_projection(GenericSemantics.advance)
+    binding, projection, digest = binding_projection(getattr(GenericSemantics, measured_operation))
     phases = {
         "state": 6,
         "capture": 7,
@@ -555,20 +556,15 @@ def growth_samples(tmp_path, catalog):
                     db.backup(destination)
             with closing(connect(path, factory=CommonWorkConnection)) as db:
                 current = work(db, value, catalog, operation="row")
-                with db.observe() as metrics:
-                    current.advance(step_budget=budget, byte_budget=131072)
-                sample = {
-                    "declaration": binding.declaration.id,
-                    "declaration_sha256": digest,
-                    "dimensions": {
-                        "retained_rows": retained,
-                        "step_budget": budget,
-                        "byte_budget": 131072,
-                        "metadata_row_octets": envelope,
-                    },
-                    "metrics": dict(metrics),
-                    "delegates": {},
-                }
+                sample = measure_semantic_operation(
+                    current,
+                    measured_operation=measured_operation,
+                    step_budget=budget,
+                    byte_budget=131072,
+                    retained_rows=retained,
+                    metadata_row_octets=envelope,
+                )
+                metrics = sample["metrics"]
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 assert metrics["source_payload_octets"] == metrics["adjacency_rows"] == 0
                 samples.append(sample)
@@ -876,7 +872,13 @@ def test_actual_cold_terminal_result_is_read_only_and_reconstructs_native_failur
 ):
     from riverhog_growth_contracts import validate_execution_samples
     from riverhog_provenance._generic_semantics import _RESULT_BYTES, GenericSemantics
-    from test_generic_semantics import CommonWorkConnection, binding_projection, workspace_rows
+    from test_generic_semantics import (
+        CommonWorkConnection,
+        binding_projection,
+        measure_semantic_result,
+        semantic_terminal_dimensions,
+        workspace_rows,
+    )
     from test_generic_semantics import subject as common_subject
 
     binding, projection, digest = binding_projection(GenericSemantics.result)
@@ -904,6 +906,7 @@ def test_actual_cold_terminal_result_is_read_only_and_reconstructs_native_failur
                 finish(current, budget=64)
                 assert current.load().phase == "rejected"
                 require_reclaimed(db)
+                terminal_dimensions = semantic_terminal_dimensions(current)
                 retained = workspace_rows(db)
                 prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
                 envelope = (
@@ -911,33 +914,31 @@ def test_actual_cold_terminal_result_is_read_only_and_reconstructs_native_failur
                     + len(current.binding)
                     + sum(len(v) if isinstance(v, bytes) else len(str(v).encode()) for v in prefix)
                 )
+                before = snapshot(db)
                 with closing(connect(path)) as destination:
                     db.backup(destination)
             with closing(connect(path, factory=CommonWorkConnection)) as db:
                 current = work(db, value, catalog, operation=operation)
-                before = snapshot(db)
                 message = (
                     "duplicate source-qualified native metadata row"
                     if operation == "generic"
                     else ERRORS[mode]
                 )
-                with db.observe() as metrics:
-                    with pytest.raises(ProvenanceValidationError, match=message):
-                        current.result()
-                assert snapshot(db) == before
-                assert metrics["changed_rows"] == metrics["source_payload_octets"] == 0
-                sample = {
-                    "declaration": binding.declaration.id,
-                    "declaration_sha256": digest,
-                    "dimensions": {
+                sample = measure_semantic_result(
+                    current,
+                    {
                         "retained_rows": retained,
                         "step_budget": 1,
                         "byte_budget": _RESULT_BYTES,
                         "metadata_row_octets": envelope,
+                        **terminal_dimensions,
                     },
-                    "metrics": dict(metrics),
-                    "delegates": {},
-                }
+                    expected_exception=ProvenanceValidationError,
+                    pattern=message,
+                )
+                metrics = sample["metrics"]
+                assert snapshot(db) == before
+                assert metrics["changed_rows"] == metrics["source_payload_octets"] == 0
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 samples.append(sample)
     from test_edge_row_semantics import terminal_growth_samples

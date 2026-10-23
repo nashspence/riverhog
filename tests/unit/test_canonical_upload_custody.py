@@ -199,12 +199,11 @@ def _construction(
                     object_id=f"segment-{'0' * 63}{sequence}",
                 )
             )
-    service = object.__new__(SqlAlchemyCollectionUploadService)
-    service._session_factory = factory
-    service._config = config
     store = MemoryImmutableStore()
-    service._archive_stores = SimpleNamespace(
-        require=lambda _name: SimpleNamespace(immutable_objects=store)
+    service = SqlAlchemyCollectionUploadService(
+        config,
+        SimpleNamespace(require=lambda _name: SimpleNamespace(immutable_objects=store)),
+        session_factory=factory,
     )
     return SimpleNamespace(
         service=service,

@@ -28,10 +28,12 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
+from ._admission_growth import admission_declaration
+from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
-from .errors import ProvenanceValidationError
+from .errors import JournalValidationCapacity, ProvenanceValidationError
 
 if TYPE_CHECKING:
     from .journal import JournalFrame
@@ -40,7 +42,6 @@ if TYPE_CHECKING:
 ALGORITHM = "riverhog-entry-preparation/v1"
 MAX_ROWS = 256
 _HEADER_OCTETS = 2048
-_BINDING_OCTETS = 8192
 _DEFAULT_BYTES = 4 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 8192
 
 
@@ -48,7 +49,7 @@ class StaleEntryPreparation(RuntimeError):
     """The source, catalog/mode, attempt, prefix or prepared state was replaced."""
 
 
-class EntryPreparationCapacity(RuntimeError):
+class EntryPreparationCapacity(JournalValidationCapacity):
     """The next existing entry atom requires more byte admission."""
 
 
@@ -89,6 +90,15 @@ class PreparationState:
             return state
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             raise RuntimeError("corrupt entry preparation checkpoint") from exc
+
+
+@dataclass(frozen=True)
+class PreparationAdmission:
+    binding: bytes
+    attempt_id: str
+    prefix: tuple[str, bytes, str]
+    prior: tuple[object, ...] | None
+    after: PreparationState
 
 
 @dataclass(frozen=True)
@@ -257,6 +267,175 @@ def _declaration() -> Declaration:
     )
 
 
+def _phase_declaration(operation: str) -> Declaration:
+    planning = operation == "prepare"
+    base = _declaration()
+    return replace(
+        base,
+        id="riverhog-provenance.sqlite-entry-preparation-"
+        + ("plan" if planning else "application")
+        + ".growth/v1",
+        subjects=("riverhog_provenance._entry_preparation.EntryPreparation." + operation,),
+        scope="detached-entry-preparation-plan"
+        if planning
+        else "owner-transaction-entry-preparation-application",
+        starts_at=(
+            "load one source/prefix-bound checkpoint outside a transaction"
+            if planning
+            else "accept one exact admitted proposal inside the owner's open transaction"
+        ),
+        ends_at=(
+            "return a bounded detached proposal without changing native state"
+            if planning
+            else "return native changes and progress while leaving the owner transaction open"
+        ),
+        bounds=tuple(
+            replace(bound, relation="equal", expression=Expression("constant", value=0, unit=COUNT))
+            if planning and bound.metric == "changed_rows"
+            else bound
+            for bound in base.bounds
+        ),
+        conditions=(
+            *base.conditions[:-1],
+            "Planning runs with the owner transaction closed; application runs with it open.",
+            "Application receives the exact proposal admitted under the recorded row/byte budget; "
+            "the owner composes transaction control and parent publication.",
+        ),
+        invariants=(
+            *base.invariants,
+            "Planning never writes; application never commits or rolls back its owner's "
+            "transaction.",
+        ),
+        limitations=(
+            *base.limitations,
+            "This phase profile does not claim that EntryPreparation.advance executed; admission, "
+            "parent publication and transaction control require actual caller composition.",
+        ),
+    )
+
+
+def _result_declaration() -> Declaration:
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    def metadata() -> Expression:
+        return Expression(
+            "product",
+            terms=(
+                Expression("constant", value=8, unit=SCALAR),
+                Expression("dimension", name="control_octets"),
+            ),
+        )
+
+    zero_octets = Expression("constant", value=0, unit=OCTETS)
+    return Declaration(
+        id="riverhog-provenance.sqlite-entry-preparation-result.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance._entry_preparation.EntryPreparation.result",),
+        scope="native-sqlite-fenced-entry-preparation-terminal-result",
+        starts_at="load exact source/prefix/preparation controls and terminal boundaries",
+        ends_at="return completion without changing native or accepted state",
+        dimensions=(
+            Dimension("retained_rows", COUNT, "Actual owned identity, queue and control rows."),
+            Dimension(
+                "control_octets",
+                OCTETS,
+                "Actual input attempt/binding/prefix/checkpoint control envelope.",
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                count(8),
+                "Fixed header/prefix/identity and empty-queue index probes.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                count(8),
+                "Only fixed controls and identity domain/type/length metadata.",
+            ),
+            Bound(
+                "changed_rows",
+                COUNT,
+                "equal",
+                count(0),
+                "Terminal inspection does not mutate native state.",
+            ),
+            Bound(
+                "returned_metadata_octets",
+                OCTETS,
+                "upper",
+                metadata(),
+                "Returned controls retain their actual scalar byte widths.",
+            ),
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "upper",
+                metadata(),
+                "Only fixed identity and exact owner/source/prefix keys are bound.",
+            ),
+            Bound(
+                "historical_payload_octets",
+                OCTETS,
+                "equal",
+                zero_octets,
+                "Identity payloads are measured by type and length, never returned.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        count(8192),
+                        Expression(
+                            "product",
+                            terms=(
+                                count(512),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                count(4),
+                                                Expression("dimension", name="retained_rows"),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Fixed control and indexed identity/queue seeks.",
+            ),
+        ),
+        conditions=(
+            "The exact source atom, catalog/modes and private workspace remain owned.",
+            "The owner closes its transaction before terminal inspection.",
+            "The checkpoint and its identity/queue boundaries agree and are complete.",
+            "control_octets retains actual source/prefix/attempt/checkpoint widths.",
+        ),
+        invariants=(
+            "The accepted prefix, immutable history and queue remain unchanged.",
+            "Incomplete, malformed or replaced preparation state cannot return success.",
+            "Preparation completion grants no semantic or archive acceptance.",
+        ),
+        limitations=(
+            "Constructor source decoding/hash and catalog admission are separate work.",
+            "Later semantics, parent publication and source custody remain owner work.",
+            "B-tree byte comparisons, physical I/O and waits remain separate costs.",
+        ),
+    )
+
+
 class EntryPreparation:
     def __init__(
         self,
@@ -309,7 +488,7 @@ class EntryPreparation:
         row = self._one(
             "SELECT substr(attempt_id,1,?),substr(binding,1,?),substr(checkpoint,1,?) "
             "FROM journal_prefix WHERE singleton=1",
-            (_HEADER_OCTETS + 1, _BINDING_OCTETS + 1, _HEADER_OCTETS + 1),
+            (_HEADER_OCTETS + 1, PREFIX_BINDING_OCTETS_MAX + 1, _HEADER_OCTETS + 1),
         )
         if (
             row is None
@@ -317,7 +496,7 @@ class EntryPreparation:
             or not row[0]
             or len(row[0]) > _HEADER_OCTETS
             or type(row[1]) is not bytes
-            or len(row[1]) > _BINDING_OCTETS
+            or len(row[1]) > PREFIX_BINDING_OCTETS_MAX
         ):
             raise RuntimeError("missing or invalid preparation accepted-prefix manifest")
         state = PrefixState.from_json(row[2])
@@ -356,35 +535,66 @@ class EntryPreparation:
         ):
             raise RuntimeError("entry preparation completion retains changed identities")
 
-    def initialize(self) -> PreparationState:
+    def _admission(self) -> PreparationAdmission:
+        prefix = self._prefix()
+        old = self._one(
+            "SELECT algorithm,attempt_id,substr(checkpoint,1,?) FROM "
+            "journal_entry_preparation WHERE singleton=1",
+            (_HEADER_OCTETS + 1,),
+        )
+        version = 0
+        if old is not None:
+            if old[0] != ALGORITHM:
+                raise RuntimeError("unknown entry preparation algorithm")
+            before = PreparationState.from_json(old[2])
+            if old[1] == self.attempt_id or not before.done:
+                raise StaleEntryPreparation("entry preparation is already bound")
+            version = before.version + 1
+        state = PreparationState(version=version)
+        return PreparationAdmission(
+            self.binding, self.attempt_id, prefix, None if old is None else tuple(old), state
+        )
+
+    @declare_growth(
+        admission_declaration(
+            identifier="entry-preparation",
+            subject="riverhog_provenance._entry_preparation.EntryPreparation.prepare_admission",
+            planning=True,
+        )
+    )
+    def prepare_admission(self) -> PreparationAdmission:
         self._detached()
+        return self._admission()
+
+    @declare_growth(
+        admission_declaration(
+            identifier="entry-preparation",
+            subject="riverhog_provenance._entry_preparation.EntryPreparation._admit",
+            planning=False,
+        )
+    )
+    def _admit(self, batch: PreparationAdmission) -> PreparationState:
+        if not self.db.in_transaction:
+            raise RuntimeError("child admission requires an owner transaction")
+        if self._admission() != batch:
+            raise StaleEntryPreparation("child admission was superseded")
+        self.db.execute(
+            "INSERT INTO journal_entry_preparation VALUES (1,?,?,?,?,?,?,?) "
+            "ON CONFLICT(singleton) DO UPDATE SET "
+            "algorithm=excluded.algorithm,attempt_id=excluded.attempt_id,"
+            " "
+            "binding=excluded.binding,prefix_attempt=excluded.prefix_atte"
+            "mpt,prefix_binding=excluded.prefix_binding, "
+            "prefix=excluded.prefix,checkpoint=excluded.checkpoint",
+            (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.after.to_json()),
+        ).close()
+        return batch.after
+
+    def initialize(self) -> PreparationState:
+        batch = self.prepare_admission()
         self.db.execute("BEGIN IMMEDIATE").close()
         try:
-            prefix = self._prefix()
-            old = self._one(
-                "SELECT algorithm,attempt_id,substr(checkpoint,1,?) FROM "
-                "journal_entry_preparation WHERE singleton=1",
-                (_HEADER_OCTETS + 1,),
-            )
-            version = 0
-            if old is not None:
-                if old[0] != ALGORITHM:
-                    raise RuntimeError("unknown entry preparation algorithm")
-                before = PreparationState.from_json(old[2])
-                if old[1] == self.attempt_id or not before.done:
-                    raise StaleEntryPreparation("entry preparation is already bound")
-                version = before.version + 1
-            state = PreparationState(version=version)
-            self.db.execute(
-                "INSERT INTO journal_entry_preparation VALUES (1,?,?,?,?,?,?,?) "
-                "ON CONFLICT(singleton) DO UPDATE SET "
-                "algorithm=excluded.algorithm,attempt_id=excluded.attempt_id,"
-                " "
-                "binding=excluded.binding,prefix_attempt=excluded.prefix_atte"
-                "mpt,prefix_binding=excluded.prefix_binding, "
-                "prefix=excluded.prefix,checkpoint=excluded.checkpoint",
-                (ALGORITHM, self.attempt_id, self.binding, *prefix, state.to_json()),
-            ).close()
+            state = self._admit(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
@@ -399,7 +609,7 @@ class EntryPreparation:
             "WHERE singleton=1 AND attempt_id=? AND binding=?",
             (
                 _HEADER_OCTETS + 1,
-                _BINDING_OCTETS + 1,
+                PREFIX_BINDING_OCTETS_MAX + 1,
                 _HEADER_OCTETS + 1,
                 _HEADER_OCTETS + 1,
                 self.attempt_id,
@@ -420,6 +630,7 @@ class EntryPreparation:
     def load(self) -> PreparationState:
         return self._load()[0]
 
+    @declare_growth(_phase_declaration("prepare"))
     def prepare(
         self, *, row_budget: int = MAX_ROWS, byte_budget: int = _DEFAULT_BYTES
     ) -> PreparationBatch:
@@ -457,6 +668,70 @@ class EntryPreparation:
             self.attempt_id, self.binding, prefix, state.to_json(), identity_before, row_budget
         )
 
+    @declare_growth(_phase_declaration("_apply"))
+    def _apply(self, batch: PreparationBatch) -> PreparationState:
+        if not self.db.in_transaction:
+            raise RuntimeError("child application requires an owner transaction")
+        if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
+            raise StaleEntryPreparation("preparation proposal belongs to another input")
+        state = PreparationState.from_json(batch.before_json)
+        if self._prefix() != batch.prefix:
+            raise StaleEntryPreparation("accepted prefix changed before preparation commit")
+        self._boundaries(state)
+        row = self._one(
+            "SELECT 1 FROM journal_entry_preparation WHERE singleton=1 AND algorithm=? "
+            "AND attempt_id=? AND binding=? AND prefix_attempt=? AND "
+            "prefix_binding=? AND prefix=? AND checkpoint=?",
+            (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before_json),
+        )
+        if row is None:
+            raise StaleEntryPreparation("preparation checkpoint was replaced")
+        after = state
+        if state.phase == "journal":
+            if self._identity(self.source.journal_id) != batch.identity_before:
+                raise StaleEntryPreparation("journal identity changed before admission")
+            if batch.identity_before is None:
+                self.db.execute(
+                    "INSERT INTO identities VALUES (?,?,?)",
+                    (self.source.journal_id, "journal", b""),
+                ).close()
+            after = replace(state, phase="entry", version=state.version + 1)
+        elif state.phase == "entry":
+            if self._identity(self.entry_id) is not None:
+                raise StaleEntryPreparation("entry identity changed before admission")
+            self.db.execute(
+                "INSERT INTO identities VALUES (?,?,?)", (self.entry_id, "entry", self.body)
+            ).close()
+            after = replace(state, phase="changes", version=state.version + 1)
+        elif state.phase == "changes":
+            retired = self.store._reset_changed_assertions(row_budget=batch.row_budget)
+            after = replace(
+                state,
+                phase="done" if retired == 0 else "changes",
+                retired=state.retired + retired,
+                version=state.version + 1,
+            )
+        if after != state:
+            with closing(
+                self.db.execute(
+                    "UPDATE journal_entry_preparation SET checkpoint=? WHERE singleton=1 "
+                    "AND algorithm=? AND attempt_id=? AND binding=? AND "
+                    "prefix_attempt=? AND prefix_binding=? AND prefix=? AND "
+                    "checkpoint=?",
+                    (
+                        after.to_json(),
+                        ALGORITHM,
+                        self.attempt_id,
+                        self.binding,
+                        *batch.prefix,
+                        batch.before_json,
+                    ),
+                )
+            ) as cursor:
+                if cursor.rowcount != 1:
+                    raise StaleEntryPreparation("preparation progress changed")
+        return after
+
     def commit(self, batch: PreparationBatch) -> PreparationState:
         self._detached()
         if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
@@ -464,66 +739,12 @@ class EntryPreparation:
         state = PreparationState.from_json(batch.before_json)
         self.db.execute("BEGIN IMMEDIATE").close()
         try:
-            if self._prefix() != batch.prefix:
-                raise StaleEntryPreparation("accepted prefix changed before preparation commit")
-            self._boundaries(state)
-            row = self._one(
-                "SELECT 1 FROM journal_entry_preparation WHERE singleton=1 AND algorithm=? "
-                "AND attempt_id=? AND binding=? AND prefix_attempt=? AND "
-                "prefix_binding=? AND prefix=? AND checkpoint=?",
-                (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before_json),
-            )
-            if row is None:
-                raise StaleEntryPreparation("preparation checkpoint was replaced")
-            after = state
-            if state.phase == "journal":
-                if self._identity(self.source.journal_id) != batch.identity_before:
-                    raise StaleEntryPreparation("journal identity changed before admission")
-                if batch.identity_before is None:
-                    self.db.execute(
-                        "INSERT INTO identities VALUES (?,?,?)",
-                        (self.source.journal_id, "journal", b""),
-                    ).close()
-                after = replace(state, phase="entry", version=state.version + 1)
-            elif state.phase == "entry":
-                if self._identity(self.entry_id) is not None:
-                    raise StaleEntryPreparation("entry identity changed before admission")
-                self.db.execute(
-                    "INSERT INTO identities VALUES (?,?,?)", (self.entry_id, "entry", self.body)
-                ).close()
-                after = replace(state, phase="changes", version=state.version + 1)
-            elif state.phase == "changes":
-                retired = self.store._reset_changed_assertions(row_budget=batch.row_budget)
-                after = replace(
-                    state,
-                    phase="done" if retired == 0 else "changes",
-                    retired=state.retired + retired,
-                    version=state.version + 1,
-                )
-            if after != state:
-                with closing(
-                    self.db.execute(
-                        "UPDATE journal_entry_preparation SET checkpoint=? WHERE singleton=1 "
-                        "AND algorithm=? AND attempt_id=? AND binding=? AND "
-                        "prefix_attempt=? AND prefix_binding=? AND prefix=? AND "
-                        "checkpoint=?",
-                        (
-                            after.to_json(),
-                            ALGORITHM,
-                            self.attempt_id,
-                            self.binding,
-                            *batch.prefix,
-                            batch.before_json,
-                        ),
-                    )
-                ) as cursor:
-                    if cursor.rowcount != 1:
-                        raise StaleEntryPreparation("preparation progress changed")
+            state = self._apply(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
             raise
-        return after
+        return state
 
     @declare_growth(_declaration())
     def advance(
@@ -531,6 +752,7 @@ class EntryPreparation:
     ) -> PreparationState:
         return self.commit(self.prepare(row_budget=row_budget, byte_budget=byte_budget))
 
+    @declare_growth(_result_declaration())
     def result(self) -> None:
         if not self.load().done:
             raise RuntimeError("entry preparation remains quarantined")

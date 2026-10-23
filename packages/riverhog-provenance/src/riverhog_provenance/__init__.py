@@ -17,6 +17,7 @@ from .delivery import selected_delivery_occurrence, verify_delivery
 from .errors import (
     ConcurrentJournalChangeError,
     IncompleteSourceError,
+    JournalValidationCapacity,
     ObservationError,
     ProvenanceValidationError,
     UnresolvedContractError,
@@ -29,6 +30,13 @@ from .framing import (
     advance_journal_framing,
 )
 from .graph import GraphValidation, validate_graph
+from .graph_certificates import (
+    JOURNAL_GRAPH_CERTIFICATE_ALGORITHM,
+    InvalidJournalGraphCertificate,
+    JournalGraphCertificate,
+    JournalGraphCertificateBinding,
+    JournalGraphCertificates,
+)
 from .history import MemberHistoryClosure, MemberHistoryMembership
 from .interface import ObservationSource, StateObserver
 from .journal import (
@@ -54,6 +62,17 @@ from .journal import (
     validate_journal_set_chunks,
     write_assertion_batches,
 )
+from .journal_reclamation import (
+    JournalReclamationProgress,
+    reclaim_retired_journal_workspace,
+)
+from .journal_result import open_retained_journal_result
+from .journal_session import (
+    JournalValidationBudget,
+    JournalValidationProgress,
+    JournalValidationSession,
+    JournalValidationSource,
+)
 from .model import (
     BinaryReadable,
     ObservationPolicy,
@@ -64,6 +83,7 @@ from .model import (
     SourceEvidence,
 )
 from .observer import BoundedSourceObserver
+from .replay_binding import JournalReplayBinding
 from .schema import validate_entry_document, validate_graph_fragment
 from .segmented_archive import (
     JournalSegment,
@@ -91,10 +111,23 @@ __all__ = [
     "selected_delivery_occurrence",
     "ConcurrentJournalChangeError",
     "IncompleteSourceError",
+    "JournalValidationCapacity",
+    "JournalReclamationProgress",
+    "reclaim_retired_journal_workspace",
+    "JournalValidationBudget",
+    "JournalValidationProgress",
+    "JournalValidationSession",
+    "JournalValidationSource",
+    "JournalReplayBinding",
     "ObservationError",
     "ProvenanceValidationError",
     "UnresolvedContractError",
     "GraphValidation",
+    "JOURNAL_GRAPH_CERTIFICATE_ALGORITHM",
+    "InvalidJournalGraphCertificate",
+    "JournalGraphCertificate",
+    "JournalGraphCertificateBinding",
+    "JournalGraphCertificates",
     "MemberHistoryClosure",
     "MemberHistoryMembership",
     "validate_graph",
@@ -121,6 +154,7 @@ __all__ = [
     "external_reference",
     "iter_journal_frames",
     "parse_journal",
+    "open_retained_journal_result",
     "recover_complete_prefix",
     "validate_journal",
     "validate_journal_chunks",

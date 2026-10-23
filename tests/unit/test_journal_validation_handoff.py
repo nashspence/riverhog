@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-import hashlib
-import sqlite3
 import subprocess
 import sys
 import threading
-from contextlib import contextmanager
 
 import pytest
-from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.catalog_models import (
     CollectionUploadProvenanceFrameRecord as Frame,
 )
@@ -16,14 +12,12 @@ from riverhog_core.catalog_models import (
     CollectionUploadRecord,
 )
 from riverhog_core.services import collection_uploads as owner
-from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import validate_journal
-from sqlalchemy import delete, event, update
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import delete, update
 
 from tests.unit.test_journal_capture import advance, checkpoint, retained
 from tests.unit.test_journal_summary_consumers import source
-from tests.unit.test_staged_journal_range import EXTENT, JOURNAL, Chunk, Journal, staged_transport
+from tests.unit.test_staged_journal_range import EXTENT, JOURNAL, Chunk, Journal
 
 
 def complete_capture(factory):
@@ -36,8 +30,62 @@ def complete_capture(factory):
 
 def service_for(factory):
     service = object.__new__(owner.SqlAlchemyCollectionUploadService)
+    from riverhog_core.runtime_config import RuntimeConfig
+    from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
+
     service._session_factory = factory
+    service._config = RuntimeConfig.for_testing(database_url=str(factory.kw["bind"].url))
+    service._journal_validation_owner = UploadJournalValidationOwner(
+        factory, service._config.journal_validation_workspace
+    )
+    service._journal_validation_after = None
+    from riverhog_core.services.upload_journal_validation_retirement import (
+        UploadJournalValidationRetirement,
+    )
+
+    service._journal_validation_retirement = UploadJournalValidationRetirement(
+        factory, service._config.journal_validation_workspace
+    )
+    service._journal_validation_cleanup_turn = False
     return service
+
+
+def native_outcome(factory, work):
+    from contextlib import closing
+
+    from riverhog_core.runtime_config import RuntimeConfig
+    from riverhog_core.services import upload_journal_epochs as epochs
+    from riverhog_core.services import upload_journal_rank as rank
+    from riverhog_core.services import upload_journal_replay as replay
+    from riverhog_core.services import upload_journal_topology as topology
+    from riverhog_core.services import upload_journal_union as union
+    from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
+
+    catalog = owner.admission_provenance_catalog()
+    if not replay.verify_upload_journal_replay_binding(factory, work, catalog):
+        raise owner._StaleUploadJournalValidation
+    for stage in (
+        epochs.advance_upload_journal_epoch_scan,
+        topology.advance_upload_journal_topology_capture,
+        union.advance_upload_journal_epoch_union,
+        rank.advance_upload_journal_epoch_rank,
+    ):
+        for _ in range(10000):
+            if stage(factory, work):
+                break
+        else:
+            pytest.fail("small native preparation stopped making progress")
+    assert replay.prepare_upload_journal_replay(factory, work, catalog=catalog)
+    config = RuntimeConfig.for_testing(database_url=str(factory.kw["bind"].url))
+    with closing(
+        UploadJournalValidationOwner(factory, config.journal_validation_workspace)
+    ) as current:
+        for _ in range(10000):
+            step = current.advance(work, catalog=catalog)
+            if step.outcome is not None:
+                return step.outcome
+            assert step.progressed
+    pytest.fail("small native replay stopped making progress")
 
 
 def terminal(factory):
@@ -51,40 +99,35 @@ def record_state(factory):
         return tuple(getattr(record, column.name) for column in Journal.__table__.columns)
 
 
-def test_native_computation_receives_exact_chunks_after_each_reader_closes(tmp_path, monkeypatch):
+def test_native_computation_reads_exact_captured_windows_after_readers_close(tmp_path, monkeypatch):
+    from riverhog_core.services.upload_journal_source import UploadJournalValidationSource
+
     raw = source(2 * EXTENT + 37, journal_id=JOURNAL)
     with retained(tmp_path, raw) as (engine, factory):
         work = complete_capture(factory)
-        assert engine.pool.checkedout() == 0
-        expected_chunks = []
-        compute = owner.validate_journal_chunks
-        read = owner._read_upload_journal_validation_chunk
+        windows, atoms = [], []
+        read_window = UploadJournalValidationSource.read_window
+        read_exact = UploadJournalValidationSource.read_exact
 
-        def observed_read(*args, **kwargs):
-            result = read(*args, **kwargs)
+        def window(current, *args):
+            result = read_window(current, *args)
             assert engine.pool.checkedout() == 0
-            expected_chunks.append(result)
+            windows.append(result)
             return result
 
-        def observed_compute(chunks, **kwargs):
+        def exact(current, *args):
+            result = read_exact(current, *args)
             assert engine.pool.checkedout() == 0
+            atoms.append(result)
+            return result
 
-            def detached():
-                for raw in chunks:
-                    assert engine.pool.checkedout() == 0
-                    yield raw
-                    assert engine.pool.checkedout() == 0
-
-            return compute(detached(), **kwargs)
-
-        monkeypatch.setattr(owner, "_read_upload_journal_validation_chunk", observed_read)
-        monkeypatch.setattr(owner, "validate_journal_chunks", observed_compute)
-        outcome = owner._compute_upload_journal_validation(factory, work)
-        assert b"".join(expected_chunks) == raw
-        assert len(expected_chunks) == 3 and max(map(len, expected_chunks)) <= EXTENT
+        monkeypatch.setattr(UploadJournalValidationSource, "read_window", window)
+        monkeypatch.setattr(UploadJournalValidationSource, "read_exact", exact)
+        outcome = native_outcome(factory, work)
+        assert b"".join(windows) == raw and max(map(len, windows)) <= 65536
+        assert atoms == [raw[1:-1]]
         assert outcome.failure is None and engine.pool.checkedout() == 0
-        assert terminal(factory)["state"] == "validating"
-        assert terminal(factory)["anchor"] is None
+        assert terminal(factory)["state"] == "validating" and terminal(factory)["anchor"] is None
         assert owner._commit_upload_journal_validation(factory, work, outcome)
         with validate_journal(raw) as expected:
             assert terminal(factory)["anchor"] == expected.anchor
@@ -112,7 +155,7 @@ def test_stale_success_and_failure_cannot_publish_or_read_replacement(tmp_path, 
     raw = source(journal_id=JOURNAL)
     with retained(tmp_path, raw) as (_, factory):
         work = complete_capture(factory)
-        outcome = owner._compute_upload_journal_validation(factory, work)
+        outcome = native_outcome(factory, work)
         if failure:
             outcome = owner._UploadJournalValidationOutcome("rejected old attempt")
         replacements = {
@@ -133,7 +176,11 @@ def test_stale_success_and_failure_cannot_publish_or_read_replacement(tmp_path, 
             session.execute(update(Journal).values({fence: replacements[fence]}))
         before = record_state(factory), checkpoint(factory)
         with pytest.raises(owner._StaleUploadJournalValidation):
-            owner._read_upload_journal_validation_chunk(factory, work, ordinal=0, offset=0)
+            from riverhog_core.services.upload_journal_source import UploadJournalValidationSource
+
+            UploadJournalValidationSource(
+                factory, work, catalog=owner.admission_provenance_catalog()
+            ).read_window(0, 1)
         assert not owner._commit_upload_journal_validation(factory, work, outcome)
         assert (record_state(factory), checkpoint(factory)) == before
 
@@ -145,7 +192,7 @@ def test_duplicate_terminal_publication_is_fenced(tmp_path, failure):
         outcome = (
             owner._UploadJournalValidationOutcome("native rejection")
             if failure
-            else owner._compute_upload_journal_validation(factory, work)
+            else native_outcome(factory, work)
         )
         assert owner._commit_upload_journal_validation(factory, work, outcome)
         published = terminal(factory), checkpoint(factory)
@@ -159,32 +206,34 @@ def test_duplicate_terminal_publication_is_fenced(tmp_path, failure):
 def test_unrelated_catalog_work_progresses_during_native_computation(
     tmp_path, monkeypatch, replace_attempt
 ):
+    from riverhog_provenance import JournalValidationSession
+
     raw = source(journal_id=JOURNAL)
     with retained(tmp_path, raw) as (engine, factory):
         complete_capture(factory)
         paused, resume = threading.Event(), threading.Event()
-        native = owner.validate_journal_chunks
+        native = JournalValidationSession.advance
         failures = []
+        service = service_for(factory)
 
-        def waiting(chunks, **kwargs):
-            iterator = iter(chunks)
-            first = next(iterator)
+        def waiting(current, *args, **kwargs):
             assert engine.pool.checkedout() == 0
             paused.set()
             if not resume.wait(30):
                 raise TimeoutError("native computation was not resumed")
+            return native(current, *args, **kwargs)
 
-            def continued():
-                yield first
-                yield from iterator
-
-            return native(continued(), **kwargs)
-
-        monkeypatch.setattr(owner, "validate_journal_chunks", waiting)
+        monkeypatch.setattr(JournalValidationSession, "advance", waiting)
 
         def worker():
             try:
-                service_for(factory)._advance_provenance_journal_validation(1, JOURNAL)
+                for _ in range(10000):
+                    service._advance_provenance_journal_validation(1, JOURNAL)
+                    if replace_attempt and paused.is_set():
+                        return
+                    if terminal(factory)["state"] == "sealed":
+                        return
+                raise AssertionError("small native service failed to complete")
             except BaseException as exc:
                 failures.append(exc)
 
@@ -207,41 +256,40 @@ def test_unrelated_catalog_work_progresses_during_native_computation(
         finally:
             resume.set()
             thread.join(30)
-        assert not thread.is_alive() and not failures
-        assert engine.pool.checkedout() == 0
-        assert terminal(factory)["state"] == ("validating" if replace_attempt else "sealed")
-        if replace_attempt:
-            assert terminal(factory)["anchor"] is None
-            for _ in range(32):
-                service_for(factory)._advance_provenance_journal_validation(1, JOURNAL)
-                assert engine.pool.checkedout() == 0
-                if terminal(factory)["state"] == "sealed":
-                    break
-                assert terminal(factory)["state"] == "validating"
+        try:
+            assert not thread.is_alive() and not failures
+            assert engine.pool.checkedout() == 0
+            assert terminal(factory)["state"] == ("validating" if replace_attempt else "sealed")
+            if replace_attempt:
                 assert terminal(factory)["anchor"] is None
-            else:
-                pytest.fail("replacement validation stopped making bounded progress")
-            assert terminal(factory)["state"] == "sealed"
+                for _ in range(10000):
+                    service._advance_provenance_journal_validation(1, JOURNAL)
+                    assert engine.pool.checkedout() == 0
+                    if terminal(factory)["state"] == "sealed":
+                        break
+                    assert terminal(factory)["state"] == "validating"
+                    assert terminal(factory)["anchor"] is None
+                else:
+                    pytest.fail("replacement validation stopped making bounded progress")
+        finally:
+            service.close()
 
 
-def test_lost_retained_chunk_never_publishes_an_anchor(tmp_path):
+def test_captured_source_survives_original_transport_chunk_removal(tmp_path):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (engine, factory):
         work = complete_capture(factory)
         with factory() as session, session.begin():
             session.execute(delete(Chunk))
-        outcome = owner._compute_upload_journal_validation(factory, work)
-        assert outcome.failure == "staged canonical journal chunks are discontinuous"
-        assert engine.pool.checkedout() == 0
+        outcome = native_outcome(factory, work)
+        assert outcome.failure is None and engine.pool.checkedout() == 0
         assert owner._commit_upload_journal_validation(factory, work, outcome)
-        assert terminal(factory)["state"] == "failed"
-        assert terminal(factory)["anchor"] is None
-        assert checkpoint(factory)[3] == 0
+        assert terminal(factory)["state"] == "sealed" and terminal(factory)["anchor"] is not None
 
 
 def test_lost_capture_manifest_link_before_publication_fails_closed(tmp_path):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work = complete_capture(factory)
-        outcome = owner._compute_upload_journal_validation(factory, work)
+        outcome = native_outcome(factory, work)
         with factory() as session, session.begin():
             session.execute(delete(Frame))
         before = record_state(factory)
@@ -265,7 +313,8 @@ from riverhog_core.catalog_db import make_session_factory
 from riverhog_core.services import collection_uploads as owner
 factory = make_session_factory(sys.argv[1])
 work = owner._read_upload_journal_validation(factory, 1, sys.argv[2])
-outcome = owner._compute_upload_journal_validation(factory, work)
+from tests.unit.test_journal_validation_handoff import native_outcome
+outcome = native_outcome(factory, work)
 assert outcome.failure is None
 original = owner.session_scope
 @contextmanager
@@ -295,119 +344,3 @@ os._exit(73)
             assert (terminal(factory), checkpoint(factory)) == before
             service_for(factory)._advance_provenance_journal_validation(1, JOURNAL)
             assert terminal(factory)["state"] == "sealed"
-
-
-class ObservedSourceResult:
-    def __init__(self, result, counts):
-        self.result, self.counts = result, counts
-
-    def __enter__(self):
-        self.result.__enter__()
-        return self
-
-    def __exit__(self, *args):
-        try:
-            return self.result.__exit__(*args)
-        finally:
-            self.counts["closed"] = self.result.closed
-
-    def one_or_none(self):
-        row = self.result.one_or_none()
-        if row is not None:
-            self.counts["source_rows"] += 1
-            self.counts["loaded_chunk_octets"] += len(row.content)
-        return row
-
-
-@pytest.mark.growth_witness(
-    "riverhog-staged-journal-validation-source-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_core.services.collection_uploads._read_upload_journal_validation_chunk",
-)
-def test_fenced_source_units_record_actual_indexed_work(tmp_path, monkeypatch, record_property):
-    binding = growth_binding(owner._read_upload_journal_validation_chunk)
-    projection = project_bindings((binding,))
-    declaration = projection["declarations"][binding.declaration.id]
-    samples = []
-    for count, first_octets, last_octets in [
-        *((j, n, 37) for j in (2, 17, 129) for n in (EXTENT, 37)),
-        (17, 37, EXTENT),
-    ]:
-        with staged_transport(
-            tmp_path / f"{count}-{first_octets}-{last_octets}",
-            count,
-            last_octets=last_octets,
-            first_octets=first_octets,
-        ) as (engine, total):
-            factory = sessionmaker(engine)
-            with factory() as session, session.begin():
-                record = session.get(Journal, (1, JOURNAL))
-                owner._begin_upload_journal_capture(session, record)
-                record.capture_phase = "deferred"
-                record.capture_failure = "transport fixture has no semantic acceptance"
-            work = owner._read_upload_journal_validation(factory, 1, JOURNAL)
-            counts = {"source_rows": 0, "loaded_chunk_octets": 0, "closed": False}
-            original = owner.read_snapshot
-
-            @contextmanager
-            def observed_snapshot(factory, snapshot=original, observations=counts):
-                with snapshot(factory) as session:
-                    execute = session.execute
-
-                    def observed_execute(*args, **kwargs):
-                        return ObservedSourceResult(execute(*args, **kwargs), observations)
-
-                    monkeypatch.setattr(session, "execute", observed_execute)
-                    yield session
-
-            with engine.connect() as connection:
-                native = connection.connection.driver_connection
-                assert isinstance(native, sqlite3.Connection)
-            statements, instructions = [], [0]
-
-            def observed_sql(
-                _connection, _cursor, sql, parameters, _context, _many, recorder=statements
-            ):
-                recorder.append((sql, parameters))
-
-            def progress(counter=instructions):
-                counter[0] += 1
-                return 0
-
-            event.listen(engine, "before_cursor_execute", observed_sql)
-            native.set_progress_handler(progress, 1)
-            try:
-                with monkeypatch.context() as patch:
-                    patch.setattr(owner, "read_snapshot", observed_snapshot)
-                    actual = owner._read_upload_journal_validation_chunk(
-                        factory, work, ordinal=count - 1, offset=total - last_octets
-                    )
-            finally:
-                native.set_progress_handler(None, 0)
-                event.remove(engine, "before_cursor_execute", observed_sql)
-            assert actual == bytes([(count - 1) % 251]) * last_octets
-            assert engine.pool.checkedout() == 0 and counts["closed"]
-            for sql, parameters in statements:
-                with engine.connect() as connection:
-                    rows = connection.exec_driver_sql("EXPLAIN QUERY PLAN " + sql, parameters)
-                    try:
-                        plan = " ".join(row[3] for row in rows)
-                    finally:
-                        rows.close()
-                assert "SEARCH" in plan and "SCAN" not in plan and "USE TEMP" not in plan
-            sample = {
-                "declaration": binding.declaration.id,
-                "declaration_sha256": hashlib.sha256(canonical_json_bytes(declaration)).hexdigest(),
-                "dimensions": {"staged_chunks": count},
-                "metrics": {
-                    "sql_statements": len(statements),
-                    "source_rows": counts["source_rows"],
-                    "loaded_chunk_octets": counts["loaded_chunk_octets"],
-                    "returned_octets": len(actual),
-                    "sqlite_vm_instructions": instructions[0],
-                },
-                "delegates": {},
-            }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
-            samples.append(sample)
-    record_property("growth_samples", samples)

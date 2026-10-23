@@ -971,13 +971,19 @@ def test_retired_journal_preparation_is_bounded_and_fenced_across_workers(databa
         pytest.fail("retired attempts stopped making bounded progress")
     assert count(old.attempt_id) == count(current.attempt_id) == 0
     assert count(replacement.attempt_id) == 3
-    assert (
-        b"".join(
-            collection_uploads_module._iter_upload_journal_validation_chunks(
-                second_factory, replacement
-            )
-        )
-        == raw
+    from riverhog_core.services.upload_journal_source import UploadJournalValidationSource
+
+    source_reader = UploadJournalValidationSource(
+        second_factory,
+        replacement,
+        catalog=collection_uploads_module.admission_provenance_catalog(),
     )
+    pieces, offset = [], 0
+    while offset < len(raw):
+        piece = source_reader.read_window(offset, min(65536, len(raw) - offset))
+        assert piece
+        pieces.append(piece)
+        offset += len(piece)
+    assert b"".join(pieces) == raw
     status = first.get_provenance_journal(collection_id, journal_id)
     assert status["state"] == "validating" and status["anchor"] is None

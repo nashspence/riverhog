@@ -355,3 +355,34 @@ def test_metered_download_source_cannot_be_bypassed_through_store_alias(tmp_path
 def test_retrieval_max_lease_covers_default_lease(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="retrieval_max_lease must be at least"):
         _config(tmp_path, retrieval_default_lease=timedelta(days=8))
+
+
+@pytest.mark.parametrize("value", [0, -1, True, 1.5])
+def test_validation_session_capacity_is_explicit_positive_configuration(tmp_path, value):
+    with pytest.raises(ValueError, match="journal_validation_concurrency"):
+        _config(tmp_path, journal_validation_concurrency=value)
+
+
+def test_validation_workspace_is_persistent_explicit_and_separate_from_test_database(tmp_path):
+    config = _config(tmp_path)
+    assert config.journal_validation_workspace == tmp_path / "state.sqlite3.journal-validation"
+    assert not config.journal_validation_workspace.exists()
+    assert config.journal_validation_concurrency == 2
+    with pytest.raises(ValueError, match="absolute retained"):
+        _config(tmp_path, journal_validation_workspace=Path("relative"))
+    selected = tmp_path / "retained-validation"
+    assert (
+        _config(tmp_path, journal_validation_workspace=selected).journal_validation_workspace
+        == selected
+    )
+
+
+def test_yaml_selects_retained_validation_resources(tmp_path, monkeypatch):
+    path, document = _document(tmp_path, monkeypatch)
+    selected = tmp_path / "retained-validation"
+    document.update(journal_validation_workspace=str(selected), journal_validation_concurrency=7)
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.journal_validation_workspace == selected
+    assert config.journal_validation_concurrency == 7
+    assert not selected.exists()

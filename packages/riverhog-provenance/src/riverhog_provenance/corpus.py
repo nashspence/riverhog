@@ -5,10 +5,23 @@ from __future__ import annotations
 import json
 import sqlite3
 from collections.abc import Iterable
+from contextlib import closing
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, Self, cast
 
+from riverhog_growth_contracts import (
+    COUNT,
+    OCTETS,
+    OCTETS_PER_COUNT,
+    SCALAR,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    Unit,
+    declare_growth,
+)
 from riverhog_provenance_contracts import canonical_document
 
 from .common import fingerprint
@@ -16,6 +29,195 @@ from .errors import ProvenanceValidationError
 from .graph import iter_assertions
 from .history import _external_references
 from .journal import JournalSummary, _body_assertions, _identity_signature
+
+
+def _corpus_order_declaration() -> Declaration:
+    def number(value: int, unit: Unit = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def multiply(*terms: Expression) -> Expression:
+        return Expression("product", terms=terms)
+
+    records = add(dimension("edges"), dimension("vertices"), number(1))
+    widths = add(
+        multiply(number(8, SCALAR), dimension("identity_octets")),
+        multiply(number(4, SCALAR), dimension("degree_octets")),
+        multiply(number(2, SCALAR), dimension("kind_octets")),
+    )
+    return Declaration(
+        id="riverhog-provenance.corpus-topological-order.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.corpus.CanonicalCorpusValidator._acyclic",),
+        scope="native-complete-corpus-graph-kind-cycle-check",
+        starts_at="open an owned disk-backed indegree and ready-work index",
+        ends_at="accept or reject the graph kind and release all ordering scratch state",
+        dimensions=(
+            Dimension("edges", COUNT, "Distinct edges of this kind in the accepted corpus index."),
+            Dimension("vertices", COUNT, "Distinct source and target identities of those edges."),
+            Dimension(
+                "identity_octets",
+                OCTETS_PER_COUNT,
+                "Maximum complete UTF-8 endpoint identity width.",
+            ),
+            Dimension("degree_octets", OCTETS_PER_COUNT, "Decimal width of max(1, edges)."),
+            Dimension(
+                "kind_octets", OCTETS_PER_COUNT, "Complete UTF-8 width of the selected graph kind."
+            ),
+        ),
+        bounds=(
+            Bound(
+                "source_edge_rows",
+                COUNT,
+                "upper",
+                dimension("edges"),
+                "One ordered input pass; no recomputation over a shrinking remaining graph.",
+            ),
+            Bound(
+                "outgoing_edge_rows",
+                COUNT,
+                "upper",
+                dimension("edges"),
+                "Each popped vertex has one indexed outgoing range, visiting each edge once.",
+            ),
+            Bound(
+                "seed_vertex_rows",
+                COUNT,
+                "upper",
+                dimension("vertices"),
+                "One pass over stored vertices seeds the initial ready queue.",
+            ),
+            Bound(
+                "ready_rows",
+                COUNT,
+                "upper",
+                dimension("vertices"),
+                "A vertex becomes ready at most once and is removed by its exact key.",
+            ),
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                multiply(number(8, SCALAR), records),
+                "Includes both connections, schema, empty reads, point updates and queue "
+                "operations.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                multiply(number(6, SCALAR), records),
+                "All input, degree, seed, outgoing and queue rows are observed.",
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "upper",
+                multiply(records, widths),
+                "Full endpoint and decimal-degree bytes are counted, without abbreviated records.",
+            ),
+            Bound(
+                "parameter_octets",
+                OCTETS,
+                "upper",
+                multiply(records, widths),
+                "All SQL parameter bytes, including repeatedly written keys and exact degrees.",
+            ),
+            Bound(
+                "written_rows",
+                COUNT,
+                "upper",
+                multiply(number(5, SCALAR), records),
+                "Includes successful node insertion, degree replacement and ready "
+                "insertion/deletion.",
+            ),
+            Bound(
+                "written_octets",
+                OCTETS,
+                "upper",
+                multiply(records, widths),
+                "Full logical node/ready fields for every successful row mutation, including "
+                "deletion.",
+            ),
+            Bound(
+                "degree_decoded_octets",
+                OCTETS,
+                "upper",
+                multiply(number(2, SCALAR), dimension("edges"), dimension("degree_octets")),
+                "Python exact-integer degree updates decode at most two scalars per edge.",
+            ),
+            Bound(
+                "degree_encoded_octets",
+                OCTETS,
+                "upper",
+                multiply(number(2, SCALAR), dimension("edges"), dimension("degree_octets")),
+                "Degree replacements encode decimal scalars without SQLite integer arithmetic.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                multiply(
+                    records,
+                    add(
+                        number(4096, SCALAR),
+                        multiply(
+                            number(1024, SCALAR),
+                            Expression("log2_ceil", terms=(add(records, number(1)),)),
+                        ),
+                    ),
+                ),
+                "Indexed B-tree work includes construction and mutation; VM constants are "
+                "engine dependent.",
+            ),
+            Bound(
+                "json_calls",
+                COUNT,
+                "equal",
+                number(0),
+                "Ordering uses existing endpoint identities, not assertion decoding.",
+            ),
+            Bound(
+                "hashed_octets",
+                OCTETS,
+                "equal",
+                number(0, OCTETS),
+                "Cycle checking introduces no journal hashing or source authority.",
+            ),
+        ),
+        conditions=(
+            "The owning corpus edge primary key is (kind, source, target), retaining "
+            "exact deduplication.",
+            "The private ordering database uses bounded SQLite cache and disk-backed "
+            "node/ready indexes.",
+            "Inputs describe complete endpoint widths; ordering has an explicit B-tree "
+            "logarithmic allowance.",
+            "VM instructions describe the selected SQLite engine, not portable internal "
+            "byte-comparison counts.",
+        ),
+        invariants=(
+            "Both derivation and specialization are checked independently with the same "
+            "exact cycle rule.",
+            "Corpus facts and error ordering before cycle checking are unchanged.",
+            "Failure releases ordering state; the ordering phase performs no source corpus writes.",
+        ),
+        limitations=(
+            "This bounds complete-corpus cycle checking, not incremental per-snapshot "
+            "graph updates.",
+            "Source validation, corpus population, foreign references and "
+            "selected-history closure have separate costs.",
+            "File release and elapsed time are observations; scratch has a constant "
+            "number of database files.",
+        ),
+    )
+
+
+_CORPUS_ORDER_GROWTH = _corpus_order_declaration()
 
 
 class CanonicalCorpusValidator:
@@ -185,22 +387,99 @@ class CanonicalCorpusValidator:
                         "comparison contradicts foreign content evidence"
                     )
         for kind in ("derivation", "specialization"):
-            # Kahn elimination on a bounded persistent index. No Python node set
-            # or recursive call stack grows with the collection's edge surface.
-            self._db.execute(
-                "CREATE TEMP TABLE remaining AS SELECT source, target FROM edges WHERE kind = ?",
-                (kind,),
-            )
-            self._db.execute("CREATE INDEX remaining_targets ON remaining(target)")
-            while self._db.execute("SELECT 1 FROM remaining LIMIT 1").fetchone() is not None:
-                sources = self._db.execute(
-                    "SELECT DISTINCT source FROM remaining WHERE source NOT IN "
-                    "(SELECT target FROM remaining) LIMIT 128"
-                ).fetchall()
-                if not sources:
-                    raise ProvenanceValidationError(f"cross-journal {kind} graph contains a cycle")
-                self._db.executemany("DELETE FROM remaining WHERE source = ?", sources)
-            self._db.execute("DROP TABLE remaining")
+            self._acyclic(kind)
+
+    @declare_growth(_CORPUS_ORDER_GROWTH)
+    def _acyclic(self, kind: str) -> None:
+        # Only indegrees and pending vertex identities are duplicated. The owned
+        # corpus edge index supplies both the input pass and exact outgoing ranges.
+        # Separate scratch keeps cancellation from leaving partially built work in
+        # the corpus connection, whose facts remain available for a fresh retry.
+        with (
+            TemporaryDirectory(prefix="order-", dir=self._scratch.name) as directory,
+            closing(sqlite3.connect(Path(directory) / "order.sqlite3")) as work,
+        ):
+            with closing(work.execute("PRAGMA cache_size = -512")):
+                pass
+            with closing(work.execute("BEGIN")):
+                pass
+            with closing(
+                work.execute("CREATE TABLE nodes (id TEXT PRIMARY KEY, degree TEXT NOT NULL)")
+            ):
+                pass
+            with closing(work.execute("CREATE TABLE ready (id TEXT PRIMARY KEY)")):
+                pass
+            vertices = 0
+            with closing(
+                self._db.execute(
+                    "SELECT source, target FROM edges WHERE kind = ? ORDER BY source, target",
+                    (kind,),
+                )
+            ) as edges:
+                for source, target in edges:
+                    with closing(
+                        work.execute("INSERT OR IGNORE INTO nodes VALUES (?, '0')", (source,))
+                    ) as inserted:
+                        vertices += inserted.rowcount
+                    with closing(
+                        work.execute("SELECT degree FROM nodes WHERE id = ?", (target,))
+                    ) as cursor:
+                        found = cursor.fetchone()
+                    if found is None:
+                        with closing(work.execute("INSERT INTO nodes VALUES (?, '1')", (target,))):
+                            pass
+                        vertices += 1
+                    else:
+                        degree = str(int(found[0]) + 1)
+                        with closing(
+                            work.execute(
+                                "UPDATE nodes SET degree = ? WHERE id = ?", (degree, target)
+                            )
+                        ):
+                            pass
+            with closing(work.execute("SELECT id, degree FROM nodes ORDER BY id")) as nodes:
+                for identity, degree in nodes:
+                    if degree == "0":
+                        with closing(work.execute("INSERT INTO ready VALUES (?)", (identity,))):
+                            pass
+            completed = 0
+            while True:
+                with closing(work.execute("SELECT id FROM ready ORDER BY id LIMIT 1")) as cursor:
+                    pending = cursor.fetchone()
+                if pending is None:
+                    break
+                source = pending[0]
+                with closing(work.execute("DELETE FROM ready WHERE id = ?", (source,))):
+                    pass
+                with closing(
+                    self._db.execute(
+                        "SELECT target FROM edges WHERE kind = ? AND source = ? ORDER BY target",
+                        (kind, source),
+                    )
+                ) as edges:
+                    for (target,) in edges:
+                        with closing(
+                            work.execute("SELECT degree FROM nodes WHERE id = ?", (target,))
+                        ) as cursor:
+                            found = cursor.fetchone()
+                        if found is None:
+                            raise RuntimeError("corpus ordering indegree is inconsistent")
+                        remaining = int(found[0]) - 1
+                        if remaining < 0:
+                            raise RuntimeError("corpus ordering indegree is inconsistent")
+                        degree = str(remaining)
+                        with closing(
+                            work.execute(
+                                "UPDATE nodes SET degree = ? WHERE id = ?", (degree, target)
+                            )
+                        ):
+                            pass
+                        if degree == "0":
+                            with closing(work.execute("INSERT INTO ready VALUES (?)", (target,))):
+                                pass
+                completed += 1
+            if completed != vertices:
+                raise ProvenanceValidationError(f"cross-journal {kind} graph contains a cycle")
 
 
 def validate_canonical_corpus(summaries: Iterable[JournalSummary]) -> None:

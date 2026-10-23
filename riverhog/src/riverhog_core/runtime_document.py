@@ -155,6 +155,16 @@ class RiverhogDocument(_Document):
     log_level: str = "INFO"
     public_base_url: str | None = None
     archive_scrypt_work_factor: int = Field(default=DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR, ge=1, le=22)
+    journal_validation_workspace: Path = Field(
+        default=Path("/scratch/journal-validation"),
+        description="Absolute private persistent workspace shared by workers resuming these jobs.",
+    )
+    journal_validation_concurrency: int = Field(
+        default=2,
+        ge=1,
+        strict=True,
+        description="Maximum active native validation sessions; other jobs wait for capacity.",
+    )
     archive_upload_sweep_interval: str = "30s"
     collection_upload_custody_lease: str = "1h"
     retrieval_restore_poll_interval: str = "5m"
@@ -265,6 +275,8 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         log_level=document.log_level,
         public_base_url=document.public_base_url,
         archive_scrypt_work_factor=document.archive_scrypt_work_factor,
+        journal_validation_workspace=document.journal_validation_workspace,
+        journal_validation_concurrency=document.journal_validation_concurrency,
         archive_upload_sweep_interval=parse_duration(document.archive_upload_sweep_interval),
         collection_upload_custody_lease=parse_duration(document.collection_upload_custody_lease),
         retrieval_restore_poll_interval=parse_duration(document.retrieval_restore_poll_interval),
