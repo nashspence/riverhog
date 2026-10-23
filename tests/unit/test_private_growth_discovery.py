@@ -160,3 +160,40 @@ def test_context_manager_trace_rejects_a_foreign_wrapped_body(private_owner, mon
     monkeypatch.setattr(module._lease, "__wrapped__", foreign_body)
     with pytest.raises(ValueError, match="outside the authoritative checkout"):
         source_analysis(root, surface, projection, packages=packages)
+
+
+def test_context_manager_qualification_uses_owner_without_replacing_callable(private_owner):
+    from riverhog_growth_contracts import growth_binding
+
+    from scripts.validation_witnesses import operation_projection
+
+    root, _, implementation = add_context_owner(private_owner)
+    module = importlib.import_module("private_growth_owner._implementation")
+    operation = module._lease
+    assert not inspect.getfile(operation).startswith(str(root))
+    assert inspect.getfile(inspect.unwrap(operation)) == str(implementation)
+    projection, reference = operation_projection(
+        "private_growth_owner._implementation._lease", root=root
+    )
+    assert reference["id"] == "fixture.private-context.growth/v1"
+    assert set(projection["declarations"]) == {reference["id"]}
+    assert growth_binding(operation).operation is operation
+    with operation() as value:
+        assert value == "owned" and module.CALLS == ["entered"]
+    assert module.CALLS == ["entered", "closed"]
+
+
+def test_context_manager_qualification_rejects_foreign_underlying_source(
+    private_owner, monkeypatch
+):
+    from scripts.validation_witnesses import operation_projection
+
+    root, _, _ = add_context_owner(private_owner)
+    module = importlib.import_module("private_growth_owner._implementation")
+
+    def foreign_body():
+        yield "foreign"
+
+    monkeypatch.setattr(module._lease, "__wrapped__", foreign_body)
+    with pytest.raises(ValueError, match="outside the required checkout"):
+        operation_projection("private_growth_owner._implementation._lease", root=root)

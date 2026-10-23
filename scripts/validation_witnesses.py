@@ -93,7 +93,7 @@ def operation_projection(
             continue
         seen.add(current.declaration.id)
         if root is not None and not Path(
-            inspect.getfile(current.operation)
+            inspect.getfile(inspect.unwrap(current.operation))
         ).resolve().is_relative_to(root.resolve()):
             raise ValueError("growth operation source is outside the required checkout")
         pending.extend(growth_binding(operation) for _, operation in current.delegates)
