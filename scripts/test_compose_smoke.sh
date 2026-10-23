@@ -777,7 +777,7 @@ with RiverhogFtpSpoolClient(
     base_url='http://127.0.0.1:8080',
     token='a-riverhog-ftp-spool-compose-smoke-token',
     allow_insecure_http=True,
-    timeout_seconds=300 + 30 * max(0, int(os.environ['STOVE0_SMOKE_FILE_COUNT']) - 16),
+    timeout_seconds=int(os.environ['STOVE0_SMOKE_PUBLICATION_TIMEOUT']),
 ) as client:
     health = client.ftp_spool_health_ready()
     assert health.service == 'a-riverhog-ftp-spool'
@@ -803,6 +803,7 @@ input_receipt_json="$(adapter_compose exec -T \
   --env RIVERHOG_SMOKE_RECEIPT_OUTPUT=1 \
   --env "STOVE0_SMOKE_FILE_COUNT=${smoke_file_count}" \
   --env "STOVE0_SMOKE_AUDIO_FRAMES=${smoke_audio_frames}" \
+  --env "STOVE0_SMOKE_PUBLICATION_TIMEOUT=${smoke_publication_timeout}" \
   --env "STOVE0_SMOKE_INTERRUPT_TRANSFER=${interrupt_transfer}" \
   ftp-spool python -c "${adapter_run_code}")"
 test -n "${input_receipt_json}"
