@@ -612,12 +612,12 @@ def validate_execution_samples(projection: object, declaration_id: str, samples:
 
     Counts establish only the declared successful-call scope. Clean source and
     assertion execution must be verified by the evidence owner separately.
+    Each root has its own bounded reader budget; every root is checked.
     """
     contexts = _projection_contexts(projection)
     rows = _fields(projection, {"format", "cost_model", "declarations"})["declarations"]
-    budget = [65536]
 
-    def check(identity: str, sample: object, depth: int) -> None:
+    def check(identity: str, sample: object, depth: int, budget: list[int]) -> None:
         budget[0] -= 1
         if depth > 64 or budget[0] < 0 or identity not in contexts:
             raise ValueError("growth sample exceeds the reader budget or has no declared owner")
@@ -642,7 +642,7 @@ def validate_execution_samples(projection: object, declaration_id: str, samples:
             if not isinstance(child_samples, list):
                 raise ValueError("growth delegate samples require actual invocation records")
             for child_sample in child_samples:
-                check(child.declaration.id, child_sample, depth + 1)
+                check(child.declaration.id, child_sample, depth + 1, budget)
 
         def composition(expression: Expression) -> None:
             if expression.op == "delegate":
@@ -667,7 +667,7 @@ def validate_execution_samples(projection: object, declaration_id: str, samples:
     if not isinstance(samples, list) or not samples:
         raise ValueError("growth evidence has no completed primitive samples")
     for sample in samples:
-        check(declaration_id, sample, 0)
+        check(declaration_id, sample, 0, [65536])
 
 
 def _evaluate(context: _Context, metric: str, dimensions: Mapping[str, int]) -> int:

@@ -256,6 +256,8 @@ def entry_samples(
                                 array.offset - 1 : array.end
                             ] == canonical.canonical_json_bytes(items)
             samples.append(sample(operation, dimensions, recorder))
+    if epochs.classify_epoch_boundary not in operations:
+        return
     raw = canonical.canonical_json_bytes(document(kind="correction"))
     for ordinal, previous in (
         (0, 0),
