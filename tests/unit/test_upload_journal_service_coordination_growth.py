@@ -410,14 +410,35 @@ def scheduling_samples(root, samples, *, large=True):
                 samples.append(sample(operation, own_dimensions, metrics, {"readiness": children}))
 
 
-@pytest.mark.growth_witness
+@pytest.mark.growth_witness(
+    "upload-journal-attempt-stamp/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.services.collection_uploads._upload_journal_validation_stamp",
+)
 def test_actual_service_catalog_selection_and_attempt_stamps(tmp_path, record_property):
     samples = []
-    catalog_samples(tmp_path, samples)
+    for case in catalog_cases(tmp_path):
+        stamp_samples(case, samples)
     record_property("growth_samples", samples)
 
 
-@pytest.mark.growth_witness
+@pytest.mark.growth_witness(
+    "upload-journal-catalog-selection/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.services.collection_uploads._next_upload_journal_validation",
+)
+def test_actual_service_catalog_selection_owns_complete_index_work(tmp_path, record_property):
+    samples = []
+    for case in catalog_cases(tmp_path):
+        selection_samples(case, samples)
+    record_property("growth_samples", samples)
+
+
+@pytest.mark.growth_witness(
+    "upload-journal-readiness-scheduling/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.services.collection_uploads.SqlAlchemyCollectionUploadService._schedule_finalization_if_ready",
+)
 def test_actual_service_readiness_scheduling_owns_complete_transaction(tmp_path, record_property):
     samples = []
     scheduling_samples(tmp_path, samples)

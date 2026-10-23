@@ -164,7 +164,12 @@ def range_fields(raw):
     return sum(len(item) for item in (value, body, assertions) if isinstance(item, dict))
 
 
-def entry_samples(samples, *, large=True):
+def entry_samples(
+    samples,
+    *,
+    large=True,
+    operations=(epochs.classify_epoch_boundary, topology.plan_topology_frame),
+):
     specifications = [(0, 0, 0), (1, 0, 0), (17, 0, 0)]
     if large:
         specifications.extend(((1025, 0, 0), (1, 65537, 0), (1, 0, 17), (1, 0, 1025)))
@@ -200,7 +205,7 @@ def entry_samples(samples, *, large=True):
         )
     )
     for raw in raws:
-        for operation in (epochs.classify_epoch_boundary, topology.plan_topology_frame):
+        for operation in operations:
             dimensions = {"input_octets": len(raw) if type(raw) is bytes else 0}
             if operation is topology.plan_topology_frame:
                 dimensions["range_fields"] = range_fields(raw)
@@ -426,14 +431,33 @@ def advance_samples(samples, *, large=True):
         samples.append(observed)
 
 
-@pytest.mark.growth_witness
+@pytest.mark.growth_witness(
+    "native-epoch-boundary-codec/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance.epoch_boundaries.classify_epoch_boundary",
+)
 def test_actual_entry_preparation_preserves_complete_codec_and_hash_work(record_property):
     samples = []
-    entry_samples(samples)
+    entry_samples(samples, operations=(epochs.classify_epoch_boundary,))
     record_property("growth_samples", samples)
 
 
-@pytest.mark.growth_witness
+@pytest.mark.growth_witness(
+    "native-topology-planning-codec/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance.topology_facts.plan_topology_frame",
+)
+def test_actual_topology_planning_preserves_complete_codec_and_hash_work(record_property):
+    samples = []
+    entry_samples(samples, operations=(topology.plan_topology_frame,))
+    record_property("growth_samples", samples)
+
+
+@pytest.mark.growth_witness(
+    "native-topology-advance-input/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance.topology_facts.advance_topology_frame",
+)
 def test_actual_topology_advance_never_revisits_committed_items(record_property):
     samples = []
     advance_samples(samples)

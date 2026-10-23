@@ -308,3 +308,13 @@ def test_declaration_outside_required_checkout_cannot_supply_a_source_binding(tm
 
     with pytest.raises(ValueError, match="outside"):
         operation_projection("riverhog_client.hash_raw_source_chunks", root=tmp_path)
+
+
+def test_growth_witness_source_requires_identity_and_gate_binding(tmp_path):
+    tests = tmp_path / "tests/unit"
+    tests.mkdir(parents=True)
+    (tests / "test_missing.py").write_text(
+        "import pytest\n@pytest.mark.growth_witness\ndef test_missing():\n    pass\n"
+    )
+    with pytest.raises(ValueError, match="requires one identity and gate binding"):
+        discover_test_witnesses(tmp_path)
