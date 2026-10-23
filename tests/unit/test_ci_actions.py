@@ -406,6 +406,45 @@ def test_artifact_paths_cannot_escape_the_data_only_destination(tmp_path, path):
         ci_actions.extract_artifact(remote, remote.artifacts[0], remote.run, tmp_path / "contents")
 
 
+@pytest.mark.parametrize("capacity", ["compressed", "expanded", "exact-expanded"])
+def test_artifact_capacity_covers_verified_compressed_and_expanded_bytes(
+    tmp_path, monkeypatch, capacity
+):
+    payload = b"complete-evidence" * 1024
+    output = BytesIO()
+    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as stream:
+        stream.writestr("evidence.json", payload)
+    archive = output.getvalue()
+    remote = Remote(artifact=artifact_record(archive), archive=archive)
+    budget = len(archive) - 1 if capacity == "compressed" else len(payload)
+    if capacity == "expanded":
+        budget -= 1
+    monkeypatch.setenv("RIVERHOG_VALIDATION_MAX_BYTES", str(budget))
+    destination = tmp_path / "contents"
+    if capacity == "exact-expanded":
+        assert ci_actions.extract_artifact(
+            remote, remote.artifacts[0], remote.run, destination
+        ) == len(payload)
+        assert (destination / "evidence.json").read_bytes() == payload
+    else:
+        message = "trusted execution" if capacity == "compressed" else "evidence budget"
+        with pytest.raises(ValueError, match=message):
+            ci_actions.extract_artifact(remote, remote.artifacts[0], remote.run, destination)
+        assert not (destination / "evidence.json").exists()
+    assert remote.downloads == (0 if capacity == "compressed" else 1)
+
+
+@pytest.mark.parametrize("budget", ["0", "-1", "", "invalid", "1.5"])
+def test_invalid_evidence_capacity_rejects_before_downloading(tmp_path, monkeypatch, budget):
+    archive = zipped([("evidence.json", b"complete evidence")])
+    remote = Remote(artifact=artifact_record(archive), archive=archive)
+    monkeypatch.setenv("RIVERHOG_VALIDATION_MAX_BYTES", budget)
+    with pytest.raises(ValueError, match="storage budget.*positive integer"):
+        ci_actions.extract_artifact(remote, remote.artifacts[0], remote.run, tmp_path / "contents")
+    assert remote.downloads == 0
+    assert not (tmp_path / "contents").exists()
+
+
 def test_parallel_aggregate_uses_actual_wall_and_includes_setup_and_cleanup():
     jobs = [job_record(30, 1, 20), job_record(31, 5, 15)]
     result = ci_actions.measure_jobs(jobs, run_record())
