@@ -73,11 +73,13 @@ def wait() -> None:
     work_ids: tuple[str, ...] = ()
     previous = None
     next_progress = started
+    next_work_refresh = started
     while (now := time.monotonic()) < deadline:
         try:
-            if not work_ids:
+            if not work_ids or now >= next_work_refresh:
                 rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
                 work_ids = tuple(row["work_id"] for row in rows)
+                next_work_refresh = now + 60
             progress = []
             for work_id in work_ids:
                 status = WorkProgress.model_validate(

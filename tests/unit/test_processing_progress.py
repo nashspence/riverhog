@@ -73,3 +73,45 @@ def test_processing_wait_fetches_exact_failure_after_terminal_progress(monkeypat
     with pytest.raises(RuntimeError, match="native-target-failure"):
         processing.wait()
     assert paths[-1] == "/v1/work/" + work_id
+
+
+def test_processing_wait_discovers_a_late_failed_child_before_parent_completion(monkeypatch):
+    parent, child = "a" * 64, "b" * 64
+    clock = [0.0]
+    paths = []
+    browses = 0
+
+    def stove(path, _payload=None, *, timeout=30):
+        nonlocal browses
+        paths.append(path)
+        assert timeout == 5
+        if path.startswith("/v1/work?"):
+            browses += 1
+            rows = [{"work_id": parent, "phase": "coordinating"}]
+            if browses > 1:
+                rows.append({"work_id": child, "phase": "failed"})
+            return {"work": rows}
+        if path.endswith("/progress"):
+            work_id = path.split("/")[-2]
+            return {
+                "format": "stove0-work-progress/v1",
+                "work_id": work_id,
+                "phase": "failed" if work_id == child else "coordinating",
+                "revision": 3 if work_id == child else 1,
+            }
+        assert path == "/v1/work/" + child
+        return {
+            "work_id": child,
+            "phase": "failed",
+            "failure": {"code": "late-child-failed", "message": "exact child failure"},
+        }
+
+    monkeypatch.setenv("STOVE0_SMOKE_COMPLETION_TIMEOUT", "300")
+    monkeypatch.setattr(processing, "stove", stove)
+    monkeypatch.setattr(processing.time, "monotonic", lambda: clock[0])
+    monkeypatch.setattr(processing.time, "sleep", lambda _: clock.__setitem__(0, clock[0] + 61))
+    with pytest.raises(RuntimeError, match="late-child-failed"):
+        processing.wait()
+    assert clock[0] == 61
+    assert browses == 2
+    assert paths[-1] == "/v1/work/" + child
