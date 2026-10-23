@@ -53,8 +53,8 @@ def _pending_declaration(kind: str) -> Declaration:
         return Expression("constant", value=value, unit=COUNT)
 
     return Declaration(
-        id=f"riverhog-core.discovery-pending-{kind}.growth/v1",
-        authority="riverhog-core",
+        id=f"riverhog-server.discovery-pending-{kind}.growth/v1",
+        authority="riverhog-server",
         subjects=(f"riverhog_core.canonical_discovery_relevance.MemberRelevance._pending_{kind}",),
         scope="canonical-discovery-pending-work-point-selection",
         starts_at=(
