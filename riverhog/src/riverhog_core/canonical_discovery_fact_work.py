@@ -46,6 +46,8 @@ class FactTaskKey:
 
 @dataclass(frozen=True, slots=True)
 class FactStreamKey:
+    """One producer-assigned work identifier, independent of payload equality."""
+
     kind: str
     record_key: str
 
@@ -71,7 +73,7 @@ def _digest(value: str) -> None:
         or len(value) != 64
         or any(character not in "0123456789abcdef" for character in value)
     ):
-        raise ValueError("source and stream identities must be lowercase SHA-256")
+        raise ValueError("source identities must be lowercase SHA-256")
 
 
 def _natural(value: int) -> None:
@@ -256,7 +258,7 @@ def begin_assertion(
 
 def _stream_identity(key: FactTaskKey, stream: FactStreamKey) -> tuple[str, str, str, str]:
     _identity(stream.kind)
-    _digest(stream.record_key)
+    _identity(stream.record_key)
     return key.build_id, key.task_id, stream.kind, stream.record_key
 
 

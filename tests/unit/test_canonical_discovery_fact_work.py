@@ -745,9 +745,7 @@ def test_native_large_array_stages_by_saved_source_position_across_batches_and_r
                         index = cursor.source_position
                         if index == len(values):
                             break
-                        selected = FactStreamKey(
-                            "profile-array-scalar", hashlib.sha256(str(index).encode()).hexdigest()
-                        )
+                        selected = FactStreamKey("profile-array-scalar", str(index))
                         if not cursor.value_position:
                             block = canonical_json_bytes(values[index])
                             segment = FactSegmentWrite(selected, 0, block)
@@ -803,7 +801,7 @@ def test_native_large_array_stages_by_saved_source_position_across_batches_and_r
                     "SELECT exact_bytes FROM discovery_fact_segments "
                     "WHERE build_id = ? AND task_id = ? AND kind = 'profile-array-scalar' "
                     "AND record_key = ? AND ordinal = 0",
-                    (key.build_id, key.task_id, hashlib.sha256(str(index).encode()).hexdigest()),
+                    (key.build_id, key.task_id, str(index)),
                 ).fetchone() == (canonical_json_bytes(expected),)
             # This fixture stages canonical bytes and the declared array. The
             # remaining extraction categories stay pending until their owners run.
@@ -818,3 +816,16 @@ def test_native_large_array_stages_by_saved_source_position_across_batches_and_r
                     )
         finally:
             db.close()
+
+
+def test_distinct_source_ordinals_keep_identical_value_bytes_as_distinct_streams(db) -> None:
+    first, second = FactStreamKey("scalar", "0"), FactStreamKey("scalar", "1")
+    with write(db):
+        stage_fact_segment(db, TASK, first, ordinal=0, exact_bytes=b"same", expected_version=0)
+        finish_fact_stream(db, TASK, first, fragments=1, octets=4, expected_version=1)
+        stage_fact_segment(db, TASK, second, ordinal=0, exact_bytes=b"same", expected_version=2)
+        finish_fact_stream(db, TASK, second, fragments=1, octets=4, expected_version=3)
+    assert fact_task_progress(db, TASK) == FactTaskProgress(4, 2, 0, 2, 8, False)
+    assert db.execute(
+        "SELECT record_key, exact_bytes FROM discovery_fact_segments ORDER BY record_key"
+    ).fetchall() == [("0", b"same"), ("1", b"same")]
