@@ -214,6 +214,33 @@ class CanonicalProvenanceArchiveReader:
             raise ProvenanceArchiveReadError("history structure differs from its identity")
         return raw
 
+    def history_descriptor(self, binding: MemberHistoryBinding) -> MemberHistoryDocument:
+        """Read one exact bound descriptor; its set terminals are separate obligations."""
+        self._root()
+        return binding.verify_descriptor(
+            _read_bounded(
+                self._read_object(member_history_object_path(binding.history_sha256)),
+                binding.history_bytes,
+            )
+        )
+
+    def history_page(self, authority: RecordSetRef, ordinal: int) -> RecordPage:
+        """Read only the selected bounded page; the consumer verifies the full commitment."""
+        if type(ordinal) is not int or not 0 <= ordinal <= authority.record_count:
+            raise ProvenanceArchiveReadError("member history page position is invalid")
+        self._root()
+        page = RecordPage.from_json_bytes(
+            _read_bounded(
+                self._read_object(
+                    history_record_page_object_path(authority.records_sha256, ordinal)
+                ),
+                PAGE_BYTES_MAX,
+            )
+        )
+        if page.authority != authority or page.ordinal != ordinal:
+            raise ProvenanceArchiveReadError("member history page authority changed")
+        return page
+
     def member_history(self, binding: MemberHistoryBinding) -> MemberHistoryDocument:
         """Verify the exact descriptor and both complete structural selections.
 
@@ -222,11 +249,7 @@ class CanonicalProvenanceArchiveReader:
         source-proof closure at the explicitly requested extent.
         """
 
-        raw = _read_bounded(
-            self._read_object(member_history_object_path(binding.history_sha256)),
-            binding.history_bytes,
-        )
-        descriptor = binding.verify_descriptor(raw)
+        descriptor = self.history_descriptor(binding)
         try:
             verify_member_history_sets(
                 descriptor,

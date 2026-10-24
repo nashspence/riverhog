@@ -1,0 +1,473 @@
+from __future__ import annotations
+
+import hashlib
+import sqlite3
+import uuid
+from dataclasses import replace
+
+import pytest
+from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
+    MEMBER_HISTORY_IMPORTS_SCHEMA,
+    MEMBER_HISTORY_ROOTS_SCHEMA,
+    PROVENANCE_BINDINGS_FORMAT,
+    HistoryJournalAnchor,
+    MemberHistoryBinding,
+    MemberHistoryDocument,
+    MemberHistoryImport,
+    MemberHistoryPrimary,
+    MemberHistoryRoot,
+    ProvenanceRootDocument,
+    ProvenanceTerminalDocument,
+    ProvenanceVolumeDocument,
+    RecordPage,
+    RecordSetCommitment,
+    binding_tree_commitment,
+    history_record_page_object_path,
+    member_history_object_path,
+    ordered_provenance_commitment,
+)
+from riverhog_canonical_json import canonical_json_bytes
+from riverhog_core.canonical_discovery_archive_work import (
+    ArchiveTaskKey,
+    StaleArchiveTask,
+    apply_archive_descriptor,
+    archive_metadata_progress,
+    begin_archive_metadata,
+    initialize_archive_work,
+    prepare_archive_descriptor,
+)
+from riverhog_core.canonical_discovery_history_work import (
+    ArchiveHistoryWork,
+    HistorySetWork,
+    apply_history_descriptor,
+    apply_history_record,
+    archive_history_ready,
+    history_set_progress,
+    initialize_history_work,
+    prepare_history_descriptor,
+    prepare_history_record,
+)
+from riverhog_core.canonical_discovery_member_work import (
+    ArchiveMemberRegistration,
+    apply_archive_member,
+    archive_member_progress,
+    begin_archive_members,
+    initialize_member_work,
+    prepare_archive_member,
+)
+from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
+
+from tests.support.canonical_discovery_work import RecordedConnection, write
+from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
+
+
+def anchor(index):
+    return HistoryJournalAnchor(
+        f"urn:uuid:{uuid.UUID(int=index + 1)}",
+        f"urn:uuid:{uuid.UUID(int=index + 1001)}",
+        index,
+        f"{index:064x}",
+        f"{index + 1:064x}",
+        index + 100,
+    )
+
+
+def record_set(objects, schema, rows, *, wrong_digest=False, page_size=64):
+    rows = sorted(rows, key=lambda row: row["key"])
+    commitment = RecordSetCommitment(schema)
+    for row in rows:
+        commitment.update(row["key"], row["value"])
+    authority = commitment.ref()
+    if wrong_digest:
+        authority = replace(authority, records_sha256="f" * 64)
+    ordinal = 0
+    for offset in range(0, len(rows), page_size):
+        page = RecordPage(authority, ordinal, tuple(rows[offset : offset + page_size]), False)
+        objects[history_record_page_object_path(authority.records_sha256, ordinal)] = (
+            page.to_json_bytes()
+        )
+        ordinal += 1
+    terminal = RecordPage(authority, ordinal, (), True)
+    objects[history_record_page_object_path(authority.records_sha256, ordinal)] = (
+        terminal.to_json_bytes()
+    )
+    return authority
+
+
+def fixture(*, count=129, members=3, fault=None):
+    _, objects, _, _ = archive_reader_fixture()
+    root = ProvenanceRootDocument.from_json_bytes(objects["provenance/root.json.age"])
+    roots = [
+        MemberHistoryRoot(anchor(i), "bound" if i % 2 == 0 else "retained") for i in range(count)
+    ]
+    primary = MemberHistoryPrimary(anchor(0), f"urn:uuid:{uuid.UUID(int=2001)}")
+    if fault == "missing_primary":
+        primary = replace(primary, journal=anchor(9999))
+    if fault == "retained_primary":
+        roots[0] = replace(roots[0], inclusion="retained")
+    if fault == "conflicting_heads":
+        roots.append(MemberHistoryRoot(replace(anchor(0), prefix_sha256="e" * 64), "bound"))
+    roots_ref = record_set(
+        objects,
+        MEMBER_HISTORY_ROOTS_SCHEMA,
+        [{"key": value.key, "value": value.to_mapping()} for value in roots],
+        wrong_digest=fault == "digest",
+    )
+    imports = [
+        MemberHistoryImport(
+            f"{i + 1:064x}",
+            1,
+            "a" * 64,
+            "b" * 64,
+            "c" * 64,
+            "d" * 64,
+            "e" * 64,
+            BOUND_HISTORY_EXTENT,
+            {
+                "scope": "external",
+                "journal_id": anchor(0).journal_id,
+                "entry": anchor(0).to_mapping()["through"],
+                "assertion_id": f"urn:uuid:{uuid.UUID(int=3001)}",
+                "object_id": f"urn:uuid:{uuid.UUID(int=4001)}",
+                "object_type": "state",
+            },
+        )
+        for i in range(3)
+    ]
+    imports_ref = record_set(
+        objects,
+        MEMBER_HISTORY_IMPORTS_SCHEMA,
+        [{"key": value.key, "value": value.to_mapping()} for value in imports],
+    )
+    histories, bindings = [], []
+    for index in range(members):
+        descriptor = MemberHistoryDocument(
+            f"{index:064x}", 7, "a" * 64, primary, roots_ref, imports_ref
+        )
+        raw = descriptor.to_json_bytes()
+        binding = MemberHistoryBinding(
+            descriptor.artifact_id,
+            descriptor.bytes,
+            descriptor.sha256,
+            descriptor.identity,
+            len(raw),
+        )
+        objects[member_history_object_path(binding.history_sha256)] = raw
+        histories.append(descriptor)
+        bindings.append(binding)
+    binding_page = canonical_json_bytes(
+        {"format": PROVENANCE_BINDINGS_FORMAT, "bindings": [b.to_mapping() for b in bindings]}
+    )
+    old = ProvenanceVolumeDocument.from_json_bytes(
+        objects["provenance/metadata/volume-" + "0" * 64 + ".json.age"]
+    )
+    updated = replace(
+        old,
+        payload=replace(
+            old.payload, bytes=len(binding_page), sha256=hashlib.sha256(binding_page).hexdigest()
+        ),
+        first_artifact_id=bindings[0].artifact_id,
+        last_artifact_id=bindings[-1].artifact_id,
+        binding_count=members,
+    )
+    objects[updated.metadata_path] = updated.to_json_bytes()
+    objects[updated.payload.path] = binding_page
+    documents = [updated]
+    for i in (1, 2):
+        documents.append(
+            ProvenanceVolumeDocument.from_json_bytes(
+                objects[f"provenance/metadata/volume-{i:064x}.json.age"]
+            )
+        )
+    terminal = ProvenanceTerminalDocument.from_json_bytes(
+        objects[f"provenance/metadata/volume-{3:064x}.json.age"]
+    )
+    root = replace(
+        root,
+        binding_count=members,
+        binding_tree_sha256=binding_tree_commitment(bindings).root_sha256,
+        ordered_volume_sha256=ordered_provenance_commitment((*documents, terminal)),
+    )
+    objects["provenance/root.json.age"] = root.to_json_bytes()
+    reads = []
+
+    def read(path):
+        reads.append(path)
+        yield objects[path]
+
+    reader = CanonicalProvenanceArchiveReader(
+        read,
+        expected_root_sha256=root.identity,
+        archive_generation=root.archive_generation,
+        artifact_set_sha256=root.artifact_set_sha256,
+    )
+    return reader, objects, bindings, histories, discovery_archive_admission(root), reads
+
+
+def setup_work(path, *, count=129, members=3, fault=None):
+    reader, objects, bindings, histories, admission, reads = fixture(
+        count=count, members=members, fault=fault
+    )
+    db = sqlite3.connect(path, isolation_level=None)
+    initialize_archive_work(db)
+    initialize_member_work(db)
+    initialize_history_work(db)
+    key = ArchiveTaskKey("build", admission.identity, "worker")
+    with write(db):
+        begin_archive_metadata(db, key, admission)
+    while not archive_metadata_progress(db, key).complete:
+        page = prepare_archive_descriptor(db, key, admission, reader)
+        with write(db):
+            apply_archive_descriptor(db, key, admission, page)
+    with write(db):
+        begin_archive_members(db, key, admission)
+    member_owner = ArchiveMemberRegistration(admission, reader)
+    while not archive_member_progress(db, key).complete:
+        page = prepare_archive_member(db, key, member_owner)
+        with write(db):
+            apply_archive_member(db, key, member_owner, page)
+    history_owner = ArchiveHistoryWork(admission, reader)
+    for binding in bindings:
+        page = prepare_history_descriptor(db, key, history_owner, binding.artifact_id)
+        with write(db):
+            apply_history_descriptor(db, key, history_owner, page)
+    return db, key, history_owner, histories, objects, reads
+
+
+def advance(db, key, owner):
+    page = prepare_history_record(db, key, owner)
+    with write(db):
+        return apply_history_record(db, key, owner, page)
+
+
+def finish(db, key, owner):
+    while not history_set_progress(db, key, owner).complete:
+        advance(db, key, owner)
+
+
+def test_shared_sets_resume_exact_page_item_without_prior_page_replay(tmp_path):
+    path = tmp_path / "work.sqlite"
+    db, key, history, descriptors, _, reads = setup_work(path)
+    descriptor = descriptors[0]
+    owner = HistorySetWork(history.admission, history.reader, descriptor.roots)
+    assert not archive_history_ready(db, key, history, descriptor.artifact_id)
+    reads.clear()
+    for _ in range(65):
+        advance(db, key, owner)
+    assert len(reads) == 4
+    assert history_set_progress(db, key, owner).page_ordinal == 1
+    assert history_set_progress(db, key, owner).item_index == 1
+    db.close()
+    db = sqlite3.connect(path, isolation_level=None)
+    owner = HistorySetWork(history.admission, history.reader, descriptor.roots)
+    reads.clear()
+    finish(db, key, owner)
+    assert len(reads) == 6  # Current second page, final data page and mandatory terminal.
+    assert not any("metadata/" in value for value in reads)
+    imports = HistorySetWork(history.admission, history.reader, descriptor.imports)
+    finish(db, key, imports)
+    assert db.execute("SELECT count(*) FROM discovery_history_sets").fetchone() == (2,)
+    assert db.execute("SELECT count(*) FROM discovery_history_set_records").fetchone() == (132,)
+    assert db.execute("SELECT count(*) FROM discovery_archive_histories").fetchone() == (3,)
+    for value in descriptors:
+        assert archive_history_ready(db, key, history, value.artifact_id)
+    stored = db.execute(
+        "SELECT record_key,value_json,source_page,source_item "
+        "FROM discovery_history_set_records WHERE records_sha256=? ORDER BY record_key",
+        (descriptor.roots.records_sha256,),
+    ).fetchall()
+    assert [(int(row[2]), row[3]) for row in stored] == [(i // 64, i % 64) for i in range(129)]
+    assert [row[0] for row in stored] == sorted(row[0] for row in stored)
+    db.close()
+
+
+@pytest.mark.parametrize("fault", ["digest", "missing_terminal", "changed_record"])
+def test_independent_set_digest_and_terminal_are_required(tmp_path, fault):
+    db, key, history, descriptors, objects, _ = setup_work(
+        tmp_path / "work.sqlite", count=3, fault="digest" if fault == "digest" else None
+    )
+    authority = descriptors[0].roots
+    if fault == "missing_terminal":
+        objects.pop(history_record_page_object_path(authority.records_sha256, 1))
+    if fault == "changed_record":
+        path = history_record_page_object_path(authority.records_sha256, 0)
+        page = RecordPage.from_json_bytes(objects[path])
+        rows = list(page.records)
+        rows[0]["value"]["inclusion"] = (
+            "retained" if rows[0]["value"]["inclusion"] == "bound" else "bound"
+        )
+        objects[path] = replace(page, records=tuple(rows)).to_json_bytes()
+    owner = HistorySetWork(history.admission, history.reader, authority)
+    with pytest.raises((StaleArchiveTask, KeyError)):
+        finish(db, key, owner)
+    assert not history_set_progress(db, key, owner).complete
+    assert not archive_history_ready(db, key, history, descriptors[0].artifact_id)
+    db.close()
+
+
+@pytest.mark.parametrize("fault", ["missing_primary", "retained_primary"])
+def test_exact_primary_must_be_bound_after_both_independent_terminals(tmp_path, fault):
+    db, key, history, descriptors, _, _ = setup_work(tmp_path / "work.sqlite", count=3, fault=fault)
+    descriptor = descriptors[0]
+    for authority in (descriptor.roots, descriptor.imports):
+        finish(db, key, HistorySetWork(history.admission, history.reader, authority))
+    with pytest.raises(StaleArchiveTask, match="exact bound primary"):
+        archive_history_ready(db, key, history, descriptor.artifact_id)
+    db.close()
+
+
+def test_conflicting_bound_heads_roll_back_the_child_and_continuation(tmp_path):
+    db, key, history, descriptors, _, _ = setup_work(
+        tmp_path / "work.sqlite", count=129, fault="conflicting_heads"
+    )
+    owner = HistorySetWork(history.admission, history.reader, descriptors[0].roots)
+    while True:
+        before = history_set_progress(db, key, owner)
+        try:
+            advance(db, key, owner)
+        except sqlite3.IntegrityError:
+            break
+    assert history_set_progress(db, key, owner) == before
+    assert not before.complete
+    db.close()
+
+
+def test_apply_failure_exact_retry_and_stale_preparation(tmp_path):
+    db, key, history, descriptors, _, _ = setup_work(tmp_path / "work.sqlite", count=3)
+    owner = HistorySetWork(history.admission, history.reader, descriptors[0].roots)
+    page = prepare_history_record(db, key, owner)
+    before = history_set_progress(db, key, owner)
+    db.execute(
+        "CREATE TRIGGER fail_record BEFORE INSERT ON discovery_history_set_records "
+        "BEGIN SELECT RAISE(ABORT,'injected history failure'); END"
+    )
+    with write(db), pytest.raises(sqlite3.IntegrityError, match="injected"):
+        apply_history_record(db, key, owner, page)
+    assert history_set_progress(db, key, owner) == before
+    assert db.execute("SELECT count(*) FROM discovery_history_set_records").fetchone() == (0,)
+    db.execute("DROP TRIGGER fail_record")
+    with write(db):
+        apply_history_record(db, key, owner, page)
+    with write(db), pytest.raises(StaleArchiveTask, match="version"):
+        apply_history_record(db, key, owner, page)
+    db.close()
+
+
+def test_source_worker_and_prepared_capability_cannot_be_substituted(tmp_path):
+    db, key, history, descriptors, _, _ = setup_work(tmp_path / "work.sqlite", count=3)
+    owner = HistorySetWork(history.admission, history.reader, descriptors[0].roots)
+    page = prepare_history_record(db, key, owner)
+    with write(db), pytest.raises(StaleArchiveTask, match="current exact"):
+        apply_history_record(db, key, owner, replace(page, terminal=True))
+    with write(db), pytest.raises(StaleArchiveTask, match="current exact"):
+        apply_history_record(
+            db, key, HistorySetWork(history.admission, history.reader, descriptors[0].roots), page
+        )
+    with pytest.raises(StaleArchiveTask, match="source/build/worker"):
+        prepare_history_record(db, replace(key, worker_id="other"), owner)
+    with pytest.raises(ValueError, match="owner-managed"):
+        apply_history_record(db, key, owner, page)
+    with write(db), pytest.raises(ValueError, match="no active"):
+        prepare_history_record(db, key, owner)
+    db.close()
+
+
+def test_descriptor_and_shared_child_obligations_commit_together(tmp_path):
+    db, key, history, descriptors, _, _ = setup_work(tmp_path / "work.sqlite", count=3)
+    db.execute("DELETE FROM discovery_archive_histories")
+    db.execute("DELETE FROM discovery_history_sets")
+    page = prepare_history_descriptor(db, key, history, descriptors[0].artifact_id)
+    db.execute(
+        "CREATE TRIGGER fail_set BEFORE INSERT ON discovery_history_sets "
+        "BEGIN SELECT RAISE(ABORT,'injected set failure'); END"
+    )
+    with write(db), pytest.raises(sqlite3.IntegrityError, match="injected"):
+        apply_history_descriptor(db, key, history, page)
+    assert db.execute("SELECT count(*) FROM discovery_archive_histories").fetchone() == (0,)
+    assert db.execute("SELECT count(*) FROM discovery_history_sets").fetchone() == (0,)
+    db.execute("DROP TRIGGER fail_set")
+    with write(db):
+        apply_history_descriptor(db, key, history, page)
+    db.close()
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-history-set-preparation/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_history_work.prepare_history_record",
+)
+def test_measured_history_record_preparation_reads_only_current_page(
+    tmp_path, monkeypatch, record_property
+):
+    measured(tmp_path, monkeypatch, record_property, prepare=True)
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-history-set-apply/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_history_work.apply_history_record",
+)
+def test_measured_history_record_apply_has_fixed_sql_without_source_hashing(
+    tmp_path, monkeypatch, record_property
+):
+    measured(tmp_path, monkeypatch, record_property, prepare=False)
+
+
+def measured(tmp_path, monkeypatch, record_property, *, prepare):
+    from riverhog_growth_contracts import (
+        growth_binding,
+        project_bindings,
+        validate_execution_samples,
+    )
+    from sha256_continuation import CheckpointSHA256
+
+    db, key, history, descriptors, _, reads = setup_work(tmp_path / "measured.sqlite")
+    owner = HistorySetWork(history.admission, history.reader, descriptors[0].roots)
+    binding = growth_binding(prepare_history_record if prepare else apply_history_record)
+    projection = project_bindings((binding,))
+    declaration_sha = hashlib.sha256(
+        canonical_json_bytes(projection["declarations"][binding.declaration.id])
+    ).hexdigest()
+    samples = []
+    actual = CheckpointSHA256.update_bytes
+    while not (before := history_set_progress(db, key, owner)).complete:
+        recorder = RecordedConnection(db)
+        observed = {"source_hash_octets": 0}
+
+        def update(self, raw, observed=observed):
+            observed["source_hash_octets"] += len(raw)
+            return actual(self, raw)
+
+        if not prepare:
+            page = prepare_history_record(db, key, owner)
+        read_count = len(reads)
+        with monkeypatch.context() as patch:
+            patch.setattr(CheckpointSHA256, "update_bytes", update)
+            if prepare:
+                page = prepare_history_record(recorder, key, owner)
+            else:
+                with write(db):
+                    apply_history_record(recorder, key, owner, page)
+        metrics = {
+            "sql_statements": recorder.metrics["sql_statements"],
+            "returned_rows": recorder.metrics["returned_rows"],
+        }
+        if prepare:
+            metrics["object_reads"] = len(reads) - read_count
+        else:
+            metrics.update(observed)
+        sample = {
+            "declaration": binding.declaration.id,
+            "declaration_sha256": declaration_sha,
+            "dimensions": {"registered_records": before.records},
+            "metrics": metrics,
+            "delegates": {},
+        }
+        validate_execution_samples(projection, binding.declaration.id, [sample])
+        samples.append(sample)
+        if prepare:
+            with write(db):
+                apply_history_record(db, key, owner, page)
+    record_property("growth_samples", samples)
+    db.close()

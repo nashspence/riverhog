@@ -2946,12 +2946,14 @@ source = { editable = "packages/riverhog-archive-contracts" }
 dependencies = [
     { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
+    { name = "sha256-continuation" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+    { name = "sha256-continuation", editable = "packages/sha256-continuation" },
 ]
 
 [[package]]
