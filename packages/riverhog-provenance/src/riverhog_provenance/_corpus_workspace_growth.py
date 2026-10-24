@@ -426,3 +426,229 @@ def order_declaration(native: Declaration, transaction: Declaration) -> Declarat
             "require composition.",
         ),
     )
+
+
+def dependency_declaration(native: Declaration, transaction: Declaration) -> Declaration:
+    """Charge one atomic dependency quantum, including all admitted metadata widths."""
+
+    def call(slot: str, declaration: Declaration, metric: str) -> Expression:
+        return Expression(
+            "delegate",
+            name=slot,
+            metric=metric,
+            terms=(_dimension("native_calls") if slot == "native" else _number(1),),
+            arguments=tuple((item.name, _dimension(item.name)) for item in declaration.dimensions),
+        )
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def product(*terms: Expression) -> Expression:
+        return Expression("product", terms=terms)
+
+    checks = _dimension("checked_obligations")
+    probes = add(product(_number(3, SCALAR), checks), _number(1))
+    parameters = add(
+        call("transaction", transaction, "parameter_octets"),
+        product(_number(5, SCALAR), probes, _dimension("metadata_octets")),
+    )
+    bounds = [
+        Bound(
+            "native_calls",
+            COUNT,
+            "upper",
+            _number(1),
+            "At most one Native dependency call follows lifecycle admission.",
+        ),
+        Bound(
+            "sql_statements",
+            COUNT,
+            "upper",
+            add(
+                call("transaction", transaction, "sql_statements"),
+                call("native", native, "sql_statements"),
+            ),
+            "All Native body and lifecycle statement visits occur in the same transaction.",
+        ),
+        Bound(
+            "algorithm_sql_statements",
+            COUNT,
+            "upper",
+            probes,
+            "Each checked obligation has metadata, payload and target seeks; at most one "
+            "unfinished or phase-exhaustion metadata seek follows.",
+        ),
+        Bound(
+            "sqlite_vm_instructions",
+            COUNT,
+            "upper",
+            add(
+                _number(512),
+                product(
+                    add(checks, _number(1)),
+                    add(
+                        _number(4096, SCALAR),
+                        product(
+                            _number(1024, SCALAR),
+                            Expression(
+                                "log2_ceil", terms=(add(_dimension("retained_rows"), _number(2)),)
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            "Indexed Native point/continuation seeks plus singleton checkpoint work, under "
+            "the maintained SQLite engine allowance.",
+        ),
+        Bound(
+            "returned_rows",
+            COUNT,
+            "upper",
+            add(call("transaction", transaction, "returned_rows"), probes),
+            "Each Native statement returns at most one exact metadata or admitted payload row.",
+        ),
+        Bound(
+            "returned_octets",
+            OCTETS,
+            "upper",
+            add(
+                call("transaction", transaction, "returned_octets"),
+                _dimension("byte_budget"),
+                product(_number(3, SCALAR), probes, _dimension("metadata_octets")),
+            ),
+            "Complete admitted reference/fork/comparison payloads plus full scalar metadata "
+            "and the retained parent checkpoint.",
+        ),
+        Bound(
+            "parameter_octets",
+            OCTETS,
+            "upper",
+            parameters,
+            "Every repeated exact lookup coordinate and parent compare-and-swap preimage.",
+        ),
+        Bound(
+            "written_rows",
+            COUNT,
+            "upper",
+            _number(1),
+            "The read-only Native dependency body writes no rows; the parent publishes once.",
+        ),
+        Bound(
+            "written_parameter_octets",
+            OCTETS,
+            "upper",
+            call("transaction", transaction, "parameter_octets"),
+            "Only the owning parent checkpoint statement mutates persistent rows.",
+        ),
+        Bound(
+            "completed_dependency_checks",
+            COUNT,
+            "equal",
+            checks,
+            "Independent successful exact-target checks agree with Native progress.",
+        ),
+        Bound(
+            "processed_rows",
+            COUNT,
+            "upper",
+            call("native", native, "processed_rows"),
+            "The caller's row admission limits actual checked obligations.",
+        ),
+        Bound(
+            "projected_payload_octets",
+            OCTETS,
+            "upper",
+            call("native", native, "projected_payload_octets"),
+            "Native length admission precedes every fetched dependency payload.",
+        ),
+        Bound(
+            "json_decodes",
+            COUNT,
+            "upper",
+            call("native", native, "json_decodes"),
+            "Only admitted references and fork anchors are decoded by Native.",
+        ),
+        Bound(
+            "dependency_decoded_octets",
+            OCTETS,
+            "upper",
+            _dimension("byte_budget"),
+            "Complete decoded references and anchors are charged to the admitted payload bytes.",
+        ),
+        Bound(
+            "dependency_encoded_octets",
+            OCTETS,
+            "upper",
+            product(checks, _dimension("metadata_octets")),
+            "Each checked reference or fork re-encodes at most one complete original entry key.",
+        ),
+    ]
+    for metric in ("source_checks", "checkpoint_decoded_octets", "checkpoint_encoded_octets"):
+        bounds.append(
+            Bound(
+                metric,
+                COUNT if metric == "source_checks" else OCTETS,
+                "upper",
+                call("transaction", transaction, metric),
+                "Source currentness and checkpoint codecs retain their owning lifecycle cost.",
+            )
+        )
+    for metric in ("source_frame_reads", "full_assertion_reads"):
+        bounds.append(
+            Bound(
+                metric,
+                COUNT,
+                "upper",
+                add(call("transaction", transaction, metric), call("native", native, metric)),
+                "Neither lifecycle nor documentary dependency checking replays source payloads.",
+            )
+        )
+    return Declaration(
+        id="riverhog-provenance.retained-corpus-dependency-step.growth/v1",
+        authority="riverhog-provenance",
+        subjects=(
+            "riverhog_provenance.corpus_workspace.RetainedCorpusValidator.advance_dependencies",
+        ),
+        scope="one complete retained Native documentary dependency quantum",
+        starts_at="receive explicit row/byte admission under current fixed inputs and worker",
+        ends_at="atomically publish Native continuation and parent checkpoint or roll back",
+        dimensions=(
+            *transaction.dimensions,
+            *native.dimensions,
+            Dimension("native_calls", COUNT, "Actual admitted Native algorithm invocations."),
+            Dimension(
+                "checked_obligations",
+                COUNT,
+                "Independent successful exact-target checks performed in this quantum.",
+            ),
+            Dimension(
+                "metadata_octets",
+                OCTETS_PER_COUNT,
+                "Independent maximum full width of any retained Native lookup scalar or "
+                "canonical entry-reference preimage, including counter and length widths.",
+            ),
+        ),
+        bounds=tuple(bounds),
+        conditions=(
+            "Raw source indexing and fixed selected semantic registration are complete.",
+            "The current application owner holds authenticated input custody and its kernel lease.",
+            "Independent metadata widths cover complete scalar keys and entry preimages in all "
+            "retained source rows, including unrelated rows.",
+            "All queries use maintained Native schema indexes and the bounded SQLite cache.",
+            "Currentness callback internals retain their separate application-owned composition.",
+        ),
+        invariants=(
+            "References precede forks, then size/SHA-256 comparisons, then both cycle checks.",
+            "A cold complete pass makes exactly 3N+3 Native statement visits for N obligations.",
+            "A capacity boundary retains at most one unfinished key, never a completed "
+            "dependency under a confirmed parent checkpoint.",
+            "Progress and all prior confirmed dependency checks survive worker replacement.",
+            "Native documentary semantics, protected commitments and original coordinates remain.",
+        ),
+        limitations=(
+            "A failed unconfirmed quantum may replay; this does not invalidate earlier commits.",
+            "Warm Native status is separate from cold dependency work and still pays lifecycle.",
+            "Engine VM constants exclude byte comparisons, storage I/O and lock waiting.",
+            "Complete manifest coverage, cycles, member relevance and current access are separate.",
+        ),
+    )

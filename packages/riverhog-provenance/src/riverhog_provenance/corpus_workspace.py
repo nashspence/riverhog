@@ -17,7 +17,11 @@ from riverhog_growth_contracts import declare_growth, growth_binding
 from riverhog_provenance_contracts import ContractCatalog
 
 from ._corpus_order import _CorpusOrder
-from ._corpus_workspace_growth import lifecycle_declaration, order_declaration
+from ._corpus_workspace_growth import (
+    dependency_declaration,
+    lifecycle_declaration,
+    order_declaration,
+)
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .corpus import (
     CanonicalCorpusValidator,
@@ -514,6 +518,16 @@ class RetainedCorpusValidator:
                 raise IncompleteSourceError("corpus fixed input manifests are incomplete")
             return self._corpus.advance_semantics(row_budget=row_budget, byte_budget=byte_budget)
 
+    @declare_growth(
+        dependency_declaration(
+            growth_binding(CanonicalCorpusValidator.advance_dependencies).declaration,
+            growth_binding(_operation).declaration,
+        ),
+        delegates=(
+            ("native", CanonicalCorpusValidator.advance_dependencies),
+            ("transaction", _operation),
+        ),
+    )
     def advance_dependencies(
         self, *, row_budget: int = 64, byte_budget: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
     ) -> CorpusDependencyProgress:
