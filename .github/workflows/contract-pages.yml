@@ -142,18 +142,34 @@ jobs:
           name: pages-inputs
           path: ${{ runner.temp }}/pages-inputs
           if-no-files-found: error
+      - name: Prepare existing-URL routing
+        env:
+          DOCUMENTATION_URL: ${{ vars.DOCUMENTATION_URL }}
+        run: |
+          mise x -- uv run --locked --group dev python scripts/documentation_publish.py relay \
+            --site "$RUNNER_TEMP/riverhog-pages" --output "$RUNNER_TEMP/riverhog-routing" \
+            --public-url "$DOCUMENTATION_URL"
+      - name: Retain complete verified site
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: documentation-site
+          path: ${{ runner.temp }}/riverhog-pages
+          include-hidden-files: true
+          compression-level: 6
+          retention-days: 1
+          if-no-files-found: error
       - name: Configure Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - name: Upload complete Pages artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
-          path: ${{ runner.temp }}/riverhog-pages
+          path: ${{ runner.temp }}/riverhog-routing
 
   deploy:
     name: Publish verified aggregate site
     needs: build
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 120
     permissions:
       actions: read
       contents: read
@@ -180,6 +196,51 @@ jobs:
             --name pages-inputs --dir "$RUNNER_TEMP/pages-inputs"
           mise x -- uv run --locked --group dev python scripts/contract_pages.py \
             --check-fresh "$RUNNER_TEMP/pages-inputs/site-manifest.json"
+      - name: Download complete verified site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download "${{ github.run_id }}" --repo "${{ github.repository }}" \
+            --name documentation-site --dir "$RUNNER_TEMP/riverhog-pages"
+      - name: Verify immutable content and promote the Worker
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          B2_APPLICATION_KEY_ID: ${{ secrets.B2_APPLICATION_KEY_ID }}
+          B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
+          B2_BUCKET_ID: ${{ secrets.B2_BUCKET_ID }}
+          DOCUMENTATION_URL: ${{ vars.DOCUMENTATION_URL }}
+          DOCUMENTATION_WORKER: ${{ vars.DOCUMENTATION_WORKER }}
+        run: |
+          mise x -- uv run --locked --group dev python scripts/documentation_publish.py publish \
+            --site "$RUNNER_TEMP/riverhog-pages" --public-url "$DOCUMENTATION_URL" \
+            --worker "$DOCUMENTATION_WORKER" --repository "${{ github.repository }}" \
+            --receipt "$RUNNER_TEMP/documentation-publication.json"
+      - name: Recheck inputs before updating existing URLs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mise x -- uv run --locked --group dev python scripts/contract_pages.py \
+            --check-fresh "$RUNNER_TEMP/pages-inputs/site-manifest.json"
       - name: Deploy complete site
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+      - name: Remove this publication's verification Worker
+        if: always()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DOCUMENTATION_WORKER: ${{ vars.DOCUMENTATION_WORKER }}
+        run: |
+          if [[ -f "$RUNNER_TEMP/riverhog-pages/site-manifest.json" ]]; then
+            mise x -- uv run --locked --group dev python scripts/documentation_publish.py cleanup \
+              --site "$RUNNER_TEMP/riverhog-pages" --worker "$DOCUMENTATION_WORKER"
+          fi
+      - name: Retain content publication receipt
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: documentation-publication
+          path: ${{ runner.temp }}/documentation-publication.json
+          if-no-files-found: ignore

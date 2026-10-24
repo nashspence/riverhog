@@ -56,7 +56,7 @@ def test_pages_preview_requires_an_exact_source_commit(tmp_path: Path) -> None:
 
 @pytest.mark.parametrize(
     ("budget", "message"),
-    [(0, "hosting limit"), (1, "operational budget"), (1_000_000_001, "hosting limit")],
+    [(0, "operational budget"), (-1, "operational budget"), (1, "operational budget")],
 )
 def test_pages_capacity_fails_before_publishing_and_keeps_all_versions(
     tmp_path, generated_contract_closure, budget, message
@@ -130,7 +130,10 @@ def test_pages_assembles_versions_semantically_and_preserves_published_bytes(
         }
         for number, (tag, selected) in enumerate((("v1.2.0", root), ("v1.10.0", documented)), 1)
     ]
-    manifest = build_pages(development, tmp_path / "site", None, releases=entries)
+    manifest = build_pages(
+        development, tmp_path / "site", None, releases=entries, budget=2_000_000_000
+    )
+    assert manifest["hosting_budget_bytes"] == 2_000_000_000
     assert manifest["latest_product_release"] == "v1.10.0"
     assert [item["version"] for item in manifest["inputs"]] == ["development", "v1.10.0", "v1.2.0"]
     assert 'href="../v1.2.0/"' in (tmp_path / "site/v1.10.0/index.html").read_text()

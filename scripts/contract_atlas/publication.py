@@ -16,7 +16,7 @@ from .documentation import DOCUMENTATION_FILENAME, source_ledger
 from .generation import BUILD_FILENAME, BUILD_FORMAT
 from .model import ContractAtlasError, canonical_bytes, canonical_sha256
 
-DEFAULT_SITE_BUDGET = 1_000_000_000
+DEFAULT_SITE_BUDGET = 10_000_000_000
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 
 
