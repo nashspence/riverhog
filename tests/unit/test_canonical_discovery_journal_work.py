@@ -26,7 +26,6 @@ from riverhog_core.canonical_discovery_journal_work import (
     apply_journal_page,
     begin_journal,
     finish_journal,
-    initialize_journal_work,
     journal_progress,
     prepare_journal_page,
 )
@@ -36,22 +35,19 @@ from riverhog_core.canonical_discovery_source_work import (
     prepare_lexical_source_page,
 )
 from riverhog_provenance import (
-    append_checkpoint,
     append_correction,
     create_journal,
     validate_journal,
 )
 
 from tests.support.canonical_discovery import native_scalar_fixture
-from tests.support.canonical_discovery_work import RecordedConnection, write
-
-ADMISSION = hashlib.sha256(b"verified archive admission").hexdigest()
-
-
-def open_work(path):
-    db = sqlite3.connect(path, isolation_level=None)
-    initialize_journal_work(db)
-    return db
+from tests.support.canonical_discovery_work import (
+    ADMISSION,
+    RecordedConnection,
+    corrected_journal_fixture,
+    open_journal_work,
+    write,
+)
 
 
 def bind(db, source):
@@ -95,31 +91,10 @@ def finish_child(db, key, source, assertion_id, budget=128):
         )
 
 
-def corrected_fixture():
-    fixture = native_scalar_fixture(3)
-    with validate_journal(fixture.raw, catalog=fixture.catalog, require_profiles=True) as summary:
-        target = {"entry": summary.anchor_at(0)["through"], "assertion_id": fixture.assertion_id}
-        who = summary.frames[0].document["recorded_by_agent_id"]
-    raw = append_correction(
-        fixture.raw,
-        [target],
-        reason="fixture retirement",
-        recorded_by_agent_id=who,
-        catalog=fixture.catalog,
-    )
-    raw = append_checkpoint(
-        raw,
-        recorded_by_agent_id=who,
-        purpose="urn:test:fixture:checkpoint",
-        catalog=fixture.catalog,
-    )
-    return fixture, raw, target
-
-
 @pytest.mark.parametrize("budget", [1, 7, 128])
 def test_native_intervals_child_terminals_and_exact_retries(tmp_path, budget):
-    fixture, raw, target = corrected_fixture()
-    db = open_work(tmp_path / "work.sqlite")
+    fixture, raw, target = corrected_journal_fixture()
+    db = open_journal_work(tmp_path / "work.sqlite")
     with validate_journal(raw, catalog=fixture.catalog, require_profiles=True) as summary:
         with QualifiedJournalSource(summary, ADMISSION) as source:
             key = bind(db, source)
@@ -166,7 +141,7 @@ def test_native_intervals_child_terminals_and_exact_retries(tmp_path, budget):
 
 def test_page_failure_rolls_back_child_and_parent_together(tmp_path):
     fixture = native_scalar_fixture(1)
-    db = open_work(tmp_path / "work.sqlite")
+    db = open_journal_work(tmp_path / "work.sqlite")
     with validate_journal(fixture.raw, catalog=fixture.catalog) as summary:
         with QualifiedJournalSource(summary, ADMISSION) as source:
             key = bind(db, source)
@@ -192,9 +167,9 @@ def test_page_failure_rolls_back_child_and_parent_together(tmp_path):
 
 
 def test_reopen_resumes_direct_positions_and_preserves_raw_retirement(tmp_path):
-    fixture, raw, _ = corrected_fixture()
+    fixture, raw, _ = corrected_journal_fixture()
     path = tmp_path / "work.sqlite"
-    db = open_work(path)
+    db = open_journal_work(path)
     with validate_journal(raw, catalog=fixture.catalog) as summary:
         with QualifiedJournalSource(summary, ADMISSION) as source:
             key = bind(db, source)
@@ -204,7 +179,7 @@ def test_reopen_resumes_direct_positions_and_preserves_raw_retirement(tmp_path):
                     apply_journal_page(db, key, source, page)
             before = journal_progress(db, key)
     db.close()
-    db = open_work(path)
+    db = open_journal_work(path)
     with validate_journal(raw, catalog=fixture.catalog) as summary:
         with QualifiedJournalSource(summary, ADMISSION) as source:
             assert bind(db, source) == key
@@ -219,8 +194,8 @@ def test_reopen_resumes_direct_positions_and_preserves_raw_retirement(tmp_path):
 
 
 def test_source_prefix_admission_worker_and_prepared_page_fences(tmp_path):
-    fixture, raw, _ = corrected_fixture()
-    db = open_work(tmp_path / "work.sqlite")
+    fixture, raw, _ = corrected_journal_fixture()
+    db = open_journal_work(tmp_path / "work.sqlite")
     with validate_journal(raw, catalog=fixture.catalog) as summary:
         with QualifiedJournalSource(summary, ADMISSION) as source:
             with QualifiedJournalSource(summary, ADMISSION, through=0) as prefix:
@@ -251,7 +226,7 @@ def test_source_prefix_admission_worker_and_prepared_page_fences(tmp_path):
 
 def test_independent_lease_survives_original_close(tmp_path):
     fixture = native_scalar_fixture(0)
-    db = open_work(tmp_path / "work.sqlite")
+    db = open_journal_work(tmp_path / "work.sqlite")
     summary = validate_journal(fixture.raw, catalog=fixture.catalog)
     with QualifiedJournalSource(summary, ADMISSION) as source:
         summary.close()
@@ -265,8 +240,8 @@ def test_independent_lease_survives_original_close(tmp_path):
 
 @pytest.mark.parametrize("damage", ["position", "predecessor", "retirement"])
 def test_source_coverage_rejects_omissions_and_changed_origin(tmp_path, damage):
-    fixture, raw, _ = corrected_fixture()
-    db = open_work(tmp_path / "work.sqlite")
+    fixture, raw, _ = corrected_journal_fixture()
+    db = open_journal_work(tmp_path / "work.sqlite")
     with validate_journal(raw, catalog=fixture.catalog) as summary:
         with QualifiedJournalSource(summary, ADMISSION) as source:
             key = bind(db, source)
@@ -321,7 +296,7 @@ def test_wide_native_array_uses_direct_items_without_reencoding_completed_rows(
             encoded_assertions.append(value["assertion_id"])
         return original_encode(value)
 
-    db = open_work(tmp_path / "work.sqlite")
+    db = open_journal_work(tmp_path / "work.sqlite")
     with validate_journal(raw, catalog=fixture.catalog) as summary:
         with QualifiedJournalSource(summary, ADMISSION) as source:
             key = bind(db, source)
@@ -351,10 +326,10 @@ def test_measured_journal_pages_bound_core_reads_and_actions(tmp_path, record_pr
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
     samples = []
-    fixture, raw, _ = corrected_fixture()
+    fixture, raw, _ = corrected_journal_fixture()
     with validate_journal(raw, catalog=fixture.catalog) as summary:
         for budget in (1, 7, 128):
-            db = open_work(tmp_path / f"budget-{budget}.sqlite")
+            db = open_journal_work(tmp_path / f"budget-{budget}.sqlite")
             with QualifiedJournalSource(summary, ADMISSION) as source:
                 key = bind(db, source)
                 while journal_progress(db, key).cursor.phase != "done":
@@ -396,7 +371,7 @@ def test_correction_new_assertion_birth_and_selected_prefix_are_independent(tmp_
             assertions={"extensions": [replacement]},
             catalog=fixture.catalog,
         )
-    db = open_work(tmp_path / "work.sqlite")
+    db = open_journal_work(tmp_path / "work.sqlite")
     with validate_journal(raw, catalog=fixture.catalog) as summary:
         for through in (0, 1):
             with QualifiedJournalSource(summary, ADMISSION, through=through) as source:
@@ -441,10 +416,10 @@ def test_measured_journal_page_apply_bounds_atomic_child_registration(
     ).hexdigest()
     actual_sha256 = hashlib.sha256
     samples = []
-    fixture, raw, _ = corrected_fixture()
+    fixture, raw, _ = corrected_journal_fixture()
     with validate_journal(raw, catalog=fixture.catalog) as summary:
         for budget in (1, 7, 128):
-            db = open_work(tmp_path / f"apply-{budget}.sqlite")
+            db = open_journal_work(tmp_path / f"apply-{budget}.sqlite")
             with QualifiedJournalSource(summary, ADMISSION) as source:
                 key = bind(db, source)
                 while journal_progress(db, key).cursor.phase != "done":
@@ -478,7 +453,7 @@ def test_measured_journal_page_apply_bounds_atomic_child_registration(
 
 def test_acknowledgement_rolls_back_and_invalidates_speculative_parent_page(tmp_path):
     fixture = native_scalar_fixture(1)
-    db = open_work(tmp_path / "work.sqlite")
+    db = open_journal_work(tmp_path / "work.sqlite")
     with validate_journal(fixture.raw, catalog=fixture.catalog) as summary:
         with QualifiedJournalSource(summary, ADMISSION) as source:
             key = bind(db, source)
@@ -507,3 +482,96 @@ def test_acknowledgement_rolls_back_and_invalidates_speculative_parent_page(tmp_
             with pytest.raises(StaleJournalTask, match="coordinate"):
                 source.assertion(0, first.actions[1].assertion.group, -1)
     db.close()
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-journal-pending-child/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_journal_work.pending_journal_assertion",
+)
+def test_measured_pending_child_skips_completed_registration_rows(
+    tmp_path, monkeypatch, record_property
+):
+    from riverhog_canonical_json import canonical_json_bytes
+    from riverhog_core.canonical_discovery_journal_work import pending_journal_assertion
+    from riverhog_growth_contracts import (
+        growth_binding,
+        project_bindings,
+        validate_execution_samples,
+    )
+
+    binding = growth_binding(pending_journal_assertion)
+    projection = project_bindings((binding,))
+    declaration_sha = hashlib.sha256(
+        canonical_json_bytes(projection["declarations"][binding.declaration.id])
+    ).hexdigest()
+    samples = []
+    fixture = native_scalar_fixture(0)
+    with validate_journal(fixture.raw, catalog=fixture.catalog) as summary:
+        for width in (0, 17, 1025):
+            db = open_journal_work(tmp_path / f"pending-{width}.sqlite")
+            with QualifiedJournalSource(summary, ADMISSION) as source:
+                key = bind(db, source)
+                drive(db, key, source, 128)
+                rows = db.execute("SELECT * FROM discovery_journal_assertions").fetchall()
+                # Selector-only metadata fixture: completion itself is tested through the driver.
+                db.execute("UPDATE discovery_journal_assertions SET acknowledged=1")
+                template = list(rows[0])
+                for ordinal in range(width):
+                    values = template.copy()
+                    values[2] = f"completed-{ordinal}"
+                    values[9] = ordinal
+                    values[10] = f"completed-task-{ordinal}"
+                    values[12] = 1
+                    db.execute(
+                        "INSERT INTO discovery_journal_assertions VALUES "
+                        "(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        values,
+                    )
+                for empty in (False, True):
+                    db.execute(
+                        "UPDATE discovery_journal_assertions SET acknowledged=? "
+                        "WHERE assertion_id=?",
+                        (int(empty), template[2]),
+                    )
+                    recorder = RecordedConnection(db)
+                    vm = 0
+                    actual_sha256 = hashlib.sha256
+
+                    def tick():
+                        nonlocal vm
+                        vm += 1
+                        return 0
+
+                    def observed_hash(
+                        value=b"", recorder=recorder, actual_sha256=actual_sha256, **kwargs
+                    ):
+                        recorder.metrics["hashed_octets"] += len(value)
+                        return actual_sha256(value, **kwargs)
+
+                    db.set_progress_handler(tick, 1)
+                    try:
+                        with monkeypatch.context() as patch:
+                            patch.setattr(hashlib, "sha256", observed_hash)
+                            pending = pending_journal_assertion(recorder, key)
+                    finally:
+                        db.set_progress_handler(None, 0)
+                    assert (pending is None) == empty
+                    if pending is not None:
+                        assert pending.assertion_id == template[2]
+                    sample = {
+                        "declaration": binding.declaration.id,
+                        "declaration_sha256": declaration_sha,
+                        "dimensions": {"registered_children": width + len(rows)},
+                        "metrics": {
+                            "sql_statements": recorder.metrics["sql_statements"],
+                            "returned_rows": recorder.metrics["returned_rows"],
+                            "hashed_octets": recorder.metrics["hashed_octets"],
+                            "sqlite_vm_instructions": vm,
+                        },
+                        "delegates": {},
+                    }
+                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    samples.append(sample)
+            db.close()
+    record_property("growth_samples", samples)

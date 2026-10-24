@@ -284,6 +284,10 @@ def initialize_journal_work(db: sqlite3.Connection) -> None:
             UNIQUE(build_id,task_id),
             FOREIGN KEY(build_id,source_key) REFERENCES discovery_journal_tasks(build_id,source_key)
         ) WITHOUT ROWID;
+        CREATE INDEX IF NOT EXISTS discovery_journal_pending_assertions
+            ON discovery_journal_assertions (
+                build_id,source_key,length(born_sequence),born_sequence,source_group,source_item
+            ) WHERE acknowledged=0;
     """)
 
 
@@ -775,3 +779,118 @@ def finish_journal(
                 (str(progress.version + 1), str(expected_version), key.build_id, key.source_key),
             )
         return journal_progress(db, key)
+
+
+@dataclass(frozen=True, slots=True)
+class PendingJournalAssertion:
+    key: FactTaskKey
+    assertion_id: str
+    sequence: int
+    group: str
+    item: int
+    origin_entry_json: str
+    canonical_stream_ref: str
+
+
+@declare_growth(
+    Declaration(
+        id="riverhog-server.discovery-journal-pending-child.growth/v1",
+        authority="riverhog-server",
+        subjects=("riverhog_core.canonical_discovery_journal_work.pending_journal_assertion",),
+        scope="one source-qualified pending-child selection",
+        starts_at="receive the current owner-leased source key",
+        ends_at="close both point/range cursors and return at most one detached child",
+        dimensions=(Dimension("registered_children", COUNT, "All retained source child rows."),),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "equal",
+                Expression("constant", value=2, unit=COUNT),
+                "One fenced parent header and one indexed pending-child selection.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                Expression("constant", value=2, unit=COUNT),
+                "Each lookup detaches at most one complete metadata row.",
+            ),
+            Bound(
+                "hashed_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "Selection does not interpret or hash any source or fact payload.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        Expression("constant", value=512, unit=COUNT),
+                        Expression(
+                            "product",
+                            terms=(
+                                Expression("constant", value=128, unit=COUNT),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("dimension", name="registered_children"),
+                                                Expression("constant", value=2, unit=COUNT),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Indexed selection excludes completed rows; VM constants depend on SQLite.",
+            ),
+        ),
+        conditions=(
+            "The owner maintains the current partial pending index and exact task keys.",
+            "Sequence text is canonical nonnegative decimal in the existing Native domain.",
+        ),
+        invariants=(
+            "Completed children are excluded by the partial index.",
+            "Length then decimal text preserves arbitrary-precision Native sequence order.",
+            "Children within one source entry retain direct grammar/item order.",
+            "Selection grants no source authority or child completion.",
+        ),
+        limitations=(
+            "SQL and returned rows exclude storage-engine/index comparisons and metadata bytes.",
+            "Child extraction, source validation and scheduling have separate costs.",
+        ),
+    )
+)
+def pending_journal_assertion(
+    db: sqlite3.Connection,
+    key: JournalTaskKey,
+) -> PendingJournalAssertion | None:
+    _task(db, key)
+    row = _one(
+        db,
+        "SELECT task_id,assertion_id,born_sequence,source_group,source_item,"
+        "origin_entry_json,canonical_stream_ref FROM discovery_journal_assertions "
+        "WHERE build_id=? AND source_key=? AND acknowledged=0 "
+        "ORDER BY length(born_sequence),born_sequence,source_group,source_item LIMIT 1",
+        (key.build_id, key.source_key),
+    )
+    if row is None:
+        return None
+    return PendingJournalAssertion(
+        FactTaskKey(key.build_id, row[0], key.source_key, key.worker_id),
+        row[1],
+        int(row[2]),
+        row[3],
+        int(row[4]),
+        row[5],
+        row[6],
+    )

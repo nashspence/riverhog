@@ -114,6 +114,10 @@ class RecordedCursor:
         self.recorder.metrics["returned_rows"] += int(row is not None)
         return row
 
+    @property
+    def rowcount(self):
+        return self.actual.rowcount
+
     def close(self):
         self.actual.close()
 
@@ -136,3 +140,45 @@ class RecordedConnection:
     def execute(self, sql, parameters=()):
         self.metrics["sql_statements"] += 1
         return RecordedCursor(self.actual.execute(sql, parameters), self)
+
+    def commit(self):
+        self.actual.commit()
+
+    def rollback(self):
+        self.actual.rollback()
+
+
+ADMISSION = hashlib.sha256(b"verified archive admission").hexdigest()
+
+
+def open_journal_work(path):
+    from riverhog_core.canonical_discovery_journal_work import initialize_journal_work
+
+    db = sqlite3.connect(path, isolation_level=None)
+    initialize_journal_work(db)
+    return db
+
+
+def corrected_journal_fixture():
+    from riverhog_provenance import append_checkpoint, append_correction, validate_journal
+
+    from tests.support.canonical_discovery import native_scalar_fixture
+
+    fixture = native_scalar_fixture(3)
+    with validate_journal(fixture.raw, catalog=fixture.catalog, require_profiles=True) as summary:
+        target = {"entry": summary.anchor_at(0)["through"], "assertion_id": fixture.assertion_id}
+        who = summary.frames[0].document["recorded_by_agent_id"]
+    raw = append_correction(
+        fixture.raw,
+        [target],
+        reason="fixture retirement",
+        recorded_by_agent_id=who,
+        catalog=fixture.catalog,
+    )
+    raw = append_checkpoint(
+        raw,
+        recorded_by_agent_id=who,
+        purpose="urn:test:fixture:checkpoint",
+        catalog=fixture.catalog,
+    )
+    return fixture, raw, target
