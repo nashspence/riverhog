@@ -20,7 +20,7 @@ from uuid import uuid4
 import yaml
 from riverhog_canonical_json import canonical_json_bytes
 
-from scripts.ci_unit import SHARDS
+from scripts.ci_unit import CI_SHARDS, SHARDS, UNIT_PARTITIONS, ci_unit_command, unit_partition
 from scripts.validation_evidence import ValidationWork
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -68,6 +68,10 @@ def validation_workloads(*, names: Sequence[str] | None = None) -> tuple[Validat
     work.extend(
         ValidationWork(f"unit-{name}", ("make", "unit-shard", f"UNIT_SHARD={name}"))
         for name in SHARDS
+    )
+    work.extend(
+        ValidationWork(f"unit-unit-{part}", ci_unit_command(f"unit-{part}"))
+        for part in UNIT_PARTITIONS
     )
     work.extend(
         ValidationWork(f"image-{name}", ("make", "image-qualification", f"IMAGE_GROUP={name}"))
@@ -156,15 +160,34 @@ def validation_workloads(*, names: Sequence[str] | None = None) -> tuple[Validat
     )
     if len({item.name for item in work}) != len(work):
         raise ValueError("each validation workload must have exactly one definition")
-    from scripts.validation_witnesses import discover_test_witnesses, operation_projection
+    from scripts.validation_witnesses import (
+        TestWitness,
+        discover_test_witnesses,
+        operation_projection,
+    )
 
     if names is not None:
         requested = set(names)
         work = [item for item in work if item.name in requested]
     selected = {item.name for item in work}
-    witnesses = tuple(
-        witness for witness in discover_test_witnesses(ROOT) if selected.intersection(witness.gates)
+    required_gates = selected | (
+        {"unit-unit"} if any(name.startswith("unit-unit-") for name in selected) else set()
     )
+    witnesses = tuple(
+        witness
+        for witness in discover_test_witnesses(ROOT)
+        if required_gates.intersection(witness.gates)
+    )
+
+    def applies(name: str, witness: TestWitness) -> bool:
+        if name in witness.gates:
+            return True
+        return (
+            name.startswith("unit-unit-")
+            and "unit-unit" in witness.gates
+            and name == "unit-unit-" + unit_partition(witness.node_id)
+        )
+
     declarations = {}
     for witness in witnesses:
         if witness.operation is not None:
@@ -174,14 +197,14 @@ def validation_workloads(*, names: Sequence[str] | None = None) -> tuple[Validat
         replace(
             item,
             growth_witnesses=tuple(
-                witness.id for witness in witnesses if item.name in witness.gates
+                witness.id for witness in witnesses if applies(item.name, witness)
             ),
             growth_declarations=tuple(
                 sorted(
                     {
                         declarations[witness.id]
                         for witness in witnesses
-                        if item.name in witness.gates and witness.id in declarations
+                        if applies(item.name, witness) and witness.id in declarations
                     }
                 )
             ),
@@ -241,6 +264,7 @@ def validation_environment(work: ValidationWork, run_id: str) -> dict[str, str]:
         ):
             raise ValueError("qualified work has Make execution overrides")
         environment.pop(variable, None)
+    environment.pop("UNIT_PARTITION", None)
     environment.update(RIVERHOG_CI_LANE=work.name, RIVERHOG_CI_RUN_ID=run_id)
     return environment
 
@@ -460,7 +484,7 @@ def plan(graph: dict[str, Any]) -> dict[str, object]:
                 for target in REPOSITORY_TARGETS
             ]
         },
-        "units": {"shard": list(SHARDS)},
+        "units": {"shard": list(CI_SHARDS)},
         "images": {
             "include": [
                 {

@@ -816,3 +816,11 @@ def test_actual_recursive_make_flags_do_not_change_qualified_work(tmp_path, monk
     makefile.write_text(f"one:\n\t$(MAKE) -f {shlex.quote(str(makefile))} two\ntwo:\n\t{command}\n")
     subprocess.run(["make", "-j1", "-f", str(makefile), "one"], cwd=qualification.ROOT, check=True)
     assert marker.read_text() == "verified"
+
+
+def test_qualified_work_does_not_inherit_a_parent_unit_partition(monkeypatch):
+    monkeypatch.setenv("UNIT_PARTITION", "2")
+    work = qualification.validation_work("unit-unit-1")
+    environment = qualification.validation_environment(work, "explicit-partition")
+    assert "UNIT_PARTITION" not in environment
+    assert work.command[-1] == "UNIT_PARTITION=1"

@@ -50,7 +50,7 @@ else:
     from scripts.ci_timing import source_identity, write_record
 
 from scripts.ci_make import owned_execution_spans, validate_make_receipt
-from scripts.ci_unit import SHARDS
+from scripts.ci_unit import CI_SHARDS, UNIT_PARTITIONS
 from scripts.validation_evidence import ValidationWork, runner_platform, validate_evidence_records
 from scripts.validation_resources import validation_storage_budget
 from scripts.validation_witnesses import collect_test_witnesses
@@ -67,7 +67,7 @@ def ci_execution_work() -> dict[str, ValidationWork]:
     definitions = {work.name: work for work in validation_workloads()}
     for owner, parameter, values, prefix in (
         ("repository", "target", REPOSITORY_TARGETS, ""),
-        ("units", "shard", SHARDS, "unit-"),
+        ("units", "shard", CI_SHARDS, "unit-"),
         ("compose", "lane", COMPOSE_LANES, "compose-"),
         ("images", "group", IMAGE_GROUPS, "image-"),
         (
@@ -86,6 +86,15 @@ def ci_execution_work() -> dict[str, ValidationWork]:
             if name in cases:
                 raise ValueError("duplicate matrix execution identity")
             cases[name] = definitions[prefix + value]
+    unit_witnesses = [
+        identity
+        for part in UNIT_PARTITIONS
+        for identity in cases[f"unit unit-{part}"].growth_witnesses
+    ]
+    if len(unit_witnesses) != len(set(unit_witnesses)) or set(unit_witnesses) != set(
+        definitions["unit-unit"].growth_witnesses
+    ):
+        raise ValueError("CI unit partitions omit or duplicate required growth witnesses")
     if set(jobs["gate"]["needs"]) != set(jobs) - {"gate"}:
         raise ValueError("CI gate omits a maintained execution owner")
     if set(jobs) != {

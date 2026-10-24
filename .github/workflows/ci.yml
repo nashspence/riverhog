@@ -140,10 +140,10 @@ jobs:
     name: unit ${{ matrix.shard }}
     needs: plan
     runs-on: ubuntu-24.04
-    timeout-minutes: ${{ matrix.shard == 'unit' && 240 || 90 }}
+    timeout-minutes: ${{ startsWith(matrix.shard, 'unit-') && 180 || 90 }}
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 6
       matrix: ${{ fromJSON(needs.plan.outputs.units) }}
     steps:
       - name: Check out repository

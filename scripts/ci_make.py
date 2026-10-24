@@ -148,6 +148,10 @@ def make_work_definitions(
             "compose-shard": ("COMPOSE_LANE", "compose-"),
         }.get(goal)
         name = goal if selector is None else selector[1] + parameters[selector[0]]
+        if goal == "unit-shard":
+            from scripts.ci_unit import unit_work_name
+
+            name = unit_work_name(parameters["UNIT_SHARD"], parameters.get("UNIT_PARTITION", ""))
         definitions.append(validation_work(name).definition())
     return definitions
 
@@ -310,6 +314,8 @@ def observe_make(makefile: Path, goals: Sequence[str]) -> int:
         )
         if goal in goals
     }
+    if "unit-shard" in goals and os.environ.get("UNIT_PARTITION"):
+        parameters["UNIT_PARTITION"] = os.environ["UNIT_PARTITION"]
     try:
         definitions = make_work_definitions(goals, parameters)
     except (ValueError, KeyError):

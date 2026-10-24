@@ -537,10 +537,18 @@ def test_failed_completed_workflow_remains_failure_with_truthful_elapsed():
 
 def test_matrix_coverage_comes_from_the_existing_execution_owners():
     work = ci_actions.ci_execution_work()
-    assert len(work) == 23
-    assert len({value.name for value in work.values()}) == 23
+    assert len(work) == 26
+    assert len({value.name for value in work.values()}) == 26
     assert work["client platform (windows-2025)"].command[-1] == "native"
-    assert work["unit unit"].growth_witnesses
+    partitions = [work[f"unit unit-{part}"] for part in ci_actions.UNIT_PARTITIONS]
+    observed = [identity for part in partitions for identity in part.growth_witnesses]
+    assert all(part.growth_witnesses for part in partitions)
+    assert len(observed) == len(set(observed))
+    assert set(observed) == set(
+        next(
+            item for item in ci_actions.validation_workloads() if item.name == "unit-unit"
+        ).growth_witnesses
+    )
 
 
 def test_unstarted_and_skipped_jobs_are_preserved_without_fabricated_elapsed():
@@ -925,3 +933,25 @@ def test_codeql_retry_binds_retained_checkout_to_its_actual_origin():
     assert records["Analyze (python)"]["origin_attempt"] == 2
     assert records["Analyze (python)"]["reused_completion"] is False
     assert [row["job_id"] for row in result["measurement"]["jobs"]] == [30]
+
+
+@pytest.mark.parametrize("defect", ["missing", "duplicate"])
+def test_ci_partition_growth_coverage_cannot_omit_or_repeat_required_work(monkeypatch, defect):
+    from dataclasses import replace
+
+    definitions = list(ci_actions.validation_workloads())
+    source = next(work for work in definitions if work.name == "unit-unit-1")
+    target = (
+        source
+        if defect == "missing"
+        else next(work for work in definitions if work.name == "unit-unit-2")
+    )
+    witnesses = (
+        target.growth_witnesses[1:]
+        if defect == "missing"
+        else (*target.growth_witnesses, source.growth_witnesses[0])
+    )
+    definitions[definitions.index(target)] = replace(target, growth_witnesses=witnesses)
+    monkeypatch.setattr(ci_actions, "validation_workloads", lambda: tuple(definitions))
+    with pytest.raises(ValueError, match="omit or duplicate required growth"):
+        ci_actions.ci_execution_work()

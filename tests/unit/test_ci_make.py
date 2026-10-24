@@ -427,3 +427,27 @@ def test_parent_cannot_consume_a_still_running_descendant(nested_qualified_spans
     timing, _rows = nested_qualified_spans
     with pytest.raises(ValueError, match="descendant execution is not bound"):
         ci_make.owned_execution_spans(timing, "nested-qualified", "parent", "a" * 40)
+
+
+def test_unit_partition_parameters_bind_the_exact_owning_work():
+    from scripts.ci_unit import UNIT_PARTITIONS
+
+    for part in UNIT_PARTITIONS:
+        definition = ci_make.make_work_definitions(
+            ("unit-shard",), {"UNIT_SHARD": "unit", "UNIT_PARTITION": part}
+        )[0]
+        assert definition["name"] == "unit-unit-" + part
+        assert definition["command"] == [
+            "make",
+            "unit-shard",
+            "UNIT_SHARD=unit",
+            "UNIT_PARTITION=" + part,
+        ]
+
+
+@pytest.mark.parametrize("shard,part", [("release", "1"), ("contract", "2"), ("unit", "5")])
+def test_invalid_unit_partition_does_not_claim_whole_family_work(shard, part):
+    with pytest.raises(ValueError, match="canonical unit"):
+        ci_make.make_work_definitions(
+            ("unit-shard",), {"UNIT_SHARD": shard, "UNIT_PARTITION": part}
+        )
