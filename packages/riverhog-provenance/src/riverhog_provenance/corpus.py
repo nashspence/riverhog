@@ -236,7 +236,7 @@ def _source_ingest_declaration(*, bounded: bool = False) -> Declaration:
         terms=(
             count(4),
             Expression("product", terms=(count(8, SCALAR), dimension("new_frames"))),
-            Expression("product", terms=(count(7, SCALAR), dimension("new_assertions"))),
+            Expression("product", terms=(count(8, SCALAR), dimension("new_assertions"))),
             dimension("new_references"),
             Expression("product", terms=(count(2, SCALAR), dimension("new_retractions"))),
         ),
@@ -553,6 +553,131 @@ def _delivery_support_declaration() -> Declaration:
     )
 
 
+def _selection_declaration(phase: str) -> Declaration:
+    def number(value: int, unit: Unit = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    bounded = phase == "advance_semantics"
+    visits = Expression("sum", terms=(dimension("row_budget"), number(1)))
+    return Declaration(
+        id="riverhog-provenance.corpus-" + phase.replace("_", "-") + ".growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.corpus.CanonicalCorpusValidator." + phase,),
+        scope="one fixed Native selected-source union semantic registration"
+        if bounded
+        else "one exact Native source-prefix selection registration",
+        starts_at="receive explicit work admission"
+        if bounded
+        else "receive an exact indexed anchor",
+        ends_at="advance original semantic assertions once or report exhausted input"
+        if bounded
+        else "record the exact selected Native prefix",
+        dimensions=(
+            Dimension("row_budget", COUNT, "Maximum semantic input rows processed by this call."),
+            Dimension(
+                "byte_budget", OCTETS, "Maximum projected payload bytes decoded by this call."
+            ),
+        )
+        if bounded
+        else (Dimension("selected_prefixes", COUNT, "Already registered exact source prefixes."),),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                Expression("product", terms=(number(8, SCALAR), visits)) if bounded else number(2),
+                "Indexed input, interval and payload seeks plus atomic obligation writes.",
+            ),
+            Bound(
+                "processed_rows",
+                COUNT,
+                "upper",
+                dimension("row_budget") if bounded else number(0),
+                "One cursor advance per original semantic assertion, never per snapshot.",
+            ),
+            Bound(
+                "projected_payload_octets",
+                OCTETS,
+                "upper",
+                dimension("byte_budget") if bounded else number(0, OCTETS),
+                "Length admission precedes every selected semantic projection fetch.",
+            ),
+            Bound(
+                "json_decodes",
+                COUNT,
+                "upper",
+                dimension("row_budget") if bounded else number(0),
+                "Only admitted semantic projection atoms are decoded.",
+            ),
+            Bound(
+                "full_assertion_reads",
+                COUNT,
+                "equal",
+                number(0),
+                "Original assertion payloads remain in a separate table and are not selected.",
+            ),
+            Bound(
+                "source_frame_reads",
+                COUNT,
+                "equal",
+                number(0),
+                "Accepted Native source frames are never replayed by selection work.",
+            ),
+        ),
+        conditions=(
+            "Raw source indexing came from owned independently accepted Native summaries.",
+            "Native entry semantics precede publication of every retained prefix header.",
+            "The source and selected-prefix set remain fixed during this semantic attempt.",
+        ),
+        invariants=(
+            "An assertion contributes only if a selected prefix intersects [birth,retirement).",
+            "Complete each semantic assertion once; retry at most one unfinished metadata atom.",
+            "A selected historical edge survives withdrawal at a later selected prefix.",
+            "Interrupted registration retries one atom; prior cursor advances remain intact.",
+        ),
+        limitations=(
+            "The current workspace and continuation are temporary, not durable restart proof.",
+            "SQL visits and payload bytes exclude storage I/O and metadata-width composition.",
+            "Foreign references, comparisons and acyclicity have separate completion work.",
+            "Added inputs in a later whole-corpus validation start a new selection attempt.",
+            "Completeness, member relevance, current access and publication remain separate.",
+        ),
+    )
+
+
+def _semantic_projection(value: Mapping[str, Any]) -> dict[str, Any] | None:
+    kind = value["type"]
+    if kind in ("derivation", "specialization"):
+        left, right = (
+            ("used_state", "generated_state") if kind == "derivation" else ("specific", "general")
+        )
+        return {
+            "type": kind,
+            "source": value[left]["object_id"],
+            "target": value[right]["object_id"],
+        }
+    if kind == "content_comparison":
+        return {
+            "type": kind,
+            "left": value["left_description"]["object_id"],
+            "right": value["right_description"]["object_id"],
+            "result": value["result"],
+        }
+    return None
+
+
+@dataclass(frozen=True, slots=True)
+class CorpusSemanticProgress:
+    """Selected semantic registration in this workspace, not global acceptance."""
+
+    processed_assertions: int
+    admitted_octets: int
+    complete: bool
+
+
 @dataclass(frozen=True, slots=True)
 class CorpusSourceProgress:
     """Raw-source completion for one exact immutable Native input."""
@@ -597,6 +722,9 @@ class CanonicalCorpusValidator:
 
     def __init__(self) -> None:
         self._closed = False
+        self._semantic_phase = "open"
+        self._semantic_after: tuple[str, str] | None = None
+        self._semantic_processed = 0
         self._scratch = TemporaryDirectory(prefix="riverhog-canonical-corpus-")
         self._db = sqlite3.connect(Path(self._scratch.name) / "corpus.sqlite3")
         self._db.execute("PRAGMA cache_size = -512")
@@ -615,7 +743,13 @@ class CanonicalCorpusValidator:
             "(journal, object, sequence_width, sequence);"
             "CREATE TABLE refs (value BLOB PRIMARY KEY);"
             "CREATE TABLE forks (anchor BLOB PRIMARY KEY);"
-            "CREATE TABLE comparisons (value BLOB PRIMARY KEY);"
+            "CREATE TABLE selected_prefixes (journal TEXT, width INTEGER, sequence TEXT, "
+            "PRIMARY KEY(journal,width,sequence)) WITHOUT ROWID;"
+            "CREATE TABLE semantic_inputs (journal TEXT, assertion TEXT, value BLOB NOT NULL, "
+            "PRIMARY KEY(journal,assertion)) WITHOUT ROWID;"
+            "CREATE TABLE fixities (object TEXT PRIMARY KEY, size TEXT, sha256 TEXT) WITHOUT ROWID;"
+            "CREATE TABLE comparisons (journal TEXT, assertion TEXT, left_object TEXT, "
+            "right_object TEXT, result TEXT, PRIMARY KEY(journal,assertion)) WITHOUT ROWID;"
             "CREATE TABLE edges (kind TEXT, source TEXT, target TEXT, "
             "PRIMARY KEY(kind, source, target));"
             "CREATE INDEX incoming ON edges(kind, target);"
@@ -656,6 +790,7 @@ class CanonicalCorpusValidator:
         self, summary: JournalSummary, *, frame_budget: int | None = None
     ) -> CorpusSourceProgress:
         self._require_open()
+        self._require_source_selection_open()
         if summary._store is None:
             raise RuntimeError("corpus sources require an owned native journal summary")
         frame_count = len(summary.frames)
@@ -754,6 +889,23 @@ class CanonicalCorpusValidator:
                                 assertion["assertion_id"],
                                 canonical_document(projection),
                             ),
+                        )
+                    semantic = _semantic_projection(assertion)
+                    if semantic is not None:
+                        self._source_write(
+                            "INSERT OR IGNORE INTO semantic_inputs VALUES (?, ?, ?)",
+                            (
+                                summary.journal_id,
+                                assertion["assertion_id"],
+                                canonical_document(semantic),
+                            ),
+                        )
+                    # Native description identity fixes content across evidence corrections.
+                    if "content" in assertion:
+                        size, digest = fingerprint(assertion["content"])
+                        self._source_write(
+                            "INSERT OR IGNORE INTO fixities VALUES (?, ?, ?)",
+                            (assertion["id"], str(size), digest),
                         )
                 for reference in _external_references(_body_assertions(document)):
                     self._source_write(
@@ -946,56 +1098,144 @@ class CanonicalCorpusValidator:
         )
         return SelectedDeliverySupport(references[state["id"]], references[occurrence["id"]])
 
+    def _require_source_selection_open(self) -> None:
+        if self._semantic_phase != "open":
+            raise RuntimeError("canonical corpus source selection is frozen during semantic work")
+
+    @declare_growth(_selection_declaration("select_source"))
+    def select_source(self, anchor: HistoryJournalAnchor) -> None:
+        """Register one exact intrinsically checked Native prefix.
+
+        Native publishes each original entry header only after its semantic
+        phases. This registers the prefix's effective intervals; it does not
+        accept foreign corpus obligations or grant member relevance/access.
+        """
+        self._require_open()
+        self._require_source_selection_open()
+        self._check_source_anchor(anchor)
+        sequence = str(anchor.through_sequence)
+        self._source_write(
+            "INSERT OR IGNORE INTO selected_prefixes VALUES (?, ?, ?)",
+            (anchor.journal_id, len(sequence), sequence),
+        )
+
+    @declare_growth(_selection_declaration("advance_semantics"))
+    def advance_semantics(
+        self, *, row_budget: int = 64, byte_budget: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+    ) -> CorpusSemanticProgress:
+        """Advance semantic registration over one fixed selected-source union.
+
+        Exact source-prefix positions seek each assertion's half-open lifetime.
+        Full effective snapshots and original assertions are never loaded.
+        Budgets bound this call; global validation and durable progress retain
+        their own completion requirements.
+        """
+        self._require_open()
+        if type(row_budget) is not int or row_budget < 1:
+            raise ValueError("corpus semantic row budget must be positive")
+        if type(byte_budget) is not int or byte_budget < 1:
+            raise ValueError("corpus semantic byte budget must be positive")
+        if self._semantic_phase == "complete":
+            return CorpusSemanticProgress(self._semantic_processed, 0, True)
+        if self._semantic_phase == "open":
+            self._semantic_phase, self._semantic_after, self._semantic_processed = (
+                "walking",
+                None,
+                0,
+            )
+        admitted = 0
+        for _ in range(row_budget):
+            found = self._source_read(
+                "SELECT a.journal,a.assertion,a.type,a.sequence,a.retired,length(s.value) "
+                "FROM semantic_inputs s JOIN assertions a "
+                "ON a.journal=s.journal AND a.assertion=s.assertion "
+                "WHERE (s.journal,s.assertion)>(?,?) "
+                "ORDER BY s.journal,s.assertion LIMIT 1",
+                self._semantic_after or ("", ""),
+            )
+            if found is None:
+                self._semantic_phase = "complete"
+                break
+            journal, assertion_id, kind, born, retired, size = found
+            selected = self._source_read(
+                "SELECT sequence FROM selected_prefixes WHERE journal=? "
+                "AND (width,sequence)>=(?,?) ORDER BY width,sequence LIMIT 1",
+                (journal, len(born), born),
+            )
+            effective = selected is not None and (
+                retired is None or (len(selected[0]), selected[0]) < (len(retired), retired)
+            )
+            if effective:
+                if size > byte_budget:
+                    raise JournalValidationCapacity(
+                        "semantic projection exceeds admitted byte budget"
+                    )
+                if size > byte_budget - admitted:
+                    break
+                encoded = self._source_read(
+                    "SELECT substr(value,1,?) FROM semantic_inputs "
+                    "WHERE journal=? AND assertion=? AND length(value)=?",
+                    (size, journal, assertion_id, size),
+                )
+                if encoded is None:
+                    raise RuntimeError("semantic projection changed outside its source fence")
+                value = json.loads(encoded[0])
+                if value["type"] != kind:
+                    raise RuntimeError("semantic projection differs from its source metadata")
+                self._source_write("SAVEPOINT corpus_semantic_assertion")
+                try:
+                    if kind == "content_comparison":
+                        self._source_write(
+                            "INSERT OR IGNORE INTO comparisons VALUES (?, ?, ?, ?, ?)",
+                            (journal, assertion_id, value["left"], value["right"], value["result"]),
+                        )
+                    else:
+                        self._source_write(
+                            "INSERT OR IGNORE INTO edges VALUES (?, ?, ?)",
+                            (kind, value["source"], value["target"]),
+                        )
+                except BaseException:
+                    self._source_write("ROLLBACK TO corpus_semantic_assertion")
+                    self._source_write("RELEASE corpus_semantic_assertion")
+                    raise
+                else:
+                    self._source_write("RELEASE corpus_semantic_assertion")
+                admitted += size
+            self._semantic_after = (journal, assertion_id)
+            self._semantic_processed += 1
+        return CorpusSemanticProgress(
+            self._semantic_processed, admitted, self._semantic_phase == "complete"
+        )
+
     def add(self, summary: JournalSummary) -> None:
         self._add_source(summary)
-        for reference in summary.graph_validation.external_references:
-            self._db.execute(
-                "INSERT OR IGNORE INTO refs VALUES (?)", (canonical_document(reference),)
-            )
-        for assertion in summary.graph_validation.objects.values():
-            kind = assertion["type"]
-            if kind == "content_comparison":
-                # Keep the independently resolved local objects with this row.
-                local = {
-                    key: summary.graph_validation.objects.get(assertion[key]["object_id"])
-                    for key in ("left_description", "right_description")
-                    if assertion[key]["scope"] == "local"
-                }
-                self._db.execute(
-                    "INSERT OR IGNORE INTO comparisons VALUES (?)",
-                    (canonical_document({"row": assertion, "local": local}),),
-                )
-            if kind in ("derivation", "specialization"):
-                fields = (
-                    ("used_state", "generated_state")
-                    if kind == "derivation"
-                    else ("specific", "general")
-                )
-                self._db.execute(
-                    "INSERT OR IGNORE INTO edges VALUES (?, ?, ?)",
-                    (kind, assertion[fields[0]]["object_id"], assertion[fields[1]]["object_id"]),
-                )
+        self.select_source(HistoryJournalAnchor.from_mapping(summary.anchor))
 
-    def _resolve(self, reference: dict[str, Any]) -> dict[str, Any]:
-        found = self._db.execute(
-            "SELECT a.entry,p.value FROM assertions a JOIN assertion_payloads p "
-            "ON p.journal=a.journal AND p.assertion=a.assertion "
-            "WHERE a.journal=? AND a.assertion=?",
+    def _resolve(self, reference: dict[str, Any]) -> None:
+        found = self._source_read(
+            "SELECT entry,object,type FROM assertions WHERE journal=? AND assertion=?",
             (reference["journal_id"], reference["assertion_id"]),
-        ).fetchone()
+        )
         if found is None:
             raise ProvenanceValidationError("unresolved required external journal assertion")
-        entry, encoded = found
-        row = cast(dict[str, Any], json.loads(encoded))
-        if (
-            entry != canonical_document(reference["entry"])
-            or row["id"] != reference["object_id"]
-            or row["type"] != reference["object_type"]
+        if found != (
+            canonical_document(reference["entry"]),
+            reference["object_id"],
+            reference["object_type"],
         ):
             raise ProvenanceValidationError("foreign reference does not match its exact assertion")
-        return row
 
     def validate(self) -> None:
+        self._require_open()
+        try:
+            while not self.advance_semantics().complete:
+                pass
+            self._validate_registered()
+        finally:
+            # A later explicit batch validation has a new fixed input set.
+            self._semantic_phase = "open"
+
+    def _validate_registered(self) -> None:
         for (encoded,) in self._db.execute("SELECT value FROM refs"):
             self._resolve(json.loads(encoded))
         for (encoded,) in self._db.execute("SELECT anchor FROM forks"):
@@ -1010,25 +1250,21 @@ class CanonicalCorpusValidator:
                 anchor["prefix_bytes"],
             ):
                 raise ProvenanceValidationError("fork prefix anchor could not be resolved exactly")
-        for (encoded,) in self._db.execute("SELECT value FROM comparisons"):
-            comparison = json.loads(encoded)
-            row = comparison["row"]
-            descriptions = [
-                comparison["local"][key]
-                if row[key]["scope"] == "local"
-                else self._resolve(row[key])
-                for key in ("left_description", "right_description")
+        for left, right, result in self._db.execute(
+            "SELECT left_object,right_object,result FROM comparisons"
+        ):
+            # Prefix admission checked local presence. Immutable description content
+            # permits one referent projection across selected snapshots.
+            fixities = [
+                self._source_read("SELECT size,sha256 FROM fixities WHERE object=?", (identity,))
+                for identity in (left, right)
             ]
-            if any(item is None or "content" not in item for item in descriptions):
-                if row["result"] != "indeterminate":
+            if any(item is None for item in fixities):
+                if result != "indeterminate":
                     raise ProvenanceValidationError("resolved comparison lacks complete fixity")
             else:
-                same = fingerprint(descriptions[0]["content"]) == fingerprint(
-                    descriptions[1]["content"]
-                )
-                if (row["result"] == "matching_fixity" and not same) or (
-                    row["result"] == "different" and same
-                ):
+                same = fixities[0] == fixities[1]
+                if (result == "matching_fixity" and not same) or (result == "different" and same):
                     raise ProvenanceValidationError(
                         "comparison contradicts foreign content evidence"
                     )
@@ -1138,6 +1374,7 @@ def validate_canonical_corpus(summaries: Iterable[JournalSummary]) -> None:
 __all__ = [
     "CanonicalCorpusValidator",
     "CorpusSourceProgress",
+    "CorpusSemanticProgress",
     "HistoricalAssertion",
     "SelectedDeliverySupport",
     "validate_canonical_corpus",
