@@ -26,6 +26,7 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import canonical_document, require_canonical_uuid_urn
 
+from ._corpus_order import CorpusOrderProgress, _CorpusOrder
 from .common import fingerprint
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .delivery import _delivery_projection, _selected_delivery_occurrence
@@ -107,36 +108,36 @@ def _corpus_order_declaration() -> Declaration:
                 "sql_statements",
                 COUNT,
                 "upper",
-                multiply(number(8, SCALAR), records),
+                multiply(number(32, SCALAR), records),
                 "Includes both connections, schema, empty reads, point updates and queue "
-                "operations.",
+                "operations and atomic checkpoint transactions.",
             ),
             Bound(
                 "returned_rows",
                 COUNT,
                 "upper",
-                multiply(number(6, SCALAR), records),
+                multiply(number(32, SCALAR), records),
                 "All input, degree, seed, outgoing and queue rows are observed.",
             ),
             Bound(
                 "returned_octets",
                 OCTETS,
                 "upper",
-                multiply(records, widths),
+                multiply(number(8, SCALAR), records, widths),
                 "Full endpoint and decimal-degree bytes are counted, without abbreviated records.",
             ),
             Bound(
                 "parameter_octets",
                 OCTETS,
                 "upper",
-                multiply(records, widths),
+                multiply(number(8, SCALAR), records, widths),
                 "All SQL parameter bytes, including repeatedly written keys and exact degrees.",
             ),
             Bound(
                 "written_rows",
                 COUNT,
                 "upper",
-                multiply(number(5, SCALAR), records),
+                multiply(number(8, SCALAR), records),
                 "Includes successful node insertion, degree replacement and ready "
                 "insertion/deletion.",
             ),
@@ -144,7 +145,7 @@ def _corpus_order_declaration() -> Declaration:
                 "written_octets",
                 OCTETS,
                 "upper",
-                multiply(records, widths),
+                multiply(number(8, SCALAR), records, widths),
                 "Full logical node/ready fields for every successful row mutation, including "
                 "deletion.",
             ),
@@ -152,15 +153,15 @@ def _corpus_order_declaration() -> Declaration:
                 "degree_decoded_octets",
                 OCTETS,
                 "upper",
-                multiply(number(2, SCALAR), dimension("edges"), dimension("degree_octets")),
-                "Python exact-integer degree updates decode at most two scalars per edge.",
+                multiply(number(24, SCALAR), records, dimension("degree_octets")),
+                "Exact degree and checkpoint counters decode bounded decimal scalars.",
             ),
             Bound(
                 "degree_encoded_octets",
                 OCTETS,
                 "upper",
-                multiply(number(2, SCALAR), dimension("edges"), dimension("degree_octets")),
-                "Degree replacements encode decimal scalars without SQLite integer arithmetic.",
+                multiply(number(24, SCALAR), records, dimension("degree_octets")),
+                "Exact degree and checkpoint counters use decimal scalars, not SQLite arithmetic.",
             ),
             Bound(
                 "sqlite_vm_instructions",
@@ -201,6 +202,8 @@ def _corpus_order_declaration() -> Declaration:
             "node/ready indexes.",
             "Inputs describe complete endpoint widths; ordering has an explicit B-tree "
             "logarithmic allowance.",
+            "The whole-run wrapper uses 1024 atoms per quantum; Native metadata widths "
+            "fit its admitted byte budget.",
             "VM instructions describe the selected SQLite engine, not portable internal "
             "byte-comparison counts.",
         ),
@@ -701,6 +704,73 @@ def _dependency_declaration() -> Declaration:
     )
 
 
+def _order_step_declaration() -> Declaration:
+    original = _selection_declaration("advance_semantics")
+    return replace(
+        original,
+        id="riverhog-provenance.corpus-advance-order.growth/v1",
+        subjects=("riverhog_provenance.corpus.CanonicalCorpusValidator.advance_order",),
+        scope="one bounded atomic cycle-ordering quantum for a fixed graph kind",
+        dimensions=(
+            Dimension("row_budget", COUNT, "Maximum ordering phase atoms per call."),
+            Dimension(
+                "byte_budget", OCTETS, "Maximum admitted checkpoint and scalar payload bytes."
+            ),
+        ),
+        starts_at="receive row and payload-byte admission after complete dependency checks",
+        ends_at="commit ordering mutations with their checkpoint or roll back the quantum",
+        bounds=tuple(
+            replace(
+                bound,
+                expression=Expression(
+                    "product",
+                    terms=(
+                        Expression("constant", value=32, unit=SCALAR),
+                        Expression(
+                            "sum",
+                            terms=(
+                                Expression("dimension", name="row_budget"),
+                                Expression("constant", value=1, unit=COUNT),
+                            ),
+                        ),
+                    ),
+                ),
+                meaning="Checkpoint admission, private initialization and indexed atom work.",
+            )
+            if bound.metric == "sql_statements"
+            else replace(bound, meaning="At most the admitted number of phase atoms.")
+            if bound.metric == "processed_rows"
+            else replace(bound, meaning="Checkpoint, endpoint and degree payload admission.")
+            if bound.metric == "projected_payload_octets"
+            else replace(
+                bound,
+                expression=Expression("constant", value=0, unit=COUNT),
+                meaning="Ordering uses exact indexed scalars, without JSON.",
+            )
+            if bound.metric == "json_decodes"
+            else bound
+            for bound in original.bounds
+        ),
+        conditions=(
+            "The Native source and selected semantic set are fixed.",
+            "Documentary dependencies have completed before graph ordering begins.",
+            "A graph kind retains disk-backed indegrees, ready keys and an atomic checkpoint.",
+        ),
+        invariants=(
+            "Ordering retains the exact independent derivation and specialization cycle rules.",
+            "Each committed input, seed or outgoing key advances once.",
+            "Rollback repeats only the unfinished bounded quantum.",
+            "A lost return after commit reloads the published checkpoint.",
+            "No original assertion or source frame is read.",
+        ),
+        limitations=(
+            "A completed kind does not complete the other kind or grant current access.",
+            "The workspace is temporary, without retained reopening or durable worker binding.",
+            "This bounds SQL visits and fetched payload; complete ordering owns physical growth.",
+        ),
+    )
+
+
 def _semantic_projection(value: Mapping[str, Any]) -> dict[str, Any] | None:
     kind = value["type"]
     if kind in ("derivation", "specialization"):
@@ -792,6 +862,7 @@ class CanonicalCorpusValidator:
         self._dependency_after: tuple[Any, ...] | None = None
         self._dependency_pending: tuple[Any, ...] | None = None
         self._dependency_checked = 0
+        self._orders: dict[str, _CorpusOrder] = {}
         self._scratch = TemporaryDirectory(prefix="riverhog-canonical-corpus-")
         self._db = sqlite3.connect(Path(self._scratch.name) / "corpus.sqlite3")
         self._db.execute("PRAGMA cache_size = -512")
@@ -834,6 +905,7 @@ class CanonicalCorpusValidator:
     def __exit__(self, *_exc: object) -> None:
         self._closed = True
         self._reset_dependencies()
+        self._close_orders()
         self._db.close()
         self._scratch.cleanup()
 
@@ -1421,6 +1493,33 @@ class CanonicalCorpusValidator:
             self._dependency_phase == "complete",
         )
 
+    def _close_orders(self) -> None:
+        for order in self._orders.values():
+            order.close()
+        self._orders.clear()
+
+    @declare_growth(_order_step_declaration())
+    def advance_order(
+        self,
+        kind: str,
+        *,
+        row_budget: int = 64,
+        byte_budget: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX,
+    ) -> CorpusOrderProgress:
+        """Advance one kind's exact cycle check with atomic bounded progress."""
+        self._require_open()
+        if kind not in ("derivation", "specialization"):
+            raise ValueError("unknown canonical corpus graph kind")
+        if type(row_budget) is not int or row_budget < 1:
+            raise ValueError("corpus ordering row budget must be positive")
+        if type(byte_budget) is not int or byte_budget < 1:
+            raise ValueError("corpus ordering byte budget must be positive")
+        if self._semantic_phase != "complete" or self._dependency_phase != "complete":
+            raise RuntimeError("corpus ordering requires complete semantics and dependencies")
+        if kind not in self._orders:
+            self._orders[kind] = _CorpusOrder(self._db, self._scratch.name, kind)
+        return self._orders[kind].advance(row_budget=row_budget, byte_budget=byte_budget)
+
     def validate(self) -> None:
         self._require_open()
         try:
@@ -1431,104 +1530,25 @@ class CanonicalCorpusValidator:
             # A later explicit batch validation has a new fixed input set.
             self._semantic_phase = "open"
             self._reset_dependencies()
+            self._close_orders()
 
     def _validate_registered(self) -> None:
         while not self.advance_dependencies().complete:
             pass
         for kind in ("derivation", "specialization"):
-            self._acyclic(kind)
+            if kind in self._orders:
+                while not self.advance_order(kind).complete:
+                    pass
+            else:
+                self._acyclic(kind)
 
     @declare_growth(_CORPUS_ORDER_GROWTH)
     def _acyclic(self, kind: str) -> None:
-        # Only indegrees and pending vertex identities are duplicated. The owned
-        # corpus edge index supplies both the input pass and exact outgoing ranges.
-        # Separate scratch keeps cancellation from leaving partially built work in
-        # the corpus connection, whose facts remain available for a fresh retry.
-        with (
-            TemporaryDirectory(prefix="order-", dir=self._scratch.name) as directory,
-            closing(sqlite3.connect(Path(directory) / "order.sqlite3")) as work,
-        ):
-            with closing(work.execute("PRAGMA cache_size = -512")):
+        with _CorpusOrder(self._db, self._scratch.name, kind) as order:
+            while not order.advance(
+                row_budget=1024, byte_budget=PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+            ).complete:
                 pass
-            with closing(work.execute("BEGIN")):
-                pass
-            with closing(
-                work.execute("CREATE TABLE nodes (id TEXT PRIMARY KEY, degree TEXT NOT NULL)")
-            ):
-                pass
-            with closing(work.execute("CREATE TABLE ready (id TEXT PRIMARY KEY)")):
-                pass
-            vertices = 0
-            with closing(
-                self._db.execute(
-                    "SELECT source, target FROM edges WHERE kind = ? ORDER BY source, target",
-                    (kind,),
-                )
-            ) as edges:
-                for source, target in edges:
-                    with closing(
-                        work.execute("INSERT OR IGNORE INTO nodes VALUES (?, '0')", (source,))
-                    ) as inserted:
-                        vertices += inserted.rowcount
-                    with closing(
-                        work.execute("SELECT degree FROM nodes WHERE id = ?", (target,))
-                    ) as cursor:
-                        found = cursor.fetchone()
-                    if found is None:
-                        with closing(work.execute("INSERT INTO nodes VALUES (?, '1')", (target,))):
-                            pass
-                        vertices += 1
-                    else:
-                        degree = str(int(found[0]) + 1)
-                        with closing(
-                            work.execute(
-                                "UPDATE nodes SET degree = ? WHERE id = ?", (degree, target)
-                            )
-                        ):
-                            pass
-            with closing(work.execute("SELECT id, degree FROM nodes ORDER BY id")) as nodes:
-                for identity, degree in nodes:
-                    if degree == "0":
-                        with closing(work.execute("INSERT INTO ready VALUES (?)", (identity,))):
-                            pass
-            completed = 0
-            while True:
-                with closing(work.execute("SELECT id FROM ready ORDER BY id LIMIT 1")) as cursor:
-                    pending = cursor.fetchone()
-                if pending is None:
-                    break
-                source = pending[0]
-                with closing(work.execute("DELETE FROM ready WHERE id = ?", (source,))):
-                    pass
-                with closing(
-                    self._db.execute(
-                        "SELECT target FROM edges WHERE kind = ? AND source = ? ORDER BY target",
-                        (kind, source),
-                    )
-                ) as edges:
-                    for (target,) in edges:
-                        with closing(
-                            work.execute("SELECT degree FROM nodes WHERE id = ?", (target,))
-                        ) as cursor:
-                            found = cursor.fetchone()
-                        if found is None:
-                            raise RuntimeError("corpus ordering indegree is inconsistent")
-                        remaining = int(found[0]) - 1
-                        if remaining < 0:
-                            raise RuntimeError("corpus ordering indegree is inconsistent")
-                        degree = str(remaining)
-                        with closing(
-                            work.execute(
-                                "UPDATE nodes SET degree = ? WHERE id = ?", (degree, target)
-                            )
-                        ):
-                            pass
-                        if degree == "0":
-                            with closing(work.execute("INSERT INTO ready VALUES (?)", (target,))):
-                                pass
-                completed += 1
-            if completed != vertices:
-                raise ProvenanceValidationError(f"cross-journal {kind} graph contains a cycle")
 
 
 def validate_canonical_corpus(summaries: Iterable[JournalSummary]) -> None:
@@ -1542,6 +1562,7 @@ __all__ = [
     "CanonicalCorpusValidator",
     "CorpusSourceProgress",
     "CorpusDependencyProgress",
+    "CorpusOrderProgress",
     "CorpusSemanticProgress",
     "HistoricalAssertion",
     "SelectedDeliverySupport",

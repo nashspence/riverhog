@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 import riverhog_canonical_json as canonical
+import riverhog_provenance._corpus_order as ordering
 import riverhog_provenance.corpus as corpus
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
@@ -33,6 +34,8 @@ def octets(value):
         return len(value.encode())
     if isinstance(value, bytes):
         return len(value)
+    if isinstance(value, int):
+        return len(str(value))
     if isinstance(value, tuple):
         return sum(octets(item) for item in value)
     assert value is None
@@ -54,6 +57,17 @@ class Cursor:
         self.recorder.metrics["returned_rows"] += int(result is not None)
         self.recorder.metrics["returned_octets"] += octets(result)
         if result is not None:
+            if self.query.startswith(
+                (
+                    "SELECT phase,",
+                    "SELECT source, target",
+                    "SELECT id, degree",
+                    "SELECT id FROM ready",
+                    "SELECT target FROM edges",
+                    "SELECT degree FROM nodes",
+                )
+            ):
+                self.recorder.metrics["projected_payload_octets"] += octets(result)
             for query, metric in (
                 ("SELECT source, target FROM edges", "source_edge_rows"),
                 ("SELECT target FROM edges", "outgoing_edge_rows"),
@@ -87,6 +101,7 @@ class Connection:
     def execute(self, query, parameters=()):
         recorder = self.recorder
         recorder.metrics["sql_statements"] += 1
+        assert "assertion_payloads" not in query
         recorder.metrics["parameter_octets"] += octets(parameters)
         recorder.queries.add(query)
         if recorder.failure_query is not None and query.startswith(recorder.failure_query):
@@ -98,10 +113,18 @@ class Connection:
                 recorder.metrics["written_octets"] += octets(parameters) + 1
             elif query.startswith("INSERT INTO nodes"):
                 recorder.metrics["written_octets"] += octets(parameters) + 1
+            elif query.startswith("INSERT INTO checkpoint"):
+                recorder.metrics["written_octets"] += 9
             else:
-                assert query.startswith(("UPDATE nodes", "INSERT INTO ready", "DELETE FROM ready"))
+                assert query.startswith(
+                    ("UPDATE nodes", "INSERT INTO ready", "DELETE FROM ready", "UPDATE checkpoint")
+                )
                 recorder.metrics["written_octets"] += octets(parameters)
         return Cursor(actual, recorder, query)
+
+    def rollback(self):
+        self.recorder.metrics["sql_statements"] += 1
+        self.actual.rollback()
 
     def close(self):
         self.actual.close()
@@ -153,8 +176,8 @@ class Recorder:
             with monkeypatch.context() as patch:
                 patch.setattr(current, "_db", Connection(actual, self))
                 patch.setattr(corpus.sqlite3, "connect", connected)
-                patch.setattr(corpus, "int", decoded, raising=False)
-                patch.setattr(corpus, "str", encoded, raising=False)
+                patch.setattr(ordering, "_decode_count", decoded)
+                patch.setattr(ordering, "_encode_count", encoded)
                 patch.setattr(corpus, "canonical_document", forbidden_json)
                 patch.setattr(corpus.json, "loads", forbidden_json)
                 patch.setattr(canonical, "canonical_json_bytes", forbidden_json)
@@ -471,6 +494,9 @@ def test_real_ordering_database_interrupt_preserves_uncommitted_corpus(kind, pha
             if query.startswith(trigger):
                 self.actual.set_progress_handler(lambda: 1, 1)
             return self.actual.execute(query, parameters)
+
+        def rollback(self):
+            self.actual.rollback()
 
         def close(self):
             self.actual.close()

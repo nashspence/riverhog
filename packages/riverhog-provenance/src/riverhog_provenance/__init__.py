@@ -15,6 +15,7 @@ from .constants import PROVENANCE_ENTRY_SCHEMA, PROVENANCE_PROFILE
 from .corpus import (
     CanonicalCorpusValidator,
     CorpusDependencyProgress,
+    CorpusOrderProgress,
     CorpusSemanticProgress,
     CorpusSourceProgress,
     HistoricalAssertion,
@@ -107,6 +108,7 @@ __all__ = [
     "CanonicalCorpusValidator",
     "CorpusSourceProgress",
     "CorpusDependencyProgress",
+    "CorpusOrderProgress",
     "CorpusSemanticProgress",
     "HistoricalAssertion",
     "SelectedDeliverySupport",
