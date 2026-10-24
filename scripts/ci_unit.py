@@ -185,6 +185,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "-m",
                 "pytest",
                 "-q",
+                "--maxfail=1",
                 "-p",
                 "scripts.ci_unit",
                 "-n",

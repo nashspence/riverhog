@@ -193,6 +193,11 @@ def artifact_record(archive):
     }
 
 
+def require_fixture_work(work, names):
+    assert tuple(names) == (work.name,)
+    return (work,)
+
+
 @pytest.fixture(scope="module")
 def actual_execution(tmp_path_factory):
     root = tmp_path_factory.mktemp("actions-execution")
@@ -228,6 +233,11 @@ def actual_execution(tmp_path_factory):
     with pytest.MonkeyPatch.context() as patch:
         patch.setattr(ci_qualification, "ROOT", source)
         patch.setattr(ci_qualification, "validation_work", lambda name: work)
+        patch.setattr(
+            ci_qualification,
+            "require_validation_work",
+            lambda names: require_fixture_work(work, names),
+        )
         patch.setenv("RIVERHOG_CI_TIMING_DIR", str(root / "timings"))
         for name in ("MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES", "RIVERHOG_VALIDATION_SCOPE"):
             patch.delenv(name, raising=False)
@@ -278,6 +288,11 @@ def actual_make_execution(tmp_path_factory):
         patch.setattr(ci_make, "ROOT", source)
         patch.setattr(ci_qualification, "ROOT", source)
         patch.setattr(ci_qualification, "validation_work", lambda name: work)
+        patch.setattr(
+            ci_qualification,
+            "require_validation_work",
+            lambda names: require_fixture_work(work, names),
+        )
         patch.setattr(
             ci_make, "make_work_definitions", lambda goals, parameters: [work.definition()]
         )

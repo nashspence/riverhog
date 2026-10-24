@@ -127,3 +127,46 @@ def test_a_collected_shard_must_actually_execute_before_claiming_success(
     )
     assert observed.returncode != 0
     assert "shard execution differs" in observed.stdout + observed.stderr
+
+
+@pytest.mark.parametrize("fail_first", [False, True])
+def test_real_shard_stops_on_failure_and_requires_every_test_for_success(tmp_path, fail_first):
+    (tmp_path / "pytest.ini").write_text("[pytest]\n")
+    tests = tmp_path / "tests" / "unit"
+    tests.mkdir(parents=True)
+    (tests / "test_release_example.py").write_text("def test_release():\n    assert True\n")
+    (tests / "test_contract_example.py").write_text("def test_contract():\n    assert True\n")
+    marker = tmp_path / "second-executed"
+    (tests / "test_example.py").write_text(
+        "from pathlib import Path\n"
+        "def test_first():\n"
+        f"    assert {not fail_first!r}\n"
+        "def test_second():\n"
+        f"    Path({str(marker)!r}).write_text('executed')\n"
+    )
+    environment = {
+        key: value for key, value in os.environ.items() if key != "RIVERHOG_CI_UNIT_EXPECTED_FILE"
+    }
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts/ci_unit.py"),
+            "run",
+            "--shard",
+            "unit",
+            "tests/unit",
+        ],
+        cwd=tmp_path,
+        env={**environment, "PYTHONPATH": str(ROOT)},
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if fail_first:
+        assert result.returncode != 0
+        assert not marker.exists()
+        assert "test_first" in result.stdout + result.stderr
+    else:
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert marker.read_text() == "executed"
+        assert "2 passed" in result.stdout
