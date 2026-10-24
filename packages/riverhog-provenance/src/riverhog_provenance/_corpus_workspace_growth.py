@@ -904,3 +904,135 @@ def semantic_declaration(native: Declaration, transaction: Declaration) -> Decla
             "require composition.",
         ),
     )
+
+
+def point_declaration(operation: str, native: Declaration, transaction: Declaration) -> Declaration:
+    """Charge the complete retained transaction around one exact Native lookup."""
+
+    def call(slot: str, declaration: Declaration, metric: str) -> Expression:
+        return Expression(
+            "delegate",
+            name=slot,
+            metric=metric,
+            terms=(_dimension("native_calls") if slot == "native" else _number(1),),
+            arguments=tuple((item.name, _dimension(item.name)) for item in declaration.dimensions),
+        )
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    limits = [
+        Bound(
+            "native_calls",
+            COUNT,
+            "upper",
+            _number(1),
+            "At most one exact Native lookup follows current owner admission.",
+        ),
+        Bound(
+            "returned_octets",
+            OCTETS,
+            "upper",
+            add(
+                call("transaction", transaction, "returned_octets"),
+                call("native", native, "metadata_octets"),
+                call("native", native, "payload_octets"),
+            ),
+            "Complete singleton owner metadata, indexed point metadata and admitted payloads.",
+        ),
+        Bound(
+            "sqlite_vm_instructions",
+            COUNT,
+            "upper",
+            add(_number(512), call("native", native, "sqlite_vm_instructions")),
+            "Native indexed seeks plus fixed singleton lifecycle and checkpoint work.",
+        ),
+        Bound(
+            "written_rows",
+            COUNT,
+            "upper",
+            _number(1),
+            "The read-only Native body is followed by at most one parent checkpoint write.",
+        ),
+        Bound(
+            "written_parameter_octets",
+            OCTETS,
+            "upper",
+            call("transaction", transaction, "parameter_octets"),
+            "All persistent writes belong to the owner checkpoint compare-and-swap.",
+        ),
+    ]
+    for metric in ("sql_statements", "returned_rows", "parameter_octets"):
+        limits.append(
+            Bound(
+                metric,
+                OCTETS if metric.endswith("octets") else COUNT,
+                "upper",
+                add(call("transaction", transaction, metric), call("native", native, metric)),
+                "Actual Native point work and owner entry/exit compose without omitting either.",
+            )
+        )
+    for metric in ("source_checks", "checkpoint_decoded_octets", "checkpoint_encoded_octets"):
+        limits.append(
+            Bound(
+                metric,
+                COUNT if metric == "source_checks" else OCTETS,
+                "upper",
+                call("transaction", transaction, metric),
+                "Current owner checks and complete checkpoint codecs retain lifecycle costs.",
+            )
+        )
+    for metric in ("payload_octets", "decoded_octets", "json_decodes", "source_frame_reads"):
+        limits.append(
+            Bound(
+                metric,
+                OCTETS if metric.endswith("octets") else COUNT,
+                "upper",
+                call("native", native, metric),
+                "The actual Native child owns all selected payload work; lifecycle adds none.",
+            )
+        )
+    if operation == "selected_delivery_support":
+        limits.append(
+            Bound(
+                "full_assertion_reads",
+                COUNT,
+                "equal",
+                _number(0),
+                "Delivery support reads only Native semantic projections and original entry keys.",
+            )
+        )
+    return Declaration(
+        id="riverhog-provenance.retained-corpus-" + operation.replace("_", "-") + ".growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.corpus_workspace.RetainedCorpusValidator." + operation,),
+        scope="one current retained Native exact historical point lookup",
+        starts_at="receive exact selection coordinates and explicit payload admission",
+        ends_at="return detached original support and atomically publish the parent checkpoint",
+        dimensions=(
+            *transaction.dimensions,
+            *native.dimensions,
+            Dimension("native_calls", COUNT, "Actual admitted Native algorithm invocations."),
+        ),
+        bounds=tuple(limits),
+        conditions=(
+            "Raw source rows came from independently accepted immutable Native journals.",
+            "The application authenticates the directory and holds its exclusive kernel lease.",
+            "The current source binding and worker checkpoint remain the exact retained fence.",
+            "Native length admission precedes every selected payload or projection fetch.",
+            "Currentness callback internals retain their separate application-owned composition.",
+        ),
+        invariants=(
+            "Exact source coordinates and half-open effective intervals remain Native-owned.",
+            "Absent or retired objects do not scan earlier assertions or fall back to old values.",
+            "Lookup results retain their original assertion and entry support coordinates.",
+            "Failure rolls back the parent checkpoint without changing earlier confirmed work.",
+            "A point result grants no global validation, member relevance or current access.",
+        ),
+        limitations=(
+            "Source ingestion, fixed manifest coverage and corpus global terminals are separate.",
+            "Each requested lookup pays its own bounded metadata and selected payload cost.",
+            "SQLite VM allowances exclude byte comparisons, physical I/O and lock waiting.",
+            "Complete application and discovery-build growth require further composition.",
+        ),
+    )

@@ -21,6 +21,7 @@ from ._corpus_workspace_growth import (
     dependency_declaration,
     lifecycle_declaration,
     order_declaration,
+    point_declaration,
     semantic_declaration,
 )
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
@@ -566,12 +567,34 @@ class RetainedCorpusValidator:
         with self._operation():
             return self._corpus.advance_order(kind, row_budget=row_budget, byte_budget=byte_budget)
 
+    @declare_growth(
+        point_declaration(
+            "historical_assertion",
+            growth_binding(CanonicalCorpusValidator.historical_assertion).declaration,
+            growth_binding(_operation).declaration,
+        ),
+        delegates=(
+            ("native", CanonicalCorpusValidator.historical_assertion),
+            ("transaction", _operation),
+        ),
+    )
     def historical_assertion(
         self, anchor: HistoryJournalAnchor, object_id: str, *, byte_budget: int
     ) -> HistoricalAssertion | None:
         with self._operation():
             return self._corpus.historical_assertion(anchor, object_id, byte_budget=byte_budget)
 
+    @declare_growth(
+        point_declaration(
+            "selected_delivery_support",
+            growth_binding(CanonicalCorpusValidator.selected_delivery_support).declaration,
+            growth_binding(_operation).declaration,
+        ),
+        delegates=(
+            ("native", CanonicalCorpusValidator.selected_delivery_support),
+            ("transaction", _operation),
+        ),
+    )
     def selected_delivery_support(
         self,
         *,
