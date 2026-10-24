@@ -13,7 +13,7 @@ import time
 import tomllib
 import zipfile
 from collections.abc import Mapping, Sequence
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path, PurePosixPath
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Any, cast
@@ -57,6 +57,7 @@ from scripts.validation_witnesses import collect_test_witnesses
 
 MAX_ROWS = 512
 MAX_FILES = 4096
+TIMESTAMP_RESOLUTION_SECONDS = 1
 
 
 def ci_execution_work() -> dict[str, ValidationWork]:
@@ -458,7 +459,10 @@ def measure_jobs(jobs: Sequence[Mapping[str, Any]], run: Mapping[str, Any]) -> d
             seconds = None
             if step.get("conclusion") != "skipped":
                 left, right = timestamp(step.get("started_at")), timestamp(step.get("completed_at"))
-                if not start <= left <= right <= finish:
+                # Independent job and step snapshots can straddle one reported second.
+                # Retain both clocks verbatim; only the containment comparison is tolerant.
+                resolution = timedelta(seconds=TIMESTAMP_RESOLUTION_SECONDS)
+                if not start - resolution <= left <= right <= finish + resolution:
                     raise ValueError("step is outside its owning job's completion boundary")
                 seconds = (right - left).total_seconds()
             steps.append(
@@ -487,7 +491,8 @@ def measure_jobs(jobs: Sequence[Mapping[str, Any]], run: Mapping[str, Any]) -> d
     if not starts:
         return {
             "boundary": "no-job-started",
-            "timestamp_resolution_seconds": 1,
+            "timestamp_resolution_seconds": TIMESTAMP_RESOLUTION_SECONDS,
+            "timestamp_boundary_tolerance_seconds": TIMESTAMP_RESOLUTION_SECONDS,
             "started_at": None,
             "finished_at": None,
             "elapsed_seconds": None,
@@ -495,7 +500,8 @@ def measure_jobs(jobs: Sequence[Mapping[str, Any]], run: Mapping[str, Any]) -> d
         }
     return {
         "boundary": "first-job-start-through-last-job-cleanup-including-between-job-gaps",
-        "timestamp_resolution_seconds": 1,
+        "timestamp_resolution_seconds": TIMESTAMP_RESOLUTION_SECONDS,
+        "timestamp_boundary_tolerance_seconds": TIMESTAMP_RESOLUTION_SECONDS,
         "started_at": min(starts).isoformat(),
         "finished_at": max(finishes).isoformat(),
         "elapsed_seconds": (max(finishes) - min(starts)).total_seconds(),

@@ -470,6 +470,40 @@ def test_parallel_aggregate_uses_actual_wall_and_includes_setup_and_cleanup():
     assert result["timestamp_resolution_seconds"] == 1
 
 
+@pytest.mark.parametrize("boundary", ["setup", "cleanup"])
+def test_step_clock_boundary_preserves_reported_resolution_and_raw_measurement(boundary):
+    job = job_record(start=5, finish=15)
+    step = job["steps"][0 if boundary == "setup" else -1]
+    field = "started_at" if boundary == "setup" else "completed_at"
+    reported = "2026-10-13T00:00:04Z" if boundary == "setup" else "2026-10-13T00:00:16Z"
+    step[field] = reported
+
+    result = ci_actions.measure_jobs([job], run_record())
+
+    assert result["elapsed_seconds"] == 10
+    assert result["timestamp_resolution_seconds"] == 1
+    assert result["timestamp_boundary_tolerance_seconds"] == 1
+    measured = result["jobs"][0]["steps"][0 if boundary == "setup" else -1]
+    assert measured["started_at" if boundary == "setup" else "finished_at"] == reported
+    assert measured["elapsed_seconds"] == 2
+    assert job["started_at"] == "2026-10-13T00:00:05Z"
+    assert job["completed_at"] == "2026-10-13T00:00:15Z"
+
+
+@pytest.mark.parametrize("defect", ["early-setup", "late-cleanup", "reversed-step"])
+def test_step_clock_rejects_larger_boundary_error_and_reversed_duration(defect):
+    job = job_record(start=5, finish=15)
+    if defect == "early-setup":
+        job["steps"][0]["started_at"] = "2026-10-13T00:00:03Z"
+    elif defect == "late-cleanup":
+        job["steps"][-1]["completed_at"] = "2026-10-13T00:00:17Z"
+    else:
+        job["steps"][0]["completed_at"] = "2026-10-13T00:00:04Z"
+
+    with pytest.raises(ValueError, match="step is outside"):
+        ci_actions.measure_jobs([job], run_record())
+
+
 @pytest.mark.parametrize(
     "defect", ["attempt", "source", "duplicate", "unfinished", "time", "phase"]
 )
