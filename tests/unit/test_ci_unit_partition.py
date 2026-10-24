@@ -171,3 +171,6 @@ def test_real_shard_propagates_failure_and_requires_every_test_for_success(tmp_p
         assert result.returncode == 0, result.stdout + result.stderr
         assert marker.read_text() == "executed"
         assert "2 passed" in result.stdout
+        assert "[gw" in result.stdout
+        assert "tests/unit/test_example.py::test_first" in result.stdout
+        assert "tests/unit/test_example.py::test_second" in result.stdout

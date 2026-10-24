@@ -168,7 +168,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(canonical_json_bytes(record).decode())
     else:
         print(
-            "Canonical unit ownership: " + ", ".join(f"{k}={len(v)}" for k, v in inventory.items())
+            "Canonical unit ownership: " + ", ".join(f"{k}={len(v)}" for k, v in inventory.items()),
+            flush=True,
         )
     if args.command != "run":
         return 0
@@ -184,7 +185,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 sys.executable,
                 "-m",
                 "pytest",
-                "-q",
+                "-v",
                 "--maxfail=1",
                 "-p",
                 "scripts.ci_unit",
