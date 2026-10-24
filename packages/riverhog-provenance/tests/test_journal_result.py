@@ -462,3 +462,14 @@ def test_frozen_result_cannot_adopt_another_source_or_mode(tmp_path, journal, ca
     source.binding = replace(source.binding, **fault)
     with pytest.raises((InvalidJournalWorkspace, StaleValidationCheckpoint)):
         open_retained_journal_result(path, source, confirmed=confirmed, catalog=catalog)
+
+
+def test_parallel_borrowed_readers_preserve_exact_retained_snapshot(
+    tmp_path, journal, catalog, parallel_snapshot_reads
+):
+    path, source, confirmed, _, expected = completed(tmp_path, journal, catalog)
+    with open_retained_journal_result(
+        path, source, confirmed=confirmed, catalog=catalog
+    ) as summary:
+        parallel_snapshot_reads(summary)
+        assert summary.materialize() == expected

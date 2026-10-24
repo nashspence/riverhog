@@ -652,6 +652,7 @@ class JournalStore:
     def _open(
         self, directory: Path, *, retained: bool, reopen: bool, read_only: bool = False
     ) -> None:
+        # Frozen reader leases share this connection but require independent statement state.
         try:
             if retained:
                 connection = sqlite3.connect(
@@ -659,10 +660,11 @@ class JournalStore:
                     + ("?mode=ro" if read_only else "?mode=rw"),
                     uri=True,
                     check_same_thread=False,
+                    cached_statements=0,
                 )
             else:
                 connection = sqlite3.connect(
-                    directory / "snapshot.sqlite3", check_same_thread=False
+                    directory / "snapshot.sqlite3", check_same_thread=False, cached_statements=0
                 )
         except BaseException:
             if not retained:
