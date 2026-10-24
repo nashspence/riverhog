@@ -1036,3 +1036,187 @@ def point_declaration(operation: str, native: Declaration, transaction: Declarat
             "Complete application and discovery-build growth require further composition.",
         ),
     )
+
+
+def selection_declaration(native: Declaration, transaction: Declaration) -> Declaration:
+    """Compose exact prefix admission, Native selection and unique-input publication."""
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def product(*terms: Expression) -> Expression:
+        return Expression("product", terms=terms)
+
+    def call(slot: str, declaration: Declaration, metric: str) -> Expression:
+        return Expression(
+            "delegate",
+            name=slot,
+            metric=metric,
+            terms=(_dimension("native_calls") if slot == "native" else _number(1),),
+            arguments=tuple((item.name, _dimension(item.name)) for item in declaration.dimensions),
+        )
+
+    body_bytes = add(_scale(4, "anchor_octets"), _scale(4, "counter_octets"))
+    bounds = [
+        Bound(
+            "native_calls",
+            COUNT,
+            "upper",
+            _number(1),
+            "At most one Native registration follows exact owned-manifest admission.",
+        ),
+        Bound(
+            "manifest_checks",
+            COUNT,
+            "upper",
+            _number(1),
+            "One exact indexed selection membership callback precedes Native work.",
+        ),
+        Bound(
+            "registration_statements",
+            COUNT,
+            "upper",
+            _number(3),
+            "One unique-input insert and conditional singleton count read and update.",
+        ),
+        Bound(
+            "sql_statements",
+            COUNT,
+            "upper",
+            add(
+                call("transaction", transaction, "sql_statements"),
+                call("native", native, "sql_statements"),
+                _number(3),
+            ),
+            "Lifecycle, Native header/selection and distinct-input publication are separate costs.",
+        ),
+        Bound(
+            "returned_rows",
+            COUNT,
+            "upper",
+            add(call("transaction", transaction, "returned_rows"), _number(2)),
+            "One exact Native header and at most one independent input-count scalar.",
+        ),
+        Bound(
+            "returned_octets",
+            OCTETS,
+            "upper",
+            add(
+                call("transaction", transaction, "returned_octets"),
+                _dimension("anchor_octets"),
+                _dimension("counter_octets"),
+            ),
+            "Complete lifecycle metadata, exact source header and conditional count scalar.",
+        ),
+        Bound(
+            "parameter_octets",
+            OCTETS,
+            "upper",
+            add(call("transaction", transaction, "parameter_octets"), body_bytes),
+            "Full repeated Native source coordinates, canonical membership key and count scalar.",
+        ),
+        Bound(
+            "written_parameter_octets",
+            OCTETS,
+            "upper",
+            add(call("transaction", transaction, "parameter_octets"), body_bytes),
+            "All actual Native, unique-input, count and parent-checkpoint write parameters.",
+        ),
+        Bound(
+            "written_rows",
+            COUNT,
+            "upper",
+            _number(4),
+            "At most one Native prefix, unique input, count update and parent checkpoint.",
+        ),
+        Bound(
+            "selection_encoded_octets",
+            OCTETS,
+            "upper",
+            _scale(2, "anchor_octets"),
+            "One exact entry reference and one full canonical selected-input preimage.",
+        ),
+        Bound(
+            "sqlite_vm_instructions",
+            COUNT,
+            "upper",
+            add(
+                _number(512),
+                product(
+                    _number(256),
+                    Expression(
+                        "log2_ceil",
+                        terms=(
+                            add(
+                                _dimension("retained_rows"),
+                                _dimension("selected_prefixes"),
+                                _number(2),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            "Indexed exact header and unique-key probes plus fixed singleton lifecycle work.",
+        ),
+    ]
+    for metric in ("source_checks", "checkpoint_decoded_octets", "checkpoint_encoded_octets"):
+        bounds.append(
+            Bound(
+                metric,
+                COUNT if metric == "source_checks" else OCTETS,
+                "upper",
+                call("transaction", transaction, metric),
+                "The current owner and complete checkpoint codecs retain lifecycle costs.",
+            )
+        )
+    for metric in (
+        "processed_rows",
+        "projected_payload_octets",
+        "json_decodes",
+        "full_assertion_reads",
+        "source_frame_reads",
+    ):
+        bounds.append(
+            Bound(
+                metric,
+                OCTETS if metric.endswith("octets") else COUNT,
+                "upper",
+                call("native", native, metric),
+                "Selection and parent registration load no original assertions or source frames.",
+            )
+        )
+    return Declaration(
+        id="riverhog-provenance.retained-corpus-select-source.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.corpus_workspace.RetainedCorpusValidator.select_source",),
+        scope="one exact retained selected-prefix registration",
+        starts_at="receive an exact independently expected selected Native anchor",
+        ends_at="atomically publish Native selection, unique completion and parent checkpoint",
+        dimensions=(
+            *transaction.dimensions,
+            *native.dimensions,
+            Dimension("native_calls", COUNT, "Actual admitted Native selection calls."),
+            Dimension("anchor_octets", OCTETS, "Complete canonical selected anchor width."),
+        ),
+        bounds=tuple(bounds),
+        conditions=(
+            "The current application owner authenticates the directory and holds its kernel lease.",
+            "The source port owns independent fixed membership and expected unique counts.",
+            "Native source rows retain every exact original anchor coordinate.",
+            "Membership and currentness callback internals retain application-owned composition.",
+            "Retained row extents and full before/after counter widths are independently known.",
+        ),
+        invariants=(
+            "Exact manifest membership precedes Native selection work.",
+            "Repeated completed inputs do not increment the independent unique-input count.",
+            "Native selection, completion count and owner checkpoint commit in one transaction.",
+            "Only independently complete source and selection counts permit semantic freezing.",
+            "A selected prefix is not global Native, history, member or access acceptance.",
+        ),
+        limitations=(
+            "Repeated explicit calls each pay bounded metadata work, including warm calls.",
+            "Raw ingestion, semantic union, global checks and source-port internals are separate.",
+            "SQLite VM allowances exclude physical I/O, byte comparisons and lock waiting.",
+            "Complete discovery builds require further application-owned composition.",
+        ),
+    )

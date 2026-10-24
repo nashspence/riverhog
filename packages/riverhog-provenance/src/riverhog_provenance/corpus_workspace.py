@@ -22,6 +22,7 @@ from ._corpus_workspace_growth import (
     lifecycle_declaration,
     order_declaration,
     point_declaration,
+    selection_declaration,
     semantic_declaration,
 )
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
@@ -507,6 +508,13 @@ class RetainedCorpusValidator:
                 self._register(anchor, selection=False)
             return progress
 
+    @declare_growth(
+        selection_declaration(
+            growth_binding(CanonicalCorpusValidator.select_source).declaration,
+            growth_binding(_operation).declaration,
+        ),
+        delegates=(("native", CanonicalCorpusValidator.select_source), ("transaction", _operation)),
+    )
     def select_source(self, anchor: HistoryJournalAnchor) -> None:
         with self._operation():
             self._admit(anchor, selection=True)
