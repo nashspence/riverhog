@@ -223,7 +223,7 @@ def _corpus_order_declaration() -> Declaration:
 _CORPUS_ORDER_GROWTH = _corpus_order_declaration()
 
 
-def _source_ingest_declaration() -> Declaration:
+def _source_ingest_declaration(*, bounded: bool = False) -> Declaration:
     def count(value: int, unit: Unit = COUNT) -> Expression:
         return Expression("constant", value=value, unit=unit)
 
@@ -241,11 +241,15 @@ def _source_ingest_declaration() -> Declaration:
         ),
     )
     return Declaration(
-        id="riverhog-provenance.corpus-source-extension.growth/v1",
+        id=(
+            "riverhog-provenance.corpus-source-advance.growth/v1"
+            if bounded
+            else "riverhog-provenance.corpus-source-extension.growth/v1"
+        ),
         authority="riverhog-provenance",
         subjects=(
-            "riverhog_provenance.corpus.CanonicalCorpusValidator._add_source",
-            "riverhog_provenance.corpus.CanonicalCorpusValidator.advance_source",
+            "riverhog_provenance.corpus.CanonicalCorpusValidator."
+            + ("advance_source" if bounded else "_add_source"),
         ),
         scope="native-corpus-raw-source-extension-after-exact-shared-prefix-proof",
         starts_at="receive one independently accepted immutable Native snapshot",
@@ -674,7 +678,9 @@ class CanonicalCorpusValidator:
             stop == frame_count,
         )
 
-    @declare_growth(_source_ingest_declaration(), delegates=(("anchor", JournalSummary.anchor_at),))
+    @declare_growth(
+        _source_ingest_declaration(bounded=True), delegates=(("anchor", JournalSummary.anchor_at),)
+    )
     def advance_source(
         self, summary: JournalSummary, *, frame_budget: int = 1
     ) -> CorpusSourceProgress:
