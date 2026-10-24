@@ -220,13 +220,104 @@ def _corpus_order_declaration() -> Declaration:
 _CORPUS_ORDER_GROWTH = _corpus_order_declaration()
 
 
+def _source_ingest_declaration() -> Declaration:
+    def count(value: int, unit: Unit = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    work = Expression(
+        "sum",
+        terms=(
+            count(4),
+            Expression("product", terms=(count(8, SCALAR), dimension("new_frames"))),
+            Expression("product", terms=(count(5, SCALAR), dimension("new_assertions"))),
+            dimension("new_references"),
+        ),
+    )
+    return Declaration(
+        id="riverhog-provenance.corpus-source-extension.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.corpus.CanonicalCorpusValidator._add_source",),
+        scope="native-corpus-raw-source-extension-after-exact-shared-prefix-proof",
+        starts_at="receive one independently accepted immutable Native snapshot",
+        ends_at="record only its missing complete source frames and the last atomic raw terminal",
+        dimensions=(
+            Dimension("new_frames", COUNT, "Source frames beyond the completed shared prefix."),
+            Dimension("new_assertions", COUNT, "Raw assertions in those source frames."),
+            Dimension("new_references", COUNT, "Raw external references in those source frames."),
+            Dimension("frame_octets", OCTETS, "Complete newly loaded RFC 7464 frame octets."),
+            Dimension("entry_octets", OCTETS, "Original JSON octets in the newly loaded frames."),
+        ),
+        bounds=(
+            Bound(
+                "source_frame_reads",
+                COUNT,
+                "equal",
+                dimension("new_frames"),
+                "Completed source frames are not fetched again, including shorter snapshots.",
+            ),
+            Bound(
+                "source_frame_octets",
+                OCTETS,
+                "equal",
+                dimension("frame_octets"),
+                "Only original missing frame payloads are loaded.",
+            ),
+            Bound(
+                "hashed_entry_octets",
+                OCTETS,
+                "equal",
+                dimension("entry_octets"),
+                "Each new original entry preimage matches its accepted Native header hash.",
+            ),
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                work,
+                "Includes corpus source/identity seeks, entry savepoints and all raw obligations.",
+            ),
+            Bound(
+                "native_anchor_calls",
+                COUNT,
+                "upper",
+                Expression("sum", terms=(dimension("new_frames"), count(1))),
+                "At most one shared cut plus one exact header for each new frame.",
+            ),
+        ),
+        conditions=(
+            "Every input owns an open independently accepted frozen Native projection.",
+            "Original journal identity, exact reference, prefix bytes and SHA agree at overlap.",
+            "The caller retains admission and current authority for the selected source union.",
+        ),
+        invariants=(
+            "An entry's raw assertions/references/fork and source continuation advance atomically.",
+            "Retry unfinished entries while retaining each completed exact source terminal.",
+            "Each selected snapshot still contributes its own effective semantic obligations.",
+            "A shared prefix never makes a documentary dependency an effective selected root.",
+            "Source identity/domain conflicts and divergent writers fail closed.",
+        ),
+        limitations=(
+            "Native indexed headers and their SHA padding have separate delegate evidence.",
+            "This profile counts payload reads, entry hashing and corpus SQL statement visits.",
+            "Canonical encoding, index/metadata bytes and storage-engine work require composition.",
+            "Effective snapshot traversal, corpus references, comparisons and cycles are separate.",
+            "The corpus workspace lifetime is unchanged; this is not durable build restart proof.",
+        ),
+    )
+
+
 class CanonicalCorpusValidator:
     """Keep corpus identity/dependency/edge indexes on disk, without a graph union.
 
     Every supplied journal must first pass canonical snapshot validation. This
     validates documentary identities, exact foreign references, forks, resolved
     comparisons and cross-journal acyclicity. It gives no precedence to a tail
-    and does not make a dependency an effective selected root.
+    and does not make a dependency an effective selected root. Raw prefixes are
+    reused only after an exact Native overlap proof. Each selected snapshot still
+    contributes its own effective semantic obligations.
     """
 
     def __init__(self) -> None:
@@ -245,6 +336,7 @@ class CanonicalCorpusValidator:
             "CREATE TABLE edges (kind TEXT, source TEXT, target TEXT, "
             "PRIMARY KEY(kind, source, target));"
             "CREATE INDEX incoming ON edges(kind, target);"
+            "CREATE TABLE source_extents (journal TEXT PRIMARY KEY, sequence TEXT NOT NULL);"
         )
 
     def __enter__(self) -> Self:
@@ -254,59 +346,112 @@ class CanonicalCorpusValidator:
         self._db.close()
         self._scratch.cleanup()
 
+    def _source_read(self, query: str, parameters: tuple[object, ...]) -> Any:
+        with closing(self._db.execute(query, parameters)) as rows:
+            return rows.fetchone()
+
+    def _source_write(self, query: str, parameters: tuple[object, ...] = ()) -> None:
+        with closing(self._db.execute(query, parameters)):
+            pass
+
     def _identity(self, identity: str, domain: str, value: bytes) -> None:
-        old = self._db.execute(
-            "SELECT domain, value FROM identities WHERE id = ?", (identity,)
-        ).fetchone()
+        old = self._source_read("SELECT domain, value FROM identities WHERE id = ?", (identity,))
         if old is not None and old != (domain, value):
             raise ProvenanceValidationError("immutable documentary identity or domain redefined")
-        self._db.execute(
+        self._source_write(
             "INSERT OR IGNORE INTO identities VALUES (?, ?, ?)", (identity, domain, value)
         )
 
-    def add(self, summary: JournalSummary) -> None:
-        import hashlib
-
+    @declare_growth(_source_ingest_declaration(), delegates=(("anchor", JournalSummary.anchor_at),))
+    def _add_source(self, summary: JournalSummary) -> None:
+        frame_count = len(summary.frames)
         self._identity(summary.journal_id, "journal", b"")
-        prefix = hashlib.sha256()
-        byte_count = 0
-        for frame in summary.frames:
-            prefix.update(frame.encoded)
-            byte_count += len(frame.encoded)
-            self._identity(frame.document["id"], "entry", frame.json_bytes)
-            row = (canonical_document(frame.reference), prefix.hexdigest(), str(byte_count))
-            old = self._db.execute(
+        extent = self._source_read(
+            "SELECT sequence FROM source_extents WHERE journal = ?", (summary.journal_id,)
+        )
+        first = 0
+        if extent is not None:
+            through = min(int(extent[0]), frame_count - 1)
+            anchor = summary.anchor_at(through)
+            found = self._source_read(
                 "SELECT reference, prefix, bytes FROM entries WHERE journal = ? AND sequence = ?",
-                (summary.journal_id, frame.document["sequence"]),
-            ).fetchone()
-            if old is not None and old != row:
+                (summary.journal_id, str(through)),
+            )
+            if found != (
+                canonical_document(anchor["through"]),
+                anchor["prefix_sha256"],
+                anchor["prefix_bytes"],
+            ):
                 raise ProvenanceValidationError(
                     "divergent writers reused the same journal identity"
                 )
-            self._db.execute(
-                "INSERT OR IGNORE INTO entries VALUES (?, ?, ?, ?, ?)",
-                (summary.journal_id, frame.document["sequence"], *row),
+            first = through + 1
+        for sequence in range(first, frame_count):
+            frame = summary.frames[sequence]
+            document = frame.document
+            anchor = summary.anchor_at(sequence)
+            if (
+                anchor["through"]["entry_id"] != document["id"]
+                or anchor["through"]["sequence"] != document["sequence"]
+                or anchor["through"]["json_sha256"] != frame.sha256
+            ):
+                raise ProvenanceValidationError("accepted corpus source entry preimage changed")
+            row = (
+                canonical_document(anchor["through"]),
+                anchor["prefix_sha256"],
+                anchor["prefix_bytes"],
             )
-            for _, assertion in iter_assertions(_body_assertions(frame.document)):
-                encoded = canonical_document(assertion)
-                self._identity(assertion["assertion_id"], "assertion", encoded)
-                self._identity(assertion["id"], "referent", _identity_signature(assertion))
-                self._db.execute(
-                    "INSERT OR IGNORE INTO assertions VALUES (?, ?, ?, ?)",
-                    (summary.journal_id, assertion["assertion_id"], row[0], encoded),
+            self._source_write("SAVEPOINT corpus_source_entry")
+            try:
+                self._identity(document["id"], "entry", frame.json_bytes)
+                old = self._source_read(
+                    "SELECT reference, prefix, bytes FROM entries "
+                    "WHERE journal = ? AND sequence = ?",
+                    (summary.journal_id, document["sequence"]),
                 )
-            for reference in _external_references(_body_assertions(frame.document)):
-                self._db.execute(
-                    "INSERT OR IGNORE INTO refs VALUES (?)", (canonical_document(reference),)
+                if old is not None and old != row:
+                    raise ProvenanceValidationError(
+                        "divergent writers reused the same journal identity"
+                    )
+                self._source_write(
+                    "INSERT OR IGNORE INTO entries VALUES (?, ?, ?, ?, ?)",
+                    (summary.journal_id, document["sequence"], *row),
                 )
+                for _, assertion in iter_assertions(_body_assertions(document)):
+                    encoded = canonical_document(assertion)
+                    self._identity(assertion["assertion_id"], "assertion", encoded)
+                    self._identity(assertion["id"], "referent", _identity_signature(assertion))
+                    self._source_write(
+                        "INSERT OR IGNORE INTO assertions VALUES (?, ?, ?, ?)",
+                        (summary.journal_id, assertion["assertion_id"], row[0], encoded),
+                    )
+                for reference in _external_references(_body_assertions(document)):
+                    self._source_write(
+                        "INSERT OR IGNORE INTO refs VALUES (?)", (canonical_document(reference),)
+                    )
+                if sequence == 0:
+                    parent = document["body"]["journal"].get("forked_from")
+                    if parent is not None:
+                        self._source_write(
+                            "INSERT OR IGNORE INTO forks VALUES (?)", (canonical_document(parent),)
+                        )
+                self._source_write(
+                    "INSERT INTO source_extents VALUES (?, ?) "
+                    "ON CONFLICT(journal) DO UPDATE SET sequence=excluded.sequence",
+                    (summary.journal_id, str(sequence)),
+                )
+            except BaseException:
+                self._source_write("ROLLBACK TO corpus_source_entry")
+                self._source_write("RELEASE corpus_source_entry")
+                raise
+            else:
+                self._source_write("RELEASE corpus_source_entry")
+
+    def add(self, summary: JournalSummary) -> None:
+        self._add_source(summary)
         for reference in summary.graph_validation.external_references:
             self._db.execute(
                 "INSERT OR IGNORE INTO refs VALUES (?)", (canonical_document(reference),)
-            )
-        parent = summary.frames[0].document["body"]["journal"].get("forked_from")
-        if parent is not None:
-            self._db.execute(
-                "INSERT OR IGNORE INTO forks VALUES (?)", (canonical_document(parent),)
             )
         for assertion in summary.graph_validation.objects.values():
             kind = assertion["type"]
