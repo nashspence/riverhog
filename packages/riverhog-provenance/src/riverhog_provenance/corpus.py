@@ -1148,14 +1148,17 @@ class CanonicalCorpusValidator:
             through = min(int(extent[0]), frame_count - 1)
             anchor = summary.anchor_at(through)
             found = self._source_read(
-                "SELECT reference, prefix, bytes FROM entries WHERE journal = ? AND sequence = ?",
-                (summary.journal_id, str(through)),
+                "SELECT reference=? AND prefix=? AND bytes=? FROM entries "
+                "WHERE journal=? AND sequence=?",
+                (
+                    canonical_document(anchor["through"]),
+                    anchor["prefix_sha256"],
+                    anchor["prefix_bytes"],
+                    summary.journal_id,
+                    str(through),
+                ),
             )
-            if found != (
-                canonical_document(anchor["through"]),
-                anchor["prefix_sha256"],
-                anchor["prefix_bytes"],
-            ):
+            if found != (1,):
                 raise ProvenanceValidationError(
                     "divergent writers reused the same journal identity"
                 )
@@ -1180,11 +1183,11 @@ class CanonicalCorpusValidator:
             try:
                 self._identity(document["id"], "entry", frame.json_bytes)
                 old = self._source_read(
-                    "SELECT reference, prefix, bytes FROM entries "
-                    "WHERE journal = ? AND sequence = ?",
-                    (summary.journal_id, document["sequence"]),
+                    "SELECT reference=? AND prefix=? AND bytes=? FROM entries "
+                    "WHERE journal=? AND sequence=?",
+                    (*row, summary.journal_id, document["sequence"]),
                 )
-                if old is not None and old != row:
+                if old is not None and old != (1,):
                     raise ProvenanceValidationError(
                         "divergent writers reused the same journal identity"
                     )
@@ -1194,10 +1197,15 @@ class CanonicalCorpusValidator:
                 )
                 for target in document["body"].get("retracts", ()):
                     old = self._source_read(
-                        "SELECT entry, retired FROM assertions WHERE journal=? AND assertion=?",
-                        (summary.journal_id, target["assertion_id"]),
+                        "SELECT entry=? AND retired IS NULL FROM assertions "
+                        "WHERE journal=? AND assertion=?",
+                        (
+                            canonical_document(target["entry"]),
+                            summary.journal_id,
+                            target["assertion_id"],
+                        ),
                     )
-                    if old != (canonical_document(target["entry"]), None):
+                    if old != (1,):
                         raise ProvenanceValidationError(
                             "corpus correction differs from its original active assertion"
                         )
