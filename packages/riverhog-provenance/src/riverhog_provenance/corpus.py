@@ -236,7 +236,7 @@ def _source_ingest_declaration(*, bounded: bool = False) -> Declaration:
         terms=(
             count(4),
             Expression("product", terms=(count(8, SCALAR), dimension("new_frames"))),
-            Expression("product", terms=(count(5, SCALAR), dimension("new_assertions"))),
+            Expression("product", terms=(count(7, SCALAR), dimension("new_assertions"))),
             dimension("new_references"),
             Expression("product", terms=(count(2, SCALAR), dimension("new_retractions"))),
         ),
@@ -402,8 +402,16 @@ def _historical_assertion_declaration() -> Declaration:
                 "metadata_octets",
                 OCTETS,
                 "upper",
-                add(dimension("anchor_octets"), constant(512, OCTETS)),
-                "Exact reference/hash/size plus bounded Native identity/type/sequence metadata.",
+                add(
+                    dimension("anchor_octets"),
+                    constant(512, OCTETS),
+                    product(
+                        Expression("log2_ceil", terms=(records,)),
+                        constant(1, OCTETS_PER_COUNT),
+                    ),
+                ),
+                "Exact header, identity/type/size and decimal positions; future retirement "
+                "width follows the retained frame extent, not the earlier selected anchor.",
             ),
             Bound(
                 "parameter_octets",
@@ -596,10 +604,13 @@ class CanonicalCorpusValidator:
             "CREATE TABLE identities (id TEXT PRIMARY KEY, domain TEXT, value BLOB);"
             "CREATE TABLE entries (journal TEXT, sequence TEXT, reference BLOB, prefix TEXT, "
             "bytes TEXT, PRIMARY KEY(journal, sequence));"
-            "CREATE TABLE assertions (journal TEXT, assertion TEXT, entry BLOB, value BLOB, "
-            "object TEXT NOT NULL, type TEXT NOT NULL, sequence TEXT NOT NULL, "
-            "sequence_width INTEGER NOT NULL, retired TEXT, delivery BLOB NOT NULL, "
-            "PRIMARY KEY(journal, assertion));"
+            "CREATE TABLE assertions (journal TEXT, assertion TEXT, object TEXT NOT NULL, "
+            "type TEXT NOT NULL, sequence TEXT NOT NULL, sequence_width INTEGER NOT NULL, "
+            "retired TEXT, entry BLOB, PRIMARY KEY(journal, assertion)) WITHOUT ROWID;"
+            "CREATE TABLE assertion_payloads (journal TEXT, assertion TEXT, value BLOB NOT NULL, "
+            "PRIMARY KEY(journal, assertion)) WITHOUT ROWID;"
+            "CREATE TABLE delivery_projections (journal TEXT, assertion TEXT, value BLOB NOT NULL, "
+            "PRIMARY KEY(journal, assertion)) WITHOUT ROWID;"
             "CREATE INDEX historical_objects ON assertions "
             "(journal, object, sequence_width, sequence);"
             "CREATE TABLE refs (value BLOB PRIMARY KEY);"
@@ -719,19 +730,31 @@ class CanonicalCorpusValidator:
                     self._identity(assertion["assertion_id"], "assertion", encoded)
                     self._identity(assertion["id"], "referent", _identity_signature(assertion))
                     self._source_write(
-                        "INSERT OR IGNORE INTO assertions VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)",
+                        "INSERT OR IGNORE INTO assertions VALUES (?, ?, ?, ?, ?, ?, NULL, ?)",
                         (
                             summary.journal_id,
                             assertion["assertion_id"],
-                            row[0],
-                            encoded,
                             assertion["id"],
                             assertion["type"],
                             document["sequence"],
                             len(document["sequence"]),
-                            canonical_document(_delivery_projection(assertion)),
+                            row[0],
                         ),
                     )
+                    self._source_write(
+                        "INSERT OR IGNORE INTO assertion_payloads VALUES (?, ?, ?)",
+                        (summary.journal_id, assertion["assertion_id"], encoded),
+                    )
+                    projection = _delivery_projection(assertion)
+                    if projection is not None:
+                        self._source_write(
+                            "INSERT OR IGNORE INTO delivery_projections VALUES (?, ?, ?)",
+                            (
+                                summary.journal_id,
+                                assertion["assertion_id"],
+                                canonical_document(projection),
+                            ),
+                        )
                 for reference in _external_references(_body_assertions(document)):
                     self._source_write(
                         "INSERT OR IGNORE INTO refs VALUES (?)", (canonical_document(reference),)
@@ -797,7 +820,7 @@ class CanonicalCorpusValidator:
         self._require_open()
         self._check_selection_budget(byte_budget)
         self._check_source_anchor(anchor)
-        return self._historical_value(anchor, object_id, byte_budget=byte_budget, column="value")
+        return self._historical_value(anchor, object_id, byte_budget=byte_budget, projection=False)
 
     @staticmethod
     def _check_selection_budget(byte_budget: int) -> None:
@@ -820,15 +843,18 @@ class CanonicalCorpusValidator:
             raise ProvenanceValidationError("historical prefix is not an exact corpus source")
 
     def _historical_value(
-        self, anchor: HistoryJournalAnchor, object_id: str, *, byte_budget: int, column: str
+        self, anchor: HistoryJournalAnchor, object_id: str, *, byte_budget: int, projection: bool
     ) -> HistoricalAssertion | None:
         require_canonical_uuid_urn(object_id)
         sequence = str(anchor.through_sequence)
+        table = "delivery_projections" if projection else "assertion_payloads"
         metadata = self._source_read(
-            "SELECT assertion, type, sequence, retired, length(entry), length(" + column + ") "
-            "FROM assertions WHERE journal=? AND object=? "
-            "AND (sequence_width, sequence) <= (?, ?) "
-            "ORDER BY sequence_width DESC, sequence DESC LIMIT 1",
+            "SELECT a.assertion,a.type,a.sequence,a.retired,length(a.entry),length(p.value) "
+            "FROM assertions a LEFT JOIN " + table + " p "
+            "ON p.journal=a.journal AND p.assertion=a.assertion "
+            "WHERE a.journal=? AND a.object=? "
+            "AND (a.sequence_width, a.sequence) <= (?, ?) "
+            "ORDER BY a.sequence_width DESC, a.sequence DESC LIMIT 1",
             (anchor.journal_id, object_id, len(sequence), sequence),
         )
         if metadata is None:
@@ -836,12 +862,23 @@ class CanonicalCorpusValidator:
         assertion_id, kind, born, retired, entry_size, value_size = metadata
         if retired is not None and (len(retired), retired) <= (len(sequence), sequence):
             return None
+        if value_size is None:
+            if projection and kind not in (
+                "delivery_association",
+                "state",
+                "occurrence",
+                "observation",
+            ):
+                return None
+            raise RuntimeError("historical assertion payload is missing from its source")
         size = entry_size + value_size
         if size > byte_budget:
             raise JournalValidationCapacity("historical assertion exceeds the admitted byte budget")
         encoded = self._source_read(
-            "SELECT substr(entry, 1, ?), substr(" + column + ", 1, ?) FROM assertions "
-            "WHERE journal=? AND assertion=? AND length(entry)=? AND length(" + column + ")=?",
+            "SELECT substr(a.entry, 1, ?),substr(p.value, 1, ?) "
+            "FROM assertions a JOIN " + table + " p "
+            "ON p.journal=a.journal AND p.assertion=a.assertion "
+            "WHERE a.journal=? AND a.assertion=? AND length(a.entry)=? AND length(p.value)=?",
             (entry_size, value_size, anchor.journal_id, assertion_id, entry_size, value_size),
         )
         if encoded is None:
@@ -891,7 +928,7 @@ class CanonicalCorpusValidator:
 
         def lookup(identity: str) -> dict[str, Any] | None:
             result = self._historical_value(
-                anchor, identity, byte_budget=metadata_byte_budget, column="delivery"
+                anchor, identity, byte_budget=metadata_byte_budget, projection=True
             )
             if result is None:
                 return None
@@ -941,7 +978,9 @@ class CanonicalCorpusValidator:
 
     def _resolve(self, reference: dict[str, Any]) -> dict[str, Any]:
         found = self._db.execute(
-            "SELECT entry, value FROM assertions WHERE journal = ? AND assertion = ?",
+            "SELECT a.entry,p.value FROM assertions a JOIN assertion_payloads p "
+            "ON p.journal=a.journal AND p.assertion=a.assertion "
+            "WHERE a.journal=? AND a.assertion=?",
             (reference["journal_id"], reference["assertion_id"]),
         ).fetchone()
         if found is None:

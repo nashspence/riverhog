@@ -87,7 +87,7 @@ def measure_support(corpus, arguments, selected_octets, monkeypatch):
         return 0
 
     def read(query, parameters):
-        if "substr(value" in query:
+        if "assertion_payloads" in query:
             observer.metrics["full_assertion_reads"] += 1
             raise AssertionError("delivery support read a full assertion")
         return original_read(query, parameters)
@@ -131,6 +131,16 @@ def test_delivery_support_reads_narrow_metadata_across_opaque_payload_growth(
         ):
             progress = corpus.advance_source(summary, frame_budget=1)
             assert progress.complete
+            metadata_columns = {
+                row[1] for row in corpus._db.execute("PRAGMA table_info(assertions)")
+            }
+            assert "value" not in metadata_columns
+            assert (
+                corpus._db.execute("SELECT max(length(value)) FROM assertion_payloads").fetchone()[
+                    0
+                ]
+                >= opaque_octets
+            )
             expected = selected_delivery_occurrence(summary, **arguments)
             expected_references = (
                 external_reference(summary, expected[0]["id"]),
@@ -144,8 +154,9 @@ def test_delivery_support_reads_narrow_metadata_across_opaque_payload_growth(
                         byte_budget=4096,
                     )
             count, selected_octets = corpus._db.execute(
-                "SELECT count(*),sum(length(entry)+length(delivery)) FROM assertions "
-                "WHERE type IN ('delivery_association','state','occurrence','observation')"
+                "SELECT count(*),sum(length(a.entry)+length(p.value)) "
+                "FROM assertions a JOIN delivery_projections p "
+                "ON p.journal=a.journal AND p.assertion=a.assertion"
             ).fetchone()
             assert count == 4
             for _ in range(3):
