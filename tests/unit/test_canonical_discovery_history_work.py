@@ -11,6 +11,9 @@ from riverhog_archive_contracts import (
     MEMBER_HISTORY_IMPORTS_SCHEMA,
     MEMBER_HISTORY_ROOTS_SCHEMA,
     PROVENANCE_BINDINGS_FORMAT,
+    ArchiveProvenanceIdentity,
+    CollectionArchiveManifest,
+    CollectionArtifactSetIdentity,
     HistoryJournalAnchor,
     MemberHistoryBinding,
     MemberHistoryDocument,
@@ -18,14 +21,17 @@ from riverhog_archive_contracts import (
     MemberHistoryPrimary,
     MemberHistoryRoot,
     ProvenanceRootDocument,
+    ProvenanceRootIdentity,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
     RecordPage,
     RecordSetCommitment,
+    SourceMemberHistoryBindingProof,
     binding_tree_commitment,
     history_record_page_object_path,
     member_history_object_path,
     ordered_provenance_commitment,
+    source_binding_proof_object_path,
 )
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.canonical_discovery_archive_work import (
@@ -41,11 +47,14 @@ from riverhog_core.canonical_discovery_history_work import (
     ArchiveHistoryWork,
     HistorySetWork,
     apply_history_descriptor,
+    apply_history_import,
     apply_history_record,
     archive_history_ready,
+    history_descriptor_ready,
     history_set_progress,
     initialize_history_work,
     prepare_history_descriptor,
+    prepare_history_import,
     prepare_history_record,
 )
 from riverhog_core.canonical_discovery_member_work import (
@@ -95,7 +104,7 @@ def record_set(objects, schema, rows, *, wrong_digest=False, page_size=64):
     return authority
 
 
-def fixture(*, count=129, members=3, fault=None):
+def fixture(*, count=129, members=3, fault=None, inherited=False):
     _, objects, _, _ = archive_reader_fixture()
     root = ProvenanceRootDocument.from_json_bytes(objects["provenance/root.json.age"])
     roots = [
@@ -135,6 +144,60 @@ def fixture(*, count=129, members=3, fault=None):
         )
         for i in range(3)
     ]
+    if inherited:
+        _, source_objects, source_bindings, _, _, _ = fixture(count=1, members=2)
+        source_root = ProvenanceRootDocument.from_json_bytes(
+            source_objects["provenance/root.json.age"]
+        )
+        target = source_bindings[1]
+        tree = binding_tree_commitment(source_bindings, target_artifact_id=target.artifact_id)
+        source_archive = CollectionArchiveManifest(
+            archive_generation=source_root.archive_generation,
+            artifact_set=CollectionArtifactSetIdentity(
+                len(source_bindings),
+                sum(value.bytes for value in source_bindings),
+                source_root.artifact_set_sha256,
+            ),
+            ordered_volume_sha256="f" * 64,
+            provenance=ArchiveProvenanceIdentity(
+                source_root.identity,
+                ProvenanceRootIdentity(
+                    id="provenance-root",
+                    kind="provenance-root",
+                    path="provenance/root.json.age",
+                    plaintext_bytes=len(source_root.to_json_bytes()),
+                    sha256=source_root.identity,
+                    stored_bytes=1234,
+                    stored_sha256="0" * 64,
+                ),
+            ),
+        )
+        assert tree.target_index is not None
+        proof = SourceMemberHistoryBindingProof(
+            "9" * 64,
+            7,
+            source_archive.to_json_bytes(),
+            source_root.to_json_bytes(),
+            target,
+            tree.target_index,
+            tree.target_siblings,
+        )
+        imports = [
+            replace(
+                imports[0],
+                source_identity=proof.source_identity,
+                source_collection_id=proof.collection_id,
+                source_archive_root_sha256=hashlib.sha256(proof.archive_root).hexdigest(),
+                source_artifact_set_sha256=source_root.artifact_set_sha256,
+                source_artifact_id=target.artifact_id,
+                source_history_sha256=target.history_sha256,
+                source_binding_proof_sha256=proof.identity,
+            )
+        ]
+        for path, raw in source_objects.items():
+            if path.startswith(("provenance/history/", "provenance/sets/")):
+                objects[path] = raw
+        objects[source_binding_proof_object_path(proof.identity)] = proof.to_json_bytes()
     imports_ref = record_set(
         objects,
         MEMBER_HISTORY_IMPORTS_SCHEMA,
@@ -205,9 +268,9 @@ def fixture(*, count=129, members=3, fault=None):
     return reader, objects, bindings, histories, discovery_archive_admission(root), reads
 
 
-def setup_work(path, *, count=129, members=3, fault=None):
+def setup_work(path, *, count=129, members=3, fault=None, inherited=False):
     reader, objects, bindings, histories, admission, reads = fixture(
-        count=count, members=members, fault=fault
+        count=count, members=members, fault=fault, inherited=inherited
     )
     db = sqlite3.connect(path, isolation_level=None)
     initialize_archive_work(db)
@@ -469,5 +532,178 @@ def measured(tmp_path, monkeypatch, record_property, *, prepare):
         if prepare:
             with write(db):
                 apply_history_record(db, key, owner, page)
+    record_property("growth_samples", samples)
+    db.close()
+
+
+def imported_work(tmp_path):
+    db, key, history, descriptors, objects, reads = setup_work(
+        tmp_path / "imports.sqlite", count=3, inherited=True
+    )
+    authority = descriptors[0].imports
+    owner = HistorySetWork(history.admission, history.reader, authority)
+    source = RecordPage.from_json_bytes(
+        objects[history_record_page_object_path(authority.records_sha256, 0)]
+    )
+    imported = MemberHistoryImport.from_mapping(source.records[0]["value"])
+    proof = SourceMemberHistoryBindingProof.from_json_bytes(
+        objects[source_binding_proof_object_path(imported.source_binding_proof_sha256)]
+    )
+    return db, key, history, owner, imported, proof, objects, reads
+
+
+def test_import_preserves_original_membership_and_shared_history_obligations(tmp_path):
+    db, key, history, owner, imported, proof, _, reads = imported_work(tmp_path)
+    with pytest.raises(StaleArchiveTask, match="completely verified"):
+        prepare_history_import(db, key, owner, imported.key)
+    finish(db, key, owner)
+    reads.clear()
+    page = prepare_history_import(db, key, owner, imported.key)
+    assert len(reads) == 4
+    assert page.proof_json.encode() == proof.to_json_bytes()
+    assert proof.index == 1 and proof.siblings
+    assert proof.source_identity != key.admission_sha256
+    with write(db):
+        apply_history_import(db, key, owner, page)
+    assert db.execute(
+        "SELECT proof_json,history_sha256 FROM discovery_history_import_proofs"
+    ).fetchone() == (proof.to_json_bytes().decode(), proof.binding.history_sha256)
+    assert not history_descriptor_ready(db, key, history, proof.binding.history_sha256)
+    descriptor = history.reader.history_descriptor(proof.binding)
+    for authority in (descriptor.roots, descriptor.imports):
+        finish(db, key, HistorySetWork(history.admission, history.reader, authority))
+    assert history_descriptor_ready(db, key, history, proof.binding.history_sha256)
+    before = db.execute(
+        "SELECT records_sha256,version,checkpoint_json,complete "
+        "FROM discovery_history_sets ORDER BY records_sha256"
+    ).fetchall()
+    with write(db):
+        apply_history_import(db, key, owner, page)
+    assert (
+        db.execute(
+            "SELECT records_sha256,version,checkpoint_json,complete "
+            "FROM discovery_history_sets ORDER BY records_sha256"
+        ).fetchall()
+        == before
+    )
+    assert db.execute("SELECT count(*) FROM discovery_history_import_proofs").fetchone() == (1,)
+    assert db.execute("SELECT count(*) FROM discovery_history_descriptors").fetchone() == (4,)
+    db.close()
+
+
+@pytest.mark.parametrize("fault", ["proof", "descriptor"])
+def test_import_rejects_changed_proof_or_selected_descriptor_before_writing(tmp_path, fault):
+    db, key, _, owner, imported, proof, objects, _ = imported_work(tmp_path)
+    finish(db, key, owner)
+    if fault == "proof":
+        changed = replace(proof, collection_id=proof.collection_id + 1)
+        objects[source_binding_proof_object_path(proof.identity)] = changed.to_json_bytes()
+    else:
+        objects[member_history_object_path(proof.binding.history_sha256)] += b" "
+    before = db.execute("SELECT count(*) FROM discovery_history_sets").fetchone()
+    with pytest.raises(ValueError):
+        prepare_history_import(db, key, owner, imported.key)
+    assert db.execute("SELECT count(*) FROM discovery_history_import_proofs").fetchone() == (0,)
+    assert db.execute("SELECT count(*) FROM discovery_history_sets").fetchone() == before
+    db.close()
+
+
+def test_import_child_obligations_rollback_and_retry_with_the_original_proof(tmp_path):
+    db, key, _, owner, imported, _, _, _ = imported_work(tmp_path)
+    finish(db, key, owner)
+    page = prepare_history_import(db, key, owner, imported.key)
+    before = db.execute("SELECT count(*) FROM discovery_history_sets").fetchone()
+    db.execute(
+        "CREATE TRIGGER fail_proof BEFORE INSERT ON discovery_history_import_proofs "
+        "BEGIN SELECT RAISE(ABORT,'injected proof failure'); END"
+    )
+    with write(db), pytest.raises(sqlite3.IntegrityError, match="injected"):
+        apply_history_import(db, key, owner, page)
+    assert db.execute("SELECT count(*) FROM discovery_history_import_proofs").fetchone() == (0,)
+    assert db.execute("SELECT count(*) FROM discovery_history_descriptors").fetchone() == (3,)
+    assert db.execute("SELECT count(*) FROM discovery_history_sets").fetchone() == before
+    db.execute("DROP TRIGGER fail_proof")
+    with write(db), pytest.raises(StaleArchiveTask, match="current exact"):
+        apply_history_import(db, key, owner, replace(page, proof_sha256="f" * 64))
+    with write(db):
+        apply_history_import(db, key, owner, page)
+    db.close()
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-history-import-preparation/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_history_work.prepare_history_import",
+)
+def test_measured_import_preparation_has_fixed_reads(tmp_path, monkeypatch, record_property):
+    measured_import(tmp_path, monkeypatch, record_property, prepare=True)
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-history-import-apply/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_history_work.apply_history_import",
+)
+def test_measured_import_apply_has_fixed_sql_without_source_hashing(
+    tmp_path, monkeypatch, record_property
+):
+    measured_import(tmp_path, monkeypatch, record_property, prepare=False)
+
+
+def measured_import(tmp_path, monkeypatch, record_property, *, prepare):
+    from riverhog_growth_contracts import (
+        growth_binding,
+        project_bindings,
+        validate_execution_samples,
+    )
+    from sha256_continuation import CheckpointSHA256
+
+    db, key, _, owner, imported, _, _, reads = imported_work(tmp_path)
+    finish(db, key, owner)
+    binding = growth_binding(prepare_history_import if prepare else apply_history_import)
+    projection = project_bindings((binding,))
+    declaration_sha = hashlib.sha256(
+        canonical_json_bytes(projection["declarations"][binding.declaration.id])
+    ).hexdigest()
+    samples = []
+    actual = CheckpointSHA256.update_bytes
+    for existing in (0, 1):
+        recorder = RecordedConnection(db)
+        observed = {"source_hash_octets": 0}
+
+        def update(self, raw, observed=observed):
+            observed["source_hash_octets"] += len(raw)
+            return actual(self, raw)
+
+        if not prepare:
+            page = prepare_history_import(db, key, owner, imported.key)
+        read_count = len(reads)
+        with monkeypatch.context() as patch:
+            patch.setattr(CheckpointSHA256, "update_bytes", update)
+            if prepare:
+                page = prepare_history_import(recorder, key, owner, imported.key)
+            else:
+                with write(db):
+                    apply_history_import(recorder, key, owner, page)
+        metrics = {
+            "sql_statements": recorder.metrics["sql_statements"],
+            "returned_rows": recorder.metrics["returned_rows"],
+        }
+        if prepare:
+            metrics["object_reads"] = len(reads) - read_count
+        else:
+            metrics.update(observed)
+        sample = {
+            "declaration": binding.declaration.id,
+            "declaration_sha256": declaration_sha,
+            "dimensions": {"registered_imports": existing},
+            "metrics": metrics,
+            "delegates": {},
+        }
+        validate_execution_samples(projection, binding.declaration.id, [sample])
+        samples.append(sample)
+        if prepare:
+            with write(db):
+                apply_history_import(db, key, owner, page)
     record_property("growth_samples", samples)
     db.close()

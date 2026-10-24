@@ -58,6 +58,7 @@ class PreparedHistoryDescriptor:
     key: ArchiveTaskKey
     artifact_id: str
     binding_json: str
+    history_sha256: str
     descriptor: MemberHistoryDocument
     descriptor_json: str
     sets: tuple[tuple[str, str, str], ...]
@@ -75,6 +76,19 @@ class PreparedHistoryRecord:
     checkpoint_json: str
     count: int
     terminal: bool
+
+
+@dataclass(frozen=True, slots=True)
+class PreparedHistoryImport:
+    key: ArchiveTaskKey
+    expected_row: tuple[Any, ...]
+    record_key: str
+    record_json: str
+    proof_sha256: str
+    proof_json: str
+    history_sha256: str
+    descriptor_json: str
+    sets: tuple[tuple[str, str, str], ...]
 
 
 class ArchiveHistoryWork:
@@ -101,6 +115,7 @@ class HistorySetWork:
         self.authority_json = canonical_json_bytes(authority.to_mapping()).decode()
         self._cache: RecordPage | None = None
         self._prepared: PreparedHistoryRecord | None = None
+        self._prepared_import: PreparedHistoryImport | None = None
 
 
 def initialize_history_work(db: sqlite3.Connection) -> None:
@@ -109,8 +124,18 @@ def initialize_history_work(db: sqlite3.Connection) -> None:
     db.executescript("""
         CREATE TABLE IF NOT EXISTS discovery_archive_histories (
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, artifact_id TEXT NOT NULL,
-            worker_id TEXT NOT NULL, binding_json TEXT NOT NULL, descriptor_json TEXT NOT NULL,
+            worker_id TEXT NOT NULL, binding_json TEXT NOT NULL, history_sha256 TEXT NOT NULL,
             PRIMARY KEY(build_id,admission_sha256,artifact_id)
+        ) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS discovery_history_descriptors (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, history_sha256 TEXT NOT NULL,
+            descriptor_json TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,history_sha256)
+        ) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS discovery_history_import_proofs (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, proof_sha256 TEXT NOT NULL,
+            worker_id TEXT NOT NULL, proof_json TEXT NOT NULL, history_sha256 TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,proof_sha256)
         ) WITHOUT ROWID;
         CREATE TABLE IF NOT EXISTS discovery_history_sets (
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, records_sha256 TEXT NOT NULL,
@@ -182,7 +207,21 @@ def prepare_history_descriptor(
         raise StaleArchiveTask("history has no exact registered member binding")
     binding = MemberHistoryBinding.from_mapping(require_canonical_json(row[0].encode()))
     descriptor = owner.reader.history_descriptor(binding)
-    sets = tuple(
+    page = PreparedHistoryDescriptor(
+        key,
+        artifact_id,
+        row[0],
+        binding.history_sha256,
+        descriptor,
+        descriptor.to_json_bytes().decode(),
+        _initial_sets(descriptor),
+    )
+    owner._prepared = page
+    return page
+
+
+def _initial_sets(descriptor: MemberHistoryDocument) -> tuple[tuple[str, str, str], ...]:
+    return tuple(
         (
             authority.records_sha256,
             canonical_json_bytes(authority.to_mapping()).decode(),
@@ -190,11 +229,49 @@ def prepare_history_descriptor(
         )
         for authority in (descriptor.roots, descriptor.imports)
     )
-    page = PreparedHistoryDescriptor(
-        key, artifact_id, row[0], descriptor, descriptor.to_json_bytes().decode(), sets
+
+
+def _register_descriptor(
+    db: sqlite3.Connection,
+    key: ArchiveTaskKey,
+    history_sha256: str,
+    descriptor_json: str,
+    sets: tuple[tuple[str, str, str], ...],
+) -> None:
+    old = _one(
+        db,
+        "SELECT descriptor_json FROM discovery_history_descriptors "
+        "WHERE build_id=? AND admission_sha256=? AND history_sha256=?",
+        (key.build_id, key.admission_sha256, history_sha256),
     )
-    owner._prepared = page
-    return page
+    if old is None:
+        db.execute(
+            "INSERT INTO discovery_history_descriptors VALUES (?,?,?,?)",
+            (key.build_id, key.admission_sha256, history_sha256, descriptor_json),
+        )
+    elif old != (descriptor_json,):
+        raise StaleArchiveTask("shared history descriptor changed")
+    for identity, authority_json, checkpoint_json in sets:
+        previous = _one(
+            db,
+            "SELECT worker_id,authority_json FROM discovery_history_sets "
+            "WHERE build_id=? AND admission_sha256=? AND records_sha256=?",
+            (key.build_id, key.admission_sha256, identity),
+        )
+        if previous is None:
+            db.execute(
+                "INSERT INTO discovery_history_sets VALUES (?,?,?,?,?,'0','0',0,?,0)",
+                (
+                    key.build_id,
+                    key.admission_sha256,
+                    identity,
+                    key.worker_id,
+                    authority_json,
+                    checkpoint_json,
+                ),
+            )
+        elif previous != (key.worker_id, authority_json):
+            raise StaleArchiveTask("shared history set worker or authority changed")
 
 
 def apply_history_descriptor(
@@ -214,10 +291,10 @@ def apply_history_descriptor(
         )
         if binding != (page.binding_json,):
             raise StaleArchiveTask("history member binding changed")
-        expected = key.worker_id, page.binding_json, page.descriptor_json
+        expected = key.worker_id, page.binding_json, page.history_sha256
         old = _one(
             db,
-            "SELECT worker_id,binding_json,descriptor_json FROM discovery_archive_histories "
+            "SELECT worker_id,binding_json,history_sha256 FROM discovery_archive_histories "
             "WHERE build_id=? AND admission_sha256=? AND artifact_id=?",
             (key.build_id, key.admission_sha256, page.artifact_id),
         )
@@ -228,27 +305,7 @@ def apply_history_descriptor(
             )
         elif old != expected:
             raise StaleArchiveTask("history descriptor worker or source changed")
-        for identity, authority_json, checkpoint_json in page.sets:
-            previous = _one(
-                db,
-                "SELECT worker_id,authority_json FROM discovery_history_sets "
-                "WHERE build_id=? AND admission_sha256=? AND records_sha256=?",
-                (key.build_id, key.admission_sha256, identity),
-            )
-            if previous is None:
-                db.execute(
-                    "INSERT INTO discovery_history_sets VALUES (?,?,?,?,?,'0','0',0,?,0)",
-                    (
-                        key.build_id,
-                        key.admission_sha256,
-                        identity,
-                        key.worker_id,
-                        authority_json,
-                        checkpoint_json,
-                    ),
-                )
-            elif previous != (key.worker_id, authority_json):
-                raise StaleArchiveTask("shared history set worker or authority changed")
+        _register_descriptor(db, key, page.history_sha256, page.descriptor_json, page.sets)
 
 
 def _header(db: sqlite3.Connection, key: ArchiveTaskKey, owner: HistorySetWork) -> tuple[Any, ...]:
@@ -476,20 +533,20 @@ def apply_history_record(
         )
 
 
-def archive_history_ready(
-    db: sqlite3.Connection, key: ArchiveTaskKey, owner: ArchiveHistoryWork, artifact_id: str
+def history_descriptor_ready(
+    db: sqlite3.Connection, key: ArchiveTaskKey, owner: ArchiveHistoryWork, history_sha256: str
 ) -> bool:
-    """Check exact set terminals and primary membership, without granting claim authority."""
+    """Verify one descriptor's set terminals and primary, without claiming Native validation."""
     _require_archive(db, key, owner.admission)
     row = _one(
         db,
-        "SELECT worker_id,descriptor_json FROM discovery_archive_histories "
-        "WHERE build_id=? AND admission_sha256=? AND artifact_id=?",
-        (key.build_id, key.admission_sha256, artifact_id),
+        "SELECT descriptor_json FROM discovery_history_descriptors "
+        "WHERE build_id=? AND admission_sha256=? AND history_sha256=?",
+        (key.build_id, key.admission_sha256, history_sha256),
     )
-    if row is None or row[0] != key.worker_id:
-        raise StaleArchiveTask("history descriptor source or worker changed")
-    descriptor = MemberHistoryDocument.from_json_bytes(row[1].encode())
+    if row is None:
+        raise StaleArchiveTask("history descriptor is not registered")
+    descriptor = MemberHistoryDocument.from_json_bytes(row[0].encode())
     for authority in (descriptor.roots, descriptor.imports):
         header = _header(db, key, HistorySetWork(owner.admission, owner.reader, authority))
         if not header[6]:
@@ -504,3 +561,187 @@ def archive_history_ready(
     if selected != (canonical_json_bytes(primary.to_mapping()).decode(),):
         raise StaleArchiveTask("history omits its exact bound primary root")
     return True
+
+
+def archive_history_ready(
+    db: sqlite3.Connection, key: ArchiveTaskKey, owner: ArchiveHistoryWork, artifact_id: str
+) -> bool:
+    """Check exact set terminals and primary membership for a root-registered member."""
+    row = _one(
+        db,
+        "SELECT worker_id,history_sha256 FROM discovery_archive_histories "
+        "WHERE build_id=? AND admission_sha256=? AND artifact_id=?",
+        (key.build_id, key.admission_sha256, artifact_id),
+    )
+    if row is None or row[0] != key.worker_id:
+        raise StaleArchiveTask("history descriptor source or worker changed")
+    return history_descriptor_ready(db, key, owner, row[1])
+
+
+@declare_growth(
+    Declaration(
+        id="riverhog-server.discovery-history-import-prepare.growth/v1",
+        authority="riverhog-server",
+        subjects=("riverhog_core.canonical_discovery_history_work.prepare_history_import",),
+        scope="one exact inherited history membership proof preparation",
+        starts_at="receive one registered record from a completely verified import set",
+        ends_at="detach the exact source proof, selected history descriptor and set obligations",
+        dimensions=(
+            Dimension("registered_imports", COUNT, "Previously registered source proofs."),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "equal",
+                Expression("constant", value=3, unit=COUNT),
+                "One archive fence, one set header and one exact import record.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                Expression("constant", value=3, unit=COUNT),
+                "Each selected lookup returns at most one row.",
+            ),
+            Bound(
+                "object_reads",
+                COUNT,
+                "upper",
+                Expression("constant", value=4, unit=COUNT),
+                "One source proof and descriptor, each with the current archive root fence.",
+            ),
+        ),
+        conditions=(
+            "The caller retains current archive/build authority and the exact workspace lease.",
+            "Preparation runs outside the owner write transaction.",
+            "The source proof and history descriptor obey their existing representation bounds.",
+        ),
+        invariants=(
+            "Import membership retains the original source identity, roots and proof coordinates.",
+            "The exact selected descriptor registers shared root/import set obligations.",
+            "No newer source head, provider lookup or member-union authorization is substituted.",
+        ),
+        limitations=(
+            "SQL counts exclude storage-engine work; bounded proof verification is separate.",
+            "Native State causality, graph closure and publication have independent obligations.",
+        ),
+    )
+)
+def prepare_history_import(
+    db: sqlite3.Connection, key: ArchiveTaskKey, owner: HistorySetWork, record_key: str
+) -> PreparedHistoryImport:
+    if db.in_transaction:
+        raise ValueError("history import preparation requires no active transaction")
+    _require_archive(db, key, owner.admission)
+    header = _header(db, key, owner)
+    if owner.authority.schema_id != MEMBER_HISTORY_IMPORTS_SCHEMA or not header[6]:
+        raise StaleArchiveTask("history import set is not completely verified")
+    row = _one(
+        db,
+        "SELECT value_json FROM discovery_history_set_records "
+        "WHERE build_id=? AND admission_sha256=? AND records_sha256=? AND record_key=?",
+        (key.build_id, key.admission_sha256, owner.authority.records_sha256, record_key),
+    )
+    if row is None:
+        raise StaleArchiveTask("history import record is not registered")
+    imported = MemberHistoryImport.from_mapping(require_canonical_json(row[0].encode()))
+    if imported.key != record_key:
+        raise StaleArchiveTask("history import record key changed")
+    proof = owner.reader.source_binding_proof(imported)
+    descriptor = owner.reader.history_descriptor(proof.binding)
+    page = PreparedHistoryImport(
+        key,
+        header,
+        record_key,
+        row[0],
+        proof.identity,
+        proof.to_json_bytes().decode(),
+        proof.binding.history_sha256,
+        descriptor.to_json_bytes().decode(),
+        _initial_sets(descriptor),
+    )
+    owner._prepared_import = page
+    return page
+
+
+@declare_growth(
+    Declaration(
+        id="riverhog-server.discovery-history-import-apply.growth/v1",
+        authority="riverhog-server",
+        subjects=("riverhog_core.canonical_discovery_history_work.apply_history_import",),
+        scope="one exact inherited history membership proof commit",
+        starts_at="receive the exact detached proof and current owner transaction",
+        ends_at="retain the original proof with its shared descriptor and child set obligations",
+        dimensions=(
+            Dimension("registered_imports", COUNT, "Previously registered source proofs."),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                Expression("constant", value=12, unit=COUNT),
+                "Two source reads and at most four bounded exact record registrations.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                Expression("constant", value=6, unit=COUNT),
+                "Exact set/record, descriptor, two set identities and proof lookups.",
+            ),
+            Bound(
+                "source_hash_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "Source verification and checkpoint encoding precede the write transaction.",
+            ),
+        ),
+        conditions=(
+            "The caller retains current archive/build authority and the exact workspace lease.",
+            "Apply receives the exact preparation; the schema has no added triggers.",
+        ),
+        invariants=(
+            "The proof, selected descriptor and new child set obligations commit atomically.",
+            "Existing shared descriptors and completed set continuations are never reset.",
+            "The original archive roots and member inclusion coordinates remain exact.",
+        ),
+        limitations=(
+            "SQL counts exclude storage-engine/index costs and owner transaction entry/commit.",
+            "Structural membership grants no Native semantic or publication authority.",
+        ),
+    )
+)
+def apply_history_import(
+    db: sqlite3.Connection, key: ArchiveTaskKey, owner: HistorySetWork, page: PreparedHistoryImport
+) -> None:
+    if owner._prepared_import is not page or page.key != key:
+        raise StaleArchiveTask("history import is not the current exact detached preparation")
+    with _atomic(db):
+        if _header(db, key, owner) != page.expected_row:
+            raise StaleArchiveTask("history import source or continuation changed")
+        current = _one(
+            db,
+            "SELECT value_json FROM discovery_history_set_records "
+            "WHERE build_id=? AND admission_sha256=? AND records_sha256=? AND record_key=?",
+            (key.build_id, key.admission_sha256, owner.authority.records_sha256, page.record_key),
+        )
+        if current != (page.record_json,):
+            raise StaleArchiveTask("history import record changed")
+        _register_descriptor(db, key, page.history_sha256, page.descriptor_json, page.sets)
+        expected = key.worker_id, page.proof_json, page.history_sha256
+        previous = _one(
+            db,
+            "SELECT worker_id,proof_json,history_sha256 FROM discovery_history_import_proofs "
+            "WHERE build_id=? AND admission_sha256=? AND proof_sha256=?",
+            (key.build_id, key.admission_sha256, page.proof_sha256),
+        )
+        if previous is None:
+            db.execute(
+                "INSERT INTO discovery_history_import_proofs VALUES (?,?,?,?,?,?)",
+                (key.build_id, key.admission_sha256, page.proof_sha256, *expected),
+            )
+        elif previous != expected:
+            raise StaleArchiveTask("history import proof source or worker changed")

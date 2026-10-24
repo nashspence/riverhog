@@ -286,6 +286,7 @@ class CanonicalProvenanceArchiveReader:
     def source_binding_proof(
         self, imported: MemberHistoryImport
     ) -> SourceMemberHistoryBindingProof:
+        self._root()
         raw = _read_bounded(
             self._read_object(
                 source_binding_proof_object_path(imported.source_binding_proof_sha256)
