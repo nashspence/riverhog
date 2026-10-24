@@ -30,7 +30,7 @@ def test_pages_contains_the_source_generated_candidate_under_its_project_path(
     source_sha = None
     candidate_manifest = json.loads((source / "build-manifest.json").read_bytes())
 
-    build = build_pages(source, destination, source_sha)
+    build = build_pages(source, destination, source_sha, budget=1_000_000_000)
 
     assert build["inputs"][0]["source_sha"] == candidate_manifest["source_sha"]
     assert build["latest_product_release"] is None
@@ -54,11 +54,15 @@ def test_pages_preview_requires_an_exact_source_commit(tmp_path: Path) -> None:
         build_pages(tmp_path / "unused", tmp_path / "site", "main")
 
 
+@pytest.mark.parametrize(
+    ("budget", "message"),
+    [(0, "operational budget"), (-1, "operational budget"), (1, "operational budget")],
+)
 def test_pages_capacity_fails_before_publishing_and_keeps_all_versions(
-    tmp_path, generated_contract_closure
+    tmp_path, generated_contract_closure, budget, message
 ):
-    with pytest.raises(ContractAtlasError, match="operational budget"):
-        build_pages(generated_contract_closure["root"], tmp_path / "site", None, budget=1)
+    with pytest.raises(ContractAtlasError, match=message):
+        build_pages(generated_contract_closure["root"], tmp_path / "site", None, budget=budget)
     assert not (tmp_path / "site").exists()
 
 
@@ -126,7 +130,10 @@ def test_pages_assembles_versions_semantically_and_preserves_published_bytes(
         }
         for number, (tag, selected) in enumerate((("v1.2.0", root), ("v1.10.0", documented)), 1)
     ]
-    manifest = build_pages(development, tmp_path / "site", None, releases=entries)
+    manifest = build_pages(
+        development, tmp_path / "site", None, releases=entries, budget=2_000_000_000
+    )
+    assert manifest["hosting_budget_bytes"] == 2_000_000_000
     assert manifest["latest_product_release"] == "v1.10.0"
     assert [item["version"] for item in manifest["inputs"]] == ["development", "v1.10.0", "v1.2.0"]
     assert 'href="../v1.2.0/"' in (tmp_path / "site/v1.10.0/index.html").read_text()

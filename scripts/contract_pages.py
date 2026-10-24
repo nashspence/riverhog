@@ -120,12 +120,12 @@ def build_pages(
     if development["documentation"] is not None:
         raise ContractAtlasError("development Pages must not include release Documentation Mode")
     if (
-        not 0 < budget < 1_000_000_000
+        budget <= 0
         or (destination.exists() and any(destination.iterdir()))
         or destination.is_symlink()
     ):
         raise ContractAtlasError(
-            "Pages requires an empty output and a budget below the hosting limit"
+            "site assembly requires an empty output and a positive operational budget"
         )
     products = sorted(
         releases or [], key=lambda entry: tuple(map(int, entry["tag"][1:].split("."))), reverse=True

@@ -67,6 +67,43 @@ def test_contract_pages_uses_exact_green_main_and_protected_publication_environm
     assert workflow["concurrency"] == {"group": "riverhog-pages", "cancel-in-progress": "false"}
     assert any("--check-fresh" in step.get("run", "") for step in deploy["steps"])
 
+    routing = next(step for step in build if step["name"] == "Prepare existing-URL routing")
+    assert "documentation_publish.py relay" in routing["run"]
+    upload = next(step for step in build if step["name"] == "Upload complete Pages artifact")
+    assert upload["with"]["path"] == "${{ runner.temp }}/riverhog-routing"
+    complete = next(step for step in build if step["name"] == "Retain complete verified site")
+    assert complete["with"]["include-hidden-files"] == "true"
+    promote = next(
+        step
+        for step in deploy["steps"]
+        if step["name"] == "Verify immutable content and promote the Worker"
+    )
+    assert "documentation_publish.py publish" in promote["run"]
+    assert all(name not in workflow["jobs"]["build"].get("env", {}) for name in promote["env"])
+    assert {key: value for key, value in promote["env"].items() if "secrets." in value} == {
+        name: "${{ secrets." + name + " }}"
+        for name in (
+            "CLOUDFLARE_API_TOKEN",
+            "CLOUDFLARE_ACCOUNT_ID",
+            "B2_APPLICATION_KEY_ID",
+            "B2_APPLICATION_KEY",
+            "B2_BUCKET_ID",
+        )
+    }
+    cleanup = next(
+        step
+        for step in deploy["steps"]
+        if step["name"] == "Remove this publication's verification Worker"
+    )
+    assert cleanup["if"] == "always()"
+    assert "documentation_publish.py cleanup" in cleanup["run"]
+    positions = {step["name"]: index for index, step in enumerate(deploy["steps"])}
+    assert (
+        positions["Verify immutable content and promote the Worker"]
+        < positions["Recheck inputs before updating existing URLs"]
+        < positions["Deploy complete site"]
+    )
+
 
 def test_every_buildx_setup_uses_the_pinned_docker_engine() -> None:
     for path in (CI_WORKFLOW, QUALIFICATION_WORKFLOW, PROVIDER_QUALIFICATION_WORKFLOW):
