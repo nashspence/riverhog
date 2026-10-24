@@ -648,6 +648,59 @@ def _selection_declaration(phase: str) -> Declaration:
     )
 
 
+def _dependency_declaration() -> Declaration:
+    original = _selection_declaration("advance_semantics")
+    return replace(
+        original,
+        id="riverhog-provenance.corpus-advance-dependencies.growth/v1",
+        subjects=("riverhog_provenance.corpus.CanonicalCorpusValidator.advance_dependencies",),
+        scope="fixed selected-corpus documentary dependency validation",
+        starts_at="receive row and projected-byte admission after semantic registration",
+        ends_at="check admitted references, forks or comparisons and retain the next atom",
+        dimensions=(
+            Dimension("row_budget", COUNT, "Maximum dependency atoms checked by this call."),
+            Dimension(
+                "byte_budget", OCTETS, "Maximum dependency payload bytes fetched by this call."
+            ),
+        ),
+        bounds=tuple(
+            replace(
+                bound,
+                meaning={
+                    "sql_statements": (
+                        "One metadata pass, admitted payload reads and exact target checks."
+                    ),
+                    "processed_rows": "Each checked obligation advances its cursor once.",
+                    "projected_payload_octets": (
+                        "Length admission precedes dependency payload reads."
+                    ),
+                    "json_decodes": "At most one admitted reference or anchor per atom.",
+                }.get(bound.metric, bound.meaning),
+            )
+            for bound in original.bounds
+        ),
+        conditions=(
+            "Raw Native source indexing and selected semantic registration are complete.",
+            "The source and selected-prefix set remain frozen during this attempt.",
+            "Indexed resume keys retain at most one unfinished metadata atom.",
+        ),
+        invariants=(
+            "Foreign references retain exact journal, entry, assertion, object and type checks.",
+            "References precede forks; forks precede comparisons; all precede cycle checks.",
+            "Native size and SHA256 comparison policy is unchanged.",
+            "Successful cursor advances are retained across a later interrupted atom.",
+            "Validation performs no corpus writes and reads no original assertion payloads.",
+        ),
+        limitations=(
+            "Completion covers dependencies, not cycle checking or whole-corpus acceptance.",
+            "The workspace and continuation are temporary, not durable restart proof.",
+            "SQL visits and fetched payload bytes exclude storage I/O and metadata widths.",
+            "A later explicit whole-corpus validation is a new fixed-selection attempt.",
+            "Completeness, member relevance, current access and publication remain separate.",
+        ),
+    )
+
+
 def _semantic_projection(value: Mapping[str, Any]) -> dict[str, Any] | None:
     kind = value["type"]
     if kind in ("derivation", "specialization"):
@@ -667,6 +720,16 @@ def _semantic_projection(value: Mapping[str, Any]) -> dict[str, Any] | None:
             "result": value["result"],
         }
     return None
+
+
+@dataclass(frozen=True, slots=True)
+class CorpusDependencyProgress:
+    """Documentary dependency progress, independently of cycle acceptance."""
+
+    phase: str
+    checked_obligations: int
+    admitted_octets: int
+    complete: bool
 
 
 @dataclass(frozen=True, slots=True)
@@ -725,6 +788,10 @@ class CanonicalCorpusValidator:
         self._semantic_phase = "open"
         self._semantic_after: tuple[str, str] | None = None
         self._semantic_processed = 0
+        self._dependency_phase = "references"
+        self._dependency_after: tuple[Any, ...] | None = None
+        self._dependency_pending: tuple[Any, ...] | None = None
+        self._dependency_checked = 0
         self._scratch = TemporaryDirectory(prefix="riverhog-canonical-corpus-")
         self._db = sqlite3.connect(Path(self._scratch.name) / "corpus.sqlite3")
         self._db.execute("PRAGMA cache_size = -512")
@@ -766,6 +833,7 @@ class CanonicalCorpusValidator:
 
     def __exit__(self, *_exc: object) -> None:
         self._closed = True
+        self._reset_dependencies()
         self._db.close()
         self._scratch.cleanup()
 
@@ -1213,17 +1281,145 @@ class CanonicalCorpusValidator:
 
     def _resolve(self, reference: dict[str, Any]) -> None:
         found = self._source_read(
-            "SELECT entry,object,type FROM assertions WHERE journal=? AND assertion=?",
-            (reference["journal_id"], reference["assertion_id"]),
+            "SELECT entry=? AND object=? AND type=? FROM assertions "
+            "WHERE journal=? AND assertion=?",
+            (
+                canonical_document(reference["entry"]),
+                reference["object_id"],
+                reference["object_type"],
+                reference["journal_id"],
+                reference["assertion_id"],
+            ),
         )
         if found is None:
             raise ProvenanceValidationError("unresolved required external journal assertion")
-        if found != (
-            canonical_document(reference["entry"]),
-            reference["object_id"],
-            reference["object_type"],
-        ):
+        if found != (1,):
             raise ProvenanceValidationError("foreign reference does not match its exact assertion")
+
+    def _reset_dependencies(self) -> None:
+        self._dependency_after, self._dependency_pending = None, None
+        self._dependency_phase, self._dependency_checked = "references", 0
+
+    def _check_dependency(self, pending: tuple[Any, ...], size: int) -> None:
+        if self._dependency_phase in ("references", "forks"):
+            table, column = (
+                ("refs", "value") if self._dependency_phase == "references" else ("forks", "anchor")
+            )
+            encoded = self._source_read(
+                f"SELECT substr({column},1,?) FROM {table} WHERE rowid=? AND length({column})=?",
+                (size, pending[0], size),
+            )
+            if encoded is None:
+                raise RuntimeError("documentary dependency changed outside its source fence")
+            value = json.loads(encoded[0])
+            if self._dependency_phase == "references":
+                self._resolve(value)
+            else:
+                found = self._source_read(
+                    "SELECT reference=? AND prefix=? AND bytes=? FROM entries "
+                    "WHERE journal=? AND sequence=?",
+                    (
+                        canonical_document(value["through"]),
+                        value["prefix_sha256"],
+                        value["prefix_bytes"],
+                        value["journal_id"],
+                        value["through"]["sequence"],
+                    ),
+                )
+                if found != (1,):
+                    raise ProvenanceValidationError(
+                        "fork prefix anchor could not be resolved exactly"
+                    )
+            return
+        value = self._source_read(
+            "SELECT left_object,right_object,result FROM comparisons "
+            "WHERE journal=? AND assertion=? AND "
+            "length(CAST(left_object AS BLOB))+length(CAST(right_object AS BLOB))"
+            "+length(CAST(result AS BLOB))=?",
+            (*pending[:2], size),
+        )
+        if value is None:
+            raise RuntimeError("comparison dependency changed outside its source fence")
+        left, right, result = value
+        # Prefix admission checked local presence; Native fixes description content.
+        found = self._source_read(
+            "SELECT l.size=r.size AND l.sha256=r.sha256 FROM fixities l,fixities r "
+            "WHERE l.object=? AND r.object=?",
+            (left, right),
+        )
+        if found is None:
+            if result != "indeterminate":
+                raise ProvenanceValidationError("resolved comparison lacks complete fixity")
+        elif (result == "matching_fixity" and found != (1,)) or (
+            result == "different" and found == (1,)
+        ):
+            raise ProvenanceValidationError("comparison contradicts foreign content evidence")
+
+    @declare_growth(_dependency_declaration())
+    def advance_dependencies(
+        self, *, row_budget: int = 64, byte_budget: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+    ) -> CorpusDependencyProgress:
+        """Check a bounded portion of the fixed corpus's documentary obligations.
+
+        Each phase retains an indexed resume key and one unfinished atom.
+        Length admission precedes payload fetches. Completion does not include
+        cycle checking, historical member relevance or current authorization.
+        """
+        self._require_open()
+        if type(row_budget) is not int or row_budget < 1:
+            raise ValueError("corpus dependency row budget must be positive")
+        if type(byte_budget) is not int or byte_budget < 1:
+            raise ValueError("corpus dependency byte budget must be positive")
+        if self._semantic_phase != "complete":
+            raise RuntimeError("corpus dependencies require complete semantic registration")
+        if self._dependency_phase == "complete":
+            return CorpusDependencyProgress("complete", self._dependency_checked, 0, True)
+        admitted = 0
+        for _ in range(row_budget):
+            if self._dependency_pending is None:
+                if self._dependency_phase in ("references", "forks"):
+                    table, column = (
+                        ("refs", "value")
+                        if self._dependency_phase == "references"
+                        else ("forks", "anchor")
+                    )
+                    self._dependency_pending = self._source_read(
+                        f"SELECT rowid,length({column}) FROM {table} "
+                        "WHERE rowid>? ORDER BY rowid LIMIT 1",
+                        self._dependency_after or (0,),
+                    )
+                else:
+                    self._dependency_pending = self._source_read(
+                        "SELECT journal,assertion,length(CAST(left_object AS BLOB))"
+                        "+length(CAST(right_object AS BLOB))+length(CAST(result AS BLOB)) "
+                        "FROM comparisons WHERE (journal,assertion)>(?,?) "
+                        "ORDER BY journal,assertion LIMIT 1",
+                        self._dependency_after or ("", ""),
+                    )
+            if self._dependency_pending is None:
+                self._dependency_after = None
+                self._dependency_phase = {
+                    "references": "forks",
+                    "forks": "comparisons",
+                    "comparisons": "complete",
+                }[self._dependency_phase]
+                break
+            size = self._dependency_pending[-1]
+            if size > byte_budget:
+                raise JournalValidationCapacity("dependency atom exceeds admitted byte budget")
+            if size > byte_budget - admitted:
+                break
+            self._check_dependency(self._dependency_pending, size)
+            self._dependency_after = self._dependency_pending[:-1]
+            self._dependency_pending = None
+            self._dependency_checked += 1
+            admitted += size
+        return CorpusDependencyProgress(
+            self._dependency_phase,
+            self._dependency_checked,
+            admitted,
+            self._dependency_phase == "complete",
+        )
 
     def validate(self) -> None:
         self._require_open()
@@ -1234,40 +1430,11 @@ class CanonicalCorpusValidator:
         finally:
             # A later explicit batch validation has a new fixed input set.
             self._semantic_phase = "open"
+            self._reset_dependencies()
 
     def _validate_registered(self) -> None:
-        for (encoded,) in self._db.execute("SELECT value FROM refs"):
-            self._resolve(json.loads(encoded))
-        for (encoded,) in self._db.execute("SELECT anchor FROM forks"):
-            anchor = json.loads(encoded)
-            found = self._db.execute(
-                "SELECT reference, prefix, bytes FROM entries WHERE journal = ? AND sequence = ?",
-                (anchor["journal_id"], anchor["through"]["sequence"]),
-            ).fetchone()
-            if found != (
-                canonical_document(anchor["through"]),
-                anchor["prefix_sha256"],
-                anchor["prefix_bytes"],
-            ):
-                raise ProvenanceValidationError("fork prefix anchor could not be resolved exactly")
-        for left, right, result in self._db.execute(
-            "SELECT left_object,right_object,result FROM comparisons"
-        ):
-            # Prefix admission checked local presence. Immutable description content
-            # permits one referent projection across selected snapshots.
-            fixities = [
-                self._source_read("SELECT size,sha256 FROM fixities WHERE object=?", (identity,))
-                for identity in (left, right)
-            ]
-            if any(item is None for item in fixities):
-                if result != "indeterminate":
-                    raise ProvenanceValidationError("resolved comparison lacks complete fixity")
-            else:
-                same = fixities[0] == fixities[1]
-                if (result == "matching_fixity" and not same) or (result == "different" and same):
-                    raise ProvenanceValidationError(
-                        "comparison contradicts foreign content evidence"
-                    )
+        while not self.advance_dependencies().complete:
+            pass
         for kind in ("derivation", "specialization"):
             self._acyclic(kind)
 
@@ -1374,6 +1541,7 @@ def validate_canonical_corpus(summaries: Iterable[JournalSummary]) -> None:
 __all__ = [
     "CanonicalCorpusValidator",
     "CorpusSourceProgress",
+    "CorpusDependencyProgress",
     "CorpusSemanticProgress",
     "HistoricalAssertion",
     "SelectedDeliverySupport",
