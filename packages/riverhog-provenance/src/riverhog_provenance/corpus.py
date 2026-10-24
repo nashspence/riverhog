@@ -407,7 +407,7 @@ def _historical_assertion_declaration() -> Declaration:
                     constant(512, OCTETS),
                     product(
                         Expression("log2_ceil", terms=(records,)),
-                        constant(1, OCTETS_PER_COUNT),
+                        constant(1, OCTETS),
                     ),
                 ),
                 "Exact header, identity/type/size and decimal positions; future retirement "
