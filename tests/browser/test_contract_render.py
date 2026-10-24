@@ -10,7 +10,7 @@ from pathlib import Path
 from threading import Thread
 
 import pytest
-from playwright.sync_api import Browser, sync_playwright
+from playwright.sync_api import Browser
 
 CANDIDATE_SOURCE: Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -116,16 +116,6 @@ def candidate_site(
         server.shutdown()
         thread.join(timeout=5)
         server.server_close()
-
-
-@pytest.fixture(scope="module")
-def browser() -> Browser:
-    with sync_playwright() as playwright:
-        instance = playwright.chromium.launch(headless=True)
-        try:
-            yield instance
-        finally:
-            instance.close()
 
 
 def test_candidate_modes_history_direct_links_and_no_js(

@@ -149,6 +149,7 @@ support_paths = [
   "scripts/operation_qualification.py",
   "scripts/contract_atlas",
   "scripts/documentation.py",
+  "scripts/documentation_publish.py",
   "scripts/documentation_readouts.py",
   "scripts/contract_freeze.py",
   "scripts/provider_qualification.py",

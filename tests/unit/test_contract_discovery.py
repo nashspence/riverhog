@@ -87,6 +87,7 @@ def test_contract_builder_has_only_current_record_and_html_dependencies() -> Non
         "github_publication": {"installation_publication", "model", "publication"},
         "installation_publication": {"model", "publication"},
         "workflow_evidence": {"github_publication", "model", "publication"},
+        "web_publication": {"model", "publication"},
         "release_publication": {"github_publication", "model", "publication", "workflow_evidence"},
         "review": {"generation", "model", "records"},
     }
