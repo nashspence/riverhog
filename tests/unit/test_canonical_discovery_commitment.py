@@ -191,7 +191,7 @@ def test_a_long_carry_is_individually_checkpointed_at_every_level(db):
         assert progress.leaf_count == 8
     assert levels == [0, 1, 2, 3]
     assert db.execute("SELECT level, digest FROM discovery_commitment_frontier").fetchall() == [
-        (3, oracle([leaf(i) for i in range(8)]))
+        ("3", oracle([leaf(i) for i in range(8)]))
     ]
 
 
@@ -469,3 +469,72 @@ def test_frontier_level_cannot_allocate_a_carry_beyond_admitted_leaves(db):
     db.execute("UPDATE discovery_commitment_frontier SET level = 30")
     with pytest.raises(StaleCommitmentWork, match="frontier level"):
         prepare_commitment_step(db, KEY)
+
+
+def test_global_counts_and_versions_cross_sqlite_integer_extent_without_rounding(db):
+    # A synthetic work checkpoint tests representation, not source coverage.
+    count = 2**63
+    prior = leaf(0)
+    db.execute(
+        "UPDATE discovery_commitment_tasks SET version=?,leaf_count=?,next_source_key=?",
+        (str(count), str(count), str(count).encode()),
+    )
+    db.execute(
+        "INSERT INTO discovery_commitment_frontier VALUES (?,?,?,?)",
+        (KEY.build_id, KEY.task_id, "63", prior),
+    )
+    value = leaf(1)
+    with write(db):
+        current = append_commitment_leaf(
+            db,
+            KEY,
+            expected_version=count,
+            source_key=str(count).encode(),
+            next_source_key=str(count + 1).encode(),
+            digest=value,
+        )
+    assert current.version == count + 1 and current.leaf_count == count + 1
+    drain_carry(db)
+    begin_fold(db, count + 1)
+    while commitment_progress(db, KEY).phase != "complete":
+        advance(db)
+    final = commitment_progress(db, KEY)
+    assert final.leaf_count == final.fold_leaf_count == count + 1
+    assert final.root == branch_digest(prior, value)
+    raw = db.execute(
+        "SELECT typeof(version),typeof(leaf_count),typeof(fold_leaf_count) "
+        "FROM discovery_commitment_tasks"
+    ).fetchone()
+    assert raw == ("text", "text", "text")
+
+
+def test_numeric_frontier_order_across_decimal_widths(db):
+    # Independent retained subtree digests exercise 2, 9, 10 ordering.
+    levels = (2, 9, 10)
+    count = sum(1 << level for level in levels)
+    db.execute(
+        "UPDATE discovery_commitment_tasks SET leaf_count=?,next_source_key=?",
+        (str(count), str(count).encode()),
+    )
+    for level in levels:
+        db.execute(
+            "INSERT INTO discovery_commitment_frontier VALUES (?,?,?,?)",
+            (KEY.build_id, KEY.task_id, str(level), leaf(level)),
+        )
+    begin_fold(db, count)
+    observed = []
+    while commitment_progress(db, KEY).phase != "complete":
+        prepared, _ = advance(db)
+        if prepared.operation == "fold":
+            observed.append(prepared.level)
+    assert observed == list(levels)
+    assert commitment_progress(db, KEY).root == branch_digest(
+        leaf(10), branch_digest(leaf(9), leaf(2))
+    )
+
+
+@pytest.mark.parametrize("value", ["01", "-1", "1.0", "", "1e20"])
+def test_noncanonical_decimal_checkpoint_is_rejected(db, value):
+    db.execute("UPDATE discovery_commitment_tasks SET leaf_count=?", (value,))
+    with pytest.raises(StaleCommitmentWork, match="invalid durable"):
+        commitment_progress(db, KEY)

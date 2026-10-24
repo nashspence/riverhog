@@ -27,7 +27,7 @@ from riverhog_growth_contracts import (
 from riverhog_core.canonical_discovery_fact_work import FACT_FRAGMENT_BYTES
 
 DOMAIN = "riverhog-canonical-discovery-factor-merkle/v1"
-_FORMAT = DOMAIN + "/work"
+_FORMAT = DOMAIN + "/work/v1"
 _EMPTY_ROOT = hashlib.sha256(b"").digest()
 
 
@@ -161,27 +161,29 @@ def initialize_commitment_work(db: sqlite3.Connection) -> None:
             build_id TEXT NOT NULL, task_id TEXT NOT NULL,
             worker_id TEXT NOT NULL, source_manifest_sha256 TEXT NOT NULL,
             extraction_policy_sha256 TEXT NOT NULL, initial_source_key BLOB NOT NULL,
-            version INTEGER NOT NULL CHECK(version >= 0),
+            version TEXT NOT NULL,
             phase TEXT NOT NULL CHECK(phase IN ('leaves','fold','complete')),
-            leaf_count INTEGER NOT NULL CHECK(leaf_count >= 0),
+            leaf_count TEXT NOT NULL,
             next_source_key BLOB NOT NULL CHECK(length(next_source_key) <= 512),
-            pending_level INTEGER CHECK(pending_level >= 0),
+            pending_level TEXT,
             pending_digest BLOB CHECK(length(pending_digest) = 32),
-            fold_level INTEGER NOT NULL CHECK(fold_level >= 0),
+            fold_level TEXT NOT NULL,
             fold_digest BLOB CHECK(length(fold_digest) = 32),
-            fold_leaf_count INTEGER NOT NULL CHECK(fold_leaf_count >= 0),
+            fold_leaf_count TEXT NOT NULL,
             root BLOB CHECK(length(root) = 32),
             CHECK((pending_level IS NULL) = (pending_digest IS NULL)),
             PRIMARY KEY(build_id, task_id)
         ) WITHOUT ROWID;
         CREATE TABLE IF NOT EXISTS discovery_commitment_frontier (
             build_id TEXT NOT NULL, task_id TEXT NOT NULL,
-            level INTEGER NOT NULL CHECK(level >= 0),
+            level TEXT NOT NULL,
             digest BLOB NOT NULL CHECK(length(digest) = 32),
             PRIMARY KEY(build_id, task_id, level),
             FOREIGN KEY(build_id, task_id)
                 REFERENCES discovery_commitment_tasks(build_id, task_id)
         ) WITHOUT ROWID;
+        CREATE INDEX IF NOT EXISTS discovery_commitment_frontier_order
+            ON discovery_commitment_frontier(build_id,task_id,length(level),level);
     """)
     if not formats:
         db.execute("INSERT INTO discovery_commitment_format VALUES (?)", (_FORMAT,))
@@ -211,6 +213,32 @@ def _binding(key: CommitmentKey) -> tuple[str, str, str]:
     return key.worker_id, key.source_manifest_sha256, key.extraction_policy_sha256
 
 
+def _stored_natural(value: object) -> int:
+    if (
+        type(value) is not str
+        or not value
+        or any(character not in "0123456789" for character in value)
+        or len(value) > 1
+        and value[0] == "0"
+    ):
+        raise ValueError("stored commitment coordinate is not exact canonical decimal")
+    return int(value)
+
+
+def _next_frontier(
+    db: sqlite3.Connection, key: CommitmentKey, level: int
+) -> tuple[int, bytes] | None:
+    coordinate = str(level)
+    row = _one(
+        db,
+        "SELECT level, digest FROM discovery_commitment_frontier "
+        "WHERE build_id = ? AND task_id = ? AND length(level) >= ? "
+        "AND (length(level) > ? OR level >= ?) ORDER BY length(level),level LIMIT 1",
+        (key.build_id, key.task_id, len(coordinate), len(coordinate), coordinate),
+    )
+    return None if row is None else (_stored_natural(row[0]), row[1])
+
+
 def commitment_progress(db: sqlite3.Connection, key: CommitmentKey) -> CommitmentProgress:
     binding = _binding(key)
     row = _one(
@@ -223,8 +251,19 @@ def commitment_progress(db: sqlite3.Connection, key: CommitmentKey) -> Commitmen
     )
     if row is None or row[:3] != binding:
         raise StaleCommitmentWork("no matching commitment build/source/policy/worker binding")
-    progress = CommitmentProgress(*row[3:])
     try:
+        progress = CommitmentProgress(
+            _stored_natural(row[3]),
+            row[4],
+            _stored_natural(row[5]),
+            row[6],
+            None if row[7] is None else _stored_natural(row[7]),
+            row[8],
+            _stored_natural(row[9]),
+            row[10],
+            _stored_natural(row[11]),
+            row[12],
+        )
         for value in (
             progress.version,
             progress.leaf_count,
@@ -281,7 +320,7 @@ def begin_commitment(
         if old is None:
             db.execute(
                 "INSERT INTO discovery_commitment_tasks VALUES "
-                "(?,?,?,?,?,?,0,'leaves',0,?,NULL,NULL,0,NULL,0,NULL)",
+                "(?,?,?,?,?,?,'0','leaves','0',?,NULL,NULL,'0',NULL,'0',NULL)",
                 (key.build_id, key.task_id, *binding, initial_source_key, initial_source_key),
             )
         elif old != (*binding, initial_source_key):
@@ -324,10 +363,17 @@ def append_commitment_leaf(
         ):
             raise StaleCommitmentWork("leaf source, phase or unfinished carry does not agree")
         db.execute(
-            "UPDATE discovery_commitment_tasks SET version = version + 1, "
-            "leaf_count = leaf_count + 1, next_source_key = ?, "
-            "pending_level = 0, pending_digest = ? WHERE build_id = ? AND task_id = ?",
-            (next_source_key, digest, key.build_id, key.task_id),
+            "UPDATE discovery_commitment_tasks SET version = ?, "
+            "leaf_count = ?, next_source_key = ?, "
+            "pending_level = '0', pending_digest = ? WHERE build_id = ? AND task_id = ?",
+            (
+                str(progress.version + 1),
+                str(progress.leaf_count + 1),
+                next_source_key,
+                digest,
+                key.build_id,
+                key.task_id,
+            ),
         )
         return commitment_progress(db, key)
 
@@ -347,9 +393,9 @@ def begin_commitment_fold(
         ):
             raise StaleCommitmentWork("source terminal or completed carry is absent")
         db.execute(
-            "UPDATE discovery_commitment_tasks SET version = version + 1, phase = 'fold' "
+            "UPDATE discovery_commitment_tasks SET version = ?, phase = 'fold' "
             "WHERE build_id = ? AND task_id = ?",
-            (key.build_id, key.task_id),
+            (str(progress.version + 1), key.build_id, key.task_id),
         )
         return commitment_progress(db, key)
 
@@ -425,7 +471,7 @@ def prepare_commitment_step(db: sqlite3.Connection, key: CommitmentKey) -> Prepa
             db,
             "SELECT digest FROM discovery_commitment_frontier "
             "WHERE build_id = ? AND task_id = ? AND level = ?",
-            (key.build_id, key.task_id, progress.pending_level),
+            (key.build_id, key.task_id, str(progress.pending_level)),
         )
         if row is None:
             return PreparedCommitmentStep(
@@ -438,12 +484,7 @@ def prepare_commitment_step(db: sqlite3.Connection, key: CommitmentKey) -> Prepa
             row[0],
             branch_digest(row[0], progress.pending_digest),
         )
-    row = _one(
-        db,
-        "SELECT level, digest FROM discovery_commitment_frontier "
-        "WHERE build_id = ? AND task_id = ? AND level >= ? ORDER BY level LIMIT 1",
-        (key.build_id, key.task_id, progress.fold_level),
-    )
+    row = _next_frontier(db, key, progress.fold_level)
     if row is None:
         if progress.fold_leaf_count != progress.leaf_count:
             raise StaleCommitmentWork("frontier loss does not cover the admitted leaf count")
@@ -507,13 +548,13 @@ def apply_commitment_step(
                 raise StaleCommitmentWork("prepared placement does not cover the exact carry")
             db.execute(
                 "INSERT INTO discovery_commitment_frontier VALUES (?,?,?,?)",
-                (key.build_id, key.task_id, step.level, step.result_digest),
+                (key.build_id, key.task_id, str(step.level), step.result_digest),
             )
             db.execute(
-                "UPDATE discovery_commitment_tasks SET version = version + 1, "
+                "UPDATE discovery_commitment_tasks SET version = ?, "
                 "pending_level = NULL, pending_digest = NULL "
                 "WHERE build_id = ? AND task_id = ?",
-                (key.build_id, key.task_id),
+                (str(progress.version + 1), key.build_id, key.task_id),
             )
         elif step.operation in {"carry", "fold"}:
             if step.level is None or step.frontier_digest is None:
@@ -529,37 +570,38 @@ def apply_commitment_step(
             ):
                 raise StaleCommitmentWork("prepared fold does not cover the next frontier level")
             if step.operation == "fold":
-                first = _one(
-                    db,
-                    "SELECT level, digest FROM discovery_commitment_frontier "
-                    "WHERE build_id = ? AND task_id = ? AND level >= ? "
-                    "ORDER BY level LIMIT 1",
-                    (key.build_id, key.task_id, progress.fold_level),
-                )
+                first = _next_frontier(db, key, progress.fold_level)
                 if first != (step.level, step.frontier_digest):
                     raise StaleCommitmentWork("fold skipped the next occupied frontier level")
             removed = db.execute(
                 "DELETE FROM discovery_commitment_frontier "
                 "WHERE build_id = ? AND task_id = ? AND level = ? AND digest = ?",
-                (key.build_id, key.task_id, step.level, step.frontier_digest),
+                (key.build_id, key.task_id, str(step.level), step.frontier_digest),
             ).rowcount
             if removed != 1:
                 raise StaleCommitmentWork("prepared frontier row changed")
             if step.operation == "carry":
                 db.execute(
-                    "UPDATE discovery_commitment_tasks SET version = version + 1, "
+                    "UPDATE discovery_commitment_tasks SET version = ?, "
                     "pending_level = ?, pending_digest = ? WHERE build_id = ? AND task_id = ?",
-                    (step.level + 1, step.result_digest, key.build_id, key.task_id),
+                    (
+                        str(progress.version + 1),
+                        str(step.level + 1),
+                        step.result_digest,
+                        key.build_id,
+                        key.task_id,
+                    ),
                 )
             else:
                 db.execute(
-                    "UPDATE discovery_commitment_tasks SET version = version + 1, "
-                    "fold_level = ?, fold_digest = ?, fold_leaf_count = fold_leaf_count + ? "
+                    "UPDATE discovery_commitment_tasks SET version = ?, "
+                    "fold_level = ?, fold_digest = ?, fold_leaf_count = ? "
                     "WHERE build_id = ? AND task_id = ?",
                     (
-                        step.level + 1,
+                        str(progress.version + 1),
+                        str(step.level + 1),
                         step.result_digest,
-                        1 << step.level,
+                        str(progress.fold_leaf_count + (1 << step.level)),
                         key.build_id,
                         key.task_id,
                     ),
@@ -581,9 +623,9 @@ def apply_commitment_step(
             if leftover is not None:
                 raise StaleCommitmentWork("commitment still has unfolded frontier rows")
             db.execute(
-                "UPDATE discovery_commitment_tasks SET version = version + 1, "
+                "UPDATE discovery_commitment_tasks SET version = ?, "
                 "phase = 'complete', root = ? WHERE build_id = ? AND task_id = ?",
-                (step.result_digest, key.build_id, key.task_id),
+                (str(progress.version + 1), step.result_digest, key.build_id, key.task_id),
             )
         else:
             raise ValueError("unknown commitment transition")
