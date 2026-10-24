@@ -145,6 +145,7 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
     assert contracts["project"]["dependencies"] == [
         "release-documentation-lib>=0.1,<0.2",
         "riverhog-canonical-json>=0.1,<0.2",
+        "sha256-continuation>=0.1,<0.2",
     ]
     assert contracts["project"]["license"] == "Apache-2.0"
     assert config["project"]["scripts"] == {
