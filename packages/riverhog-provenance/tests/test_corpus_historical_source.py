@@ -20,6 +20,7 @@ from riverhog_provenance import (
     assertion_reference,
     create_journal,
     encode_entry,
+    external_reference,
     new_id,
     parse_journal,
     reference,
@@ -463,21 +464,18 @@ def test_historical_delivery_reuses_native_policy_and_exact_selected_prefix(
             arguments["binding"]["journal"] = complete.anchor
         if fault == "valid":
             expected = selected_delivery_occurrence(oracle, **arguments)
-            assert (
-                corpus.selected_delivery_occurrence(**arguments, assertion_byte_budget=65536)
-                == expected
-            )
-            assert (
-                corpus.selected_delivery_occurrence(**arguments, assertion_byte_budget=65536)[0][
-                    "id"
-                ]
-                == association["state"]["object_id"]
-            )
+            actual = corpus.selected_delivery_support(**arguments, metadata_byte_budget=65536)
+            assert actual.state_reference == external_reference(oracle, expected[0]["id"])
+            assert actual.occurrence_reference == external_reference(oracle, expected[1]["id"])
+            actual.state_reference["object_id"] = new_id()
+            assert corpus.selected_delivery_support(
+                **arguments, metadata_byte_budget=65536
+            ).state_reference == external_reference(oracle, expected[0]["id"])
         else:
             with pytest.raises(ProvenanceValidationError):
                 selected_delivery_occurrence(oracle, **arguments)
             with pytest.raises(ProvenanceValidationError):
-                corpus.selected_delivery_occurrence(**arguments, assertion_byte_budget=65536)
+                corpus.selected_delivery_support(**arguments, metadata_byte_budget=65536)
 
 
 def replacement_ladder(journal, who, count, catalog):

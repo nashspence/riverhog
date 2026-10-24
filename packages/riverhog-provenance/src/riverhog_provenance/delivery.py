@@ -12,6 +12,32 @@ from .model import BinaryReadable, ObservationPolicy
 from .observer import measure
 
 
+def _delivery_projection(value: Mapping[str, Any]) -> dict[str, Any]:
+    """Retain only the fields consumed by the selected-delivery predicate.
+
+    Native's content schema admits exactly one SHA-256 digest. Other fixity
+    algorithms, opaque descriptions and advisory Occurrence fields remain in
+    the original assertion, outside this per-selection semantic projection.
+    """
+    result = {name: value[name] for name in ("id", "type", "assertion_id")}
+    kind = value["type"]
+    if kind == "delivery_association":
+        result.update(
+            (name, value[name]) for name in ("role", "slot", "state", "verification_observation_id")
+        )
+    elif kind == "state":
+        result["occurrence_id"] = value["occurrence_id"]
+    elif kind == "observation":
+        result["state"] = value["state"]
+        result["content"] = {
+            "size_bytes": value["content"]["size_bytes"],
+            "digests": [
+                digest for digest in value["content"]["digests"] if digest["algorithm"] == "sha-256"
+            ],
+        }
+    return result
+
+
 def selected_delivery_occurrence(
     summary: JournalSummary,
     *,

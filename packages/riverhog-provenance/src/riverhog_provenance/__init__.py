@@ -16,6 +16,7 @@ from .corpus import (
     CanonicalCorpusValidator,
     CorpusSourceProgress,
     HistoricalAssertion,
+    SelectedDeliverySupport,
     validate_canonical_corpus,
 )
 from .delivery import selected_delivery_occurrence, verify_delivery
@@ -104,6 +105,7 @@ __all__ = [
     "CanonicalCorpusValidator",
     "CorpusSourceProgress",
     "HistoricalAssertion",
+    "SelectedDeliverySupport",
     "validate_canonical_corpus",
     "artifact",
     "assertion",

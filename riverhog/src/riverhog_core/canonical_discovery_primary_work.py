@@ -191,8 +191,8 @@ def _declaration(phase: str) -> Declaration:
             "native_assertion_calls",
             COUNT,
             "equal",
-            count(4 if phase == "prepare" else 0),
-            "The selected Native policy reads exactly four admitted historical assertions.",
+            count(0),
+            "Primary binding never requests full Native assertion payloads.",
         ),
         Bound(
             "native_documentary_calls",
@@ -231,7 +231,7 @@ def _declaration(phase: str) -> Declaration:
         conditions=(
             "The caller retains current archive/build authority and the exact workspace lease.",
             "The history's root/import terminals and bound primary snapshot are verified.",
-            "Preparation explicitly admits each selected Native assertion atom.",
+            "Preparation explicitly admits each narrow Native semantic metadata atom.",
         ),
         invariants=(
             "The exact historical delivery uses Native's maintained policy and original support.",
@@ -241,7 +241,7 @@ def _declaration(phase: str) -> Declaration:
         ),
         limitations=(
             "Core SQL counts exclude B-tree work and transaction entry/commit.",
-            "Native owns its four admitted assertion point reads and documentary/header work.",
+            "Native owns indexed semantic projection reads and documentary/header work.",
             "Native global corpus, effective-history and causal-State terminals are separate.",
             "Private workspace registration grants no current access or generation publication.",
         ),
@@ -255,7 +255,7 @@ def prepare_history_primary(
     owner: HistoryPrimaryWork,
     history_sha256: str,
     *,
-    assertion_byte_budget: int,
+    metadata_byte_budget: int,
 ) -> PreparedHistoryPrimary:
     if db.in_transaction:
         raise ValueError("primary preparation requires no active transaction")
@@ -265,20 +265,17 @@ def prepare_history_primary(
         HistorySetWork(owner.history.admission, owner.history.reader, descriptor.roots),
         owner.source,
     )
-    state, occurrence = owner.corpus.selected_delivery_occurrence(
+    support = owner.corpus.selected_delivery_support(
         binding={"artifact_id": descriptor.artifact_id, **descriptor.primary.to_mapping()},
         artifact_id=descriptor.artifact_id,
         byte_count=descriptor.bytes,
         sha256=descriptor.sha256,
         member_role=owner.member_role,
-        assertion_byte_budget=assertion_byte_budget,
+        metadata_byte_budget=metadata_byte_budget,
     )
-    supports = tuple(
-        owner.source.reference_for_assertion(
-            value["assertion_id"], object_id=value["id"], object_type=kind
-        )
-        for value, kind in ((state, "state"), (occurrence, "occurrence"))
-    )
+    supports = (support.state_reference, support.occurrence_reference)
+    for reference in supports:
+        owner.source.reference_anchor(reference)
     if any(
         int(value["entry"]["sequence"]) > descriptor.primary.journal.through_sequence
         for value in supports

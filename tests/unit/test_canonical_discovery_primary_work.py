@@ -211,7 +211,7 @@ def test_historical_primary_verifies_native_delivery_and_retains_only_original_s
         monkeypatch.setattr(frame_type, "__getitem__", no_frames)
         monkeypatch.setattr(frame_type, "__iter__", no_frames)
         page = prepare_history_primary(
-            db, key, owner, descriptor.identity, assertion_byte_budget=65536
+            db, key, owner, descriptor.identity, metadata_byte_budget=65536
         )
         with write(db):
             apply_history_primary(db, key, owner, page)
@@ -234,9 +234,7 @@ def test_primary_uses_native_member_and_fixity_policy_before_any_registration(tm
     with primary_work(tmp_path / "work.sqlite", fault=fault) as values:
         db, key, owner, descriptor, *_ = values
         with pytest.raises(ProvenanceValidationError):
-            prepare_history_primary(
-                db, key, owner, descriptor.identity, assertion_byte_budget=65536
-            )
+            prepare_history_primary(db, key, owner, descriptor.identity, metadata_byte_budget=65536)
         assert db.execute("SELECT count(*) FROM discovery_history_primary_bindings").fetchone() == (
             0,
         )
@@ -246,12 +244,12 @@ def test_primary_assertion_capacity_does_not_register_partial_support(tmp_path):
     with primary_work(tmp_path / "work.sqlite") as values:
         db, key, owner, descriptor, *_ = values
         with pytest.raises(JournalValidationCapacity):
-            prepare_history_primary(db, key, owner, descriptor.identity, assertion_byte_budget=1)
+            prepare_history_primary(db, key, owner, descriptor.identity, metadata_byte_budget=1)
         assert db.execute("SELECT count(*) FROM discovery_history_primary_bindings").fetchone() == (
             0,
         )
         page = prepare_history_primary(
-            db, key, owner, descriptor.identity, assertion_byte_budget=65536
+            db, key, owner, descriptor.identity, metadata_byte_budget=65536
         )
         with write(db):
             apply_history_primary(db, key, owner, page)
@@ -265,7 +263,7 @@ def test_changed_primary_inputs_or_exact_preparation_cannot_register_support(tmp
     with primary_work(tmp_path / "work.sqlite") as values:
         db, key, owner, descriptor, *_ = values
         page = prepare_history_primary(
-            db, key, owner, descriptor.identity, assertion_byte_budget=65536
+            db, key, owner, descriptor.identity, metadata_byte_budget=65536
         )
         if fault == "descriptor":
             db.execute(
@@ -301,7 +299,7 @@ def test_closed_native_source_cannot_commit_a_prepared_primary(tmp_path):
     with primary_work(tmp_path / "work.sqlite") as values:
         db, key, owner, descriptor, *_ = values
         page = prepare_history_primary(
-            db, key, owner, descriptor.identity, assertion_byte_budget=65536
+            db, key, owner, descriptor.identity, metadata_byte_budget=65536
         )
         owner.source.close()
         with pytest.raises(StaleJournalTask):
@@ -319,7 +317,7 @@ def test_primary_registration_rolls_back_then_retries_exact_support(tmp_path):
     with primary_work(tmp_path / "work.sqlite") as values:
         db, key, owner, descriptor, *_ = values
         page = prepare_history_primary(
-            db, key, owner, descriptor.identity, assertion_byte_budget=65536
+            db, key, owner, descriptor.identity, metadata_byte_budget=65536
         )
         with pytest.raises(Interrupted):
             with write(db):
@@ -341,10 +339,10 @@ def test_primary_preparation_and_application_use_the_required_transaction_bounda
         with write(db):
             with pytest.raises(ValueError, match="no active transaction"):
                 prepare_history_primary(
-                    db, key, owner, descriptor.identity, assertion_byte_budget=65536
+                    db, key, owner, descriptor.identity, metadata_byte_budget=65536
                 )
         page = prepare_history_primary(
-            db, key, owner, descriptor.identity, assertion_byte_budget=65536
+            db, key, owner, descriptor.identity, metadata_byte_budget=65536
         )
         with pytest.raises(ValueError, match="owner-managed transaction"):
             apply_history_primary(db, key, owner, page)
@@ -378,9 +376,9 @@ def growth_sample(operation, dimensions, metrics):
 def observe_primary(db, owner, frame_type, monkeypatch):
     recorder = RecordedConnection(db)
     metrics = recorder.metrics
-    actual_delivery = owner.corpus.selected_delivery_occurrence
+    actual_delivery = owner.corpus.selected_delivery_support
     actual_assertion = owner.corpus.historical_assertion
-    actual_reference = owner.source.reference_for_assertion
+    actual_reference = owner.source.reference_anchor
 
     def delivery(**arguments):
         metrics["native_delivery_calls"] = metrics.get("native_delivery_calls", 0) + 1
@@ -399,9 +397,9 @@ def observe_primary(db, owner, frame_type, monkeypatch):
         raise AssertionError("primary work fetched an original source frame")
 
     with monkeypatch.context() as patch:
-        patch.setattr(owner.corpus, "selected_delivery_occurrence", delivery)
+        patch.setattr(owner.corpus, "selected_delivery_support", delivery)
         patch.setattr(owner.corpus, "historical_assertion", assertion)
-        patch.setattr(owner.source, "reference_for_assertion", reference)
+        patch.setattr(owner.source, "reference_anchor", reference)
         patch.setattr(frame_type, "__getitem__", frame)
         patch.setattr(frame_type, "__iter__", frame)
         yield recorder
@@ -421,7 +419,7 @@ def test_actual_primary_preparation_uses_native_point_policy_and_fixed_core_read
         for count in (0, 1):
             with observe_primary(db, owner, frame_type, monkeypatch) as observer:
                 page = prepare_history_primary(
-                    observer, key, owner, descriptor.identity, assertion_byte_budget=65536
+                    observer, key, owner, descriptor.identity, metadata_byte_budget=65536
                 )
             samples.append(
                 growth_sample(
@@ -445,7 +443,7 @@ def test_actual_primary_commit_writes_only_original_references_without_source_ha
     with primary_work(tmp_path / "measured.sqlite") as values:
         db, key, owner, descriptor, _, _, frame_type = values
         page = prepare_history_primary(
-            db, key, owner, descriptor.identity, assertion_byte_budget=65536
+            db, key, owner, descriptor.identity, metadata_byte_budget=65536
         )
 
         def no_source_hash(*_arguments):
