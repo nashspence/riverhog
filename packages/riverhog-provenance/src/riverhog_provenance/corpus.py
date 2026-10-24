@@ -27,6 +27,7 @@ from riverhog_growth_contracts import (
 from riverhog_provenance_contracts import canonical_document, require_canonical_uuid_urn
 
 from .common import fingerprint
+from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
 from .graph import iter_assertions
 from .history import _external_references
@@ -242,12 +243,18 @@ def _source_ingest_declaration() -> Declaration:
     return Declaration(
         id="riverhog-provenance.corpus-source-extension.growth/v1",
         authority="riverhog-provenance",
-        subjects=("riverhog_provenance.corpus.CanonicalCorpusValidator._add_source",),
+        subjects=(
+            "riverhog_provenance.corpus.CanonicalCorpusValidator._add_source",
+            "riverhog_provenance.corpus.CanonicalCorpusValidator.advance_source",
+        ),
         scope="native-corpus-raw-source-extension-after-exact-shared-prefix-proof",
         starts_at="receive one independently accepted immutable Native snapshot",
         ends_at="record only its missing complete source frames and the last atomic raw terminal",
         dimensions=(
-            Dimension("new_frames", COUNT, "Source frames beyond the completed shared prefix."),
+            Dimension("new_frames", COUNT, "Missing source frames admitted by this call."),
+            Dimension(
+                "frame_budget", COUNT, "Maximum bounded Native entry atoms admitted by the call."
+            ),
             Dimension("new_assertions", COUNT, "Raw assertions in those source frames."),
             Dimension("new_references", COUNT, "Raw external references in those source frames."),
             Dimension("new_retractions", COUNT, "Original assertion retirements in new frames."),
@@ -255,6 +262,26 @@ def _source_ingest_declaration() -> Declaration:
             Dimension("entry_octets", OCTETS, "Original JSON octets in the newly loaded frames."),
         ),
         bounds=(
+            Bound(
+                "admitted_frames",
+                COUNT,
+                "upper",
+                dimension("frame_budget"),
+                "Every actual Native source frame load is charged to the caller's quantum.",
+            ),
+            Bound(
+                "admitted_frame_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        dimension("frame_budget"),
+                        count(PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 2, OCTETS_PER_COUNT),
+                    ),
+                ),
+                "Each admitted Native JSON atom retains the existing wire envelope plus RS/LF.",
+            ),
             Bound(
                 "source_frame_reads",
                 COUNT,
@@ -297,9 +324,9 @@ def _source_ingest_declaration() -> Declaration:
             "The caller retains admission and current authority for the selected source union.",
         ),
         invariants=(
-            "An entry's raw assertions/references/fork and source continuation advance atomically.",
+            "An entry's assertions, retirements, references, fork and continuation are atomic.",
             "Retry unfinished entries while retaining each completed exact source terminal.",
-            "Each selected snapshot still contributes its own effective semantic obligations.",
+            "Raw reuse never discharges the selected effective-snapshot semantic obligations.",
             "A shared prefix never makes a documentary dependency an effective selected root.",
             "Source identity/domain conflicts and divergent writers fail closed.",
         ),
@@ -441,6 +468,17 @@ def _historical_assertion_declaration() -> Declaration:
 
 
 @dataclass(frozen=True, slots=True)
+class CorpusSourceProgress:
+    """Raw-source completion for one exact immutable Native input."""
+
+    journal_id: str
+    source_sha256: str
+    source_octets: int
+    accepted_frames: int
+    complete: bool
+
+
+@dataclass(frozen=True, slots=True)
 class HistoricalAssertion:
     """One effective assertion with its original documentary address.
 
@@ -517,8 +555,12 @@ class CanonicalCorpusValidator:
         )
 
     @declare_growth(_source_ingest_declaration(), delegates=(("anchor", JournalSummary.anchor_at),))
-    def _add_source(self, summary: JournalSummary) -> None:
+    def _add_source(
+        self, summary: JournalSummary, *, frame_budget: int | None = None
+    ) -> CorpusSourceProgress:
         self._require_open()
+        if summary._store is None:
+            raise RuntimeError("corpus sources require an owned native journal summary")
         frame_count = len(summary.frames)
         self._identity(summary.journal_id, "journal", b"")
         extent = self._source_read(
@@ -541,7 +583,8 @@ class CanonicalCorpusValidator:
                     "divergent writers reused the same journal identity"
                 )
             first = through + 1
-        for sequence in range(first, frame_count):
+        stop = frame_count if frame_budget is None else min(frame_count, first + frame_budget)
+        for sequence in range(first, stop):
             frame = summary.frames[sequence]
             document = frame.document
             anchor = summary.anchor_at(sequence)
@@ -623,6 +666,29 @@ class CanonicalCorpusValidator:
                 raise
             else:
                 self._source_write("RELEASE corpus_source_entry")
+        return CorpusSourceProgress(
+            summary.journal_id,
+            summary.journal_sha256,
+            summary.journal_bytes,
+            stop,
+            stop == frame_count,
+        )
+
+    @declare_growth(_source_ingest_declaration(), delegates=(("anchor", JournalSummary.anchor_at),))
+    def advance_source(
+        self, summary: JournalSummary, *, frame_budget: int = 1
+    ) -> CorpusSourceProgress:
+        """Advance raw indexing by at most the caller's bounded Native entry atoms.
+
+        Each atom has Native's existing entry wire bound. Completed exact
+        prefixes survive interruption within this corpus workspace; a fresh call
+        proves overlap before loading any missing frame. This does not register
+        selected effective snapshots or accept global corpus/history semantics.
+        """
+        self._require_open()
+        if type(frame_budget) is not int or frame_budget < 1:
+            raise ValueError("corpus source frame budget must be positive")
+        return self._add_source(summary, frame_budget=frame_budget)
 
     @declare_growth(_historical_assertion_declaration())
     def historical_assertion(
@@ -920,4 +986,9 @@ def validate_canonical_corpus(summaries: Iterable[JournalSummary]) -> None:
         validator.validate()
 
 
-__all__ = ["CanonicalCorpusValidator", "HistoricalAssertion", "validate_canonical_corpus"]
+__all__ = [
+    "CanonicalCorpusValidator",
+    "CorpusSourceProgress",
+    "HistoricalAssertion",
+    "validate_canonical_corpus",
+]

@@ -78,8 +78,9 @@ def test_missing_suffix_only_and_older_prefixes_retain_exact_source_rows(
         corpus.validate()
 
 
+@pytest.mark.parametrize("method", ["add", "advance_source"])
 def test_divergent_writers_reject_before_any_source_payload_is_loaded(
-    journal, who, catalog, monkeypatch
+    journal, who, catalog, monkeypatch, method
 ):
     with validate_journal(journal, catalog=catalog) as first:
         artifact = first.graph["artifacts"][0]["id"]
@@ -111,7 +112,7 @@ def test_divergent_writers_reject_before_any_source_payload_is_loaded(
         before = corpus._db.total_changes
         with source_reads(monkeypatch) as reads:
             with pytest.raises(ProvenanceValidationError, match="divergent writers"):
-                corpus.add(right)
+                getattr(corpus, method)(right)
         assert reads == []
         assert corpus._db.total_changes == before
 
@@ -179,7 +180,8 @@ def test_interrupted_suffix_restarts_after_last_complete_source_entry(
         corpus.validate()
 
 
-def test_closed_source_is_not_accepted_by_completed_prefix_reuse(journal, catalog):
+@pytest.mark.parametrize("method", ["add", "advance_source"])
+def test_closed_source_is_not_accepted_by_completed_prefix_reuse(journal, catalog, method):
     with (
         validate_journal(journal, catalog=catalog) as current,
         CanonicalCorpusValidator() as corpus,
@@ -189,7 +191,7 @@ def test_closed_source_is_not_accepted_by_completed_prefix_reuse(journal, catalo
         reader.close()
         before = corpus._db.total_changes
         with pytest.raises(RuntimeError, match="closed"):
-            corpus.add(reader)
+            getattr(corpus, method)(reader)
         assert corpus._db.total_changes == before
 
 
@@ -271,8 +273,9 @@ class SourceObserver:
         return cursor
 
 
-def measure(corpus, current, first, monkeypatch):
-    frames = list(current.frames)[first:]
+def measure(corpus, current, first, monkeypatch, *, frame_budget=None, advance=False):
+    stop = len(current.frames) if frame_budget is None else first + frame_budget
+    frames = list(current.frames)[first:stop]
     assertions = references = retractions = 0
     for frame in frames:
         retractions += len(frame.document["body"].get("retracts", ()))
@@ -290,6 +293,7 @@ def measure(corpus, current, first, monkeypatch):
                 stack.extend(value)
     dimensions = {
         "new_frames": len(frames),
+        "frame_budget": len(current.frames) if frame_budget is None else frame_budget,
         "new_assertions": assertions,
         "new_references": references,
         "new_retractions": retractions,
@@ -315,12 +319,21 @@ def measure(corpus, current, first, monkeypatch):
             patch.setattr(corpus, "_db", observer)
             patch.setattr(journal_owner.JournalSummary, "anchor_at", anchor)
             patch.setattr(journal_owner.JournalFrame, "sha256", property(hash_entry))
-            corpus._add_source(current)
+            if advance:
+                corpus.advance_source(current, frame_budget=frame_budget)
+            else:
+                corpus._add_source(current, frame_budget=frame_budget)
+    observer.metrics["admitted_frames"] = len(reads)
+    observer.metrics["admitted_frame_octets"] = sum(size for _, size in reads)
     observer.metrics["source_frame_reads"] = len(reads)
     observer.metrics["source_frame_octets"] = sum(size for _, size in reads)
     assert all(cursor.closed for cursor in observer.cursors)
     return record(
-        growth_binding(owner.CanonicalCorpusValidator._add_source),
+        growth_binding(
+            owner.CanonicalCorpusValidator.advance_source
+            if advance
+            else owner.CanonicalCorpusValidator._add_source
+        ),
         dimensions,
         observer.metrics,
         {"anchor": children},
@@ -348,4 +361,115 @@ def test_actual_corpus_source_extension_visits_only_missing_original_frames(
             with validate_journal(initial, catalog=catalog) as shorter:
                 samples.append(measure(corpus, shorter, 1, monkeypatch))
             corpus.validate()
+    record_property("growth_samples", samples)
+
+
+def test_bounded_source_advancement_stops_at_the_admitted_frame_budget(
+    journal, catalog, monkeypatch
+):
+    raw = history(journal, 17, catalog)
+    with validate_journal(raw, catalog=catalog) as current, CanonicalCorpusValidator() as corpus:
+        for completed in range(1, 18):
+            with source_reads(monkeypatch) as reads:
+                progress = corpus.advance_source(current, frame_budget=1)
+            assert [position for position, _ in reads] == [completed - 1]
+            assert progress.journal_id == current.journal_id
+            assert progress.source_sha256 == current.journal_sha256
+            assert progress.source_octets == current.journal_bytes
+            assert progress.accepted_frames == completed
+            assert progress.complete is (completed == 17)
+        with source_reads(monkeypatch) as reads:
+            assert corpus.advance_source(current, frame_budget=1) == progress
+        assert reads == []
+        assert corpus._db.execute("SELECT count(*) FROM entries").fetchone() == (17,)
+        first = current.frames[0].encoded
+        with validate_journal(first, catalog=catalog) as shorter:
+            with source_reads(monkeypatch) as reads:
+                selected = corpus.advance_source(shorter, frame_budget=1)
+            assert reads == []
+            assert selected.complete and selected.accepted_frames == 1
+            assert selected.source_sha256 == shorter.journal_sha256
+            assert selected.source_sha256 != progress.source_sha256
+            assert corpus._db.execute(
+                "SELECT sequence FROM source_extents WHERE journal=?", (current.journal_id,)
+            ).fetchone() == ("16",)
+        # Raw advancement does not discharge selected effective-graph or global obligations.
+        corpus.add(current)
+        corpus.validate()
+
+
+@pytest.mark.parametrize("budget", [0, -1, True, "1", None])
+def test_source_frame_budget_is_checked_before_any_source_or_corpus_change(
+    journal, catalog, budget
+):
+    with (
+        validate_journal(journal, catalog=catalog) as current,
+        CanonicalCorpusValidator() as corpus,
+    ):
+        before = corpus._db.total_changes
+        with pytest.raises(ValueError, match="frame budget"):
+            corpus.advance_source(current, frame_budget=budget)
+        assert corpus._db.total_changes == before
+
+
+def test_interrupted_bounded_source_resumes_at_only_the_unfinished_entry(
+    journal, catalog, monkeypatch
+):
+    class Interrupted(BaseException):
+        pass
+
+    raw = history(journal, 17, catalog)
+    with validate_journal(raw, catalog=catalog) as current, CanonicalCorpusValidator() as corpus:
+        identity = corpus._identity
+        stop_id = current.anchor_at(4)["through"]["entry_id"]
+
+        def interrupt(key, domain, value):
+            if domain == "entry" and key == stop_id:
+                raise Interrupted()
+            return identity(key, domain, value)
+
+        with monkeypatch.context() as patch:
+            patch.setattr(corpus, "_identity", interrupt)
+            with pytest.raises(Interrupted):
+                corpus.advance_source(current, frame_budget=17)
+        with source_reads(monkeypatch) as reads:
+            progress = corpus.advance_source(current, frame_budget=1)
+        assert [position for position, _ in reads] == [4]
+        assert progress.accepted_frames == 5
+        assert not progress.complete
+        assert corpus.advance_source(current, frame_budget=12).complete
+
+
+@pytest.mark.growth_witness(
+    "native-bounded-corpus-source-extension-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance.corpus.CanonicalCorpusValidator.advance_source",
+)
+def test_actual_bounded_source_advancement_preserves_entry_and_payload_budgets(
+    journal, catalog, monkeypatch, record_property
+):
+    samples = []
+    for count, budget in ((1, 1), (17, 1), (129, 1), (129, 17)):
+        raw = history(journal, count, catalog)
+        with (
+            validate_journal(raw, catalog=catalog) as current,
+            CanonicalCorpusValidator() as corpus,
+        ):
+            samples.append(
+                measure(corpus, current, 0, monkeypatch, frame_budget=budget, advance=True)
+            )
+            samples.append(
+                measure(
+                    corpus,
+                    current,
+                    min(count, budget),
+                    monkeypatch,
+                    frame_budget=budget,
+                    advance=True,
+                )
+            )
+            corpus.add(current)
+            samples.append(
+                measure(corpus, current, count, monkeypatch, frame_budget=budget, advance=True)
+            )
     record_property("growth_samples", samples)
