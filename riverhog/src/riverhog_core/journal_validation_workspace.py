@@ -75,10 +75,10 @@ def _lease_declaration() -> Declaration:
                 "stat_calls",
                 COUNT,
                 "upper",
-                count(5),
+                count(6),
                 (
-                    "Four exact descriptor checks and an optional "
-                    "database-existence check; no payload read."
+                    "Four exact descriptor checks and at most two "
+                    "Native database-existence checks; no payload read."
                 ),
             ),
             Bound(
@@ -332,21 +332,22 @@ def lease_journal_validation_workspace(
                     if not create:
                         raise
                     # Only interrupted initial creation can lack a lease.
-                    # An existing database is an explicit storage-loss case.
-                    try:
-                        os.stat("snapshot.sqlite3", dir_fd=owner, follow_symlinks=False)
-                    except FileNotFoundError:
-                        lease = os.open(
-                            ".lease",
-                            os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
-                            0o600,
-                            dir_fd=owner,
-                        )
-                        resources.callback(os.close, lease)
-                    else:
+                    # Either retained Native database establishes existing owned state.
+                    for state_name in ("snapshot.sqlite3", "corpus.sqlite3"):
+                        try:
+                            os.stat(state_name, dir_fd=owner, follow_symlinks=False)
+                        except FileNotFoundError:
+                            continue
                         raise LostJournalValidationWorkspace(
                             "retained validation lease was lost"
                         ) from None
+                    lease = os.open(
+                        ".lease",
+                        os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                        0o600,
+                        dir_fd=owner,
+                    )
+                    resources.callback(os.close, lease)
                 else:
                     resources.callback(os.close, lease)
                 _private_file(lease)

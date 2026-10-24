@@ -157,7 +157,17 @@ def private_file(path, payload=b""):
         os.close(descriptor)
 
 
-def setup(root, *, depth=1, siblings=0, payload=0, selected=True, lease=True, coordinator=True):
+def setup(
+    root,
+    *,
+    depth=1,
+    siblings=0,
+    payload=0,
+    selected=True,
+    lease=True,
+    coordinator=True,
+    state_name="snapshot.sqlite3",
+):
     for number in range(depth - 1):
         root = root / f"d{number}"
     root.mkdir(mode=0o700, parents=True)
@@ -166,7 +176,7 @@ def setup(root, *, depth=1, siblings=0, payload=0, selected=True, lease=True, co
         root / ".coordinator",
         root / ONE,
         root / ONE / ".lease",
-        root / ONE / "snapshot.sqlite3",
+        root / ONE / state_name,
     ]
     if coordinator:
         private_file(root / ".coordinator")
@@ -175,7 +185,7 @@ def setup(root, *, depth=1, siblings=0, payload=0, selected=True, lease=True, co
         if lease:
             private_file(root / ONE / ".lease")
         if payload:
-            private_file(root / ONE / "snapshot.sqlite3", b"x" * payload)
+            private_file(root / ONE / state_name, b"x" * payload)
     for number in range(siblings):
         path = root / f"{number:032x}"
         path.mkdir(mode=0o700)
@@ -193,7 +203,7 @@ def snapshot(case):
             continue
         digest = (
             hashlib.sha256(path.read_bytes()).hexdigest()
-            if path.name == "snapshot.sqlite3" and stat.S_ISREG(value.st_mode)
+            if path.name in {"snapshot.sqlite3", "corpus.sqlite3"} and stat.S_ISREG(value.st_mode)
             else None
         )
         records.append(
@@ -327,6 +337,7 @@ def lease_samples(root, *, samples, large=True):
         ("stale", {"selected": False}),
         ("empty", {"lease": False}),
         ("lost", {"lease": False, "payload": 65537}),
+        ("lost-corpus", {"lease": False, "payload": 65537, "state_name": "corpus.sqlite3"}),
         ("coordinator", {"coordinator": False}),
         ("absent", {"selected": False}),
     ):
@@ -354,7 +365,7 @@ def lease_samples(root, *, samples, large=True):
             )
             assert (case.root / ONE / ".lease").is_file()
             continue
-        elif name == "lost":
+        elif name in {"lost", "lost-corpus"}:
             samples.append(
                 measure(
                     case.root,

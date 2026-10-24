@@ -76,14 +76,17 @@ def test_missing_retained_directory_is_not_recreated(tmp_path):
     assert not root.exists()
 
 
-def test_interrupted_empty_creation_can_finish_but_a_lost_database_lease_cannot(tmp_path):
+@pytest.mark.parametrize("state_name", ["snapshot.sqlite3", "corpus.sqlite3"])
+def test_interrupted_empty_creation_can_finish_but_a_lost_database_lease_cannot(
+    tmp_path, state_name
+):
     root = tmp_path / "retained"
     directory = root / ONE
     directory.mkdir(parents=True, mode=0o700)
     root.chmod(0o700)
     with lease_journal_validation_workspace(root, ONE, create=True) as resumed:
         assert resumed == directory
-    (directory / "snapshot.sqlite3").write_bytes(b"retained fixture")
+    (directory / state_name).write_bytes(b"retained fixture")
     (directory / ".lease").unlink()
     with pytest.raises(LostJournalValidationWorkspace, match="lease was lost"):
         with lease_journal_validation_workspace(root, ONE, create=True):
@@ -296,3 +299,78 @@ def test_shared_readers_never_create_a_workspace(tmp_path):
         with lease_journal_validation_workspace(root, ONE, create=True, shared=True):
             pytest.fail("a reader created a workspace")
     assert not root.exists()
+
+
+def test_retained_corpus_holds_the_real_kernel_lease_until_native_close(tmp_path):
+    from contextlib import ExitStack
+
+    from riverhog_provenance import CorpusReplayBinding, RetainedCorpusValidator
+    from riverhog_provenance_contracts import ContractCatalog
+
+    catalog = ContractCatalog()
+
+    class EmptyCorpusSource:
+        binding = CorpusReplayBinding(
+            attempt_id=ONE,
+            directory_id="owned-corpus",
+            source_manifest_sha256="1" * 64,
+            source_count=0,
+            selection_manifest_sha256="2" * 64,
+            selection_count=0,
+            policy_sha256="3" * 64,
+            catalog_sha256=catalog.checkpoint_sha256(),
+        )
+
+        def verify_current(self):
+            return True
+
+        def admit_source(self, anchor):
+            return False
+
+        def admit_selection(self, anchor):
+            return False
+
+    root = tmp_path / "retained"
+    resources = ExitStack()
+    try:
+        directory = resources.enter_context(
+            lease_journal_validation_workspace(root, ONE, create=True)
+        )
+        corpus = RetainedCorpusValidator.open_retained(
+            directory,
+            EmptyCorpusSource(),
+            worker_epoch=0,
+            create=True,
+            catalog=catalog,
+            on_storage_close=resources.close,
+        )
+    except BaseException:
+        resources.close()
+        raise
+    code = """import sys
+from pathlib import Path
+from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
+with lease_journal_validation_workspace(Path(sys.argv[1]),sys.argv[2]) as directory:
+ assert (directory is None)==(sys.argv[3]=="busy")
+"""
+    try:
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(root), ONE, "busy"], capture_output=True
+        )
+        assert result.returncode == 0, result.stderr.decode()
+        assert corpus._db.execute("SELECT sources,selections FROM corpus_workspace").fetchone() == (
+            "0",
+            "0",
+        )
+    finally:
+        corpus.close()
+    result = subprocess.run(
+        [sys.executable, "-c", code, str(root), ONE, "free"], capture_output=True
+    )
+    assert result.returncode == 0, result.stderr.decode()
+    assert (directory / "corpus.sqlite3").is_file()
+    (directory / ".lease").unlink()
+    with pytest.raises(LostJournalValidationWorkspace, match="lease was lost"):
+        with lease_journal_validation_workspace(root, ONE, create=True):
+            pytest.fail("lost corpus lease was recreated")
+    assert not (directory / ".lease").exists()
