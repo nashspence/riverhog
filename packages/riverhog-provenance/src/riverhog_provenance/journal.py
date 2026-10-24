@@ -28,6 +28,7 @@ from riverhog_provenance_contracts import (
     ENTRY_SCHEMA,
     PROFILE,
     ContractCatalog,
+    ExternalReference,
     canonical_document,
     decode_document,
     require_canonical_uuid_urn,
@@ -329,6 +330,102 @@ def _source_anchor_declaration() -> Declaration:
     )
 
 
+def _source_reference_declaration() -> Declaration:
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    return Declaration(
+        id="riverhog-provenance.frozen-source-reference.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.journal.JournalSummary.reference_anchor",),
+        scope="frozen-native-exact-documentary-reference-selection",
+        starts_at="receive one complete external reference and an owned accepted frozen source",
+        ends_at="return its exact original prefix anchor without loading assertion or frame bodies",
+        dimensions=(
+            Dimension("indexed_assertions", COUNT, "All accepted active and retired assertions."),
+            Dimension("assertion_key_octets", OCTETS, "The complete canonical assertion UUID URN."),
+            Dimension("metadata_octets", OCTETS, "Complete sequence, object UUID and type fields."),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements", COUNT, "equal", count(1), "One exact assertion primary-key seek."
+            ),
+            Bound("returned_rows", COUNT, "equal", count(1), "One original documentary address."),
+            Bound("closed_cursors", COUNT, "equal", count(1), "Close before the anchor delegate."),
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "equal",
+                Expression("dimension", name="assertion_key_octets"),
+                "The full assertion identity is bound once.",
+            ),
+            Bound(
+                "metadata_octets",
+                OCTETS,
+                "equal",
+                Expression("dimension", name="metadata_octets"),
+                "No assertion payload or effective-object projection is fetched.",
+            ),
+            Bound(
+                "native_anchor_calls",
+                COUNT,
+                "equal",
+                count(1),
+                "The existing source-header delegate supplies the exact original prefix.",
+            ),
+            Bound(
+                "source_read_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "Neither the reference lookup nor its delegate reads journal payload.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        count(256),
+                        Expression(
+                            "log2_ceil",
+                            terms=(
+                                Expression(
+                                    "sum",
+                                    terms=(
+                                        Expression("dimension", name="indexed_assertions"),
+                                        count(2),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "One maintained SQLite B-tree point read, excluding the anchor delegate.",
+            ),
+        ),
+        conditions=(
+            "The source owns an open frozen independently validated Native projection.",
+            "The caller retains exact archive/source admission and current access checks.",
+            "The external reference has the existing flat canonical Native schema.",
+        ),
+        invariants=(
+            "Journal, assertion, object, type and every original entry coordinate match exactly.",
+            "Retired documentary assertions remain addressable without effective attribution.",
+            "The exact original prefix is returned, never the current tail or another referent.",
+            "All lookup cursors close before the Native source-anchor delegate executes.",
+        ),
+        limitations=(
+            "Direct metrics exclude the separately witnessed anchor delegate and its padding.",
+            "Reference schema validation uses existing bounded identity/header field shapes.",
+            "This supplies documentary address proof, not corpus or effective-history validity.",
+            "Source validation, custody, current authority and filesystem lifetime are separate.",
+            "VM constants depend on SQLite; I/O, lock waits and elapsed time are observations.",
+        ),
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class JournalSummary:
     journal_id: str
@@ -459,6 +556,43 @@ class JournalSummary:
             "prefix_sha256": digest.hexdigest(),
             "prefix_bytes": str(digest.total_bytes),
         }
+
+    @declare_growth(_source_reference_declaration(), delegates=(("anchor", anchor_at),))
+    def reference_anchor(self, reference: Mapping[str, Any]) -> dict[str, Any]:
+        """Resolve an exact documentary assertion without replaying its source.
+
+        Retraction does not erase a documentary address. This method does not
+        attribute the assertion to an effective historical graph, accept a
+        corpus, or replace the caller's source admission/current access checks.
+        """
+        from .journal_store import InvalidJournalWorkspace
+
+        if self._store is None:
+            raise RuntimeError("source references require an owned native journal summary")
+        self._store.require_open()
+        selected = ExternalReference.model_validate(reference).model_dump(mode="json")
+        if selected["journal_id"] != self.journal_id:
+            raise ProvenanceValidationError("foreign reference names another source journal")
+        original = self._store._assertion_origin(selected["assertion_id"])
+        if original is None:
+            raise ProvenanceValidationError("required foreign entry or assertion is absent")
+        sequence, object_id, kind = original
+        try:
+            ordinal = int(sequence)
+            if str(ordinal) != sequence or not 0 <= ordinal < len(self.frames):
+                raise ValueError("invalid original source position")
+        except (ValueError, TypeError) as error:
+            raise InvalidJournalWorkspace(
+                "accepted assertion source position is corrupt"
+            ) from error
+        anchor = self.anchor_at(ordinal)
+        if (
+            anchor["through"] != selected["entry"]
+            or object_id != selected["object_id"]
+            or kind != selected["object_type"]
+        ):
+            raise ProvenanceValidationError("foreign reference differs from its exact assertion")
+        return anchor
 
     @property
     def tail(self) -> JournalFrame:

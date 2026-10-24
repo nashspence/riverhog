@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from typing import Any, cast
@@ -222,6 +222,14 @@ class QualifiedJournalSource:
         if type(sequence) is not int or not 0 <= sequence < self.entry_count:
             raise StaleJournalTask("snapshot exceeds the admitted exact source prefix")
         return self._summary.anchor_at(sequence)
+
+    def reference_anchor(self, reference: Mapping[str, Any]) -> dict[str, Any]:
+        """Resolve a documentary dependency inside this exact admitted source."""
+        self.check_open()
+        anchor = self._summary.reference_anchor(reference)
+        if int(anchor["through"]["sequence"]) >= self.entry_count:
+            raise StaleJournalTask("dependency exceeds the admitted exact source prefix")
+        return anchor
 
     def entry(self, sequence: int) -> _Entry:
         self.check_open()

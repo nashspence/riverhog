@@ -1308,6 +1308,20 @@ class JournalStore:
             raise InvalidJournalWorkspace("accepted journal source header is missing")
         return cast(tuple[bytes, str], row)
 
+    def _assertion_origin(self, assertion_id: str) -> tuple[str, str, str] | None:
+        """Detach original documentary fields, including retired assertions."""
+        self.require_open()
+        if not self._frozen:
+            raise RuntimeError("source references require a frozen journal summary")
+        with closing(
+            self.db.execute(
+                "SELECT sequence, object_id, type FROM assertions WHERE assertion_id = ?",
+                (assertion_id,),
+            )
+        ) as rows:
+            row = rows.fetchone()
+        return cast(tuple[str, str, str] | None, row)
+
     @property
     def origins(self) -> Mapping[str, dict[str, str]]:
         return _Origins(self)
