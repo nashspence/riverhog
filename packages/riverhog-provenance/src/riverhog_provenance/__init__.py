@@ -22,6 +22,12 @@ from .corpus import (
     SelectedDeliverySupport,
     validate_canonical_corpus,
 )
+from .corpus_workspace import (
+    CorpusReplayBinding,
+    CorpusValidationSource,
+    RetainedCorpusValidator,
+    StaleCorpusWorkspace,
+)
 from .delivery import selected_delivery_occurrence, verify_delivery
 from .errors import (
     ConcurrentJournalChangeError,
@@ -103,6 +109,10 @@ from .segmented_archive import (
 from .sources import BytesSource, SegmentSource, StreamSource
 
 __all__ = [
+    "CorpusReplayBinding",
+    "CorpusValidationSource",
+    "RetainedCorpusValidator",
+    "StaleCorpusWorkspace",
     "PROVENANCE_ENTRY_SCHEMA",
     "PROVENANCE_PROFILE",
     "CanonicalCorpusValidator",

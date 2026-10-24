@@ -343,7 +343,7 @@ def _source_ingest_declaration(*, bounded: bool = False) -> Declaration:
             "This profile counts payload reads, entry hashing and corpus SQL statement visits.",
             "Canonical encoding, index/metadata bytes and storage-engine work require composition.",
             "Effective snapshot traversal, corpus references, comparisons and cycles are separate.",
-            "The corpus workspace lifetime is unchanged; this is not durable build restart proof.",
+            "Source indexing does not admit retained ownership or durable parent progress.",
         ),
     )
 
@@ -477,7 +477,7 @@ def _historical_assertion_declaration() -> Declaration:
         limitations=(
             "This bounds point source attribution, not whole historical semantic validation.",
             "Source population, global corpus validity, custody and current access are separate.",
-            "The temporary corpus lifetime does not establish durable build restart.",
+            "Retained workspace admission and durable parent progress require composition.",
             "VM constants depend on SQLite; physical I/O and elapsed time remain observations.",
         ),
     )
@@ -642,7 +642,7 @@ def _selection_declaration(phase: str) -> Declaration:
             "Interrupted registration retries one atom; prior cursor advances remain intact.",
         ),
         limitations=(
-            "The current workspace and continuation are temporary, not durable restart proof.",
+            "Retained workspace admission and durable parent checkpoints require composition.",
             "SQL visits and payload bytes exclude storage I/O and metadata-width composition.",
             "Foreign references, comparisons and acyclicity have separate completion work.",
             "Added inputs in a later whole-corpus validation start a new selection attempt.",
@@ -696,7 +696,7 @@ def _dependency_declaration() -> Declaration:
         ),
         limitations=(
             "Completion covers dependencies, not cycle checking or whole-corpus acceptance.",
-            "The workspace and continuation are temporary, not durable restart proof.",
+            "Retained workspace admission and durable parent checkpoints require composition.",
             "SQL visits and fetched payload bytes exclude storage I/O and metadata widths.",
             "A later explicit whole-corpus validation is a new fixed-selection attempt.",
             "Completeness, member relevance, current access and publication remain separate.",
@@ -765,7 +765,7 @@ def _order_step_declaration() -> Declaration:
         ),
         limitations=(
             "A completed kind does not complete the other kind or grant current access.",
-            "The workspace is temporary, without retained reopening or durable worker binding.",
+            "Retained admission and durable worker binding have separate lifecycle costs.",
             "This bounds SQL visits and fetched payload; complete ordering owns physical growth.",
         ),
     )
@@ -854,6 +854,24 @@ class CanonicalCorpusValidator:
     """
 
     def __init__(self) -> None:
+        self._initialize_state()
+        self._scratch: TemporaryDirectory[str] | None = TemporaryDirectory(
+            prefix="riverhog-canonical-corpus-"
+        )
+        self._directory = Path(self._scratch.name)
+        self._db = sqlite3.connect(self._directory / "corpus.sqlite3")
+        self._db.execute("PRAGMA cache_size = -512")
+        self._initialize_schema()
+
+    @classmethod
+    def _from_workspace(cls, db: sqlite3.Connection, directory: Path) -> Self:
+        result = cls.__new__(cls)
+        result._initialize_state()
+        result._scratch = None
+        result._directory, result._db = directory, db
+        return result
+
+    def _initialize_state(self) -> None:
         self._closed = False
         self._semantic_phase = "open"
         self._semantic_after: tuple[str, str] | None = None
@@ -863,10 +881,9 @@ class CanonicalCorpusValidator:
         self._dependency_pending: tuple[Any, ...] | None = None
         self._dependency_checked = 0
         self._orders: dict[str, _CorpusOrder] = {}
-        self._scratch = TemporaryDirectory(prefix="riverhog-canonical-corpus-")
-        self._db = sqlite3.connect(Path(self._scratch.name) / "corpus.sqlite3")
-        self._db.execute("PRAGMA cache_size = -512")
-        self._db.executescript(
+
+    def _initialize_schema(self) -> None:
+        schema = (
             "CREATE TABLE identities (id TEXT PRIMARY KEY, domain TEXT, value BLOB);"
             "CREATE TABLE entries (journal TEXT, sequence TEXT, reference BLOB, prefix TEXT, "
             "bytes TEXT, PRIMARY KEY(journal, sequence));"
@@ -893,6 +910,9 @@ class CanonicalCorpusValidator:
             "CREATE INDEX incoming ON edges(kind, target);"
             "CREATE TABLE source_extents (journal TEXT PRIMARY KEY, sequence TEXT NOT NULL);"
         )
+        for statement in schema.split(";"):
+            if statement:
+                self._source_write(statement)
 
     def _require_open(self) -> None:
         if self._closed:
@@ -907,7 +927,8 @@ class CanonicalCorpusValidator:
         self._reset_dependencies()
         self._close_orders()
         self._db.close()
-        self._scratch.cleanup()
+        if self._scratch is not None:
+            self._scratch.cleanup()
 
     def _source_read(self, query: str, parameters: tuple[object, ...]) -> Any:
         with closing(self._db.execute(query, parameters)) as rows:
@@ -1517,7 +1538,7 @@ class CanonicalCorpusValidator:
         if self._semantic_phase != "complete" or self._dependency_phase != "complete":
             raise RuntimeError("corpus ordering requires complete semantics and dependencies")
         if kind not in self._orders:
-            self._orders[kind] = _CorpusOrder(self._db, self._scratch.name, kind)
+            self._orders[kind] = _CorpusOrder(self._db, str(self._directory), kind)
         return self._orders[kind].advance(row_budget=row_budget, byte_budget=byte_budget)
 
     def validate(self) -> None:
@@ -1544,7 +1565,7 @@ class CanonicalCorpusValidator:
 
     @declare_growth(_CORPUS_ORDER_GROWTH)
     def _acyclic(self, kind: str) -> None:
-        with _CorpusOrder(self._db, self._scratch.name, kind) as order:
+        with _CorpusOrder(self._db, str(self._directory), kind) as order:
             while not order.advance(
                 row_budget=1024, byte_budget=PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
             ).complete:

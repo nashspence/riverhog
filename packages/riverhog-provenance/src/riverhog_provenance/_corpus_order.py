@@ -7,7 +7,7 @@ from contextlib import closing
 from dataclasses import dataclass, replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, Self, cast
+from typing import Any, Protocol, Self, cast
 
 from .errors import JournalValidationCapacity, ProvenanceValidationError
 
@@ -66,13 +66,22 @@ _FIELDS = "phase,source,target,seed,current,outgoing,vertices,completed,source_e
 _STATE_LENGTH = "+".join("length(CAST(" + name + " AS BLOB))" for name in _FIELDS.split(","))
 
 
+class _OrderDatabase(Protocol):
+    def execute(self, query: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor: ...
+
+    def rollback(self) -> None: ...
+
+    def close(self) -> None: ...
+
+
 class _CorpusOrder:
     def __init__(self, source: sqlite3.Connection, directory: str, kind: str) -> None:
-        self.source, self.kind = source, kind
+        self.source: _OrderDatabase = source
+        self.kind = kind
         self._finished: CorpusOrderProgress | None = None
         self.scratch = TemporaryDirectory(prefix="order-", dir=directory)
         try:
-            self.db = sqlite3.connect(
+            self.db: _OrderDatabase = sqlite3.connect(
                 Path(self.scratch.name) / "order.sqlite3", isolation_level=None
             )
             self._write("PRAGMA cache_size=-512")
@@ -106,7 +115,7 @@ class _CorpusOrder:
 
     @staticmethod
     def _read(
-        db: sqlite3.Connection, query: str, parameters: tuple[Any, ...] = ()
+        db: _OrderDatabase, query: str, parameters: tuple[Any, ...] = ()
     ) -> tuple[Any, ...] | None:
         with closing(db.execute(query, parameters)) as rows:
             return cast(tuple[Any, ...] | None, rows.fetchone())
@@ -117,7 +126,7 @@ class _CorpusOrder:
 
     def _payload(
         self,
-        db: sqlite3.Connection,
+        db: _OrderDatabase,
         metadata: str,
         query: str,
         parameters: tuple[Any, ...],
