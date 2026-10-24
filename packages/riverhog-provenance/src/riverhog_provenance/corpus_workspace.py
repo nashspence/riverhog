@@ -24,6 +24,7 @@ from ._corpus_workspace_growth import (
     point_declaration,
     selection_declaration,
     semantic_declaration,
+    source_declaration,
 )
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .corpus import (
@@ -493,6 +494,18 @@ class RetainedCorpusValidator:
                 (str(count),),
             )
 
+    @declare_growth(
+        source_declaration(
+            growth_binding(CanonicalCorpusValidator.advance_source).declaration,
+            growth_binding(_operation).declaration,
+            growth_binding(JournalSummary.anchor_at).declaration,
+        ),
+        delegates=(
+            ("native", CanonicalCorpusValidator.advance_source),
+            ("transaction", _operation),
+            ("header", JournalSummary.anchor_at),
+        ),
+    )
     def advance_source(
         self, summary: JournalSummary, *, frame_budget: int = 1, through: int | None = None
     ) -> CorpusSourceProgress:

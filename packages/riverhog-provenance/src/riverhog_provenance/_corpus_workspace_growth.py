@@ -1220,3 +1220,225 @@ def selection_declaration(native: Declaration, transaction: Declaration) -> Decl
             "Complete discovery builds require further application-owned composition.",
         ),
     )
+
+
+def source_declaration(
+    native: Declaration, transaction: Declaration, header: Declaration
+) -> Declaration:
+    """Compose one owned raw-source quantum and its complete database boundary work."""
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def product(*terms: Expression) -> Expression:
+        return Expression("product", terms=terms)
+
+    def call(slot: str, declaration: Declaration, metric: str) -> Expression:
+        return Expression(
+            "delegate",
+            name=slot,
+            metric=metric,
+            terms=(_dimension("native_calls") if slot == "native" else _number(1),),
+            arguments=tuple((item.name, _dimension(item.name)) for item in declaration.dimensions),
+        )
+
+    source_seeks = add(_scale(2, "new_frames"), _number(3))
+    statements = add(
+        call("transaction", transaction, "sql_statements"),
+        call("native", native, "sql_statements"),
+        source_seeks,
+        _number(3),
+    )
+    metadata = product(statements, _dimension("source_metadata_octets"))
+    parameters = add(
+        call("transaction", transaction, "parameter_octets"),
+        _scale(12, "entry_octets"),
+        product(_number(8, SCALAR), metadata),
+        _scale(4, "counter_octets"),
+    )
+    records = add(
+        _dimension("retained_rows"),
+        _dimension("retained_frames"),
+        _dimension("new_frames"),
+        _dimension("new_assertions"),
+        _dimension("new_references"),
+        _dimension("new_retractions"),
+        _number(2),
+    )
+    bounds = [
+        Bound(metric, COUNT, "upper", _number(limit), meaning)
+        for metric, limit, meaning in (
+            ("native_calls", 1, "One admitted Native source quantum follows exact membership."),
+            ("manifest_checks", 1, "One exact source-manifest admission precedes Native work."),
+            (
+                "parent_header_calls",
+                1,
+                "An explicit prefix selects one independently accepted header.",
+            ),
+            (
+                "registration_statements",
+                3,
+                "Unique completion uses one insert and a conditional count read/update.",
+            ),
+            (
+                "full_retained_preimage_reads",
+                0,
+                "Stored identity and assertion preimages are not returned.",
+            ),
+        )
+    ]
+    bounds.extend(
+        (
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                statements,
+                "Count every lifecycle, Native, source-frame/header and completion statement.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                statements,
+                "Each indexed statement detaches at most one row.",
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "upper",
+                add(
+                    call("transaction", transaction, "returned_octets"),
+                    _dimension("frame_octets"),
+                    metadata,
+                    _dimension("counter_octets"),
+                ),
+                "Original missing entry bytes, indexed metadata and owner checkpoint only.",
+            ),
+            Bound(
+                "parameter_octets",
+                OCTETS,
+                "upper",
+                parameters,
+                "Entry/assertion candidates, exact keys, headers and owner CAS inputs.",
+            ),
+            Bound(
+                "written_parameter_octets",
+                OCTETS,
+                "upper",
+                parameters,
+                "All inserted or updated row parameters remain within complete input accounting.",
+            ),
+            Bound(
+                "written_rows",
+                COUNT,
+                "upper",
+                statements,
+                "Exact unique-key mutations affect at most one row per statement.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                add(
+                    _number(1024),
+                    product(
+                        statements,
+                        add(
+                            _number(256, SCALAR),
+                            product(
+                                _number(128, SCALAR), Expression("log2_ceil", terms=(records,))
+                            ),
+                        ),
+                    ),
+                ),
+                "Indexed seeks and per-entry mutations count every actual database instruction.",
+            ),
+            Bound(
+                "canonical_encoded_octets",
+                OCTETS,
+                "upper",
+                add(
+                    call("transaction", transaction, "checkpoint_encoded_octets"),
+                    _scale(8, "entry_octets"),
+                    product(_number(8, SCALAR), metadata),
+                ),
+                "Native preimage, SHA state and parent metadata encodings.",
+            ),
+            Bound(
+                "header_decoded_octets",
+                OCTETS,
+                "upper",
+                product(_number(6, SCALAR), source_seeks, _dimension("source_metadata_octets")),
+                "Decode only indexed references and SHA headers outside entry parsing.",
+            ),
+            Bound(
+                "document_decoded_octets",
+                OCTETS,
+                "upper",
+                _dimension("entry_octets"),
+                "Decode each missing original Native entry once.",
+            ),
+        )
+    )
+    for metric in ("source_frame_reads", "source_frame_octets", "hashed_entry_octets"):
+        bounds.append(
+            Bound(
+                metric,
+                COUNT if metric == "source_frame_reads" else OCTETS,
+                "upper",
+                call("native", native, metric),
+                "The parent's source admission and registration add no original-frame replay.",
+            )
+        )
+    for metric in ("source_checks", "checkpoint_decoded_octets", "checkpoint_encoded_octets"):
+        bounds.append(
+            Bound(
+                metric,
+                COUNT if metric == "source_checks" else OCTETS,
+                "upper",
+                call("transaction", transaction, metric),
+                "Retain complete current-owner and checkpoint lifecycle accounting.",
+            )
+        )
+    return Declaration(
+        id="riverhog-provenance.retained-corpus-advance-source.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.corpus_workspace.RetainedCorpusValidator.advance_source",),
+        scope="one current-owner retained Native raw-source quantum",
+        starts_at="receive an owned accepted snapshot and independently fixed source membership",
+        ends_at="atomically retain or roll back raw rows, unique completion and checkpoint",
+        dimensions=(
+            *transaction.dimensions,
+            *native.dimensions,
+            *header.dimensions,
+            Dimension("native_calls", COUNT, "Actual admitted Native source calls."),
+            Dimension("parent_header_calls", COUNT, "Actual explicit parent-prefix selections."),
+            Dimension(
+                "source_metadata_octets",
+                OCTETS_PER_COUNT,
+                "Maximum complete accepted anchor/reference/SHA-state and source-key scalar width.",
+            ),
+        ),
+        bounds=tuple(bounds),
+        conditions=(
+            "The application authenticates the workspace and holds its exclusive kernel lease.",
+            "Independent source membership and unique counts precede raw indexing.",
+            "Retained row extents include all participating Native indices, including new keys.",
+            "Sources supply independently accepted bytes and complete indexed header widths.",
+            "Entry parsing and canonical codecs retain the admitted Native atom policy.",
+        ),
+        invariants=(
+            "Completed shared original prefixes are proved exactly and are never fetched again.",
+            "Only complete unique source inputs increment the independent source count.",
+            "Raw source rows, completion count and owner checkpoint share one transaction.",
+            "Missing membership, ownership loss and failed obligations retain the old checkpoint.",
+            "Raw completion does not discharge selection, global history or archive access.",
+        ),
+        limitations=(
+            "Source-port membership/currentness internals remain application-owned composition.",
+            "VM observations exclude internal byte comparisons, physical I/O and lock waiting.",
+            "Canonical counters measure owner codec boundaries, excluding parser internals.",
+            "Complete discovery and publication need application-owned composition.",
+        ),
+    )
