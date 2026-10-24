@@ -24,9 +24,10 @@ configure_processing_fixture() {
   # Four target outputs per overlapping-route input; separate bounded control
   # contacts from observation, publication, content access, and complete settlement budgets.
   smoke_completion_timeout=$((600 + 480 * smoke_file_count))
-  if [[ "${lane}" == "processing-overlap" ]]; then
-    smoke_completion_timeout=2400
-  fi
+  case "${lane}" in
+    processing-overlap) smoke_completion_timeout=2400 ;;
+    processing-e2e) smoke_completion_timeout=4800 ;;
+  esac
   smoke_observation_timeout=$((300 + 60 * smoke_file_count))
   smoke_admission_timeout=$((smoke_observation_timeout + 600))
   smoke_content_timeout=$((300 + 30 * (smoke_file_count > 16 ? smoke_file_count - 16 : 0)))

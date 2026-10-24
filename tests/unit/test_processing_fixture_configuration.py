@@ -53,7 +53,7 @@ def test_every_physical_fixture_setting_is_independent_of_previous_scenarios(
     assert standalone["smoke_claim_file_count"] == count + 1
     assert standalone["smoke_observation_timeout"] == 300 + 60 * count
     assert standalone["smoke_completion_timeout"] == (
-        2400 if lane == "processing-overlap" else 600 + 480 * count
+        {"processing-overlap": 2400, "processing-e2e": 4800}.get(lane, 600 + 480 * count)
     )
     assert standalone["smoke_publication_timeout"] == 900 + 30 * max(0, count - 16)
     assert standalone["smoke_audio_frames"] == int(frames)
