@@ -25,7 +25,8 @@ from riverhog_growth_contracts import (
     Expression,
     declare_growth,
 )
-from riverhog_provenance import JournalSummary
+from riverhog_provenance import JournalSummary, assertion_reference
+from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from riverhog_core.canonical_discovery_fact_work import (
     FactTaskKey,
@@ -230,6 +231,27 @@ class QualifiedJournalSource:
         if int(anchor["through"]["sequence"]) >= self.entry_count:
             raise StaleJournalTask("dependency exceeds the admitted exact source prefix")
         return anchor
+
+    def reference_for_assertion(
+        self, assertion_id: str, *, object_id: str, object_type: str
+    ) -> dict[str, Any]:
+        """Detach an original Native address within this exact admitted source.
+
+        Native verifies the full documentary reference, including retired
+        assertions. An original address does not grant effective attribution.
+        """
+        self.check_open()
+        require_canonical_uuid_urn(assertion_id)
+        require_canonical_uuid_urn(object_id)
+        selected = {
+            "scope": "external",
+            "journal_id": self._anchor["journal_id"],
+            **assertion_reference(self._summary, assertion_id),
+            "object_id": object_id,
+            "object_type": object_type,
+        }
+        self.reference_anchor(selected)
+        return selected
 
     def entry(self, sequence: int) -> _Entry:
         self.check_open()
