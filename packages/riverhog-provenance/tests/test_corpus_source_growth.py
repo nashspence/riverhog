@@ -247,21 +247,35 @@ def test_late_historical_selection_preserves_retracted_corpus_cycle_obligations(
             corpus.validate()
 
 
+class SourceCursor(Cursor):
+    def fetchone(self):
+        result = self.actual.fetchone()
+        if result is not None:
+            self.recorder.metrics["returned_rows"] += 1
+            self.recorder.metrics["metadata_octets"] += sum(
+                len(value.encode() if isinstance(value, str) else value)
+                for value in result
+                if value is not None
+            )
+        return result
+
+
 class SourceObserver:
     def __init__(self, actual):
         self.actual, self.metrics, self.cursors = actual, defaultdict(int), []
 
     def execute(self, query, parameters=()):
         self.metrics["sql_statements"] += 1
-        cursor = Cursor(self.actual.execute(query, parameters), self)
+        cursor = SourceCursor(self.actual.execute(query, parameters), self)
         self.cursors.append(cursor)
         return cursor
 
 
 def measure(corpus, current, first, monkeypatch):
     frames = list(current.frames)[first:]
-    assertions = references = 0
+    assertions = references = retractions = 0
     for frame in frames:
+        retractions += len(frame.document["body"].get("retracts", ()))
         body = frame.document["body"].get("assertions", {})
         assertions += sum(len(rows) for rows in body.values())
         stack = [body]
@@ -278,6 +292,7 @@ def measure(corpus, current, first, monkeypatch):
         "new_frames": len(frames),
         "new_assertions": assertions,
         "new_references": references,
+        "new_retractions": retractions,
         "frame_octets": sum(len(frame.encoded) for frame in frames),
         "entry_octets": sum(len(frame.json_bytes) for frame in frames),
     }

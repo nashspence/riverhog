@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from contextlib import closing
+from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, Self, cast
 
+from riverhog_archive_contracts import HistoryJournalAnchor
 from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
@@ -22,10 +24,10 @@ from riverhog_growth_contracts import (
     Unit,
     declare_growth,
 )
-from riverhog_provenance_contracts import canonical_document
+from riverhog_provenance_contracts import canonical_document, require_canonical_uuid_urn
 
 from .common import fingerprint
-from .errors import ProvenanceValidationError
+from .errors import JournalValidationCapacity, ProvenanceValidationError
 from .graph import iter_assertions
 from .history import _external_references
 from .journal import JournalSummary, _body_assertions, _identity_signature
@@ -234,6 +236,7 @@ def _source_ingest_declaration() -> Declaration:
             Expression("product", terms=(count(8, SCALAR), dimension("new_frames"))),
             Expression("product", terms=(count(5, SCALAR), dimension("new_assertions"))),
             dimension("new_references"),
+            Expression("product", terms=(count(2, SCALAR), dimension("new_retractions"))),
         ),
     )
     return Declaration(
@@ -247,6 +250,7 @@ def _source_ingest_declaration() -> Declaration:
             Dimension("new_frames", COUNT, "Source frames beyond the completed shared prefix."),
             Dimension("new_assertions", COUNT, "Raw assertions in those source frames."),
             Dimension("new_references", COUNT, "Raw external references in those source frames."),
+            Dimension("new_retractions", COUNT, "Original assertion retirements in new frames."),
             Dimension("frame_octets", OCTETS, "Complete newly loaded RFC 7464 frame octets."),
             Dimension("entry_octets", OCTETS, "Original JSON octets in the newly loaded frames."),
         ),
@@ -309,6 +313,145 @@ def _source_ingest_declaration() -> Declaration:
     )
 
 
+def _historical_assertion_declaration() -> Declaration:
+    def constant(value: int, unit: Unit = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def product(*terms: Expression) -> Expression:
+        return Expression("product", terms=terms)
+
+    records = add(dimension("retained_assertions"), dimension("retained_frames"), constant(1))
+    return Declaration(
+        id="riverhog-provenance.corpus-historical-assertion.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.corpus.CanonicalCorpusValidator.historical_assertion",),
+        scope="exact-native-source-prefix-effective-object-point-selection",
+        starts_at="receive one exact source anchor, object identity and explicit byte admission",
+        ends_at="return absence or one detached effective assertion with original support",
+        dimensions=(
+            Dimension("retained_assertions", COUNT, "All original corpus assertion index rows."),
+            Dimension("retained_frames", COUNT, "All exact corpus source entry index rows."),
+            Dimension("anchor_octets", OCTETS, "Complete canonical selected anchor octets."),
+            Dimension(
+                "selected_octets",
+                OCTETS,
+                "Admitted assertion and original entry reference octets, zero for absence.",
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                constant(3),
+                "One exact header, one latest-birth seek, at most one admitted payload.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                constant(3),
+                "The latest-birth range returns at most one row, including retired gaps.",
+            ),
+            Bound(
+                "closed_cursors",
+                COUNT,
+                "upper",
+                constant(3),
+                "Every point cursor closes before subsequent work or return.",
+            ),
+            Bound(
+                "metadata_octets",
+                OCTETS,
+                "upper",
+                add(dimension("anchor_octets"), constant(512, OCTETS)),
+                "Exact reference/hash/size plus bounded Native identity/type/sequence metadata.",
+            ),
+            Bound(
+                "parameter_octets",
+                OCTETS,
+                "upper",
+                add(
+                    product(constant(4, SCALAR), dimension("anchor_octets")), constant(512, OCTETS)
+                ),
+                "Full repeated source, object, assertion, sequence and admitted size keys.",
+            ),
+            Bound(
+                "payload_octets",
+                OCTETS,
+                "equal",
+                dimension("selected_octets"),
+                "Only one admitted assertion and its original entry reference are fetched.",
+            ),
+            Bound(
+                "decoded_octets",
+                OCTETS,
+                "equal",
+                dimension("selected_octets"),
+                "Only the selected original reference and assertion are decoded.",
+            ),
+            Bound(
+                "json_decodes",
+                COUNT,
+                "upper",
+                constant(2),
+                "No assertion decoding across absent, retired or unrelated rows.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                add(
+                    constant(768), product(constant(128), Expression("log2_ceil", terms=(records,)))
+                ),
+                "The stored-width tuple index seeks exact journal, object and numeric birth order.",
+            ),
+            Bound(
+                "source_frame_reads",
+                COUNT,
+                "equal",
+                constant(0),
+                "No journal replay or original frame load.",
+            ),
+        ),
+        conditions=(
+            "Native source admission and exact shared-prefix proof precede corpus indexing.",
+            "The owning index retains canonical decimal birth and retirement positions.",
+            "A positive caller byte admission precedes any selected assertion payload read.",
+        ),
+        invariants=(
+            "Effective intervals are half open; replacement begins at the correction entry.",
+            "Retired gaps return absence without scanning for an earlier surviving assertion.",
+            "The original documentary assertion address is preserved in every selected result.",
+            "Independent journal sources do not substitute for the exact selected anchor.",
+        ),
+        limitations=(
+            "This bounds point source attribution, not whole historical semantic validation.",
+            "Source population, global corpus validity, custody and current access are separate.",
+            "The temporary corpus lifetime does not establish durable build restart.",
+            "VM constants depend on SQLite; physical I/O and elapsed time remain observations.",
+        ),
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class HistoricalAssertion:
+    """One effective assertion with its original documentary address.
+
+    Values are detached from the corpus. The address remains original across
+    later corrections; it does not grant source admission or current access.
+    """
+
+    value: dict[str, Any]
+    reference: dict[str, Any]
+
+
 class CanonicalCorpusValidator:
     """Keep corpus identity/dependency/edge indexes on disk, without a graph union.
 
@@ -321,6 +464,7 @@ class CanonicalCorpusValidator:
     """
 
     def __init__(self) -> None:
+        self._closed = False
         self._scratch = TemporaryDirectory(prefix="riverhog-canonical-corpus-")
         self._db = sqlite3.connect(Path(self._scratch.name) / "corpus.sqlite3")
         self._db.execute("PRAGMA cache_size = -512")
@@ -329,7 +473,11 @@ class CanonicalCorpusValidator:
             "CREATE TABLE entries (journal TEXT, sequence TEXT, reference BLOB, prefix TEXT, "
             "bytes TEXT, PRIMARY KEY(journal, sequence));"
             "CREATE TABLE assertions (journal TEXT, assertion TEXT, entry BLOB, value BLOB, "
+            "object TEXT NOT NULL, type TEXT NOT NULL, sequence TEXT NOT NULL, "
+            "sequence_width INTEGER NOT NULL, retired TEXT, "
             "PRIMARY KEY(journal, assertion));"
+            "CREATE INDEX historical_objects ON assertions "
+            "(journal, object, sequence_width, sequence);"
             "CREATE TABLE refs (value BLOB PRIMARY KEY);"
             "CREATE TABLE forks (anchor BLOB PRIMARY KEY);"
             "CREATE TABLE comparisons (value BLOB PRIMARY KEY);"
@@ -339,10 +487,16 @@ class CanonicalCorpusValidator:
             "CREATE TABLE source_extents (journal TEXT PRIMARY KEY, sequence TEXT NOT NULL);"
         )
 
+    def _require_open(self) -> None:
+        if self._closed:
+            raise RuntimeError("canonical corpus is closed")
+
     def __enter__(self) -> Self:
+        self._require_open()
         return self
 
     def __exit__(self, *_exc: object) -> None:
+        self._closed = True
         self._db.close()
         self._scratch.cleanup()
 
@@ -364,6 +518,7 @@ class CanonicalCorpusValidator:
 
     @declare_growth(_source_ingest_declaration(), delegates=(("anchor", JournalSummary.anchor_at),))
     def _add_source(self, summary: JournalSummary) -> None:
+        self._require_open()
         frame_count = len(summary.frames)
         self._identity(summary.journal_id, "journal", b"")
         extent = self._source_read(
@@ -417,13 +572,35 @@ class CanonicalCorpusValidator:
                     "INSERT OR IGNORE INTO entries VALUES (?, ?, ?, ?, ?)",
                     (summary.journal_id, document["sequence"], *row),
                 )
+                for target in document["body"].get("retracts", ()):
+                    old = self._source_read(
+                        "SELECT entry, retired FROM assertions WHERE journal=? AND assertion=?",
+                        (summary.journal_id, target["assertion_id"]),
+                    )
+                    if old != (canonical_document(target["entry"]), None):
+                        raise ProvenanceValidationError(
+                            "corpus correction differs from its original active assertion"
+                        )
+                    self._source_write(
+                        "UPDATE assertions SET retired=? WHERE journal=? AND assertion=?",
+                        (document["sequence"], summary.journal_id, target["assertion_id"]),
+                    )
                 for _, assertion in iter_assertions(_body_assertions(document)):
                     encoded = canonical_document(assertion)
                     self._identity(assertion["assertion_id"], "assertion", encoded)
                     self._identity(assertion["id"], "referent", _identity_signature(assertion))
                     self._source_write(
-                        "INSERT OR IGNORE INTO assertions VALUES (?, ?, ?, ?)",
-                        (summary.journal_id, assertion["assertion_id"], row[0], encoded),
+                        "INSERT OR IGNORE INTO assertions VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)",
+                        (
+                            summary.journal_id,
+                            assertion["assertion_id"],
+                            row[0],
+                            encoded,
+                            assertion["id"],
+                            assertion["type"],
+                            document["sequence"],
+                            len(document["sequence"]),
+                        ),
                     )
                 for reference in _external_references(_body_assertions(document)):
                     self._source_write(
@@ -446,6 +623,115 @@ class CanonicalCorpusValidator:
                 raise
             else:
                 self._source_write("RELEASE corpus_source_entry")
+
+    @declare_growth(_historical_assertion_declaration())
+    def historical_assertion(
+        self,
+        anchor: HistoryJournalAnchor,
+        object_id: str,
+        *,
+        byte_budget: int,
+    ) -> HistoricalAssertion | None:
+        """Read one effective object at an exact admitted source prefix.
+
+        The budget admits the selected assertion and original entry reference
+        before either payload is fetched. A retired gap is absent, without
+        falling back to an earlier assertion. This source view does not accept
+        a whole historical graph or the corpus's separate global obligations.
+        """
+        self._require_open()
+        if not isinstance(anchor, HistoryJournalAnchor):
+            raise TypeError("historical selection requires an exact history journal anchor")
+        require_canonical_uuid_urn(object_id)
+        if type(byte_budget) is not int or byte_budget < 1:
+            raise ValueError("historical assertion byte budget must be positive")
+        selected = cast(dict[str, Any], anchor.to_mapping())
+        sequence = selected["through"]["sequence"]
+        found = self._source_read(
+            "SELECT reference, prefix, bytes FROM entries WHERE journal=? AND sequence=?",
+            (anchor.journal_id, sequence),
+        )
+        if found != (
+            canonical_document(selected["through"]),
+            anchor.prefix_sha256,
+            str(anchor.prefix_bytes),
+        ):
+            raise ProvenanceValidationError("historical prefix is not an exact corpus source")
+        metadata = self._source_read(
+            "SELECT assertion, type, sequence, retired, length(entry), length(value) "
+            "FROM assertions WHERE journal=? AND object=? "
+            "AND (sequence_width, sequence) <= (?, ?) "
+            "ORDER BY sequence_width DESC, sequence DESC LIMIT 1",
+            (anchor.journal_id, object_id, len(sequence), sequence),
+        )
+        if metadata is None:
+            return None
+        assertion_id, kind, born, retired, entry_size, value_size = metadata
+        if retired is not None and (len(retired), retired) <= (len(sequence), sequence):
+            return None
+        size = entry_size + value_size
+        if size > byte_budget:
+            raise JournalValidationCapacity("historical assertion exceeds the admitted byte budget")
+        encoded = self._source_read(
+            "SELECT substr(entry, 1, ?), substr(value, 1, ?) FROM assertions "
+            "WHERE journal=? AND assertion=? AND length(entry)=? AND length(value)=?",
+            (entry_size, value_size, anchor.journal_id, assertion_id, entry_size, value_size),
+        )
+        if encoded is None:
+            raise RuntimeError("historical assertion changed outside its source fence")
+        entry, value = json.loads(encoded[0]), json.loads(encoded[1])
+        if (
+            entry["sequence"] != born
+            or value["id"] != object_id
+            or value["type"] != kind
+            or value["assertion_id"] != assertion_id
+        ):
+            raise RuntimeError("historical assertion differs from its source metadata")
+        return HistoricalAssertion(
+            value,
+            {
+                "scope": "external",
+                "journal_id": anchor.journal_id,
+                "entry": entry,
+                "assertion_id": assertion_id,
+                "object_id": object_id,
+                "object_type": kind,
+            },
+        )
+
+    def selected_delivery_occurrence(
+        self,
+        *,
+        binding: Mapping[str, Any],
+        artifact_id: str,
+        byte_count: int,
+        sha256: str,
+        member_role: str,
+        assertion_byte_budget: int,
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        """Verify Native delivery policy through at most four historical point reads.
+
+        Each assertion must fit the caller's explicit per-assertion admission.
+        Global corpus and historical semantic acceptance remain independent.
+        """
+        from .delivery import _selected_delivery_occurrence
+
+        self._require_open()
+        anchor = HistoryJournalAnchor.from_mapping(binding.get("journal"))
+
+        def lookup(identity: str) -> dict[str, Any] | None:
+            result = self.historical_assertion(anchor, identity, byte_budget=assertion_byte_budget)
+            return result.value if result is not None else None
+
+        return _selected_delivery_occurrence(
+            anchor.to_mapping(),
+            lookup,
+            binding=binding,
+            artifact_id=artifact_id,
+            byte_count=byte_count,
+            sha256=sha256,
+            member_role=member_role,
+        )
 
     def add(self, summary: JournalSummary) -> None:
         self._add_source(summary)
@@ -634,4 +920,4 @@ def validate_canonical_corpus(summaries: Iterable[JournalSummary]) -> None:
         validator.validate()
 
 
-__all__ = ["CanonicalCorpusValidator", "validate_canonical_corpus"]
+__all__ = ["CanonicalCorpusValidator", "HistoricalAssertion", "validate_canonical_corpus"]

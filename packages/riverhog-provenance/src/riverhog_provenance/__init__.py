@@ -12,7 +12,7 @@ from .common import (
     utc_now,
 )
 from .constants import PROVENANCE_ENTRY_SCHEMA, PROVENANCE_PROFILE
-from .corpus import CanonicalCorpusValidator, validate_canonical_corpus
+from .corpus import CanonicalCorpusValidator, HistoricalAssertion, validate_canonical_corpus
 from .delivery import selected_delivery_occurrence, verify_delivery
 from .errors import (
     ConcurrentJournalChangeError,
@@ -97,6 +97,7 @@ __all__ = [
     "PROVENANCE_ENTRY_SCHEMA",
     "PROVENANCE_PROFILE",
     "CanonicalCorpusValidator",
+    "HistoricalAssertion",
     "validate_canonical_corpus",
     "artifact",
     "assertion",

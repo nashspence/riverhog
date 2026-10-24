@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from typing import Any
 
 from .common import fingerprint
@@ -28,13 +28,33 @@ def selected_delivery_occurrence(
     back to an ancestor, sibling, or source locator.
     """
 
-    if binding.get("artifact_id") != artifact_id or binding.get("journal") != summary.anchor:
+    return _selected_delivery_occurrence(
+        summary.anchor,
+        summary.graph_validation.objects.get,
+        binding=binding,
+        artifact_id=artifact_id,
+        byte_count=byte_count,
+        sha256=sha256,
+        member_role=member_role,
+    )
+
+
+def _selected_delivery_occurrence(
+    anchor: Mapping[str, Any],
+    lookup: Callable[[str], dict[str, Any] | None],
+    *,
+    binding: Mapping[str, Any],
+    artifact_id: str,
+    byte_count: int,
+    sha256: str,
+    member_role: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    if binding.get("artifact_id") != artifact_id or binding.get("journal") != anchor:
         raise ProvenanceValidationError("primary delivery binding differs from selected member")
-    objects = summary.graph_validation.objects
     association_id = binding.get("delivery_association_id")
     if not isinstance(association_id, str):
         raise ProvenanceValidationError("primary delivery association identity is invalid")
-    association = objects.get(association_id)
+    association = lookup(association_id)
     if association is None or association.get("type") != "delivery_association":
         raise ProvenanceValidationError("primary delivery association is absent")
     if association.get("role") != member_role or association.get("slot") != {
@@ -48,7 +68,7 @@ def selected_delivery_occurrence(
     state_id = state_reference.get("object_id")
     if not isinstance(state_id, str):
         raise ProvenanceValidationError("primary delivery State identity is invalid")
-    state = objects.get(state_id)
+    state = lookup(state_id)
     if (
         state is None
         or state.get("type") != "state"
@@ -58,13 +78,13 @@ def selected_delivery_occurrence(
     occurrence_id = state.get("occurrence_id")
     if not isinstance(occurrence_id, str):
         raise ProvenanceValidationError("primary delivery Occurrence identity is invalid")
-    occurrence = objects.get(occurrence_id)
+    occurrence = lookup(occurrence_id)
     if occurrence is None or occurrence.get("type") != "occurrence":
         raise ProvenanceValidationError("primary delivery Occurrence is absent")
     observation_id = association.get("verification_observation_id")
     if not isinstance(observation_id, str):
         raise ProvenanceValidationError("primary delivery observation identity is invalid")
-    observation = objects.get(observation_id)
+    observation = lookup(observation_id)
     if (
         observation is None
         or observation.get("type") != "observation"
