@@ -166,8 +166,9 @@ class QualifiedJournalSource:
     """Own an independent Native lease and one decoded entry at a time.
 
     Admission is supplied by the archive owner, not established by this digest.
-    Shared-prefix/corpus reconciliation and selection of the required maximal
-    prefix precede construction. Source identity includes the selected exact
+    This binding does not establish shared-prefix or corpus reconciliation.
+    The selected source union must establish those independent terminals before
+    merging sources or publication. Source identity includes the selected exact
     anchor; journal UUID or equal payload bytes alone never deduplicate sources.
     """
 
@@ -214,6 +215,13 @@ class QualifiedJournalSource:
     def check_open(self) -> None:
         if self._closed or self._summary.anchor_at(self.entry_count - 1) != self._anchor:
             raise StaleJournalTask("source lease is closed or its exact prefix changed")
+
+    def anchor_at(self, sequence: int) -> dict[str, Any]:
+        """Detach an exact admitted Native prefix without loading an entry body."""
+        self.check_open()
+        if type(sequence) is not int or not 0 <= sequence < self.entry_count:
+            raise StaleJournalTask("snapshot exceeds the admitted exact source prefix")
+        return self._summary.anchor_at(sequence)
 
     def entry(self, sequence: int) -> _Entry:
         self.check_open()

@@ -12,6 +12,7 @@ from riverhog_archive_contracts import (
     HistoryJournalAnchor,
     MemberHistoryBinding,
     MemberHistoryBuilder,
+    MemberHistoryDocument,
     MemberHistoryPrimary,
     ProvenancePayload,
     ProvenanceRootDocument,
@@ -19,6 +20,7 @@ from riverhog_archive_contracts import (
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
     binding_tree_commitment,
+    member_history_object_path,
     ordered_provenance_commitment,
     provenance_structure_identity,
 )
@@ -30,6 +32,9 @@ from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveRead
 def archive_reader_fixture(
     journal_bytes: bytes = b"first-frame\nsecond-frame\n",
     journal_id: str = "urn:uuid:11111111-1111-4111-8111-111111111111",
+    *,
+    histories: tuple[MemberHistoryDocument, ...] | None = None,
+    history_objects: dict[str, bytes] | None = None,
 ) -> tuple[CanonicalProvenanceArchiveReader, dict[str, bytes], str, str]:
     generation = "a" * 64
     artifact_set = "b" * 64
@@ -44,16 +49,38 @@ def archive_reader_fixture(
         ),
         "urn:uuid:22222222-2222-4222-8222-222222222222",
     )
-    with MemberHistoryBuilder(
-        artifact_id="c" * 64, bytes=7, sha256="a" * 64, primary=primary
-    ) as builder:
-        final, _history = builder.seal()
-        binding = final.to_mapping()
-        structures = {
-            provenance_structure_identity(raw).relative_path: raw for raw in builder.objects()
-        }
+    if histories is None:
+        with MemberHistoryBuilder(
+            artifact_id="c" * 64, bytes=7, sha256="a" * 64, primary=primary
+        ) as builder:
+            final, _history = builder.seal()
+            binding = final.to_mapping()
+            structures = {
+                provenance_structure_identity(raw).relative_path: raw for raw in builder.objects()
+            }
+        bindings = (MemberHistoryBinding.from_mapping(binding),)
+    else:
+        if not histories:
+            raise ValueError("history archive fixture needs a member")
+        bindings = tuple(
+            MemberHistoryBinding(
+                value.artifact_id,
+                value.bytes,
+                value.sha256,
+                value.identity,
+                len(value.to_json_bytes()),
+            )
+            for value in histories
+        )
+        structures = dict(history_objects or {})
+        structures.update(
+            {
+                member_history_object_path(value.identity): value.to_json_bytes()
+                for value in histories
+            }
+        )
     binding_bytes = canonical_json_bytes(
-        {"format": PROVENANCE_BINDINGS_FORMAT, "bindings": [binding]}
+        {"format": PROVENANCE_BINDINGS_FORMAT, "bindings": [b.to_mapping() for b in bindings]}
     )
     descriptors = (
         ProvenanceVolumeDocument(
@@ -66,9 +93,9 @@ def archive_reader_fixture(
                 bytes=len(binding_bytes),
                 sha256=hashlib.sha256(binding_bytes).hexdigest(),
             ),
-            first_artifact_id="c" * 64,
-            last_artifact_id="c" * 64,
-            binding_count=1,
+            first_artifact_id=bindings[0].artifact_id,
+            last_artifact_id=bindings[-1].artifact_id,
+            binding_count=len(bindings),
         ),
         ProvenanceVolumeDocument(
             archive_generation=generation,
@@ -110,10 +137,8 @@ def archive_reader_fixture(
         archive_generation=generation,
         artifact_set_sha256=artifact_set,
         delivery_context_id="urn:uuid:44444444-4444-4444-8444-444444444444",
-        binding_count=1,
-        binding_tree_sha256=binding_tree_commitment(
-            (MemberHistoryBinding.from_mapping(binding),)
-        ).root_sha256,
+        binding_count=len(bindings),
+        binding_tree_sha256=binding_tree_commitment(bindings).root_sha256,
         journal_count=1,
         ordered_volume_sha256=ordered_provenance_commitment((*descriptors, terminal)),
     )
@@ -137,11 +162,13 @@ def archive_reader_fixture(
     return reader, objects, journal_id, journal_bytes.decode()
 
 
-def discovery_archive_admission(root):
+def discovery_archive_admission(root, *, total_bytes=7):
     raw = root.to_json_bytes()
     archive = CollectionArchiveManifest(
         archive_generation=root.archive_generation,
-        artifact_set=CollectionArtifactSetIdentity(root.binding_count, 7, root.artifact_set_sha256),
+        artifact_set=CollectionArtifactSetIdentity(
+            root.binding_count, total_bytes, root.artifact_set_sha256
+        ),
         ordered_volume_sha256="f" * 64,
         provenance=ArchiveProvenanceIdentity(
             root.identity,
