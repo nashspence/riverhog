@@ -448,6 +448,10 @@ def dependency_declaration(native: Declaration, transaction: Declaration) -> Dec
 
     checks = _dimension("checked_obligations")
     probes = add(product(_number(3, SCALAR), checks), _number(1))
+    projection_bytes = product(
+        add(checks, _number(1)),
+        add(_scale(16, "metadata_octets"), _number(256, OCTETS_PER_COUNT)),
+    )
     parameters = add(
         call("transaction", transaction, "parameter_octets"),
         product(_number(5, SCALAR), probes, _dimension("metadata_octets")),
@@ -513,7 +517,7 @@ def dependency_declaration(native: Declaration, transaction: Declaration) -> Dec
             "upper",
             add(
                 call("transaction", transaction, "returned_octets"),
-                _dimension("byte_budget"),
+                projection_bytes,
                 product(_number(3, SCALAR), probes, _dimension("metadata_octets")),
             ),
             "Complete admitted reference/fork/comparison payloads plus full scalar metadata "
@@ -572,8 +576,9 @@ def dependency_declaration(native: Declaration, transaction: Declaration) -> Dec
             "dependency_decoded_octets",
             OCTETS,
             "upper",
-            _dimension("byte_budget"),
-            "Complete decoded references and anchors are charged to the admitted payload bytes.",
+            projection_bytes,
+            "Native reference/anchor shapes have fixed fields and one complete entry preimage; "
+            "decoded bytes also respect the separate Native payload admission.",
         ),
         Bound(
             "dependency_encoded_octets",
@@ -635,6 +640,8 @@ def dependency_declaration(native: Declaration, transaction: Declaration) -> Dec
             "Independent metadata widths cover complete scalar keys and entry preimages in all "
             "retained source rows, including unrelated rows.",
             "All queries use maintained Native schema indexes and the bounded SQLite cache.",
+            "Native reference/anchor projections contain fixed identity fields and one "
+            "canonical entry preimage; metadata_octets covers that entire preimage.",
             "Currentness callback internals retain their separate application-owned composition.",
         ),
         invariants=(
@@ -650,5 +657,250 @@ def dependency_declaration(native: Declaration, transaction: Declaration) -> Dec
             "Warm Native status is separate from cold dependency work and still pays lifecycle.",
             "Engine VM constants exclude byte comparisons, storage I/O and lock waiting.",
             "Complete manifest coverage, cycles, member relevance and current access are separate.",
+        ),
+    )
+
+
+def semantic_declaration(native: Declaration, transaction: Declaration) -> Declaration:
+    """Compose selected-union registration with its independent manifest admission."""
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def product(*terms: Expression) -> Expression:
+        return Expression("product", terms=terms)
+
+    def call(slot: str, declaration: Declaration, metric: str) -> Expression:
+        return Expression(
+            "delegate",
+            name=slot,
+            metric=metric,
+            terms=(_dimension("native_calls") if slot == "native" else _number(1),),
+            arguments=tuple((item.name, _dimension(item.name)) for item in declaration.dimensions),
+        )
+
+    inputs = _dimension("processed_inputs")
+    probes = add(product(_number(8, SCALAR), inputs), _number(2))
+    manifest_bytes = _scale(2, "counter_octets")
+    projection_bytes = product(
+        add(inputs, _number(1)),
+        add(_scale(8, "metadata_octets"), _number(128, OCTETS_PER_COUNT)),
+    )
+    parameters = add(
+        call("transaction", transaction, "parameter_octets"),
+        product(_number(5, SCALAR), probes, _dimension("metadata_octets")),
+    )
+    limits = (
+        (
+            "native_calls",
+            COUNT,
+            _number(1),
+            "At most one Native call follows the independent source/selection terminal check.",
+        ),
+        (
+            "input_count_checks",
+            COUNT,
+            _number(1),
+            "One singleton count check precedes Native registration; it is not "
+            "lifecycle body work.",
+        ),
+        (
+            "sql_statements",
+            COUNT,
+            add(
+                call("transaction", transaction, "sql_statements"),
+                call("native", native, "sql_statements"),
+                _number(1),
+            ),
+            "Lifecycle, Native body and the separate exact-input terminal query compose.",
+        ),
+        (
+            "algorithm_sql_statements",
+            COUNT,
+            probes,
+            "Each original assertion uses bounded metadata, interval, payload and obligation work; "
+            "one unfinished atom may repeat its two metadata seeks.",
+        ),
+        (
+            "sqlite_vm_instructions",
+            COUNT,
+            add(
+                _number(512),
+                product(
+                    add(inputs, _number(1)),
+                    add(
+                        _number(4096, SCALAR),
+                        product(
+                            _number(1024, SCALAR),
+                            Expression(
+                                "log2_ceil", terms=(add(_dimension("retained_rows"), _number(2)),)
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            "Indexed input/interval/obligation access plus fixed manifest and checkpoint work.",
+        ),
+        (
+            "returned_rows",
+            COUNT,
+            add(
+                call("transaction", transaction, "returned_rows"),
+                product(_number(3, SCALAR), inputs),
+                _number(3),
+            ),
+            "At most three Native rows per input, two unfinished rows and one manifest row.",
+        ),
+        (
+            "returned_octets",
+            OCTETS,
+            add(
+                call("transaction", transaction, "returned_octets"),
+                manifest_bytes,
+                projection_bytes,
+                product(_number(6, SCALAR), probes, _dimension("metadata_octets")),
+            ),
+            "Full projection bytes, six-scalar input metadata, exact interval keys "
+            "and parent state.",
+        ),
+        (
+            "parameter_octets",
+            OCTETS,
+            parameters,
+            "All repeated exact keys, obligation scalars and parent compare-and-swap preimages.",
+        ),
+        (
+            "written_rows",
+            COUNT,
+            add(_number(1), inputs),
+            "At most one selected-union obligation per original assertion and one "
+            "parent publication.",
+        ),
+        (
+            "written_parameter_octets",
+            OCTETS,
+            add(
+                call("transaction", transaction, "parameter_octets"),
+                product(_number(5, SCALAR), inputs, _dimension("metadata_octets")),
+            ),
+            "Successful edge/comparison insert parameters and the complete parent "
+            "checkpoint write.",
+        ),
+        (
+            "processed_rows",
+            COUNT,
+            call("native", native, "processed_rows"),
+            "Actual completed original inputs respect Native's row admission.",
+        ),
+        (
+            "projected_payload_octets",
+            OCTETS,
+            call("native", native, "projected_payload_octets"),
+            "Only admitted effective semantic projections are fetched.",
+        ),
+        (
+            "json_decodes",
+            COUNT,
+            call("native", native, "json_decodes"),
+            "Decode only the admitted selected projections, never full documentary assertions.",
+        ),
+        (
+            "semantic_decoded_octets",
+            OCTETS,
+            projection_bytes,
+            "Each Native projection has at most four scalar values and fixed JSON syntax; "
+            "complete decoded bytes also respect the Native payload admission.",
+        ),
+    )
+    bounds = [
+        Bound(metric, unit, "upper", expression, meaning)
+        for metric, unit, expression, meaning in limits
+    ]
+    bounds.append(
+        Bound(
+            "completed_semantic_inputs",
+            COUNT,
+            "equal",
+            inputs,
+            "Independently confirmed original input keys agree with Native progress "
+            "and its cursor.",
+        )
+    )
+    for metric in ("source_checks", "checkpoint_decoded_octets", "checkpoint_encoded_octets"):
+        bounds.append(
+            Bound(
+                metric,
+                COUNT if metric == "source_checks" else OCTETS,
+                "upper",
+                call("transaction", transaction, metric),
+                "Currentness and parent checkpoint codecs retain their owning lifecycle cost.",
+            )
+        )
+    for metric in ("source_frame_reads", "full_assertion_reads"):
+        bounds.append(
+            Bound(
+                metric,
+                COUNT,
+                "upper",
+                add(call("transaction", transaction, metric), call("native", native, metric)),
+                "Neither the lifecycle nor selected-union registration replays original payloads.",
+            )
+        )
+    return Declaration(
+        id="riverhog-provenance.retained-corpus-semantic-step.growth/v1",
+        authority="riverhog-provenance",
+        subjects=(
+            "riverhog_provenance.corpus_workspace.RetainedCorpusValidator.advance_semantics",
+        ),
+        scope="one atomic retained Native selected-source semantic union quantum",
+        starts_at="receive admitted work under current ownership and fixed input expectations",
+        ends_at="publish exact source-union obligations and parent checkpoint or roll back",
+        dimensions=(
+            *transaction.dimensions,
+            *native.dimensions,
+            Dimension(
+                "native_calls", COUNT, "Actual Native algorithm invocations after admission."
+            ),
+            Dimension(
+                "processed_inputs",
+                COUNT,
+                "Independently confirmed original semantic input keys in this call.",
+            ),
+            Dimension(
+                "metadata_octets",
+                OCTETS_PER_COUNT,
+                "Independent maximum complete scalar width of retained Native identity, "
+                "type, sequence, size, comparison result and endpoint keys.",
+            ),
+        ),
+        bounds=tuple(bounds),
+        conditions=(
+            "Independent manifest membership and unique completion counts cover fixed inputs.",
+            "The application owns authenticated source custody and its exclusive kernel lease.",
+            "Native checks independent source/selection counts before freezing semantic inputs.",
+            "Metadata widths and retained extents cover all indexed inputs and selected prefixes.",
+            "All queries use the maintained Native schema indexes and bounded SQLite cache.",
+            "Native projections carry at most four canonical ASCII identity/type/result scalars; "
+            "unrelated documentary text is never part of a semantic projection.",
+            "Currentness callback internals retain their separate application-owned composition.",
+        ),
+        invariants=(
+            "Each original semantic assertion is considered once over the selected prefix union.",
+            "An assertion contributes exactly when a selected prefix intersects "
+            "[birth,retirement).",
+            "A cold pass has at most 6A+2C+1 Native statement visits for A original inputs and "
+            "C confirmed calls; advancing calls complete an input, so C<=A+1.",
+            "Only an unfinished byte admission repeats metadata; confirmed inputs "
+            "survive replacement.",
+            "Native obligations and their parent continuation commit in one "
+            "current-owner transaction.",
+            "Source completion, dependencies, cycles, member relevance and access remain distinct.",
+        ),
+        limitations=(
+            "Failed unconfirmed quanta may replay while prior confirmed work remains retained.",
+            "Warm status retains constant manifest and lifecycle cost without Native input reads.",
+            "VM constants exclude scalar comparisons, storage I/O and lock waiting.",
+            "Raw-source admission, final source-normal commitments and publication "
+            "require composition.",
         ),
     )

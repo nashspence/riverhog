@@ -21,6 +21,7 @@ from ._corpus_workspace_growth import (
     dependency_declaration,
     lifecycle_declaration,
     order_declaration,
+    semantic_declaration,
 )
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .corpus import (
@@ -507,6 +508,16 @@ class RetainedCorpusValidator:
             self._corpus.select_source(anchor)
             self._register(anchor, selection=True)
 
+    @declare_growth(
+        semantic_declaration(
+            growth_binding(CanonicalCorpusValidator.advance_semantics).declaration,
+            growth_binding(_operation).declaration,
+        ),
+        delegates=(
+            ("native", CanonicalCorpusValidator.advance_semantics),
+            ("transaction", _operation),
+        ),
+    )
     def advance_semantics(
         self, *, row_budget: int = 64, byte_budget: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
     ) -> CorpusSemanticProgress:
