@@ -13,11 +13,11 @@ from typing import Any, Protocol, Self, cast
 
 from riverhog_archive_contracts import HistoryJournalAnchor
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_growth_contracts import declare_growth
+from riverhog_growth_contracts import declare_growth, growth_binding
 from riverhog_provenance_contracts import ContractCatalog
 
 from ._corpus_order import _CorpusOrder
-from ._corpus_workspace_growth import lifecycle_declaration
+from ._corpus_workspace_growth import lifecycle_declaration, order_declaration
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .corpus import (
     CanonicalCorpusValidator,
@@ -520,6 +520,13 @@ class RetainedCorpusValidator:
         with self._operation():
             return self._corpus.advance_dependencies(row_budget=row_budget, byte_budget=byte_budget)
 
+    @declare_growth(
+        order_declaration(
+            growth_binding(CanonicalCorpusValidator.advance_order).declaration,
+            growth_binding(_operation).declaration,
+        ),
+        delegates=(("native", CanonicalCorpusValidator.advance_order), ("transaction", _operation)),
+    )
     def advance_order(
         self,
         kind: str,
