@@ -68,11 +68,16 @@ class ProvenanceArchiveSummary:
 
 def _read_bounded(chunks: Iterator[bytes], maximum: int) -> bytes:
     content = bytearray()
-    for chunk in chunks:
-        if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
-            raise ProvenanceArchiveReadError("provenance object exceeds its bounded contract")
-        content.extend(chunk)
-    return bytes(content)
+    try:
+        for chunk in chunks:
+            if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
+                raise ProvenanceArchiveReadError("provenance object exceeds its bounded contract")
+            content.extend(chunk)
+        return bytes(content)
+    finally:
+        close = getattr(chunks, "close", None)
+        if close is not None:
+            close()
 
 
 class CanonicalProvenanceArchiveReader:
@@ -356,6 +361,51 @@ class CanonicalProvenanceArchiveReader:
             ):
                 yield document
             sequence += 1
+
+    def payload_bytes(self, document: ProvenanceVolumeDocument) -> bytes:
+        """Read a payload selected by a previously authenticated descriptor scan.
+
+        The owner supplies descriptor membership evidence. This method checks
+        fixed archive authority and the complete payload length and digest.
+        """
+        root = self._root()
+        if (document.archive_generation, document.artifact_set_sha256) != (
+            root.archive_generation,
+            root.artifact_set_sha256,
+        ):
+            raise ProvenanceArchiveReadError("payload descriptor belongs to another archive")
+        raw = _read_bounded(self._read_object(document.payload.path), document.payload.bytes)
+        if (
+            len(raw) != document.payload.bytes
+            or hashlib.sha256(raw).hexdigest() != document.payload.sha256
+        ):
+            raise ProvenanceArchiveReadError("provenance payload differs from its exact descriptor")
+        return raw
+
+    def descriptor_at(self, sequence: int) -> ProvenanceVolumeDocument | ProvenanceTerminalDocument:
+        """Read one candidate descriptor at its exact archive position.
+
+        This authenticates the selected root and fixed descriptor authority.
+        Its membership in the complete ordered volume commitment is established
+        by the consuming scan, not by this isolated read.
+        """
+        root = self._root()
+        path = f"provenance/metadata/volume-{format_archive_sequence(sequence)}.json.age"
+        raw = _read_bounded(self._read_object(path), PROVENANCE_METADATA_BYTES_MAX)
+        value = require_canonical_json(raw)
+        if not isinstance(value, dict):
+            raise ProvenanceArchiveReadError("provenance volume is not an object")
+        document: ProvenanceVolumeDocument | ProvenanceTerminalDocument
+        if value.get("format") == PROVENANCE_TERMINAL_FORMAT:
+            document = ProvenanceTerminalDocument.from_json_bytes(raw)
+        else:
+            document = ProvenanceVolumeDocument.from_json_bytes(raw)
+        if document.sequence != sequence or (
+            document.archive_generation,
+            document.artifact_set_sha256,
+        ) != (root.archive_generation, root.artifact_set_sha256):
+            raise ProvenanceArchiveReadError("provenance descriptor position or authority changed")
+        return document
 
     def scan(self) -> ProvenanceArchiveSummary:
         """Verify the complete root-selected descriptor sequence without payload reads."""
