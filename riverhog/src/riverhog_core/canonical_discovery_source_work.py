@@ -246,10 +246,10 @@ class PreparedSourcePage:
     expected_version: int
     expected_cursor: FactExtractionCursor
     actions: tuple[PreparedSourceStep, ...]
-    expected_lexical_streams: int
+    category_stream_totals: tuple[tuple[str, int], ...]
 
 
-def _stream_action(
+def prepare_stream_action(
     cursor: FactExtractionCursor,
     stream: FactStreamKey,
     payload: bytes,
@@ -286,7 +286,7 @@ def prepare_lexical_source_step(
             or cursor.section_ordinal
         ):
             raise StaleFactTask("canonical source has an unexpected traversal coordinate")
-        return _stream_action(
+        return prepare_stream_action(
             cursor,
             FactStreamKey("canonical", "0"),
             source.canonical_json,
@@ -373,7 +373,7 @@ def prepare_lexical_source_step(
         next_section = 4
     elif section == 3:
         next_section = 5
-    return _stream_action(
+    return prepare_stream_action(
         cursor,
         FactStreamKey(kind, str(value.node)),
         source.payload(value, section),
@@ -519,14 +519,18 @@ def prepare_lexical_source_page(
         actions.append(action)
         cursor = action.next_cursor
     return PreparedSourcePage(
-        key, progress.version, initial, tuple(actions), source.lexical_stream_count
+        key,
+        progress.version,
+        initial,
+        tuple(actions),
+        (("scalars", 1), ("names", source.lexical_stream_count)),
     )
 
 
-def apply_lexical_source_page(
+def apply_source_page(
     db: sqlite3.Connection, key: FactTaskKey, page: PreparedSourcePage
 ) -> FactTaskProgress:
-    """Commit prepared facts, frames and next source cursor under one owner CAS."""
+    """Commit prepared facts, frames and source-category terminals under one owner CAS."""
     if not db.in_transaction:
         raise ValueError("source mutation requires an owner-managed transaction")
     if key != page.key:
@@ -536,6 +540,8 @@ def apply_lexical_source_page(
         progress, cursor = fact_extraction_cursor(db, key)
         if progress.version != page.expected_version or cursor != page.expected_cursor:
             raise StaleFactTask("prepared source page has a stale checkpoint")
+        expected_totals = dict(page.category_stream_totals)
+        previous_category = cursor.category
         for action in page.actions:
             progress = advance_assertion(
                 db,
@@ -547,12 +553,12 @@ def apply_lexical_source_page(
                 stack_action=action.stack_action,
                 stack_frame=action.stack_frame,
             )
-        if (
-            page.actions
-            and page.actions[-1].next_cursor.category == "names"
-            and progress.streams != page.expected_lexical_streams
-        ):
-            raise StaleFactTask("lexical streams do not cover the admitted source terminal")
+            current_category = action.next_cursor.category
+            if current_category != previous_category:
+                expected_streams = expected_totals.get(current_category)
+                if expected_streams is None or progress.streams != expected_streams:
+                    raise StaleFactTask("fact streams do not cover the admitted source terminal")
+            previous_category = current_category
     except BaseException:
         db.execute("ROLLBACK TO discovery_source_page")
         db.execute("RELEASE discovery_source_page")

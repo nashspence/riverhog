@@ -24,7 +24,12 @@ class NativeProfileFixture:
     profile: ProfilePin
 
 
-def native_profile_fixture(data: Any, schema: dict[str, Any]) -> NativeProfileFixture:
+def native_profile_fixture(
+    data: Any,
+    schema: dict[str, Any],
+    *,
+    source_names: tuple[dict[str, Any], ...] = (),
+) -> NativeProfileFixture:
     """Put one exact declared profile value inside a complete native journal."""
     schema_id = "urn:test:canonical-discovery:profile-value"
     contract = ProvenanceContractBinding(
@@ -54,6 +59,19 @@ def native_profile_fixture(data: Any, schema: dict[str, Any]) -> NativeProfileFi
             "value": {"profile": pin.model_dump(mode="json"), "data": data},
         },
     )
+    if source_names:
+        evidence = extension["evidence"][0]
+        extension["evidence"] = [
+            {
+                **evidence,
+                "source_identifier": {
+                    "scheme": "urn:test:canonical-discovery:source-name",
+                    "scope": "global",
+                    "value": name,
+                },
+            }
+            for name in source_names
+        ]
     graph = observed.graph_fragment()
     graph["extensions"] = [extension]
     return NativeProfileFixture(

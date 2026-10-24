@@ -108,22 +108,42 @@ def _escaped_bytes(value: bytes) -> str:
     )
 
 
+@dataclass(frozen=True, slots=True)
+class NameRepresentation:
+    value: str
+    representation: Representation
+    source_value_sha256: str
+
+
+def declared_name_text(exact: bytes, encoding: str) -> str | None:
+    """Decode only an explicit supported codec, preserving opaque/invalid bytes."""
+    if encoding not in {"utf-8", "utf-16le"}:
+        return None
+    try:
+        decoded = exact.decode(encoding, "strict")
+        require_portable_json(decoded)
+    except (UnicodeError, ValueError):
+        return None
+    return decoded
+
+
+def name_representations(name: Mapping[str, Any]) -> Iterator[NameRepresentation]:
+    """Project one declared name, without walking other source slots."""
+    if name.get("kind") != "bytes":
+        return
+    exact = base64.b64decode(name["bytes"]["data"], validate=True)
+    digest = hashlib.sha256(canonical_json_bytes(name)).hexdigest()
+    yield NameRepresentation(base64.b64encode(exact).decode("ascii"), "exact-bytes", digest)
+    yield NameRepresentation(_escaped_bytes(exact), "byte-escape", digest)
+    decoded = declared_name_text(exact, name["encoding"])
+    if decoded is not None:
+        yield NameRepresentation(decoded, "declared-text", digest)
+
+
 def name_postings(row: Mapping[str, Any]) -> Iterator[ScalarPosting]:
     for pointer, name in _name_slots(row):
-        if name.get("kind") != "bytes":
-            continue
-        exact = base64.b64decode(name["bytes"]["data"], validate=True)
-        source_sha256 = hashlib.sha256(canonical_json_bytes(name)).hexdigest()
-        encoded = base64.b64encode(exact).decode("ascii")
-        yield ScalarPosting(pointer, encoded, "exact-bytes", source_sha256)
-        yield ScalarPosting(pointer, _escaped_bytes(exact), "byte-escape", source_sha256)
-        if name["encoding"] in {"utf-8", "utf-16le"}:
-            try:
-                decoded = exact.decode(name["encoding"], "strict")
-                require_portable_json(decoded)
-            except (UnicodeError, ValueError):
-                continue
-            yield ScalarPosting(pointer, decoded, "declared-text", source_sha256)
+        for item in name_representations(name):
+            yield ScalarPosting(pointer, item.value, item.representation, item.source_value_sha256)
 
 
 def declared_profile_sections(row: Mapping[str, Any]) -> Iterator[ProfileSection]:
@@ -213,12 +233,15 @@ def assertion_clause_matches(
 
 
 __all__ = [
+    "NameRepresentation",
     "ProfileSection",
     "ScalarPosting",
     "ascii_fold",
     "assertion_clause_matches",
     "assertion_postings",
+    "declared_name_text",
     "declared_profile_sections",
+    "name_representations",
     "literal_chunks",
     "predicate_matches",
 ]
