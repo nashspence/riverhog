@@ -2,22 +2,28 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import sqlite3
 import subprocess
 import sys
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing, contextmanager
+from copy import deepcopy
 from dataclasses import replace
+from functools import wraps
 
 import pytest
 import sha256_continuation as sha_owner
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import (
+    BoundedSourceObserver,
+    BytesSource,
     ProvenanceValidationError,
     append_checkpoint,
     assertion,
+    create_journal,
     encode_entry,
     new_id,
     parse_journal,
@@ -399,13 +405,13 @@ def test_native_graph_error_precedes_anchor_mismatch_and_later_parse_error(
         "prefix_bytes": str(len(raw)),
     }
     calls = []
-    original = JournalPrefix.commit
+    original = JournalPrefix._apply
 
     def commit(self, proposal):
         calls.append(proposal)
         return original(self, proposal)
 
-    monkeypatch.setattr(JournalPrefix, "commit", commit)
+    monkeypatch.setattr(JournalPrefix, "_apply", commit)
     with pytest.raises(ProvenanceValidationError, match="entry recorder"):
         validate_journal(raw + b"invalid later frame", catalog=catalog, expected_anchor=expected)
     assert calls == []
@@ -480,8 +486,8 @@ class PrefixConnection(sqlite3.Connection):
             self.metrics["published_metadata_octets"] += len(parameters[0].encode())
         elif sql.startswith("INSERT INTO frames"):
             self.metrics["published_payload_octets"] += len(parameters[1])
-            self.metrics["published_metadata_octets"] += len(parameters[0].encode()) + len(
-                parameters[2]
+            self.metrics["published_metadata_octets"] += (
+                len(parameters[0].encode()) + len(parameters[2]) + len(parameters[3].encode())
             )
         return result
 
@@ -504,6 +510,7 @@ class PrefixConnection(sqlite3.Connection):
         }
         self.statements = []
         changes = self.total_changes
+        transaction_before = self.in_transaction
 
         def trace(_sql):
             self.metrics["sql_statements"] += 1
@@ -531,7 +538,7 @@ class PrefixConnection(sqlite3.Connection):
             self.set_progress_handler(None, 0)
             self.set_authorizer(None)
             self.metrics["changed_rows"] = self.total_changes - changes
-        assert not self.in_transaction
+        assert transaction_before or not self.in_transaction
         assert all(cursor.closed for _sql, _parameters, cursor in self.statements)
         for sql, parameters, _cursor in self.statements:
             if not sql.startswith(("SELECT", "UPDATE", "DELETE")):
@@ -797,44 +804,60 @@ def test_existing_entry_limit_is_checked_before_loading_or_decoding(tmp_path, ca
         assert not statements and current.load() == PrefixState.empty()
 
 
-@pytest.mark.growth_witness(
-    "riverhog-journal-prefix-publication-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_provenance._journal_prefix.JournalPrefix.commit",
-)
-def test_actual_cold_prefix_publication_work(
-    tmp_path, journal, who, catalog, monkeypatch, record_property
-):
-    binding = growth_binding(JournalPrefix.commit)
-    projection = project_bindings((binding,))
-    declaration_sha256 = hashlib.sha256(
-        canonical_json_bytes(projection["declarations"][binding.declaration.id])
-    ).hexdigest()
-    samples = []
-    for count, payload, anchored in (
-        (1, 1, False),
-        (17, 1, False),
-        (129, 1, False),
-        (1025, 1, False),
-        (1, 65537, False),
-        (1025, 65537, False),
-        (17, 0, True),
-        (129, 0, True),
+@pytest.fixture(scope="module")
+def publication_histories(tmp_path_factory, catalog):
+    """Native histories are prepared off every measured pager and reused as immutable seeds."""
+    root = tmp_path_factory.mktemp("publication-histories")
+    observed = BoundedSourceObserver(catalog=catalog).observe(
+        BytesSource(b"opaque primary bytes\x00\xff")
+    )
+    who = observed.observer_agent_id
+    first = parse_journal(
+        create_journal(observed.graph_fragment(), recorded_by_agent_id=who, catalog=catalog)
+    )[0]
+    cases = []
+    for index, (count, payload, anchor_mode, tail) in enumerate(
+        (
+            (1, 1, "none", None),
+            (17, 1, "none", None),
+            (129, 1, "none", None),
+            (1025, 1, "none", None),
+            (1, 65537, "none", None),
+            (1025, 65537, "none", None),
+            (17, 0, "matched", None),
+            (129, 0, "matched", None),
+            (0, 1, "none", None),
+            (17, 0, "future", None),
+            (17, 0, "matched", 55),
+            (17, 0, "matched", 56),
+        )
     ):
-        path = tmp_path / f"publication-{count}-{payload}-{anchored}.sqlite3"
+        path = root / f"publication-{index}.sqlite3"
         with closing(connect(":memory:")) as seed:
             install(seed)
             current = prefix(seed, catalog)
             current.initialize()
-            first = parse_journal(journal)[0]
-            frames = [first]
-            state = current.commit(current.prepare(first, catalog))
-            for _ in range(1, count):
-                frame = checkpoint_frame(state, who, catalog)
+            frames = []
+            state = current.load()
+            for ordinal in range(count):
+                frame = first if ordinal == 0 else checkpoint_frame(state, who, catalog)
                 state = current.commit(current.prepare(frame, catalog))
                 frames.append(frame)
-            if anchored:
+            if not count:
+                candidate = first
+            elif anchor_mode != "none":
                 candidate = checkpoint_frame(state, who, catalog)
+                if tail is not None:
+                    document = deepcopy(candidate.document)
+                    # Purpose is native schema-valid content. Its exact UTF-8 width
+                    # selects both sides of SHA's finalization padding boundary.
+                    for padding in range(64):
+                        document["body"]["purpose"] = "urn:test:prefix:" + "x" * padding
+                        candidate = parse_journal(encode_entry(document, catalog=catalog))[0]
+                        if (state.byte_count + len(candidate.encoded)) % 64 == tail:
+                            break
+                    else:
+                        raise AssertionError("native padding-boundary fixture was not found")
             else:
                 target = first.document["body"]["assertions"]["artifacts"][0]["id"]
                 row = assertion(
@@ -861,19 +884,22 @@ def test_actual_cold_prefix_publication_work(
             expected_digest = hashlib.sha256(raw).hexdigest()
             with validate_journal(raw, catalog=catalog) as verified:
                 assert verified.journal_sha256 == expected_digest
-            anchor = (
-                None
-                if not anchored
-                else {
-                    "journal_id": state.journal_id,
-                    "through": candidate.reference,
-                    "prefix_sha256": expected_digest,
-                    "prefix_bytes": str(len(raw)),
+            anchor = None
+            if anchor_mode != "none":
+                through, anchored_raw = candidate, raw
+                if anchor_mode == "future":
+                    accepted = current.commit(current.prepare(candidate, catalog))
+                    through = checkpoint_frame(accepted, who, catalog)
+                    anchored_raw += through.encoded
+                    with validate_journal(anchored_raw, catalog=catalog) as verified:
+                        assert verified.journal_sha256 == hashlib.sha256(anchored_raw).hexdigest()
+                anchor = {
+                    "journal_id": candidate.document["journal_id"],
+                    "through": through.reference,
+                    "prefix_sha256": hashlib.sha256(anchored_raw).hexdigest(),
+                    "prefix_bytes": str(len(anchored_raw)),
                 }
-            )
-            # Bind a target anchor before accepting any frame in its workspace.
-            # Both workspaces use the maintained prefix transitions for fixture setup.
-            if anchored:
+                # Bind before accepting any frame, using actual maintained transitions.
                 with closing(connect(":memory:")) as bound:
                     install(bound)
                     current = prefix(bound, catalog, expected_anchor=anchor)
@@ -881,49 +907,250 @@ def test_actual_cold_prefix_publication_work(
                     for frame in frames:
                         current.commit(current.prepare(frame, catalog))
                     proposal = current.prepare(candidate, catalog)
+                    before = snapshot(bound)
                     with closing(connect(path)) as stored:
                         bound.backup(stored)
             else:
                 proposal = current.prepare(candidate, catalog)
+                before = snapshot(seed)
                 with closing(connect(path)) as stored:
                     seed.backup(stored)
-        with closing(sqlite3.connect(path, factory=PrefixConnection)) as db:
-            db.execute("PRAGMA synchronous = FULL").close()
-            current = prefix(db, catalog, expected_anchor=anchor)
-            real_update, real_compress = CheckpointSHA256.update_bytes, sha_owner.sha256_compress
-
-            def update(digest, data, *, real_update=real_update, db=db):
-                db.metrics["source_hashed_octets"] += len(data)
-                return real_update(digest, data)
-
-            def compress(words, block, *, real_compress=real_compress, db=db):
-                db.metrics["sha256_compression_calls"] += 1
-                return real_compress(words, block)
-
-            with db.observe() as metrics:
-                with monkeypatch.context() as patch:
-                    patch.setattr(CheckpointSHA256, "update_bytes", update)
-                    patch.setattr(sha_owner, "sha256_compress", compress)
-                    accepted = current.commit(proposal)
-            sample = {
-                "declaration": binding.declaration.id,
-                "declaration_sha256": declaration_sha256,
-                "dimensions": {"retained_frames": count, "frame_octets": len(candidate.encoded)},
-                "metrics": {
-                    bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds
-                },
-                "delegates": {},
-            }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
-            samples.append(sample)
-            assert accepted.hexdigest == expected_digest and accepted.frame_count == count + 1
-            assert accepted.byte_count == len(raw) and accepted.matched_anchor == anchored
-            assert current.load() == accepted
-            assert (
-                db.execute("SELECT value FROM frames WHERE sequence = ?", (str(count),)).fetchone()[
-                    0
-                ]
-                == candidate.json_bytes
+            actual_tail = CheckpointSHA256.from_state(proposal.sha256_state).total_bytes % 64
+            padding_blocks = (1 if actual_tail < 56 else 2) if anchor_mode == "matched" else 0
+            assert tail is None or actual_tail == tail
+            cases.append(
+                {
+                    "path": path,
+                    "count": count,
+                    "candidate": candidate,
+                    "proposal": proposal,
+                    "anchor": anchor,
+                    "before": before,
+                    "expected_digest": expected_digest,
+                    "source_octets": len(raw),
+                    "matched": anchor_mode == "matched",
+                    "dimensions": {
+                        "retained_frames": count,
+                        "frame_octets": len(candidate.encoded),
+                        "padding_blocks": padding_blocks,
+                    },
+                }
             )
-            assert metrics["source_hashed_octets"] == 0
+    assert len(cases) == 12
+    assert {case["dimensions"]["padding_blocks"] for case in cases} == {0, 1, 2}
+    return cases
+
+
+def publication_sample(frame, primitive):
+    binding = frame["binding"]
+    projection = project_bindings((binding,))
+    metrics = dict(primitive)
+    for bound in binding.declaration.bounds:
+        if bound.metric.startswith(("prefix_", "padding_")):
+            underlying = bound.metric.split("_", 1)[1]
+            metrics[bound.metric] = sum(
+                sample["metrics"][underlying]
+                for calls in frame["delegates"].values()
+                for sample in calls
+            )
+    sample = {
+        "declaration": binding.declaration.id,
+        "declaration_sha256": hashlib.sha256(
+            canonical_json_bytes(projection["declarations"][binding.declaration.id])
+        ).hexdigest(),
+        "dimensions": frame["dimensions"],
+        "metrics": {bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds},
+        "delegates": frame["delegates"],
+    }
+    validate_execution_samples(projection, binding.declaration.id, [sample])
+    return sample
+
+
+@contextmanager
+def observe_publication(db, binding, dimensions):
+    """Observe actual methods and public SHA calls under one uninterrupted SQLite observer."""
+
+    def frame(owner, inputs):
+        return {
+            "binding": owner,
+            "dimensions": inputs,
+            "delegates": {name: [] for name, _operation in owner.delegates},
+        }
+
+    root = frame(binding, dimensions)
+    stack, pending, operations = [root], [binding], set()
+    while pending:
+        current = pending.pop()
+        for _name, operation in current.delegates:
+            if operation not in operations:
+                operations.add(operation)
+                pending.append(growth_binding(operation))
+    rotations = [0]
+    real_rotate, real_update = sha_owner._rotr, CheckpointSHA256.update_bytes
+
+    def rotate(value, shift):
+        rotations[0] += 1
+        return real_rotate(value, shift)
+
+    def update(digest, data):
+        db.metrics["source_hashed_octets"] += len(data)
+        return real_update(digest, data)
+
+    def instrument(operation):
+        @wraps(operation)
+        def run(*args, **kwargs):
+            assert db.recording
+            parent = stack[-1]
+            tags = [name for name, child in parent["binding"].delegates if child is operation]
+            assert len(tags) == 1
+            child = growth_binding(operation)
+            compression = operation is sha_compress
+            if compression:
+                dimensions = {"block_octets": len(args[1])}
+            else:
+                assert args[0].db is db
+                dimensions = {
+                    item.name: parent["dimensions"][item.name]
+                    for item in child.declaration.dimensions
+                }
+            observed = frame(child, dimensions)
+            before, changes = dict(db.metrics), db.total_changes
+            start_rotations = rotations[0]
+            stack.append(observed)
+            try:
+                if compression:
+                    db.metrics["sha256_compression_calls"] += 1
+                result = operation(*args, **kwargs)
+            finally:
+                assert stack.pop() is observed
+            primitive = {key: value - before[key] for key, value in db.metrics.items()}
+            primitive["changed_rows"] = db.total_changes - changes
+            if compression:
+                primitive = {
+                    "block_input_octets": len(args[1]),
+                    "rotate_calls": rotations[0] - start_rotations,
+                    "returned_words": len(result),
+                }
+            parent["delegates"][tags[0]].append(publication_sample(observed, primitive))
+            return result
+
+        return run
+
+    sha_compress = sha_owner.sha256_compress
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(sha_owner, "_rotr", rotate)
+        patch.setattr(CheckpointSHA256, "update_bytes", update)
+        for operation in operations:
+            owner = sha_owner if operation is sha_compress else JournalPrefix
+            patch.setattr(owner, operation.__name__, instrument(operation))
+        yield root
+    assert stack == [root]
+
+
+def publication_samples(tmp_path, catalog, cases, operation, *, samples):
+    binding = growth_binding(getattr(JournalPrefix, operation))
+    for index, case in enumerate(cases):
+        for inherited in (False, True) if operation != "_apply" else (True,):
+            path = tmp_path / f"{operation}-{index}-{inherited}.sqlite3"
+            shutil.copyfile(case["path"], path)
+            proposal = case["proposal"]
+            dimensions = {
+                item.name: case["dimensions"][item.name] for item in binding.declaration.dimensions
+            }
+            # Build the application input on a separate, warm setup pager.
+            with closing(connect(path)) as setup:
+                batch = prefix(setup, catalog, expected_anchor=case["anchor"]).prepare_publication(
+                    proposal
+                )
+            with closing(sqlite3.connect(path, factory=PrefixConnection)) as db:
+                db.execute("PRAGMA synchronous = FULL").close()
+                db.execute("PRAGMA cache_size = -64").close()
+                current = prefix(db, catalog, expected_anchor=case["anchor"])
+                if inherited:
+                    db.execute("BEGIN IMMEDIATE").close()
+                with db.observe() as metrics:
+                    with observe_publication(db, binding, dimensions) as observed:
+                        if operation == "_apply":
+                            accepted = current._apply(batch)
+                        elif operation == "prepare_publication":
+                            planned = current.prepare_publication(proposal)
+                            accepted = planned.after
+                        else:
+                            accepted = current.commit(proposal)
+                samples.append(publication_sample(observed, metrics))
+                assert metrics["source_hashed_octets"] == 0
+                if operation in {"_apply", "prepare_publication"}:
+                    assert db.in_transaction == inherited
+                    with closing(sqlite3.connect(path, timeout=0)) as reader:
+                        try:
+                            assert snapshot(reader) == case["before"]
+                        except sqlite3.OperationalError as error:
+                            # DELETE journaling may take an exclusive lock when
+                            # this cold small cache spills the existing large atom.
+                            # A blocked reader cannot observe unpublished writes.
+                            assert error.sqlite_errorcode == sqlite3.SQLITE_BUSY
+                    if inherited:
+                        db.rollback()
+                    assert snapshot(db) == case["before"]
+                    with closing(sqlite3.connect(path, timeout=0)) as reader:
+                        assert snapshot(reader) == case["before"]
+                    # Establish the exact suffix outside the observation, after rollback proof.
+                    if operation == "prepare_publication":
+                        assert planned == batch
+                    db.execute("BEGIN IMMEDIATE").close()
+                    assert current._apply(batch) == accepted
+                    db.commit()
+                assert not db.in_transaction
+                assert accepted.hexdigest == case["expected_digest"]
+                assert accepted.frame_count == case["count"] + 1
+                assert accepted.byte_count == case["source_octets"]
+                assert accepted.matched_anchor == case["matched"]
+                assert current.load() == accepted
+                with closing(sqlite3.connect(path, timeout=0)) as reader:
+                    assert snapshot(reader) == snapshot(db)
+                with closing(
+                    db.execute("SELECT value FROM frames WHERE sequence = ?", (str(case["count"]),))
+                ) as cursor:
+                    assert cursor.fetchone()[0] == case["candidate"].json_bytes
+    assert len(samples) == len(cases) * (1 if operation == "_apply" else 2)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-journal-prefix-publication-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._journal_prefix.JournalPrefix.commit",
+)
+def test_actual_cold_prefix_publication_work(
+    tmp_path, catalog, publication_histories, record_property
+):
+    samples = []
     record_property("growth_samples", samples)
+    publication_samples(tmp_path, catalog, publication_histories, "commit", samples=samples)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-journal-prefix-publication-planning-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._journal_prefix.JournalPrefix.prepare_publication",
+)
+def test_actual_cold_prefix_publication_planning(
+    tmp_path, catalog, publication_histories, record_property
+):
+    samples = []
+    record_property("growth_samples", samples)
+    publication_samples(
+        tmp_path, catalog, publication_histories, "prepare_publication", samples=samples
+    )
+
+
+@pytest.mark.growth_witness(
+    "riverhog-journal-prefix-publication-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._journal_prefix.JournalPrefix._apply",
+)
+def test_actual_cold_prefix_publication_application(
+    tmp_path, catalog, publication_histories, record_property
+):
+    samples = []
+    record_property("growth_samples", samples)
+    publication_samples(tmp_path, catalog, publication_histories, "_apply", samples=samples)

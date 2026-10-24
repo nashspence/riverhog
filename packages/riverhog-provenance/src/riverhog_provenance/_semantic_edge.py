@@ -11,6 +11,7 @@ import hashlib
 import json
 import re
 import sqlite3
+from collections.abc import Callable
 from contextlib import closing
 from dataclasses import dataclass, replace
 from typing import Any
@@ -26,9 +27,12 @@ from riverhog_growth_contracts import (
     Dimension,
     Expression,
     declare_growth,
+    growth_binding,
 )
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
+from ._admission_growth import admission_declaration
+from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
 from ._online_dag import OnlineDag, _Plan, _Snapshot, _Work
 from ._semantic_source import SemanticSource
@@ -36,7 +40,6 @@ from .errors import ProvenanceValidationError
 
 ALGORITHM = "riverhog-semantic-edge/v1"
 _HEADER_OCTETS = 2048
-_BINDING_OCTETS = 8192
 
 
 class StaleSemanticEdge(RuntimeError):
@@ -238,6 +241,229 @@ def _declaration() -> Declaration:
     )
 
 
+def _phase_declaration(operation: str) -> Declaration:
+    planning = operation == "prepare"
+    base = _declaration()
+    return replace(
+        base,
+        id="riverhog-provenance.sqlite-semantic-edge-"
+        + ("plan" if planning else "application")
+        + ".growth/v1",
+        subjects=("riverhog_provenance._semantic_edge.SemanticEdge." + operation,),
+        scope="detached-semantic-edge-plan"
+        if planning
+        else "owner-transaction-semantic-edge-application",
+        starts_at=(
+            "load the exact owned phase outside a transaction"
+            if planning
+            else "accept one admitted exact proposal inside the parent's transaction"
+        ),
+        ends_at=(
+            "return a bounded detached proposal without changing native state"
+            if planning
+            else "return native changes and progress while preserving the open parent transaction"
+        ),
+        bounds=tuple(
+            replace(
+                bound, relation="equal", expression=Expression("constant", value=0, unit=bound.unit)
+            )
+            if planning and bound.metric in {"changed_rows", "written_value_octets"}
+            else bound
+            for bound in base.bounds
+        ),
+        conditions=(
+            base.conditions[0],
+            base.conditions[1],
+            base.conditions[3],
+            "The proposal is admitted under the recorded row budget; planning is detached "
+            "and application runs inside its owner's transaction.",
+        ),
+        invariants=(
+            *base.invariants,
+            "Planning never writes; application neither commits nor rolls back the parent's "
+            "transaction.",
+        ),
+        limitations=(
+            *base.limitations,
+            "Admission, graph delegates and parent transaction control require caller evidence; "
+            "this phase does not claim execution of the standalone advance operation.",
+        ),
+    )
+
+
+def _graph_delegates(operation: str) -> tuple[tuple[str, Callable[..., Any]], ...]:
+    if operation == "prepare":
+        return (("graph_start", OnlineDag._prepare_start), ("graph_transition", OnlineDag._prepare))
+    if operation == "_apply":
+        return (("graph_application", OnlineDag._apply),)
+    raise ValueError("unknown semantic graph phase")
+
+
+def _composed_declaration(
+    operation: str, *, phase_delegates: tuple[tuple[str, Callable[..., Any]], ...] = ()
+) -> Declaration:
+    whole = operation == "advance"
+    base = _declaration() if whole else _phase_declaration(operation)
+    delegates = phase_delegates if whole else _graph_delegates(operation)
+    selectors = (
+        ("graph_start", "graph_transition", "graph_application")
+        if whole
+        else tuple(name for name, _child in delegates)
+    )
+    dimensions = (
+        *base.dimensions,
+        Dimension("graph_retained_rows", COUNT, "Actual rows in the child's graph-owned tables."),
+        Dimension(
+            "graph_metadata_row_octets",
+            OCTETS_PER_COUNT,
+            "Input-derived native graph checkpoint, scalar and identity column envelope.",
+        ),
+        *(
+            Dimension(
+                name + "_calls",
+                COUNT,
+                "Invocation selector determined by the exact incoming semantic/native graph phase.",
+            )
+            for name in selectors
+        ),
+    )
+    by_metric = {bound.metric: bound for bound in base.bounds}
+    parameter_octets = Expression(
+        "product",
+        terms=(
+            by_metric["sql_statements"].expression,
+            Expression("dimension", name="metadata_row_octets"),
+        ),
+    )
+    extra = [
+        Bound(
+            "bound_parameter_octets",
+            OCTETS,
+            "upper",
+            parameter_octets,
+            "Actual parameters of all source/graph/checkpoint statements in the inclusive unit.",
+        ),
+        Bound(
+            "written_value_octets",
+            OCTETS,
+            "equal" if operation == "prepare" else "upper",
+            Expression("constant", value=0, unit=OCTETS)
+            if operation == "prepare"
+            else parameter_octets,
+            "Parameters supplied to bounded checkpoint and graph mutation statements.",
+        ),
+    ]
+    for metric in growth_binding(OnlineDag._prepare).declaration.bounds:
+        terms = []
+        for name, child in delegates:
+            child_dimensions = growth_binding(child).declaration.dimensions
+            arguments = []
+            for dimension in child_dimensions:
+                key = dimension.name
+                if whole:
+                    value = Expression("dimension", name=key)
+                elif key == "retained_rows":
+                    value = Expression("dimension", name="graph_retained_rows")
+                elif key == "metadata_row_octets":
+                    value = Expression("dimension", name="graph_metadata_row_octets")
+                elif key == "row_budget" and name == "graph_start":
+                    value = Expression("constant", value=1, unit=COUNT)
+                else:
+                    value = Expression("dimension", name=key)
+                arguments.append((key, value))
+            terms.append(
+                Expression(
+                    "delegate",
+                    name=name,
+                    metric="graph_" + metric.metric if whole else metric.metric,
+                    terms=(
+                        Expression("constant", value=1, unit=COUNT)
+                        if whole
+                        else Expression("dimension", name=name + "_calls"),
+                    ),
+                    arguments=tuple(arguments),
+                )
+            )
+        expression = terms[0] if len(terms) == 1 else Expression("sum", terms=tuple(terms))
+        extra.append(
+            Bound(
+                "graph_" + metric.metric,
+                metric.unit,
+                "upper",
+                expression,
+                "Actual native graph subtotal already included in the parent's inclusive work.",
+            )
+        )
+    return replace(
+        base,
+        dimensions=dimensions,
+        bounds=(*base.bounds, *extra),
+        conditions=(
+            *base.conditions,
+            "Graph invocation selectors come from the incoming phase/proposal, with at most "
+            "one start or transition and one application in a whole unit.",
+        ),
+        invariants=(
+            *base.invariants,
+            "Inclusive primitive bounds retain all graph work; graph subtotals identify its "
+            "actual named child invocations.",
+        ),
+        limitations=tuple(
+            note
+            for note in base.limitations
+            if not note.startswith("Admission, graph delegates and parent transaction control")
+        )
+        + (
+            "Admission and parent publication require their owner's evidence. Whole units compose "
+            "their actual planning/application phases, which compose native graph invocations.",
+        ),
+    )
+
+
+def _terminal_declaration() -> Declaration:
+    base = _declaration()
+    zero_count = Expression("constant", value=0, unit=COUNT)
+    zero_octets = Expression("constant", value=0, unit=OCTETS)
+    statements = next(bound.expression for bound in base.bounds if bound.metric == "sql_statements")
+    return replace(
+        base,
+        id="riverhog-provenance.sqlite-semantic-edge-result.growth/v1",
+        subjects=("riverhog_provenance._semantic_edge.SemanticEdge.result",),
+        scope="native-sqlite-fenced-semantic-graph-terminal-result",
+        starts_at="load the exact terminal semantic and graph checkpoints with their source fence",
+        ends_at="return acceptance or the authentic native self/cycle rejection without writes",
+        bounds=(
+            *(
+                replace(bound, relation="equal", expression=zero_count)
+                if bound.metric in {"changed_rows", "adjacency_rows"}
+                else bound
+                for bound in base.bounds
+            ),
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(statements, Expression("dimension", name="metadata_row_octets")),
+                ),
+                "Fixed source, prefix, subject and terminal checkpoint point keys.",
+            ),
+            Bound(
+                "written_value_octets",
+                OCTETS,
+                "equal",
+                zero_octets,
+                "A terminal result never mutates the private workspace.",
+            ),
+        ),
+        conditions=(
+            *base.conditions,
+            "row_budget is one fixed terminal checkpoint; no adjacency is visited.",
+        ),
+    )
+
+
 class SemanticEdge:
     def __init__(
         self,
@@ -294,7 +520,7 @@ class SemanticEdge:
         row = self._one(
             "SELECT substr(attempt_id,1,?),substr(binding,1,?),substr(checkpoint,1,?) "
             "FROM journal_prefix WHERE singleton=1",
-            (_HEADER_OCTETS + 1, _BINDING_OCTETS + 1, _HEADER_OCTETS + 1),
+            (_HEADER_OCTETS + 1, PREFIX_BINDING_OCTETS_MAX + 1, _HEADER_OCTETS + 1),
         )
         if (
             row is None
@@ -302,7 +528,7 @@ class SemanticEdge:
             or not row[0]
             or len(row[0]) > _HEADER_OCTETS
             or type(row[1]) is not bytes
-            or len(row[1]) > _BINDING_OCTETS
+            or len(row[1]) > PREFIX_BINDING_OCTETS_MAX
         ):
             raise RuntimeError("missing or invalid semantic accepted-prefix manifest")
         prefix = PrefixState.from_json(row[2])
@@ -350,6 +576,13 @@ class SemanticEdge:
         )
         return None if row is None else tuple(row)
 
+    @declare_growth(
+        admission_declaration(
+            identifier="semantic-edge",
+            subject="riverhog_provenance._semantic_edge.SemanticEdge.prepare_admission",
+            planning=True,
+        )
+    )
     def prepare_admission(self) -> EdgeAdmission:
         self._detached()
         prefix = self._prefix()
@@ -370,6 +603,13 @@ class SemanticEdge:
             self.binding, self.attempt_id, prefix, old, graph, EdgeState(version=version)
         )
 
+    @declare_growth(
+        admission_declaration(
+            identifier="semantic-edge",
+            subject="riverhog_provenance._semantic_edge.SemanticEdge._admit",
+            planning=False,
+        )
+    )
     def _admit(self, batch: EdgeAdmission) -> EdgeState:
         if not self.db.in_transaction:
             raise RuntimeError("semantic graph admission requires an owner transaction")
@@ -419,7 +659,7 @@ class SemanticEdge:
             "WHERE kind=? AND attempt_id=? AND binding=?",
             (
                 _HEADER_OCTETS + 1,
-                _BINDING_OCTETS + 1,
+                PREFIX_BINDING_OCTETS_MAX + 1,
                 _HEADER_OCTETS + 1,
                 _HEADER_OCTETS + 1,
                 self.kind,
@@ -452,6 +692,7 @@ class SemanticEdge:
     def load(self) -> EdgeState:
         return self._load()[0]
 
+    @declare_growth(_composed_declaration("prepare"), delegates=_graph_delegates("prepare"))
     def prepare(self, *, row_budget: int = 64) -> EdgeBatch:
         OnlineDag._budget(row_budget)
         state, prefix, graph = self._load()
@@ -470,6 +711,7 @@ class SemanticEdge:
             raise StaleSemanticEdge("graph changed during detached semantic planning")
         return EdgeBatch(self.binding, self.attempt_id, prefix, state.to_json(), after, graph, plan)
 
+    @declare_growth(_composed_declaration("_apply"), delegates=_graph_delegates("_apply"))
     def _apply(self, batch: EdgeBatch) -> EdgeState:
         if not self.db.in_transaction:
             raise RuntimeError("semantic graph application requires an owner transaction")
@@ -530,10 +772,16 @@ class SemanticEdge:
             raise
         return state
 
-    @declare_growth(_declaration())
+    @declare_growth(
+        _composed_declaration(
+            "advance", phase_delegates=(("planning", prepare), ("application", _apply))
+        ),
+        delegates=(("planning", prepare), ("application", _apply)),
+    )
     def advance(self, *, row_budget: int = 64) -> EdgeState:
         return self.commit(self.prepare(row_budget=row_budget))
 
+    @declare_growth(_terminal_declaration())
     def result(self) -> None:
         state, _prefix, graph = self._load()
         if not state.done:

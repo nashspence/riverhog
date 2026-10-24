@@ -470,15 +470,6 @@ class FtpSpool:
         page_size: int = 25,
         page_token: str | None = None,
     ) -> dict[str, object]:
-        with self._custody_pass_lock:
-            return self._status(page_size=page_size, page_token=page_token)
-
-    def _status(
-        self,
-        *,
-        page_size: int,
-        page_token: str | None,
-    ) -> dict[str, object]:
         if page_size < 1 or page_size > 100:
             raise ValueError("FTP spool status page_size must be in 1..100")
         source_ids = [source.id for source in self.config.sources]
@@ -615,8 +606,11 @@ class FtpSpool:
 
     def _claim_summary(self, source: SourceConfig) -> tuple[int, int]:
         with closing(self._open_state(source)) as connection:
-            claim_count = _state_value(connection, "claim_count")
-            claim_bytes = _state_value(connection, "claim_bytes")
+            claim_count, claim_bytes = connection.execute(
+                "SELECT "
+                "(SELECT value FROM adapter_state WHERE key = 'claim_count'), "
+                "(SELECT value FROM adapter_state WHERE key = 'claim_bytes')"
+            ).fetchone()
         if claim_count is None or claim_bytes is None:
             raise FtpSpoolError("FTP claim accounting is unavailable")
         return int(claim_count), int(claim_bytes)

@@ -9,7 +9,9 @@ from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import (
+    COUNT,
     OCTETS,
+    OCTETS_PER_COUNT,
     Bound,
     Declaration,
     Dimension,
@@ -267,8 +269,9 @@ def advance_topology_frame(
     """Advance bounded items, plus one existing entry-bounded final item atom.
 
     The source owner supplies only the exact authenticated frame ranges. Full
-    entry planning, source-page verification and item canonical decoding are
-    separate costs. No graph or semantic acceptance is inferred from these facts.
+    entry planning and source-page verification are separate owner costs. This
+    call includes selected-item canonical decoding and hashing. No graph or
+    semantic acceptance is inferred from these facts.
     """
     if type(item_budget) is not int or not 1 <= item_budget <= 64:
         raise ValueError("invalid topology item budget")
@@ -288,3 +291,378 @@ def advance_topology_frame(
             array = replace(array, index=array.index + 1, offset=next_offset)
         cursor = replace(cursor, **{name: array})
     return TopologyFrameAdvance(cursor, tuple(facts), inspected, octets)
+
+
+def _topology_preparation_declaration(mode: str) -> Declaration:
+    planning = mode == "plan"
+
+    def constant(value: int, unit: tuple[tuple[str, int], ...] = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(constant(value, ()), term))
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    octets = (
+        dimension("input_octets")
+        if planning
+        else add(dimension("octet_budget"), dimension("maximum_item_octets"))
+    )
+    calls = constant(1) if planning else dimension("item_budget")
+    bounds = [
+        Bound(
+            "json_decodes",
+            COUNT,
+            "upper",
+            calls,
+            ("Decode the complete entry once, or each attempted documentary item once."),
+        ),
+        Bound(
+            "json_decoded_octets",
+            OCTETS,
+            "upper",
+            octets,
+            (
+                "Actual complete entry/item "
+                "bytes enter canonical "
+                "parsing; earlier committed "
+                "items are not decoded again."
+            ),
+        ),
+        Bound(
+            "json_encodes",
+            COUNT,
+            "upper",
+            add(constant(1), scale(2, dimension("range_fields"))) if planning else calls,
+            (
+                "Planning compares "
+                "canonical source and"
+                " encodes each "
+                "immediate key/value "
+                "at three fixed "
+                "object levels; "
+                "advancement compares"
+                " each selected item "
+                "once."
+            ),
+        ),
+        Bound(
+            "json_encoded_octets",
+            OCTETS,
+            "upper",
+            scale(6, octets),
+            (
+                "Valid planning "
+                "encodes at most four"
+                " complete-entry "
+                "equivalents; "
+                "rejected compact "
+                "numeric text can "
+                "expand up to sixfold"
+                " in its sole "
+                "canonical check."
+            ),
+        ),
+        Bound(
+            "hashed_octets",
+            OCTETS,
+            "upper",
+            octets,
+            ("Hash one exact planned entry or each returned documentary fact once."),
+        ),
+    ]
+    if planning:
+        bounds.extend(
+            (
+                Bound(
+                    "range_keys",
+                    COUNT,
+                    "upper",
+                    dimension("range_fields"),
+                    ("Visit immediate keys only at the root, body and assertions levels."),
+                ),
+                Bound(
+                    "range_key_octets",
+                    OCTETS,
+                    "upper",
+                    scale(6, dimension("input_octets")),
+                    (
+                        "Full UTF-16 sorting "
+                        "keys cost at most "
+                        "twice JSON source "
+                        "width at each of "
+                        "three fixed levels."
+                    ),
+                ),
+                Bound(
+                    "returned_cursors",
+                    COUNT,
+                    "upper",
+                    constant(1),
+                    (
+                        "Return one fixed-shape "
+                        "pair of array positions"
+                        " without retaining "
+                        "source bytes."
+                    ),
+                ),
+            )
+        )
+    else:
+        bounds.extend(
+            (
+                Bound(
+                    "item_calls",
+                    COUNT,
+                    "upper",
+                    dimension("item_budget"),
+                    (
+                        "The actual "
+                        "retract/relations "
+                        "loop attempts at "
+                        "most the explicit "
+                        "item admission."
+                    ),
+                ),
+                Bound(
+                    "visited_octets",
+                    OCTETS,
+                    "upper",
+                    octets,
+                    (
+                        "Structural iteration visits "
+                        "each selected item and "
+                        "delimiter once; one final "
+                        "item can cross the byte "
+                        "admission."
+                    ),
+                ),
+                Bound(
+                    "returned_octets",
+                    OCTETS,
+                    "upper",
+                    octets,
+                    ("Only selected exact item bytes are assembled for decoding."),
+                ),
+                Bound(
+                    "source_range_octets",
+                    OCTETS,
+                    "upper",
+                    add(
+                        octets,
+                        Expression(
+                            "product",
+                            terms=(constant(65536, OCTETS_PER_COUNT), dimension("item_budget")),
+                        ),
+                    ),
+                    (
+                        "Observe complete "
+                        "actual callback "
+                        "returns, including "
+                        "at most one final "
+                        "65,536-byte overread"
+                        " window per item."
+                    ),
+                ),
+                Bound(
+                    "read_calls",
+                    COUNT,
+                    "upper",
+                    add(
+                        constant(1),
+                        Expression(
+                            "product", terms=(constant(1, (("count", 1), ("octets", -1))), octets)
+                        ),
+                    ),
+                    (
+                        "Each successful read"
+                        " makes at least one "
+                        "byte of progress; "
+                        "include a final "
+                        "unavailable-range "
+                        "rejection."
+                    ),
+                ),
+                Bound(
+                    "requested_range_octets",
+                    OCTETS,
+                    "upper",
+                    Expression(
+                        "product",
+                        terms=(
+                            constant(65536, OCTETS_PER_COUNT),
+                            add(
+                                constant(1),
+                                Expression(
+                                    "product",
+                                    terms=(constant(1, (("count", 1), ("octets", -1))), octets),
+                                ),
+                            ),
+                        ),
+                    ),
+                    (
+                        "Account for full "
+                        "range requests even "
+                        "when the callback "
+                        "returns short "
+                        "blocks."
+                    ),
+                ),
+                Bound(
+                    "returned_facts",
+                    COUNT,
+                    "upper",
+                    dimension("item_budget"),
+                    (
+                        "Ignored relation "
+                        "kinds produce no "
+                        "fact; each selected "
+                        "item produces at "
+                        "most one."
+                    ),
+                ),
+            )
+        )
+    return Declaration(
+        id="riverhog-provenance.topology-" + mode + ".growth/v1",
+        authority="riverhog-provenance",
+        subjects=(
+            "riverhog_provenance.topology_facts."
+            + ("plan_topology_frame" if planning else "advance_topology_frame"),
+        ),
+        scope="complete private topology " + mode + " with real canonical and structural work",
+        starts_at=(
+            "receive the exact entry bytes or retained array cursors, source "
+            "callback and explicit item/byte admissions"
+        ),
+        ends_at=(
+            "return private source-bound cursors/facts or propagate the "
+            "existing input/storage rejection"
+        ),
+        dimensions=(
+            (
+                Dimension(
+                    "input_octets",
+                    OCTETS,
+                    (
+                        "Complete supplied entry bytes, including "
+                        "malformed/over-capacity input; zero for "
+                        "rejected non-byte types."
+                    ),
+                ),
+                Dimension(
+                    "range_fields",
+                    COUNT,
+                    (
+                        "Independent "
+                        "immediate member "
+                        "count at the "
+                        "supplied root, body "
+                        "and assertions "
+                        "objects; malformed "
+                        "input can supply a "
+                        "conservative "
+                        "complete field "
+                        "envelope."
+                    ),
+                ),
+            )
+            if planning
+            else (
+                Dimension(
+                    "item_budget",
+                    COUNT,
+                    ("Actual caller item admission in the existing 1..64 domain."),
+                ),
+                Dimension(
+                    "octet_budget",
+                    OCTETS,
+                    ("Actual caller byte admission in the existing 1..65,536 domain."),
+                ),
+                Dimension(
+                    "maximum_item_octets",
+                    OCTETS,
+                    (
+                        "Largest complete actual remaining"
+                        " item in the exact source arrays,"
+                        " independently of observed reads "
+                        "or work."
+                    ),
+                ),
+            )
+        ),
+        bounds=tuple(bounds),
+        conditions=(
+            "The existing entry cap and input/cursor checks remain in force.",
+            (
+                "Advancement receives"
+                " exact authenticated"
+                " canonical source "
+                "ranges and valid "
+                "explicit admissions;"
+                " callback storage "
+                "and verification "
+                "remain with the "
+                "source owner."
+            ),
+            (
+                "Full actual input "
+                "widths and remaining"
+                " item sizes come "
+                "from supplied source"
+                " facts, "
+                "independently of "
+                "observed cost."
+            ),
+        ),
+        invariants=(
+            (
+                "Planning retains only fixed-shape positions; advancement never "
+                "revisits a committed preceding item."
+            ),
+            (
+                "Private documentary "
+                "facts do not accept "
+                "schema, graph or "
+                "semantic validity "
+                "and do not grant "
+                "archive authority."
+            ),
+            (
+                "One existing "
+                "entry-bounded final "
+                "item may exceed the "
+                "step byte admission "
+                "without silent "
+                "omission."
+            ),
+        ),
+        limitations=(
+            (
+                "Callback source storage, page verification, durable publication, "
+                "graph construction and ordered semantic replay remain separate "
+                "work."
+            ),
+            (
+                "Logical "
+                "byte/codec/key "
+                "observations exclude"
+                " internal canonical "
+                "object-key "
+                "comparisons, "
+                "recursive "
+                "portable-value "
+                "checks, allocation "
+                "and CPU latency."
+            ),
+        ),
+    )
+
+
+declare_growth(_topology_preparation_declaration("plan"))(plan_topology_frame)
+declare_growth(_topology_preparation_declaration("advance"))(advance_topology_frame)

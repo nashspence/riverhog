@@ -2946,12 +2946,14 @@ source = { editable = "packages/riverhog-archive-contracts" }
 dependencies = [
     { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
+    { name = "sha256-continuation" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+    { name = "sha256-continuation", editable = "packages/sha256-continuation" },
 ]
 
 [[package]]
@@ -3149,6 +3151,7 @@ dependencies = [
     { name = "riverhog-provenance-contracts" },
     { name = "riverhog-storage-adapter-protocol" },
     { name = "riverhog-storage-adapter-support" },
+    { name = "sha256-continuation" },
     { name = "sqlalchemy" },
     { name = "starlette" },
     { name = "state-schema" },
@@ -3176,6 +3179,7 @@ requires-dist = [
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
     { name = "riverhog-storage-adapter-protocol", editable = "packages/riverhog-storage-adapter-protocol" },
     { name = "riverhog-storage-adapter-support", editable = "packages/riverhog-storage-adapter-support" },
+    { name = "sha256-continuation", editable = "packages/sha256-continuation" },
     { name = "sqlalchemy", specifier = ">=2.0,<2.1" },
     { name = "starlette", specifier = ">=0.37,<2.0" },
     { name = "state-schema", editable = "packages/state-schema" },

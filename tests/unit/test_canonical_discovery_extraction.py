@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 
+import pytest
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.canonical_discovery_extraction import (
     assertion_clause_matches,
     assertion_postings,
     declared_profile_sections,
     literal_chunks,
+    name_representations,
 )
 from riverhog_protocol import AssertionClause, ProfilePin
 
@@ -109,3 +113,44 @@ def test_chunk_windows_find_a_literal_crossing_the_4096_boundary() -> None:
     assert all(len(chunk) <= 4096 for _, chunk in chunks)
     assert any(needle in chunk for _, chunk in chunks)
     assert all(offset >= 0 for offset, _ in chunks)
+
+
+@pytest.mark.parametrize(
+    ("exact", "encoding", "escaped", "text"),
+    [
+        (b"", "utf-8", "", ""),
+        (b"A\\\x00\xff", "utf-8", r"A\\\x00\xff", None),
+        (b"H\x00i\x00", "utf-16le", r"H\x00i\x00", "Hi"),
+        (b"\x00\xd8", "utf-16le", r"\x00\xd8", None),
+        (b"\xf0\x9f\xa6\x9b", "utf-8", r"\xf0\x9f\xa6\x9b", "\U0001f99b"),
+        (b"Hi", "unknown", "Hi", None),
+    ],
+)
+def test_one_declared_name_preserves_exact_projections_and_original_document_hash(
+    exact, encoding, escaped, text
+):
+    name = {
+        "kind": "bytes",
+        "bytes": {
+            "encoding": "base64",
+            "data": base64.b64encode(exact).decode("ascii"),
+            "byte_length": str(len(exact)),
+        },
+        "encoding": encoding,
+        "display": "presentation",
+    }
+    actual = list(name_representations(name))
+    expected = [
+        ("exact-bytes", base64.b64encode(exact).decode("ascii")),
+        ("byte-escape", escaped),
+    ]
+    if text is not None:
+        expected.append(("declared-text", text))
+    assert [(item.representation, item.value) for item in actual] == expected
+    assert {item.source_value_sha256 for item in actual} == {
+        hashlib.sha256(canonical_json_bytes(name)).hexdigest()
+    }
+    changed = list(name_representations({**name, "display": "another presentation"}))
+    assert [(item.representation, item.value) for item in changed] == expected
+    assert changed[0].source_value_sha256 != actual[0].source_value_sha256
+    assert list(name_representations({"kind": "text", "value": "plain"})) == []

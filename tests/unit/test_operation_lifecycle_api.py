@@ -107,7 +107,11 @@ def _tag_set_identity(*tags: str) -> str:
 
 def _container(tmp_path: Path, *, database_url: str | None = None) -> ServiceContainer:
     database_url = database_url or sqlite_url(tmp_path / "catalog.sqlite3")
-    baseline = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
+    baseline = RuntimeConfig.for_testing(
+        database_url=database_url,
+        archive_scrypt_work_factor=1,
+        journal_validation_workspace=tmp_path / "journal-validation",
+    )
     primary_config = replace(
         baseline.archive_store("archive"),
         name="primary",

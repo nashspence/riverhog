@@ -175,6 +175,33 @@ def test_shared_definitions_cover_every_declared_direct_make_validation_target()
         assert definitions[0]["name"] == identity
 
 
+@pytest.mark.parametrize("goal", ["owner", "one", "build-", "build-foreign/path"])
+def test_unowned_make_goals_do_not_resolve_repository_growth_operations(monkeypatch, goal):
+    from scripts import ci_qualification
+
+    def unexpected_lookup(_name):
+        pytest.fail("unowned Make goals must not resolve repository growth operations")
+
+    monkeypatch.setattr(ci_qualification, "validation_work", unexpected_lookup)
+    with pytest.raises(ValueError, match="unknown maintained Make target"):
+        ci_make.make_work_definitions((goal,), {})
+
+
+def test_declared_make_build_pattern_resolves_its_exact_work(monkeypatch):
+    from scripts import ci_qualification
+
+    calls = []
+    definition = {"name": "build-fixture", "command": ["make", "build-fixture"]}
+
+    def lookup(name):
+        calls.append(name)
+        return SimpleNamespace(definition=lambda: definition)
+
+    monkeypatch.setattr(ci_qualification, "validation_work", lookup)
+    assert ci_make.make_work_definitions(("build-fixture",), {}) == [definition]
+    assert calls == ["build-fixture"]
+
+
 @pytest.mark.parametrize("identity", ["", ".", "..", "../foreign", "x/y", "x" * 129])
 def test_invalid_path_identity_never_redirects_evidence(identity):
     with pytest.raises(ValueError):

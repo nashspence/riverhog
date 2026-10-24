@@ -13,7 +13,7 @@ import time
 import tomllib
 import zipfile
 from collections.abc import Mapping, Sequence
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path, PurePosixPath
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Any, cast
@@ -26,6 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from contract_atlas.github_publication import GitHubPublication
 from contract_atlas.model import ContractAtlasError
+from contract_atlas.publication import file_sha256
 
 if TYPE_CHECKING:
     from ci_execution import validate_checkout
@@ -51,11 +52,12 @@ else:
 from scripts.ci_make import owned_execution_spans, validate_make_receipt
 from scripts.ci_unit import SHARDS
 from scripts.validation_evidence import ValidationWork, runner_platform, validate_evidence_records
+from scripts.validation_resources import validation_storage_budget
 from scripts.validation_witnesses import collect_test_witnesses
 
-BUDGET_BYTES = 64 * 1024 * 1024
 MAX_ROWS = 512
 MAX_FILES = 4096
+TIMESTAMP_RESOLUTION_SECONDS = 1
 
 
 def ci_execution_work() -> dict[str, ValidationWork]:
@@ -231,13 +233,14 @@ def extract_artifact(
     run: Mapping[str, Any],
     destination: Path,
 ) -> int:
+    budget = validation_storage_budget()
     owner = artifact.get("workflow_run", {})
     size = artifact.get("size_in_bytes")
     if (
         artifact.get("expired") is not False
         or type(artifact.get("id")) is not int
         or type(size) is not int
-        or not 0 < size <= BUDGET_BYTES
+        or not 0 < size <= budget
         or owner.get("id") != run["id"]
         or owner.get("head_sha") != run["head_sha"]
         or owner.get("head_branch") != run["head_branch"]
@@ -248,9 +251,7 @@ def extract_artifact(
         raise ValueError("artifact is not owned by the selected trusted execution")
     archive = destination.with_suffix(".zip")
     remote.download_workflow_artifact(artifact["id"], archive)
-    if archive.stat().st_size != size or (
-        "sha256:" + hashlib.sha256(archive.read_bytes()).hexdigest() != artifact["digest"]
-    ):
+    if archive.stat().st_size != size or ("sha256:" + file_sha256(archive) != artifact["digest"]):
         raise ValueError("artifact bytes differ from GitHub's exact digest")
     destination.mkdir()
     expanded = 0
@@ -274,7 +275,7 @@ def extract_artifact(
                 raise ValueError("artifact has an unsafe, repeated or special path")
             seen.add(str(relative))
             expanded += item.file_size
-            if expanded > BUDGET_BYTES:
+            if expanded > budget:
                 raise ValueError("artifact expansion exceeds the evidence budget")
             path = destination / relative
             if item.is_dir():
@@ -291,6 +292,7 @@ def verify_ci_artifacts(
     remote: GitHubPublication, run: Mapping[str, Any], source_sha: str, directory: Path
 ) -> dict[str, object]:
     """Consume actual owner artifacts, never an unbound pass string in a summary."""
+    budget = validation_storage_budget()
     cases = ci_execution_work()
     artifacts = bounded_rows(remote, f"actions/runs/{run['id']}/artifacts", "artifacts")
     attempt = run["run_attempt"]
@@ -322,11 +324,11 @@ def verify_ci_artifacts(
         if type(size) is not int:
             raise ValueError("artifact size is missing")
         total += size
-        if total > BUDGET_BYTES:
+        if total > budget:
             raise ValueError("complete execution artifacts exceed the collection budget")
         owned = directory / work.name
         expanded_total += extract_artifact(remote, artifact, run, owned)
-        if expanded_total > BUDGET_BYTES:
+        if expanded_total > budget:
             raise ValueError("complete expanded artifacts exceed the collection budget")
         receipt = require_canonical_json((owned / "receipt.json").read_bytes())
         report = validate_evidence_records(
@@ -457,7 +459,10 @@ def measure_jobs(jobs: Sequence[Mapping[str, Any]], run: Mapping[str, Any]) -> d
             seconds = None
             if step.get("conclusion") != "skipped":
                 left, right = timestamp(step.get("started_at")), timestamp(step.get("completed_at"))
-                if not start <= left <= right <= finish:
+                # Independent job and step snapshots can straddle one reported second.
+                # Retain both clocks verbatim; only the containment comparison is tolerant.
+                resolution = timedelta(seconds=TIMESTAMP_RESOLUTION_SECONDS)
+                if not start - resolution <= left <= right <= finish + resolution:
                     raise ValueError("step is outside its owning job's completion boundary")
                 seconds = (right - left).total_seconds()
             steps.append(
@@ -486,7 +491,8 @@ def measure_jobs(jobs: Sequence[Mapping[str, Any]], run: Mapping[str, Any]) -> d
     if not starts:
         return {
             "boundary": "no-job-started",
-            "timestamp_resolution_seconds": 1,
+            "timestamp_resolution_seconds": TIMESTAMP_RESOLUTION_SECONDS,
+            "timestamp_boundary_tolerance_seconds": TIMESTAMP_RESOLUTION_SECONDS,
             "started_at": None,
             "finished_at": None,
             "elapsed_seconds": None,
@@ -494,7 +500,8 @@ def measure_jobs(jobs: Sequence[Mapping[str, Any]], run: Mapping[str, Any]) -> d
         }
     return {
         "boundary": "first-job-start-through-last-job-cleanup-including-between-job-gaps",
-        "timestamp_resolution_seconds": 1,
+        "timestamp_resolution_seconds": TIMESTAMP_RESOLUTION_SECONDS,
+        "timestamp_boundary_tolerance_seconds": TIMESTAMP_RESOLUTION_SECONDS,
         "started_at": min(starts).isoformat(),
         "finished_at": max(finishes).isoformat(),
         "elapsed_seconds": (max(finishes) - min(starts)).total_seconds(),
@@ -561,6 +568,7 @@ def collect_gate(remote: GitHubPublication, run_id: int, attempt: int) -> dict[s
 def collect_codeql_checkout(
     remote: GitHubPublication, run: Mapping[str, Any], jobs: Sequence[Mapping[str, Any]]
 ) -> dict[str, object]:
+    budget = validation_storage_budget()
     text, document = source_document(remote, run["head_sha"], run["path"])
     workflow = yaml.safe_load(text)
     job_definition = workflow["jobs"]["analyze"]
@@ -586,7 +594,7 @@ def collect_codeql_checkout(
             if type(artifact.get("size_in_bytes")) is not int:
                 raise ValueError("CodeQL checkout artifact has no bounded size")
             total += artifact["size_in_bytes"]
-            if total > BUDGET_BYTES:
+            if total > budget:
                 raise ValueError("CodeQL checkout artifacts exceed the collection budget")
             destination = Path(temporary) / work
             extract_artifact(remote, artifact, run, destination)

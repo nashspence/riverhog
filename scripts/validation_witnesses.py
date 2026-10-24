@@ -38,6 +38,8 @@ def discover_test_witnesses(root: Path) -> tuple[TestWitness, ...]:
                 if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     continue
                 for decorator in node.decorator_list:
+                    if ast.unparse(decorator) == "pytest.mark.growth_witness":
+                        raise ValueError("growth witness requires one identity and gate binding")
                     if not isinstance(decorator, ast.Call):
                         continue
                     if ast.unparse(decorator.func) != "pytest.mark.growth_witness":
@@ -93,7 +95,7 @@ def operation_projection(
             continue
         seen.add(current.declaration.id)
         if root is not None and not Path(
-            inspect.getfile(current.operation)
+            inspect.getfile(inspect.unwrap(current.operation))
         ).resolve().is_relative_to(root.resolve()):
             raise ValueError("growth operation source is outside the required checkout")
         pending.extend(growth_binding(operation) for _, operation in current.delegates)

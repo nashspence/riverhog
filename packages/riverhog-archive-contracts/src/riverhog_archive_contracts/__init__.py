@@ -36,6 +36,7 @@ from riverhog_archive_contracts.history_builder import MemberHistoryBuilder
 from riverhog_archive_contracts.history_store import MemberHistoryStore, read_bounded_history_object
 from riverhog_archive_contracts.member_binding_tree import (
     BindingTreeCommitment,
+    MemberBindingTreeCheckpoint,
     binding_tree_commitment,
     verify_binding_inclusion,
 )
@@ -104,6 +105,7 @@ from riverhog_archive_contracts.structural_record_set import (
     RECORD_PAGE_FORMAT,
     RECORD_SET_FORMAT,
     RecordPage,
+    RecordSetCheckpoint,
     RecordSetCommitment,
     RecordSetRef,
     verify_record_pages,
@@ -137,6 +139,7 @@ __all__ = [
     "source_binding_proof_object_path",
     "validate_member_history_binding_page",
     "verify_member_history_sets",
+    "MemberBindingTreeCheckpoint",
     "BindingTreeCommitment",
     "binding_tree_commitment",
     "verify_binding_inclusion",
@@ -146,6 +149,7 @@ __all__ = [
     "RECORD_PAGE_FORMAT",
     "RECORD_SET_FORMAT",
     "RecordPage",
+    "RecordSetCheckpoint",
     "RecordSetCommitment",
     "RecordSetRef",
     "verify_record_pages",

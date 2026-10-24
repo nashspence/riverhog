@@ -528,9 +528,11 @@ start_ftp
 partition_run_code="from ftplib import FTP, all_errors
 from io import BytesIO
 import json
+import os
 from pathlib import Path
 import time
 from a_riverhog_ftp_spool_client import RiverhogFtpSpoolClient
+publication_timeout = int(os.environ['STOVE0_SMOKE_PUBLICATION_TIMEOUT'])
 same_path = Path('/intake/ftp/same-path.bin')
 expected = (b'first exact FTP event', b'second distinct exact FTP event')
 
@@ -564,15 +566,16 @@ with RiverhogFtpSpoolClient(
     base_url='http://127.0.0.1:8080',
     token='a-riverhog-ftp-spool-compose-smoke-token',
     allow_insecure_http=True,
+    timeout_seconds=publication_timeout,
 ) as client:
     result = client.flush_ftp_spool_source('ftp-smoke')
     assert result['failed'] == [], result
-    deadline = time.monotonic() + 60
+    deadline = time.monotonic() + publication_timeout
     while time.monotonic() < deadline:
+        status = client.get_ftp_spool_status()
         receipt_paths = sorted(
             Path('/intake/ftp/.a-riverhog-ftp-spool/receipts').glob('*.json')
         )
-        status = client.get_ftp_spool_status()
         if len(receipt_paths) == 2 and status.sources[0].claims == 0:
             break
         time.sleep(0.25)
@@ -593,6 +596,7 @@ print(json.dumps([
 ], sort_keys=True))"
 partition_receipts_json="$(adapter_compose exec -T \
   --env RIVERHOG_SMOKE_PARTITION_OUTPUT=1 \
+  --env "STOVE0_SMOKE_PUBLICATION_TIMEOUT=${smoke_publication_timeout}" \
   ftp-spool python -c "${partition_run_code}")"
 test "$(printf '%s' "${partition_receipts_json}" | jq 'length')" -eq 2
 
@@ -777,7 +781,7 @@ with RiverhogFtpSpoolClient(
     base_url='http://127.0.0.1:8080',
     token='a-riverhog-ftp-spool-compose-smoke-token',
     allow_insecure_http=True,
-    timeout_seconds=300 + 30 * max(0, int(os.environ['STOVE0_SMOKE_FILE_COUNT']) - 16),
+    timeout_seconds=int(os.environ['STOVE0_SMOKE_PUBLICATION_TIMEOUT']),
 ) as client:
     health = client.ftp_spool_health_ready()
     assert health.service == 'a-riverhog-ftp-spool'
@@ -803,6 +807,7 @@ input_receipt_json="$(adapter_compose exec -T \
   --env RIVERHOG_SMOKE_RECEIPT_OUTPUT=1 \
   --env "STOVE0_SMOKE_FILE_COUNT=${smoke_file_count}" \
   --env "STOVE0_SMOKE_AUDIO_FRAMES=${smoke_audio_frames}" \
+  --env "STOVE0_SMOKE_PUBLICATION_TIMEOUT=${smoke_publication_timeout}" \
   --env "STOVE0_SMOKE_INTERRUPT_TRANSFER=${interrupt_transfer}" \
   ftp-spool python -c "${adapter_run_code}")"
 test -n "${input_receipt_json}"

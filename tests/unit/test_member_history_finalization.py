@@ -6,6 +6,7 @@ import uuid
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
 from riverhog_age import decrypt_age_scrypt
 from riverhog_archive_contracts import MemberHistoryBinding, MemberHistoryRoot, RecordPage
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
@@ -32,21 +33,23 @@ from tests.unit.test_archive_root import MemoryImmutableStore
 
 
 def test_final_history_and_encrypted_structure_resume_without_changing_early_primary(
-    tmp_path: Path,
+    tmp_path: Path, request: pytest.FixtureRequest
 ) -> None:
     config = RuntimeConfig.for_testing(
         database_url=sqlite_url(tmp_path / "catalog.db"),
         archive_scrypt_work_factor=1,
     )
     factory = make_session_factory(config.database_url)
-    Base.metadata.create_all(factory.kw["bind"])
+    engine = factory.kw["bind"]
+    request.addfinalizer(engine.dispose)
+    Base.metadata.create_all(engine)
     store = MemoryImmutableStore()
-    service = object.__new__(SqlAlchemyCollectionUploadService)
-    service._session_factory = factory
-    service._config = config
-    service._archive_stores = SimpleNamespace(
-        require=lambda _name: SimpleNamespace(immutable_objects=store)
+    service = SqlAlchemyCollectionUploadService(
+        config,
+        SimpleNamespace(require=lambda _name: SimpleNamespace(immutable_objects=store)),
+        session_factory=factory,
     )
+    request.addfinalizer(service.close)
     member = ArtifactMemberIdentityDocument.model_validate(
         {
             "artifact_id": "c" * 64,
@@ -69,6 +72,7 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
         observation.graph_fragment(), recorded_by_agent_id=observation.observer_agent_id
     )
     late_summary = validate_journal(late)
+    request.addfinalizer(late_summary.close)
     incarnation = str(uuid.uuid4())
     with session_scope(factory) as session:
         session.add(
@@ -116,6 +120,7 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
         )
         for raw in (produced.content, late):
             summary = validate_journal(raw, require_profiles=False)
+            request.addfinalizer(summary.close)
             session.add(
                 CollectionUploadProvenanceJournalRecord(
                     collection_id=1,

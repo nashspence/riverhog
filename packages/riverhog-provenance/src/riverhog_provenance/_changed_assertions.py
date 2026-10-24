@@ -23,8 +23,10 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
+from .errors import JournalValidationCapacity
 
-class ChangedAssertionCapacity(RuntimeError):
+
+class ChangedAssertionCapacity(JournalValidationCapacity):
     """The selected current atom needs more byte admission."""
 
 

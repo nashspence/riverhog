@@ -916,6 +916,45 @@ def test_status_pages_sources_without_claiming_an_exact_backlog_snapshot(tmp_pat
     assert following["next_page_token"] is None
 
 
+def test_status_observes_durable_claim_while_publication_is_blocked(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    config = _config(tmp_path)
+    source = config.sources[0]
+    content = b"exact custody during slow publication"
+    _completed_upload(source, "pending.bin", content)
+    entered = threading.Event()
+    release = threading.Event()
+
+    class BlockingProducer(_Producer):
+        calls: list[dict[str, Any]] = []
+
+        def publish(self, files: object, **kwargs: object) -> ProducedCollection:
+            entered.set()
+            assert release.wait(timeout=5)
+            return super().publish(files, **kwargs)
+
+    monkeypatch.setattr(landing, "CollectionProducer", BlockingProducer)
+    adapter = FtpSpool(object(), config)  # type: ignore[arg-type]
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        publication = executor.submit(adapter.run_once)
+        try:
+            assert entered.wait(timeout=5)
+            status = executor.submit(adapter.status).result(timeout=2)
+            observed = FtpSpoolStatus.model_validate(status)
+            assert observed.snapshot is False
+            assert observed.sources[0].claims == 1
+            assert observed.sources[0].claim_bytes == len(content)
+            assert observed.sources[0].completion_failures == 0
+            assert not list((source.root / ".a-riverhog-ftp-spool/receipts").glob("*.json"))
+        finally:
+            release.set()
+        assert publication.result(timeout=5)["completed"] == 1
+    assert FtpSpoolStatus.model_validate(adapter.status()).sources[0].claims == 0
+    assert len(list((source.root / ".a-riverhog-ftp-spool/receipts").glob("*.json"))) == 1
+
+
 def test_explicit_flush_is_the_same_bounded_claim_and_receipt_path(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

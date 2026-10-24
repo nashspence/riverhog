@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 from collections.abc import Iterable, Iterator, Mapping, Sequence, Set
 from contextlib import ExitStack
 from dataclasses import dataclass, field, replace
@@ -27,10 +28,12 @@ from riverhog_provenance_contracts import (
     ENTRY_SCHEMA,
     PROFILE,
     ContractCatalog,
+    ExternalReference,
     canonical_document,
     decode_document,
     require_canonical_uuid_urn,
 )
+from sha256_continuation import CheckpointSHA256, sha256_compress
 
 from .common import fingerprint, new_id, utc_now
 from .constants import JOURNAL_POLICY, PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
@@ -155,6 +158,274 @@ def _identity_signature(row: Mapping[str, Any]) -> bytes:
     return canonical_document(value)
 
 
+def _source_anchor_declaration() -> Declaration:
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    return Declaration(
+        id="riverhog-provenance.frozen-source-anchor.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.journal.JournalSummary.anchor_at",),
+        scope="frozen-native-source-prefix-header-selection",
+        starts_at="select an accepted frame sequence from an owned frozen source summary",
+        ends_at="return its exact flat SHA-256 prefix anchor after closing metadata cursors",
+        dimensions=(
+            Dimension("retained_frames", COUNT, "Accepted frames in the frozen source."),
+            Dimension("sequence_octets", OCTETS, "Full UTF-8 decimal lookup ordinal width."),
+            Dimension(
+                "header_octets", OCTETS, "Complete indexed reference and SHA continuation octets."
+            ),
+            Dimension(
+                "padding_blocks", COUNT, "One for a source SHA tail below 56 octets; otherwise two."
+            ),
+        ),
+        bounds=(
+            Bound("sql_statements", COUNT, "equal", count(1), "One primary-key header selection."),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "equal",
+                count(1),
+                "Exactly the selected accepted source header.",
+            ),
+            Bound(
+                "closed_cursors",
+                COUNT,
+                "equal",
+                count(1),
+                "Metadata cursors close before digest finalization.",
+            ),
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "equal",
+                Expression("dimension", name="sequence_octets"),
+                "The complete source ordinal is bound once.",
+            ),
+            Bound(
+                "metadata_octets",
+                OCTETS,
+                "equal",
+                Expression("dimension", name="header_octets"),
+                "Both indexed header fields are read completely.",
+            ),
+            Bound(
+                "json_decodes",
+                COUNT,
+                "equal",
+                count(2),
+                "The exact reference and trusted SHA codec.",
+            ),
+            Bound(
+                "json_encodes",
+                COUNT,
+                "equal",
+                count(2),
+                "Verify each owning canonical header codec.",
+            ),
+            Bound(
+                "decoded_octets",
+                OCTETS,
+                "equal",
+                Expression("dimension", name="header_octets"),
+                "Complete header codec inputs, never frame payload.",
+            ),
+            Bound(
+                "encoded_octets",
+                OCTETS,
+                "equal",
+                Expression("dimension", name="header_octets"),
+                "Round trips reproduce the complete canonical header bytes.",
+            ),
+            Bound(
+                "source_read_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "No journal frame or source range is read.",
+            ),
+            Bound(
+                "source_update_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "No source update is supplied to the SHA continuation.",
+            ),
+            Bound(
+                "compression_calls",
+                COUNT,
+                "equal",
+                Expression("dimension", name="padding_blocks"),
+                "Finalize a copy of the selected exact prefix continuation.",
+            ),
+            *tuple(
+                Bound(
+                    "padding_" + metric,
+                    unit,
+                    "equal",
+                    Expression(
+                        "delegate",
+                        name="padding",
+                        metric=metric,
+                        terms=(Expression("dimension", name="padding_blocks"),),
+                        arguments=(
+                            ("block_octets", Expression("constant", value=64, unit=OCTETS)),
+                        ),
+                    ),
+                    "Actual mandatory native SHA padding costs.",
+                )
+                for metric, unit in (
+                    ("block_input_octets", OCTETS),
+                    ("rotate_calls", COUNT),
+                    ("returned_words", COUNT),
+                )
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        count(512),
+                        Expression(
+                            "product",
+                            terms=(
+                                count(128),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("dimension", name="retained_frames"),
+                                                count(2),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Indexed metadata lookup growth under the maintained native SQLite engine.",
+            ),
+        ),
+        conditions=(
+            "The source summary owns an open frozen native projection of a fully accepted journal.",
+            "Header and source progress commit together under the native validation fence.",
+            "Padding count derives from the exact input continuation before the call.",
+            "The caller retains source admission and current access policy.",
+        ),
+        invariants=(
+            "Return the original flat journal-prefix SHA-256, bytes and exact entry reference.",
+            "No historical semantic view or current-tail substitution is returned.",
+            "The selected prefix and owning frozen summary remain unchanged.",
+        ),
+        limitations=(
+            "Validation, custody, authorization and historical fact traversal have separate costs.",
+            "Codec and padding inputs have the existing bounded native header shapes.",
+            "VM constants depend on SQLite; elapsed time, I/O and lock waits remain observations.",
+        ),
+    )
+
+
+def _source_reference_declaration() -> Declaration:
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    return Declaration(
+        id="riverhog-provenance.frozen-source-reference.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.journal.JournalSummary.reference_anchor",),
+        scope="frozen-native-exact-documentary-reference-selection",
+        starts_at="receive one complete external reference and an owned accepted frozen source",
+        ends_at="return its exact original prefix anchor without loading assertion or frame bodies",
+        dimensions=(
+            Dimension("indexed_assertions", COUNT, "All accepted active and retired assertions."),
+            Dimension("assertion_key_octets", OCTETS, "The complete canonical assertion UUID URN."),
+            Dimension("metadata_octets", OCTETS, "Complete sequence, object UUID and type fields."),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements", COUNT, "equal", count(1), "One exact assertion primary-key seek."
+            ),
+            Bound("returned_rows", COUNT, "equal", count(1), "One original documentary address."),
+            Bound("closed_cursors", COUNT, "equal", count(1), "Close before the anchor delegate."),
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "equal",
+                Expression("dimension", name="assertion_key_octets"),
+                "The full assertion identity is bound once.",
+            ),
+            Bound(
+                "metadata_octets",
+                OCTETS,
+                "equal",
+                Expression("dimension", name="metadata_octets"),
+                "No assertion payload or effective-object projection is fetched.",
+            ),
+            Bound(
+                "native_anchor_calls",
+                COUNT,
+                "equal",
+                count(1),
+                "The existing source-header delegate supplies the exact original prefix.",
+            ),
+            Bound(
+                "source_read_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "Neither the reference lookup nor its delegate reads journal payload.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        count(256),
+                        Expression(
+                            "log2_ceil",
+                            terms=(
+                                Expression(
+                                    "sum",
+                                    terms=(
+                                        Expression("dimension", name="indexed_assertions"),
+                                        count(2),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "One maintained SQLite B-tree point read, excluding the anchor delegate.",
+            ),
+        ),
+        conditions=(
+            "The source owns an open frozen independently validated Native projection.",
+            "The caller retains exact archive/source admission and current access checks.",
+            "The external reference has the existing flat canonical Native schema.",
+        ),
+        invariants=(
+            "Journal, assertion, object, type and every original entry coordinate match exactly.",
+            "Retired documentary assertions remain addressable without effective attribution.",
+            "The exact original prefix is returned, never the current tail or another referent.",
+            "All lookup cursors close before the Native source-anchor delegate executes.",
+        ),
+        limitations=(
+            "Direct metrics exclude the separately witnessed anchor delegate and its padding.",
+            "Reference schema validation uses existing bounded identity/header field shapes.",
+            "This supplies documentary address proof, not corpus or effective-history validity.",
+            "Source validation, custody, current authority and filesystem lifetime are separate.",
+            "VM constants depend on SQLite; I/O, lock waits and elapsed time are observations.",
+        ),
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class JournalSummary:
     journal_id: str
@@ -249,6 +520,80 @@ class JournalSummary:
             store.close()
             raise
 
+    @declare_growth(_source_anchor_declaration(), delegates=(("padding", sha256_compress),))
+    def anchor_at(self, sequence: int) -> dict[str, Any]:
+        """Return the exact source prefix at an accepted frame without replay.
+
+        This source header does not provide an effective historical graph or
+        replace source admission, custody or the caller's current permissions.
+        The summary must own an open frozen native projection.
+        """
+        from ._journal_prefix import _reference
+        from .journal_store import InvalidJournalWorkspace
+
+        if type(sequence) is not int:
+            raise TypeError("source frame sequence must be an integer")
+        if self._store is None:
+            raise RuntimeError("source headers require an owned native journal summary")
+        self._store.require_open()
+        if not 0 <= sequence < len(self.frames):
+            raise IndexError(sequence)
+        encoded, state = self._store._frame_prefix(sequence)
+        try:
+            reference = _reference(json.loads(encoded))
+            digest = CheckpointSHA256.from_state(state)
+            if (
+                reference["sequence"] != str(sequence)
+                or canonical_document(reference) != encoded
+                or not 0 < digest.total_bytes <= self.journal_bytes
+            ):
+                raise ValueError("source prefix header differs from its frozen source")
+        except (ValueError, TypeError, UnicodeError) as error:
+            raise InvalidJournalWorkspace("accepted journal source header is corrupt") from error
+        return {
+            "journal_id": self.journal_id,
+            "through": reference,
+            "prefix_sha256": digest.hexdigest(),
+            "prefix_bytes": str(digest.total_bytes),
+        }
+
+    @declare_growth(_source_reference_declaration(), delegates=(("anchor", anchor_at),))
+    def reference_anchor(self, reference: Mapping[str, Any]) -> dict[str, Any]:
+        """Resolve an exact documentary assertion without replaying its source.
+
+        Retraction does not erase a documentary address. This method does not
+        attribute the assertion to an effective historical graph, accept a
+        corpus, or replace the caller's source admission/current access checks.
+        """
+        from .journal_store import InvalidJournalWorkspace
+
+        if self._store is None:
+            raise RuntimeError("source references require an owned native journal summary")
+        self._store.require_open()
+        selected = ExternalReference.model_validate(reference).model_dump(mode="json")
+        if selected["journal_id"] != self.journal_id:
+            raise ProvenanceValidationError("foreign reference names another source journal")
+        original = self._store._assertion_origin(selected["assertion_id"])
+        if original is None:
+            raise ProvenanceValidationError("required foreign entry or assertion is absent")
+        sequence, object_id, kind = original
+        try:
+            ordinal = int(sequence)
+            if str(ordinal) != sequence or not 0 <= ordinal < len(self.frames):
+                raise ValueError("invalid original source position")
+        except (ValueError, TypeError) as error:
+            raise InvalidJournalWorkspace(
+                "accepted assertion source position is corrupt"
+            ) from error
+        anchor = self.anchor_at(ordinal)
+        if (
+            anchor["through"] != selected["entry"]
+            or object_id != selected["object_id"]
+            or kind != selected["object_type"]
+        ):
+            raise ProvenanceValidationError("foreign reference differs from its exact assertion")
+        return anchor
+
     @property
     def tail(self) -> JournalFrame:
         return self.frames[-1]
@@ -261,7 +606,9 @@ class JournalSummary:
     def anchor(self) -> dict[str, Any]:
         return {
             "journal_id": self.journal_id,
-            "through": self.tail.reference,
+            "through": (
+                self._store.frame_reference(-1) if self._store is not None else self.tail.reference
+            ),
             "prefix_sha256": self.journal_sha256,
             "prefix_bytes": str(self.journal_bytes),
         }
@@ -299,46 +646,19 @@ def validate_journal_chunks(
 ) -> JournalSummary:
     from uuid import uuid4
 
-    from ._journal_prefix import JournalPrefix
-    from .journal_store import JournalStore
+    from .journal_session import JournalValidationSession
 
-    selected = catalog or ContractCatalog()
-    store = JournalStore()
-    try:
-        attempt = uuid4().hex
-        prefix = JournalPrefix(
-            store.db,
-            attempt_id=attempt,
-            source_binding="disposable-stream:" + attempt,
-            catalog=selected,
-            require_profiles=require_profiles,
-            expected_anchor=expected_anchor,
-            require_exact_tail=require_exact_tail,
-        )
-        prefix.initialize()
-        for frame in iter_journal_frames(chunks):
-            prepared = prefix.prepare(frame, selected)
-            store.accept(
-                prepared.document, frame, catalog=selected, require_profiles=require_profiles
-            )
-            state = prefix.commit(prepared)
-            store.frame_count = state.frame_count
-        state = prefix.finish()
-        store.freeze()
-        summary = JournalSummary(
-            cast(str, state.journal_id),
-            store.frames,
-            store.graph_validation,
-            store.retired,
-            state.hexdigest,
-            state.byte_count,
-            store.origins,
-        )
-        object.__setattr__(summary, "_store", store)
-        return summary
-    except BaseException:
-        store.close()
-        raise
+    with JournalValidationSession(
+        chunks,
+        attempt_id=uuid4().hex,
+        catalog=catalog,
+        require_profiles=require_profiles,
+        expected_anchor=expected_anchor,
+        require_exact_tail=require_exact_tail,
+    ) as session:
+        while not session.advance().complete:
+            pass
+        return session.result()
 
 
 def validate_journal(raw: bytes, **options: Any) -> JournalSummary:

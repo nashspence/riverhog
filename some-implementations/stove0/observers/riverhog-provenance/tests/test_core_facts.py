@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import time
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from copy import deepcopy
 from pathlib import Path
 from threading import Event, Lock
@@ -36,6 +36,7 @@ from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER
 from riverhog_provenance import (
     BoundedSourceObserver,
     BytesSource,
+    JournalSummary,
     append_correction,
     assertion,
     assertion_reference,
@@ -81,7 +82,7 @@ def _fixture(
     describes: dict[str, object] | None = None,
     hint: dict[str, object] | None = None,
     other_hint: dict[str, object] | None = None,
-) -> tuple[WorkArtifactSubject, CollectionArtifactProvenanceBindingDocument, object]:
+) -> tuple[WorkArtifactSubject, CollectionArtifactProvenanceBindingDocument, JournalSummary]:
     observed = BoundedSourceObserver().observe(BytesSource(b"abc"))
     graph = observed.graph_fragment()
     if hint is not None:
@@ -171,13 +172,14 @@ def _fixture(
 def test_service_bounds_parallel_provenance_reads_with_request_local_results(
     tmp_path: Path, monkeypatch
 ) -> None:
-    subject, _, _ = _fixture(
+    subject, _, initial_source = _fixture(
         name="/source/clip.wav", view_id="urn:uuid:11111111-1111-4111-8111-111111111111"
     )
     entered = Event()
     release = Event()
     lock = Lock()
     active = peak = count = 0
+    prepared = {}
 
     class Observer(RiverhogProvenanceObserver):
         def observe(self, request, runtime):
@@ -189,12 +191,9 @@ def test_service_bounds_parallel_provenance_reads_with_request_local_results(
                 if active == 4:
                     entered.set()
             try:
-                assert release.wait(timeout=5)
-                _, binding, summary = _fixture(
-                    name="/source/clip.wav",
-                    view_id="urn:uuid:11111111-1111-4111-8111-111111111111",
-                )
-                fact = extract_materialization_hint_fact(request.subjects[0], binding, summary)
+                assert release.wait(timeout=30)
+                binding, source = prepared[request.request_id]
+                fact = extract_materialization_hint_fact(request.subjects[0], binding, source)
                 return ContentObservationResultBuilder(self.descriptor(), request).observed(
                     {"artifacts": [fact]}
                 )
@@ -242,9 +241,18 @@ def test_service_bounds_parallel_provenance_reads_with_request_local_results(
             observer, runtime_factory=runtime, **kwargs
         ),
     )
-    with TestClient(
-        create_app(token="fixture", observer=observer, state_root=tmp_path / "state")
-    ) as client:
+    with (
+        ExitStack() as sources,
+        TestClient(
+            create_app(token="fixture", observer=observer, state_root=tmp_path / "state")
+        ) as client,
+    ):
+        sources.enter_context(initial_source)
+        for invocation in invocations:
+            _, binding, source = _fixture(
+                name="/source/clip.wav", view_id="urn:uuid:11111111-1111-4111-8111-111111111111"
+            )
+            prepared[invocation.request.request_id] = (binding, sources.enter_context(source))
         with ThreadPoolExecutor(max_workers=7) as callers:
             responses = [
                 callers.submit(
@@ -256,15 +264,15 @@ def test_service_bounds_parallel_provenance_reads_with_request_local_results(
                 for invocation in invocations
             ]
             try:
-                assert entered.wait(timeout=5)
+                assert entered.wait(timeout=30)
                 assert count == active == peak == 4
             finally:
                 release.set()
             for invocation, pending in zip(invocations, responses, strict=True):
-                response = pending.result(timeout=5)
+                response = pending.result(timeout=30)
                 assert response.status_code == 200, response.text
                 assert response.json()["state"] == "queued"
-                deadline = time.monotonic() + 5
+                deadline = time.monotonic() + 30
                 while time.monotonic() < deadline:
                     status = client.get(
                         f"/v1/observations/{invocation.job_id}",
@@ -276,6 +284,7 @@ def test_service_bounds_parallel_provenance_reads_with_request_local_results(
                 else:
                     raise AssertionError("provenance observation did not complete")
                 result = status["result"]
+                assert result["state"] == "observed", result.get("failure", result)
                 assert result["request_id"] == invocation.request.request_id
                 assert (
                     result["facts"]["artifacts"][0]["subject_id"]

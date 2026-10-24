@@ -5740,3 +5740,77 @@ CREATE TABLE collection_upload_provenance_retired_preparations (
 )
     """.strip(),
 )
+
+SQLITE_DDL += (
+    """
+CREATE TABLE journal_validation_jobs (
+	workspace_id VARCHAR(32) NOT NULL, 
+	collection_id INTEGER, 
+	journal_id VARCHAR(45), 
+	attempt_id VARCHAR NOT NULL, 
+	source_binding_json TEXT NOT NULL, 
+	certificate_binding_json TEXT NOT NULL, 
+	worker_epoch BIGINT NOT NULL, 
+	version VARCHAR(64) NOT NULL, 
+	state VARCHAR NOT NULL, 
+	progress_json TEXT, 
+	outcome_json TEXT, 
+	failure TEXT, 
+	PRIMARY KEY (workspace_id), 
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE SET NULL, 
+	CONSTRAINT ck_journal_validation_source_link CHECK ((collection_id IS NULL) = (journal_id IS NULL)), 
+	CONSTRAINT ck_journal_validation_retired_source CHECK (state NOT IN ('retiring','directory') OR collection_id IS NULL), 
+	CONSTRAINT ck_journal_validation_worker_epoch CHECK (worker_epoch >= 0), 
+	CONSTRAINT ck_journal_validation_state CHECK (state IN ('opening','active','complete','failed','lost','retiring','directory')), 
+	CONSTRAINT ck_journal_validation_workspace CHECK (length(workspace_id) = 32 AND lower(workspace_id) = workspace_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(workspace_id, '0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0), 
+	CONSTRAINT ck_journal_validation_outcome CHECK (state NOT IN ('complete','failed') OR outcome_json IS NOT NULL), 
+	CONSTRAINT ck_journal_validation_jobs_version_hex CHECK (length(version) = 64 AND lower(version) = version AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+)
+    """.strip(),
+    """
+CREATE INDEX ix_journal_validation_orphan_workspace ON journal_validation_jobs (workspace_id) WHERE collection_id IS NULL AND state NOT IN ('retiring','directory')
+    """.strip(),
+    """
+CREATE INDEX ix_journal_validation_state_workspace ON journal_validation_jobs (state, workspace_id)
+    """.strip(),
+    """
+CREATE UNIQUE INDEX uq_journal_validation_source ON journal_validation_jobs (collection_id, journal_id) WHERE collection_id IS NOT NULL
+    """.strip(),
+)
+
+POSTGRESQL_DDL += (
+    """
+CREATE TABLE journal_validation_jobs (
+	workspace_id VARCHAR(32) NOT NULL, 
+	collection_id BIGINT, 
+	journal_id VARCHAR(45), 
+	attempt_id VARCHAR NOT NULL, 
+	source_binding_json TEXT NOT NULL, 
+	certificate_binding_json TEXT NOT NULL, 
+	worker_epoch BIGINT NOT NULL, 
+	version VARCHAR(64) NOT NULL, 
+	state VARCHAR NOT NULL, 
+	progress_json TEXT, 
+	outcome_json TEXT, 
+	failure TEXT, 
+	PRIMARY KEY (workspace_id), 
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE SET NULL, 
+	CONSTRAINT ck_journal_validation_source_link CHECK ((collection_id IS NULL) = (journal_id IS NULL)), 
+	CONSTRAINT ck_journal_validation_retired_source CHECK (state NOT IN ('retiring','directory') OR collection_id IS NULL), 
+	CONSTRAINT ck_journal_validation_worker_epoch CHECK (worker_epoch >= 0), 
+	CONSTRAINT ck_journal_validation_state CHECK (state IN ('opening','active','complete','failed','lost','retiring','directory')), 
+	CONSTRAINT ck_journal_validation_workspace CHECK (length(workspace_id) = 32 AND lower(workspace_id) = workspace_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(workspace_id, '0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0), 
+	CONSTRAINT ck_journal_validation_outcome CHECK (state NOT IN ('complete','failed') OR outcome_json IS NOT NULL), 
+	CONSTRAINT ck_journal_validation_jobs_version_hex CHECK (length(version) = 64 AND lower(version) = version AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+)
+    """.strip(),
+    """
+CREATE INDEX ix_journal_validation_orphan_workspace ON journal_validation_jobs (workspace_id) WHERE collection_id IS NULL AND state NOT IN ('retiring','directory')
+    """.strip(),
+    """
+CREATE INDEX ix_journal_validation_state_workspace ON journal_validation_jobs (state, workspace_id)
+    """.strip(),
+    """
+CREATE UNIQUE INDEX uq_journal_validation_source ON journal_validation_jobs (collection_id, journal_id) WHERE collection_id IS NOT NULL
+    """.strip(),
+)

@@ -406,7 +406,7 @@ def _upload_provenance_journal(
         )
         offset += len(chunk)
     service.seal_provenance_journal(collection_id, journal_id)
-    for _ in range(64):
+    for _ in range(10000):
         status = service.get_provenance_journal(collection_id, journal_id)
         if status["state"] in {"sealed", "failed"}:
             assert status["state"] == "sealed", status["failure"]

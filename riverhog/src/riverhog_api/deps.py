@@ -109,6 +109,7 @@ class ServiceContainer:
     bootstrap_token: str = field(default="", repr=False)
 
     def close(self) -> None:
+        self.collection_uploads.close()
         dispose_session_factory(self.session_factory)
         for client in self.storage_adapter_clients:
             client.close()

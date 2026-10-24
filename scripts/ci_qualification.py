@@ -53,7 +53,7 @@ NATIVE_TESTS = (
 )
 
 
-def validation_workloads() -> tuple[ValidationWork, ...]:
+def validation_workloads(*, names: Sequence[str] | None = None) -> tuple[ValidationWork, ...]:
     """Derive required work; optional speed goals do not authorize or gate execution."""
     work = [ValidationWork(name, ("make", name)) for name in REPOSITORY_TARGETS]
     from scripts.ci_make import maintained_make_targets
@@ -158,7 +158,13 @@ def validation_workloads() -> tuple[ValidationWork, ...]:
         raise ValueError("each validation workload must have exactly one definition")
     from scripts.validation_witnesses import discover_test_witnesses, operation_projection
 
-    witnesses = discover_test_witnesses(ROOT)
+    if names is not None:
+        requested = set(names)
+        work = [item for item in work if item.name in requested]
+    selected = {item.name for item in work}
+    witnesses = tuple(
+        witness for witness in discover_test_witnesses(ROOT) if selected.intersection(witness.gates)
+    )
     declarations = {}
     for witness in witnesses:
         if witness.operation is not None:
@@ -185,23 +191,26 @@ def validation_workloads() -> tuple[ValidationWork, ...]:
 
 
 def validation_work(name: str) -> ValidationWork:
-    from scripts.ci_make import maintained_make_targets
-
-    for work in validation_workloads():
-        if work.name == name:
-            return work
-    if re.fullmatch(r"build-[a-zA-Z0-9_-]+", name) and "build-%" in maintained_make_targets(
-        ROOT / "Makefile"
-    ):
-        return ValidationWork(name, ("make", name))
-    raise ValueError(f"unknown maintained validation workload: {name}")
+    return require_validation_work((name,))[0]
 
 
 def require_validation_work(names: Sequence[str]) -> tuple[ValidationWork, ...]:
-    """Require known, unique work identities, never numerical target approval."""
+    """Require known unique work and bind only operations owned by that selection."""
     if not names or len(set(names)) != len(names):
         raise ValueError("expected workloads must be nonempty and unique")
-    return tuple(validation_work(name) for name in names)
+    from scripts.ci_make import maintained_make_targets
+
+    available = {item.name: item for item in validation_workloads(names=names)}
+    has_image_pattern = "build-%" in maintained_make_targets(ROOT / "Makefile")
+    selected = []
+    for name in names:
+        work = available.get(name)
+        if work is None:
+            if not has_image_pattern or re.fullmatch(r"build-[a-zA-Z0-9_-]+", name) is None:
+                raise ValueError(f"unknown maintained validation workload: {name}")
+            work = ValidationWork(name, ("make", name))
+        selected.append(work)
+    return tuple(selected)
 
 
 def validation_environment(work: ValidationWork, run_id: str) -> dict[str, str]:
