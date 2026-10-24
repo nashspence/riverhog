@@ -136,7 +136,9 @@ def test_capacity_rejects_before_payload_read_and_retries_pending_atom(monkeypat
         populated(corpus, 2)
         read = corpus._source_read
 
-        def forbidden(*_args, **_kwargs):
+        def forbidden(query, parameters):
+            if query.startswith("SELECT rowid,length("):
+                return read(query, parameters)
             pytest.fail("capacity rejection fetched a dependency payload")
 
         with monkeypatch.context() as patch:
