@@ -273,9 +273,10 @@ class SourceObserver:
         return cursor
 
 
-def measure(corpus, current, first, monkeypatch, *, frame_budget=None, advance=False):
-    stop = len(current.frames) if frame_budget is None else first + frame_budget
-    frames = list(current.frames)[first:stop]
+def measure(corpus, current, first, monkeypatch, *, frame_budget=None, advance=False, through=None):
+    selected_frames = len(current.frames) if through is None else through + 1
+    stop = selected_frames if frame_budget is None else min(selected_frames, first + frame_budget)
+    frames = [current.frames[index] for index in range(first, stop)]
     assertions = references = retractions = 0
     for frame in frames:
         retractions += len(frame.document["body"].get("retracts", ()))
@@ -320,9 +321,9 @@ def measure(corpus, current, first, monkeypatch, *, frame_budget=None, advance=F
             patch.setattr(journal_owner.JournalSummary, "anchor_at", anchor)
             patch.setattr(journal_owner.JournalFrame, "sha256", property(hash_entry))
             if advance:
-                corpus.advance_source(current, frame_budget=frame_budget)
+                corpus.advance_source(current, frame_budget=frame_budget, through=through)
             else:
-                corpus._add_source(current, frame_budget=frame_budget)
+                corpus._add_source(current, frame_budget=frame_budget, through=through)
     observer.metrics["admitted_frames"] = len(reads)
     observer.metrics["admitted_frame_octets"] = sum(size for _, size in reads)
     observer.metrics["source_frame_reads"] = len(reads)

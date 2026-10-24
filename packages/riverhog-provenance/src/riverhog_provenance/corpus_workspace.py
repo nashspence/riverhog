@@ -492,12 +492,16 @@ class RetainedCorpusValidator:
             )
 
     def advance_source(
-        self, summary: JournalSummary, *, frame_budget: int = 1
+        self, summary: JournalSummary, *, frame_budget: int = 1, through: int | None = None
     ) -> CorpusSourceProgress:
-        anchor = HistoryJournalAnchor.from_mapping(summary.anchor)
         with self._operation():
+            anchor = HistoryJournalAnchor.from_mapping(
+                summary.anchor if through is None else summary.anchor_at(through)
+            )
             self._admit(anchor, selection=False)
-            progress = self._corpus.advance_source(summary, frame_budget=frame_budget)
+            progress = self._corpus.advance_source(
+                summary, frame_budget=frame_budget, through=through
+            )
             if progress.complete:
                 self._register(anchor, selection=False)
             return progress

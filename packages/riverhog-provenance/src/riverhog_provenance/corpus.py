@@ -322,12 +322,13 @@ def _source_ingest_declaration(*, bounded: bool = False) -> Declaration:
                 "native_anchor_calls",
                 COUNT,
                 "upper",
-                Expression("sum", terms=(dimension("new_frames"), count(1))),
-                "At most one shared cut plus one exact header for each new frame.",
+                Expression("sum", terms=(dimension("new_frames"), count(2))),
+                "One optional exact source endpoint, one shared cut and one header per new frame.",
             ),
         ),
         conditions=(
             "Every input owns an open independently accepted frozen Native projection.",
+            "An explicit through selects only an accepted prefix of that same projection.",
             "Original journal identity, exact reference, prefix bytes and SHA agree at overlap.",
             "The caller retains admission and current authority for the selected source union.",
         ),
@@ -948,13 +949,27 @@ class CanonicalCorpusValidator:
 
     @declare_growth(_source_ingest_declaration(), delegates=(("anchor", JournalSummary.anchor_at),))
     def _add_source(
-        self, summary: JournalSummary, *, frame_budget: int | None = None
+        self,
+        summary: JournalSummary,
+        *,
+        frame_budget: int | None = None,
+        through: int | None = None,
     ) -> CorpusSourceProgress:
         self._require_open()
         self._require_source_selection_open()
         if summary._store is None:
             raise RuntimeError("corpus sources require an owned native journal summary")
-        frame_count = len(summary.frames)
+        available_frames = len(summary.frames)
+        if through is not None and (
+            type(through) is not int or not 0 <= through < available_frames
+        ):
+            raise ValueError("corpus source prefix must select an accepted Native frame")
+        frame_count = available_frames if through is None else through + 1
+        if through is None:
+            source_sha256, source_octets = summary.journal_sha256, summary.journal_bytes
+        else:
+            endpoint = summary.anchor_at(through)
+            source_sha256, source_octets = endpoint["prefix_sha256"], int(endpoint["prefix_bytes"])
         self._identity(summary.journal_id, "journal", b"")
         extent = self._source_read(
             "SELECT sequence FROM source_extents WHERE journal = ?", (summary.journal_id,)
@@ -1091,8 +1106,8 @@ class CanonicalCorpusValidator:
                 self._source_write("RELEASE corpus_source_entry")
         return CorpusSourceProgress(
             summary.journal_id,
-            summary.journal_sha256,
-            summary.journal_bytes,
+            source_sha256,
+            source_octets,
             stop,
             stop == frame_count,
         )
@@ -1101,19 +1116,21 @@ class CanonicalCorpusValidator:
         _source_ingest_declaration(bounded=True), delegates=(("anchor", JournalSummary.anchor_at),)
     )
     def advance_source(
-        self, summary: JournalSummary, *, frame_budget: int = 1
+        self, summary: JournalSummary, *, frame_budget: int = 1, through: int | None = None
     ) -> CorpusSourceProgress:
         """Advance raw indexing by at most the caller's bounded Native entry atoms.
 
         Each atom has Native's existing entry wire bound. Completed exact
         prefixes survive interruption within this corpus workspace; a fresh call
-        proves overlap before loading any missing frame. This does not register
+        proves overlap before loading any missing frame. An explicit through
+        selects an accepted source prefix, including its exact digest and byte
+        count; later frames contribute no raw obligations. This does not register
         selected effective snapshots or accept global corpus/history semantics.
         """
         self._require_open()
         if type(frame_budget) is not int or frame_budget < 1:
             raise ValueError("corpus source frame budget must be positive")
-        return self._add_source(summary, frame_budget=frame_budget)
+        return self._add_source(summary, frame_budget=frame_budget, through=through)
 
     @declare_growth(_historical_assertion_declaration())
     def historical_assertion(
