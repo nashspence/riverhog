@@ -22,6 +22,7 @@ from riverhog_provenance import (
 from riverhog_provenance import corpus as owner
 from riverhog_provenance import journal as journal_owner
 from riverhog_provenance.journal_store import _Frames
+from test_corpus_identity_growth import measure_identity
 from test_journal_result import history
 from test_source_anchor_growth import Cursor, record
 from test_source_anchor_growth import measure as measure_anchor
@@ -250,12 +251,16 @@ def test_late_historical_selection_preserves_retracted_corpus_cycle_obligations(
 
 
 class SourceCursor(Cursor):
+    @property
+    def rowcount(self):
+        return self.actual.rowcount
+
     def fetchone(self):
         result = self.actual.fetchone()
         if result is not None:
             self.recorder.metrics["returned_rows"] += 1
             self.recorder.metrics["metadata_octets"] += sum(
-                len(value.encode() if isinstance(value, str) else value)
+                len(value if isinstance(value, bytes) else str(value).encode())
                 for value in result
                 if value is not None
             )
@@ -301,8 +306,21 @@ def measure(corpus, current, first, monkeypatch, *, frame_budget=None, advance=F
         "frame_octets": sum(len(frame.encoded) for frame in frames),
         "entry_octets": sum(len(frame.json_bytes) for frame in frames),
     }
-    observer, children = SourceObserver(corpus._db), []
+    observer, children, identities = SourceObserver(corpus._db), [], []
+    retained_identities = (
+        corpus._db.execute("SELECT count(*) FROM identities").fetchone()[0]
+        + 1
+        + len(frames)
+        + 2 * assertions
+    )
     hashed = journal_owner.JournalFrame.sha256.fget
+
+    def identity(key, domain, value):
+        observer.metrics["native_identity_calls"] += 1
+        sample = measure_identity(
+            corpus, key, domain, value, monkeypatch, retained_identities=retained_identities
+        )
+        identities.append(sample)
 
     def anchor(summary, sequence):
         assert all(cursor.closed for cursor in observer.cursors)
@@ -318,6 +336,7 @@ def measure(corpus, current, first, monkeypatch, *, frame_budget=None, advance=F
     with source_reads(monkeypatch) as reads:
         with monkeypatch.context() as patch:
             patch.setattr(corpus, "_db", observer)
+            patch.setattr(corpus, "_identity", identity)
             patch.setattr(journal_owner.JournalSummary, "anchor_at", anchor)
             patch.setattr(journal_owner.JournalFrame, "sha256", property(hash_entry))
             if advance:
@@ -329,6 +348,7 @@ def measure(corpus, current, first, monkeypatch, *, frame_budget=None, advance=F
     observer.metrics["source_frame_reads"] = len(reads)
     observer.metrics["source_frame_octets"] = sum(size for _, size in reads)
     assert all(cursor.closed for cursor in observer.cursors)
+    assert observer.metrics["native_identity_calls"] == len(identities)
     return record(
         growth_binding(
             owner.CanonicalCorpusValidator.advance_source
@@ -337,7 +357,7 @@ def measure(corpus, current, first, monkeypatch, *, frame_budget=None, advance=F
         ),
         dimensions,
         observer.metrics,
-        {"anchor": children},
+        {"anchor": children, "identity": identities},
     )
 
 

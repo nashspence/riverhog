@@ -227,6 +227,153 @@ def _corpus_order_declaration() -> Declaration:
 _CORPUS_ORDER_GROWTH = _corpus_order_declaration()
 
 
+def _identity_declaration() -> Declaration:
+    def number(value: int, unit: Unit = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    parameters = Expression(
+        "product",
+        terms=(
+            number(2, SCALAR),
+            Expression(
+                "sum",
+                terms=(
+                    dimension("identity_octets"),
+                    dimension("domain_octets"),
+                    dimension("preimage_octets"),
+                ),
+            ),
+        ),
+    )
+    return Declaration(
+        id="riverhog-provenance.corpus-identity.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.corpus.CanonicalCorpusValidator._identity",),
+        scope="one exact Native identity and immutable-preimage admission",
+        starts_at="receive one owned identity, domain and candidate BLOB preimage",
+        ends_at="preserve the identical row, insert one missing row or reject a conflict",
+        dimensions=(
+            Dimension("retained_identities", COUNT, "Independent upper extent of retained keys."),
+            Dimension("identity_octets", OCTETS, "Complete candidate identity UTF-8 width."),
+            Dimension("domain_octets", OCTETS, "Complete candidate domain UTF-8 width."),
+            Dimension("preimage_octets", OCTETS, "Complete candidate BLOB preimage width."),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                number(2),
+                "One indexed exact-match scalar and at most one insert-or-ignore.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                number(1),
+                "The exact identity key returns at most one comparison scalar.",
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "upper",
+                number(1, OCTETS),
+                "Return only zero or one; stored domain and preimage are not transferred.",
+            ),
+            Bound(
+                "parameter_octets",
+                OCTETS,
+                "upper",
+                parameters,
+                "The exact key, domain and complete candidate bytes are each bound at most twice.",
+            ),
+            Bound(
+                "comparison_input_octets",
+                OCTETS,
+                "equal",
+                dimension("preimage_octets"),
+                "The one exact SQLite BLOB comparison receives the complete candidate once.",
+            ),
+            Bound(
+                "written_parameter_octets",
+                OCTETS,
+                "upper",
+                parameters,
+                "A newly inserted row retains its full original domain, key and preimage.",
+            ),
+            Bound(
+                "written_rows",
+                COUNT,
+                "upper",
+                number(1),
+                "An immutable identity is inserted once; conflicts never rewrite it.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        number(256),
+                        Expression(
+                            "product",
+                            terms=(
+                                number(128),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(dimension("retained_identities"), number(2)),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Exact unique-key comparison and insertion use the maintained B-tree allowance.",
+            ),
+            Bound(
+                "full_retained_preimage_reads",
+                COUNT,
+                "equal",
+                number(0),
+                "No stored preimage crosses the SQLite result boundary.",
+            ),
+            Bound(
+                "source_frame_reads",
+                COUNT,
+                "equal",
+                number(0),
+                "Identity admission does not load source frames.",
+            ),
+        ),
+        conditions=(
+            "Candidate bytes are owned by the caller; equality does not reinterpret their format.",
+            "Native identity values use the maintained exact BLOB schema and unique key.",
+            "The caller retains transaction ownership and source admission.",
+            "The independent retained extent includes any newly inserted key.",
+        ),
+        invariants=(
+            "Both domain and every candidate preimage byte must match an existing identity.",
+            "A prefix, matching length, digest or reused identity is not an exact preimage match.",
+            "Failed equality preserves the old identity and all original preimage bytes.",
+            "Duplicate exact admission does not change the immutable row.",
+        ),
+        limitations=(
+            "BLOB comparison examines at most the shorter preimage; internal comparison steps "
+            "are not directly observed by SQLite VM instruction counts.",
+            "Index-key comparisons, physical I/O, lock waiting and source codecs are separate.",
+            "Source ingestion and retained parent progress require composition.",
+        ),
+    )
+
+
 def _source_ingest_declaration(*, bounded: bool = False) -> Declaration:
     def count(value: int, unit: Unit = COUNT) -> Expression:
         return Expression("constant", value=value, unit=unit)
@@ -324,6 +471,22 @@ def _source_ingest_declaration(*, bounded: bool = False) -> Declaration:
                 "upper",
                 Expression("sum", terms=(dimension("new_frames"), count(2))),
                 "One optional exact source endpoint, one shared cut and one header per new frame.",
+            ),
+            Bound(
+                "native_identity_calls",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        count(1),
+                        dimension("new_frames"),
+                        Expression(
+                            "product", terms=(count(2, SCALAR), dimension("new_assertions"))
+                        ),
+                    ),
+                ),
+                "One journal key, one original entry key per frame and assertion/referent keys.",
             ),
         ),
         conditions=(
@@ -939,15 +1102,21 @@ class CanonicalCorpusValidator:
         with closing(self._db.execute(query, parameters)):
             pass
 
+    @declare_growth(_identity_declaration())
     def _identity(self, identity: str, domain: str, value: bytes) -> None:
-        old = self._source_read("SELECT domain, value FROM identities WHERE id = ?", (identity,))
-        if old is not None and old != (domain, value):
+        old = self._source_read(
+            "SELECT domain=? AND value=? FROM identities WHERE id=?", (domain, value, identity)
+        )
+        if old is not None and old != (1,):
             raise ProvenanceValidationError("immutable documentary identity or domain redefined")
         self._source_write(
             "INSERT OR IGNORE INTO identities VALUES (?, ?, ?)", (identity, domain, value)
         )
 
-    @declare_growth(_source_ingest_declaration(), delegates=(("anchor", JournalSummary.anchor_at),))
+    @declare_growth(
+        _source_ingest_declaration(),
+        delegates=(("anchor", JournalSummary.anchor_at), ("identity", _identity)),
+    )
     def _add_source(
         self,
         summary: JournalSummary,
@@ -1113,7 +1282,8 @@ class CanonicalCorpusValidator:
         )
 
     @declare_growth(
-        _source_ingest_declaration(bounded=True), delegates=(("anchor", JournalSummary.anchor_at),)
+        _source_ingest_declaration(bounded=True),
+        delegates=(("anchor", JournalSummary.anchor_at), ("identity", _identity)),
     )
     def advance_source(
         self, summary: JournalSummary, *, frame_budget: int = 1, through: int | None = None
