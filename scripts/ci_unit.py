@@ -20,7 +20,7 @@ SHARDS = ("release", "contract", "unit")
 SHARD_PROFILES = {
     "release": (2, "worksteal"),
     "contract": (2, "worksteal"),
-    "unit": (4, "loadscope"),
+    "unit": (4, "worksteal"),
 }
 
 
