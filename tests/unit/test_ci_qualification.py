@@ -819,6 +819,8 @@ def test_actual_recursive_make_flags_do_not_change_qualified_work(tmp_path, monk
 
 
 def test_qualified_work_does_not_inherit_a_parent_unit_partition(monkeypatch):
+    for variable in ("MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES"):
+        monkeypatch.delenv(variable, raising=False)
     monkeypatch.setenv("UNIT_PARTITION", "2")
     work = qualification.validation_work("unit-unit-1")
     environment = qualification.validation_environment(work, "explicit-partition")

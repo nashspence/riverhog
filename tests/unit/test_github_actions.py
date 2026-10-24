@@ -357,8 +357,8 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "images",
     }
     jobs = workflow["jobs"]
-    caps = {"repository": "2", "units": "3", "compose": "7", "images": "2", "client-platforms": "3"}
-    assert sum(map(int, caps.values())) == 17
+    caps = {"repository": "2", "units": "6", "compose": "7", "images": "2", "client-platforms": "3"}
+    assert sum(map(int, caps.values())) == 20
     for name, cap in caps.items():
         job = jobs[name]
         assert job["strategy"]["fail-fast"] == "false"
