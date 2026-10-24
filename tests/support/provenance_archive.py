@@ -6,12 +6,16 @@ import hashlib
 
 from riverhog_archive_contracts import (
     PROVENANCE_BINDINGS_FORMAT,
+    ArchiveProvenanceIdentity,
+    CollectionArchiveManifest,
+    CollectionArtifactSetIdentity,
     HistoryJournalAnchor,
     MemberHistoryBinding,
     MemberHistoryBuilder,
     MemberHistoryPrimary,
     ProvenancePayload,
     ProvenanceRootDocument,
+    ProvenanceRootIdentity,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
     binding_tree_commitment,
@@ -19,6 +23,7 @@ from riverhog_archive_contracts import (
     provenance_structure_identity,
 )
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_core.canonical_discovery_archive_work import ArchiveDiscoveryAdmission
 from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
 
 
@@ -130,3 +135,28 @@ def archive_reader_fixture(
         artifact_set_sha256=artifact_set,
     )
     return reader, objects, journal_id, journal_bytes.decode()
+
+
+def discovery_archive_admission(root):
+    raw = root.to_json_bytes()
+    archive = CollectionArchiveManifest(
+        archive_generation=root.archive_generation,
+        artifact_set=CollectionArtifactSetIdentity(root.binding_count, 7, root.artifact_set_sha256),
+        ordered_volume_sha256="f" * 64,
+        provenance=ArchiveProvenanceIdentity(
+            root.identity,
+            ProvenanceRootIdentity(
+                id="provenance-root",
+                kind="provenance-root",
+                path="provenance/root.json.age",
+                plaintext_bytes=len(raw),
+                sha256=root.identity,
+                stored_bytes=1234,
+                stored_sha256="0" * 64,
+            ),
+        ),
+    )
+    archive_raw = archive.to_json_bytes()
+    return ArchiveDiscoveryAdmission(
+        archive_raw, raw, expected_archive_sha256=hashlib.sha256(archive_raw).hexdigest()
+    )

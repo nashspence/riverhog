@@ -37,32 +37,7 @@ from riverhog_provenance import validate_journal, validate_journal_chunks
 
 from tests.support.canonical_discovery import native_scalar_fixture
 from tests.support.canonical_discovery_work import write
-from tests.support.provenance_archive import archive_reader_fixture
-
-
-def admission_for(root):
-    raw = root.to_json_bytes()
-    archive = CollectionArchiveManifest(
-        archive_generation=root.archive_generation,
-        artifact_set=CollectionArtifactSetIdentity(root.binding_count, 7, root.artifact_set_sha256),
-        ordered_volume_sha256="f" * 64,
-        provenance=ArchiveProvenanceIdentity(
-            root.identity,
-            ProvenanceRootIdentity(
-                id="provenance-root",
-                kind="provenance-root",
-                path="provenance/root.json.age",
-                plaintext_bytes=len(raw),
-                sha256=root.identity,
-                stored_bytes=1234,
-                stored_sha256="0" * 64,
-            ),
-        ),
-    )
-    archive_raw = archive.to_json_bytes()
-    return ArchiveDiscoveryAdmission(
-        archive_raw, raw, expected_archive_sha256=hashlib.sha256(archive_raw).hexdigest()
-    )
+from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
 
 
 def open_work(path, admission):
@@ -88,7 +63,7 @@ def root_for(objects):
 def test_root_pair_requires_exact_archive_preimage_and_provenance_binding():
     _, objects, _, _ = archive_reader_fixture()
     root = root_for(objects)
-    admission = admission_for(root)
+    admission = discovery_archive_admission(root)
     assert admission.root == root
     with pytest.raises(StaleArchiveTask, match="selected exact root"):
         ArchiveDiscoveryAdmission(b"{}", root.to_json_bytes(), expected_archive_sha256="a" * 64)
@@ -120,7 +95,7 @@ def test_root_pair_requires_exact_archive_preimage_and_provenance_binding():
 def test_metadata_resume_reads_only_next_descriptors_and_registers_exact_children(tmp_path):
     _, objects, journal_id, text = archive_reader_fixture()
     root = root_for(objects)
-    admission = admission_for(root)
+    admission = discovery_archive_admission(root)
     reads = []
 
     def read(path):
@@ -143,7 +118,7 @@ def test_metadata_resume_reads_only_next_descriptors_and_registers_exact_childre
             apply_archive_descriptor(db, key, admission, page)
     before = archive_metadata_progress(db, key)
     db.close()
-    admission = admission_for(root)
+    admission = discovery_archive_admission(root)
     db, key = open_work(tmp_path / "work.sqlite", admission)
     reads.clear()
     assert archive_metadata_progress(db, key) == before
@@ -167,7 +142,7 @@ def test_archived_native_journal_feeds_bounded_fact_driver_only_after_metadata_t
     fixture = native_scalar_fixture(3)
     with validate_journal(fixture.raw, catalog=fixture.catalog) as original:
         reader, objects, _, _ = archive_reader_fixture(fixture.raw, original.journal_id)
-    admission = admission_for(root_for(objects))
+    admission = discovery_archive_admission(root_for(objects))
     db, key = open_work(tmp_path / "work.sqlite", admission)
     with validate_journal(fixture.raw, catalog=fixture.catalog) as pending:
         with pytest.raises(StaleArchiveTask, match="coverage is incomplete"):
@@ -198,7 +173,7 @@ def test_archived_native_journal_feeds_bounded_fact_driver_only_after_metadata_t
 
 def test_source_child_and_cursor_registration_roll_back_together(tmp_path):
     reader, objects, _, _ = archive_reader_fixture()
-    admission = admission_for(root_for(objects))
+    admission = discovery_archive_admission(root_for(objects))
     db, key = open_work(tmp_path / "work.sqlite", admission)
     before = archive_metadata_progress(db, key)
     page = prepare_archive_descriptor(db, key, admission, reader)
@@ -230,7 +205,7 @@ def test_terminal_requires_independently_rooted_commitment_and_counts(tmp_path, 
             "journals": {"journal_count": 2},
         }[change],
     )
-    admission = admission_for(root)
+    admission = discovery_archive_admission(root)
     db, key = open_work(tmp_path / "work.sqlite", admission)
     for _ in range(3):
         page = prepare_archive_descriptor(db, key, admission, reader)
@@ -245,7 +220,7 @@ def test_terminal_requires_independently_rooted_commitment_and_counts(tmp_path, 
 @pytest.mark.parametrize("change", ["sequence", "generation", "gap", "overflow"])
 def test_descriptor_rejects_wrong_position_authority_and_journal_extent(tmp_path, change):
     reader, objects, _, _ = archive_reader_fixture()
-    admission = admission_for(root_for(objects))
+    admission = discovery_archive_admission(root_for(objects))
     db, key = open_work(tmp_path / "work.sqlite", admission)
     if change in {"gap", "overflow"}:
         page = prepare_archive_descriptor(db, key, admission, reader)
@@ -280,7 +255,7 @@ def test_descriptor_rejects_wrong_position_authority_and_journal_extent(tmp_path
 
 def test_changed_worker_source_and_forged_preparation_are_rejected(tmp_path):
     reader, objects, _, _ = archive_reader_fixture()
-    admission = admission_for(root_for(objects))
+    admission = discovery_archive_admission(root_for(objects))
     db, key = open_work(tmp_path / "work.sqlite", admission)
     with write(db), pytest.raises(StaleArchiveTask, match="registration"):
         begin_archive_metadata(db, replace(key, worker_id="other"), admission)
@@ -316,7 +291,7 @@ def test_measured_metadata_preparation_reads_and_hashes_one_next_descriptor(
 
     _, objects, _, _ = archive_reader_fixture()
     root = root_for(objects)
-    admission = admission_for(root)
+    admission = discovery_archive_admission(root)
     binding = growth_binding(prepare_archive_descriptor)
     projection = project_bindings((binding,))
     declaration_sha = hashlib.sha256(
@@ -388,7 +363,7 @@ def test_measured_metadata_apply_has_fixed_sql_and_no_source_hashing(
     from tests.support.canonical_discovery_work import RecordedConnection
 
     reader, objects, _, _ = archive_reader_fixture()
-    admission = admission_for(root_for(objects))
+    admission = discovery_archive_admission(root_for(objects))
     binding = growth_binding(apply_archive_descriptor)
     projection = project_bindings((binding,))
     declaration_sha = hashlib.sha256(
@@ -434,7 +409,7 @@ def test_native_prefix_with_same_journal_id_cannot_replace_archived_complete_sou
     fixture, raw, _ = corrected_journal_fixture()
     with validate_journal(raw, catalog=fixture.catalog) as complete:
         reader, objects, _, _ = archive_reader_fixture(raw, complete.journal_id)
-        admission = admission_for(root_for(objects))
+        admission = discovery_archive_admission(root_for(objects))
         db, key = open_work(tmp_path / "work.sqlite", admission)
         drive(db, key, admission, reader)
         with validate_journal(fixture.raw, catalog=fixture.catalog) as prefix:
@@ -448,7 +423,7 @@ def test_native_prefix_with_same_journal_id_cannot_replace_archived_complete_sou
 
 def test_missing_terminal_retains_incomplete_metadata_source(tmp_path):
     reader, objects, _, _ = archive_reader_fixture()
-    admission = admission_for(root_for(objects))
+    admission = discovery_archive_admission(root_for(objects))
     db, key = open_work(tmp_path / "work.sqlite", admission)
     for _ in range(3):
         page = prepare_archive_descriptor(db, key, admission, reader)
@@ -467,7 +442,7 @@ def test_authenticated_segment_directory_does_not_rescan_and_checks_payload_fixi
     tmp_path, monkeypatch
 ):
     reader, objects, journal_id, text = archive_reader_fixture()
-    admission = admission_for(root_for(objects))
+    admission = discovery_archive_admission(root_for(objects))
     db, key = open_work(tmp_path / "work.sqlite", admission)
     drive(db, key, admission, reader)
 
@@ -502,7 +477,7 @@ def test_measured_segment_selection_uses_detached_point_reads(tmp_path, record_p
     from tests.support.canonical_discovery_work import RecordedConnection
 
     reader, objects, journal_id, _ = archive_reader_fixture()
-    admission = admission_for(root_for(objects))
+    admission = discovery_archive_admission(root_for(objects))
     db, key = open_work(tmp_path / "segment-selection.sqlite", admission)
     drive(db, key, admission, reader)
     binding = growth_binding(archive_journal_segment)

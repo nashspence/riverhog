@@ -591,6 +591,36 @@ class CanonicalProvenanceArchiveReader:
         for journal_id, _bytes, _sha256 in self.iter_journal_headers():
             yield journal_id
 
+    def binding_page(self, document: ProvenanceVolumeDocument) -> tuple[MemberHistoryBinding, ...]:
+        """Verify one previously authenticated binding page without a metadata rescan."""
+        if document.payload.kind != "bindings":
+            raise ProvenanceArchiveReadError("descriptor does not select a binding page")
+        content = self.payload_bytes(document)
+        value = require_canonical_json(content)
+        if not isinstance(value, dict) or set(value) != {"format", "bindings"}:
+            raise ProvenanceArchiveReadError("provenance binding page is invalid")
+        if value["format"] != PROVENANCE_BINDINGS_FORMAT:
+            raise ProvenanceArchiveReadError("provenance binding page format changed")
+        raw_bindings = value["bindings"]
+        if not isinstance(raw_bindings, list) or not all(
+            isinstance(row, dict) for row in raw_bindings
+        ):
+            raise ProvenanceArchiveReadError("provenance binding page rows are invalid")
+        try:
+            bindings = validate_member_history_binding_page(
+                cast(list[Mapping[str, Any]], raw_bindings),
+                max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
+            )
+        except ValueError as exc:
+            raise ProvenanceArchiveReadError("provenance binding page rows are invalid") from exc
+        if (
+            len(bindings) != document.binding_count
+            or bindings[0].artifact_id != document.first_artifact_id
+            or bindings[-1].artifact_id != document.last_artifact_id
+        ):
+            raise ProvenanceArchiveReadError("provenance binding page range changed")
+        return bindings
+
     def iter_bindings(self) -> Iterator[dict[str, object]]:
         """Stream exact member-ordered binding pages from the selected archive."""
 
@@ -601,39 +631,7 @@ class CanonicalProvenanceArchiveReader:
                 return
             if document.payload.kind != "bindings":
                 continue
-            content = _read_bounded(
-                self._read_object(document.payload.path), document.payload.bytes
-            )
-            if (
-                len(content) != document.payload.bytes
-                or hashlib.sha256(content).hexdigest() != document.payload.sha256
-            ):
-                raise ProvenanceArchiveReadError("provenance binding page changed")
-            value = require_canonical_json(content)
-            if not isinstance(value, dict) or set(value) != {"format", "bindings"}:
-                raise ProvenanceArchiveReadError("provenance binding page is invalid")
-            if value["format"] != PROVENANCE_BINDINGS_FORMAT:
-                raise ProvenanceArchiveReadError("provenance binding page format changed")
-            raw_bindings = value["bindings"]
-            if not isinstance(raw_bindings, list) or not all(
-                isinstance(row, dict) for row in raw_bindings
-            ):
-                raise ProvenanceArchiveReadError("provenance binding page rows are invalid")
-            try:
-                bindings = validate_member_history_binding_page(
-                    cast(list[Mapping[str, Any]], raw_bindings),
-                    max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
-                )
-            except ValueError as exc:
-                raise ProvenanceArchiveReadError(
-                    "provenance binding page rows are invalid"
-                ) from exc
-            if (
-                len(bindings) != document.binding_count
-                or bindings[0].artifact_id != document.first_artifact_id
-                or bindings[-1].artifact_id != document.last_artifact_id
-            ):
-                raise ProvenanceArchiveReadError("provenance binding page range changed")
+            bindings = self.binding_page(document)
             for binding in bindings:
                 if last_id is not None and binding.artifact_id <= last_id:
                     raise ProvenanceArchiveReadError("provenance bindings are not member ordered")
