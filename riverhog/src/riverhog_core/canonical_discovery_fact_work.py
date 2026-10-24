@@ -600,6 +600,45 @@ def fact_stack_top(db: sqlite3.Connection, key: FactTaskKey) -> FactStackFrame |
     return FactStackFrame(*row)
 
 
+@dataclass(frozen=True, slots=True)
+class FactAssertionBinding:
+    assertion_id: str
+    origin_sha256: str
+    canonical_stream_ref: str
+
+
+def fact_assertion_binding(db: sqlite3.Connection, key: FactTaskKey) -> FactAssertionBinding:
+    """Detach one exact assertion obligation without scanning source or work rows."""
+    _task(db, key)
+    row = _one(
+        db,
+        "SELECT assertion_id, origin_sha256, canonical_stream_ref "
+        "FROM discovery_fact_tasks WHERE build_id = ? AND task_id = ?",
+        (key.build_id, key.task_id),
+    )
+    if row is None:
+        raise StaleFactTask("assertion source obligation is absent")
+    return FactAssertionBinding(*row)
+
+
+def fact_stack_frame(db: sqlite3.Connection, key: FactTaskKey, *, depth: int) -> FactStackFrame:
+    """Detach one exact saved frame for bounded speculative page preparation."""
+    _natural(depth)
+    _task(db, key)
+    cursor = _cursor(db, key)
+    if not 1 <= depth <= cursor.stack_depth:
+        raise StaleFactTask("requested frame is outside the current extraction stack")
+    row = _one(
+        db,
+        "SELECT source_node, next_child, path_node FROM discovery_fact_stack "
+        "WHERE build_id = ? AND task_id = ? AND depth = ?",
+        (key.build_id, key.task_id, depth),
+    )
+    if row is None:
+        raise StaleFactTask("assertion extraction stack is incomplete")
+    return FactStackFrame(*row)
+
+
 def advance_assertion(
     db: sqlite3.Connection,
     key: FactTaskKey,

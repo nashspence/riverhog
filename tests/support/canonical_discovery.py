@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 from riverhog_protocol import ProfilePin
 from riverhog_provenance import (
@@ -16,26 +17,23 @@ from riverhog_provenance_contracts import ContractCatalog, ProvenanceContractBin
 
 
 @dataclass(frozen=True, slots=True)
-class NativeScalarFixture:
+class NativeProfileFixture:
     raw: bytes
     catalog: ContractCatalog
     assertion_id: str
     profile: ProfilePin
 
 
-def native_scalar_fixture(count: int) -> NativeScalarFixture:
-    """Put one exact profiled array inside a complete native journal."""
-    if count < 0:
-        raise ValueError("scalar count must be nonnegative")
-    schema_id = "urn:test:canonical-discovery:scalar-array"
+def native_profile_fixture(data: Any, schema: dict[str, Any]) -> NativeProfileFixture:
+    """Put one exact declared profile value inside a complete native journal."""
+    schema_id = "urn:test:canonical-discovery:profile-value"
     contract = ProvenanceContractBinding(
-        contract_id="urn:test:canonical-discovery:scalar-contract",
+        contract_id="urn:test:canonical-discovery:profile-contract",
         schemas=[
             {
                 "$id": schema_id,
                 "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "array",
-                "items": {"type": "integer"},
+                **schema,
             }
         ],
     )
@@ -50,15 +48,15 @@ def native_scalar_fixture(count: int) -> NativeScalarFixture:
         "extension",
         observed.observer_agent_id,
         subject=reference(observed.artifact_id, "artifact"),
-        property="urn:test:canonical-discovery:scalar-values",
+        property="urn:test:canonical-discovery:profile-data",
         value={
             "type": "json",
-            "value": {"profile": pin.model_dump(mode="json"), "data": list(range(count))},
+            "value": {"profile": pin.model_dump(mode="json"), "data": data},
         },
     )
     graph = observed.graph_fragment()
     graph["extensions"] = [extension]
-    return NativeScalarFixture(
+    return NativeProfileFixture(
         raw=create_journal(
             graph,
             recorded_by_agent_id=observed.observer_agent_id,
@@ -67,4 +65,13 @@ def native_scalar_fixture(count: int) -> NativeScalarFixture:
         catalog=catalog,
         assertion_id=extension["assertion_id"],
         profile=pin,
+    )
+
+
+def native_scalar_fixture(count: int) -> NativeProfileFixture:
+    """Put one exact profiled array inside a complete native journal."""
+    if count < 0:
+        raise ValueError("scalar count must be nonnegative")
+    return native_profile_fixture(
+        list(range(count)), {"type": "array", "items": {"type": "integer"}}
     )
