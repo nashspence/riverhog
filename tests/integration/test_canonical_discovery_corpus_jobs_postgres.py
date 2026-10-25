@@ -107,6 +107,10 @@ def test_postgresql_discovery_claim_cas_and_pinned_job_survive_generation_deleti
         current = owner.pin_discovery_corpus(factory, claimed[0], frozen)
         assert current is not None and current.binding.selection_count == frozen.selection_count
         assert owner.pin_discovery_corpus(factory, current, frozen) == current
+        active = owner.activate_discovery_corpus(factory, current)
+        assert active is not None and active.state == "active"
+        assert owner.pin_discovery_corpus(factory, current, frozen) == active
+        current = active
         with factory() as session, session.begin():
             session.execute(delete(Generation).where(Generation.build_id == job.build_id))
         assert not owner.discovery_worker_current(factory, current)

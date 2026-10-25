@@ -141,7 +141,7 @@ def reset(case, mode, variant):
     if mode == "select_discovery_job":
         job = case.job
     if mode == "activate_discovery_corpus" or (
-        mode == "pin_discovery_corpus" and variant == "retry"
+        mode == "pin_discovery_corpus" and variant in {"retry", "post-open-retry"}
     ):
         job = replace(
             job,
@@ -170,6 +170,8 @@ def reset(case, mode, variant):
 
 def measure(case, mode, variant, cold):
     job = reset(case, mode, variant)
+    if variant == "post-open-retry":
+        assert owner.activate_discovery_corpus(case.factory, job) is not None
     control = "failure" * case.metadata_width
     before = snapshot(case.engine)
     width = max(
@@ -204,7 +206,7 @@ def measure(case, mode, variant, cold):
             manifest = replace(manifest, sources=replace(manifest.sources, source_count=2))
             expected_error = owner.StaleArchiveTask
         action = partial(owner.pin_discovery_corpus, case.factory, job, manifest)
-        changed = int(variant != "retry")
+        changed = int(variant not in {"retry", "post-open-retry"})
     elif mode == "activate_discovery_corpus":
         selected = replace(job, version="e" * 64) if variant == "stale" else job
         action = partial(owner.activate_discovery_corpus, case.factory, selected)
@@ -267,7 +269,7 @@ def exercise(mode, cases, record_property):
         "select_discovery_job": ("new", "existing", "superseded"),
         "claim_discovery_worker": ("fresh", "stale", "superseded"),
         "discovery_worker_current": ("current", "superseded"),
-        "pin_discovery_corpus": ("fresh", "retry", "wrong-count", "superseded"),
+        "pin_discovery_corpus": ("fresh", "retry", "post-open-retry", "wrong-count", "superseded"),
         "activate_discovery_corpus": ("fresh", "stale", "superseded"),
         "lose_discovery_corpus": ("fresh", "stale"),
         "retire_discovery_job": ("fresh", "stale"),

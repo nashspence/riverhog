@@ -441,10 +441,10 @@ def pin_discovery_corpus(
         if job.source_manifest_sha256 is not None:
             if job.binding != proposed.binding:
                 raise StaleArchiveTask("fixed original corpus inputs changed within an attempt")
-            with session.execute(
-                select(Job.workspace_id).where(*_identity(job), Job.state.in_(("ready", "active")))
-            ) as rows:
-                return job if rows.one_or_none() is not None else None
+            current = session.scalar(
+                select(Job).where(*_identity(job), Job.state.in_(("ready", "active")))
+            )
+            return None if current is None else DiscoveryJob.read(current)
         row = session.execute(
             update(Job)
             .where(*_identity(job), Job.version == job.version, Job.state == "preparing")

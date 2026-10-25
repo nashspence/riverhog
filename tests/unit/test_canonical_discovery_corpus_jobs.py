@@ -109,6 +109,7 @@ def test_one_attempt_and_original_binding_survive_claim_pin_and_reopen(case):
         assert owner.pin_discovery_corpus(case.factory, pinned, case.frozen) == pinned
         active = owner.activate_discovery_corpus(case.factory, pinned)
         assert active is not None and active.state == "active"
+        assert owner.pin_discovery_corpus(case.factory, pinned, case.frozen) == active
         with lease_journal_validation_workspace(case.root, first.workspace_id) as busy:
             assert busy is None
         assert case.engine.pool.checkedout() == 0
