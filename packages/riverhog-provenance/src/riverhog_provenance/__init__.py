@@ -52,7 +52,12 @@ from .graph_certificates import (
     JournalGraphCertificateBinding,
     JournalGraphCertificates,
 )
-from .history import MemberHistoryClosure, MemberHistoryMembership
+from .history import (
+    DocumentaryNode,
+    MemberHistoryClosure,
+    MemberHistoryMembership,
+    inspect_documentary_node,
+)
 from .interface import ObservationSource, StateObserver
 from .journal import (
     JournalFrame,
@@ -153,6 +158,8 @@ __all__ = [
     "JournalGraphCertificate",
     "JournalGraphCertificateBinding",
     "JournalGraphCertificates",
+    "DocumentaryNode",
+    "inspect_documentary_node",
     "MemberHistoryClosure",
     "MemberHistoryMembership",
     "validate_graph",

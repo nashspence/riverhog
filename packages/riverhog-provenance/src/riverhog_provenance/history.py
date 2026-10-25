@@ -7,6 +7,7 @@ import sqlite3
 from collections import OrderedDict
 from collections.abc import Callable, Iterable, Iterator, Mapping
 from contextlib import closing
+from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, Self, cast
@@ -155,22 +156,57 @@ def _pending_declaration(kind: str) -> Declaration:
     )
 
 
-def _external_references(value: object) -> Iterator[dict[str, Any]]:
+@dataclass(frozen=True, slots=True)
+class DocumentaryNode:
+    """Native interpretation of one value in the documentary reference language.
+
+    A detached reference terminates this node. Otherwise, descend selects the
+    original dictionary values or list items; opaque JSON and scalars terminate.
+    The caller owns bounded traversal, source coordinates and current custody.
+    """
+
+    reference: dict[str, Any] | None
+    descend: bool
+
+
+_DOCUMENTARY_CHILDREN = DocumentaryNode(None, True)
+_DOCUMENTARY_TERMINAL = DocumentaryNode(None, False)
+_EXTERNAL_FIELDS = ("scope", "journal_id", "entry", "assertion_id", "object_id", "object_type")
+
+
+def inspect_documentary_node(value: object) -> DocumentaryNode:
+    """Classify one decoded node without visiting or retaining its children.
+
+    Exact canonical endpoint records use the maintained reference model. An
+    opaque JSON wrapper never exposes references from its profile payload.
+    Field probes stay fixed even for wide dictionaries; reference metadata uses
+    the existing UUID, digest, object-type and sequence domains.
+    """
     if isinstance(value, dict):
-        if value.get("scope") == "external":
-            # Only canonical endpoint records are dependencies. An opaque profile
-            # may contain unrelated data which happens to have a scope field.
-            fields = {"scope", "journal_id", "entry", "assertion_id", "object_id", "object_type"}
-            if set(value) == fields:
-                yield ExternalReference.model_validate(value).model_dump(mode="json")
-                return
-        if value.get("type") == "json" and set(value) == {"type", "value"}:
-            return  # Opaque profile data is not a canonical endpoint language.
-        for child in value.values():
-            yield from _external_references(child)
-    elif isinstance(value, list):
-        for child in value:
-            yield from _external_references(child)
+        if (
+            len(value) == len(_EXTERNAL_FIELDS)
+            and value.get("scope") == "external"
+            and all(key in value for key in _EXTERNAL_FIELDS)
+        ):
+            selected = ExternalReference.model_validate(value).model_dump(mode="json")
+            return DocumentaryNode(selected, False)
+        if len(value) == 2 and value.get("type") == "json" and "value" in value:
+            return _DOCUMENTARY_TERMINAL
+        return _DOCUMENTARY_CHILDREN
+    return _DOCUMENTARY_CHILDREN if isinstance(value, list) else _DOCUMENTARY_TERMINAL
+
+
+def _external_references(value: object) -> Iterator[dict[str, Any]]:
+    selected = inspect_documentary_node(value)
+    if selected.reference is not None:
+        yield selected.reference
+    elif selected.descend:
+        if isinstance(value, dict):
+            for child in value.values():
+                yield from _external_references(child)
+        elif isinstance(value, list):
+            for child in value:
+                yield from _external_references(child)
 
 
 def _prefix(chunks: Iterable[bytes], count: int) -> Iterator[bytes]:

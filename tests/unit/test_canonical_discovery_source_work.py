@@ -348,8 +348,13 @@ def test_measured_source_pages_bound_sql_hashing_and_output_on_native_atoms(
         ("wide", list(range(65)), {"type": "array", "items": {"type": "integer"}}),
         ("long", "\U0001f99b" * 5000, {"type": "string"}),
         ("deep", deep, {"type": "object"}),
+        ("documentary", None, None),
     ):
-        admitted = validated_source(native_profile_fixture(data, schema))
+        admitted = validated_source(
+            native_documentary_fixture()
+            if case == "documentary"
+            else native_profile_fixture(data, schema)
+        )
         for budget in (1, 7, 128):
             source = source_for(admitted.row, admitted.origin_sha256)
             db = open_work(tmp_path / f"{case}-{budget}.sqlite3", source)
@@ -358,8 +363,15 @@ def test_measured_source_pages_bound_sql_hashing_and_output_on_native_atoms(
                 deep_recorded = False
                 while fact_extraction_cursor(db, KEY)[1].category in {"canonical", "scalars"}:
                     _, before = fact_extraction_cursor(db, KEY)
-                    selected = page_number in (0, 1, 7) or (
-                        before.stack_depth >= 32 and not deep_recorded
+                    reference_step = (
+                        before.category == "scalars"
+                        and before.section_ordinal == 6
+                        and source.documentary_reference(source.at_cursor(before)) is not None
+                    )
+                    selected = (
+                        reference_step
+                        or page_number in (0, 1, 7)
+                        or (before.stack_depth >= 32 and not deep_recorded)
                     )
                     if selected:
                         deep_recorded = deep_recorded or before.stack_depth >= 32
@@ -399,6 +411,120 @@ def test_measured_source_pages_bound_sql_hashing_and_output_on_native_atoms(
                         apply_source_page(db, KEY, page)
                     page_number += 1
                 assert scalar_projection(db) == oracle(admitted.row)
+                assert len(streams(db, "documentary-reference")) == source.documentary_count
+                if case == "documentary":
+                    assert source.documentary_count == 1
+                    assert list(streams(db, "documentary-reference").values()) == [
+                        canonical_json_bytes(admitted.row["value"]["value"])
+                    ]
             finally:
                 db.close()
     record_property("growth_samples", samples)
+
+
+def native_documentary_fixture():
+    from types import SimpleNamespace
+
+    from riverhog_provenance import (
+        BoundedSourceObserver,
+        BytesSource,
+        assertion,
+        create_journal,
+        external_reference,
+        reference,
+        validate_journal,
+    )
+
+    from tests.support.canonical_discovery import native_scalar_fixture
+
+    first = native_scalar_fixture(1)
+    with validate_journal(first.raw, catalog=first.catalog) as native:
+        selected = external_reference(native, native.states[0]["id"])
+    observed = BoundedSourceObserver(catalog=first.catalog).observe(BytesSource(b"documentary"))
+    row = assertion(
+        "extension",
+        observed.observer_agent_id,
+        subject=reference(observed.artifact_id, "artifact"),
+        property="urn:test:documentary-source",
+        value={"type": "reference", "value": selected},
+    )
+    graph = observed.graph_fragment()
+    graph["extensions"] = [row]
+    raw = create_journal(
+        graph, recorded_by_agent_id=observed.observer_agent_id, catalog=first.catalog
+    )
+    return SimpleNamespace(raw=raw, catalog=first.catalog, assertion_id=row["assertion_id"])
+
+
+def documentary_tree():
+    admitted = validated_source(native_documentary_fixture())
+    selected = admitted.row["value"]["value"]
+    row = {
+        "assertion_id": admitted.assertion_id,
+        "references": [selected, {"nested": selected}],
+        "opaque": {
+            "type": "json",
+            "value": [selected, {**selected, "journal_id": "invalid opaque payload"}],
+        },
+    }
+    return json.loads(canonical_json_bytes(row)), selected
+
+
+@pytest.mark.parametrize("budget", [1, 7, 128])
+def test_documentary_facts_keep_original_node_coordinates_without_changing_lexical_facts(
+    tmp_path, budget
+):
+    row, reference = documentary_tree()
+    source = source_for(row)
+    db = open_work(tmp_path / "documentary.sqlite", source)
+    drive(db, source, budget)
+    expected = {
+        source.locate("references", 0).node,
+        source.locate("references", 1, "nested").node,
+    }
+    actual = streams(db, "documentary-reference")
+    assert set(actual) == expected
+    assert all(value == canonical_json_bytes(reference) for value in actual.values())
+    assert source.documentary_count == len(actual) == 2
+    assert fact_task_progress(db, KEY).streams == source.lexical_stream_count
+    assert scalar_projection(db) == oracle(row)
+    db.close()
+
+
+def test_documentary_fragment_cursor_rolls_back_retries_and_reopens_without_duplicates(tmp_path):
+    row, reference = documentary_tree()
+    source = source_for(row)
+    path = tmp_path / "documentary-reopen.sqlite"
+    db = open_work(path, source)
+    while True:
+        page = prepare_lexical_source_page(db, KEY, source, action_budget=1)
+        if page.actions[0].segment is not None:
+            if page.actions[0].segment.stream.kind == "documentary-reference":
+                break
+        with write(db):
+            apply_source_page(db, KEY, page)
+    before = fact_extraction_cursor(db, KEY)
+    db.execute(
+        "CREATE TRIGGER fail_documentary BEFORE INSERT ON discovery_fact_segments "
+        "WHEN NEW.kind='documentary-reference' "
+        "BEGIN SELECT RAISE(ABORT,'injected documentary fragment failure'); END"
+    )
+    with write(db), pytest.raises(sqlite3.IntegrityError, match="injected documentary"):
+        apply_source_page(db, KEY, page)
+    assert fact_extraction_cursor(db, KEY) == before
+    db.execute("DROP TRIGGER fail_documentary")
+    with write(db):
+        apply_source_page(db, KEY, page)
+    saved = fact_extraction_cursor(db, KEY)
+    db.close()
+    db = sqlite3.connect(path, isolation_level=None)
+    source = source_for(row)
+    assert fact_extraction_cursor(db, KEY) == saved
+    drive(db, source, 1)
+    assert len(streams(db, "documentary-reference")) == 2
+    assert all(
+        value == canonical_json_bytes(reference)
+        for value in streams(db, "documentary-reference").values()
+    )
+    assert fact_task_progress(db, KEY).streams == source.lexical_stream_count
+    db.close()

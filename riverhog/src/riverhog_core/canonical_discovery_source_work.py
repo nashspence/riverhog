@@ -25,6 +25,7 @@ from riverhog_growth_contracts import (
     Expression,
     declare_growth,
 )
+from riverhog_provenance import inspect_documentary_node
 
 from riverhog_core.canonical_discovery_fact_work import (
     FACT_FRAGMENT_BYTES,
@@ -49,6 +50,8 @@ class _Container:
     node: int
     keys: tuple[str, ...] | None
     key_positions: dict[str, int]
+    documentary: bool
+    parent: int | None
     child_nodes: list[int] = field(default_factory=list)
 
     def __len__(self) -> int:
@@ -98,7 +101,8 @@ class AdmittedAssertionSource:
         self.canonical_sha256 = hashlib.sha256(self.canonical_json).hexdigest()
         self.containers: list[_Container] = []
         self._container_ids: dict[int, int] = {}
-        self._add_container(row, 0)
+        self.documentary_count = 0
+        self._add_container(row, 0, True)
         pending = [(0, 0)]
         next_node = 1
         while pending:
@@ -114,23 +118,38 @@ class AdmittedAssertionSource:
             if type(value) in (dict, list):
                 if id(value) in self._container_ids:
                     raise ValueError("source must be an immutable decoded JSON tree")
-                child = self._add_container(value, next_node - 1)
+                child = self._add_container(
+                    value, next_node - 1, container.documentary, parent=identity
+                )
                 pending.append((child, 0))
             elif value is not None and type(value) not in (str, int, bool):
                 raise TypeError("assertion contains a nonportable scalar")
         self.node_count = next_node
         self.scalar_count = next_node - len(self.containers)
-        self.lexical_stream_count = 1 + 2 * self.node_count + 2 * self.scalar_count
+        self.lexical_stream_count = (
+            1 + 2 * self.node_count + 2 * self.scalar_count + self.documentary_count
+        )
         self._scalar_node: int | None = None
         self._scalar_bytes = b""
         self._scalar_sha256 = ""
         self._payload_key: tuple[int, int] | None = None
         self._payload_bytes = b""
 
-    def _add_container(self, value: Any, node: int) -> int:
+    def _add_container(
+        self, value: Any, node: int, documentary: bool, *, parent: int | None = None
+    ) -> int:
+        if documentary:
+            selected = inspect_documentary_node(value)
+            self.documentary_count += int(selected.reference is not None)
+            documentary = selected.descend
         keys = tuple(sorted(value)) if type(value) is dict else None
         container = _Container(
-            value, node, keys, {} if keys is None else {key: i for i, key in enumerate(keys)}
+            value,
+            node,
+            keys,
+            {} if keys is None else {key: i for i, key in enumerate(keys)},
+            documentary,
+            parent,
         )
         identity = len(self.containers)
         self._container_ids[id(value)] = identity
@@ -174,6 +193,19 @@ class AdmittedAssertionSource:
                 raise ValueError("only the assertion root has source position zero")
             return SourceValue(0, None, "", self.row, 0)
         return self.child(cursor.source_node, cursor.source_position - 1)
+
+    def documentary_reference(self, value: SourceValue) -> dict[str, Any] | None:
+        """Interpret one original node through Native's documentary language."""
+        if value.container is None:
+            return None
+        container = self.containers[value.container]
+        # Eligibility belongs to the original parent, even when this exact
+        # reference or opaque node terminates documentary traversal itself.
+        if container.documentary or (
+            container.parent is not None and not self.containers[container.parent].documentary
+        ):
+            return None
+        return inspect_documentary_node(container.value).reference
 
     def scalar(self, value: SourceValue) -> tuple[bytes, str]:
         if value.container is not None:
@@ -225,6 +257,11 @@ class AdmittedAssertionSource:
             )
         elif section == 3:
             payload, _ = self.scalar(value)
+        elif section == 6:
+            reference = self.documentary_reference(value)
+            if reference is None:
+                raise StaleFactTask("documentary stream has no original Native reference")
+            payload = canonical_json_bytes(reference)
         else:
             raise ValueError("unknown lexical stream section")
         self._payload_key, self._payload_bytes = key, payload
@@ -296,7 +333,7 @@ def prepare_lexical_source_step(
                 source_node=0,
                 source_position=0,
                 record_ordinal=0,
-                section_ordinal=0,
+                section_ordinal=6,
             ),
         )
     if cursor.category != "scalars":
@@ -338,7 +375,7 @@ def prepare_lexical_source_step(
                     source_node=stack_top.source_node,
                     source_position=stack_top.next_child + 1,
                     record_ordinal=child.node,
-                    section_ordinal=0,
+                    section_ordinal=6,
                 ),
                 stack_action="replace",
                 stack_frame=replace(stack_top, next_child=stack_top.next_child + 1),
@@ -357,6 +394,18 @@ def prepare_lexical_source_step(
         raise StaleFactTask("source value is not the exact consumed child of its saved frame")
     if value.node != cursor.record_ordinal:
         raise StaleFactTask("source coordinate changed its lexical ordinal")
+    if section == 6:
+        terminal = replace(cursor, section_ordinal=0)
+        if source.documentary_reference(value) is None:
+            if cursor.value_position or cursor.fragment_ordinal:
+                raise StaleFactTask("absent documentary node has an unfinished stream")
+            return PreparedSourceStep(terminal)
+        return prepare_stream_action(
+            cursor,
+            FactStreamKey("documentary-reference", str(value.node)),
+            source.payload(value, 6),
+            terminal,
+        )
     if section == 4:
         if value.container is None:
             raise StaleFactTask("source traversal cannot push a scalar")
@@ -397,7 +446,7 @@ def _page_declaration() -> Declaration:
         id="riverhog-server.discovery-source-page.growth/v1",
         authority="riverhog-server",
         subjects=("riverhog_core.canonical_discovery_source_work.prepare_lexical_source_page",),
-        scope="canonical-and-scalar-prepared-physical-page",
+        scope="canonical-scalar-and-documentary-prepared-physical-page",
         starts_at="receive one indexed admitted atom and its exact durable source obligation",
         ends_at="return at most the requested prepared actions with detached frame reads",
         dimensions=(
@@ -463,7 +512,7 @@ def _page_declaration() -> Declaration:
             "Atom admission, canonicalization and initial structural indexing are separate costs.",
             "SQL, SHA preimages and physical output are measured; total CPU/I/O is excluded.",
             "Encoding, backend access, commit and source completeness are separate costs.",
-            "Only canonical/scalar categories are prepared by this owner.",
+            "Documentary interpretation stays with Native; this owner stores original node facts.",
         ),
     )
 
