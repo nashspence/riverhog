@@ -575,3 +575,22 @@ def test_measured_pending_child_skips_completed_registration_rows(
                     samples.append(sample)
             db.close()
     record_property("growth_samples", samples)
+
+
+def test_qualified_source_delegates_original_fork_metadata_to_native():
+    fixture = native_scalar_fixture(1)
+    with validate_journal(fixture.raw, catalog=fixture.catalog) as parent:
+        anchor = parent.anchor_at(0)
+        graph = parent.graph
+        who = parent.frames[0].document["recorded_by_agent_id"]
+    raw = create_journal(
+        graph, recorded_by_agent_id=who, forked_from=anchor, catalog=fixture.catalog
+    )
+    with validate_journal(raw, catalog=fixture.catalog) as summary:
+        with QualifiedJournalSource(summary, ADMISSION, through=0) as source:
+            assert source.fork_anchor() == anchor
+            detached = source.fork_anchor()
+            detached["prefix_sha256"] = "0" * 64
+            assert source.fork_anchor() == anchor
+        with pytest.raises(StaleJournalTask, match="closed"):
+            source.fork_anchor()

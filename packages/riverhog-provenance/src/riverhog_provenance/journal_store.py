@@ -1292,6 +1292,19 @@ class JournalStore:
             raise IndexError(index)
         return cast(dict[str, str], json.loads(row[0]))
 
+    def _initial_frame(self) -> bytes:
+        """Detach the one accepted initialization atom, without a source traversal."""
+        self.require_open()
+        if not self._frozen:
+            raise RuntimeError("fork metadata requires a frozen journal summary")
+        with closing(
+            self.db.execute("SELECT value FROM frames WHERE sequence = ?", ("0",))
+        ) as rows:
+            row = rows.fetchone()
+        if row is None:
+            raise InvalidJournalWorkspace("accepted journal initialization is missing")
+        return cast(bytes, row[0])
+
     def _frame_prefix(self, sequence: int) -> tuple[bytes, str]:
         """Detach the exact accepted source header, without loading its frame."""
         self.require_open()

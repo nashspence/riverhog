@@ -426,6 +426,94 @@ def _source_reference_declaration() -> Declaration:
     )
 
 
+def _source_fork_declaration() -> Declaration:
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    return Declaration(
+        id="riverhog-provenance.frozen-source-fork.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.journal.JournalSummary.fork_anchor",),
+        scope="one authenticated initialization atom from a frozen Native journal",
+        starts_at="receive an open independently validated frozen source summary",
+        ends_at="return its detached recorded fork anchor or explicit absence",
+        dimensions=(
+            Dimension("retained_frames", COUNT, "All accepted source frames."),
+            Dimension("initial_octets", OCTETS, "Complete canonical initialization JSON bytes."),
+        ),
+        bounds=(
+            Bound("sql_statements", COUNT, "equal", count(1), "One indexed initial-frame read."),
+            Bound("returned_rows", COUNT, "equal", count(1), "The original initialization atom."),
+            Bound("closed_cursors", COUNT, "equal", count(1), "Close before decoding the atom."),
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=1, unit=OCTETS),
+                "The exact sequence zero key.",
+            ),
+            *(
+                Bound(
+                    metric,
+                    OCTETS,
+                    "equal",
+                    Expression("dimension", name="initial_octets"),
+                    "Read and decode the complete initialization atom exactly once.",
+                )
+                for metric in ("source_read_octets", "decoded_octets", "encoded_octets")
+            ),
+            Bound("json_decodes", COUNT, "equal", count(1), "One original document decode."),
+            Bound("json_encodes", COUNT, "equal", count(1), "Verify the original canonical bytes."),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        count(512),
+                        Expression(
+                            "product",
+                            terms=(
+                                count(128),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("dimension", name="retained_frames"),
+                                                count(2),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "One maintained B-tree point read; no journal traversal.",
+            ),
+        ),
+        conditions=(
+            "The source owns an open frozen independently validated Native projection.",
+            "The initialization atom remains subject to Native's entry admission limit.",
+            "The caller retains exact source admission, custody and current authority.",
+        ),
+        invariants=(
+            "The recorded fork comes from the original initialization entry only.",
+            "Source tail length never causes prefix replay or another frame read.",
+            "Absence is explicit, and the returned mapping cannot mutate the source.",
+        ),
+        limitations=(
+            "Decoding costs the complete initialization atom, including unrelated assertions.",
+            "Calling once per qualified journal is the closure owner's separate obligation.",
+            "A recorded fork is not proof that its foreign source is present or accepted.",
+            "SQL VM constants depend on SQLite; I/O and elapsed time remain observations.",
+        ),
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class JournalSummary:
     journal_id: str
@@ -556,6 +644,29 @@ class JournalSummary:
             "prefix_sha256": digest.hexdigest(),
             "prefix_bytes": str(digest.total_bytes),
         }
+
+    @declare_growth(_source_fork_declaration())
+    def fork_anchor(self) -> dict[str, Any] | None:
+        """Read the recorded fork from exactly one original initialization atom.
+
+        Native validation already owns this metadata's grammar. The caller must
+        independently resolve and admit any returned foreign prefix.
+        """
+        from .journal_store import InvalidJournalWorkspace
+
+        if self._store is None:
+            raise RuntimeError("fork metadata requires an owned native journal summary")
+        raw = self._store._initial_frame()
+        document = decode_document(raw)
+        if (
+            document["journal_id"] != self.journal_id
+            or document["sequence"] != "0"
+            or document["entry_kind"] != "journal_init"
+        ):
+            raise InvalidJournalWorkspace("accepted journal initialization coordinates changed")
+        # Decoding detaches this complete atom from its frozen source. Return
+        # only the Native-defined metadata, never the initial assertion graph.
+        return cast(dict[str, Any] | None, document["body"]["journal"].get("forked_from"))
 
     @declare_growth(_source_reference_declaration(), delegates=(("anchor", anchor_at),))
     def reference_anchor(self, reference: Mapping[str, Any]) -> dict[str, Any]:

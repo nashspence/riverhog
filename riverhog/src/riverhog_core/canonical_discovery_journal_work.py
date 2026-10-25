@@ -230,6 +230,11 @@ class QualifiedJournalSource:
             raise StaleJournalTask("snapshot exceeds the admitted exact source prefix")
         return self._summary.anchor_at(sequence)
 
+    def fork_anchor(self) -> dict[str, Any] | None:
+        """Detach the original Native fork, without interpreting its metadata in Core."""
+        self.check_open()
+        return self._summary.fork_anchor()
+
     def reference_anchor(self, reference: Mapping[str, Any]) -> dict[str, Any]:
         """Resolve a documentary dependency inside this exact admitted source."""
         self.check_open()
@@ -826,7 +831,7 @@ def finish_journal(
 
 
 @dataclass(frozen=True, slots=True)
-class PendingJournalAssertion:
+class JournalAssertion:
     key: FactTaskKey
     assertion_id: str
     sequence: int
@@ -917,7 +922,7 @@ class PendingJournalAssertion:
 def pending_journal_assertion(
     db: sqlite3.Connection,
     key: JournalTaskKey,
-) -> PendingJournalAssertion | None:
+) -> JournalAssertion | None:
     _task(db, key)
     row = _one(
         db,
@@ -929,7 +934,7 @@ def pending_journal_assertion(
     )
     if row is None:
         return None
-    return PendingJournalAssertion(
+    return JournalAssertion(
         FactTaskKey(key.build_id, row[0], key.source_key, key.worker_id),
         row[1],
         int(row[2]),
