@@ -254,3 +254,89 @@ def test_uncertain_storage_close_can_be_confirmed_without_reopening_work(
         assert releases == ["released"]
     finally:
         db.close()
+
+
+@pytest.mark.parametrize("damage", ["unlink", "replace", "symlink", "permissions", "hardlink"])
+def test_live_handle_rejects_lost_or_replaced_database_before_work(tmp_path, catalog, damage):
+    path = directory(tmp_path)
+    source = EmptySource(catalog)
+    workspace = open_workspace(path, source, create=True)
+    file = path / "corpus.sqlite3"
+    try:
+        if damage == "unlink":
+            file.unlink()
+        elif damage in {"replace", "symlink"}:
+            file.rename(path / "detached.sqlite3")
+            if damage == "replace":
+                file.write_bytes(b"unrelated")
+                file.chmod(0o600)
+            else:
+                file.symlink_to(path / "detached.sqlite3")
+        elif damage == "permissions":
+            file.chmod(0o644)
+        else:
+            import os
+
+            os.link(file, path / "duplicate.sqlite3")
+        with pytest.raises(StaleCorpusWorkspace, match="file"):
+            workspace.advance_semantics()
+    finally:
+        workspace.close()
+
+
+def test_serialized_native_work_and_close_can_move_between_worker_threads(tmp_path, catalog):
+    from concurrent.futures import ThreadPoolExecutor
+
+    path = directory(tmp_path)
+    source = EmptySource(catalog)
+    workspace = open_workspace(path, source, create=True)
+    try:
+        with ThreadPoolExecutor(max_workers=1) as worker:
+            assert worker.submit(workspace.advance_semantics).result(timeout=10).complete
+            while not worker.submit(workspace.advance_dependencies).result(timeout=10).complete:
+                pass
+            while (
+                not worker.submit(workspace.advance_order, "derivation").result(timeout=10).complete
+            ):
+                pass
+            worker.submit(workspace.close).result(timeout=10)
+    finally:
+        workspace.close()
+
+
+@pytest.mark.parametrize("lost_reply", [False, True])
+def test_uncertain_open_close_leaves_the_actual_handle_reachable(
+    tmp_path, catalog, monkeypatch, lost_reply
+):
+    path = directory(tmp_path)
+    source = EmptySource(catalog)
+    retained, released = [], []
+    initialize = owner.RetainedCorpusValidator._initialize
+
+    def interrupted(workspace):
+        initialize(workspace)
+        workspace._corpus._db = UncertainClose(workspace._db, lost_reply=lost_reply)
+        raise InterruptedError("initialization return lost")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(owner.RetainedCorpusValidator, "_initialize", interrupted)
+        with pytest.raises(OSError, match="unconfirmed"):
+            open_workspace(
+                path,
+                source,
+                create=True,
+                on_storage_open=retained.append,
+                on_storage_close=lambda: released.append(True),
+            )
+    assert len(retained) == 1
+    workspace = retained[0]
+    assert not workspace._storage_closed
+    assert workspace._descriptor is not None
+    assert released == []
+    with pytest.raises(RuntimeError, match="closed"):
+        workspace.advance_semantics()
+    workspace.close()
+    assert workspace._descriptor is None
+    assert released == [True]
+    workspace.close()
+    assert released == [True]

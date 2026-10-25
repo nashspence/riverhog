@@ -26,7 +26,7 @@ from riverhog_core.canonical_discovery_archive_work import (
     begin_archive_metadata,
     initialize_archive_work,
 )
-from riverhog_core.canonical_discovery_journal_work import initialize_journal_work
+from riverhog_core.canonical_discovery_dependency_source import initialize_dependency_source
 from riverhog_core.canonical_discovery_primary_work import initialize_primary_work
 from riverhog_core.canonical_discovery_selection import initialize_corpus_selection
 from riverhog_core.catalog_db import SessionFactory
@@ -201,7 +201,9 @@ class DiscoveryMetadata:
             self._descriptor = os.open(path, os.O_RDWR | os.O_NOFOLLOW)
         if not self._file_current():
             raise LostJournalValidationWorkspace("Core metadata file custody is incompatible")
-        db = self._db = sqlite3.connect(path.as_uri() + "?mode=rw", uri=True, isolation_level=None)
+        db = self._db = sqlite3.connect(
+            path.as_uri() + "?mode=rw", uri=True, isolation_level=None, check_same_thread=False
+        )
         if created:
             with closing(db.execute("PRAGMA auto_vacuum=INCREMENTAL")):
                 pass
@@ -226,7 +228,7 @@ class DiscoveryMetadata:
                 pass
         if created:
             initialize_archive_work(db)
-            initialize_journal_work(db)
+            initialize_dependency_source(db)
             initialize_corpus_selection(db)
             initialize_primary_work(db)
             with closing(

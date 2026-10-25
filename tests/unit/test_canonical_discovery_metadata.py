@@ -231,3 +231,19 @@ def test_stale_preparing_snapshot_cannot_recreate_confirmed_missing_storage(case
             assert not file.exists()
         finally:
             stale.close()
+
+
+def test_serialized_core_metadata_can_move_between_worker_threads(case):
+    from concurrent.futures import ThreadPoolExecutor
+
+    with owned(case) as (metadata, _):
+        metadata.open()
+
+        def advance():
+            with metadata.transaction() as (db, key):
+                return archive_metadata_progress(db, key)
+
+        with ThreadPoolExecutor(max_workers=1) as worker:
+            assert worker.submit(advance).result(timeout=10).version == 0
+            assert worker.submit(metadata.verify_current).result(timeout=10)
+            worker.submit(metadata.close).result(timeout=10)

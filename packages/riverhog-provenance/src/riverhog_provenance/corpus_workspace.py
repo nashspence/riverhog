@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import re
 import sqlite3
+import stat
 from collections.abc import Callable, Iterator, Mapping
 from contextlib import closing, contextmanager
 from dataclasses import asdict, dataclass
@@ -232,6 +233,8 @@ class RetainedCorpusValidator:
 
     Every successful bounded call commits its data and checkpoint together.
     This owner exposes no whole-corpus reset or discovery-publication grant.
+    The application serializes all calls, which may move between worker threads.
+    The optional opening callback retains the handle before initialization can fail.
     It owns no independent result readers; close releases the callback only
     after its sole database handle closes. The application retains the files.
     """
@@ -244,6 +247,8 @@ class RetainedCorpusValidator:
     _closed: bool
     _storage_closed: bool
     _on_close: Callable[[], None] | None
+    _directory: Path
+    _descriptor: int | None
     _db: sqlite3.Connection
     _corpus: CanonicalCorpusValidator
 
@@ -259,6 +264,7 @@ class RetainedCorpusValidator:
         catalog: ContractCatalog | None = None,
         metadata_byte_budget: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX,
         on_storage_close: Callable[[], None] | None = None,
+        on_storage_open: Callable[[Self], None] | None = None,
     ) -> Self:
         if type(worker_epoch) is not int or worker_epoch < 0:
             raise ValueError("retained corpus requires a nonnegative worker epoch")
@@ -274,22 +280,39 @@ class RetainedCorpusValidator:
             raise JournalValidationCapacity("corpus binding exceeds admitted metadata budget")
         if source.verify_current() is not True:
             raise IncompleteSourceError("retained corpus source is no longer current")
-        directory = Path(directory)
+        directory = Path(directory).absolute()
         path = directory / "corpus.sqlite3"
         if directory.is_symlink() or not directory.is_dir() or path.is_symlink():
             raise StaleCorpusWorkspace("retained corpus directory is unavailable")
-        if create:
-            descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            os.close(descriptor)
-            _sync_directory(directory)
-        elif not path.is_file():
-            raise StaleCorpusWorkspace("retained corpus database is missing")
+        try:
+            descriptor = os.open(
+                path,
+                os.O_RDWR | os.O_NOFOLLOW | (os.O_CREAT | os.O_EXCL if create else 0),
+                0o600,
+            )
+        except FileNotFoundError as error:
+            raise StaleCorpusWorkspace("retained corpus database is missing") from error
         result = cls.__new__(cls)
         result._source, result._binding, result._encoded = source, binding, encoded
         result._epoch, result._metadata_budget = worker_epoch, metadata_byte_budget
-        result._closed, result._storage_closed, result._on_close = False, False, None
-        result._db = sqlite3.connect(path.resolve().as_uri() + "?mode=rw", uri=True)
+        result._closed, result._storage_closed, result._on_close = False, False, on_storage_close
+        result._directory, result._descriptor = directory, descriptor
         try:
+            result._verify_file()
+            result._db = sqlite3.connect(
+                path.as_uri() + "?mode=rw", uri=True, check_same_thread=False
+            )
+        except BaseException:
+            os.close(descriptor)
+            result._descriptor = None
+            raise
+        result._corpus = CanonicalCorpusValidator._from_workspace(result._db, directory)
+        try:
+            # Retain the handle before initialization or fencing can fail.
+            # The caller keeps its lease if a following close is unconfirmed.
+            if on_storage_open is not None:
+                on_storage_open(result)
+            result._verify_file()
             db = result._db
             if create:
                 _write(db, "PRAGMA auto_vacuum=INCREMENTAL")
@@ -306,7 +329,6 @@ class RetainedCorpusValidator:
                 "PRAGMA temp_store=FILE",
             ):
                 _write(db, statement)
-            result._corpus = CanonicalCorpusValidator._from_workspace(db, directory)
             _write(db, "BEGIN IMMEDIATE")
             if create:
                 result._corpus._initialize_schema()
@@ -339,14 +361,13 @@ class RetainedCorpusValidator:
             if create:
                 _sync_directory(directory)
         except sqlite3.DatabaseError as error:
-            result._db.close()
+            result.close()
             raise StaleCorpusWorkspace(
                 "retained corpus storage is corrupt or incomplete"
             ) from error
         except BaseException:
-            result._db.close()
+            result.close()
             raise
-        result._on_close = on_storage_close
         return result
 
     def _initialize(self) -> None:
@@ -385,7 +406,27 @@ class RetainedCorpusValidator:
             ),
         )
 
+    def _verify_file(self) -> None:
+        try:
+            if self._descriptor is None:
+                raise StaleCorpusWorkspace("retained corpus file custody is closed")
+            held = os.fstat(self._descriptor)
+            entry = os.stat(self._directory / "corpus.sqlite3", follow_symlinks=False)
+            current = (
+                stat.S_ISREG(held.st_mode)
+                and stat.S_IMODE(held.st_mode) == 0o600
+                and held.st_uid == os.getuid()
+                and held.st_nlink == 1
+                and (held.st_dev, held.st_ino, held.st_mode)
+                == (entry.st_dev, entry.st_ino, entry.st_mode)
+            )
+        except OSError as error:
+            raise StaleCorpusWorkspace("retained corpus file custody changed") from error
+        if not current:
+            raise StaleCorpusWorkspace("retained corpus file custody changed")
+
     def _verify_current(self) -> None:
+        self._verify_file()
         if self._source.binding != self._binding or self._source.verify_current() is not True:
             raise IncompleteSourceError("retained corpus source is no longer current")
 
@@ -643,6 +684,9 @@ class RetainedCorpusValidator:
         if not self._storage_closed:
             self._corpus.__exit__()
             self._storage_closed = True
+        if self._descriptor is not None:
+            os.close(self._descriptor)
+            self._descriptor = None
         callback, self._on_close = self._on_close, None
         if callback is not None:
             callback()

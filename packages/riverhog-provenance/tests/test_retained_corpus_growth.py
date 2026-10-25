@@ -81,6 +81,23 @@ class Observer:
     def observe(self, monkeypatch, source, workspace=None):
         connect, checkpoint, restore = owner.sqlite3.connect, owner._checkpoint, owner._restore
         current = source.verify_current
+        opened_fd, closed_fd = owner.os.open, owner.os.close
+        fstat, stat, lstat = owner.os.fstat, owner.os.stat, owner.os.lstat
+
+        def descriptor_opened(*args, **kwargs):
+            self.metrics["descriptor_opens"] += 1
+            return opened_fd(*args, **kwargs)
+
+        def descriptor_closed(*args, **kwargs):
+            self.metrics["descriptor_closes"] += 1
+            return closed_fd(*args, **kwargs)
+
+        def inspected(operation):
+            def inspect(*args, **kwargs):
+                self.metrics["file_identity_reads"] += 1
+                return operation(*args, **kwargs)
+
+            return inspect
 
         def opened(*args, **kwargs):
             self.metrics["opened_connections"] += 1
@@ -106,6 +123,11 @@ class Observer:
             patch.setattr(owner, "_checkpoint", encoded)
             patch.setattr(owner, "_restore", decoded)
             patch.setattr(source, "verify_current", checked)
+            patch.setattr(owner.os, "open", descriptor_opened)
+            patch.setattr(owner.os, "close", descriptor_closed)
+            patch.setattr(owner.os, "fstat", inspected(fstat))
+            patch.setattr(owner.os, "stat", inspected(stat))
+            patch.setattr(owner.os, "lstat", inspected(lstat))
             db = None if workspace is None else workspace._db
             if db is not None:
                 patch.setattr(workspace, "_db", Connection(db, self))
@@ -174,8 +196,17 @@ def test_actual_owner_create_reopen_and_rejection_are_metadata_work(
         path.mkdir()
         source = EmptySource(catalog)
         observer = Observer()
+        retained = []
+
+        def retain(handle, observed=observer, owned=retained):
+            observed.metrics["opening_callbacks"] += 1
+            owned.append(handle)
+
         with observer.observe(monkeypatch, source):
-            workspace = open_workspace(path, source, create=True, catalog=catalog)
+            workspace = open_workspace(
+                path, source, create=True, catalog=catalog, on_storage_open=retain
+            )
+        assert retained == [workspace]
         samples.append(observer.sample(RetainedCorpusValidator.open_retained, source, 0))
         # Subsequent actual SQL belongs to fixture setup, not this opening sample.
         workspace._db = workspace._db.db
@@ -200,6 +231,36 @@ def test_actual_owner_create_reopen_and_rejection_are_metadata_work(
         with observer.observe(monkeypatch, source):
             with pytest.raises(StaleCorpusWorkspace, match="missing"):
                 open_workspace(path, source, epoch=2, catalog=catalog)
+        samples.append(observer.sample(RetainedCorpusValidator.open_retained, source, count))
+        rejected = tmp_path / ("rejected-" + str(count))
+        rejected.mkdir()
+        source = EmptySource(catalog)
+        current = [True]
+        source.verify_current = lambda state=current: state[0]
+        observer = Observer()
+        retained = []
+
+        def retain_rejected(handle, observed=observer, owned=retained, state=current):
+            observed.metrics["opening_callbacks"] += 1
+            owned.append(handle)
+            state[0] = False
+
+        def release_rejected(observed=observer):
+            observed.metrics["release_callbacks"] += 1
+
+        with observer.observe(monkeypatch, source):
+            with pytest.raises(owner.IncompleteSourceError):
+                open_workspace(
+                    rejected,
+                    source,
+                    create=True,
+                    catalog=catalog,
+                    on_storage_open=retain_rejected,
+                    on_storage_close=release_rejected,
+                )
+        assert len(retained) == 1 and retained[0]._storage_closed
+        assert retained[0]._descriptor is None
+        assert observer.metrics["opening_callbacks"] == observer.metrics["release_callbacks"] == 1
         samples.append(observer.sample(RetainedCorpusValidator.open_retained, source, count))
     record_property("growth_samples", samples)
 

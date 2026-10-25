@@ -60,7 +60,11 @@ def lifecycle_declaration(operation: str) -> Declaration:
         "full_assertion_reads": 0,
         "closed_connections": 1 if closing or opening else 0,
         "opened_connections": 1 if opening else 0,
-        "release_callbacks": 1 if closing else 0,
+        "release_callbacks": 1 if closing or opening else 0,
+        "opening_callbacks": 1 if opening else 0,
+        "descriptor_opens": 2 if opening else 0,
+        "descriptor_closes": 2 if opening else 1 if closing else 0,
+        "file_identity_reads": 12 if opening else 0 if closing else 4,
     }
     bounds = [
         Bound(metric, COUNT, "upper", _number(limit), meaning)
@@ -105,7 +109,27 @@ def lifecycle_declaration(operation: str) -> Declaration:
             (
                 "release_callbacks",
                 limits["release_callbacks"],
-                "The transferred callback follows actual close.",
+                "The transferred callback follows actual close, including rejected opening.",
+            ),
+            (
+                "opening_callbacks",
+                limits["opening_callbacks"],
+                "The application retains at most one actual handle before initialization.",
+            ),
+            (
+                "descriptor_opens",
+                limits["descriptor_opens"],
+                "One retained file descriptor and one creation directory sync.",
+            ),
+            (
+                "descriptor_closes",
+                limits["descriptor_closes"],
+                "Close only the retained descriptor and any creation directory descriptor.",
+            ),
+            (
+                "file_identity_reads",
+                limits["file_identity_reads"],
+                "Fixed entry and held-descriptor checks without enumerating retained work.",
             ),
         )
     ]
@@ -170,6 +194,8 @@ def lifecycle_declaration(operation: str) -> Declaration:
             "Only a strictly newer worker replaces a retained owner.",
             "Input binding, schema cookie, worker and checkpoint remain one atomic fence.",
             "Creation is exclusive; reopening does not create or repair missing state.",
+            "The original regular private file remains linked to its held descriptor.",
+            "Serialized operations may move between application worker threads.",
             "Exact source/selection memberships and independent counts precede semantic freezing.",
             "Lifecycle work grants no member relevance, current archive access or publication.",
         ),
