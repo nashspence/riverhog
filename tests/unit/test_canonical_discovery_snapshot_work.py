@@ -6,8 +6,10 @@ from dataclasses import replace
 
 import pytest
 from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
     MEMBER_HISTORY_IMPORTS_SCHEMA,
     MEMBER_HISTORY_ROOTS_SCHEMA,
+    RETAINED_HISTORY_EXTENT,
     HistoryJournalAnchor,
     MemberHistoryDocument,
     MemberHistoryPrimary,
@@ -398,7 +400,9 @@ def test_coverage_requires_each_original_root_incidence_and_survives_reopen(tmp_
     with validate_journal(raw, catalog=fixture.catalog) as summary:
         with admit_archive_journal(db, key, admission, summary) as source:
             for history, roots in zip(histories, selections, strict=True):
-                initial = history_snapshot_progress(db, key, history)
+                initial = history_snapshot_progress(
+                    db, key, history, extent=RETAINED_HISTORY_EXTENT
+                )
                 assert initial.expected_roots == len(roots) == 3
                 assert initial.registered_roots == 0 and not initial.complete
                 owner = HistorySnapshotWork(history, source)
@@ -406,15 +410,22 @@ def test_coverage_requires_each_original_root_incidence_and_survives_reopen(tmp_
                     page = prepare_history_snapshot(db, key, owner, selected.key)
                     with write(db):
                         apply_history_snapshot(db, key, owner, page)
-                    expected = history_snapshot_progress(db, key, history)
+                    expected = history_snapshot_progress(
+                        db, key, history, extent=RETAINED_HISTORY_EXTENT
+                    )
                     assert expected.registered_roots == count
                     assert expected.complete is (count == len(roots))
                     with write(db):
                         apply_history_snapshot(db, key, owner, page)
-                    assert history_snapshot_progress(db, key, history) == expected
+                    assert (
+                        history_snapshot_progress(db, key, history, extent=RETAINED_HISTORY_EXTENT)
+                        == expected
+                    )
                 db.close()
                 db = sqlite3.connect(path, isolation_level=None)
-                assert history_snapshot_progress(db, key, history).complete
+                assert history_snapshot_progress(
+                    db, key, history, extent=RETAINED_HISTORY_EXTENT
+                ).complete
     assert db.execute("SELECT count(*) FROM discovery_snapshot_headers").fetchone() == (3,)
     assert db.execute("SELECT count(*) FROM discovery_history_snapshot_links").fetchone() == (6,)
     db.close()
@@ -429,7 +440,9 @@ def test_coverage_and_incidence_update_are_one_retryable_commit(tmp_path, native
             first = prepare_history_snapshot(db, key, owner, selections[0][0].key)
             with write(db):
                 apply_history_snapshot(db, key, owner, first)
-            before = history_snapshot_progress(db, key, histories[0])
+            before = history_snapshot_progress(
+                db, key, histories[0], extent=RETAINED_HISTORY_EXTENT
+            )
             page = prepare_history_snapshot(db, key, owner, selections[0][1].key)
             db.execute(
                 "CREATE TRIGGER fail_coverage BEFORE UPDATE ON discovery_history_snapshot_coverage "
@@ -437,14 +450,22 @@ def test_coverage_and_incidence_update_are_one_retryable_commit(tmp_path, native
             )
             with write(db), pytest.raises(sqlite3.IntegrityError, match="injected coverage"):
                 apply_history_snapshot(db, key, owner, page)
-            assert history_snapshot_progress(db, key, histories[0]) == before
+            assert (
+                history_snapshot_progress(db, key, histories[0], extent=RETAINED_HISTORY_EXTENT)
+                == before
+            )
             assert db.execute(
                 "SELECT count(*) FROM discovery_history_snapshot_links"
             ).fetchone() == (1,)
             db.execute("DROP TRIGGER fail_coverage")
             with write(db):
                 apply_history_snapshot(db, key, owner, page)
-            assert history_snapshot_progress(db, key, histories[0]).registered_roots == 2
+            assert (
+                history_snapshot_progress(
+                    db, key, histories[0], extent=RETAINED_HISTORY_EXTENT
+                ).registered_roots
+                == 2
+            )
     db.close()
 
 
@@ -471,7 +492,7 @@ def test_coverage_rejects_corrupt_or_missing_accounting(tmp_path, native, counte
                     "UPDATE discovery_history_snapshot_coverage SET " + column + "=?", (value,)
                 )
                 with pytest.raises(StaleArchiveTask, match="coverage"):
-                    history_snapshot_progress(db, key, histories[0])
+                    history_snapshot_progress(db, key, histories[0], extent=RETAINED_HISTORY_EXTENT)
     db.close()
 
 
@@ -481,23 +502,25 @@ def test_coverage_rejects_changed_root_authority_and_current_worker(tmp_path, na
     original = history.authority
     history.authority = replace(original, record_count=1)
     with pytest.raises(StaleArchiveTask, match="authority"):
-        history_snapshot_progress(db, key, history)
+        history_snapshot_progress(db, key, history, extent=RETAINED_HISTORY_EXTENT)
     history.authority = original
     with pytest.raises(StaleArchiveTask, match="worker"):
-        history_snapshot_progress(db, replace(key, worker_id="replacement"), history)
+        history_snapshot_progress(
+            db, replace(key, worker_id="replacement"), history, extent=RETAINED_HISTORY_EXTENT
+        )
     db.execute(
         "UPDATE discovery_history_sets SET complete=0 WHERE records_sha256=?",
         (history.authority.records_sha256,),
     )
     with pytest.raises(StaleArchiveTask, match="verified"):
-        history_snapshot_progress(db, key, history)
+        history_snapshot_progress(db, key, history, extent=RETAINED_HISTORY_EXTENT)
     db.execute(
         "UPDATE discovery_history_sets SET complete=1 WHERE records_sha256=?",
         (history.authority.records_sha256,),
     )
     db.execute("UPDATE discovery_archive_tasks SET complete=0")
     with pytest.raises(StaleArchiveTask, match="incomplete"):
-        history_snapshot_progress(db, key, history)
+        history_snapshot_progress(db, key, history, extent=RETAINED_HISTORY_EXTENT)
     db.close()
 
 
@@ -531,7 +554,7 @@ def test_measured_coverage_is_indexed_read_only_and_independent_of_unrelated_row
             history = histories[0]
             for index in range(retained - 1):
                 db.execute(
-                    "INSERT INTO discovery_history_snapshot_coverage VALUES (?,?,?,?,?,'0')",
+                    "INSERT INTO discovery_history_snapshot_coverage VALUES (?,?,?,?,?,'0','0')",
                     (
                         "unrelated-" + str(index),
                         key.admission_sha256,
@@ -542,12 +565,14 @@ def test_measured_coverage_is_indexed_read_only_and_independent_of_unrelated_row
                 )
             with admit_archive_journal(db, key, admission, summary) as source:
                 owner = HistorySnapshotWork(history, source)
+                registered_bound = 0
                 for state, selected_roots in (
                     ("unstarted", ()),
                     ("partial", selections[0][:1]),
                     ("complete", selections[0][1:]),
                 ):
                     for selected in selected_roots:
+                        registered_bound += int(selected.inclusion == "bound")
                         page = prepare_history_snapshot(db, key, owner, selected.key)
                         with write(db):
                             apply_history_snapshot(db, key, owner, page)
@@ -601,53 +626,141 @@ def test_measured_coverage_is_indexed_read_only_and_independent_of_unrelated_row
                             ),
                             "metadata_octets": max(widths),
                         }
-                        observer = MeasuredConnection(db)
-                        changes = db.total_changes
+                        for extent in (BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT):
+                            observer = MeasuredConnection(db)
+                            changes = db.total_changes
 
-                        def encode(value, observer=observer):
-                            result = actual_encode(value)
-                            observer.metrics["encoded_octets"] += len(result)
-                            return result
+                            def encode(value, observer=observer):
+                                result = actual_encode(value)
+                                observer.metrics["encoded_octets"] += len(result)
+                                return result
 
-                        def instruction(observer=observer):
-                            observer.metrics["sqlite_vm_instructions"] += 1
-                            return 0
+                            def instruction(observer=observer):
+                                observer.metrics["sqlite_vm_instructions"] += 1
+                                return 0
 
-                        db.set_progress_handler(instruction, 1)
-                        try:
-                            with monkeypatch.context() as patch:
-                                patch.setattr(snapshots, "canonical_json_bytes", encode)
-                                patch.setitem(
-                                    require_canonical_json.__globals__,
-                                    "canonical_json_bytes",
-                                    encode,
-                                )
-                                progress = history_snapshot_progress(observer, key, history)
-                        finally:
-                            db.set_progress_handler(None, 0)
-                        assert db.total_changes == changes
-                        assert progress.expected_roots == 3
-                        assert (
-                            progress.registered_roots
-                            == {"unstarted": 0, "partial": 1, "complete": 3}[state]
-                        )
-                        assert progress.complete is (state == "complete")
-                        for sql, parameters in observer.statements:
-                            assert "count(" not in sql.lower()
-                            plans = db.execute("EXPLAIN QUERY PLAN " + sql, parameters).fetchall()
-                            assert all("SCAN" not in row[3].upper() for row in plans)
-                        metrics = {
-                            bound.metric: observer.metrics[bound.metric]
-                            for bound in binding.declaration.bounds
-                        }
-                        sample = {
-                            "declaration": binding.declaration.id,
-                            "declaration_sha256": declaration_sha,
-                            "dimensions": dimensions,
-                            "metrics": metrics,
-                            "delegates": {},
-                        }
-                        validate_execution_samples(projection, binding.declaration.id, [sample])
-                        samples.append(sample)
+                            db.set_progress_handler(instruction, 1)
+                            try:
+                                with monkeypatch.context() as patch:
+                                    patch.setattr(snapshots, "canonical_json_bytes", encode)
+                                    patch.setitem(
+                                        require_canonical_json.__globals__,
+                                        "canonical_json_bytes",
+                                        encode,
+                                    )
+                                    progress = history_snapshot_progress(
+                                        observer, key, history, extent=extent
+                                    )
+                            finally:
+                                db.set_progress_handler(None, 0)
+                            assert db.total_changes == changes
+                            assert progress.expected_roots == (
+                                1 if extent == BOUND_HISTORY_EXTENT else 3
+                            )
+                            assert progress.registered_roots == (
+                                registered_bound
+                                if extent == BOUND_HISTORY_EXTENT
+                                else {"unstarted": 0, "partial": 1, "complete": 3}[state]
+                            )
+                            assert progress.complete is (
+                                registered_bound == 1
+                                if extent == BOUND_HISTORY_EXTENT
+                                else state == "complete"
+                            )
+                            for sql, parameters in observer.statements:
+                                assert "count(" not in sql.lower()
+                                plans = db.execute(
+                                    "EXPLAIN QUERY PLAN " + sql, parameters
+                                ).fetchall()
+                                assert all("SCAN" not in row[3].upper() for row in plans)
+                            metrics = {
+                                bound.metric: observer.metrics[bound.metric]
+                                for bound in binding.declaration.bounds
+                            }
+                            sample = {
+                                "declaration": binding.declaration.id,
+                                "declaration_sha256": declaration_sha,
+                                "dimensions": dimensions,
+                                "metrics": metrics,
+                                "delegates": {},
+                            }
+                            validate_execution_samples(projection, binding.declaration.id, [sample])
+                            samples.append(sample)
             db.close()
     record_property("growth_samples", samples)
+
+
+def test_bound_extent_completes_without_reading_missing_retained_journal(tmp_path, native):
+    fixture, raw, _, _ = native
+    path = tmp_path / "bound.sqlite"
+    db, key, admission, histories, selections = setup_work(path, native, fault="journal_id")
+    history = histories[0]
+    with validate_journal(raw, catalog=fixture.catalog) as summary:
+        with admit_archive_journal(db, key, admission, summary) as source:
+            owner = HistorySnapshotWork(history, source)
+            for selected in selections[0]:
+                if selected.inclusion == "bound":
+                    page = prepare_history_snapshot(db, key, owner, selected.key)
+                    with write(db):
+                        apply_history_snapshot(db, key, owner, page)
+                    with write(db):
+                        apply_history_snapshot(db, key, owner, page)
+    db.close()
+    db = sqlite3.connect(path, isolation_level=None)
+    bound = history_snapshot_progress(db, key, history, extent=BOUND_HISTORY_EXTENT)
+    retained = history_snapshot_progress(db, key, history, extent=RETAINED_HISTORY_EXTENT)
+    assert (bound.expected_roots, bound.registered_roots, bound.complete) == (1, 1, True)
+    assert (retained.expected_roots, retained.registered_roots, retained.complete) == (3, 1, False)
+    assert db.execute("SELECT count(*) FROM discovery_history_snapshot_links").fetchone() == (1,)
+    db.close()
+
+
+def test_bound_completion_does_not_prevent_later_retained_selection(tmp_path, native):
+    fixture, raw, _, _ = native
+    db, key, admission, histories, selections = setup_work(tmp_path / "extents.sqlite", native)
+    history = histories[0]
+    with validate_journal(raw, catalog=fixture.catalog) as summary:
+        with admit_archive_journal(db, key, admission, summary) as source:
+            owner = HistorySnapshotWork(history, source)
+            ordered = sorted(selections[0], key=lambda root: root.inclusion != "bound")
+            for count, selected in enumerate(ordered, 1):
+                page = prepare_history_snapshot(db, key, owner, selected.key)
+                with write(db):
+                    apply_history_snapshot(db, key, owner, page)
+                bound = history_snapshot_progress(db, key, history, extent=BOUND_HISTORY_EXTENT)
+                retained = history_snapshot_progress(
+                    db, key, history, extent=RETAINED_HISTORY_EXTENT
+                )
+                assert bound.complete and bound.registered_roots == 1
+                assert retained.complete is (count == 3)
+                assert retained.registered_roots == count
+    db.close()
+
+
+@pytest.mark.parametrize("total,bound", [("0", "1"), ("1", "2"), ("3", "0"), ("1", "01")])
+def test_extent_counter_correlations_fail_closed(tmp_path, native, total, bound):
+    fixture, raw, _, _ = native
+    db, key, admission, histories, selections = setup_work(tmp_path / "counters.sqlite", native)
+    history = histories[0]
+    with validate_journal(raw, catalog=fixture.catalog) as summary:
+        with admit_archive_journal(db, key, admission, summary) as source:
+            owner = HistorySnapshotWork(history, source)
+            page = prepare_history_snapshot(db, key, owner, selections[0][0].key)
+            with write(db):
+                apply_history_snapshot(db, key, owner, page)
+    db.execute(
+        "UPDATE discovery_history_snapshot_coverage "
+        "SET registered_roots=?,registered_bound_roots=?",
+        (total, bound),
+    )
+    for extent in (BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT):
+        with pytest.raises(StaleArchiveTask, match="coverage"):
+            history_snapshot_progress(db, key, history, extent=extent)
+    db.close()
+
+
+def test_unknown_extent_cannot_claim_snapshot_completion(tmp_path, native):
+    db, key, _, histories, _ = setup_work(tmp_path / "extent.sqlite", native)
+    with pytest.raises(ValueError, match="unsupported"):
+        history_snapshot_progress(db, key, histories[0], extent="latest")
+    db.close()

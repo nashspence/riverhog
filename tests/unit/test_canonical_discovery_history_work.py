@@ -372,9 +372,11 @@ def test_shared_sets_resume_exact_page_item_without_prior_page_replay(tmp_path):
     reads.clear()
     finish(db, key, owner)
     assert len(reads) == 6  # Current second page, final data page and mandatory terminal.
+    assert history_set_progress(db, key, owner).bound_roots == 65
     assert not any("metadata/" in value for value in reads)
     imports = HistorySetWork(history.admission, history.reader, descriptor.imports)
     finish(db, key, imports)
+    assert history_set_progress(db, key, imports).bound_roots == 0
     assert db.execute("SELECT count(*) FROM discovery_history_sets").fetchone() == (2,)
     assert db.execute("SELECT count(*) FROM discovery_history_set_records").fetchone() == (132,)
     assert db.execute("SELECT count(*) FROM discovery_archive_histories").fetchone() == (3,)
@@ -1008,3 +1010,60 @@ def test_measured_import_coverage_is_indexed_and_read_only(tmp_path, monkeypatch
                 samples.append(sample)
         db.close()
     record_property("growth_samples", samples)
+
+
+@pytest.mark.parametrize("counter", ["-1", "01", "4"])
+def test_bound_input_count_rejects_noncanonical_or_impossible_values(tmp_path, counter):
+    db, key, history, descriptors, _, _ = setup_work(tmp_path / "count.sqlite", count=3)
+    owner = HistorySetWork(history.admission, history.reader, descriptors[0].roots)
+    finish(db, key, owner)
+    db.execute(
+        "UPDATE discovery_history_sets SET bound_roots=? WHERE records_sha256=?",
+        (counter, owner.authority.records_sha256),
+    )
+    with pytest.raises(StaleArchiveTask, match="bound-root count"):
+        history_set_progress(db, key, owner)
+    db.close()
+
+
+def test_bound_input_count_and_record_checkpoint_roll_back_together(tmp_path):
+    db, key, history, descriptors, _, _ = setup_work(tmp_path / "rollback.sqlite", count=3)
+    owner = HistorySetWork(history.admission, history.reader, descriptors[0].roots)
+    before = history_set_progress(db, key, owner)
+    page = prepare_history_record(db, key, owner)
+    db.execute(
+        "CREATE TRIGGER fail_bound_count BEFORE UPDATE OF bound_roots ON discovery_history_sets "
+        "BEGIN SELECT RAISE(ABORT,'injected bound count failure'); END"
+    )
+    with write(db), pytest.raises(sqlite3.IntegrityError, match="injected bound count"):
+        apply_history_record(db, key, owner, page)
+    assert history_set_progress(db, key, owner) == before
+    assert db.execute("SELECT count(*) FROM discovery_history_set_records").fetchone() == (0,)
+    db.execute("DROP TRIGGER fail_bound_count")
+    with write(db):
+        result = apply_history_record(db, key, owner, page)
+    assert result.records == 1
+    assert result.bound_roots == int(page.bound_journal is not None)
+    db.close()
+
+
+@pytest.mark.parametrize("count", [1, 17, 129])
+def test_bound_root_input_count_matches_maintained_archive_selector(tmp_path, count):
+    db, key, history, descriptors, _, _ = setup_work(tmp_path / "parity.sqlite", count=count)
+    descriptor = descriptors[0]
+    raw = db.execute(
+        "SELECT binding_json FROM discovery_archive_histories WHERE artifact_id=?",
+        (descriptor.artifact_id,),
+    ).fetchone()[0]
+    binding = MemberHistoryBinding.from_mapping(require_canonical_json(raw.encode()))
+    store = history.reader.history_store()
+    expected = {
+        extent: sum(1 for _ in store.roots(binding, extent=extent))
+        for extent in (BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT)
+    }
+    owner = HistorySetWork(history.admission, history.reader, descriptor.roots)
+    finish(db, key, owner)
+    progress = history_set_progress(db, key, owner)
+    assert progress.records == expected[RETAINED_HISTORY_EXTENT]
+    assert progress.bound_roots == expected[BOUND_HISTORY_EXTENT]
+    db.close()

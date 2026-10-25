@@ -15,7 +15,9 @@ from dataclasses import dataclass
 from typing import Any
 
 from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
     MEMBER_HISTORY_ROOTS_SCHEMA,
+    RETAINED_HISTORY_EXTENT,
     HistoryJournalAnchor,
     MemberHistoryRoot,
 )
@@ -114,6 +116,7 @@ def initialize_snapshot_work(db: sqlite3.Connection) -> None:
         CREATE TABLE IF NOT EXISTS discovery_history_snapshot_coverage (
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, root_set_sha256 TEXT NOT NULL,
             worker_id TEXT NOT NULL, authority_json TEXT NOT NULL, registered_roots TEXT NOT NULL,
+            registered_bound_roots TEXT NOT NULL,
             PRIMARY KEY(build_id,admission_sha256,root_set_sha256)
         ) WITHOUT ROWID;
         CREATE TABLE IF NOT EXISTS discovery_history_snapshot_links (
@@ -170,26 +173,44 @@ def _selection(
 
 
 def _coverage(
-    db: sqlite3.Connection, key: ArchiveTaskKey, history: HistorySetWork
-) -> tuple[HistorySnapshotProgress, bool]:
+    db: sqlite3.Connection,
+    key: ArchiveTaskKey,
+    history: HistorySetWork,
+    selection: HistorySetProgress,
+) -> tuple[HistorySnapshotProgress, HistorySnapshotProgress, bool]:
     row = _one(
         db,
-        "SELECT worker_id,authority_json,registered_roots "
+        "SELECT worker_id,authority_json,registered_roots,registered_bound_roots "
         "FROM discovery_history_snapshot_coverage "
         "WHERE build_id=? AND admission_sha256=? AND root_set_sha256=?",
         (key.build_id, key.admission_sha256, history.authority.records_sha256),
     )
     if row is None:
-        return HistorySnapshotProgress(history.authority.record_count, 0), False
-    if row[:2] != (key.worker_id, history.authority_json) or type(row[2]) is not str:
+        return (
+            HistorySnapshotProgress(selection.records, 0),
+            HistorySnapshotProgress(selection.bound_roots, 0),
+            False,
+        )
+    if row[:2] != (key.worker_id, history.authority_json):
         raise StaleArchiveTask("snapshot coverage has another worker or root authority")
     try:
-        registered = parse_scalar("nonnegative", row[2])
+        if any(type(value) is not str for value in row[2:]):
+            raise ValueError
+        registered, bound = (parse_scalar("nonnegative", value) for value in row[2:])
     except (ValueError, TypeError):
         raise StaleArchiveTask("snapshot coverage counter is not canonical") from None
-    if registered > history.authority.record_count:
-        raise StaleArchiveTask("snapshot coverage exceeds its authenticated root count")
-    return HistorySnapshotProgress(history.authority.record_count, registered), True
+    if (
+        registered > selection.records
+        or bound > selection.bound_roots
+        or bound > registered
+        or registered - bound > selection.records - selection.bound_roots
+    ):
+        raise StaleArchiveTask("snapshot coverage exceeds its authenticated extent counts")
+    return (
+        HistorySnapshotProgress(selection.records, registered),
+        HistorySnapshotProgress(selection.bound_roots, bound),
+        True,
+    )
 
 
 @declare_growth(
@@ -197,7 +218,7 @@ def _coverage(
         id="riverhog-server.discovery-history-snapshot-coverage.growth/v1",
         authority="riverhog-server",
         subjects=("riverhog_core.canonical_discovery_snapshot_work.history_snapshot_progress",),
-        scope="one authenticated root-set snapshot incidence completion check",
+        scope="one authenticated root-set snapshot incidence check for its requested extent",
         starts_at="receive the exact current archive, worker and authenticated root-set authority",
         ends_at="close all Core cursors and detach required versus uniquely registered root counts",
         dimensions=(
@@ -312,12 +333,15 @@ def _coverage(
     )
 )
 def history_snapshot_progress(
-    db: sqlite3.Connection, key: ArchiveTaskKey, history: HistorySetWork
+    db: sqlite3.Connection, key: ArchiveTaskKey, history: HistorySetWork, *, extent: str
 ) -> HistorySnapshotProgress:
+    if extent not in (BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT):
+        raise ValueError("unsupported member history extent")
     if not archive_metadata_progress(db, key).complete:
         raise StaleArchiveTask("snapshot archive source metadata is incomplete")
-    _root_set(db, key, history)
-    return _coverage(db, key, history)[0]
+    selection = _root_set(db, key, history)
+    retained, bound, _ = _coverage(db, key, history, selection)
+    return bound if extent == BOUND_HISTORY_EXTENT else retained
 
 
 def _record(
@@ -471,7 +495,7 @@ def prepare_history_snapshot(
             "Apply receives the exact preparation; the schema has no added triggers.",
         ),
         invariants=(
-            "Source/header/incidence and coverage commit atomically; retries add no counts.",
+            "Headers, incidence and both extent counts commit atomically; retries add no counts.",
             "Existing keys compare full original coordinates; a digest alone is not equality.",
             "A closed/replaced source or changed selection cannot register a snapshot header.",
         ),
@@ -492,11 +516,12 @@ def apply_history_snapshot(
     owner.check_source()
     owner.source.check_open()
     with _atomic(db):
-        if _selection(db, key, owner) != page.expected_set:
+        selection = _selection(db, key, owner)
+        if selection != page.expected_set:
             raise StaleArchiveTask("snapshot root-set version or continuation changed")
         if _record(db, key, owner, page.record_key) != page.record_json:
             raise StaleArchiveTask("snapshot root record changed")
-        coverage, coverage_exists = _coverage(db, key, owner.history)
+        coverage, bound_coverage, coverage_exists = _coverage(db, key, owner.history, selection)
         source = _one(
             db,
             "SELECT binding_json FROM discovery_snapshot_sources "
@@ -542,11 +567,19 @@ def apply_history_snapshot(
             ),
         )
         if incidence is None:
-            if coverage.complete:
+            if (
+                coverage.complete
+                or (page.inclusion == "bound" and bound_coverage.complete)
+                or (
+                    page.inclusion == "retained"
+                    and coverage.registered_roots - bound_coverage.registered_roots
+                    == coverage.expected_roots - bound_coverage.expected_roots
+                )
+            ):
                 raise StaleArchiveTask("snapshot coverage already reaches its authenticated count")
             if not coverage_exists:
                 db.execute(
-                    "INSERT INTO discovery_history_snapshot_coverage VALUES (?,?,?,?,?,'0')",
+                    "INSERT INTO discovery_history_snapshot_coverage VALUES (?,?,?,?,?,'0','0')",
                     (
                         key.build_id,
                         key.admission_sha256,
@@ -567,17 +600,24 @@ def apply_history_snapshot(
             )
             with closing(
                 db.execute(
-                    "UPDATE discovery_history_snapshot_coverage SET registered_roots=? "
+                    "UPDATE discovery_history_snapshot_coverage "
+                    "SET registered_roots=?,registered_bound_roots=? "
                     "WHERE build_id=? AND admission_sha256=? AND root_set_sha256=? "
-                    "AND worker_id=? AND authority_json=? AND registered_roots=?",
+                    "AND worker_id=? AND authority_json=? AND registered_roots=? "
+                    "AND registered_bound_roots=?",
                     (
                         format_scalar("nonnegative", coverage.registered_roots + 1),
+                        format_scalar(
+                            "nonnegative",
+                            bound_coverage.registered_roots + int(page.inclusion == "bound"),
+                        ),
                         key.build_id,
                         key.admission_sha256,
                         owner.history.authority.records_sha256,
                         key.worker_id,
                         owner.history.authority_json,
                         format_scalar("nonnegative", coverage.registered_roots),
+                        format_scalar("nonnegative", bound_coverage.registered_roots),
                     ),
                 )
             ) as changed:
@@ -585,5 +625,13 @@ def apply_history_snapshot(
                     raise StaleArchiveTask("snapshot coverage changed during registration")
         elif incidence != expected:
             raise StaleArchiveTask("snapshot root incidence has conflicting coordinates")
-        elif not coverage_exists or coverage.registered_roots == 0:
+        elif (
+            not coverage_exists
+            or coverage.registered_roots == 0
+            or (page.inclusion == "bound" and bound_coverage.registered_roots == 0)
+            or (
+                page.inclusion == "retained"
+                and coverage.registered_roots == bound_coverage.registered_roots
+            )
+        ):
             raise StaleArchiveTask("snapshot incidence has no matching coverage")

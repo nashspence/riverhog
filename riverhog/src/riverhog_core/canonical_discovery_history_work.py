@@ -65,6 +65,7 @@ class HistorySetProgress:
     page_ordinal: int
     item_index: int
     records: int
+    bound_roots: int
     complete: bool
 
 
@@ -90,6 +91,7 @@ class PreparedHistoryRecord:
     next_item: int
     checkpoint_json: str
     count: int
+    bound_roots: int
     terminal: bool
 
 
@@ -166,7 +168,7 @@ def initialize_history_work(db: sqlite3.Connection) -> None:
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, records_sha256 TEXT NOT NULL,
             worker_id TEXT NOT NULL, authority_json TEXT NOT NULL, version TEXT NOT NULL,
             page_ordinal TEXT NOT NULL, item_index INTEGER NOT NULL, checkpoint_json TEXT NOT NULL,
-            complete INTEGER NOT NULL CHECK(complete IN (0,1)),
+            complete INTEGER NOT NULL CHECK(complete IN (0,1)), bound_roots TEXT NOT NULL,
             PRIMARY KEY(build_id,admission_sha256,records_sha256)
         ) WITHOUT ROWID;
         CREATE TABLE IF NOT EXISTS discovery_history_set_records (
@@ -285,7 +287,7 @@ def _register_descriptor(
         )
         if previous is None:
             db.execute(
-                "INSERT INTO discovery_history_sets VALUES (?,?,?,?,?,'0','0',0,?,0)",
+                "INSERT INTO discovery_history_sets VALUES (?,?,?,?,?,'0','0',0,?,0,'0')",
                 (
                     key.build_id,
                     key.admission_sha256,
@@ -336,7 +338,8 @@ def apply_history_descriptor(
 def _header(db: sqlite3.Connection, key: ArchiveTaskKey, owner: HistorySetWork) -> tuple[Any, ...]:
     row = _one(
         db,
-        "SELECT worker_id,authority_json,version,page_ordinal,item_index,checkpoint_json,complete "
+        "SELECT worker_id,authority_json,version,page_ordinal,item_index,checkpoint_json,complete,"
+        "bound_roots "
         "FROM discovery_history_sets WHERE build_id=? AND admission_sha256=? AND records_sha256=?",
         (key.build_id, key.admission_sha256, owner.authority.records_sha256),
     )
@@ -349,12 +352,31 @@ def _header(db: sqlite3.Connection, key: ArchiveTaskKey, owner: HistorySetWork) 
     return tuple(row)
 
 
+def _bound_roots(row: tuple[Any, ...], checkpoint: RecordSetCheckpoint, schema_id: str) -> int:
+    try:
+        if type(row[7]) is not str:
+            raise ValueError
+        bound = parse_scalar("nonnegative", row[7])
+    except (TypeError, ValueError):
+        raise StaleArchiveTask("history bound-root count is not canonical") from None
+    if (
+        checkpoint.schema_id != schema_id
+        or bound > checkpoint.count
+        or (schema_id != MEMBER_HISTORY_ROOTS_SCHEMA and bound != 0)
+    ):
+        raise StaleArchiveTask("history bound-root count differs from its structural coverage")
+    return bound
+
+
 def history_set_progress(
     db: sqlite3.Connection, key: ArchiveTaskKey, owner: HistorySetWork
 ) -> HistorySetProgress:
     row = _header(db, key, owner)
     checkpoint = RecordSetCheckpoint.from_json_bytes(row[5].encode())
-    return HistorySetProgress(int(row[2]), int(row[3]), row[4], checkpoint.count, bool(row[6]))
+    bound = _bound_roots(row, checkpoint, owner.authority.schema_id)
+    return HistorySetProgress(
+        int(row[2]), int(row[3]), row[4], checkpoint.count, bound, bool(row[6])
+    )
 
 
 @declare_growth(
@@ -418,8 +440,7 @@ def prepare_history_record(
         raise StaleArchiveTask("history set is already complete")
     ordinal, item = int(row[3]), row[4]
     checkpoint = RecordSetCheckpoint.from_json_bytes(row[5].encode())
-    if checkpoint.schema_id != owner.authority.schema_id:
-        raise StaleArchiveTask("history checkpoint schema changed")
+    bound_roots = _bound_roots(row, checkpoint, owner.authority.schema_id)
     if owner._cache is None or owner._cache.ordinal != ordinal:
         owner._cache = owner.reader.history_page(owner.authority, ordinal)
     source = owner._cache
@@ -427,7 +448,7 @@ def prepare_history_record(
         if item != 0 or checkpoint.ref() != owner.authority:
             raise StaleArchiveTask("history set terminal does not cover its exact authority")
         page = PreparedHistoryRecord(
-            key, row, None, None, None, ordinal, 0, row[5], checkpoint.count, True
+            key, row, None, None, None, ordinal, 0, row[5], checkpoint.count, bound_roots, True
         )
     else:
         if not 0 <= item < len(source.records) or checkpoint.count >= owner.authority.record_count:
@@ -460,6 +481,7 @@ def prepare_history_record(
             0 if last else item + 1,
             following.to_json_bytes().decode(),
             following.count,
+            bound_roots + int(bound_journal is not None),
             False,
         )
     owner._prepared = page
@@ -505,7 +527,7 @@ def prepare_history_record(
             "Apply receives the exact preparation; the schema has no added triggers.",
         ),
         invariants=(
-            "A record's original coordinates and its commitment continuation are atomic.",
+            "Original coordinates, commitment continuation and bound-root input count are atomic.",
             "The unique bound-journal index rejects conflicting bound heads across pages.",
             "Stale source/worker/version or forged preparation cannot advance work.",
         ),
@@ -540,7 +562,7 @@ def apply_history_record(
         version = int(page.expected_row[2]) + 1
         db.execute(
             "UPDATE discovery_history_sets SET version=?,page_ordinal=?,item_index=?,"
-            "checkpoint_json=?,complete=? WHERE build_id=? AND admission_sha256=? "
+            "checkpoint_json=?,complete=?,bound_roots=? WHERE build_id=? AND admission_sha256=? "
             "AND records_sha256=?",
             (
                 str(version),
@@ -548,13 +570,14 @@ def apply_history_record(
                 page.next_item,
                 page.checkpoint_json,
                 int(page.terminal),
+                format_scalar("nonnegative", page.bound_roots),
                 key.build_id,
                 key.admission_sha256,
                 owner.authority.records_sha256,
             ),
         )
         return HistorySetProgress(
-            version, page.next_page, page.next_item, page.count, page.terminal
+            version, page.next_page, page.next_item, page.count, page.bound_roots, page.terminal
         )
 
 
