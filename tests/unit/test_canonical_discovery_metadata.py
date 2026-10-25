@@ -58,6 +58,14 @@ def test_owned_metadata_initializes_once_and_resumes_stable_archive_work(case, q
         first.open()
         assert first.job.state == "seeding"
         assert first.verify_current()
+        with first.read() as (db, _):
+            assert db.execute("SELECT format FROM discovery_workspace").fetchone() == (
+                "riverhog-discovery-metadata/v2",
+            )
+            assert db.execute(
+                "SELECT name FROM sqlite_master "
+                "WHERE type='table' AND name='discovery_corpus_replay'"
+            ).fetchone() == ("discovery_corpus_replay",)
         first.open()
         reader = qualified[1][2]
         with first.read() as (db, key):
@@ -267,3 +275,20 @@ def test_new_claim_record_cannot_reauthorize_old_core_handles(case):
                 assert archive_metadata_progress(db, key).version == 0
         finally:
             second.close()
+
+
+@pytest.mark.parametrize("damage", ["format", "required_table"])
+def test_reopen_rejects_incompatible_owned_metadata_without_recreation(case, damage):
+    with owned(case) as (metadata, path):
+        metadata.open()
+    file = path / "discovery.sqlite3"
+    with sqlite3.connect(file) as db:
+        if damage == "format":
+            db.execute("UPDATE discovery_workspace SET format='unrecognized'")
+        else:
+            db.execute("DROP TABLE discovery_corpus_replay")
+    before = file.read_bytes()
+    with owned(case) as (metadata, _):
+        with pytest.raises(LostJournalValidationWorkspace, match="missing or changed"):
+            metadata.open()
+    assert file.read_bytes() == before
