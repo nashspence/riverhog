@@ -19,6 +19,7 @@ from riverhog_growth_contracts import (
 )
 
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
+from riverhog_core.canonical_discovery_archive_framing import initialize_archive_framing
 from riverhog_core.canonical_discovery_archive_work import (
     ArchiveDiscoveryAdmission,
     ArchiveTaskKey,
@@ -36,7 +37,7 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
 )
 
-_FORMAT = "riverhog-discovery-metadata/v3"
+_FORMAT = "riverhog-discovery-metadata/v4"
 
 
 class DiscoveryMetadata:
@@ -242,6 +243,7 @@ class DiscoveryMetadata:
                 pass
         if created:
             initialize_archive_work(db)
+            initialize_archive_framing(db)
             initialize_dependency_source(db)
             initialize_corpus_selection(db)
             initialize_primary_work(db)
