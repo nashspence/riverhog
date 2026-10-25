@@ -9,7 +9,9 @@ from riverhog_provenance import JournalValidationCapacity
 from riverhog_provenance.constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
-from riverhog_core.canonical_discovery_archive_source_growth import declare_archive_source_growth
+from riverhog_core.canonical_discovery_archive_source_growth import (
+    declare_growth_for_archive_source,
+)
 from riverhog_core.canonical_discovery_archive_work import (
     ArchiveJournalHeader,
     ArchiveTaskKey,
@@ -117,4 +119,4 @@ class ArchiveJournalSource:
         return b"".join(pieces)
 
 
-declare_archive_source_growth(ArchiveJournalSource)
+declare_growth_for_archive_source(ArchiveJournalSource)

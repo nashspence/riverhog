@@ -22,9 +22,10 @@ from riverhog_core.canonical_discovery_archive_work import (
     archive_journal_segment_at,
 )
 from riverhog_core.canonical_discovery_metadata import DiscoveryMetadata
+from riverhog_core.growth_bounds import compact_expression
 
 
-def declare_archive_source_growth(owner: type[Any]) -> None:
+def declare_growth_for_archive_source(owner: type[Any]) -> None:
     def number(value: int, unit: Unit = COUNT) -> Expression:
         return Expression("constant", value=value, unit=unit)
 
@@ -136,7 +137,7 @@ def declare_archive_source_growth(owner: type[Any]) -> None:
                         metric,
                         unit,
                         "upper",
-                        summed(*terms),
+                        compact_expression(summed(*terms)),
                         "Expanded custody and indexed directory work plus complete raw bytes.",
                     )
                     for metric, (unit, terms) in totals.items()
