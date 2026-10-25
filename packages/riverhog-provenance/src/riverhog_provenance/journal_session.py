@@ -943,6 +943,13 @@ def _lifecycle_declaration(mode: str) -> Declaration:
             "The transferred owner callback runs only with final storage release.",
         ),
         Bound(
+            "retention_callbacks",
+            COUNT,
+            "upper",
+            count(int(retained_open)),
+            "One optional early-retention callback precedes retained initialization.",
+        ),
+        Bound(
             "opened_files",
             COUNT,
             "upper",
@@ -1151,7 +1158,7 @@ def _lifecycle_declaration(mode: str) -> Declaration:
                 "optional default construction reads only the packaged core schemas."
             ),
             (
-                "Source-currentness and transferred release callback bodies execute "
+                "Source-currentness, early-retention and release callback bodies execute "
                 "normally, with their provider-owned internal work composed by that "
                 "owner."
             ),
@@ -1215,6 +1222,7 @@ class JournalValidationSession:
     ) -> None:
         self.attempt_id = attempt_id
         self._closed = False
+        self._closing = False
         self._summary: JournalSummary | None = None
         self._failure: BaseException | None = None
         self._catalog = catalog or ContractCatalog()
@@ -1279,6 +1287,7 @@ class JournalValidationSession:
         require_exact_tail: bool = False,
         certificates: JournalGraphCertificates | None = None,
         on_storage_close: Callable[[], None] | None = None,
+        on_storage_open: Callable[[Self], None] | None = None,
     ) -> Self:
         """Open this owner's workspace; a replacement requires a newer worker epoch.
 
@@ -1290,6 +1299,9 @@ class JournalValidationSession:
         database. The callback runs once after its final result reader closes,
         so an owner may retain its kernel lease beyond the Session's lifetime.
         A failed constructor leaves callback ownership with the caller.
+        The optional open callback receives the closeable Session before native
+        schema or prefix initialization. It must retain the handle first; a
+        cleanup failure then remains reachable for a later explicit close.
         """
         selected = catalog or ContractCatalog()
         binding = source.binding
@@ -1315,12 +1327,23 @@ class JournalValidationSession:
         result = object.__new__(cls)
         result.attempt_id = attempt_id
         result._closed = False
+        result._closing = False
         result._summary = None
         result._failure = None
         result._catalog = selected
         result._source, result._source_binding = source, binding
-        result._store = JournalStore.open_retained(directory, create=create)
+
+        def retain_storage(store: JournalStore) -> None:
+            result._store = store
+            if on_storage_open is not None:
+                on_storage_open(result)
+
+        store_opened = False
         try:
+            result._store = JournalStore.open_retained(
+                directory, create=create, on_storage_open=retain_storage
+            )
+            store_opened = True
             result._prefix = JournalPrefix(
                 result._store.db,
                 attempt_id=attempt_id,
@@ -1381,13 +1404,17 @@ class JournalValidationSession:
             )
             result._input = RetainedInput(result._ledger, source)
         except BaseException:
-            result._store.close()
+            result._closing = True
+            # A failing Store constructor already attempted its own cleanup.
+            # Its early retained handle preserves a failed close for retry.
+            if store_opened:
+                result.close()
             raise
         result._store._storage.on_close = on_storage_close
         return result
 
     def _require_open(self) -> None:
-        if self._closed:
+        if self._closing or self._closed:
             raise RuntimeError("journal validation session is closed")
 
     def _progress(self, snapshot: ValidationSnapshot) -> JournalValidationProgress:
@@ -1524,12 +1551,16 @@ class JournalValidationSession:
     @declare_growth(_lifecycle_declaration("close"))
     def close(self) -> None:
         if not self._closed:
-            self._closed = True
+            self._closing = True
             self._store.close()
-            if isinstance(self._input, _ChunkInput):
-                self._input.release()
-            self._replay._current = None
+            source = getattr(self, "_input", None)
+            if isinstance(source, _ChunkInput):
+                source.release()
+            replay = getattr(self, "_replay", None)
+            if replay is not None:
+                replay._current = None
             self._failure = None
+            self._closed = True
 
     def __enter__(self) -> Self:
         self._require_open()

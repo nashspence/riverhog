@@ -149,6 +149,7 @@ class LifecycleRecorder:
                 "unlinks",
                 "removed_directories",
                 "release_callbacks",
+                "retention_callbacks",
             )
         }
 
@@ -200,6 +201,19 @@ class LifecycleRecorder:
                 self.recording = recording
 
         return release
+
+    def retention_callback(self, original):
+        def retain(value):
+            recording = self.recording
+            if recording:
+                self.metrics["retention_callbacks"] += 1
+                self.recording = False
+            try:
+                return original(value)
+            finally:
+                self.recording = recording
+
+        return retain
 
     @contextmanager
     def kernel(self):
@@ -441,7 +455,7 @@ def constructor_samples(
             operation = JournalValidationSession.open_retained.__func__
             metadata = 32768 + 2 * octets((source.binding.to_json(), str(regime[4])))
             dimensions = lifecycle_dimensions(operation, metadata=metadata, initializing=True)
-            callback_calls = []
+            callback_calls, retained_handles = [], []
             with recorder.kernel():
                 session, sample = recorder.measured(
                     operation,
@@ -456,11 +470,14 @@ def constructor_samples(
                         create=True,
                         catalog=catalog,
                         on_storage_close=recorder.callback(partial(callback_calls.append, 1)),
+                        on_storage_open=recorder.retention_callback(retained_handles.append),
                     ),
                 )
                 samples.append(sample)
                 assert sample["metrics"]["opened_databases"] == 1
                 assert sample["metrics"]["closed_databases"] == 0
+                assert sample["metrics"]["retention_callbacks"] == 1
+                assert retained_handles == [session]
                 try:
                     before = session._ledger.load()
                     assert before.checkpoint.version == before.checkpoint.frame_ordinal == 0
