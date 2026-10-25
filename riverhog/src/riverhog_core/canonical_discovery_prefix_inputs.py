@@ -43,6 +43,7 @@ class CorpusPrefixProgress:
     prefixes: int
     journals: int
     pending: int
+    closed: bool
 
 
 @dataclass(frozen=True, slots=True)
@@ -85,6 +86,7 @@ def initialize_corpus_prefix_inputs(db: sqlite3.Connection) -> None:
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, worker_id TEXT NOT NULL,
             source_manifest_sha256 TEXT NOT NULL, prefixes TEXT NOT NULL, journals TEXT NOT NULL,
             pending_sources TEXT NOT NULL, version TEXT NOT NULL,
+            closed INTEGER NOT NULL CHECK(closed IN (0,1)),
             PRIMARY KEY(build_id,admission_sha256)
         ) WITHOUT ROWID;
         CREATE TABLE IF NOT EXISTS discovery_corpus_prefix_inputs (
@@ -134,13 +136,15 @@ def _header(
     _require_frozen_sources(db, key, admission, manifest)
     row = _one(
         db,
-        "SELECT worker_id,source_manifest_sha256,prefixes,journals,pending_sources,version "
+        "SELECT worker_id,source_manifest_sha256,prefixes,journals,pending_sources,version,closed "
         "FROM discovery_corpus_prefix_headers WHERE build_id=? AND admission_sha256=?",
         (key.build_id, key.admission_sha256),
     )
     if row is None or row[:2] != (key.worker_id, manifest.manifest_sha256):
         raise StaleArchiveTask("prefix registry has another current source manifest or worker")
-    prefixes, journals, pending, version = map(_natural, row[2:])
+    if row[6] not in (0, 1):
+        raise StaleArchiveTask("prefix registry has an invalid selection seal")
+    prefixes, journals, pending, version = map(_natural, row[2:6])
     if (
         version != prefixes
         or journals > manifest.source_count
@@ -149,7 +153,7 @@ def _header(
         or (prefixes == 0) != (journals == 0)
     ):
         raise StaleArchiveTask("prefix registry counters differ from admitted sources")
-    return CorpusPrefixProgress(version, prefixes, journals, pending)
+    return CorpusPrefixProgress(version, prefixes, journals, pending, bool(row[6]))
 
 
 def _declaration(mode: str) -> Declaration:
@@ -291,7 +295,7 @@ def begin_corpus_prefix_inputs(
         expected = key.worker_id, manifest.manifest_sha256
         if old is None:
             db.execute(
-                "INSERT INTO discovery_corpus_prefix_headers VALUES (?,?,?,?,'0','0','0','0')",
+                "INSERT INTO discovery_corpus_prefix_headers VALUES (?,?,?,?,'0','0','0','0',0)",
                 (key.build_id, key.admission_sha256, *expected),
             )
         elif old != expected:
@@ -413,6 +417,8 @@ def apply_corpus_prefix(
             if old != (1,) or current is None:
                 raise StaleArchiveTask("prefix digest names different original coordinates")
             return progress
+        if progress.closed:
+            raise StaleArchiveTask("original prefix selection is sealed")
         if progress.version != page.expected_version:
             raise StaleArchiveTask("prefix preparation has a stale registry version")
         if current is not None and current.source_binding_json != page.source_binding_json:
@@ -477,7 +483,9 @@ def apply_corpus_prefix(
         ).rowcount
         if changed != 1:
             raise StaleArchiveTask("prefix registry worker changed")
-        return CorpusPrefixProgress(progress.version + 1, progress.prefixes + 1, journals, pending)
+        return CorpusPrefixProgress(
+            progress.version + 1, progress.prefixes + 1, journals, pending, False
+        )
 
 
 @declare_growth(_declaration("maximum"))

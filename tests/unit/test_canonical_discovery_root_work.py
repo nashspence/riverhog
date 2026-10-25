@@ -31,8 +31,11 @@ from riverhog_core.canonical_discovery_archive_work import (
     prepare_archive_descriptor,
 )
 from riverhog_core.canonical_discovery_corpus_members import (
+    CorpusMemberRegistration,
+    apply_corpus_member,
     begin_corpus_members,
     initialize_corpus_members,
+    prepare_corpus_member,
 )
 from riverhog_core.canonical_discovery_history_inputs import (
     _register_corpus_history,
@@ -70,7 +73,18 @@ def original():
         yield raw, summary
 
 
-def setup(path, original, *, extent=RETAINED_HISTORY_EXTENT, missing=False, selected_roots=None):
+def setup(
+    path,
+    original,
+    *,
+    extent=RETAINED_HISTORY_EXTENT,
+    missing=False,
+    selected_roots=None,
+    composed_members=False,
+    members=2,
+    history_imports=(),
+    extra_history_objects=None,
+):
     raw, native = original
     anchors = tuple(HistoryJournalAnchor.from_mapping(native.anchor_at(i)) for i in range(3))
     selected = [
@@ -93,7 +107,13 @@ def setup(path, original, *, extent=RETAINED_HISTORY_EXTENT, missing=False, sele
         MEMBER_HISTORY_ROOTS_SCHEMA,
         [{"key": value.key, "value": value.to_mapping()} for value in selected],
     )
-    imports = record_set(objects, MEMBER_HISTORY_IMPORTS_SCHEMA, [])
+    imports = record_set(
+        objects,
+        MEMBER_HISTORY_IMPORTS_SCHEMA,
+        [{"key": value.key, "value": value.to_mapping()} for value in history_imports],
+    )
+    if extra_history_objects is not None:
+        objects.update(extra_history_objects)
     # This owner fixture authenticates exact original Native roots; synthetic member
     # identities do not claim complete member-State or Native corpus semantics.
     histories = tuple(
@@ -108,14 +128,14 @@ def setup(path, original, *, extent=RETAINED_HISTORY_EXTENT, missing=False, sele
             roots,
             imports,
         )
-        for i in range(2)
+        for i in range(members)
     )
     reader, archived, _, _ = archive_reader_fixture(
         raw, native.journal_id, histories=histories, history_objects=objects
     )
     admission = discovery_archive_admission(
         ProvenanceRootDocument.from_json_bytes(archived["provenance/root.json.age"]),
-        total_bytes=14,
+        total_bytes=7 * members,
     )
     db = sqlite3.connect(path, isolation_level=None)
     initialize_archive_work(db)
@@ -130,11 +150,17 @@ def setup(path, original, *, extent=RETAINED_HISTORY_EXTENT, missing=False, sele
             apply_archive_descriptor(db, key, admission, page)
     with write(db):
         begin_corpus_members(db, key, admission)
-    member = ArchiveMemberRegistration(admission, reader)
+    member = (
+        CorpusMemberRegistration(admission, reader)
+        if composed_members
+        else ArchiveMemberRegistration(admission, reader)
+    )
+    prepare_member = prepare_corpus_member if composed_members else prepare_archive_member
+    apply_member = apply_corpus_member if composed_members else apply_archive_member
     while not archive_member_progress(db, key).complete:
-        page = prepare_archive_member(db, key, member)
+        page = prepare_member(db, key, member)
         with write(db):
-            apply_archive_member(db, key, member, page)
+            apply_member(db, key, member, page)
     descriptors = ArchiveHistoryWork(admission, reader)
     for history in histories:
         page = prepare_history_descriptor(db, key, descriptors, history.artifact_id)
