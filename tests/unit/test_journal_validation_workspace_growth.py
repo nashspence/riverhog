@@ -43,6 +43,7 @@ class Recorder:
                 "flock_calls",
                 "path_octets",
                 "creation_callbacks",
+                "custody_callbacks",
                 "payload_octets",
                 "directory_enumerations",
             }
@@ -203,7 +204,8 @@ def snapshot(case):
             continue
         digest = (
             hashlib.sha256(path.read_bytes()).hexdigest()
-            if path.name in {"snapshot.sqlite3", "corpus.sqlite3"} and stat.S_ISREG(value.st_mode)
+            if path.name in {"snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3"}
+            and stat.S_ISREG(value.st_mode)
             else None
         )
         records.append(
@@ -231,6 +233,7 @@ def measure(
     expected=None,
     error=None,
     body_error=None,
+    custody_callback=None,
 ):
     recorder = Recorder()
     recorder.root = root
@@ -242,6 +245,15 @@ def measure(
         "root_path_octets": len(os.fsencode(root)),
         "workspace_identity_octets": len(identity.encode()),
     }
+
+    def receive(custody):
+        recorder.metrics["custody_callbacks"] += 1
+        active, recorder.active = recorder.active, False
+        try:
+            custody_callback(custody)
+        finally:
+            recorder.active = active
+
     with recorder.observe():
         try:
             with operation(
@@ -250,6 +262,7 @@ def measure(
                 create=create,
                 shared=shared,
                 creation_current=None if callback is None else recorder.callback(callback),
+                on_custody=None if custody_callback is None else receive,
             ) as value:
                 if body_error is not None:
                     raise body_error
@@ -332,12 +345,16 @@ def lease_samples(root, *, samples, large=True):
     )
     assert stat.S_IMODE(new.stat().st_mode) == 0o700
     assert stat.S_IMODE((new / ONE / ".lease").stat().st_mode) == 0o600
+    captured = []
+    samples.append(measure(new, expected=new / ONE, custody_callback=captured.append))
+    assert len(captured) == 1 and not captured[0].verify_current()
     samples.append(measure(root / "missing", error=owner.LostJournalValidationWorkspace))
     for name, options in (
         ("stale", {"selected": False}),
         ("empty", {"lease": False}),
         ("lost", {"lease": False, "payload": 65537}),
         ("lost-corpus", {"lease": False, "payload": 65537, "state_name": "corpus.sqlite3"}),
+        ("lost-core", {"lease": False, "payload": 65537, "state_name": "discovery.sqlite3"}),
         ("coordinator", {"coordinator": False}),
         ("absent", {"selected": False}),
     ):
@@ -365,7 +382,7 @@ def lease_samples(root, *, samples, large=True):
             )
             assert (case.root / ONE / ".lease").is_file()
             continue
-        elif name in {"lost", "lost-corpus"}:
+        elif name in {"lost", "lost-corpus", "lost-core"}:
             samples.append(
                 measure(
                     case.root,
@@ -419,3 +436,77 @@ def test_actual_workspace_lease_bounds_complete_enter_exit_and_kernel_custody(
     samples = []
     record_property("growth_samples", samples)
     lease_samples(tmp_path / "leases", samples=samples)
+
+
+def measure_custody(custody, root, *, expected):
+    recorder = Recorder()
+    recorder.root = root
+    binding = growth_binding(owner.ValidationWorkspaceCustody.verify_current)
+    projection = project_bindings((binding,))
+    with recorder.observe():
+        assert custody.verify_current() is expected
+    sample = {
+        "declaration": binding.declaration.id,
+        "declaration_sha256": hashlib.sha256(
+            canonical_json_bytes(projection["declarations"][binding.declaration.id])
+        ).hexdigest(),
+        "dimensions": {
+            "root_path_octets": len(os.fsencode(root)),
+            "workspace_identity_octets": len(custody.directory.name.encode()),
+        },
+        "metrics": {
+            bound.metric: recorder.metrics[bound.metric] for bound in binding.declaration.bounds
+        },
+        "delegates": {},
+    }
+    validate_execution_samples(projection, binding.declaration.id, [sample])
+    return sample
+
+
+@pytest.mark.growth_witness(
+    "riverhog-validation-workspace-current-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.journal_validation_workspace.ValidationWorkspaceCustody.verify_current",
+)
+def test_measured_descriptor_custody_currentness(tmp_path, record_property):
+    samples = []
+    for index, (depth, siblings, payload) in enumerate(
+        [
+            (1, 0, 0),
+            (17, 0, 0),
+            (65, 0, 0),
+            (1, 17, 0),
+            (1, 1025, 0),
+            (1, 0, 65537),
+            (1, 0, 1024 * 1024),
+        ]
+    ):
+        case = setup(tmp_path / str(index), depth=depth, siblings=siblings, payload=payload)
+        captured = []
+        measure(case.root, expected=case.root / ONE, custody_callback=captured.append)
+        assert not captured[0].verify_current()
+        samples.append(measure_custody(captured[0], case.root, expected=False))
+        with owner.lease_journal_validation_workspace(case.root, ONE, on_custody=captured.append):
+            custody = captured[-1]
+            before = snapshot(case)
+            samples.append(measure_custody(custody, case.root, expected=True))
+            assert snapshot(case) == before
+            (case.root / ONE / ".lease").unlink()
+            before = snapshot(case)
+            samples.append(measure_custody(custody, case.root, expected=False))
+            assert snapshot(case) == before
+        samples.append(measure_custody(custody, case.root, expected=False))
+    for fault in ("root", "directory", "lease-mode"):
+        case = setup(tmp_path / fault)
+        captured = []
+        with owner.lease_journal_validation_workspace(case.root, ONE, on_custody=captured.append):
+            if fault == "root":
+                case.root.rename(tmp_path / (fault + "-held"))
+                case.root.mkdir(mode=0o700)
+            elif fault == "directory":
+                (case.root / ONE).rename(case.root / TWO)
+                (case.root / ONE).mkdir(mode=0o700)
+            else:
+                (case.root / ONE / ".lease").chmod(0o644)
+            samples.append(measure_custody(captured[0], case.root, expected=False))
+    record_property("growth_samples", samples)

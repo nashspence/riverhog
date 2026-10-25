@@ -76,7 +76,7 @@ def test_missing_retained_directory_is_not_recreated(tmp_path):
     assert not root.exists()
 
 
-@pytest.mark.parametrize("state_name", ["snapshot.sqlite3", "corpus.sqlite3"])
+@pytest.mark.parametrize("state_name", ["snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3"])
 def test_interrupted_empty_creation_can_finish_but_a_lost_database_lease_cannot(
     tmp_path, state_name
 ):
@@ -374,3 +374,112 @@ with lease_journal_validation_workspace(Path(sys.argv[1]),sys.argv[2]) as direct
         with lease_journal_validation_workspace(root, ONE, create=True):
             pytest.fail("lost corpus lease was recreated")
     assert not (directory / ".lease").exists()
+
+
+def test_lost_lease_cannot_create_a_second_writer_while_core_owner_still_holds_it(tmp_path):
+    root = tmp_path / "retained"
+    with lease_journal_validation_workspace(root, ONE, create=True) as directory:
+        assert directory is not None
+        state = directory / "discovery.sqlite3"
+        state.write_bytes(b"accepted Core progress")
+        (directory / ".lease").unlink()
+        with pytest.raises(LostJournalValidationWorkspace, match="lease was lost"):
+            with lease_journal_validation_workspace(root, ONE, create=True):
+                pytest.fail("replacement lease admitted a second Core writer")
+        assert state.read_bytes() == b"accepted Core progress"
+        assert not (directory / ".lease").exists()
+
+
+@pytest.mark.parametrize(
+    "damage",
+    [
+        "root-replacement",
+        "directory-replacement",
+        "lease-replacement",
+        "root-mode",
+        "owner-mode",
+        "lease-mode",
+        "lease-hardlink",
+    ],
+)
+def test_descriptor_custody_rejects_replaced_or_incompatible_entries(tmp_path, damage):
+    root = tmp_path / "retained"
+    captured = []
+    with lease_journal_validation_workspace(root, ONE, create=True, on_custody=captured.append):
+        custody = captured[0]
+        assert custody.verify_current()
+        if damage == "root-replacement":
+            root.rename(tmp_path / "original")
+            root.mkdir(mode=0o700)
+        elif damage == "directory-replacement":
+            (root / ONE).rename(root / TWO)
+            (root / ONE).mkdir(mode=0o700)
+        elif damage == "lease-replacement":
+            (root / ONE / ".lease").rename(root / ONE / ".original")
+            (root / ONE / ".lease").touch(mode=0o600)
+        elif damage == "lease-hardlink":
+            os.link(root / ONE / ".lease", root / ONE / ".extra")
+        else:
+            path = {
+                "root-mode": root,
+                "owner-mode": root / ONE,
+                "lease-mode": root / ONE / ".lease",
+            }[damage]
+            path.chmod(0o755 if path.is_dir() else 0o644)
+        assert not custody.verify_current()
+    assert not custody.verify_current()
+
+
+def test_descriptor_custody_closes_before_reuse_and_busy_selection_never_exposes_it(tmp_path):
+    root = tmp_path / "retained"
+    captured = []
+    with lease_journal_validation_workspace(root, ONE, create=True, on_custody=captured.append):
+        first = captured[0]
+        assert first.verify_current()
+        with lease_journal_validation_workspace(root, ONE, on_custody=captured.append) as busy:
+            assert busy is None
+        assert captured == [first]
+    assert not first.verify_current()
+    with lease_journal_validation_workspace(root, ONE, on_custody=captured.append):
+        second = captured[1]
+        assert second.verify_current()
+        assert not first.verify_current()
+    assert not second.verify_current()
+
+
+def test_custody_handoff_failure_closes_custody_and_releases_lease(tmp_path):
+    root = tmp_path / "retained"
+    captured = []
+    failure = ValueError("owner handoff rejected")
+
+    def reject(custody):
+        captured.append(custody)
+        assert custody.verify_current()
+        raise failure
+
+    with pytest.raises(ValueError) as raised:
+        with lease_journal_validation_workspace(root, ONE, create=True, on_custody=reject):
+            pytest.fail("failed handoff was admitted")
+    assert raised.value is failure
+    assert not captured[0].verify_current()
+    with lease_journal_validation_workspace(root, ONE) as available:
+        assert available is not None
+
+
+def test_descriptor_custody_becomes_closed_before_any_owned_descriptor_closes(
+    tmp_path, monkeypatch
+):
+    captured = []
+    actual_close = os.close
+
+    def close(descriptor):
+        if captured:
+            assert not captured[0].verify_current()
+        actual_close(descriptor)
+
+    monkeypatch.setattr(os, "close", close)
+    with lease_journal_validation_workspace(
+        tmp_path / "retained", ONE, create=True, on_custody=captured.append
+    ):
+        assert captured[0].verify_current()
+    assert not captured[0].verify_current()

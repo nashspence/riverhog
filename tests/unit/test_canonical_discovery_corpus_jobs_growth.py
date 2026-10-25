@@ -42,6 +42,7 @@ TABLES = (Collection, Generation, State, Deletion, Job)
 MODES = (
     "select_discovery_job",
     "claim_discovery_worker",
+    "confirm_discovery_storage",
     "discovery_worker_current",
     "pin_discovery_corpus",
     "activate_discovery_corpus",
@@ -137,9 +138,11 @@ def cases(tmp_path_factory, fixed_inputs):
 
 
 def reset(case, mode, variant):
-    job = replace(case.job, worker_epoch=1)
+    job = replace(case.job, worker_epoch=1, state="seeding")
     if mode == "select_discovery_job":
         job = case.job
+    if mode == "confirm_discovery_storage" and variant != "retry":
+        job = replace(job, state="preparing")
     if mode == "activate_discovery_corpus" or (
         mode == "pin_discovery_corpus" and variant in {"retry", "post-open-retry"}
     ):
@@ -198,6 +201,10 @@ def measure(case, mode, variant, cold):
     elif mode == "claim_discovery_worker":
         selected = replace(job, version="e" * 64) if variant == "stale" else job
         action = partial(owner.claim_discovery_worker, case.factory, selected)
+    elif mode == "confirm_discovery_storage":
+        selected = replace(job, version="e" * 64) if variant == "stale" else job
+        action = partial(owner.confirm_discovery_storage, case.factory, selected)
+        changed = int(variant != "retry")
     elif mode == "discovery_worker_current":
         action = partial(owner.discovery_worker_current, case.factory, job)
     elif mode == "pin_discovery_corpus":
@@ -268,6 +275,7 @@ def exercise(mode, cases, record_property):
     variants = {
         "select_discovery_job": ("new", "existing", "superseded"),
         "claim_discovery_worker": ("fresh", "stale", "superseded"),
+        "confirm_discovery_storage": ("fresh", "retry", "stale", "superseded"),
         "discovery_worker_current": ("current", "superseded"),
         "pin_discovery_corpus": ("fresh", "retry", "post-open-retry", "wrong-count", "superseded"),
         "activate_discovery_corpus": ("fresh", "stale", "superseded"),
@@ -351,3 +359,12 @@ def test_measured_discovery_job_lose(cases, record_property):
 )
 def test_measured_discovery_job_retire(cases, record_property):
     exercise("retire_discovery_job", cases, record_property)
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-job-confirm-storage/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_corpus_jobs.confirm_discovery_storage",
+)
+def test_measured_discovery_job_confirm_storage(cases, record_property):
+    exercise("confirm_discovery_storage", cases, record_property)

@@ -8,6 +8,7 @@ import re
 import stat
 from collections.abc import Callable, Iterator
 from contextlib import ExitStack, contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 
 from riverhog_growth_contracts import (
@@ -75,10 +76,10 @@ def _lease_declaration() -> Declaration:
                 "stat_calls",
                 COUNT,
                 "upper",
-                count(6),
+                count(7),
                 (
-                    "Four exact descriptor checks and at most two "
-                    "Native database-existence checks; no payload read."
+                    "Four exact descriptor checks and at most three "
+                    "Core/Native database-existence checks; no payload read."
                 ),
             ),
             Bound(
@@ -127,7 +128,7 @@ def _lease_declaration() -> Declaration:
                     terms=(
                         scale(3, dimension("root_path_octets")),
                         scale(2, dimension("workspace_identity_octets")),
-                        Expression("constant", value=64, unit=OCTETS),
+                        Expression("constant", value=80, unit=OCTETS),
                     ),
                 ),
                 (
@@ -144,6 +145,13 @@ def _lease_declaration() -> Declaration:
                     "Only an admitted exclusive creation attempt invokes its "
                     "caller-owned currentness callback."
                 ),
+            ),
+            Bound(
+                "custody_callbacks",
+                COUNT,
+                "upper",
+                count(1),
+                "A successful selected lease exposes its exact descriptor custody at most once.",
             ),
             Bound(
                 "payload_octets",
@@ -225,7 +233,7 @@ class LostJournalValidationWorkspace(RuntimeError):
     "The retained job directory or lease is missing, replaced or incompatible."
 
 
-def _private_directory(descriptor: int) -> None:
+def _private_directory(descriptor: int) -> os.stat_result:
     identity = os.fstat(descriptor)
     if (
         not stat.S_ISDIR(identity.st_mode)
@@ -233,9 +241,10 @@ def _private_directory(descriptor: int) -> None:
         or stat.S_IMODE(identity.st_mode) != 0o700
     ):
         raise LostJournalValidationWorkspace("validation directories require private owner custody")
+    return identity
 
 
-def _private_file(descriptor: int) -> None:
+def _private_file(descriptor: int) -> os.stat_result:
     identity = os.fstat(descriptor)
     if (
         not stat.S_ISREG(identity.st_mode)
@@ -244,6 +253,40 @@ def _private_file(descriptor: int) -> None:
         or identity.st_nlink != 1
     ):
         raise LostJournalValidationWorkspace("validation leases require private owner custody")
+    return identity
+
+
+@dataclass(slots=True)
+class ValidationWorkspaceCustody:
+    """Exact live descriptors supplied only by the held workspace lease."""
+
+    directory: Path
+    _root: int
+    _owner: int
+    _lease: int
+    _held: bool = True
+
+    def verify_current(self) -> bool:
+        if not self._held:
+            return False
+        try:
+            descriptors = (
+                _private_directory(self._root),
+                _private_directory(self._owner),
+                _private_file(self._lease),
+            )
+            entries = (
+                os.stat(self.directory.parent, follow_symlinks=False),
+                os.stat(self.directory.name, dir_fd=self._root, follow_symlinks=False),
+                os.stat(".lease", dir_fd=self._owner, follow_symlinks=False),
+            )
+            return all(
+                (descriptor.st_dev, descriptor.st_ino, descriptor.st_mode)
+                == (entry.st_dev, entry.st_ino, entry.st_mode)
+                for descriptor, entry in zip(descriptors, entries, strict=True)
+            )
+        except (OSError, LostJournalValidationWorkspace):
+            return False
 
 
 @contextmanager
@@ -254,6 +297,7 @@ def lease_journal_validation_workspace(
     create: bool = False,
     shared: bool = False,
     creation_current: Callable[[], bool] | None = None,
+    on_custody: Callable[[ValidationWorkspaceCustody], None] | None = None,
 ) -> Iterator[Path | None]:
     """Lease one exact catalog-selected directory, preserving its files on release.
 
@@ -276,6 +320,7 @@ def lease_journal_validation_workspace(
         raise ValueError("shared journal readers cannot create a workspace")
 
     exposed = False
+    custody: ValidationWorkspaceCustody | None = None
     try:
         with ExitStack() as resources:
             root_created = False
@@ -332,8 +377,8 @@ def lease_journal_validation_workspace(
                     if not create:
                         raise
                     # Only interrupted initial creation can lack a lease.
-                    # Either retained Native database establishes existing owned state.
-                    for state_name in ("snapshot.sqlite3", "corpus.sqlite3"):
+                    # Any retained Core or Native database establishes existing owned state.
+                    for state_name in ("snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3"):
                         try:
                             os.stat(state_name, dir_fd=owner, follow_symlinks=False)
                         except FileNotFoundError:
@@ -367,7 +412,11 @@ def lease_journal_validation_workspace(
             if busy:
                 yield None
                 return
-            yield root / workspace_id
+            custody = ValidationWorkspaceCustody(root / workspace_id, root_fd, owner, lease)
+            resources.callback(setattr, custody, "_held", False)
+            if on_custody is not None:
+                on_custody(custody)
+            yield custody.directory
     except _StaleWorkspaceCreation:
         yield None
     except OSError as error:
@@ -382,6 +431,85 @@ def lease_journal_validation_workspace(
                 "retained validation directory or lease is unavailable"
             ) from None
         raise
+    finally:
+        if custody is not None:
+            custody._held = False
+
+
+def _custody_declaration() -> Declaration:
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    return Declaration(
+        id="riverhog-server.validation-workspace-current.growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            "riverhog_core.journal_validation_workspace.ValidationWorkspaceCustody.verify_current",
+        ),
+        scope="one exact held root, directory and kernel lease identity check",
+        starts_at="receive descriptor custody from the successful selected lease context",
+        ends_at="return current or reject closed, missing, replaced or incompatible custody",
+        dimensions=(
+            Dimension("root_path_octets", OCTETS, "Complete native encoded absolute root path."),
+            Dimension("workspace_identity_octets", OCTETS, "Exact selected directory identity."),
+        ),
+        bounds=(
+            Bound("stat_calls", COUNT, "upper", count(6), "Three descriptors and exact entries."),
+            Bound(
+                "uid_calls", COUNT, "upper", count(3), "Each descriptor retains its owner check."
+            ),
+            Bound(
+                "path_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        Expression("dimension", name="root_path_octets"),
+                        Expression("dimension", name="workspace_identity_octets"),
+                        Expression("constant", value=6, unit=OCTETS),
+                    ),
+                ),
+                "Root path, selected relative directory and exact lease filename only.",
+            ),
+            *(
+                Bound(
+                    metric,
+                    COUNT,
+                    "equal",
+                    count(0),
+                    "Verification neither changes nor traverses storage.",
+                )
+                for metric in (
+                    "open_calls",
+                    "close_calls",
+                    "mkdir_calls",
+                    "fsync_calls",
+                    "flock_calls",
+                    "creation_callbacks",
+                    "custody_callbacks",
+                    "directory_enumerations",
+                )
+            ),
+            Bound(
+                "payload_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "No source or retained database bytes are read.",
+            ),
+        ),
+        conditions=("The caller retains the original lease context and descriptor custody.",),
+        invariants=(
+            "Closed custody never becomes current when the same descriptor numbers are reused.",
+            "Root, selected directory and lease entries must still name the held descriptors.",
+            "Missing or incompatible entries never authorize recreation or repair.",
+        ),
+        limitations=("Kernel path lookup and physical I/O latency retain filesystem ownership.",),
+    )
+
+
+declare_growth(_custody_declaration())(ValidationWorkspaceCustody.verify_current)
 
 
 declare_growth(_lease_declaration())(lease_journal_validation_workspace)

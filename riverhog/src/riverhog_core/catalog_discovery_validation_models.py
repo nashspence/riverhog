@@ -39,7 +39,7 @@ class DiscoveryValidationJobRecord(Base):
         CheckConstraint("build_epoch >= 1", name="ck_discovery_validation_build_epoch"),
         CheckConstraint("worker_epoch >= 0", name="ck_discovery_validation_worker_epoch"),
         CheckConstraint(
-            "state IN ('preparing','ready','active','lost','retiring','directory')",
+            "state IN ('preparing','seeding','ready','active','lost','retiring','directory')",
             name="ck_discovery_validation_state",
         ),
         CheckConstraint(
@@ -47,10 +47,10 @@ class DiscoveryValidationJobRecord(Base):
             name="ck_discovery_validation_retired",
         ),
         CheckConstraint(
-            "(source_manifest_sha256 IS NULL AND source_count IS NULL AND "
-            "selection_manifest_sha256 IS NULL AND selection_count IS NULL) OR "
-            "(source_manifest_sha256 IS NOT NULL AND source_count IS NOT NULL AND "
-            "selection_manifest_sha256 IS NOT NULL AND selection_count IS NOT NULL)",
+            "source_manifest_sha256 IS NULL AND source_count IS NULL AND "
+            "selection_manifest_sha256 IS NULL AND selection_count IS NULL OR "
+            "source_manifest_sha256 IS NOT NULL AND source_count IS NOT NULL AND "
+            "selection_manifest_sha256 IS NOT NULL AND selection_count IS NOT NULL",
             name="ck_discovery_validation_pinned_inputs",
         ),
         CheckConstraint(

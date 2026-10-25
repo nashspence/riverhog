@@ -86,7 +86,9 @@ def case(tmp_path, fixed_inputs):
 def claimed(case):
     result = owner.claim_discovery_worker(case.factory, case.job)
     assert result is not None
-    return result
+    confirmed = owner.confirm_discovery_storage(case.factory, result)
+    assert confirmed is not None and confirmed.state == "seeding"
+    return confirmed
 
 
 def test_one_attempt_and_original_binding_survive_claim_pin_and_reopen(case):
@@ -280,3 +282,31 @@ def test_failed_pin_rolls_back_catalog_update_and_closes_owned_connection(case):
     with case.factory() as session:
         assert owner.DiscoveryJob.read(session.get(Job, first.workspace_id)) == first
     assert case.engine.pool.checkedout() == 0
+
+
+def test_unconfirmed_storage_cannot_pin_and_uncertain_confirmation_preserves_progress(case):
+    with pytest.raises(owner.StaleArchiveTask, match="claimed"):
+        owner.confirm_discovery_storage(case.factory, case.job)
+    first = owner.claim_discovery_worker(case.factory, case.job)
+    assert first is not None and first.state == "preparing"
+    assert owner.pin_discovery_corpus(case.factory, first, case.frozen) is None
+    confirmed = owner.confirm_discovery_storage(case.factory, first)
+    assert confirmed is not None and confirmed.state == "seeding"
+    assert owner.confirm_discovery_storage(case.factory, first) == confirmed
+    assert owner.confirm_discovery_storage(case.factory, confirmed) == confirmed
+    pinned = owner.pin_discovery_corpus(case.factory, confirmed, case.frozen)
+    assert pinned is not None and pinned.state == "ready"
+    assert owner.confirm_discovery_storage(case.factory, pinned) == pinned
+    active = owner.activate_discovery_corpus(case.factory, pinned)
+    assert active is not None
+    assert owner.confirm_discovery_storage(case.factory, pinned) == active
+    assert owner.confirm_discovery_storage(case.factory, active) == active
+
+
+def test_storage_confirmation_rejects_superseded_and_stale_initialization(case):
+    first = owner.claim_discovery_worker(case.factory, case.job)
+    assert first is not None
+    assert owner.confirm_discovery_storage(case.factory, replace(first, version="e" * 64)) is None
+    with case.factory() as session, session.begin():
+        session.execute(update(State).values(epoch=2))
+    assert owner.confirm_discovery_storage(case.factory, first) is None

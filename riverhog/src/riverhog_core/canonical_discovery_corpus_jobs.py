@@ -148,6 +148,7 @@ def _declaration(mode: str) -> Declaration:
     sql = {
         "select_discovery_job": 4,
         "claim_discovery_worker": 2,
+        "confirm_discovery_storage": 3,
         "discovery_worker_current": 1,
         "pin_discovery_corpus": 2,
         "activate_discovery_corpus": 2,
@@ -393,7 +394,7 @@ def claim_discovery_worker(factory: SessionFactory, job: DiscoveryJob) -> Discov
             .where(
                 *_identity(job),
                 Job.version == job.version,
-                Job.state.in_(("preparing", "ready", "active")),
+                Job.state.in_(("preparing", "seeding", "ready", "active")),
             )
             .values(worker_epoch=job.worker_epoch + 1, version=_version())
             .returning(Job)
@@ -409,11 +410,39 @@ def discovery_worker_current(factory: SessionFactory, job: DiscoveryJob) -> bool
         .join(Job, Job.build_id == Generation.build_id)
         .where(
             *_identity(job),
-            Job.state.in_(("preparing", "ready", "active")),
+            Job.state.in_(("preparing", "seeding", "ready", "active")),
         )
     )
     with factory() as session, session.execute(query) as rows:
         return rows.one_or_none() is not None
+
+
+@declare_growth(_declaration("confirm_discovery_storage"))
+def confirm_discovery_storage(factory: SessionFactory, job: DiscoveryJob) -> DiscoveryJob | None:
+    """Confirm validated Core storage under exclusive custody before advancing archive work."""
+    if job.worker_epoch < 1:
+        raise StaleArchiveTask("Core storage requires a claimed discovery worker")
+    with factory() as session, session.begin():
+        if not _current_build(session, job, lock=True):
+            return None
+        current = session.scalar(
+            select(Job).where(
+                *_identity(job), Job.state.in_(("preparing", "seeding", "ready", "active"))
+            )
+        )
+        if current is None:
+            return None
+        if current.state != "preparing":
+            return DiscoveryJob.read(current)
+        if current.version != job.version:
+            return None
+        row = session.execute(
+            update(Job)
+            .where(*_identity(job), Job.version == job.version, Job.state == "preparing")
+            .values(state="seeding", version=_version())
+            .returning(Job)
+        ).scalar_one_or_none()
+        return None if row is None else DiscoveryJob.read(row)
 
 
 @declare_growth(_declaration("pin_discovery_corpus"))
@@ -447,7 +476,7 @@ def pin_discovery_corpus(
             return None if current is None else DiscoveryJob.read(current)
         row = session.execute(
             update(Job)
-            .where(*_identity(job), Job.version == job.version, Job.state == "preparing")
+            .where(*_identity(job), Job.version == job.version, Job.state == "seeding")
             .values(
                 source_manifest_sha256=proposed.source_manifest_sha256,
                 source_count=proposed.source_count,
@@ -494,7 +523,7 @@ def lose_discovery_corpus(
             .where(
                 *_identity(job),
                 Job.version == job.version,
-                Job.state.in_(("preparing", "ready", "active")),
+                Job.state.in_(("preparing", "seeding", "ready", "active")),
             )
             .values(state="lost", failure=failure, version=_version())
             .returning(Job)

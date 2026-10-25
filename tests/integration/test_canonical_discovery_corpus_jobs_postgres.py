@@ -104,7 +104,10 @@ def test_postgresql_discovery_claim_cas_and_pinned_job_survive_generation_deleti
             results = list(workers.map(lambda _: claim(), range(2)))
         claimed = [result for result in results if result is not None]
         assert len(claimed) == 1 and claimed[0].worker_epoch == 1
-        current = owner.pin_discovery_corpus(factory, claimed[0], frozen)
+        confirmed = owner.confirm_discovery_storage(factory, claimed[0])
+        assert confirmed is not None and confirmed.state == "seeding"
+        assert owner.confirm_discovery_storage(factory, claimed[0]) == confirmed
+        current = owner.pin_discovery_corpus(factory, confirmed, frozen)
         assert current is not None and current.binding.selection_count == frozen.selection_count
         assert owner.pin_discovery_corpus(factory, current, frozen) == current
         active = owner.activate_discovery_corpus(factory, current)
