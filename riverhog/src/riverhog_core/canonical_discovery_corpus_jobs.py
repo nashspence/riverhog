@@ -150,13 +150,14 @@ def _declaration(mode: str) -> Declaration:
         "claim_discovery_worker": 2,
         "confirm_discovery_storage": 3,
         "discovery_worker_current": 1,
+        "discovery_worker_snapshot": 1,
         "pin_discovery_corpus": 2,
         "activate_discovery_corpus": 2,
         "lose_discovery_corpus": 1,
         "retire_discovery_job": 1,
     }[mode]
-    mutates = int(mode != "discovery_worker_current")
-    versions = int(mode != "discovery_worker_current")
+    mutates = int(mode not in {"discovery_worker_current", "discovery_worker_snapshot"})
+    versions = mutates
 
     def count(value: int) -> Expression:
         return Expression("constant", value=value, unit=COUNT)
@@ -415,6 +416,23 @@ def discovery_worker_current(factory: SessionFactory, job: DiscoveryJob) -> bool
     )
     with factory() as session, session.execute(query) as rows:
         return rows.one_or_none() is not None
+
+
+@declare_growth(_declaration("discovery_worker_snapshot"))
+def discovery_worker_snapshot(factory: SessionFactory, job: DiscoveryJob) -> DiscoveryJob | None:
+    """Read the actual same-worker disposition before granting storage creation."""
+    query = (
+        _build_query(job)
+        .with_only_columns(Job, maintain_column_froms=True)
+        .join(Job, Job.build_id == Generation.build_id)
+        .where(
+            *_identity(job),
+            Job.state.in_(("preparing", "seeding", "ready", "active")),
+        )
+    )
+    with factory() as session:
+        row = session.scalar(query)
+        return None if row is None else DiscoveryJob.read(row)
 
 
 @declare_growth(_declaration("confirm_discovery_storage"))

@@ -44,6 +44,7 @@ MODES = (
     "claim_discovery_worker",
     "confirm_discovery_storage",
     "discovery_worker_current",
+    "discovery_worker_snapshot",
     "pin_discovery_corpus",
     "activate_discovery_corpus",
     "lose_discovery_corpus",
@@ -188,7 +189,10 @@ def measure(case, mode, variant, cold):
         "control_octets": octets((tuple(asdict(job).values()), control)),
     }
     expected_error = None
-    changed = int(mode not in {"discovery_worker_current", "select_discovery_job"})
+    changed = int(
+        mode
+        not in {"discovery_worker_current", "discovery_worker_snapshot", "select_discovery_job"}
+    )
     if mode == "select_discovery_job":
         action = partial(
             owner.select_discovery_job,
@@ -207,6 +211,8 @@ def measure(case, mode, variant, cold):
         changed = int(variant != "retry")
     elif mode == "discovery_worker_current":
         action = partial(owner.discovery_worker_current, case.factory, job)
+    elif mode == "discovery_worker_snapshot":
+        action = partial(owner.discovery_worker_snapshot, case.factory, job)
     elif mode == "pin_discovery_corpus":
         manifest = case.frozen
         if variant == "wrong-count":
@@ -227,7 +233,11 @@ def measure(case, mode, variant, cold):
         changed = 0
     recorder = CatalogRecorder(owner)
     with ExitStack() as lease:
-        if mode not in {"select_discovery_job", "discovery_worker_current"}:
+        if mode not in {
+            "select_discovery_job",
+            "discovery_worker_current",
+            "discovery_worker_snapshot",
+        }:
             assert (
                 lease.enter_context(lease_journal_validation_workspace(case.root, job.workspace_id))
                 is not None
@@ -277,6 +287,7 @@ def exercise(mode, cases, record_property):
         "claim_discovery_worker": ("fresh", "stale", "superseded"),
         "confirm_discovery_storage": ("fresh", "retry", "stale", "superseded"),
         "discovery_worker_current": ("current", "superseded"),
+        "discovery_worker_snapshot": ("current", "superseded"),
         "pin_discovery_corpus": ("fresh", "retry", "post-open-retry", "wrong-count", "superseded"),
         "activate_discovery_corpus": ("fresh", "stale", "superseded"),
         "lose_discovery_corpus": ("fresh", "stale"),
@@ -368,3 +379,12 @@ def test_measured_discovery_job_retire(cases, record_property):
 )
 def test_measured_discovery_job_confirm_storage(cases, record_property):
     exercise("confirm_discovery_storage", cases, record_property)
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-job-snapshot/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_corpus_jobs.discovery_worker_snapshot",
+)
+def test_measured_discovery_job_snapshot(cases, record_property):
+    exercise("discovery_worker_snapshot", cases, record_property)

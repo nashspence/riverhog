@@ -107,6 +107,7 @@ def test_postgresql_discovery_claim_cas_and_pinned_job_survive_generation_deleti
         confirmed = owner.confirm_discovery_storage(factory, claimed[0])
         assert confirmed is not None and confirmed.state == "seeding"
         assert owner.confirm_discovery_storage(factory, claimed[0]) == confirmed
+        assert owner.discovery_worker_snapshot(factory, claimed[0]) == confirmed
         current = owner.pin_discovery_corpus(factory, confirmed, frozen)
         assert current is not None and current.binding.selection_count == frozen.selection_count
         assert owner.pin_discovery_corpus(factory, current, frozen) == current
@@ -117,6 +118,7 @@ def test_postgresql_discovery_claim_cas_and_pinned_job_survive_generation_deleti
         with factory() as session, session.begin():
             session.execute(delete(Generation).where(Generation.build_id == job.build_id))
         assert not owner.discovery_worker_current(factory, current)
+        assert owner.discovery_worker_snapshot(factory, current) is None
         with factory() as session:
             orphan = owner.DiscoveryJob.read(session.get(Job, job.workspace_id))
         assert orphan.build_id is None and orphan.binding == current.binding

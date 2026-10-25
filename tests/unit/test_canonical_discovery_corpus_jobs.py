@@ -207,6 +207,7 @@ def test_live_catalog_root_build_and_exact_job_fences_reject_stale_workers(case,
             session.execute(update(Job).values(**values))
     assert not owner.discovery_worker_current(case.factory, first)
     assert owner.claim_discovery_worker(case.factory, first) is None
+    assert owner.discovery_worker_snapshot(case.factory, first) is None
     assert owner.pin_discovery_corpus(case.factory, first, case.frozen) is None
     assert case.engine.pool.checkedout() == 0
 
@@ -293,6 +294,7 @@ def test_unconfirmed_storage_cannot_pin_and_uncertain_confirmation_preserves_pro
     confirmed = owner.confirm_discovery_storage(case.factory, first)
     assert confirmed is not None and confirmed.state == "seeding"
     assert owner.confirm_discovery_storage(case.factory, first) == confirmed
+    assert owner.discovery_worker_snapshot(case.factory, first) == confirmed
     assert owner.confirm_discovery_storage(case.factory, confirmed) == confirmed
     pinned = owner.pin_discovery_corpus(case.factory, confirmed, case.frozen)
     assert pinned is not None and pinned.state == "ready"
