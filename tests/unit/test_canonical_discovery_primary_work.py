@@ -8,14 +8,25 @@ from types import SimpleNamespace
 
 import pytest
 from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
     RETAINED_HISTORY_EXTENT,
+    ArchiveProvenanceIdentity,
+    CollectionArchiveManifest,
+    CollectionArtifactSetIdentity,
     HistoryJournalAnchor,
+    MemberHistoryBinding,
     MemberHistoryBuilder,
+    MemberHistoryDocument,
+    MemberHistoryImport,
     MemberHistoryPrimary,
     MemberHistoryRoot,
     MemberHistoryStore,
     ProvenanceRootDocument,
+    ProvenanceRootIdentity,
+    SourceMemberHistoryBindingProof,
+    member_history_object_path,
     provenance_structure_identity,
+    source_binding_proof_object_path,
 )
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core import canonical_discovery_primary_work as owner_module
@@ -33,10 +44,12 @@ from riverhog_core.canonical_discovery_history_work import (
     ArchiveHistoryWork,
     HistorySetWork,
     apply_history_descriptor,
+    apply_history_import,
     apply_history_record,
     history_set_progress,
     initialize_history_work,
     prepare_history_descriptor,
+    prepare_history_import,
     prepare_history_record,
 )
 from riverhog_core.canonical_discovery_journal_work import StaleJournalTask
@@ -53,6 +66,7 @@ from riverhog_core.canonical_discovery_primary_work import (
     apply_history_primary,
     initialize_primary_work,
     prepare_history_primary,
+    verify_history_import_primary,
 )
 from riverhog_core.canonical_discovery_snapshot_work import (
     HistorySnapshotWork,
@@ -154,7 +168,15 @@ def primary_corpus(path, source, summary, store, binding, catalog, *, retained):
 
 
 @contextmanager
-def primary_work(path, *, fault=None, retained=False):
+def primary_work(
+    path,
+    *,
+    fault=None,
+    retained=False,
+    inherited_extent=None,
+    import_fault=None,
+    worker_id="worker",
+):
     catalog, payload = ContractCatalog(), b"primary"
     artifact_id = hashlib.sha256(payload).hexdigest()
     observed = BoundedSourceObserver(catalog=catalog).observe(BytesSource(payload))
@@ -206,6 +228,85 @@ def primary_work(path, *, fault=None, retained=False):
                 provenance_structure_identity(value).relative_path: value
                 for value in builder.objects()
             }
+        source_descriptor, imported = descriptor, None
+        if inherited_extent is not None:
+            _, source_objects, _, _ = archive_reader_fixture(
+                raw, summary.journal_id, histories=(descriptor,), history_objects=structures
+            )
+            source_root = ProvenanceRootDocument.from_json_bytes(
+                source_objects["provenance/root.json.age"]
+            )
+            archive = CollectionArchiveManifest(
+                archive_generation=source_root.archive_generation,
+                artifact_set=CollectionArtifactSetIdentity(
+                    1, descriptor.bytes, source_root.artifact_set_sha256
+                ),
+                ordered_volume_sha256="f" * 64,
+                provenance=ArchiveProvenanceIdentity(
+                    source_root.identity,
+                    ProvenanceRootIdentity(
+                        id="provenance-root",
+                        kind="provenance-root",
+                        path="provenance/root.json.age",
+                        plaintext_bytes=len(source_root.to_json_bytes()),
+                        sha256=source_root.identity,
+                        stored_bytes=1234,
+                        stored_sha256="0" * 64,
+                    ),
+                ),
+            )
+            proof = SourceMemberHistoryBindingProof(
+                "9" * 64,
+                7,
+                archive.to_json_bytes(),
+                source_root.to_json_bytes(),
+                MemberHistoryBinding(
+                    descriptor.artifact_id,
+                    descriptor.bytes,
+                    descriptor.sha256,
+                    descriptor.identity,
+                    len(descriptor.to_json_bytes()),
+                ),
+                0,
+                (),
+            )
+            input_state = dict(state_reference)
+            if import_fault == "state":
+                input_state["object_id"] = "urn:uuid:ffffffff-ffff-4fff-8fff-ffffffffffff"
+            elif import_fault == "assertion":
+                input_state["assertion_id"] = "urn:uuid:ffffffff-ffff-4fff-8fff-ffffffffffff"
+            elif import_fault == "entry":
+                input_state["entry"] = dict(input_state["entry"], sequence="1")
+            imported = MemberHistoryImport(
+                proof.source_identity,
+                proof.collection_id,
+                hashlib.sha256(proof.archive_root).hexdigest(),
+                source_root.artifact_set_sha256,
+                descriptor.artifact_id,
+                descriptor.identity,
+                proof.identity,
+                inherited_extent,
+                input_state,
+            )
+            structures[source_binding_proof_object_path(proof.identity)] = proof.to_json_bytes()
+            structures[member_history_object_path(descriptor.identity)] = descriptor.to_json_bytes()
+            with MemberHistoryBuilder(
+                artifact_id=descriptor.artifact_id,
+                bytes=descriptor.bytes,
+                sha256=descriptor.sha256,
+                primary=descriptor.primary,
+            ) as builder:
+                builder.add_root(
+                    MemberHistoryRoot(HistoryJournalAnchor.from_mapping(summary.anchor), "retained")
+                )
+                builder.add_import(imported)
+                binding, descriptor = builder.seal()
+                structures.update(
+                    {
+                        provenance_structure_identity(value).relative_path: value
+                        for value in builder.objects()
+                    }
+                )
         reader, objects, _, _ = archive_reader_fixture(
             raw, summary.journal_id, histories=(descriptor,), history_objects=structures
         )
@@ -220,7 +321,7 @@ def primary_work(path, *, fault=None, retained=False):
             initialize_history_work(db)
             initialize_snapshot_work(db)
             initialize_primary_work(db)
-            key = ArchiveTaskKey("build", admission.identity, "worker")
+            key = ArchiveTaskKey("build", admission.identity, worker_id)
             with write(db):
                 begin_archive_metadata(db, key, admission)
             while not archive_metadata_progress(db, key).complete:
@@ -244,6 +345,17 @@ def primary_work(path, *, fault=None, retained=False):
                     page = prepare_history_record(db, key, work)
                     with write(db):
                         apply_history_record(db, key, work, page)
+            if imported is not None:
+                imported_set = HistorySetWork(admission, reader, descriptor.imports)
+                page = prepare_history_import(db, key, imported_set, imported.key)
+                with write(db):
+                    apply_history_import(db, key, imported_set, page)
+                for authority in (source_descriptor.roots, source_descriptor.imports):
+                    work = HistorySetWork(admission, reader, authority)
+                    while not history_set_progress(db, key, work).complete:
+                        page = prepare_history_record(db, key, work)
+                        with write(db):
+                            apply_history_record(db, key, work, page)
             roots = HistorySetWork(admission, reader, descriptor.roots)
             with admit_archive_journal(db, key, admission, summary) as source:
                 store = MemberHistoryStore(lambda path: (objects[path],))
@@ -541,3 +653,101 @@ def test_actual_primary_commit_writes_only_original_references_without_source_ha
                     )
                 )
     record_property("growth_samples", samples)
+
+
+def imported_primary(values):
+    db, key, owner, descriptor, *_ = values
+    imports = HistorySetWork(owner.history.admission, owner.history.reader, descriptor.imports)
+    record, history = db.execute(
+        "SELECT record_key,history_sha256 FROM discovery_history_import_links "
+        "WHERE build_id=? AND admission_sha256=? AND import_set_sha256=?",
+        (key.build_id, key.admission_sha256, descriptor.imports.records_sha256),
+    ).fetchone()
+    return db, key, owner, imports, record, history
+
+
+@pytest.mark.parametrize("retained", [False, True])
+@pytest.mark.parametrize("extent", [BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT])
+def test_import_state_matches_exact_native_verified_source_primary(tmp_path, retained, extent):
+    with primary_work(
+        tmp_path / "import.sqlite", retained=retained, inherited_extent=extent
+    ) as values:
+        db, key, owner, imports, record, history = imported_primary(values)
+        with pytest.raises(StaleArchiveTask, match="Native-verified"):
+            verify_history_import_primary(db, key, imports, record)
+        page = prepare_history_primary(db, key, owner, history, metadata_byte_budget=65536)
+        with write(db):
+            apply_history_primary(db, key, owner, page)
+        verify_history_import_primary(db, key, imports, record)
+        with pytest.raises(ValueError, match="no active transaction"):
+            with write(db):
+                verify_history_import_primary(db, key, imports, record)
+
+
+@pytest.mark.parametrize("fault", ["state", "assertion", "entry"])
+def test_wrong_import_state_rejects_even_when_the_source_history_is_structurally_valid(
+    tmp_path, fault
+):
+    with primary_work(
+        tmp_path / "import.sqlite",
+        retained=True,
+        inherited_extent=BOUND_HISTORY_EXTENT,
+        import_fault=fault,
+    ) as values:
+        db, key, owner, imports, record, history = imported_primary(values)
+        page = prepare_history_primary(db, key, owner, history, metadata_byte_budget=65536)
+        with write(db):
+            apply_history_primary(db, key, owner, page)
+        with pytest.raises(ProvenanceValidationError, match="source primary"):
+            verify_history_import_primary(db, key, imports, record)
+
+
+@pytest.mark.parametrize(
+    "damage",
+    [
+        "coverage",
+        "set",
+        "link",
+        "proof-worker",
+        "primary-worker",
+        "descriptor",
+        "anchor",
+        "source-history",
+        "proof",
+    ],
+)
+def test_import_primary_rejects_changed_original_proof_or_native_binding(tmp_path, damage):
+    with primary_work(
+        tmp_path / "import.sqlite", retained=True, inherited_extent=BOUND_HISTORY_EXTENT
+    ) as values:
+        db, key, owner, imports, record, history = imported_primary(values)
+        page = prepare_history_primary(db, key, owner, history, metadata_byte_budget=65536)
+        with write(db):
+            apply_history_primary(db, key, owner, page)
+        if damage == "coverage":
+            db.execute("UPDATE discovery_history_import_coverage SET registered_imports='0'")
+        elif damage == "set":
+            db.execute(
+                "UPDATE discovery_history_sets SET complete=0 WHERE records_sha256=?",
+                (imports.authority.records_sha256,),
+            )
+        elif damage == "link":
+            db.execute("DELETE FROM discovery_history_import_links")
+        elif damage == "proof-worker":
+            db.execute("UPDATE discovery_history_import_proofs SET worker_id='stale'")
+        elif damage == "primary-worker":
+            db.execute("UPDATE discovery_history_primary_bindings SET worker_id='stale'")
+        elif damage == "descriptor":
+            descriptor = MemberHistoryDocument.from_json_bytes(page.descriptor_json.encode())
+            db.execute(
+                "UPDATE discovery_history_descriptors SET descriptor_json=? WHERE history_sha256=?",
+                (replace(descriptor, bytes=descriptor.bytes + 1).to_json_bytes().decode(), history),
+            )
+        elif damage == "anchor":
+            db.execute("UPDATE discovery_history_primary_bindings SET anchor_json='{}'")
+        elif damage == "source-history":
+            db.execute("UPDATE discovery_history_import_proofs SET history_sha256=?", ("f" * 64,))
+        else:
+            db.execute("UPDATE discovery_history_import_links SET proof_sha256=?", ("f" * 64,))
+        with pytest.raises(StaleArchiveTask):
+            verify_history_import_primary(db, key, imports, record)

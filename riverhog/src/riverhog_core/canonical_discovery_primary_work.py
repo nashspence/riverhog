@@ -13,8 +13,12 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any
 
-from riverhog_archive_contracts import MemberHistoryDocument, MemberHistoryRoot
-from riverhog_canonical_json import canonical_json_bytes
+from riverhog_archive_contracts import (
+    MemberHistoryDocument,
+    MemberHistoryImport,
+    MemberHistoryRoot,
+)
+from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
 from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
@@ -24,13 +28,18 @@ from riverhog_growth_contracts import (
     Expression,
     declare_growth,
 )
-from riverhog_provenance import CanonicalCorpusValidator, RetainedCorpusValidator
+from riverhog_provenance import (
+    CanonicalCorpusValidator,
+    ProvenanceValidationError,
+    RetainedCorpusValidator,
+)
 
 from riverhog_core.canonical_discovery_archive_work import ArchiveTaskKey, StaleArchiveTask
 from riverhog_core.canonical_discovery_history_work import (
     ArchiveHistoryWork,
     HistorySetWork,
     history_descriptor_ready,
+    history_import_progress,
 )
 from riverhog_core.canonical_discovery_journal_work import QualifiedJournalSource
 from riverhog_core.canonical_discovery_snapshot_work import HistorySnapshotWork
@@ -336,3 +345,200 @@ def apply_history_primary(
             ).close()
         elif previous != expected:
             raise StaleArchiveTask("primary source or original support changed")
+
+
+def _import_primary_declaration() -> Declaration:
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    def width(value: int) -> Expression:
+        return Expression(
+            "product",
+            terms=(
+                Expression("constant", value=value),
+                Expression("dimension", name="metadata_octets"),
+            ),
+        )
+
+    return Declaration(
+        id="riverhog-server.discovery-history-import-primary.growth/v1",
+        authority="riverhog-server",
+        subjects=("riverhog_core.canonical_discovery_primary_work.verify_history_import_primary",),
+        scope="one original import incidence and its shared Native-verified source primary",
+        starts_at="receive current archive custody and one exact authenticated import-set record",
+        ends_at="close all Core cursors and accept the exact original State or reject the import",
+        dimensions=(
+            Dimension("registered_records", COUNT, "All independently retained Core records."),
+            Dimension(
+                "metadata_octets",
+                OCTETS,
+                "Largest complete input, parameter tuple or selected metadata row.",
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                count(4),
+                "Three original coverage/header reads and one indexed source-primary join.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                count(4),
+                "Each exact lookup returns at most one complete row.",
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "upper",
+                width(4),
+                "All fields from the four complete rows are charged.",
+            ),
+            Bound(
+                "parameter_octets",
+                OCTETS,
+                "upper",
+                width(24),
+                "Complete repeated archive, set, worker and original incidence keys.",
+            ),
+            Bound(
+                "encoded_octets",
+                OCTETS,
+                "upper",
+                width(8),
+                "Authority/checkpoint round trips, import key, descriptor and exact references.",
+            ),
+            Bound(
+                "decoded_octets",
+                OCTETS,
+                "upper",
+                width(4),
+                "The original checkpoint, import and source descriptor are bounded metadata.",
+            ),
+            Bound(
+                "hashed_octets",
+                OCTETS,
+                "upper",
+                width(2),
+                "One exact original import key and source descriptor identity.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        count(4096),
+                        Expression(
+                            "product",
+                            terms=(
+                                count(512),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("dimension", name="registered_records"),
+                                                count(2),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Fixed indexed point work on the maintained SQLite schema.",
+            ),
+            *(
+                Bound(
+                    metric,
+                    COUNT,
+                    "equal",
+                    count(0),
+                    "No mutation, Native body call, source replay or structure-object traversal.",
+                )
+                for metric in ("changed_rows", "native_calls", "source_frame_reads", "object_reads")
+            ),
+        ),
+        conditions=(
+            "The application retains current metadata, original archive and worker/kernel fences.",
+            "Structural import proofs and source primary bindings have their owning verification.",
+            "The shared Native primary row is immutable while this attempt remains current.",
+            "All Core queries use the maintained exact-key indexes without table traversal.",
+        ),
+        invariants=(
+            "Every required original incidence is checked against its own authenticated source.",
+            "A known history or valid journal union does not establish imported State equality.",
+            "The exact Native-proven historical State is used, never a corrected current tail.",
+            "Missing source-primary proof is incomplete; a different imported State is invalid.",
+            "Both declared history extents retain the same exact source-primary equality check.",
+        ),
+        limitations=(
+            "This point check creates no complete semantic, causal-State or publication terminal.",
+            "Whole-corpus validity, import cycles and same-member causal closure are separate.",
+            "VM and logical bytes exclude physical I/O, lock waits and internal byte comparisons.",
+        ),
+    )
+
+
+@declare_growth(_import_primary_declaration())
+def verify_history_import_primary(
+    db: sqlite3.Connection, key: ArchiveTaskKey, owner: HistorySetWork, record_key: str
+) -> None:
+    """Check one original imported State against its Native-verified source primary.
+
+    This reads the original incidence and shared primary binding. It neither
+    traverses the selected history nor grants a complete semantic or publication
+    terminal. The application retains current metadata custody around this read.
+    """
+    if db.in_transaction:
+        raise ValueError("import primary verification requires no active transaction")
+    if not history_import_progress(db, key, owner).complete:
+        raise StaleArchiveTask("import primary requires complete original incidence coverage")
+    row = _one(
+        db,
+        "SELECT r.value_json,l.proof_sha256,l.history_sha256,p.worker_id,p.history_sha256,"
+        "b.worker_id,b.anchor_json,b.state_reference_json,d.descriptor_json "
+        "FROM discovery_history_set_records r "
+        "JOIN discovery_history_import_links l ON "
+        "l.build_id=r.build_id AND l.admission_sha256=r.admission_sha256 "
+        "AND l.import_set_sha256=r.records_sha256 AND l.record_key=r.record_key "
+        "JOIN discovery_history_import_proofs p ON "
+        "p.build_id=l.build_id AND p.admission_sha256=l.admission_sha256 "
+        "AND p.proof_sha256=l.proof_sha256 "
+        "JOIN discovery_history_primary_bindings b ON "
+        "b.build_id=l.build_id AND b.admission_sha256=l.admission_sha256 "
+        "AND b.history_sha256=l.history_sha256 "
+        "JOIN discovery_history_descriptors d ON "
+        "d.build_id=b.build_id AND d.admission_sha256=b.admission_sha256 "
+        "AND d.history_sha256=b.history_sha256 "
+        "WHERE r.build_id=? AND r.admission_sha256=? AND r.records_sha256=? AND r.record_key=?",
+        (key.build_id, key.admission_sha256, owner.authority.records_sha256, record_key),
+    )
+    if row is None:
+        raise StaleArchiveTask("import has no exact Native-verified source primary")
+    raw, proof_id, history_id, proof_worker, proof_history, primary_worker, anchor, state, body = (
+        row
+    )
+    imported = MemberHistoryImport.from_mapping(require_canonical_json(raw.encode()))
+    descriptor = MemberHistoryDocument.from_json_bytes(body.encode())
+    if (
+        imported.key != record_key
+        or imported.source_binding_proof_sha256 != proof_id
+        or imported.source_history_sha256 != history_id
+        or proof_history != history_id
+        or proof_worker != key.worker_id
+        or primary_worker != key.worker_id
+        or descriptor.identity != history_id
+        or descriptor.artifact_id != imported.source_artifact_id
+        or canonical_json_bytes(descriptor.primary.journal.to_mapping()).decode() != anchor
+    ):
+        raise StaleArchiveTask("import source proof or Native primary binding changed")
+    if canonical_json_bytes(imported.input_state).decode() != state:
+        raise ProvenanceValidationError("imported State differs from the source primary")
