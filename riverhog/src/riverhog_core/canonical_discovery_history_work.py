@@ -233,11 +233,24 @@ def prepare_history_descriptor(
     if row is None:
         raise StaleArchiveTask("history has no exact registered member binding")
     binding = MemberHistoryBinding.from_mapping(require_canonical_json(row[0].encode()))
+    return _prepare_history_binding(db, key, owner, binding)
+
+
+def _prepare_history_binding(
+    db: sqlite3.Connection,
+    key: ArchiveTaskKey,
+    owner: ArchiveHistoryWork,
+    binding: MemberHistoryBinding,
+) -> PreparedHistoryDescriptor:
+    """Detach a descriptor; apply still requires its exact registered member."""
+    if db.in_transaction:
+        raise ValueError("history source preparation requires no active transaction")
+    _require_archive(db, key, owner.admission)
     descriptor = owner.reader.history_descriptor(binding)
     page = PreparedHistoryDescriptor(
         key,
-        artifact_id,
-        row[0],
+        binding.artifact_id,
+        canonical_json_bytes(binding.to_mapping()).decode(),
         binding.history_sha256,
         descriptor,
         descriptor.to_json_bytes().decode(),
@@ -615,6 +628,9 @@ def archive_history_ready(
     db: sqlite3.Connection, key: ArchiveTaskKey, owner: ArchiveHistoryWork, artifact_id: str
 ) -> bool:
     """Check exact set terminals and primary membership for a root-registered member."""
+    _require_archive(db, key, owner.admission)
+    if not archive_member_progress(db, key).complete:
+        return False
     row = _one(
         db,
         "SELECT worker_id,history_sha256 FROM discovery_archive_histories "

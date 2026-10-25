@@ -49,6 +49,7 @@ class ArchiveMemberProgress:
 class PreparedArchiveMember:
     key: ArchiveTaskKey
     expected_row: tuple[Any, ...]
+    expected_members: int
     binding: MemberHistoryBinding | None
     binding_json: str | None
     source_page: str | None
@@ -253,7 +254,7 @@ def prepare_archive_member(
         ):
             raise StaleArchiveTask("member terminal does not cover the root-selected bindings")
         page = PreparedArchiveMember(
-            key, row, None, None, None, None, progress.after_page, 0, row[4], True
+            key, row, progress.members, None, None, None, None, progress.after_page, 0, row[4], True
         )
     else:
         sequence, descriptor_json = selected
@@ -269,6 +270,7 @@ def prepare_archive_member(
         page = PreparedArchiveMember(
             key,
             row,
+            progress.members,
             binding,
             canonical_json_bytes(binding.to_mapping()).decode(),
             sequence,
