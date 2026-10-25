@@ -166,7 +166,11 @@ def test_binding_time_reads_effective_raw_fields_without_payload_or_writes(
     assert row == original
 
 
-@pytest.mark.parametrize("value", ["x" * 1048576, b"x" * 1048576, "\N{SNOWMAN}"])
+@pytest.mark.parametrize(
+    "value",
+    ["x" * 1048576, b"x" * 1048576, "\N{SNOWMAN}"],
+    ids=("oversized-text", "oversized-blob", "non-ascii"),
+)
 def test_invalid_projection_is_rejected_after_a_bounded_metadata_read(tmp_path, value):
     path = tmp_path / "corrupt.sqlite3"
     row = prepare(path, "instant")

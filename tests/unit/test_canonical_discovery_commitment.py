@@ -335,7 +335,11 @@ def test_foreign_work_format_is_not_silently_reinitialized(tmp_path):
             initialize_commitment_work(db)
 
 
-@pytest.mark.parametrize("fragment", [b"", b"x" * 4097])
+@pytest.mark.parametrize(
+    "fragment",
+    [b"", b"x" * 4097],
+    ids=("empty", "oversized"),
+)
 def test_invalid_fragment_width_is_not_a_different_leaf_protocol(fragment):
     with pytest.raises(ValueError):
         fact_fragment_leaf(b"value", b"key", 0, fragment)

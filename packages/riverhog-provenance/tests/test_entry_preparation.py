@@ -132,7 +132,9 @@ def test_reopen_each_unit_reuses_identities_and_retired_queue(tmp_path, count, b
 
 
 @pytest.mark.parametrize(
-    "domain,value", [("referent", b"large" * 65536), ("journal", ""), ("journal", b"nonempty")]
+    "domain,value",
+    [("referent", b"large" * 65536), ("journal", ""), ("journal", b"nonempty")],
+    ids=("referent-oversized", "journal-text", "journal-nonempty"),
 )
 def test_journal_identity_error_precedes_duplicate_entry(tmp_path, domain, value):
     path, source = tmp_path / "entry.sqlite3", frame()

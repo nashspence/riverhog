@@ -269,6 +269,14 @@ def test_locator_selector_keeps_profile_requirement_and_error_type(tmp_path, cat
         ("address_status", None),
         ("value", identity(33).upper()),
     ],
+    ids=(
+        "oversized-value",
+        "oversized-capture",
+        "oversized-status",
+        "capture-blob",
+        "status-null",
+        "value-uppercase",
+    ),
 )
 def test_locator_raw_metadata_corruption_is_bounded(tmp_path, column, value):
     from test_entry_preparation import WorkConnection

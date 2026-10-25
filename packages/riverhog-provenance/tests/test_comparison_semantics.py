@@ -290,6 +290,17 @@ def test_existing_finding_is_preserved_and_inconsistent_identity_is_rejected(
         ("sha256", b"a" * 64),
         ("sha256", None),
     ],
+    ids=(
+        "size-noncanonical",
+        "size-large-integer",
+        "size-oversized",
+        "size-blob",
+        "size-null",
+        "sha-uppercase",
+        "sha-oversized",
+        "sha-blob",
+        "sha-null",
+    ),
 )
 def test_raw_fixity_corruption_fails_closed_after_bounded_reads(tmp_path, field, value):
     path = tmp_path / "corrupt.sqlite3"

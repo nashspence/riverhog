@@ -292,7 +292,11 @@ def test_owner_transaction_and_exact_private_format_are_required(tmp_path: Path)
             initialize_fact_work(connection)
 
 
-@pytest.mark.parametrize("ordinal,data", [(-1, b"x"), (0, b""), (0, b"x" * 4097)])
+@pytest.mark.parametrize(
+    "ordinal,data",
+    [(-1, b"x"), (0, b""), (0, b"x" * 4097)],
+    ids=("negative-ordinal", "empty", "oversized"),
+)
 def test_invalid_fragment_input_cannot_create_partial_streams(db, ordinal, data) -> None:
     with pytest.raises(ValueError):
         with write(db):

@@ -241,7 +241,11 @@ def test_public_description_native_and_journal_agree(graph, who, catalog, mode):
 
 
 @pytest.mark.parametrize("field", ["occurrence_id", "kind", "source_context_id"])
-@pytest.mark.parametrize("value", ["x" * 131072, b"x" * 131072, "é", "", b"\x00"])
+@pytest.mark.parametrize(
+    "value",
+    ["x" * 131072, b"x" * 131072, "é", "", b"\x00"],
+    ids=("oversized-text", "oversized-blob", "non-ascii", "empty-text", "nul-blob"),
+)
 def test_description_corruption_is_rejected_after_bounded_metadata_read(tmp_path, field, value):
     path = tmp_path / "corrupt.sqlite3"
     create_staging(path)

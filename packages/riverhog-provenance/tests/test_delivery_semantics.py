@@ -179,7 +179,11 @@ def test_effective_delivery_metadata_reads_are_closed_and_payload_free(
 
 
 @pytest.mark.parametrize("kind", KINDS)
-@pytest.mark.parametrize("value", ["x" * 131072, b"x" * 131072, "é", "", b"\x00"])
+@pytest.mark.parametrize(
+    "value",
+    ["x" * 131072, b"x" * 131072, "é", "", b"\x00"],
+    ids=("oversized-text", "oversized-blob", "non-ascii", "empty-text", "nul-blob"),
+)
 def test_corrupt_delivery_metadata_rejects_after_bounded_scalar_read(tmp_path, kind, value):
     path = tmp_path / "corrupt.sqlite3"
     row = prepare(path, kind, "valid")
