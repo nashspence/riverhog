@@ -36,16 +36,18 @@ def archive_reader_fixture(
     histories: tuple[MemberHistoryDocument, ...] | None = None,
     history_objects: dict[str, bytes] | None = None,
     additional_journals: tuple[tuple[str, bytes], ...] = (),
+    segment_ends: tuple[int, ...] = (12,),
 ) -> tuple[CanonicalProvenanceArchiveReader, dict[str, bytes], str, str]:
     generation = "a" * 64
     artifact_set = "b" * 64
+    source_sha256 = hashlib.sha256(journal_bytes).hexdigest()
     primary = MemberHistoryPrimary(
         HistoryJournalAnchor(
             journal_id,
             "urn:uuid:33333333-3333-4333-8333-333333333333",
             0,
             "d" * 64,
-            hashlib.sha256(journal_bytes).hexdigest(),
+            source_sha256,
             len(journal_bytes),
         ),
         "urn:uuid:22222222-2222-4222-8222-222222222222",
@@ -98,37 +100,33 @@ def archive_reader_fixture(
             last_artifact_id=bindings[-1].artifact_id,
             binding_count=len(bindings),
         ),
-        ProvenanceVolumeDocument(
-            archive_generation=generation,
-            artifact_set_sha256=artifact_set,
-            sequence=1,
-            payload=ProvenancePayload(
-                kind="journal",
-                sequence=1,
-                bytes=len(journal_bytes[:12]),
-                sha256=hashlib.sha256(journal_bytes[:12]).hexdigest(),
-            ),
-            journal_id=journal_id,
-            journal_offset=0,
-            journal_bytes=len(journal_bytes),
-            journal_sha256=hashlib.sha256(journal_bytes).hexdigest(),
-        ),
-        ProvenanceVolumeDocument(
-            archive_generation=generation,
-            artifact_set_sha256=artifact_set,
-            sequence=2,
-            payload=ProvenancePayload(
-                kind="journal",
-                sequence=2,
-                bytes=len(journal_bytes[12:]),
-                sha256=hashlib.sha256(journal_bytes[12:]).hexdigest(),
-            ),
-            journal_id=journal_id,
-            journal_offset=12,
-            journal_bytes=len(journal_bytes),
-            journal_sha256=hashlib.sha256(journal_bytes).hexdigest(),
-        ),
     )
+    boundaries = (0, *segment_ends, len(journal_bytes))
+    if any(type(value) is not int for value in boundaries) or any(
+        left >= right for left, right in zip(boundaries, boundaries[1:], strict=False)
+    ):
+        raise ValueError("fixture journal segments must be nonempty and ordered")
+    journal_payloads = []
+    for start, stop in zip(boundaries, boundaries[1:], strict=False):
+        sequence = len(descriptors)
+        raw = journal_bytes[start:stop]
+        document = ProvenanceVolumeDocument(
+            archive_generation=generation,
+            artifact_set_sha256=artifact_set,
+            sequence=sequence,
+            payload=ProvenancePayload(
+                kind="journal",
+                sequence=sequence,
+                bytes=len(raw),
+                sha256=hashlib.sha256(raw).hexdigest(),
+            ),
+            journal_id=journal_id,
+            journal_offset=start,
+            journal_bytes=len(journal_bytes),
+            journal_sha256=source_sha256,
+        )
+        descriptors += (document,)
+        journal_payloads.append((document.payload.path, raw))
     extra_payloads = []
     for extra_id, extra_bytes in additional_journals:
         sequence = len(descriptors)
@@ -168,8 +166,7 @@ def archive_reader_fixture(
     for document in (*descriptors, terminal):
         objects[document.metadata_path] = document.to_json_bytes()
     objects[descriptors[0].payload.path] = binding_bytes
-    objects[descriptors[1].payload.path] = journal_bytes[:12]
-    objects[descriptors[2].payload.path] = journal_bytes[12:]
+    objects.update(journal_payloads)
     objects.update(extra_payloads)
 
     def read_object(path: str):

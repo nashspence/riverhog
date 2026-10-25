@@ -23,9 +23,10 @@ from riverhog_archive_contracts import (
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
     format_archive_sequence,
+    parse_archive_sequence,
     update_provenance_commitment,
 )
-from riverhog_canonical_json import canonical_json_bytes
+from riverhog_canonical_json import canonical_json_bytes, format_scalar, parse_scalar
 from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
@@ -165,8 +166,13 @@ def initialize_archive_work(db: sqlite3.Connection) -> None:
         CREATE TABLE IF NOT EXISTS discovery_archive_journal_segments (
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
             sequence TEXT NOT NULL, descriptor_json TEXT NOT NULL,
+            offset_width INTEGER NOT NULL, source_offset TEXT NOT NULL,
             PRIMARY KEY(build_id,admission_sha256,journal_id,sequence)
         ) WITHOUT ROWID;
+        CREATE UNIQUE INDEX IF NOT EXISTS discovery_archive_journal_offsets
+        ON discovery_archive_journal_segments(
+            build_id,admission_sha256,journal_id,offset_width,source_offset
+        );
         CREATE TABLE IF NOT EXISTS discovery_archive_journals (
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL,
             journal_id TEXT NOT NULL, source_bytes TEXT NOT NULL, source_sha256 TEXT NOT NULL,
@@ -524,14 +530,17 @@ def apply_archive_descriptor(
                     ),
                 )
         if isinstance(doc, ProvenanceVolumeDocument) and doc.payload.kind == "journal":
+            assert doc.journal_offset is not None
             db.execute(
-                "INSERT INTO discovery_archive_journal_segments VALUES (?,?,?,?,?)",
+                "INSERT INTO discovery_archive_journal_segments VALUES (?,?,?,?,?,?,?)",
                 (
                     key.build_id,
                     key.admission_sha256,
                     doc.journal_id,
                     format_archive_sequence(doc.sequence),
                     page.descriptor_json,
+                    len(format_scalar("nonnegative", doc.journal_offset)),
+                    format_scalar("nonnegative", doc.journal_offset),
                 ),
             )
         state = page.next_state
@@ -650,3 +659,209 @@ def archive_journal_segment(
     return (
         None if selected is None else ProvenanceVolumeDocument.from_json_bytes(selected[0].encode())
     )
+
+
+@dataclass(frozen=True, slots=True)
+class ArchiveJournalHeader:
+    journal_id: str
+    source_bytes: int
+    source_sha256: str
+
+
+def archive_journal_header(
+    db: sqlite3.Connection, key: ArchiveTaskKey, journal_id: str
+) -> ArchiveJournalHeader:
+    """Read one complete root-selected source identity without payload traversal."""
+    if not _task(db, key)[13]:
+        raise StaleArchiveTask("archive metadata source coverage is incomplete")
+    row = _one(
+        db,
+        "SELECT source_bytes,source_sha256 FROM discovery_archive_journals "
+        "WHERE build_id=? AND admission_sha256=? AND journal_id=?",
+        (key.build_id, key.admission_sha256, journal_id),
+    )
+    if row is None:
+        raise StaleArchiveTask("archive journal is absent from its original input directory")
+    try:
+        size = parse_scalar("nonnegative", row[0])
+        if size < 1:
+            raise ValueError("journal sources must contain bytes")
+        _digest(row[1])
+    except (TypeError, ValueError):
+        raise StaleArchiveTask("archive journal header has invalid original controls") from None
+    return ArchiveJournalHeader(journal_id, size, row[1])
+
+
+def archive_journal_segment_at(
+    db: sqlite3.Connection, key: ArchiveTaskKey, journal_id: str, offset: int
+) -> ProvenanceVolumeDocument | None:
+    """Seek one covering segment by canonical decimal width and original offset."""
+    if db.in_transaction:
+        raise ValueError("archive range selection requires no active write transaction")
+    if type(offset) is not int or offset < 0:
+        raise ValueError("archive journal offset must be nonnegative")
+    header = archive_journal_header(db, key, journal_id)
+    if offset > header.source_bytes:
+        raise StaleArchiveTask("archive range exceeds its original source")
+    if offset == header.source_bytes:
+        return None
+    encoded = format_scalar("nonnegative", offset)
+    parameters = key.build_id, key.admission_sha256, journal_id
+    base = (
+        "SELECT source_offset,sequence,descriptor_json FROM discovery_archive_journal_segments "
+        "WHERE build_id=? AND admission_sha256=? AND journal_id=? "
+    )
+    row = _one(
+        db,
+        base + "AND offset_width=? AND source_offset<=? ORDER BY source_offset DESC LIMIT 1",
+        (*parameters, len(encoded), encoded),
+    )
+    if row is None:
+        row = _one(
+            db,
+            base + "AND offset_width<? ORDER BY offset_width DESC,source_offset DESC LIMIT 1",
+            (*parameters, len(encoded)),
+        )
+    if row is None:
+        raise StaleArchiveTask("archive journal range has no original covering descriptor")
+    document = ProvenanceVolumeDocument.from_json_bytes(row[2].encode())
+    if (
+        document.payload.kind != "journal"
+        or document.sequence != parse_archive_sequence(row[1])
+        or document.journal_id != journal_id
+        or document.journal_bytes != header.source_bytes
+        or document.journal_sha256 != header.source_sha256
+        or document.journal_offset is None
+        or format_scalar("nonnegative", document.journal_offset) != row[0]
+        or not document.journal_offset <= offset < document.journal_offset + document.payload.bytes
+    ):
+        raise StaleArchiveTask("archive range index differs from its original descriptor")
+    return document
+
+
+def _archive_range_declaration(mode: str) -> Declaration:
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    def width(value: int) -> Expression:
+        return Expression(
+            "product",
+            terms=(
+                Expression("constant", value=value),
+                Expression("dimension", name="metadata_octets"),
+            ),
+        )
+
+    statements = 2 if mode == "header" else 4
+    return Declaration(
+        id="riverhog-server.discovery-archive-journal-" + mode + ".growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            "riverhog_core.canonical_discovery_archive_work.archive_journal_"
+            + ("header" if mode == "header" else "segment_at"),
+        ),
+        scope="one original archive source header or indexed covering-segment selection",
+        starts_at="receive the current archive key and one original journal/range coordinate",
+        ends_at="close all cursors and detach one complete header or covering descriptor",
+        dimensions=(
+            Dimension("registered_inputs", COUNT, "All independently retained Core rows."),
+            Dimension(
+                "metadata_octets",
+                OCTETS,
+                "Largest complete original control tuple, metadata row or descriptor.",
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                count(statements),
+                "One parent/header pair and at most two indexed decimal-offset seeks.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                count(statements),
+                "Every indexed point or predecessor selection returns at most one row.",
+            ),
+            *(
+                Bound(
+                    metric,
+                    OCTETS,
+                    "upper",
+                    width(multiplier),
+                    "Charge complete original rows, parameters and metadata codec preimages.",
+                )
+                for metric, multiplier in (
+                    ("returned_octets", statements),
+                    ("parameter_octets", statements * 2),
+                    ("encoded_octets", 16),
+                    ("decoded_octets", 4),
+                    ("hashed_octets", 2),
+                    ("written_octets", 0),
+                    ("sha256_block_octets", 0),
+                    ("source_read_octets", 0),
+                )
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        count(4096),
+                        Expression(
+                            "product",
+                            terms=(
+                                count(512),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("dimension", name="registered_inputs"),
+                                                count(2),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Point/covering index work includes first-read schema costs, without scans.",
+            ),
+            Bound(
+                "source_reads",
+                COUNT,
+                "upper",
+                count(0),
+                "No payload or preceding metadata object is read by directory selection.",
+            ),
+        ),
+        conditions=(
+            "The caller retains current archive authority and exclusive workspace custody.",
+            "Original descriptor membership and independent coverage precede directory use.",
+            "Canonical decimal width/offset indexes keep their maintained schema and no triggers.",
+        ),
+        invariants=(
+            "Journal identity, full fixity, offset and original sequence remain exact.",
+            "Numeric byte offsets are ordered without a semantic total-source ceiling.",
+            "Missing coverage, gaps and conflicting source descriptors are explicit failures.",
+        ),
+        limitations=(
+            "Payload authentication, Native framing and semantic acceptance retain their owners.",
+            "VM excludes internal byte comparisons and physical I/O; timing remains observed.",
+        ),
+    )
+
+
+for _range_function, _range_mode in (
+    (archive_journal_header, "header"),
+    (archive_journal_segment_at, "segment-at"),
+):
+    declare_growth(_archive_range_declaration(_range_mode))(_range_function)
