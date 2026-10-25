@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import sqlite3
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from dataclasses import replace
 from types import SimpleNamespace
 
@@ -65,8 +65,10 @@ from riverhog_provenance import (
     BoundedSourceObserver,
     BytesSource,
     CanonicalCorpusValidator,
+    CorpusReplayBinding,
     JournalValidationCapacity,
     ProvenanceValidationError,
+    RetainedCorpusValidator,
     append_correction,
     assertion,
     assertion_reference,
@@ -81,8 +83,78 @@ from tests.support.canonical_discovery_work import RecordedConnection, write
 from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
 
 
+class PrimaryCorpusSource:
+    def __init__(self, source, summary, selections, directory, catalog):
+        self.source = source
+        self.original = HistoryJournalAnchor.from_mapping(summary.anchor)
+        self.selections = frozenset(selections)
+
+        def digest(anchors):
+            return hashlib.sha256(
+                canonical_json_bytes(
+                    sorted(canonical_json_bytes(anchor.to_mapping()).decode() for anchor in anchors)
+                )
+            ).hexdigest()
+
+        self.binding = CorpusReplayBinding(
+            attempt_id="a" * 32,
+            directory_id=directory.name,
+            source_manifest_sha256=digest((self.original,)),
+            source_count=1,
+            selection_manifest_sha256=digest(self.selections),
+            selection_count=len(self.selections),
+            policy_sha256=hashlib.sha256(COLLECTION_MEMBER_ROLE.encode()).hexdigest(),
+            catalog_sha256=catalog.checkpoint_sha256(),
+        )
+
+    def verify_current(self):
+        try:
+            self.source.check_open()
+            return True
+        except StaleJournalTask:
+            return False
+
+    def admit_source(self, anchor):
+        return self.verify_current() and anchor == self.original
+
+    def admit_selection(self, anchor):
+        return self.verify_current() and anchor in self.selections
+
+
 @contextmanager
-def primary_work(path, *, fault=None):
+def primary_corpus(path, source, summary, store, binding, catalog, *, retained):
+    with ExitStack() as resources:
+        if retained:
+            directory = path.parent / (path.stem + "-native")
+            directory.mkdir(mode=0o700)
+            selections = tuple(
+                root.journal for root in store.roots(binding, extent=RETAINED_HISTORY_EXTENT)
+            )
+            inputs = PrimaryCorpusSource(source, summary, selections, directory, catalog)
+            corpus = resources.enter_context(
+                RetainedCorpusValidator.open_retained(
+                    directory, inputs, worker_epoch=1, create=True, catalog=catalog
+                )
+            )
+        else:
+            corpus = resources.enter_context(CanonicalCorpusValidator())
+        while not corpus.advance_source(summary, frame_budget=1).complete:
+            pass
+        if retained:
+            for anchor in selections:
+                corpus.select_source(anchor)
+            while not corpus.advance_semantics(row_budget=1).complete:
+                pass
+            while not corpus.advance_dependencies(row_budget=1).complete:
+                pass
+            for kind in ("derivation", "specialization"):
+                while not corpus.advance_order(kind, row_budget=1).complete:
+                    pass
+        yield corpus
+
+
+@contextmanager
+def primary_work(path, *, fault=None, retained=False):
     catalog, payload = ContractCatalog(), b"primary"
     artifact_id = hashlib.sha256(payload).hexdigest()
     observed = BoundedSourceObserver(catalog=catalog).observe(BytesSource(payload))
@@ -174,11 +246,11 @@ def primary_work(path, *, fault=None):
                         apply_history_record(db, key, work, page)
             roots = HistorySetWork(admission, reader, descriptor.roots)
             with admit_archive_journal(db, key, admission, summary) as source:
-                with CanonicalCorpusValidator() as corpus:
-                    while not corpus.advance_source(summary, frame_budget=1).complete:
-                        pass
+                store = MemberHistoryStore(lambda path: (objects[path],))
+                with primary_corpus(
+                    path, source, summary, store, binding, catalog, retained=retained
+                ) as corpus:
                     snapshots = HistorySnapshotWork(roots, source)
-                    store = MemberHistoryStore(lambda path: (objects[path],))
                     for selected in store.roots(binding, extent=RETAINED_HISTORY_EXTENT):
                         page = prepare_history_snapshot(db, key, snapshots, selected.key)
                         with write(db):
@@ -199,10 +271,11 @@ def primary_work(path, *, fault=None):
             db.close()
 
 
+@pytest.mark.parametrize("retained", [False, True])
 def test_historical_primary_verifies_native_delivery_and_retains_only_original_support(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, retained
 ):
-    with primary_work(tmp_path / "work.sqlite") as values:
+    with primary_work(tmp_path / "work.sqlite", retained=retained) as values:
         db, key, owner, descriptor, state, occurrence, frame_type = values
 
         def no_frames(*_args):
@@ -229,9 +302,12 @@ def test_historical_primary_verifies_native_delivery_and_retains_only_original_s
         ]
 
 
+@pytest.mark.parametrize("retained", [False, True])
 @pytest.mark.parametrize("fault", ["slot", "association", "size", "digest"])
-def test_primary_uses_native_member_and_fixity_policy_before_any_registration(tmp_path, fault):
-    with primary_work(tmp_path / "work.sqlite", fault=fault) as values:
+def test_primary_uses_native_member_and_fixity_policy_before_any_registration(
+    tmp_path, fault, retained
+):
+    with primary_work(tmp_path / "work.sqlite", fault=fault, retained=retained) as values:
         db, key, owner, descriptor, *_ = values
         with pytest.raises(ProvenanceValidationError):
             prepare_history_primary(db, key, owner, descriptor.identity, metadata_byte_budget=65536)
@@ -414,20 +490,21 @@ def test_actual_primary_preparation_uses_native_point_policy_and_fixed_core_read
     tmp_path, monkeypatch, record_property
 ):
     samples = []
-    with primary_work(tmp_path / "measured.sqlite") as values:
-        db, key, owner, descriptor, _, _, frame_type = values
-        for count in (0, 1):
-            with observe_primary(db, owner, frame_type, monkeypatch) as observer:
-                page = prepare_history_primary(
-                    observer, key, owner, descriptor.identity, metadata_byte_budget=65536
+    for retained in (False, True):
+        with primary_work(tmp_path / f"measured-{retained}.sqlite", retained=retained) as values:
+            db, key, owner, descriptor, _, _, frame_type = values
+            for count in (0, 1):
+                with observe_primary(db, owner, frame_type, monkeypatch) as observer:
+                    page = prepare_history_primary(
+                        observer, key, owner, descriptor.identity, metadata_byte_budget=65536
+                    )
+                samples.append(
+                    growth_sample(
+                        prepare_history_primary, {"registered_primaries": count}, observer.metrics
+                    )
                 )
-            samples.append(
-                growth_sample(
-                    prepare_history_primary, {"registered_primaries": count}, observer.metrics
-                )
-            )
-            with write(db):
-                apply_history_primary(db, key, owner, page)
+                with write(db):
+                    apply_history_primary(db, key, owner, page)
     record_property("growth_samples", samples)
 
 
@@ -440,26 +517,27 @@ def test_actual_primary_commit_writes_only_original_references_without_source_ha
     tmp_path, monkeypatch, record_property
 ):
     samples = []
-    with primary_work(tmp_path / "measured.sqlite") as values:
-        db, key, owner, descriptor, _, _, frame_type = values
-        page = prepare_history_primary(
-            db, key, owner, descriptor.identity, metadata_byte_budget=65536
-        )
-
-        def no_source_hash(*_arguments):
-            raise AssertionError("primary commit hashed source bytes")
-
-        for count in (0, 1):
-            with write(db):
-                with observe_primary(db, owner, frame_type, monkeypatch) as observer:
-                    with monkeypatch.context() as patch:
-                        patch.setattr(
-                            owner_module, "hashlib", SimpleNamespace(sha256=no_source_hash)
-                        )
-                        apply_history_primary(observer, key, owner, page)
-            samples.append(
-                growth_sample(
-                    apply_history_primary, {"registered_primaries": count}, observer.metrics
-                )
+    for retained in (False, True):
+        with primary_work(tmp_path / f"measured-{retained}.sqlite", retained=retained) as values:
+            db, key, owner, descriptor, _, _, frame_type = values
+            page = prepare_history_primary(
+                db, key, owner, descriptor.identity, metadata_byte_budget=65536
             )
+
+            def no_source_hash(*_arguments):
+                raise AssertionError("primary commit hashed source bytes")
+
+            for count in (0, 1):
+                with write(db):
+                    with observe_primary(db, owner, frame_type, monkeypatch) as observer:
+                        with monkeypatch.context() as patch:
+                            patch.setattr(
+                                owner_module, "hashlib", SimpleNamespace(sha256=no_source_hash)
+                            )
+                            apply_history_primary(observer, key, owner, page)
+                samples.append(
+                    growth_sample(
+                        apply_history_primary, {"registered_primaries": count}, observer.metrics
+                    )
+                )
     record_property("growth_samples", samples)

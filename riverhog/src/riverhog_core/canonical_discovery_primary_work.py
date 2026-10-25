@@ -24,7 +24,7 @@ from riverhog_growth_contracts import (
     Expression,
     declare_growth,
 )
-from riverhog_provenance import CanonicalCorpusValidator
+from riverhog_provenance import CanonicalCorpusValidator, RetainedCorpusValidator
 
 from riverhog_core.canonical_discovery_archive_work import ArchiveTaskKey, StaleArchiveTask
 from riverhog_core.canonical_discovery_history_work import (
@@ -54,7 +54,7 @@ class HistoryPrimaryWork:
         self,
         history: ArchiveHistoryWork,
         source: QualifiedJournalSource,
-        corpus: CanonicalCorpusValidator,
+        corpus: CanonicalCorpusValidator | RetainedCorpusValidator,
         *,
         member_role: str,
     ) -> None:
