@@ -736,6 +736,118 @@ def test_admission_wait_does_not_retry_a_reported_admission_failure(
     assert contacts == [("/v1/admin/scheduler/run", 5)]
 
 
+@pytest.mark.parametrize("read_timeouts", [0, 1, 3])
+def test_admission_wait_reads_committed_outcome_after_timeout_before_another_tick(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture, read_timeouts: int
+) -> None:
+    monkeypatch.setenv("INPUT_COLLECTION_ID", "7")
+    monkeypatch.setenv("RIVERHOG_SMOKE_SCHEDULER_STEP", "work_bound")
+    monkeypatch.setenv("STOVE0_SMOKE_ADMISSION_TIMEOUT", "10")
+    clock = [0.0]
+    monkeypatch.setattr(
+        processing,
+        "time",
+        SimpleNamespace(
+            monotonic=lambda: clock[0], sleep=lambda _: clock.__setitem__(0, clock[0] + 1)
+        ),
+    )
+    contacts = []
+    remaining = read_timeouts
+    committed = False
+
+    def read(path, payload=None, *, timeout=30):
+        nonlocal committed, remaining
+        assert timeout == 5
+        contacts.append(path)
+        if payload is not None:
+            assert not committed, "an uncertain scheduler outcome must be read before retry"
+            committed = True
+            raise TimeoutError("response lost after commit")
+        assert committed and path.startswith("/v1/admissions?")
+        if remaining:
+            remaining -= 1
+            raise TimeoutError("temporary status read timeout")
+        return {
+            "admissions": [
+                {"intent": {"collection": {"collection_id": "7"}}, "state": "work_bound"}
+            ]
+        }
+
+    monkeypatch.setattr(processing, "stove", read)
+    processing.await_admission()
+    assert contacts.count("/v1/admin/scheduler/run") == 1
+    assert len(contacts) == read_timeouts + 2
+    report = json.loads(capsys.readouterr().err)
+    assert report["proof"] == "admission-control-recovery"
+    assert report["scheduler_timeouts"] == 1
+    assert report["status_timeouts"] == read_timeouts
+
+
+@pytest.mark.parametrize("status_times_out", [False, True])
+def test_admission_wait_timeout_recovery_keeps_original_deadline_and_requires_completion(
+    monkeypatch: pytest.MonkeyPatch, status_times_out: bool
+) -> None:
+    monkeypatch.setenv("INPUT_COLLECTION_ID", "7")
+    monkeypatch.setenv("RIVERHOG_SMOKE_SCHEDULER_STEP", "work_bound")
+    monkeypatch.setenv("STOVE0_SMOKE_ADMISSION_TIMEOUT", "3")
+    clock = [0.0]
+    monkeypatch.setattr(
+        processing,
+        "time",
+        SimpleNamespace(
+            monotonic=lambda: clock[0], sleep=lambda _: clock.__setitem__(0, clock[0] + 1)
+        ),
+    )
+    contacts = []
+
+    def read(path, payload=None, *, timeout=30):
+        assert timeout == 5
+        contacts.append(path)
+        if payload is not None or status_times_out:
+            raise TimeoutError("still unavailable")
+        return {
+            "admissions": [{"intent": {"collection": {"collection_id": "7"}}, "state": "intent"}]
+        }
+
+    monkeypatch.setattr(processing, "stove", read)
+    with pytest.raises(AssertionError) as error:
+        processing.await_admission()
+    diagnostic = json.loads(str(error.value))
+    assert diagnostic["expected"] == "work_bound"
+    assert clock[0] == 3
+    assert diagnostic["scheduler_timeouts"] == (1 if status_times_out else 3)
+    assert diagnostic["status_timeouts"] == (3 if status_times_out else 0)
+    if status_times_out:
+        assert contacts.count("/v1/admin/scheduler/run") == 1
+    else:
+        assert diagnostic["state"] == "intent"
+
+
+def test_admission_wait_timeout_recovery_does_not_hide_a_status_http_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("INPUT_COLLECTION_ID", "7")
+    monkeypatch.setenv("RIVERHOG_SMOKE_SCHEDULER_STEP", "work_bound")
+    monkeypatch.setenv("STOVE0_SMOKE_ADMISSION_TIMEOUT", "3")
+    monkeypatch.setattr(processing, "time", SimpleNamespace(monotonic=lambda: 0))
+    error = _scheduler_conflict_response()
+    error.code = 500
+
+    def read(path, payload=None, *, timeout=30):
+        assert timeout == 5
+        if payload is not None:
+            raise TimeoutError("uncertain scheduler outcome")
+        assert path.startswith("/v1/admissions?")
+        raise error
+
+    monkeypatch.setattr(processing, "stove", read)
+    try:
+        with pytest.raises(urllib.error.HTTPError):
+            processing.await_admission()
+    finally:
+        error.close()
+
+
 @pytest.mark.parametrize("state", ["intent", "previewed", "work_bound"])
 def test_automatic_execution_requires_the_exact_durable_admission_binding(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture, state: str

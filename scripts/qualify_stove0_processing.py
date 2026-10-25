@@ -170,34 +170,53 @@ def await_admission() -> None:
     next_progress = started
     preview_ids: tuple[str, ...] = ()
     scheduler_conflicts = 0
+    scheduler_timeouts = 0
+    status_timeouts = 0
+    read_pending = False
     diagnostic: dict[str, Any] = {"expected": expected, "scheduler_conflicts": 0}
     while (now := time.monotonic()) < deadline:
-        try:
-            result = stove(
-                "/v1/admin/scheduler/run", {"role": "controller", "work_limit": 1}, timeout=5
-            )
-        except urllib.error.HTTPError as error:
-            if error.code != 409:
-                raise
-            with error:
-                code, _message, _details = parse_operation_error_payload(
-                    STOVE0_HTTP_ERROR_AUTHORITY,
-                    "run_scheduler",
-                    status=error.code,
-                    payload=json.load(error),
+        result: dict[str, Any] = {"admission": None}
+        if not read_pending:
+            try:
+                result = stove(
+                    "/v1/admin/scheduler/run", {"role": "controller", "work_limit": 1}, timeout=5
                 )
-            assert code == "conflict"
-            # An independent controller may commit progress before this tick loses
-            # its cursor CAS. The durable milestone still establishes completion.
-            scheduler_conflicts += 1
-            result = {"admission": None}
-        diagnostic["scheduler_conflicts"] = scheduler_conflicts
+            except TimeoutError:
+                # The request may have committed; inspect durable state before another tick.
+                scheduler_timeouts += 1
+            except urllib.error.HTTPError as error:
+                if error.code != 409:
+                    raise
+                with error:
+                    code, _message, _details = parse_operation_error_payload(
+                        STOVE0_HTTP_ERROR_AUTHORITY,
+                        "run_scheduler",
+                        status=error.code,
+                        payload=json.load(error),
+                    )
+                assert code == "conflict"
+                # An independent controller may commit before this tick loses its cursor CAS.
+                scheduler_conflicts += 1
+        diagnostic.update(
+            scheduler_conflicts=scheduler_conflicts,
+            scheduler_timeouts=scheduler_timeouts,
+            status_timeouts=status_timeouts,
+            elapsed_seconds=int(now - started),
+        )
         if result["admission"] is not None:
             assert result["admission"]["failures"] == [], result
         previews = result.get("previews") or {}
         if previews.get("progressed"):
             preview_ids = tuple(dict.fromkeys(previews["progressed"]))
-        payload = stove("/v1/admissions?page_size=100&sort=admission_id&order=asc", timeout=5)
+        try:
+            payload = stove("/v1/admissions?page_size=100&sort=admission_id&order=asc", timeout=5)
+        except TimeoutError:
+            status_timeouts += 1
+            diagnostic["status_timeouts"] = status_timeouts
+            read_pending = True
+            time.sleep(0.5)
+            continue
+        read_pending = False
         matches = [
             row
             for row in payload["admissions"]
@@ -207,6 +226,20 @@ def await_admission() -> None:
         row = matches[0] if matches else {}
         current = row.get("state")
         if current == expected:
+            if scheduler_timeouts or status_timeouts:
+                print(
+                    canonical_json_bytes(
+                        {
+                            "proof": "admission-control-recovery",
+                            "expected": expected,
+                            "elapsed_seconds": int(now - started),
+                            "scheduler_timeouts": scheduler_timeouts,
+                            "status_timeouts": status_timeouts,
+                        }
+                    ).decode(),
+                    file=sys.stderr,
+                    flush=True,
+                )
             return
         if current is not None:
             assert current in state_order, row
@@ -239,6 +272,8 @@ def await_admission() -> None:
                 "planning": planning,
                 "preview_failures": previews.get("failures", []),
                 "scheduler_conflicts": scheduler_conflicts,
+                "scheduler_timeouts": scheduler_timeouts,
+                "status_timeouts": status_timeouts,
             }
             print(canonical_json_bytes(diagnostic).decode(), file=sys.stderr, flush=True)
             previous, next_progress = current, now + 60
