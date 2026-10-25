@@ -486,14 +486,12 @@ def complete_corpus_source_inputs(
         )
 
 
-@declare_growth(_declaration("membership"))
-def corpus_source_admitted(
+def _require_frozen_sources(
     db: sqlite3.Connection,
     key: ArchiveTaskKey,
     admission: ArchiveDiscoveryAdmission,
     manifest: FrozenCorpusSourceInputs,
-    anchor: HistoryJournalAnchor,
-) -> bool:
+) -> None:
     progress = _header(db, key, admission)
     expected = FrozenCorpusSourceInputs(
         admission.identity,
@@ -502,6 +500,17 @@ def corpus_source_admitted(
     )
     if not progress.complete or manifest != expected:
         raise StaleArchiveTask("corpus input manifest is not the exact completed source set")
+
+
+@declare_growth(_declaration("membership"))
+def corpus_source_admitted(
+    db: sqlite3.Connection,
+    key: ArchiveTaskKey,
+    admission: ArchiveDiscoveryAdmission,
+    manifest: FrozenCorpusSourceInputs,
+    anchor: HistoryJournalAnchor,
+) -> bool:
+    _require_frozen_sources(db, key, admission, manifest)
     source_binding = journal_source_binding(admission.identity, anchor.to_mapping())
     row = _one(
         db,
