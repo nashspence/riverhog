@@ -11,6 +11,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 
+from riverhog_archive_contracts import RETAINED_HISTORY_EXTENT
 from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
@@ -25,6 +26,11 @@ from riverhog_core.canonical_discovery_archive_work import (
     ArchiveDiscoveryAdmission,
     ArchiveTaskKey,
     StaleArchiveTask,
+)
+from riverhog_core.canonical_discovery_history_inputs import (
+    _register_corpus_history,
+    begin_corpus_history_inputs,
+    initialize_corpus_history_inputs,
 )
 from riverhog_core.canonical_discovery_history_work import (
     ArchiveHistoryWork,
@@ -67,6 +73,7 @@ class CorpusMemberRegistration:
 def initialize_corpus_members(db: sqlite3.Connection) -> None:
     initialize_member_work(db)
     initialize_history_work(db)
+    initialize_corpus_history_inputs(db)
     db.executescript("""
         CREATE TABLE IF NOT EXISTS discovery_corpus_member_coverage (
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, worker_id TEXT NOT NULL,
@@ -117,6 +124,7 @@ def begin_corpus_members(
 ) -> ArchiveMemberProgress:
     with _atomic(db):
         progress = begin_archive_members(db, key, admission)
+        begin_corpus_history_inputs(db, key, admission)
         cursor = db.execute(
             "SELECT worker_id FROM discovery_corpus_member_coverage "
             "WHERE build_id=? AND admission_sha256=?",
@@ -159,9 +167,13 @@ def _declaration(mode: str) -> Declaration:
         ),
         bounds=(
             Bound(
-                "sql_statements", COUNT, "upper", count(32), "Fixed parent/child point operations."
+                "sql_statements",
+                COUNT,
+                "upper",
+                count(64),
+                "Fixed parent, descriptor and shared requirement point operations.",
             ),
-            Bound("returned_rows", COUNT, "upper", count(16), "Fixed metadata and child lookups."),
+            Bound("returned_rows", COUNT, "upper", count(32), "Fixed metadata and child lookups."),
             Bound(
                 "source_reads",
                 COUNT,
@@ -293,6 +305,13 @@ def apply_corpus_member(
         progress = apply_archive_member(db, key, owner.members, page.member)
         if page.history is not None:
             apply_history_descriptor(db, key, owner.histories, page.history)
+            _register_corpus_history(
+                db,
+                key,
+                owner.members.admission,
+                page.history.descriptor,
+                extent=RETAINED_HISTORY_EXTENT,
+            )
         db.execute(
             "UPDATE discovery_corpus_member_coverage SET members=? "
             "WHERE build_id=? AND admission_sha256=?",

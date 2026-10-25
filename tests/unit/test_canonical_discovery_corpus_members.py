@@ -116,6 +116,8 @@ def test_original_member_and_history_children_resume_together(tmp_path):
         "discovery_history_descriptors",
         "discovery_history_sets",
         "discovery_corpus_member_coverage",
+        "discovery_corpus_history_inputs",
+        "discovery_corpus_history_headers",
     ],
 )
 def test_child_failure_rolls_back_original_cursor_and_every_child(tmp_path, table):
@@ -123,7 +125,11 @@ def test_child_failure_rolls_back_original_cursor_and_every_child(tmp_path, tabl
     try:
         page = prepare_corpus_member(db, key, owner)
         before = archive_member_progress(db, key)
-        event = "UPDATE" if table == "discovery_corpus_member_coverage" else "INSERT"
+        event = (
+            "UPDATE"
+            if table in ("discovery_corpus_member_coverage", "discovery_corpus_history_headers")
+            else "INSERT"
+        )
         db.execute(
             f"CREATE TRIGGER fail_child BEFORE {event} ON {table} "
             "BEGIN SELECT RAISE(ABORT,'injected child failure'); END"

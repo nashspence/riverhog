@@ -119,6 +119,8 @@ def fixture(
     inherited=False,
     import_targets=(1,),
     distinct_import_sets=False,
+    empty_imports=False,
+    empty_source_imports=False,
 ):
     _, objects, _, _ = archive_reader_fixture()
     root = ProvenanceRootDocument.from_json_bytes(objects["provenance/root.json.age"])
@@ -159,8 +161,12 @@ def fixture(
         )
         for i in range(3)
     ]
+    if empty_imports:
+        imports = []
     if inherited:
-        _, source_objects, source_bindings, _, _, _ = fixture(count=1, members=2)
+        _, source_objects, source_bindings, _, _, _ = fixture(
+            count=1, members=2, empty_imports=empty_source_imports
+        )
         source_root = ProvenanceRootDocument.from_json_bytes(
             source_objects["provenance/root.json.age"]
         )

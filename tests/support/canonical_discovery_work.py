@@ -237,3 +237,86 @@ class MeasuredConnection:
         self.metrics["parameter_octets"] += sum(metadata_octets(value) for value in parameters)
         self.statements.append((sql, parameters))
         return _MeasuredCursor(self.actual.execute(sql, parameters), self.metrics)
+
+
+@contextmanager
+def observe_metadata(db, monkeypatch, *, reader=None):
+    """Observe complete Core/Archive metadata execution around one operation."""
+    import sys
+
+    from riverhog_canonical_json import canonical_json_bytes
+
+    recorder = MeasuredConnection(db)
+    recorder.metrics.update(source_reads=0, source_read_octets=0)
+    recorder.source_paths = []
+    actual_execute = recorder.execute
+    actual_hash = hashlib.sha256
+
+    def execute(sql, parameters=()):
+        if sql.lstrip().startswith(("INSERT", "UPDATE")):
+            recorder.metrics["written_octets"] += sum(map(metadata_octets, parameters))
+        return actual_execute(sql, parameters)
+
+    recorder.execute = execute
+
+    class ObservedHash:
+        def __init__(self, value=b"", **kwargs):
+            recorder.metrics["hashed_octets"] += len(value)
+            self.actual = actual_hash(value, **kwargs)
+
+        def update(self, value):
+            recorder.metrics["hashed_octets"] += len(value)
+            self.actual.update(value)
+
+        def digest(self):
+            return self.actual.digest()
+
+        def hexdigest(self):
+            return self.actual.hexdigest()
+
+        def copy(self):
+            result = object.__new__(ObservedHash)
+            result.actual = self.actual.copy()
+            return result
+
+    def encode(value):
+        result = canonical_json_bytes(value)
+        recorder.metrics["encoded_octets"] += len(result)
+        return result
+
+    def tick():
+        recorder.metrics["sqlite_vm_instructions"] += 1
+        return 0
+
+    actual_read = None if reader is None else reader._read_object
+
+    def read(path):
+        assert not db.in_transaction
+        recorder.metrics["source_reads"] += 1
+        recorder.source_paths.append(path)
+        for block in actual_read(path):
+            recorder.metrics["source_read_octets"] += len(block)
+            yield block
+
+    db.set_progress_handler(tick, 1)
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(hashlib, "sha256", ObservedHash)
+            for module in tuple(sys.modules.values()):
+                if module is not None and getattr(module, "__name__", "").startswith(
+                    (
+                        "riverhog_archive_contracts",
+                        "riverhog_canonical_json",
+                        "riverhog_core.canonical_discovery",
+                        "riverhog_core.provenance_archive_read",
+                    )
+                ):
+                    if getattr(module, "canonical_json_bytes", None) is canonical_json_bytes:
+                        patch.setattr(module, "canonical_json_bytes", encode)
+                    if getattr(module, "sha256", None) is actual_hash:
+                        patch.setattr(module, "sha256", ObservedHash)
+            if reader is not None:
+                patch.setattr(reader, "_read_object", read)
+            yield recorder
+    finally:
+        db.set_progress_handler(None, 0)
