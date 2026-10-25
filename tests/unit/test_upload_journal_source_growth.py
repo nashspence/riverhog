@@ -16,22 +16,12 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from riverhog_provenance import replay_binding as codec_owner
 from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import create_engine, event, update
-from sqlalchemy.engine import Row
 
+from tests.support.catalog_work import octets
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_replay_binding import Scan, pack, ready
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_staged_journal_range import JOURNAL, Journal
-
-
-def octets(value):
-    if value is None:
-        return 0
-    if isinstance(value, (tuple, list, Row)):
-        return sum(map(octets, value))
-    if isinstance(value, dict):
-        return sum(map(octets, value.values()))
-    return len(value) if isinstance(value, bytes) else len(str(value).encode())
 
 
 def source_metadata_octets(work):

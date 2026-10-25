@@ -5814,3 +5814,117 @@ CREATE INDEX ix_journal_validation_state_workspace ON journal_validation_jobs (s
 CREATE UNIQUE INDEX uq_journal_validation_source ON journal_validation_jobs (collection_id, journal_id) WHERE collection_id IS NOT NULL
     """.strip(),
 )
+
+SQLITE_DDL += (
+    """
+CREATE TABLE discovery_validation_jobs (
+	workspace_id VARCHAR(32) NOT NULL,
+	build_id VARCHAR(36),
+	attempt_id VARCHAR(32) NOT NULL,
+	admission_sha256 VARCHAR(64) NOT NULL,
+	archive_generation VARCHAR(64) NOT NULL,
+	archive_root_sha256 VARCHAR(64) NOT NULL,
+	provenance_identity VARCHAR(64) NOT NULL,
+	artifact_set_identity VARCHAR(64) NOT NULL,
+	journal_count TEXT NOT NULL,
+	build_epoch BIGINT NOT NULL,
+	policy_sha256 VARCHAR(64) NOT NULL,
+	catalog_sha256 VARCHAR(64) NOT NULL,
+	worker_epoch BIGINT NOT NULL,
+	version VARCHAR(64) NOT NULL,
+	state VARCHAR NOT NULL,
+	source_manifest_sha256 VARCHAR(64),
+	source_count TEXT,
+	selection_manifest_sha256 VARCHAR(64),
+	selection_count TEXT,
+	failure TEXT,
+	PRIMARY KEY (workspace_id),
+	FOREIGN KEY(build_id) REFERENCES collection_provenance_index_generations (build_id) ON DELETE SET NULL,
+	CONSTRAINT ck_discovery_validation_build_epoch CHECK (build_epoch >= 1),
+	CONSTRAINT ck_discovery_validation_worker_epoch CHECK (worker_epoch >= 0),
+	CONSTRAINT ck_discovery_validation_state CHECK (state IN ('preparing','ready','active','lost','retiring','directory')),
+	CONSTRAINT ck_discovery_validation_retired CHECK (state NOT IN ('retiring','directory') OR build_id IS NULL),
+	CONSTRAINT ck_discovery_validation_pinned_inputs CHECK ((source_manifest_sha256 IS NULL AND source_count IS NULL AND selection_manifest_sha256 IS NULL AND selection_count IS NULL) OR (source_manifest_sha256 IS NOT NULL AND source_count IS NOT NULL AND selection_manifest_sha256 IS NOT NULL AND selection_count IS NOT NULL)),
+	CONSTRAINT ck_discovery_validation_ready_inputs CHECK (state NOT IN ('ready','active') OR source_manifest_sha256 IS NOT NULL),
+	CONSTRAINT ck_discovery_validation_lost_reason CHECK (state != 'lost' OR failure IS NOT NULL),
+	CONSTRAINT ck_discovery_validation_workspace_id CHECK (length(workspace_id) = 32 AND lower(workspace_id) = workspace_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(workspace_id,'0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0),
+	CONSTRAINT ck_discovery_validation_attempt_id CHECK (length(attempt_id) = 32 AND lower(attempt_id) = attempt_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_id,'0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0),
+	CONSTRAINT ck_discovery_validation_jobs_admission_sha256_hex CHECK (length(admission_sha256) = 64 AND lower(admission_sha256) = admission_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(admission_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_archive_generation_hex CHECK (length(archive_generation) = 64 AND lower(archive_generation) = archive_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_archive_root_sha256_hex CHECK (length(archive_root_sha256) = 64 AND lower(archive_root_sha256) = archive_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_provenance_identity_hex CHECK (length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_artifact_set_identity_hex CHECK (length(artifact_set_identity) = 64 AND lower(artifact_set_identity) = artifact_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_policy_sha256_hex CHECK (length(policy_sha256) = 64 AND lower(policy_sha256) = policy_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(policy_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_catalog_sha256_hex CHECK (length(catalog_sha256) = 64 AND lower(catalog_sha256) = catalog_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(catalog_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_version_hex CHECK (length(version) = 64 AND lower(version) = version AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_source_manifest_sha256_hex CHECK (source_manifest_sha256 IS NULL OR length(source_manifest_sha256) = 64 AND lower(source_manifest_sha256) = source_manifest_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_manifest_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_selection_manifest_sha256_hex CHECK (selection_manifest_sha256 IS NULL OR length(selection_manifest_sha256) = 64 AND lower(selection_manifest_sha256) = selection_manifest_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(selection_manifest_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+)
+    """.strip(),
+    """
+CREATE INDEX ix_discovery_validation_orphan_workspace ON discovery_validation_jobs (workspace_id) WHERE build_id IS NULL AND state NOT IN ('retiring','directory')
+    """.strip(),
+    """
+CREATE INDEX ix_discovery_validation_state_workspace ON discovery_validation_jobs (state, workspace_id)
+    """.strip(),
+    """
+CREATE UNIQUE INDEX uq_discovery_validation_build ON discovery_validation_jobs (build_id) WHERE build_id IS NOT NULL
+    """.strip(),
+)
+
+POSTGRESQL_DDL += (
+    """
+CREATE TABLE discovery_validation_jobs (
+	workspace_id VARCHAR(32) NOT NULL,
+	build_id VARCHAR(36),
+	attempt_id VARCHAR(32) NOT NULL,
+	admission_sha256 VARCHAR(64) NOT NULL,
+	archive_generation VARCHAR(64) NOT NULL,
+	archive_root_sha256 VARCHAR(64) NOT NULL,
+	provenance_identity VARCHAR(64) NOT NULL,
+	artifact_set_identity VARCHAR(64) NOT NULL,
+	journal_count TEXT NOT NULL,
+	build_epoch BIGINT NOT NULL,
+	policy_sha256 VARCHAR(64) NOT NULL,
+	catalog_sha256 VARCHAR(64) NOT NULL,
+	worker_epoch BIGINT NOT NULL,
+	version VARCHAR(64) NOT NULL,
+	state VARCHAR NOT NULL,
+	source_manifest_sha256 VARCHAR(64),
+	source_count TEXT,
+	selection_manifest_sha256 VARCHAR(64),
+	selection_count TEXT,
+	failure TEXT,
+	PRIMARY KEY (workspace_id),
+	FOREIGN KEY(build_id) REFERENCES collection_provenance_index_generations (build_id) ON DELETE SET NULL,
+	CONSTRAINT ck_discovery_validation_build_epoch CHECK (build_epoch >= 1),
+	CONSTRAINT ck_discovery_validation_worker_epoch CHECK (worker_epoch >= 0),
+	CONSTRAINT ck_discovery_validation_state CHECK (state IN ('preparing','ready','active','lost','retiring','directory')),
+	CONSTRAINT ck_discovery_validation_retired CHECK (state NOT IN ('retiring','directory') OR build_id IS NULL),
+	CONSTRAINT ck_discovery_validation_pinned_inputs CHECK ((source_manifest_sha256 IS NULL AND source_count IS NULL AND selection_manifest_sha256 IS NULL AND selection_count IS NULL) OR (source_manifest_sha256 IS NOT NULL AND source_count IS NOT NULL AND selection_manifest_sha256 IS NOT NULL AND selection_count IS NOT NULL)),
+	CONSTRAINT ck_discovery_validation_ready_inputs CHECK (state NOT IN ('ready','active') OR source_manifest_sha256 IS NOT NULL),
+	CONSTRAINT ck_discovery_validation_lost_reason CHECK (state != 'lost' OR failure IS NOT NULL),
+	CONSTRAINT ck_discovery_validation_workspace_id CHECK (length(workspace_id) = 32 AND lower(workspace_id) = workspace_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(workspace_id,'0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0),
+	CONSTRAINT ck_discovery_validation_attempt_id CHECK (length(attempt_id) = 32 AND lower(attempt_id) = attempt_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_id,'0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0),
+	CONSTRAINT ck_discovery_validation_jobs_admission_sha256_hex CHECK (length(admission_sha256) = 64 AND lower(admission_sha256) = admission_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(admission_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_archive_generation_hex CHECK (length(archive_generation) = 64 AND lower(archive_generation) = archive_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_archive_root_sha256_hex CHECK (length(archive_root_sha256) = 64 AND lower(archive_root_sha256) = archive_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_provenance_identity_hex CHECK (length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_artifact_set_identity_hex CHECK (length(artifact_set_identity) = 64 AND lower(artifact_set_identity) = artifact_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_policy_sha256_hex CHECK (length(policy_sha256) = 64 AND lower(policy_sha256) = policy_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(policy_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_catalog_sha256_hex CHECK (length(catalog_sha256) = 64 AND lower(catalog_sha256) = catalog_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(catalog_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_version_hex CHECK (length(version) = 64 AND lower(version) = version AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_source_manifest_sha256_hex CHECK (source_manifest_sha256 IS NULL OR length(source_manifest_sha256) = 64 AND lower(source_manifest_sha256) = source_manifest_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_manifest_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_selection_manifest_sha256_hex CHECK (selection_manifest_sha256 IS NULL OR length(selection_manifest_sha256) = 64 AND lower(selection_manifest_sha256) = selection_manifest_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(selection_manifest_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+)
+    """.strip(),
+    """
+CREATE INDEX ix_discovery_validation_orphan_workspace ON discovery_validation_jobs (workspace_id) WHERE build_id IS NULL AND state NOT IN ('retiring','directory')
+    """.strip(),
+    """
+CREATE INDEX ix_discovery_validation_state_workspace ON discovery_validation_jobs (state, workspace_id)
+    """.strip(),
+    """
+CREATE UNIQUE INDEX uq_discovery_validation_build ON discovery_validation_jobs (build_id) WHERE build_id IS NOT NULL
+    """.strip(),
+)

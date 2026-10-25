@@ -132,11 +132,12 @@ class ArchiveDiscoveryAdmission:
         self.root = root
         self.archive_sha256 = expected_archive_sha256
         self.root_json = root.to_json_bytes().decode()
+        self.provenance_sha256 = root.identity
         self.binding_json = canonical_json_bytes(
             {
                 "domain": "riverhog-discovery-archive-admission/v1",
                 "archive_root_sha256": expected_archive_sha256,
-                "provenance_root_sha256": root.identity,
+                "provenance_root_sha256": self.provenance_sha256,
             }
         ).decode()
         self.identity = hashlib.sha256(self.binding_json.encode()).hexdigest()
