@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import sqlite3
 from dataclasses import replace
 
@@ -307,7 +308,33 @@ def _selected_rows(db, key):
     return result
 
 
-def _measured_inputs(tmp_path, native, monkeypatch, record_property, mode):
+@pytest.fixture(scope="module")
+def source_templates(tmp_path_factory, native):
+    raw, summary = native
+    root = tmp_path_factory.mktemp("corpus-input-templates")
+    templates = {}
+    for retained in (1, 17, 129):
+        path = root / (str(retained) + ".sqlite")
+        db = sqlite3.connect(path, isolation_level=None)
+        initialize_archive_work(db)
+        initialize_corpus_source_inputs(db)
+        key, admission = register_archive(db, raw, summary)
+        for index in range(retained - 1):
+            other, other_admission = register_archive(
+                db, raw, summary, build="unrelated-" + str(index)
+            )
+            with admit_archive_journal(db, other, other_admission, summary) as source:
+                commit_input(db, other, CorpusSourceInputWork(other_admission, source))
+        db.execute(
+            "UPDATE discovery_corpus_source_inputs SET source_binding_json=? WHERE build_id<>?",
+            ("unrelated damaged cache record" * 3000, key.build_id),
+        )
+        db.close()
+        templates[retained] = path, key, admission
+    return templates
+
+
+def _measured_inputs(tmp_path, native, monkeypatch, record_property, mode, source_templates):
     from riverhog_core import canonical_discovery_corpus_inputs as inputs
     from riverhog_core import canonical_discovery_journal_work as journal_work
     from riverhog_growth_contracts import (
@@ -329,29 +356,17 @@ def _measured_inputs(tmp_path, native, monkeypatch, record_property, mode):
     declaration_sha = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
-    raw, summary = native
+    _, summary = native
     actual_anchor = JournalSummary.anchor_at
     actual_encode, actual_hash = inputs.canonical_json_bytes, inputs.sha256
     samples = []
     for retained in (1, 17, 129):
         path = tmp_path / (mode + "-" + str(retained) + ".sqlite")
+        template, key, admission = source_templates[retained]
+        shutil.copyfile(template, path)
         db = sqlite3.connect(path, isolation_level=None)
-        initialize_archive_work(db)
-        initialize_corpus_source_inputs(db)
-        key, admission = register_archive(db, raw, summary)
         with admit_archive_journal(db, key, admission, summary) as source:
             owner = CorpusSourceInputWork(admission, source)
-            for index in range(retained - 1):
-                other, other_admission = register_archive(
-                    db, raw, summary, build="unrelated-" + str(index)
-                )
-                with admit_archive_journal(db, other, other_admission, summary) as other_source:
-                    commit_input(db, other, CorpusSourceInputWork(other_admission, other_source))
-            # Large unrelated data must never enter the selected operation's byte accounting.
-            db.execute(
-                "UPDATE discovery_corpus_source_inputs SET source_binding_json=? WHERE build_id<>?",
-                ("unrelated damaged cache record" * 3000, key.build_id),
-            )
             if mode == "begin":
                 db.execute(
                     "DELETE FROM discovery_corpus_source_manifests WHERE build_id=?",
@@ -491,8 +506,8 @@ def _measured_inputs(tmp_path, native, monkeypatch, record_property, mode):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.canonical_discovery_corpus_inputs.begin_corpus_source_inputs",
 )
-def test_measured_manifest_begin(tmp_path, native, monkeypatch, record_property):
-    _measured_inputs(tmp_path, native, monkeypatch, record_property, "begin")
+def test_measured_manifest_begin(tmp_path, native, monkeypatch, record_property, source_templates):
+    _measured_inputs(tmp_path, native, monkeypatch, record_property, "begin", source_templates)
 
 
 @pytest.mark.growth_witness(
@@ -500,8 +515,10 @@ def test_measured_manifest_begin(tmp_path, native, monkeypatch, record_property)
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.canonical_discovery_corpus_inputs.prepare_corpus_source_input",
 )
-def test_measured_manifest_prepare(tmp_path, native, monkeypatch, record_property):
-    _measured_inputs(tmp_path, native, monkeypatch, record_property, "prepare")
+def test_measured_manifest_prepare(
+    tmp_path, native, monkeypatch, record_property, source_templates
+):
+    _measured_inputs(tmp_path, native, monkeypatch, record_property, "prepare", source_templates)
 
 
 @pytest.mark.growth_witness(
@@ -509,8 +526,8 @@ def test_measured_manifest_prepare(tmp_path, native, monkeypatch, record_propert
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.canonical_discovery_corpus_inputs.apply_corpus_source_input",
 )
-def test_measured_manifest_apply(tmp_path, native, monkeypatch, record_property):
-    _measured_inputs(tmp_path, native, monkeypatch, record_property, "apply")
+def test_measured_manifest_apply(tmp_path, native, monkeypatch, record_property, source_templates):
+    _measured_inputs(tmp_path, native, monkeypatch, record_property, "apply", source_templates)
 
 
 @pytest.mark.growth_witness(
@@ -518,8 +535,10 @@ def test_measured_manifest_apply(tmp_path, native, monkeypatch, record_property)
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.canonical_discovery_corpus_inputs.complete_corpus_source_inputs",
 )
-def test_measured_manifest_complete(tmp_path, native, monkeypatch, record_property):
-    _measured_inputs(tmp_path, native, monkeypatch, record_property, "complete")
+def test_measured_manifest_complete(
+    tmp_path, native, monkeypatch, record_property, source_templates
+):
+    _measured_inputs(tmp_path, native, monkeypatch, record_property, "complete", source_templates)
 
 
 @pytest.mark.growth_witness(
@@ -527,8 +546,10 @@ def test_measured_manifest_complete(tmp_path, native, monkeypatch, record_proper
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.canonical_discovery_corpus_inputs.corpus_source_admitted",
 )
-def test_measured_manifest_membership(tmp_path, native, monkeypatch, record_property):
-    _measured_inputs(tmp_path, native, monkeypatch, record_property, "membership")
+def test_measured_manifest_membership(
+    tmp_path, native, monkeypatch, record_property, source_templates
+):
+    _measured_inputs(tmp_path, native, monkeypatch, record_property, "membership", source_templates)
 
 
 def test_retries_compare_stored_source_preimages_inside_sql(owned):
