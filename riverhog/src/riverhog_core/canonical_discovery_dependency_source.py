@@ -150,6 +150,22 @@ _COLUMNS = (
 _ORDER = " ORDER BY length(born_sequence),born_sequence,source_group,source_item LIMIT 1"
 
 
+def _completed_source(db: sqlite3.Connection, key: JournalTaskKey) -> int:
+    parent = _task(db, key)
+    progress = _progress(parent)
+    if (
+        not progress.complete
+        or progress.cursor.phase != "done"
+        or progress.cursor.sequence != int(parent[3])
+        or progress.pending
+        or parent[14] != parent[2]
+        or parent[16] is None
+        or int(parent[16]) + 1 != progress.version
+    ):
+        raise StaleJournalTask("documentary source requires a completed original journal")
+    return int(parent[3])
+
+
 @declare_growth(_declaration())
 def next_source_assertion(
     db: sqlite3.Connection,
@@ -164,19 +180,8 @@ def next_source_assertion(
     ranges do not advance it, so a later request can extend the shared journal's
     work without replaying previously inspected assertions.
     """
-    parent = _task(db, key)
-    progress = _progress(parent)
-    if (
-        not progress.complete
-        or progress.cursor.phase != "done"
-        or progress.cursor.sequence != int(parent[3])
-        or progress.pending
-        or parent[14] != parent[2]
-        or parent[16] is None
-        or int(parent[16]) + 1 != progress.version
-    ):
-        raise StaleJournalTask("documentary source requires a completed original journal")
-    if type(through) is not int or not 0 <= through < int(parent[3]):
+    entry_count = _completed_source(db, key)
+    if type(through) is not int or not 0 <= through < entry_count:
         raise ValueError("documentary prefix exceeds the completed original source")
     if after is not None:
         if (
