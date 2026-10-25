@@ -17,9 +17,12 @@ from tests.unit.test_canonical_discovery_metadata_growth import case_for
 
 
 @contextmanager
-def framing_case(path, raw, *, segments=1, retained=17, opening=None):
+def framing_case(
+    path, raw, *, segments=1, retained=17, opening=None, catalog=None, journal_id=None
+):
     ends = tuple(len(raw) * ordinal // segments for ordinal in range(1, segments))
-    reader, objects, journal_id, _ = archive_reader_fixture(raw, segment_ends=ends)
+    options = {} if journal_id is None else {"journal_id": journal_id}
+    reader, objects, journal_id, _ = archive_reader_fixture(raw, segment_ends=ends, **options)
     admission = discovery_archive_admission(root_for(objects))
     db, key = open_work(":memory:", admission)
     path.mkdir(parents=True)
@@ -30,7 +33,7 @@ def framing_case(path, raw, *, segments=1, retained=17, opening=None):
             db.backup(saved)
     finally:
         db.close()
-    with case_for(path / "owned", admission, retained, 17) as case:
+    with case_for(path / "owned", admission, retained, 17, catalog=catalog) as case:
         with opening() if opening is not None else nullcontext():
             case.metadata.open()
         seed(case, template, retained)

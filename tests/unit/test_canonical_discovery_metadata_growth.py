@@ -248,7 +248,8 @@ class Recorder:
 
 
 @contextmanager
-def case_for(root, admission, retained, width, *, template=None):
+def case_for(root, admission, retained, width, *, template=None, catalog=None):
+    catalog = ContractCatalog() if catalog is None else catalog
     root.mkdir()
     if template is not None:
         with closing(_REAL_CONNECT(template.path)) as original:
@@ -269,7 +270,6 @@ def case_for(root, admission, retained, width, *, template=None):
                 session.add(collection)
                 session.flush()
                 build_id = begin_index_build(session, collection_id=1)
-            catalog = ContractCatalog()
             selected = jobs.select_discovery_job(
                 factory, build_id=build_id, admission=admission, catalog=catalog
             )
@@ -298,7 +298,7 @@ def case_for(root, admission, retained, width, *, template=None):
                     )
         else:
             selected = jobs.select_discovery_job(
-                factory, build_id=template.build_id, admission=admission, catalog=ContractCatalog()
+                factory, build_id=template.build_id, admission=admission, catalog=catalog
             )
             assert selected is not None
         captured = []
