@@ -8,7 +8,7 @@ from dataclasses import replace
 
 import pytest
 from riverhog_archive_contracts import ProvenanceRootDocument
-from riverhog_canonical_json import canonical_json_bytes
+from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
 from riverhog_core.canonical_discovery_archive_work import (
     ArchiveTaskKey,
     StaleArchiveTask,
@@ -404,6 +404,9 @@ def _measured_inputs(tmp_path, native, monkeypatch, record_property, mode, sourc
                     with monkeypatch.context() as patch:
                         patch.setattr(JournalSummary, "anchor_at", anchor)
                         patch.setattr(inputs, "canonical_json_bytes", encode)
+                        patch.setitem(
+                            require_canonical_json.__globals__, "canonical_json_bytes", encode
+                        )
                         patch.setattr(journal_work, "canonical_json_bytes", encode)
                         patch.setattr(inputs, "sha256", digest)
                         db.set_progress_handler(instruction, 1)

@@ -34,7 +34,7 @@ from riverhog_archive_contracts import (
     ordered_provenance_commitment,
     source_binding_proof_object_path,
 )
-from riverhog_canonical_json import canonical_json_bytes
+from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
 from riverhog_core.canonical_discovery_archive_work import (
     ArchiveTaskKey,
     StaleArchiveTask,
@@ -977,6 +977,9 @@ def test_measured_import_coverage_is_indexed_and_read_only(tmp_path, monkeypatch
                 try:
                     with monkeypatch.context() as patch:
                         patch.setattr(histories, "canonical_json_bytes", encode)
+                        patch.setitem(
+                            require_canonical_json.__globals__, "canonical_json_bytes", encode
+                        )
                         progress = history_import_progress(observer, key, owner)
                 finally:
                     db.set_progress_handler(None, 0)
