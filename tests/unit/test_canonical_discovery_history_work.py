@@ -11,6 +11,7 @@ from riverhog_archive_contracts import (
     MEMBER_HISTORY_IMPORTS_SCHEMA,
     MEMBER_HISTORY_ROOTS_SCHEMA,
     PROVENANCE_BINDINGS_FORMAT,
+    RETAINED_HISTORY_EXTENT,
     ArchiveProvenanceIdentity,
     CollectionArchiveManifest,
     CollectionArtifactSetIdentity,
@@ -51,6 +52,7 @@ from riverhog_core.canonical_discovery_history_work import (
     apply_history_record,
     archive_history_ready,
     history_descriptor_ready,
+    history_import_progress,
     history_set_progress,
     initialize_history_work,
     prepare_history_descriptor,
@@ -67,7 +69,12 @@ from riverhog_core.canonical_discovery_member_work import (
 )
 from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
 
-from tests.support.canonical_discovery_work import RecordedConnection, write
+from tests.support.canonical_discovery_work import (
+    MeasuredConnection,
+    RecordedConnection,
+    metadata_octets,
+    write,
+)
 from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
 
 
@@ -104,7 +111,15 @@ def record_set(objects, schema, rows, *, wrong_digest=False, page_size=64):
     return authority
 
 
-def fixture(*, count=129, members=3, fault=None, inherited=False):
+def fixture(
+    *,
+    count=129,
+    members=3,
+    fault=None,
+    inherited=False,
+    import_targets=(1,),
+    distinct_import_sets=False,
+):
     _, objects, _, _ = archive_reader_fixture()
     root = ProvenanceRootDocument.from_json_bytes(objects["provenance/root.json.age"])
     roots = [
@@ -149,8 +164,6 @@ def fixture(*, count=129, members=3, fault=None, inherited=False):
         source_root = ProvenanceRootDocument.from_json_bytes(
             source_objects["provenance/root.json.age"]
         )
-        target = source_bindings[1]
-        tree = binding_tree_commitment(source_bindings, target_artifact_id=target.artifact_id)
         source_archive = CollectionArchiveManifest(
             archive_generation=source_root.archive_generation,
             artifact_set=CollectionArtifactSetIdentity(
@@ -172,32 +185,37 @@ def fixture(*, count=129, members=3, fault=None, inherited=False):
                 ),
             ),
         )
-        assert tree.target_index is not None
-        proof = SourceMemberHistoryBindingProof(
-            "9" * 64,
-            7,
-            source_archive.to_json_bytes(),
-            source_root.to_json_bytes(),
-            target,
-            tree.target_index,
-            tree.target_siblings,
-        )
-        imports = [
-            replace(
-                imports[0],
-                source_identity=proof.source_identity,
-                source_collection_id=proof.collection_id,
-                source_archive_root_sha256=hashlib.sha256(proof.archive_root).hexdigest(),
-                source_artifact_set_sha256=source_root.artifact_set_sha256,
-                source_artifact_id=target.artifact_id,
-                source_history_sha256=target.history_sha256,
-                source_binding_proof_sha256=proof.identity,
+        original_import = imports[0]
+        imports = []
+        for target_index in import_targets:
+            target = source_bindings[target_index]
+            tree = binding_tree_commitment(source_bindings, target_artifact_id=target.artifact_id)
+            assert tree.target_index is not None
+            proof = SourceMemberHistoryBindingProof(
+                "9" * 64,
+                7,
+                source_archive.to_json_bytes(),
+                source_root.to_json_bytes(),
+                target,
+                tree.target_index,
+                tree.target_siblings,
             )
-        ]
+            imports.append(
+                replace(
+                    original_import,
+                    source_identity=proof.source_identity,
+                    source_collection_id=proof.collection_id,
+                    source_archive_root_sha256=hashlib.sha256(proof.archive_root).hexdigest(),
+                    source_artifact_set_sha256=source_root.artifact_set_sha256,
+                    source_artifact_id=target.artifact_id,
+                    source_history_sha256=target.history_sha256,
+                    source_binding_proof_sha256=proof.identity,
+                )
+            )
+            objects[source_binding_proof_object_path(proof.identity)] = proof.to_json_bytes()
         for path, raw in source_objects.items():
             if path.startswith(("provenance/history/", "provenance/sets/")):
                 objects[path] = raw
-        objects[source_binding_proof_object_path(proof.identity)] = proof.to_json_bytes()
     imports_ref = record_set(
         objects,
         MEMBER_HISTORY_IMPORTS_SCHEMA,
@@ -205,8 +223,21 @@ def fixture(*, count=129, members=3, fault=None, inherited=False):
     )
     histories, bindings = [], []
     for index in range(members):
+        selected_imports = imports_ref
+        if distinct_import_sets and index % 2:
+            selected_imports = record_set(
+                objects,
+                MEMBER_HISTORY_IMPORTS_SCHEMA,
+                [
+                    {
+                        "key": value.key,
+                        "value": replace(value, extent=RETAINED_HISTORY_EXTENT).to_mapping(),
+                    }
+                    for value in imports
+                ],
+            )
         descriptor = MemberHistoryDocument(
-            f"{index:064x}", 7, "a" * 64, primary, roots_ref, imports_ref
+            f"{index:064x}", 7, "a" * 64, primary, roots_ref, selected_imports
         )
         raw = descriptor.to_json_bytes()
         binding = MemberHistoryBinding(
@@ -268,9 +299,23 @@ def fixture(*, count=129, members=3, fault=None, inherited=False):
     return reader, objects, bindings, histories, discovery_archive_admission(root), reads
 
 
-def setup_work(path, *, count=129, members=3, fault=None, inherited=False):
+def setup_work(
+    path,
+    *,
+    count=129,
+    members=3,
+    fault=None,
+    inherited=False,
+    import_targets=(1,),
+    distinct_import_sets=False,
+):
     reader, objects, bindings, histories, admission, reads = fixture(
-        count=count, members=members, fault=fault, inherited=inherited
+        count=count,
+        members=members,
+        fault=fault,
+        inherited=inherited,
+        import_targets=import_targets,
+        distinct_import_sets=distinct_import_sets,
     )
     db = sqlite3.connect(path, isolation_level=None)
     initialize_archive_work(db)
@@ -707,3 +752,256 @@ def measured_import(tmp_path, monkeypatch, record_property, *, prepare):
                 apply_history_import(db, key, owner, page)
     record_property("growth_samples", samples)
     db.close()
+
+
+def import_rows(owner, objects):
+    page = RecordPage.from_json_bytes(
+        objects[history_record_page_object_path(owner.authority.records_sha256, 0)]
+    )
+    return [MemberHistoryImport.from_mapping(row["value"]) for row in page.records]
+
+
+def test_import_coverage_is_independent_of_shared_proofs_and_reopens(tmp_path):
+    path = tmp_path / "coverage.sqlite"
+    db, key, history, descriptors, objects, _ = setup_work(
+        path, count=3, inherited=True, import_targets=(0, 1), distinct_import_sets=True
+    )
+    owners = [HistorySetWork(history.admission, history.reader, d.imports) for d in descriptors[:2]]
+    assert owners[0].authority != owners[1].authority
+    for owner in owners:
+        finish(db, key, owner)
+        initial = history_import_progress(db, key, owner)
+        assert initial.expected_imports == 2
+        assert initial.registered_imports == 0 and not initial.complete
+        for count, imported in enumerate(reversed(import_rows(owner, objects)), 1):
+            page = prepare_history_import(db, key, owner, imported.key)
+            with write(db):
+                apply_history_import(db, key, owner, page)
+            progress = history_import_progress(db, key, owner)
+            assert progress.registered_imports == count
+            assert progress.complete is (count == 2)
+            with write(db):
+                apply_history_import(db, key, owner, page)
+            assert history_import_progress(db, key, owner) == progress
+        db.close()
+        db = sqlite3.connect(path, isolation_level=None)
+        assert history_import_progress(db, key, owner).complete
+    assert db.execute("SELECT count(*) FROM discovery_history_import_proofs").fetchone() == (2,)
+    assert db.execute("SELECT count(*) FROM discovery_history_import_links").fetchone() == (4,)
+    db.close()
+
+
+def test_verified_empty_import_set_has_an_explicit_zero_terminal(tmp_path):
+    db, key, history, descriptors, _, _ = setup_work(
+        tmp_path / "empty.sqlite", count=3, inherited=True, import_targets=()
+    )
+    owner = HistorySetWork(history.admission, history.reader, descriptors[0].imports)
+    with pytest.raises(StaleArchiveTask, match="completely verified"):
+        history_import_progress(db, key, owner)
+    finish(db, key, owner)
+    progress = history_import_progress(db, key, owner)
+    assert progress.expected_imports == progress.registered_imports == 0
+    assert progress.complete
+    assert db.execute("SELECT count(*) FROM discovery_history_import_links").fetchone() == (0,)
+    db.close()
+
+
+def test_import_coverage_rolls_back_proof_children_and_incidence_together(tmp_path):
+    db, key, _, owner, imported, _, _, _ = imported_work(tmp_path)
+    finish(db, key, owner)
+    page = prepare_history_import(db, key, owner, imported.key)
+    tables = (
+        "discovery_history_descriptors",
+        "discovery_history_sets",
+        "discovery_history_import_proofs",
+        "discovery_history_import_links",
+        "discovery_history_import_coverage",
+    )
+    before = {table: db.execute("SELECT * FROM " + table).fetchall() for table in tables}
+    db.execute(
+        "CREATE TRIGGER fail_import_coverage BEFORE UPDATE ON discovery_history_import_coverage "
+        "BEGIN SELECT RAISE(ABORT,'injected import coverage failure'); END"
+    )
+    with write(db), pytest.raises(sqlite3.IntegrityError, match="injected import coverage"):
+        apply_history_import(db, key, owner, page)
+    assert {table: db.execute("SELECT * FROM " + table).fetchall() for table in tables} == before
+    db.execute("DROP TRIGGER fail_import_coverage")
+    with write(db):
+        apply_history_import(db, key, owner, page)
+    assert history_import_progress(db, key, owner).complete
+    db.execute("UPDATE discovery_history_import_links SET proof_sha256=?", ("f" * 64,))
+    with write(db), pytest.raises(StaleArchiveTask, match="original coordinates"):
+        apply_history_import(db, key, owner, page)
+    db.close()
+
+
+@pytest.mark.parametrize("fault", ["worker", "authority", "count", "counter", "missing", "cache"])
+def test_import_coverage_rejects_stale_authority_and_corrupt_accounting(tmp_path, fault):
+    db, key, _, owner, imported, _, _, _ = imported_work(tmp_path)
+    finish(db, key, owner)
+    page = prepare_history_import(db, key, owner, imported.key)
+    with write(db):
+        apply_history_import(db, key, owner, page)
+    if fault == "cache":
+        owner.authority = replace(owner.authority, record_count=0)
+    elif fault == "missing":
+        db.execute("DELETE FROM discovery_history_import_coverage")
+        with write(db), pytest.raises(StaleArchiveTask, match="matching coverage"):
+            apply_history_import(db, key, owner, page)
+        db.close()
+        return
+    else:
+        column, value = {
+            "worker": ("worker_id", "replaced"),
+            "authority": ("authority_json", "{}"),
+            "count": ("registered_imports", "2"),
+            "counter": ("registered_imports", "01"),
+        }[fault]
+        db.execute("UPDATE discovery_history_import_coverage SET " + column + "=?", (value,))
+    with pytest.raises(StaleArchiveTask, match="authority|coverage"):
+        history_import_progress(db, key, owner)
+    db.close()
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-history-import-coverage/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_history_work.history_import_progress",
+)
+def test_measured_import_coverage_is_indexed_and_read_only(tmp_path, monkeypatch, record_property):
+    from riverhog_core import canonical_discovery_history_work as histories
+    from riverhog_growth_contracts import (
+        growth_binding,
+        project_bindings,
+        validate_execution_samples,
+    )
+
+    binding = growth_binding(history_import_progress)
+    projection = project_bindings((binding,))
+    declaration_sha = hashlib.sha256(
+        canonical_json_bytes(projection["declarations"][binding.declaration.id])
+    ).hexdigest()
+    actual_encode = histories.canonical_json_bytes
+    samples = []
+    for retained in (1, 17, 129):
+        path = tmp_path / ("import-coverage-" + str(retained) + ".sqlite")
+        db, key, history, descriptors, objects, _ = setup_work(
+            path, count=3, inherited=True, import_targets=(0, 1)
+        )
+        owner = HistorySetWork(history.admission, history.reader, descriptors[0].imports)
+        finish(db, key, owner)
+        imports = import_rows(owner, objects)
+        for index in range(retained - 1):
+            db.execute(
+                "INSERT INTO discovery_history_import_coverage VALUES (?,?,?,?,?,'0')",
+                (
+                    "unrelated-" + str(index),
+                    key.admission_sha256,
+                    owner.authority.records_sha256,
+                    "unrelated",
+                    "unrelated damaged import authority" * 3000,
+                ),
+            )
+        for state, selected in (
+            ("unstarted", ()),
+            ("partial", imports[:1]),
+            ("complete", imports[1:]),
+        ):
+            for imported in selected:
+                page = prepare_history_import(db, key, owner, imported.key)
+                with write(db):
+                    apply_history_import(db, key, owner, page)
+            for cache in ("warm", "reopened"):
+                if cache == "reopened":
+                    db.close()
+                    db = sqlite3.connect(path, isolation_level=None)
+                widths = [
+                    sum(
+                        map(
+                            metadata_octets,
+                            (
+                                key.build_id,
+                                key.admission_sha256,
+                                key.worker_id,
+                                owner.authority_json,
+                            ),
+                        )
+                    )
+                ]
+                for table, extra, values in (
+                    ("discovery_archive_tasks", "", ()),
+                    (
+                        "discovery_history_sets",
+                        " AND records_sha256=?",
+                        (owner.authority.records_sha256,),
+                    ),
+                    (
+                        "discovery_history_import_coverage",
+                        " AND import_set_sha256=?",
+                        (owner.authority.records_sha256,),
+                    ),
+                ):
+                    row = db.execute(
+                        "SELECT * FROM "
+                        + table
+                        + " WHERE build_id=? AND admission_sha256=?"
+                        + extra,
+                        (key.build_id, key.admission_sha256, *values),
+                    ).fetchone()
+                    if row is not None:
+                        widths.append(sum(map(metadata_octets, row)))
+                dimensions = {
+                    "registered_records": sum(
+                        db.execute("SELECT count(*) FROM " + table).fetchone()[0]
+                        for table in (
+                            "discovery_archive_tasks",
+                            "discovery_history_sets",
+                            "discovery_history_import_coverage",
+                        )
+                    ),
+                    "metadata_octets": max(widths),
+                }
+                observer = MeasuredConnection(db)
+                changes = db.total_changes
+
+                def encode(value, observer=observer):
+                    encoded = actual_encode(value)
+                    observer.metrics["encoded_octets"] += len(encoded)
+                    return encoded
+
+                def instruction(observer=observer):
+                    observer.metrics["sqlite_vm_instructions"] += 1
+                    return 0
+
+                db.set_progress_handler(instruction, 1)
+                try:
+                    with monkeypatch.context() as patch:
+                        patch.setattr(histories, "canonical_json_bytes", encode)
+                        progress = history_import_progress(observer, key, owner)
+                finally:
+                    db.set_progress_handler(None, 0)
+                assert db.total_changes == changes
+                assert progress.expected_imports == 2
+                assert (
+                    progress.registered_imports
+                    == {"unstarted": 0, "partial": 1, "complete": 2}[state]
+                )
+                assert progress.complete is (state == "complete")
+                for sql, parameters in observer.statements:
+                    assert "count(" not in sql.lower()
+                    plans = db.execute("EXPLAIN QUERY PLAN " + sql, parameters).fetchall()
+                    assert all("SCAN" not in row[3].upper() for row in plans)
+                sample = {
+                    "declaration": binding.declaration.id,
+                    "declaration_sha256": declaration_sha,
+                    "dimensions": dimensions,
+                    "metrics": {
+                        bound.metric: observer.metrics[bound.metric]
+                        for bound in binding.declaration.bounds
+                    },
+                    "delegates": {},
+                }
+                validate_execution_samples(projection, binding.declaration.id, [sample])
+                samples.append(sample)
+        db.close()
+    record_property("growth_samples", samples)

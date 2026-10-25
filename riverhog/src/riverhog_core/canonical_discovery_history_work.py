@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import sqlite3
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from typing import Any
 
@@ -23,7 +23,12 @@ from riverhog_archive_contracts import (
     RecordSetCheckpoint,
     RecordSetRef,
 )
-from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
+from riverhog_canonical_json import (
+    canonical_json_bytes,
+    format_scalar,
+    parse_scalar,
+    require_canonical_json,
+)
 from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
@@ -42,6 +47,16 @@ from riverhog_core.canonical_discovery_archive_work import (
 )
 from riverhog_core.canonical_discovery_member_work import archive_member_progress
 from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
+
+
+@dataclass(frozen=True, slots=True)
+class HistoryImportProgress:
+    expected_imports: int
+    registered_imports: int
+
+    @property
+    def complete(self) -> bool:
+        return self.registered_imports == self.expected_imports
 
 
 @dataclass(frozen=True, slots=True)
@@ -136,6 +151,16 @@ def initialize_history_work(db: sqlite3.Connection) -> None:
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, proof_sha256 TEXT NOT NULL,
             worker_id TEXT NOT NULL, proof_json TEXT NOT NULL, history_sha256 TEXT NOT NULL,
             PRIMARY KEY(build_id,admission_sha256,proof_sha256)
+        ) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS discovery_history_import_coverage (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, import_set_sha256 TEXT NOT NULL,
+            worker_id TEXT NOT NULL, authority_json TEXT NOT NULL, registered_imports TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,import_set_sha256)
+        ) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS discovery_history_import_links (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, import_set_sha256 TEXT NOT NULL,
+            record_key TEXT NOT NULL, proof_sha256 TEXT NOT NULL, history_sha256 TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,import_set_sha256,record_key)
         ) WITHOUT ROWID;
         CREATE TABLE IF NOT EXISTS discovery_history_sets (
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, records_sha256 TEXT NOT NULL,
@@ -634,9 +659,7 @@ def prepare_history_import(
     if db.in_transaction:
         raise ValueError("history import preparation requires no active transaction")
     _require_archive(db, key, owner.admission)
-    header = _header(db, key, owner)
-    if owner.authority.schema_id != MEMBER_HISTORY_IMPORTS_SCHEMA or not header[6]:
-        raise StaleArchiveTask("history import set is not completely verified")
+    header = _verified_import_set(db, key, owner)
     row = _one(
         db,
         "SELECT value_json FROM discovery_history_set_records "
@@ -681,15 +704,15 @@ def prepare_history_import(
                 "sql_statements",
                 COUNT,
                 "upper",
-                Expression("constant", value=12, unit=COUNT),
-                "Two source reads and at most four bounded exact record registrations.",
+                Expression("constant", value=17, unit=COUNT),
+                "Exact source reads, shared children and atomic incidence coverage.",
             ),
             Bound(
                 "returned_rows",
                 COUNT,
                 "upper",
-                Expression("constant", value=6, unit=COUNT),
-                "Exact set/record, descriptor, two set identities and proof lookups.",
+                Expression("constant", value=8, unit=COUNT),
+                "Exact source, shared child/proof, incidence and coverage lookups.",
             ),
             Bound(
                 "source_hash_octets",
@@ -704,7 +727,7 @@ def prepare_history_import(
             "Apply receives the exact preparation; the schema has no added triggers.",
         ),
         invariants=(
-            "The proof, selected descriptor and new child set obligations commit atomically.",
+            "Proof, descriptor, children, incidence and coverage commit atomically.",
             "Existing shared descriptors and completed set continuations are never reset.",
             "The original archive roots and member inclusion coordinates remain exact.",
         ),
@@ -720,8 +743,9 @@ def apply_history_import(
     if owner._prepared_import is not page or page.key != key:
         raise StaleArchiveTask("history import is not the current exact detached preparation")
     with _atomic(db):
-        if _header(db, key, owner) != page.expected_row:
+        if _verified_import_set(db, key, owner) != page.expected_row:
             raise StaleArchiveTask("history import source or continuation changed")
+        coverage, coverage_exists = _import_coverage(db, key, owner)
         current = _one(
             db,
             "SELECT value_json FROM discovery_history_set_records "
@@ -745,3 +769,227 @@ def apply_history_import(
             )
         elif previous != expected:
             raise StaleArchiveTask("history import proof source or worker changed")
+        incidence = _one(
+            db,
+            "SELECT proof_sha256,history_sha256 FROM discovery_history_import_links "
+            "WHERE build_id=? AND admission_sha256=? AND import_set_sha256=? AND record_key=?",
+            (key.build_id, key.admission_sha256, owner.authority.records_sha256, page.record_key),
+        )
+        expected_link = page.proof_sha256, page.history_sha256
+        if incidence is None:
+            if coverage.complete:
+                raise StaleArchiveTask("import coverage already reaches its authenticated count")
+            if not coverage_exists:
+                db.execute(
+                    "INSERT INTO discovery_history_import_coverage VALUES (?,?,?,?,?,'0')",
+                    (
+                        key.build_id,
+                        key.admission_sha256,
+                        owner.authority.records_sha256,
+                        key.worker_id,
+                        owner.authority_json,
+                    ),
+                ).close()
+            db.execute(
+                "INSERT INTO discovery_history_import_links VALUES (?,?,?,?,?,?)",
+                (
+                    key.build_id,
+                    key.admission_sha256,
+                    owner.authority.records_sha256,
+                    page.record_key,
+                    *expected_link,
+                ),
+            ).close()
+            with closing(
+                db.execute(
+                    "UPDATE discovery_history_import_coverage SET registered_imports=? "
+                    "WHERE build_id=? AND admission_sha256=? AND import_set_sha256=? "
+                    "AND worker_id=? AND authority_json=? AND registered_imports=?",
+                    (
+                        format_scalar("nonnegative", coverage.registered_imports + 1),
+                        key.build_id,
+                        key.admission_sha256,
+                        owner.authority.records_sha256,
+                        key.worker_id,
+                        owner.authority_json,
+                        format_scalar("nonnegative", coverage.registered_imports),
+                    ),
+                )
+            ) as changed:
+                if changed.rowcount != 1:
+                    raise StaleArchiveTask("history import coverage changed during registration")
+        elif incidence != expected_link:
+            raise StaleArchiveTask("history import incidence has conflicting original coordinates")
+        elif not coverage_exists or coverage.registered_imports == 0:
+            raise StaleArchiveTask("history import incidence has no matching coverage")
+
+
+def _verified_import_set(
+    db: sqlite3.Connection, key: ArchiveTaskKey, owner: HistorySetWork
+) -> tuple[Any, ...]:
+    if (
+        key.admission_sha256 != owner.admission.identity
+        or owner.authority.schema_id != MEMBER_HISTORY_IMPORTS_SCHEMA
+        or canonical_json_bytes(owner.authority.to_mapping()).decode() != owner.authority_json
+    ):
+        raise StaleArchiveTask("history import set has another source or original authority")
+    row = _header(db, key, owner)
+    checkpoint = RecordSetCheckpoint.from_json_bytes(row[5].encode())
+    if (
+        not row[6]
+        or checkpoint.schema_id != owner.authority.schema_id
+        or checkpoint.count != owner.authority.record_count
+    ):
+        raise StaleArchiveTask("history import set is not completely verified")
+    return row
+
+
+def _import_coverage(
+    db: sqlite3.Connection, key: ArchiveTaskKey, owner: HistorySetWork
+) -> tuple[HistoryImportProgress, bool]:
+    row = _one(
+        db,
+        "SELECT worker_id,authority_json,registered_imports "
+        "FROM discovery_history_import_coverage "
+        "WHERE build_id=? AND admission_sha256=? AND import_set_sha256=?",
+        (key.build_id, key.admission_sha256, owner.authority.records_sha256),
+    )
+    if row is None:
+        return HistoryImportProgress(owner.authority.record_count, 0), False
+    if row[:2] != (key.worker_id, owner.authority_json) or type(row[2]) is not str:
+        raise StaleArchiveTask("history import coverage has another worker or authority")
+    try:
+        registered = parse_scalar("nonnegative", row[2])
+    except (ValueError, TypeError):
+        raise StaleArchiveTask("history import coverage counter is not canonical") from None
+    if registered > owner.authority.record_count:
+        raise StaleArchiveTask("history import coverage exceeds its authenticated count")
+    return HistoryImportProgress(owner.authority.record_count, registered), True
+
+
+@declare_growth(
+    Declaration(
+        id="riverhog-server.discovery-history-import-coverage.growth/v1",
+        authority="riverhog-server",
+        subjects=("riverhog_core.canonical_discovery_history_work.history_import_progress",),
+        scope="one authenticated import-set original incidence completion check",
+        starts_at="receive the current archive, worker and exact authenticated import set",
+        ends_at="close Core cursors and detach required versus registered import counts",
+        dimensions=(
+            Dimension(
+                "registered_records", COUNT, "All retained archive, set and coverage headers."
+            ),
+            Dimension(
+                "metadata_octets", OCTETS, "Largest complete selected or incoming metadata row."
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "equal",
+                Expression("constant", value=3, unit=COUNT),
+                "One archive fence, one authenticated set header and one exact coverage lookup.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                Expression("constant", value=3, unit=COUNT),
+                "Each indexed query returns at most one original metadata row.",
+            ),
+            Bound(
+                "parameter_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        Expression("constant", value=16, unit=()),
+                        Expression("dimension", name="metadata_octets"),
+                    ),
+                ),
+                "Complete bound keys are charged; no retained incidence or payload scan.",
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        Expression("constant", value=8, unit=()),
+                        Expression("dimension", name="metadata_octets"),
+                    ),
+                ),
+                "All returned header fields are charged.",
+            ),
+            Bound(
+                "encoded_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        Expression("constant", value=2, unit=()),
+                        Expression("dimension", name="metadata_octets"),
+                    ),
+                ),
+                "The complete incoming authority is compared to its original canonical bytes.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        Expression("constant", value=4096, unit=COUNT),
+                        Expression(
+                            "product",
+                            terms=(
+                                Expression("constant", value=512, unit=COUNT),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("dimension", name="registered_records"),
+                                                Expression("constant", value=2, unit=COUNT),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Qualified SQLite B-tree point work; unrelated rows are never visited.",
+            ),
+        ),
+        conditions=(
+            "The owner retains current catalog/build authority and exclusive workspace custody.",
+            "The maintained workspace schema has no added triggers or indexes.",
+            "Import registration increments coverage only with a new authenticated incidence.",
+        ),
+        invariants=(
+            "The expected count comes from the fully verified original structural import set.",
+            "A shared source proof cannot substitute for a missing import-set incidence.",
+            "An exact retry increments no count; incidence and counter changes are atomic.",
+            "This operation performs no COUNT, source-byte read, Native call or write.",
+        ),
+        limitations=(
+            "This is one import set's coverage, not complete member/import/dependency closure.",
+            "Native validity, source custody and publication retain their separate terminals.",
+            "VM constants depend on SQLite; lock waits and elapsed time are observations.",
+        ),
+    )
+)
+def history_import_progress(
+    db: sqlite3.Connection, key: ArchiveTaskKey, owner: HistorySetWork
+) -> HistoryImportProgress:
+    if not archive_metadata_progress(db, key).complete:
+        raise StaleArchiveTask("history import archive metadata is incomplete")
+    _verified_import_set(db, key, owner)
+    return _import_coverage(db, key, owner)[0]
