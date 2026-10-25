@@ -8,7 +8,7 @@ from riverhog_growth_contracts import growth_binding
 from riverhog_provenance import RetainedCorpusValidator, StaleCorpusWorkspace
 from riverhog_provenance import corpus_workspace as owner
 from test_corpus_order_growth import edges_for, insert
-from test_retained_corpus_faults import EmptySource
+from test_retained_corpus_faults import EmptySource, UncertainClose
 from test_retained_corpus_workspace import open_workspace
 from test_source_anchor_growth import record
 
@@ -213,23 +213,37 @@ def test_actual_close_releases_only_its_native_handle(
     tmp_path, catalog, monkeypatch, record_property
 ):
     samples = []
-    for count in (0, 1, 17, 129):
-        path = tmp_path / str(count)
-        path.mkdir()
-        source = EmptySource(catalog)
-        observer = Observer()
+    for count in (0, 1, 17, 129, 1025):
+        for failure in (None, "before", "lost-reply"):
+            path = tmp_path / (str(count) + "-" + str(failure))
+            path.mkdir()
+            source = EmptySource(catalog)
+            active = [Observer()]
 
-        def release(observer=observer):
-            observer.metrics["release_callbacks"] += 1
+            def release(observers=active):
+                observers[0].metrics["release_callbacks"] += 1
 
-        workspace = open_workspace(path, source, create=True, on_storage_close=release)
-        with workspace._operation():
-            insert(workspace._corpus, edges_for("chain", count), "derivation")
-        with observer.observe(monkeypatch, source, workspace):
-            # The corpus owns the same sole handle closed by the outer owner.
-            workspace._corpus._db = workspace._db
-            workspace.close()
-            workspace.close()
-        samples.append(observer.sample(RetainedCorpusValidator.close, source, count))
-        assert (path / "corpus.sqlite3").is_file()
+            workspace = open_workspace(path, source, create=True, on_storage_close=release)
+            with workspace._operation():
+                insert(workspace._corpus, edges_for("chain", count), "derivation")
+            db = workspace._db
+            closing = (
+                db if failure is None else UncertainClose(db, lost_reply=failure == "lost-reply")
+            )
+            for attempt in range(3):
+                observer = active[0] = Observer()
+                with observer.observe(monkeypatch, source, workspace):
+                    workspace._corpus._db = Connection(closing, observer)
+                    if failure is not None and attempt == 0:
+                        with pytest.raises(OSError, match="unconfirmed"):
+                            workspace.close()
+                    else:
+                        workspace.close()
+                samples.append(observer.sample(RetainedCorpusValidator.close, source, count))
+                expected_release = int(attempt == (0 if failure is None else 1))
+                assert observer.metrics["release_callbacks"] == expected_release
+                assert observer.metrics["closed_connections"] == int(
+                    attempt == 0 or failure is not None and attempt == 1
+                )
+            assert (path / "corpus.sqlite3").is_file()
     record_property("growth_samples", samples)

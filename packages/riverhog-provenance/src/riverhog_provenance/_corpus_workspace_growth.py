@@ -93,7 +93,9 @@ def lifecycle_declaration(operation: str) -> Declaration:
             (
                 "closed_connections",
                 limits["closed_connections"],
-                "Only the owned connection can close.",
+                "At most one owned close primitive is attempted; errors do not confirm closure."
+                if closing
+                else "Only the owned connection can close.",
             ),
             (
                 "opened_connections",

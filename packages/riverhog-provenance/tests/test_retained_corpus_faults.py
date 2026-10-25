@@ -206,3 +206,51 @@ def test_reopening_never_reads_native_corpus_payload_or_ordering_rows(
         patch.setattr(owner.sqlite3, "connect", metadata_only)
         with open_workspace(path, source, epoch=1):
             pass
+
+
+class UncertainClose:
+    def __init__(self, db, *, lost_reply):
+        self.db, self.lost_reply = db, lost_reply
+        self.attempted = False
+
+    def close(self):
+        if not self.attempted:
+            self.attempted = True
+            if self.lost_reply:
+                self.db.close()
+            raise OSError("storage close outcome is unconfirmed")
+        self.db.close()
+
+
+@pytest.mark.parametrize("lost_reply", [False, True])
+def test_uncertain_storage_close_can_be_confirmed_without_reopening_work(
+    tmp_path, catalog, lost_reply
+):
+    path = directory(tmp_path)
+    source = EmptySource(catalog)
+    releases = []
+    workspace = open_workspace(
+        path, source, create=True, on_storage_close=lambda: releases.append("released")
+    )
+    db = workspace._db
+
+    workspace._corpus._db = UncertainClose(db, lost_reply=lost_reply)
+    try:
+        with pytest.raises(OSError, match="unconfirmed"):
+            workspace.close()
+        assert releases == []
+        with pytest.raises(RuntimeError, match="closed"):
+            workspace.advance_semantics()
+        if lost_reply:
+            with pytest.raises(sqlite3.ProgrammingError):
+                db.execute("SELECT 1")
+        else:
+            assert db.execute("SELECT 1").fetchone() == (1,)
+        workspace.close()
+        with pytest.raises(sqlite3.ProgrammingError):
+            db.execute("SELECT 1")
+        assert releases == ["released"]
+        workspace.close()
+        assert releases == ["released"]
+    finally:
+        db.close()

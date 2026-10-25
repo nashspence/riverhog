@@ -242,6 +242,7 @@ class RetainedCorpusValidator:
     _epoch: int
     _metadata_budget: int
     _closed: bool
+    _storage_closed: bool
     _on_close: Callable[[], None] | None
     _db: sqlite3.Connection
     _corpus: CanonicalCorpusValidator
@@ -286,7 +287,7 @@ class RetainedCorpusValidator:
         result = cls.__new__(cls)
         result._source, result._binding, result._encoded = source, binding, encoded
         result._epoch, result._metadata_budget = worker_epoch, metadata_byte_budget
-        result._closed, result._on_close = False, None
+        result._closed, result._storage_closed, result._on_close = False, False, None
         result._db = sqlite3.connect(path.resolve().as_uri() + "?mode=rw", uri=True)
         try:
             db = result._db
@@ -638,12 +639,13 @@ class RetainedCorpusValidator:
 
     @declare_growth(lifecycle_declaration("close"))
     def close(self) -> None:
-        if not self._closed:
-            self._closed = True
+        self._closed = True
+        if not self._storage_closed:
             self._corpus.__exit__()
-            callback, self._on_close = self._on_close, None
-            if callback is not None:
-                callback()
+            self._storage_closed = True
+        callback, self._on_close = self._on_close, None
+        if callback is not None:
+            callback()
 
     def __enter__(self) -> Self:
         if self._closed:
