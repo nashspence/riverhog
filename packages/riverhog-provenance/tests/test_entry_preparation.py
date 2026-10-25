@@ -28,6 +28,8 @@ def owner(db):
     store = object.__new__(JournalStore)
     store._storage = SimpleNamespace(connection=db)
     store._cleanup = SimpleNamespace(alive=True)
+    store._closing = False
+    store._lease = SimpleNamespace(closed=False)
     return store
 
 

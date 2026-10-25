@@ -656,7 +656,8 @@ class JournalStore:
         requires the current complete format and never performs an upgrade.
 
         A successful return transfers the optional owner release callback to the
-        shared storage. It runs once, after the last reader closes its database.
+        shared storage. It runs after the last reader closes its database. Failed calls remain
+        retryable; the callback must retain its own unconfirmed release work.
         On construction failure the caller retains that resource's ownership.
         The optional open callback receives the closeable handle before schema
         initialization or restoration. It must retain the handle before doing

@@ -1296,8 +1296,9 @@ class JournalValidationSession:
         missing database. Closing preserves retained files for their owner.
 
         On success, optional on_storage_close ownership passes to the shared
-        database. The callback runs once after its final result reader closes,
+        database. The callback runs after its final result reader closes,
         so an owner may retain its kernel lease beyond the Session's lifetime.
+        Failed callbacks remain retryable and must retain unconfirmed release work.
         A failed constructor leaves callback ownership with the caller.
         The optional open callback receives the closeable Session before native
         schema or prefix initialization. It must retain the handle first; a
