@@ -29,6 +29,7 @@ _OPERATIONS = {
     "prepare": framing.prepare_archive_framing,
     "apply": framing.apply_archive_framing,
     "position": framing.archive_journal_frame,
+    "page": framing.archive_framing_page,
 }
 
 
@@ -70,6 +71,16 @@ def observe(case, work, monkeypatch):
                     return result
 
                 patch.setattr(framing, name, scalar)
+            actual_capture = framing._capture_bytes
+
+            def capture(tail, content, consumed):
+                result = actual_capture(tail, content, consumed)
+                recorder.metrics["copied_octets"] = (
+                    recorder.metrics.get("copied_octets", 0) + consumed + len(result)
+                )
+                return result
+
+            patch.setattr(framing, "_capture_bytes", capture)
             yield recorder
     for sql, parameters in recorder.statements:
         if sql.lstrip().upper().startswith("SELECT"):
@@ -87,7 +98,9 @@ def dimensions(case, work, position_budget):
     ).fetchall():
         for row in db.execute(f"SELECT * FROM {table}"):
             retained += 1
-            width = max(width, octets(row))
+            width = max(
+                width, octets(tuple(value for value in row if not isinstance(value, bytes)))
+            )
     return {
         "registered_inputs": retained,
         "metadata_octets": width,
@@ -163,6 +176,17 @@ def exercise(tmp_path, monkeypatch, record_property, mode):
                             )
                         elif mode == "apply":
                             output = framing.apply_archive_framing(recorder, key, work, page)
+                        elif mode == "page":
+                            output = framing.archive_framing_page(
+                                recorder,
+                                key,
+                                work,
+                                max(
+                                    0,
+                                    (before.cursor.byte_offset - 1)
+                                    // framing.ARCHIVE_CAPTURE_PAGE_OCTETS,
+                                ),
+                            )
                         else:
                             output = framing.archive_journal_frame(
                                 recorder, key, work, max(0, before.cursor.frame_count - 1)
@@ -194,6 +218,8 @@ def exercise(tmp_path, monkeypatch, record_property, mode):
             measure(False)
             terminal = progress(case, work)
             assert terminal.phase == "complete" and terminal.cursor.frame_count == size
+    if mode in {"prepare", "apply", "page"}:
+        samples.extend(full_page_samples(tmp_path, monkeypatch, mode))
     record_property("growth_samples", samples)
     record_property(
         "framing_conditions",
@@ -202,6 +228,47 @@ def exercise(tmp_path, monkeypatch, record_property, mode):
         "cold/warm access, indexed SQL and complete scalar/row widths. Source and public Native "
         "bodies retain their own witnesses.",
     )
+
+
+def full_page_samples(tmp_path, monkeypatch, mode):
+    samples = []
+    extent = framing.ARCHIVE_CAPTURE_PAGE_OCTETS
+    raw = b"\x1e" + b"x" * extent + b"\n"
+    for retained in (1, 1025):
+        with framing_case(tmp_path / f"full-page-{retained}", raw, retained=retained) as (
+            case,
+            work,
+        ):
+            begin(case, work)
+            first = prepare(case, work, byte_budget=extent - 1, frame_budget=3)
+            assert apply(case, work, first)
+            assert progress(case, work).cursor.byte_offset == extent - 1
+            page = None
+            if mode in {"apply", "page"}:
+                page = prepare(case, work, byte_budget=1, frame_budget=3)
+                if mode == "page":
+                    assert apply(case, work, page)
+            for cold in (True, False):
+                dims = dimensions(case, work, 3)
+                if cold:
+                    case.metadata._db.execute("PRAGMA shrink_memory").close()
+                context = case.metadata.transaction if mode == "apply" else case.metadata.read
+                with context() as (_, key):
+                    with observe(case, work, monkeypatch) as recorder:
+                        if mode == "prepare":
+                            result = framing.prepare_archive_framing(
+                                recorder, key, work, byte_budget=1, frame_budget=3
+                            )
+                            assert result.captured.content == raw[:extent]
+                        elif mode == "apply":
+                            assert framing.apply_archive_framing(recorder, key, work, page) == cold
+                        else:
+                            assert (
+                                framing.archive_framing_page(recorder, key, work, 0).content
+                                == raw[:extent]
+                            )
+                    samples.append(sample(mode, dims, recorder.metrics))
+    return samples
 
 
 @pytest.mark.growth_witness(
@@ -247,3 +314,12 @@ def test_apply_work(tmp_path, monkeypatch, record_property):
 )
 def test_position_work(tmp_path, monkeypatch, record_property):
     exercise(tmp_path, monkeypatch, record_property, "position")
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-archive-framing-page/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_archive_framing.archive_framing_page",
+)
+def test_page_work(tmp_path, monkeypatch, record_property):
+    exercise(tmp_path, monkeypatch, record_property, "page")

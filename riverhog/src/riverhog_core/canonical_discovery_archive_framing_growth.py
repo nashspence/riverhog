@@ -38,15 +38,27 @@ def declare_growth_for_archive_framing(operations: dict[str, Callable[..., Any]]
             summed(number(64, ()), product(number(8, ()), scalar_positions)),
             dimension("metadata_octets"),
         )
+        # Fixed capture pages bound each admitted unit; their full payload costs
+        # are separate from original control widths, including partial-page rewrites.
+        payload = number(65536, OCTETS)
+        incoming = payload if mode == "apply" else number(0, OCTETS)
+        outgoing = payload if mode in {"prepare", "page"} else number(0, OCTETS)
         limits = {
             "sql_statements": summed(number(40), product(number(3, ()), positions)),
             "returned_rows": number(20),
-            "returned_octets": product(number(32, ()), dimension("metadata_octets")),
-            "parameter_octets": width,
-            "written_octets": width if mode in {"begin", "apply"} else number(0, OCTETS),
+            "returned_octets": summed(
+                product(number(32, ()), dimension("metadata_octets")), outgoing
+            ),
+            "parameter_octets": summed(width, incoming),
+            "written_octets": summed(width, incoming)
+            if mode in {"begin", "apply"}
+            else number(0, OCTETS),
+            "copied_octets": product(number(2 if mode == "prepare" else 0, ()), payload),
             "encoded_octets": number(0, OCTETS),
             "decoded_octets": number(0, OCTETS),
-            "hashed_octets": number(0, OCTETS),
+            "hashed_octets": product(
+                number(2 if mode == "prepare" else int(mode == "page"), ()), payload
+            ),
             "sha256_block_octets": number(0, OCTETS),
             "source_reads": number(0),
             "source_read_octets": number(0, OCTETS),
@@ -70,7 +82,7 @@ def declare_growth_for_archive_framing(operations: dict[str, Callable[..., Any]]
                 id="riverhog-server.discovery-archive-framing-" + mode + ".growth/v1",
                 authority="riverhog-server",
                 subjects=(operation.__module__ + "." + operation.__qualname__,),
-                scope="direct Core original-frame directory and bounded child-call counts",
+                scope="direct Core original-frame/capture directory and bounded child-call counts",
                 starts_at="receive current source owner, original cursor and explicit budgets",
                 ends_at="return a detached unit, indexed position or atomically committed cursor",
                 dimensions=(
@@ -104,12 +116,13 @@ def declare_growth_for_archive_framing(operations: dict[str, Callable[..., Any]]
                 ),
                 invariants=(
                     "Original full source identity and current worker precede directory access.",
-                    "Original positions and their exact cursor commit or roll back together.",
+                    "Positions, normalized pages and their cursor commit or roll back together.",
                     "No preceding frame, source prefix or unrelated directory is scanned.",
                     "Source window count and Native cursor extent independently bound each unit.",
                     "Speculative framing failure supplies no semantic or publication acceptance.",
                 ),
                 limitations=(
+                    "Partial-page rewrites charge their complete fixed page, even for tiny input.",
                     "Source currentness/window bodies retain ArchiveJournalSource declarations.",
                     "Native framing byte visits retain advance_journal_framing's declaration.",
                     "Outer metadata fences, physical I/O/CPU and semantic replay retain owners.",

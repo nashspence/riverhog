@@ -128,6 +128,9 @@ def test_atomic_rollback_and_competing_preparations_preserve_committed_positions
                 assert framing.apply_archive_framing(db, key, work, first)
                 raise RuntimeError("interrupt")
         assert progress(case, work) == initial
+        assert case.metadata._db.execute(
+            "SELECT count(*) FROM discovery_archive_pages"
+        ).fetchone() == (0,)
         assert prepare(case, work, frame_budget=3) is first
         assert apply(case, work, first)
         assert apply(case, other, second) is False
@@ -248,3 +251,76 @@ def test_real_worker_epoch_handoff_preserves_original_directory_and_rejects_old_
         finally:
             current.close()
             case.metadata = previous
+
+
+def captured(case, work, ordinal):
+    with case.metadata.read() as (db, key):
+        return framing.archive_framing_page(db, key, work, ordinal)
+
+
+def test_normalized_pages_cover_only_consumed_original_bytes_and_survive_reopen(tmp_path):
+    raw = b"\x1e{}\n" * 20000
+    extent = framing.ARCHIVE_CAPTURE_PAGE_OCTETS
+    with framing_case(tmp_path / "pages", raw, segments=17) as (case, work):
+        begin(case, work)
+        first = prepare(case, work, byte_budget=extent, frame_budget=1)
+        assert first.captured.content == raw[:4]
+        assert len(first.captured.content) < len(raw) // 17
+        assert apply(case, work, first)
+        while page := prepare(case, work, byte_budget=9000, frame_budget=2048):
+            assert 0 < len(page.captured.content) <= extent
+            assert page.captured.ordinal == page.expected.cursor.byte_offset // extent
+            assert apply(case, work, page)
+        from riverhog_core.canonical_discovery_metadata import DiscoveryMetadata
+
+        previous = case.metadata
+        previous.close()
+        case.metadata = DiscoveryMetadata(
+            case.factory, previous.job, case.admission, previous.custody
+        )
+        case.metadata.open()
+        work = framing.ArchiveJournalFramingWork(
+            ArchiveJournalSource(case.metadata, work.source.reader, work.source.identity.journal_id)
+        )
+        assert progress(case, work).cursor.byte_offset == len(raw)
+        first, last = captured(case, work, 0), captured(case, work, 1)
+        assert first.content == raw[:extent]
+        assert last.content == raw[extent:]
+        assert first.content + last.content == raw
+        assert captured(case, work, 2) is None
+
+
+@pytest.mark.parametrize("damage", ["content", "digest", "missing", "extent"])
+def test_lost_or_changed_captured_pages_are_preserved_and_rejected(tmp_path, damage):
+    with framing_case(tmp_path / "page-loss", b"\x1e{}\n" * 17) as (case, work):
+        begin(case, work)
+        assert apply(case, work, prepare(case, work, frame_budget=3))
+        db = case.metadata._db
+        if damage == "content":
+            db.execute("UPDATE discovery_archive_pages SET content=?", (b"x" * 12,)).close()
+        elif damage == "digest":
+            db.execute("UPDATE discovery_archive_pages SET sha256=?", ("0" * 64,)).close()
+        elif damage == "missing":
+            db.execute("DELETE FROM discovery_archive_pages").close()
+        else:
+            db.execute("UPDATE discovery_archive_pages SET content=?", (b"x",)).close()
+        with pytest.raises(StaleArchiveTask):
+            captured(case, work, 0)
+        with pytest.raises(StaleArchiveTask):
+            prepare(case, work)
+        assert db.execute("SELECT count(*) FROM discovery_archive_pages").fetchone() == (
+            0 if damage == "missing" else 1,
+        )
+
+
+def test_prepared_capture_loses_its_page_identity_before_commit(tmp_path):
+    with framing_case(tmp_path / "page-cas", b"\x1e{}\n" * 17) as (case, work):
+        begin(case, work)
+        assert apply(case, work, prepare(case, work, frame_budget=1))
+        page = prepare(case, work, frame_budget=1)
+        case.metadata._db.execute(
+            "UPDATE discovery_archive_pages SET sha256=?", ("0" * 64,)
+        ).close()
+        with pytest.raises(StaleArchiveTask):
+            apply(case, work, page)
+        assert progress(case, work).cursor.frame_count == 1
