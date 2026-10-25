@@ -66,6 +66,7 @@ class DiscoveryMetadata:
             raise StaleArchiveTask("Core metadata has another claimed archive attempt")
         self.factory, self.job, self.admission, self.custody = factory, job, admission, custody
         self._expected = self._binding()
+        self._claimed = self._claimed_binding()
         self._root = admission.root
         self._archive_binding = (
             admission.identity,
@@ -95,11 +96,23 @@ class DiscoveryMetadata:
             self.job.catalog_sha256,
         )
 
+    def _claimed_binding(self) -> tuple[str | int, ...]:
+        return (
+            self.job.archive_generation,
+            self.job.archive_root_sha256,
+            self.job.provenance_identity,
+            self.job.artifact_set_identity,
+            self.job.journal_count,
+            self.job.build_epoch,
+            self.job.worker_epoch,
+        )
+
     def _owner_current(self) -> bool:
         return (
             not self._closing
             and not self._closed
             and self._binding() == self._expected
+            and self._claimed_binding() == self._claimed
             and self.admission.root is self._root
             and (
                 self.admission.identity,
@@ -457,6 +470,14 @@ def _metadata_declaration(operation: str) -> Declaration:
                 "upper",
                 octets(256 if opening else 0),
                 "Only fixed initialization domain bytes and one catalog version UUID are hashed.",
+            ),
+            Bound(
+                "encoded_octets",
+                OCTETS,
+                "upper",
+                width(1) if opening else octets(0),
+                "Serialize the initial archive hash continuation once; its complete width "
+                "is included in the original control metadata.",
             ),
             Bound(
                 "encoded_path_octets",

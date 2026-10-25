@@ -89,7 +89,9 @@ def test_native_receives_full_original_sources_and_exact_clipped_selections(
         assert source.verify_current()
 
 
-@pytest.mark.parametrize("damage", ["worker", "binding", "admission", "freeze", "file", "closed"])
+@pytest.mark.parametrize(
+    "damage", ["worker", "adopted_worker", "binding", "admission", "freeze", "file", "closed"]
+)
 def test_source_rechecks_actual_owner_and_frozen_inputs(case, qualified, damage):
     with owned(case) as (metadata, path):
         metadata.open()
@@ -98,6 +100,10 @@ def test_source_rechecks_actual_owner_and_frozen_inputs(case, qualified, damage)
         assert source.verify_current()
         if damage == "worker":
             assert jobs.claim_discovery_worker(case.factory, metadata.job) is not None
+        elif damage == "adopted_worker":
+            claimed = jobs.claim_discovery_worker(case.factory, metadata.job)
+            assert claimed is not None
+            metadata.job = claimed
         elif damage == "binding":
             metadata.job = replace(metadata.job, source_manifest_sha256="e" * 64)
         elif damage == "admission":

@@ -174,6 +174,15 @@ class Recorder:
                 return update(instance, data)
 
             patch.setattr(CheckpointSHA256, "update", updated)
+            export = CheckpointSHA256.export_state
+
+            def exported(instance):
+                result = export(instance)
+                if self.active:
+                    self.metrics["encoded_octets"] += len(result.encode())
+                return result
+
+            patch.setattr(CheckpointSHA256, "export_state", exported)
 
             def forbidden(*_args, **_kwargs):
                 if self.active:

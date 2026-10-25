@@ -65,6 +65,7 @@ def lifecycle_declaration(operation: str) -> Declaration:
         "descriptor_opens": 2 if opening else 0,
         "descriptor_closes": 2 if opening else 1 if closing else 0,
         "file_identity_reads": 12 if opening else 0 if closing else 4,
+        "fsync_calls": 1 if opening else 0,
     }
     bounds = [
         Bound(metric, COUNT, "upper", _number(limit), meaning)
@@ -130,6 +131,11 @@ def lifecycle_declaration(operation: str) -> Declaration:
                 "file_identity_reads",
                 limits["file_identity_reads"],
                 "Fixed entry and held-descriptor checks without enumerating retained work.",
+            ),
+            (
+                "fsync_calls",
+                limits["fsync_calls"],
+                "Synchronize the containing directory once after exclusive storage creation.",
             ),
         )
     ]

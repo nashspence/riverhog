@@ -247,3 +247,23 @@ def test_serialized_core_metadata_can_move_between_worker_threads(case):
             assert worker.submit(advance).result(timeout=10).version == 0
             assert worker.submit(metadata.verify_current).result(timeout=10)
             worker.submit(metadata.close).result(timeout=10)
+
+
+def test_new_claim_record_cannot_reauthorize_old_core_handles(case):
+    with owned(case) as (first, _):
+        first.open()
+        replacement = jobs.claim_discovery_worker(case.factory, first.job)
+        assert replacement is not None
+        first.job = replacement
+        assert not first.verify_current()
+        with pytest.raises(StaleArchiveTask):
+            with first.read():
+                pass
+        second = DiscoveryMetadata(case.factory, replacement, case.admission, first.custody)
+        try:
+            second.open()
+            assert second.verify_current()
+            with second.read() as (db, key):
+                assert archive_metadata_progress(db, key).version == 0
+        finally:
+            second.close()

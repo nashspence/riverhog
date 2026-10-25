@@ -82,7 +82,12 @@ class Observer:
         connect, checkpoint, restore = owner.sqlite3.connect, owner._checkpoint, owner._restore
         current = source.verify_current
         opened_fd, closed_fd = owner.os.open, owner.os.close
+        actual_fsync = owner.os.fsync
         fstat, stat, lstat = owner.os.fstat, owner.os.stat, owner.os.lstat
+
+        def synced(*args, **kwargs):
+            self.metrics["fsync_calls"] += 1
+            return actual_fsync(*args, **kwargs)
 
         def descriptor_opened(*args, **kwargs):
             self.metrics["descriptor_opens"] += 1
@@ -123,6 +128,7 @@ class Observer:
             patch.setattr(owner, "_checkpoint", encoded)
             patch.setattr(owner, "_restore", decoded)
             patch.setattr(source, "verify_current", checked)
+            patch.setattr(owner.os, "fsync", synced)
             patch.setattr(owner.os, "open", descriptor_opened)
             patch.setattr(owner.os, "close", descriptor_closed)
             patch.setattr(owner.os, "fstat", inspected(fstat))
