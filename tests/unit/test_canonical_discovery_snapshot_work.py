@@ -50,14 +50,17 @@ from riverhog_core.canonical_discovery_member_work import (
 from riverhog_core.canonical_discovery_snapshot_work import (
     HistorySnapshotWork,
     apply_history_snapshot,
+    history_snapshot_progress,
     initialize_snapshot_work,
     prepare_history_snapshot,
 )
 from riverhog_provenance import JournalSummary, validate_journal
 
 from tests.support.canonical_discovery_work import (
+    MeasuredConnection,
     RecordedConnection,
     corrected_journal_fixture,
+    metadata_octets,
     write,
 )
 from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
@@ -251,6 +254,7 @@ def test_source_header_and_root_incidence_roll_back_and_retry_together(tmp_path,
                 "discovery_snapshot_sources",
                 "discovery_snapshot_headers",
                 "discovery_history_snapshot_links",
+                "discovery_history_snapshot_coverage",
             ):
                 assert db.execute("SELECT count(*) FROM " + table).fetchone() == (0,)
             db.execute("DROP TRIGGER fail_link")
@@ -385,3 +389,260 @@ def test_valid_shorter_native_prefix_cannot_replace_the_complete_archive_source(
                 prepare_history_snapshot(db, key, owner, selected.key)
             assert db.execute("SELECT count(*) FROM discovery_snapshot_headers").fetchone() == (0,)
     db.close()
+
+
+def test_coverage_requires_each_original_root_incidence_and_survives_reopen(tmp_path, native):
+    fixture, raw, _, _ = native
+    path = tmp_path / "coverage.sqlite"
+    db, key, admission, histories, selections = setup_work(path, native)
+    with validate_journal(raw, catalog=fixture.catalog) as summary:
+        with admit_archive_journal(db, key, admission, summary) as source:
+            for history, roots in zip(histories, selections, strict=True):
+                initial = history_snapshot_progress(db, key, history)
+                assert initial.expected_roots == len(roots) == 3
+                assert initial.registered_roots == 0 and not initial.complete
+                owner = HistorySnapshotWork(history, source)
+                for count, selected in enumerate(reversed(roots), 1):
+                    page = prepare_history_snapshot(db, key, owner, selected.key)
+                    with write(db):
+                        apply_history_snapshot(db, key, owner, page)
+                    expected = history_snapshot_progress(db, key, history)
+                    assert expected.registered_roots == count
+                    assert expected.complete is (count == len(roots))
+                    with write(db):
+                        apply_history_snapshot(db, key, owner, page)
+                    assert history_snapshot_progress(db, key, history) == expected
+                db.close()
+                db = sqlite3.connect(path, isolation_level=None)
+                assert history_snapshot_progress(db, key, history).complete
+    assert db.execute("SELECT count(*) FROM discovery_snapshot_headers").fetchone() == (3,)
+    assert db.execute("SELECT count(*) FROM discovery_history_snapshot_links").fetchone() == (6,)
+    db.close()
+
+
+def test_coverage_and_incidence_update_are_one_retryable_commit(tmp_path, native):
+    fixture, raw, _, _ = native
+    db, key, admission, histories, selections = setup_work(tmp_path / "coverage.sqlite", native)
+    with validate_journal(raw, catalog=fixture.catalog) as summary:
+        with admit_archive_journal(db, key, admission, summary) as source:
+            owner = HistorySnapshotWork(histories[0], source)
+            first = prepare_history_snapshot(db, key, owner, selections[0][0].key)
+            with write(db):
+                apply_history_snapshot(db, key, owner, first)
+            before = history_snapshot_progress(db, key, histories[0])
+            page = prepare_history_snapshot(db, key, owner, selections[0][1].key)
+            db.execute(
+                "CREATE TRIGGER fail_coverage BEFORE UPDATE ON discovery_history_snapshot_coverage "
+                "BEGIN SELECT RAISE(ABORT,'injected coverage failure'); END"
+            )
+            with write(db), pytest.raises(sqlite3.IntegrityError, match="injected coverage"):
+                apply_history_snapshot(db, key, owner, page)
+            assert history_snapshot_progress(db, key, histories[0]) == before
+            assert db.execute(
+                "SELECT count(*) FROM discovery_history_snapshot_links"
+            ).fetchone() == (1,)
+            db.execute("DROP TRIGGER fail_coverage")
+            with write(db):
+                apply_history_snapshot(db, key, owner, page)
+            assert history_snapshot_progress(db, key, histories[0]).registered_roots == 2
+    db.close()
+
+
+@pytest.mark.parametrize("counter", ["-1", "01", "4", None, "authority", "worker"])
+def test_coverage_rejects_corrupt_or_missing_accounting(tmp_path, native, counter):
+    fixture, raw, _, _ = native
+    db, key, admission, histories, selections = setup_work(tmp_path / "coverage.sqlite", native)
+    with validate_journal(raw, catalog=fixture.catalog) as summary:
+        with admit_archive_journal(db, key, admission, summary) as source:
+            owner = HistorySnapshotWork(histories[0], source)
+            page = prepare_history_snapshot(db, key, owner, selections[0][0].key)
+            with write(db):
+                apply_history_snapshot(db, key, owner, page)
+            if counter is None:
+                db.execute("DELETE FROM discovery_history_snapshot_coverage")
+                with write(db), pytest.raises(StaleArchiveTask, match="matching coverage"):
+                    apply_history_snapshot(db, key, owner, page)
+            else:
+                column = {"authority": "authority_json", "worker": "worker_id"}.get(
+                    counter, "registered_roots"
+                )
+                value = "changed-" + counter if column != "registered_roots" else counter
+                db.execute(
+                    "UPDATE discovery_history_snapshot_coverage SET " + column + "=?", (value,)
+                )
+                with pytest.raises(StaleArchiveTask, match="coverage"):
+                    history_snapshot_progress(db, key, histories[0])
+    db.close()
+
+
+def test_coverage_rejects_changed_root_authority_and_current_worker(tmp_path, native):
+    db, key, _, histories, _ = setup_work(tmp_path / "coverage.sqlite", native)
+    history = histories[0]
+    original = history.authority
+    history.authority = replace(original, record_count=1)
+    with pytest.raises(StaleArchiveTask, match="authority"):
+        history_snapshot_progress(db, key, history)
+    history.authority = original
+    with pytest.raises(StaleArchiveTask, match="worker"):
+        history_snapshot_progress(db, replace(key, worker_id="replacement"), history)
+    db.execute(
+        "UPDATE discovery_history_sets SET complete=0 WHERE records_sha256=?",
+        (history.authority.records_sha256,),
+    )
+    with pytest.raises(StaleArchiveTask, match="verified"):
+        history_snapshot_progress(db, key, history)
+    db.execute(
+        "UPDATE discovery_history_sets SET complete=1 WHERE records_sha256=?",
+        (history.authority.records_sha256,),
+    )
+    db.execute("UPDATE discovery_archive_tasks SET complete=0")
+    with pytest.raises(StaleArchiveTask, match="incomplete"):
+        history_snapshot_progress(db, key, history)
+    db.close()
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-history-snapshot-coverage/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_snapshot_work.history_snapshot_progress",
+)
+def test_measured_coverage_is_indexed_read_only_and_independent_of_unrelated_rows(
+    tmp_path, native, monkeypatch, record_property
+):
+    from riverhog_core import canonical_discovery_snapshot_work as snapshots
+    from riverhog_growth_contracts import (
+        growth_binding,
+        project_bindings,
+        validate_execution_samples,
+    )
+
+    fixture, raw, _, _ = native
+    binding = growth_binding(history_snapshot_progress)
+    projection = project_bindings((binding,))
+    declaration_sha = hashlib.sha256(
+        canonical_json_bytes(projection["declarations"][binding.declaration.id])
+    ).hexdigest()
+    actual_encode = snapshots.canonical_json_bytes
+    samples = []
+    with validate_journal(raw, catalog=fixture.catalog) as summary:
+        for retained in (1, 17, 129):
+            path = tmp_path / ("coverage-" + str(retained) + ".sqlite")
+            db, key, admission, histories, selections = setup_work(path, native)
+            history = histories[0]
+            for index in range(retained - 1):
+                db.execute(
+                    "INSERT INTO discovery_history_snapshot_coverage VALUES (?,?,?,?,?,'0')",
+                    (
+                        "unrelated-" + str(index),
+                        key.admission_sha256,
+                        history.authority.records_sha256,
+                        "unrelated",
+                        "unrelated damaged root authority" * 3000,
+                    ),
+                )
+            with admit_archive_journal(db, key, admission, summary) as source:
+                owner = HistorySnapshotWork(history, source)
+                for state, selected_roots in (
+                    ("unstarted", ()),
+                    ("partial", selections[0][:1]),
+                    ("complete", selections[0][1:]),
+                ):
+                    for selected in selected_roots:
+                        page = prepare_history_snapshot(db, key, owner, selected.key)
+                        with write(db):
+                            apply_history_snapshot(db, key, owner, page)
+                    for cache in ("warm", "reopened"):
+                        if cache == "reopened":
+                            db.close()
+                            db = sqlite3.connect(path, isolation_level=None)
+                        widths = [
+                            sum(
+                                map(
+                                    metadata_octets,
+                                    (
+                                        key.build_id,
+                                        key.admission_sha256,
+                                        key.worker_id,
+                                        history.authority_json,
+                                    ),
+                                )
+                            )
+                        ]
+                        for table, extra, values in (
+                            ("discovery_archive_tasks", "", ()),
+                            (
+                                "discovery_history_sets",
+                                " AND records_sha256=?",
+                                (history.authority.records_sha256,),
+                            ),
+                            (
+                                "discovery_history_snapshot_coverage",
+                                " AND root_set_sha256=?",
+                                (history.authority.records_sha256,),
+                            ),
+                        ):
+                            row = db.execute(
+                                "SELECT * FROM "
+                                + table
+                                + " WHERE build_id=? AND admission_sha256=?"
+                                + extra,
+                                (key.build_id, key.admission_sha256, *values),
+                            ).fetchone()
+                            if row is not None:
+                                widths.append(sum(map(metadata_octets, row)))
+                        dimensions = {
+                            "registered_records": sum(
+                                db.execute("SELECT count(*) FROM " + table).fetchone()[0]
+                                for table in (
+                                    "discovery_archive_tasks",
+                                    "discovery_history_sets",
+                                    "discovery_history_snapshot_coverage",
+                                )
+                            ),
+                            "metadata_octets": max(widths),
+                        }
+                        observer = MeasuredConnection(db)
+                        changes = db.total_changes
+
+                        def encode(value, observer=observer):
+                            result = actual_encode(value)
+                            observer.metrics["encoded_octets"] += len(result)
+                            return result
+
+                        def instruction(observer=observer):
+                            observer.metrics["sqlite_vm_instructions"] += 1
+                            return 0
+
+                        db.set_progress_handler(instruction, 1)
+                        try:
+                            with monkeypatch.context() as patch:
+                                patch.setattr(snapshots, "canonical_json_bytes", encode)
+                                progress = history_snapshot_progress(observer, key, history)
+                        finally:
+                            db.set_progress_handler(None, 0)
+                        assert db.total_changes == changes
+                        assert progress.expected_roots == 3
+                        assert (
+                            progress.registered_roots
+                            == {"unstarted": 0, "partial": 1, "complete": 3}[state]
+                        )
+                        assert progress.complete is (state == "complete")
+                        for sql, parameters in observer.statements:
+                            assert "count(" not in sql.lower()
+                            plans = db.execute("EXPLAIN QUERY PLAN " + sql, parameters).fetchall()
+                            assert all("SCAN" not in row[3].upper() for row in plans)
+                        metrics = {
+                            bound.metric: observer.metrics[bound.metric]
+                            for bound in binding.declaration.bounds
+                        }
+                        sample = {
+                            "declaration": binding.declaration.id,
+                            "declaration_sha256": declaration_sha,
+                            "dimensions": dimensions,
+                            "metrics": metrics,
+                            "delegates": {},
+                        }
+                        validate_execution_samples(projection, binding.declaration.id, [sample])
+                        samples.append(sample)
+            db.close()
+    record_property("growth_samples", samples)

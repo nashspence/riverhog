@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import sqlite3
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from typing import Any
 
@@ -19,7 +19,12 @@ from riverhog_archive_contracts import (
     HistoryJournalAnchor,
     MemberHistoryRoot,
 )
-from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
+from riverhog_canonical_json import (
+    canonical_json_bytes,
+    format_scalar,
+    parse_scalar,
+    require_canonical_json,
+)
 from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
@@ -41,6 +46,16 @@ from riverhog_core.canonical_discovery_history_work import (
     history_set_progress,
 )
 from riverhog_core.canonical_discovery_journal_work import QualifiedJournalSource
+
+
+@dataclass(frozen=True, slots=True)
+class HistorySnapshotProgress:
+    expected_roots: int
+    registered_roots: int
+
+    @property
+    def complete(self) -> bool:
+        return self.registered_roots == self.expected_roots
 
 
 @dataclass(frozen=True, slots=True)
@@ -96,6 +111,11 @@ def initialize_snapshot_work(db: sqlite3.Connection) -> None:
             prefix_sha256 TEXT NOT NULL, anchor_json TEXT NOT NULL,
             PRIMARY KEY(build_id,admission_sha256,source_key,prefix_sha256)
         ) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS discovery_history_snapshot_coverage (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, root_set_sha256 TEXT NOT NULL,
+            worker_id TEXT NOT NULL, authority_json TEXT NOT NULL, registered_roots TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,root_set_sha256)
+        ) WITHOUT ROWID;
         CREATE TABLE IF NOT EXISTS discovery_history_snapshot_links (
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, root_set_sha256 TEXT NOT NULL,
             record_key TEXT NOT NULL, source_key TEXT NOT NULL, prefix_sha256 TEXT NOT NULL,
@@ -128,18 +148,176 @@ def _atomic(db: sqlite3.Connection) -> Iterator[None]:
         db.execute("RELEASE discovery_snapshot")
 
 
+def _root_set(
+    db: sqlite3.Connection, key: ArchiveTaskKey, history: HistorySetWork
+) -> HistorySetProgress:
+    if (
+        key.admission_sha256 != history.admission.identity
+        or history.authority.schema_id != MEMBER_HISTORY_ROOTS_SCHEMA
+        or canonical_json_bytes(history.authority.to_mapping()).decode() != history.authority_json
+    ):
+        raise StaleArchiveTask("snapshot selection has another archive or set authority")
+    progress = history_set_progress(db, key, history)
+    if not progress.complete or progress.records != history.authority.record_count:
+        raise StaleArchiveTask("snapshot root set is not completely verified")
+    return progress
+
+
 def _selection(
     db: sqlite3.Connection, key: ArchiveTaskKey, owner: HistorySnapshotWork
 ) -> HistorySetProgress:
-    if (
-        key.admission_sha256 != owner.history.admission.identity
-        or owner.history.authority.schema_id != MEMBER_HISTORY_ROOTS_SCHEMA
-    ):
-        raise StaleArchiveTask("snapshot selection has another archive or set schema")
-    progress = history_set_progress(db, key, owner.history)
-    if not progress.complete:
-        raise StaleArchiveTask("snapshot root set is not completely verified")
-    return progress
+    return _root_set(db, key, owner.history)
+
+
+def _coverage(
+    db: sqlite3.Connection, key: ArchiveTaskKey, history: HistorySetWork
+) -> tuple[HistorySnapshotProgress, bool]:
+    row = _one(
+        db,
+        "SELECT worker_id,authority_json,registered_roots "
+        "FROM discovery_history_snapshot_coverage "
+        "WHERE build_id=? AND admission_sha256=? AND root_set_sha256=?",
+        (key.build_id, key.admission_sha256, history.authority.records_sha256),
+    )
+    if row is None:
+        return HistorySnapshotProgress(history.authority.record_count, 0), False
+    if row[:2] != (key.worker_id, history.authority_json) or type(row[2]) is not str:
+        raise StaleArchiveTask("snapshot coverage has another worker or root authority")
+    try:
+        registered = parse_scalar("nonnegative", row[2])
+    except (ValueError, TypeError):
+        raise StaleArchiveTask("snapshot coverage counter is not canonical") from None
+    if registered > history.authority.record_count:
+        raise StaleArchiveTask("snapshot coverage exceeds its authenticated root count")
+    return HistorySnapshotProgress(history.authority.record_count, registered), True
+
+
+@declare_growth(
+    Declaration(
+        id="riverhog-server.discovery-history-snapshot-coverage.growth/v1",
+        authority="riverhog-server",
+        subjects=("riverhog_core.canonical_discovery_snapshot_work.history_snapshot_progress",),
+        scope="one authenticated root-set snapshot incidence completion check",
+        starts_at="receive the exact current archive, worker and authenticated root-set authority",
+        ends_at="close all Core cursors and detach required versus uniquely registered root counts",
+        dimensions=(
+            Dimension(
+                "registered_records", COUNT, "All retained archive, set and coverage headers."
+            ),
+            Dimension(
+                "metadata_octets", OCTETS, "Largest complete selected or incoming metadata row."
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "equal",
+                Expression("constant", value=3, unit=COUNT),
+                "One archive fence, one authenticated set header and one exact coverage lookup.",
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                Expression("constant", value=3, unit=COUNT),
+                "Each indexed query returns at most one original metadata row.",
+            ),
+            Bound(
+                "parameter_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        Expression("constant", value=16, unit=()),
+                        Expression("dimension", name="metadata_octets"),
+                    ),
+                ),
+                "Complete bound keys are charged; no retained incidence or payload scan.",
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        Expression("constant", value=8, unit=()),
+                        Expression("dimension", name="metadata_octets"),
+                    ),
+                ),
+                "All returned header fields are charged.",
+            ),
+            Bound(
+                "encoded_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        Expression("constant", value=2, unit=()),
+                        Expression("dimension", name="metadata_octets"),
+                    ),
+                ),
+                "The complete incoming authority is compared to its original canonical bytes.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        Expression("constant", value=4096, unit=COUNT),
+                        Expression(
+                            "product",
+                            terms=(
+                                Expression("constant", value=512, unit=COUNT),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("dimension", name="registered_records"),
+                                                Expression("constant", value=2, unit=COUNT),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Qualified SQLite B-tree point work; unrelated rows are never visited.",
+            ),
+        ),
+        conditions=(
+            "The owner retains current catalog/build authority and exclusive workspace custody.",
+            "The maintained workspace schema has no added triggers or indexes.",
+            "Snapshot registration increments coverage only with a new authenticated incidence.",
+        ),
+        invariants=(
+            "The expected count comes from the fully verified original structural root set.",
+            "A shared snapshot header cannot substitute for a missing root-set incidence.",
+            "An exact retry increments no count; incidence and counter changes are atomic.",
+            "This operation performs no COUNT, source-byte read, Native call or write.",
+        ),
+        limitations=(
+            "This is one root set's coverage, not complete member/import/dependency closure.",
+            "Native validity, source custody and publication retain their separate terminals.",
+            "VM constants depend on SQLite; lock waits and elapsed time are observations.",
+        ),
+    )
+)
+def history_snapshot_progress(
+    db: sqlite3.Connection, key: ArchiveTaskKey, history: HistorySetWork
+) -> HistorySnapshotProgress:
+    if not archive_metadata_progress(db, key).complete:
+        raise StaleArchiveTask("snapshot archive source metadata is incomplete")
+    _root_set(db, key, history)
+    return _coverage(db, key, history)[0]
 
 
 def _record(
@@ -263,15 +441,15 @@ def prepare_history_snapshot(
                 "sql_statements",
                 COUNT,
                 "upper",
-                Expression("constant", value=10, unit=COUNT),
-                "Two selection reads and three exact keyed registrations in a savepoint.",
+                Expression("constant", value=13, unit=COUNT),
+                "Exact source/root lookups, registrations and atomic coverage accounting.",
             ),
             Bound(
                 "returned_rows",
                 COUNT,
                 "upper",
-                Expression("constant", value=5, unit=COUNT),
-                "Exact selection/record and existing source/header/incidence lookups.",
+                Expression("constant", value=6, unit=COUNT),
+                "Exact selection/record, source/header/incidence and coverage lookups.",
             ),
             Bound(
                 "native_anchor_calls",
@@ -293,7 +471,7 @@ def prepare_history_snapshot(
             "Apply receives the exact preparation; the schema has no added triggers.",
         ),
         invariants=(
-            "Source/header/incidence registration is atomic and exact retries do not add copies.",
+            "Source/header/incidence and coverage commit atomically; retries add no counts.",
             "Existing keys compare full original coordinates; a digest alone is not equality.",
             "A closed/replaced source or changed selection cannot register a snapshot header.",
         ),
@@ -318,6 +496,7 @@ def apply_history_snapshot(
             raise StaleArchiveTask("snapshot root-set version or continuation changed")
         if _record(db, key, owner, page.record_key) != page.record_json:
             raise StaleArchiveTask("snapshot root record changed")
+        coverage, coverage_exists = _coverage(db, key, owner.history)
         source = _one(
             db,
             "SELECT binding_json FROM discovery_snapshot_sources "
@@ -363,6 +542,19 @@ def apply_history_snapshot(
             ),
         )
         if incidence is None:
+            if coverage.complete:
+                raise StaleArchiveTask("snapshot coverage already reaches its authenticated count")
+            if not coverage_exists:
+                db.execute(
+                    "INSERT INTO discovery_history_snapshot_coverage VALUES (?,?,?,?,?,'0')",
+                    (
+                        key.build_id,
+                        key.admission_sha256,
+                        owner.history.authority.records_sha256,
+                        key.worker_id,
+                        owner.history.authority_json,
+                    ),
+                )
             db.execute(
                 "INSERT INTO discovery_history_snapshot_links VALUES (?,?,?,?,?,?,?)",
                 (
@@ -373,5 +565,25 @@ def apply_history_snapshot(
                     *expected,
                 ),
             )
+            with closing(
+                db.execute(
+                    "UPDATE discovery_history_snapshot_coverage SET registered_roots=? "
+                    "WHERE build_id=? AND admission_sha256=? AND root_set_sha256=? "
+                    "AND worker_id=? AND authority_json=? AND registered_roots=?",
+                    (
+                        format_scalar("nonnegative", coverage.registered_roots + 1),
+                        key.build_id,
+                        key.admission_sha256,
+                        owner.history.authority.records_sha256,
+                        key.worker_id,
+                        owner.history.authority_json,
+                        format_scalar("nonnegative", coverage.registered_roots),
+                    ),
+                )
+            ) as changed:
+                if changed.rowcount != 1:
+                    raise StaleArchiveTask("snapshot coverage changed during registration")
         elif incidence != expected:
             raise StaleArchiveTask("snapshot root incidence has conflicting coordinates")
+        elif not coverage_exists or coverage.registered_roots == 0:
+            raise StaleArchiveTask("snapshot incidence has no matching coverage")

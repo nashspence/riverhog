@@ -32,7 +32,12 @@ from riverhog_core.canonical_discovery_corpus_inputs import (
 from riverhog_core.canonical_discovery_journal_work import QualifiedJournalSource, StaleJournalTask
 from riverhog_provenance import validate_journal
 
-from tests.support.canonical_discovery_work import corrected_journal_fixture, write
+from tests.support.canonical_discovery_work import (
+    MeasuredConnection,
+    corrected_journal_fixture,
+    metadata_octets,
+    write,
+)
 from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
 
 
@@ -239,61 +244,6 @@ def test_mutated_root_count_cannot_replace_authenticated_expectations(owned):
         begin_corpus_source_inputs(db, key, admission)
 
 
-def _octets(value):
-    if value is None:
-        return 0
-    return len(value) if isinstance(value, bytes) else len(str(value).encode())
-
-
-class _MeasuredCursor:
-    def __init__(self, actual, metrics):
-        self.actual, self.metrics = actual, metrics
-
-    def fetchone(self):
-        row = self.actual.fetchone()
-        if row is not None:
-            self.metrics["returned_rows"] += 1
-            self.metrics["returned_octets"] += sum(_octets(value) for value in row)
-        return row
-
-    @property
-    def rowcount(self):
-        return self.actual.rowcount
-
-    def close(self):
-        self.actual.close()
-
-
-class _MeasuredConnection:
-    def __init__(self, actual):
-        self.actual = actual
-        self.metrics = dict.fromkeys(
-            (
-                "sql_statements",
-                "returned_rows",
-                "parameter_octets",
-                "returned_octets",
-                "written_octets",
-                "encoded_octets",
-                "hashed_octets",
-                "sqlite_vm_instructions",
-                "native_anchor_calls",
-            ),
-            0,
-        )
-        self.statements = []
-
-    @property
-    def in_transaction(self):
-        return self.actual.in_transaction
-
-    def execute(self, sql, parameters=()):
-        self.metrics["sql_statements"] += 1
-        self.metrics["parameter_octets"] += sum(_octets(value) for value in parameters)
-        self.statements.append((sql, parameters))
-        return _MeasuredCursor(self.actual.execute(sql, parameters), self.metrics)
-
-
 def _selected_rows(db, key):
     result = {}
     for table in (
@@ -385,7 +335,9 @@ def _measured_inputs(tmp_path, native, monkeypatch, record_property, mode, sourc
                 page = prepare_corpus_source_input(db, key, owner) if mode == "apply" else None
                 before = _selected_rows(db, key)
                 row_widths = [
-                    sum(_octets(value) for value in row) for rows in before.values() for row in rows
+                    sum(metadata_octets(value) for value in row)
+                    for rows in before.values()
+                    for row in rows
                 ]
                 incoming = (
                     key.build_id,
@@ -394,11 +346,11 @@ def _measured_inputs(tmp_path, native, monkeypatch, record_property, mode, sourc
                     admission.root_json,
                     admission.binding_json,
                 )
-                row_widths.append(sum(_octets(value) for value in incoming))
+                row_widths.append(sum(metadata_octets(value) for value in incoming))
                 if mode in ("prepare", "apply"):
                     row_widths.append(
                         sum(
-                            _octets(value)
+                            metadata_octets(value)
                             for value in (
                                 key.build_id,
                                 key.admission_sha256,
@@ -421,7 +373,7 @@ def _measured_inputs(tmp_path, native, monkeypatch, record_property, mode, sourc
                     ),
                     "metadata_octets": max(row_widths),
                 }
-                recorder = _MeasuredConnection(db)
+                recorder = MeasuredConnection(db)
 
                 def anchor(self, sequence, recorder=recorder):
                     recorder.metrics["native_anchor_calls"] += 1
@@ -477,7 +429,9 @@ def _measured_inputs(tmp_path, native, monkeypatch, record_property, mode, sourc
                 for table in before:
                     for row in after[table]:
                         if row not in before[table]:
-                            recorder.metrics["written_octets"] += sum(_octets(v) for v in row)
+                            recorder.metrics["written_octets"] += sum(
+                                metadata_octets(v) for v in row
+                            )
                 for sql, parameters in recorder.statements:
                     assert "COUNT(" not in sql.upper()
                     if sql.startswith("SELECT"):
@@ -563,7 +517,7 @@ def test_retries_compare_stored_source_preimages_inside_sql(owned):
         "WHERE build_id=? AND admission_sha256=?",
         (huge, key.build_id, key.admission_sha256),
     )
-    recorder = _MeasuredConnection(db)
+    recorder = MeasuredConnection(db)
     with write(db), pytest.raises(StaleArchiveTask, match="original source coordinates"):
         apply_corpus_source_input(recorder, key, owner, page)
     assert recorder.metrics["returned_octets"] < 4096

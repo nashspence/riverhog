@@ -182,3 +182,58 @@ def corrected_journal_fixture():
         catalog=fixture.catalog,
     )
     return fixture, raw, target
+
+
+def metadata_octets(value):
+    if value is None:
+        return 0
+    return len(value) if isinstance(value, bytes) else len(str(value).encode())
+
+
+class _MeasuredCursor:
+    def __init__(self, actual, metrics):
+        self.actual, self.metrics = actual, metrics
+
+    def fetchone(self):
+        row = self.actual.fetchone()
+        if row is not None:
+            self.metrics["returned_rows"] += 1
+            self.metrics["returned_octets"] += sum(metadata_octets(value) for value in row)
+        return row
+
+    @property
+    def rowcount(self):
+        return self.actual.rowcount
+
+    def close(self):
+        self.actual.close()
+
+
+class MeasuredConnection:
+    def __init__(self, actual):
+        self.actual = actual
+        self.metrics = dict.fromkeys(
+            (
+                "sql_statements",
+                "returned_rows",
+                "parameter_octets",
+                "returned_octets",
+                "written_octets",
+                "encoded_octets",
+                "hashed_octets",
+                "sqlite_vm_instructions",
+                "native_anchor_calls",
+            ),
+            0,
+        )
+        self.statements = []
+
+    @property
+    def in_transaction(self):
+        return self.actual.in_transaction
+
+    def execute(self, sql, parameters=()):
+        self.metrics["sql_statements"] += 1
+        self.metrics["parameter_octets"] += sum(metadata_octets(value) for value in parameters)
+        self.statements.append((sql, parameters))
+        return _MeasuredCursor(self.actual.execute(sql, parameters), self.metrics)
