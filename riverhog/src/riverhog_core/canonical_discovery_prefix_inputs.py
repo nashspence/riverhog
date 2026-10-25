@@ -42,6 +42,7 @@ class CorpusPrefixProgress:
     version: int
     prefixes: int
     journals: int
+    pending: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,6 +61,7 @@ class CorpusPrefixMaximum:
     source_binding_json: str
     anchor: HistoryJournalAnchor
     version: int
+    pending: bool
 
 
 class CorpusPrefixWork:
@@ -82,7 +84,8 @@ def initialize_corpus_prefix_inputs(db: sqlite3.Connection) -> None:
         CREATE TABLE IF NOT EXISTS discovery_corpus_prefix_headers (
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, worker_id TEXT NOT NULL,
             source_manifest_sha256 TEXT NOT NULL, prefixes TEXT NOT NULL, journals TEXT NOT NULL,
-            version TEXT NOT NULL, PRIMARY KEY(build_id,admission_sha256)
+            pending_sources TEXT NOT NULL, version TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256)
         ) WITHOUT ROWID;
         CREATE TABLE IF NOT EXISTS discovery_corpus_prefix_inputs (
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, source_key TEXT NOT NULL,
@@ -92,7 +95,17 @@ def initialize_corpus_prefix_inputs(db: sqlite3.Connection) -> None:
         CREATE TABLE IF NOT EXISTS discovery_corpus_prefix_maxima (
             build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, source_key TEXT NOT NULL,
             binding_json TEXT NOT NULL, anchor_json TEXT NOT NULL, version TEXT NOT NULL,
+            pending INTEGER NOT NULL CHECK(pending IN (0,1)),
             PRIMARY KEY(build_id,admission_sha256,source_key)
+        ) WITHOUT ROWID;
+        CREATE INDEX IF NOT EXISTS discovery_corpus_dependency_pending
+        ON discovery_corpus_prefix_maxima(build_id,admission_sha256,source_key)
+        WHERE pending=1;
+        CREATE TABLE IF NOT EXISTS discovery_corpus_dependency_cursors (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, source_key TEXT NOT NULL,
+            version TEXT NOT NULL, fork_complete INTEGER NOT NULL CHECK(fork_complete IN (0,1)),
+            after_json TEXT, active_json TEXT, after_node TEXT, scanned_through TEXT,
+            receipt_json TEXT, PRIMARY KEY(build_id,admission_sha256,source_key)
         ) WITHOUT ROWID;
     """)
 
@@ -121,21 +134,22 @@ def _header(
     _require_frozen_sources(db, key, admission, manifest)
     row = _one(
         db,
-        "SELECT worker_id,source_manifest_sha256,prefixes,journals,version "
+        "SELECT worker_id,source_manifest_sha256,prefixes,journals,pending_sources,version "
         "FROM discovery_corpus_prefix_headers WHERE build_id=? AND admission_sha256=?",
         (key.build_id, key.admission_sha256),
     )
     if row is None or row[:2] != (key.worker_id, manifest.manifest_sha256):
         raise StaleArchiveTask("prefix registry has another current source manifest or worker")
-    prefixes, journals, version = map(_natural, row[2:])
+    prefixes, journals, pending, version = map(_natural, row[2:])
     if (
         version != prefixes
         or journals > manifest.source_count
         or journals > prefixes
+        or pending > journals
         or (prefixes == 0) != (journals == 0)
     ):
         raise StaleArchiveTask("prefix registry counters differ from admitted sources")
-    return CorpusPrefixProgress(version, prefixes, journals)
+    return CorpusPrefixProgress(version, prefixes, journals, pending)
 
 
 def _declaration(mode: str) -> Declaration:
@@ -277,7 +291,7 @@ def begin_corpus_prefix_inputs(
         expected = key.worker_id, manifest.manifest_sha256
         if old is None:
             db.execute(
-                "INSERT INTO discovery_corpus_prefix_headers VALUES (?,?,?,?,'0','0','0')",
+                "INSERT INTO discovery_corpus_prefix_headers VALUES (?,?,?,?,'0','0','0','0')",
                 (key.build_id, key.admission_sha256, *expected),
             )
         elif old != expected:
@@ -331,7 +345,7 @@ def _maximum(
 ) -> CorpusPrefixMaximum | None:
     row = _one(
         db,
-        "SELECT binding_json,anchor_json,version FROM discovery_corpus_prefix_maxima "
+        "SELECT binding_json,anchor_json,version,pending FROM discovery_corpus_prefix_maxima "
         "WHERE build_id=? AND admission_sha256=? AND source_key=?",
         (key.build_id, key.admission_sha256, source_key),
     )
@@ -360,7 +374,7 @@ def _maximum(
     )
     if original != (row[0],) or selected != (row[1],):
         raise StaleArchiveTask("shared maximum differs from original source or prefix coordinates")
-    return CorpusPrefixMaximum(source_key, row[0], anchor, _natural(row[2]))
+    return CorpusPrefixMaximum(source_key, row[0], anchor, _natural(row[2]), bool(row[3]))
 
 
 @declare_growth(_declaration("apply"))
@@ -404,6 +418,8 @@ def apply_corpus_prefix(
         if current is not None and current.source_binding_json != page.source_binding_json:
             raise StaleArchiveTask("prefix maximum source binding changed")
         journals = progress.journals + int(current is None)
+        extends = current is None or page.anchor.through_sequence > current.anchor.through_sequence
+        pending = progress.pending + int(extends and (current is None or not current.pending))
         if journals > owner.manifest.source_count:
             raise StaleArchiveTask("prefix journal count exceeds the complete source manifest")
         db.execute(
@@ -418,7 +434,7 @@ def apply_corpus_prefix(
         )
         if current is None:
             db.execute(
-                "INSERT INTO discovery_corpus_prefix_maxima VALUES (?,?,?,?,?,'0')",
+                "INSERT INTO discovery_corpus_prefix_maxima VALUES (?,?,?,?,?,'0',1)",
                 (
                     key.build_id,
                     key.admission_sha256,
@@ -427,9 +443,14 @@ def apply_corpus_prefix(
                     page.anchor_json,
                 ),
             )
+            db.execute(
+                "INSERT INTO discovery_corpus_dependency_cursors "
+                "VALUES (?,?,?,'0',0,NULL,NULL,NULL,NULL,NULL)",
+                (key.build_id, key.admission_sha256, page.source_key),
+            )
         elif page.anchor.through_sequence > current.anchor.through_sequence:
             db.execute(
-                "UPDATE discovery_corpus_prefix_maxima SET anchor_json=?,version=? "
+                "UPDATE discovery_corpus_prefix_maxima SET anchor_json=?,version=?,pending=1 "
                 "WHERE build_id=? AND admission_sha256=? AND source_key=?",
                 (
                     page.anchor_json,
@@ -440,11 +461,13 @@ def apply_corpus_prefix(
                 ),
             )
         changed = db.execute(
-            "UPDATE discovery_corpus_prefix_headers SET prefixes=?,journals=?,version=? "
+            "UPDATE discovery_corpus_prefix_headers SET prefixes=?,journals=?,"
+            "pending_sources=?,version=? "
             "WHERE build_id=? AND admission_sha256=? AND worker_id=? AND version=?",
             (
                 format_scalar("nonnegative", progress.prefixes + 1),
                 format_scalar("nonnegative", journals),
+                format_scalar("nonnegative", pending),
                 format_scalar("nonnegative", progress.version + 1),
                 key.build_id,
                 key.admission_sha256,
@@ -454,7 +477,7 @@ def apply_corpus_prefix(
         ).rowcount
         if changed != 1:
             raise StaleArchiveTask("prefix registry worker changed")
-        return CorpusPrefixProgress(progress.version + 1, progress.prefixes + 1, journals)
+        return CorpusPrefixProgress(progress.version + 1, progress.prefixes + 1, journals, pending)
 
 
 @declare_growth(_declaration("maximum"))

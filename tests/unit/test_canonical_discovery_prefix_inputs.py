@@ -234,11 +234,11 @@ def _measure(owned, native, tmp_path, monkeypatch, record_property, mode):
             for index in range(retained):
                 unrelated = f"unrelated-{retained}-{index}"
                 db.execute(
-                    "INSERT INTO discovery_corpus_prefix_headers VALUES (?,?,?,?,'0','0','0')",
+                    "INSERT INTO discovery_corpus_prefix_headers VALUES (?,?,?,?,'0','0','0','0')",
                     (unrelated, key.admission_sha256, "worker", "f" * 64),
                 )
                 db.execute(
-                    "INSERT INTO discovery_corpus_prefix_maxima VALUES (?,?,?,?,?,'0')",
+                    "INSERT INTO discovery_corpus_prefix_maxima VALUES (?,?,?,?,?,'0',0)",
                     (
                         unrelated,
                         key.admission_sha256,
@@ -264,6 +264,7 @@ def _measure(owned, native, tmp_path, monkeypatch, record_property, mode):
                 "discovery_corpus_prefix_headers",
                 "discovery_corpus_prefix_inputs",
                 "discovery_corpus_prefix_maxima",
+                "discovery_corpus_dependency_cursors",
             )
             rows = []
             for table in tables:

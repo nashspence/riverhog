@@ -35,6 +35,7 @@ def archive_reader_fixture(
     *,
     histories: tuple[MemberHistoryDocument, ...] | None = None,
     history_objects: dict[str, bytes] | None = None,
+    additional_journals: tuple[tuple[str, bytes], ...] = (),
 ) -> tuple[CanonicalProvenanceArchiveReader, dict[str, bytes], str, str]:
     generation = "a" * 64
     artifact_set = "b" * 64
@@ -128,10 +129,30 @@ def archive_reader_fixture(
             journal_sha256=hashlib.sha256(journal_bytes).hexdigest(),
         ),
     )
+    extra_payloads = []
+    for extra_id, extra_bytes in additional_journals:
+        sequence = len(descriptors)
+        descriptor = ProvenanceVolumeDocument(
+            archive_generation=generation,
+            artifact_set_sha256=artifact_set,
+            sequence=sequence,
+            payload=ProvenancePayload(
+                kind="journal",
+                sequence=sequence,
+                bytes=len(extra_bytes),
+                sha256=hashlib.sha256(extra_bytes).hexdigest(),
+            ),
+            journal_id=extra_id,
+            journal_offset=0,
+            journal_bytes=len(extra_bytes),
+            journal_sha256=hashlib.sha256(extra_bytes).hexdigest(),
+        )
+        descriptors += (descriptor,)
+        extra_payloads.append((descriptor.payload.path, extra_bytes))
     terminal = ProvenanceTerminalDocument(
         archive_generation=generation,
         artifact_set_sha256=artifact_set,
-        sequence=3,
+        sequence=len(descriptors),
     )
     root = ProvenanceRootDocument(
         archive_generation=generation,
@@ -139,7 +160,7 @@ def archive_reader_fixture(
         delivery_context_id="urn:uuid:44444444-4444-4444-8444-444444444444",
         binding_count=len(bindings),
         binding_tree_sha256=binding_tree_commitment(bindings).root_sha256,
-        journal_count=1,
+        journal_count=1 + len(additional_journals),
         ordered_volume_sha256=ordered_provenance_commitment((*descriptors, terminal)),
     )
     objects = {"provenance/root.json.age": root.to_json_bytes()}
@@ -149,6 +170,7 @@ def archive_reader_fixture(
     objects[descriptors[0].payload.path] = binding_bytes
     objects[descriptors[1].payload.path] = journal_bytes[:12]
     objects[descriptors[2].payload.path] = journal_bytes[12:]
+    objects.update(extra_payloads)
 
     def read_object(path: str):
         yield objects[path]
