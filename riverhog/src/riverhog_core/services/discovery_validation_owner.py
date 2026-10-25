@@ -248,7 +248,8 @@ class DiscoveryValidationOwner:
             if not metadata.verify_current():
                 raise StaleArchiveTask("discovery quantum lost its current owner")
         except BaseException:
-            self._drop(build_id, slot)
+            if not slot.closing:
+                self._drop(build_id, slot)
             raise
         finally:
             if work is not None:

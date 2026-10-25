@@ -677,6 +677,29 @@ def exercise_case(case, qualified, retained, width, cold, mode, samples):
 
         measure(exceptional_quantum)
         assert case.pool.active_build_ids() == ()
+        with context(case) as restarted:
+            assert restarted is not None
+            native = restarted.corpus(selection)
+        slot = case.pool._slots[case.build_id]
+        native._corpus._db = UncertainClose(native._db, lost_reply=True, failures=2)
+        slot.metadata.custody._held = False
+
+        def unconfirmed_quantum():
+            with pytest.raises(OSError, match="unconfirmed"):
+                with context(case):
+                    pytest.fail("unconfirmed cleanup reopened work")
+
+        measure(unconfirmed_quantum)
+        assert case.pool.active_build_ids() == (case.build_id,)
+        measure(unconfirmed_quantum)
+        assert case.pool.active_build_ids() == (case.build_id,)
+
+        def confirmed_cleanup():
+            with context(case) as work:
+                assert work is None
+
+        measure(confirmed_cleanup)
+        assert case.pool.active_build_ids() == ()
         (directory / ".lease").unlink()
 
         def lost_quantum():

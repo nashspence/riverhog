@@ -366,3 +366,33 @@ def test_accepted_custody_loss_is_retained_without_recreating_storage(
         assert replacement.active_build_ids() == ()
     finally:
         replacement.close()
+
+
+@pytest.mark.parametrize("storage", ["native", "core"])
+@pytest.mark.parametrize("lost_reply", [False, True])
+def test_stale_work_attempts_cleanup_once_and_keeps_each_unconfirmed_reply(
+    case, qualified, storage, lost_reply
+):
+    owner = DiscoveryValidationOwner(case.factory, case.root)
+    try:
+        with unit(owner, case) as work:
+            selection, _ = seed(work.metadata, qualified)
+            native = work.corpus(selection)
+            metadata = work.metadata
+        target = native._corpus if storage == "native" else metadata
+        uncertain = UncertainClose(target._db, lost_reply=lost_reply, failures=2)
+        target._db = uncertain
+        metadata.custody._held = False
+        for remaining in (1, 0):
+            with pytest.raises(OSError, match="unconfirmed"):
+                with unit(owner, case):
+                    pytest.fail("unconfirmed cleanup reopened work")
+            assert uncertain.failures == remaining
+            assert owner.active_build_ids() == (case.build_id,)
+            busy(case)
+        with unit(owner, case) as work:
+            assert work is None
+        assert owner.active_build_ids() == ()
+        available(case)
+    finally:
+        owner.close()
