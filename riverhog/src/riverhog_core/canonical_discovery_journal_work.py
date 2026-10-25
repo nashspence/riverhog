@@ -56,6 +56,18 @@ def _identity(value: str) -> None:
         raise ValueError("work identity must be a bounded nonempty ASCII identifier")
 
 
+def journal_source_binding(admission_sha256: str, anchor: Mapping[str, Any]) -> str:
+    """Encode exact source coordinates without establishing admission authority."""
+    _digest(admission_sha256)
+    return canonical_json_bytes(
+        {
+            "admission_sha256": admission_sha256,
+            "anchor": anchor,
+            "domain": "riverhog-discovery-journal-source/v1",
+        }
+    ).decode()
+
+
 def _one(db: sqlite3.Connection, sql: str, parameters: tuple[object, ...]) -> Any:
     cursor = db.execute(sql, parameters)
     try:
@@ -187,13 +199,7 @@ class QualifiedJournalSource:
                 raise ValueError("a source prefix must contain its initial entry")
             self._anchor = self._summary.anchor_at(sequence)
             self.entry_count = sequence + 1
-            self.binding_json = canonical_json_bytes(
-                {
-                    "admission_sha256": admission_sha256,
-                    "anchor": self._anchor,
-                    "domain": "riverhog-discovery-journal-source/v1",
-                }
-            ).decode()
+            self.binding_json = journal_source_binding(admission_sha256, self._anchor)
             self.source_key = hashlib.sha256(self.binding_json.encode()).hexdigest()
             self.terminal_json = canonical_json_bytes(self._anchor["through"]).decode()
         except BaseException:
