@@ -71,6 +71,11 @@ class Pool(dict):
             self.recorder.add("pool_slot_visits")
             yield value
 
+    def items(self):
+        for item in super().items():
+            self.recorder.add("pool_slot_visits")
+            yield item
+
 
 class Lock:
     def __init__(self, actual, recorder, *, pool=False):
@@ -658,7 +663,8 @@ def waiting_shutdown_sample(case, *, samples):
         worker.start()
         try:
             assert waiting.wait(30)
-            assert current._closed and not current._slots and not recorder.pool_held
+            assert current._closed and current._slots.get(_key) is slot
+            assert not recorder.pool_held
             assert current._lock.actual.acquire(blocking=False)
             current._lock.actual.release()
             with pytest.raises(RuntimeError):

@@ -1248,7 +1248,12 @@ def test_actual_owner_retains_unchanged_native_input_after_capacity(tmp_path, re
 
 def recording_cases(witness, root, *, large):
     witness.opening.native_helpers()
-    from test_journal_session_recording_rejection_growth import recording_source
+    path = (
+        Path(witness.opening.__file__).resolve().parents[2] / "packages/riverhog-provenance/tests"
+    )
+    with witness.pytest.MonkeyPatch.context() as patch:
+        patch.syspath_prepend(str(path))
+        from test_journal_session_recording_rejection_growth import recording_source
 
     from tests.unit.test_journal_capture import retained
     from tests.unit.test_staged_journal_range import JOURNAL

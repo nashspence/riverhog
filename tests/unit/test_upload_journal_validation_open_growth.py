@@ -660,6 +660,9 @@ class Recorder(fences.Recorder):
                 dimensions["load_calls"] = 1
                 native.initializing = initializing
                 proxy = native.source(selected)
+                kwargs = dict(kwargs)
+                if kwargs.get("on_storage_open") is not None:
+                    kwargs["on_storage_open"] = native.retention_callback(kwargs["on_storage_open"])
 
                 def action():
                     return operation(cls, directory, proxy, **kwargs)
@@ -871,6 +874,7 @@ def test_actual_opening_preserves_provider_costs_and_transferred_custody(
             if error is not None:
                 raise error
             assert result is None and slot.session is not None and slot.source is not None
+            assert sample["delegates"]["native"][0]["metrics"]["retention_callbacks"] == 1
             progress = slot.session.progress()
             job = slot.job
             assert progress.accepted_frames == 0 and job.worker_epoch == 1

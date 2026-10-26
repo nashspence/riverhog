@@ -439,10 +439,17 @@ class _OwnedSource:
 class _Slot:
     lock: Lock = field(default_factory=Lock)
     session: JournalValidationSession | None = None
+    resources: ExitStack = field(default_factory=ExitStack)
+    closing: bool = False
     job: jobs.ValidationJob | None = None
     source: _OwnedSource | None = None
     work: source_owner._UploadJournalValidationWork | None = None
     catalog_sha256: str | None = None
+
+    def retain_session(self, session: JournalValidationSession) -> None:
+        if self.session is not None:
+            raise RuntimeError("validation slot already retains Native storage")
+        self.session = session
 
 
 @dataclass(frozen=True, slots=True)
@@ -673,8 +680,8 @@ def _release_declaration(mode: str) -> Declaration:
         scope="concrete retained Session release with final workspace custody callbacks",
         starts_at="accept the selected owned slot or the existing configured pool",
         ends_at=(
-            "remove its reservation and close native handles while preserving "
-            "borrowed-reader custody"
+            "close Native handles before removing confirmed reservations, preserving "
+            "uncertain closure and borrowed-reader custody"
         ),
         dimensions=(
             Dimension("configured_slots", COUNT, "Positive configured pool capacity."),
@@ -703,9 +710,9 @@ def _release_declaration(mode: str) -> Declaration:
                 Bound(
                     metric,
                     COUNT,
-                    "equal",
-                    count(1),
-                    ("One pool mutex acquisition/release encloses only reservation metadata."),
+                    "upper",
+                    count(1) if dropping else add(count(1), dimension("pending_slots")),
+                    "Snapshot once and remove each confirmed reservation under the pool mutex.",
                 )
                 for metric in ("pool_lock_acquisitions", "pool_lock_releases")
             ),
@@ -714,8 +721,8 @@ def _release_declaration(mode: str) -> Declaration:
                     metric,
                     COUNT,
                     "upper",
-                    count(int(dropping)),
-                    ("Dropping seeks and removes at most the exact selected reservation."),
+                    limit,
+                    "Only exact successfully closed reservations can be removed.",
                 )
                 for metric in ("pool_map_lookups", "pool_map_removals")
             ),
@@ -723,8 +730,8 @@ def _release_declaration(mode: str) -> Declaration:
                 "pool_map_clears",
                 COUNT,
                 "equal",
-                count(int(not dropping)),
-                "Shutdown clears its pool snapshot under the mutex.",
+                count(0),
+                "Unconfirmed reservations stay reachable; no pool-wide clear discards them.",
             ),
             Bound(
                 "pool_slot_visits",
@@ -853,8 +860,8 @@ def _release_declaration(mode: str) -> Declaration:
                 "retention classes partition the invocations bounded by the entry pool snapshot."
             ),
             (
-                "The drop caller holds its slot lock; shutdown snapshots and "
-                "clears under the actual pool mutex before waiting on slot locks."
+                "The drop caller holds its slot lock; shutdown snapshots under "
+                "the pool mutex before waiting on each slot outside it."
             ),
             (
                 "Storage callbacks are the exact transferred workspace lease "
@@ -869,6 +876,8 @@ def _release_declaration(mode: str) -> Declaration:
         invariants=(
             "Database, filesystem and storage callback execution occurs outside the pool mutex.",
             "A mismatched replacement reservation remains intact when an older slot is dropped.",
+            "Unconfirmed closure retains its closing reservation for a later retry.",
+            "One failed slot does not prevent shutdown from closing independent slots.",
             (
                 "Borrowed readers preserve native storage and kernel custody "
                 "through their own final close."
@@ -1028,8 +1037,8 @@ def _sweep_declaration() -> Declaration:
                 "drop_calls_limit",
                 COUNT,
                 "upper",
-                dimension("source_calls"),
-                "Only an actually checked stale source can trigger a drop.",
+                dimension("pending_slots"),
+                "Each nonbusy stale or already-closing reservation can be dropped at most once.",
             ),
             *(
                 Bound(
@@ -1829,12 +1838,14 @@ class UploadJournalValidationOwner:
             return slot if slot.lock.acquire(blocking=False) else None
 
     def _drop(self, key: tuple[int, str, str], slot: _Slot) -> None:
-        with self._lock:
-            if self._slots.get(key) is slot:
-                del self._slots[key]
+        slot.closing = True
         if slot.session is not None:
             slot.session.close()
             slot.session = None
+        slot.resources.close()
+        with self._lock:
+            if self._slots.get(key) is slot:
+                del self._slots[key]
 
     def active_keys(self) -> tuple[tuple[int, str], ...]:
         with self._lock:
@@ -1843,28 +1854,38 @@ class UploadJournalValidationOwner:
     def release_stale(self) -> None:
         with self._lock:
             slots = tuple(self._slots.items())
+        errors = []
         for key, slot in slots:
             if not slot.lock.acquire(blocking=False):
                 continue
             try:
-                if slot.source is not None:
+                if slot.closing:
+                    self._drop(key, slot)
+                elif slot.source is not None:
                     try:
                         slot.source.verify_source()
                     except source_owner._StaleUploadJournalValidation:
                         self._drop(key, slot)
+            except BaseException as error:
+                errors.append(error)
             finally:
                 slot.lock.release()
+        if errors:
+            raise errors[0]
 
     def close(self) -> None:
         with self._lock:
             self._closed = True
-            slots = tuple(self._slots.values())
-            self._slots.clear()
-        for slot in slots:
-            with slot.lock:
-                if slot.session is not None:
-                    slot.session.close()
-                    slot.session = None
+            slots = tuple(self._slots.items())
+        errors = []
+        for key, slot in slots:
+            try:
+                with slot.lock:
+                    self._drop(key, slot)
+            except BaseException as error:
+                errors.append(error)
+        if errors:
+            raise errors[0]
 
     def _open(
         self,
@@ -1892,7 +1913,7 @@ class UploadJournalValidationOwner:
             return ValidationAdvance(False)
         slot.job = job
         creation_job = job
-        resources = ExitStack()
+        resources = slot.resources
         try:
             directory = resources.enter_context(
                 lease_journal_validation_workspace(
@@ -1923,19 +1944,24 @@ class UploadJournalValidationOwner:
                 catalog=catalog,
                 certificates=certificates,
                 on_storage_close=resources.close,
+                on_storage_open=slot.retain_session,
             )
-            slot.session = current
+            assert slot.session is current
+            # Successful construction transfers the lease to final Native storage
+            # release, including independently borrowed frozen readers.
+            slot.resources = ExitStack()
             slot.source, slot.work = owned_source, source
             slot.catalog_sha256 = catalog.checkpoint_sha256()
-            # Successful construction transferred lease ownership to storage.
-            resources = ExitStack()
             adopted = jobs.publish_progress(self.factory, source, job, current.progress())
             if adopted is None:
                 raise source_owner._StaleUploadJournalValidation
             slot.job = adopted
             return None
         finally:
-            resources.close()
+            # An early Native callback retains even partially initialized storage.
+            # Its uncertain closure must precede release of application custody.
+            if slot.session is None:
+                resources.close()
 
     def advance(
         self,
@@ -1950,6 +1976,9 @@ class UploadJournalValidationOwner:
         if slot is None:
             return ValidationAdvance(False)
         try:
+            if slot.closing:
+                self._drop(key, slot)
+                return ValidationAdvance(False)
             if slot.session is None:
                 terminal = self._open(source, slot, catalog)
                 if terminal is not None:
@@ -1992,12 +2021,14 @@ class UploadJournalValidationOwner:
                 self._drop(key, slot)
             return ValidationAdvance(after != before or outcome is not None, outcome)
         except JournalValidationCapacity:
-            # The same live atom remains available for a later admitted unit.
-            if slot.session is None:
+            # A successfully opened atom stays warm; failed initialization retains
+            # its early storage handle only until application cleanup confirms.
+            if slot.source is None and not slot.closing:
                 self._drop(key, slot)
             return ValidationAdvance(False)
         except source_owner._StaleUploadJournalValidation:
-            self._drop(key, slot)
+            if not slot.closing:
+                self._drop(key, slot)
             return ValidationAdvance(False)
         except (
             LostJournalValidationWorkspace,
@@ -2011,12 +2042,14 @@ class UploadJournalValidationOwner:
                         self.factory, source, slot.job, None, lost=str(error)[:1000]
                     )
             finally:
-                self._drop(key, slot)
+                if not slot.closing:
+                    self._drop(key, slot)
             raise LostJournalValidationWorkspace(
                 "retained native validation is unavailable"
             ) from error
         except BaseException:
-            self._drop(key, slot)
+            if not slot.closing:
+                self._drop(key, slot)
             raise
         finally:
             slot.lock.release()

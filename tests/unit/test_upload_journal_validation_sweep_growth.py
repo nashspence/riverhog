@@ -41,13 +41,6 @@ DIRECT = set(fences.BASE_METRICS) | {
 }
 
 
-class Pool(release.Pool):
-    def items(self):
-        for pair in super().items():
-            self.recorder.add("pool_slot_visits")
-            yield pair
-
-
 class Recorder(release.Recorder):
     def __init__(self):
         super().__init__()
@@ -144,7 +137,7 @@ class Recorder(release.Recorder):
             )
         self.envelopes = dimensions
         source_recorder = fences.Recorder(SOURCE, {})
-        pool = Pool(self)
+        pool = release.Pool(self)
         pool.update(current._slots)
         current._slots = pool
         before = fences.snapshot(case.engine)
@@ -241,11 +234,12 @@ class Recorder(release.Recorder):
             expected = {
                 key
                 for key, value in states.items()
-                if value in {"worker", "missing", "source"} and key not in blocked
+                if value in {"worker", "missing", "source", "closing"} and key not in blocked
             }
             assert set(self.dropped) == expected
             assert set(current._slots) == set(keys) - expected
             assert not (set(self.checked) & blocked)
+            assert not any(key in self.checked for key, kind in states.items() if kind == "closing")
             assert fences.snapshot(case.engine) == before
             for key, slot, storage in selected:
                 assert (slot.session is None) == (key in expected)
@@ -264,6 +258,10 @@ def changes(case, selected, kind):
     states = {}
     with case.factory() as session, session.begin():
         for index, (key, slot, _storage) in enumerate(selected):
+            if kind == "closing":
+                slot.closing = True
+                states[key] = kind
+                continue
             if kind == "current" or kind in {"worker", "source"} and index % 2:
                 continue
             if kind in {"missing", "binding"} and index:
@@ -331,7 +329,7 @@ def test_actual_stale_sweeps_preserve_heterogeneous_inputs_and_nonblocking_slots
     samples = []
     record_property("growth_samples", samples)
     for case in sweep_cases:
-        for kind in ("current", "worker", "source", "missing", "binding"):
+        for kind in ("current", "worker", "source", "missing", "binding", "closing"):
             for busy in (False, True):
                 if busy and not case.works:
                     continue
