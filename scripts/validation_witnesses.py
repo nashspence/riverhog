@@ -221,86 +221,106 @@ def collect_test_witnesses(
         if not isinstance(identity, str) or not identity:
             raise ValueError("missing pytest session identity")
         sessions.setdefault(identity, []).append(row)
-    selected = []
+    selected_sessions = []
     for rows in sessions.values():
         workers = [row for row in rows if row.get("worker") != "controller"]
-        selected.extend(workers or rows)
-    observed: dict[str, str] = {}
-    for record in selected:
-        if record.get("source_sha") != source_sha or record.get("source_clean") is not True:
-            raise ValueError("growth artifact is not bound to the required clean source")
-        if record.get("source_end") != {"source_sha": source_sha, "source_clean": True}:
-            raise ValueError("growth artifact source changed during execution")
-        bindings, observations, tests = (
-            record.get("growth_witnesses"),
-            record.get("growth_observations"),
-            record.get("tests"),
-        )
-        if not all(isinstance(value, dict) for value in (bindings, observations, tests)):
-            raise ValueError("missing executed growth witness data")
-        assert (
-            isinstance(bindings, dict)
-            and isinstance(observations, dict)
-            and isinstance(tests, dict)
-        )
-        for identity in expected:
-            witness = declarations[identity]
-            binding = bindings.get(witness.node_id)
-            report = tests.get(witness.node_id)
-            if report is None:
-                continue
-            required_binding: dict[str, object] = {
-                "id": identity,
-                "source_sha256": witness.source_sha256,
-            }
-            projection = None
-            if witness.operation is not None:
-                projection, declaration = operation_projection(witness.operation, root=root)
-                required_binding["declaration"] = declaration
-            if identity in observed or binding != required_binding:
-                raise ValueError("duplicate, stale or mismatched owner growth witness")
-            if not isinstance(report, dict):
-                raise ValueError("invalid or expected-failure witness assertion results")
-            phases: dict[str, object] = {}
-            for phase, value in report.items():
-                if not isinstance(value, dict) or value.get("expected_failure") is not False:
-                    raise ValueError("invalid or expected-failure witness assertion results")
-                phases[phase] = value.get("outcome")
-            if phases != {"setup": "passed", "call": "passed", "teardown": "passed"}:
-                raise ValueError("required growth witness did not completely execute")
-            if projection is not None:
-                samples = record.get("growth_samples")
-                if not isinstance(samples, dict):
-                    raise ValueError("missing declared growth execution samples")
-                execution: dict[str, object] = {
-                    "format": "riverhog-growth-execution/v1",
-                    "source": {"source_sha": source_sha, "source_clean": True},
-                    "source_end": record["source_end"],
-                    "run_id": run_id,
-                    "session_id": record["session_id"],
-                    "node_id": witness.node_id,
-                    "owner_sha256": witness.source_sha256,
-                    "declaration": declaration,
-                    "outcomes": report,
-                    "samples": samples.get(witness.node_id),
-                }
-                validate_growth_execution(
-                    projection, execution, source={"source_sha": source_sha, "source_clean": True}
-                )
-                if evidence is not None:
-                    evidence.append(execution)
-                observed[identity] = "pass"
-                continue
-            metrics = observations.get(witness.node_id)
-            if (
-                not isinstance(metrics, dict)
-                or not metrics
-                or any(
-                    not isinstance(key, str) or type(value) is not int or value < 0
-                    for key, value in metrics.items()
-                )
+        selected_sessions.append(workers or rows)
+    for rows in selected_sessions:
+        for record in rows:
+            if record.get("source_sha") != source_sha or record.get("source_clean") is not True:
+                raise ValueError("growth artifact is not bound to the required clean source")
+            if record.get("source_end") != {"source_sha": source_sha, "source_clean": True}:
+                raise ValueError("growth artifact source changed during execution")
+            if not all(
+                isinstance(record.get(field), dict)
+                for field in ("growth_witnesses", "growth_observations", "tests")
             ):
-                raise ValueError("missing or malformed actual growth observations")
+                raise ValueError("missing executed growth witness data")
+
+    def belongs(node: str, witness: TestWitness) -> bool:
+        return node == witness.node_id or (
+            node.startswith(witness.node_id + "[") and node.endswith("]")
+        )
+
+    observed: dict[str, str] = {}
+    for identity in expected:
+        witness = declarations[identity]
+        required_binding: dict[str, object] = {
+            "id": identity,
+            "source_sha256": witness.source_sha256,
+        }
+        projection = None
+        if witness.operation is not None:
+            projection, declaration = operation_projection(witness.operation, root=root)
+            required_binding["declaration"] = declaration
+        for rows in selected_sessions:
+            collections = [
+                {
+                    node: binding
+                    for node, binding in row["growth_witnesses"].items()
+                    if belongs(node, witness)
+                }
+                for row in rows
+            ]
+            reports = [
+                (node, row) for row in rows for node in row["tests"] if belongs(node, witness)
+            ]
+            if not any(collections) and not reports:
+                continue
+            collected = collections[0]
+            if not collected or any(value != collected for value in collections):
+                raise ValueError("growth witness collection differs between workers")
+            if any(binding != required_binding for binding in collected.values()):
+                raise ValueError("stale or mismatched owner growth witness")
+            if identity in observed or len({node for node, _ in reports}) != len(reports):
+                raise ValueError("duplicate owner growth witness execution")
+            if {node for node, _ in reports} != set(collected):
+                raise ValueError("missing or uncollected owner growth witness case execution")
+            for node, record in reports:
+                report = record["tests"][node]
+                if not isinstance(report, dict):
+                    raise ValueError("invalid or expected-failure witness assertion results")
+                phases: dict[str, object] = {}
+                for phase, value in report.items():
+                    if not isinstance(value, dict) or value.get("expected_failure") is not False:
+                        raise ValueError("invalid or expected-failure witness assertion results")
+                    phases[phase] = value.get("outcome")
+                if phases != {"setup": "passed", "call": "passed", "teardown": "passed"}:
+                    raise ValueError("required growth witness did not completely execute")
+                if projection is not None:
+                    samples = record.get("growth_samples")
+                    if not isinstance(samples, dict):
+                        raise ValueError("missing declared growth execution samples")
+                    execution: dict[str, object] = {
+                        "format": "riverhog-growth-execution/v1",
+                        "source": {"source_sha": source_sha, "source_clean": True},
+                        "source_end": record["source_end"],
+                        "run_id": run_id,
+                        "session_id": record["session_id"],
+                        "node_id": node,
+                        "owner_sha256": witness.source_sha256,
+                        "declaration": declaration,
+                        "outcomes": report,
+                        "samples": samples.get(node),
+                    }
+                    validate_growth_execution(
+                        projection,
+                        execution,
+                        source={"source_sha": source_sha, "source_clean": True},
+                    )
+                    if evidence is not None:
+                        evidence.append(execution)
+                    continue
+                metrics = record["growth_observations"].get(node)
+                if (
+                    not isinstance(metrics, dict)
+                    or not metrics
+                    or any(
+                        not isinstance(key, str) or type(value) is not int or value < 0
+                        for key, value in metrics.items()
+                    )
+                ):
+                    raise ValueError("missing or malformed actual growth observations")
             observed[identity] = "pass"
     if set(observed) != set(expected):
         raise ValueError("missing required owner growth witness execution")

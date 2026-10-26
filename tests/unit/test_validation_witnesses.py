@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -318,3 +319,170 @@ def test_growth_witness_source_requires_identity_and_gate_binding(tmp_path):
     )
     with pytest.raises(ValueError, match="requires one identity and gate binding"):
         discover_test_witnesses(tmp_path)
+
+
+@pytest.fixture(scope="module", params=(0, 2), ids=("serial", "xdist"))
+def executed_parametrized_witness(executed_declared_witness, tmp_path_factory, request):
+    source_root, _, _ = executed_declared_witness
+    temporary = tmp_path_factory.mktemp("parametrized-witness")
+    root, output = temporary / "source", temporary / "observations"
+    shutil.copytree(
+        source_root,
+        root,
+        ignore=shutil.ignore_patterns(".git", "__pycache__", ".pytest_cache"),
+    )
+    module = "test_parametrized_witness_fixture_owner_" + str(request.param)
+    original = root / "test_witness_fixture_owner.py"
+    (root / (module + ".py")).write_text(
+        original.read_text().replace("test_witness_fixture_owner", module)
+    )
+    original.unlink()
+    test = root / "tests/unit/test_example.py"
+    test.write_text(
+        test.read_text()
+        .replace("test_witness_fixture_owner", module)
+        .replace(
+            "@pytest.mark.growth_witness(",
+            '@pytest.mark.parametrize("count", [7, 17, 1025], '
+            'ids=["small[7]", "medium", "large"])\n@pytest.mark.growth_witness(',
+        )
+        .replace(
+            "def test_actual_visits(record_property):",
+            "def test_actual_visits(record_property, count):",
+        )
+        .replace("for count in (7, 17):", "for count in (count,):")
+    )
+    (root / "tests/unit/test_observations.py").write_text(
+        "import pytest\n"
+        '@pytest.mark.parametrize("count", [1, 17, 1025])\n'
+        '@pytest.mark.growth_witness("parametrized-observations/v1", gates=("unit",))\n'
+        "def test_actual_observations(count, record_property):\n"
+        "    visits = sum(1 for _ in range(count))\n"
+        "    assert visits == count\n"
+        "    record_property('growth_observations', {'visits': visits})\n"
+    )
+    for command in (
+        ["git", "init", "-q"],
+        ["git", "add", "."],
+        [
+            "git",
+            "-c",
+            "user.name=Example",
+            "-c",
+            "user.email=example@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "commit",
+            "-qm",
+            "Define parametrized witness",
+        ],
+    ):
+        subprocess.run(command, cwd=root, check=True, capture_output=True)
+    source = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+    command = [sys.executable, "-m", "pytest", "-q", "-p", "scripts.ci_timing"]
+    if request.param:
+        command.extend(("-n", str(request.param), "--dist=load"))
+    observed = subprocess.run(
+        command,
+        cwd=root,
+        env={
+            **os.environ,
+            "PYTHONPATH": os.pathsep.join((str(root), str(ROOT))),
+            "RIVERHOG_CI_RUN_ID": RUN,
+            "RIVERHOG_CI_LANE": "unit",
+            "RIVERHOG_CI_TIMING_DIR": str(output),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert observed.returncode == 0, observed.stdout + observed.stderr
+    paths = tuple((output / "pytest").glob(f"*/{RUN}/*/*.json"))
+    assert len(paths) == (3 if request.param else 1)
+    return root, paths, source
+
+
+def test_every_actual_parametrized_case_supplies_declared_evidence(
+    executed_parametrized_witness, monkeypatch
+):
+    root, paths, source = executed_parametrized_witness
+    monkeypatch.syspath_prepend(str(root))
+    evidence = []
+    assert collect_test_witnesses(
+        paths,
+        root=root,
+        expected=("declared-visits/v1", "parametrized-observations/v1"),
+        source_sha=source,
+        run_id=RUN,
+        evidence=evidence,
+    ) == {"declared-visits/v1": "pass", "parametrized-observations/v1": "pass"}
+    assert len({row["node_id"] for row in evidence}) == 3
+    assert sorted(row["samples"][0]["dimensions"]["members"] for row in evidence) == [7, 17, 1025]
+
+
+@pytest.mark.parametrize(
+    "defect",
+    (
+        "missing-case",
+        "missing-samples",
+        "failed-case",
+        "owner",
+        "declaration",
+        "uncollected-case",
+        "duplicate-case",
+        "collection-disagreement",
+        "second-session",
+    ),
+)
+def test_parametrized_evidence_requires_all_cases_exactly_once(
+    executed_parametrized_witness, monkeypatch, tmp_path, defect
+):
+    root, paths, source = executed_parametrized_witness
+    monkeypatch.syspath_prepend(str(root))
+    records = [json.loads(path.read_bytes()) for path in paths]
+    workers = [row for row in records if row["worker"] != "controller"] or records
+    base = next(
+        witness.node_id
+        for witness in discover_test_witnesses(root)
+        if witness.id == "declared-visits/v1"
+    )
+    actual = next(
+        row for row in workers if any(node.startswith(base + "[") for node in row["tests"])
+    )
+    node = next(node for node in actual["tests"] if node.startswith(base + "["))
+    if defect == "missing-case":
+        actual["tests"].pop(node)
+    elif defect == "missing-samples":
+        actual["growth_samples"].pop(node)
+    elif defect == "failed-case":
+        actual["tests"][node]["call"]["outcome"] = "failed"
+    elif defect == "owner":
+        for row in workers:
+            row["growth_witnesses"][node]["source_sha256"] = "a" * 64
+    elif defect == "declaration":
+        for row in workers:
+            row["growth_witnesses"][node]["declaration"]["projection_sha256"] = "a" * 64
+    elif defect == "uncollected-case":
+        actual["tests"][node.split("[", 1)[0] + "[uncollected]"] = actual["tests"].pop(node)
+    elif defect == "duplicate-case":
+        records.append(json.loads(json.dumps(actual)))
+    elif defect == "collection-disagreement":
+        workers[-1]["growth_witnesses"].pop(node)
+    else:
+        copies = json.loads(json.dumps(workers))
+        for row in copies:
+            row["session_id"] = "another-session"
+        records.extend(copies)
+    invalid_paths = []
+    for ordinal, record in enumerate(records):
+        path = tmp_path / f"invalid-{ordinal}.json"
+        path.write_bytes(canonical_json_bytes(record))
+        invalid_paths.append(path)
+    with pytest.raises(ValueError):
+        collect_test_witnesses(
+            invalid_paths,
+            root=root,
+            expected=("declared-visits/v1",),
+            source_sha=source,
+            run_id=RUN,
+        )
