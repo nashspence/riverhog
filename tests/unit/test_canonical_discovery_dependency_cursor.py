@@ -211,7 +211,12 @@ def test_measured_original_cursor_seeks_past_dense_completed_source_coordinates(
         rows = db.execute("SELECT * FROM discovery_journal_tasks").fetchall()
         rows += db.execute("SELECT * FROM discovery_journal_assertions").fetchall()
         metadata = max(sum(map(metadata_octets, row)) for row in rows)
-        for after in (None, positions[-2] if width > 1 else positions[0], positions[-1]):
+        for after in (
+            None,
+            positions[0],
+            positions[-2] if width > 1 else positions[0],
+            positions[-1],
+        ):
             recorder = MeasuredConnection(db)
             actual_hash = hashlib.sha256
 
@@ -230,6 +235,11 @@ def test_measured_original_cursor_seeks_past_dense_completed_source_coordinates(
                     selected = next_source_assertion(recorder, key, through=0, after=after)
             finally:
                 db.set_progress_handler(None, 0)
+            for sql, parameters in recorder.statements:
+                plan = " ".join(
+                    row[3].upper() for row in db.execute("EXPLAIN QUERY PLAN " + sql, parameters)
+                )
+                assert "SCAN " not in plan and "TEMP B-TREE" not in plan, plan
             if after is None:
                 assert selected is not None
             elif after == positions[-1]:

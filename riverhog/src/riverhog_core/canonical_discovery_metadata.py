@@ -27,7 +27,7 @@ from riverhog_core.canonical_discovery_archive_work import (
     initialize_archive_work,
 )
 from riverhog_core.canonical_discovery_corpus_replay import initialize_corpus_replay
-from riverhog_core.canonical_discovery_dependency_source import initialize_dependency_source
+from riverhog_core.canonical_discovery_endpoint_index import initialize_endpoint_index
 from riverhog_core.canonical_discovery_journal_schema import (
     initialize_archive_framing,
     initialize_journal_epochs,
@@ -45,7 +45,7 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
 )
 
-_FORMAT = "riverhog-discovery-metadata/v12"
+_FORMAT = "riverhog-discovery-metadata/v13"
 
 
 class DiscoveryMetadata:
@@ -252,7 +252,7 @@ class DiscoveryMetadata:
         if created:
             initialize_archive_work(db)
             initialize_archive_framing(db)
-            initialize_dependency_source(db)
+            initialize_endpoint_index(db)
             initialize_corpus_selection(db)
             initialize_primary_work(db)
             initialize_corpus_replay(db)

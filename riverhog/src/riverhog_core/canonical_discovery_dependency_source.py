@@ -211,13 +211,15 @@ def next_source_assertion(
         row = _one(
             db,
             query + " AND length(born_sequence)=? AND born_sequence=? "
-            "AND (source_group,source_item)>(?,?)" + _ORDER,
+            "AND (source_group,source_item)>(?,?) "
+            "ORDER BY source_group,source_item LIMIT 1",
             (*base, len(sequence), sequence, after.group, after.item),
         )
         if row is None:
             row = _one(
                 db,
-                query + " AND length(born_sequence)=? AND born_sequence>?" + _ORDER,
+                query + " AND length(born_sequence)=? AND born_sequence>? "
+                "ORDER BY born_sequence,source_group,source_item LIMIT 1",
                 (*base, len(sequence), sequence),
             )
         if row is None:

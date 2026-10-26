@@ -60,12 +60,20 @@ def test_owned_metadata_initializes_once_and_resumes_stable_archive_work(case, q
         assert first.verify_current()
         with first.read() as (db, _):
             assert db.execute("SELECT format FROM discovery_workspace").fetchone() == (
-                "riverhog-discovery-metadata/v12",
+                "riverhog-discovery-metadata/v13",
             )
             assert db.execute(
                 "SELECT name FROM sqlite_master "
                 "WHERE type='table' AND name='discovery_corpus_replay'"
             ).fetchone() == ("discovery_corpus_replay",)
+            assert db.execute(
+                "SELECT name FROM sqlite_master "
+                "WHERE type='table' AND name='discovery_endpoint_tasks'"
+            ).fetchone() == ("discovery_endpoint_tasks",)
+            assert db.execute(
+                "SELECT name FROM sqlite_master "
+                "WHERE type='index' AND name='discovery_endpoint_inverse'"
+            ).fetchone() == ("discovery_endpoint_inverse",)
         first.open()
         reader = qualified[1][2]
         with first.read() as (db, key):
