@@ -14,6 +14,7 @@ from collections.abc import Callable, Sequence
 from contextlib import closing
 from functools import partial
 from pathlib import Path
+from types import SimpleNamespace
 
 import gogurt_listener_runtime.listener as listener_module
 import pytest
@@ -183,7 +184,63 @@ def _wait_for_published_pid(pid_file: Path) -> int:
             return int(pid_file.read_text(encoding="utf-8"))
         except (FileNotFoundError, ValueError):
             time.sleep(0.02)
+        except PermissionError:
+            if sys.platform != "win32":
+                raise
+            # Windows can deny a read briefly while the child publishes/replaces
+            # this fixture file. The original deadline still bounds readiness.
+            time.sleep(0.02)
     raise AssertionError("Gogurt action did not publish its process ID")
+
+
+@pytest.mark.parametrize("platform", ["win32", "linux"])
+def test_published_pid_read_retries_only_windows_sharing_denial(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, platform: str
+) -> None:
+    pid_file = tmp_path / "pid"
+    pid_file.write_text(str(os.getpid()), encoding="utf-8")
+    read_text = Path.read_text
+    reads = []
+
+    def read(path: Path, *args: object, **kwargs: object) -> str:
+        if path == pid_file:
+            reads.append(path)
+            if len(reads) == 1:
+                raise PermissionError("publication temporarily denies sharing")
+        return read_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", read)
+    monkeypatch.setitem(globals(), "sys", SimpleNamespace(platform=platform))
+    if platform == "win32":
+        assert _wait_for_published_pid(pid_file) == os.getpid()
+        assert len(reads) == 2
+    else:
+        with pytest.raises(PermissionError, match="denies sharing"):
+            _wait_for_published_pid(pid_file)
+        assert len(reads) == 1
+
+
+def test_published_pid_persistent_windows_denial_keeps_original_deadline(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    pid_file = tmp_path / "pid"
+    read_text = Path.read_text
+    sleeps = []
+    times = iter((0.0, 0.0, 6.0))
+
+    def read(path: Path, *args: object, **kwargs: object) -> str:
+        if path == pid_file:
+            raise PermissionError("publication still denies sharing")
+        return read_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", read)
+    monkeypatch.setitem(globals(), "sys", SimpleNamespace(platform="win32"))
+    monkeypatch.setitem(
+        globals(), "time", SimpleNamespace(monotonic=lambda: next(times), sleep=sleeps.append)
+    )
+    with pytest.raises(AssertionError, match="did not publish"):
+        _wait_for_published_pid(pid_file)
+    assert sleeps == [0.02]
 
 
 def _heartbeat_payload(paths: ListenerRuntimePaths) -> dict[str, object]:
