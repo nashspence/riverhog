@@ -115,6 +115,7 @@ def exercise(case, tmp_path, monkeypatch, record_property, operation):
         for guarded in (False, True):
             path = tmp_path / f"{count}-{guarded}.sqlite3"
             db = sqlite3.connect(path, isolation_level=None)
+            db.execute("PRAGMA foreign_keys=ON").close()
             case.db.backup(db)
             selected = SimpleNamespace(db=db, key=case.key, path=path)
             try:
@@ -196,6 +197,7 @@ def exercise(case, tmp_path, monkeypatch, record_property, operation):
                         if cold:
                             db.close()
                             db = selected.db = sqlite3.connect(path, isolation_level=None)
+                            selected.db.execute("PRAGMA foreign_keys=ON").close()
                         current_inputs = dimensions(selected, parent.to_mapping(), before, output)
                         with observe(selected, monkeypatch) as recorder:
                             assert NEXT(recorder, selected.key, octet_budget=BUDGET) is not None

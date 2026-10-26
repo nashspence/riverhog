@@ -98,7 +98,7 @@ def all_kinds():
         Selector(
             "member",
             **SNAPSHOT,
-            member_id=uid(8),
+            member_id="f" * 64,
             history_sha256=HISTORY,
             association_id=uid(9),
             context_id=uid(10),
@@ -192,6 +192,7 @@ def test_unary_output_cursor_retry_rollback_cold_reopen_and_obsolete_page(case):
         assert APPLY(case.db, case.key, work, page) == page.result
     case.db.close()
     case.db = sqlite3.connect(case.path, isolation_level=None)
+    case.db.execute("PRAGMA foreign_keys=ON").close()
     assert progress(case, parent) == page.result
     work = owner.SelectorWork(case.key, octet_budget=BUDGET)
     terminal = PREPARE(work, page.result, position=("done",), complete=True)
@@ -346,3 +347,10 @@ def test_encoded_coordinate_shape_cannot_drop_explicit_nulls_or_change_domain():
     value["domain"] = "other-owner/v1"
     with pytest.raises(ValueError):
         Selector.from_mapping(value)
+
+
+def test_archive_member_sha256_is_distinct_from_native_object_uuid_domain():
+    member = all_kinds()[0]
+    assert member.member_id == "f" * 64
+    with pytest.raises(ValueError):
+        replace(member, member_id=uid(8))

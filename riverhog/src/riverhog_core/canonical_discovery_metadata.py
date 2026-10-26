@@ -46,7 +46,7 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
 )
 
-_FORMAT = "riverhog-discovery-metadata/v14"
+_FORMAT = "riverhog-discovery-metadata/v15"
 
 
 class DiscoveryMetadata:

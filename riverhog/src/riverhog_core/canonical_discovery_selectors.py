@@ -24,6 +24,9 @@ _OBJECT = _SNAPSHOT | {"object_id", "scope"}
 _FIELDS = {
     "member": _SNAPSHOT | {"member_id", "history_sha256", "association_id", "context_id"},
     "history-documentary": frozenset({"history_sha256", "extent"}),
+    "root-set-documentary": frozenset({"records_sha256", "extent"}),
+    "import-set-documentary": frozenset({"records_sha256"}),
+    "import-set-reachable": frozenset({"records_sha256"}),
     "snapshot-documentary": _SNAPSHOT,
     "prefix-dependencies": _SNAPSHOT,
     "state": _OBJECT,
@@ -48,6 +51,7 @@ class Selector:
     object_id: str | None = None
     scope: str | None = None
     history_sha256: str | None = None
+    records_sha256: str | None = None
     extent: str | None = None
     reference: ExternalReference | None = None
     member_id: str | None = None
@@ -62,10 +66,10 @@ class Selector:
         }
         if self.kind not in _FIELDS or present != _FIELDS[self.kind]:
             raise ValueError("selector requires its fixed exact coordinate fields")
-        for value in (self.source_key, self.history_sha256):
+        for value in (self.source_key, self.history_sha256, self.records_sha256, self.member_id):
             if value is not None:
                 _digest(value)
-        for value in (self.object_id, self.member_id, self.association_id, self.context_id):
+        for value in (self.object_id, self.association_id, self.context_id):
             if value is not None:
                 require_canonical_uuid_urn(value)
         if self.anchor is not None and not isinstance(self.anchor, HistoryJournalAnchor):
