@@ -333,6 +333,10 @@ def initialize_journal_work(db: sqlite3.Connection) -> None:
             UNIQUE(build_id,task_id),
             FOREIGN KEY(build_id,source_key) REFERENCES discovery_journal_tasks(build_id,source_key)
         ) WITHOUT ROWID;
+        CREATE INDEX IF NOT EXISTS discovery_journal_historical_objects
+            ON discovery_journal_assertions (
+                build_id,source_key,referent_id,length(born_sequence),born_sequence,assertion_id
+            );
         CREATE INDEX IF NOT EXISTS discovery_journal_pending_assertions
             ON discovery_journal_assertions (
                 build_id,source_key,length(born_sequence),born_sequence,source_group,source_item
