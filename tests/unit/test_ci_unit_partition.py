@@ -67,7 +67,7 @@ def test_actual_canonical_collection_has_exhaustive_unique_shard_ownership(tmp_p
     for witness in discover_test_witnesses(ROOT):
         if witness.id in expected:
             part = module_owners[witness.node_id.partition("::")[0]]
-            assert witness.node_id in parts[part]
+            assert witness.node_id in {node.partition("[")[0] for node in parts[part]}
             assert witness.id in definitions[f"unit-unit-{part}"].growth_witnesses
     assert record["contract_fixture_modules"]
     assert not {node.partition("::")[0] for node in record["shards"]["unit"]} & set(

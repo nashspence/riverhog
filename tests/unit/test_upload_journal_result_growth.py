@@ -254,6 +254,7 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
                         "bound_parameter_octets",
                         "sqlite_vm_instructions",
                         "source_probes",
+                        "opening_callbacks",
                         "historical_payload_reads",
                         "source_payload_octets",
                     )
@@ -353,6 +354,14 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
                     inputs=child_dimensions,
                     **kwargs,
                 ):
+                    callback = kwargs.get("on_storage_open")
+                    if callback is not None:
+
+                        def retained(opening):
+                            observations["opening_callbacks"] += 1
+                            return callback(opening)
+
+                        kwargs["on_storage_open"] = retained
                     result = native_open(*args, **kwargs)
                     db = result._store.db
                     observations.update(
