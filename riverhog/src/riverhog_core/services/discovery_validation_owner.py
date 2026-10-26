@@ -13,6 +13,7 @@ from uuid import uuid4
 from riverhog_provenance import (
     InvalidJournalWorkspace,
     JournalGraphCertificates,
+    JournalSummary,
     JournalValidationSession,
     RetainedCorpusValidator,
     StaleCorpusWorkspace,
@@ -22,6 +23,7 @@ from riverhog_provenance_contracts import ContractCatalog
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core import canonical_discovery_journal_registration as registration
 from riverhog_core.canonical_discovery_archive_framing import ArchiveJournalFramingWork
+from riverhog_core.canonical_discovery_archive_source import ArchiveJournalSource
 from riverhog_core.canonical_discovery_archive_work import (
     ArchiveDiscoveryAdmission,
     StaleArchiveTask,
@@ -41,6 +43,10 @@ from riverhog_core.journal_validation_workspace import (
 )
 from riverhog_core.services.discovery_journal_growth import declare_growth_for_journal_dispatch
 from riverhog_core.services.discovery_journal_owner import DiscoveryJournalOwner
+from riverhog_core.services.discovery_journal_result import DiscoverySealedJournalOwner
+from riverhog_core.services.discovery_journal_result_growth import (
+    declare_growth_for_sealed_dispatch,
+)
 from riverhog_core.services.discovery_validation_growth import declare_owner_growth
 
 
@@ -52,6 +58,7 @@ class _Slot:
     source: DiscoveryCorpusSource | None = None
     corpus: RetainedCorpusValidator | None = None
     journal: DiscoveryJournalOwner | None = None
+    sealed: DiscoverySealedJournalOwner | None = None
     closing: bool = False
 
     def retain_corpus(self, corpus: RetainedCorpusValidator) -> None:
@@ -68,8 +75,8 @@ class DiscoveryValidationWork:
     another execution or create an independent reader lifecycle.
     """
 
-    def __init__(self, slot: _Slot, catalog: ContractCatalog) -> None:
-        self._slot, self._catalog = slot, catalog
+    def __init__(self, slot: _Slot, catalog: ContractCatalog, journal_root: Path) -> None:
+        self._slot, self._catalog, self._journal_root = slot, catalog, journal_root
         self._active = True
 
     @property
@@ -156,6 +163,35 @@ class DiscoveryValidationWork:
                 raise StaleArchiveTask("Native journal opening lost its current registration")
         return session
 
+    def sealed_journal(
+        self, source: ArchiveJournalSource, *, collection_id: int
+    ) -> JournalSummary | None:
+        """Borrow one exact sealed result; absent or busy results remain pending."""
+        metadata, slot = self.metadata, self._slot
+        if source.metadata is not metadata:
+            raise StaleArchiveTask("sealed source belongs to another discovery metadata owner")
+        retained = slot.sealed
+        if retained is not None:
+            if (
+                not retained.closing
+                and retained.admission.job.collection_id == collection_id
+                and retained.source.identity == source.identity
+            ):
+                return retained.borrow()
+            retained.close()
+            slot.sealed = None
+        try:
+            retained = DiscoverySealedJournalOwner.prepare(source, collection_id, self._catalog)
+        except KeyError:
+            return None
+        # Retain before acquisition can leave partial Native cleanup uncertain.
+        slot.sealed = retained
+        if retained.open(self._journal_root, self._catalog) is None:
+            retained.close()
+            slot.sealed = None
+            return None
+        return retained.borrow()
+
     def corpus(self, selection: CorpusSelectionWork) -> RetainedCorpusValidator:
         metadata = self.metadata
         slot = self._slot
@@ -216,10 +252,18 @@ class DiscoveryValidationOwner:
     closing slot reachable for retry, including failed Native initialization.
     """
 
-    def __init__(self, factory: SessionFactory, root: Path, *, concurrency: int = 2) -> None:
+    def __init__(
+        self,
+        factory: SessionFactory,
+        root: Path,
+        *,
+        concurrency: int = 2,
+        journal_root: Path | None = None,
+    ) -> None:
         if type(concurrency) is not int or concurrency < 1:
             raise ValueError("discovery concurrency must be positive")
         self.factory, self.root, self.concurrency = factory, root, concurrency
+        self.journal_root = root if journal_root is None else journal_root
         self._lock = Lock()
         self._slots: dict[str, _Slot] = {}
         self._closed = False
@@ -238,6 +282,9 @@ class DiscoveryValidationOwner:
 
     def _drop(self, build_id: str, slot: _Slot) -> None:
         slot.closing = True
+        if slot.sealed is not None:
+            slot.sealed.close()
+            slot.sealed = None
         if slot.journal is not None:
             slot.journal.close()
             slot.journal = None
@@ -338,7 +385,7 @@ class DiscoveryValidationOwner:
                 self._drop(build_id, slot)
                 yield None
                 return
-            work = DiscoveryValidationWork(slot, catalog)
+            work = DiscoveryValidationWork(slot, catalog, self.journal_root)
             yield work
             if not metadata.verify_current():
                 raise StaleArchiveTask("discovery quantum lost its current owner")
@@ -390,3 +437,5 @@ class DiscoveryValidationOwner:
 declare_owner_growth(DiscoveryValidationOwner, DiscoveryValidationWork)
 
 declare_growth_for_journal_dispatch(DiscoveryValidationWork)
+
+declare_growth_for_sealed_dispatch(DiscoveryValidationWork)

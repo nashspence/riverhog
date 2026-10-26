@@ -20,9 +20,9 @@ from riverhog_core.journal_validation_workspace import (
     lease_journal_validation_workspace,
 )
 from riverhog_core.journal_validation_workspace_reference import (
-    ValidationWorkspaceReference,
     retain_validation_workspace,
 )
+from riverhog_core.journal_validation_workspace_references import JournalWorkspaceReferences
 from riverhog_core.services.discovery_journal_growth import (
     declare_growth_for_journal_custody_source,
     declare_growth_for_journal_owner,
@@ -57,28 +57,6 @@ class DiscoveryJournalCustodySource:
         result = self.source.read_exact(offset, octets)
         self._require_current()
         return result
-
-
-class JournalWorkspaceReferences:
-    """Release the child before its parent; retain each unconfirmed reference."""
-
-    def __init__(self) -> None:
-        self.parent: ValidationWorkspaceReference | None = None
-        self.child: ValidationWorkspaceReference | None = None
-
-    def retain_parent(self, reference: ValidationWorkspaceReference) -> None:
-        self.parent = reference
-
-    def retain_child(self, reference: ValidationWorkspaceReference) -> None:
-        self.child = reference
-
-    def close(self) -> None:
-        if self.child is not None:
-            self.child.close()
-            self.child = None
-        if self.parent is not None:
-            self.parent.close()
-            self.parent = None
 
 
 class DiscoveryJournalOwner:
@@ -160,6 +138,6 @@ class DiscoveryJournalOwner:
             self.references.close()
 
 
-declare_growth_for_journal_owner(DiscoveryJournalOwner, JournalWorkspaceReferences)
+declare_growth_for_journal_owner(DiscoveryJournalOwner)
 
 declare_growth_for_journal_custody_source(DiscoveryJournalCustodySource)

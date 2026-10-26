@@ -16,7 +16,11 @@ from riverhog_growth_contracts import (
     declare_growth,
     growth_binding,
 )
-from riverhog_provenance import JournalValidationSession, RetainedCorpusValidator
+from riverhog_provenance import (
+    JournalResultOpening,
+    JournalValidationSession,
+    RetainedCorpusValidator,
+)
 
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core.canonical_discovery_corpus_source import DiscoveryCorpusSource
@@ -209,9 +213,10 @@ def _renamed(expression: Expression, kind: str) -> Expression:
 
 def _children(mode: str) -> tuple[tuple[str, Callable[..., Any], int], ...]:
     dropped = (
-        ("journal", JournalValidationSession.close, 1),
-        ("kernel", lease_journal_validation_workspace, 1),
-        ("reference", ValidationWorkspaceReference.close, 2),
+        ("journal", JournalValidationSession.close, 2),
+        ("journal", JournalResultOpening.close, 1),
+        ("kernel", lease_journal_validation_workspace, 2),
+        ("reference", ValidationWorkspaceReference.close, 4),
         ("native", RetainedCorpusValidator.close, 1),
         ("storage", DiscoveryMetadata.close, 1),
         ("kernel", lease_journal_validation_workspace, 1),

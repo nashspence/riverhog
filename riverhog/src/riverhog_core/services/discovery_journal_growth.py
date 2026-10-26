@@ -47,7 +47,6 @@ LIMITS = {
         "context_closes": 1,
         "reference_group_closes": 1,
     },
-    "references": {"reference_closes": 2},
 }
 
 
@@ -94,10 +93,9 @@ def _declare(operation: Any, mode: str, owner: str) -> None:
     )(operation)
 
 
-def declare_growth_for_journal_owner(owner: type[Any], references: type[Any]) -> None:
+def declare_growth_for_journal_owner(owner: type[Any]) -> None:
     _declare(owner.open, "open", "child")
     _declare(owner.close, "close", "child")
-    _declare(references.close, "references", "child")
 
 
 def declare_growth_for_journal_dispatch(work: type[Any]) -> None:

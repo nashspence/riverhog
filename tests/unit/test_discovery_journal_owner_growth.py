@@ -6,6 +6,8 @@ from dataclasses import replace
 
 import pytest
 from riverhog_core.canonical_discovery_journal_source import DiscoveryJournalSource
+from riverhog_core.journal_validation_workspace_reference import ValidationWorkspaceReference
+from riverhog_core.journal_validation_workspace_references import JournalWorkspaceReferences
 from riverhog_core.services import discovery_journal_owner as child
 from riverhog_core.services import discovery_validation_owner as owner
 from riverhog_growth_contracts import growth_binding
@@ -19,7 +21,7 @@ SOURCE = owner.DiscoveryValidationWork.journal_source
 JOURNAL = owner.DiscoveryValidationWork.journal
 OPEN = child.DiscoveryJournalOwner.open
 CLOSE = child.DiscoveryJournalOwner.close
-REFERENCES = child.JournalWorkspaceReferences.close
+REFERENCES = JournalWorkspaceReferences.close
 CURRENT = child.DiscoveryJournalCustodySource.verify_current
 WINDOW = child.DiscoveryJournalCustodySource.read_window
 EXACT = child.DiscoveryJournalCustodySource.read_exact
@@ -72,8 +74,8 @@ def observe(operation, monkeypatch):
         (child, "lease_journal_validation_workspace", "lease_contexts"),
         (child.Path, "exists", "path_probes"),
         (child.ExitStack, "close", "context_closes"),
-        (child.JournalWorkspaceReferences, "close", "reference_group_closes"),
-        (child.ValidationWorkspaceReference, "close", "reference_closes"),
+        (JournalWorkspaceReferences, "close", "reference_group_closes"),
+        (ValidationWorkspaceReference, "close", "reference_closes"),
     )
     with monkeypatch.context() as patch:
         for module, name, metric in targets:
@@ -205,7 +207,7 @@ def test_actual_child_close_and_retry_ports(tmp_path, monkeypatch, record_proper
 @pytest.mark.growth_witness(
     "riverhog-discovery-journal-reference-group-close/v1",
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_core.services.discovery_journal_owner.JournalWorkspaceReferences.close",
+    operation="riverhog_core.journal_validation_workspace_references.JournalWorkspaceReferences.close",
 )
 def test_actual_child_parent_reference_release_ports(tmp_path, monkeypatch, record_property):
     exercise(tmp_path, monkeypatch, record_property, REFERENCES)
