@@ -178,6 +178,7 @@ def test_retained_result_admission_records_actual_work(
                 "bound_parameter_octets",
                 "sqlite_vm_instructions",
                 "source_probes",
+                "opening_callbacks",
                 "historical_payload_reads",
             )
         }
@@ -218,11 +219,18 @@ def test_retained_result_admission_records_actual_work(
             return connection
 
         source.verify_current = current
+        openings = []
+
+        def retained(opening, observations=metrics, kept=openings):
+            observations["opening_callbacks"] += 1
+            kept.append(opening)
+
         with monkeypatch.context() as patch:
             patch.setattr(sqlite3, "connect", observed_connect)
             result = open_retained_journal_result(
-                path, source, confirmed=confirmed, catalog=catalog
+                path, source, confirmed=confirmed, catalog=catalog, on_storage_open=retained
             )
+        assert len(openings) == 1 and openings[0].closed
         connection = result._store.db
         metrics.update(
             returned_handles=int(result._store._frozen),

@@ -25,6 +25,7 @@ from ._session_input import RetainedInput
 from .errors import IncompleteSourceError
 from .graph_certificates import JournalGraphCertificateBinding
 from .journal import JournalSummary
+from .journal_result_opening import JournalResultOpening
 from .journal_session import (
     JournalValidationProgress,
     JournalValidationSource,
@@ -90,6 +91,13 @@ def _result_declaration() -> Declaration:
                 "equal",
                 count(1),
                 "One existing SQLite mode=ro database.",
+            ),
+            Bound(
+                "opening_callbacks",
+                COUNT,
+                "upper",
+                count(1),
+                "One optional early callback retains actual opening custody before acquisition.",
             ),
             Bound(
                 "source_probes",
@@ -217,6 +225,7 @@ def open_retained_journal_result(
     expected_anchor: Mapping[str, Any] | None = None,
     require_exact_tail: bool = False,
     on_storage_close: Callable[[], None] | None = None,
+    on_storage_open: Callable[[JournalResultOpening], None] | None = None,
 ) -> JournalSummary:
     """Return one independently owned, read-only, exactly confirmed frozen result.
 
@@ -228,6 +237,10 @@ def open_retained_journal_result(
     The caller excludes writers and reclamation for every resulting reader. On
     successful return the storage owns on_storage_close through the last borrowed
     handle. A failed constructor leaves that resource callback with the caller.
+    The optional early callback must retain its closeable opening before any
+    database acquisition. Failed cleanup keeps the actual partial Native handle
+    there for explicit retry. Success transfers custody to the result; closing
+    the now-empty opening cannot invalidate that result or its other borrowers.
     """
     selected = catalog or ContractCatalog()
     binding = source.binding
@@ -244,8 +257,17 @@ def open_retained_journal_result(
         prefix_binding = canonical_json_bytes(
             {"source": prefix_binding, "graph_certificate": certificates.to_json()}
         ).decode()
-    store = JournalStore.open_retained(directory, read_only=True)
+    opening = JournalResultOpening()
+    store_opened = False
     try:
+        if on_storage_open is not None:
+            on_storage_open(opening)
+        if opening.closed:
+            raise InvalidJournalWorkspace("frozen result opening closed before acquisition")
+        store = JournalStore.open_retained(
+            directory, read_only=True, on_storage_open=opening._retain
+        )
+        store_opened = True
         prefix = JournalPrefix(
             store.db,
             attempt_id=confirmed.attempt_id,
@@ -296,7 +318,11 @@ def open_retained_journal_result(
         )
         object.__setattr__(result, "_store", store)
     except BaseException:
-        store.close()
+        # A failing Store constructor already attempted its own cleanup.
+        # Its actual handle remains in the early-retained opening for retry.
+        if store_opened:
+            opening.close()
         raise
     store._storage.on_close = on_storage_close
+    opening._transfer()
     return result

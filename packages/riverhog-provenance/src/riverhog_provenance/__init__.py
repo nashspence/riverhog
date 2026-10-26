@@ -87,6 +87,7 @@ from .journal_reclamation import (
     reclaim_retired_journal_workspace,
 )
 from .journal_result import open_retained_journal_result
+from .journal_result_opening import JournalResultOpening
 from .journal_session import (
     JournalValidationBudget,
     JournalValidationProgress,
@@ -175,6 +176,7 @@ __all__ = [
     "JournalFrame",
     "JournalSetValidation",
     "JournalSummary",
+    "JournalResultOpening",
     "RecoveryResult",
     "append_assertion_batches",
     "write_assertion_batches",
