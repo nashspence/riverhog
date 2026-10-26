@@ -12,17 +12,35 @@ from riverhog_archive_contracts import HistoryJournalAnchor
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core import canonical_discovery_endpoint_index as index
 from riverhog_core import canonical_discovery_endpoint_source as endpoint_source
+from riverhog_core.canonical_discovery_archive_work import (
+    admit_archive_journal,
+    initialize_archive_work,
+)
+from riverhog_core.canonical_discovery_corpus_inputs import (
+    CorpusSourceInputWork,
+    complete_corpus_source_inputs,
+    initialize_corpus_source_inputs,
+)
 from riverhog_core.canonical_discovery_journal_extraction import JournalFactExtraction
 from riverhog_core.canonical_discovery_journal_fragments import JournalFactCapacity
 from riverhog_core.canonical_discovery_journal_lookup import documentary_journal_assertion
-from riverhog_core.canonical_discovery_journal_work import JournalTaskKey, QualifiedJournalSource
+from riverhog_core.canonical_discovery_journal_work import JournalTaskKey
 from riverhog_core.canonical_discovery_outgoing_endpoints import next_assertion_endpoint
 from riverhog_core.canonical_discovery_rows import core_edges
+from riverhog_core.canonical_discovery_selector_work import initialize_selector_work
 from riverhog_provenance import JournalFrame, assertion, validate_journal
 
 from tests.support.canonical_discovery import native_scalar_fixture
-from tests.support.canonical_discovery_work import ADMISSION, open_journal_work, write
+from tests.support.canonical_discovery_work import open_journal_work, write
 from tests.support.catalog_work import octets
+from tests.unit.test_canonical_discovery_activity_selector_growth import exercise_activity
+from tests.unit.test_canonical_discovery_activity_selectors import (
+    APPLY as ACTIVITY_APPLY,
+)
+from tests.unit.test_canonical_discovery_activity_selectors import (
+    PREPARE as ACTIVITY_PREPARE,
+)
+from tests.unit.test_canonical_discovery_corpus_inputs import commit_input, register_archive
 from tests.unit.test_canonical_discovery_endpoint_index import (
     APPLY,
     BEGIN,
@@ -278,19 +296,30 @@ def degree_index(request, tmp_path_factory):
             ),
             flush=True,
         )
-        with QualifiedJournalSource(native, ADMISSION) as source:
-            path = (
-                tmp_path_factory.mktemp("native-endpoint-degree-" + str(degree)) / "degree.sqlite3"
-            )
-            db = open_journal_work(path)
+        path = tmp_path_factory.mktemp("native-endpoint-degree-" + str(degree)) / "degree.sqlite3"
+        db = open_journal_work(path)
+        db.execute("PRAGMA foreign_keys=ON").close()
+        initialize_archive_work(db)
+        initialize_corpus_source_inputs(db)
+        initialize_selector_work(db)
+        archive_key, admission = register_archive(db, raw, native)
+        with admit_archive_journal(db, archive_key, admission, native) as source:
             case = SimpleNamespace(
                 db=db,
                 path=path,
                 source=source,
                 anchor=HistoryJournalAnchor.from_mapping(native.anchor),
+                archive_key=archive_key,
+                admission=admission,
+                native=native,
             )
             try:
-                case.key = JournalTaskKey("build", source.source_key, "worker")
+                commit_input(db, archive_key, CorpusSourceInputWork(admission, source))
+                with write(db):
+                    case.manifest = complete_corpus_source_inputs(db, archive_key, admission)
+                case.key = JournalTaskKey(
+                    archive_key.build_id, source.source_key, archive_key.worker_id
+                )
                 run(JournalFactExtraction(db, case.key, source), 128)
                 print(
                     json.dumps(
@@ -443,3 +472,39 @@ def test_original_outgoing_reads_bound_each_step_at_actual_native_degrees(
         position += 1
     assert actual == expected
     record_property("growth_samples", samples)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-activity-selector-native-degree-prepare/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_activity_selectors.prepare_activity_selector",
+)
+def test_activity_preparation_walks_one_original_endpoint_at_native_high_degrees(
+    degree_index, tmp_path, monkeypatch, record_property
+):
+    exercise_activity(
+        degree_index,
+        tmp_path,
+        monkeypatch,
+        record_property,
+        ACTIVITY_PREPARE,
+        degree=degree_index.degree,
+    )
+
+
+@pytest.mark.growth_witness(
+    "riverhog-activity-selector-native-degree-replay/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_journal_selector_work.apply_journal_selector",
+)
+def test_activity_replay_and_cold_retry_do_not_repeat_the_high_degree_prefix(
+    degree_index, tmp_path, monkeypatch, record_property
+):
+    exercise_activity(
+        degree_index,
+        tmp_path,
+        monkeypatch,
+        record_property,
+        ACTIVITY_APPLY,
+        degree=degree_index.degree,
+    )
