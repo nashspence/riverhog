@@ -117,6 +117,7 @@ def matching_index(matching_facts, tmp_path_factory):
     path = tmp_path_factory.mktemp("match-index") / "indexed.sqlite3"
     db = sqlite3.connect(path, isolation_level=None)
     original.db.backup(db)
+    db.execute("PRAGMA foreign_keys=ON").close()
     with QualifiedJournalSource(original.native, ADMISSION) as source:
         case = SimpleNamespace(**vars(original), source=source)
         case.db, case.path = db, path
@@ -133,6 +134,7 @@ def matching_case(matching_index, tmp_path):
     path = tmp_path / "match.sqlite3"
     db = sqlite3.connect(path, isolation_level=None)
     original.db.backup(db)
+    db.execute("PRAGMA foreign_keys=ON").close()
     with QualifiedJournalSource(original.native, ADMISSION) as source:
         case = SimpleNamespace(
             **{k: v for k, v in vars(original).items() if k not in {"source", "work"}}
@@ -221,6 +223,7 @@ def test_cold_resume_keeps_the_same_candidate_position_and_original_role(matchin
     def reopen(_step):
         case.db.close()
         case.db = sqlite3.connect(case.path, isolation_level=None)
+        case.db.execute("PRAGMA foreign_keys=ON").close()
         case.work = index.EndpointIndexWork(case.source, case.anchor)
 
     actual, _ = collect(case, "context", target, on_step=reopen)
@@ -234,6 +237,7 @@ def test_collision_candidates_require_exact_local_ids_and_complete_foreign_refer
     path = tmp_path / "collisions.sqlite3"
     db = sqlite3.connect(path, isolation_level=None)
     original.db.backup(db)
+    db.execute("PRAGMA foreign_keys=ON").close()
 
     class Collision:
         def hexdigest(self):

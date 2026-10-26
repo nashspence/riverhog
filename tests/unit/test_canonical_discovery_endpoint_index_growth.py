@@ -14,7 +14,9 @@ from riverhog_core import canonical_discovery_endpoint_index as index
 from riverhog_core import canonical_discovery_endpoint_source as endpoint_source
 from riverhog_core.canonical_discovery_journal_extraction import JournalFactExtraction
 from riverhog_core.canonical_discovery_journal_fragments import JournalFactCapacity
+from riverhog_core.canonical_discovery_journal_lookup import documentary_journal_assertion
 from riverhog_core.canonical_discovery_journal_work import JournalTaskKey, QualifiedJournalSource
+from riverhog_core.canonical_discovery_outgoing_endpoints import next_assertion_endpoint
 from riverhog_core.canonical_discovery_rows import core_edges
 from riverhog_provenance import JournalFrame, assertion, validate_journal
 
@@ -242,15 +244,9 @@ def test_endpoint_inverse_candidates_seek_exact_keys(mixed_case, monkeypatch, re
     exercise(mixed_case, monkeypatch, record_property, CANDIDATE)
 
 
-@pytest.mark.parametrize("degree", (1, 17, 1025))
-@pytest.mark.growth_witness(
-    "riverhog-endpoint-index-native-high-degree/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_core.canonical_discovery_endpoint_index.next_endpoint_candidate",
-)
-def test_native_high_degree_edges_keep_independent_coordinates_and_bounded_inverse_reads(
-    tmp_path, monkeypatch, record_property, degree
-):
+@pytest.fixture(scope="module", params=(1, 17, 1025))
+def degree_index(request, tmp_path_factory):
+    degree = request.param
     started = time.perf_counter()
     fixture = native_scalar_fixture(0)
     with validate_journal(fixture.raw, catalog=fixture.catalog) as original:
@@ -283,7 +279,9 @@ def test_native_high_degree_edges_keep_independent_coordinates_and_bounded_inver
             flush=True,
         )
         with QualifiedJournalSource(native, ADMISSION) as source:
-            path = tmp_path / "degree.sqlite3"
+            path = (
+                tmp_path_factory.mktemp("native-endpoint-degree-" + str(degree)) / "degree.sqlite3"
+            )
             db = open_journal_work(path)
             case = SimpleNamespace(
                 db=db,
@@ -319,48 +317,129 @@ def test_native_high_degree_edges_keep_independent_coordinates_and_bounded_inver
                     ),
                     flush=True,
                 )
-                progress = PROGRESS(db, case.key, case.work)
-                base = dimensions(case)
-                first = endpoint_source.read_journal_endpoint(
-                    db,
-                    case.key,
-                    source,
-                    case.anchor,
-                    activity["assertion_id"],
-                    next(iter(expected)),
-                    octet_budget=4096,
-                )
-                samples, actual, after = [], {}, None
-                position = 0
-                while True:
-                    arguments = dict(
-                        role="context",
-                        target_scope="local",
-                        target_type="context",
-                        target_sha256=first.target_sha256,
-                        after=after,
-                    )
-                    if position in {0, degree // 2, degree - 1, degree}:
-                        for cold in (False, True):
-                            if cold:
-                                case.db.close()
-                                case.db = sqlite3.connect(path, isolation_level=None)
-                                db = case.db
-                                case.work = index.EndpointIndexWork(source, case.anchor)
-                            inputs = values(case, base, progress)
-                            for _retry in range(3):
-                                with observed(case, monkeypatch) as measured:
-                                    row = CANDIDATE(measured, case.key, case.work, **arguments)
-                                samples.append(sample(CANDIDATE, inputs, measured.metrics))
-                    else:
-                        row = CANDIDATE(db, case.key, case.work, **arguments)
-                    if row is None:
-                        break
-                    assert row[2] == activity["assertion_id"] and row[3] not in actual
-                    actual[row[3]] = row[6]
-                    after = row[2:4]
-                    position += 1
-                assert actual == {record: edge.role for record, edge in expected.items()}
-                record_property("growth_samples", samples)
+                case.degree, case.activity, case.expected = degree, activity, expected
+                yield case
             finally:
                 case.db.close()
+
+
+@pytest.mark.growth_witness(
+    "riverhog-endpoint-index-native-high-degree/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_endpoint_index.next_endpoint_candidate",
+)
+def test_native_high_degree_edges_keep_independent_coordinates_and_bounded_inverse_reads(
+    degree_index, monkeypatch, record_property
+):
+    case = degree_index
+    db, source, path = case.db, case.source, case.path
+    degree, activity, expected = case.degree, case.activity, case.expected
+    progress = PROGRESS(db, case.key, case.work)
+    base = dimensions(case)
+    first = endpoint_source.read_journal_endpoint(
+        db,
+        case.key,
+        source,
+        case.anchor,
+        activity["assertion_id"],
+        next(iter(expected)),
+        octet_budget=4096,
+    )
+    samples, actual, after = [], {}, None
+    position = 0
+    while True:
+        arguments = dict(
+            role="context",
+            target_scope="local",
+            target_type="context",
+            target_sha256=first.target_sha256,
+            after=after,
+        )
+        if position in {0, degree // 2, degree - 1, degree}:
+            for cold in (False, True):
+                if cold:
+                    case.db.close()
+                    case.db = sqlite3.connect(path, isolation_level=None)
+                    case.db.execute("PRAGMA foreign_keys=ON").close()
+                    db = case.db
+                    case.work = index.EndpointIndexWork(source, case.anchor)
+                inputs = values(case, base, progress)
+                for _retry in range(3):
+                    with observed(case, monkeypatch) as measured:
+                        row = CANDIDATE(measured, case.key, case.work, **arguments)
+                    samples.append(sample(CANDIDATE, inputs, measured.metrics))
+        else:
+            row = CANDIDATE(db, case.key, case.work, **arguments)
+        if row is None:
+            break
+        assert row[2] == activity["assertion_id"] and row[3] not in actual
+        actual[row[3]] = row[6]
+        after = row[2:4]
+        position += 1
+    assert actual == {record: edge.role for record, edge in expected.items()}
+    record_property("growth_samples", samples)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-original-outgoing-endpoint-native-degree/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_outgoing_endpoints.next_assertion_endpoint",
+)
+def test_original_outgoing_reads_bound_each_step_at_actual_native_degrees(
+    degree_index, monkeypatch, record_property
+):
+    case = degree_index
+    activity = case.activity
+    original = documentary_journal_assertion(
+        case.db, case.key, case.source, case.anchor, activity["assertion_id"]
+    )
+    expected = {str(i): edge for i, edge in enumerate(core_edges(activity))}
+    progress = PROGRESS(case.db, case.key, case.work)
+    base = dimensions(case)
+    payload = case.db.execute(
+        "SELECT max(octets) FROM (SELECT sum(octets) AS octets FROM discovery_fact_streams "
+        "WHERE build_id=? AND task_id=? "
+        "AND kind IN ('edge-header','edge-role','edge-target','edge-foreign') "
+        "GROUP BY record_key)",
+        (case.key.build_id, original.key.task_id),
+    ).fetchone()[0]
+    inputs = values(case, base, progress, payload=payload)
+    samples, actual, after, position = [], {}, None, 0
+    while True:
+        if position in {0, len(expected) // 2, len(expected) - 1, len(expected)}:
+            for cold in (False, True):
+                if cold:
+                    case.db.close()
+                    case.db = sqlite3.connect(case.path, isolation_level=None)
+                    case.db.execute("PRAGMA foreign_keys=ON").close()
+                    case.work = index.EndpointIndexWork(case.source, case.anchor)
+                for _retry in range(3):
+                    with observed(case, monkeypatch) as measured:
+                        result = next_assertion_endpoint(
+                            measured,
+                            case.key,
+                            case.work,
+                            case.anchor,
+                            original,
+                            octet_budget=4096,
+                            after=after,
+                        )
+                    samples.append(sample(next_assertion_endpoint, inputs, measured.metrics))
+        else:
+            result = next_assertion_endpoint(
+                case.db,
+                case.key,
+                case.work,
+                case.anchor,
+                original,
+                octet_budget=4096,
+                after=after,
+            )
+        if result is None:
+            break
+        assert result.record_key not in actual and (after is None or result.record_key > after)
+        actual[result.record_key] = result.edge
+        after = result.record_key
+        position += 1
+    assert actual == expected
+    record_property("growth_samples", samples)
