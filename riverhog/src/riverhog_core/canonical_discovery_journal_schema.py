@@ -143,3 +143,46 @@ def initialize_journal_union(db: sqlite3.Connection) -> None:
             PRIMARY KEY(build_id,admission_sha256,journal_id,epoch,kind,vertex_id)
         ) WITHOUT ROWID;
     """)
+
+
+def initialize_journal_rank(db: sqlite3.Connection) -> None:
+    if db.in_transaction:
+        raise ValueError("journal rank initialization requires no active transaction")
+    db.executescript("""
+        CREATE TABLE IF NOT EXISTS discovery_journal_rank (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            worker_id TEXT NOT NULL, directory_id TEXT NOT NULL, algorithm TEXT NOT NULL,
+            binding_json TEXT NOT NULL, union_version TEXT NOT NULL,
+            version TEXT NOT NULL, state TEXT NOT NULL, epoch TEXT NOT NULL, kind TEXT NOT NULL,
+            phase TEXT NOT NULL, seed_after TEXT, active TEXT, edge_after TEXT,
+            vertices TEXT NOT NULL, arcs TEXT NOT NULL, seeded TEXT NOT NULL,
+            settled TEXT NOT NULL, visited TEXT NOT NULL, ready TEXT NOT NULL,
+            last_vertex_epoch TEXT, last_vertex_kind TEXT, last_vertex_id TEXT,
+            last_vertex_degree TEXT, last_vertex_rank TEXT, last_vertex_ready INTEGER,
+            last_arc_epoch TEXT, last_arc_kind TEXT, last_arc_source TEXT, last_arc_target TEXT,
+            last_graph_epoch TEXT, last_graph_kind TEXT, last_graph_state TEXT,
+            last_graph_vertices TEXT, last_graph_arcs TEXT, last_graph_settled TEXT,
+            last_graph_visited TEXT,
+            PRIMARY KEY(build_id,admission_sha256,journal_id),
+            CHECK(state IN ('building','complete','deferred')),
+            CHECK(kind IN ('derivation','specialization')),
+            CHECK(phase IN ('graph','seed','pop','edges'))
+        ) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS discovery_journal_rank_vertices (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            epoch TEXT NOT NULL, kind TEXT NOT NULL, vertex_id TEXT NOT NULL,
+            degree TEXT NOT NULL, rank TEXT, ready INTEGER NOT NULL CHECK(ready IN (0,1)),
+            PRIMARY KEY(build_id,admission_sha256,journal_id,epoch,kind,vertex_id)
+        ) WITHOUT ROWID;
+        CREATE INDEX IF NOT EXISTS discovery_journal_rank_ready
+            ON discovery_journal_rank_vertices
+            (build_id,admission_sha256,journal_id,epoch,kind,ready,vertex_id);
+        CREATE TABLE IF NOT EXISTS discovery_journal_rank_graphs (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            epoch TEXT NOT NULL, kind TEXT NOT NULL, state TEXT NOT NULL,
+            vertices TEXT NOT NULL, arcs TEXT NOT NULL,
+            settled TEXT NOT NULL, visited TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,journal_id,epoch,kind),
+            CHECK(state IN ('acyclic','cyclic'))
+        ) WITHOUT ROWID;
+    """)

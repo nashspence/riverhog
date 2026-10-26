@@ -60,7 +60,7 @@ def test_owned_metadata_initializes_once_and_resumes_stable_archive_work(case, q
         assert first.verify_current()
         with first.read() as (db, _):
             assert db.execute("SELECT format FROM discovery_workspace").fetchone() == (
-                "riverhog-discovery-metadata/v9",
+                "riverhog-discovery-metadata/v10",
             )
             assert db.execute(
                 "SELECT name FROM sqlite_master "
