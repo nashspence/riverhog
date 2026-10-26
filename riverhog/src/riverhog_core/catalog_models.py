@@ -600,6 +600,9 @@ class CollectionArtifactRecord(Base):
     artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     bytes: Mapped[int] = mapped_column(BigInteger)
     sha256: Mapped[str] = mapped_column(String(64))
+    # Operational custody evidence is not reconstructible from archive authority.
+    # Keep it across index rebuilds, without loading it during ordinary catalog reads.
+    custody_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True, deferred=True)
 
     __table_args__ = (
         ForeignKeyConstraint(

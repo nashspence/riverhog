@@ -395,6 +395,7 @@ CREATE TABLE collection_artifacts (
 	artifact_id VARCHAR(64) NOT NULL,
 	bytes BIGINT NOT NULL,
 	sha256 VARCHAR(64) NOT NULL,
+	custody_receipt_json TEXT,
 	PRIMARY KEY (collection_id, artifact_id),
 	FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE,
 	CONSTRAINT ck_collection_artifacts_bytes CHECK (bytes >= 0 AND bytes < 9223372036854775808),

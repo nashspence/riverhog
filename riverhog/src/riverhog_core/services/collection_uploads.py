@@ -100,6 +100,7 @@ from riverhog_protocol import (
     collection_upload_raw_digest_summary,
     decode_collection_tag_node,
     validate_collection_tag,
+    validate_collection_upload_artifact_custody_receipt,
     validate_collection_upload_batch_against_registration_constraints,
 )
 from riverhog_protocol.collection_completion import (
@@ -323,6 +324,7 @@ from riverhog_core.services.operation_plans import (
     plan_challenge,
 )
 from riverhog_core.services.retrieval_cache import register_cache_ready
+from riverhog_core.services.upload_custody_growth import custody_readback_declaration
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
     MirroredArchiveResumableObjectStore,
 )
@@ -1793,18 +1795,46 @@ class SqlAlchemyCollectionUploadService:
         self._schedule_finalization_if_ready(normalized_id)
         return self.get(normalized_id)
 
+    @declare_growth(custody_readback_declaration())
     def get_artifact(self, collection_id: int, artifact_id: ArtifactId) -> dict[str, object]:
         """Read one accepted member and its exact safe-release receipt by immutable ID."""
         normalized_id = _collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
-            if session.get(CollectionUploadRecord, normalized_id) is None:
-                raise NotFound(f"collection upload session not found: {normalized_id}")
-            member = session.get(CollectionUploadArtifactRecord, (normalized_id, str(artifact_id)))
-            if member is None:
-                raise NotFound(
-                    f"collection upload artifact not found: {normalized_id}/{artifact_id}"
+            upload_id = session.scalar(
+                select(CollectionUploadRecord.collection_id).where(
+                    CollectionUploadRecord.collection_id == normalized_id
                 )
-            return _artifact_payload(member)
+            )
+            if upload_id is not None:
+                member = session.get(
+                    CollectionUploadArtifactRecord, (normalized_id, str(artifact_id))
+                )
+                if member is not None:
+                    return _artifact_payload(member)
+            else:
+                is_published = session.scalar(
+                    select(CollectionRecord.is_published).where(
+                        CollectionRecord.id == normalized_id
+                    )
+                )
+                if is_published:
+                    published = session.get(
+                        CollectionArtifactRecord, (normalized_id, str(artifact_id))
+                    )
+                    if published is not None and published.custody_receipt_json is not None:
+                        receipt = _validate_member_custody_receipt(
+                            normalized_id, published, published.custody_receipt_json
+                        )
+                        return {
+                            "artifact_id": published.artifact_id,
+                            "bytes": format_scalar("nonnegative", published.bytes),
+                            "sha256": published.sha256,
+                            "payload_sealed": True,
+                            "custody_receipt": receipt,
+                        }
+            raise NotFound(
+                f"collection upload artifact custody unavailable: {normalized_id}/{artifact_id}"
+            )
 
     def list_artifacts(
         self,
@@ -5067,18 +5097,40 @@ def _advance_catalog_artifacts(session: Session, upload: CollectionUploadRecord)
         upload.catalog_phase = "journals"
         upload.catalog_cursor_json = "{}"
         return
-    session.execute(
-        insert(CollectionArtifactRecord),
-        [
+    requirement = (
+        None
+        if upload.completion_requirement_json is None
+        else CollectionCompletionRequirementDocument.model_validate_json(
+            upload.completion_requirement_json
+        ).identity
+    )
+    projected: list[dict[str, object]] = []
+    for row in rows:
+        original = row.custody_receipt_json
+        if original is None:
+            raise RuntimeError("catalog publication requires original artifact custody")
+        receipt = _validate_member_custody_receipt(upload.collection_id, row, original)
+        binding = session.get(
+            CollectionUploadArtifactProvenanceBindingRecord,
+            (upload.collection_id, row.artifact_id),
+        )
+        if (
+            binding is None
+            or receipt.primary.model_dump(mode="json") != _provenance_binding_row(binding)
+            or receipt.completion_requirement_sha256 != requirement
+        ):
+            raise Conflict("catalog custody differs from the accepted primary construction")
+        projected.append(
             {
                 "collection_id": upload.collection_id,
                 "artifact_id": row.artifact_id,
                 "bytes": row.bytes,
                 "sha256": row.sha256,
+                "custody_receipt_json": original,
             }
-            for row in rows
-        ],
-    )
+        )
+    # The original octets and the cursor commit in the same finalizer transaction.
+    session.execute(insert(CollectionArtifactRecord), projected)
     _set_catalog_cursor(
         upload,
         {
@@ -7103,6 +7155,24 @@ def _registration_constraints_payload(policy: CollectionVolumePolicy) -> dict[st
         "pack_member_bytes": format_scalar("nonnegative", policy.pack_member_bytes),
         "raw_part_plaintext_bytes": format_scalar("nonnegative", policy.raw_part_plaintext_bytes),
     }
+
+
+def _validate_member_custody_receipt(
+    collection_id: int,
+    member: CollectionUploadArtifactRecord | CollectionArtifactRecord,
+    original: str,
+) -> CollectionUploadArtifactCustodyReceiptDocument:
+    return validate_collection_upload_artifact_custody_receipt(
+        collection_id,
+        ArtifactMemberIdentityDocument.model_validate(
+            {
+                "artifact_id": member.artifact_id,
+                "bytes": format_scalar("nonnegative", member.bytes),
+                "sha256": member.sha256,
+            }
+        ),
+        CollectionUploadArtifactCustodyReceiptDocument.model_validate_json(original),
+    )
 
 
 def _artifact_payload(record: CollectionUploadArtifactRecord) -> dict[str, object]:
