@@ -471,3 +471,89 @@ def test_profile_candidate_values_remain_on_the_same_assertion(tmp_path: Path) -
         )
         assert list(matches) == ["3" * 64]
     engine.dispose()
+
+
+@pytest.mark.parametrize("operator", ["equals", "contains"])
+def test_all_profile_values_require_one_matching_section(operator, tmp_path: Path) -> None:
+    engine = create_catalog_engine(sqlite_url(tmp_path / "profile-sections.sqlite3"))
+    Base.metadata.create_all(engine)
+    with Session(engine) as session:
+        _indexed_collection(session)
+        template = session.scalar(select(Assertion).limit(1))
+        assert template is not None
+        for ordinal in (1, 2, 3):
+            key = str(ordinal) * 64
+            session.add(
+                Assertion(
+                    build_id=template.build_id,
+                    row_key=key,
+                    journal_id=template.journal_id,
+                    prefix_sha256=template.prefix_sha256,
+                    sequence=template.sequence,
+                    entry_id=template.entry_id,
+                    assertion_id=template.assertion_id,
+                    referent_id=template.referent_id,
+                    kind="reported_description",
+                    assertion_state="effective",
+                    assertion_sha256=key,
+                    canonical_json=b"{}",
+                )
+            )
+            session.flush()
+            for pointer in ("/left", "/right"):
+                session.add(
+                    Profile(
+                        build_id=template.build_id,
+                        row_key=key,
+                        pointer=pointer,
+                        contract_id="qualification:opaque",
+                        contract_sha256="c" * 64,
+                        schema_id="other" if ordinal == 3 else "qualification:section",
+                    )
+                )
+            for index, value in enumerate(("needle", "second")):
+                section = "/right" if ordinal == 1 and index == 1 else "/left"
+                session.add(
+                    Value(
+                        build_id=template.build_id,
+                        row_key=key,
+                        ordinal=index,
+                        pointer=section + "/data/value" + str(index),
+                        representation="json-scalar",
+                        scalar_type="string",
+                        source_value_sha256=key,
+                        exact_json=b'"' + value.encode() + b'"',
+                        text_value=value,
+                        folded_text=value,
+                    )
+                )
+                session.flush()
+                session.add(
+                    TextChunk(
+                        build_id=template.build_id,
+                        row_key=key,
+                        value_ordinal=index,
+                        chunk_ordinal=0,
+                        codepoint_offset=0,
+                        text_chunk=value,
+                        folded_chunk=value,
+                    )
+                )
+        session.flush()
+        pin = {
+            "contract_id": "qualification:opaque",
+            "contract_sha256": "c" * 64,
+            "schema_id": "qualification:section",
+        }
+        clause = AssertionClause.model_validate(
+            {
+                "profile": pin,
+                "values": [
+                    {"operator": operator, "value": value} for value in ("needle", "second")
+                ],
+            }
+        )
+        assert list(
+            session.scalars(select(Assertion.row_key).where(_clause_predicate(Assertion, clause)))
+        ) == ["2" * 64]
+    engine.dispose()
