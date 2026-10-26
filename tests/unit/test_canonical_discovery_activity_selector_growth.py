@@ -97,14 +97,16 @@ def observed_activity(case, monkeypatch):
                 "_equal_coordinates",
                 lambda left, right: compared(left, right, same_coordinates),
             )
-            for name, metric in (
-                ("check_open", "source_checks"),
-                ("anchor_at", "native_anchor_calls"),
-                ("reference_for_assertion", "native_reference_calls"),
-            ):
-                patch.setattr(case.source, name, child(getattr(case.source, name), metric))
-            patch.setattr(case.source, "entry", forbidden)
-            patch.setattr(case.source, "assertion", forbidden)
+            for source in (case.source, *getattr(case, "additional_sources", ())):
+                for name, metric in (
+                    ("check_open", "source_checks"),
+                    ("anchor_at", "native_anchor_calls"),
+                    ("reference_for_assertion", "native_reference_calls"),
+                    ("reference_anchor", "native_reference_calls"),
+                ):
+                    patch.setattr(source, name, child(getattr(source, name), metric))
+                patch.setattr(source, "entry", forbidden)
+                patch.setattr(source, "assertion", forbidden)
             patch.setattr(JournalFrame, "document", property(forbidden))
             for module in tuple(sys.modules.values()):
                 if module is not None and getattr(module, "__name__", "").startswith(
