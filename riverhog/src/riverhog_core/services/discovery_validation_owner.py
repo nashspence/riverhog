@@ -14,6 +14,8 @@ from riverhog_provenance import (
     InvalidJournalWorkspace,
     JournalGraphCertificates,
     JournalSummary,
+    JournalValidationBudget,
+    JournalValidationProgress,
     JournalValidationSession,
     RetainedCorpusValidator,
     StaleCorpusWorkspace,
@@ -21,6 +23,7 @@ from riverhog_provenance import (
 from riverhog_provenance_contracts import ContractCatalog
 
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
+from riverhog_core import canonical_discovery_journal_preparation as journal_preparation
 from riverhog_core import canonical_discovery_journal_registration as registration
 from riverhog_core.canonical_discovery_archive_framing import ArchiveJournalFramingWork
 from riverhog_core.canonical_discovery_archive_source import ArchiveJournalSource
@@ -29,6 +32,8 @@ from riverhog_core.canonical_discovery_archive_work import (
     StaleArchiveTask,
 )
 from riverhog_core.canonical_discovery_corpus_source import DiscoveryCorpusSource
+from riverhog_core.canonical_discovery_journal_certificates import DiscoveryJournalGraphCertificates
+from riverhog_core.canonical_discovery_journal_epochs import DiscoveryJournalEpochWork
 from riverhog_core.canonical_discovery_journal_source import DiscoveryJournalSource
 from riverhog_core.canonical_discovery_metadata import DiscoveryMetadata
 from riverhog_core.canonical_discovery_selection import (
@@ -59,6 +64,9 @@ class _Slot:
     corpus: RetainedCorpusValidator | None = None
     journal: DiscoveryJournalOwner | None = None
     sealed: DiscoverySealedJournalOwner | None = None
+    preparation: journal_preparation.DiscoveryJournalPreparationWork | None = None
+    preparation_initialized: bool = False
+    certificates: DiscoveryJournalGraphCertificates | None = None
     closing: bool = False
 
     def retain_corpus(self, corpus: RetainedCorpusValidator) -> None:
@@ -101,6 +109,64 @@ class DiscoveryValidationWork:
         if selected.binding != source.binding:
             raise StaleArchiveTask("journal preparation lost its registered original source")
         return source
+
+    def prepare_journal(
+        self, work: ArchiveJournalFramingWork
+    ) -> DiscoveryJournalGraphCertificates | None:
+        """Publish one bounded preparation atom; return evidence only when complete."""
+        metadata, slot = self.metadata, self._slot
+        source = self.journal_source(work)
+        selected = slot.preparation
+        if selected is not None and selected.epochs.source.binding != source.binding:
+            with metadata.read() as (db, key):
+                current = journal_preparation.discovery_journal_preparation_progress(
+                    db, key, selected
+                )
+            if not current.complete:
+                raise StaleArchiveTask("another original journal owns unfinished preparation")
+            previous = slot.journal
+            if previous is not None and (
+                previous.closing
+                or previous.session is None
+                or not previous.session.progress().complete
+            ):
+                raise StaleArchiveTask("another unfinished journal still owns this slot")
+            selected = None
+            slot.preparation = None
+            slot.preparation_initialized = False
+            slot.certificates = None
+        if selected is None:
+            original = DiscoveryJournalEpochWork(work, source)
+            selected = journal_preparation.DiscoveryJournalPreparationWork(original)
+            slot.preparation = selected
+        if not slot.preparation_initialized:
+            with metadata.transaction() as (db, key):
+                journal_preparation.begin_discovery_journal_preparation(db, key, selected)
+            slot.preparation_initialized = True
+        with metadata.read() as (db, key):
+            page = journal_preparation.prepare_discovery_journal_preparation(db, key, selected)
+        if page is not None:
+            with metadata.transaction() as (db, key):
+                if not journal_preparation.apply_discovery_journal_preparation(
+                    db, key, selected, page
+                ):
+                    raise StaleArchiveTask("journal preparation publication lost its current owner")
+            return None
+        if slot.certificates is None:
+            slot.certificates = DiscoveryJournalGraphCertificates(metadata, selected.rank)
+        elif not slot.certificates.verify_current():
+            raise StaleArchiveTask("completed journal preparation is no longer current")
+        return slot.certificates
+
+    def advance_journal(
+        self, work: ArchiveJournalFramingWork, *, budget: JournalValidationBudget
+    ) -> JournalValidationProgress | None:
+        """Execute one preparation atom or one Native replay quantum under this slot."""
+        certificates = self.prepare_journal(work)
+        if certificates is None:
+            return None
+        native = self.journal(work, certificates=certificates)
+        return None if native is None else native.advance(budget)
 
     def journal(
         self,
@@ -291,6 +357,9 @@ class DiscoveryValidationOwner:
         if slot.corpus is not None:
             slot.corpus.close()
             slot.corpus = None
+        slot.preparation = None
+        slot.preparation_initialized = False
+        slot.certificates = None
         if slot.metadata is not None:
             slot.metadata.close()
             slot.metadata = None

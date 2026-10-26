@@ -186,3 +186,18 @@ def initialize_journal_rank(db: sqlite3.Connection) -> None:
             CHECK(state IN ('acyclic','cyclic'))
         ) WITHOUT ROWID;
     """)
+
+
+def initialize_journal_preparation(db: sqlite3.Connection) -> None:
+    if db.in_transaction:
+        raise ValueError("journal preparation initialization requires no active transaction")
+    db.execute("""
+        CREATE TABLE IF NOT EXISTS discovery_journal_preparation (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            worker_id TEXT NOT NULL, directory_id TEXT NOT NULL, binding_json TEXT NOT NULL,
+            algorithm TEXT NOT NULL, version TEXT NOT NULL, phase TEXT NOT NULL,
+            child_version TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,journal_id),
+            CHECK(phase IN ('epochs','topology','union','rank','complete'))
+        ) WITHOUT ROWID
+    """).close()

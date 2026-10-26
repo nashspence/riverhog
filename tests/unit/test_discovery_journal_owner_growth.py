@@ -52,6 +52,29 @@ def observe(operation, monkeypatch):
         else child.DiscoveryJournalCustodySource
     )
     targets = (
+        (owner.DiscoveryValidationWork, "prepare_journal", "preparation_dispatches"),
+        (owner.DiscoveryValidationWork, "journal", "journal_dispatches"),
+        (owner.DiscoveryJournalEpochWork, "__init__", "epoch_constructions"),
+        (
+            owner.journal_preparation.DiscoveryJournalPreparationWork,
+            "__init__",
+            "preparation_constructions",
+        ),
+        (owner.journal_preparation, "begin_discovery_journal_preparation", "preparation_begins"),
+        (
+            owner.journal_preparation,
+            "prepare_discovery_journal_preparation",
+            "preparation_prepares",
+        ),
+        (owner.journal_preparation, "apply_discovery_journal_preparation", "preparation_applies"),
+        (
+            owner.journal_preparation,
+            "discovery_journal_preparation_progress",
+            "preparation_progress_calls",
+        ),
+        (owner.DiscoveryJournalGraphCertificates, "__init__", "certificate_constructions"),
+        (owner.DiscoveryJournalGraphCertificates, "verify_current", "certificate_checks"),
+        (JournalValidationSession, "advance", "native_advances"),
         (child.ValidationWorkspaceCustody, "verify_current", "custody_checks"),
         (DiscoveryJournalSource, "read_window", "source_windows"),
         (DiscoveryJournalSource, "read_exact", "source_exact_reads"),

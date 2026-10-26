@@ -31,6 +31,7 @@ from riverhog_core.canonical_discovery_dependency_source import initialize_depen
 from riverhog_core.canonical_discovery_journal_schema import (
     initialize_archive_framing,
     initialize_journal_epochs,
+    initialize_journal_preparation,
     initialize_journal_rank,
     initialize_journal_registration,
     initialize_journal_topology,
@@ -44,7 +45,7 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
 )
 
-_FORMAT = "riverhog-discovery-metadata/v10"
+_FORMAT = "riverhog-discovery-metadata/v11"
 
 
 class DiscoveryMetadata:
@@ -260,6 +261,7 @@ class DiscoveryMetadata:
             initialize_journal_topology(db)
             initialize_journal_union(db)
             initialize_journal_rank(db)
+            initialize_journal_preparation(db)
             with closing(
                 db.execute(
                     "CREATE TABLE discovery_workspace("

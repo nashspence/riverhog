@@ -15,6 +15,25 @@ from riverhog_growth_contracts import (
 )
 
 LIMITS = {
+    "prepare_journal": {
+        "source_preparations": 1,
+        "epoch_constructions": 1,
+        "preparation_constructions": 1,
+        "preparation_begins": 1,
+        "preparation_prepares": 1,
+        "preparation_applies": 1,
+        "preparation_progress_calls": 1,
+        "metadata_reads": 2,
+        "metadata_transactions": 2,
+        "certificate_constructions": 1,
+        "certificate_checks": 1,
+        "native_progress_calls": 1,
+    },
+    "advance_journal": {
+        "preparation_dispatches": 1,
+        "journal_dispatches": 1,
+        "native_advances": 1,
+    },
     "journal_source": {
         "metadata_reads": 1,
         "metadata_transactions": 1,
@@ -101,6 +120,8 @@ def declare_growth_for_journal_owner(owner: type[Any]) -> None:
 def declare_growth_for_journal_dispatch(work: type[Any]) -> None:
     _declare(work.journal_source, "journal_source", "dispatch")
     _declare(work.journal, "journal", "dispatch")
+    _declare(work.prepare_journal, "prepare_journal", "dispatch")
+    _declare(work.advance_journal, "advance_journal", "dispatch")
 
 
 def declare_growth_for_journal_custody_source(owner: type[Any]) -> None:
