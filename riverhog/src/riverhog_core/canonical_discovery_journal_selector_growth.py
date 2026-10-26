@@ -70,7 +70,11 @@ def _declare(namespace: dict[str, Any], *, applying: bool) -> None:
         + ".growth/v1",
         authority="riverhog-server",
         subjects=("riverhog_core." + module + "." + name,),
-        scope="one fixed activity atom or its exact original journal-control replay",
+        scope=(
+            "one original journal-selector incidence and cursor replay"
+            if applying
+            else "one fixed activity atom or its exact original journal-control replay"
+        ),
         starts_at="receive exact pending coordinates under current metadata custody",
         ends_at="detach one source-bound incidence or commit it with the same cursor",
         dimensions=(
@@ -102,13 +106,34 @@ def _declare(namespace: dict[str, Any], *, applying: bool) -> None:
         conditions=(
             "The application retains current metadata custody and worker-epoch fencing.",
             "The complete source manifest, Native source and endpoint index retain their owners.",
-            "Activity preparation visits one original outgoing endpoint or fixed phase per atom.",
+            (
+                "Preparation retains its fixed selector owner's bounded original source controls."
+                if applying
+                else (
+                    "Activity preparation visits one original outgoing endpoint "
+                    "or fixed phase per atom."
+                )
+            ),
             "Each receipt is a complete capacity-bounded one-row SELECT, including physical BLOBs.",
             "The number of prepared controls is bounded by the preparing fixed selector owner.",
         ),
         invariants=(
-            "An effective activity has one documentary-own link and original context incidences.",
-            "Non-context endpoints advance explicitly; duplicate incidences retain set semantics.",
+            (
+                "Incidence meaning and original source selection remain with the fixed preparer."
+                if applying
+                else (
+                    "An effective activity has one documentary-own link "
+                    "and original context incidences."
+                )
+            ),
+            (
+                "Incidence and cursor commit together; repeated applications retain set semantics."
+                if applying
+                else (
+                    "Non-context endpoints advance explicitly; "
+                    "duplicate incidences retain set semantics."
+                )
+            ),
             "Every source control is rechecked inside the incidence/cursor transaction.",
             "Source membership is exact archive admission, not independent corpus acceptance.",
             "No entry, assertion payload, snapshot view or member-context product is rebuilt.",
