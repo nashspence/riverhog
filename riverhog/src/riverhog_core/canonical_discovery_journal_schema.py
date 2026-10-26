@@ -45,3 +45,24 @@ def initialize_journal_registration(db: sqlite3.Connection) -> None:
             UNIQUE(build_id,admission_sha256,directory_id)
         ) WITHOUT ROWID
     """).close()
+
+
+def initialize_journal_epochs(db: sqlite3.Connection) -> None:
+    if db.in_transaction:
+        raise ValueError("journal epoch initialization requires no active transaction")
+    db.executescript("""
+        CREATE TABLE IF NOT EXISTS discovery_journal_epochs (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            worker_id TEXT NOT NULL, directory_id TEXT NOT NULL, algorithm TEXT NOT NULL,
+            binding_json TEXT NOT NULL, version TEXT NOT NULL, next_frame TEXT NOT NULL,
+            byte_offset TEXT NOT NULL, epoch TEXT NOT NULL, phase TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,journal_id),
+            CHECK(phase IN ('scanning','complete','deferred'))
+        ) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS discovery_journal_epoch_frames (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            ordinal TEXT NOT NULL, byte_offset TEXT NOT NULL, json_bytes TEXT NOT NULL,
+            epoch TEXT NOT NULL, entry_kind TEXT NOT NULL, json_sha256 TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,journal_id,ordinal)
+        ) WITHOUT ROWID;
+    """)
