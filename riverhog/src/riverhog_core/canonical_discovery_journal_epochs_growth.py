@@ -38,26 +38,27 @@ def declare_growth_for_journal_epochs(namespace: dict[str, Any]) -> None:
     )
     for mode, name in (
         ("progress", "discovery_journal_epoch_progress"),
+        ("frame", "discovery_journal_epoch_frame"),
         ("begin", "begin_discovery_journal_epochs"),
         ("prepare", "prepare_discovery_journal_epoch"),
         ("apply", "apply_discovery_journal_epoch"),
     ):
         preparing, reading = mode == "prepare", mode == "progress"
-        sql = 2 if mode in {"progress", "apply"} else int(mode == "begin")
+        sql = 2 if mode in {"progress", "apply"} else int(mode in {"begin", "frame"})
         limits = {
             "sql_statements": count(sql),
-            "returned_rows": count(2 if reading else 0),
+            "returned_rows": count(2 if reading else int(mode == "frame")),
             "changed_rows": count(2 if mode == "apply" else int(mode == "begin")),
             "returned_octets": scale(2, width)
-            if reading
+            if reading or mode == "frame"
             else Expression("constant", value=0, unit=OCTETS),
             "parameter_octets": scale(16, width),
             "sqlite_vm_instructions": Expression(
                 "sum", terms=(count(1024), Expression("product", terms=(count(256), depth)))
             ),
-            "registration_calls": count(int(mode in {"progress", "begin"})),
-            "progress_calls": count(int(mode != "progress")),
-            "frame_position_calls": count(int(mode in {"progress", "prepare"})),
+            "registration_calls": count(int(mode in {"progress", "begin", "frame"})),
+            "progress_calls": count(int(mode not in {"progress", "frame"})),
+            "frame_position_calls": count(int(mode in {"progress", "prepare", "frame"})),
             "framing_progress_calls": count(int(mode in {"progress", "prepare"})),
             "source_exact_calls": count(3 if preparing else 0),
             "source_read_octets": entry

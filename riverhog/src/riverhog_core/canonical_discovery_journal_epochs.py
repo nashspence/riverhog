@@ -98,6 +98,14 @@ def _fact(
     return position, boundary
 
 
+def discovery_journal_epoch_frame(
+    db: sqlite3.Connection, key: ArchiveTaskKey, work: DiscoveryJournalEpochWork, ordinal: int
+) -> tuple[JournalFramePosition, JournalEpochBoundary]:
+    """Read one registered original frame fact without traversing earlier entries."""
+    _fence(db, key, work)
+    return _fact(db, key, work, ordinal)
+
+
 def discovery_journal_epoch_progress(
     db: sqlite3.Connection, key: ArchiveTaskKey, work: DiscoveryJournalEpochWork
 ) -> DiscoveryJournalEpochProgress:

@@ -19,6 +19,7 @@ from tests.unit.test_canonical_discovery_journal_source_growth import sample
 
 OPERATIONS = {
     "progress": owner.discovery_journal_epoch_progress,
+    "frame": owner.discovery_journal_epoch_frame,
     "begin": owner.begin_discovery_journal_epochs,
     "prepare": owner.prepare_discovery_journal_epoch,
     "apply": owner.apply_discovery_journal_epoch,
@@ -137,7 +138,7 @@ def exercise(tmp_path, monkeypatch, record_property, mode):
             else:
                 begin(case.metadata, task)
                 seed(case, task, retained)
-            if mode == "progress":
+            if mode in {"progress", "frame"}:
                 assert apply(case.metadata, task, prepare(case.metadata, task))
             page = prepare(case.metadata, task) if mode == "apply" else None
             for retry in range(3):
@@ -154,6 +155,8 @@ def exercise(tmp_path, monkeypatch, record_property, mode):
                     if mode == "apply" and retry:
                         with pytest.raises(owner.StaleArchiveTask, match="owned prepared"):
                             operation(recorder, key, task, page)
+                    elif mode == "frame":
+                        assert operation(recorder, key, task, 0)[0].ordinal == 0
                     elif mode == "apply":
                         assert operation(recorder, key, task, page)
                     else:
@@ -208,3 +211,12 @@ def test_actual_fact_cursor_publication_and_duplicate_rejection_are_bounded(
     tmp_path, monkeypatch, record_property
 ):
     exercise(tmp_path, monkeypatch, record_property, "apply")
+
+
+@pytest.mark.growth_witness(
+    "riverhog-discovery-journal-epochs-frame/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_journal_epochs.discovery_journal_epoch_frame",
+)
+def test_actual_registered_epoch_frame_point_lookup(tmp_path, monkeypatch, record_property):
+    exercise(tmp_path, monkeypatch, record_property, "frame")

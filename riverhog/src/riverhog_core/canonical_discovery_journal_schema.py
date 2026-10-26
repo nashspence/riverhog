@@ -66,3 +66,30 @@ def initialize_journal_epochs(db: sqlite3.Connection) -> None:
             PRIMARY KEY(build_id,admission_sha256,journal_id,ordinal)
         ) WITHOUT ROWID;
     """)
+
+
+def initialize_journal_topology(db: sqlite3.Connection) -> None:
+    if db.in_transaction:
+        raise ValueError("journal topology initialization requires no active transaction")
+    db.executescript("""
+        CREATE TABLE IF NOT EXISTS discovery_journal_topology (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            worker_id TEXT NOT NULL, directory_id TEXT NOT NULL, algorithm TEXT NOT NULL,
+            binding_json TEXT NOT NULL, epoch_version TEXT NOT NULL,
+            version TEXT NOT NULL, next_frame TEXT NOT NULL, phase TEXT NOT NULL,
+            cursor_json TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,journal_id),
+            CHECK(phase IN ('scanning','complete','deferred'))
+        ) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS discovery_journal_topology_facts (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            ordinal TEXT NOT NULL, frame_ordinal TEXT NOT NULL, epoch TEXT NOT NULL,
+            array_kind TEXT NOT NULL, item_ordinal TEXT NOT NULL, byte_offset TEXT NOT NULL,
+            json_bytes TEXT NOT NULL, json_sha256 TEXT NOT NULL,
+            assertion_id TEXT NOT NULL, kind TEXT NOT NULL, source_id TEXT, target_id TEXT,
+            PRIMARY KEY(build_id,admission_sha256,journal_id,ordinal),
+            UNIQUE(build_id,admission_sha256,journal_id,frame_ordinal,array_kind,item_ordinal),
+            CHECK(array_kind IN ('retracts','relations')),
+            CHECK(kind IN ('retraction','derivation','specialization'))
+        ) WITHOUT ROWID;
+    """)
