@@ -10,10 +10,10 @@ from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_certificates as owner
 from riverhog_core.services import upload_journal_rank as rank
-from riverhog_core.services import upload_journal_topology as facts
 from riverhog_core.services import upload_journal_union as union
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import replay_binding as binding_owner
+from riverhog_provenance import topology_checkpoint
 from sqlalchemy import event, update
 
 from tests.unit.test_journal_capture import retained
@@ -161,9 +161,9 @@ class Recorder:
                 if not cold:
                     with engine.connect():
                         pass
-                for module in (union, facts, rank, binding_owner):
+                for module in (union, topology_checkpoint, rank, binding_owner):
                     patch.setattr(module, "json", SimpleNamespace(loads=loads))
-                for module in (owner, union, facts, rank, binding_owner):
+                for module in (owner, union, topology_checkpoint, rank, binding_owner):
                     patch.setattr(module, "canonical_json_bytes", encode)
                 patch.setattr(owner, "hashlib", SimpleNamespace(sha256=sha256))
                 self.active = True

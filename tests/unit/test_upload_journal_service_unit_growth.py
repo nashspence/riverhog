@@ -18,7 +18,7 @@ from riverhog_core.services import upload_journal_replay as replay
 from riverhog_core.services import upload_journal_topology as topology
 from riverhog_core.services import upload_journal_union as union
 from riverhog_growth_contracts import growth_binding
-from riverhog_provenance import framing, replay_binding
+from riverhog_provenance import framing, replay_binding, topology_checkpoint
 from sqlalchemy import event
 
 from tests.unit import test_upload_journal_validation_advance_growth as native
@@ -201,7 +201,16 @@ class CoreRecorder:
                     ),
                 )
                 patch.setattr(canonical, "canonical_json_bytes", encoded)
-                for module in (source_owner, epochs, topology, union, rank, replay, replay_binding):
+                for module in (
+                    source_owner,
+                    epochs,
+                    topology,
+                    topology_checkpoint,
+                    union,
+                    rank,
+                    replay,
+                    replay_binding,
+                ):
                     if hasattr(module, "json"):
                         patch.setattr(
                             module,

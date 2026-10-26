@@ -11,6 +11,7 @@ from riverhog_core.services import upload_journal_topology as topology
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import parse_journal, validate_journal
 from riverhog_provenance import topology_facts as neutral
+from riverhog_provenance.topology_checkpoint import TopologyCaptureCheckpoint
 from sqlalchemy import delete, event, select, update
 
 from tests.unit.test_journal_capture import retained
@@ -186,7 +187,7 @@ def test_capture_preserves_parallel_documentary_edges_kinds_and_real_epochs(tmp_
         for row in rows:
             exact = raw[row.byte_offset : row.byte_offset + row.json_bytes]
             assert hashlib.sha256(exact).hexdigest() == row.json_sha256
-        assert topology._decode(progress(factory)[-1]).facts == 5
+        assert TopologyCaptureCheckpoint.from_json(progress(factory)[-1]).facts == 5
 
 
 def test_high_degree_capture_commits_bounded_rows_and_plans_each_entry_once(tmp_path, monkeypatch):
@@ -212,7 +213,7 @@ def test_high_degree_capture_commits_bounded_rows_and_plans_each_entry_once(tmp_
             if done:
                 break
         assert len(planned) == 1 and len(rows) == 1025
-        assert topology._decode(progress(factory)[-1]).active is None
+        assert TopologyCaptureCheckpoint.from_json(progress(factory)[-1]).active is None
 
 
 def test_item_decode_and_page_digest_computation_release_catalog_readers(tmp_path, monkeypatch):
@@ -292,7 +293,7 @@ def test_reopen_fails_closed_on_changed_progress_or_missing_source(tmp_path, fau
         assert not topology.advance_upload_journal_topology_capture(factory, work)
         with factory() as session, session.begin():
             if fault == "missing-last":
-                last = topology._decode(progress(factory)[-1]).last
+                last = TopologyCaptureCheckpoint.from_json(progress(factory)[-1]).last
                 session.execute(delete(Fact).where(Fact.item_ordinal == last[2]))
             elif fault == "algorithm":
                 session.execute(update(Scan).values(topology_algorithm="different"))
