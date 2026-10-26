@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import sqlite3
+from hashlib import sha256
 from typing import cast
 
 from riverhog_provenance_contracts import LocalReference
 
+from riverhog_core import canonical_discovery_endpoint_matches as endpoint_matches
 from riverhog_core.canonical_discovery_archive_work import ArchiveTaskKey, StaleArchiveTask, _one
 from riverhog_core.canonical_discovery_documentary_selector_growth import (
     declare_growth_for_documentary_dependencies,
@@ -81,7 +83,7 @@ def _observed_at(
     assertion_id: str,
     record_key: str,
 ) -> JournalAssertionHeader | None:
-    assert selected.anchor is not None
+    assert selected.anchor is not None and selected.object_id is not None
     # Future documentary candidates still advance. Verify their original controls
     # under the complete source before suppressing them at the selected prefix.
     endpoint = read_journal_endpoint(
@@ -100,14 +102,17 @@ def _observed_at(
         (work.journal_key.build_id, work.journal_key.source_key, assertion_id, record_key),
     )
     edge, original = endpoint.edge, endpoint.assertion
-    if row != _output(work.journal_key, endpoint) or (
-        edge.role,
-        edge.target_scope,
-        edge.target_type,
-        edge.target_id,
-    ) != ("state", "local", "state", selected.object_id):
+    expected = selected.object_id.encode("ascii")
+    if (
+        row != _output(work.journal_key, endpoint)
+        or (edge.role, edge.target_scope, edge.target_type) != ("state", "local", "state")
+        or endpoint.target_sha256 != sha256(expected).hexdigest()
+    ):
         raise StaleArchiveTask("documentary observation position differs from its original target")
-    if original.born_sequence > selected.anchor.through_sequence:
+    if (
+        original.born_sequence > selected.anchor.through_sequence
+        or not endpoint_matches._equal_bytes(edge.target_id.encode("ascii"), expected)
+    ):
         return None
     return original
 

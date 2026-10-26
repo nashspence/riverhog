@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import sqlite3
 from dataclasses import replace
 from types import SimpleNamespace
@@ -8,6 +9,8 @@ from types import SimpleNamespace
 import pytest
 from riverhog_archive_contracts import HistoryJournalAnchor
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_core import canonical_discovery_documentary_selectors as documentary
+from riverhog_core import canonical_discovery_endpoint_matches as endpoint_matches
 from riverhog_core.canonical_discovery_archive_work import (
     StaleArchiveTask,
     admit_archive_journal,
@@ -461,3 +464,44 @@ def test_native_immutable_context_justifies_one_own_dependency_atom(case, select
             assertions={"descriptions": [changed]},
             catalog=case.catalog,
         )
+
+
+def test_colliding_candidate_digest_advances_by_original_bytes_after_cold_resume(case, monkeypatch):
+    spec = seed(case)
+    target_digest = hashlib.sha256(case.state.encode("ascii")).hexdigest()
+    record = next(str(i) for i, edge in enumerate(core_edges(case.other)) if edge.role == "state")
+    original_read = documentary.read_journal_endpoint
+
+    def colliding_read(*args, **kwargs):
+        endpoint = original_read(*args, **kwargs)
+        if (
+            endpoint.assertion.assertion_id == case.other["assertion_id"]
+            and endpoint.record_key == record
+        ):
+            return replace(endpoint, target_sha256=target_digest)
+        return endpoint
+
+    # Keep real Native bytes and source controls. The digest provider models a
+    # collision solely for this other-State candidate; equality still owns scope.
+    with write(case.db):
+        case.db.execute(
+            "UPDATE discovery_endpoints SET target_sha256=? WHERE build_id=? AND source_key=? "
+            "AND assertion_id=? AND record_key=?",
+            (
+                target_digest,
+                case.key.build_id,
+                case.key.source_key,
+                case.other["assertion_id"],
+                record,
+            ),
+        ).close()
+    monkeypatch.setattr(documentary, "read_journal_endpoint", colliding_read)
+    monkeypatch.setattr(endpoint_matches, "read_journal_endpoint", colliding_read)
+    pages = drain(case, spec)
+    assert any(
+        page.page.result.position == ("observed", case.other["assertion_id"], record)
+        and page.page.output is None
+        and not page.page.result.complete
+        for page in pages
+    )
+    assert {child for parent, child in graph(case)[1] if parent == spec} == expected(case, spec)
