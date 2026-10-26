@@ -39,13 +39,14 @@ from riverhog_core.canonical_discovery_journal_schema import (
 )
 from riverhog_core.canonical_discovery_primary_work import initialize_primary_work
 from riverhog_core.canonical_discovery_selection import initialize_corpus_selection
+from riverhog_core.canonical_discovery_selector_work import initialize_selector_work
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
     ValidationWorkspaceCustody,
 )
 
-_FORMAT = "riverhog-discovery-metadata/v13"
+_FORMAT = "riverhog-discovery-metadata/v14"
 
 
 class DiscoveryMetadata:
@@ -253,6 +254,7 @@ class DiscoveryMetadata:
             initialize_archive_work(db)
             initialize_archive_framing(db)
             initialize_endpoint_index(db)
+            initialize_selector_work(db)
             initialize_corpus_selection(db)
             initialize_primary_work(db)
             initialize_corpus_replay(db)

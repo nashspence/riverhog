@@ -5,7 +5,9 @@ from contextlib import contextmanager
 from dataclasses import replace
 
 import pytest
+from riverhog_archive_contracts import RETAINED_HISTORY_EXTENT
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
+from riverhog_core import canonical_discovery_selector_work as selectors
 from riverhog_core.canonical_discovery_archive_work import (
     StaleArchiveTask,
     apply_archive_descriptor,
@@ -13,6 +15,7 @@ from riverhog_core.canonical_discovery_archive_work import (
     prepare_archive_descriptor,
 )
 from riverhog_core.canonical_discovery_metadata import DiscoveryMetadata
+from riverhog_core.canonical_discovery_selectors import Selector
 from riverhog_core.catalog_provenance_index_models import (
     CollectionProvenanceIndexStateRecord as State,
 )
@@ -60,7 +63,7 @@ def test_owned_metadata_initializes_once_and_resumes_stable_archive_work(case, q
         assert first.verify_current()
         with first.read() as (db, _):
             assert db.execute("SELECT format FROM discovery_workspace").fetchone() == (
-                "riverhog-discovery-metadata/v13",
+                "riverhog-discovery-metadata/v14",
             )
             assert db.execute(
                 "SELECT name FROM sqlite_master "
@@ -74,12 +77,26 @@ def test_owned_metadata_initializes_once_and_resumes_stable_archive_work(case, q
                 "SELECT name FROM sqlite_master "
                 "WHERE type='index' AND name='discovery_endpoint_inverse'"
             ).fetchone() == ("discovery_endpoint_inverse",)
+            assert db.execute(
+                "SELECT name FROM sqlite_master WHERE type='index' "
+                "AND name='discovery_selector_pending'"
+            ).fetchone() == ("discovery_selector_pending",)
         first.open()
         reader = qualified[1][2]
         with first.read() as (db, key):
             prepared = prepare_archive_descriptor(db, key, case.admission, reader)
         with first.transaction() as (db, key):
             assert apply_archive_descriptor(db, key, case.admission, prepared).version == 1
+        selector = Selector(
+            "history-documentary",
+            history_sha256=qualified[1][4][0].identity,
+            extent=RETAINED_HISTORY_EXTENT,
+        )
+        with first.transaction() as (db, current):
+            selectors.intern_selector(db, current, selector, octet_budget=16384)
+        with first.read() as (db, current):
+            selector_before = selectors.next_selector(db, current, octet_budget=16384)
+            assert selector_before.selector == selector
         inode = (path / "discovery.sqlite3").stat().st_ino
         key = first.key
         epoch = first.job.worker_epoch
@@ -92,6 +109,15 @@ def test_owned_metadata_initializes_once_and_resumes_stable_archive_work(case, q
         with second.read() as (db, current):
             assert current == key
             assert archive_metadata_progress(db, current).version == 1
+            assert selectors.next_selector(db, current, octet_budget=16384) == selector_before
+        work = selectors.SelectorWork(second.key, octet_budget=16384)
+        page = selectors.prepare_selector_page(
+            work, selector_before, position=("end",), complete=True
+        )
+        with second.transaction() as (db, current):
+            selectors.apply_selector_page(db, current, work, page)
+        with second.read() as (db, current):
+            assert selectors.next_selector(db, current, octet_budget=16384) is None
 
 
 def test_storage_confirmation_lost_reply_resumes_the_actual_durable_file(case, monkeypatch):
