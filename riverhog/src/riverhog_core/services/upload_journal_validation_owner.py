@@ -23,13 +23,13 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance import (
     InvalidJournalGraphCertificate,
+    InvalidJournalWorkspace,
     JournalReplayBinding,
     JournalValidationBudget,
     JournalValidationCapacity,
     JournalValidationSession,
     ProvenanceValidationError,
 )
-from riverhog_provenance.journal_store import InvalidJournalWorkspace
 from riverhog_provenance_contracts import ContractCatalog
 
 from riverhog_core.catalog_db import SessionFactory

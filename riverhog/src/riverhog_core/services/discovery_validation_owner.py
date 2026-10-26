@@ -2,21 +2,32 @@
 
 from __future__ import annotations
 
+import sqlite3
 from collections.abc import Iterator
 from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from threading import Lock
+from uuid import uuid4
 
-from riverhog_provenance import RetainedCorpusValidator, StaleCorpusWorkspace
+from riverhog_provenance import (
+    InvalidJournalWorkspace,
+    JournalGraphCertificates,
+    JournalValidationSession,
+    RetainedCorpusValidator,
+    StaleCorpusWorkspace,
+)
 from riverhog_provenance_contracts import ContractCatalog
 
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
+from riverhog_core import canonical_discovery_journal_registration as registration
+from riverhog_core.canonical_discovery_archive_framing import ArchiveJournalFramingWork
 from riverhog_core.canonical_discovery_archive_work import (
     ArchiveDiscoveryAdmission,
     StaleArchiveTask,
 )
 from riverhog_core.canonical_discovery_corpus_source import DiscoveryCorpusSource
+from riverhog_core.canonical_discovery_journal_source import DiscoveryJournalSource
 from riverhog_core.canonical_discovery_metadata import DiscoveryMetadata
 from riverhog_core.canonical_discovery_selection import (
     CorpusSelectionWork,
@@ -28,6 +39,8 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
     lease_journal_validation_workspace,
 )
+from riverhog_core.services.discovery_journal_growth import declare_growth_for_journal_dispatch
+from riverhog_core.services.discovery_journal_owner import DiscoveryJournalOwner
 from riverhog_core.services.discovery_validation_growth import declare_owner_growth
 
 
@@ -38,6 +51,7 @@ class _Slot:
     metadata: DiscoveryMetadata | None = None
     source: DiscoveryCorpusSource | None = None
     corpus: RetainedCorpusValidator | None = None
+    journal: DiscoveryJournalOwner | None = None
     closing: bool = False
 
     def retain_corpus(self, corpus: RetainedCorpusValidator) -> None:
@@ -63,6 +77,84 @@ class DiscoveryValidationWork:
         if not self._active or self._slot.closing or self._slot.metadata is None:
             raise StaleArchiveTask("discovery work no longer owns an active quantum")
         return self._slot.metadata
+
+    def journal_source(self, work: ArchiveJournalFramingWork) -> DiscoveryJournalSource:
+        """Register immutable source custody before graph preparation or Native I/O."""
+        metadata = self.metadata
+        if work.source.metadata is not metadata:
+            raise StaleArchiveTask("journal preparation belongs to another metadata owner")
+        with metadata.read() as (db, key):
+            selected = registration.find_discovery_journal(db, key, work)
+        source = DiscoveryJournalSource(
+            work, directory_id=uuid4().hex if selected is None else selected.binding.directory_id
+        )
+        if selected is None:
+            with metadata.transaction() as (db, key):
+                selected = registration.register_discovery_journal(db, key, work, source.binding)
+        if selected.binding != source.binding:
+            raise StaleArchiveTask("journal preparation lost its registered original source")
+        return source
+
+    def journal(
+        self,
+        work: ArchiveJournalFramingWork,
+        *,
+        certificates: JournalGraphCertificates | None = None,
+    ) -> JournalValidationSession | None:
+        """Keep one selected unfinished Native atom warm across serialized quanta."""
+        metadata, slot = self.metadata, self._slot
+        source = self.journal_source(work)
+        retained = slot.journal
+        if retained is not None:
+            if retained.closing or retained.session is None:
+                raise StaleArchiveTask("journal child has unconfirmed cleanup")
+            if retained.source.binding == source.binding:
+                previous = retained.certificates
+                if (
+                    (None if previous is None else previous.binding)
+                    != (None if certificates is None else certificates.binding)
+                    or retained.native_source is None
+                    or not retained.native_source.verify_current()
+                ):
+                    raise StaleArchiveTask("warm journal has another original input owner")
+                return retained.session
+            if not retained.session.progress().complete:
+                raise StaleArchiveTask("another unfinished journal still owns this slot")
+            retained.close()
+            slot.journal = None
+        # Retain the helper before reference acquisition or Native construction.
+        retained = DiscoveryJournalOwner(source)
+        slot.journal = retained
+        with metadata.read() as (db, key):
+            selected = registration.find_discovery_journal(db, key, work)
+        if selected is None or selected.binding != source.binding:
+            raise StaleArchiveTask("journal opening lost its exact directory admission")
+        try:
+            session = retained.open(
+                metadata, self._catalog, confirmed=selected.confirmed, certificates=certificates
+            )
+        except (
+            FileNotFoundError,
+            InvalidJournalWorkspace,
+            LostJournalValidationWorkspace,
+            sqlite3.DatabaseError,
+        ):
+            lost = jobs.lose_discovery_corpus(
+                metadata.factory,
+                metadata.job,
+                failure="Registered Native journal workspace is missing or incompatible",
+            )
+            if lost is not None:
+                metadata.job = lost
+            raise
+        if session is None:
+            retained.close()
+            slot.journal = None
+            return None
+        with metadata.transaction() as (db, key):
+            if not registration.confirm_discovery_journal(db, key, work, selected):
+                raise StaleArchiveTask("Native journal opening lost its current registration")
+        return session
 
     def corpus(self, selection: CorpusSelectionWork) -> RetainedCorpusValidator:
         metadata = self.metadata
@@ -146,6 +238,9 @@ class DiscoveryValidationOwner:
 
     def _drop(self, build_id: str, slot: _Slot) -> None:
         slot.closing = True
+        if slot.journal is not None:
+            slot.journal.close()
+            slot.journal = None
         if slot.corpus is not None:
             slot.corpus.close()
             slot.corpus = None
@@ -293,3 +388,5 @@ class DiscoveryValidationOwner:
 
 
 declare_owner_growth(DiscoveryValidationOwner, DiscoveryValidationWork)
+
+declare_growth_for_journal_dispatch(DiscoveryValidationWork)

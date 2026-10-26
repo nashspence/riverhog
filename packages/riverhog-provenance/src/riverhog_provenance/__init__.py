@@ -93,6 +93,7 @@ from .journal_session import (
     JournalValidationSession,
     JournalValidationSource,
 )
+from .journal_store import InvalidJournalWorkspace
 from .model import (
     BinaryReadable,
     ObservationPolicy,
@@ -141,6 +142,7 @@ __all__ = [
     "selected_delivery_occurrence",
     "ConcurrentJournalChangeError",
     "IncompleteSourceError",
+    "InvalidJournalWorkspace",
     "JournalValidationCapacity",
     "JournalReclamationProgress",
     "reclaim_retired_journal_workspace",

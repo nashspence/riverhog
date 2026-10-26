@@ -16,13 +16,14 @@ from riverhog_growth_contracts import (
     declare_growth,
     growth_binding,
 )
-from riverhog_provenance import RetainedCorpusValidator
+from riverhog_provenance import JournalValidationSession, RetainedCorpusValidator
 
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core.canonical_discovery_corpus_source import DiscoveryCorpusSource
 from riverhog_core.canonical_discovery_metadata import DiscoveryMetadata
 from riverhog_core.canonical_discovery_selection import frozen_corpus_selection
 from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
+from riverhog_core.journal_validation_workspace_reference import ValidationWorkspaceReference
 
 _COUNT_METRICS = (
     "core_sql_statements",
@@ -45,6 +46,7 @@ _COUNT_METRICS = (
     "native_changed_rows",
     "native_opened_connections",
     "native_closed_connections",
+    "stream_close_calls",
     "native_vm_instructions",
     "native_source_checks",
     "native_opening_callbacks",
@@ -141,6 +143,26 @@ def _metric(kind: str, metric: str) -> str:
             "path_octets": "encoded_path_octets",
             "payload_octets": "source_payload_octets",
         }.get(metric, metric)
+    if kind == "reference":
+        return {"stream_closes": "stream_close_calls"}.get(metric, metric)
+    if kind == "journal":
+        return {
+            "sql_statements": "native_sql_statements",
+            "returned_rows": "native_returned_rows",
+            "changed_rows": "native_changed_rows",
+            "returned_metadata_octets": "native_returned_octets",
+            "bound_parameter_octets": "native_parameter_octets",
+            "opened_databases": "native_opened_connections",
+            "closed_databases": "native_closed_connections",
+            "sqlite_vm_instructions": "native_vm_instructions",
+            "source_verifications": "native_source_checks",
+            "release_callbacks": "native_release_callbacks",
+            "retention_callbacks": "native_opening_callbacks",
+            "opened_files": "open_calls",
+            "closed_files": "close_calls",
+            "file_syncs": "fsync_calls",
+            "directory_scans": "directory_enumerations",
+        }.get(metric, metric)
     if kind == "native":
         return {
             "sql_statements": "native_sql_statements",
@@ -164,6 +186,9 @@ def _metric(kind: str, metric: str) -> str:
 
 
 def _renamed(expression: Expression, kind: str) -> Expression:
+    if kind == "journal" and expression.op == "dimension":
+        if expression.name in {"source_checks", "release_callbacks"}:
+            return _count(int(expression.name == "release_callbacks"))
     names = {
         "metadata_octets": "control_octets",
         "registered_inputs": "retained_core_rows",
@@ -184,6 +209,9 @@ def _renamed(expression: Expression, kind: str) -> Expression:
 
 def _children(mode: str) -> tuple[tuple[str, Callable[..., Any], int], ...]:
     dropped = (
+        ("journal", JournalValidationSession.close, 1),
+        ("kernel", lease_journal_validation_workspace, 1),
+        ("reference", ValidationWorkspaceReference.close, 2),
         ("native", RetainedCorpusValidator.close, 1),
         ("storage", DiscoveryMetadata.close, 1),
         ("kernel", lease_journal_validation_workspace, 1),

@@ -167,7 +167,10 @@ class Recorder:
             actual_connect = sqlite3.connect
 
             def connect(path, *args, **kwargs):
-                if any(name in str(path) for name in ("discovery.sqlite3", "corpus.sqlite3")):
+                if any(
+                    name in str(path)
+                    for name in ("discovery.sqlite3", "corpus.sqlite3", "snapshot.sqlite3")
+                ):
                     return self.connect(path, *args, **kwargs)
                 return actual_connect(path, *args, **kwargs)
 
@@ -213,7 +216,10 @@ class Recorder:
             actual_connect = sqlite3.connect
 
             def connect(path, *args, **kwargs):
-                if any(name in str(path) for name in ("discovery.sqlite3", "corpus.sqlite3")):
+                if any(
+                    name in str(path)
+                    for name in ("discovery.sqlite3", "corpus.sqlite3", "snapshot.sqlite3")
+                ):
                     return self.connect(path, *args, **kwargs)
                 return actual_connect(path, *args, **kwargs)
 

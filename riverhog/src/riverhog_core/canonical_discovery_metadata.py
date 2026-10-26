@@ -19,7 +19,6 @@ from riverhog_growth_contracts import (
 )
 
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
-from riverhog_core.canonical_discovery_archive_framing import initialize_archive_framing
 from riverhog_core.canonical_discovery_archive_work import (
     ArchiveDiscoveryAdmission,
     ArchiveTaskKey,
@@ -29,7 +28,10 @@ from riverhog_core.canonical_discovery_archive_work import (
 )
 from riverhog_core.canonical_discovery_corpus_replay import initialize_corpus_replay
 from riverhog_core.canonical_discovery_dependency_source import initialize_dependency_source
-from riverhog_core.canonical_discovery_journal_registration import initialize_journal_registration
+from riverhog_core.canonical_discovery_journal_schema import (
+    initialize_archive_framing,
+    initialize_journal_registration,
+)
 from riverhog_core.canonical_discovery_primary_work import initialize_primary_work
 from riverhog_core.canonical_discovery_selection import initialize_corpus_selection
 from riverhog_core.catalog_db import SessionFactory
