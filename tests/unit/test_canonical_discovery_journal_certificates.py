@@ -256,3 +256,63 @@ def test_actual_native_replay_uses_only_current_acyclic_evidence_and_keeps_error
                 assert not calls and not starts
             else:
                 assert len(calls) == len(starts) == 2
+
+
+def prepared_for_owned_work(work, framing):
+    from riverhog_core import canonical_discovery_journal_epochs as epochs
+    from riverhog_core import canonical_discovery_journal_rank as rank
+    from riverhog_core import canonical_discovery_journal_topology as topology
+    from riverhog_core import canonical_discovery_journal_union as union
+
+    from tests.unit.test_canonical_discovery_journal_epochs import begin as begin_epochs
+    from tests.unit.test_canonical_discovery_journal_epochs import finish as finish_epochs
+    from tests.unit.test_canonical_discovery_journal_topology import begin as begin_topology
+    from tests.unit.test_canonical_discovery_journal_topology import finish as finish_topology
+    from tests.unit.test_canonical_discovery_journal_union import begin as begin_union
+    from tests.unit.test_canonical_discovery_journal_union import finish as finish_union
+
+    original = epochs.DiscoveryJournalEpochWork(framing, work.journal_source(framing))
+    begin_epochs(work.metadata, original)
+    finish_epochs(work.metadata, original)
+    facts = topology.DiscoveryJournalTopologyWork(original)
+    begin_topology(work.metadata, facts)
+    finish_topology(work.metadata, facts)
+    graphs = union.DiscoveryJournalUnionWork(facts)
+    begin_union(work.metadata, graphs)
+    finish_union(work.metadata, graphs)
+    ranks = rank.DiscoveryJournalRankWork(graphs)
+    return certificates(work, ranks)
+
+
+def test_real_worker_takeover_keeps_certificate_identity_and_resumes_same_native_checkpoint(
+    tmp_path,
+):
+    from riverhog_core.services.discovery_validation_owner import DiscoveryValidationOwner
+
+    from tests.unit.test_discovery_journal_owner import prepared as owned
+    from tests.unit.test_discovery_journal_owner import quantum
+
+    with owned(tmp_path / "owned") as case:
+        with quantum(case) as (work, framing):
+            first = prepared_for_owned_work(work, framing)
+            native = work.journal(framing, certificates=first)
+            before = native.advance(JournalValidationBudget(rows=1))
+            assert not before.complete
+            binding = work.journal_source(framing).binding
+            directory = work.metadata.custody.directory / "journals" / binding.directory_id
+            inode = (directory / "snapshot.sqlite3").stat().st_ino
+            worker_epoch = work.metadata.job.worker_epoch
+        case.pool.close()
+        case.pool = DiscoveryValidationOwner(case.factory, case.root)
+        with quantum(case) as (work, framing):
+            restored = prepared_for_owned_work(work, framing)
+            assert work.metadata.job.worker_epoch == worker_epoch + 1
+            assert first._manifest[0] == restored._manifest[0]
+            assert first.binding == restored.binding
+            assert not first.verify_current() and restored.verify_current()
+            resumed = work.journal(framing, certificates=restored)
+            assert resumed is not native
+            assert resumed.progress().accepted_frames == before.accepted_frames
+            assert (directory / "snapshot.sqlite3").stat().st_ino == inode
+            finish_native(resumed)
+            assert resumed.progress().complete
