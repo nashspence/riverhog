@@ -29,6 +29,7 @@ from riverhog_core.canonical_discovery_archive_work import (
 )
 from riverhog_core.canonical_discovery_corpus_replay import initialize_corpus_replay
 from riverhog_core.canonical_discovery_dependency_source import initialize_dependency_source
+from riverhog_core.canonical_discovery_journal_registration import initialize_journal_registration
 from riverhog_core.canonical_discovery_primary_work import initialize_primary_work
 from riverhog_core.canonical_discovery_selection import initialize_corpus_selection
 from riverhog_core.catalog_db import SessionFactory
@@ -37,7 +38,7 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
 )
 
-_FORMAT = "riverhog-discovery-metadata/v5"
+_FORMAT = "riverhog-discovery-metadata/v6"
 
 
 class DiscoveryMetadata:
@@ -248,6 +249,7 @@ class DiscoveryMetadata:
             initialize_corpus_selection(db)
             initialize_primary_work(db)
             initialize_corpus_replay(db)
+            initialize_journal_registration(db)
             with closing(
                 db.execute(
                     "CREATE TABLE discovery_workspace("
