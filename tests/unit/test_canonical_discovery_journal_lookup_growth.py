@@ -297,3 +297,98 @@ def test_actual_early_prefix_seeks_past_later_object_versions(
     histories, monkeypatch, record_property
 ):
     exercise(histories, monkeypatch, record_property, EFFECTIVE)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-original-owner-next/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_journal_owners.next_owner_assertion",
+)
+def test_original_owner_ranges_seek_dense_native_corrections_without_snapshot_expansion(
+    histories, tmp_path, monkeypatch, record_property
+):
+    import sqlite3
+
+    from riverhog_core import canonical_discovery_journal_owners as owners
+
+    samples = []
+    for original in histories:
+        path = tmp_path / (str(original.count) + ".sqlite3")
+        db = sqlite3.connect(path, isolation_level=None)
+        original.db.backup(db)
+        case = SimpleNamespace(**vars(original))
+        case.db = db
+        full = original.anchors[-1]
+        middle_id = db.execute(
+            "SELECT assertion_id FROM discovery_journal_assertions "
+            "WHERE build_id=? AND source_key=? AND referent_id=? AND born_sequence=?",
+            (case.key.build_id, case.key.source_key, case.referent, str(case.count // 2)),
+        ).fetchone()[0]
+        middle = lookup.documentary_journal_assertion(db, case.key, case.source, full, middle_id)
+        inputs = dimensions(case)
+        inputs["metadata_octets"] = max(
+            inputs["metadata_octets"], octets((case.first, middle, case.last))
+        )
+        scalar = owners.format_scalar
+        try:
+            for anchor in case.anchors:
+                for after in (None, case.first, middle, case.last):
+                    for cold in (False, True):
+                        if cold:
+                            case.db.close()
+                            case.db = sqlite3.connect(path, isolation_level=None)
+                        for _retry in range(3):
+                            with observe(case, monkeypatch) as recorder:
+
+                                def encoded(kind, value, _scalar=scalar, _recorder=recorder):
+                                    result = _scalar(kind, value)
+                                    _recorder.metrics["scalar_encoded_octets"] += len(
+                                        result.encode()
+                                    )
+                                    return result
+
+                                with monkeypatch.context() as patch:
+                                    patch.setattr(owners, "format_scalar", encoded)
+                                    if (
+                                        after is not None
+                                        and after.born_sequence > anchor.through_sequence
+                                    ):
+                                        from riverhog_core.canonical_discovery_journal_work import (
+                                            StaleJournalTask,
+                                        )
+
+                                        with pytest.raises(StaleJournalTask):
+                                            owners.next_owner_assertion(
+                                                recorder,
+                                                case.key,
+                                                case.source,
+                                                anchor,
+                                                case.referent,
+                                                after=after,
+                                            )
+                                        selected = None
+                                    else:
+                                        selected = owners.next_owner_assertion(
+                                            recorder,
+                                            case.key,
+                                            case.source,
+                                            anchor,
+                                            case.referent,
+                                            after=after,
+                                        )
+                            samples.append(
+                                sample(owners.next_owner_assertion, inputs, recorder.metrics)
+                            )
+                            if selected is not None:
+                                assert selected.referent_id == case.referent
+                                assert selected.born_sequence <= anchor.through_sequence
+                                assert after is None or selected.born_sequence > after.born_sequence
+            with observe(case, monkeypatch) as recorder:
+                assert (
+                    owners.next_owner_assertion(recorder, case.key, case.source, full, ABSENT)
+                    is None
+                )
+            samples.append(sample(owners.next_owner_assertion, inputs, recorder.metrics))
+        finally:
+            case.db.close()
+    record_property("growth_samples", samples)

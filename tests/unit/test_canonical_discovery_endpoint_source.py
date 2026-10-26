@@ -133,6 +133,7 @@ def mixed_originals(tmp_path_factory):
                     anchor=HistoryJournalAnchor.from_mapping(native.anchor),
                     assertion=fixture.assertion_id,
                     native=native,
+                    catalog=fixture.catalog,
                     canonical=canonical_json_bytes(graph["extensions"][0]),
                 )
             finally:

@@ -63,6 +63,7 @@ def observed(case, monkeypatch):
                 lambda raw: decoded(raw, actual_endpoint_decode),
             )
             patch.setattr(index, "format_scalar", scalar)
+            patch.setattr(endpoint_source, "format_scalar", scalar)
             yield recorder
 
 
