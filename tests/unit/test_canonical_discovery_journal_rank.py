@@ -36,8 +36,8 @@ from tests.unit.test_discovery_journal_owner import quantum
 
 
 @contextmanager
-def rank_case(path, raw, *, retained=1):
-    with union_case(path, raw, retained=retained) as (case, original):
+def rank_case(path, raw, *, retained=1, **source_options):
+    with union_case(path, raw, retained=retained, **source_options) as (case, original):
         begin_union(case.metadata, original)
         finish_union(case.metadata, original)
         yield case, owner.DiscoveryJournalRankWork(original)

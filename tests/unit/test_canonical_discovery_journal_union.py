@@ -45,8 +45,8 @@ def frame(rows=(), *, kind="assertion", retracts=()):
 
 
 @contextmanager
-def union_case(path, raw, *, retained=1):
-    with topology_case(path, raw, retained=retained) as (case, original):
+def union_case(path, raw, *, retained=1, **source_options):
+    with topology_case(path, raw, retained=retained, **source_options) as (case, original):
         begin_topology(case.metadata, original)
         finish_topology(case.metadata, original)
         yield case, owner.DiscoveryJournalUnionWork(original)

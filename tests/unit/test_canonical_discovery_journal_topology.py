@@ -44,8 +44,12 @@ def encoded(count=129, *, padding=0):
 
 
 @contextmanager
-def topology_case(path, raw, *, retained=1):
-    with source_case(path, raw, segments=1, retained=retained) as (case, framing, source):
+def topology_case(path, raw, *, retained=1, **source_options):
+    with source_case(path, raw, segments=1, retained=retained, **source_options) as (
+        case,
+        framing,
+        source,
+    ):
         original = epochs.DiscoveryJournalEpochWork(framing, source)
         with case.metadata.transaction() as (db, key):
             registration.register_discovery_journal(db, key, framing, source.binding)
