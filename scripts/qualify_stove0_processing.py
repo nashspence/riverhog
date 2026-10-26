@@ -31,10 +31,26 @@ def stove(path: str, payload: Any = None, *, timeout: float = 30) -> dict[str, A
             "Content-Type": "application/json",
         },
     )
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        document = json.load(response)
-    assert isinstance(document, dict)
-    return document
+    deadline = time.monotonic() + timeout
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("stove0 metadata request exhausted its original deadline")
+        try:
+            with urllib.request.urlopen(request, timeout=remaining) as response:
+                document = json.load(response)
+            assert isinstance(document, dict)
+            return document
+        except urllib.error.HTTPError as exc:
+            if exc.code != 503:
+                raise
+            exc.close()
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError(
+                    "stove0 metadata request exhausted its original deadline"
+                ) from exc
+            time.sleep(min(1.0, remaining))
 
 
 def recipe_id() -> str:

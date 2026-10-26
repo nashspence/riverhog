@@ -115,3 +115,69 @@ def test_processing_wait_discovers_a_late_failed_child_before_parent_completion(
     assert clock[0] == 61
     assert browses == 2
     assert paths[-1] == "/v1/work/" + child
+
+
+def test_processing_metadata_retry_preserves_exact_post_and_original_deadline(monkeypatch):
+    import io
+    import json
+    import urllib.error
+
+    clock, requests = [0.0], []
+    monkeypatch.setattr(processing.time, "monotonic", lambda: clock[0])
+    monkeypatch.setattr(
+        processing.time, "sleep", lambda seconds: clock.__setitem__(0, clock[0] + seconds)
+    )
+
+    def contact(request, *, timeout):
+        requests.append((request, timeout))
+        if len(requests) < 3:
+            raise urllib.error.HTTPError(request.full_url, 503, "unavailable", {}, io.BytesIO(b""))
+        return io.BytesIO(b'{"job_id":"same-invocation"}')
+
+    monkeypatch.setattr(processing.urllib.request, "urlopen", contact)
+    payload = {"invocation_id": "a" * 64, "preview_sha256": "b" * 64}
+    assert processing.stove("/v1/work", payload, timeout=2.5) == {"job_id": "same-invocation"}
+    assert [timeout for _, timeout in requests] == [2.5, 1.5, 0.5]
+    assert all(request is requests[0][0] for request, _ in requests)
+    assert all(json.loads(request.data) == payload for request, _ in requests)
+
+
+def test_processing_metadata_deferral_cannot_extend_the_original_deadline(monkeypatch):
+    import io
+    import urllib.error
+
+    clock, requests = [0.0], []
+    monkeypatch.setattr(processing.time, "monotonic", lambda: clock[0])
+    monkeypatch.setattr(
+        processing.time, "sleep", lambda seconds: clock.__setitem__(0, clock[0] + seconds)
+    )
+
+    def unavailable(request, *, timeout):
+        requests.append(timeout)
+        raise urllib.error.HTTPError(request.full_url, 503, "unavailable", {}, io.BytesIO(b""))
+
+    monkeypatch.setattr(processing.urllib.request, "urlopen", unavailable)
+    with pytest.raises(TimeoutError, match="original deadline"):
+        processing.stove("/v1/work", {"invocation_id": "a" * 64}, timeout=2.5)
+    assert clock[0] == 2.5 and requests == [2.5, 1.5, 0.5]
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 409, 500])
+def test_processing_metadata_retry_does_not_hide_nontransient_errors(monkeypatch, status):
+    import io
+    import urllib.error
+
+    error = urllib.error.HTTPError("https://stove0.invalid", status, "failure", {}, io.BytesIO(b""))
+
+    def failed(*args, **kwargs):
+        raise error
+
+    def forbidden(*args):
+        pytest.fail("nontransient response was retried")
+
+    monkeypatch.setattr(processing.urllib.request, "urlopen", failed)
+    monkeypatch.setattr(processing.time, "sleep", forbidden)
+    with pytest.raises(urllib.error.HTTPError) as received:
+        processing.stove("/v1/work", {"invocation_id": "a" * 64})
+    assert received.value is error
+    error.close()
