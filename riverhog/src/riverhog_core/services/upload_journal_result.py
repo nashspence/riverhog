@@ -5,6 +5,7 @@ from __future__ import annotations
 import sqlite3
 from collections.abc import Mapping
 from contextlib import ExitStack
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +40,7 @@ from riverhog_core.journal_validation_workspace import (
 )
 
 from . import upload_journal_validation_jobs as jobs
+from .upload_journal_result_admission_growth import declare_growth_for_sealed_admission
 
 _SOURCE_FIELDS = (
     "collection_id",
@@ -167,6 +169,83 @@ def _confirmed(
         "prefix_bytes": binding.source_bytes,
     }
     return binding, certificates, progress, anchor
+
+
+@dataclass(frozen=True, slots=True)
+class SealedJournalResultAdmission:
+    """Detached exact catalog confirmation; no connection or Native handle."""
+
+    _source: tuple[tuple[str, Any], ...]
+    job: jobs.ValidationJob
+    binding: JournalReplayBinding
+    certificates: JournalGraphCertificateBinding
+    confirmed: JournalValidationProgress
+
+    @property
+    def anchor(self) -> dict[str, Any]:
+        source = dict(self._source)
+        return {
+            "journal_id": self.binding.journal_id,
+            "through": {
+                "entry_id": source["terminal_entry_id"],
+                "sequence": str(source["terminal_sequence"]),
+                "json_sha256": source["terminal_json_sha256"],
+            },
+            "prefix_sha256": self.binding.source_sha256,
+            "prefix_bytes": self.binding.source_bytes,
+        }
+
+    def verify_current(self, session: Session) -> bool:
+        """Point-check the exact immutable source/job in this short transaction."""
+        return _SealedSource(session, dict(self._source), self.job, self.binding).verify_current()
+
+
+def prepare_upload_journal_result(
+    session: Session,
+    collection_id: int,
+    journal_id: str,
+    *,
+    catalog: ContractCatalog,
+) -> SealedJournalResultAdmission:
+    """Select and validate immutable sealed metadata without opening Native data.
+
+    The caller owns this bounded catalog transaction. After it closes, the
+    admission carries no row cursor, session, lease or file. Native opening
+    requires independent workspace custody and current checks against this exact
+    admission; its original binding is never relabeled to another workspace.
+    """
+    if not session.in_transaction():
+        raise RuntimeError("sealed result admission requires the caller's catalog transaction")
+    with session.no_autoflush:
+        with session.execute(
+            select(*(getattr(Journal, field) for field in _SOURCE_FIELDS))
+            .where(Journal.collection_id == collection_id, Journal.journal_id == journal_id)
+            .with_for_update()
+        ) as rows:
+            selected_source = rows.mappings().one_or_none()
+        if selected_source is None or selected_source["state"] != "sealed":
+            raise KeyError(journal_id)
+        source = dict(selected_source)
+        with session.execute(
+            select(*(getattr(Job, field) for field in jobs.ValidationJob.__dataclass_fields__))
+            .where(Job.collection_id == collection_id, Job.journal_id == journal_id)
+            .with_for_update()
+        ) as rows:
+            selected = rows.mappings().one_or_none()
+        if selected is None:
+            raise LostJournalValidationWorkspace("sealed journal lost its retained native job")
+        job = jobs.ValidationJob(**dict(selected))
+    try:
+        binding, certificates, confirmed, _anchor = _confirmed(source, job)
+        if binding.catalog_sha256 != catalog.checkpoint_sha256():
+            raise LostJournalValidationWorkspace(
+                "sealed result admission has another current contract catalog"
+            )
+    except (RuntimeError, ValueError) as error:
+        raise LostJournalValidationWorkspace("sealed native result is unavailable") from error
+    return SealedJournalResultAdmission(
+        tuple(source.items()), job, binding, certificates, confirmed
+    )
 
 
 def _result_declaration() -> Declaration:
@@ -394,32 +473,12 @@ def open_upload_journal_result(
     the exact frozen projection and shared kernel lease until their last close.
     Missing retained state is explicit; this never recreates or revalidates it.
     """
-    if not session.in_transaction():
-        raise RuntimeError("sealed result admission requires the caller's catalog transaction")
-    with session.no_autoflush:
-        with session.execute(
-            select(*(getattr(Journal, field) for field in _SOURCE_FIELDS))
-            .where(Journal.collection_id == collection_id, Journal.journal_id == journal_id)
-            .with_for_update()
-        ) as rows:
-            selected_source = rows.mappings().one_or_none()
-        if selected_source is None or selected_source["state"] != "sealed":
-            raise KeyError(journal_id)
-        source = dict(selected_source)
-        with session.execute(
-            select(*(getattr(Job, field) for field in jobs.ValidationJob.__dataclass_fields__))
-            .where(Job.collection_id == collection_id, Job.journal_id == journal_id)
-            .with_for_update()
-        ) as rows:
-            selected = rows.mappings().one_or_none()
-        if selected is None:
-            raise LostJournalValidationWorkspace("sealed journal lost its retained native job")
-        job = jobs.ValidationJob(**dict(selected))
+    admission = prepare_upload_journal_result(session, collection_id, journal_id, catalog=catalog)
+    job = admission.job
     resources = ExitStack()
     transferred = False
     try:
-        binding, certificates, confirmed, anchor = _confirmed(source, job)
-        owned_source = _SealedSource(session, source, job, binding)
+        owned_source = _SealedSource(session, dict(admission._source), job, admission.binding)
         directory = resources.enter_context(
             lease_journal_validation_workspace(root, job.workspace_id, shared=True)
         )
@@ -430,14 +489,14 @@ def open_upload_journal_result(
         result = open_retained_journal_result(
             directory,
             owned_source,
-            confirmed=confirmed,
+            confirmed=admission.confirmed,
             catalog=catalog,
-            certificates=certificates,
+            certificates=admission.certificates,
             on_storage_close=resources.close,
         )
         transferred = True
         try:
-            if result.anchor != anchor:
+            if result.anchor != admission.anchor:
                 raise LostJournalValidationWorkspace(
                     "sealed native result lost its terminal anchor"
                 )
@@ -463,3 +522,6 @@ def open_upload_journal_result(
     finally:
         if not transferred:
             resources.close()
+
+
+declare_growth_for_sealed_admission(prepare_upload_journal_result, SealedJournalResultAdmission)
