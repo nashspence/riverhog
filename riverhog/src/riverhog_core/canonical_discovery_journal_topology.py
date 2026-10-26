@@ -199,6 +199,46 @@ def discovery_journal_topology_progress(
     return progress
 
 
+def discovery_journal_topology_page(
+    db: sqlite3.Connection,
+    key: ArchiveTaskKey,
+    work: DiscoveryJournalTopologyWork,
+    first: int,
+    *,
+    frame: int | None = None,
+    array: str | None = None,
+    fact_budget: int = 64,
+) -> tuple[DiscoveryJournalTopologyFact, ...]:
+    """Read bounded contiguous original facts, optionally within one frame/array."""
+    if (
+        type(first) is not int
+        or first < 0
+        or (frame is None) != (array is None)
+        or frame is not None
+        and (type(frame) is not int or frame < 0)
+        or array is not None
+        and array not in {"retracts", "relations"}
+        or type(fact_budget) is not int
+        or not 1 <= fact_budget <= 64
+    ):
+        raise ValueError("invalid original topology page controls")
+    progress = discovery_journal_topology_progress(db, key, work)
+    if first > progress.checkpoint.facts or frame is not None and frame > progress.next_frame:
+        raise StaleArchiveTask("topology page exceeds its published original extent")
+    values = []
+    for ordinal in range(first, min(first + fact_budget, progress.checkpoint.facts)):
+        fact = _fact(db, key, work, ordinal)
+        if frame is not None and (
+            fact.frame < frame
+            or (fact.frame == frame and array == "relations" and fact.item.array == "retracts")
+        ):
+            raise StaleArchiveTask("topology page skipped an unconsumed original fact")
+        if frame is not None and (fact.frame != frame or fact.item.array != array):
+            break
+        values.append(fact)
+    return tuple(values)
+
+
 def begin_discovery_journal_topology(
     db: sqlite3.Connection, key: ArchiveTaskKey, work: DiscoveryJournalTopologyWork
 ) -> DiscoveryJournalTopologyProgress:

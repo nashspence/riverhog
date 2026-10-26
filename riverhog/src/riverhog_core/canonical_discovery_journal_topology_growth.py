@@ -36,22 +36,33 @@ def declare_growth_for_journal_topology(namespace: dict[str, Any]) -> None:
     depth = Expression("log2_ceil", terms=(add(count(2), dimension("retained_rows")),))
     for mode, name in (
         ("progress", "discovery_journal_topology_progress"),
+        ("page", "discovery_journal_topology_page"),
         ("begin", "begin_discovery_journal_topology"),
         ("prepare", "prepare_discovery_journal_topology"),
         ("apply", "apply_discovery_journal_topology"),
     ):
         reading, preparing, publishing = mode == "progress", mode == "prepare", mode == "apply"
         limits = {
-            "sql_statements": count(2 if reading else 65 if publishing else int(mode == "begin")),
-            "returned_rows": count(2 if reading else 0),
+            "sql_statements": count(
+                2
+                if reading
+                else 64
+                if mode == "page"
+                else 65
+                if publishing
+                else int(mode == "begin")
+            ),
+            "returned_rows": count(2 if reading else 64 if mode == "page" else 0),
             "changed_rows": count(65 if publishing else int(mode == "begin")),
-            "returned_octets": scale(2, width) if reading else octets(0),
+            "returned_octets": scale(2 if reading else 64, width)
+            if reading or mode == "page"
+            else octets(0),
             "parameter_octets": scale(256, width),
             "sqlite_vm_instructions": add(
                 count(4096), Expression("product", terms=(count(4096), depth))
             ),
-            "epoch_progress_calls": count(1),
-            "epoch_frame_calls": count(2 if reading else int(preparing)),
+            "epoch_progress_calls": count(int(mode != "page")),
+            "epoch_frame_calls": count(2 if reading else 64 if mode == "page" else int(preparing)),
             "progress_calls": count(int(not reading)),
             "checkpoint_decodes": count(int(reading)),
             "checkpoint_encodes": count(int(preparing or mode == "begin")),
@@ -66,7 +77,7 @@ def declare_growth_for_journal_topology(namespace: dict[str, Any]) -> None:
             "native_advance_calls": count(int(preparing)),
             "published_facts": count(64 if publishing else 0),
             "scalar_encoded_octets": scale(256, width),
-            "scalar_decoded_octets": scale(32, width),
+            "scalar_decoded_octets": scale(128 if mode == "page" else 32, width),
         }
         operation = namespace[name]
         declare_growth(

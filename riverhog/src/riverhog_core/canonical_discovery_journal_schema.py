@@ -93,3 +93,53 @@ def initialize_journal_topology(db: sqlite3.Connection) -> None:
             CHECK(kind IN ('retraction','derivation','specialization'))
         ) WITHOUT ROWID;
     """)
+
+
+def initialize_journal_union(db: sqlite3.Connection) -> None:
+    if db.in_transaction:
+        raise ValueError("journal union initialization requires no active transaction")
+    db.executescript("""
+        CREATE TABLE IF NOT EXISTS discovery_journal_union (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            worker_id TEXT NOT NULL, directory_id TEXT NOT NULL, algorithm TEXT NOT NULL,
+            binding_json TEXT NOT NULL, topology_version TEXT NOT NULL,
+            version TEXT NOT NULL, frame TEXT NOT NULL, state TEXT NOT NULL,
+            epoch TEXT NOT NULL, phase TEXT NOT NULL, consumed TEXT NOT NULL,
+            seed_after TEXT, active_count TEXT NOT NULL, seeded_count TEXT NOT NULL,
+            last_source_sha256 TEXT, last_arc_epoch TEXT, last_arc_kind TEXT,
+            last_arc_source TEXT, last_arc_target TEXT,
+            PRIMARY KEY(build_id,admission_sha256,journal_id),
+            CHECK(state IN ('building','complete','deferred')),
+            CHECK(phase IN ('frame','retracts','seed','add')),
+            CHECK((last_arc_epoch IS NULL)=(last_arc_kind IS NULL)
+              AND (last_arc_epoch IS NULL)=(last_arc_source IS NULL)
+              AND (last_arc_epoch IS NULL)=(last_arc_target IS NULL))
+        ) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS discovery_journal_active_edges (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            assertion_id TEXT NOT NULL, kind TEXT NOT NULL, source_id TEXT NOT NULL,
+            target_id TEXT NOT NULL, frame TEXT NOT NULL, item TEXT NOT NULL,
+            active INTEGER NOT NULL CHECK(active IN (0,1)),
+            PRIMARY KEY(build_id,admission_sha256,journal_id,assertion_id)
+        ) WITHOUT ROWID;
+        CREATE INDEX IF NOT EXISTS discovery_journal_active_seed
+            ON discovery_journal_active_edges
+            (build_id,admission_sha256,journal_id,active,assertion_id);
+        CREATE TABLE IF NOT EXISTS discovery_journal_union_graphs (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            epoch TEXT NOT NULL, kind TEXT NOT NULL, vertices TEXT NOT NULL, arcs TEXT NOT NULL,
+            state TEXT NOT NULL CHECK(state IN ('building','complete')),
+            PRIMARY KEY(build_id,admission_sha256,journal_id,epoch,kind)
+        ) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS discovery_journal_union_arcs (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            epoch TEXT NOT NULL, kind TEXT NOT NULL,
+            source_id TEXT NOT NULL, target_id TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,journal_id,epoch,kind,source_id,target_id)
+        ) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS discovery_journal_union_vertices (
+            build_id TEXT NOT NULL, admission_sha256 TEXT NOT NULL, journal_id TEXT NOT NULL,
+            epoch TEXT NOT NULL, kind TEXT NOT NULL, vertex_id TEXT NOT NULL, degree TEXT NOT NULL,
+            PRIMARY KEY(build_id,admission_sha256,journal_id,epoch,kind,vertex_id)
+        ) WITHOUT ROWID;
+    """)

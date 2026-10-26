@@ -279,3 +279,36 @@ def test_one_existing_large_item_can_cross_octet_budget_without_a_new_cap(tmp_pa
         assert len(page.facts) == 1 and page.facts[0].json_bytes > 65536
         assert len(calls) >= 2 and apply(case.metadata, task, page)
         assert progress(case.metadata, task).phase == "complete"
+
+
+def test_original_fact_page_preserves_array_boundaries_and_never_skips(tmp_path):
+    raw = b"\x1e" + encoded(1) + b"\n"
+    with topology_case(tmp_path / "source", raw + raw) as (case, task):
+        begin(case.metadata, task)
+        assert finish(case.metadata, task).checkpoint.facts == 4
+        with case.metadata.read() as (db, key):
+            page = owner.discovery_journal_topology_page(db, key, task, 0)
+            assert [row.frame for row in page] == [0, 0, 1, 1]
+            assert (
+                len(
+                    owner.discovery_journal_topology_page(
+                        db, key, task, 0, frame=0, array="retracts"
+                    )
+                )
+                == 1
+            )
+            assert (
+                len(
+                    owner.discovery_journal_topology_page(
+                        db, key, task, 1, frame=0, array="relations"
+                    )
+                )
+                == 1
+            )
+            assert owner.discovery_journal_topology_page(db, key, task, 4) == ()
+            with pytest.raises(StaleArchiveTask, match="skipped"):
+                owner.discovery_journal_topology_page(db, key, task, 0, frame=1, array="retracts")
+            with pytest.raises(StaleArchiveTask, match="extent"):
+                owner.discovery_journal_topology_page(db, key, task, 5)
+            with pytest.raises(ValueError, match="controls"):
+                owner.discovery_journal_topology_page(db, key, task, 0, frame=0)

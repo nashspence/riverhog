@@ -201,6 +201,12 @@ class _MeasuredCursor:
             self.metrics["returned_octets"] += sum(metadata_octets(value) for value in row)
         return row
 
+    def fetchall(self):
+        rows = []
+        while (row := self.fetchone()) is not None:
+            rows.append(row)
+        return rows
+
     @property
     def rowcount(self):
         return self.actual.rowcount

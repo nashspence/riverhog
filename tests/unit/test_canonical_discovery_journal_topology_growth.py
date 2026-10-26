@@ -24,6 +24,7 @@ from tests.unit.test_canonical_discovery_journal_topology import (
 
 OPERATIONS = {
     "progress": owner.discovery_journal_topology_progress,
+    "page": owner.discovery_journal_topology_page,
     "begin": owner.begin_discovery_journal_topology,
     "prepare": owner.prepare_discovery_journal_topology,
     "apply": owner.apply_discovery_journal_topology,
@@ -148,7 +149,7 @@ def exercise(tmp_path, monkeypatch, record_property, mode):
                         "DELETE FROM discovery_journal_topology WHERE journal_id=?",
                         (task.epochs.source.binding.journal_id,),
                     ).close()
-            if mode == "progress":
+            if mode in {"progress", "page"}:
                 # Real selected late cursor and fact rows, independent from unrelated rows.
                 target = max(1, items - 2)
                 while progress(case.metadata, task).checkpoint.facts < target:
@@ -169,6 +170,9 @@ def exercise(tmp_path, monkeypatch, record_property, mode):
                         if mode == "apply" and retry:
                             with pytest.raises(owner.StaleArchiveTask, match="owned prepared"):
                                 operation(recorder, key, task, page)
+                        elif mode == "page":
+                            result = operation(recorder, key, task, 0, fact_budget=64)
+                            assert len(result) <= 64
                         elif mode == "apply":
                             assert operation(recorder, key, task, page)
                         else:
@@ -217,3 +221,12 @@ def test_actual_native_and_source_callback_ports(tmp_path, monkeypatch, record_p
 )
 def test_actual_bounded_publication_and_rejected_duplicate(tmp_path, monkeypatch, record_property):
     exercise(tmp_path, monkeypatch, record_property, "apply")
+
+
+@pytest.mark.growth_witness(
+    "riverhog-discovery-journal-topology-page/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_journal_topology.discovery_journal_topology_page",
+)
+def test_actual_contiguous_original_fact_page(tmp_path, monkeypatch, record_property):
+    exercise(tmp_path, monkeypatch, record_property, "page")

@@ -33,6 +33,7 @@ from riverhog_core.canonical_discovery_journal_schema import (
     initialize_journal_epochs,
     initialize_journal_registration,
     initialize_journal_topology,
+    initialize_journal_union,
 )
 from riverhog_core.canonical_discovery_primary_work import initialize_primary_work
 from riverhog_core.canonical_discovery_selection import initialize_corpus_selection
@@ -42,7 +43,7 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
 )
 
-_FORMAT = "riverhog-discovery-metadata/v8"
+_FORMAT = "riverhog-discovery-metadata/v9"
 
 
 class DiscoveryMetadata:
@@ -256,6 +257,7 @@ class DiscoveryMetadata:
             initialize_journal_registration(db)
             initialize_journal_epochs(db)
             initialize_journal_topology(db)
+            initialize_journal_union(db)
             with closing(
                 db.execute(
                     "CREATE TABLE discovery_workspace("
