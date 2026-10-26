@@ -10,6 +10,7 @@ from pathlib import Path
 from threading import Lock
 from uuid import uuid4
 
+from riverhog_archive_contracts import HistoryJournalAnchor
 from riverhog_provenance import (
     InvalidJournalWorkspace,
     JournalGraphCertificates,
@@ -23,6 +24,7 @@ from riverhog_provenance import (
 from riverhog_provenance_contracts import ContractCatalog
 
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
+from riverhog_core import canonical_discovery_corpus_replay as replay
 from riverhog_core import canonical_discovery_journal_preparation as journal_preparation
 from riverhog_core import canonical_discovery_journal_registration as registration
 from riverhog_core.canonical_discovery_archive_framing import ArchiveJournalFramingWork
@@ -46,6 +48,7 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
     lease_journal_validation_workspace,
 )
+from riverhog_core.services.discovery_corpus_replay_growth import declare_corpus_replay_dispatch
 from riverhog_core.services.discovery_journal_growth import declare_growth_for_journal_dispatch
 from riverhog_core.services.discovery_journal_owner import DiscoveryJournalOwner
 from riverhog_core.services.discovery_journal_result import DiscoverySealedJournalOwner
@@ -62,6 +65,9 @@ class _Slot:
     metadata: DiscoveryMetadata | None = None
     source: DiscoveryCorpusSource | None = None
     corpus: RetainedCorpusValidator | None = None
+    replay: replay.CorpusReplayWork | None = None
+    replay_initialized: bool = False
+    replay_summary: JournalSummary | None = None
     journal: DiscoveryJournalOwner | None = None
     sealed: DiscoverySealedJournalOwner | None = None
     preparation: journal_preparation.DiscoveryJournalPreparationWork | None = None
@@ -309,6 +315,85 @@ class DiscoveryValidationWork:
         metadata.job = activated
         return native
 
+    def corpus_replay(self, selection: CorpusSelectionWork) -> replay.CorpusReplayWork:
+        """Retain one exact conductor beneath the current Native corpus owner."""
+        metadata, slot = self.metadata, self._slot
+        native = self.corpus(selection)
+        with metadata.read() as (db, key):
+            manifest = frozen_corpus_selection(db, key, selection)
+        retained = slot.replay
+        if retained is None:
+            retained = replay.CorpusReplayWork(selection, manifest, native)
+            slot.replay = retained
+        elif retained.corpus is not native or retained.manifest != manifest:
+            raise StaleArchiveTask("retained corpus replay has another original input freeze")
+        if not slot.replay_initialized:
+            with metadata.transaction() as (db, key):
+                replay.begin_corpus_replay(db, key, retained)
+            slot.replay_initialized = True
+        return retained
+
+    def next_corpus_source(self, selection: CorpusSelectionWork) -> HistoryJournalAnchor | None:
+        """Request one full original source, independently of clipped selections."""
+        retained = self.corpus_replay(selection)
+        with self.metadata.read() as (db, key):
+            return replay.next_corpus_replay_source(db, key, retained)
+
+    def advance_corpus(
+        self,
+        selection: CorpusSelectionWork,
+        *,
+        frame_budget: int = 1,
+        row_budget: int = 64,
+        byte_budget: int,
+    ) -> replay.CorpusReplayProgress | None:
+        """Replay one quantum from the exact retained source, or remain pending.
+
+        The caller prepares the requested journal through this slot's journal or
+        sealed-result owner. This dispatch never opens a second source reader,
+        revalidates a journal, or retains an all-source summary cache.
+        """
+        metadata, slot = self.metadata, self._slot
+        retained = self.corpus_replay(selection)
+        with metadata.read() as (db, key):
+            target = replay.next_corpus_replay_source(db, key, retained)
+        if slot.replay_summary is not None:
+            raise StaleArchiveTask("corpus replay retains an unconfirmed source release")
+        if target is not None:
+            sealed, journal = slot.sealed, slot.journal
+            if sealed is not None and sealed.source.identity.journal_id == target.journal_id:
+                slot.replay_summary = sealed.borrow()
+            elif journal is not None and journal.source.binding.journal_id == target.journal_id:
+                if (
+                    journal.closing
+                    or journal.session is None
+                    or journal.native_source is None
+                    or not journal.native_source.verify_current()
+                ):
+                    raise StaleArchiveTask("corpus replay source no longer has current custody")
+                if not journal.session.progress().complete:
+                    return None
+                slot.replay_summary = journal.session.result()
+            else:
+                return None
+        try:
+            with metadata.read() as (db, key):
+                page = replay.prepare_corpus_replay(
+                    db,
+                    key,
+                    retained,
+                    summary=slot.replay_summary,
+                    frame_budget=frame_budget,
+                    row_budget=row_budget,
+                    byte_budget=byte_budget,
+                )
+        finally:
+            if slot.replay_summary is not None:
+                slot.replay_summary.close()
+                slot.replay_summary = None
+        with metadata.transaction() as (db, key):
+            return replay.apply_corpus_replay(db, key, retained, page)
+
 
 class DiscoveryValidationOwner:
     """Keep bounded work warm and release custody only after confirmed closure.
@@ -348,6 +433,9 @@ class DiscoveryValidationOwner:
 
     def _drop(self, build_id: str, slot: _Slot) -> None:
         slot.closing = True
+        if slot.replay_summary is not None:
+            slot.replay_summary.close()
+            slot.replay_summary = None
         if slot.sealed is not None:
             slot.sealed.close()
             slot.sealed = None
@@ -357,6 +445,8 @@ class DiscoveryValidationOwner:
         if slot.corpus is not None:
             slot.corpus.close()
             slot.corpus = None
+        slot.replay = None
+        slot.replay_initialized = False
         slot.preparation = None
         slot.preparation_initialized = False
         slot.certificates = None
@@ -508,3 +598,5 @@ declare_owner_growth(DiscoveryValidationOwner, DiscoveryValidationWork)
 declare_growth_for_journal_dispatch(DiscoveryValidationWork)
 
 declare_growth_for_sealed_dispatch(DiscoveryValidationWork)
+
+declare_corpus_replay_dispatch(DiscoveryValidationWork)
