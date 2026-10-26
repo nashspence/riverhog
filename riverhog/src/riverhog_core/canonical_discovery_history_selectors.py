@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import sqlite3
 from dataclasses import dataclass
-from typing import Any, cast
+from typing import cast
 
 from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
@@ -46,6 +46,11 @@ from riverhog_core.canonical_discovery_history_work import (
     history_set_progress,
 )
 from riverhog_core.canonical_discovery_primary_work import verify_history_import_primary
+from riverhog_core.canonical_discovery_selector_sources import (
+    SelectorSourceReads,
+    SelectorSourceReceipt,
+    source_control_json,
+)
 from riverhog_core.canonical_discovery_selector_work import (
     PreparedSelectorPage,
     SelectorCapacity,
@@ -69,16 +74,9 @@ _KINDS = {
 
 
 @dataclass(frozen=True, slots=True)
-class _SourceReceipt:
-    sql: str
-    parameters: tuple[object, ...]
-    exact_json: str
-
-
-@dataclass(frozen=True, slots=True)
 class PreparedHistorySelector:
     page: PreparedSelectorPage
-    sources: tuple[_SourceReceipt, ...]
+    sources: tuple[SelectorSourceReceipt, ...]
 
 
 class HistorySelectorWork(SelectorWork):
@@ -104,55 +102,6 @@ class HistorySelectorWork(SelectorWork):
             or self._binding() != self._archive_binding
         ):
             raise StaleArchiveTask("history selector lost its exact archive/build/attempt binding")
-
-
-def _receipt_json(sql: str, parameters: tuple[object, ...], row: Any, budget: int) -> str:
-    return _encoded(
-        {"sql": sql, "parameters": list(parameters), "row": None if row is None else list(row)},
-        budget,
-    )
-
-
-class _CaptureCursor:
-    def __init__(
-        self, actual: sqlite3.Cursor, owner: _SourceReads, sql: str, parameters: tuple[object, ...]
-    ) -> None:
-        self.actual, self.owner, self.sql, self.parameters = actual, owner, sql, parameters
-        self._read = False
-
-    def fetchone(self) -> Any:
-        if self._read:
-            raise RuntimeError("history source control reads must detach at most one row")
-        self._read = True
-        row = self.actual.fetchone()
-        self.owner.receipts.append(
-            _SourceReceipt(
-                self.sql,
-                self.parameters,
-                _receipt_json(self.sql, self.parameters, row, self.owner.work.octet_budget),
-            )
-        )
-        return row
-
-    def close(self) -> None:
-        self.actual.close()
-
-
-class _SourceReads:
-    """Retain the fixed point/range controls actually used by one preparation."""
-
-    def __init__(self, db: sqlite3.Connection, work: HistorySelectorWork) -> None:
-        self.db, self.work = db, work
-        self.receipts: list[_SourceReceipt] = []
-
-    @property
-    def in_transaction(self) -> bool:
-        return self.db.in_transaction
-
-    def execute(self, sql: str, parameters: tuple[object, ...] = ()) -> _CaptureCursor:
-        if not sql.lstrip().startswith("SELECT "):
-            raise RuntimeError("history source preparation must only read immutable controls")
-        return _CaptureCursor(self.db.execute(sql, parameters), self, sql, parameters)
 
 
 def _same_source(left: str, right: str) -> bool:
@@ -430,7 +379,7 @@ def prepare_history_selector(
     work.check(key)
     if expected.selector.kind not in _KINDS or expected.complete:
         raise StaleArchiveTask("history selector preparation has another owner or fixed kind")
-    sources = _SourceReads(db, work)
+    sources = SelectorSourceReads(db, octet_budget=work.octet_budget)
     # The owning helpers use only this closed one-row SELECT interface here.
     source_db = cast(sqlite3.Connection, sources)
     _require_archive(source_db, key, work.history.admission)
@@ -456,7 +405,7 @@ def apply_history_selector(
     with _atomic(db):
         for receipt in prepared.sources:
             row = _one(db, receipt.sql, receipt.parameters)
-            actual = _receipt_json(receipt.sql, receipt.parameters, row, work.octet_budget)
+            actual = source_control_json(receipt.sql, receipt.parameters, row, work.octet_budget)
             if not _same_source(actual, receipt.exact_json):
                 raise StaleArchiveTask("history selector original source changed after preparation")
         return apply_selector_page(db, key, work, prepared.page)
