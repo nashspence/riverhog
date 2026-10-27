@@ -460,8 +460,10 @@ def _vfs_selection_fault(shim, parent: Path, operation: str, kind: str, when: st
         files._select = selection
         try:
             files.put_bytes("decision", (candidate,), byte_limit=len(candidate))
-        except sqlite3.Error as exc:
-            error = exc.sqlite_errorcode
+        except PrimaryStateError as exc:
+            cause = exc.__cause__
+            assert isinstance(cause, sqlite3.Error)
+            error = cause.sqlite_errorcode
             assert error & 255 == sqlite3.SQLITE_IOERR
         else:
             raise AssertionError("VFS failure was reported as a successful selection")
