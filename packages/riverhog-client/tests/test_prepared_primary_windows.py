@@ -78,6 +78,24 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
         and case["retry_coldly_verified"]
         for case in evidence["control_vfs"]["cases"]
     )
+    measured = [
+        evidence["space"]["transactions"],
+        evidence["controls"]["transactions"],
+        *(case["transactions"] for case in evidence["journals"]["cases"]),
+    ]
+    assert all(
+        result["completed_transactions"] > 0
+        and result["maxima"]["database_pages_written"] > 0
+        and result["maxima"]["journal_write_extent_bytes"] > 0
+        and result["maxima"]["other_write_bytes"] == 0
+        and not result["cache_peak_certified"]
+        and not result["dirty_page_admission_certified"]
+        for result in measured
+    )
+    assert evidence["controls"]["transactions"]["failed_transactions"] > 0
+    assert all(
+        case["transactions"]["failed_transactions"] > 0 for case in evidence["journals"]["cases"]
+    )
     print(json.dumps(evidence, sort_keys=True))
 
 

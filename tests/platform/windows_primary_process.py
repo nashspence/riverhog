@@ -526,14 +526,16 @@ def _vfs_fault_witness(parent: Path):
 
 def _physical_space_witness(parent: Path):
     from tests.support.prepared_primary_space import witness as space_witness
+    from tests.support.prepared_primary_transaction_writes import TransactionWriteTotals
     from tests.support.sqlite_vfs_faults import FaultVfs
 
     allocation = ALLOCATION + b"/physical-space"
     path = windows_container_path(parent, allocation)
+    totals = TransactionWriteTotals(tracked_pages=128)
     with FaultVfs.windows() as shim:
 
         def opened(*, initialize):
-            return _vfs_files(shim, path, allocation, initialize=initialize)
+            return totals.attach(_vfs_files(shim, path, allocation, initialize=initialize), shim)
 
         def io_bytes():
             return {
@@ -543,6 +545,7 @@ def _physical_space_witness(parent: Path):
 
         result = space_witness(opened, io_bytes=io_bytes)
         result["runtime"] = shim.identity
+        result["transactions"] = totals.report()
         result["completed_vfs_bytes"] = io_bytes()
         result["vfs_write_high_water"] = dict(shim.write_high_water)
         assert all(cycle["total_vacuum_database_write_bytes"] > 0 for cycle in result["cycles"])
@@ -551,39 +554,52 @@ def _physical_space_witness(parent: Path):
 
 def _control_capacity_witness(parent: Path):
     from tests.support.prepared_primary_controls import witness as control_witness
+    from tests.support.prepared_primary_transaction_writes import TransactionWriteTotals
     from tests.support.sqlite_vfs_faults import FaultVfs
 
     allocation = ALLOCATION + b"/reserved-controls"
     path = windows_container_path(parent, allocation)
     limits = SqlitePrimaryLimits(256 * 1024, 256 * 1024, 128 * 1024)
+    totals = TransactionWriteTotals(tracked_pages=128)
     with FaultVfs.windows() as shim:
 
         def opened(*, initialize):
-            return _vfs_files(shim, path, allocation, initialize=initialize, limits=limits)
+            return totals.attach(
+                _vfs_files(shim, path, allocation, initialize=initialize, limits=limits), shim
+            )
 
         result = control_witness(opened, database_bytes=limits.database_bytes)
         result["runtime"] = shim.identity
+        result["transactions"] = totals.report()
         result["vfs_write_high_water"] = dict(shim.write_high_water)
     return result
 
 
 def _journal_capacity_witness(parent: Path):
     from tests.support.prepared_primary_journal import witness as journal_witness
+    from tests.support.prepared_primary_transaction_writes import TransactionWriteTotals
     from tests.support.sqlite_vfs_faults import FaultVfs
 
     reports = []
     with FaultVfs.windows() as shim:
         for capacity in (65536, 262144):
+            totals = TransactionWriteTotals(tracked_pages=128)
             allocation = ALLOCATION + f"/journal-reserve/{capacity}".encode("ascii")
             path = windows_container_path(parent, allocation)
             limits = SqlitePrimaryLimits(2 * 1024**2, 2 * 1024**2, 128 * 1024)
 
-            def opened(*, initialize, path=path, allocation=allocation, limits=limits):
-                return _vfs_files(shim, path, allocation, initialize=initialize, limits=limits)
+            def opened(
+                *, initialize, path=path, allocation=allocation, limits=limits, totals=totals
+            ):
+                return totals.attach(
+                    _vfs_files(shim, path, allocation, initialize=initialize, limits=limits), shim
+                )
 
-            reports.append(
-                journal_witness(opened, capacity=capacity, database_bytes=limits.database_bytes)
+            result = journal_witness(
+                opened, capacity=capacity, database_bytes=limits.database_bytes
             )
+            result["transactions"] = totals.report()
+            reports.append(result)
         identity = shim.identity
     return {"runtime": identity, "cases": reports}
 

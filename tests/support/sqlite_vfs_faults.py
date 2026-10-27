@@ -12,6 +12,7 @@ import os
 import sqlite3
 import uuid
 from collections import Counter
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -88,6 +89,51 @@ class Fault:
     native_result: int | None = None
 
 
+class TransactionWrites:
+    """Bounded successful-delegation measurements, without retaining payload bytes."""
+
+    def __init__(self, *, page_bytes, tracked_pages):
+        if any(type(value) is not int or value <= 0 for value in (page_bytes, tracked_pages)):
+            raise ValueError("transaction measurement needs positive page geometry and capacity")
+        self.page_bytes, self.tracked_pages = page_bytes, tracked_pages
+        self.pages = set()
+        self.overflow = False
+        self.database_bytes = self.journal_bytes = self.journal_extent = self.other_bytes = 0
+
+    def record(self, kind, amount, offset):
+        if type(amount) is not int or type(offset) is not int or min(amount, offset) < 0:
+            raise ValueError("transaction write extent is invalid")
+        if not amount:
+            return
+        if kind == "journal":
+            self.journal_bytes += amount
+            self.journal_extent = max(self.journal_extent, offset + amount)
+        elif kind == "database":
+            self.database_bytes += amount
+            if amount:
+                first, last = offset // self.page_bytes, (offset + amount - 1) // self.page_bytes
+                for page in range(first, last + 1):
+                    if page in self.pages:
+                        continue
+                    if len(self.pages) == self.tracked_pages:
+                        self.overflow = True
+                        break
+                    self.pages.add(page)
+        else:
+            self.other_bytes += amount
+
+    def report(self):
+        if self.overflow:
+            raise RuntimeError("transaction measurement exhausted its declared tracking capacity")
+        return {
+            "database_pages_written": len(self.pages),
+            "database_write_bytes": self.database_bytes,
+            "journal_write_bytes": self.journal_bytes,
+            "journal_write_extent_bytes": self.journal_extent,
+            "other_write_bytes": self.other_bytes,
+        }
+
+
 class FaultVfs:
     """Keep native file/lock operations; inject one write/sync return at its actual callback."""
 
@@ -105,6 +151,7 @@ class FaultVfs:
         self.completed_bytes = Counter()
         self.write_high_water = Counter()
         self.errors = []
+        self._transaction_writes = None
         self.fault: Fault | None = None
         self.identity = {}
         self.io = IoMethods()
@@ -196,6 +243,17 @@ class FaultVfs:
             raise RuntimeError("the requested VFS fault did not occur")
         self.fault = None
 
+    @contextmanager
+    def transaction_writes(self, *, page_bytes, tracked_pages):
+        if self._transaction_writes is not None:
+            raise RuntimeError("transaction measurements must not overlap")
+        trace = TransactionWrites(page_bytes=page_bytes, tracked_pages=tracked_pages)
+        self._transaction_writes = trace
+        try:
+            yield trace
+        finally:
+            self._transaction_writes = None
+
     def _real(self, file: _PF) -> _PF:
         return c.cast(c.cast(file, _PTR).value + self.offset, _PF)
 
@@ -222,6 +280,8 @@ class FaultVfs:
                 if result == sqlite3.SQLITE_OK and name in ("read", "write"):
                     self.completed_bytes[(name, file_kind)] += arguments[1]
                     if name == "write":
+                        if self._transaction_writes is not None:
+                            self._transaction_writes.record(file_kind, arguments[1], arguments[2])
                         self.write_high_water[file_kind] = max(
                             self.write_high_water[file_kind], arguments[2] + arguments[1]
                         )
