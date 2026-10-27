@@ -78,7 +78,7 @@ from riverhog_protocol.collection_workflows import (
     processing_outcome_set_identity,
 )
 from riverhog_protocol.effect_settlement import ExternalEffectSettlement
-from riverhog_protocol.errors import Conflict, Forbidden, NotFound
+from riverhog_protocol.errors import Conflict, Forbidden
 from riverhog_protocol.no_output_settlement import NoOutputSettlement
 from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
 from riverhog_provenance import (
@@ -1225,9 +1225,17 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     published_retry = writer()
     try:
         assert published_retry.producer.collection_id == output_collection_id
-        # Publication retires the upload projection; the final root receipt resumes completion.
-        with pytest.raises(NotFound):
-            target.get_collection_upload_session_artifact(output_collection_id, OUTPUT_ID)
+        # Original member custody survives publication alongside the final-root receipt.
+        published_member = target.get_collection_upload_session_artifact(
+            output_collection_id, OUTPUT_ID
+        )
+        assert published_member["payload_sealed"] is True
+        assert published_member["custody_receipt"] == receipts[0].receipt.model_dump(mode="json")
+        published_custody = published_retry.producer.resume_artifact_custody(identity)
+        assert published_custody is not None
+        assert published_custody.receipt == receipts[0].receipt
+        assert published_custody.receipt.primary == primary
+        assert not output_payload_path.exists()
         replayed_output = published_retry.finish(
             execution_sha256=hashlib.sha256(execution_preimage).hexdigest(),
             disposition_set=disposition_identity,
