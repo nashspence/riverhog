@@ -101,6 +101,8 @@ class PrimaryPublisher:
         """Compare the full retry descriptor before observation, authorship or registration."""
         session = self.store.session
         requirement = attribution.completion_requirement
+        if requirement is not None:
+            requirement = type(requirement).model_validate_json(primary_control_bytes(requirement))
         requirement_identity = None if requirement is None else requirement.identity
         if (
             attribution.construction_identity != session.attribution_construction_identity_sha256
@@ -111,7 +113,9 @@ class PrimaryPublisher:
             )
         # Freeze mutable caller values before both comparison and Native authorship.
         source_context = json.loads(canonical_json_bytes(dict(attribution.source_context)))
-        attribution = replace(attribution, source_context=source_context)
+        attribution = replace(
+            attribution, source_context=source_context, completion_requirement=requirement
+        )
         causal = tuple(
             ExternalReference.model_validate(value).model_dump(mode="json")
             for value in causal_input_states

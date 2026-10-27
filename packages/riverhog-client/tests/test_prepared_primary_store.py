@@ -663,3 +663,218 @@ def test_an_author_cannot_reenter_and_discard_its_own_active_transition(tmp_path
             store.prepare_or_load(_member(), REQUEST, reenter)
         assert store.usage.members == 0
         store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+
+
+class _CreationApi(_PublicationApi):
+    def __init__(self):
+        super().__init__()
+        self.create_calls = 0
+        self.get_calls = 0
+        self.tag_calls = 0
+        self.tags = set()
+        self.resumed = False
+        self.lose_create_ack = False
+        self.lose_tag_ack = False
+        self.read_denied = False
+        self.finalized = False
+
+    def create_or_resume_collection_upload_session(self, key, **options):
+        self.create_calls += 1
+        assert options["custody_mode"] == "custody-transfer"
+        self.tags.update(options["tags"])
+        if self.lose_create_ack:
+            raise RuntimeError("lost first-create response")
+        return {**super().get_collection_upload_session(42), "resumed": self.resumed}
+
+    def get_collection_upload_session(self, collection):
+        from riverhog_protocol.errors import Forbidden
+
+        self.get_calls += 1
+        if self.read_denied:
+            raise Forbidden("current principal cannot read the bound session")
+        value = super().get_collection_upload_session(collection)
+        if self.finalized:
+            value["state"] = "finalized"
+        return value
+
+    def add_collection_upload_session_tags(self, _collection, tags):
+        assert tags
+        self.tag_calls += 1
+        self.tags.update(tags)
+        if self.lose_tag_ack:
+            self.lose_tag_ack = False
+            raise RuntimeError("lost initial-tag response")
+        return {}
+
+
+def _unbound(root):
+    return PrimaryStore(
+        root,
+        allocation_id="existing-app-allocation",
+        scope=SCOPE,
+        limits=LIMITS,
+        initialize=True,
+    )
+
+
+def _create(api, store, **changes):
+    from riverhog_client._prepared_primary_session import open_primary_session
+    from riverhog_client.canonical_production import ProducerAttribution
+
+    options = {
+        "attribution": ProducerAttribution(
+            "fixture",
+            "fixture/v1",
+            "1",
+            "event",
+            "fixture",
+            {},
+            hashlib.sha256(b"event").hexdigest(),
+        ),
+        "idempotency_key": None,
+        "archive_store": None,
+        "use_cache": None,
+        "copy_to": None,
+        "description": None,
+        "tags": (),
+        "event_context": None,
+    }
+    options.update(changes)
+    return open_primary_session(api, store, **options)
+
+
+def test_bound_creation_uses_current_point_authority_and_never_creates_again(tmp_path):
+    from riverhog_protocol.errors import Forbidden
+
+    root = tmp_path.resolve() / "state"
+    api = _CreationApi()
+    with _unbound(root) as store:
+        session, attribution = _create(api, store)
+        assert attribution.construction_identity == hashlib.sha256(b"event").hexdigest()
+        assert store.session.server_construction_identity_sha256 == "a" * 64
+        assert store.session.attribution_construction_identity_sha256 != "a" * 64
+        assert session["collection_id"] == "42" and api.create_calls == 1
+        assert session["resumed"] is False
+    with _open(root) as store:
+        assert _create(api, store)[0]["resumed"] is True
+        assert api.create_calls == api.get_calls == 1 and api.tag_calls == 0
+        api.read_denied = True
+        with pytest.raises(Forbidden):
+            _create(api, store)
+        assert api.create_calls == 1
+        api.read_denied = False
+        api.finalized = True
+        session, _ = _create(api, store)
+        assert session["state"] == "finalized" and api.tag_calls == 0
+
+
+@pytest.mark.parametrize("changed", ["description", "tags", "event_context", "copy_to", "producer"])
+def test_creation_input_change_conflicts_before_any_remote_call(tmp_path, changed):
+    from riverhog_client.canonical_production import ProducerAttribution
+
+    api = _CreationApi()
+    with _unbound(tmp_path.resolve() / "state") as store:
+        _create(api, store)
+        if changed == "producer":
+            changes = {
+                "attribution": ProducerAttribution(
+                    "fixture",
+                    "fixture/v1",
+                    "2",
+                    "event",
+                    "fixture",
+                    {},
+                    hashlib.sha256(b"event").hexdigest(),
+                )
+            }
+        elif changed == "tags":
+            changes = {"tags": ("changed",)}
+        elif changed == "copy_to":
+            changes = {"copy_to": ("archive",)}
+        elif changed == "description":
+            changes = {"description": "changed"}
+        else:
+            changes = {"event_context": {"changed": True}}
+        with pytest.raises(PrimaryStateError, match="creation inputs changed"):
+            _create(api, store, **changes)
+        assert api.create_calls == 1 and api.get_calls == api.tag_calls == 0
+
+
+@pytest.mark.parametrize("uncertain", ["lost-create", "resumed-without-header"])
+def test_missing_accepted_creation_header_is_an_explicit_reconciliation_boundary(
+    tmp_path, uncertain
+):
+    api = _CreationApi()
+    api.lose_create_ack = uncertain == "lost-create"
+    api.resumed = uncertain == "resumed-without-header"
+    root = tmp_path.resolve() / "state"
+    with _unbound(root) as store:
+        with pytest.raises((RuntimeError, PrimaryStateError)):
+            _create(api, store)
+    with _open(root) as store:
+        with pytest.raises(PrimaryStateError, match="uncertain outcome"):
+            _create(api, store)
+        assert api.create_calls == 1 and api.tag_calls == api.get_calls == 0
+
+
+def test_lost_initial_tags_replays_only_under_the_original_accepted_header(tmp_path):
+    root = tmp_path.resolve() / "state"
+    api = _CreationApi()
+    tags = tuple(f"fixture/{number:04d}" for number in range(205))
+    api.lose_tag_ack = True
+    with _unbound(root) as store:
+        with pytest.raises(RuntimeError, match="initial-tag response"):
+            _create(api, store, tags=tags)
+        assert store.session.collection_id == 42
+    with _open(root) as store:
+        _create(api, store, tags=tags)
+        assert api.tags == set(tags) and api.create_calls == 1 and api.get_calls == 1
+
+
+def test_execution_attribution_and_completion_survive_lost_ack_and_finalized_resume(tmp_path):
+    from riverhog_client.canonical_production import ProducerAttribution
+    from riverhog_protocol.collection_completion import (
+        COMPLETION_REQUIRED_RECORD_KINDS,
+        CollectionCompletionRequirementDocument,
+    )
+
+    requirement = CollectionCompletionRequirementDocument(
+        execution_id="1" * 64,
+        execution_envelope_sha256="2" * 64,
+        controller_evidence_sha256="3" * 64,
+        record_kinds=tuple(sorted(COMPLETION_REQUIRED_RECORD_KINDS)),
+    )
+    attribution = ProducerAttribution(
+        "fixture",
+        "fixture/v1",
+        "1",
+        "event",
+        "fixture",
+        {},
+        hashlib.sha256(b"event").hexdigest(),
+        requirement,
+    )
+    api = _CreationApi()
+    accepted = []
+
+    def completion(_collection, value):
+        accepted.append(value)
+        if len(accepted) == 1:
+            raise RuntimeError("lost completion acknowledgement")
+        return value
+
+    api.set_collection_upload_session_completion_requirement = completion
+    root = tmp_path.resolve() / "state"
+    with _unbound(root) as store:
+        with pytest.raises(RuntimeError, match="completion acknowledgement"):
+            _create(api, store, attribution=attribution)
+        assert store.session.attribution_construction_identity_sha256 == "a" * 64
+        assert store.session.completion_requirement_sha256 == requirement.identity
+    with _open(root) as store:
+        _session, resumed = _create(api, store, attribution=attribution)
+        assert resumed.construction_identity == "a" * 64
+        assert accepted == [requirement, requirement] and api.create_calls == 1
+        api.finalized = True
+        session, resumed = _create(api, store, attribution=attribution)
+        assert session["state"] == "finalized" and resumed.construction_identity == "a" * 64
+        assert len(accepted) == 2

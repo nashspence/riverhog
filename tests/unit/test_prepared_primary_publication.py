@@ -8,13 +8,11 @@ from pathlib import Path
 import pytest
 from riverhog_client._prepared_primary_documents import (
     PrimaryScope,
-    PrimarySession,
-    primary_control_bytes,
 )
 from riverhog_client._prepared_primary_publisher import DeclaredPrimaryObservation, PrimaryPublisher
+from riverhog_client._prepared_primary_session import open_primary_session
 from riverhog_client._prepared_primary_store import PrimaryStore, PrimaryStoreLimits
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
-from riverhog_client.initial_tags import prepare_initial_collection_tags
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import (
     CollectionUploadProvenanceJournalRecord,
@@ -45,40 +43,36 @@ def test_durable_primary_replays_after_actual_http_stage_bind_and_decision_ackno
         control_bytes=64 * 1024,
     )
     scope = PrimaryScope(service="fixture-service", account="fixture-account")
-    request = b'{"fixture":"create-inputs"}'
     store = PrimaryStore(
         root, allocation_id="fixture-allocation", scope=scope, limits=limits, initialize=True
     )
-    assert store.session_for(request) is None
     key = "interrupted-durable-primary"
-    with prepare_initial_collection_tags(()) as tags:
-        session = api.create_or_resume_collection_upload_session(
-            key,
-            ingest_source="fixture-ingress",
-            tags=(),
-            initial_tag_set_identity=tags.tag_set_identity,
-            custody_mode="custody-transfer",
-        )
-    collection_id = int(session["collection_id"])
-    attribution_identity = hashlib.sha256(key.encode()).hexdigest()
-    store.bind_session(
-        PrimarySession.model_validate(
-            {
-                "allocation_sha256": hashlib.sha256(
-                    primary_control_bytes(store.allocation)
-                ).hexdigest(),
-                "create_request": {
-                    "bytes": str(len(request)),
-                    "sha256": hashlib.sha256(request).hexdigest(),
-                },
-                "collection_id": str(collection_id),
-                "delivery_context_id": session["delivery_context_id"],
-                "server_construction_identity_sha256": session["construction_identity_sha256"],
-                "attribution_construction_identity_sha256": attribution_identity,
-                "completion_requirement_sha256": None,
-            }
-        )
+    attribution = ProducerAttribution(
+        "fixture",
+        "fixture/v1",
+        "1",
+        key,
+        "fixture-ingress",
+        {},
+        hashlib.sha256(key.encode()).hexdigest(),
     )
+
+    def open_session():
+        return open_primary_session(
+            api,
+            store,
+            attribution=attribution,
+            idempotency_key=key,
+            archive_store=None,
+            use_cache=None,
+            copy_to=None,
+            description=None,
+            tags=(),
+            event_context=None,
+        )
+
+    session, attribution = open_session()
+    collection_id = int(session["collection_id"])
     payload = b"exact interrupted publication"
     member = ArtifactMemberIdentityDocument.model_validate(
         {
@@ -86,9 +80,6 @@ def test_durable_primary_replays_after_actual_http_stage_bind_and_decision_ackno
             "bytes": str(len(payload)),
             "sha256": hashlib.sha256(payload).hexdigest(),
         }
-    )
-    attribution = ProducerAttribution(
-        "fixture", "fixture/v1", "1", key, "fixture-ingress", {}, attribution_identity
     )
     observations = []
 
@@ -141,7 +132,7 @@ def test_durable_primary_replays_after_actual_http_stage_bind_and_decision_ackno
         root, allocation_id="fixture-allocation", scope=scope, limits=limits, initialize=False
     )
     try:
-        assert store.session_for(request) == store.session
+        assert open_session()[0]["resumed"] is True
         publisher = PrimaryPublisher(api, store)
         lazy = DeclaredPrimaryObservation(
             lazy.observer, lazy.configuration, lazy.catalog_sha256, unexpected_observation
