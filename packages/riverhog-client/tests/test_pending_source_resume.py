@@ -17,6 +17,7 @@ def _producer(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     producer._sources = {}
     producer._restored_sources = OrderedDict()
     producer._source_lock = threading.RLock()
+    producer._operation_lock = threading.RLock()
     producer._pending_source_resolver = None
     producer._require_heartbeat = lambda: None
     producer._reconcile_pending_sources = lambda: ()

@@ -78,7 +78,7 @@ provider_qualification_runtime = "provider-qualification"
 
 [governance.boundary_freeze]
 status = "frozen"
-protected_boundary_sha256 = "04dba8930542eef98c1bc7fa13a5e2d399f03c6a21b6e28bbcbaafdc2341952e"
+protected_boundary_sha256 = "8a455827411054ea31a303595b4ae14679430b5de052fe73b4601acd1460baa0"
 protected_components = [
   "config-validation",
   "gogurt",
