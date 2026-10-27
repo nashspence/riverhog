@@ -352,3 +352,89 @@ def test_uncertain_control_commit_keeps_the_original_visible_outcome(tmp_path, c
             assert files.read_control("prepared", byte_limit=8) == b"original"
             with pytest.raises(FileExistsError):
                 files.put_control("prepared", b"replacement", byte_limit=11)
+
+
+def test_extent_reader_opens_without_payload_reads_and_retains_exact_framing(tmp_path):
+    lines = [b"x\n", b"a" * 4093 + b"\n", b"b" * 4097 + b"\n", b"tail"]
+    body = b"".join(lines)
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        files.put("inventory", [body], byte_limit=len(body))
+
+        def no_payload(action, table, _column, *_rest):
+            if action == sqlite3.SQLITE_READ and table == "primary_chunks":
+                return sqlite3.SQLITE_DENY
+            return sqlite3.SQLITE_OK
+
+        files._connection.set_authorizer(no_payload)
+        with files.extent_reader("inventory", byte_count=len(body)) as stream:
+            assert not files._connection.in_transaction
+            assert stream.tell() == 0
+            files._connection.set_authorizer(None)
+            assert stream.readline(0) == b""
+            for line in lines:
+                assert stream.readline(len(line) + 1) == line
+                assert not files._connection.in_transaction
+            assert stream.readline() == b""
+            assert stream.tell() == len(body)
+            stream.seek(4094)
+            assert stream.readline(10) == b"a\n"
+            stream.seek(4096)
+            assert stream.readline(3) == b"bbb"
+            assert stream.tell() == 4099
+            with pytest.raises(PrimaryStateBusy, match="pins"):
+                files.remove_step("inventory")
+
+
+@pytest.mark.parametrize("members", [1, 257, 1025])
+def test_framed_extent_queries_grow_with_rows_and_chunk_boundaries(tmp_path, members):
+    lines = [f"member-{number:08d} original binding\n".encode() for number in range(members)]
+    body = b"".join(lines)
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        files.put("inventory", [body], byte_limit=len(body))
+        statements = []
+        files._connection.set_trace_callback(statements.append)
+        with files.extent_reader("inventory", byte_count=len(body)) as stream:
+            assert not any("FROM primary_chunks" in statement for statement in statements)
+            for line in lines:
+                assert stream.readline(128) == line
+            assert stream.readline(128) == b""
+        reads = [statement for statement in statements if "FROM primary_chunks" in statement]
+        assert members <= len(reads) <= members + (len(body) + 4095) // 4096
+        assert all("generation=" in statement and "ordinal=" in statement for statement in reads)
+
+
+@pytest.mark.parametrize("close", ["root", "child"])
+def test_extent_readers_release_generation_pins_and_obey_owner_lifetime(tmp_path, close):
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        child = files.child("member", initialize=True)
+        body = b"first\nsecond\n"
+        child.put("inventory", [body], byte_limit=len(body))
+        with pytest.raises(PrimaryStateError, match="closed"):
+            with child.extent_reader("inventory", byte_count=len(body)) as stream:
+                assert stream.readline(6) == b"first\n"
+                (files if close == "root" else child).close()
+                with pytest.raises((ValueError, PrimaryStateError), match="closed"):
+                    stream.readline(1)
+        assert not files._root._pins
+        assert not files._root._readers
+
+
+def test_extent_reader_checks_selection_length_and_every_accessed_chunk(tmp_path):
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        files.put("inventory", [b"x" * 5000], byte_limit=5000)
+        with pytest.raises(PrimaryStateError, match="extent"):
+            with files.extent_reader("inventory", byte_count=5001):
+                pytest.fail("wrong extent exposed a reader")
+        assert not files._pins
+        with files.extent_reader("inventory", byte_count=5000) as stream:
+            for invalid in [1.5, -0.5, "1"]:
+                with pytest.raises(TypeError):
+                    stream.readline(invalid)
+            assert stream.tell() == 0
+            files._connection.execute(
+                "UPDATE primary_chunks SET body=? WHERE ordinal=1", (b"short",)
+            ).close()
+            stream.seek(4096)
+            with pytest.raises(PrimaryStateError, match="chunk extent"):
+                stream.readline(10)
+        assert not files._pins

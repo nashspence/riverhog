@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+import operator
 import sqlite3
 import threading
 import uuid
@@ -585,33 +586,30 @@ class TransactionalPrimaryFiles:
             return False
 
     @contextmanager
-    def verified(self, file: PrimaryByteFile) -> Iterator[BinaryIO]:
+    def _selected_reader(
+        self, name: str, *, byte_count: int, sha256: str | None = None
+    ) -> Iterator[_ChunkReader]:
+        primary_file_name(name)
+        if type(byte_count) is not int or byte_count < 0:
+            raise ValueError("prepared-primary extent length must be nonnegative")
         with self._mutex:
             row = self._one(
                 "SELECT o.generation,o.bytes,o.sha256,o.complete FROM primary_names n "
                 "JOIN primary_objects o ON o.generation=n.generation "
                 "WHERE n.namespace=? AND n.name=?",
-                (self._namespace, file.name),
+                (self._namespace, name),
             )
             if row is None:
-                raise FileNotFoundError(file.name)
-            if row[1:] != (file.bytes, file.sha256, 1):
+                raise FileNotFoundError(name)
+            if row[1] != byte_count or row[3] != 1 or (sha256 is not None and row[2] != sha256):
                 raise PrimaryStateError(
                     "prepared-primary selected extent differs from its commitment"
                 )
-            stream = _ChunkReader(self, row[0], file.bytes)
+            stream = _ChunkReader(self, row[0], byte_count)
             self._root._readers.add(stream)
             self._root._pins[row[0]] = self._root._pins.get(row[0], 0) + 1
         try:
-            digest = hashlib.sha256()
-            while chunk := stream.read(_BLOCK):
-                digest.update(chunk)
-            if digest.hexdigest() != file.sha256:
-                raise PrimaryStateError(
-                    "prepared-primary selected bytes differ from their commitment"
-                )
-            stream.seek(0)
-            yield cast(BinaryIO, stream)
+            yield stream
             self.check_current()
         finally:
             stream.close()
@@ -622,6 +620,26 @@ class TransactionalPrimaryFiles:
                     self._root._pins[row[0]] = remaining - 1
                 else:
                     self._root._pins.pop(row[0], None)
+
+    @contextmanager
+    def extent_reader(self, name: str, *, byte_count: int) -> Iterator[BinaryIO]:
+        """Pin an exact extent; the caller verifies its original framed commitment."""
+        with self._selected_reader(name, byte_count=byte_count) as stream:
+            yield cast(BinaryIO, stream)
+
+    @contextmanager
+    def verified(self, file: PrimaryByteFile) -> Iterator[BinaryIO]:
+        """Verify all original bytes before exposing a replay reader."""
+        with self._selected_reader(file.name, byte_count=file.bytes, sha256=file.sha256) as stream:
+            digest = hashlib.sha256()
+            while chunk := stream.read(_BLOCK):
+                digest.update(chunk)
+            if digest.hexdigest() != file.sha256:
+                raise PrimaryStateError(
+                    "prepared-primary selected bytes differ from their commitment"
+                )
+            stream.seek(0)
+            yield cast(BinaryIO, stream)
 
     def close(self) -> None:
         with self._mutex:
@@ -668,6 +686,25 @@ class _ChunkReader(io.RawIOBase):
             raise ValueError("negative prepared-primary seek")
         self._position = position
         return position
+
+    def readline(self, size: int | None = -1) -> bytes:
+        self._checkClosed()
+        self._owner.check_current()
+        requested = -1 if size is None else operator.index(size)
+        remaining = self._length - self._position
+        limit = remaining if requested < 0 else min(remaining, requested)
+        result = bytearray()
+        while len(result) < limit:
+            count = min(_BLOCK - self._position % _BLOCK, limit - len(result))
+            fragment = self.read(count)
+            newline = fragment.find(b"\n")
+            if newline >= 0:
+                used = newline + 1
+                self._position -= len(fragment) - used
+                result.extend(fragment[:used])
+                break
+            result.extend(fragment)
+        return bytes(result)
 
     def readinto(self, target: Any) -> int:
         self._checkClosed()

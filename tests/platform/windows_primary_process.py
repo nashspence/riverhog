@@ -428,6 +428,12 @@ def witness(root: Path) -> dict:
             pass
         result = files.put("journal", (CONTENT[:1], CONTENT[1:]), byte_limit=len(CONTENT))
         assert result == file
+        with files.extent_reader("journal", byte_count=len(CONTENT)) as stream:
+            assert not files._connection.in_transaction
+            assert stream.readline(4093) == CONTENT[:4093]
+            stream.seek(4090)
+            assert stream.readline(20) == CONTENT[4090:4110]
+        cases.append("bounded-extent-framing")
 
         def control_only(action, table, _column, *_rest):
             if action == sqlite3.SQLITE_READ and table == "primary_chunks":
