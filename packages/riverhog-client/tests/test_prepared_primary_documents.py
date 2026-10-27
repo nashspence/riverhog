@@ -58,7 +58,7 @@ def original(tmp_path_factory):
             materialization_hint=None,
             allow_missing_materialization_hint=True,
         )
-        prepared = PreparedPrimary(
+        prepared = PreparedPrimary.seal(
             session_sha256="1" * 64,
             member=member,
             request=_file("request", b"fixture inputs"),
@@ -200,3 +200,12 @@ def test_changed_saved_receipt_commitment_is_rejected(original) -> None:
     assert value["receipt_sha256"] != retained.receipt_sha256
     with pytest.raises(ValueError, match="custody proof identity"):
         PrimaryCustody.model_validate(value)
+
+
+def test_unvalidated_manifest_change_cannot_be_blessed_by_a_genuine_receipt(original) -> None:
+    prepared, receipt = original
+    changed = prepared.model_copy(
+        update={"graph": prepared.graph.model_copy(update={"sha256": "f" * 64})}
+    )
+    with pytest.raises(ValueError, match="original manifest integrity"):
+        _retained(changed, receipt)

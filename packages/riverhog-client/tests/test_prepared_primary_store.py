@@ -7,6 +7,8 @@ import json
 import os
 import subprocess
 import sys
+import time
+from contextlib import contextmanager
 from dataclasses import replace
 from pathlib import Path
 
@@ -99,8 +101,8 @@ def _receipt(prepared, member=None):
             CollectionUploadProvenanceCustodyObjectDocument(
                 object_id="fixture-primary",
                 relative_path="provenance/payloads/fixture.bin.age",
-                plaintext_bytes=str(len(JOURNAL)),
-                plaintext_sha256=hashlib.sha256(JOURNAL).hexdigest(),
+                plaintext_bytes=str(prepared.primary.journal.prefix_bytes),
+                plaintext_sha256=prepared.primary.journal.prefix_sha256,
                 sealed_receipt_sha256="b" * 64,
             ),
         ),
@@ -256,14 +258,22 @@ remove=PrimaryFiles.remove
 closing_intent_writes=0
 link=os.link
 replace_file=os.replace
+unlink=os.unlink
 def crash_link(source,target,*args,**kwargs):
     if "candidate-"+target==boundary: os._exit(37)
-    return link(source,target,*args,**kwargs)
+    result=link(source,target,*args,**kwargs)
+    if "linked-"+target==boundary: os._exit(37)
+    return result
 def crash_replace(source,target,*args,**kwargs):
     if "candidate-"+target==boundary: os._exit(37)
     return replace_file(source,target,*args,**kwargs)
 os.link=crash_link
 os.replace=crash_replace
+def crash_unlink(name,*args,**kwargs):
+    result=unlink(name,*args,**kwargs)
+    if "unlinked-"+name==boundary: os._exit(37)
+    return result
+os.unlink=crash_unlink
 def crash_put(self,name,*args,**kwargs):
     global closing_intent_writes
     result=put(self,name,*args,**kwargs)
@@ -288,7 +298,7 @@ elif spec['operation']=='custody':
     from riverhog_client._prepared_primary_closing import advance_custody
     from riverhog_protocol import CollectionUploadArtifactCustodyReceiptDocument
     def settle(item):
-        store.accept_custody(store.load(item),
+        store.accept_custody(store.load_controls(item),
             CollectionUploadArtifactCustodyReceiptDocument.model_validate(spec['receipt']))
     advance_custody(store,limit=1,settle=settle)
 else:
@@ -372,14 +382,18 @@ def test_process_exit_recovers_only_the_active_candidate_or_durable_winner(tmp_p
         "usage",
     ],
 )
+@pytest.mark.parametrize("truncated", [False, True])
 def test_process_exit_during_reclaim_never_subtracts_twice_or_requires_released_bytes(
-    tmp_path, boundary
+    tmp_path, boundary, truncated
 ):
     root = tmp_path.resolve() / "state"
     with _open(root, initialize=True) as store:
         record = store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
         store.accept_custody(record, _receipt(record.prepared))
         store.accept_decision(record, b"exact decision")
+        if truncated:
+            with store._member(str(_member().artifact_id), create=False) as files:
+                (files.root / "journal").write_bytes(JOURNAL[:1])
     _crash(root, boundary, operation="reclaim")
     with _open(root) as store:
         record = store.prepare_or_load(_member(), REQUEST, _no_author)
@@ -1138,7 +1152,9 @@ def test_terminal_custody_waits_for_exact_receipts_and_recovers_a_lost_cursor(tm
         "candidate-custody-closing",
         "custody-closing",
         "candidate-custody",
+        "linked-custody",
         "custody",
+        "unlinked-journal",
         "remove-journal",
         "candidate-reclaimed",
         "reclaimed",
@@ -1447,3 +1463,281 @@ def test_reserved_custody_commitment_progresses_when_full_receipt_exceeds_contro
         assert loaded.custody.receipt_sha256 == receipt.receipt_sha256
         assert store.accept_custody(loaded, receipt) == loaded
         assert store.reclaim(member)
+
+
+@pytest.mark.parametrize("role", ["request", "observation", "graph", "decision"])
+def test_original_manifest_seal_rejects_metadata_corruption_before_later_anchors(tmp_path, role):
+    from riverhog_canonical_json import canonical_json_bytes
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        original = store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+        with store._member(str(_member().artifact_id), create=False) as files:
+            path = files.root / "prepared"
+            assert not files.exists("custody") and not files.exists("decision-accepted")
+    value = json.loads(path.read_bytes())
+    value[role]["sha256"] = "f" * 64
+    path.write_bytes(canonical_json_bytes(value))
+    with _open(root) as store:
+        with pytest.raises(ValueError, match="original manifest integrity"):
+            store.load_controls(_member())
+        with pytest.raises(ValueError, match="original manifest integrity"):
+            store.accept_custody(original, _receipt(original.prepared))
+        assert store.usage.pending_bytes > 0
+
+
+def test_receipt_read_cannot_bless_a_missing_original_manifest_seal(tmp_path):
+    from riverhog_canonical_json import canonical_json_bytes
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+        with store._member(str(_member().artifact_id), create=False) as files:
+            path = files.root / "prepared"
+    value = json.loads(path.read_bytes())
+    del value["manifest_sha256"]
+    path.write_bytes(canonical_json_bytes(value))
+    with _open(root) as store:
+        with pytest.raises(ValueError, match="manifest_sha256"):
+            store.load_controls(_member())
+        assert "manifest_sha256" not in json.loads(path.read_bytes())
+
+
+@pytest.mark.parametrize("role", ["request", "observation", "graph", "journal", "decision"])
+@pytest.mark.parametrize("damage", ["missing", "truncated", "changed"])
+def test_receipt_controls_survive_unreplayable_preimages_without_inventing_decision(
+    tmp_path, role, damage
+):
+    from riverhog_client._prepared_primary_publisher import PrimaryPublisher
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        original = store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+        pending = store.usage.pending_bytes
+        with store._member(str(_member().artifact_id), create=False) as files:
+            path = files.root / role
+            content = path.read_bytes()
+    if damage == "missing":
+        path.unlink()
+    else:
+        path.write_bytes(content[:1] if damage == "truncated" else b"x" * len(content))
+    with _open(root) as store:
+        assert store.load_controls(_member()) == original
+        retained = store.accept_custody(original, _receipt(original.prepared))
+        assert retained.custody is not None and retained.decision_accepted is None
+        assert not retained.compact and not store.reclaim(_member())
+        assert store.usage.pending_bytes == pending
+        api = _PublicationApi()
+        with pytest.raises(PrimaryStateError):
+            PrimaryPublisher(api, store).replay(retained)
+        assert not api.journals and not api.decision_calls
+        assert store.load_controls(_member()) == retained
+    with _open(root) as store:
+        assert store.load_controls(_member()) == retained
+        assert store.usage.pending_bytes == pending
+        assert not store.reclaim(_member())
+
+
+def test_receipt_checks_stale_prepared_handle_against_original_sealed_manifest(tmp_path):
+    from riverhog_client._prepared_primary_documents import PreparedPrimary
+
+    with _open(tmp_path.resolve() / "state", initialize=True) as store:
+        original = store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+        value = original.prepared.model_dump(mode="json", exclude={"manifest_sha256"})
+        value["request"]["sha256"] = "e" * 64
+        stale = replace(original, prepared=PreparedPrimary.seal(**value))
+        with pytest.raises(PrimaryStateError, match="matching manifest"):
+            store.accept_custody(stale, _receipt(original.prepared))
+        assert store.load_controls(_member()).custody is None
+
+
+@contextmanager
+def _receipt_work(monkeypatch):
+    """Observe real local primitives; the store fixture does not execute Native authorship."""
+    counts = dict(read_bytes=0, pending_read_bytes=0, hash_bytes=0, opens=0, fsyncs=0, unlinks=0)
+    roles = {}
+    open_file, fdopen, sha256 = filesystem.PrimaryFiles._open, os.fdopen, hashlib.sha256
+    fsync, unlink = os.fsync, os.unlink
+    pending = {"request", "observation", "graph", "journal", "decision"}
+
+    def opened(files, name):
+        descriptor = open_file(files, name)
+        roles[descriptor] = name
+        counts["opens"] += 1
+        return descriptor
+
+    class Reader:
+        def __init__(self, stream, role):
+            self.stream, self.role = stream, role
+
+        def __enter__(self):
+            self.stream.__enter__()
+            return self
+
+        def __exit__(self, *args):
+            return self.stream.__exit__(*args)
+
+        def __getattr__(self, name):
+            return getattr(self.stream, name)
+
+        def counted(self, value):
+            counts["read_bytes"] += len(value)
+            if self.role in pending:
+                counts["pending_read_bytes"] += len(value)
+            return value
+
+        def read(self, *args):
+            return self.counted(self.stream.read(*args))
+
+        def readline(self, *args):
+            return self.counted(self.stream.readline(*args))
+
+    class Digest:
+        def __init__(self, digest):
+            self.digest = digest
+
+        def __getattr__(self, name):
+            return getattr(self.digest, name)
+
+        def update(self, value):
+            counts["hash_bytes"] += len(value)
+            return self.digest.update(value)
+
+    def hash_bytes(value=b"", *args, **kwargs):
+        counts["hash_bytes"] += len(value)
+        return Digest(sha256(value, *args, **kwargs))
+
+    def synced(descriptor):
+        counts["fsyncs"] += 1
+        return fsync(descriptor)
+
+    def removed(*args, **kwargs):
+        result = unlink(*args, **kwargs)
+        counts["unlinks"] += 1
+        return result
+
+    def no_scan(*_args, **_kwargs):
+        pytest.fail("selected-member receipt work enumerated unrelated members")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(filesystem.PrimaryFiles, "_open", opened)
+        patch.setattr(
+            os, "fdopen", lambda fd, *a, **kw: Reader(fdopen(fd, *a, **kw), roles.get(fd))
+        )
+        patch.setattr(hashlib, "sha256", hash_bytes)
+        patch.setattr(os, "fsync", synced)
+        patch.setattr(os, "unlink", removed)
+        patch.setattr(os, "scandir", no_scan)
+        patch.setattr(Path, "iterdir", no_scan)
+        started = time.perf_counter()
+        yield counts
+        counts["seconds"] = time.perf_counter() - started
+
+
+@pytest.mark.parametrize("large_role", ["baseline", "request", "observation", "graph", "journal"])
+def test_cold_receipt_all_stages_read_controls_only_as_independent_preimages_grow(
+    tmp_path, monkeypatch, large_role
+):
+    member = _member()
+    authored = _author()
+    request = REQUEST
+    if large_role == "request":
+        request = b"r" * (1024 * 1024)
+    elif large_role in ("observation", "graph"):
+        authored = replace(authored, **{large_role: b"p" * (1024 * 1024)})
+    elif large_role == "journal":
+        journal = b"j" * (1024 * 1024)
+        primary = authored.primary.model_dump(mode="json")
+        primary["journal"].update(
+            prefix_bytes=str(len(journal)), prefix_sha256=hashlib.sha256(journal).hexdigest()
+        )
+        authored = replace(
+            authored,
+            journal=journal,
+            primary=CollectionArtifactProvenanceBindingDocument.model_validate(primary),
+        )
+    limits = replace(
+        LIMITS, pending_bytes=4 * 1024**2, total_bytes=8 * 1024**2, preparation_bytes=2 * 1024**2
+    )
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True, limits=limits) as store:
+        original = store.prepare_or_load(member, request, lambda _limit: authored)
+    receipt = _receipt(original.prepared)
+    samples = {}
+    with _receipt_work(monkeypatch) as cold:
+        store = _open(root, limits=limits)
+        assert store.load_controls(member) == original
+    samples["cold_control_load"] = dict(cold)
+    try:
+        with _receipt_work(monkeypatch) as accept:
+            retained = store.accept_custody(original, receipt)
+            assert retained.custody is not None and retained.decision_accepted is None
+        samples["receipt_admission_and_return"] = dict(accept)
+        with _receipt_work(monkeypatch) as waiting:
+            assert not store.reclaim(member)
+        samples["unacknowledged_reclaim"] = dict(waiting)
+        # The real decision acknowledgement is a separate, byte-consuming phase.
+        store.accept_decision(retained, authored.decision)
+        with _receipt_work(monkeypatch) as reclaim:
+            assert store.reclaim(member)
+            assert store.reclaim(member)
+            assert store.usage.pending_bytes == 0
+        samples["acknowledged_reclaim_and_retry"] = dict(reclaim)
+        for sample in samples.values():
+            assert sample["pending_read_bytes"] == 0
+            assert (
+                sample["hash_bytes"]
+                <= 8 * (sample["read_bytes"] + len(primary_control_bytes(receipt))) + 512
+            )
+            assert sample["fsyncs"] > 0
+        print("prepared_receipt_work", json.dumps({"large_role": large_role, "samples": samples}))
+    finally:
+        store.close()
+
+
+def test_interrupted_preparation_byte_recovery_is_separate_from_receipt_work(tmp_path, monkeypatch):
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True):
+        pass
+    _crash(root, "prepared")
+    with _receipt_work(monkeypatch) as recovery:
+        store = _open(root)
+    try:
+        assert recovery["pending_read_bytes"] > 0
+        with _receipt_work(monkeypatch) as receipt_phase:
+            original = store.load_controls(_member())
+            store.accept_custody(original, _receipt(original.prepared))
+        assert receipt_phase["pending_read_bytes"] == 0
+        print(
+            "prepared_transition_work", json.dumps({"recovery": recovery, "receipt": receipt_phase})
+        )
+    finally:
+        store.close()
+
+
+def test_terminal_receipt_callback_and_reclamation_never_read_redundant_preimages(
+    tmp_path, monkeypatch
+):
+    from riverhog_client._prepared_primary_closing import advance_custody
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        _ready_inventory(store, (_member(),))
+        original = store.load(_member())
+        with store._member(str(_member().artifact_id), create=False) as files:
+            for file in original.prepared.byte_files:
+                (files.root / file.name).unlink()
+    with _receipt_work(monkeypatch) as terminal:
+        with _open(root) as store:
+
+            def settle(member):
+                record = store.load_controls(member)
+                store.accept_custody(record, _receipt(record.prepared))
+
+            assert advance_custody(store, limit=1, settle=settle)
+            assert store.usage.pending_bytes == 0
+            assert store.custody_settled
+            assert advance_custody(store, limit=1, settle=_no_author)
+    assert terminal["pending_read_bytes"] == 0
+    assert terminal["fsyncs"] > 0
+    print("prepared_terminal_receipt_work", json.dumps(terminal))

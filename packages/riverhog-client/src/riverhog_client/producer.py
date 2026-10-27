@@ -798,7 +798,7 @@ class IncrementalCollectionProducer:
     ) -> ProducerArtifactCustody | None:
         """Reconcile one previously verified identity without rereading released bytes."""
         self._require_heartbeat()
-        if self.primary_store.load(_member_identity(identity)) is None:
+        if self.primary_store.load_controls(_member_identity(identity)) is None:
             raise PrimaryStateError("custody retry has no original local prepared primary")
         source = _Source(
             artifact_id=identity.artifact_id,
@@ -842,7 +842,7 @@ class IncrementalCollectionProducer:
                     receipt_value
                 )
                 member = _member_identity(source)
-                record = self.primary_store.load(member)
+                record = self.primary_store.load_controls(member)
                 if record is None:
                     raise PrimaryStateError("custody has no original local prepared primary")
                 self.primary_store.accept_custody(record, receipt)

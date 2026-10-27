@@ -660,3 +660,93 @@ def test_stop_retains_owned_resources_until_the_heartbeat_worker_actually_exits(
     assert not heartbeat.is_alive() and not stopper.is_alive()
     assert stopped.is_set() and released_source.is_set() and not failures
     assert producer._heartbeat_thread is None and not producer._sources
+
+
+def test_resume_custody_rejects_every_changed_receipt_coordinate(primary_store, tmp_path):
+    from riverhog_canonical_json import canonical_json_sha256
+
+    class ChangedReceiptApi(_CustodyApi):
+        change = None
+
+        def _receipt(self, row):
+            value = super()._receipt(row)
+            if value is None or self.change is None:
+                return value
+            if self.change == "collection":
+                value["collection_id"] = "43"
+            elif self.change == "bytes":
+                value["bytes"] = str(int(value["bytes"]) + 1)
+            elif self.change == "sha256":
+                value["sha256"] = "1" * 64
+            elif self.change == "completion":
+                value["completion_requirement_sha256"] = "1" * 64
+            elif self.change == "delivery_association_id":
+                value["primary"][self.change] = "urn:uuid:ffffffff-4321-4321-8321-123456789abc"
+            else:
+                journal = value["primary"]["journal"]
+                if self.change == "journal_id":
+                    journal[self.change] = "urn:uuid:ffffffff-4321-4321-8321-123456789abc"
+                elif self.change == "prefix_bytes":
+                    journal[self.change] = str(int(journal[self.change]) + 1)
+                elif self.change == "prefix_sha256":
+                    journal[self.change] = "1" * 64
+                elif self.change == "sequence":
+                    journal["through"][self.change] = str(int(journal["through"][self.change]) + 1)
+                elif self.change == "entry_id":
+                    journal["through"][self.change] = (
+                        "urn:uuid:ffffffff-4321-4321-8321-123456789abc"
+                    )
+                else:
+                    journal["through"][self.change] = "1" * 64
+            value["receipt_sha256"] = canonical_json_sha256(
+                {key: item for key, item in value.items() if key != "receipt_sha256"}
+            )
+            # Every injected receipt remains a complete internally consistent document.
+            CollectionUploadArtifactCustodyReceiptDocument.model_validate(value)
+            return value
+
+    api = ChangedReceiptApi()
+    source = tmp_path / "source.bin"
+    content = b"original exact receipt"
+    source.write_bytes(content)
+    identity = ProducerArtifactIdentity("a" * 64, len(content), hashlib.sha256(content).hexdigest())
+    producer = _producer(api, primary_store)
+    try:
+        assert producer.append_inputs(
+            (ProducerFile(source, identity.artifact_id, allow_missing_materialization_hint=True),)
+        )
+        member = ArtifactMemberIdentityDocument.model_validate(
+            {
+                "artifact_id": identity.artifact_id,
+                "bytes": str(identity.bytes),
+                "sha256": identity.sha256,
+            }
+        )
+        original = primary_store.load_controls(member)
+        assert original.compact
+        source.unlink()
+        for coordinate in (
+            "collection",
+            "bytes",
+            "sha256",
+            "completion",
+            "delivery_association_id",
+            "journal_id",
+            "entry_id",
+            "sequence",
+            "json_sha256",
+            "prefix_bytes",
+            "prefix_sha256",
+        ):
+            api.change = coordinate
+            with pytest.raises(ValueError):
+                producer.resume_artifact_custody(identity)
+            assert primary_store.load_controls(member) == original
+        api.change = None
+        assert (
+            producer.resume_artifact_custody(identity).receipt.receipt_sha256
+            == original.custody.receipt_sha256
+        )
+        assert len(api.journals) == 1 and not source.exists()
+    finally:
+        producer.stop()

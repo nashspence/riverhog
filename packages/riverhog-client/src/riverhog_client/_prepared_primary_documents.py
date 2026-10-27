@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal, Self
+from typing import Annotated, Any, Literal, Self
 
 from pydantic import (
     BaseModel,
@@ -97,7 +97,7 @@ class PrimaryObservation(PrimaryControl):
     graph: ByteFile
 
 
-class PreparedPrimary(PrimaryControl):
+class _PreparedPrimaryManifest(PrimaryControl):
     kind: Literal["prepared"] = "prepared"
     session_sha256: Sha256
     member: ArtifactMemberIdentityDocument
@@ -124,6 +124,34 @@ class PreparedPrimary(PrimaryControl):
     @property
     def byte_files(self) -> tuple[ByteFile, ...]:
         return self.request, self.observation, self.graph, self.journal, self.decision
+
+
+class PreparedPrimary(_PreparedPrimaryManifest):
+    """Original manifest sealed before its atomic publication; never sealed on read."""
+
+    manifest_sha256: Sha256
+
+    @model_validator(mode="after")
+    def exact_manifest(self) -> Self:
+        import hashlib
+
+        payload = self.model_dump(mode="json", exclude={"manifest_sha256"})
+        if hashlib.sha256(canonical_json_bytes(payload)).hexdigest() != self.manifest_sha256:
+            raise ValueError("prepared-primary original manifest integrity differs")
+        return self
+
+    @classmethod
+    def seal(cls, **value: Any) -> Self:
+        import hashlib
+
+        manifest = _PreparedPrimaryManifest.model_validate(value)
+        payload = manifest.model_dump(mode="json")
+        return cls.model_validate(
+            {
+                **payload,
+                "manifest_sha256": hashlib.sha256(canonical_json_bytes(payload)).hexdigest(),
+            }
+        )
 
 
 class PrimaryDecisionAccepted(PrimaryControl):
@@ -167,6 +195,7 @@ class PrimaryCustody(PrimaryControl):
         """Validate the whole authenticated receipt before retaining its commitment."""
         import hashlib
 
+        prepared = PreparedPrimary.model_validate_json(primary_control_bytes(prepared))
         receipt = CollectionUploadArtifactCustodyReceiptDocument.model_validate_json(
             primary_control_bytes(receipt)
         )

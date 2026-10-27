@@ -382,3 +382,174 @@ def test_shared_producer_restarts_exact_preparation_and_drains_finalized_custody
         producer.stop()
         store.close()
         api.close()
+
+
+def test_authenticated_custody_survives_lost_decision_ack_and_damaged_local_journals(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from riverhog_client import (
+        IncrementalCollectionProducer,
+        PrimaryStateError,
+        ProducerArtifactIdentity,
+        ProducerFile,
+    )
+    from riverhog_client._prepared_primary_posix import PrimaryFiles
+    from riverhog_protocol.errors import Unauthorized
+
+    monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
+    api, _archive = _bounded_service_api(tmp_path)
+    root = tmp_path.resolve() / "primary"
+    limits = PrimaryStoreLimits(
+        pending_bytes=16 * 1024**2,
+        total_bytes=32 * 1024**2,
+        preparation_bytes=8 * 1024**2,
+        control_bytes=64 * 1024,
+    )
+    scope = PrimaryScope(service="fixture-service", account="fixture-account")
+    identities = []
+    sources = []
+    for number in range(3):
+        content = f"receipt member {number}".encode()
+        source = tmp_path / f"source-{number}"
+        source.write_bytes(content)
+        identities.append(
+            ProducerArtifactIdentity(
+                f"{number + 1:064x}", len(content), hashlib.sha256(content).hexdigest()
+            )
+        )
+        sources.append(source)
+
+    def construct(store):
+        return IncrementalCollectionProducer(
+            api,
+            primary_store=store,
+            member_inventory=lambda: tuple(identities),
+            producer_app="fixture",
+            adapter_id="fixture/v1",
+            adapter_version="1",
+            ingest_source="fixture",
+            source_event_id="receipt-without-decision-ack",
+        )
+
+    store = PrimaryStore(
+        root, allocation_id="fixture-allocation", scope=scope, limits=limits, initialize=True
+    )
+    producer = construct(store)
+    collection_id = producer.collection_id
+    originals = []
+    try:
+        accept = api.set_collection_upload_session_materialization_decisions
+
+        def lost_ack(*args, **kwargs):
+            accept(*args, **kwargs)
+            raise RuntimeError("lost exact decision acknowledgement")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(api, "set_collection_upload_session_materialization_decisions", lost_ack)
+            for source, identity in zip(sources, identities, strict=True):
+                with pytest.raises(RuntimeError, match="decision acknowledgement"):
+                    producer.append_inputs(
+                        (
+                            ProducerFile(
+                                source,
+                                identity.artifact_id,
+                                allow_missing_materialization_hint=True,
+                            ),
+                        )
+                    )
+        for identity in identities:
+            member = ArtifactMemberIdentityDocument.model_validate(
+                {
+                    "artifact_id": identity.artifact_id,
+                    "bytes": str(identity.bytes),
+                    "sha256": identity.sha256,
+                }
+            )
+            record = store.load(member)
+            assert record.decision_accepted is None and record.custody is None
+            originals.append(record)
+        with session_scope(api.service._session_factory) as session_db:
+            assert set(
+                session_db.scalars(
+                    select(CollectionUploadProvenanceJournalRecord.journal_id).where(
+                        CollectionUploadProvenanceJournalRecord.collection_id == collection_id
+                    )
+                )
+            ) == {record.prepared.primary.journal.journal_id for record in originals}
+        for original in originals:
+            assert (
+                api.get_collection_upload_session_artifact_provenance_binding(
+                    collection_id, original.prepared.member.artifact_id
+                )
+                == original.prepared.primary
+            )
+        # The service accepted all exact decisions despite the deliberately lost responses.
+        api.complete_collection_upload_session(collection_id)
+        producer._upload_available(reconcile=False)
+        for _ in range(100):
+            if api.get_collection_upload_session(collection_id)["state"] == "finalized":
+                break
+        else:
+            pytest.fail("the three-member remote finalization did not settle")
+        pending = store.usage.pending_bytes
+        for number, record in enumerate(originals):
+            with store._member(str(record.prepared.member.artifact_id), create=False) as files:
+                path = files.root / "journal"
+                raw = path.read_bytes()
+                if number == 0:
+                    path.unlink()
+                else:
+                    path.write_bytes(raw[:1] if number == 1 else b"x" * len(raw))
+    finally:
+        producer.stop()
+        store.close()
+
+    store = PrimaryStore(
+        root, allocation_id="fixture-allocation", scope=scope, limits=limits, initialize=False
+    )
+    producer = construct(store)
+    try:
+        from riverhog_api.deps import get_container
+
+        application_container = api._app.dependency_overrides[get_container]()
+        with monkeypatch.context() as patch:
+            patch.setattr(application_container.app_keys, "authenticate", lambda _token: None)
+            with pytest.raises(Unauthorized):
+                producer.resume_artifact_custody(identities[0])
+        assert store.load_controls(originals[0].prepared.member).custody is None
+
+        def no_byte_validation(*_args, **_kwargs):
+            pytest.fail("receipt reconciliation attempted pending-byte validation")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(PrimaryFiles, "verified", no_byte_validation)
+            for source, identity, original in zip(sources, identities, originals, strict=True):
+                custody = producer.resume_artifact_custody(identity)
+                assert custody is not None
+                assert custody.receipt.primary == original.prepared.primary
+                assert source.exists()
+                retained = store.load_controls(original.prepared.member)
+                assert retained.custody.receipt_sha256 == custody.receipt.receipt_sha256
+                assert retained.decision_accepted is None
+                assert not store.reclaim(original.prepared.member)
+                source.unlink()  # The application releases payload only after durable custody.
+        assert store.usage.pending_bytes == pending
+        assert not (root / "custody-settled").exists()
+        for original in originals:
+            with pytest.raises(PrimaryStateError):
+                PrimaryPublisher(api, store).replay(store.load_controls(original.prepared.member))
+            published = api.get_collection_upload_session_artifact(
+                collection_id, original.prepared.member.artifact_id
+            )
+            exact_receipt = CollectionUploadArtifactCustodyReceiptDocument.model_validate(
+                published["custody_receipt"]
+            )
+            assert exact_receipt.primary == original.prepared.primary
+            assert (
+                exact_receipt.receipt_sha256
+                == store.load_controls(original.prepared.member).custody.receipt_sha256
+            )
+    finally:
+        producer.stop()
+        store.close()
+        api.close()

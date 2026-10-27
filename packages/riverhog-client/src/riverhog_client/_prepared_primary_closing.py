@@ -416,7 +416,7 @@ def advance_custody(
                         raise PrimaryStateError("custody inventory member order changed")
                     if count >= cursor.members:
                         raise PrimaryStateError("custody inventory exceeds its exact member count")
-                    record = store.load(entry.member)
+                    record = store.load_controls(entry.member)
                     if record is None or _identity(record.prepared) != entry.prepared_sha256:
                         raise PrimaryStateError("custody member lost its original preparation")
                     if record.decision_accepted is None:
@@ -425,7 +425,7 @@ def advance_custody(
                         )
                     if record.custody is None:
                         settle(entry.member)
-                        record = store.load(entry.member)
+                        record = store.load_controls(entry.member)
                         if (
                             record is None
                             or record.decision_accepted is None

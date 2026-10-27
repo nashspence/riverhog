@@ -343,7 +343,7 @@ class PrimaryStore:
                 with child(shard, key) as files:
                     yield files
 
-    def _record(
+    def _control_record(
         self,
         files: PrimaryFiles,
         member: ArtifactMemberIdentityDocument,
@@ -364,7 +364,12 @@ class PrimaryStore:
             ):
                 raise PrimaryStateError("prepared-primary uncommitted bytes have no transition")
             return None
-        if prepared.member != member or prepared.session_sha256 != _identity(self.session):
+        session = self.session
+        if (
+            prepared.member != member
+            or prepared.session_sha256 != _identity(session)
+            or prepared.completion_requirement_sha256 != session.completion_requirement_sha256
+        ):
             raise PrimaryStateError("prepared-primary member or accepted session changed")
         if tuple(file.name for file in prepared.byte_files) != _BYTE_NAMES:
             raise PrimaryStateError("prepared-primary byte inventory is not the current format")
@@ -383,18 +388,29 @@ class PrimaryStore:
             reclaimed.prepared_sha256 != identity or accepted is None or custody is None
         ):
             raise PrimaryStateError("prepared-primary reclaim has no original compact authority")
-        result = PrimaryRecord(prepared, accepted, custody)
-        if not result.compact:
+        files.sync()
+        return PrimaryRecord(prepared, accepted, custody)
+
+    def _record(
+        self,
+        files: PrimaryFiles,
+        member: ArtifactMemberIdentityDocument,
+        *,
+        uncommitted: bool = False,
+    ) -> PrimaryRecord | None:
+        result = self._control_record(files, member, uncommitted=uncommitted)
+        if result is not None and not result.compact:
             try:
-                for file in prepared.byte_files:
+                for file in result.prepared.byte_files:
                     with files.verified(file.byte_file()):
                         pass
             except FileNotFoundError as exc:
                 raise PrimaryStateError("prepared-primary committed bytes are missing") from exc
-        files.sync()
         return result
 
-    def load(self, member: ArtifactMemberIdentityDocument) -> PrimaryRecord | None:
+    def _load(
+        self, member: ArtifactMemberIdentityDocument, *, verify_preimages: bool
+    ) -> PrimaryRecord | None:
         with self._mutex:
             self._recover()
             with ExitStack() as opened:
@@ -404,7 +420,17 @@ class PrimaryStore:
                     )
                 except FileNotFoundError:
                     return None
-                return self._record(files, member)
+                if verify_preimages:
+                    return self._record(files, member)
+                return self._control_record(files, member)
+
+    def load(self, member: ArtifactMemberIdentityDocument) -> PrimaryRecord | None:
+        """Validate original pending bytes before preparation or byte-dependent replay."""
+        return self._load(member, verify_preimages=True)
+
+    def load_controls(self, member: ArtifactMemberIdentityDocument) -> PrimaryRecord | None:
+        """Receipt/reclaim authority only; byte-dependent replay must use strict load."""
+        return self._load(member, verify_preimages=False)
 
     def prepare_or_load(
         self,
@@ -473,8 +499,8 @@ class PrimaryStore:
             refs = tuple(
                 _reference(name, raw) for name, raw in zip(_BYTE_NAMES, contents, strict=True)
             )
-            prepared = PreparedPrimary.model_validate(
-                {
+            prepared = PreparedPrimary.seal(
+                **{
                     "session_sha256": _identity(self.session),
                     "member": member.model_dump(mode="json"),
                     **{
@@ -485,6 +511,8 @@ class PrimaryStore:
                     "completion_requirement_sha256": authored.completion_requirement_sha256,
                 }
             )
+            if prepared.completion_requirement_sha256 != self.session.completion_requirement_sha256:
+                raise PrimaryStateError("prepared-primary completion differs from accepted session")
             with self._member(str(member.artifact_id), create=True) as files:
                 for ref, content in zip(refs, contents, strict=True):
                     files.put(
@@ -650,18 +678,18 @@ class PrimaryStore:
                 self.session.collection_id, record.prepared, receipt
             )
             with self._member(str(record.prepared.member.artifact_id), create=False) as files:
-                current = self._record(files, record.prepared.member)
+                current = self._control_record(files, record.prepared.member)
                 if current is None or current.prepared != record.prepared:
                     raise PrimaryStateError("prepared-primary custody has no matching manifest")
                 self._install(files, "custody", custody)
-            result = self.load(record.prepared.member)
+            result = self.load_controls(record.prepared.member)
             assert result is not None
             return result
 
     def reclaim(self, member: ArtifactMemberIdentityDocument) -> bool:
         with self._mutex:
             self._recover()
-            record = self.load(member)
+            record = self.load_controls(member)
             if record is None or not record.compact:
                 return False
             # The control is retained after deletion to make subtraction idempotent.
