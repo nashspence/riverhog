@@ -5,9 +5,10 @@ from __future__ import annotations
 import hashlib
 import uuid
 from collections.abc import Iterable, Mapping
+from pathlib import Path
 from typing import Any
 
-from riverhog_client import PrimaryScope, PrimaryStatePolicy, PrimaryStore
+from riverhog_client import PrimaryScope, PrimaryStateError, PrimaryStatePolicy, PrimaryStore
 from riverhog_client._prepared_primary_closing import (
     advance_closing,
     advance_custody,
@@ -133,3 +134,25 @@ def settle_stub_publication(
     freeze_inventory(store, sorted(members, key=lambda member: str(member.artifact_id)))
     assert advance_closing(store, limit=max(1, len(members)), settle=no_replay)
     assert advance_custody(store, limit=max(1, len(members)), settle=no_replay)
+
+
+class SqlitePrimaryTestGuard:
+    """SQL-only fixture; native ownership and NTFS are qualified separately."""
+
+    vfs = "unix"
+
+    def __init__(self, path: Path):
+        self.path = path
+        self.closed = False
+
+    def check_current(self):
+        if self.closed:
+            raise PrimaryStateError("fixture owner closed")
+
+    def check_journal(self, *, required, recovering=False):
+        self.check_current()
+        if required:
+            assert Path(str(self.path) + "-journal").is_file()
+
+    def close(self):
+        self.closed = True

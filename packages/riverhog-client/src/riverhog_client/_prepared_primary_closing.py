@@ -206,9 +206,7 @@ def freeze_inventory(
 
         store._authoring = True
         try:
-            retained = store._files.put(
-                "inventory", chunks(), byte_limit=grant, temporary_name="candidate-inventory"
-            )
+            retained = store._files.put_bytes("inventory", chunks(), byte_limit=grant)
         finally:
             store._authoring = False
         inventory = PrimaryInventory.model_validate(

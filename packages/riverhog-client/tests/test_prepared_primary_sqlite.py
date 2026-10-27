@@ -10,29 +10,9 @@ from riverhog_client import PrimaryStateBusy, PrimaryStateError
 from riverhog_client import _prepared_primary_sqlite as owner
 from riverhog_client._prepared_primary_types import PrimaryByteFile
 
+from tests.support.prepared_primary import SqlitePrimaryTestGuard as _SQLGuard
+
 pytestmark = pytest.mark.skipif(os.name == "nt", reason="SQL core isolation uses the Unix VFS")
-
-
-class _SQLGuard:
-    """SQL-only fixture; native ownership and NTFS are qualified separately."""
-
-    vfs = "unix"
-
-    def __init__(self, path: Path):
-        self.path = path
-        self.closed = False
-
-    def check_current(self):
-        if self.closed:
-            raise PrimaryStateError("fixture owner closed")
-
-    def check_journal(self, *, required, recovering=False):
-        self.check_current()
-        if required:
-            assert Path(str(self.path) + "-journal").is_file()
-
-    def close(self):
-        self.closed = True
 
 
 LIMITS = owner.SqlitePrimaryLimits(16 * 1024**2, 32 * 1024**2, 128 * 1024)
@@ -57,7 +37,7 @@ def test_chunk_publication_never_holds_a_transaction_while_asking_for_input(tmp_
                 yield part
 
         expected = b"".join(parts)
-        result = files.put("journal", chunks(), byte_limit=len(expected))
+        result = files.put_bytes("journal", chunks(), byte_limit=len(expected))
         with files.verified(result) as stream:
             assert stream.read() == expected
             stream.seek(4094)
@@ -70,9 +50,9 @@ def test_chunk_publication_never_holds_a_transaction_while_asking_for_input(tmp_
 def test_original_winner_is_immutable_and_survives_cold_reopen(tmp_path, content):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
-        result = files.put("journal", [content], byte_limit=len(content))
+        result = files.put_bytes("journal", [content], byte_limit=len(content))
         with pytest.raises(FileExistsError):
-            files.put("journal", [b"replacement"], byte_limit=100)
+            files.put_bytes("journal", [b"replacement"], byte_limit=100)
     with _open(path, initialize=False) as files:
         with files.verified(result) as stream:
             assert stream.read() == content
@@ -83,7 +63,7 @@ def test_namespaces_are_indexed_and_root_close_invalidates_children_and_readers(
     child = files.child("member", initialize=True)
     other = files.child("other", initialize=True)
     try:
-        result = child.put("journal", [b"original"], byte_limit=8)
+        result = child.put_bytes("journal", [b"original"], byte_limit=8)
         assert not other.exists("journal")
         with pytest.raises(PrimaryStateError, match="closed"):
             with child.verified(result) as stream:
@@ -100,7 +80,7 @@ def test_namespaces_are_indexed_and_root_close_invalidates_children_and_readers(
 def test_replay_validates_every_selected_chunk_before_exposing_a_reader(tmp_path, mutation):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
-        result = files.put("journal", [b"x" * 10000], byte_limit=10000)
+        result = files.put_bytes("journal", [b"x" * 10000], byte_limit=10000)
     with sqlite3.connect(path) as db:
         if mutation == "bytes":
             db.execute("UPDATE primary_chunks SET body=? WHERE ordinal=1", (b"y" * 4096,))
@@ -118,21 +98,21 @@ def test_wrong_commitment_cannot_create_a_selected_name_and_cleanup_is_bounded(t
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
         with pytest.raises(PrimaryStateError, match="expected identity"):
-            files.put("journal", [b"x" * 10000], byte_limit=10000, expected=(10000, "0" * 64))
+            files.put_bytes("journal", [b"x" * 10000], byte_limit=10000, expected=(10000, "0" * 64))
         with pytest.raises(PrimaryStateError, match="uncertain"):
             files.exists("journal")
     with _open(path, initialize=False) as files:
         assert not files.exists("journal")
         assert files._one("SELECT count(*) FROM primary_chunks") == (3,)
         with pytest.raises(PrimaryStateBusy, match="cleanup"):
-            files.put("other", [b"y"], byte_limit=1)
+            files.put_bytes("other", [b"y"], byte_limit=1)
         assert files.recover_step() is False
         assert files._one("SELECT count(*) FROM primary_chunks") == (2,)
         assert files.recover_step() is False
         assert files.recover_step() is False
         assert files.recover_step() is True
         assert files.recover_step() is True
-        files.put("journal", [b"new"], byte_limit=3)
+        files.put_bytes("journal", [b"new"], byte_limit=3)
 
 
 class _CommitFailure:
@@ -174,7 +154,7 @@ def test_uncertain_selection_requires_reopen_and_keeps_the_committed_winner(
             files, "_select", lambda generation, file: uncertain(files, generation, file)
         )
         with pytest.raises(PrimaryStateError, match="mutation failed"):
-            files.put("journal", [b"retained"], byte_limit=8)
+            files.put_bytes("journal", [b"retained"], byte_limit=8)
         with pytest.raises(PrimaryStateError, match="uncertain"):
             files.exists("journal")
     with _open(path, initialize=False) as files:
@@ -192,7 +172,7 @@ def test_uncertain_selection_requires_reopen_and_keeps_the_committed_winner(
 def test_cold_open_rejects_unknown_state_without_reinitializing_it(tmp_path, change):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
-        files.put("journal", [b"keep"], byte_limit=4)
+        files.put_bytes("journal", [b"keep"], byte_limit=4)
     with sqlite3.connect(path) as db:
         if change == "revision":
             db.execute("UPDATE primary_schema_revision SET version_num='unknown'")
@@ -211,7 +191,7 @@ def test_cold_open_rejects_unknown_state_without_reinitializing_it(tmp_path, cha
 def test_cold_open_has_no_whole_database_integrity_or_payload_scan(tmp_path, monkeypatch):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
-        files.put("journal", [b"x" * 50000], byte_limit=50000)
+        files.put_bytes("journal", [b"x" * 50000], byte_limit=50000)
     original = owner.sqlite3.connect
     observed = []
 
@@ -236,7 +216,7 @@ def test_cold_open_has_no_whole_database_integrity_or_payload_scan(tmp_path, mon
 def test_receipt_controls_read_and_compare_original_bytes_without_pending_chunk_reads(tmp_path):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
-        files.put("journal", [b"pending" * 2000], byte_limit=14000)
+        files.put_bytes("journal", [b"pending" * 2000], byte_limit=14000)
 
         def authorize(action, table, column, *_rest):
             if action == sqlite3.SQLITE_READ and table == "primary_chunks":
@@ -273,8 +253,8 @@ def test_control_admission_and_role_conflicts_never_replace_original_bytes(tmp_p
         with pytest.raises(owner.PrimaryStateCapacity):
             files.read_control("prepared", byte_limit=7)
         with pytest.raises(FileExistsError):
-            files.put("prepared", [b"replacement"], byte_limit=11)
-        files.put("journal", [b"pending"], byte_limit=7)
+            files.put_bytes("prepared", [b"replacement"], byte_limit=11)
+        files.put_bytes("journal", [b"pending"], byte_limit=7)
         with pytest.raises(PrimaryStateError, match="byte role"):
             files.put_control("journal", b"replacement", byte_limit=11)
         with pytest.raises(PrimaryStateError, match="comparison"):
@@ -295,7 +275,7 @@ def test_existing_namespace_is_an_openable_immutable_winner(tmp_path):
 def test_selected_generation_reclaim_is_pinned_bounded_and_cold_resumable(tmp_path):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
-        journal = files.put("journal", [b"x" * 10000], byte_limit=10000)
+        journal = files.put_bytes("journal", [b"x" * 10000], byte_limit=10000)
         files.put_control("prepared", b"retained-original-authority", byte_limit=100)
         with files.verified(journal) as stream:
             with pytest.raises(PrimaryStateBusy, match="pins"):
@@ -326,7 +306,7 @@ def test_selected_generation_reclaim_is_pinned_bounded_and_cold_resumable(tmp_pa
 def test_uncertain_chunk_delete_recovers_the_exact_cleanup_cursor(tmp_path, committed):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
-        files.put("journal", [b"x" * 10000], byte_limit=10000)
+        files.put_bytes("journal", [b"x" * 10000], byte_limit=10000)
         assert files.remove_step("journal") is False
         files._connection = _CommitFailure(files._connection, committed=committed)
         with pytest.raises(PrimaryStateError, match="mutation failed"):
@@ -359,7 +339,7 @@ def test_extent_reader_opens_without_payload_reads_and_retains_exact_framing(tmp
     lines = [b"x\n", b"a" * 4093 + b"\n", b"b" * 4097 + b"\n", b"tail"]
     body = b"".join(lines)
     with _open(tmp_path / "state.sqlite3", initialize=True) as files:
-        files.put("inventory", [body], byte_limit=len(body))
+        files.put_bytes("inventory", [body], byte_limit=len(body))
 
         def no_payload(action, table, _column, *_rest):
             if action == sqlite3.SQLITE_READ and table == "primary_chunks":
@@ -391,7 +371,7 @@ def test_framed_extent_queries_grow_with_rows_and_chunk_boundaries(tmp_path, mem
     lines = [f"member-{number:08d} original binding\n".encode() for number in range(members)]
     body = b"".join(lines)
     with _open(tmp_path / "state.sqlite3", initialize=True) as files:
-        files.put("inventory", [body], byte_limit=len(body))
+        files.put_bytes("inventory", [body], byte_limit=len(body))
         statements = []
         files._connection.set_trace_callback(statements.append)
         with files.extent_reader("inventory", byte_count=len(body)) as stream:
@@ -409,7 +389,7 @@ def test_extent_readers_release_generation_pins_and_obey_owner_lifetime(tmp_path
     with _open(tmp_path / "state.sqlite3", initialize=True) as files:
         child = files.child("member", initialize=True)
         body = b"first\nsecond\n"
-        child.put("inventory", [body], byte_limit=len(body))
+        child.put_bytes("inventory", [body], byte_limit=len(body))
         with pytest.raises(PrimaryStateError, match="closed"):
             with child.extent_reader("inventory", byte_count=len(body)) as stream:
                 assert stream.readline(6) == b"first\n"
@@ -422,7 +402,7 @@ def test_extent_readers_release_generation_pins_and_obey_owner_lifetime(tmp_path
 
 def test_extent_reader_checks_selection_length_and_every_accessed_chunk(tmp_path):
     with _open(tmp_path / "state.sqlite3", initialize=True) as files:
-        files.put("inventory", [b"x" * 5000], byte_limit=5000)
+        files.put_bytes("inventory", [b"x" * 5000], byte_limit=5000)
         with pytest.raises(PrimaryStateError, match="extent"):
             with files.extent_reader("inventory", byte_count=5001):
                 pytest.fail("wrong extent exposed a reader")
@@ -445,7 +425,7 @@ def test_pending_cleanup_allows_only_existing_namespace_and_other_absent_role_re
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
         with files.child("member", initialize=True) as member:
-            member.put("journal", [b"x" * 8193], byte_limit=8193)
+            member.put_bytes("journal", [b"x" * 8193], byte_limit=8193)
             assert not member.remove_step("journal")
     with _open(path, initialize=False) as files:
         with pytest.raises(FileExistsError):
@@ -457,7 +437,7 @@ def test_pending_cleanup_allows_only_existing_namespace_and_other_absent_role_re
             with pytest.raises(PrimaryStateBusy):
                 files.child("new-member", initialize=True)
             with pytest.raises(PrimaryStateBusy):
-                member.put("request", [b"new"], byte_limit=3)
+                member.put_bytes("request", [b"new"], byte_limit=3)
             assert member.remove_step("journal") is False
             assert files._one("SELECT count(*) FROM primary_chunks") == (2,)
             while not member.remove_step("journal"):
@@ -474,7 +454,7 @@ def test_unselected_candidate_cannot_be_reported_as_completed_role_cleanup(tmp_p
 
     with _open(path, initialize=True) as files:
         with pytest.raises(RuntimeError, match="input interrupted"):
-            files.put("journal", interrupted(), byte_limit=8192)
+            files.put_bytes("journal", interrupted(), byte_limit=8192)
     with _open(path, initialize=False) as files:
         with pytest.raises(PrimaryStateBusy):
             files.remove_step("journal")
@@ -482,3 +462,48 @@ def test_unselected_candidate_cannot_be_reported_as_completed_role_cleanup(tmp_p
         assert files.recover_step() is False
         assert files.recover_step() is True
         assert files.remove_step("journal")
+
+
+def test_candidate_disposition_is_named_bounded_and_does_not_drive_selected_reclaim(tmp_path):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        selected = files.put_bytes("journal", [b"j" * 9000], byte_limit=9000)
+        assert not files.remove_step("journal")
+        before = files._connection.total_changes
+        assert files.discard_candidates(("journal",))
+        assert files._connection.total_changes == before
+        assert files._one("SELECT count(*) FROM primary_chunks") == (3,)
+        while not files.remove_step("journal"):
+            pass
+        assert not files.exists(selected.name)
+
+
+def test_unselected_candidate_disposition_preserves_other_namespace_and_winner(tmp_path):
+    path = tmp_path / "state.sqlite3"
+
+    def interrupted():
+        yield b"x" * 9000
+        raise RuntimeError("candidate input interrupted")
+
+    with _open(path, initialize=True) as files:
+        with files.child("other", initialize=True):
+            pass
+        winner = files.put_bytes("winner", [b"original"], byte_limit=8)
+        with pytest.raises(RuntimeError, match="candidate input"):
+            files.put_bytes("journal", interrupted(), byte_limit=10000)
+    with _open(path, initialize=False) as files:
+        with files.child("other", initialize=False) as other:
+            before = files._connection.total_changes
+            assert other.discard_candidates(("journal",))
+            assert files._connection.total_changes == before
+        with pytest.raises(PrimaryStateError, match="logical owner"):
+            files.discard_candidates(("different",))
+        for remaining in (1, 0):
+            assert not files.discard_candidates(("journal",))
+            assert files._one(
+                "SELECT count(*) FROM primary_chunks WHERE generation IN "
+                "(SELECT generation FROM primary_operation)"
+            ) == (remaining,)
+        assert files.discard_candidates(("journal",))
+        with files.verified(winner) as stream:
+            assert stream.read() == b"original"

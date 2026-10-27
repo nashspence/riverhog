@@ -35,7 +35,8 @@ from riverhog_client._prepared_primary_documents import (
     PrimaryUsage,
     primary_control_bytes,
 )
-from riverhog_client._prepared_primary_posix import PrimaryFiles
+from riverhog_client._prepared_primary_posix import PrimaryFiles as PosixPrimaryFiles
+from riverhog_client._prepared_primary_storage import PrimaryStorage
 from riverhog_client._prepared_primary_types import (
     PrimaryStateBusy,
     PrimaryStateCapacity,
@@ -153,7 +154,8 @@ class PrimaryStore:
         self._mutex = threading.RLock()
         self._authoring = False
         self._closing_advancing = False
-        self._files = PrimaryFiles(root, initialize=initialize)
+        self._root_candidates_pending = True
+        self._files: PrimaryStorage = PosixPrimaryFiles(root, initialize=initialize)
         try:
             expected = PrimaryAllocation.model_validate(
                 {
@@ -170,9 +172,6 @@ class PrimaryStore:
                 raise PrimaryStateError(
                     "prepared-primary allocation, scope or control admission changed"
                 )
-            # Only named candidates from the one interrupted root operation are removable.
-            for name in _ROOT_NAMES:
-                self._files.remove("candidate-" + name)
             self._usage = self._read(self._files, "usage", PrimaryUsage)
             self._files.sync()
             self._recover(require_complete=False)
@@ -223,14 +222,14 @@ class PrimaryStore:
             self._recover(require_complete=False)
             return self._usage
 
-    def _read(self, files: PrimaryFiles, name: str, model: type[_Control]) -> _Control:
+    def _read(self, files: PrimaryStorage, name: str, model: type[_Control]) -> _Control:
         raw = files.read_control(name, byte_limit=self.limits.control_bytes)
         value = model.model_validate_json(raw)
         if primary_control_bytes(value) != raw:
             raise PrimaryStateError("prepared-primary control is not its exact current encoding")
         return value
 
-    def _optional(self, files: PrimaryFiles, name: str, model: type[_Control]) -> _Control | None:
+    def _optional(self, files: PrimaryStorage, name: str, model: type[_Control]) -> _Control | None:
         try:
             return self._read(files, name, model)
         except FileNotFoundError:
@@ -238,7 +237,7 @@ class PrimaryStore:
 
     def _write(
         self,
-        files: PrimaryFiles,
+        files: PrimaryStorage,
         name: str,
         document: BaseModel,
         *,
@@ -262,7 +261,7 @@ class PrimaryStore:
             expected=None if expected is None else primary_control_bytes(expected),
         )
 
-    def _install(self, files: PrimaryFiles, name: str, document: BaseModel) -> None:
+    def _install(self, files: PrimaryStorage, name: str, document: BaseModel) -> None:
         """Adopt only an identical visible winner, after a new directory barrier."""
         try:
             self._write(files, name, document)
@@ -294,11 +293,10 @@ class PrimaryStore:
                 )
             reference = _reference("create-request", create_request)
             try:
-                self._files.put(
+                self._files.put_bytes(
                     reference.name,
                     (create_request,),
                     byte_limit=self.limits.control_bytes,
-                    temporary_name="candidate-create-request",
                 )
             except FileExistsError:
                 with self._files.verified(reference.byte_file()):
@@ -334,10 +332,10 @@ class PrimaryStore:
             return session
 
     @contextmanager
-    def _member(self, artifact_id: str, *, create: bool) -> Iterator[PrimaryFiles]:
+    def _member(self, artifact_id: str, *, create: bool) -> Iterator[PrimaryStorage]:
         key = hashlib.sha256(artifact_id.encode("utf-8")).hexdigest()
 
-        def child(parent: PrimaryFiles, name: str) -> PrimaryFiles:
+        def child(parent: PrimaryStorage, name: str) -> PrimaryStorage:
             if not create:
                 return parent.child(name, initialize=False)
             try:
@@ -359,13 +357,13 @@ class PrimaryStore:
 
     def _control_record(
         self,
-        files: PrimaryFiles,
+        files: PrimaryStorage,
         member: ArtifactMemberIdentityDocument,
         *,
         uncommitted: bool = False,
     ) -> PrimaryRecord | None:
-        for name in ("decision-accepted", "custody", "reclaimed"):
-            files.remove("candidate-" + name)
+        if not files.discard_candidates(("decision-accepted", "custody", "reclaimed")):
+            raise PrimaryStateBusy("prepared-primary controls require bounded candidate cleanup")
         prepared = self._optional(files, "prepared", PreparedPrimary)
         custody = self._optional(files, "custody", PrimaryCustody)
         accepted = self._optional(files, "decision-accepted", PrimaryDecisionAccepted)
@@ -407,7 +405,7 @@ class PrimaryStore:
 
     def _record(
         self,
-        files: PrimaryFiles,
+        files: PrimaryStorage,
         member: ArtifactMemberIdentityDocument,
         *,
         uncommitted: bool = False,
@@ -530,12 +528,11 @@ class PrimaryStore:
                 raise PrimaryStateError("prepared-primary completion differs from accepted session")
             with self._member(str(member.artifact_id), create=True) as files:
                 for ref, content in zip(refs, contents, strict=True):
-                    files.put(
+                    files.put_bytes(
                         ref.name,
                         (content,),
                         byte_limit=grant,
                         expected=(ref.bytes, ref.sha256),
-                        temporary_name="candidate-" + ref.name,
                     )
                 self._write(files, "prepared", prepared)
             self._finish_transition(after, transition)
@@ -563,7 +560,7 @@ class PrimaryStore:
         self._usage = after
         self._files.remove_control("transition", expected=primary_control_bytes(transition))
 
-    def _remove_roles(self, files: PrimaryFiles) -> bool:
+    def _remove_roles(self, files: PrimaryStorage) -> bool:
         for name in _BYTE_NAMES:
             if not files.remove_step(name):
                 return False
@@ -580,6 +577,10 @@ class PrimaryStore:
         if self._authoring:
             raise PrimaryStateBusy("prepared-primary author cannot reenter its active transition")
         self._files.check_current()
+        if self._root_candidates_pending:
+            if not self._files.discard_candidates(_ROOT_NAMES):
+                return self._cleanup_pending(require_complete=require_complete)
+            self._root_candidates_pending = False
         transition = self._optional(self._files, "transition", PrimaryTransition)
         if transition is None:
             from riverhog_client._prepared_primary_closing import recover_closing
@@ -592,9 +593,8 @@ class PrimaryStore:
                 "prepared-primary transition counter differs from retained state"
             )
         with self._member(str(transition.member.artifact_id), create=True) as files:
-            # These are the only possible unlinked publication candidates.
-            for name in _MEMBER_NAMES:
-                files.remove("candidate-" + name)
+            if not files.discard_candidates(_MEMBER_NAMES):
+                return self._cleanup_pending(require_complete=require_complete)
             record = self._record(
                 files, transition.member, uncommitted=transition.operation == "prepare"
             )

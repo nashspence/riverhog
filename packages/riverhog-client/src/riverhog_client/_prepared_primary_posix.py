@@ -181,6 +181,32 @@ class PrimaryFiles:
             os.close(descriptor)
             raise
 
+    def put_bytes(
+        self,
+        name: str,
+        chunks: Iterable[bytes],
+        *,
+        byte_limit: int,
+        expected: tuple[int, str] | None = None,
+    ) -> PrimaryByteFile:
+        """Publish a logical role through its exact recoverable POSIX candidate."""
+        return self.put(
+            name,
+            chunks,
+            byte_limit=byte_limit,
+            expected=expected,
+            temporary_name="candidate-" + name,
+        )
+
+    def discard_candidates(self, names: tuple[str, ...]) -> bool:
+        """Only exact named candidates under this construction lease are removable."""
+        self.check_current()
+        for name in names:
+            primary_file_name(name)
+        for name in names:
+            self.remove("candidate-" + name)
+        return True
+
     def put(
         self,
         name: str,

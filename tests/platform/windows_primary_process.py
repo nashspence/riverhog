@@ -382,7 +382,7 @@ def _crash(path: Path, when: str) -> None:
             os._exit(72)
 
         files._select = boundary
-        files.put("journal", (CONTENT[:5000], CONTENT[5000:]), byte_limit=len(CONTENT))
+        files.put_bytes("journal", (CONTENT[:5000], CONTENT[5000:]), byte_limit=len(CONTENT))
     raise AssertionError("process-death boundary was not reached")
 
 
@@ -426,7 +426,7 @@ def witness(root: Path) -> dict:
             allocation=ALLOCATION + b"independent",
         ):
             pass
-        result = files.put("journal", (CONTENT[:1], CONTENT[1:]), byte_limit=len(CONTENT))
+        result = files.put_bytes("journal", (CONTENT[:1], CONTENT[1:]), byte_limit=len(CONTENT))
         assert result == file
         with files.extent_reader("journal", byte_count=len(CONTENT)) as stream:
             assert not files._connection.in_transaction
@@ -462,7 +462,7 @@ def witness(root: Path) -> dict:
             stream.seek(4090)
             assert stream.read(20) == CONTENT[4090:4110]
         try:
-            files.put("journal", [b"replacement"], byte_limit=100)
+            files.put_bytes("journal", [b"replacement"], byte_limit=100)
         except FileExistsError:
             pass
         else:
@@ -473,7 +473,7 @@ def witness(root: Path) -> dict:
         assert result.returncode == 42, result.returncode
         with files.child("existing", initialize=True):
             pass
-        files.put("retiring", [b"r" * 9000], byte_limit=9000)
+        files.put_bytes("retiring", [b"r" * 9000], byte_limit=9000)
         assert not files.remove_step("retiring")
         cases.extend(
             [
@@ -532,9 +532,10 @@ def witness(root: Path) -> dict:
                 assert files.recover_step()
             else:
                 count = 0
-                while not files.recover_step():
+                while not files.discard_candidates(("journal",)):
                     count += 1
                 assert count == (len(CONTENT) + 4095) // 4096
+                cases.append("adapter-owned-candidate-continuation")
         cases.append("fresh-process-death-" + when + "-selection")
     linked = parent / "linked.sqlite3"
     os.link(path, linked)

@@ -312,7 +312,22 @@ class TransactionalPrimaryFiles:
                 "prepared-primary interrupted candidate requires bounded cleanup"
             )
 
-    def put(
+    def discard_candidates(self, names: tuple[str, ...]) -> bool:
+        """Advance one unselected candidate step, never selected-byte reclamation."""
+        for name in names:
+            primary_file_name(name)
+        with self._mutex:
+            row = self._one(
+                "SELECT o.namespace,o.name,o.complete,p.phase FROM primary_operation p "
+                "JOIN primary_objects o ON o.generation=p.generation WHERE p.id=1"
+            )
+            if row is None or row[0] != self._namespace or row[2] == 1:
+                return True
+            if row[1] not in names or row[2] != 0 or row[3] not in ("writing", "cleanup"):
+                raise PrimaryStateError("prepared-primary candidate differs from its logical owner")
+            return self.recover_step()
+
+    def put_bytes(
         self,
         name: str,
         chunks: Iterable[bytes],
