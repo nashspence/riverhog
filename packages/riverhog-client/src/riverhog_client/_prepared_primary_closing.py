@@ -82,7 +82,7 @@ def recover_closing(store: PrimaryStore) -> None:
                             "members": str(intent.members),
                         }
                     ),
-                    replace=True,
+                    expected=intent,
                 )
         return
     if (
@@ -102,9 +102,9 @@ def recover_closing(store: PrimaryStore) -> None:
         ):
             raise PrimaryStateError("frozen inventory has no matching accounting transition")
         files.sync()
-        store._write(files, "usage", intent.after, replace=True)
+        store._write(files, "usage", intent.after, expected=store._usage)
         store._usage = intent.after
-        files.remove("closing-intent")
+        files.remove_control("closing-intent", expected=primary_control_bytes(intent))
     if (
         not store._usage.inventory_selected
         or store._usage.inventory_bytes != closing.inventory.bytes
@@ -225,20 +225,16 @@ def freeze_inventory(
                 "inventory_selected": True,
             }
         )
-        store._write(
-            store._files,
-            "closing-intent",
-            PrimaryClosingIntent.model_validate(
-                {
-                    "session_sha256": intent.session_sha256,
-                    "members": str(intent.members),
-                    "inventory": inventory,
-                    "before": store._usage,
-                    "after": after,
-                }
-            ),
-            replace=True,
+        completed_intent = PrimaryClosingIntent.model_validate(
+            {
+                "session_sha256": intent.session_sha256,
+                "members": str(intent.members),
+                "inventory": inventory,
+                "before": store._usage,
+                "after": after,
+            }
         )
+        store._write(store._files, "closing-intent", completed_intent, expected=intent)
         closing = PrimaryClosing.model_validate(
             {
                 "session_sha256": intent.session_sha256,
@@ -251,9 +247,11 @@ def freeze_inventory(
             }
         )
         store._install(store._files, "closing", closing)
-        store._write(store._files, "usage", after, replace=True)
+        store._write(store._files, "usage", after, expected=store._usage)
         store._usage = after
-        store._files.remove("closing-intent")
+        store._files.remove_control(
+            "closing-intent", expected=primary_control_bytes(completed_intent)
+        )
         return closing
 
 
@@ -339,7 +337,7 @@ def advance_closing(
                 "manifest_chain_sha256": chain,
             }
         )
-        store._write(store._files, "closing", next_control, replace=True)
+        store._write(store._files, "closing", next_control, expected=closing)
         if complete:
             store._install(
                 store._files,
@@ -464,7 +462,7 @@ def advance_custody(
                 "manifest_chain_sha256": chain,
             }
         )
-        store._write(store._files, "custody-closing", next_control, replace=True)
+        store._write(store._files, "custody-closing", next_control, expected=cursor)
         if complete:
             store._install(
                 store._files,

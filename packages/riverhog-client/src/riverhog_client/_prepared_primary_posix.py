@@ -245,6 +245,47 @@ class PrimaryFiles:
                 pass
             self.sync()
 
+    def put_control(
+        self, name: str, body: bytes, *, byte_limit: int, expected: bytes | None = None
+    ) -> None:
+        """Install immutable bytes, or compare/switch one exact prior encoding."""
+        primary_file_name(name)
+        if type(byte_limit) is not int or byte_limit < 0:
+            raise ValueError("prepared-primary control admission must be nonnegative")
+        if not isinstance(body, bytes) or (
+            expected is not None and not isinstance(expected, bytes)
+        ):
+            raise TypeError("prepared-primary controls must be original bytes")
+        if len(body) > byte_limit:
+            raise PrimaryStateCapacity("prepared-primary control exceeds explicit admission")
+        if expected is not None:
+            try:
+                previous = self.read_control(name, byte_limit=byte_limit)
+            except FileNotFoundError:
+                raise PrimaryStateError("prepared-primary control comparison changed") from None
+            if previous != expected:
+                raise PrimaryStateError("prepared-primary control comparison changed")
+        self.put(
+            name,
+            (body,),
+            byte_limit=byte_limit,
+            replace=expected is not None,
+            temporary_name="candidate-" + name,
+        )
+
+    def remove_control(self, name: str, *, expected: bytes) -> None:
+        """Delete only the exact control encoding under the construction owner."""
+        if not isinstance(expected, bytes):
+            raise TypeError("prepared-primary controls must be original bytes")
+        try:
+            previous = self.read_control(name, byte_limit=len(expected))
+        except FileNotFoundError:
+            self.sync()
+            return
+        if previous != expected:
+            raise PrimaryStateError("prepared-primary control comparison changed")
+        self.remove(name)
+
     def read_control(self, name: str, *, byte_limit: int) -> bytes:
         if type(byte_limit) is not int or byte_limit < 0:
             raise ValueError("prepared-primary control admission must be explicit and nonnegative")

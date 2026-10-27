@@ -175,3 +175,74 @@ def test_member_directories_share_the_exact_construction_owner(tmp_path: Path):
                 with shard.child("abcd", initialize=False) as member:
                     with member.verified(file) as stream:
                         assert stream.read() == b"original"
+
+
+def test_control_updates_compare_original_bytes_and_never_create_missing_winners(tmp_path):
+    root = tmp_path.resolve() / "state"
+    original = b'{"sequence":"0"}\n'
+    selected = b'{"sequence":"1"}\n'
+    with owner.PrimaryFiles(root, initialize=True) as files:
+        files.put_control("usage", original, byte_limit=100)
+        with pytest.raises(FileExistsError):
+            files.put_control("usage", selected, byte_limit=100)
+        with pytest.raises(owner.PrimaryStateError, match="comparison"):
+            files.put_control("usage", selected, expected=original[:-1], byte_limit=100)
+        with pytest.raises(owner.PrimaryStateError, match="comparison"):
+            files.put_control("missing", selected, expected=original, byte_limit=100)
+        assert not files.exists("missing")
+        assert files.read_control("usage", byte_limit=100) == original
+        files.put_control("usage", selected, expected=original, byte_limit=100)
+    with owner.PrimaryFiles(root, initialize=False) as files:
+        assert files.read_control("usage", byte_limit=100) == selected
+        with pytest.raises(owner.PrimaryStateError, match="comparison"):
+            files.remove_control("usage", expected=original)
+        assert files.read_control("usage", byte_limit=100) == selected
+        files.remove_control("usage", expected=selected)
+        files.remove_control("usage", expected=selected)
+        assert not files.exists("usage")
+
+
+@pytest.mark.parametrize("boundary", [1, 2])
+def test_uncertain_control_switch_preserves_only_the_old_or_selected_exact_body(
+    tmp_path, monkeypatch, boundary
+):
+    root = tmp_path.resolve() / "state"
+    sync = os.fsync
+    count = 0
+    with owner.PrimaryFiles(root, initialize=True) as files:
+        files.put_control("usage", b"original", byte_limit=100)
+
+        def failing(descriptor):
+            nonlocal count
+            count += 1
+            if count == boundary:
+                raise OSError("control switch fsync failure")
+            return sync(descriptor)
+
+        with monkeypatch.context() as patch:
+            patch.setattr(owner.os, "fsync", failing)
+            with pytest.raises(OSError, match="control switch fsync"):
+                files.put_control("usage", b"selected", expected=b"original", byte_limit=100)
+    with owner.PrimaryFiles(root, initialize=False) as files:
+        expected = b"original" if boundary == 1 else b"selected"
+        assert files.read_control("usage", byte_limit=100) == expected
+        files.put_control("usage", b"next", expected=expected, byte_limit=100)
+        assert files.read_control("usage", byte_limit=100) == b"next"
+        assert not files.exists("candidate-usage")
+
+
+def test_control_admission_rejects_invalid_input_before_writing_any_candidate(tmp_path):
+    with owner.PrimaryFiles(tmp_path.resolve() / "state", initialize=True) as files:
+        files.put_control("usage", b"original", byte_limit=8)
+        with pytest.raises(owner.PrimaryStateCapacity):
+            files.put_control("usage", b"too large", expected=b"original", byte_limit=8)
+        for body, expected in [(bytearray(b"x"), None), (b"x", bytearray(b"original"))]:
+            with pytest.raises(TypeError, match="original bytes"):
+                files.put_control("usage", body, expected=expected, byte_limit=8)
+        for invalid in [-1, True, 1.5]:
+            with pytest.raises(ValueError, match="admission"):
+                files.put_control("usage", b"x", expected=b"original", byte_limit=invalid)
+        with pytest.raises(owner.PrimaryStateError):
+            files.remove_control("usage", expected=b"")
+        assert files.read_control("usage", byte_limit=8) == b"original"
+        assert sorted(p.name for p in files.root.iterdir()) == [".owner", "usage"]

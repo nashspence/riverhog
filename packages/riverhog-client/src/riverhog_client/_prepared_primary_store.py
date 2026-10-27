@@ -237,15 +237,29 @@ class PrimaryStore:
             return None
 
     def _write(
-        self, files: PrimaryFiles, name: str, document: BaseModel, *, replace: bool = False
+        self,
+        files: PrimaryFiles,
+        name: str,
+        document: BaseModel,
+        *,
+        expected: BaseModel | None = None,
     ) -> None:
         raw = primary_control_bytes(document)
-        files.put(
+        if expected is not None:
+            # An uncertain prior response may have left this exact selected winner.
+            # Reestablish its barrier before adopting it; never overwrite another body.
+            try:
+                previous = files.read_control(name, byte_limit=self.limits.control_bytes)
+            except FileNotFoundError:
+                previous = None
+            if previous == raw:
+                files.sync()
+                return
+        files.put_control(
             name,
-            (raw,),
+            raw,
             byte_limit=self.limits.control_bytes,
-            replace=replace,
-            temporary_name="candidate-" + name,
+            expected=None if expected is None else primary_control_bytes(expected),
         )
 
     def _install(self, files: PrimaryFiles, name: str, document: BaseModel) -> None:
@@ -494,8 +508,9 @@ class PrimaryStore:
                 controls=after.control_bytes,
                 members=after.members,
             )
-            transition = transition.model_copy(update={"after": after})
-            self._write(self._files, "transition", transition, replace=True)
+            selected_transition = transition.model_copy(update={"after": after})
+            self._write(self._files, "transition", selected_transition, expected=transition)
+            transition = selected_transition
             refs = tuple(
                 _reference(name, raw) for name, raw in zip(_BYTE_NAMES, contents, strict=True)
             )
@@ -523,7 +538,7 @@ class PrimaryStore:
                         temporary_name="candidate-" + ref.name,
                     )
                 self._write(files, "prepared", prepared)
-            self._finish_transition(after)
+            self._finish_transition(after, transition)
             return PrimaryRecord(prepared, None, None)
 
     def _next_usage(self, *, pending: int, controls: int, members: int) -> PrimaryUsage:
@@ -543,10 +558,10 @@ class PrimaryStore:
             }
         )
 
-    def _finish_transition(self, after: PrimaryUsage) -> None:
-        self._write(self._files, "usage", after, replace=True)
+    def _finish_transition(self, after: PrimaryUsage, transition: PrimaryTransition) -> None:
+        self._write(self._files, "usage", after, expected=self._usage)
         self._usage = after
-        self._files.remove("transition")
+        self._files.remove_control("transition", expected=primary_control_bytes(transition))
 
     def _recover(self) -> None:
         if self._authoring:
@@ -597,7 +612,7 @@ class PrimaryStore:
                     files, "reclaimed", PrimaryReclaimed(prepared_sha256=_identity(record.prepared))
                 )
                 selected = transition.after
-        self._finish_transition(selected)
+        self._finish_transition(selected, transition)
         from riverhog_client._prepared_primary_closing import recover_closing
 
         recover_closing(self)
@@ -708,5 +723,5 @@ class PrimaryStore:
                 for name in _BYTE_NAMES:
                     files.remove(name)
                 self._install(files, "reclaimed", PrimaryReclaimed(prepared_sha256=identity))
-                self._finish_transition(after)
+                self._finish_transition(after, transition)
             return True

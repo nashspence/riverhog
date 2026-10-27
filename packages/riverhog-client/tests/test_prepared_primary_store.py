@@ -1081,7 +1081,7 @@ def test_finish_barrier_checks_the_complete_frozen_chain_after_settling_every_me
         changed = closing.model_copy(
             update={"inventory": closing.inventory.model_copy(update={"chain_sha256": "f" * 64})}
         )
-        store._write(store._files, "closing", changed, replace=True)
+        store._write(store._files, "closing", changed, expected=closing)
 
         def settle(member):
             store.accept_decision(store.load(member), b"exact decision")
