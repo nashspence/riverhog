@@ -1,0 +1,18 @@
+{
+  "kind": "reference_sql_ordering_probe_not_windows_qualification",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "sqlite_version": "3.46.1",
+  "sqlite_source_id": "2024-08-13 09:16:08 c9c2ab54ba1f5f46360f1b4f35d849cd3f080e6fc2b6c60e91b16c63f69aalt1",
+  "tests": 7,
+  "successful": true,
+  "elapsed_seconds": 3.873348,
+  "limitations": [
+    "synthetic SQL only",
+    "no Riverhog imports",
+    "no Win32 ownership or ACLs",
+    "no Native/authenticated receipts",
+    "no VFS byte-I/O measurement",
+    "process exits, not power loss"
+  ]
+}
