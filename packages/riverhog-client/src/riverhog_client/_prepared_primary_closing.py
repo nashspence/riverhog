@@ -11,6 +11,8 @@ from riverhog_protocol import ArtifactMemberIdentityDocument
 from riverhog_client._prepared_primary_documents import (
     PrimaryClosing,
     PrimaryClosingIntent,
+    PrimaryCustodyClosing,
+    PrimaryCustodySettled,
     PrimaryFinishReady,
     PrimaryInventory,
     PrimaryInventoryEntry,
@@ -45,6 +47,10 @@ def recover_closing(store: PrimaryStore) -> None:
     intent = store._optional(files, "closing-intent", PrimaryClosingIntent)
     closing = store._optional(files, "closing", PrimaryClosing)
     ready = store._optional(files, "finish-ready", PrimaryFinishReady)
+    draining = store._optional(files, "custody-closing", PrimaryCustodyClosing)
+    settled = store._optional(files, "custody-settled", PrimaryCustodySettled)
+    if (draining is not None or settled is not None) and ready is None:
+        raise PrimaryStateError("terminal custody has no original decision barrier")
     if closing is None:
         if store._usage.inventory_selected:
             raise PrimaryStateError("selected inventory has lost its closing control")
@@ -109,6 +115,24 @@ def recover_closing(store: PrimaryStore) -> None:
         or closing.manifest_chain_sha256 != ready.manifest_chain_sha256
     ):
         raise PrimaryStateError("finish-ready differs from its exact inventory closure")
+    if draining is not None and (
+        ready is None
+        or draining.session_sha256 != ready.session_sha256
+        or draining.inventory != ready.inventory
+        or draining.members != ready.members
+    ):
+        raise PrimaryStateError("custody cursor differs from its original frozen inventory")
+    if settled is not None and (
+        draining is None
+        or settled.session_sha256 != draining.session_sha256
+        or settled.inventory != draining.inventory
+        or settled.members != draining.members
+        or settled.manifest_chain_sha256 != draining.inventory.chain_sha256
+        or draining.after_member != draining.members
+        or draining.after_offset != draining.inventory.bytes
+        or draining.manifest_chain_sha256 != settled.manifest_chain_sha256
+    ):
+        raise PrimaryStateError("settled custody differs from its exact inventory closure")
 
 
 def freeze_inventory(
@@ -316,6 +340,131 @@ def advance_closing(
                     {
                         "session_sha256": closing.session_sha256,
                         "inventory": closing.inventory,
+                        "members": str(count),
+                        "manifest_chain_sha256": chain,
+                    }
+                ),
+            )
+        return complete
+
+
+def advance_custody(
+    store: PrimaryStore,
+    *,
+    limit: int,
+    settle: Callable[[ArtifactMemberIdentityDocument], None],
+) -> bool:
+    """Retain receipts and reclaim preimages through a bounded, resumable cursor.
+
+    A not-yet-available receipt leaves its member pending. An earlier lost cursor
+    never repeats a receipt call whose exact result is already retained locally.
+    This barrier settles artifact custody; collection finalization keeps its owner.
+    """
+    if type(limit) is not int or limit <= 0:
+        raise ValueError("custody batch admission must be a positive integer")
+    with store._mutex:
+        store._recover()
+        ready = store._read(store._files, "finish-ready", PrimaryFinishReady)
+        cursor = store._optional(store._files, "custody-closing", PrimaryCustodyClosing)
+        if cursor is None:
+            cursor = PrimaryCustodyClosing.model_validate(
+                {
+                    "session_sha256": ready.session_sha256,
+                    "inventory": ready.inventory,
+                    "members": str(ready.members),
+                    "after_member": "0",
+                    "after_offset": "0",
+                    "last_member": None,
+                    "manifest_chain_sha256": _EMPTY,
+                }
+            )
+            store._install(store._files, "custody-closing", cursor)
+        if store._optional(store._files, "custody-settled", PrimaryCustodySettled) is not None:
+            store._files.sync()
+            return True
+        if store._closing_advancing:
+            raise PrimaryStateError("custody callback cannot advance its own cursor")
+        count = cursor.after_member
+        offset = cursor.after_offset
+        chain = cursor.manifest_chain_sha256
+        previous_member = cursor.last_member
+        store._closing_advancing = True
+        try:
+            with store._files.extent_reader(
+                cursor.inventory.name, byte_count=cursor.inventory.bytes
+            ) as stream:
+                stream.seek(offset)
+                for _ in range(limit):
+                    raw = stream.readline(store.limits.control_bytes + 2)
+                    if not raw:
+                        break
+                    if len(raw) > store.limits.control_bytes + 1 or not raw.endswith(b"\n"):
+                        raise PrimaryStateError("custody inventory has an invalid framed row")
+                    entry = PrimaryInventoryEntry.model_validate_json(raw[:-1])
+                    if primary_control_bytes(entry) + b"\n" != raw:
+                        raise PrimaryStateError("custody inventory row is not its exact encoding")
+                    key = str(entry.member.artifact_id)
+                    if previous_member is not None and key <= previous_member:
+                        raise PrimaryStateError("custody inventory member order changed")
+                    if count >= cursor.members:
+                        raise PrimaryStateError("custody inventory exceeds its exact member count")
+                    record = store.load(entry.member)
+                    if record is None or _identity(record.prepared) != entry.prepared_sha256:
+                        raise PrimaryStateError("custody member lost its original preparation")
+                    if record.decision_accepted is None:
+                        raise PrimaryStateError(
+                            "terminal custody lost its exact decision acknowledgement"
+                        )
+                    if record.custody is None:
+                        settle(entry.member)
+                        record = store.load(entry.member)
+                        if (
+                            record is None
+                            or record.decision_accepted is None
+                            or _identity(record.prepared) != entry.prepared_sha256
+                        ):
+                            raise PrimaryStateError(
+                                "custody callback changed its original preparation"
+                            )
+                        if record.custody is None:
+                            break
+                    if not store.reclaim(entry.member):
+                        raise PrimaryStateError(
+                            "custody member cannot retain compact release authority"
+                        )
+                    chain = _chain(chain, raw[:-1])
+                    count += 1
+                    offset += len(raw)
+                    previous_member = entry.member.artifact_id
+                complete = count == cursor.members
+                if complete and (
+                    offset != cursor.inventory.bytes
+                    or stream.read(1)
+                    or chain != cursor.inventory.chain_sha256
+                ):
+                    raise PrimaryStateError("custody inventory differs from its frozen commitment")
+                if not complete and offset >= cursor.inventory.bytes:
+                    raise PrimaryStateError("custody inventory ended before its declared members")
+        finally:
+            store._closing_advancing = False
+        next_control = PrimaryCustodyClosing.model_validate(
+            {
+                **cursor.model_dump(mode="json"),
+                "after_member": str(count),
+                "after_offset": str(offset),
+                "last_member": previous_member,
+                "manifest_chain_sha256": chain,
+            }
+        )
+        store._write(store._files, "custody-closing", next_control, replace=True)
+        if complete:
+            store._install(
+                store._files,
+                "custody-settled",
+                PrimaryCustodySettled.model_validate(
+                    {
+                        "session_sha256": ready.session_sha256,
+                        "inventory": ready.inventory,
                         "members": str(count),
                         "manifest_chain_sha256": chain,
                     }

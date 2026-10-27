@@ -80,12 +80,13 @@ def _author(member=None):
     )
 
 
-def _receipt(prepared):
+def _receipt(prepared, member=None):
+    member = prepared.member if member is None else member
     return CollectionUploadArtifactCustodyReceiptDocument.seal(
         collection_id=42,
-        artifact_id=prepared.member.artifact_id,
-        bytes=prepared.member.bytes,
-        sha256=prepared.member.sha256,
+        artifact_id=member.artifact_id,
+        bytes=member.bytes,
+        sha256=member.sha256,
         primary=prepared.primary,
         completion_requirement_sha256=None,
         archive_objects=(
@@ -283,6 +284,13 @@ if spec['operation']=='prepare':
         value['decision'].encode(),value['primary'],None))
 elif spec['operation']=='reclaim':
     store.reclaim(member)
+elif spec['operation']=='custody':
+    from riverhog_client._prepared_primary_closing import advance_custody
+    from riverhog_protocol import CollectionUploadArtifactCustodyReceiptDocument
+    def settle(item):
+        store.accept_custody(store.load(item),
+            CollectionUploadArtifactCustodyReceiptDocument.model_validate(spec['receipt']))
+    advance_custody(store,limit=1,settle=settle)
 else:
     from riverhog_client._prepared_primary_closing import freeze_inventory,advance_closing
     if spec['operation']=='freeze':
@@ -298,6 +306,7 @@ def _crash(root, boundary, *, operation="prepare"):
     authored = _author()
     spec = {
         "operation": operation,
+        "receipt": _receipt(authored, _member()).model_dump(mode="json"),
         "scope": SCOPE.model_dump(mode="json"),
         "limits": {
             key: getattr(LIMITS, key)
@@ -1067,3 +1076,152 @@ def test_finish_barrier_checks_the_complete_frozen_chain_after_settling_every_me
             advance_closing(store, limit=1, settle=settle)
         assert store.load(_member()).decision_accepted is not None
         assert not (root / "finish-ready").exists()
+
+
+def _ready_inventory(store, inventory):
+    from riverhog_client._prepared_primary_closing import advance_closing, freeze_inventory
+
+    for member in inventory:
+        record = store.prepare_or_load(
+            member, REQUEST, lambda _limit, member=member: _author(member)
+        )
+        store.accept_decision(record, b"exact decision")
+    freeze_inventory(store, inventory)
+    assert advance_closing(store, limit=max(1, len(inventory)), settle=_no_author)
+
+
+def test_terminal_custody_waits_for_exact_receipts_and_recovers_a_lost_cursor(tmp_path):
+    from riverhog_client._prepared_primary_closing import advance_custody
+
+    root = tmp_path.resolve() / "state"
+    inventory = tuple(_member(number) for number in range(1, 4))
+    with _open(root, initialize=True) as store:
+        _ready_inventory(store, inventory)
+        inventory_bytes = store.usage.inventory_bytes
+        assert not advance_custody(store, limit=1, settle=lambda _member: None)
+        assert json.loads((root / "custody-closing").read_bytes())["after_member"] == "0"
+        assert not (root / "custody-settled").exists()
+
+        def lost_cursor(member):
+            record = store.load(member)
+            store.accept_custody(record, _receipt(record.prepared))
+            raise RuntimeError("lost custody cursor")
+
+        with pytest.raises(RuntimeError, match="lost custody cursor"):
+            advance_custody(store, limit=1, settle=lost_cursor)
+        assert store.load(inventory[0]).custody is not None
+
+    with _open(root) as store:
+        calls = []
+
+        def settle(member):
+            calls.append(member.artifact_id)
+            record = store.load(member)
+            store.accept_custody(record, _receipt(record.prepared))
+
+        assert not advance_custody(store, limit=1, settle=settle)
+        assert calls == []
+        assert not advance_custody(store, limit=1, settle=settle)
+        assert advance_custody(store, limit=1, settle=settle)
+        assert calls == [inventory[1].artifact_id, inventory[2].artifact_id]
+        assert store.usage.pending_bytes == 0
+        assert store.usage.inventory_bytes == inventory_bytes
+        for member in inventory:
+            assert store.load(member).compact
+            assert store.prepare_or_load(member, REQUEST, _no_author).compact
+        assert advance_custody(store, limit=1, settle=_no_author)
+
+
+@pytest.mark.parametrize(
+    "boundary",
+    [
+        "candidate-custody-closing",
+        "custody-closing",
+        "candidate-custody",
+        "custody",
+        "remove-journal",
+        "candidate-reclaimed",
+        "reclaimed",
+        "candidate-usage",
+        "usage",
+        "candidate-custody-settled",
+        "custody-settled",
+    ],
+)
+def test_process_exit_during_terminal_custody_keeps_exact_receipts_and_accounting(
+    tmp_path, boundary
+):
+    from riverhog_client._prepared_primary_closing import advance_custody
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        _ready_inventory(store, (_member(),))
+    _crash(root, boundary, operation="custody")
+    with _open(root) as store:
+        calls = []
+
+        def settle(member):
+            calls.append(member.artifact_id)
+            record = store.load(member)
+            store.accept_custody(record, _receipt(record.prepared))
+
+        assert advance_custody(store, limit=1, settle=settle)
+        assert calls == (
+            [_member().artifact_id]
+            if boundary in ("candidate-custody-closing", "custody-closing", "candidate-custody")
+            else []
+        )
+        assert store.usage.pending_bytes == 0
+        assert store.load(_member()).compact
+        assert advance_custody(store, limit=1, settle=_no_author)
+
+
+def test_terminal_custody_does_not_invent_a_missing_decision_acknowledgement(tmp_path):
+    from riverhog_client._prepared_primary_closing import advance_custody
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        _ready_inventory(store, (_member(),))
+        with store._member(str(_member().artifact_id), create=False) as files:
+            files.remove("decision-accepted")
+        with pytest.raises(PrimaryStateError, match="exact decision acknowledgement"):
+            advance_custody(store, limit=1, settle=_no_author)
+        assert not (root / "custody-settled").exists()
+        record = store.load(_member())
+        with store.byte_reader(record, "decision") as stream:
+            assert stream.read() == b"exact decision"
+
+
+def test_terminal_custody_requires_its_decision_barrier_and_exact_frozen_chain(tmp_path):
+    from riverhog_client._prepared_primary_closing import advance_custody
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        with pytest.raises(FileNotFoundError):
+            advance_custody(store, limit=1, settle=_no_author)
+        _ready_inventory(store, (_member(),))
+        value = json.loads((root / "inventory").read_bytes())
+        value["prepared_sha256"] = "f" * 64
+        (root / "inventory").write_bytes(
+            json.dumps(value, sort_keys=True, separators=(",", ":")).encode() + b"\n"
+        )
+        with pytest.raises(PrimaryStateError, match="original preparation"):
+            advance_custody(store, limit=1, settle=_no_author)
+        assert not (root / "custody-settled").exists()
+
+
+@pytest.mark.parametrize("removed", ["finish-ready", "custody-closing"])
+def test_terminal_release_authority_cannot_outlive_its_original_barrier(tmp_path, removed):
+    from riverhog_client._prepared_primary_closing import advance_custody
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        _ready_inventory(store, ())
+
+        def no_member(_member):
+            pytest.fail("empty inventory requested an artifact")
+
+        assert advance_custody(store, limit=1, settle=no_member)
+    (root / removed).unlink()
+    with pytest.raises(PrimaryStateError):
+        _open(root)

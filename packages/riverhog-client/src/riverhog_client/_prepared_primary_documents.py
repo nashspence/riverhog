@@ -180,8 +180,7 @@ class PrimaryInventoryEntry(BaseModel):
     prepared_sha256: Sha256
 
 
-class PrimaryClosing(PrimaryControl):
-    kind: Literal["closing"] = "closing"
+class PrimaryInventoryCursor(PrimaryControl):
     session_sha256: Sha256
     inventory: PrimaryInventory
     members: NonnegativeDecimal
@@ -197,6 +196,22 @@ class PrimaryClosing(PrimaryControl):
         if (self.last_member is None) != (self.after_member == 0):
             raise ValueError("primary closing member cursor has no exact last identity")
         return self
+
+
+class PrimaryClosing(PrimaryInventoryCursor):
+    kind: Literal["closing"] = "closing"
+
+
+class PrimaryCustodyClosing(PrimaryInventoryCursor):
+    kind: Literal["custody-closing"] = "custody-closing"
+
+
+class PrimaryCustodySettled(PrimaryControl):
+    kind: Literal["custody-settled"] = "custody-settled"
+    session_sha256: Sha256
+    inventory: PrimaryInventory
+    members: NonnegativeDecimal
+    manifest_chain_sha256: Sha256
 
 
 class PrimaryFinishReady(PrimaryControl):

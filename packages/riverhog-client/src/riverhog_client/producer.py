@@ -410,8 +410,11 @@ class IncrementalCollectionProducer:
     def stop(self) -> None:
         self._heartbeat_stop.set()
         thread = self._heartbeat_thread
-        if thread is not None and thread is not threading.current_thread():
-            thread.join(timeout=5.0)
+        if thread is threading.current_thread():
+            raise RuntimeError("heartbeat worker cannot release its own producer resources")
+        if thread is not None:
+            # A requested stop or a timed-out join is not proof of quiescence.
+            thread.join()
         self._heartbeat_thread = None
         for source in self._sources.values():
             source.close()

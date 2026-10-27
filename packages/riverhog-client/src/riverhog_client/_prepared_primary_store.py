@@ -53,6 +53,8 @@ _ROOT_NAMES = (
     "closing-intent",
     "closing",
     "finish-ready",
+    "custody-closing",
+    "custody-settled",
     "inventory",
 )
 _MEMBER_NAMES = (*_BYTE_NAMES, "prepared", "decision-accepted", "custody", "reclaimed")
@@ -95,7 +97,7 @@ class PrimaryStoreLimits:
 
     @property
     def root_reservation(self) -> int:
-        return 12 * self.control_bytes
+        return 14 * self.control_bytes
 
     @property
     def member_reservation(self) -> int:

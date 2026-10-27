@@ -542,3 +542,65 @@ def test_native_ingest_preserves_members_across_registration_and_payload_regimes
     finally:
         producer.stop()
         api.close()
+
+
+def test_stop_retains_owned_resources_until_the_heartbeat_worker_actually_exits():
+    import threading
+
+    producer = object.__new__(IncrementalCollectionProducer)
+    producer._heartbeat_stop = threading.Event()
+    entered_join = threading.Event()
+    release_worker = threading.Event()
+    exited_worker = threading.Event()
+    released_source = threading.Event()
+    stopped = threading.Event()
+
+    class Source:
+        def close(self):
+            assert exited_worker.is_set()
+            released_source.set()
+
+    producer._sources = {"pending": Source()}
+    producer._restored_sources = {}
+
+    def worker():
+        release_worker.wait()
+        exited_worker.set()
+
+    heartbeat = threading.Thread(target=worker)
+    heartbeat.start()
+    producer._heartbeat_thread = heartbeat
+    original_join = heartbeat.join
+    join_timeouts = []
+
+    def observed_join(timeout=None):
+        join_timeouts.append(timeout)
+        entered_join.set()
+        # A deadline that expires cannot authorize release of a live worker.
+        original_join(None if timeout is None else 0)
+
+    heartbeat.join = observed_join
+    failures = []
+
+    def stop():
+        try:
+            producer.stop()
+        except BaseException as exc:
+            failures.append(exc)
+        finally:
+            stopped.set()
+
+    stopper = threading.Thread(target=stop)
+    stopper.start()
+    try:
+        assert entered_join.wait(5)
+        assert join_timeouts == [None]
+        assert not released_source.is_set() and not stopped.is_set()
+        assert producer._heartbeat_thread is heartbeat
+    finally:
+        release_worker.set()
+        original_join(5)
+        stopper.join(5)
+    assert not heartbeat.is_alive() and not stopper.is_alive()
+    assert stopped.is_set() and released_source.is_set() and not failures
+    assert producer._heartbeat_thread is None and not producer._sources
