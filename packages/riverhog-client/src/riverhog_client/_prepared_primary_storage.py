@@ -33,6 +33,10 @@ class PrimaryStorage(Protocol):
         """Advance only unselected candidates for these logical names."""
         ...
 
+    def prepare_controls(self, names: tuple[str, ...], *, byte_limit: int) -> None:
+        """Prepare backend control roles before payload; SQLite allocates fixed extents."""
+        ...
+
     def read_control(self, name: str, *, byte_limit: int) -> bytes: ...
 
     def put_control(

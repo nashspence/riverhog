@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from riverhog_client._prepared_primary_sqlite_space import SqlitePrimarySpace, SqliteVacuumStep
 
 _BLOCK = 4096
-_GEOMETRY = "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096"
+_GEOMETRY = "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096;controls=fixed/v1"
 
 
 class ContainerGuard(Protocol):
@@ -424,6 +424,12 @@ class TransactionalPrimaryFiles:
             self._require_idle()
             if self.exists(name):
                 raise FileExistsError(name)
+            from riverhog_client._prepared_primary_sqlite_controls import reserved
+
+            if reserved(self, name):
+                raise PrimaryStateError(
+                    "prepared-primary byte role conflicts with reserved control"
+                )
             generation = uuid.uuid4().hex
             with self._transaction() as db:
                 db.execute(
@@ -546,105 +552,39 @@ class TransactionalPrimaryFiles:
                     ).close()
             return chunk is None
 
+    def _control_selected(self, name: str) -> bool:
+        from riverhog_client._prepared_primary_sqlite_controls import selected
+
+        return selected(self, name)
+
     def exists(self, name: str) -> bool:
         primary_file_name(name)
         parameters = (self._namespace, name)
-        return (
-            self._one("SELECT 1 FROM primary_names WHERE namespace=? AND name=?", parameters)
-            is not None
-            or self._one("SELECT 1 FROM primary_controls WHERE namespace=? AND name=?", parameters)
-            is not None
-        )
+        return self._one(
+            "SELECT 1 FROM primary_names WHERE namespace=? AND name=?", parameters
+        ) is not None or self._control_selected(name)
+
+    def prepare_controls(self, names: tuple[str, ...], *, byte_limit: int) -> None:
+        from riverhog_client._prepared_primary_sqlite_controls import prepare
+
+        prepare(self, names, byte_limit=byte_limit)
 
     def read_control(self, name: str, *, byte_limit: int) -> bytes:
-        """Read a bounded original encoding without accessing pending chunk rows."""
-        primary_file_name(name)
-        if type(byte_limit) is not int or byte_limit < 0:
-            raise ValueError("prepared-primary control admission must be nonnegative")
-        row = self._one(
-            "SELECT length(body),substr(body,1,?) FROM primary_controls "
-            "WHERE namespace=? AND name=?",
-            (byte_limit + 1, self._namespace, name),
-        )
-        if row is None:
-            raise FileNotFoundError(name)
-        size, body = row
-        if type(size) is not int or not isinstance(body, bytes):
-            raise PrimaryStateError("prepared-primary control is not original bytes")
-        if size > byte_limit:
-            raise PrimaryStateCapacity("prepared-primary control exceeds explicit admission")
-        if len(body) != size:
-            raise PrimaryStateError("prepared-primary control extent changed")
-        return body
+        from riverhog_client._prepared_primary_sqlite_controls import read
+
+        return read(self, name, byte_limit=byte_limit)
 
     def put_control(
         self, name: str, body: bytes, *, byte_limit: int, expected: bytes | None = None
     ) -> None:
-        """Install immutable bytes, or compare/switch one exact prior encoding."""
-        primary_file_name(name)
-        if type(byte_limit) is not int or byte_limit < 0:
-            raise ValueError("prepared-primary control admission must be nonnegative")
-        if not isinstance(body, bytes) or (
-            expected is not None and not isinstance(expected, bytes)
-        ):
-            raise TypeError("prepared-primary controls must be original bytes")
-        if len(body) > byte_limit:
-            raise PrimaryStateCapacity("prepared-primary control exceeds explicit admission")
-        with self._mutex:
-            self._require_control_idle(name)
-            if self._one(
-                "SELECT 1 FROM primary_names WHERE namespace=? AND name=?",
-                (self._namespace, name),
-            ):
-                raise PrimaryStateError("prepared-primary control conflicts with a byte role")
-            previous = self._one(
-                "SELECT body FROM primary_controls WHERE namespace=? AND name=?",
-                (self._namespace, name),
-            )
-            if expected is None and previous is not None:
-                raise FileExistsError(name)
-            if expected is not None and previous != (expected,):
-                raise PrimaryStateError("prepared-primary control comparison changed")
-            with self._transaction() as db:
-                if expected is None:
-                    db.execute(
-                        "INSERT INTO primary_controls VALUES (?,?,?)", (self._namespace, name, body)
-                    ).close()
-                else:
-                    cursor = db.execute(
-                        "UPDATE primary_controls SET body=? "
-                        "WHERE namespace=? AND name=? AND body=?",
-                        (body, self._namespace, name, expected),
-                    )
-                    if cursor.rowcount != 1:
-                        cursor.close()
-                        raise PrimaryStateError("prepared-primary control comparison changed")
-                    cursor.close()
+        from riverhog_client._prepared_primary_sqlite_controls import put
+
+        put(self, name, body, byte_limit=byte_limit, expected=expected)
 
     def remove_control(self, name: str, *, expected: bytes) -> None:
-        """Delete only the exact transition/control encoding selected by its owner."""
-        primary_file_name(name)
-        if not isinstance(expected, bytes):
-            raise TypeError("prepared-primary controls must be original bytes")
-        with self._mutex:
-            self._require_control_idle(name)
-            previous = self._one(
-                "SELECT body FROM primary_controls WHERE namespace=? AND name=?",
-                (self._namespace, name),
-            )
-            if previous is None:
-                return
-            if previous != (expected,):
-                raise PrimaryStateError("prepared-primary control comparison changed")
-            with self._transaction() as db:
-                cursor = db.execute(
-                    "DELETE FROM primary_controls WHERE namespace=? AND name=? AND body=?",
-                    (self._namespace, name, expected),
-                )
-                if cursor.rowcount != 1:
-                    cursor.close()
-                    raise PrimaryStateError("prepared-primary control comparison changed")
-                cursor.close()
+        from riverhog_client._prepared_primary_sqlite_controls import remove
+
+        remove(self, name, expected=expected)
 
     def remove_step(self, name: str) -> bool:
         """Unselect one unpinned generation, then delete at most one chunk per step."""

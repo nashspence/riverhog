@@ -173,6 +173,12 @@ class PrimaryStore:
         )
         try:
             if initialize:
+                self._files.prepare_controls(
+                    tuple(
+                        name for name in _ROOT_NAMES if name not in ("create-request", "inventory")
+                    ),
+                    byte_limit=self.limits.control_bytes,
+                )
                 self._write(self._files, "allocation", expected)
                 self._write(self._files, "usage", PrimaryUsage())
             self.allocation = self._read(self._files, "allocation", PrimaryAllocation)
@@ -396,6 +402,11 @@ class PrimaryStore:
         with child(self._files, "members") as members:
             with child(members, key[:2]) as shard:
                 with child(shard, key) as files:
+                    if create:
+                        files.prepare_controls(
+                            ("prepared", "decision-accepted", "custody", "reclaimed"),
+                            byte_limit=self.limits.control_bytes,
+                        )
                     yield files
 
     def _control_record(

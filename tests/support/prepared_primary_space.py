@@ -9,6 +9,7 @@ def witness(opened, *, io_bytes=None):
     """Measure repeated growth/reclaim and single-page maintenance without crediting free pages."""
     cycles = []
     with opened(initialize=True) as files:
+        files.prepare_controls(("receipt",), byte_limit=64)
         original = files.put_bytes("original", (b"retained original",), byte_limit=17)
         files.put_control("receipt", b"exact original control", byte_limit=64)
         for _cycle in range(3):

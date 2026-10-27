@@ -311,6 +311,14 @@ class PrimaryFiles:
                 pass
             self.sync()
 
+    def prepare_controls(self, names: tuple[str, ...], *, byte_limit: int) -> None:
+        """Validate the file backend's names and admission; this does not reserve disk space."""
+        if type(byte_limit) is not int or byte_limit < 0:
+            raise ValueError("prepared-primary control admission must be nonnegative")
+        for name in names:
+            primary_file_name(name)
+        self.check_current()
+
     def put_control(
         self, name: str, body: bytes, *, byte_limit: int, expected: bytes | None = None
     ) -> None:

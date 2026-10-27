@@ -131,6 +131,9 @@ class _CommitFailure:
             raise sqlite3.OperationalError("injected commit response uncertainty")
         return self.connection.execute(sql, *args)
 
+    def blobopen(self, *args, **kwargs):
+        return self.connection.blobopen(*args, **kwargs)
+
     def rollback(self):
         self.connection.rollback()
 
@@ -217,6 +220,7 @@ def test_cold_open_has_no_whole_database_integrity_or_payload_scan(tmp_path, mon
 def test_receipt_controls_read_and_compare_original_bytes_without_pending_chunk_reads(tmp_path):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
+        files.prepare_controls(("prepared", "usage"), byte_limit=100)
         files.put_bytes("journal", [b"pending" * 2000], byte_limit=14000)
 
         def authorize(action, table, column, *_rest):
@@ -250,6 +254,7 @@ def test_control_admission_and_role_conflicts_never_replace_original_bytes(tmp_p
         with pytest.raises(owner.PrimaryStateCapacity):
             files.put_control("prepared", b"oversized", byte_limit=3)
         assert not files.exists("prepared")
+        files.prepare_controls(("prepared",), byte_limit=8)
         files.put_control("prepared", b"original", byte_limit=8)
         with pytest.raises(owner.PrimaryStateCapacity):
             files.read_control("prepared", byte_limit=7)
@@ -266,6 +271,7 @@ def test_control_admission_and_role_conflicts_never_replace_original_bytes(tmp_p
 def test_existing_namespace_is_an_openable_immutable_winner(tmp_path):
     with _open(tmp_path / "state.sqlite3", initialize=True) as files:
         with files.child("member", initialize=True) as child:
+            child.prepare_controls(("prepared",), byte_limit=8)
             child.put_control("prepared", b"original", byte_limit=8)
         with pytest.raises(FileExistsError):
             files.child("member", initialize=True)
@@ -276,6 +282,7 @@ def test_existing_namespace_is_an_openable_immutable_winner(tmp_path):
 def test_selected_generation_reclaim_is_pinned_bounded_and_cold_resumable(tmp_path):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
+        files.prepare_controls(("prepared", "custody"), byte_limit=100)
         journal = files.put_bytes("journal", [b"x" * 10000], byte_limit=10000)
         files.put_control("prepared", b"retained-original-authority", byte_limit=100)
         with files.verified(journal) as stream:
@@ -327,6 +334,7 @@ def test_uncertain_chunk_delete_recovers_the_exact_cleanup_cursor(tmp_path, comm
 def test_uncertain_control_commit_keeps_the_original_visible_outcome(tmp_path, committed):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
+        files.prepare_controls(("prepared",), byte_limit=8)
         files._connection = _CommitFailure(files._connection, committed=committed)
         with pytest.raises(PrimaryStateError, match="mutation failed"):
             files.put_control("prepared", b"original", byte_limit=8)
@@ -516,6 +524,7 @@ def test_unselected_candidate_disposition_preserves_other_namespace_and_winner(t
 def test_same_container_ordering_has_point_growth_and_no_transaction_across_yields(tmp_path, count):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
+        files.prepare_controls(("marker",), byte_limit=8)
         files.put_control("marker", b"original", byte_limit=8)
         selects = 0
         steps = 0
@@ -661,6 +670,7 @@ def test_ordering_schema_is_required_without_erasing_original_selected_bytes(tmp
 def test_atomic_control_progress_does_not_advance_or_displace_pending_byte_cleanup(tmp_path):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
+        files.prepare_controls(("cursor", "receipt"), byte_limit=100)
         files.put_bytes("journal", [b"j" * 9000], byte_limit=9000)
         files.put_control("cursor", b"before", byte_limit=100)
         assert not files.remove_step("journal")
@@ -751,3 +761,82 @@ def test_invalid_retained_scratch_grant_is_not_replaced_by_current_configuration
         with pytest.raises(PrimaryStateError, match="scratch admission is invalid"):
             files.ordering_reserved_bytes()
         assert files._one("SELECT byte_limit FROM primary_ordering") == (damaged,)
+
+
+def test_control_capacity_is_prepared_explicitly_and_cannot_change_or_become_a_byte_role(tmp_path):
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        with pytest.raises(PrimaryStateError, match="not prepared"):
+            files.put_control("receipt", b"original", byte_limit=8)
+        files.prepare_controls(("receipt",), byte_limit=8)
+        assert not files.exists("receipt")
+        with pytest.raises(FileNotFoundError):
+            files.read_control("receipt", byte_limit=8)
+        with pytest.raises(PrimaryStateError, match="reserved control"):
+            files.put_bytes("receipt", (b"replacement",), byte_limit=11)
+        with pytest.raises(PrimaryStateError, match="capacity changed"):
+            files.prepare_controls(("receipt",), byte_limit=9)
+        with pytest.raises(owner.PrimaryStateCapacity, match="prepared capacity"):
+            files.put_control("receipt", b"too large", byte_limit=9)
+        files.put_control("receipt", b"original", byte_limit=8)
+        slot = files._one("SELECT rowid,length(body) FROM primary_controls")
+        files.remove_control("receipt", expected=b"original")
+        files.put_control("receipt", b"", byte_limit=8)
+        assert files.exists("receipt") and files.read_control("receipt", byte_limit=0) == b""
+        assert files._one("SELECT rowid,length(body) FROM primary_controls") == slot
+        files.put_bytes("journal", (b"selected",), byte_limit=8)
+        with pytest.raises(PrimaryStateError, match="byte role"):
+            files.prepare_controls(("journal",), byte_limit=8)
+
+
+@pytest.mark.parametrize("limit", [-1, True, 1.5, None])
+def test_control_preparation_requires_explicit_extent_admission(tmp_path, limit):
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        with pytest.raises(ValueError, match="admission"):
+            files.prepare_controls(("receipt",), byte_limit=limit)
+        with pytest.raises(owner.PrimaryStateCapacity, match="SQLite extent"):
+            files.prepare_controls(
+                ("receipt",), byte_limit=files._connection.getlimit(sqlite3.SQLITE_LIMIT_LENGTH)
+            )
+        assert not files.exists("receipt")
+        files.sync()
+
+
+@pytest.mark.parametrize(
+    "damaged",
+    [
+        b"short",
+        b"\x02" + bytes(8),
+        b"\x00" + (1).to_bytes(8, "big"),
+        b"\x01" + (9).to_bytes(8, "big") + bytes(8),
+        "text is not an extent",
+    ],
+)
+def test_invalid_control_extent_fails_closed_without_replacing_original_state(tmp_path, damaged):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        files.prepare_controls(("receipt",), byte_limit=8)
+        files.put_control("receipt", b"original", byte_limit=8)
+    with sqlite3.connect(path) as db:
+        db.execute("UPDATE primary_controls SET body=?", (damaged,))
+    with _open(path, initialize=False) as files:
+        with pytest.raises(PrimaryStateError, match="control"):
+            files.read_control("receipt", byte_limit=8)
+        with pytest.raises(PrimaryStateError, match="control"):
+            files.exists("receipt")
+    with sqlite3.connect(path) as db:
+        assert db.execute("SELECT body FROM primary_controls").fetchone() == (damaged,)
+
+
+def test_unknown_storage_geometry_is_rejected_without_erasing_original_bytes(tmp_path):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        files.put_bytes("original", (b"original",), byte_limit=8)
+    with sqlite3.connect(path) as db:
+        db.execute("UPDATE primary_format SET geometry='unsupported geometry'")
+    with pytest.raises(PrimaryStateError, match="geometry"):
+        _open(path, initialize=False)
+    with sqlite3.connect(path) as db:
+        assert db.execute("SELECT body FROM primary_chunks").fetchall() == [(b"original",)]
+        assert db.execute("SELECT geometry FROM primary_format").fetchone() == (
+            "unsupported geometry",
+        )

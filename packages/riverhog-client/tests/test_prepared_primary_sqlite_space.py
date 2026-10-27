@@ -122,3 +122,24 @@ def test_failed_maintenance_requires_reopen_and_preserves_exact_primary(tmp_path
         with files.verified(original) as stream:
             assert stream.read() == b"original"
         assert not files.vacuum_step(keep_free_pages=0).done
+
+
+def test_reserved_controls_progress_at_zero_free_pages_through_cold_reopens(tmp_path):
+    from tests.support.prepared_primary_controls import witness as control_witness
+
+    path = tmp_path / "state.sqlite3"
+    limits = SqlitePrimaryLimits(256 * 1024, 256 * 1024, 128 * 1024)
+
+    def opened(*, initialize):
+        if initialize:
+            path.touch(exist_ok=False)
+        return TransactionalPrimaryFiles(
+            SqlitePrimaryTestGuard(path),
+            allocation_descriptor=b"reserved controls at database saturation",
+            limits=limits,
+            initialize=initialize,
+        )
+
+    evidence = control_witness(opened, database_bytes=limits.database_bytes)
+    assert len(evidence["cases"]) == 5
+    assert evidence["removal_retains_capacity"] and evidence["original_bytes_preserved"]

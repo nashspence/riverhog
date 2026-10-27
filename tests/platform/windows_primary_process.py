@@ -417,7 +417,7 @@ def _guard_rename_exclusion(path: Path) -> None:
         moved.rename(original)
 
 
-def _vfs_files(shim, path, allocation, *, initialize):
+def _vfs_files(shim, path, allocation, *, initialize, limits=LIMITS):
     class Guard:
         vfs = shim.name
 
@@ -438,7 +438,7 @@ def _vfs_files(shim, path, allocation, *, initialize):
             self.native.close()
 
     return TransactionalPrimaryFiles(
-        Guard(), allocation_descriptor=allocation, limits=LIMITS, initialize=initialize
+        Guard(), allocation_descriptor=allocation, limits=limits, initialize=initialize
     )
 
 
@@ -549,6 +549,24 @@ def _physical_space_witness(parent: Path):
     return result
 
 
+def _control_capacity_witness(parent: Path):
+    from tests.support.prepared_primary_controls import witness as control_witness
+    from tests.support.sqlite_vfs_faults import FaultVfs
+
+    allocation = ALLOCATION + b"/reserved-controls"
+    path = windows_container_path(parent, allocation)
+    limits = SqlitePrimaryLimits(256 * 1024, 256 * 1024, 128 * 1024)
+    with FaultVfs.windows() as shim:
+
+        def opened(*, initialize):
+            return _vfs_files(shim, path, allocation, initialize=initialize, limits=limits)
+
+        result = control_witness(opened, database_bytes=limits.database_bytes)
+        result["runtime"] = shim.identity
+        result["vfs_write_high_water"] = dict(shim.write_high_water)
+    return result
+
+
 def witness(root: Path) -> dict:
     api = _WindowsAPI()
     assert not _elevated(api), "native qualification must run in a non-elevated process"
@@ -559,6 +577,7 @@ def witness(root: Path) -> dict:
     file = PrimaryByteFile("journal", len(CONTENT), hashlib.sha256(CONTENT).hexdigest())
     path = windows_container_path(parent, ALLOCATION)
     with _files(path, initialize=True) as files:
+        files.prepare_controls(("receipt-proof", "usage", "cleanup-progress"), byte_limit=100)
         with _files(
             windows_container_path(parent, ALLOCATION + b"independent"),
             initialize=True,
@@ -747,6 +766,8 @@ def witness(root: Path) -> dict:
         "vfs-" + fault["operation"] + "-" + fault["file"] + "-" + fault["when"]
         for fault in vfs_faults["faults"]
     )
+    controls = _control_capacity_witness(parent)
+    cases.append("reserved-control-progress-at-page-ceiling")
     space = _physical_space_witness(parent)
     cases.extend(["physical-space-bounded-maintenance", "cold-journal-extent-retention"])
     with sqlite3.connect(":memory:") as runtime:
@@ -767,12 +788,13 @@ def witness(root: Path) -> dict:
         "vfs": "win32",
         "vfs_faults": vfs_faults,
         "space": space,
+        "controls": controls,
         "elapsed_seconds": time.monotonic() - started,
         "limitations": [
             "process death is not power loss",
             "producer activation is not yet qualified",
             "VFS faults cover byte selection writes and syncs",
-            "physical control reserves and machine-reset behavior are not certified",
+            "journal progress headroom and machine-reset behavior are not certified",
         ],
     }
 
