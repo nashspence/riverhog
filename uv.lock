@@ -2978,6 +2978,7 @@ name = "riverhog-client"
 version = "0.1.0"
 source = { editable = "packages/riverhog-client" }
 dependencies = [
+    { name = "alembic" },
     { name = "http-api-contracts" },
     { name = "httpx", extra = ["http2"] },
     { name = "pydantic" },
@@ -2989,11 +2990,14 @@ dependencies = [
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance" },
     { name = "riverhog-provenance-contracts" },
+    { name = "sqlalchemy" },
+    { name = "state-schema" },
     { name = "time-formats" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "alembic", specifier = ">=1.18.5,<2.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "httpx", extras = ["http2"], specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
@@ -3005,6 +3009,8 @@ requires-dist = [
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
+    { name = "sqlalchemy", specifier = ">=2.0,<3.0" },
+    { name = "state-schema", editable = "packages/state-schema" },
     { name = "time-formats", editable = "packages/time-formats" },
 ]
 

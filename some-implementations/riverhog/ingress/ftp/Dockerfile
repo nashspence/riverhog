@@ -31,6 +31,7 @@ COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
 COPY packages/riverhog-growth-contracts packages/riverhog-growth-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client
+COPY packages/state-schema packages/state-schema
 COPY packages/riverhog-protocol packages/riverhog-protocol
 COPY packages/sha256-continuation packages/sha256-continuation
 COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
