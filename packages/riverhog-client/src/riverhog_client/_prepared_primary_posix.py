@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import os
 import stat
+import threading
 import uuid
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
@@ -50,6 +51,7 @@ class PrimaryFiles:
         self._directory = -1
         self._owner = -1
         self._owner_root = self
+        self._ordering_guard = threading.Lock()
         for parent in (self.root, *self.root.parents):
             if parent.is_symlink():
                 raise PrimaryStateError("prepared-primary state cannot traverse symlinks")
@@ -144,6 +146,21 @@ class PrimaryFiles:
         except BaseException:
             child.close()
             raise
+
+    def ordered_rows(
+        self, rows: Iterable[tuple[str, int, str]], *, byte_limit: int
+    ) -> Iterator[tuple[str, int, str]]:
+        """Keep disposable physical ordering with the filesystem backend."""
+        from riverhog_client._prepared_primary_posix_ordering import ordered_rows
+
+        self.check_current()
+        guard = self._owner_root._ordering_guard
+        if not guard.acquire(blocking=False):
+            raise PrimaryStateBusy("prepared-primary inventory ordering has a live reader")
+        try:
+            yield from ordered_rows(self, rows, byte_limit=byte_limit)
+        finally:
+            guard.release()
 
     def sync(self) -> None:
         if self._directory < 0:

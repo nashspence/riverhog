@@ -246,3 +246,145 @@ def test_control_admission_rejects_invalid_input_before_writing_any_candidate(tm
             files.remove_control("usage", expected=b"")
         assert files.read_control("usage", byte_limit=8) == b"original"
         assert sorted(p.name for p in files.root.iterdir()) == [".owner", "usage"]
+
+
+@pytest.mark.parametrize("count", [1, 257, 1025])
+def test_ordering_closes_transactions_and_cursors_before_external_iteration(
+    tmp_path, monkeypatch, count
+):
+    import sqlite3
+
+    from riverhog_client import _prepared_primary_posix_ordering as ordering
+
+    connections = []
+    open_cursors = set()
+    select_count = 0
+    select_work = 0
+    selecting = False
+
+    class Cursor(sqlite3.Cursor):
+        def execute(self, *args, **kwargs):
+            result = super().execute(*args, **kwargs)
+            open_cursors.add(self)
+            return result
+
+        def close(self):
+            open_cursors.discard(self)
+            return super().close()
+
+    class Connection(sqlite3.Connection):
+        def execute(self, *args, **kwargs):
+            return self.cursor(factory=Cursor).execute(*args, **kwargs)
+
+    connect = sqlite3.connect
+
+    def trace(statement):
+        nonlocal selecting, select_count
+        selecting = statement.startswith("SELECT ")
+        if selecting:
+            select_count += 1
+
+    def progress():
+        nonlocal select_work
+        if selecting:
+            select_work += 1
+        return 0
+
+    def tracked_connect(*args, **kwargs):
+        connection = connect(*args, **kwargs, factory=Connection)
+        connection.set_trace_callback(trace)
+        connection.set_progress_handler(progress, 1)
+        connections.append(connection)
+        return connection
+
+    monkeypatch.setattr(ordering.sqlite3, "connect", tracked_connect)
+
+    def rows():
+        for number in reversed(range(count)):
+            assert len(connections) == 1
+            assert not connections[0].in_transaction
+            assert not open_cursors
+            yield f"opaque-{number:08}", number, "a" * 64
+
+    with owner.PrimaryFiles(tmp_path.resolve() / "state", initialize=True) as files:
+        iterator = files.ordered_rows(rows(), byte_limit=1024 * 1024)
+        for number, row in enumerate(iterator):
+            assert row == (f"opaque-{number:08}", number, "a" * 64)
+            assert not connections[0].in_transaction
+            assert not open_cursors
+        assert number == count - 1
+        assert select_count == count + 1
+        assert select_work <= 64 * (count + 1)
+        assert not (files.root / "inventory-ordering" / "selection.sqlite3").exists()
+
+
+def test_ordering_has_one_live_reader_across_construction_children(tmp_path):
+    rows = [("b", 2, "b" * 64), ("a", 1, "a" * 64)]
+    with owner.PrimaryFiles(tmp_path.resolve() / "state", initialize=True) as files:
+        with files.child("member", initialize=True) as child:
+            iterator = files.ordered_rows(rows, byte_limit=32 * 1024)
+            assert next(iterator) == rows[1]
+            for contender in [files, child]:
+                with pytest.raises(owner.PrimaryStateBusy, match="live reader"):
+                    next(contender.ordered_rows(rows, byte_limit=32 * 1024))
+            iterator.close()
+            assert list(child.ordered_rows(rows, byte_limit=32 * 1024)) == rows[::-1]
+        assert list(files.ordered_rows(rows, byte_limit=32 * 1024)) == rows[::-1]
+
+
+@pytest.mark.parametrize("failure", ["input", "duplicate", "capacity"])
+def test_ordering_failure_releases_scratch_and_preserves_unrelated_primary(tmp_path, failure):
+    with owner.PrimaryFiles(tmp_path.resolve() / "state", initialize=True) as files:
+        original = files.put("journal", (b"original",), byte_limit=8)
+
+        def rows():
+            yield "a", 1, "a" * 64
+            if failure == "input":
+                raise RuntimeError("input stopped")
+            if failure == "duplicate":
+                yield "a", 1, "a" * 64
+            else:
+                for number in range(1025):
+                    yield f"{number:08}", number, "a" * 64
+
+        error = {
+            "input": RuntimeError,
+            "duplicate": owner.PrimaryStateError,
+            "capacity": owner.PrimaryStateCapacity,
+        }[failure]
+        with pytest.raises(error):
+            list(files.ordered_rows(rows(), byte_limit=16 * 1024))
+        scratch = files.root / "inventory-ordering" / "selection.sqlite3"
+        assert not scratch.exists()
+        with files.verified(original) as stream:
+            assert stream.read() == b"original"
+        assert list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=32 * 1024)) == [
+            ("a", 1, "a" * 64)
+        ]
+
+
+def test_ordering_rebuilds_only_exact_interrupted_scratch_names_after_cold_open(tmp_path):
+    root = tmp_path.resolve() / "state"
+    with owner.PrimaryFiles(root, initialize=True) as files:
+        with files.child("inventory-ordering", initialize=True) as scratch:
+            for name in [
+                "selection.sqlite3",
+                "selection.sqlite3-journal",
+                "candidate-selection.sqlite3",
+                "unrelated",
+            ]:
+                scratch.put(name, (b"interrupted",), byte_limit=11)
+    with owner.PrimaryFiles(root, initialize=False) as files:
+        assert list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=32 * 1024)) == [
+            ("a", 1, "a" * 64)
+        ]
+        with files.child("inventory-ordering", initialize=False) as scratch:
+            assert scratch.read_control("unrelated", byte_limit=11) == b"interrupted"
+            assert all(
+                not scratch.exists(name)
+                for name in [
+                    "selection.sqlite3",
+                    "selection.sqlite3-journal",
+                    "candidate-selection.sqlite3",
+                ]
+            )
