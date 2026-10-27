@@ -45,11 +45,12 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
     raw = report.read_text() if report.is_file() else ""
     evidence = json.loads(raw) if raw else {"missing_report": True, "exit_code": code}
     assert code == 0, evidence
-    assert evidence["passed"] == 32 and evidence["elevated"] is False, evidence
+    assert evidence["passed"] == 33 and evidence["elevated"] is False, evidence
     assert evidence["vfs"] == "win32"
     assert evidence["vfs_faults"]["runtime"]["base_vfs"] == "win32"
     assert len(evidence["vfs_faults"]["faults"]) == 8
     assert all(fault["injected"] for fault in evidence["vfs_faults"]["faults"])
+    assert len(evidence["space"]["cycles"]) == 3
     print(json.dumps(evidence, sort_keys=True))
 
 
@@ -117,3 +118,24 @@ def test_journal_connection_recovery_preserves_presence_and_private_checks(monke
     with pytest.raises(PrimaryStateError, match="missing|not private"):
         guard.check_journal(required=True, recovering=True)
     assert guard._journal_identity == (7, 0, 1)
+
+
+def test_native_allocation_keeps_end_of_file_and_allocated_size_distinct():
+    import ctypes
+
+    from riverhog_client._prepared_primary_windows_native import _FileStandardInfo, _WindowsAPI
+
+    calls = []
+
+    class Kernel:
+        def GetFileInformationByHandleEx(self, handle, kind, pointer, size):
+            calls.append((handle, kind, size))
+            info = ctypes.cast(pointer, ctypes.POINTER(_FileStandardInfo)).contents
+            info.allocated, info.end, info.links = 16384, 4097, 1
+            return 1
+
+    api = object.__new__(_WindowsAPI)
+    api.kernel = Kernel()
+    space = api.file_space(7)
+    assert calls == [(7, 1, ctypes.sizeof(_FileStandardInfo))]
+    assert space.end_bytes == 4097 and space.allocated_bytes == 16384

@@ -83,6 +83,12 @@ def test_vfs_fault_surrounds_the_native_call_without_replacing_its_file_or_filen
     expected = sqlite3.SQLITE_IOERR_WRITE if operation == "write" else sqlite3.SQLITE_IOERR_FSYNC
     assert result == expected and fault.injected
     assert fault.delegated is (when == "after")
+    assert shim.completed_bytes[("write", "database")] == (
+        11 if operation == "write" and when == "after" else 0
+    )
+    assert shim.write_high_water["database"] == (
+        4107 if operation == "write" and when == "after" else 0
+    )
     assert len(calls) == (2 if when == "after" else 1)
     if when == "after":
         assert calls[1][0] == operation and calls[1][1] == real

@@ -39,3 +39,11 @@ class PrimaryByteFile:
             raise ValueError("invalid prepared-primary file length")
         if not isinstance(self.sha256, str) or _SHA256.fullmatch(self.sha256) is None:
             raise ValueError("invalid prepared-primary file digest")
+
+
+@dataclass(frozen=True, slots=True)
+class PrimaryFileSpace:
+    """Separate the logical file extent from filesystem-reported allocation."""
+
+    end_bytes: int
+    allocated_bytes: int

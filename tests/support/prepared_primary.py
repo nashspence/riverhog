@@ -16,6 +16,7 @@ from riverhog_client._prepared_primary_closing import (
 )
 from riverhog_client._prepared_primary_documents import PrimarySession, primary_control_bytes
 from riverhog_client._prepared_primary_store import PrimaryPreparation
+from riverhog_client._prepared_primary_types import PrimaryFileSpace
 from riverhog_client.producer import ProducerArtifactIdentity, ProducerFile
 from riverhog_protocol import (
     ArtifactMemberIdentityDocument,
@@ -153,6 +154,15 @@ class SqlitePrimaryTestGuard:
         self.check_current()
         if required:
             assert Path(str(self.path) + "-journal").is_file()
+
+    def file_space(self):
+        self.check_current()
+
+        def space(path):
+            info = path.stat()
+            return PrimaryFileSpace(info.st_size, info.st_blocks * 512)
+
+        return space(self.path), space(Path(str(self.path) + "-journal"))
 
     def close(self):
         self.closed = True

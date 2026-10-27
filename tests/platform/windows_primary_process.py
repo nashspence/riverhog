@@ -417,16 +417,11 @@ def _guard_rename_exclusion(path: Path) -> None:
         moved.rename(original)
 
 
-def _vfs_selection_fault(shim, parent: Path, operation: str, kind: str, when: str):
-    from dataclasses import asdict
-
-    allocation = ALLOCATION + f"/vfs/{operation}/{kind}/{when}".encode("ascii")
-    path = windows_container_path(parent, allocation)
-
+def _vfs_files(shim, path, allocation, *, initialize):
     class Guard:
         vfs = shim.name
 
-        def __init__(self, *, initialize):
+        def __init__(self):
             self.path = path
             self.native = WindowsContainer(path, initialize=initialize)
 
@@ -436,16 +431,25 @@ def _vfs_selection_fault(shim, parent: Path, operation: str, kind: str, when: st
         def check_journal(self, *, required, recovering=False):
             self.native.check_journal(required=required, recovering=recovering)
 
+        def file_space(self):
+            return self.native.file_space()
+
         def close(self):
             self.native.close()
 
+    return TransactionalPrimaryFiles(
+        Guard(), allocation_descriptor=allocation, limits=LIMITS, initialize=initialize
+    )
+
+
+def _vfs_selection_fault(shim, parent: Path, operation: str, kind: str, when: str):
+    from dataclasses import asdict
+
+    allocation = ALLOCATION + f"/vfs/{operation}/{kind}/{when}".encode("ascii")
+    path = windows_container_path(parent, allocation)
+
     def opened(*, initialize):
-        return TransactionalPrimaryFiles(
-            Guard(initialize=initialize),
-            allocation_descriptor=allocation,
-            limits=LIMITS,
-            initialize=initialize,
-        )
+        return _vfs_files(shim, path, allocation, initialize=initialize)
 
     candidate = b"candidate decision" * 500
     selected = PrimaryByteFile("decision", len(candidate), hashlib.sha256(candidate).hexdigest())
@@ -518,6 +522,31 @@ def _vfs_fault_witness(parent: Path):
         calls = {operation + ":" + kind: count for (operation, kind), count in shim.calls.items()}
     assert len(reports) == 8
     return {"runtime": identity, "faults": reports, "calls": calls}
+
+
+def _physical_space_witness(parent: Path):
+    from tests.support.prepared_primary_space import witness as space_witness
+    from tests.support.sqlite_vfs_faults import FaultVfs
+
+    allocation = ALLOCATION + b"/physical-space"
+    path = windows_container_path(parent, allocation)
+    with FaultVfs.windows() as shim:
+
+        def opened(*, initialize):
+            return _vfs_files(shim, path, allocation, initialize=initialize)
+
+        def io_bytes():
+            return {
+                operation + ":" + kind: count
+                for (operation, kind), count in shim.completed_bytes.items()
+            }
+
+        result = space_witness(opened, io_bytes=io_bytes)
+        result["runtime"] = shim.identity
+        result["completed_vfs_bytes"] = io_bytes()
+        result["vfs_write_high_water"] = dict(shim.write_high_water)
+        assert all(cycle["total_vacuum_database_write_bytes"] > 0 for cycle in result["cycles"])
+    return result
 
 
 def witness(root: Path) -> dict:
@@ -718,6 +747,8 @@ def witness(root: Path) -> dict:
         "vfs-" + fault["operation"] + "-" + fault["file"] + "-" + fault["when"]
         for fault in vfs_faults["faults"]
     )
+    space = _physical_space_witness(parent)
+    cases.append("physical-space-bounded-maintenance")
     with sqlite3.connect(":memory:") as runtime:
         source_id = runtime.execute("SELECT sqlite_source_id()").fetchone()[0]
         compile_options = [row[0] for row in runtime.execute("PRAGMA compile_options")]
@@ -735,6 +766,7 @@ def witness(root: Path) -> dict:
         "sqlite_extension_sha256": hashlib.sha256(Path(_sqlite3.__file__).read_bytes()).hexdigest(),
         "vfs": "win32",
         "vfs_faults": vfs_faults,
+        "space": space,
         "elapsed_seconds": time.monotonic() - started,
         "limitations": [
             "process death is not power loss",

@@ -102,6 +102,8 @@ class FaultVfs:
         self._callbacks = []
         self.files = {}
         self.calls = Counter()
+        self.completed_bytes = Counter()
+        self.write_high_water = Counter()
         self.errors = []
         self.fault: Fault | None = None
         self.identity = {}
@@ -217,6 +219,12 @@ class FaultVfs:
                     fault.injected = True
                     return code
                 result = getattr(methods, name)(real, *arguments)
+                if result == sqlite3.SQLITE_OK and name in ("read", "write"):
+                    self.completed_bytes[(name, file_kind)] += arguments[1]
+                    if name == "write":
+                        self.write_high_water[file_kind] = max(
+                            self.write_high_water[file_kind], arguments[2] + arguments[1]
+                        )
                 if name == "close":
                     del self.files[address]
                 if hit:

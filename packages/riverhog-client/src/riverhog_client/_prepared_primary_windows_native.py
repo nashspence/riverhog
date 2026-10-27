@@ -10,7 +10,11 @@ from ctypes import wintypes
 from pathlib import Path
 from typing import Any
 
-from riverhog_client._prepared_primary_types import PrimaryStateBusy, PrimaryStateError
+from riverhog_client._prepared_primary_types import (
+    PrimaryFileSpace,
+    PrimaryStateBusy,
+    PrimaryStateError,
+)
 
 _DWORD = ctypes.c_uint32
 _BOOL = ctypes.c_int32
@@ -47,6 +51,17 @@ class _FileInformation(ctypes.Structure):
         ("links", _DWORD),
         ("index_high", _DWORD),
         ("index_low", _DWORD),
+    ]
+
+
+class _FileStandardInfo(ctypes.Structure):
+    # FILE_STANDARD_INFO uses one-byte BOOLEAN fields, unlike the Win32 BOOL.
+    _fields_ = [
+        ("allocated", ctypes.c_int64),
+        ("end", ctypes.c_int64),
+        ("links", _DWORD),
+        ("delete_pending", ctypes.c_ubyte),
+        ("directory", ctypes.c_ubyte),
     ]
 
 
@@ -116,6 +131,7 @@ class _WindowsAPI:
         bind(k, "GetCurrentProcess", _HANDLE)
         bind(k, "GetDriveTypeW", _DWORD, wintypes.LPCWSTR)
         bind(k, "GetFileInformationByHandle", _BOOL, _HANDLE, p(_FileInformation))
+        bind(k, "GetFileInformationByHandleEx", _BOOL, _HANDLE, ctypes.c_int, _PTR, _DWORD)
         bind(k, "GetFinalPathNameByHandleW", _DWORD, _HANDLE, wintypes.LPWSTR, _DWORD, _DWORD)
         bind(
             k,
@@ -268,6 +284,27 @@ class _WindowsAPI:
         if buffer.value.casefold() != ("\\\\?\\" + str(path)).casefold():
             raise PrimaryStateError("prepared-primary path resolved through an unsupported alias")
         return info.volume, info.index_high, info.index_low
+
+    def file_space(self, handle: int) -> PrimaryFileSpace:
+        """Read FILE_STANDARD_INFO (FileStandardInfo=1) from the owned native handle."""
+        info = _FileStandardInfo()
+        self._required(
+            self.kernel.GetFileInformationByHandleEx(
+                handle, 1, ctypes.byref(info), ctypes.sizeof(info)
+            ),
+            "file allocation",
+        )
+        if (
+            info.allocated < 0
+            or info.end < 0
+            or info.links != 1
+            or info.delete_pending
+            or info.directory
+        ):
+            raise PrimaryStateError(
+                "prepared-primary file allocation is not a current regular file"
+            )
+        return PrimaryFileSpace(end_bytes=info.end, allocated_bytes=info.allocated)
 
     def private(self, handle: int, *, directory: bool = False, inherited: bool = False) -> None:
         owner, acl, descriptor = _PTR(), _PTR(), _PTR()
@@ -444,6 +481,27 @@ class WindowsContainer:
             ):
                 raise PrimaryStateError("prepared-primary journal identity changed")
             self._journal_identity = identity
+        finally:
+            self._api.close(handle)
+
+    def file_space(self) -> tuple[PrimaryFileSpace, PrimaryFileSpace]:
+        """Measure the pinned database and identity-checked private journal separately."""
+        self.check_current()
+        path = Path(str(self.path) + "-journal")
+        try:
+            handle = self._api.open(path, journal=True)
+        except FileNotFoundError:
+            raise PrimaryStateError("prepared-primary durable journal is missing") from None
+        try:
+            identity = self._api.information(handle, path, directory=False)
+            if identity != self._journal_identity:
+                raise PrimaryStateError("prepared-primary journal identity changed")
+            self._api.private(handle, inherited=True)
+            result = self._api.file_space(self._database), self._api.file_space(handle)
+            if self._api.information(handle, path, directory=False) != identity:
+                raise PrimaryStateError("prepared-primary journal identity changed")
+            self.check_current()
+            return result
         finally:
             self._api.close(handle)
 

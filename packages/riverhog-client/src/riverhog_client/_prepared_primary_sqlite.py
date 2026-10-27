@@ -12,7 +12,7 @@ from collections.abc import Iterable, Iterator
 from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, BinaryIO, Protocol, cast
+from typing import TYPE_CHECKING, Any, BinaryIO, Protocol, cast
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Connection, Engine
@@ -22,11 +22,15 @@ from state_schema import EngineFactory
 from riverhog_client._prepared_primary_sqlite_schema import primary_state_schema, verify_shape
 from riverhog_client._prepared_primary_types import (
     PrimaryByteFile,
+    PrimaryFileSpace,
     PrimaryStateBusy,
     PrimaryStateCapacity,
     PrimaryStateError,
     primary_file_name,
 )
+
+if TYPE_CHECKING:
+    from riverhog_client._prepared_primary_sqlite_space import SqlitePrimarySpace, SqliteVacuumStep
 
 _BLOCK = 4096
 _GEOMETRY = "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096"
@@ -39,11 +43,12 @@ class ContainerGuard(Protocol):
     def check_current(self) -> None: ...
     def check_journal(self, *, required: bool, recovering: bool = False) -> None: ...
     def close(self) -> None: ...
+    def file_space(self) -> tuple[PrimaryFileSpace, PrimaryFileSpace]: ...
 
 
 @dataclass(frozen=True, slots=True)
 class SqlitePrimaryLimits:
-    """Page ceiling, retained-journal setting and fixed SQLite cache budget.
+    """Page ceiling, retained-journal setting and SQLite cache tuning.
 
     Journal retention is distinct from peak transaction space and from the
     calling application's reservations for pending bytes and control progress.
@@ -269,6 +274,18 @@ class TransactionalPrimaryFiles:
                 cursor.close()
                 raise PrimaryStateError("prepared-primary durable barrier is unavailable")
             cursor.close()
+
+    def space_usage(self) -> SqlitePrimarySpace:
+        """Observe database/reusable pages and actual owned file allocation."""
+        from riverhog_client._prepared_primary_sqlite_space import space_usage
+
+        return space_usage(self)
+
+    def vacuum_step(self, *, keep_free_pages: int) -> SqliteVacuumStep:
+        """Explicit execution only: one freelist page, preserving the caller's free-page floor."""
+        from riverhog_client._prepared_primary_sqlite_space import vacuum_step
+
+        return vacuum_step(self, keep_free_pages=keep_free_pages)
 
     def child(self, name: str, *, initialize: bool) -> TransactionalPrimaryFiles:
         primary_file_name(name)
