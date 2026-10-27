@@ -108,4 +108,7 @@ def witness(opened, *, io_bytes=None):
             assert stream.read() == b"retained original"
         assert files.read_control("receipt", byte_limit=64) == b"exact original control"
         cold = files.space_usage()
+        assert cold.journal.end_bytes >= maintained.journal.end_bytes
+        # Filesystems may drop speculative allocation beyond EOF on last close.
+        assert cold.journal.allocated_bytes >= maintained.journal.end_bytes
     return {"cycles": cycles, "cold": asdict(cold)}

@@ -748,7 +748,7 @@ def witness(root: Path) -> dict:
         for fault in vfs_faults["faults"]
     )
     space = _physical_space_witness(parent)
-    cases.append("physical-space-bounded-maintenance")
+    cases.extend(["physical-space-bounded-maintenance", "cold-journal-extent-retention"])
     with sqlite3.connect(":memory:") as runtime:
         source_id = runtime.execute("SELECT sqlite_source_id()").fetchone()[0]
         compile_options = [row[0] for row in runtime.execute("PRAGMA compile_options")]

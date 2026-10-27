@@ -79,9 +79,10 @@ def _connect(guard: ContainerGuard, limits: SqlitePrimaryLimits) -> sqlite3.Conn
         connection.enable_load_extension(False)
         settings = {
             "busy_timeout": 0,
+            # Select retention before a pragma opens the pager in its default delete mode.
+            "journal_mode": "PERSIST",
             "page_size": _BLOCK,
             "auto_vacuum": 2,
-            "journal_mode": "PERSIST",
             "synchronous": 3,
             "foreign_keys": 1,
             "cache_size": -(limits.cache_bytes // 1024),
