@@ -175,7 +175,7 @@ class PrimaryStore:
                 self._files.remove("candidate-" + name)
             self._usage = self._read(self._files, "usage", PrimaryUsage)
             self._files.sync()
-            self._recover()
+            self._recover(require_complete=False)
         except BaseException:
             self._files.close()
             raise
@@ -195,7 +195,7 @@ class PrimaryStore:
     def publication_started(self) -> bool:
         """Distinguish pristine allocation from a possibly committed remote creation."""
         with self._mutex:
-            self._recover()
+            self._recover(require_complete=False)
             return (
                 self._optional(self._files, "creating", PrimaryCreating) is not None
                 or self._optional(self._files, "session", PrimarySession) is not None
@@ -207,20 +207,20 @@ class PrimaryStore:
     def session_bound(self) -> bool:
         """Whether the allocation retains an accepted session, without creating one."""
         with self._mutex:
-            self._recover()
+            self._recover(require_complete=False)
             return self._optional(self._files, "session", PrimarySession) is not None
 
     @property
     def custody_settled(self) -> bool:
         """Observe the validated complete local receipt/reclaim barrier without a scan."""
         with self._mutex:
-            self._recover()
+            self._recover(require_complete=False)
             return self._optional(self._files, "custody-settled", PrimaryCustodySettled) is not None
 
     @property
     def usage(self) -> PrimaryUsage:
         with self._mutex:
-            self._recover()
+            self._recover(require_complete=False)
             return self._usage
 
     def _read(self, files: PrimaryFiles, name: str, model: type[_Control]) -> _Control:
@@ -426,7 +426,7 @@ class PrimaryStore:
         self, member: ArtifactMemberIdentityDocument, *, verify_preimages: bool
     ) -> PrimaryRecord | None:
         with self._mutex:
-            self._recover()
+            self._recover(require_complete=verify_preimages)
             with ExitStack() as opened:
                 try:
                     files = opened.enter_context(
@@ -563,7 +563,20 @@ class PrimaryStore:
         self._usage = after
         self._files.remove_control("transition", expected=primary_control_bytes(transition))
 
-    def _recover(self) -> None:
+    def _remove_roles(self, files: PrimaryFiles) -> bool:
+        for name in _BYTE_NAMES:
+            if not files.remove_step(name):
+                return False
+        return True
+
+    @staticmethod
+    def _cleanup_pending(*, require_complete: bool) -> bool:
+        if require_complete:
+            raise PrimaryStateBusy("prepared-primary transition requires bounded cleanup")
+        return False
+
+    def _recover(self, *, require_complete: bool = True) -> bool:
+        """Reconcile named controls and bounded selected-generation cleanup."""
         if self._authoring:
             raise PrimaryStateBusy("prepared-primary author cannot reenter its active transition")
         self._files.check_current()
@@ -571,8 +584,9 @@ class PrimaryStore:
         if transition is None:
             from riverhog_client._prepared_primary_closing import recover_closing
 
-            recover_closing(self)
-            return
+            if not recover_closing(self):
+                return self._cleanup_pending(require_complete=require_complete)
+            return True
         if self._usage not in (transition.before, transition.after):
             raise PrimaryStateError(
                 "prepared-primary transition counter differs from retained state"
@@ -588,8 +602,8 @@ class PrimaryStore:
                 if record is None:
                     if self._usage != transition.before:
                         raise PrimaryStateError("prepared-primary committed manifest disappeared")
-                    for name in _BYTE_NAMES:
-                        files.remove(name)
+                    if not self._remove_roles(files):
+                        return self._cleanup_pending(require_complete=require_complete)
                     selected = transition.before
                 else:
                     expected = self._usage_from_preparation(transition.before, record.prepared)
@@ -606,8 +620,8 @@ class PrimaryStore:
                 expected = self._usage_after_reclaim(transition.before, record.prepared)
                 if transition.after != expected:
                     raise PrimaryStateError("prepared-primary reclaim accounting changed")
-                for name in _BYTE_NAMES:
-                    files.remove(name)
+                if not self._remove_roles(files):
+                    return self._cleanup_pending(require_complete=require_complete)
                 self._install(
                     files, "reclaimed", PrimaryReclaimed(prepared_sha256=_identity(record.prepared))
                 )
@@ -615,7 +629,9 @@ class PrimaryStore:
         self._finish_transition(selected, transition)
         from riverhog_client._prepared_primary_closing import recover_closing
 
-        recover_closing(self)
+        if not recover_closing(self):
+            return self._cleanup_pending(require_complete=require_complete)
+        return True
 
     def _usage_from_preparation(
         self, before: PrimaryUsage, prepared: PreparedPrimary
@@ -703,7 +719,8 @@ class PrimaryStore:
 
     def reclaim(self, member: ArtifactMemberIdentityDocument) -> bool:
         with self._mutex:
-            self._recover()
+            if not self._recover(require_complete=False):
+                return False
             record = self.load_controls(member)
             if record is None or not record.compact:
                 return False
@@ -720,8 +737,8 @@ class PrimaryStore:
                     operation="reclaim", member=member, before=self._usage, after=after
                 )
                 self._write(self._files, "transition", transition)
-                for name in _BYTE_NAMES:
-                    files.remove(name)
+                if not self._remove_roles(files):
+                    return False
                 self._install(files, "reclaimed", PrimaryReclaimed(prepared_sha256=identity))
                 self._finish_transition(after, transition)
             return True

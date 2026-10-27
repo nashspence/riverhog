@@ -42,7 +42,7 @@ def _chain(previous: str, content: bytes) -> str:
     ).hexdigest()
 
 
-def recover_closing(store: PrimaryStore) -> None:
+def recover_closing(store: PrimaryStore) -> bool:
     files = store._files
     expected_reservation = (
         0
@@ -71,7 +71,8 @@ def recover_closing(store: PrimaryStore) -> None:
                 raise PrimaryStateError("closing inventory differs from its allocation")
             if intent.before is not None and store._usage != intent.before:
                 raise PrimaryStateError("uncommitted inventory has changed accounting")
-            files.remove("inventory")
+            if not files.remove_step("inventory"):
+                return False
             if intent.inventory is not None:
                 store._write(
                     files,
@@ -84,7 +85,7 @@ def recover_closing(store: PrimaryStore) -> None:
                     ),
                     expected=intent,
                 )
-        return
+        return True
     if (
         closing.session_sha256 != _identity(store.session)
         or closing.members != store._usage.members
@@ -140,6 +141,7 @@ def recover_closing(store: PrimaryStore) -> None:
         or draining.manifest_chain_sha256 != settled.manifest_chain_sha256
     ):
         raise PrimaryStateError("settled custody differs from its exact inventory closure")
+    return True
 
 
 def freeze_inventory(
@@ -369,7 +371,8 @@ def advance_custody(
     if type(limit) is not int or limit <= 0:
         raise ValueError("custody batch admission must be a positive integer")
     with store._mutex:
-        store._recover()
+        if not store._recover(require_complete=False):
+            return False
         ready = store._read(store._files, "finish-ready", PrimaryFinishReady)
         cursor = store._optional(store._files, "custody-closing", PrimaryCustodyClosing)
         if cursor is None:
@@ -435,9 +438,7 @@ def advance_custody(
                         if record.custody is None:
                             break
                     if not store.reclaim(entry.member):
-                        raise PrimaryStateError(
-                            "custody member cannot retain compact release authority"
-                        )
+                        break
                     chain = _chain(chain, raw[:-1])
                     count += 1
                     offset += len(raw)

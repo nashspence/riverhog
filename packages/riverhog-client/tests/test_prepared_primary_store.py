@@ -1741,3 +1741,165 @@ def test_terminal_receipt_callback_and_reclamation_never_read_redundant_preimage
     assert terminal["pending_read_bytes"] == 0
     assert terminal["fsyncs"] > 0
     print("prepared_terminal_receipt_work", json.dumps(terminal))
+
+
+@pytest.mark.parametrize("role", ["request", "observation", "graph", "journal", "decision"])
+def test_bounded_reclaim_retains_original_charge_across_cold_pending_steps(
+    tmp_path, monkeypatch, role
+):
+    from riverhog_client import PrimaryStateBusy
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        record = store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+        record = store.accept_decision(record, b"exact decision")
+        record = store.accept_custody(record, _receipt(record.prepared))
+        before = store.usage
+    remove_step = filesystem.PrimaryFiles.remove_step
+    paused = True
+    calls = 0
+
+    def pending(files, name):
+        nonlocal calls
+        if name == role and paused:
+            calls += 1
+            return False
+        return remove_step(files, name)
+
+    monkeypatch.setattr(filesystem.PrimaryFiles, "remove_step", pending)
+    with _open(root) as store:
+        assert not store.reclaim(_member())
+        assert calls == 1
+        transition = (root / "transition").read_bytes()
+        for observe in [
+            lambda: store.usage,
+            lambda: store.session_bound,
+            lambda: store.publication_started,
+            lambda: store.custody_settled,
+            lambda: store.load_controls(_member()),
+        ]:
+            previous = calls
+            observe()
+            assert calls == previous + 1
+            assert store._usage == before
+            assert (root / "transition").read_bytes() == transition
+        with store._member(str(_member().artifact_id), create=False) as files:
+            assert not files.exists("reclaimed")
+            assert files.read_control(role, byte_limit=LIMITS.control_bytes)
+        with pytest.raises(PrimaryStateBusy, match="bounded cleanup"):
+            store.prepare_or_load(_member(2), REQUEST, _no_author)
+    previous = calls
+    with _open(root) as store:
+        assert calls == previous + 1
+        assert store._usage == before
+        paused = False
+        assert store.reclaim(_member())
+        after = store.usage
+        assert after.pending_bytes == 0 and after.sequence == before.sequence + 1
+        assert after.members == before.members
+        assert after.control_bytes == before.control_bytes
+        assert not (root / "transition").exists()
+        assert store.reclaim(_member()) and store.usage == after
+    with _open(root) as store:
+        assert store.reclaim(_member()) and store.usage == after
+
+
+@pytest.mark.parametrize("role", ["request", "observation", "graph", "journal", "decision"])
+def test_terminal_custody_cursor_waits_for_all_bounded_role_deletions(tmp_path, monkeypatch, role):
+    from riverhog_client._prepared_primary_closing import advance_custody
+
+    root = tmp_path.resolve() / "state"
+    remove_step = filesystem.PrimaryFiles.remove_step
+    paused = True
+    calls = []
+
+    def pending(files, name):
+        if name == role and paused:
+            return False
+        return remove_step(files, name)
+
+    with _open(root, initialize=True) as store:
+        _ready_inventory(store, (_member(),))
+        before = store.usage
+        monkeypatch.setattr(filesystem.PrimaryFiles, "remove_step", pending)
+
+        def settle(member):
+            calls.append(member)
+            record = store.load_controls(member)
+            store.accept_custody(record, _receipt(record.prepared))
+
+        assert not advance_custody(store, limit=1, settle=settle)
+        cursor = (root / "custody-closing").read_bytes()
+        assert json.loads(cursor)["after_member"] == "0"
+        assert len(calls) == 1 and store._usage == before
+    with _open(root) as store:
+        for _ in range(3):
+            assert not advance_custody(store, limit=1, settle=settle)
+            assert (root / "custody-closing").read_bytes() == cursor
+            assert store._usage == before
+            assert not (root / "custody-settled").exists()
+            assert len(calls) == 1
+        paused = False
+        assert advance_custody(store, limit=1, settle=settle)
+        assert len(calls) == 1
+        assert store.custody_settled
+        assert store.usage.pending_bytes == 0
+        assert json.loads((root / "custody-closing").read_bytes())["after_member"] == "1"
+
+
+def test_interrupted_preparation_keeps_its_transition_until_bounded_rollback_finishes(
+    tmp_path, monkeypatch
+):
+    from riverhog_client import PrimaryStateBusy
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True):
+        pass
+    _crash(root, "graph")
+    remove_step = filesystem.PrimaryFiles.remove_step
+    paused = True
+
+    def pending(files, name):
+        if name == "graph" and paused:
+            return False
+        return remove_step(files, name)
+
+    monkeypatch.setattr(filesystem.PrimaryFiles, "remove_step", pending)
+    with _open(root) as store:
+        assert store.usage.members == store.usage.pending_bytes == 0
+        assert (root / "transition").exists()
+        with pytest.raises(PrimaryStateBusy, match="bounded cleanup"):
+            store.prepare_or_load(_member(), REQUEST, _no_author)
+        paused = False
+        record = store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+        assert not record.compact
+        assert store.usage.members == 1
+        assert not (root / "transition").exists()
+
+
+def test_unselected_inventory_rebuild_waits_for_bounded_deletion(tmp_path, monkeypatch):
+    from riverhog_client import PrimaryStateBusy
+    from riverhog_client._prepared_primary_closing import freeze_inventory
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+    _crash(root, "inventory", operation="freeze")
+    remove_step = filesystem.PrimaryFiles.remove_step
+    paused = True
+
+    def pending(files, name):
+        if name == "inventory" and paused:
+            return False
+        return remove_step(files, name)
+
+    monkeypatch.setattr(filesystem.PrimaryFiles, "remove_step", pending)
+    with _open(root) as store:
+        original_intent = (root / "closing-intent").read_bytes()
+        assert not store.usage.inventory_selected
+        with pytest.raises(PrimaryStateBusy, match="bounded cleanup"):
+            freeze_inventory(store, (_member(),))
+        assert (root / "closing-intent").read_bytes() == original_intent
+        paused = False
+        assert freeze_inventory(store, (_member(),)).members == 1
+        assert store.usage.inventory_selected

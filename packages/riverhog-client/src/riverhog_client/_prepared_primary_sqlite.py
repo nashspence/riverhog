@@ -274,7 +274,6 @@ class TransactionalPrimaryFiles:
         with self._mutex:
             self.check_current()
             if initialize:
-                self._require_idle()
                 if (
                     self._one(
                         "SELECT id FROM primary_namespaces WHERE parent=? AND name=?",
@@ -283,6 +282,7 @@ class TransactionalPrimaryFiles:
                     is not None
                 ):
                     raise FileExistsError(name)
+                self._require_idle()
                 with self._transaction() as db:
                     cursor = db.execute(
                         "INSERT INTO primary_namespaces(parent,name) VALUES (?,?)",
@@ -559,9 +559,11 @@ class TransactionalPrimaryFiles:
                 "ON o.generation=p.generation WHERE p.id=1"
             )
             if operation is not None:
-                if operation[1:] != (self._namespace, name, 1, "cleanup"):
-                    raise PrimaryStateBusy("another prepared-primary mutation requires cleanup")
-                return self.recover_step()
+                if operation[1:] == (self._namespace, name, 1, "cleanup"):
+                    return self.recover_step()
+                if operation[1:3] != (self._namespace, name) and not self.exists(name):
+                    return True
+                raise PrimaryStateBusy("another prepared-primary mutation requires cleanup")
             row = self._one(
                 "SELECT generation FROM primary_names WHERE namespace=? AND name=?",
                 (self._namespace, name),

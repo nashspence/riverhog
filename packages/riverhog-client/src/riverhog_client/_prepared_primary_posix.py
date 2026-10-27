@@ -366,6 +366,11 @@ class PrimaryFiles:
         os.close(descriptor)
         return True
 
+    def remove_step(self, name: str) -> bool:
+        """A POSIX unlink completes one bounded selected-name deletion."""
+        self.remove(name)
+        return True
+
     def remove(self, name: str) -> None:
         self.check_current()
         try:

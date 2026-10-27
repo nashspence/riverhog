@@ -471,6 +471,8 @@ def witness(root: Path) -> dict:
             [sys.executable, __file__, "--busy", str(path)], timeout=60, check=False
         )
         assert result.returncode == 42, result.returncode
+        with files.child("existing", initialize=True):
+            pass
         files.put("retiring", [b"r" * 9000], byte_limit=9000)
         assert not files.remove_step("retiring")
         cases.extend(
@@ -487,6 +489,24 @@ def witness(root: Path) -> dict:
             assert stream.read() == CONTENT
         assert not files.exists("retiring")
         assert files.read_control("receipt-proof", byte_limit=100) == b"original-encoding"
+        try:
+            files.child("existing", initialize=True)
+        except FileExistsError:
+            pass
+        else:
+            raise AssertionError("existing namespace was created again during cleanup")
+        with files.child("existing", initialize=False) as child:
+            assert not child.exists("missing")
+        changes = files._connection.total_changes
+        assert files.remove_step("missing")
+        assert files._connection.total_changes == changes
+        try:
+            files.child("new-child", initialize=True)
+        except PrimaryStateBusy:
+            pass
+        else:
+            raise AssertionError("pending cleanup admitted a new namespace")
+        cases.append("pending-cleanup-point-coordination")
         steps = 0
         while not files.remove_step("retiring"):
             steps += 1

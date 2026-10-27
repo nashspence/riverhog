@@ -307,8 +307,9 @@ def test_selected_generation_reclaim_is_pinned_bounded_and_cold_resumable(tmp_pa
         assert files.read_control("prepared", byte_limit=100) == b"retained-original-authority"
         with pytest.raises(PrimaryStateBusy):
             files.put_control("custody", b"proof", byte_limit=100)
-        with pytest.raises(PrimaryStateBusy):
-            files.remove_step("other")
+        changes = files._connection.total_changes
+        assert files.remove_step("other")
+        assert files._connection.total_changes == changes
     for remaining in (2, 1, 0):
         with _open(path, initialize=False) as files:
             assert files.remove_step("journal") is False
@@ -438,3 +439,46 @@ def test_extent_reader_checks_selection_length_and_every_accessed_chunk(tmp_path
             with pytest.raises(PrimaryStateError, match="chunk extent"):
                 stream.readline(10)
         assert not files._pins
+
+
+def test_pending_cleanup_allows_only_existing_namespace_and_other_absent_role_reads(tmp_path):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        with files.child("member", initialize=True) as member:
+            member.put("journal", [b"x" * 8193], byte_limit=8193)
+            assert not member.remove_step("journal")
+    with _open(path, initialize=False) as files:
+        with pytest.raises(FileExistsError):
+            files.child("member", initialize=True)
+        with files.child("member", initialize=False) as member:
+            before = files._connection.total_changes
+            assert member.remove_step("request")
+            assert files._connection.total_changes == before
+            with pytest.raises(PrimaryStateBusy):
+                files.child("new-member", initialize=True)
+            with pytest.raises(PrimaryStateBusy):
+                member.put("request", [b"new"], byte_limit=3)
+            assert member.remove_step("journal") is False
+            assert files._one("SELECT count(*) FROM primary_chunks") == (2,)
+            while not member.remove_step("journal"):
+                pass
+            assert member.remove_step("journal")
+
+
+def test_unselected_candidate_cannot_be_reported_as_completed_role_cleanup(tmp_path):
+    path = tmp_path / "state.sqlite3"
+
+    def interrupted():
+        yield b"x" * 4096
+        raise RuntimeError("input interrupted")
+
+    with _open(path, initialize=True) as files:
+        with pytest.raises(RuntimeError, match="input interrupted"):
+            files.put("journal", interrupted(), byte_limit=8192)
+    with _open(path, initialize=False) as files:
+        with pytest.raises(PrimaryStateBusy):
+            files.remove_step("journal")
+        assert files.remove_step("request")
+        assert files.recover_step() is False
+        assert files.recover_step() is True
+        assert files.remove_step("journal")
