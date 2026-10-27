@@ -6,7 +6,11 @@ import sys
 from pathlib import Path
 
 import pytest
-from riverhog_client._prepared_primary_windows_native import windows_container_path
+from riverhog_client import PrimaryStateError
+from riverhog_client._prepared_primary_windows_native import (
+    WindowsContainer,
+    windows_container_path,
+)
 
 
 def test_windows_container_filename_commits_the_original_framed_descriptor():
@@ -44,3 +48,69 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
     assert evidence["passed"] == 13 and evidence["elevated"] is False, evidence
     assert evidence["vfs"] == "win32"
     print(json.dumps(evidence, sort_keys=True))
+
+
+class _JournalAPI:
+    """Journal lifecycle fixture; native handle and ACL behavior runs separately."""
+
+    identity = None
+    private_error = False
+
+    def open(self, _path, *, journal):
+        assert journal
+        if self.identity is None:
+            raise FileNotFoundError
+        return 1
+
+    def information(self, _handle, _path, *, directory):
+        assert not directory
+        return self.identity
+
+    def private(self, _handle, *, inherited):
+        assert inherited
+        if self.private_error:
+            raise PrimaryStateError("fixture sidecar is not private")
+
+    def close(self, _handle):
+        pass
+
+
+def _journal_guard(monkeypatch):
+    guard = object.__new__(WindowsContainer)
+    guard.path = Path("state.sqlite3")
+    guard._api = _JournalAPI()
+    guard._journal_identity = (7, 0, 1)
+    monkeypatch.setattr(guard, "check_current", lambda: None)
+    return guard
+
+
+def test_journal_connection_recovery_rebinds_an_absent_old_sidecar(monkeypatch):
+    guard = _journal_guard(monkeypatch)
+    guard.check_journal(required=False, recovering=True)
+    assert guard._journal_identity is None
+    guard._api.identity = (7, 0, 2)
+    guard.check_journal(required=True)
+    assert guard._journal_identity == (7, 0, 2)
+
+
+def test_journal_replacement_outside_connection_recovery_is_rejected(monkeypatch):
+    guard = _journal_guard(monkeypatch)
+    guard.check_journal(required=False)
+    assert guard._journal_identity == (7, 0, 1)
+    guard._api.identity = (7, 0, 2)
+    with pytest.raises(PrimaryStateError, match="journal identity changed"):
+        guard.check_journal(required=True)
+    assert guard._journal_identity == (7, 0, 1)
+    guard.check_journal(required=True, recovering=True)
+    assert guard._journal_identity == (7, 0, 2)
+
+
+@pytest.mark.parametrize("failure", ["missing", "unprivate"])
+def test_journal_connection_recovery_preserves_presence_and_private_checks(monkeypatch, failure):
+    guard = _journal_guard(monkeypatch)
+    if failure == "unprivate":
+        guard._api.identity = (7, 0, 2)
+        guard._api.private_error = True
+    with pytest.raises(PrimaryStateError, match="missing|not private"):
+        guard.check_journal(required=True, recovering=True)
+    assert guard._journal_identity == (7, 0, 1)

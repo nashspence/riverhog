@@ -424,6 +424,9 @@ class WindowsContainer:
         except FileNotFoundError:
             if required:
                 raise PrimaryStateError("prepared-primary durable journal is missing") from None
+            if recovering:
+                # SQLite can remove the prior journal while opening a connection.
+                self._journal_identity = None
             return
         try:
             identity = self._api.information(handle, path, directory=False)
