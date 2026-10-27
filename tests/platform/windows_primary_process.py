@@ -253,7 +253,8 @@ def run_unprivileged(
             a.LogonUserW(account, ".", password, 2, 0, ctypes.byref(token)), "test standard logon"
         )
         sid = _token_sid(api, token)
-        # Pinning checks ancestry metadata without granting access to its contents.
+        # Synchronous metadata-only CreateFile handles also require SYNCHRONIZE.
+        # These grants do not allow listing or reading directory contents.
         ancestors = {
             parent
             for target in (cwd, Path(sys.base_prefix), writable_directory, report)
@@ -261,7 +262,7 @@ def run_unprivileged(
         }
         for path in sorted(ancestors, key=lambda item: len(item.parts)):
             granted.append((path, False))
-            _acl(path, "/grant", f"*{sid}:(RC,RA)", recursive=False)
+            _acl(path, "/grant", f"*{sid}:(RC,RA,S)", recursive=False)
         for path in dict.fromkeys((cwd, Path(sys.base_prefix))):
             granted.append((path, True))
             _acl(path, "/grant", f"*{sid}:(OI)(CI)RX", recursive=True)
