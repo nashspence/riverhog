@@ -140,28 +140,55 @@ class PrimaryDecisionAccepted(PrimaryControl):
 
 
 class PrimaryCustody(PrimaryControl):
+    """Durable receipt proof bound to the separately retained original manifest."""
+
     kind: Literal["custody"] = "custody"
     collection_id: CollectionId
     prepared_sha256: Sha256
-    prepared: PreparedPrimary
-    receipt: CollectionUploadArtifactCustodyReceiptDocument
+    receipt_sha256: Sha256
+    proof_sha256: Sha256
 
     @model_validator(mode="after")
-    def exact_receipt(self) -> Self:
+    def exact_proof(self) -> Self:
         import hashlib
 
-        if hashlib.sha256(primary_control_bytes(self.prepared)).hexdigest() != self.prepared_sha256:
-            raise ValueError("custody differs from its retained preparation")
-        validate_collection_upload_artifact_custody_receipt(
-            self.collection_id, self.prepared.member, self.receipt
+        payload = self.model_dump(mode="json", exclude={"proof_sha256"})
+        if hashlib.sha256(canonical_json_bytes(payload)).hexdigest() != self.proof_sha256:
+            raise ValueError("prepared-primary custody proof identity differs")
+        return self
+
+    @classmethod
+    def from_receipt(
+        cls,
+        collection_id: int,
+        prepared: PreparedPrimary,
+        receipt: CollectionUploadArtifactCustodyReceiptDocument,
+    ) -> Self:
+        """Validate the whole authenticated receipt before retaining its commitment."""
+        import hashlib
+
+        receipt = CollectionUploadArtifactCustodyReceiptDocument.model_validate_json(
+            primary_control_bytes(receipt)
         )
+        validate_collection_upload_artifact_custody_receipt(collection_id, prepared.member, receipt)
         if (
-            self.receipt.primary != self.prepared.primary
-            or self.receipt.completion_requirement_sha256
-            != self.prepared.completion_requirement_sha256
+            receipt.primary != prepared.primary
+            or receipt.completion_requirement_sha256 != prepared.completion_requirement_sha256
         ):
             raise ValueError("custody differs from the retained primary construction")
-        return self
+        payload = {
+            "format": "riverhog-prepared-primary/v1",
+            "kind": "custody",
+            "collection_id": str(collection_id),
+            "prepared_sha256": hashlib.sha256(primary_control_bytes(prepared)).hexdigest(),
+            "receipt_sha256": receipt.receipt_sha256,
+        }
+        return cls.model_validate(
+            {
+                **payload,
+                "proof_sha256": hashlib.sha256(canonical_json_bytes(payload)).hexdigest(),
+            }
+        )
 
 
 class PrimaryInventory(BaseModel):

@@ -1389,3 +1389,61 @@ def test_control_readback_never_invents_missing_wire_version_or_kind(tmp_path, f
     (root / "usage").write_bytes(json.dumps(value, sort_keys=True, separators=(",", ":")).encode())
     with pytest.raises(PrimaryStateError, match="exact current encoding"):
         _open(root)
+
+
+def test_reserved_custody_commitment_progresses_when_full_receipt_exceeds_control_admission(
+    tmp_path,
+):
+    from riverhog_canonical_json import canonical_json_sha256
+
+    member = _member()
+    with _open(tmp_path.resolve() / "shape", initialize=True) as store:
+        template = store.prepare_or_load(member, REQUEST, lambda _limit: _author())
+        control_bytes = len(primary_control_bytes(template.prepared))
+    pending = len(REQUEST) + sum(
+        len(value)
+        for value in (b"original selection", b"original graph", JOURNAL, b"exact decision")
+    )
+    limits = replace(
+        LIMITS,
+        control_bytes=control_bytes,
+        pending_bytes=pending,
+        preparation_bytes=pending,
+        total_bytes=20 * control_bytes + 1 + pending,
+    )
+    root = tmp_path.resolve() / "saturated"
+    with _open(root, initialize=True, limits=limits) as store:
+        original = store.prepare_or_load(member, REQUEST, lambda _limit: _author())
+        assert (
+            limits.root_reservation
+            + store.usage.control_bytes
+            + store.usage.inventory_reserved_bytes
+            + store.usage.pending_bytes
+            == limits.total_bytes
+        )
+        with pytest.raises(PrimaryStateCapacity):
+            store.prepare_or_load(_member(2), REQUEST, _no_author)
+        small_receipt = _receipt(original.prepared)
+        value = small_receipt.model_dump(mode="json")
+        value["archive_object_count"] = "1" + "0" * 2000
+        value["provenance_object_count"] = "1" + "0" * 2000
+        value["receipt_sha256"] = canonical_json_sha256(
+            {key: item for key, item in value.items() if key != "receipt_sha256"}
+        )
+        receipt = CollectionUploadArtifactCustodyReceiptDocument.model_validate(value)
+        assert len(primary_control_bytes(receipt)) > limits.control_bytes
+        retained = store.accept_custody(original, receipt)
+        assert not retained.compact and store.usage.pending_bytes == pending
+        assert retained.custody.receipt_sha256 == receipt.receipt_sha256
+        assert len(primary_control_bytes(retained.custody)) <= limits.control_bytes
+        with pytest.raises(PrimaryStateError, match="immutable control conflicts"):
+            store.accept_custody(retained, small_receipt)
+        retained = store.accept_decision(retained, b"exact decision")
+        assert retained.compact and store.reclaim(member)
+        assert store.usage.pending_bytes == 0
+    with _open(root, limits=limits) as store:
+        loaded = store.load(member)
+        assert loaded.prepared == original.prepared
+        assert loaded.custody.receipt_sha256 == receipt.receipt_sha256
+        assert store.accept_custody(loaded, receipt) == loaded
+        assert store.reclaim(member)

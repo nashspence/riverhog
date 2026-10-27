@@ -95,12 +95,7 @@ def original(tmp_path_factory):
 
 
 def _retained(prepared, receipt):
-    return PrimaryCustody(
-        collection_id="42",
-        prepared_sha256=hashlib.sha256(primary_control_bytes(prepared)).hexdigest(),
-        prepared=prepared,
-        receipt=receipt,
-    )
+    return PrimaryCustody.from_receipt(42, prepared, receipt)
 
 
 def test_custody_binds_the_original_primary_and_survives_absent_large_files(
@@ -111,7 +106,8 @@ def test_custody_binds_the_original_primary_and_survives_absent_large_files(
     raw = primary_control_bytes(retained)
     loaded = PrimaryCustody.model_validate_json(raw)
     assert loaded == retained
-    assert loaded.prepared.primary == receipt.primary
+    assert loaded.prepared_sha256 == hashlib.sha256(primary_control_bytes(prepared)).hexdigest()
+    assert loaded.receipt_sha256 == receipt.receipt_sha256
     # Compact controls carry commitments; parsing them does not open retired preimages.
     assert list(tmp_path.iterdir()) == []
     accepted = PrimaryDecisionAccepted(
@@ -183,4 +179,24 @@ def test_custody_and_materialization_acceptance_remain_independent(original) -> 
             response=response,
         )
     # A valid receipt is retained even though no successful decision acknowledgement exists.
-    assert PrimaryCustody.model_validate_json(primary_control_bytes(retained)).receipt == receipt
+    assert (
+        PrimaryCustody.model_validate_json(primary_control_bytes(retained)).receipt_sha256
+        == receipt.receipt_sha256
+    )
+
+
+def test_unvalidated_receipt_changes_cannot_be_compacted(original) -> None:
+    prepared, receipt = original
+    changed = receipt.model_copy(update={"archive_object_count": receipt.archive_object_count + 1})
+    with pytest.raises(ValueError, match="receipt identity"):
+        _retained(prepared, changed)
+
+
+def test_changed_saved_receipt_commitment_is_rejected(original) -> None:
+    prepared, receipt = original
+    retained = _retained(prepared, receipt)
+    value = retained.model_dump(mode="json")
+    value["receipt_sha256"] = "1" * 64
+    assert value["receipt_sha256"] != retained.receipt_sha256
+    with pytest.raises(ValueError, match="custody proof identity"):
+        PrimaryCustody.model_validate(value)

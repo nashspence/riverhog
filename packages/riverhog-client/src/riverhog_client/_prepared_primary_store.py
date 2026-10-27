@@ -370,8 +370,7 @@ class PrimaryStore:
             raise PrimaryStateError("prepared-primary byte inventory is not the current format")
         identity = _identity(prepared)
         if custody is not None and (
-            custody.prepared != prepared
-            or custody.prepared_sha256 != identity
+            custody.prepared_sha256 != identity
             or custody.collection_id != self.session.collection_id
         ):
             raise PrimaryStateError("prepared-primary custody changed")
@@ -647,13 +646,8 @@ class PrimaryStore:
     ) -> PrimaryRecord:
         with self._mutex:
             self._recover()
-            custody = PrimaryCustody.model_validate(
-                {
-                    "collection_id": str(self.session.collection_id),
-                    "prepared_sha256": _identity(record.prepared),
-                    "prepared": record.prepared,
-                    "receipt": receipt,
-                }
+            custody = PrimaryCustody.from_receipt(
+                self.session.collection_id, record.prepared, receipt
             )
             with self._member(str(record.prepared.member.artifact_id), create=False) as files:
                 current = self._record(files, record.prepared.member)
