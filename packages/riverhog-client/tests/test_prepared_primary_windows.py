@@ -45,8 +45,11 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
     raw = report.read_text() if report.is_file() else ""
     evidence = json.loads(raw) if raw else {"missing_report": True, "exit_code": code}
     assert code == 0, evidence
-    assert evidence["passed"] == 24 and evidence["elevated"] is False, evidence
+    assert evidence["passed"] == 32 and evidence["elevated"] is False, evidence
     assert evidence["vfs"] == "win32"
+    assert evidence["vfs_faults"]["runtime"]["base_vfs"] == "win32"
+    assert len(evidence["vfs_faults"]["faults"]) == 8
+    assert all(fault["injected"] for fault in evidence["vfs_faults"]["faults"])
     print(json.dumps(evidence, sort_keys=True))
 
 

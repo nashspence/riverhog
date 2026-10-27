@@ -417,6 +417,107 @@ def _guard_rename_exclusion(path: Path) -> None:
         moved.rename(original)
 
 
+def _vfs_selection_fault(shim, parent: Path, operation: str, kind: str, when: str):
+    from dataclasses import asdict
+
+    allocation = ALLOCATION + f"/vfs/{operation}/{kind}/{when}".encode("ascii")
+    path = windows_container_path(parent, allocation)
+
+    class Guard:
+        vfs = shim.name
+
+        def __init__(self, *, initialize):
+            self.path = path
+            self.native = WindowsContainer(path, initialize=initialize)
+
+        def check_current(self):
+            self.native.check_current()
+
+        def check_journal(self, *, required, recovering=False):
+            self.native.check_journal(required=required, recovering=recovering)
+
+        def close(self):
+            self.native.close()
+
+    def opened(*, initialize):
+        return TransactionalPrimaryFiles(
+            Guard(initialize=initialize),
+            allocation_descriptor=allocation,
+            limits=LIMITS,
+            initialize=initialize,
+        )
+
+    candidate = b"candidate decision" * 500
+    selected = PrimaryByteFile("decision", len(candidate), hashlib.sha256(candidate).hexdigest())
+    with opened(initialize=True) as files:
+        original = files.put_bytes("journal", (CONTENT,), byte_limit=len(CONTENT))
+        select = files._select
+
+        def selection(generation, result):
+            shim.arm(operation, kind, when)
+            return select(generation, result)
+
+        files._select = selection
+        try:
+            files.put_bytes("decision", (candidate,), byte_limit=len(candidate))
+        except sqlite3.Error as exc:
+            error = exc.sqlite_errorcode
+            assert error & 255 == sqlite3.SQLITE_IOERR
+        else:
+            raise AssertionError("VFS failure was reported as a successful selection")
+        fault = shim.fault
+        assert fault is not None and fault.injected
+        assert fault.delegated is (when == "after")
+        if fault.delegated:
+            assert fault.native_result == sqlite3.SQLITE_OK
+        try:
+            files.sync()
+        except PrimaryStateError:
+            pass
+        else:
+            raise AssertionError("uncertain selection retained a usable owner")
+    report = {**asdict(fault), "sqlite_errorcode": error}
+    shim.clear_fault()
+    with opened(initialize=False) as files:
+        assert files._one("PRAGMA journal_mode") == ("persist",)
+        assert files._one("PRAGMA synchronous") == (3,)
+        with files.verified(original) as stream:
+            assert stream.read() == CONTENT
+        report["candidate_selected"] = files.exists("decision")
+        if report["candidate_selected"]:
+            with files.verified(selected) as stream:
+                assert stream.read() == candidate
+        steps = 0
+        while not files.recover_step():
+            steps += 1
+            assert steps < 128
+        report["candidate_cleanup_steps"] = steps
+        with files.verified(original) as stream:
+            assert stream.read() == CONTENT
+    return report
+
+
+def _vfs_fault_witness(parent: Path):
+    from tests.support.sqlite_vfs_faults import FaultVfs
+
+    reports = []
+    with FaultVfs.windows() as shim:
+        for operation in ("write", "sync"):
+            for kind in ("database", "journal"):
+                for when in ("before", "after"):
+                    try:
+                        reports.append(_vfs_selection_fault(shim, parent, operation, kind, when))
+                    except BaseException as exc:
+                        raise RuntimeError(
+                            f"VFS selection fault {operation}/{kind}/{when}: "
+                            f"injection={shim.fault}; callback_errors={shim.errors}"
+                        ) from exc
+        identity = shim.identity
+        calls = {operation + ":" + kind: count for (operation, kind), count in shim.calls.items()}
+    assert len(reports) == 8
+    return {"runtime": identity, "faults": reports, "calls": calls}
+
+
 def witness(root: Path) -> dict:
     api = _WindowsAPI()
     assert not _elevated(api), "native qualification must run in a non-elevated process"
@@ -610,6 +711,11 @@ def witness(root: Path) -> dict:
     else:
         raise AssertionError("unadmitted sidecar parent was accepted")
     cases.append("unadmitted-parent-rejection")
+    vfs_faults = _vfs_fault_witness(parent)
+    cases.extend(
+        "vfs-" + fault["operation"] + "-" + fault["file"] + "-" + fault["when"]
+        for fault in vfs_faults["faults"]
+    )
     with sqlite3.connect(":memory:") as runtime:
         source_id = runtime.execute("SELECT sqlite_source_id()").fetchone()[0]
         compile_options = [row[0] for row in runtime.execute("PRAGMA compile_options")]
@@ -626,11 +732,13 @@ def witness(root: Path) -> dict:
         "python_executable_sha256": hashlib.sha256(Path(sys.executable).read_bytes()).hexdigest(),
         "sqlite_extension_sha256": hashlib.sha256(Path(_sqlite3.__file__).read_bytes()).hexdigest(),
         "vfs": "win32",
+        "vfs_faults": vfs_faults,
         "elapsed_seconds": time.monotonic() - started,
         "limitations": [
             "process death is not power loss",
             "producer activation is not yet qualified",
-            "VFS fault injection and physical control reserves remain open",
+            "VFS faults cover byte selection writes and syncs",
+            "physical control reserves and machine-reset behavior are not certified",
         ],
     }
 
