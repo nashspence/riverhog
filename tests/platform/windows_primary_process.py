@@ -35,6 +35,12 @@ ALLOCATION = b"native Windows transaction witness allocation"
 LIMITS = SqlitePrimaryLimits(16 * 1024**2, 32 * 1024**2, 128 * 1024)
 CONTENT = b"original\x00" * 1900
 
+# A fresh script process starts in tests/platform; shared witnesses live under tests.
+# Append the checkout so installed product imports retain their existing priority.
+_REPOSITORY_ROOT = str(Path(__file__).resolve().parents[2])
+if _REPOSITORY_ROOT not in sys.path:
+    sys.path.append(_REPOSITORY_ROOT)
+
 
 class _Startup(ctypes.Structure):
     _fields_ = [
