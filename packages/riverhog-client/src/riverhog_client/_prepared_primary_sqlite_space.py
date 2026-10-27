@@ -24,6 +24,7 @@ class SqlitePrimarySpace:
     database: PrimaryFileSpace
     journal: PrimaryFileSpace
     ordering_grant_bytes: int
+    journal_reserved_bytes: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,7 +55,13 @@ def space_usage(files: TransactionalPrimaryFiles) -> SqlitePrimarySpace:
         if not 0 <= free <= pages or database.end_bytes != pages * page_bytes:
             raise PrimaryStateError("prepared-primary physical extent disagrees with SQLite")
         return SqlitePrimarySpace(
-            page_bytes, pages, free, database, journal, files.ordering_reserved_bytes()
+            page_bytes,
+            pages,
+            free,
+            database,
+            journal,
+            files.ordering_reserved_bytes(),
+            files.journal_reserved_bytes(),
         )
 
 

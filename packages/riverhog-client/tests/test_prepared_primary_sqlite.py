@@ -805,7 +805,7 @@ def test_control_preparation_requires_explicit_extent_admission(tmp_path, limit)
     "damaged",
     [
         b"short",
-        b"\x02" + bytes(8),
+        b"\x03" + bytes(8),
         b"\x00" + (1).to_bytes(8, "big"),
         b"\x01" + (9).to_bytes(8, "big") + bytes(8),
         "text is not an extent",
@@ -840,3 +840,186 @@ def test_unknown_storage_geometry_is_rejected_without_erasing_original_bytes(tmp
         assert db.execute("SELECT geometry FROM primary_format").fetchone() == (
             "unsupported geometry",
         )
+
+
+@pytest.mark.parametrize("phase", ["warming", "selection"])
+@pytest.mark.parametrize("committed", [False, True])
+def test_uncertain_journal_preparation_resumes_without_claiming_unprepared_capacity(
+    tmp_path, monkeypatch, phase, committed
+):
+    from riverhog_client import _prepared_primary_sqlite_journal as journal
+
+    path = tmp_path / "state.sqlite3"
+    warm = journal._warm
+
+    def uncertain(files, identifier):
+        if phase == "warming":
+            files._root._connection = _CommitFailure(files._root._connection, committed=committed)
+        warm(files, identifier)
+        if phase == "selection":
+            files._root._connection = _CommitFailure(files._root._connection, committed=committed)
+
+    with _open(path, initialize=True) as files:
+        with monkeypatch.context() as patch:
+            patch.setattr(journal, "_warm", uncertain)
+            with pytest.raises(PrimaryStateError, match="mutation failed"):
+                files.prepare_controls(("receipt",), byte_limit=65536)
+        with pytest.raises(PrimaryStateError, match="uncertain"):
+            files.sync()
+    with _open(path, initialize=False) as files:
+        assert not files.exists("receipt")
+        selected = phase == "selection" and committed
+        assert bool(files.journal_reserved_bytes()) is selected
+        assert files._one("SELECT hex(substr(body,1,1)) FROM primary_controls") == (
+            "00" if selected else "02",
+        )
+        if not selected:
+            with pytest.raises(PrimaryStateBusy, match="preparation"):
+                files.put_control("receipt", b"original", byte_limit=65536)
+        files.prepare_controls(("receipt",), byte_limit=65536)
+        assert files.journal_reserved_bytes() > 65536
+        files.put_control("receipt", b"original", byte_limit=65536)
+        assert files.read_control("receipt", byte_limit=65536) == b"original"
+
+
+def test_lost_journal_reserve_blocks_payload_before_input_and_execution_restores_exact_controls(
+    tmp_path,
+):
+    path = tmp_path / "state.sqlite3"
+    body = b"original" * 8192
+    with _open(path, initialize=True) as files:
+        files.prepare_controls(("receipt",), byte_limit=65536)
+        files.put_control("receipt", body, byte_limit=65536)
+        reserved = files.journal_reserved_bytes()
+    # Test-only damage to a closed, committed, non-hot journal fixture.
+    path.with_name(path.name + "-journal").write_bytes(b"")
+    with _open(path, initialize=False) as files:
+        assert files.read_control("receipt", byte_limit=65536) == body
+        assert files.space_usage().journal.end_bytes < reserved
+        consumed = False
+
+        def payload():
+            nonlocal consumed
+            consumed = True
+            yield b"new payload"
+
+        with pytest.raises(owner.PrimaryStateCapacity, match="journal backing"):
+            files.put_bytes("new", payload(), byte_limit=11)
+        assert not consumed and files._one("SELECT generation FROM primary_operation") is None
+        with pytest.raises(owner.PrimaryStateCapacity, match="journal backing"):
+            files.put_control("receipt", b"changed", byte_limit=65536, expected=body)
+        files.prepare_controls(("receipt",), byte_limit=65536)
+        space = files.space_usage()
+        assert space.journal.end_bytes >= reserved
+        assert space.journal.allocated_bytes >= reserved
+        assert files.read_control("receipt", byte_limit=65536) == body
+        files.put_control("receipt", b"after", byte_limit=65536, expected=body)
+
+
+def test_journal_restore_during_pending_cleanup_does_not_read_preimages_or_advance_its_cursor(
+    tmp_path,
+):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        files.prepare_controls(("receipt",), byte_limit=65536)
+        files.put_control("receipt", b"original", byte_limit=65536)
+        files.put_bytes("journal", (b"x" * 9000,), byte_limit=9000)
+        assert not files.remove_step("journal")
+        operation = files._one("SELECT generation,cursor,phase FROM primary_operation")
+    path.with_name(path.name + "-journal").write_bytes(b"")
+    with _open(path, initialize=False) as files:
+
+        def no_preimages(action, table, *_rest):
+            return (
+                sqlite3.SQLITE_DENY
+                if action == sqlite3.SQLITE_READ
+                and table in ("primary_chunks", "primary_order_rows")
+                else sqlite3.SQLITE_OK
+            )
+
+        files._connection.set_authorizer(no_preimages)
+        try:
+            files.prepare_controls(("receipt",), byte_limit=65536)
+            files.put_control("receipt", b"after", byte_limit=65536, expected=b"original")
+        finally:
+            files._connection.set_authorizer(None)
+        assert files._one("SELECT generation,cursor,phase FROM primary_operation") == operation
+        assert files._one("SELECT count(*) FROM primary_chunks") == (3,)
+        assert files.read_control("receipt", byte_limit=65536) == b"after"
+
+
+def test_small_retention_rejects_before_ready_and_larger_grant_can_resume_the_original_slot(
+    tmp_path,
+):
+    from tests.support.prepared_primary import SqlitePrimaryTestGuard
+
+    path = tmp_path / "state.sqlite3"
+    path.touch()
+    limits = owner.SqlitePrimaryLimits(2 * 1024**2, 4096, 128 * 1024)
+    with owner.TransactionalPrimaryFiles(
+        SqlitePrimaryTestGuard(path),
+        allocation_descriptor=ALLOCATION,
+        limits=limits,
+        initialize=True,
+    ) as files:
+        with pytest.raises(owner.PrimaryStateCapacity, match="cannot admit"):
+            files.prepare_controls(("receipt",), byte_limit=65536)
+        assert files._one("PRAGMA journal_size_limit") == (4096,)
+        assert files.journal_reserved_bytes() == 0
+        assert not files.exists("receipt")
+        slot = files._one("SELECT rowid,length(body) FROM primary_controls")
+        assert files.space_usage().journal.end_bytes <= 4096
+    with _open(path, initialize=False) as files:
+        files.prepare_controls(("receipt",), byte_limit=65536)
+        assert files._one("SELECT rowid,length(body) FROM primary_controls") == slot
+        files.put_control("receipt", b"original", byte_limit=65536)
+        assert files.read_control("receipt", byte_limit=65536) == b"original"
+
+
+def test_ready_control_preparation_is_read_only_and_capacity_is_fixed_for_the_construction(
+    tmp_path, monkeypatch
+):
+    from riverhog_client import _prepared_primary_sqlite_journal as journal
+
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        files.prepare_controls(("receipt",), byte_limit=65536)
+        changes = files._connection.total_changes
+        statements = []
+        files._connection.set_trace_callback(statements.append)
+
+        def forbidden(*_args):
+            raise AssertionError("ready capacity must not be warmed again")
+
+        monkeypatch.setattr(journal, "_warm", forbidden)
+        for _ in range(3):
+            files.prepare_controls(("receipt",), byte_limit=65536)
+        with pytest.raises(PrimaryStateError, match="construction control capacity"):
+            files.prepare_controls(("other",), byte_limit=65537)
+        files._connection.set_trace_callback(None)
+        assert files._connection.total_changes == changes
+        assert not any(s.startswith(("BEGIN", "UPDATE", "INSERT", "DELETE")) for s in statements)
+
+
+def test_control_preparation_never_releases_existing_reserved_journal_backing(
+    tmp_path, monkeypatch
+):
+    from riverhog_client import _prepared_primary_sqlite_journal as journal
+
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        limit = journal._limit
+
+        def preserve(db, value):
+            assert value != 0 or files.journal_reserved_bytes() == 0, (
+                "preparation released an existing journal reservation"
+            )
+            return limit(db, value)
+
+        monkeypatch.setattr(journal, "_limit", preserve)
+        files.prepare_controls(("receipt",), byte_limit=65536)
+        files.put_control("receipt", b"original", byte_limit=65536)
+        before = files.space_usage()
+        files.prepare_controls(("cursor",), byte_limit=65536)
+        after = files.space_usage()
+        assert after.journal.end_bytes >= before.journal_reserved_bytes
+        assert after.journal.allocated_bytes >= before.journal_reserved_bytes
+        assert files.read_control("receipt", byte_limit=65536) == b"original"

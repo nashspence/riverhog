@@ -29,8 +29,10 @@ Table(
     Column("allocation", LargeBinary, nullable=False),
     Column("geometry", Text, nullable=False),
     Column("barrier", Integer, nullable=False),
+    Column("journal_reserve", LargeBinary, nullable=False),
     CheckConstraint("id = 1", name="ck_primary_format_singleton"),
     CheckConstraint("barrier >= 0", name="ck_primary_format_barrier"),
+    CheckConstraint("length(journal_reserve) = 16", name="ck_primary_format_journal_reserve"),
 )
 Table(
     "primary_namespaces",

@@ -33,7 +33,9 @@ if TYPE_CHECKING:
     from riverhog_client._prepared_primary_sqlite_space import SqlitePrimarySpace, SqliteVacuumStep
 
 _BLOCK = 4096
-_GEOMETRY = "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096;controls=fixed/v1"
+_GEOMETRY = (
+    "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096;controls=fixed/v2;journal=prepared/v1"
+)
 
 
 class ContainerGuard(Protocol):
@@ -162,7 +164,7 @@ class TransactionalPrimaryFiles:
                     with engine.begin() as connection:
                         schema.upgrade_connection(connection)
                         connection.exec_driver_sql(
-                            "INSERT INTO primary_format VALUES (1, ?, ?, 0)",
+                            "INSERT INTO primary_format VALUES (1, ?, ?, 0, zeroblob(16))",
                             (allocation_descriptor, _GEOMETRY),
                         )
                         connection.exec_driver_sql(
@@ -184,6 +186,7 @@ class TransactionalPrimaryFiles:
             identity = self._one("SELECT allocation, geometry FROM primary_format WHERE id=1")
             if identity != (allocation_descriptor, _GEOMETRY):
                 raise PrimaryStateError("prepared-primary allocation or storage geometry changed")
+            self.journal_reserved_bytes()
             self.sync()
         except BaseException:
             self.close()
@@ -275,6 +278,16 @@ class TransactionalPrimaryFiles:
                 cursor.close()
                 raise PrimaryStateError("prepared-primary durable barrier is unavailable")
             cursor.close()
+
+    def journal_reserved_bytes(self) -> int:
+        from riverhog_client._prepared_primary_sqlite_journal import reserved_bytes
+
+        return reserved_bytes(self)
+
+    def require_journal_ready(self) -> None:
+        from riverhog_client._prepared_primary_sqlite_journal import require
+
+        require(self)
 
     def space_usage(self) -> SqlitePrimarySpace:
         """Observe database/reusable pages and actual owned file allocation."""
@@ -430,6 +443,7 @@ class TransactionalPrimaryFiles:
                 raise PrimaryStateError(
                     "prepared-primary byte role conflicts with reserved control"
                 )
+            self.require_journal_ready()
             generation = uuid.uuid4().hex
             with self._transaction() as db:
                 db.execute(

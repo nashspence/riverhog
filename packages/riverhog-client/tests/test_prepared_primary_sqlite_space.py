@@ -143,3 +143,26 @@ def test_reserved_controls_progress_at_zero_free_pages_through_cold_reopens(tmp_
     evidence = control_witness(opened, database_bytes=limits.database_bytes)
     assert len(evidence["cases"]) == 5
     assert evidence["removal_retains_capacity"] and evidence["original_bytes_preserved"]
+
+
+@pytest.mark.parametrize("capacity", [65536, 262144])
+def test_prepared_journal_headroom_survives_payload_saturation_and_cold_controls(
+    tmp_path, capacity
+):
+    from tests.support.prepared_primary_journal import witness as journal_witness
+
+    path = tmp_path / "state.sqlite3"
+    limits = SqlitePrimaryLimits(2 * 1024**2, 2 * 1024**2, 128 * 1024)
+
+    def opened(*, initialize):
+        if initialize:
+            path.touch(exist_ok=False)
+        return TransactionalPrimaryFiles(
+            SqlitePrimaryTestGuard(path),
+            allocation_descriptor=b"prepared journal resource witness",
+            limits=limits,
+            initialize=initialize,
+        )
+
+    evidence = journal_witness(opened, capacity=capacity, database_bytes=limits.database_bytes)
+    assert evidence["original_preserved"]

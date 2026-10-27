@@ -567,6 +567,27 @@ def _control_capacity_witness(parent: Path):
     return result
 
 
+def _journal_capacity_witness(parent: Path):
+    from tests.support.prepared_primary_journal import witness as journal_witness
+    from tests.support.sqlite_vfs_faults import FaultVfs
+
+    reports = []
+    with FaultVfs.windows() as shim:
+        for capacity in (65536, 262144):
+            allocation = ALLOCATION + f"/journal-reserve/{capacity}".encode("ascii")
+            path = windows_container_path(parent, allocation)
+            limits = SqlitePrimaryLimits(2 * 1024**2, 2 * 1024**2, 128 * 1024)
+
+            def opened(*, initialize, path=path, allocation=allocation, limits=limits):
+                return _vfs_files(shim, path, allocation, initialize=initialize, limits=limits)
+
+            reports.append(
+                journal_witness(opened, capacity=capacity, database_bytes=limits.database_bytes)
+            )
+        identity = shim.identity
+    return {"runtime": identity, "cases": reports}
+
+
 def witness(root: Path) -> dict:
     api = _WindowsAPI()
     assert not _elevated(api), "native qualification must run in a non-elevated process"
@@ -766,6 +787,10 @@ def witness(root: Path) -> dict:
         "vfs-" + fault["operation"] + "-" + fault["file"] + "-" + fault["when"]
         for fault in vfs_faults["faults"]
     )
+    journals = _journal_capacity_witness(parent)
+    cases.extend(
+        f"prepared-journal-headroom-{case['capacity_bytes']}" for case in journals["cases"]
+    )
     controls = _control_capacity_witness(parent)
     cases.append("reserved-control-progress-at-page-ceiling")
     space = _physical_space_witness(parent)
@@ -789,12 +814,16 @@ def witness(root: Path) -> dict:
         "vfs_faults": vfs_faults,
         "space": space,
         "controls": controls,
+        "journals": journals,
         "elapsed_seconds": time.monotonic() - started,
         "limitations": [
             "process death is not power loss",
             "producer activation is not yet qualified",
             "VFS faults cover byte selection writes and syncs",
-            "journal progress headroom and machine-reset behavior are not certified",
+            (
+                "full-volume ENOSPC, dirty-page/cache grants "
+                "and machine-reset behavior are not certified"
+            ),
         ],
     }
 

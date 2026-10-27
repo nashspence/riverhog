@@ -45,7 +45,7 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
     raw = report.read_text() if report.is_file() else ""
     evidence = json.loads(raw) if raw else {"missing_report": True, "exit_code": code}
     assert code == 0, evidence
-    assert evidence["passed"] == 35 and evidence["elevated"] is False, evidence
+    assert evidence["passed"] == 37 and evidence["elevated"] is False, evidence
     assert evidence["vfs"] == "win32"
     assert evidence["vfs_faults"]["runtime"]["base_vfs"] == "win32"
     assert len(evidence["vfs_faults"]["faults"]) == 8
@@ -139,3 +139,37 @@ def test_native_allocation_keeps_end_of_file_and_allocated_size_distinct():
     space = api.file_space(7)
     assert calls == [(7, 1, ctypes.sizeof(_FileStandardInfo))]
     assert space.end_bytes == 4097 and space.allocated_bytes == 16384
+
+
+@pytest.mark.parametrize("attributes", [0, 0x200, 0x800])
+@pytest.mark.parametrize("directory", [False, True])
+def test_native_identity_admission_rejects_sparse_or_compressed_state(attributes, directory):
+    import ctypes
+
+    from riverhog_client import _prepared_primary_windows_native as native
+
+    path = Path("state")
+    final = chr(92) * 2 + "?" + chr(92) + str(path)
+
+    class Kernel:
+        @staticmethod
+        def GetFileInformationByHandle(_handle, pointer):
+            info = ctypes.cast(pointer, ctypes.POINTER(native._FileInformation)).contents
+            info.attributes = attributes | (0x10 if directory else 0)
+            info.links = 1
+            info.volume, info.index_high, info.index_low = 1, 0, 42
+            return 1
+
+        @staticmethod
+        def GetFinalPathNameByHandleW(_handle, buffer, _size, _flags):
+            if buffer is not None:
+                buffer.value = final
+            return len(final)
+
+    api = object.__new__(native._WindowsAPI)
+    api.kernel = Kernel()
+    if attributes:
+        with pytest.raises(PrimaryStateError, match="unsupported file kind"):
+            api.information(1, path, directory=directory)
+    else:
+        assert api.information(1, path, directory=directory) == (1, 0, 42)

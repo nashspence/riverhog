@@ -6,6 +6,7 @@ import sqlite3
 from typing import TYPE_CHECKING
 
 from riverhog_client._prepared_primary_types import (
+    PrimaryStateBusy,
     PrimaryStateCapacity,
     PrimaryStateError,
     primary_file_name,
@@ -35,9 +36,9 @@ def _length(blob: sqlite3.Blob, capacity: int) -> int | None:
     if len(header) != _HEADER:
         raise PrimaryStateError("prepared-primary control header is incomplete")
     selected, size = header[0], int.from_bytes(header[1:], "big")
-    if selected not in (0, 1) or size > capacity or (selected == 0 and size != 0):
+    if selected not in (0, 1, 2) or size > capacity or (selected != 1 and size != 0):
         raise PrimaryStateError("prepared-primary control header is invalid")
-    return size if selected else None
+    return size if selected == 1 else None
 
 
 def _body(
@@ -76,6 +77,14 @@ def prepare(owner: TransactionalPrimaryFiles, names: tuple[str, ...], *, byte_li
         raise ValueError("prepared-primary control admission must be nonnegative")
     for name in names:
         primary_file_name(name)
+    from riverhog_client._prepared_primary_sqlite_journal import (
+        ensure,
+        validate_control_limit,
+    )
+    from riverhog_client._prepared_primary_sqlite_journal import (
+        prepare as prepare_journal,
+    )
+
     with owner._mutex:
         if byte_limit > owner._db().getlimit(sqlite3.SQLITE_LIMIT_LENGTH) - _HEADER:
             raise PrimaryStateCapacity("prepared-primary control exceeds SQLite extent admission")
@@ -84,19 +93,36 @@ def prepare(owner: TransactionalPrimaryFiles, names: tuple[str, ...], *, byte_li
             if slot is not None:
                 if slot[1] != byte_limit:
                     raise PrimaryStateError("prepared-primary reserved control capacity changed")
+                validate_control_limit(owner, byte_limit)
                 selected(owner, name)
+                with owner._db().blobopen(
+                    "primary_controls", "body", slot[0], readonly=True
+                ) as blob:
+                    pending = blob.read(1) == b"\x02"
+                if pending:
+                    prepare_journal(owner, slot[0])
+                else:
+                    ensure(owner)
                 continue
             owner._require_idle()
+            validate_control_limit(owner, byte_limit)
             if owner._one(
                 "SELECT 1 FROM primary_names WHERE namespace=? AND name=?",
                 (owner._namespace, name),
             ):
                 raise PrimaryStateError("prepared-primary control conflicts with a byte role")
             with owner._transaction() as db:
-                db.execute(
+                cursor = db.execute(
                     "INSERT INTO primary_controls VALUES (?,?,zeroblob(?))",
                     (owner._namespace, name, byte_limit + _HEADER),
-                ).close()
+                )
+                identifier = cursor.lastrowid
+                cursor.close()
+                if identifier is None:
+                    raise PrimaryStateError("prepared-primary control identity is unavailable")
+                with db.blobopen("primary_controls", "body", identifier) as blob:
+                    blob.write(bytes((2,)))
+            prepare_journal(owner, identifier)
 
 
 def read(owner: TransactionalPrimaryFiles, name: str, *, byte_limit: int) -> bytes:
@@ -135,6 +161,9 @@ def put(
         slot = _slot(owner, name)
         if slot is None:
             raise PrimaryStateError("prepared-primary control capacity was not prepared")
+        with owner._db().blobopen("primary_controls", "body", slot[0], readonly=True) as blob:
+            if blob.read(1) == bytes((2,)):
+                raise PrimaryStateBusy("prepared-primary control preparation is incomplete")
         previous = _body(owner, slot, byte_limit=slot[1])
         if expected is None and previous is not None:
             raise FileExistsError(name)
@@ -142,6 +171,7 @@ def put(
             raise PrimaryStateError("prepared-primary control comparison changed")
         if len(body) > slot[1]:
             raise PrimaryStateCapacity("prepared-primary control exceeds prepared capacity")
+        owner.require_journal_ready()
         with owner._transaction() as db:
             if _body(owner, slot, byte_limit=slot[1]) != previous:
                 raise PrimaryStateError("prepared-primary control comparison changed")
@@ -166,6 +196,7 @@ def remove(owner: TransactionalPrimaryFiles, name: str, *, expected: bytes) -> N
         if previous != expected:
             raise PrimaryStateError("prepared-primary control comparison changed")
         assert slot is not None
+        owner.require_journal_ready()
         with owner._transaction() as db:
             if _body(owner, slot, byte_limit=slot[1]) != expected:
                 raise PrimaryStateError("prepared-primary control comparison changed")
