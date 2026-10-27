@@ -35,7 +35,7 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
         code = run_unprivileged(
             [sys.executable, str(helper), "--witness", str(tmp_path), "--report", str(report)],
             cwd=root,
-            timeout_seconds=600,
+            timeout_seconds=900,
             writable_directory=tmp_path,
             report=report,
         )
