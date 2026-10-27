@@ -231,3 +231,124 @@ def test_cold_open_has_no_whole_database_integrity_or_payload_scan(tmp_path, mon
     with _open(path, initialize=False) as files:
         assert files.exists("journal")
     assert not any("quick_check" in sql or "foreign_key_check" in sql for sql in observed)
+
+
+def test_receipt_controls_read_and_compare_original_bytes_without_pending_chunk_reads(tmp_path):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        files.put("journal", [b"pending" * 2000], byte_limit=14000)
+
+        def authorize(action, table, column, *_rest):
+            if action == sqlite3.SQLITE_READ and table == "primary_chunks":
+                return sqlite3.SQLITE_DENY
+            return sqlite3.SQLITE_OK
+
+        files._connection.set_authorizer(authorize)
+        files.put_control("prepared", b'{"original":"manifest"}', byte_limit=100)
+        files.put_control("usage", b'{"generation":0}', byte_limit=100)
+        assert files.exists("prepared")
+        assert files.read_control("prepared", byte_limit=100) == b'{"original":"manifest"}'
+        with pytest.raises(FileExistsError):
+            files.put_control("prepared", b"different", byte_limit=100)
+        with pytest.raises(PrimaryStateError, match="comparison"):
+            files.put_control("usage", b'{"generation":1}', byte_limit=100, expected=b"wrong")
+        files.put_control(
+            "usage", b'{"generation":1}', byte_limit=100, expected=b'{"generation":0}'
+        )
+        assert files.read_control("usage", byte_limit=100) == b'{"generation":1}'
+        files.remove_control("usage", expected=b'{"generation":1}')
+        files.remove_control("usage", expected=b'{"generation":1}')
+        assert not files.exists("usage")
+        files.sync()
+    with _open(path, initialize=False) as files:
+        assert files.read_control("prepared", byte_limit=100) == b'{"original":"manifest"}'
+
+
+def test_control_admission_and_role_conflicts_never_replace_original_bytes(tmp_path):
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        with pytest.raises(owner.PrimaryStateCapacity):
+            files.put_control("prepared", b"oversized", byte_limit=3)
+        assert not files.exists("prepared")
+        files.put_control("prepared", b"original", byte_limit=8)
+        with pytest.raises(owner.PrimaryStateCapacity):
+            files.read_control("prepared", byte_limit=7)
+        with pytest.raises(FileExistsError):
+            files.put("prepared", [b"replacement"], byte_limit=11)
+        files.put("journal", [b"pending"], byte_limit=7)
+        with pytest.raises(PrimaryStateError, match="byte role"):
+            files.put_control("journal", b"replacement", byte_limit=11)
+        with pytest.raises(PrimaryStateError, match="comparison"):
+            files.remove_control("prepared", expected=b"wrong")
+        assert files.read_control("prepared", byte_limit=8) == b"original"
+
+
+def test_existing_namespace_is_an_openable_immutable_winner(tmp_path):
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        with files.child("member", initialize=True) as child:
+            child.put_control("prepared", b"original", byte_limit=8)
+        with pytest.raises(FileExistsError):
+            files.child("member", initialize=True)
+        with files.child("member", initialize=False) as child:
+            assert child.read_control("prepared", byte_limit=8) == b"original"
+
+
+def test_selected_generation_reclaim_is_pinned_bounded_and_cold_resumable(tmp_path):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        journal = files.put("journal", [b"x" * 10000], byte_limit=10000)
+        files.put_control("prepared", b"retained-original-authority", byte_limit=100)
+        with files.verified(journal) as stream:
+            with pytest.raises(PrimaryStateBusy, match="pins"):
+                files.remove_step("journal")
+            assert stream.read(3) == b"xxx"
+        assert files.remove_step("journal") is False
+        assert not files.exists("journal")
+        assert files._one("SELECT count(*) FROM primary_chunks") == (3,)
+        assert files.read_control("prepared", byte_limit=100) == b"retained-original-authority"
+        with pytest.raises(PrimaryStateBusy):
+            files.put_control("custody", b"proof", byte_limit=100)
+        with pytest.raises(PrimaryStateBusy):
+            files.remove_step("other")
+    for remaining in (2, 1, 0):
+        with _open(path, initialize=False) as files:
+            assert files.remove_step("journal") is False
+            assert files._one("SELECT count(*) FROM primary_chunks") == (remaining,)
+            assert files.read_control("prepared", byte_limit=100) == b"retained-original-authority"
+    with _open(path, initialize=False) as files:
+        assert files.remove_step("journal") is True
+        assert files.remove_step("journal") is True
+        assert files._one("SELECT count(*) FROM primary_objects") == (0,)
+        files.put_control("custody", b"proof", byte_limit=100)
+
+
+@pytest.mark.parametrize("committed", [False, True])
+def test_uncertain_chunk_delete_recovers_the_exact_cleanup_cursor(tmp_path, committed):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        files.put("journal", [b"x" * 10000], byte_limit=10000)
+        assert files.remove_step("journal") is False
+        files._connection = _CommitFailure(files._connection, committed=committed)
+        with pytest.raises(PrimaryStateError, match="mutation failed"):
+            files.remove_step("journal")
+    with _open(path, initialize=False) as files:
+        assert not files.exists("journal")
+        assert files._one("SELECT cursor FROM primary_operation") == (1 if committed else 0,)
+        assert files._one("SELECT count(*) FROM primary_chunks") == (2 if committed else 3,)
+        while not files.remove_step("journal"):
+            pass
+        assert files._one("SELECT count(*) FROM primary_objects") == (0,)
+
+
+@pytest.mark.parametrize("committed", [False, True])
+def test_uncertain_control_commit_keeps_the_original_visible_outcome(tmp_path, committed):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        files._connection = _CommitFailure(files._connection, committed=committed)
+        with pytest.raises(PrimaryStateError, match="mutation failed"):
+            files.put_control("prepared", b"original", byte_limit=8)
+    with _open(path, initialize=False) as files:
+        assert files.exists("prepared") is committed
+        if committed:
+            assert files.read_control("prepared", byte_limit=8) == b"original"
+            with pytest.raises(FileExistsError):
+                files.put_control("prepared", b"replacement", byte_limit=11)

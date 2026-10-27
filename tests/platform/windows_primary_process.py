@@ -1,4 +1,4 @@
-"""Native subprocess witnesses; no credentials or machine configuration changes."""
+"""Native witnesses with isolated, ephemeral hosted-CI standard-user setup."""
 
 from __future__ import annotations
 
@@ -8,6 +8,8 @@ import ctypes
 import hashlib
 import json
 import os
+import secrets
+import shutil
 import sqlite3
 import subprocess
 import sys
@@ -77,28 +79,146 @@ def _elevated(api: _WindowsAPI) -> bool:
         api.close(token.value)
 
 
-def run_unprivileged(arguments: list[str], *, cwd: Path, timeout_seconds: int) -> int:
-    """Launch the same user with NORMALUSER restrictions, then verify in the child."""
+class _UserInfo(ctypes.Structure):
+    _fields_ = [
+        ("name", wintypes.LPWSTR),
+        ("password", wintypes.LPWSTR),
+        ("password_age", _DWORD),
+        ("privilege", _DWORD),
+        ("home", wintypes.LPWSTR),
+        ("comment", wintypes.LPWSTR),
+        ("flags", _DWORD),
+        ("script", wintypes.LPWSTR),
+    ]
+
+
+class _MemberName(ctypes.Structure):
+    _fields_ = [("name", wintypes.LPWSTR)]
+
+
+def _status(value: int, operation: str) -> None:
+    if value:
+        raise PrimaryStateError(f"native qualification {operation} failed ({value})")
+
+
+def _token_sid(api: _WindowsAPI, token) -> str:
+    size = _DWORD()
+    api.security.GetTokenInformation(token, 1, None, 0, ctypes.byref(size))
+    if not size.value or size.value > 1024 * 1024:
+        raise PrimaryStateError("native qualification token identity is unavailable")
+    buffer = ctypes.create_string_buffer(size.value)
+    api._required(
+        api.security.GetTokenInformation(token, 1, buffer, size, ctypes.byref(size)),
+        "test account identity",
+    )
+    return api._sid_text(_PTR.from_buffer(buffer))
+
+
+def _users_group(api: _WindowsAPI) -> str:
+    sid = _PTR()
+    api._required(
+        api.security.ConvertStringSidToSidW("S-1-5-32-545", ctypes.byref(sid)),
+        "test Users group SID",
+    )
+    try:
+        name, domain = ctypes.create_unicode_buffer(257), ctypes.create_unicode_buffer(257)
+        name_size, domain_size, kind = _DWORD(len(name)), _DWORD(len(domain)), _DWORD()
+        api._required(
+            api.security.LookupAccountSidW(
+                None,
+                sid,
+                name,
+                ctypes.byref(name_size),
+                domain,
+                ctypes.byref(domain_size),
+                ctypes.byref(kind),
+            ),
+            "test Users group name",
+        )
+        return name.value
+    finally:
+        api.kernel.LocalFree(sid)
+
+
+def _acl(path: Path, *arguments: str, recursive: bool) -> None:
+    command = ["icacls", str(path), *arguments]
+    if recursive:
+        command.append("/T")
+    command.append("/Q")
+    result = subprocess.run(command, capture_output=True, check=False)
+    _status(result.returncode, "fixture ACL")
+
+
+def run_unprivileged(
+    arguments: list[str],
+    *,
+    cwd: Path,
+    timeout_seconds: int,
+    writable_directory: Path,
+    report: Path,
+) -> int:
+    """Use a real standard token; elevated fixture setup belongs only to hosted CI.
+
+    The temporary account has an in-memory random credential, minimum fixture
+    grants, and no loaded profile. Runtime code receives no setup privileges.
+    The parent waits for actual process exit, removes fixture data as its owner,
+    removes its temporary grants and deletes the account.
+    """
     api = _WindowsAPI()
     if not _elevated(api):
         return subprocess.run(arguments, cwd=cwd, timeout=timeout_seconds, check=False).returncode
+    if (
+        os.environ.get("GITHUB_ACTIONS") != "true"
+        or os.environ.get("RUNNER_ENVIRONMENT") != "github-hosted"
+    ):
+        raise PrimaryStateError("run native qualification from a standard-user terminal")
+    loader = getattr(ctypes, "WinDLL", None)
+    net = loader("netapi32", use_last_error=True)
     p = ctypes.POINTER
     a, k = api.security, api.kernel
     bindings = [
-        (a, "SaferCreateLevel", _BOOL, [_DWORD, _DWORD, _DWORD, p(_HANDLE), _PTR]),
-        (a, "SaferComputeTokenFromLevel", _BOOL, [_HANDLE, _HANDLE, p(_HANDLE), _DWORD, _PTR]),
-        (a, "SaferCloseLevel", _BOOL, [_HANDLE]),
+        (net, "NetUserAdd", _DWORD, [wintypes.LPCWSTR, _DWORD, _PTR, p(_DWORD)]),
+        (net, "NetUserDel", _DWORD, [wintypes.LPCWSTR, wintypes.LPCWSTR]),
+        (
+            net,
+            "NetLocalGroupAddMembers",
+            _DWORD,
+            [wintypes.LPCWSTR, wintypes.LPCWSTR, _DWORD, _PTR, _DWORD],
+        ),
+        (a, "ConvertStringSidToSidW", _BOOL, [wintypes.LPCWSTR, p(_PTR)]),
         (
             a,
-            "CreateProcessAsUserW",
+            "LookupAccountSidW",
             _BOOL,
             [
-                _HANDLE,
+                wintypes.LPCWSTR,
+                _PTR,
+                wintypes.LPWSTR,
+                p(_DWORD),
+                wintypes.LPWSTR,
+                p(_DWORD),
+                p(_DWORD),
+            ],
+        ),
+        (
+            a,
+            "LogonUserW",
+            _BOOL,
+            [wintypes.LPCWSTR, wintypes.LPCWSTR, wintypes.LPCWSTR, _DWORD, _DWORD, p(_HANDLE)],
+        ),
+        (a, "ImpersonateLoggedOnUser", _BOOL, [_HANDLE]),
+        (a, "RevertToSelf", _BOOL, []),
+        (
+            a,
+            "CreateProcessWithLogonW",
+            _BOOL,
+            [
+                wintypes.LPCWSTR,
+                wintypes.LPCWSTR,
+                wintypes.LPCWSTR,
+                _DWORD,
                 wintypes.LPCWSTR,
                 wintypes.LPWSTR,
-                _PTR,
-                _PTR,
-                _BOOL,
                 _DWORD,
                 _PTR,
                 wintypes.LPCWSTR,
@@ -113,32 +233,71 @@ def run_unprivileged(arguments: list[str], *, cwd: Path, timeout_seconds: int) -
     for library, name, result, parameters in bindings:
         function = getattr(library, name)
         function.restype, function.argtypes = result, parameters
-    level, token = _HANDLE(), _HANDLE()
-    api._required(
-        a.SaferCreateLevel(1, 0x20000, 1, ctypes.byref(level), None), "test NORMALUSER level"
+    account = "rh-primary-" + secrets.token_hex(4)
+    password = "Aa1!" + secrets.token_urlsafe(28)
+    info = _UserInfo(account, password, 0, 1, None, "Ephemeral native qualification", 0x10201, None)
+    parameter_error = _DWORD()
+    _status(
+        net.NetUserAdd(None, 1, ctypes.byref(info), ctypes.byref(parameter_error)),
+        "standard account creation",
     )
+    token = _HANDLE()
+    granted: list[tuple[Path, bool]] = []
+    sid = None
     try:
+        member = _MemberName(account)
+        result = net.NetLocalGroupAddMembers(None, _users_group(api), 3, ctypes.byref(member), 1)
+        if result not in (0, 1378):
+            _status(result, "standard group membership")
         api._required(
-            a.SaferComputeTokenFromLevel(level, None, ctypes.byref(token), 0, None),
-            "test NORMALUSER token",
+            a.LogonUserW(account, ".", password, 2, 0, ctypes.byref(token)), "test standard logon"
         )
-    finally:
-        a.SaferCloseLevel(level)
-    try:
+        sid = _token_sid(api, token)
+        # Pinning checks ancestry metadata without granting access to its contents.
+        ancestors = {
+            parent
+            for target in (cwd, Path(sys.base_prefix), writable_directory, report)
+            for parent in target.parents
+        }
+        for path in sorted(ancestors, key=lambda item: len(item.parts)):
+            granted.append((path, False))
+            _acl(path, "/grant", f"*{sid}:(RC,RA)", recursive=False)
+        for path in dict.fromkeys((cwd, Path(sys.base_prefix))):
+            granted.append((path, True))
+            _acl(path, "/grant", f"*{sid}:(OI)(CI)RX", recursive=True)
+        granted.append((writable_directory, True))
+        _acl(writable_directory, "/grant", f"*{sid}:(OI)(CI)M", recursive=True)
+        report.touch(exist_ok=True)
+        granted.append((report, False))
+        _acl(report, "/grant", f"*{sid}:W", recursive=False)
         info = _Startup()
         info.cb = ctypes.sizeof(info)
         process = _Process()
         command = ctypes.create_unicode_buffer(subprocess.list2cmdline(arguments))
+        environment = {
+            key: os.environ[key]
+            for key in ("SystemRoot", "WINDIR", "PATH", "COMSPEC", "PATHEXT")
+            if key in os.environ
+        }
+        environment.update(
+            TEMP=str(writable_directory),
+            TMP=str(writable_directory),
+            PYTHONDONTWRITEBYTECODE="1",
+            PYTHONUTF8="1",
+        )
+        block = ctypes.create_unicode_buffer(
+            "\0".join(f"{key}={value}" for key, value in sorted(environment.items())) + "\0\0"
+        )
         api._required(
-            a.CreateProcessAsUserW(
-                token,
+            a.CreateProcessWithLogonW(
+                account,
+                ".",
+                password,
+                0,
                 arguments[0],
                 command,
-                None,
-                None,
-                False,
-                0,
-                None,
+                0x08000400,
+                block,
                 str(cwd),
                 ctypes.byref(info),
                 ctypes.byref(process),
@@ -149,7 +308,9 @@ def run_unprivileged(arguments: list[str], *, cwd: Path, timeout_seconds: int) -
             waited = k.WaitForSingleObject(process.process, timeout_seconds * 1000)
             if waited != 0:
                 k.TerminateProcess(process.process, 90)
-                k.WaitForSingleObject(process.process, 10000)
+                exited = k.WaitForSingleObject(process.process, 10000)
+                if exited != 0:
+                    raise AssertionError("standard-user witness has not exited")
                 raise AssertionError(f"standard-user witness did not finish ({waited})")
             result = _DWORD()
             api._required(
@@ -160,7 +321,31 @@ def run_unprivileged(arguments: list[str], *, cwd: Path, timeout_seconds: int) -
             api.close(process.thread)
             api.close(process.process)
     finally:
-        api.close(token)
+        failures = []
+        if token.value:
+            if a.ImpersonateLoggedOnUser(token):
+                try:
+                    private = writable_directory / "private"
+                    if private.exists():
+                        shutil.rmtree(private)
+                except OSError:
+                    failures.append("fixture data cleanup")
+                finally:
+                    if not a.RevertToSelf():
+                        os._exit(91)
+            else:
+                failures.append("fixture owner cleanup token")
+            api.close(token)
+        if sid is not None:
+            for path, recursive in reversed(granted):
+                try:
+                    _acl(path, "/remove:g", "*" + sid, recursive=recursive)
+                except PrimaryStateError:
+                    failures.append("fixture grant cleanup")
+        if net.NetUserDel(None, account):
+            failures.append("standard account cleanup")
+        if failures:
+            raise PrimaryStateError("native qualification cleanup failed: " + ", ".join(failures))
 
 
 def _parent(path: Path) -> None:
@@ -217,7 +402,31 @@ def witness(root: Path) -> dict:
             pass
         result = files.put("journal", (CONTENT[:1], CONTENT[1:]), byte_limit=len(CONTENT))
         assert result == file
+
+        def control_only(action, table, _column, *_rest):
+            if action == sqlite3.SQLITE_READ and table == "primary_chunks":
+                return sqlite3.SQLITE_DENY
+            return sqlite3.SQLITE_OK
+
+        files._connection.set_authorizer(control_only)
+        try:
+            files.put_control("receipt-proof", b"original-encoding", byte_limit=100)
+            files.put_control("usage", b"before", byte_limit=100)
+            files.put_control("usage", b"after", expected=b"before", byte_limit=100)
+            assert files.read_control("receipt-proof", byte_limit=100) == b"original-encoding"
+            assert files.read_control("usage", byte_limit=100) == b"after"
+            files.remove_control("usage", expected=b"after")
+        finally:
+            files._connection.set_authorizer(None)
+        cases.append("control-only-original-encoding")
         with files.verified(result) as stream:
+            try:
+                files.remove_step("journal")
+            except PrimaryStateBusy:
+                pass
+            else:
+                raise AssertionError("reclamation discarded a pinned replay generation")
+            cases.append("pinned-generation-reclaim-exclusion")
             stream.seek(4090)
             assert stream.read(20) == CONTENT[4090:4110]
         try:
@@ -230,6 +439,8 @@ def witness(root: Path) -> dict:
             [sys.executable, __file__, "--busy", str(path)], timeout=60, check=False
         )
         assert result.returncode == 42, result.returncode
+        files.put("retiring", [b"r" * 9000], byte_limit=9000)
+        assert not files.remove_step("retiring")
         cases.extend(
             [
                 "fresh-container",
@@ -242,7 +453,13 @@ def witness(root: Path) -> dict:
     with _files(path, initialize=False) as files:
         with files.verified(file) as stream:
             assert stream.read() == CONTENT
-    cases.append("cold-reopen-exact-winner")
+        assert not files.exists("retiring")
+        assert files.read_control("receipt-proof", byte_limit=100) == b"original-encoding"
+        steps = 0
+        while not files.remove_step("retiring"):
+            steps += 1
+        assert steps == 3
+    cases.extend(["cold-reopen-exact-winner", "bounded-cold-generation-cleanup"])
     for when in ("before", "after"):
         allocation = ALLOCATION + when.encode()
         candidate = windows_container_path(parent, allocation)

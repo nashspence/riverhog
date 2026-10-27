@@ -143,6 +143,7 @@ class TransactionalPrimaryFiles:
         self._namespace = 1
         self._root = self
         self._readers: set[_ChunkReader] = set()
+        self._pins: dict[str, int] = {}
         self._connection: sqlite3.Connection | None = None
         factory = _engine_factory(guard, limits)
         schema = primary_state_schema(factory)
@@ -272,6 +273,15 @@ class TransactionalPrimaryFiles:
         with self._mutex:
             self.check_current()
             if initialize:
+                self._require_idle()
+                if (
+                    self._one(
+                        "SELECT id FROM primary_namespaces WHERE parent=? AND name=?",
+                        (self._namespace, name),
+                    )
+                    is not None
+                ):
+                    raise FileExistsError(name)
                 with self._transaction() as db:
                     cursor = db.execute(
                         "INSERT INTO primary_namespaces(parent,name) VALUES (?,?)",
@@ -440,27 +450,158 @@ class TransactionalPrimaryFiles:
 
     def exists(self, name: str) -> bool:
         primary_file_name(name)
+        parameters = (self._namespace, name)
         return (
-            self._one(
-                "SELECT 1 FROM primary_names WHERE namespace=? AND name=?", (self._namespace, name)
-            )
+            self._one("SELECT 1 FROM primary_names WHERE namespace=? AND name=?", parameters)
+            is not None
+            or self._one("SELECT 1 FROM primary_controls WHERE namespace=? AND name=?", parameters)
             is not None
         )
 
-    @contextmanager
-    def verified(self, file: PrimaryByteFile) -> Iterator[BinaryIO]:
+    def read_control(self, name: str, *, byte_limit: int) -> bytes:
+        """Read a bounded original encoding without accessing pending chunk rows."""
+        primary_file_name(name)
+        if type(byte_limit) is not int or byte_limit < 0:
+            raise ValueError("prepared-primary control admission must be nonnegative")
         row = self._one(
-            "SELECT o.generation,o.bytes,o.sha256,o.complete FROM primary_names n "
-            "JOIN primary_objects o ON o.generation=n.generation WHERE n.namespace=? AND n.name=?",
-            (self._namespace, file.name),
+            "SELECT length(body),substr(body,1,?) FROM primary_controls "
+            "WHERE namespace=? AND name=?",
+            (byte_limit + 1, self._namespace, name),
         )
         if row is None:
-            raise FileNotFoundError(file.name)
-        if row[1:] != (file.bytes, file.sha256, 1):
-            raise PrimaryStateError("prepared-primary selected extent differs from its commitment")
-        stream = _ChunkReader(self, row[0], file.bytes)
+            raise FileNotFoundError(name)
+        size, body = row
+        if type(size) is not int or not isinstance(body, bytes):
+            raise PrimaryStateError("prepared-primary control is not original bytes")
+        if size > byte_limit:
+            raise PrimaryStateCapacity("prepared-primary control exceeds explicit admission")
+        if len(body) != size:
+            raise PrimaryStateError("prepared-primary control extent changed")
+        return body
+
+    def put_control(
+        self, name: str, body: bytes, *, byte_limit: int, expected: bytes | None = None
+    ) -> None:
+        """Install immutable bytes, or compare/switch one exact prior encoding."""
+        primary_file_name(name)
+        if type(byte_limit) is not int or byte_limit < 0:
+            raise ValueError("prepared-primary control admission must be nonnegative")
+        if not isinstance(body, bytes) or (
+            expected is not None and not isinstance(expected, bytes)
+        ):
+            raise TypeError("prepared-primary controls must be original bytes")
+        if len(body) > byte_limit:
+            raise PrimaryStateCapacity("prepared-primary control exceeds explicit admission")
         with self._mutex:
+            self._require_idle()
+            if self._one(
+                "SELECT 1 FROM primary_names WHERE namespace=? AND name=?",
+                (self._namespace, name),
+            ):
+                raise PrimaryStateError("prepared-primary control conflicts with a byte role")
+            previous = self._one(
+                "SELECT body FROM primary_controls WHERE namespace=? AND name=?",
+                (self._namespace, name),
+            )
+            if expected is None and previous is not None:
+                raise FileExistsError(name)
+            if expected is not None and previous != (expected,):
+                raise PrimaryStateError("prepared-primary control comparison changed")
+            with self._transaction() as db:
+                if expected is None:
+                    db.execute(
+                        "INSERT INTO primary_controls VALUES (?,?,?)", (self._namespace, name, body)
+                    ).close()
+                else:
+                    cursor = db.execute(
+                        "UPDATE primary_controls SET body=? "
+                        "WHERE namespace=? AND name=? AND body=?",
+                        (body, self._namespace, name, expected),
+                    )
+                    if cursor.rowcount != 1:
+                        cursor.close()
+                        raise PrimaryStateError("prepared-primary control comparison changed")
+                    cursor.close()
+
+    def remove_control(self, name: str, *, expected: bytes) -> None:
+        """Delete only the exact transition/control encoding selected by its owner."""
+        primary_file_name(name)
+        if not isinstance(expected, bytes):
+            raise TypeError("prepared-primary controls must be original bytes")
+        with self._mutex:
+            self._require_idle()
+            previous = self._one(
+                "SELECT body FROM primary_controls WHERE namespace=? AND name=?",
+                (self._namespace, name),
+            )
+            if previous is None:
+                return
+            if previous != (expected,):
+                raise PrimaryStateError("prepared-primary control comparison changed")
+            with self._transaction() as db:
+                cursor = db.execute(
+                    "DELETE FROM primary_controls WHERE namespace=? AND name=? AND body=?",
+                    (self._namespace, name, expected),
+                )
+                if cursor.rowcount != 1:
+                    cursor.close()
+                    raise PrimaryStateError("prepared-primary control comparison changed")
+                cursor.close()
+
+    def remove_step(self, name: str) -> bool:
+        """Unselect one unpinned generation, then delete at most one chunk per step."""
+        primary_file_name(name)
+        with self._mutex:
+            operation = self._one(
+                "SELECT o.generation,o.namespace,o.name,o.complete,p.phase "
+                "FROM primary_operation p JOIN primary_objects o "
+                "ON o.generation=p.generation WHERE p.id=1"
+            )
+            if operation is not None:
+                if operation[1:] != (self._namespace, name, 1, "cleanup"):
+                    raise PrimaryStateBusy("another prepared-primary mutation requires cleanup")
+                return self.recover_step()
+            row = self._one(
+                "SELECT generation FROM primary_names WHERE namespace=? AND name=?",
+                (self._namespace, name),
+            )
+            if row is None:
+                return True
+            generation = row[0]
+            if self._root._pins.get(generation, 0):
+                raise PrimaryStateBusy("prepared-primary replay still pins this generation")
+            with self._transaction() as db:
+                cursor = db.execute(
+                    "DELETE FROM primary_names WHERE namespace=? AND name=? AND generation=?",
+                    (self._namespace, name, generation),
+                )
+                if cursor.rowcount != 1:
+                    cursor.close()
+                    raise PrimaryStateError("prepared-primary selected generation changed")
+                cursor.close()
+                db.execute(
+                    "INSERT INTO primary_operation VALUES (1,?,0,'cleanup')", (generation,)
+                ).close()
+            return False
+
+    @contextmanager
+    def verified(self, file: PrimaryByteFile) -> Iterator[BinaryIO]:
+        with self._mutex:
+            row = self._one(
+                "SELECT o.generation,o.bytes,o.sha256,o.complete FROM primary_names n "
+                "JOIN primary_objects o ON o.generation=n.generation "
+                "WHERE n.namespace=? AND n.name=?",
+                (self._namespace, file.name),
+            )
+            if row is None:
+                raise FileNotFoundError(file.name)
+            if row[1:] != (file.bytes, file.sha256, 1):
+                raise PrimaryStateError(
+                    "prepared-primary selected extent differs from its commitment"
+                )
+            stream = _ChunkReader(self, row[0], file.bytes)
             self._root._readers.add(stream)
+            self._root._pins[row[0]] = self._root._pins.get(row[0], 0) + 1
         try:
             digest = hashlib.sha256()
             while chunk := stream.read(_BLOCK):
@@ -476,6 +617,11 @@ class TransactionalPrimaryFiles:
             stream.close()
             with self._mutex:
                 self._root._readers.discard(stream)
+                remaining = self._root._pins.get(row[0], 0)
+                if remaining > 1:
+                    self._root._pins[row[0]] = remaining - 1
+                else:
+                    self._root._pins.pop(row[0], None)
 
     def close(self) -> None:
         with self._mutex:
@@ -485,6 +631,7 @@ class TransactionalPrimaryFiles:
             for reader in self._readers:
                 reader.close()
             self._readers.clear()
+            self._pins.clear()
             if self._connection is not None:
                 self._connection.close()
                 self._connection = None

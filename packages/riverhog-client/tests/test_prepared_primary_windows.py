@@ -32,12 +32,15 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
             [sys.executable, str(helper), "--witness", str(tmp_path), "--report", str(report)],
             cwd=root,
             timeout_seconds=600,
+            writable_directory=tmp_path,
+            report=report,
         )
     except BaseException as exc:
         report.write_text(json.dumps({"failed": True, "launcher_error": str(exc)}))
         raise
-    evidence = json.loads(report.read_text()) if report.is_file() else {"missing_report": True}
+    raw = report.read_text() if report.is_file() else ""
+    evidence = json.loads(raw) if raw else {"missing_report": True, "exit_code": code}
     assert code == 0, evidence
-    assert evidence["passed"] == 10 and evidence["elevated"] is False, evidence
+    assert evidence["passed"] == 13 and evidence["elevated"] is False, evidence
     assert evidence["vfs"] == "win32"
     print(json.dumps(evidence, sort_keys=True))
