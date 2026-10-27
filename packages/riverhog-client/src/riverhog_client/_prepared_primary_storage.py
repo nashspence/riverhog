@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Iterator
 from contextlib import AbstractContextManager
+from pathlib import Path
 from typing import BinaryIO, Protocol, Self
 
 from riverhog_client._prepared_primary_types import PrimaryByteFile
@@ -49,3 +50,11 @@ class PrimaryStorage(Protocol):
     def ordered_rows(
         self, rows: Iterable[tuple[str, int, str]], *, byte_limit: int
     ) -> Iterator[tuple[str, int, str]]: ...
+
+
+class PrimaryStorageFactory(Protocol):
+    """Open one explicit location using the shared owner's canonical allocation bytes."""
+
+    def __call__(
+        self, location: Path, *, allocation_descriptor: bytes, initialize: bool
+    ) -> PrimaryStorage: ...

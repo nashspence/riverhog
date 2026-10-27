@@ -19,6 +19,7 @@ from ctypes import wintypes
 from pathlib import Path
 
 from riverhog_client import PrimaryStateBusy, PrimaryStateError
+from riverhog_client._prepared_primary_factory import WindowsPrimaryFactory
 from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits, TransactionalPrimaryFiles
 from riverhog_client._prepared_primary_types import PrimaryByteFile
 from riverhog_client._prepared_primary_windows_native import (
@@ -542,6 +543,11 @@ def witness(root: Path) -> dict:
         with files.verified(file) as stream:
             assert stream.read() == CONTENT
     cases.append("same-container-derived-ordering")
+    from tests.support.prepared_primary_replay import DESCRIPTOR
+    from tests.support.prepared_primary_replay import witness as shared_replay
+
+    shared_replay(windows_container_path(parent, DESCRIPTOR), WindowsPrimaryFactory(LIMITS))
+    cases.extend(["shared-store-cold-exact-replay", "shared-store-bounded-custody"])
     cases.extend(["cold-reopen-exact-winner", "bounded-cold-generation-cleanup"])
     _guard_rename_exclusion(path)
     cases.extend(["live-database-rename-exclusion", "live-parent-rename-exclusion"])

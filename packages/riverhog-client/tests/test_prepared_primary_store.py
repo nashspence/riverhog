@@ -109,13 +109,14 @@ def _receipt(prepared, member=None):
     )
 
 
-def _open(root, *, initialize=False, limits=LIMITS, scope=SCOPE):
+def _open(root, *, initialize=False, limits=LIMITS, scope=SCOPE, storage_factory=None):
     store = PrimaryStore(
         root,
         allocation_id="existing-app-allocation",
         scope=scope,
         limits=limits,
         initialize=initialize,
+        **({"storage_factory": storage_factory} if storage_factory is not None else {}),
     )
     if initialize:
         assert store.session_for(CREATE) is None
@@ -1906,34 +1907,22 @@ def test_unselected_inventory_rebuild_waits_for_bounded_deletion(tmp_path, monke
 
 
 @pytest.fixture
-def sql_core_storage(monkeypatch):
+def sql_core_storage():
     from riverhog_client import _prepared_primary_sqlite as sql
-    from riverhog_client import _prepared_primary_store as shared
-    from riverhog_client._prepared_primary_documents import PrimaryAllocation
 
     from tests.support.prepared_primary import SqlitePrimaryTestGuard
 
-    descriptor = primary_control_bytes(
-        PrimaryAllocation.model_validate(
-            {
-                "allocation_id": "existing-app-allocation",
-                "scope": SCOPE,
-                "control_record_bytes": str(LIMITS.control_bytes),
-            }
-        )
-    )
-
-    def opened(path, *, initialize):
+    def opened(path, *, allocation_descriptor, initialize):
         if initialize:
             path.touch(exist_ok=False)
         return sql.TransactionalPrimaryFiles(
             SqlitePrimaryTestGuard(path),
-            allocation_descriptor=descriptor,
+            allocation_descriptor=allocation_descriptor,
             limits=sql.SqlitePrimaryLimits(16 * 1024**2, 32 * 1024**2, 128 * 1024),
             initialize=initialize,
         )
 
-    monkeypatch.setattr(shared, "PosixPrimaryFiles", opened)
+    return opened
 
 
 def test_shared_sql_core_replays_original_and_retains_charge_through_cold_reclaim(
@@ -1943,12 +1932,12 @@ def test_shared_sql_core_replays_original_and_retains_charge_through_cold_reclai
 
     root = tmp_path.resolve() / "state.sqlite3"
     journal = b"original journal" * 1000
-    with _open(root, initialize=True) as store:
+    with _open(root, storage_factory=sql_core_storage, initialize=True) as store:
         original = store.prepare_or_load(
             _member(), REQUEST, lambda _limit: _author(journal=journal)
         )
         before = store.usage
-    with _open(root) as store:
+    with _open(root, storage_factory=sql_core_storage) as store:
         assert store.prepare_or_load(_member(), REQUEST, _no_author) == original
         with store.byte_reader(original, "journal") as stream:
             assert stream.read() == journal
@@ -1957,7 +1946,7 @@ def test_shared_sql_core_replays_original_and_retains_charge_through_cold_reclai
         assert not store.reclaim(_member())
         assert store._usage == before
 
-    with _open(root) as store:
+    with _open(root, storage_factory=sql_core_storage) as store:
         assert store._usage == before
         statements = []
         store._files._connection.set_trace_callback(statements.append)
@@ -1982,7 +1971,7 @@ def test_shared_sql_core_replays_original_and_retains_charge_through_cold_reclai
         assert after.pending_bytes == 0 and after.sequence == before.sequence + 1
         assert after.control_bytes == before.control_bytes
         assert store.reclaim(_member()) and store.usage == after
-    with _open(root) as store:
+    with _open(root, storage_factory=sql_core_storage) as store:
         assert store.load_controls(_member()).compact
         assert store.usage == after
 
@@ -1992,7 +1981,7 @@ def test_shared_sql_core_terminal_cursor_waits_for_every_original_role(tmp_path,
 
     root = tmp_path.resolve() / "state.sqlite3"
     calls = []
-    with _open(root, initialize=True) as store:
+    with _open(root, storage_factory=sql_core_storage, initialize=True) as store:
         _ready_inventory(store, (_member(),))
         before = store.usage
 
@@ -2004,7 +1993,7 @@ def test_shared_sql_core_terminal_cursor_waits_for_every_original_role(tmp_path,
         assert not advance_custody(store, limit=1, settle=settle)
         cursor = store._files.read_control("custody-closing", byte_limit=LIMITS.control_bytes)
         assert json.loads(cursor)["after_member"] == "0"
-    with _open(root) as store:
+    with _open(root, storage_factory=sql_core_storage) as store:
         for _ in range(64):
             complete = advance_custody(store, limit=1, settle=settle)
             if complete:
@@ -2033,14 +2022,14 @@ def test_shared_sql_core_cold_candidate_rollback_never_adopts_an_unsealed_primar
             raise RuntimeError("before original journal selection")
         return select(files, generation, result)
 
-    with _open(root, initialize=True) as store:
+    with _open(root, storage_factory=sql_core_storage, initialize=True) as store:
         with monkeypatch.context() as patch:
             patch.setattr(sql.TransactionalPrimaryFiles, "_select", interrupted)
             with pytest.raises(RuntimeError, match="before original"):
                 store.prepare_or_load(
                     _member(), REQUEST, lambda _limit: _author(journal=b"journal" * 2000)
                 )
-    with _open(root) as store:
+    with _open(root, storage_factory=sql_core_storage) as store:
         for _ in range(64):
             assert store._usage.pending_bytes == store._usage.members == 0
             if store._recover(require_complete=False):
@@ -2100,7 +2089,7 @@ def test_inventory_initialization_precedes_the_sql_singleton_byte_candidate(
 
     root = tmp_path.resolve() / "state.sqlite3"
     members = [_member(1), _member(2)]
-    with _open(root, initialize=True) as store:
+    with _open(root, storage_factory=sql_core_storage, initialize=True) as store:
         for member in members:
             store.prepare_or_load(member, REQUEST, lambda _limit, member=member: _author(member))
         seen = []
@@ -2135,7 +2124,7 @@ def test_shared_sql_core_orders_lazy_inventory_before_publishing_and_settling(
     root = tmp_path.resolve() / "state.sqlite3"
     members = [_member(2), _member(1)]
     limits = replace(LIMITS, inventory_order_bytes=128 * 1024)
-    with _open(root, initialize=True, limits=limits) as store:
+    with _open(root, storage_factory=sql_core_storage, initialize=True, limits=limits) as store:
         for member in members:
             store.prepare_or_load(member, REQUEST, lambda _limit, member=member: _author(member))
         supplied = (

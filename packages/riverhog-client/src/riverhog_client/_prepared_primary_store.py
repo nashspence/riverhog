@@ -35,8 +35,8 @@ from riverhog_client._prepared_primary_documents import (
     PrimaryUsage,
     primary_control_bytes,
 )
-from riverhog_client._prepared_primary_posix import PrimaryFiles as PosixPrimaryFiles
-from riverhog_client._prepared_primary_storage import PrimaryStorage
+from riverhog_client._prepared_primary_factory import posix_primary_files
+from riverhog_client._prepared_primary_storage import PrimaryStorage, PrimaryStorageFactory
 from riverhog_client._prepared_primary_types import (
     PrimaryStateBusy,
     PrimaryStateCapacity,
@@ -149,21 +149,29 @@ class PrimaryStore:
         scope: PrimaryScope,
         limits: PrimaryStoreLimits,
         initialize: bool,
+        storage_factory: PrimaryStorageFactory = posix_primary_files,
     ) -> None:
+        if type(initialize) is not bool:
+            raise ValueError("prepared-primary initialization requires explicit boolean authority")
+        expected = PrimaryAllocation.model_validate(
+            {
+                "allocation_id": allocation_id,
+                "scope": scope,
+                "control_record_bytes": str(limits.control_bytes),
+            }
+        )
+        descriptor = primary_control_bytes(expected)
+        if len(descriptor) > limits.control_bytes:
+            raise PrimaryStateCapacity("prepared-primary allocation exceeds control admission")
         self.limits = limits
         self._mutex = threading.RLock()
         self._authoring = False
         self._closing_advancing = False
         self._root_candidates_pending = True
-        self._files: PrimaryStorage = PosixPrimaryFiles(root, initialize=initialize)
+        self._files: PrimaryStorage = storage_factory(
+            root, allocation_descriptor=descriptor, initialize=initialize
+        )
         try:
-            expected = PrimaryAllocation.model_validate(
-                {
-                    "allocation_id": allocation_id,
-                    "scope": scope,
-                    "control_record_bytes": str(limits.control_bytes),
-                }
-            )
             if initialize:
                 self._write(self._files, "allocation", expected)
                 self._write(self._files, "usage", PrimaryUsage())
