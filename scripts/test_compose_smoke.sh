@@ -282,6 +282,10 @@ chmod 0640 "${secret_root}"/*
 
 adapter_config="${smoke_root}/ftp-spool.yaml"
 cat > "${adapter_config}" <<EOF
+primary_state:
+  scope:
+    service: qualification-service
+    account: qualification-account
 host_id: urn:uuid:00000000-0000-4000-8000-000000000522
 riverhog_base_url: http://app:8000
 riverhog_token_file: /run/secrets/riverhog_token
@@ -353,13 +357,17 @@ export REVIEW0_CONFIG_HOST_PATH="${materializer_config}"
 export A_STOVE0_RCLONE_TARGET_CONFIG_HOST_PATH="${rclone_target_config}"
 write_review_configs() {
   cat > "${materializer_config}" <<EOF
+primary_state:
+  scope:
+    service: qualification-service
+    account: qualification-account
 token_file: /run/secrets/review0_token
 samplers:
   - id: opus
     base_url: http://a-review0-opus-sampler:8080
     token_file: /run/secrets/a_review0_opus_sampler_token
     allow_insecure_http: true
-    descriptor_sha256: ${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256}
+    descriptor_sha256: "${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256}"
     image_id: ${A_STOVE0_OPUS_TARGET_IMAGE_ID}
 EOF
   cat > "${rclone_target_config}" <<EOF
@@ -387,6 +395,7 @@ export A_RIVERHOG_FTP_SPOOL_API_TOKEN_FILE="${secret_root}/ftp-spool-api-token"
 export A_RIVERHOG_FTP_SPOOL_PASSWORD_FILE="${secret_root}/ftp-spool-password"
 
 client_environment=(
+  --env 'A_RIVERHOG_CLI_PRIMARY_STATE={"scope":{"service":"qualification-service","account":"qualification-account"}}'
   --env RIVERHOG_BASE_URL=http://app:8000
   --env RIVERHOG_ALLOW_INSECURE_HTTP=true
   --env "RIVERHOG_TOKEN=${smoke_token}"

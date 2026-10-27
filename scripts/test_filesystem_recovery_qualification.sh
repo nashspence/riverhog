@@ -124,6 +124,7 @@ receipt="$({
     --env RIVERHOG_BASE_URL=http://app:8000 \
     --env "RIVERHOG_TOKEN=${qualification_token}" \
     --env RIVERHOG_ALLOW_INSECURE_HTTP=true \
+    --env 'A_RIVERHOG_CLI_PRIMARY_STATE={"scope":{"service":"qualification-service","account":"qualification-account"}}' \
     --env XDG_STATE_HOME=/state \
     --tmpfs /state:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532 \
     --volume "${proof_root}/oracle:/input:ro" \
