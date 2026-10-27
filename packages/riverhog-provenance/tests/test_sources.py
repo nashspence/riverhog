@@ -100,9 +100,12 @@ def test_second_hash_is_not_silently_downgraded(catalog):
 
 
 def test_result_graph_is_deeply_isolated(observation):
+    raw = observation.graph_json
+    assert isinstance(raw, bytes)
     first = observation.graph_fragment()
     first["states"][0]["extent"]["kind"] = "made-up"
     assert observation.graph_fragment()["states"][0]["extent"]["kind"] == "whole_object"
+    assert observation.graph_json == raw
 
 
 @pytest.mark.parametrize(
