@@ -503,6 +503,24 @@ def _vfs_selection_fault(shim, parent: Path, operation: str, kind: str, when: st
     return report
 
 
+def _write_quota_witness(parent: Path):
+    from tests.support.prepared_primary_write_quota import witness as quota_witness
+    from tests.support.sqlite_vfs_faults import FaultVfs
+
+    reports = []
+    with FaultVfs.windows() as shim:
+        for refusal in ("database", "journal"):
+            allocation = ALLOCATION + b"/write-quota/" + refusal.encode("ascii")
+            path = windows_container_path(parent, allocation)
+
+            def opened(*, initialize, path=path, allocation=allocation):
+                return _vfs_files(shim, path, allocation, initialize=initialize)
+
+            reports.append(quota_witness(opened, shim, refusal))
+        identity = shim.identity
+    return {"runtime": identity, "cases": reports}
+
+
 def _vfs_fault_witness(parent: Path):
     from tests.support.sqlite_vfs_faults import FaultVfs
 
@@ -926,6 +944,8 @@ def witness(root: Path) -> dict:
         "vfs-" + fault["operation"] + "-" + fault["file"] + "-" + fault["when"]
         for fault in vfs_faults["faults"]
     )
+    write_quota = _write_quota_witness(parent)
+    cases.extend("write-quota-" + case["refusal"] for case in write_quota["cases"])
     resource_recovery = _shared_resource_recovery_witness(parent)
     cases.extend(
         f"shared-resource-{case['role']}-{case['phase']}-{int(case['commit_executed'])}"
@@ -969,6 +989,7 @@ def witness(root: Path) -> dict:
         "sqlite_extension_sha256": hashlib.sha256(Path(_sqlite3.__file__).read_bytes()).hexdigest(),
         "vfs": "win32",
         "vfs_faults": vfs_faults,
+        "write_quota": write_quota,
         "space": space,
         "controls": controls,
         "journals": journals,

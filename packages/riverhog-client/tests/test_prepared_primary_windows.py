@@ -45,11 +45,32 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
     raw = report.read_text() if report.is_file() else ""
     evidence = json.loads(raw) if raw else {"missing_report": True, "exit_code": code}
     assert code == 0, evidence
-    assert evidence["passed"] == 141 and evidence["elevated"] is False, evidence
+    assert evidence["passed"] == 143 and evidence["elevated"] is False, evidence
     assert evidence["vfs"] == "win32"
     assert evidence["vfs_faults"]["runtime"]["base_vfs"] == "win32"
     assert len(evidence["vfs_faults"]["faults"]) == 8
     assert all(fault["injected"] for fault in evidence["vfs_faults"]["faults"])
+    assert evidence["write_quota"]["runtime"]["base_vfs"] == "win32"
+    quota_cases = evidence["write_quota"]["cases"]
+    assert len(quota_cases) == 2
+    assert all(
+        case["quota"]["refusals"] == 1
+        and case["original_control_exact"]
+        and case["original_payload_exact"]
+        and case["survivor_control_exact"]
+        and case["capacity_retained"]
+        and case["larger_grant_retry_coldly_verified"]
+        and not case["production_resource_gate_certified"]
+        and not case["all_allocating_file_methods_covered"]
+        and not case["initialization_quota_covered"]
+        for case in quota_cases
+    )
+    database_quota = next(case for case in quota_cases if case["refusal"] == "database")
+    assert database_quota["quota"]["forward"]["database_pages_attempted"] == 2
+    assert database_quota["automatic_rollback_pages_before_driver_error"] > 2
+    assert database_quota["explicit_rollback_calls"] == 0
+    journal_quota = next(case for case in quota_cases if case["refusal"] == "journal")
+    assert journal_quota["quota"]["forward"]["database_pages_attempted"] == 0
     assert len(evidence["space"]["cycles"]) == 3
     assert len(evidence["resource_recovery"]) == 16
     assert all(

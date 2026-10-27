@@ -134,6 +134,135 @@ class TransactionWrites:
         }
 
 
+@dataclass(frozen=True)
+class WriteLimits:
+    """Experimental xWrite envelope; other allocating VFS methods remain separate."""
+
+    page_bytes: int
+    database_pages: int
+    database_end: int
+    journal_end: int
+    write_bytes: int
+    calls: int
+
+    def __post_init__(self):
+        for value in (
+            self.page_bytes,
+            self.database_pages,
+            self.database_end,
+            self.journal_end,
+            self.write_bytes,
+            self.calls,
+        ):
+            if type(value) is not int or not 0 < value <= (1 << 63) - 1:
+                raise ValueError("write grants must be positive signed-64-bit integers")
+        if self.page_bytes & (self.page_bytes - 1):
+            raise ValueError("write grant needs power-of-two pages")
+
+
+class WriteRefusal(Exception):
+    pass
+
+
+class WriteBank:
+    """Bounded test bookkeeping: charge attempted delegation, without refunds."""
+
+    def __init__(self, limits):
+        self.limits = limits
+        self.pages = set()
+        self.calls = self.write_bytes = self.database_bytes = self.journal_bytes = 0
+        self.journal_extent = 0
+
+    def admit(self, kind, amount, offset):
+        maximum = (1 << 63) - 1
+        if any(type(value) is not int or value < 0 for value in (amount, offset)):
+            raise WriteRefusal("invalid write extent")
+        if offset > maximum or amount > maximum - offset:
+            raise WriteRefusal("write extent overflow")
+        if kind not in ("database", "journal"):
+            raise WriteRefusal("unadmitted file class")
+        limits = self.limits
+        if self.calls == limits.calls or amount > limits.write_bytes - self.write_bytes:
+            raise WriteRefusal("write byte/call grant")
+        new = set()
+        if amount:
+            end = offset + amount
+            ceiling = limits.database_end if kind == "database" else limits.journal_end
+            if end > ceiling:
+                raise WriteRefusal(kind + " extent grant")
+            if kind == "database":
+                first, last = offset // limits.page_bytes, (end - 1) // limits.page_bytes
+                if last - first + 1 > limits.database_pages:
+                    raise WriteRefusal("database page grant")
+                new = set(range(first, last + 1)) - self.pages
+                if len(new) > limits.database_pages - len(self.pages):
+                    raise WriteRefusal("database page grant")
+        self.pages.update(new)
+        self.calls += 1
+        self.write_bytes += amount
+        if kind == "database":
+            self.database_bytes += amount
+        else:
+            self.journal_bytes += amount
+            if amount:
+                self.journal_extent = max(self.journal_extent, offset + amount)
+
+    def report(self):
+        return {
+            "database_pages_attempted": len(self.pages),
+            "database_write_bytes": self.database_bytes,
+            "journal_write_bytes": self.journal_bytes,
+            "journal_write_extent_bytes": self.journal_extent,
+            "write_bytes": self.write_bytes,
+            "write_calls": self.calls,
+        }
+
+
+class WriteQuota:
+    """Latch a separate restoration bank before returning an error to SQLite."""
+
+    def __init__(self, forward, recovery):
+        if forward is recovery:
+            raise ValueError("forward and recovery write banks must be independent")
+        self.forward, self.recovery = forward, recovery
+        self.recovering = False
+        self.refusals = 0
+        self.first_refusal = None
+        self.native_failures = 0
+
+    def admit(self, kind, amount, offset):
+        bank = self.recovery if self.recovering else self.forward
+        try:
+            bank.admit(kind, amount, offset)
+        except WriteRefusal as exc:
+            self.refusals += 1
+            if self.first_refusal is None:
+                self.first_refusal = {
+                    "file": kind,
+                    "amount": amount,
+                    "offset": offset,
+                    "reason": str(exc),
+                    "bank": "recovery" if self.recovering else "forward",
+                }
+            self.recovering = True
+            return False
+        return True
+
+    def failed(self):
+        self.native_failures += 1
+        self.recovering = True
+
+    def report(self):
+        return {
+            "forward": self.forward.report(),
+            "recovery": self.recovery.report(),
+            "recovering": self.recovering,
+            "refusals": self.refusals,
+            "first_refusal": self.first_refusal,
+            "native_failures": self.native_failures,
+        }
+
+
 class FaultVfs:
     """Keep native file/lock operations; inject one write/sync return at its actual callback."""
 
@@ -152,6 +281,7 @@ class FaultVfs:
         self.write_high_water = Counter()
         self.errors = []
         self._transaction_writes = None
+        self._write_quota = None
         self.fault: Fault | None = None
         self.identity = {}
         self.io = IoMethods()
@@ -254,6 +384,17 @@ class FaultVfs:
         finally:
             self._transaction_writes = None
 
+    @contextmanager
+    def write_quota(self, *, forward, recovery):
+        if self._write_quota is not None:
+            raise RuntimeError("write quotas must not overlap")
+        quota = WriteQuota(WriteBank(forward), WriteBank(recovery))
+        self._write_quota = quota
+        try:
+            yield quota
+        finally:
+            self._write_quota = None
+
     def _real(self, file: _PF) -> _PF:
         return c.cast(c.cast(file, _PTR).value + self.offset, _PF)
 
@@ -265,6 +406,10 @@ class FaultVfs:
                 methods = c.cast(real.contents.methods, c.POINTER(IoMethods)).contents
                 file_kind = self.files[address]
                 self.calls[(name, file_kind)] += 1
+                quota = self._write_quota
+                if name == "write" and quota is not None:
+                    if not quota.admit(file_kind, arguments[1], arguments[2]):
+                        return sqlite3.SQLITE_FULL
                 fault = self.fault
                 hit = (
                     fault is not None
@@ -275,8 +420,12 @@ class FaultVfs:
                 code = sqlite3.SQLITE_IOERR_WRITE if name == "write" else sqlite3.SQLITE_IOERR_FSYNC
                 if hit and fault.when == "before":
                     fault.injected = True
+                    if quota is not None:
+                        quota.failed()
                     return code
                 result = getattr(methods, name)(real, *arguments)
+                if quota is not None and name in ("write", "sync") and result != sqlite3.SQLITE_OK:
+                    quota.failed()
                 if result == sqlite3.SQLITE_OK and name in ("read", "write"):
                     self.completed_bytes[(name, file_kind)] += arguments[1]
                     if name == "write":
@@ -292,6 +441,8 @@ class FaultVfs:
                     fault.native_result = result
                     if result == sqlite3.SQLITE_OK:
                         fault.injected = True
+                        if quota is not None:
+                            quota.failed()
                         return code
                 return result
             except BaseException as exc:

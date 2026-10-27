@@ -76,11 +76,17 @@ def test_vfs_fault_surrounds_the_native_call_without_replacing_its_file_or_filen
     ]
     fault = shim.arm(operation, "database", when)
     body = c.create_string_buffer(b"exact bytes")
-    with shim.transaction_writes(page_bytes=4096, tracked_pages=2) as trace:
-        if operation == "write":
-            result = shim.io.write(file, c.addressof(body), 11, 4096)
-        else:
-            result = shim.io.sync(file, 3)
+    with shim.write_quota(forward=_write_limits(), recovery=_write_limits()) as quota:
+        with shim.transaction_writes(page_bytes=4096, tracked_pages=2) as trace:
+            if operation == "write":
+                result = shim.io.write(file, c.addressof(body), 11, 4096)
+            else:
+                result = shim.io.sync(file, 3)
+        assert quota.recovering and quota.native_failures == 1
+        charged = quota.forward.report()
+        assert charged["database_pages_attempted"] == (1 if operation == "write" else 0)
+        assert charged["database_write_bytes"] == (11 if operation == "write" else 0)
+        assert not quota.recovery.pages
     report = trace.report()
     assert report["database_pages_written"] == (
         1 if operation == "write" and when == "after" else 0
@@ -152,3 +158,179 @@ def test_transaction_measurement_context_rejects_overlap_and_releases_on_error()
     with shim.transaction_writes(page_bytes=4096, tracked_pages=2) as second:
         assert second.report()["journal_write_bytes"] == 0
     assert first.report()["journal_write_bytes"] == 40
+
+
+def _write_limits(**changes):
+    from tests.support.sqlite_vfs_faults import WriteLimits
+
+    values = {
+        "page_bytes": 4096,
+        "database_pages": 2,
+        "database_end": 16384,
+        "journal_end": 10000,
+        "write_bytes": 20000,
+        "calls": 20,
+    }
+    return WriteLimits(**(values | changes))
+
+
+def test_write_bank_admits_exact_prefix_and_rejects_crossing_without_partial_charge():
+    from tests.support.sqlite_vfs_faults import WriteBank, WriteRefusal
+
+    bank = WriteBank(_write_limits())
+    bank.admit("database", 2, 4095)
+    bank.admit("database", 1, 0)
+    bank.admit("journal", 10, 9990)
+    before = bank.report()
+    with pytest.raises(WriteRefusal, match="page grant"):
+        bank.admit("database", 1, 8192)
+    assert bank.report() == before
+    assert len(bank.pages) == 2
+    assert before["database_write_bytes"] == 3 and before["write_calls"] == 3
+    assert before["journal_write_extent_bytes"] == 10000
+
+
+@pytest.mark.parametrize(
+    ("kind", "amount", "offset"),
+    [
+        ("database", 1, 16384),
+        ("journal", 1, 10000),
+        ("other", 1, 0),
+        ("other", 0, 0),
+        ("journal", 2, (1 << 63) - 1),
+        ("database", True, 0),
+        ("database", 1, -1),
+        ("database", 0, 1 << 63),
+    ],
+)
+def test_write_bank_rejects_invalid_or_unadmitted_extents_before_delegation(kind, amount, offset):
+    from tests.support.sqlite_vfs_faults import WriteBank, WriteRefusal
+
+    bank = WriteBank(_write_limits())
+    with pytest.raises(WriteRefusal):
+        bank.admit(kind, amount, offset)
+    assert bank.report()["write_calls"] == 0 and not bank.pages
+
+
+@pytest.mark.parametrize("grant", [{"calls": 2}, {"write_bytes": 2}])
+def test_write_bank_counts_rewrites_toward_byte_and_call_grants(grant):
+    from tests.support.sqlite_vfs_faults import WriteBank, WriteRefusal
+
+    bank = WriteBank(_write_limits(**grant))
+    bank.admit("database", 1, 0)
+    bank.admit("database", 1, 0)
+    with pytest.raises(WriteRefusal):
+        bank.admit("database", 1, 0)
+    assert bank.report()["write_calls"] == bank.report()["write_bytes"] == 2
+    assert len(bank.pages) == 1
+
+
+def test_empty_write_does_not_create_pages_or_journal_extent_but_consumes_a_call():
+    from tests.support.sqlite_vfs_faults import WriteBank
+
+    bank = WriteBank(_write_limits())
+    bank.admit("database", 0, (1 << 63) - 1)
+    bank.admit("journal", 0, (1 << 63) - 1)
+    assert bank.report()["write_calls"] == 2
+    assert bank.report()["write_bytes"] == bank.report()["journal_write_extent_bytes"] == 0
+    assert not bank.pages
+
+
+@pytest.mark.parametrize("refusal", ["database", "journal"])
+def test_actual_sqlite_write_quota_preserves_originals_and_reserved_rollback(tmp_path, refusal):
+    import _sqlite3
+    import sys
+
+    from riverhog_client._prepared_primary_sqlite import (
+        SqlitePrimaryLimits,
+        TransactionalPrimaryFiles,
+    )
+
+    from tests.support.prepared_primary import SqlitePrimaryTestGuard
+    from tests.support.prepared_primary_write_quota import witness
+    from tests.support.sqlite_vfs_faults import _PV
+
+    if sys.platform != "linux":
+        pytest.skip("portable quota isolation requires Linux; Windows has its native owner witness")
+    library = c.CDLL(getattr(_sqlite3, "__file__", None))
+    try:
+        source_id = library.sqlite3_sourceid
+    except AttributeError:
+        pytest.skip(
+            "pinned Linux runtime hides its SQLite VFS API; actual quota cases run in Windows CI"
+        )
+    source_id.restype = c.c_char_p
+    with sqlite3.connect(":memory:") as connection:
+        expected = connection.execute("SELECT sqlite_source_id()").fetchone()[0]
+    assert source_id().decode("ascii") == expected
+    library.sqlite3_vfs_find.argtypes, library.sqlite3_vfs_find.restype = [c.c_char_p], _PV
+    library.sqlite3_vfs_register.argtypes = [_PV, c.c_int]
+    library.sqlite3_vfs_register.restype = c.c_int
+    library.sqlite3_vfs_unregister.argtypes, library.sqlite3_vfs_unregister.restype = [_PV], c.c_int
+    with FaultVfs(library, library.sqlite3_vfs_find(b"unix")) as shim:
+        path = tmp_path / "state.sqlite3"
+
+        def opened(*, initialize):
+            if initialize:
+                path.touch(exist_ok=False)
+            guard = SqlitePrimaryTestGuard(path)
+            guard.vfs = shim.name
+            return TransactionalPrimaryFiles(
+                guard,
+                allocation_descriptor=b"quota original allocation",
+                limits=SqlitePrimaryLimits(16 * 1024**2, 32 * 1024**2, 128 * 1024),
+                initialize=initialize,
+            )
+
+        result = witness(opened, shim, refusal)
+        assert result["larger_grant_retry_coldly_verified"]
+        assert result["original_control_exact"] and result["original_payload_exact"]
+
+
+def test_quota_refuses_the_whole_write_before_delegate_and_keeps_recovery_independent():
+    calls = []
+    native = IoMethods()
+    native.version = 1
+
+    def write(_file, _body, amount, offset):
+        calls.append((amount, offset))
+        return sqlite3.SQLITE_OK
+
+    native.write = _IO["write"](write)
+    base = SqliteVfs()
+    base.version, base.file_bytes, base.pathname_bytes = 1, c.sizeof(SqliteFile), 512
+    shim = FaultVfs(None, c.pointer(base))
+    storage = c.create_string_buffer(shim.vfs.file_bytes)
+    file = c.cast(storage, _PF)
+    shim._real(file).contents.methods = c.addressof(native)
+    shim.files[c.addressof(storage)] = "database"
+    body = c.create_string_buffer(b"ab")
+    with shim.write_quota(
+        forward=_write_limits(), recovery=_write_limits(database_pages=1)
+    ) as quota:
+        assert shim.io.write(file, c.addressof(body), 2, 4095) == sqlite3.SQLITE_OK
+        before = quota.forward.report()
+        assert shim.io.write(file, c.addressof(body), 1, 8192) == sqlite3.SQLITE_FULL
+        assert calls == [(2, 4095)]
+        assert quota.recovering and quota.forward.report() == before
+        assert shim.io.write(file, c.addressof(body), 1, 8192) == sqlite3.SQLITE_OK
+        assert calls == [(2, 4095), (1, 8192)]
+        assert quota.recovery.report()["database_pages_attempted"] == 1
+        assert shim.io.write(file, c.addressof(body), 1, 12288) == sqlite3.SQLITE_FULL
+        assert calls == [(2, 4095), (1, 8192)]
+        assert quota.refusals == 2 and quota.first_refusal["bank"] == "forward"
+    assert not shim.errors
+
+
+def test_write_quota_rejects_overlap_and_exceptional_exit_releases_the_frame():
+    base = SqliteVfs()
+    base.version, base.file_bytes, base.pathname_bytes = 1, c.sizeof(SqliteFile), 512
+    shim = FaultVfs(None, c.pointer(base))
+    with pytest.raises(OSError):
+        with shim.write_quota(forward=_write_limits(), recovery=_write_limits()):
+            with pytest.raises(RuntimeError, match="overlap"):
+                with shim.write_quota(forward=_write_limits(), recovery=_write_limits()):
+                    pytest.fail("overlapping quota accepted")
+            raise OSError("interrupted")
+    with shim.write_quota(forward=_write_limits(), recovery=_write_limits()) as quota:
+        assert not quota.recovering and quota.forward.report()["write_calls"] == 0
