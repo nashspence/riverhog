@@ -18,6 +18,8 @@ _PTR = ctypes.c_void_p
 _HANDLE = wintypes.HANDLE
 _READ_CONTROL = 0x20000
 _READ_ATTRIBUTES = 0x80
+_READ_DATA = 0x1
+_TRAVERSE = 0x20
 _READ_WRITE = 0xC0000000
 _REPARSE = 0x400
 _DIRECTORY = 0x10
@@ -216,7 +218,11 @@ class _WindowsAPI:
         try:
             raw = self.kernel.CreateFileW(
                 str(path),
-                _READ_WRITE if create or owner else _READ_CONTROL | _READ_ATTRIBUTES,
+                (
+                    _READ_WRITE
+                    if create or owner
+                    else _READ_CONTROL | _READ_ATTRIBUTES | (_TRAVERSE if directory else _READ_DATA)
+                ),
                 0 if owner else (7 if journal else 3),
                 ctypes.byref(attributes) if create else None,
                 1 if create else 3,

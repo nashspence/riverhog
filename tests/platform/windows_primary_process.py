@@ -22,6 +22,7 @@ from riverhog_client import PrimaryStateBusy, PrimaryStateError
 from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits, TransactionalPrimaryFiles
 from riverhog_client._prepared_primary_types import PrimaryByteFile
 from riverhog_client._prepared_primary_windows_native import (
+    WindowsContainer,
     _SecurityAttributes,
     _WindowsAPI,
     windows_container_path,
@@ -253,7 +254,7 @@ def run_unprivileged(
             a.LogonUserW(account, ".", password, 2, 0, ctypes.byref(token)), "test standard logon"
         )
         sid = _token_sid(api, token)
-        # Synchronous metadata-only CreateFile handles also require SYNCHRONIZE.
+        # Traverse access participates in sharing checks; synchronous handles need S.
         # These grants do not allow listing or reading directory contents.
         ancestors = {
             parent
@@ -262,7 +263,7 @@ def run_unprivileged(
         }
         for path in sorted(ancestors, key=lambda item: len(item.parts)):
             granted.append((path, False))
-            _acl(path, "/grant", f"*{sid}:(RC,RA,S)", recursive=False)
+            _acl(path, "/grant", f"*{sid}:(RC,RA,S,X)", recursive=False)
         for path in dict.fromkeys((cwd, Path(sys.base_prefix))):
             granted.append((path, True))
             _acl(path, "/grant", f"*{sid}:(OI)(CI)RX", recursive=True)
@@ -385,6 +386,30 @@ def _crash(path: Path, when: str) -> None:
     raise AssertionError("process-death boundary was not reached")
 
 
+def _guard_rename_exclusion(path: Path) -> None:
+    """Isolate native lifetime pins from SQLite's own data-file handles."""
+    locations = (path, path.parent)
+    guard = WindowsContainer(path, initialize=False)
+    try:
+        for original in locations:
+            moved = original.with_name(original.name + ".relocated")
+            try:
+                original.rename(moved)
+            except OSError as exc:
+                if exc.winerror not in (5, 32):
+                    raise
+            else:
+                moved.rename(original)
+                raise AssertionError("live native guard allowed container relocation")
+    finally:
+        guard.close()
+    # Prove fixture permissions permit those same operations once the pins close.
+    for original in locations:
+        moved = original.with_name(original.name + ".relocated")
+        original.rename(moved)
+        moved.rename(original)
+
+
 def witness(root: Path) -> dict:
     api = _WindowsAPI()
     assert not _elevated(api), "native qualification must run in a non-elevated process"
@@ -461,6 +486,8 @@ def witness(root: Path) -> dict:
             steps += 1
         assert steps == 3
     cases.extend(["cold-reopen-exact-winner", "bounded-cold-generation-cleanup"])
+    _guard_rename_exclusion(path)
+    cases.extend(["live-database-rename-exclusion", "live-parent-rename-exclusion"])
     for when in ("before", "after"):
         allocation = ALLOCATION + when.encode()
         candidate = windows_container_path(parent, allocation)
