@@ -355,6 +355,14 @@ class TransactionalPrimaryFiles:
         except (TypeError, ValueError) as exc:
             raise PrimaryStateError("prepared-primary scratch admission is invalid") from exc
 
+    def recover_ordering_step(self) -> bool:
+        """A ready cache needs no work; interrupted scratch advances one cleanup step."""
+        with self._mutex:
+            phase = self._one("SELECT phase FROM primary_ordering WHERE id=1")
+            if phase is None or phase == ("ready",):
+                return True
+            return self.ordering_cleanup_step()
+
     def ordering_cleanup_step(self) -> bool:
         """Explicit execution/maintenance only; at most one derived row per call."""
         from riverhog_client._prepared_primary_sqlite_ordering import cleanup_step

@@ -202,7 +202,7 @@ class PrimaryStore:
     def publication_started(self) -> bool:
         """Distinguish pristine allocation from a possibly committed remote creation."""
         with self._mutex:
-            self._recover(require_complete=False)
+            self._recover(require_complete=False, verify_preimages=False)
             return (
                 self._optional(self._files, "creating", PrimaryCreating) is not None
                 or self._optional(self._files, "session", PrimarySession) is not None
@@ -214,20 +214,20 @@ class PrimaryStore:
     def session_bound(self) -> bool:
         """Whether the allocation retains an accepted session, without creating one."""
         with self._mutex:
-            self._recover(require_complete=False)
+            self._recover(require_complete=False, verify_preimages=False)
             return self._optional(self._files, "session", PrimarySession) is not None
 
     @property
     def custody_settled(self) -> bool:
         """Observe the validated complete local receipt/reclaim barrier without a scan."""
         with self._mutex:
-            self._recover(require_complete=False)
+            self._recover(require_complete=False, verify_preimages=False)
             return self._optional(self._files, "custody-settled", PrimaryCustodySettled) is not None
 
     @property
     def usage(self) -> PrimaryUsage:
         with self._mutex:
-            self._recover(require_complete=False)
+            self._recover(require_complete=False, verify_preimages=False)
             return self._usage
 
     @property
@@ -246,6 +246,17 @@ class PrimaryStore:
         )
         if self.limits.root_reservation + retained > self.limits.total_bytes:
             raise PrimaryStateCapacity("owner inventory ordering exceeds allocation admission")
+
+    def recover_step(self) -> bool:
+        """Advance cleanup; a selected preparation verifies its admitted bytes in execution."""
+        with self._mutex:
+            if self._authoring:
+                raise PrimaryStateBusy(
+                    "prepared-primary author cannot reenter its active transition"
+                )
+            if not self._files.recover_ordering_step():
+                return False
+            return self._recover(require_complete=False, verify_preimages=True)
 
     def cleanup_ordering_step(self) -> bool:
         """Explicit execution cleanup; status and close never drain derived scratch."""
@@ -304,7 +315,7 @@ class PrimaryStore:
     def session_for(self, create_request: bytes) -> PrimarySession | None:
         """Compare before any remote mutation; record first-create ambiguity durably."""
         with self._mutex:
-            self._recover()
+            complete = self._recover(require_complete=False, verify_preimages=False)
             session = self._optional(self._files, "session", PrimarySession)
             commitment = _commit(create_request)
             if session is not None:
@@ -315,6 +326,8 @@ class PrimaryStore:
                     raise PrimaryStateError("prepared-primary creation inputs changed")
                 self._files.sync()
                 return session
+            if not complete:
+                self._cleanup_pending(require_complete=True)
             creating = self._optional(self._files, "creating", PrimaryCreating)
             if creating is not None:
                 raise PrimaryStateError(
@@ -454,7 +467,7 @@ class PrimaryStore:
         self, member: ArtifactMemberIdentityDocument, *, verify_preimages: bool
     ) -> PrimaryRecord | None:
         with self._mutex:
-            self._recover(require_complete=verify_preimages)
+            self._recover(require_complete=verify_preimages, verify_preimages=verify_preimages)
             with ExitStack() as opened:
                 try:
                     files = opened.enter_context(
@@ -602,8 +615,8 @@ class PrimaryStore:
             raise PrimaryStateBusy("prepared-primary transition requires bounded cleanup")
         return False
 
-    def _recover(self, *, require_complete: bool = True) -> bool:
-        """Reconcile named controls and bounded selected-generation cleanup."""
+    def _recover(self, *, require_complete: bool = True, verify_preimages: bool = True) -> bool:
+        """Reconcile controls/cleanup; point calls defer selected preparation verification."""
         if self._authoring:
             raise PrimaryStateBusy("prepared-primary author cannot reenter its active transition")
         self._files.check_current()
@@ -625,7 +638,8 @@ class PrimaryStore:
         with self._member(str(transition.member.artifact_id), create=True) as files:
             if not files.discard_candidates(_MEMBER_NAMES):
                 return self._cleanup_pending(require_complete=require_complete)
-            record = self._record(
+            read_record = self._record if verify_preimages else self._control_record
+            record = read_record(
                 files, transition.member, uncommitted=transition.operation == "prepare"
             )
             if transition.operation == "prepare":
@@ -636,6 +650,8 @@ class PrimaryStore:
                         return self._cleanup_pending(require_complete=require_complete)
                     selected = transition.before
                 else:
+                    if not verify_preimages:
+                        return self._cleanup_pending(require_complete=require_complete)
                     expected = self._usage_from_preparation(transition.before, record.prepared)
                     if expected != transition.after:
                         raise PrimaryStateError(
@@ -734,7 +750,7 @@ class PrimaryStore:
         self, record: PrimaryRecord, receipt: CollectionUploadArtifactCustodyReceiptDocument
     ) -> PrimaryRecord:
         with self._mutex:
-            self._recover()
+            self._recover(require_complete=False, verify_preimages=False)
             custody = PrimaryCustody.from_receipt(
                 self.session.collection_id, record.prepared, receipt
             )
@@ -749,7 +765,7 @@ class PrimaryStore:
 
     def reclaim(self, member: ArtifactMemberIdentityDocument) -> bool:
         with self._mutex:
-            if not self._recover(require_complete=False):
+            if not self._recover(require_complete=False, verify_preimages=False):
                 return False
             record = self.load_controls(member)
             if record is None or not record.compact:

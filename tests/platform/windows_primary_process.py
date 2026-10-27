@@ -556,7 +556,13 @@ def witness(root: Path) -> dict:
     from tests.support.prepared_primary_replay import witness as shared_replay
 
     shared_replay(windows_container_path(parent, DESCRIPTOR), WindowsPrimaryFactory(LIMITS))
-    cases.extend(["shared-store-cold-exact-replay", "shared-store-bounded-custody"])
+    cases.extend(
+        [
+            "shared-store-cold-exact-replay",
+            "shared-store-bounded-custody",
+            "shared-store-bounded-recovery",
+        ]
+    )
     cases.extend(["cold-reopen-exact-winner", "bounded-cold-generation-cleanup"])
     _guard_rename_exclusion(path)
     cases.extend(["live-database-rename-exclusion", "live-parent-rename-exclusion"])

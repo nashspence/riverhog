@@ -168,6 +168,10 @@ class PrimaryFiles:
 
         return reserved_bytes(self)
 
+    def recover_ordering_step(self) -> bool:
+        """Disposable POSIX scratch has a fixed set of names, without row traversal."""
+        return self.ordering_cleanup_step()
+
     def ordering_cleanup_step(self) -> bool:
         """Remove fixed derived scratch names only in explicit execution work."""
         from riverhog_client._prepared_primary_posix_ordering import cleanup_step

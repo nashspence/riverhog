@@ -117,14 +117,16 @@ def witness(path: Path, factory: PrimaryStorageFactory) -> None:
         complete = store.reclaim(member)
         if not complete:
             assert store._usage == before
+        assert store.session_for(create) == store.session
 
     with opened() as store:
         for _ in range(64):
-            if store.reclaim(member):
+            if store.recover_step():
                 break
             assert store._usage == before
         else:
             raise AssertionError("bounded shared-store fixture reclaim did not finish")
+        assert store.reclaim(member)
         assert store.load_controls(member).compact
         assert store.usage.pending_bytes == 0
         assert store.usage.sequence == before.sequence + 1

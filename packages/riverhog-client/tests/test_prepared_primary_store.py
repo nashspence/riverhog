@@ -2255,3 +2255,161 @@ def test_larger_ordering_grant_cannot_borrow_existing_member_reservations(
             list(ordered_primary_inventory(store, forbidden_input()))
         assert store._files.ordering_reserved_bytes() == 0
         assert store.usage == before and store.load(_member()) == original
+
+
+def _deny_primary_chunk_bodies(factory):
+    import sqlite3
+
+    def opened(path, *, allocation_descriptor, initialize):
+        files = factory(path, allocation_descriptor=allocation_descriptor, initialize=initialize)
+
+        def control_reads(action, table, column, *_rest):
+            if action == sqlite3.SQLITE_READ and table == "primary_chunks" and column == "body":
+                return sqlite3.SQLITE_DENY
+            return sqlite3.SQLITE_OK
+
+        files._connection.set_authorizer(control_reads)
+        return files
+
+    return opened
+
+
+def test_selected_prepare_control_recovery_defers_preimage_verification_to_execution(
+    tmp_path, monkeypatch, sql_core_storage
+):
+    import sqlite3
+
+    root = tmp_path.resolve() / "state.sqlite3"
+    with _open(root, initialize=True, storage_factory=sql_core_storage) as store:
+
+        def interrupted(*_args):
+            raise RuntimeError("after original manifest selection")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(store, "_finish_transition", interrupted)
+            with pytest.raises(RuntimeError, match="original manifest"):
+                store.prepare_or_load(_member(), REQUEST, lambda _grant: _author())
+
+        def control_reads(action, table, column, *_rest):
+            if action == sqlite3.SQLITE_READ and table == "primary_chunks" and column == "body":
+                return sqlite3.SQLITE_DENY
+            return sqlite3.SQLITE_OK
+
+        store._files._connection.set_authorizer(control_reads)
+        assert store.usage.members == 0
+        assert store._files.exists("transition")
+        original = store.load_controls(_member())
+        assert original is not None
+        assert store.session_for(CREATE) == store.session
+        receipt = store.accept_custody(original, _receipt(original.prepared))
+        assert receipt.custody is not None and not receipt.compact
+        assert not store.reclaim(_member())
+        assert store.usage.members == 0
+        with pytest.raises(sqlite3.DatabaseError, match="prohibited"):
+            store.load(_member())
+        store._files._connection.set_authorizer(None)
+        statements = []
+        store._files._connection.set_trace_callback(statements.append)
+        assert store.recover_step()
+        assert any("SELECT body FROM primary_chunks" in q for q in statements)
+        assert store.usage.members == 1
+        assert not store._files.exists("transition")
+        assert store.load(_member()).prepared == original.prepared
+
+
+def test_bound_session_and_receipt_progress_during_unrelated_pending_candidate_cleanup(
+    tmp_path, monkeypatch, sql_core_storage
+):
+    from riverhog_client import _prepared_primary_sqlite as sql
+
+    root = tmp_path.resolve() / "state.sqlite3"
+    with _open(root, initialize=True, storage_factory=sql_core_storage) as store:
+        original = store.prepare_or_load(_member(), REQUEST, lambda _grant: _author())
+        original = store.accept_decision(original, b"exact decision")
+        before = store.usage
+        select = sql.TransactionalPrimaryFiles._select
+
+        def interrupted(files, generation, result):
+            if result.name == "journal":
+                raise RuntimeError("before unrelated journal selection")
+            return select(files, generation, result)
+
+        with monkeypatch.context() as patch:
+            patch.setattr(sql.TransactionalPrimaryFiles, "_select", interrupted)
+            with pytest.raises(RuntimeError, match="unrelated journal"):
+                store.prepare_or_load(
+                    _member(2), REQUEST, lambda _grant: _author(_member(2), journal=b"j" * 131072)
+                )
+
+    with _open(root, storage_factory=_deny_primary_chunk_bodies(sql_core_storage)) as store:
+        operation = store._files._one("SELECT generation,cursor FROM primary_operation")
+        assert operation is not None
+        assert store.session_for(CREATE) == store.session
+        accepted = store.accept_custody(original, _receipt(original.prepared))
+        assert accepted.compact and accepted.prepared == original.prepared
+        after = store._files._one("SELECT generation,cursor FROM primary_operation")
+        assert after is not None and after[0] == operation[0]
+        assert 0 <= after[1] - operation[1] <= 3
+        assert store._usage == before
+        statements = []
+        store._files._connection.set_trace_callback(statements.append)
+        for _ in range(128):
+            statements.clear()
+            complete = store.recover_step()
+            assert sum(s.startswith("DELETE FROM primary_chunks") for s in statements) <= 1
+            assert not store._files._connection.in_transaction
+            if complete:
+                break
+            assert store._usage == before
+        else:
+            pytest.fail("bounded execution recovery did not finish")
+        assert store._usage == before
+        assert store.load_controls(_member()).compact
+        assert store.load_controls(_member(2)) is None
+
+
+def test_explicit_recovery_steps_finish_interrupted_ordering_without_status_draining_it(
+    tmp_path, sql_core_storage
+):
+    root = tmp_path.resolve() / "state.sqlite3"
+    rows = [(f"{number:064x}", number, "a" * 64) for number in range(17)]
+    with _open(root, initialize=True, storage_factory=sql_core_storage) as store:
+        original = store.prepare_or_load(_member(), REQUEST, lambda _grant: _author())
+
+        def interrupted():
+            yield from rows
+            raise RuntimeError("interrupted derived input")
+
+        with pytest.raises(RuntimeError, match="derived input"):
+            list(store._files.ordered_rows(interrupted(), byte_limit=128 * 1024))
+
+    with _open(root, storage_factory=_deny_primary_chunk_bodies(sql_core_storage)) as store:
+        for _ in range(3):
+            assert store.usage.members == 1
+            assert store.session_bound
+        assert store._files._one("SELECT count(*) FROM primary_order_rows") == (len(rows),)
+        statements = []
+        store._files._connection.set_trace_callback(statements.append)
+        pending = 0
+        for _ in range(len(rows) + 2):
+            statements.clear()
+            if store.recover_step():
+                break
+            pending += 1
+            assert sum(s.startswith("DELETE FROM primary_order_rows") for s in statements) <= 1
+            assert store._files.ordering_reserved_bytes() == 128 * 1024
+        else:
+            pytest.fail("bounded derived recovery did not finish")
+        assert pending == len(rows) + 1
+        assert store._files.ordering_reserved_bytes() == 0
+        assert store.load_controls(_member()).prepared == original.prepared
+
+
+def test_explicit_recovery_keeps_ready_ordering_admitted(tmp_path, sql_core_storage):
+    root = tmp_path.resolve() / "state.sqlite3"
+    with _open(root, initialize=True, storage_factory=sql_core_storage) as store:
+        list(store._files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024))
+    with _open(root, storage_factory=sql_core_storage) as store:
+        assert store.recover_step()
+        assert store._files.ordering_reserved_bytes() == 128 * 1024
+        assert store._files._one("SELECT phase FROM primary_ordering") == ("ready",)

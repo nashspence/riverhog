@@ -51,6 +51,10 @@ class PrimaryStorage(Protocol):
         """Retained scratch admission, without advancing or scanning its rows."""
         ...
 
+    def recover_ordering_step(self) -> bool:
+        """Recover interrupted scratch in one step, retaining a ready generation."""
+        ...
+
     def ordering_cleanup_step(self) -> bool:
         """Advance bounded explicit execution cleanup, retaining admission until done."""
         ...
