@@ -2413,3 +2413,21 @@ def test_explicit_recovery_keeps_ready_ordering_admitted(tmp_path, sql_core_stor
         assert store.recover_step()
         assert store._files.ordering_reserved_bytes() == 128 * 1024
         assert store._files._one("SELECT phase FROM primary_ordering") == ("ready",)
+
+
+@pytest.mark.parametrize("role", ["prepared", "decision-accepted", "custody", "reclaimed"])
+@pytest.mark.parametrize("phase", ["warming", "readiness"])
+@pytest.mark.parametrize("committed", [False, True])
+def test_shared_sql_resource_preparation_uncertainty_coldly_rolls_back_without_replacing_primary(
+    tmp_path, sql_core_storage, role, phase, committed
+):
+    from tests.support.prepared_primary_resource_recovery import witness
+
+    evidence = witness(
+        tmp_path.resolve() / "state.sqlite3",
+        sql_core_storage,
+        role=role,
+        phase=phase,
+        committed=committed,
+    )
+    assert evidence["survivor_exact"] and evidence["member_grant_charged_once"]

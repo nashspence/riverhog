@@ -588,6 +588,32 @@ def _journal_capacity_witness(parent: Path):
     return {"runtime": identity, "cases": reports}
 
 
+def _shared_resource_recovery_witness(parent: Path):
+    from tests.support.prepared_primary_replay import DESCRIPTOR
+    from tests.support.prepared_primary_resource_recovery import cases
+    from tests.support.prepared_primary_resource_recovery import witness as recovery_witness
+
+    reports = []
+    for role, phase, committed in cases():
+        directory = parent / f"resource-recovery-{role}-{phase}-{int(committed)}"
+        _parent(directory)
+        try:
+            reports.append(
+                recovery_witness(
+                    windows_container_path(directory, DESCRIPTOR),
+                    WindowsPrimaryFactory(LIMITS),
+                    role=role,
+                    phase=phase,
+                    committed=committed,
+                )
+            )
+        except BaseException as exc:
+            raise RuntimeError(
+                f"Shared resource recovery {role}/{phase}/committed={committed}"
+            ) from exc
+    return reports
+
+
 def witness(root: Path) -> dict:
     api = _WindowsAPI()
     assert not _elevated(api), "native qualification must run in a non-elevated process"
@@ -787,6 +813,11 @@ def witness(root: Path) -> dict:
         "vfs-" + fault["operation"] + "-" + fault["file"] + "-" + fault["when"]
         for fault in vfs_faults["faults"]
     )
+    resource_recovery = _shared_resource_recovery_witness(parent)
+    cases.extend(
+        f"shared-resource-{case['role']}-{case['phase']}-{int(case['commit_executed'])}"
+        for case in resource_recovery
+    )
     journals = _journal_capacity_witness(parent)
     cases.extend(
         f"prepared-journal-headroom-{case['capacity_bytes']}" for case in journals["cases"]
@@ -815,6 +846,7 @@ def witness(root: Path) -> dict:
         "space": space,
         "controls": controls,
         "journals": journals,
+        "resource_recovery": resource_recovery,
         "elapsed_seconds": time.monotonic() - started,
         "limitations": [
             "process death is not power loss",
