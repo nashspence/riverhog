@@ -1,0 +1,94 @@
+{
+  "scope": "reference arithmetic and Linux actual-SQLite xWrite refusal only; not production/Windows qualification",
+  "python": "3.13.5",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "sqlite": "3.46.1",
+  "sqlite_source_id": "2024-08-13 09:16:08 c9c2ab54ba1f5f46360f1b4f35d849cd3f080e6fc2b6c60e91b16c63f69aalt1",
+  "audited_source": "f41bae6e1456d4ae16952de293320cbe4a6ce460",
+  "tests": 10,
+  "failures": 0,
+  "errors": 0,
+  "elapsed_seconds": 1.483230515999992,
+  "observations": [
+    {
+      "fixed_control_8KiB": [
+        9,
+        45144
+      ],
+      "fixed_control_256KiB": [
+        71,
+        299592
+      ],
+      "wide_sector": [
+        142,
+        599168
+      ]
+    },
+    {
+      "hard_heap_bytes": 1048576,
+      "rejected": true,
+      "original": 7
+    },
+    {
+      "scenario": "control",
+      "page_cap": 2,
+      "journal_cap": 1048576,
+      "error": 13,
+      "forward_pages": 2,
+      "forward_journal_peak": 271376,
+      "refusals": [
+        [
+          "database",
+          4096,
+          20480,
+          "page grant"
+        ]
+      ],
+      "rollback_pages": 66
+    },
+    {
+      "scenario": "control",
+      "page_cap": 128,
+      "journal_cap": 8192,
+      "error": 13,
+      "forward_pages": 0,
+      "forward_journal_peak": 4620,
+      "refusals": [
+        [
+          "journal",
+          4096,
+          4620,
+          "journal extent grant"
+        ]
+      ],
+      "rollback_pages": 0
+    },
+    {
+      "scenario": "structural",
+      "page_cap": 3,
+      "journal_cap": 1048576,
+      "error": 13,
+      "forward_pages": 3,
+      "forward_journal_peak": 16928,
+      "refusals": [
+        [
+          "database",
+          4096,
+          16384,
+          "page grant"
+        ]
+      ],
+      "rollback_pages": 4
+    },
+    {
+      "scenario": "control",
+      "page_cap": 71,
+      "journal_cap": 299592,
+      "error": null,
+      "forward_pages": 66,
+      "forward_journal_peak": 271376,
+      "refusals": [],
+      "rollback_pages": 0
+    }
+  ]
+}
