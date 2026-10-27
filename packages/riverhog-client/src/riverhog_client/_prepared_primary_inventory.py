@@ -31,6 +31,7 @@ def ordered_primary_inventory(
             yield str(member.artifact_id), member.bytes, member.sha256
 
     with store._mutex:
+        store._admit_ordering()
         for key, byte_count, digest in store._files.ordered_rows(
             rows(), byte_limit=store.limits.inventory_order_bytes
         ):

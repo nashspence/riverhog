@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sqlite3
 from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING
@@ -10,6 +11,45 @@ from riverhog_client._prepared_primary_types import PrimaryStateCapacity, Primar
 
 if TYPE_CHECKING:
     from riverhog_client._prepared_primary_posix import PrimaryFiles
+
+
+_SCRATCH_NAMES = (
+    "selection.sqlite3-journal",
+    "selection.sqlite3",
+    "candidate-selection.sqlite3",
+)
+
+
+def reserved_bytes(owner: PrimaryFiles) -> int:
+    """Observe only known retained scratch names; never read database contents."""
+    try:
+        opened = owner.child("inventory-ordering", initialize=False)
+    except FileNotFoundError:
+        return 0
+    total = 0
+    with opened as files:
+        for name in _SCRATCH_NAMES:
+            try:
+                descriptor = files._open(name)
+            except FileNotFoundError:
+                continue
+            try:
+                total += os.fstat(descriptor).st_size
+            finally:
+                os.close(descriptor)
+    return total
+
+
+def cleanup_step(owner: PrimaryFiles) -> bool:
+    """A fixed number of unlinks removes derived state without enumerating the owner."""
+    try:
+        opened = owner.child("inventory-ordering", initialize=False)
+    except FileNotFoundError:
+        return True
+    with opened as files:
+        for name in _SCRATCH_NAMES:
+            files.remove(name)
+    return True
 
 
 def ordered_rows(
@@ -27,11 +67,7 @@ def ordered_rows(
     except FileExistsError:
         opened = owner.child("inventory-ordering", initialize=False)
     with opened as files:
-        for name in (
-            "selection.sqlite3-journal",
-            "selection.sqlite3",
-            "candidate-selection.sqlite3",
-        ):
+        for name in _SCRATCH_NAMES:
             files.remove(name)
         files.put(
             "selection.sqlite3",

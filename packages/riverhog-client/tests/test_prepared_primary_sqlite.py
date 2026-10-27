@@ -707,3 +707,47 @@ def test_ordering_rechecks_byte_idle_after_finishing_old_scratch(tmp_path, monke
         assert list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024)) == [
             ("a", 1, "a" * 64)
         ]
+
+
+@pytest.mark.parametrize("members", [1, 257])
+def test_retained_scratch_grant_is_a_control_only_point_read_until_final_cleanup(tmp_path, members):
+    path = tmp_path / "state.sqlite3"
+    rows = [(f"{number:064x}", number, "a" * 64) for number in range(members)]
+    with _open(path, initialize=True) as files:
+        assert files.ordering_reserved_bytes() == 0
+        assert list(files.ordered_rows(rows, byte_limit=128 * 1024)) == rows
+    with _open(path, initialize=False) as files:
+        statements = []
+
+        def controls_only(action, table, _column, *_rest):
+            if action == sqlite3.SQLITE_READ and table in ("primary_chunks", "primary_order_rows"):
+                return sqlite3.SQLITE_DENY
+            return sqlite3.SQLITE_OK
+
+        files._connection.set_authorizer(controls_only)
+        files._connection.set_trace_callback(statements.append)
+        for _ in range(3):
+            assert files.ordering_reserved_bytes() == 128 * 1024
+        assert statements == ["SELECT byte_limit FROM primary_ordering WHERE id=1"] * 3
+        files._connection.set_authorizer(None)
+        files._connection.set_trace_callback(None)
+        for _ in range(members + 2):
+            if files.ordering_cleanup_step():
+                break
+            assert files.ordering_reserved_bytes() == 128 * 1024
+        else:
+            pytest.fail("bounded derived cleanup did not finish")
+        assert files.ordering_reserved_bytes() == 0
+
+
+@pytest.mark.parametrize("damaged", ["01", "-1", "unknown"])
+def test_invalid_retained_scratch_grant_is_not_replaced_by_current_configuration(tmp_path, damaged):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024))
+    with sqlite3.connect(path) as db:
+        db.execute("UPDATE primary_ordering SET byte_limit=?", (damaged,))
+    with _open(path, initialize=False) as files:
+        with pytest.raises(PrimaryStateError, match="scratch admission is invalid"):
+            files.ordering_reserved_bytes()
+        assert files._one("SELECT byte_limit FROM primary_ordering") == (damaged,)

@@ -230,6 +230,28 @@ class PrimaryStore:
             self._recover(require_complete=False)
             return self._usage
 
+    @property
+    def _root_reservation(self) -> int:
+        return 14 * self.limits.control_bytes + max(
+            self.limits.inventory_order_bytes, self._files.ordering_reserved_bytes()
+        )
+
+    def _admit_ordering(self) -> None:
+        """A changed scratch grant cannot borrow existing member or inventory admission."""
+        retained = (
+            self._usage.control_bytes
+            + self._usage.pending_bytes
+            + self._usage.inventory_bytes
+            + self._usage.inventory_reserved_bytes
+        )
+        if self.limits.root_reservation + retained > self.limits.total_bytes:
+            raise PrimaryStateCapacity("owner inventory ordering exceeds allocation admission")
+
+    def cleanup_ordering_step(self) -> bool:
+        """Explicit execution cleanup; status and close never drain derived scratch."""
+        with self._mutex:
+            return self._files.ordering_cleanup_step()
+
     def _read(self, files: PrimaryStorage, name: str, model: type[_Control]) -> _Control:
         raw = files.read_control(name, byte_limit=self.limits.control_bytes)
         value = model.model_validate_json(raw)
@@ -475,7 +497,7 @@ class PrimaryStore:
                 self.limits.preparation_bytes,
                 self.limits.pending_bytes - self._usage.pending_bytes,
                 self.limits.total_bytes
-                - self.limits.root_reservation
+                - self._root_reservation
                 - self._usage.control_bytes
                 - self.limits.member_reservation
                 - self._usage.pending_bytes

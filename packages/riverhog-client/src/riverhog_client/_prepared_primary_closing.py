@@ -166,7 +166,7 @@ def freeze_inventory(
             store._write(store._files, "closing-intent", intent)
         grant = (
             store.limits.total_bytes
-            - store.limits.root_reservation
+            - store._root_reservation
             - store._usage.control_bytes
             - store._usage.pending_bytes
         )

@@ -343,6 +343,18 @@ class TransactionalPrimaryFiles:
         finally:
             guard.release()
 
+    def ordering_reserved_bytes(self) -> int:
+        """Retain the original grant across ready, interrupted and cleanup phases."""
+        from riverhog_canonical_json import parse_scalar
+
+        row = self._one("SELECT byte_limit FROM primary_ordering WHERE id=1")
+        if row is None:
+            return 0
+        try:
+            return parse_scalar("nonnegative", row[0])
+        except (TypeError, ValueError) as exc:
+            raise PrimaryStateError("prepared-primary scratch admission is invalid") from exc
+
     def ordering_cleanup_step(self) -> bool:
         """Explicit execution/maintenance only; at most one derived row per call."""
         from riverhog_client._prepared_primary_sqlite_ordering import cleanup_step

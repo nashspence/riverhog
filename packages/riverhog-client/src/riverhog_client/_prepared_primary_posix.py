@@ -162,6 +162,25 @@ class PrimaryFiles:
         finally:
             guard.release()
 
+    def ordering_reserved_bytes(self) -> int:
+        """Charge exact retained scratch files through point metadata reads."""
+        from riverhog_client._prepared_primary_posix_ordering import reserved_bytes
+
+        return reserved_bytes(self)
+
+    def ordering_cleanup_step(self) -> bool:
+        """Remove fixed derived scratch names only in explicit execution work."""
+        from riverhog_client._prepared_primary_posix_ordering import cleanup_step
+
+        self.check_current()
+        guard = self._owner_root._ordering_guard
+        if not guard.acquire(blocking=False):
+            raise PrimaryStateBusy("prepared-primary inventory ordering has a live reader")
+        try:
+            return cleanup_step(self)
+        finally:
+            guard.release()
+
     def sync(self) -> None:
         if self._directory < 0:
             raise PrimaryStateError("prepared-primary construction directory is closed")

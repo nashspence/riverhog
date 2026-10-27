@@ -47,6 +47,14 @@ class PrimaryStorage(Protocol):
 
     def verified(self, file: PrimaryByteFile) -> AbstractContextManager[BinaryIO]: ...
 
+    def ordering_reserved_bytes(self) -> int:
+        """Retained scratch admission, without advancing or scanning its rows."""
+        ...
+
+    def ordering_cleanup_step(self) -> bool:
+        """Advance bounded explicit execution cleanup, retaining admission until done."""
+        ...
+
     def ordered_rows(
         self, rows: Iterable[tuple[str, int, str]], *, byte_limit: int
     ) -> Iterator[tuple[str, int, str]]: ...

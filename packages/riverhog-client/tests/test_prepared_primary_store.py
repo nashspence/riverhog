@@ -2155,3 +2155,103 @@ def test_shared_sql_core_orders_lazy_inventory_before_publishing_and_settling(
             pytest.fail("bounded ordered custody fixture did not finish")
         assert receipts == members[::-1]
         assert store.custody_settled and store.usage.pending_bytes == 0
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_retained_ordering_stays_charged_until_explicit_cleanup_after_budget_reduction(
+    tmp_path, sql_core_storage, backend
+):
+    root = tmp_path.resolve() / ("state" if backend == "posix" else "state.sqlite3")
+    factory = None if backend == "posix" else sql_core_storage
+    original_limits = replace(LIMITS, inventory_order_bytes=128 * 1024)
+    with _open(root, initialize=True, limits=original_limits, storage_factory=factory) as store:
+        original = store.prepare_or_load(_member(), REQUEST, lambda _grant: _author())
+        before = store.usage
+        if backend == "sqlite":
+            assert list(store._files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024)) == [
+                ("a", 1, "a" * 64)
+            ]
+        else:
+            with store._files.child("inventory-ordering", initialize=True) as scratch:
+                scratch.put("selection.sqlite3", [b"x" * (128 * 1024)], byte_limit=128 * 1024)
+        assert store._files.ordering_reserved_bytes() == 128 * 1024
+
+    size = sum(file.bytes for file in original.prepared.byte_files)
+    reduced = replace(
+        LIMITS,
+        inventory_order_bytes=0,
+        total_bytes=(
+            LIMITS.root_reservation
+            + before.control_bytes
+            + before.pending_bytes
+            + before.inventory_reserved_bytes
+            + LIMITS.member_reservation
+            + LIMITS.control_bytes
+            + 1
+            + size
+            + 32
+        ),
+    )
+    with _open(root, limits=reduced, storage_factory=factory) as store:
+        for _ in range(3):
+            assert store.usage == before
+            assert store.session_bound
+            assert store._files.ordering_reserved_bytes() == 128 * 1024
+        with pytest.raises(PrimaryStateCapacity, match="admission exhausted"):
+            store.prepare_or_load(_member(2), REQUEST, _no_author)
+        assert store.load(_member()) == original
+
+        # Reduced admission must not invalidate original compact-control authority.
+        acknowledged = store.accept_decision(original, b"exact decision")
+        store.accept_custody(acknowledged, _receipt(original.prepared))
+        for _ in range(64):
+            if store.reclaim(_member()):
+                break
+        else:
+            pytest.fail("original receipt-backed reclaim did not finish")
+        assert store._files.ordering_reserved_bytes() == 128 * 1024
+        for _ in range(8):
+            if store.cleanup_ordering_step():
+                break
+            assert store._files.ordering_reserved_bytes() == 128 * 1024
+        else:
+            pytest.fail("bounded scratch cleanup did not finish")
+        assert store._files.ordering_reserved_bytes() == 0
+        second = store.prepare_or_load(_member(2), REQUEST, lambda _grant: _author(_member(2)))
+        assert second.prepared.member == _member(2)
+        assert store.usage.members == 2
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_larger_ordering_grant_cannot_borrow_existing_member_reservations(
+    tmp_path, sql_core_storage, backend
+):
+    from riverhog_client import ordered_primary_inventory
+
+    root = tmp_path.resolve() / ("state" if backend == "posix" else "state.sqlite3")
+    factory = None if backend == "posix" else sql_core_storage
+    with _open(root, initialize=True, storage_factory=factory) as store:
+        original = store.prepare_or_load(_member(), REQUEST, lambda _grant: _author())
+        before = store.usage
+    increased = replace(
+        LIMITS,
+        inventory_order_bytes=128 * 1024,
+        total_bytes=(
+            14 * LIMITS.control_bytes
+            + 128 * 1024
+            + before.control_bytes
+            + before.pending_bytes
+            + before.inventory_reserved_bytes
+            - 1
+        ),
+    )
+
+    def forbidden_input():
+        pytest.fail("unadmitted ordering consumed owner input")
+        yield
+
+    with _open(root, limits=increased, storage_factory=factory) as store:
+        with pytest.raises(PrimaryStateCapacity, match="ordering exceeds allocation"):
+            list(ordered_primary_inventory(store, forbidden_input()))
+        assert store._files.ordering_reserved_bytes() == 0
+        assert store.usage == before and store.load(_member()) == original

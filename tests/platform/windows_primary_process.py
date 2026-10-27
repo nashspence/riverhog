@@ -536,13 +536,16 @@ def witness(root: Path) -> dict:
         assert files._one("PRAGMA journal_mode") == ("persist",)
         assert files._one("PRAGMA synchronous") == (3,)
     with _files(path, initialize=False) as files:
+        assert files.ordering_reserved_bytes() == 128 * 1024
         cleanup_steps = 0
         while not files.ordering_cleanup_step():
             cleanup_steps += 1
+            assert files.ordering_reserved_bytes() == 128 * 1024
         assert cleanup_steps == 3
+        assert files.ordering_reserved_bytes() == 0
         with files.verified(file) as stream:
             assert stream.read() == CONTENT
-    cases.append("same-container-derived-ordering")
+    cases.extend(["same-container-derived-ordering", "retained-scratch-admission"])
     from tests.support.prepared_primary_replay import DESCRIPTOR
     from tests.support.prepared_primary_replay import witness as shared_replay
 
