@@ -19,7 +19,7 @@ from sqlalchemy.engine import Connection, Engine
 from sqlalchemy.pool import NullPool
 from state_schema import EngineFactory
 
-from riverhog_client._prepared_primary_sqlite_schema import primary_state_schema, verify_shape
+from riverhog_client._prepared_primary_sqlite_schema import _primary_state_schema, _verify_shape
 from riverhog_client._prepared_primary_types import (
     PrimaryByteFile,
     PrimaryFileSpace,
@@ -156,7 +156,7 @@ class TransactionalPrimaryFiles:
         self._ordering_guard = threading.Lock()
         self._connection: sqlite3.Connection | None = None
         factory = _engine_factory(guard, limits)
-        schema = primary_state_schema(factory)
+        schema = _primary_state_schema(factory)
         try:
             if initialize:
                 engine = factory()
@@ -179,7 +179,7 @@ class TransactionalPrimaryFiles:
                 engine = factory()
                 try:
                     with engine.connect() as connection:
-                        verify_shape(connection)
+                        _verify_shape(connection)
                 finally:
                     engine.dispose()
             self._connection = _connect(guard, limits)

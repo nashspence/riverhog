@@ -117,16 +117,16 @@ Table(
 )
 
 
-def verify_shape(connection: StateConnection) -> None:
+def _verify_shape(connection: StateConnection) -> None:
     """Bounded schema inspection; full integrity scans belong to explicit audits."""
     assert_schema_matches_metadata(connection, METADATA, version_table=VERSION_TABLE)
 
 
-def primary_state_schema(engine_factory: EngineFactory) -> StateSchema:
+def _primary_state_schema(engine_factory: EngineFactory) -> StateSchema:
     return StateSchema(
         name="prepared-primary byte store",
         engine_factory=engine_factory,
         script_location=MIGRATIONS,
-        verify=verify_shape,
+        verify=_verify_shape,
         version_table=VERSION_TABLE,
     )
