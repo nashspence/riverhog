@@ -266,7 +266,7 @@ def test_native_qualification_preserves_staged_install_and_bounded_failure_evide
     monkeypatch.setenv("GOGURT_FAILURE_EVIDENCE_DIR", "/tmp/qualification-evidence")
     monkeypatch.setattr(qualification, "run", lambda command: commands.append(command))
     qualification.native_platform()
-    assert commands[0][3:] == ["-q", *qualification.NATIVE_TESTS]
+    assert commands[0][3:] == ["-q", "--maxfail=1", *qualification.NATIVE_TESTS]
     assert commands[1][-4:] == [
         "--listener-lifecycle-repetitions",
         "12",

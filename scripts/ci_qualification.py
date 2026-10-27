@@ -458,7 +458,7 @@ def qualify_images(targets: Sequence[str], graph: dict[str, Any]) -> None:
 
 
 def native_platform() -> None:
-    run([sys.executable, "-m", "pytest", "-q", *NATIVE_TESTS])
+    run([sys.executable, "-m", "pytest", "-q", "--maxfail=1", *NATIVE_TESTS])
     command = [
         sys.executable,
         "scripts/qualify_installation.py",
