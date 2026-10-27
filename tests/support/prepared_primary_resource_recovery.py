@@ -97,9 +97,10 @@ def _slots(files):
     )
 
 
-def witness(path, factory, *, role, phase, committed):
+def witness(path, factory, *, role, phase, committed=None, inject=None):
     from riverhog_client import _prepared_primary_sqlite_journal as journal
 
+    assert (type(committed) is bool and inject is None) or (committed is None and callable(inject))
     survivor, interrupted = _member(1), _member(2)
     calls = 0
 
@@ -157,29 +158,35 @@ def witness(path, factory, *, role, phase, committed):
         warm = journal._warm
         injected = False
 
-        def fail_response(files, identifier):
+        def interrupt_prepare(files, identifier):
             nonlocal injected
             selected = files._one(
                 "SELECT namespace,name FROM primary_controls WHERE rowid=?", (identifier,)
             )
             chosen = not injected and selected == (files._namespace, role) and files._namespace != 1
-            if chosen:
-                injected = True
-                if phase == "warming":
+
+            def interrupt():
+                if inject is None:
                     files._root._connection = _CommitResponseFailure(
                         files._root._connection, committed=committed
                     )
+                else:
+                    inject(files)
+
+            if chosen:
+                injected = True
+                if phase == "warming":
+                    interrupt()
             warm(files, identifier)
             if chosen and phase == "readiness":
-                files._root._connection = _CommitResponseFailure(
-                    files._root._connection, committed=committed
-                )
+                interrupt()
 
-        with patch.object(journal, "_warm", fail_response):
+        with patch.object(journal, "_warm", interrupt_prepare):
             try:
                 store.prepare_or_load(interrupted, REQUEST, author)
             except PrimaryStateError as exc:
                 assert isinstance(exc.__cause__, sqlite3.Error)
+                error = getattr(exc.__cause__, "sqlite_errorcode", None)
             else:
                 raise AssertionError("resource commit uncertainty was reported as prepared")
         assert injected and calls == 1
@@ -225,5 +232,10 @@ def witness(path, factory, *, role, phase, committed):
         "unsealed_primary_adopted": False,
         "retry_reused_capacity": True,
         "member_grant_charged_once": True,
-        "fault_kind": "injected COMMIT response loss, not VFS or power failure",
+        "sqlite_errorcode": error,
+        "fault_kind": (
+            "injected COMMIT response loss, not VFS or power failure"
+            if inject is None
+            else "injected storage I/O failure, not power failure"
+        ),
     }

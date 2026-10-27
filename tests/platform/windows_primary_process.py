@@ -594,8 +594,8 @@ def _shared_resource_recovery_witness(parent: Path):
     from tests.support.prepared_primary_resource_recovery import witness as recovery_witness
 
     reports = []
-    for role, phase, committed in cases():
-        directory = parent / f"resource-recovery-{role}-{phase}-{int(committed)}"
+    for number, (role, phase, committed) in enumerate(cases()):
+        directory = parent / f"response-{number}"
         _parent(directory)
         try:
             reports.append(
@@ -612,6 +612,103 @@ def _shared_resource_recovery_witness(parent: Path):
                 f"Shared resource recovery {role}/{phase}/committed={committed}"
             ) from exc
     return reports
+
+
+def _shared_resource_vfs_witness(parent: Path):
+    from dataclasses import asdict
+    from itertools import product
+
+    from tests.support.prepared_primary_replay import DESCRIPTOR
+    from tests.support.prepared_primary_resource_recovery import ROLES
+    from tests.support.prepared_primary_resource_recovery import witness as recovery_witness
+    from tests.support.sqlite_vfs_faults import FaultVfs
+
+    reports = []
+    with FaultVfs.windows() as shim:
+        for number, (role, phase, operation, kind, when) in enumerate(
+            product(
+                ROLES,
+                ("warming", "readiness"),
+                ("write", "sync"),
+                ("database", "journal"),
+                ("before", "after"),
+            )
+        ):
+            directory = parent / f"resource-{number}"
+            _parent(directory)
+
+            def opened(path, *, allocation_descriptor, initialize):
+                return _vfs_files(shim, path, allocation_descriptor, initialize=initialize)
+
+            def inject(_files, operation=operation, kind=kind, when=when):
+                shim.arm(operation, kind, when)
+
+            try:
+                result = recovery_witness(
+                    windows_container_path(directory, DESCRIPTOR),
+                    opened,
+                    role=role,
+                    phase=phase,
+                    inject=inject,
+                )
+                fault = shim.fault
+                assert fault is not None and fault.injected
+                assert fault.delegated is (when == "after")
+                if fault.delegated:
+                    assert fault.native_result == sqlite3.SQLITE_OK
+                assert result["sqlite_errorcode"] & 255 == sqlite3.SQLITE_IOERR
+                reports.append({**result, "vfs_fault": asdict(fault)})
+                shim.clear_fault()
+            except BaseException as exc:
+                raise RuntimeError(
+                    f"Shared resource VFS failure {role}/{phase}/{operation}/{kind}/{when}: "
+                    f"injection={shim.fault}; callback_errors={shim.errors}"
+                ) from exc
+        identity = shim.identity
+    return {"runtime": identity, "cases": reports}
+
+
+def _control_vfs_witness(parent: Path):
+    from dataclasses import asdict
+    from itertools import product
+
+    from tests.support.prepared_primary_control_faults import witness as control_witness
+    from tests.support.sqlite_vfs_faults import FaultVfs
+
+    reports = []
+    with FaultVfs.windows() as shim:
+        for change, operation, kind, when in product(
+            ("install", "replace", "remove"),
+            ("write", "sync"),
+            ("database", "journal"),
+            ("before", "after"),
+        ):
+            allocation = ALLOCATION + f"/control-vfs/{change}/{operation}/{kind}/{when}".encode()
+            path = windows_container_path(parent, allocation)
+
+            def opened(*, initialize, path=path, allocation=allocation):
+                return _vfs_files(shim, path, allocation, initialize=initialize)
+
+            def inject(_files, operation=operation, kind=kind, when=when):
+                shim.arm(operation, kind, when)
+
+            try:
+                result = control_witness(opened, change=change, inject=inject)
+                fault = shim.fault
+                assert fault is not None and fault.injected
+                assert fault.delegated is (when == "after")
+                if fault.delegated:
+                    assert fault.native_result == sqlite3.SQLITE_OK
+                assert result["sqlite_errorcode"] & 255 == sqlite3.SQLITE_IOERR
+                reports.append({**result, "vfs_fault": asdict(fault)})
+                shim.clear_fault()
+            except BaseException as exc:
+                raise RuntimeError(
+                    f"Control VFS failure {change}/{operation}/{kind}/{when}: "
+                    f"injection={shim.fault}; callback_errors={shim.errors}"
+                ) from exc
+        identity = shim.identity
+    return {"runtime": identity, "cases": reports}
 
 
 def witness(root: Path) -> dict:
@@ -818,6 +915,19 @@ def witness(root: Path) -> dict:
         f"shared-resource-{case['role']}-{case['phase']}-{int(case['commit_executed'])}"
         for case in resource_recovery
     )
+    resource_vfs = _shared_resource_vfs_witness(parent)
+    cases.extend(
+        f"shared-resource-vfs-{case['role']}-{case['phase']}-"
+        f"{case['vfs_fault']['operation']}-{case['vfs_fault']['file']}-"
+        f"{case['vfs_fault']['when']}"
+        for case in resource_vfs["cases"]
+    )
+    control_vfs = _control_vfs_witness(parent)
+    cases.extend(
+        f"control-vfs-{case['change']}-{case['vfs_fault']['operation']}-"
+        f"{case['vfs_fault']['file']}-{case['vfs_fault']['when']}"
+        for case in control_vfs["cases"]
+    )
     journals = _journal_capacity_witness(parent)
     cases.extend(
         f"prepared-journal-headroom-{case['capacity_bytes']}" for case in journals["cases"]
@@ -847,11 +957,16 @@ def witness(root: Path) -> dict:
         "controls": controls,
         "journals": journals,
         "resource_recovery": resource_recovery,
+        "resource_vfs": resource_vfs,
+        "control_vfs": control_vfs,
         "elapsed_seconds": time.monotonic() - started,
         "limitations": [
             "process death is not power loss",
             "producer activation is not yet qualified",
-            "VFS faults cover byte selection writes and syncs",
+            (
+                "VFS faults cover byte selection, control mutation "
+                "and resource preparation writes and syncs"
+            ),
             (
                 "full-volume ENOSPC, dirty-page/cache grants "
                 "and machine-reset behavior are not certified"

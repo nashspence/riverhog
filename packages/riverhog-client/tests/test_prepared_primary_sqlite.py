@@ -1023,3 +1023,23 @@ def test_control_preparation_never_releases_existing_reserved_journal_backing(
         assert after.journal.end_bytes >= before.journal_reserved_bytes
         assert after.journal.allocated_bytes >= before.journal_reserved_bytes
         assert files.read_control("receipt", byte_limit=65536) == b"original"
+
+
+@pytest.mark.parametrize("change", ["install", "replace", "remove"])
+@pytest.mark.parametrize("committed", [False, True])
+def test_uncertain_large_control_mutation_retries_coldly_with_original_capacity(
+    tmp_path, change, committed
+):
+    from tests.support.prepared_primary_control_faults import witness
+    from tests.support.prepared_primary_resource_recovery import _CommitResponseFailure
+
+    path = tmp_path / "state.sqlite3"
+
+    def opened(*, initialize):
+        return _open(path, initialize=initialize)
+
+    def inject(files):
+        files._connection = _CommitResponseFailure(files._connection, committed=committed)
+
+    report = witness(opened, change=change, inject=inject)
+    assert report["visible_outcome"] == ("after" if committed else "before")

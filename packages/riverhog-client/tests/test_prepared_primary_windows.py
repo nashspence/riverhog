@@ -45,7 +45,7 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
     raw = report.read_text() if report.is_file() else ""
     evidence = json.loads(raw) if raw else {"missing_report": True, "exit_code": code}
     assert code == 0, evidence
-    assert evidence["passed"] == 53 and evidence["elevated"] is False, evidence
+    assert evidence["passed"] == 141 and evidence["elevated"] is False, evidence
     assert evidence["vfs"] == "win32"
     assert evidence["vfs_faults"]["runtime"]["base_vfs"] == "win32"
     assert len(evidence["vfs_faults"]["faults"]) == 8
@@ -58,6 +58,25 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
         and case["retry_reused_capacity"]
         and case["member_grant_charged_once"]
         for case in evidence["resource_recovery"]
+    )
+    assert evidence["resource_vfs"]["runtime"]["base_vfs"] == "win32"
+    assert len(evidence["resource_vfs"]["cases"]) == 64
+    assert all(
+        case["vfs_fault"]["injected"]
+        and case["survivor_exact"]
+        and case["retry_reused_capacity"]
+        and case["member_grant_charged_once"]
+        for case in evidence["resource_vfs"]["cases"]
+    )
+    assert evidence["control_vfs"]["runtime"]["base_vfs"] == "win32"
+    assert len(evidence["control_vfs"]["cases"]) == 24
+    assert all(
+        case["vfs_fault"]["injected"]
+        and case["original_control_exact"]
+        and case["original_payload_exact"]
+        and case["capacity_retained"]
+        and case["retry_coldly_verified"]
+        for case in evidence["control_vfs"]["cases"]
     )
     print(json.dumps(evidence, sort_keys=True))
 
