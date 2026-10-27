@@ -192,6 +192,7 @@ def test_cold_open_has_no_whole_database_integrity_or_payload_scan(tmp_path, mon
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
         files.put_bytes("journal", [b"x" * 50000], byte_limit=50000)
+        list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024))
     original = owner.sqlite3.connect
     observed = []
 
@@ -200,7 +201,7 @@ def test_cold_open_has_no_whole_database_integrity_or_payload_scan(tmp_path, mon
         db.set_trace_callback(observed.append)
 
         def authorize(action, table, column, *_rest):
-            if action == sqlite3.SQLITE_READ and table == "primary_chunks":
+            if action == sqlite3.SQLITE_READ and table in ("primary_chunks", "primary_order_rows"):
                 return sqlite3.SQLITE_DENY
             return sqlite3.SQLITE_OK
 
@@ -285,8 +286,8 @@ def test_selected_generation_reclaim_is_pinned_bounded_and_cold_resumable(tmp_pa
         assert not files.exists("journal")
         assert files._one("SELECT count(*) FROM primary_chunks") == (3,)
         assert files.read_control("prepared", byte_limit=100) == b"retained-original-authority"
-        with pytest.raises(PrimaryStateBusy):
-            files.put_control("custody", b"proof", byte_limit=100)
+        files.put_control("custody", b"proof", byte_limit=100)
+        assert files.read_control("custody", byte_limit=100) == b"proof"
         changes = files._connection.total_changes
         assert files.remove_step("other")
         assert files._connection.total_changes == changes
@@ -299,7 +300,9 @@ def test_selected_generation_reclaim_is_pinned_bounded_and_cold_resumable(tmp_pa
         assert files.remove_step("journal") is True
         assert files.remove_step("journal") is True
         assert files._one("SELECT count(*) FROM primary_objects") == (0,)
-        files.put_control("custody", b"proof", byte_limit=100)
+        with pytest.raises(FileExistsError):
+            files.put_control("custody", b"proof", byte_limit=100)
+        assert files.read_control("custody", byte_limit=100) == b"proof"
 
 
 @pytest.mark.parametrize("committed", [False, True])
@@ -507,3 +510,200 @@ def test_unselected_candidate_disposition_preserves_other_namespace_and_winner(t
         assert files.discard_candidates(("journal",))
         with files.verified(winner) as stream:
             assert stream.read() == b"original"
+
+
+@pytest.mark.parametrize("count", [1, 257, 1025])
+def test_same_container_ordering_has_point_growth_and_no_transaction_across_yields(tmp_path, count):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        files.put_control("marker", b"original", byte_limit=8)
+        selects = 0
+        steps = 0
+        selecting = False
+
+        def trace(statement):
+            nonlocal selects, selecting
+            selecting = statement.startswith("SELECT artifact_id,bytes,sha256")
+            if selecting:
+                selects += 1
+
+        def progress():
+            nonlocal steps
+            if selecting:
+                steps += 1
+            return 0
+
+        files._connection.set_trace_callback(trace)
+        files._connection.set_progress_handler(progress, 1)
+
+        def rows():
+            for number in reversed(range(count)):
+                assert not files._connection.in_transaction
+                if number == count - 1:
+                    with pytest.raises(PrimaryStateBusy, match="ordering"):
+                        files.put_bytes("new", [b"new"], byte_limit=3)
+                yield f"opaque-{number:08}", number, "a" * 64
+
+        for number, row in enumerate(files.ordered_rows(rows(), byte_limit=1024 * 1024)):
+            assert row == (f"opaque-{number:08}", number, "a" * 64)
+            assert not files._connection.in_transaction
+        assert number == count - 1
+        assert selects == count + 1 and steps <= 80 * (count + 1)
+        assert files._one("PRAGMA journal_mode") == ("persist",)
+        assert files._one("PRAGMA synchronous") == (3,)
+        assert files.read_control("marker", byte_limit=8) == b"original"
+        assert files._one("SELECT phase FROM primary_ordering") == ("ready",)
+
+
+def test_ordering_reader_excludes_replacement_and_cleanup_but_not_ready_payload_work(tmp_path):
+    path = tmp_path / "state.sqlite3"
+    rows = [("b", 2, "b" * 64), ("a", 1, "a" * 64)]
+    with _open(path, initialize=True) as files:
+        with files.child("other", initialize=True) as other:
+            ordered = files.ordered_rows(rows, byte_limit=128 * 1024)
+            assert next(ordered) == rows[1]
+            with pytest.raises(PrimaryStateBusy, match="live reader"):
+                next(other.ordered_rows(rows, byte_limit=128 * 1024))
+            with pytest.raises(PrimaryStateBusy, match="live reader"):
+                files.ordering_cleanup_step()
+            retained = files.put_bytes("original", [b"original"], byte_limit=8)
+            assert next(ordered) == rows[0]
+            ordered.close()
+            assert list(other.ordered_rows(rows, byte_limit=128 * 1024)) == rows[::-1]
+            with files.verified(retained) as stream:
+                assert stream.read() == b"original"
+
+
+@pytest.mark.parametrize("failure", ["input", "duplicate"])
+def test_ordering_failure_retains_only_derived_generation_and_preserves_primary(tmp_path, failure):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        original = files.put_bytes("original", [b"original"], byte_limit=8)
+
+        def rows():
+            yield "a", 1, "a" * 64
+            if failure == "input":
+                raise RuntimeError("ordering input interrupted")
+            yield "a", 1, "a" * 64
+
+        error = RuntimeError if failure == "input" else PrimaryStateError
+        with pytest.raises(error):
+            list(files.ordered_rows(rows(), byte_limit=128 * 1024))
+        with pytest.raises(PrimaryStateBusy, match="ordering"):
+            files.put_control("new", b"new", byte_limit=3)
+    with _open(path, initialize=False) as files:
+        assert list(files.ordered_rows([("b", 2, "b" * 64)], byte_limit=128 * 1024)) == [
+            ("b", 2, "b" * 64)
+        ]
+        with files.verified(original) as stream:
+            assert stream.read() == b"original"
+
+
+def test_ordering_page_admission_rejects_and_cold_cleanup_preserves_primary(tmp_path):
+    from riverhog_client import PrimaryStateCapacity
+
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        original = files.put_bytes("original", [b"original"], byte_limit=8)
+        with pytest.raises(PrimaryStateCapacity, match="scratch admission"):
+            list(
+                files.ordered_rows(
+                    ((f"{n:064}", n, "a" * 64) for n in range(257)), byte_limit=3 * 4096
+                )
+            )
+    with _open(path, initialize=False) as files:
+        for _ in range(128):
+            if files.ordering_cleanup_step():
+                break
+        else:
+            pytest.fail("bounded scratch fixture cleanup did not finish")
+        assert files._one("SELECT generation FROM primary_ordering") is None
+        assert list(files.ordered_rows([("b", 2, "b" * 64)], byte_limit=128 * 1024)) == [
+            ("b", 2, "b" * 64)
+        ]
+        with files.verified(original) as stream:
+            assert stream.read() == b"original"
+
+
+def test_ordering_cleanup_cursor_survives_cold_steps_and_deletes_one_row_at_a_time(tmp_path):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        list(
+            files.ordered_rows(((f"{n:08}", n, "a" * 64) for n in range(17)), byte_limit=128 * 1024)
+        )
+        assert not files.ordering_cleanup_step()
+        assert not files.ordering_cleanup_step()
+        assert files._one("SELECT cursor FROM primary_ordering") == ("00000000",)
+    with _open(path, initialize=False) as files:
+        for remaining in range(15, -1, -1):
+            assert not files.ordering_cleanup_step()
+            assert files._one("SELECT count(*) FROM primary_order_rows") == (remaining,)
+        assert files.ordering_cleanup_step()
+        assert files.ordering_cleanup_step()
+
+
+def test_ordering_schema_is_required_without_erasing_original_selected_bytes(tmp_path):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        files.put_bytes("original", [b"original"], byte_limit=8)
+    with sqlite3.connect(path) as db:
+        db.execute("DROP TABLE primary_order_rows")
+    with pytest.raises((PrimaryStateError, RuntimeError)):
+        _open(path, initialize=False)
+    with sqlite3.connect(path) as db:
+        assert db.execute("SELECT body FROM primary_chunks").fetchall() == [(b"original",)]
+        assert (
+            db.execute("SELECT name FROM sqlite_schema WHERE name='primary_order_rows'").fetchone()
+            is None
+        )
+
+
+def test_atomic_control_progress_does_not_advance_or_displace_pending_byte_cleanup(tmp_path):
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        files.put_bytes("journal", [b"j" * 9000], byte_limit=9000)
+        files.put_control("cursor", b"before", byte_limit=100)
+        assert not files.remove_step("journal")
+        operation = files._one("SELECT generation,cursor,phase FROM primary_operation")
+        files.put_control("cursor", b"after", byte_limit=100, expected=b"before")
+        files.put_control("receipt", b"original proof", byte_limit=100)
+        assert files.read_control("cursor", byte_limit=100) == b"after"
+        files.remove_control("cursor", expected=b"after")
+        assert files._one("SELECT generation,cursor,phase FROM primary_operation") == operation
+        assert files._one("SELECT count(*) FROM primary_chunks") == (3,)
+        with pytest.raises(PrimaryStateBusy, match="byte candidate"):
+            files.put_control("journal", b"replacement", byte_limit=100)
+        with pytest.raises(PrimaryStateBusy):
+            files.put_bytes("new", [b"new"], byte_limit=3)
+    with _open(path, initialize=False) as files:
+        assert files.read_control("receipt", byte_limit=100) == b"original proof"
+        assert files._one("SELECT generation,cursor,phase FROM primary_operation") == operation
+
+
+def test_ordering_rechecks_byte_idle_after_finishing_old_scratch(tmp_path, monkeypatch):
+    from riverhog_client import _prepared_primary_sqlite_ordering as ordering
+
+    path = tmp_path / "state.sqlite3"
+    with _open(path, initialize=True) as files:
+        files.put_bytes("journal", [b"j" * 9000], byte_limit=9000)
+        cleanup = ordering.cleanup_step
+        raced = False
+
+        def interleaved(owner):
+            nonlocal raced
+            ready = cleanup(owner)
+            if ready and not raced:
+                raced = True
+                assert not owner.remove_step("journal")
+            return ready
+
+        with monkeypatch.context() as patch:
+            patch.setattr(ordering, "cleanup_step", interleaved)
+            with pytest.raises(PrimaryStateBusy, match="byte mutation"):
+                list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024))
+        assert files._one("SELECT generation FROM primary_ordering") is None
+        while not files.remove_step("journal"):
+            pass
+        assert list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024)) == [
+            ("a", 1, "a" * 64)
+        ]

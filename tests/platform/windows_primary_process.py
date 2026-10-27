@@ -489,6 +489,19 @@ def witness(root: Path) -> dict:
             assert stream.read() == CONTENT
         assert not files.exists("retiring")
         assert files.read_control("receipt-proof", byte_limit=100) == b"original-encoding"
+        operation = files._one("SELECT generation,cursor,phase FROM primary_operation")
+        files.put_control("cleanup-progress", b"before", byte_limit=100)
+        files.put_control("cleanup-progress", b"after", expected=b"before", byte_limit=100)
+        assert files.read_control("cleanup-progress", byte_limit=100) == b"after"
+        files.remove_control("cleanup-progress", expected=b"after")
+        assert files._one("SELECT generation,cursor,phase FROM primary_operation") == operation
+        try:
+            files.put_control("retiring", b"replacement", byte_limit=100)
+        except PrimaryStateBusy:
+            pass
+        else:
+            raise AssertionError("control displaced its pending byte generation")
+        cases.append("pending-cleanup-control-progress")
         try:
             files.child("existing", initialize=True)
         except FileExistsError:
@@ -511,6 +524,24 @@ def witness(root: Path) -> dict:
         while not files.remove_step("retiring"):
             steps += 1
         assert steps == 3
+        rows = [("b", 2, "b" * 64), ("a", 1, "a" * 64)]
+
+        def inventory():
+            for row in rows:
+                assert not files._connection.in_transaction
+                yield row
+
+        assert list(files.ordered_rows(inventory(), byte_limit=128 * 1024)) == rows[::-1]
+        assert files._one("PRAGMA journal_mode") == ("persist",)
+        assert files._one("PRAGMA synchronous") == (3,)
+    with _files(path, initialize=False) as files:
+        cleanup_steps = 0
+        while not files.ordering_cleanup_step():
+            cleanup_steps += 1
+        assert cleanup_steps == 3
+        with files.verified(file) as stream:
+            assert stream.read() == CONTENT
+    cases.append("same-container-derived-ordering")
     cases.extend(["cold-reopen-exact-winner", "bounded-cold-generation-cleanup"])
     _guard_rename_exclusion(path)
     cases.extend(["live-database-rename-exclusion", "live-parent-rename-exclusion"])

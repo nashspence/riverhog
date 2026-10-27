@@ -145,6 +145,7 @@ class TransactionalPrimaryFiles:
         self._root = self
         self._readers: set[_ChunkReader] = set()
         self._pins: dict[str, int] = {}
+        self._ordering_guard = threading.Lock()
         self._connection: sqlite3.Connection | None = None
         factory = _engine_factory(guard, limits)
         schema = primary_state_schema(factory)
@@ -311,6 +312,49 @@ class TransactionalPrimaryFiles:
             raise PrimaryStateBusy(
                 "prepared-primary interrupted candidate requires bounded cleanup"
             )
+        self._require_ordering_idle()
+
+    def _require_ordering_idle(self) -> None:
+        ordering = self._one("SELECT phase FROM primary_ordering WHERE id=1")
+        if ordering is not None and ordering != ("ready",):
+            raise PrimaryStateBusy("prepared-primary derived ordering requires bounded cleanup")
+
+    def _require_control_idle(self, name: str) -> None:
+        self._require_ordering_idle()
+        candidate = self._one(
+            "SELECT o.namespace,o.name FROM primary_operation p JOIN primary_objects o "
+            "ON o.generation=p.generation WHERE p.id=1"
+        )
+        if candidate == (self._namespace, name):
+            raise PrimaryStateBusy("prepared-primary control conflicts with its byte candidate")
+
+    def ordered_rows(
+        self, rows: Iterable[tuple[str, int, str]], *, byte_limit: int
+    ) -> Iterator[tuple[str, int, str]]:
+        """Keep derived ordering inside this container under one live reader."""
+        from riverhog_client._prepared_primary_sqlite_ordering import ordered_rows
+
+        self.check_current()
+        guard = self._root._ordering_guard
+        if not guard.acquire(blocking=False):
+            raise PrimaryStateBusy("prepared-primary inventory ordering has a live reader")
+        try:
+            yield from ordered_rows(self, rows, byte_limit=byte_limit)
+        finally:
+            guard.release()
+
+    def ordering_cleanup_step(self) -> bool:
+        """Explicit execution/maintenance only; at most one derived row per call."""
+        from riverhog_client._prepared_primary_sqlite_ordering import cleanup_step
+
+        self.check_current()
+        guard = self._root._ordering_guard
+        if not guard.acquire(blocking=False):
+            raise PrimaryStateBusy("prepared-primary inventory ordering has a live reader")
+        try:
+            return cleanup_step(self)
+        finally:
+            guard.release()
 
     def discard_candidates(self, names: tuple[str, ...]) -> bool:
         """Advance one unselected candidate step, never selected-byte reclamation."""
@@ -509,7 +553,7 @@ class TransactionalPrimaryFiles:
         if len(body) > byte_limit:
             raise PrimaryStateCapacity("prepared-primary control exceeds explicit admission")
         with self._mutex:
-            self._require_idle()
+            self._require_control_idle(name)
             if self._one(
                 "SELECT 1 FROM primary_names WHERE namespace=? AND name=?",
                 (self._namespace, name),
@@ -545,7 +589,7 @@ class TransactionalPrimaryFiles:
         if not isinstance(expected, bytes):
             raise TypeError("prepared-primary controls must be original bytes")
         with self._mutex:
-            self._require_idle()
+            self._require_control_idle(name)
             previous = self._one(
                 "SELECT body FROM primary_controls WHERE namespace=? AND name=?",
                 (self._namespace, name),
@@ -586,6 +630,7 @@ class TransactionalPrimaryFiles:
             if row is None:
                 return True
             generation = row[0]
+            self._require_idle()
             if self._root._pins.get(generation, 0):
                 raise PrimaryStateBusy("prepared-primary replay still pins this generation")
             with self._transaction() as db:

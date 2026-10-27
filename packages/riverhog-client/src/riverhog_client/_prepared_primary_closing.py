@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
-from collections.abc import Callable, Iterable
+import itertools
+from collections.abc import Callable, Generator, Iterable
 from typing import TYPE_CHECKING
 
 from riverhog_protocol import ArtifactMemberIdentityDocument
@@ -174,7 +176,7 @@ def freeze_inventory(
         previous_member: str | None = None
         chain = _EMPTY
 
-        def chunks() -> Iterable[bytes]:
+        def chunks() -> Generator[bytes, None, None]:
             nonlocal count, previous_member, chain
             for member in members:
                 key = str(member.artifact_id)
@@ -206,7 +208,14 @@ def freeze_inventory(
 
         store._authoring = True
         try:
-            retained = store._files.put_bytes("inventory", chunks(), byte_limit=grant)
+            with contextlib.closing(chunks()) as frames:
+                # Prime one frame before opening the backend's singleton byte candidate.
+                first = next(frames, None)
+                retained = store._files.put_bytes(
+                    "inventory",
+                    () if first is None else itertools.chain((first,), frames),
+                    byte_limit=grant,
+                )
         finally:
             store._authoring = False
         inventory = PrimaryInventory.model_validate(

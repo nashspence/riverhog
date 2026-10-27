@@ -2072,3 +2072,97 @@ def test_root_candidate_reconciliation_finishes_once_per_cold_owner(tmp_path, mo
         for _ in range(10):
             assert store.usage.members == 0
         assert len(calls) == 2
+
+
+def test_inventory_initialization_precedes_the_posix_byte_candidate(tmp_path):
+    from riverhog_client._prepared_primary_closing import freeze_inventory
+
+    root = tmp_path.resolve() / "state"
+    members = [_member(1), _member(2)]
+    with _open(root, initialize=True) as store:
+        for member in members:
+            store.prepare_or_load(member, REQUEST, lambda _limit, member=member: _author(member))
+        seen = []
+
+        def inventory():
+            for member in members:
+                seen.append((root / "candidate-inventory").exists())
+                yield member
+
+        assert freeze_inventory(store, inventory()).members == 2
+        assert seen == [False, True]
+
+
+def test_inventory_initialization_precedes_the_sql_singleton_byte_candidate(
+    tmp_path, sql_core_storage
+):
+    from riverhog_client._prepared_primary_closing import freeze_inventory
+
+    root = tmp_path.resolve() / "state.sqlite3"
+    members = [_member(1), _member(2)]
+    with _open(root, initialize=True) as store:
+        for member in members:
+            store.prepare_or_load(member, REQUEST, lambda _limit, member=member: _author(member))
+        seen = []
+
+        def inventory():
+            for member in members:
+                operation = store._files._one(
+                    "SELECT o.name FROM primary_operation p "
+                    "JOIN primary_objects o ON o.generation=p.generation WHERE p.id=1"
+                )
+                if not seen:
+                    store._files._require_idle()
+                assert not store._files._connection.in_transaction
+                seen.append(operation)
+                yield member
+
+        assert freeze_inventory(store, inventory()).members == 2
+        assert seen == [None, ("inventory",)]
+
+
+def test_shared_sql_core_orders_lazy_inventory_before_publishing_and_settling(
+    tmp_path, sql_core_storage
+):
+    from riverhog_client import ordered_primary_inventory
+    from riverhog_client._prepared_primary_closing import (
+        advance_closing,
+        advance_custody,
+        freeze_inventory,
+    )
+    from riverhog_client.producer import ProducerArtifactIdentity, _member_identity
+
+    root = tmp_path.resolve() / "state.sqlite3"
+    members = [_member(2), _member(1)]
+    limits = replace(LIMITS, inventory_order_bytes=128 * 1024)
+    with _open(root, initialize=True, limits=limits) as store:
+        for member in members:
+            store.prepare_or_load(member, REQUEST, lambda _limit, member=member: _author(member))
+        supplied = (
+            ProducerArtifactIdentity(member.artifact_id, member.bytes, member.sha256)
+            for member in members
+        )
+        closing = freeze_inventory(
+            store, map(_member_identity, ordered_primary_inventory(store, supplied))
+        )
+        assert closing.members == 2 and store.usage.inventory_selected
+        assert store._files._one("SELECT phase FROM primary_ordering") == ("ready",)
+
+        def decision(member):
+            store.accept_decision(store.load(member), b"exact decision")
+
+        assert advance_closing(store, limit=2, settle=decision)
+        receipts = []
+
+        def custody(member):
+            receipts.append(member)
+            record = store.load_controls(member)
+            store.accept_custody(record, _receipt(record.prepared))
+
+        for _ in range(64):
+            if advance_custody(store, limit=2, settle=custody):
+                break
+        else:
+            pytest.fail("bounded ordered custody fixture did not finish")
+        assert receipts == members[::-1]
+        assert store.custody_settled and store.usage.pending_bytes == 0

@@ -89,6 +89,32 @@ Table(
 )
 
 
+Table(
+    "primary_ordering",
+    METADATA,
+    Column("id", Integer, primary_key=True),
+    Column("generation", Text, nullable=False),
+    Column("namespace", Integer, ForeignKey("primary_namespaces.id"), nullable=False),
+    Column("phase", Text, nullable=False),
+    Column("cursor", Text),
+    Column("base_pages", Integer, nullable=False),
+    Column("byte_limit", Text, nullable=False),
+    UniqueConstraint("generation", name="uq_primary_ordering_generation"),
+    CheckConstraint("id = 1", name="ck_primary_ordering_singleton"),
+    CheckConstraint("phase IN ('building', 'ready', 'cleanup')", name="ck_primary_ordering_phase"),
+    CheckConstraint("base_pages >= 0", name="ck_primary_ordering_base_pages"),
+)
+Table(
+    "primary_order_rows",
+    METADATA,
+    Column("generation", Text, ForeignKey("primary_ordering.generation"), primary_key=True),
+    Column("artifact_id", Text, primary_key=True),
+    Column("bytes", Text, nullable=False),
+    Column("sha256", Text, nullable=False),
+    sqlite_with_rowid=False,
+)
+
+
 def verify_shape(connection: StateConnection) -> None:
     """Bounded schema inspection; full integrity scans belong to explicit audits."""
     assert_schema_matches_metadata(connection, METADATA, version_table=VERSION_TABLE)
