@@ -44,6 +44,13 @@ def _chain(previous: str, content: bytes) -> str:
 
 def recover_closing(store: PrimaryStore) -> None:
     files = store._files
+    expected_reservation = (
+        0
+        if store._usage.inventory_selected
+        else store._usage.members * (store.limits.control_bytes + 1)
+    )
+    if store._usage.inventory_reserved_bytes != expected_reservation:
+        raise PrimaryStateError("prepared inventory reservation differs from retained membership")
     intent = store._optional(files, "closing-intent", PrimaryClosingIntent)
     closing = store._optional(files, "closing", PrimaryClosing)
     ready = store._optional(files, "finish-ready", PrimaryFinishReady)
@@ -214,6 +221,7 @@ def freeze_inventory(
                 **store._usage.model_dump(mode="json"),
                 "sequence": str(store._usage.sequence + 1),
                 "inventory_bytes": str(retained.bytes),
+                "inventory_reserved_bytes": "0",
                 "inventory_selected": True,
             }
         )

@@ -1800,12 +1800,12 @@ class SqlAlchemyCollectionUploadService:
         """Read one accepted member and its exact safe-release receipt by immutable ID."""
         normalized_id = _collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
-            upload_id = session.scalar(
+            upload_session_row_id = session.scalar(
                 select(CollectionUploadRecord.collection_id).where(
                     CollectionUploadRecord.collection_id == normalized_id
                 )
             )
-            if upload_id is not None:
+            if upload_session_row_id is not None:
                 member = session.get(
                     CollectionUploadArtifactRecord, (normalized_id, str(artifact_id))
                 )

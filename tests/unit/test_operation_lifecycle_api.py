@@ -282,6 +282,7 @@ def _finalize_upload(
 
 
 def test_riverhog_official_client_positive_disposable_lifecycle(
+    primary_store,
     tmp_path: Path,
 ) -> None:  # type: ignore[no-untyped-def]
     container = _container(tmp_path)
@@ -1115,6 +1116,8 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     def writer():
         return IncrementalDerivedCollectionWriter(
             target,
+            primary_store=primary_store,
+            member_inventory=lambda: (identity,),
             spec=spec,
             claim_id=claim_id,
             fence=claim_fence,

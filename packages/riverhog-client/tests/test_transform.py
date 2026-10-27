@@ -79,6 +79,8 @@ from riverhog_provenance import (
     validate_journal,
 )
 
+from tests.support.prepared_primary import custody_receipt, inventory_from_rows
+
 WORK_ID = "3" * 64
 EXECUTION_ID = "4" * 64
 CONTROLLER_EVIDENCE = {
@@ -584,6 +586,7 @@ def test_claimed_reader_owns_pending_job_through_preparation_failure_and_cleanup
 
 @pytest.mark.parametrize("runtime_type", [ClaimedCollectionRuntime, CollectionTransformRuntime])
 def test_maintained_client_runtimes_release_completed_retrievals_promptly(
+    primary_store,
     runtime_type: type[Any],
 ) -> None:
     api = RetrievalApi()
@@ -598,6 +601,8 @@ def test_maintained_client_runtimes_release_completed_retrievals_promptly(
         if runtime_type is ClaimedCollectionRuntime
         else CollectionTransformRuntime(
             api,
+            primary_store=primary_store,
+            member_inventory=lambda: inventory_from_rows(api.registered),
             spec=_spec(),
             controller_evidence=CONTROLLER_EVIDENCE,
             producer_app="fixture-transform",
@@ -877,10 +882,20 @@ class UploadApi:
         }
 
     def get_collection_upload_session(self, _collection_id: int) -> dict[str, Any]:
+        header = {
+            "collection_id": "7",
+            "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
+            "construction_identity_sha256": "c" * 64,
+            "registration_constraints": {
+                "pack_member_bytes": "1024",
+                "raw_part_plaintext_bytes": "65536",
+            },
+        }
         if not self.discovery_closed:
-            return {"state": "open", "construction_identity_sha256": "c" * 64}
+            return {**header, "state": "open"}
         assert self.committed
         return {
+            **header,
             "state": "finalized",
             "artifact_set_identity": self.completion_artifact_set_identity,
             "collection": {
@@ -889,6 +904,18 @@ class UploadApi:
                 "artifact_set_identity": self.completion_artifact_set_identity,
             },
         }
+
+    def get_collection_upload_session_artifact(self, _collection_id, artifact_id):
+        row = next((row for row in self.registered if row["artifact_id"] == artifact_id), None)
+        if row is None:
+            raise NotFound("member absent")
+        primary = self.bindings.get(artifact_id)
+        receipt = None
+        if self.discovery_closed and self.committed and primary is not None:
+            receipt = custody_receipt(
+                7, row, primary, None if self.requirement is None else self.requirement.identity
+            ).model_dump(mode="json")
+        return {**row, "custody_receipt": receipt}
 
     def upload_collection_upload_session_provenance_journal(
         self,
@@ -911,6 +938,8 @@ class UploadApi:
         for binding in batch.bindings:
             assert self.bindings.setdefault(binding.artifact_id, binding) == binding
 
+        return batch
+
     def get_collection_upload_session_artifact_provenance_binding(
         self,
         _collection_id: int,
@@ -929,6 +958,8 @@ class UploadApi:
                 self.materialization_decisions.setdefault(decision.artifact_id, decision)
                 == decision
             )
+
+        return batch
 
     def stage_collection_upload_session_history_structure(
         self, _collection_id: int, raw: bytes
@@ -1203,10 +1234,12 @@ def _completion_records() -> tuple[CompletionRecord, ...]:
 
 
 def _incremental_writer(
-    api: UploadApi, inputs: Sequence[InputHistoryApi]
+    api: UploadApi, inputs: Sequence[InputHistoryApi], *, primary_store
 ) -> IncrementalDerivedCollectionWriter:
     return IncrementalDerivedCollectionWriter(
         api,
+        primary_store=primary_store,
+        member_inventory=lambda: inventory_from_rows(api.registered),
         spec=DerivedCollectionSpec(
             inputs=tuple(value.root for value in inputs),
             recipe=_spec().recipe,
@@ -1223,12 +1256,16 @@ def _incremental_writer(
     )
 
 
-def test_producer_rejects_empty_iterable_before_opening_construction() -> None:
+def test_producer_rejects_empty_iterable_before_opening_construction(
+    primary_store,
+) -> None:
     api = UploadApi()
 
     with pytest.raises(ValueError, match="at least one source file"):
         CollectionProducer(
             api,  # type: ignore[arg-type]
+            primary_store=primary_store,
+            member_inventory=lambda: inventory_from_rows(api.registered),
             producer_app="fixture-transform",
             adapter_id="test-transform/v1",
             adapter_version="1",
@@ -1239,6 +1276,7 @@ def test_producer_rejects_empty_iterable_before_opening_construction() -> None:
 
 
 def test_producer_stream_has_no_shared_filesystem_and_is_snapshot_verified(
+    primary_store,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
@@ -1254,6 +1292,8 @@ def test_producer_stream_has_no_shared_filesystem_and_is_snapshot_verified(
 
     receipt = CollectionProducer(
         api,  # type: ignore[arg-type]
+        primary_store=primary_store,
+        member_inventory=lambda: inventory_from_rows(api.registered),
         producer_app="stove0-worker",
         adapter_id="test-transform/v1",
         adapter_version="1",
@@ -1275,6 +1315,7 @@ def test_producer_stream_has_no_shared_filesystem_and_is_snapshot_verified(
 
 
 def test_producer_streams_bounded_batches_without_limiting_collection_size(
+    primary_store,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
@@ -1295,6 +1336,8 @@ def test_producer_streams_bounded_batches_without_limiting_collection_size(
 
     receipt = CollectionProducer(
         api,  # type: ignore[arg-type]
+        primary_store=primary_store,
+        member_inventory=lambda: inventory_from_rows(api.registered),
         producer_app="stove0-worker",
         adapter_id="test-transform/v1",
         adapter_version="1",
@@ -1307,6 +1350,7 @@ def test_producer_streams_bounded_batches_without_limiting_collection_size(
 
 
 def test_producer_streams_exact_observation_into_primary_binding(
+    primary_store,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
@@ -1315,6 +1359,8 @@ def test_producer_streams_exact_observation_into_primary_binding(
     api = UploadApi()
     CollectionProducer(
         api,
+        primary_store=primary_store,
+        member_inventory=lambda: inventory_from_rows(api.registered),
         producer_app="fixture-transform",
         adapter_id="test-transform/v1",
         adapter_version="1",
@@ -1341,7 +1387,9 @@ def test_producer_streams_exact_observation_into_primary_binding(
     assert "path" not in api.registered[0]
 
 
-def test_transform_retains_late_input_history_across_fanout_fanin_and_lost_response() -> None:
+def test_transform_retains_late_input_history_across_fanout_fanin_and_lost_response(
+    primary_store,
+) -> None:
     from riverhog_canonical_json import canonical_json_sha256
     from riverhog_protocol.collection_completion_validation import validate_disposition_record_pages
     from riverhog_protocol.collection_record_preimages import CollectionRecordPreimages
@@ -1412,7 +1460,7 @@ def test_transform_retains_late_input_history_across_fanout_fanin_and_lost_respo
         ),
     )
     api.derivation_identity = disposition
-    first = _incremental_writer(api, sources)
+    first = _incremental_writer(api, sources, primary_store=primary_store)
     try:
         with pytest.raises(ConnectionError, match="lost registration"):
             first.append(
@@ -1428,7 +1476,7 @@ def test_transform_retains_late_input_history_across_fanout_fanin_and_lost_respo
         first.stop()
     copied = dict(api.journals)
     assert sources[0].late_journal_id in copied
-    resumed = _incremental_writer(api, sources)
+    resumed = _incremental_writer(api, sources, primary_store=primary_store)
     try:
         for output, histories in zip(outputs, selected, strict=True):
             resumed.append(
@@ -1466,7 +1514,9 @@ def test_transform_retains_late_input_history_across_fanout_fanin_and_lost_respo
     assert not completion.graph.get("relations")
 
 
-def test_incremental_transform_recovers_accepted_primary_after_lost_binding_response() -> None:
+def test_incremental_transform_recovers_accepted_primary_after_lost_binding_response(
+    primary_store,
+) -> None:
     source = InputHistoryApi(1, INPUT_ID, b"source")
     accepted = source.accepted()
     output = _derived_stream(0, b"derived")
@@ -1482,7 +1532,7 @@ def test_incremental_transform_recovers_accepted_primary_after_lost_binding_resp
                 raise ConnectionError("lost accepted primary response")
 
     api = LostBindingApi()
-    first = _incremental_writer(api, (source,))
+    first = _incremental_writer(api, (source,), primary_store=primary_store)
     try:
         with pytest.raises(ConnectionError, match="lost accepted primary"):
             first.append(
@@ -1496,7 +1546,7 @@ def test_incremental_transform_recovers_accepted_primary_after_lost_binding_resp
         first.stop()
     primary = api.bindings[output.artifact_id]
     exact = api.journals[primary.journal.journal_id]
-    resumed = _incremental_writer(api, (source,))
+    resumed = _incremental_writer(api, (source,), primary_store=primary_store)
     try:
         resumed.append(
             output,
@@ -1515,12 +1565,13 @@ def test_incremental_transform_recovers_accepted_primary_after_lost_binding_resp
 
 @pytest.mark.parametrize("extent", ["unknown", ""])
 def test_incremental_transform_rejects_unaccepted_history_extent_before_output_registration(
+    primary_store,
     extent: str,
 ) -> None:
     source = InputHistoryApi(1, INPUT_ID, b"source")
     output = _derived_stream(0, b"derived")
     api = UploadApi()
-    writer = _incremental_writer(api, (source,))
+    writer = _incremental_writer(api, (source,), primary_store=primary_store)
     try:
         with pytest.raises(ValueError, match="extent"):
             writer.append(
@@ -1536,6 +1587,7 @@ def test_incremental_transform_rejects_unaccepted_history_extent_before_output_r
 
 
 def test_producer_stream_rejects_mutation_between_hash_and_upload(
+    primary_store,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
@@ -1556,9 +1608,12 @@ def test_producer_stream_rejects_mutation_between_hash_and_upload(
         read_range=mutable,
     )
 
+    api = UploadApi()
     with pytest.raises(RuntimeError, match="changed during upload"):
         CollectionProducer(
-            UploadApi(),  # type: ignore[arg-type]
+            api,  # type: ignore[arg-type]
+            primary_store=primary_store,
+            member_inventory=lambda: inventory_from_rows(api.registered),
             producer_app="stove0-worker",
             adapter_id="test-transform/v1",
             adapter_version="1",
@@ -1577,6 +1632,7 @@ def test_producer_file_rejects_symlink_sources(tmp_path: Path) -> None:
 
 
 def test_producer_file_rejects_mutation_between_hash_and_upload(
+    primary_store,
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
@@ -1594,9 +1650,12 @@ def test_producer_file_rejects_mutation_between_hash_and_upload(
             source.write_bytes(b"X" * len(b"generated output"))
             return super().acquire_collection_upload_session_work(collection_id, limit=limit)
 
+    api = MutatingUploadApi()
     with pytest.raises(RuntimeError, match="source changed during upload verification"):
         CollectionProducer(
-            MutatingUploadApi(),  # type: ignore[arg-type]
+            api,  # type: ignore[arg-type]
+            primary_store=primary_store,
+            member_inventory=lambda: inventory_from_rows(api.registered),
             producer_app="stove0-worker",
             adapter_id="test-transform/v1",
             adapter_version="1",
@@ -1612,6 +1671,7 @@ def test_producer_file_rejects_mutation_between_hash_and_upload(
 
 
 def test_derived_writer_binds_outputs_to_dispositions(
+    primary_store,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     spec = _spec()
@@ -1642,8 +1702,11 @@ def test_derived_writer_binds_outputs_to_dispositions(
     import riverhog_client.processing.writer as module
 
     monkeypatch.setattr(module, "IncrementalDerivedCollectionWriter", StubWriter)
+    api = UploadApi()
     writer = DerivedCollectionWriter(
-        UploadApi(),
+        api,
+        primary_store=primary_store,
+        member_inventory=lambda: inventory_from_rows(api.registered),
         spec=spec,
         claim_id="claim-1",
         fence=1,
@@ -1697,12 +1760,15 @@ def test_derived_writer_binds_outputs_to_dispositions(
 
 
 def test_runtime_passes_the_sealed_disposition_identity_to_publication(
+    primary_store,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     spec = _spec()
     api = RetrievalApi()
     runtime = CollectionTransformRuntime(
         api,  # type: ignore[arg-type]
+        primary_store=primary_store,
+        member_inventory=lambda: inventory_from_rows(api.registered),
         spec=spec,
         claim_id="claim-1",
         fence=1,
@@ -1743,6 +1809,7 @@ def test_runtime_passes_the_sealed_disposition_identity_to_publication(
 
 
 def test_finalized_receipt_is_not_revoked_by_a_late_cancellation(
+    primary_store,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     spec = _spec()
@@ -1754,8 +1821,11 @@ def test_finalized_receipt_is_not_revoked_by_a_late_cancellation(
         if checks > 1:
             raise RuntimeError("canceled after publication")
 
+    api = RetrievalApi()
     runtime = CollectionTransformRuntime(
-        RetrievalApi(),  # type: ignore[arg-type]
+        api,  # type: ignore[arg-type]
+        primary_store=primary_store,
+        member_inventory=lambda: inventory_from_rows(api.registered),
         spec=spec,
         claim_id="claim-1",
         fence=1,
@@ -2019,10 +2089,12 @@ def test_runtime_registry_applies_refresh_arriving_before_target_start() -> None
     assert registry.capability_token("job-1", fallback="initial") == "initial"
 
 
-def test_runtime_rejects_empty_capability_without_environment_fallback() -> None:
+def test_runtime_rejects_empty_capability_without_environment_fallback(primary_store) -> None:
     spec = _spec()
     with pytest.raises(ValueError, match="nonempty"):
         CollectionTransformRuntime.from_capability(
+            primary_store=primary_store,
+            member_inventory=lambda: (),
             base_url="https://riverhog.invalid",
             capability_token="  ",
             spec=spec,

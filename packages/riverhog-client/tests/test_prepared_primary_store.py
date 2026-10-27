@@ -1225,3 +1225,167 @@ def test_terminal_release_authority_cannot_outlive_its_original_barrier(tmp_path
     (root / removed).unlink()
     with pytest.raises(PrimaryStateError):
         _open(root)
+
+
+def test_owner_inventory_orders_on_disk_with_fixed_scratch_admission_and_no_registry(tmp_path):
+    from riverhog_client import ordered_primary_inventory
+    from riverhog_client.producer import ProducerArtifactIdentity
+
+    root = tmp_path.resolve() / "state"
+    limits = replace(LIMITS, inventory_order_bytes=32 * 1024)
+    members = tuple(
+        ProducerArtifactIdentity(value.artifact_id, value.bytes, value.sha256)
+        for value in (_member(3), _member(1), _member(2))
+    )
+    with _open(root, initialize=True, limits=limits) as store:
+        assert list(ordered_primary_inventory(store, iter(members))) == [
+            members[1],
+            members[2],
+            members[0],
+        ]
+        scratch = root / "inventory-ordering" / "selection.sqlite3"
+        assert not scratch.exists()
+        with pytest.raises(PrimaryStateError, match="duplicate artifact"):
+            list(ordered_primary_inventory(store, (members[0], members[0])))
+        assert not scratch.exists()
+        # Exact named scratch from an interrupted sort is derived, never member authority.
+        scratch.write_bytes(b"interrupted scratch")
+        scratch.chmod(0o600)
+        assert len(list(ordered_primary_inventory(store, members))) == 3
+        assert not scratch.exists()
+        assert store.usage.members == 0
+
+
+def test_owner_inventory_scratch_capacity_failure_preserves_preparation_and_restarts(tmp_path):
+    from riverhog_client import ordered_primary_inventory
+    from riverhog_client.producer import ProducerArtifactIdentity
+
+    root = tmp_path.resolve() / "state"
+    limits = replace(LIMITS, inventory_order_bytes=8192)
+    with _open(root, initialize=True, limits=limits) as store:
+        original = store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+        before = store.usage
+
+        def many_members():
+            for number in range(1000):
+                member = _member(number)
+                yield ProducerArtifactIdentity(member.artifact_id, member.bytes, member.sha256)
+
+        with pytest.raises(PrimaryStateCapacity, match="scratch admission"):
+            list(ordered_primary_inventory(store, many_members()))
+        assert store.load(_member()) == original and store.usage == before
+        assert not (root / "inventory-ordering" / "selection.sqlite3").exists()
+
+
+def test_closing_output_is_reserved_before_pending_and_total_admission_saturate(tmp_path):
+    from riverhog_client._prepared_primary_closing import advance_closing, freeze_inventory
+
+    size = len(REQUEST) + sum(
+        len(raw) for raw in (b"original selection", b"original graph", JOURNAL, b"exact decision")
+    )
+    limits = replace(
+        LIMITS,
+        pending_bytes=size,
+        total_bytes=LIMITS.root_reservation
+        + LIMITS.member_reservation
+        + LIMITS.control_bytes
+        + 1
+        + size,
+    )
+    with _open(tmp_path.resolve() / "state", initialize=True, limits=limits) as store:
+        record = store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+        assert store.usage.inventory_reserved_bytes == limits.control_bytes + 1
+        assert (
+            limits.root_reservation
+            + store.usage.control_bytes
+            + store.usage.pending_bytes
+            + store.usage.inventory_reserved_bytes
+        ) == limits.total_bytes
+        store.accept_decision(record, b"exact decision")
+        closing = freeze_inventory(store, (_member(),))
+        assert store.usage.inventory_reserved_bytes == 0
+        assert (
+            limits.root_reservation
+            + store.usage.control_bytes
+            + store.usage.pending_bytes
+            + closing.inventory.bytes
+        ) <= limits.total_bytes
+        assert advance_closing(store, limit=1, settle=_no_author)
+
+
+@pytest.mark.parametrize("mode", ["supplied", "lazy"])
+def test_restored_observation_selection_keeps_its_original_mode_without_a_factory(
+    tmp_path, native_observation, mode
+):
+    from riverhog_client._prepared_primary_publisher import (
+        DeclaredPrimaryObservation,
+        PrimaryPublisher,
+        retained_primary_observation,
+    )
+
+    selection = native_observation
+    calls = []
+    if mode == "lazy":
+
+        def observe():
+            calls.append(True)
+            return native_observation
+
+        selection = DeclaredPrimaryObservation(
+            "fixture-observer",
+            {"source": "fixture"},
+            native_observation.catalog.checkpoint_sha256(),
+            observe,
+        )
+    root = tmp_path.resolve() / "state"
+    api = _PublicationApi()
+    with _open(root, initialize=True) as store:
+        original = _publish(PrimaryPublisher(api, store), selection)
+        restored = retained_primary_observation(selection)
+        assert restored.inputs["mode"] == mode
+    with _open(root) as store:
+        replay = _publish(PrimaryPublisher(api, store), restored)
+        assert replay.prepared == original.prepared
+        assert calls == ([True] if mode == "lazy" else [])
+    other = tmp_path.resolve() / "no-preparation"
+    with _open(other, initialize=True) as store:
+        with pytest.raises(PrimaryStateError, match="original preparation preimages"):
+            _publish(PrimaryPublisher(api, store), restored)
+        assert store.usage.members == 0
+
+
+@pytest.mark.parametrize("change", ["unknown-field", "unknown-mode", "changed-observer"])
+def test_restored_observation_declarations_reject_unrecognized_inputs_before_authorship(
+    tmp_path, change
+):
+    from riverhog_client._prepared_primary_publisher import (
+        PrimaryPublisher,
+        RetainedPrimaryObservation,
+        retained_primary_observation,
+    )
+
+    selection = dict(retained_primary_observation(None).inputs)
+    if change == "unknown-field":
+        selection["unknown"] = True
+    elif change == "unknown-mode":
+        selection["mode"] = "equivalent-replacement"
+    else:
+        selection["observer"] = "another-observer"
+    with _open(tmp_path.resolve() / "state", initialize=True) as store:
+        with pytest.raises(PrimaryStateError):
+            _publish(
+                PrimaryPublisher(_PublicationApi(), store), RetainedPrimaryObservation(selection)
+            )
+        assert store.usage.members == 0
+
+
+@pytest.mark.parametrize("field", ["format", "kind"])
+def test_control_readback_never_invents_missing_wire_version_or_kind(tmp_path, field):
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True):
+        pass
+    value = json.loads((root / "usage").read_bytes())
+    value.pop(field)
+    (root / "usage").write_bytes(json.dumps(value, sort_keys=True, separators=(",", ":")).encode())
+    with pytest.raises(PrimaryStateError, match="exact current encoding"):
+        _open(root)

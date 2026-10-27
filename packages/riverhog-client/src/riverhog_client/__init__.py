@@ -17,6 +17,20 @@ from riverhog_protocol import (
     Unauthorized,
 )
 
+from riverhog_client._prepared_primary_documents import PrimaryScope
+from riverhog_client._prepared_primary_inventory import ordered_primary_inventory
+from riverhog_client._prepared_primary_policy import PrimaryStatePolicy
+from riverhog_client._prepared_primary_publisher import (
+    DeclaredPrimaryObservation,
+    RetainedPrimaryObservation,
+    retained_primary_observation,
+)
+from riverhog_client._prepared_primary_store import PrimaryStore, PrimaryStoreLimits
+from riverhog_client._prepared_primary_types import (
+    PrimaryStateBusy,
+    PrimaryStateCapacity,
+    PrimaryStateError,
+)
 from riverhog_client.catalog_sync import CatalogReplica, CatalogSyncApi
 from riverhog_client.client import (
     ApiClient,
@@ -50,6 +64,17 @@ from riverhog_client.uploads import (
 )
 
 __all__ = [
+    "DeclaredPrimaryObservation",
+    "RetainedPrimaryObservation",
+    "retained_primary_observation",
+    "PrimaryScope",
+    "PrimaryStatePolicy",
+    "PrimaryStateBusy",
+    "PrimaryStateCapacity",
+    "PrimaryStateError",
+    "PrimaryStore",
+    "PrimaryStoreLimits",
+    "ordered_primary_inventory",
     "ApiClient",
     "CatalogReplica",
     "CatalogSyncApi",

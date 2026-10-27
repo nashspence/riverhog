@@ -41,6 +41,7 @@ from riverhog_provenance import (
     validate_journal_chunks,
 )
 
+from riverhog_client import PrimaryStore
 from riverhog_client.canonical_completion import CompletionRecord, write_completion_journal
 from riverhog_client.completion_records import CompletionRecords
 from riverhog_client.processing.history_transfer import CanonicalHistoryTransfer
@@ -80,6 +81,8 @@ class DerivedCollectionWriter:
         self,
         api: Any,
         *,
+        primary_store: PrimaryStore,
+        member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -97,6 +100,8 @@ class DerivedCollectionWriter:
         if not evidence:
             raise ValueError("derived collection writer requires controller evidence")
         self.api = api
+        self.primary_store = primary_store
+        self.member_inventory = member_inventory
         self.spec = spec
         self.claim_id = claim_id
         self.fence = fence
@@ -143,6 +148,8 @@ class DerivedCollectionWriter:
             raise ValueError("derived output declarations lack exact input-history correspondence")
         writer = IncrementalDerivedCollectionWriter(
             self.api,
+            primary_store=self.primary_store,
+            member_inventory=self.member_inventory,
             spec=self.spec,
             claim_id=self.claim_id,
             fence=self.fence,
@@ -183,6 +190,8 @@ class IncrementalDerivedCollectionWriter:
         self,
         api: Any,
         *,
+        primary_store: PrimaryStore,
+        member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -224,6 +233,8 @@ class IncrementalDerivedCollectionWriter:
         )
         self.producer = IncrementalCollectionProducer(
             api,
+            primary_store=primary_store,
+            member_inventory=member_inventory,
             producer_app=producer_app,
             adapter_id="riverhog-derived-collection/v1",
             adapter_version=producer_version,

@@ -231,6 +231,7 @@ class PrimaryUsage(PrimaryControl):
     sequence: NonnegativeDecimal = 0
     pending_bytes: NonnegativeDecimal = 0
     inventory_bytes: NonnegativeDecimal = 0
+    inventory_reserved_bytes: NonnegativeDecimal = 0
     inventory_selected: bool = False
     control_bytes: NonnegativeDecimal = 0
     members: NonnegativeDecimal = 0
@@ -278,6 +279,8 @@ class PrimaryClosingIntent(PrimaryControl):
             or self.before.inventory_selected
             or not self.after.inventory_selected
             or self.after.inventory_bytes != self.inventory.bytes
+            or self.after.inventory_reserved_bytes != 0
+            or self.after.inventory_bytes > self.before.inventory_reserved_bytes
             or self.before.pending_bytes != self.after.pending_bytes
             or self.before.control_bytes != self.after.control_bytes
         ):

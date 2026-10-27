@@ -8,12 +8,14 @@ import os
 import secrets
 import tempfile
 import uuid
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_client import ProducerFile
+from riverhog_client import PrimaryStatePolicy, PrimaryStore, ProducerFile
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.provenance_transport import MaterializationHintDocument
 
@@ -100,9 +102,9 @@ def _state_path(root: Path, key: str) -> Path:
     return directory / f"{digest}.json"
 
 
-def prepare_upload(root: Path, idempotency_key: str) -> LocalUpload:
-    """Reuse an exact persisted allocation or publish one before opening a session."""
-
+def _verified_upload_sources(
+    root: Path, idempotency_key: str
+) -> tuple[Path, list[dict[str, object]]]:
     root = root.expanduser().resolve()
     if not root.is_dir():
         raise ValueError("collection source must be a directory")
@@ -116,6 +118,18 @@ def prepare_upload(root: Path, idempotency_key: str) -> LocalUpload:
         }
         for item in preview_upload(root)
     ]
+    return root, current
+
+
+def prepare_upload(root: Path, idempotency_key: str) -> LocalUpload:
+    """Reuse an exact persisted allocation or publish one before opening a session."""
+    root, current = _verified_upload_sources(root, idempotency_key)
+    return _prepare_verified_upload(root, idempotency_key, current)
+
+
+def _prepare_verified_upload(
+    root: Path, idempotency_key: str, current: list[dict[str, object]]
+) -> LocalUpload:
     destination = _state_path(root, idempotency_key)
     if not destination.exists():
         document = {
@@ -182,3 +196,21 @@ def prepare_upload(root: Path, idempotency_key: str) -> LocalUpload:
         for item in loaded["sources"]
     )
     return LocalUpload(sources=sources, source_naming_view_id=view_id)
+
+
+@contextmanager
+def prepare_primary_upload(
+    root: Path, idempotency_key: str, policy: PrimaryStatePolicy
+) -> Iterator[tuple[LocalUpload, PrimaryStore]]:
+    """Own publication state before allocating a new upload or touching Riverhog."""
+    root, current = _verified_upload_sources(root, idempotency_key)
+    destination = _state_path(root, idempotency_key)
+    # An accepted allocation never implicitly replaces a missing store.
+    with PrimaryStore(
+        destination.with_suffix(".primary"),
+        allocation_id=destination.stem,
+        scope=policy.scope,
+        limits=policy.limits(),
+        initialize=not destination.exists(),
+    ) as store:
+        yield _prepare_verified_upload(root, idempotency_key, current), store

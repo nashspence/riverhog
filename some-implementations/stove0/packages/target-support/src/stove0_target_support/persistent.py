@@ -7,6 +7,7 @@ import json
 import logging
 import os
 import secrets
+import shutil
 import subprocess
 import threading
 import time
@@ -18,6 +19,7 @@ from typing import Any, Final
 
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
+from riverhog_client import PrimaryStateBusy, PrimaryStatePolicy, PrimaryStore
 from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
 from riverhog_protocol import DownloadAllowanceExceeded, RiverhogError, ServiceUnavailable
 from stove0_extension_support import (
@@ -110,6 +112,7 @@ class PersistentTargetService:
         descriptor: TargetDescriptor,
         operations: Mapping[str, OperationContract],
         state_root: Path,
+        primary_state: PrimaryStatePolicy | None,
         execute: JobExecutor,
         intent_semantic_validators: Mapping[str, IntentSemanticValidator] | None = None,
         maximum_workers: int = 1,
@@ -120,6 +123,9 @@ class PersistentTargetService:
         terminal_state_retention_seconds: int = DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     ) -> None:
         self._descriptor = descriptor
+        self.primary_state = primary_state
+        if descriptor.protocol != EFFECT_TARGET_PROTOCOL and primary_state is None:
+            raise ValueError("transform target requires explicit prepared-primary state policy")
         self._operations = dict(operations)
         if set(self._operations) != {item.operation_id for item in descriptor.operations}:
             raise ValueError(
@@ -470,9 +476,28 @@ class PersistentTargetService:
             completion_path = TargetCompletionCheckpoint.manifest_path(self.state_root, job_id)
             if status.state != "succeeded" and (
                 completion_path.exists()
+                or self._primary_unresolved(job_id)
                 or TargetOutputCheckpoint.has_job_records(self.state_root, job_id)
             ):
                 return {"jobs": 0, "bytes": 0}
+            primary_root = self.state_root / f"{job_id}.primary"
+            if primary_root.exists():
+                if self.primary_state is None:
+                    return {"jobs": 0, "bytes": 0}
+                with PrimaryStore(
+                    primary_root,
+                    allocation_id=job_id,
+                    scope=self.primary_state.scope,
+                    limits=self.primary_state.limits(),
+                    initialize=False,
+                ) as primary_store:
+                    if primary_store.publication_started and not primary_store.custody_settled:
+                        return {"jobs": 0, "bytes": 0}
+                # The service's existing exclusive state-root owner fences collectors.
+                removed_bytes += sum(
+                    path.stat().st_size for path in primary_root.rglob("*") if path.is_file()
+                )
+                shutil.rmtree(primary_root)
             accepted_path = self._accepted_path(job_id)
             removed_bytes += stat.st_size
             if accepted_path.exists():
@@ -658,6 +683,8 @@ class PersistentTargetService:
                 attempt,
                 self._runtime_registry,
                 state_root=self.state_root,
+                primary_state=self.primary_state,
+                initialize_primary=attempt == 1,
                 progress_callback=lambda progress: self._report_progress(job_id, attempt, progress),
                 completion_callback=self._commit_status,
             )
@@ -745,6 +772,7 @@ class PersistentTargetService:
                         TargetCompletionCheckpoint.manifest_path(
                             self.state_root, request.declaration.job_id
                         ).exists()
+                        or self._primary_unresolved(request.declaration.job_id)
                         or TargetOutputCheckpoint.has_job_records(
                             self.state_root, request.declaration.job_id
                         )
@@ -898,6 +926,24 @@ class PersistentTargetService:
                     )
                 )
 
+    def _primary_unresolved(self, job_id: str) -> bool:
+        root = self.state_root / f"{job_id}.primary"
+        if not root.exists():
+            return False
+        if self.primary_state is None:
+            return True
+        try:
+            with PrimaryStore(
+                root,
+                allocation_id=job_id,
+                scope=self.primary_state.scope,
+                limits=self.primary_state.limits(),
+                initialize=False,
+            ) as store:
+                return store.publication_started and not store.custody_settled
+        except PrimaryStateBusy:
+            return True
+
     def _cancel_stopped(
         self, accepted: AcceptedTargetJob, status: TargetJobStatus
     ) -> TargetJobStatus:
@@ -906,6 +952,7 @@ class PersistentTargetService:
             return status
         if (status.protocol == EFFECT_TARGET_PROTOCOL and status.state != "queued") or (
             TargetCompletionCheckpoint.manifest_path(self.state_root, job_id).exists()
+            or self._primary_unresolved(job_id)
             or TargetOutputCheckpoint.has_job_records(self.state_root, job_id)
         ):
             # A stopped payload does not establish that an effect or an early

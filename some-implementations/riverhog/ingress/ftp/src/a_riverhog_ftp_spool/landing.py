@@ -30,8 +30,13 @@ from a_riverhog_ftp_spool_client.events import (
 )
 from lifecycle_events import lifecycle_event
 from riverhog_canonical_json import CanonicalJsonError, canonical_json_bytes
-from riverhog_client import ApiClient
-from riverhog_client.producer import CollectionProducer, ProducedCollection, ProducerFile
+from riverhog_client import ApiClient, PrimaryStore, ordered_primary_inventory
+from riverhog_client.producer import (
+    CollectionProducer,
+    ProducedCollection,
+    ProducerArtifactIdentity,
+    ProducerFile,
+)
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_provenance import (
     ObservationResult,
@@ -593,6 +598,8 @@ class FtpSpool:
                         }
                     ],
                 }
+                with self._primary_store(claim_root, str(manifest["claim_id"]), initialize=True):
+                    pass
                 _write_json(claim_root / _MANIFEST, manifest)
                 self._register_claim(source, manifest)
             except BaseException:
@@ -1273,6 +1280,8 @@ class FtpSpool:
                 "completion_event_ids": [row.event_identity for row in discovery.files],
                 "files": files,
             }
+            with self._primary_store(claim_root, str(manifest["claim_id"]), initialize=True):
+                pass
             _write_json(claim_root / _MANIFEST, manifest)
             ordinal = self._register_claim(
                 source,
@@ -1434,55 +1443,87 @@ class FtpSpool:
             },
         )
 
+    def _primary_store(
+        self, claim_root: Path, allocation_id: str, *, initialize: bool = False
+    ) -> PrimaryStore:
+        return PrimaryStore(
+            claim_root / "prepared-primary",
+            allocation_id=allocation_id,
+            scope=self.config.primary_state.scope,
+            limits=self.config.primary_state.limits(),
+            initialize=initialize,
+        )
+
     def _complete_receipted_claim(
         self, source: SourceConfig, claim_id: str, receipt: ProducedCollection
     ) -> ProducedCollection:
-        self._record_publication(source, claim_id, receipt)
-        self._finish_claim_cleanup(source, claim_id)
+        claim_root = self._claims_root(source) / claim_id
+        if claim_root.exists():
+            with self._primary_store(claim_root, claim_id) as store:
+                if not store.custody_settled:
+                    raise FtpSpoolError("FTP claim has unresolved prepared-primary custody")
+                self._record_publication(source, claim_id, receipt)
+                self._finish_claim_cleanup(source, claim_id)
+        else:
+            self._record_publication(source, claim_id, receipt)
+            self._finish_claim_cleanup(source, claim_id)
         return receipt
 
     def _publish_claim_once(self, source: SourceConfig, claim_root: Path) -> ProducedCollection:
         durable_receipt = self._durable_receipt(source, claim_root.name)
         if durable_receipt is not None:
             return self._complete_receipted_claim(source, claim_root.name, durable_receipt)
-        manifest = self._reconcile_claim(source, claim_root)
-        files = tuple(
-            ProducerFile(
-                source=claim_root / "payload" / str(row["path"]),
-                artifact_id=ArtifactId(str(row["artifact_id"])),
-                materialization_hint=PurePosixPath(str(row["path"])).parts,
-                observation=self._load_observation(claim_root, row),
+        with self._primary_store(claim_root, claim_root.name) as store:
+            manifest = self._reconcile_claim(source, claim_root)
+            files = tuple(
+                ProducerFile(
+                    source=claim_root / "payload" / str(row["path"]),
+                    artifact_id=ArtifactId(str(row["artifact_id"])),
+                    materialization_hint=PurePosixPath(str(row["path"])).parts,
+                    observation=self._load_observation(claim_root, row),
+                )
+                for row in _file_rows(manifest)
             )
-            for row in _file_rows(manifest)
-        )
-        producer = CollectionProducer(
-            self.api,
-            producer_app="a-riverhog-ftp-spool/v1",
-            adapter_id="ftp/v1",
-            adapter_version="1.0.0",
-            ingest_source=source.ingest_source,
-            archive_store=source.archive_store,
-            description=source.description,
-            tags=source.tags,
-        )
-        receipt = producer.publish(
-            files,
-            source_event_id=str(manifest["source_event_id"]),
-            source_context={"adapter": "ftp", "source": source.id},
-            idempotency_key=str(manifest["claim_id"]),
-            event_context={"adapter": "ftp", "source": source.id},
-        )
-        receipt_payload = {
-            "format": "a-riverhog-ftp-spool-receipt/v1",
-            "claim_id": claim_root.name,
-            "source_event_id": str(manifest["source_event_id"]),
-            "collection_id": str(receipt.collection_id),
-            "archive_root_sha256": receipt.archive_root_sha256,
-            "artifact_set_identity": receipt.artifact_set_identity,
-            "riverhog_receipt": receipt.receipt,
-        }
-        _write_json(claim_root / _RECEIPT, receipt_payload)
-        _write_json(self._receipt_path(source, claim_root.name), receipt_payload)
+            producer = CollectionProducer(
+                self.api,
+                primary_store=store,
+                member_inventory=lambda: ordered_primary_inventory(
+                    store,
+                    (
+                        ProducerArtifactIdentity(
+                            ArtifactId(str(row["artifact_id"])),
+                            int(str(row["bytes"])),
+                            str(row["sha256"]),
+                        )
+                        for row in _file_rows(manifest)
+                    ),
+                ),
+                producer_app="a-riverhog-ftp-spool/v1",
+                adapter_id="ftp/v1",
+                adapter_version="1.0.0",
+                ingest_source=source.ingest_source,
+                archive_store=source.archive_store,
+                description=source.description,
+                tags=source.tags,
+            )
+            receipt = producer.publish(
+                files,
+                source_event_id=str(manifest["source_event_id"]),
+                source_context={"adapter": "ftp", "source": source.id},
+                idempotency_key=str(manifest["claim_id"]),
+                event_context={"adapter": "ftp", "source": source.id},
+            )
+            receipt_payload = {
+                "format": "a-riverhog-ftp-spool-receipt/v1",
+                "claim_id": claim_root.name,
+                "source_event_id": str(manifest["source_event_id"]),
+                "collection_id": str(receipt.collection_id),
+                "archive_root_sha256": receipt.archive_root_sha256,
+                "artifact_set_identity": receipt.artifact_set_identity,
+                "riverhog_receipt": receipt.receipt,
+            }
+            _write_json(claim_root / _RECEIPT, receipt_payload)
+            _write_json(self._receipt_path(source, claim_root.name), receipt_payload)
         return self._complete_receipted_claim(source, claim_root.name, receipt)
 
     def _receipt_path(self, source: SourceConfig, claim_id: str) -> Path:

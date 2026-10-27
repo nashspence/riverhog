@@ -26,6 +26,7 @@ from riverhog_client._prepared_primary_documents import (
     PrimaryClosingIntent,
     PrimaryCreating,
     PrimaryCustody,
+    PrimaryCustodySettled,
     PrimaryDecisionAccepted,
     PrimaryReclaimed,
     PrimaryScope,
@@ -82,6 +83,7 @@ class PrimaryStoreLimits:
     total_bytes: int
     preparation_bytes: int
     control_bytes: int
+    inventory_order_bytes: int = 0
 
     def __post_init__(self) -> None:
         for value in (
@@ -92,12 +94,14 @@ class PrimaryStoreLimits:
         ):
             if type(value) is not int or value <= 0:
                 raise ValueError("prepared-primary resource admission must be positive integers")
+        if type(self.inventory_order_bytes) is not int or self.inventory_order_bytes < 0:
+            raise ValueError("inventory ordering admission must be a nonnegative integer")
         if self.total_bytes < self.root_reservation:
             raise ValueError("prepared-primary total admission cannot reserve root controls")
 
     @property
     def root_reservation(self) -> int:
-        return 14 * self.control_bytes
+        return 14 * self.control_bytes + self.inventory_order_bytes
 
     @property
     def member_reservation(self) -> int:
@@ -188,6 +192,32 @@ class PrimaryStore:
             self._files.close()
 
     @property
+    def publication_started(self) -> bool:
+        """Distinguish pristine allocation from a possibly committed remote creation."""
+        with self._mutex:
+            self._recover()
+            return (
+                self._optional(self._files, "creating", PrimaryCreating) is not None
+                or self._optional(self._files, "session", PrimarySession) is not None
+                or self._files.exists("create-request")
+                or self._usage.members != 0
+            )
+
+    @property
+    def session_bound(self) -> bool:
+        """Whether the allocation retains an accepted session, without creating one."""
+        with self._mutex:
+            self._recover()
+            return self._optional(self._files, "session", PrimarySession) is not None
+
+    @property
+    def custody_settled(self) -> bool:
+        """Observe the validated complete local receipt/reclaim barrier without a scan."""
+        with self._mutex:
+            self._recover()
+            return self._optional(self._files, "custody-settled", PrimaryCustodySettled) is not None
+
+    @property
     def usage(self) -> PrimaryUsage:
         with self._mutex:
             self._recover()
@@ -195,7 +225,10 @@ class PrimaryStore:
 
     def _read(self, files: PrimaryFiles, name: str, model: type[_Control]) -> _Control:
         raw = files.read_control(name, byte_limit=self.limits.control_bytes)
-        return model.model_validate_json(raw)
+        value = model.model_validate_json(raw)
+        if primary_control_bytes(value) != raw:
+            raise PrimaryStateError("prepared-primary control is not its exact current encoding")
+        return value
 
     def _optional(self, files: PrimaryFiles, name: str, model: type[_Control]) -> _Control | None:
         try:
@@ -401,7 +434,9 @@ class PrimaryStore:
                 - self._usage.control_bytes
                 - self.limits.member_reservation
                 - self._usage.pending_bytes
-                - self._usage.inventory_bytes,
+                - self._usage.inventory_bytes
+                - self._usage.inventory_reserved_bytes
+                - (self.limits.control_bytes + 1),
             )
             if grant <= 0 or grant < len(request):
                 raise PrimaryStateCapacity("prepared-primary allocation admission exhausted")
@@ -472,6 +507,11 @@ class PrimaryStore:
                 "control_bytes": str(controls),
                 "inventory_bytes": str(self._usage.inventory_bytes),
                 "inventory_selected": self._usage.inventory_selected,
+                "inventory_reserved_bytes": str(
+                    0
+                    if self._usage.inventory_selected
+                    else members * (self.limits.control_bytes + 1)
+                ),
                 "members": str(members),
             }
         )
@@ -547,6 +587,9 @@ class PrimaryStore:
                 "control_bytes": str(before.control_bytes + self.limits.member_reservation),
                 "inventory_bytes": str(before.inventory_bytes),
                 "inventory_selected": before.inventory_selected,
+                "inventory_reserved_bytes": str(
+                    before.inventory_reserved_bytes + self.limits.control_bytes + 1
+                ),
                 "members": str(before.members + 1),
             }
         )
@@ -562,6 +605,7 @@ class PrimaryStore:
                 "control_bytes": str(before.control_bytes),
                 "inventory_bytes": str(before.inventory_bytes),
                 "inventory_selected": before.inventory_selected,
+                "inventory_reserved_bytes": str(before.inventory_reserved_bytes),
                 "members": str(before.members),
             }
         )

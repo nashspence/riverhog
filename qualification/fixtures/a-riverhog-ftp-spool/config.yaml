@@ -1,3 +1,7 @@
+primary_state:
+  scope:
+    service: qualification-service
+    account: qualification-account
 host_id: urn:uuid:00000000-0000-4000-8000-000000000001
 riverhog_base_url: http://app:8000
 allow_insecure_http: true

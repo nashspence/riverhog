@@ -123,6 +123,10 @@ def test_upload_cli_forwards_persisted_ids_and_source_advice_to_producer(
             calls["stopped"] = True
 
     api = object()
+    monkeypatch.setenv(
+        "A_RIVERHOG_CLI_PRIMARY_STATE",
+        json.dumps({"scope": {"service": "fixture-service", "account": "fixture-account"}}),
+    )
     monkeypatch.setattr(riverhog_main, "client", lambda: api)
     monkeypatch.setattr(riverhog_main, "IncrementalCollectionProducer", FakeProducer)
     arguments = [
@@ -203,3 +207,57 @@ def test_upload_artifact_list_and_discard_controls_have_human_json_parity(
         assert human.exit_code == structured.exit_code == 0
         assert expected_human in human.stdout
         assert structured_key in json.loads(structured.stdout)
+
+
+def test_cli_reuses_declared_native_observation_and_rejects_changed_finalized_inputs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from riverhog_client import PrimaryStateError
+    from riverhog_provenance import BoundedSourceObserver, BytesSource
+    from riverhog_provenance_contracts import core_contract
+
+    from tests.unit.test_incremental_collection_producer import _CustodyApi
+
+    root = tmp_path / "sources"
+    root.mkdir()
+    (root / "clip.bin").write_bytes(b"exact CLI member")
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    monkeypatch.setenv(
+        "A_RIVERHOG_CLI_PRIMARY_STATE",
+        json.dumps({"scope": {"service": "fixture-service", "account": "fixture-account"}}),
+    )
+    observed = []
+
+    class Observer:
+        contract = core_contract()
+
+        def observe_native_file(self, path, *, host_id, naming_view_id):
+            observed.append((host_id, naming_view_id))
+            return BoundedSourceObserver().observe(BytesSource(path.read_bytes()))
+
+    api = _CustodyApi()
+    monkeypatch.setattr(riverhog_main, "client", lambda: api)
+    monkeypatch.setattr(riverhog_main, "resolve_provenance_observer", lambda _name: Observer())
+    arguments = [
+        "collection",
+        "upload",
+        "start",
+        str(root),
+        "--idempotency-key",
+        "native-cli",
+        "--provenance-observer",
+        "fixture-native",
+        "--source-host-id",
+        "urn:uuid:11111111-1111-4111-8111-111111111111",
+        "--json",
+    ]
+    first = RUNNER.invoke(riverhog_main.app, arguments)
+    assert first.exit_code == 0, first.output
+    second = RUNNER.invoke(riverhog_main.app, arguments)
+    assert second.exit_code == 0, second.output
+    assert len(observed) == 1 and len(api.journals) == 1 and api.session_calls == 1
+    changed = list(arguments)
+    changed[-2] = "urn:uuid:22222222-2222-4222-8222-222222222222"
+    rejected = RUNNER.invoke(riverhog_main.app, changed)
+    assert rejected.exit_code != 0 and isinstance(rejected.exception, PrimaryStateError)
+    assert len(observed) == 1 and len(api.journals) == 1 and api.session_calls == 1

@@ -8,6 +8,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from typing import Any
 
+from pydantic import TypeAdapter
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_protocol import (
     ArtifactMaterializationDecisionBatchDocument,
@@ -16,11 +17,13 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.errors import NotFound
 from riverhog_provenance import ObservationResult
-from riverhog_provenance_contracts import ContractCatalog, ExternalReference
+from riverhog_provenance_contracts import ContractCatalog, ExternalReference, ProvenanceId
 
 from riverhog_client._prepared_primary_documents import (
+    ByteCommitment,
     ByteFile,
     PrimaryObservation,
+    Sha256,
     primary_control_bytes,
 )
 from riverhog_client._prepared_primary_store import (
@@ -47,6 +50,68 @@ class DeclaredPrimaryObservation:
     configuration: Mapping[str, Any]
     catalog_sha256: str
     factory: Callable[[], ObservationResult]
+
+
+@dataclass(frozen=True, slots=True)
+class RetainedPrimaryObservation:
+    """A checkpoint repeats its original selection; it cannot invent missing preimages."""
+
+    inputs: Mapping[str, Any]
+
+
+def retained_primary_observation(
+    observation: ObservationResult | DeclaredPrimaryObservation | RetainedPrimaryObservation | None,
+) -> RetainedPrimaryObservation:
+    """Freeze the three-mode descriptor without invoking a lazy factory."""
+    if isinstance(observation, RetainedPrimaryObservation):
+        selection = dict(observation.inputs)
+    elif isinstance(observation, ObservationResult):
+        selection = {"mode": "supplied", **_observation_identity(observation)}
+    elif isinstance(observation, DeclaredPrimaryObservation):
+        selection = {
+            "mode": "lazy",
+            "observer": observation.observer,
+            "configuration": dict(observation.configuration),
+            "catalog_sha256": observation.catalog_sha256,
+        }
+    else:
+        selection = {
+            "mode": "automatic",
+            "observer": "riverhog-provenance/BoundedSourceObserver",
+            "catalog_sha256": ContractCatalog().checkpoint_sha256(),
+        }
+    selection = json.loads(canonical_json_bytes(selection))
+    mode = selection.get("mode")
+    common = {"mode", "catalog_sha256"}
+    identities = {
+        "artifact_id",
+        "occurrence_id",
+        "state_id",
+        "capture_id",
+        "observation_id",
+        "observer_agent_id",
+    }
+    if mode == "automatic":
+        expected = common | {"observer"}
+        if selection.get("observer") != "riverhog-provenance/BoundedSourceObserver":
+            raise PrimaryStateError("automatic observation changed its declared observer")
+    elif mode == "lazy":
+        expected = common | {"observer", "configuration"}
+        if not isinstance(selection.get("observer"), str) or not selection["observer"]:
+            raise PrimaryStateError("lazy observation requires its original observer")
+        if not isinstance(selection.get("configuration"), dict):
+            raise PrimaryStateError("lazy observation requires its original configuration")
+    elif mode == "supplied":
+        expected = common | identities | {"graph"}
+        for name in identities:
+            TypeAdapter(ProvenanceId).validate_python(selection.get(name))
+        ByteCommitment.model_validate(selection.get("graph"))
+    else:
+        raise PrimaryStateError("restored primary observation has no original selection mode")
+    if set(selection) != expected:
+        raise PrimaryStateError("observation selection has unknown or missing fields")
+    TypeAdapter(Sha256).validate_python(selection.get("catalog_sha256"))
+    return RetainedPrimaryObservation(selection)
 
 
 def _observation_identity(observation: ObservationResult) -> dict[str, Any]:
@@ -91,7 +156,10 @@ class PrimaryPublisher:
         *,
         member: ArtifactMemberIdentityDocument,
         attribution: ProducerAttribution,
-        observation: ObservationResult | DeclaredPrimaryObservation | None,
+        observation: ObservationResult
+        | DeclaredPrimaryObservation
+        | RetainedPrimaryObservation
+        | None,
         automatic_observation: Callable[[], ObservationResult],
         materialization_hint: tuple[str, ...] | None,
         allow_missing_materialization_hint: bool,
@@ -144,6 +212,27 @@ class PrimaryPublisher:
                 "catalog_sha256": catalog_pin,
             }
             observe = observation.factory
+        elif isinstance(observation, RetainedPrimaryObservation):
+            selection = dict(retained_primary_observation(observation).inputs)
+            if selection.get("mode") not in {"automatic", "supplied", "lazy"}:
+                raise PrimaryStateError(
+                    "restored primary observation has no original selection mode"
+                )
+            restored_pin = selection.get("catalog_sha256")
+            if (
+                not isinstance(restored_pin, str)
+                or len(restored_pin) != 64
+                or any(value not in "0123456789abcdef" for value in restored_pin)
+            ):
+                raise PrimaryStateError("restored primary observation has no exact catalog pin")
+            catalog_pin = restored_pin
+
+            def observe() -> ObservationResult:
+                if selection["mode"] == "automatic":
+                    return automatic_observation()
+                raise PrimaryStateError(
+                    "restored supplied or lazy observation has no original preparation preimages"
+                )
         else:
             catalog_pin = ContractCatalog().checkpoint_sha256()
             selection = {

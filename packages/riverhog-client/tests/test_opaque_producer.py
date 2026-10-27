@@ -25,12 +25,28 @@ class _Api:
         return {
             "collection_id": "1",
             "state": "open",
+            "resumed": False,
+            "construction_identity_sha256": "c" * 64,
             "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
             "registration_constraints": {
                 "pack_member_bytes": "1048576",
                 "raw_part_plaintext_bytes": "65536",
             },
         }
+
+    def get_collection_upload_session(self, _collection_id):
+        return {
+            "collection_id": "1",
+            "state": "open",
+            "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
+            "construction_identity_sha256": "c" * 64,
+        }
+
+    def get_collection_upload_session_artifact(self, _collection_id, artifact_id):
+        row = next((row for row in self.registered if row["artifact_id"] == artifact_id), None)
+        if row is None:
+            raise NotFound("member absent")
+        return {**row, "custody_receipt": None}
 
     def add_collection_upload_session_tags(self, *args: object) -> None:
         raise AssertionError("unexpected tags")
@@ -58,6 +74,8 @@ class _Api:
     ) -> None:
         self.bindings.extend(batch.model_dump(mode="json")["bindings"])  # type: ignore[attr-defined]
 
+        return batch
+
     def get_collection_upload_session_artifact_provenance_binding(
         self, collection_id: int, artifact_id: ArtifactId
     ) -> object:
@@ -68,6 +86,8 @@ class _Api:
     ) -> None:
         self.decisions.extend(batch.model_dump(mode="json")["decisions"])  # type: ignore[attr-defined]
 
+        return batch
+
     def spawn(self) -> _Api:
         return self
 
@@ -75,13 +95,17 @@ class _Api:
         pass
 
 
-def test_producer_registers_pathless_member_and_exact_canonical_history(monkeypatch: Any) -> None:
+def test_producer_registers_pathless_member_and_exact_canonical_history(
+    primary_store, monkeypatch: Any
+) -> None:
     monkeypatch.setattr(producer_module, "upload_collection_units", lambda *a, **k: None)
     content = b"exact original bytes"
     artifact_id = ArtifactId("a" * 64)
     api = _Api()
     producer = IncrementalCollectionProducer(
         api,  # type: ignore[arg-type]
+        primary_store=primary_store,
+        member_inventory=lambda: (),
         producer_app="a-test-producer",
         adapter_id="test-adapter/v1",
         adapter_version="1",

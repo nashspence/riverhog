@@ -13,7 +13,7 @@ from riverhog_protocol.collection_workflows import (
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from time_formats import utc_timestamp_now
 
-from riverhog_client import ApiClient
+from riverhog_client import ApiClient, PrimaryStore
 from riverhog_client.processing.capability import CapabilityApiClient
 from riverhog_client.processing.models import (
     ClaimedArtifact,
@@ -175,6 +175,8 @@ class CollectionTransformRuntime:
         self,
         api: Any,
         *,
+        primary_store: PrimaryStore,
+        member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -192,6 +194,8 @@ class CollectionTransformRuntime:
             if isinstance(api, CapabilityApiClient)
             else CapabilityApiClient(api, owns_client=owned_api)
         )
+        self.primary_store = primary_store
+        self.member_inventory = member_inventory
         self.spec = spec
         self.work_id = work_id
         self.execution_id = execution_id
@@ -220,6 +224,8 @@ class CollectionTransformRuntime:
         )
         self.writer = DerivedCollectionWriter(
             self.api,
+            primary_store=primary_store,
+            member_inventory=member_inventory,
             spec=spec,
             work_id=work_id,
             claim_id=claim_id,
@@ -236,6 +242,8 @@ class CollectionTransformRuntime:
         *,
         base_url: str,
         capability_token: str,
+        primary_store: PrimaryStore,
+        member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -252,6 +260,8 @@ class CollectionTransformRuntime:
         )
         return cls(
             api,
+            primary_store=primary_store,
+            member_inventory=member_inventory,
             spec=spec,
             claim_id=claim_id,
             fence=fence,
@@ -365,6 +375,8 @@ class CollectionTransformRuntime:
             return self._incremental_writer
         writer = IncrementalDerivedCollectionWriter(
             self.api,
+            primary_store=self.primary_store,
+            member_inventory=self.member_inventory,
             spec=self.spec,
             work_id=self.work_id,
             claim_id=self.claim_id,

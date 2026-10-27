@@ -21,8 +21,18 @@ from riverhog_archive_contracts import (
     MemberHistoryPrimary,
     MemberHistoryRoot,
 )
-from riverhog_client import ApiClient
-from riverhog_client.producer import IncrementalCollectionProducer, ProducerFile
+from riverhog_client import (
+    ApiClient,
+    PrimaryScope,
+    PrimaryStatePolicy,
+    PrimaryStore,
+    ordered_primary_inventory,
+)
+from riverhog_client.producer import (
+    IncrementalCollectionProducer,
+    ProducerArtifactIdentity,
+    ProducerFile,
+)
 from riverhog_core.canonical_provenance_archive import PublishedCanonicalProvenance
 from riverhog_core.catalog_db import create_catalog_engine, session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectRecord, CollectionUploadRecord
@@ -96,13 +106,36 @@ def publish_shared_history(
     primaries = []
     claims = []
     who = new_id()
+    event_id = uuid4().hex
+    primary_policy = PrimaryStatePolicy(
+        scope=PrimaryScope(service="qualification-service", account="qualification-account")
+    )
+    primary_store = PrimaryStore(
+        directory / "prepared-primary",
+        allocation_id=event_id,
+        scope=primary_policy.scope,
+        limits=primary_policy.limits(),
+        initialize=True,
+    )
     producer = IncrementalCollectionProducer(
         api,
+        primary_store=primary_store,
+        member_inventory=lambda: ordered_primary_inventory(
+            primary_store,
+            (
+                ProducerArtifactIdentity(
+                    source.artifact_id,
+                    source.source.stat().st_size,
+                    hashlib.sha256(source.source.read_bytes()).hexdigest(),
+                )
+                for source in sources
+            ),
+        ),
         producer_app="shared-history-qualification",
         adapter_id="qualification-ingress/v1",
         adapter_version="1",
         ingest_source="qualification",
-        source_event_id=uuid4().hex,
+        source_event_id=event_id,
         use_cache=False,
     )
     try:
@@ -195,6 +228,7 @@ def publish_shared_history(
         assert finalized.archive_root_sha256 is not None
     finally:
         producer.stop()
+        primary_store.close()
     with session_scope(container.session_factory) as session:
         state = session.get(State, collection_id)
         assert state is not None and state.active_build_id is not None

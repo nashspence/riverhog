@@ -9,7 +9,7 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
-from riverhog_client import IncrementalCollectionProducer, ProducerStream
+from riverhog_client import IncrementalCollectionProducer, ProducerArtifactIdentity, ProducerStream
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     ARCHIVES_MANAGE,
@@ -423,7 +423,9 @@ def test_upload_copy_intent_does_not_claim_a_separately_created_job(tmp_path: Pa
     assert service.get(COLLECTION_ID, destination_store="b2") == independent
 
 
-def test_upload_publication_atomically_queues_the_accepted_copy(tmp_path: Path) -> None:
+def test_upload_publication_atomically_queues_the_accepted_copy(
+    primary_store, tmp_path: Path
+) -> None:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
     baseline = RuntimeConfig.for_testing(database_url=database_url)
     deep = replace(baseline.archive_store("archive"), name="deep", base_url="http://127.0.0.1/deep")
@@ -482,6 +484,10 @@ def test_upload_publication_atomically_queues_the_accepted_copy(tmp_path: Path) 
     content = b"durable copy intent from accepted upload"
     producer = IncrementalCollectionProducer(
         api,
+        primary_store=primary_store,
+        member_inventory=lambda: (
+            ProducerArtifactIdentity("d" * 64, len(content), hashlib.sha256(content).hexdigest()),
+        ),
         producer_app="fixture",
         adapter_id="fixture/v1",
         adapter_version="1",

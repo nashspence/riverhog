@@ -21,6 +21,7 @@ from riverhog_core.catalog_models import (
 from riverhog_core.services.collection_uploads import _validate_staged_canonical_journal_set
 from riverhog_protocol import (
     ArtifactMemberIdentityDocument,
+    CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadRegistrationConstraintsDocument,
 )
 from riverhog_protocol.errors import Conflict
@@ -211,5 +212,173 @@ def test_durable_primary_replays_after_actual_http_stage_bind_and_decision_ackno
             with pytest.raises(Conflict, match="unrelated journals"):
                 _validate_staged_canonical_journal_set(session_db, upload)
     finally:
+        store.close()
+        api.close()
+
+
+def test_shared_producer_restarts_exact_preparation_and_drains_finalized_custody(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from riverhog_client import (
+        IncrementalCollectionProducer,
+        ProducerArtifactIdentity,
+        ProducerFile,
+    )
+
+    monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
+    api, _archive = _bounded_service_api(tmp_path)
+    root = tmp_path.resolve() / "producer-primary"
+    source = tmp_path / "source.bin"
+    payload = b"prepared through the maintained producer"
+    source.write_bytes(payload)
+    member = ProducerArtifactIdentity("ad" * 32, len(payload), hashlib.sha256(payload).hexdigest())
+    limits = PrimaryStoreLimits(
+        pending_bytes=16 * 1024 * 1024,
+        total_bytes=32 * 1024 * 1024,
+        preparation_bytes=8 * 1024 * 1024,
+        control_bytes=64 * 1024,
+    )
+    scope = PrimaryScope(service="fixture-service", account="fixture-account")
+    observations = []
+
+    def observe():
+        result = BoundedSourceObserver().observe(BytesSource(payload))
+        observations.append(result)
+        return result
+
+    selection = DeclaredPrimaryObservation(
+        "fixture-observer/v1",
+        {"source_identity": "fixture-source"},
+        ContractCatalog().checkpoint_sha256(),
+        observe,
+    )
+
+    def construct(store, inventory=lambda: (member,)):
+        return IncrementalCollectionProducer(
+            api,
+            primary_store=store,
+            member_inventory=inventory,
+            producer_app="fixture",
+            adapter_id="fixture/v1",
+            adapter_version="1",
+            ingest_source="fixture",
+            source_event_id="producer-interrupted-primary",
+        )
+
+    def input_file():
+        return ProducerFile(
+            source,
+            member.artifact_id,
+            observation=selection,
+            allow_missing_materialization_hint=True,
+        )
+
+    store = PrimaryStore(
+        root, allocation_id="fixture-allocation", scope=scope, limits=limits, initialize=True
+    )
+    producer = construct(store)
+    collection_id = producer.collection_id
+    try:
+        registration = api.register_collection_upload_session_artifacts
+
+        def require_prepared(cid, members, **kwargs):
+            for registered in members:
+                assert (
+                    store.load(ArtifactMemberIdentityDocument.model_validate(registered))
+                    is not None
+                )
+            return registration(cid, members, **kwargs)
+
+        def lost_bind(*_args, **_kwargs):
+            raise RuntimeError("producer stage before bind")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(api, "register_collection_upload_session_artifacts", require_prepared)
+            patch.setattr(api, "bind_collection_upload_session_artifact_provenance", lost_bind)
+            with pytest.raises(RuntimeError, match="stage before bind"):
+                producer.append_inputs((input_file(),))
+    finally:
+        producer.stop()
+        store.close()
+
+    store = PrimaryStore(
+        root, allocation_id="fixture-allocation", scope=scope, limits=limits, initialize=False
+    )
+    producer = construct(store)
+    try:
+        accept = api.set_collection_upload_session_materialization_decisions
+
+        def lost_ack(*args, **kwargs):
+            accept(*args, **kwargs)
+            raise RuntimeError("producer lost decision acknowledgement")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(api, "set_collection_upload_session_materialization_decisions", lost_ack)
+            with pytest.raises(RuntimeError, match="decision acknowledgement"):
+                producer.append_inputs((input_file(),))
+    finally:
+        producer.stop()
+        store.close()
+
+    store = PrimaryStore(
+        root, allocation_id="fixture-allocation", scope=scope, limits=limits, initialize=False
+    )
+    producer = construct(store)
+    try:
+        producer.append_inputs((input_file(),))
+        retained = store.load(
+            ArtifactMemberIdentityDocument.model_validate(
+                {
+                    "artifact_id": member.artifact_id,
+                    "bytes": str(member.bytes),
+                    "sha256": member.sha256,
+                }
+            )
+        )
+        with session_scope(api.service._session_factory) as session_db:
+            assert set(
+                session_db.scalars(
+                    select(CollectionUploadProvenanceJournalRecord.journal_id).where(
+                        CollectionUploadProvenanceJournalRecord.collection_id == collection_id
+                    )
+                )
+            ) == {retained.prepared.primary.journal.journal_id}
+        result = producer.finish(poll_seconds=0.01, timeout_seconds=300)
+        assert result.receipt["state"] == "finalized"
+        published = api.get_collection_upload_session_artifact(collection_id, member.artifact_id)
+        assert (
+            CollectionUploadArtifactCustodyReceiptDocument.model_validate(
+                published["custody_receipt"]
+            ).primary
+            == retained.prepared.primary
+        )
+        assert len(observations) == 1
+        assert store.usage.pending_bytes == 0
+        assert (root / "custody-settled").is_file()
+        source.unlink()
+    finally:
+        producer.stop()
+        store.close()
+
+    def no_source_inventory():
+        pytest.fail("finalized custody retry enumerated released source inventory")
+        yield
+
+    store = PrimaryStore(
+        root, allocation_id="fixture-allocation", scope=scope, limits=limits, initialize=False
+    )
+    producer = construct(store, no_source_inventory)
+    try:
+        resumed_result = producer.finish(poll_seconds=0.01, timeout_seconds=30)
+        assert (
+            resumed_result.collection_id,
+            resumed_result.archive_root_sha256,
+            resumed_result.artifact_set_identity,
+        ) == (result.collection_id, result.archive_root_sha256, result.artifact_set_identity)
+        custody = producer.resume_artifact_custody(member)
+        assert custody is not None and custody.artifact == member
+        assert not source.exists() and len(observations) == 1
+    finally:
+        producer.stop()
         store.close()
         api.close()

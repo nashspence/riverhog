@@ -34,6 +34,7 @@ from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from pydantic import BaseModel, TypeAdapter
 from riverhog_api.app import create_app as create_riverhog_app
+from riverhog_client import PrimaryScope, PrimaryStatePolicy
 from riverhog_client.client import ApiClient
 from riverhog_core.runtime_config import RuntimeConfig
 from sqlalchemy import create_engine
@@ -154,6 +155,9 @@ def create_stove0_contract_app() -> FastAPI:
 
 def create_adapter_contract_app() -> FastAPI:
     config = FtpSpoolConfig(
+        primary_state=PrimaryStatePolicy(
+            scope=PrimaryScope(service="qualification-service", account="qualification-account")
+        ),
         host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-qualification-token",

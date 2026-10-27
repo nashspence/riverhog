@@ -26,12 +26,14 @@ from riverhog_client.producer import ProducedCollection
 from riverhog_provenance_contracts import SOURCE_NAMING_VIEW_SCHEME
 
 from tests.provenance_observer import native_provenance_provider
+from tests.support.prepared_primary import settle_stub_publication
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
 
 
 def _config(tmp_path: Path) -> FtpSpoolConfig:
     return FtpSpoolConfig(
+        primary_state={"scope": {"service": "fixture-service", "account": "fixture-account"}},
         host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-token",
@@ -56,6 +58,7 @@ class _Producer:
     fail_once = False
 
     def __init__(self, _api: object, **kwargs: object) -> None:
+        self.primary_store = kwargs["primary_store"]
         self.kwargs = kwargs
 
     def publish(self, files: object, **kwargs: object) -> ProducedCollection:
@@ -78,6 +81,7 @@ class _Producer:
         if self.__class__.fail_once:
             self.__class__.fail_once = False
             raise ConnectionError("finalized response was lost")
+        settle_stub_publication(self.primary_store, materialized, collection_id=41)
         return ProducedCollection(
             collection_id=41,
             archive_root_sha256="a" * 64,
@@ -93,6 +97,7 @@ class _ControlledProducer:
     permanently_failing_paths: set[str] = set()
 
     def __init__(self, _api: object, **_kwargs: object) -> None:
+        self.primary_store = _kwargs["primary_store"]
         pass
 
     def publish(self, files: object, **_kwargs: object) -> ProducedCollection:
@@ -102,6 +107,9 @@ class _ControlledProducer:
         if not self.__class__.available or path in self.__class__.permanently_failing_paths:
             raise ConnectionError(f"publication unavailable for {path}")
         self.__class__.successes.append(path)
+        settle_stub_publication(
+            self.primary_store, materialized, collection_id=len(self.__class__.successes)
+        )
         return ProducedCollection(
             collection_id=len(self.__class__.successes),
             archive_root_sha256="a" * 64,

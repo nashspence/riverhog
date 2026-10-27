@@ -75,12 +75,26 @@ class _CustodyApi:
         return {
             "collection_id": "42",
             "resumed": self.session_calls > 1,
+            "construction_identity_sha256": "c" * 64,
             "state": "open",
             "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
             "registration_constraints": {
                 "pack_member_bytes": "1024",
                 "raw_part_plaintext_bytes": "65536",
             },
+        }
+
+    def get_collection_upload_session(self, _collection_id):
+        return {
+            "collection_id": "42",
+            "state": "finalized" if self.completed is not None else "open",
+            "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
+            "construction_identity_sha256": "c" * 64,
+            "registration_constraints": {
+                "pack_member_bytes": "1024",
+                "raw_part_plaintext_bytes": "65536",
+            },
+            **(self.completed or {}),
         }
 
     def add_collection_upload_session_tags(self, _collection_id, tags):
@@ -130,6 +144,8 @@ class _CustodyApi:
         }
 
     def get_collection_upload_session_artifact(self, _collection_id, artifact_id):
+        if artifact_id not in self.rows:
+            raise NotFound("artifact absent")
         row = self.rows[artifact_id]
         return {**row, "custody_receipt": self._receipt(row)}
 
@@ -167,6 +183,8 @@ class _CustodyApi:
         for binding in batch.bindings:
             assert self.bindings.setdefault(binding.artifact_id, binding) == binding
 
+        return batch
+
     def get_collection_upload_session_artifact_provenance_binding(
         self, _collection_id, artifact_id
     ):
@@ -174,8 +192,8 @@ class _CustodyApi:
             raise NotFound("binding absent")
         return self.bindings[artifact_id]
 
-    def set_collection_upload_session_materialization_decisions(self, *_args):
-        pass
+    def set_collection_upload_session_materialization_decisions(self, _collection_id, batch):
+        return batch
 
     def complete_collection_upload_session(self, _collection_id):
         identity = artifact_set_identity_ordered(
@@ -195,9 +213,14 @@ class _CustodyApi:
         return dict(self.completed)
 
 
-def _producer(api: _CustodyApi) -> IncrementalCollectionProducer:
+def _producer(api: _CustodyApi, primary_store) -> IncrementalCollectionProducer:
     return IncrementalCollectionProducer(
         api,  # type: ignore[arg-type]
+        primary_store=primary_store,
+        member_inventory=lambda: (
+            ProducerArtifactIdentity(row["artifact_id"], int(row["bytes"]), row["sha256"])
+            for _key, row in sorted(api.rows.items())
+        ),
         producer_app="fixture-target",
         adapter_id="fixture-target/v1",
         adapter_version="1.0.0",
@@ -207,12 +230,19 @@ def _producer(api: _CustodyApi) -> IncrementalCollectionProducer:
     )
 
 
-def test_incremental_producer_stages_unbounded_logical_tags_in_bounded_requests() -> None:
+def test_incremental_producer_stages_unbounded_logical_tags_in_bounded_requests(
+    primary_store,
+) -> None:
     api = _CustodyApi()
     tags = tuple(f"classification/{index:04d}" for index in range(205))
 
     producer = IncrementalCollectionProducer(
         api,  # type: ignore[arg-type]
+        primary_store=primary_store,
+        member_inventory=lambda: (
+            ProducerArtifactIdentity(row["artifact_id"], int(row["bytes"]), row["sha256"])
+            for _key, row in sorted(api.rows.items())
+        ),
         producer_app="fixture-target",
         adapter_id="fixture-target/v1",
         adapter_version="1.0.0",
@@ -232,13 +262,20 @@ def test_incremental_producer_stages_unbounded_logical_tags_in_bounded_requests(
     assert all(len(batch) <= COLLECTION_TAG_REQUEST_MEMBERS_MAX for batch in api.tag_batches)
 
 
-def test_incremental_producer_rejects_late_invalid_tags_before_remote_mutation() -> None:
+def test_incremental_producer_rejects_late_invalid_tags_before_remote_mutation(
+    primary_store,
+) -> None:
     api = _CustodyApi()
     tags = [*(f"classification/{index:04d}" for index in range(150)), " invalid"]
 
     with pytest.raises(ValueError):
         IncrementalCollectionProducer(
             api,  # type: ignore[arg-type]
+            primary_store=primary_store,
+            member_inventory=lambda: (
+                ProducerArtifactIdentity(row["artifact_id"], int(row["bytes"]), row["sha256"])
+                for _key, row in sorted(api.rows.items())
+            ),
             producer_app="fixture-target",
             adapter_id="fixture-target/v1",
             adapter_version="1.0.0",
@@ -249,7 +286,9 @@ def test_incremental_producer_rejects_late_invalid_tags_before_remote_mutation()
     assert api.session_calls == 0
 
 
-def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(tmp_path):
+def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(
+    primary_store, tmp_path
+):
     api = _CustodyApi()
     source = tmp_path / "artifact.bin"
     payload = b"completed artifact"
@@ -258,7 +297,7 @@ def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(tm
     identity = ProducerArtifactIdentity(
         artifact_id, len(payload), hashlib.sha256(payload).hexdigest()
     )
-    first = _producer(api)
+    first = _producer(api, primary_store)
     try:
         receipts = first.append_inputs(
             (ProducerFile(source, artifact_id, allow_missing_materialization_hint=True),)
@@ -267,7 +306,7 @@ def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(tm
     finally:
         first.stop()
     source.unlink()
-    resumed = _producer(api)
+    resumed = _producer(api, primary_store)
     try:
         before_resume = api.registration_calls
         receipt = resumed.resume_artifact_custody(identity)
@@ -283,7 +322,9 @@ def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(tm
     assert api.completed is not None
 
 
-def test_incremental_producer_keeps_local_custody_when_receipt_identity_is_wrong(tmp_path):
+def test_incremental_producer_keeps_local_custody_when_receipt_identity_is_wrong(
+    primary_store, tmp_path
+):
     class WrongReceiptApi(_CustodyApi):
         def _receipt(self, row):
             primary = self.bindings.get(row["artifact_id"])
@@ -302,7 +343,7 @@ def test_incremental_producer_keeps_local_custody_when_receipt_identity_is_wrong
     api = WrongReceiptApi()
     source = tmp_path / "artifact.bin"
     source.write_bytes(b"completed artifact")
-    producer = _producer(api)
+    producer = _producer(api, primary_store)
     try:
         with pytest.raises(ValueError, match="upload member identity"):
             producer.append_inputs(
@@ -314,11 +355,11 @@ def test_incremental_producer_keeps_local_custody_when_receipt_identity_is_wrong
         producer.stop()
 
 
-def test_incremental_producer_keeps_equal_bytes_as_distinct_members(tmp_path):
+def test_incremental_producer_keeps_equal_bytes_as_distinct_members(primary_store, tmp_path):
     api = _CustodyApi()
     source = tmp_path / "source.bin"
     source.write_bytes(b"identical bytes")
-    producer = _producer(api)
+    producer = _producer(api, primary_store)
     try:
         producer.append_inputs(
             tuple(
@@ -367,13 +408,17 @@ def _bounded_service_api(
 
 
 def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
+    primary_store,
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
     api, store = _bounded_service_api(tmp_path)
+    identities = {}
     producer = IncrementalCollectionProducer(
         api,  # type: ignore[arg-type]
+        primary_store=primary_store,
+        member_inventory=lambda: (identities[key] for key in sorted(identities)),
         producer_app="fixture-target",
         adapter_id="fixture-target/v1",
         adapter_version="1.0.0",
@@ -387,7 +432,11 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
         for index in range(25):
             artifact_id = f"{index:064x}"
             source = tmp_path / f"output-{index:04d}.bin"
-            source.write_bytes(f"artifact-{index}".encode())
+            content = f"artifact-{index}".encode()
+            source.write_bytes(content)
+            identities[artifact_id] = ProducerArtifactIdentity(
+                artifact_id, len(content), hashlib.sha256(content).hexdigest()
+            )
             local[artifact_id] = source
             high_water = max(high_water, sum(item.exists() for item in local.values()))
             receipts = producer.append_inputs(
@@ -439,6 +488,7 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
     ],
 )
 def test_native_ingest_preserves_members_across_registration_and_payload_regimes(
+    primary_store,
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     members: int,
@@ -499,6 +549,11 @@ def test_native_ingest_preserves_members_across_registration_and_payload_regimes
         expected[artifact_id] = (len(payload), hashlib.sha256(payload).hexdigest())
     producer = IncrementalCollectionProducer(
         api,
+        primary_store=primary_store,
+        member_inventory=lambda: (
+            ProducerArtifactIdentity(key, value[0], value[1])
+            for key, value in sorted(expected.items())
+        ),
         producer_app="fixture-target",
         adapter_id="fixture-target/v1",
         adapter_version="1.0.0",
@@ -548,6 +603,7 @@ def test_stop_retains_owned_resources_until_the_heartbeat_worker_actually_exits(
     import threading
 
     producer = object.__new__(IncrementalCollectionProducer)
+    producer._operation_lock = threading.RLock()
     producer._heartbeat_stop = threading.Event()
     entered_join = threading.Event()
     release_worker = threading.Event()

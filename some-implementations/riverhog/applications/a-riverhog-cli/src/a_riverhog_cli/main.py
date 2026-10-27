@@ -7,6 +7,7 @@ import sys
 import time
 import uuid
 from collections.abc import Mapping
+from functools import partial
 from pathlib import Path
 from typing import Annotated, Any, cast
 
@@ -18,9 +19,14 @@ from riverhog_canonical_json import parse_identity_json
 from riverhog_client import (
     COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES,
     ApiClient,
+    DeclaredPrimaryObservation,
     IncrementalCollectionProducer,
+    PrimaryStateError,
+    PrimaryStatePolicy,
     ProducerArtifactIdentity,
+    ordered_primary_inventory,
 )
+from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.collection_description import validate_collection_description
 from riverhog_protocol.errors import RiverhogError
 from riverhog_protocol.paths import (
@@ -30,6 +36,7 @@ from riverhog_protocol.paths import (
 from riverhog_provenance import (
     resolve_provenance_observer,
 )
+from riverhog_provenance_contracts import ContractCatalog
 from time_formats import parse_duration
 
 from a_riverhog_cli.application_keys_output import (
@@ -45,7 +52,7 @@ from a_riverhog_cli.cli_support import (
     format_lifecycle_events,
     format_list_ids,
 )
-from a_riverhog_cli.directory_upload import prepare_upload, preview_upload
+from a_riverhog_cli.directory_upload import prepare_primary_upload, preview_upload
 from a_riverhog_cli.local import local_app
 from a_riverhog_cli.output import (
     format_app_access,
@@ -1545,6 +1552,14 @@ def upload_cmd(
         str | None,
         typer.Option("--source-host-id", envvar="A_RIVERHOG_CLI_SOURCE_HOST_ID"),
     ] = None,
+    primary_state: Annotated[
+        str | None,
+        typer.Option(
+            "--primary-state",
+            envvar="A_RIVERHOG_CLI_PRIMARY_STATE",
+            help="Publication state scope and byte budgets as JSON.",
+        ),
+    ] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
     dry_run: Annotated[bool, typer.Option("--dry-run")] = False,
 ) -> None:
@@ -1572,9 +1587,14 @@ def upload_cmd(
                 json_mode=json_mode,
             )
             return
-        upload = prepare_upload(resolved_root, key)
     except ValueError as exc:
         raise typer.BadParameter(str(exc), param_hint="root") from exc
+    try:
+        if primary_state is None:
+            raise ValueError("publication requires an explicit service/account state scope")
+        primary_policy = PrimaryStatePolicy.model_validate_json(primary_state)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc), param_hint="--primary-state") from exc
     selected_observer = (
         resolve_provenance_observer(provenance_observer)
         if provenance_observer is not None
@@ -1590,47 +1610,85 @@ def upload_cmd(
         version = importlib.metadata.version("a-riverhog-cli")
     except importlib.metadata.PackageNotFoundError:
         version = "development"
-    producer = IncrementalCollectionProducer(
-        client(),
-        producer_app="a-riverhog-cli",
-        adapter_id="a-riverhog-cli.directory/v1",
-        adapter_version=version,
-        ingest_source="local-directory",
-        source_event_id=key,
-        source_context={"kind": "local-directory"},
-        idempotency_key=key,
-        archive_store=cast(Any, archive_store),
-        use_cache=use_cache,
-        copy_to=cast(Any, copy_to),
-        description=description,
-        tags=tag or (),
-    )
-    try:
-        if producer.constraints is not None:
-            for start in range(0, len(upload.sources), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES):
-                inputs = []
-                expected = {}
-                for source in upload.sources[
-                    start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
-                ]:
-                    observation = (
-                        selected_observer.observe_native_file(
-                            source.path,
-                            host_id=source_host_id,
-                            naming_view_id=upload.source_naming_view_id,
+    with prepare_primary_upload(resolved_root, key, primary_policy) as (upload, store):
+        observation_selection: dict[str, object] = {
+            "mode": "automatic",
+            "observer": "riverhog-provenance/BoundedSourceObserver",
+            "catalog_sha256": ContractCatalog().checkpoint_sha256(),
+        }
+        if selected_observer is not None:
+            observation_selection = {
+                "mode": "lazy",
+                "observer": str(provenance_observer),
+                "configuration": {
+                    "host_id": source_host_id,
+                    "naming_view_id": upload.source_naming_view_id,
+                },
+                "catalog_sha256": ContractCatalog(
+                    (selected_observer.contract,)
+                ).checkpoint_sha256(),
+            }
+        producer = IncrementalCollectionProducer(
+            client(),
+            primary_store=store,
+            member_inventory=lambda: ordered_primary_inventory(
+                store,
+                (
+                    ProducerArtifactIdentity(
+                        ArtifactId(source.artifact_id), source.bytes, source.sha256
+                    )
+                    for source in upload.sources
+                ),
+            ),
+            producer_app="a-riverhog-cli",
+            adapter_id="a-riverhog-cli.directory/v1",
+            adapter_version=version,
+            ingest_source="local-directory",
+            source_event_id=key,
+            source_context={"kind": "local-directory", "observation": observation_selection},
+            idempotency_key=key,
+            archive_store=cast(Any, archive_store),
+            use_cache=use_cache,
+            copy_to=cast(Any, copy_to),
+            description=description,
+            tags=tag or (),
+        )
+        try:
+            if producer.constraints is not None:
+                for start in range(
+                    0, len(upload.sources), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
+                ):
+                    inputs = []
+                    expected = {}
+                    for source in upload.sources[
+                        start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
+                    ]:
+                        observation = None
+                        if selected_observer is not None and source_host_id is not None:
+                            native_observer = selected_observer
+                            observation = DeclaredPrimaryObservation(
+                                str(provenance_observer),
+                                {
+                                    "host_id": source_host_id,
+                                    "naming_view_id": upload.source_naming_view_id,
+                                },
+                                ContractCatalog((native_observer.contract,)).checkpoint_sha256(),
+                                partial(
+                                    native_observer.observe_native_file,
+                                    source.path,
+                                    host_id=source_host_id,
+                                    naming_view_id=upload.source_naming_view_id,
+                                ),
+                            )
+                        item = source.producer_file(observation=observation)
+                        inputs.append(item)
+                        expected[item.artifact_id] = ProducerArtifactIdentity(
+                            item.artifact_id, source.bytes, source.sha256
                         )
-                        if selected_observer is not None and source_host_id is not None
-                        else None
-                    )
-                    item = source.producer_file(observation=observation)
-                    inputs.append(item)
-                    expected[item.artifact_id] = ProducerArtifactIdentity(
-                        item.artifact_id, source.bytes, source.sha256
-                    )
-                producer.append_inputs(inputs, expected_identities=expected)
-        result = producer.finish()
-    finally:
-        producer.stop()
+                    producer.append_inputs(inputs, expected_identities=expected)
+            result = producer.finish()
+        finally:
+            producer.stop()
     emit(
         result.receipt if json_mode else format_collection_upload(result.receipt),
         json_mode=json_mode,
@@ -2594,6 +2652,7 @@ def main() -> int:
         httpx.HTTPStatusError,
         httpx.TransportError,
         RiverhogError,
+        PrimaryStateError,
         FileExistsError,
         FileNotFoundError,
         NotADirectoryError,
