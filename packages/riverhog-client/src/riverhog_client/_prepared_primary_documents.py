@@ -13,6 +13,7 @@ from pydantic import (
 )
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_protocol import (
+    ArtifactId,
     ArtifactMemberIdentityDocument,
     CollectionArtifactProvenanceBindingDocument,
     CollectionUploadArtifactCustodyReceiptDocument,
@@ -163,25 +164,45 @@ class PrimaryCustody(PrimaryControl):
         return self
 
 
+class PrimaryInventory(BaseModel):
+    """Canonical newline rows committed by an ordered, length-framed hash chain."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    format: Literal["riverhog-prepared-inventory-chain/v1"] = "riverhog-prepared-inventory-chain/v1"
+    name: Literal["inventory"] = "inventory"
+    bytes: NonnegativeDecimal
+    chain_sha256: Sha256
+
+
+class PrimaryInventoryEntry(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    member: ArtifactMemberIdentityDocument
+    prepared_sha256: Sha256
+
+
 class PrimaryClosing(PrimaryControl):
     kind: Literal["closing"] = "closing"
     session_sha256: Sha256
-    inventory: ByteFile
+    inventory: PrimaryInventory
     members: NonnegativeDecimal
     after_member: NonnegativeDecimal
+    after_offset: NonnegativeDecimal
+    last_member: ArtifactId | None
     manifest_chain_sha256: Sha256
 
     @model_validator(mode="after")
     def within_inventory(self) -> Self:
-        if self.after_member > self.members:
+        if self.after_member > self.members or self.after_offset > self.inventory.bytes:
             raise ValueError("primary closing cursor exceeds its exact inventory")
+        if (self.last_member is None) != (self.after_member == 0):
+            raise ValueError("primary closing member cursor has no exact last identity")
         return self
 
 
 class PrimaryFinishReady(PrimaryControl):
     kind: Literal["finish-ready"] = "finish-ready"
     session_sha256: Sha256
-    inventory: ByteCommitment
+    inventory: PrimaryInventory
     members: NonnegativeDecimal
     manifest_chain_sha256: Sha256
 
@@ -194,6 +215,8 @@ class PrimaryUsage(PrimaryControl):
     kind: Literal["usage"] = "usage"
     sequence: NonnegativeDecimal = 0
     pending_bytes: NonnegativeDecimal = 0
+    inventory_bytes: NonnegativeDecimal = 0
+    inventory_selected: bool = False
     control_bytes: NonnegativeDecimal = 0
     members: NonnegativeDecimal = 0
 
@@ -215,3 +238,33 @@ class PrimaryTransition(PrimaryControl):
 class PrimaryReclaimed(PrimaryControl):
     kind: Literal["reclaimed"] = "reclaimed"
     prepared_sha256: Sha256
+
+
+class PrimaryClosingIntent(PrimaryControl):
+    kind: Literal["closing-intent"] = "closing-intent"
+    session_sha256: Sha256
+    members: NonnegativeDecimal
+    inventory: PrimaryInventory | None = None
+    before: PrimaryUsage | None = None
+    after: PrimaryUsage | None = None
+
+    @model_validator(mode="after")
+    def exact_accounting(self) -> Self:
+        if self.inventory is None:
+            if self.before is not None or self.after is not None:
+                raise ValueError("unselected inventory cannot change admission")
+        elif self.before is None or self.after is None:
+            raise ValueError("selected inventory requires complete admission accounting")
+        elif (
+            self.before.members != self.members
+            or self.after.members != self.members
+            or self.after.sequence != self.before.sequence + 1
+            or self.before.inventory_bytes != 0
+            or self.before.inventory_selected
+            or not self.after.inventory_selected
+            or self.after.inventory_bytes != self.inventory.bytes
+            or self.before.pending_bytes != self.after.pending_bytes
+            or self.before.control_bytes != self.after.control_bytes
+        ):
+            raise ValueError("inventory admission changed the prepared allocation")
+        return self

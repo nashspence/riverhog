@@ -252,6 +252,7 @@ store=PrimaryStore(root,allocation_id='existing-app-allocation',scope=PrimarySco
 member=ArtifactMemberIdentityDocument.model_validate(spec['member'])
 put=PrimaryFiles.put
 remove=PrimaryFiles.remove
+closing_intent_writes=0
 link=os.link
 replace_file=os.replace
 def crash_link(source,target,*args,**kwargs):
@@ -263,7 +264,11 @@ def crash_replace(source,target,*args,**kwargs):
 os.link=crash_link
 os.replace=crash_replace
 def crash_put(self,name,*args,**kwargs):
+    global closing_intent_writes
     result=put(self,name,*args,**kwargs)
+    if name=="closing-intent":
+        closing_intent_writes+=1
+        if boundary=="closing-intent-ready" and closing_intent_writes==2: os._exit(37)
     if name==boundary: os._exit(37)
     return result
 def crash_remove(self,name):
@@ -276,8 +281,15 @@ if spec['operation']=='prepare':
     store.prepare_or_load(member,spec['request'].encode(),lambda _limit:PrimaryPreparation(
         value['observation'].encode(),value['graph'].encode(),value['journal'].encode(),
         value['decision'].encode(),value['primary'],None))
-else:
+elif spec['operation']=='reclaim':
     store.reclaim(member)
+else:
+    from riverhog_client._prepared_primary_closing import freeze_inventory,advance_closing
+    if spec['operation']=='freeze':
+        freeze_inventory(store,(member,))
+    else:
+        def settle(item): store.accept_decision(store.load(item),b'exact decision')
+        advance_closing(store,limit=1,settle=settle)
 raise RuntimeError('crash boundary was not reached')
 """
 
@@ -878,3 +890,180 @@ def test_execution_attribution_and_completion_survive_lost_ack_and_finalized_res
         session, resumed = _create(api, store, attribution=attribution)
         assert session["state"] == "finalized" and resumed.construction_identity == "a" * 64
         assert len(accepted) == 2
+
+
+def test_closing_freezes_the_exact_owner_inventory_and_replays_only_unacknowledged_members(
+    tmp_path,
+):
+    from riverhog_client._prepared_primary_closing import advance_closing, freeze_inventory
+
+    root = tmp_path.resolve() / "state"
+    inventory = tuple(_member(number) for number in range(1, 4))
+    with _open(root, initialize=True) as store:
+        for member in inventory:
+            store.prepare_or_load(member, REQUEST, lambda _limit, member=member: _author(member))
+        closing = freeze_inventory(store, inventory)
+        assert closing.after_member == 0 and store.usage.inventory_selected
+        with pytest.raises(PrimaryStateError, match="closing allocation"):
+            store.prepare_or_load(_member(4), REQUEST, _no_author)
+
+        def lost_cursor(member):
+            store.accept_decision(store.load(member), b"exact decision")
+            raise RuntimeError("lost closure cursor")
+
+        with pytest.raises(RuntimeError, match="closure cursor"):
+            advance_closing(store, limit=1, settle=lost_cursor)
+        assert store.load(inventory[0]).decision_accepted is not None
+        assert not (root / "finish-ready").exists()
+
+    def no_inventory():
+        pytest.fail("a frozen owner inventory was traversed again")
+        yield
+
+    with _open(root) as store:
+        assert freeze_inventory(store, no_inventory()) == closing
+        calls = []
+
+        def settle(member):
+            calls.append(member.artifact_id)
+            store.accept_decision(store.load(member), b"exact decision")
+
+        assert not advance_closing(store, limit=1, settle=settle)
+        assert calls == []
+        assert not advance_closing(store, limit=1, settle=settle)
+        assert advance_closing(store, limit=1, settle=settle)
+        assert calls == [inventory[1].artifact_id, inventory[2].artifact_id]
+        assert all(store.load(member).custody is None for member in inventory)
+        assert advance_closing(
+            store, limit=1, settle=lambda _member: pytest.fail("finished prefix replay")
+        )
+        retained_bytes = store.usage.inventory_bytes
+        record = store.load(inventory[0])
+        store.accept_custody(record, _receipt(record.prepared))
+        assert store.reclaim(inventory[0])
+        assert store.usage.inventory_bytes == retained_bytes and store.usage.inventory_selected
+
+
+@pytest.mark.parametrize("invalid", ["duplicate", "omitted", "unknown"])
+def test_closing_never_omits_or_replaces_allocated_preparations(tmp_path, invalid):
+    from riverhog_client._prepared_primary_closing import freeze_inventory
+
+    inventory = tuple(_member(number) for number in range(1, 4))
+    with _open(tmp_path.resolve() / "state", initialize=True) as store:
+        for member in inventory:
+            store.prepare_or_load(member, REQUEST, lambda _limit, member=member: _author(member))
+        if invalid == "duplicate":
+            attempted = (inventory[0], inventory[0], inventory[2])
+        elif invalid == "omitted":
+            attempted = inventory[:-1]
+        else:
+            attempted = (inventory[0], inventory[1], _member(4))
+        with pytest.raises(PrimaryStateError):
+            freeze_inventory(store, attempted)
+        with pytest.raises(PrimaryStateError, match="closing allocation"):
+            store.prepare_or_load(_member(4), REQUEST, _no_author)
+        assert freeze_inventory(store, inventory).members == 3
+
+
+@pytest.mark.parametrize(
+    "boundary",
+    [
+        "closing-intent",
+        "candidate-inventory",
+        "inventory",
+        "closing-intent-ready",
+        "closing",
+        "candidate-usage",
+        "usage",
+    ],
+)
+def test_process_exit_during_inventory_freeze_never_omits_a_member_or_invents_finish_ready(
+    tmp_path, boundary
+):
+    from riverhog_client._prepared_primary_closing import advance_closing, freeze_inventory
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+    _crash(root, boundary, operation="freeze")
+    with _open(root) as store:
+        closing = freeze_inventory(store, (_member(),))
+        assert closing.members == 1 and store.usage.inventory_bytes == closing.inventory.bytes
+        assert not (root / "finish-ready").exists()
+
+        def settle(member):
+            store.accept_decision(store.load(member), b"exact decision")
+
+        assert advance_closing(store, limit=1, settle=settle)
+        assert store.load(_member()).custody is None
+
+
+@pytest.mark.parametrize("boundary", ["closing", "finish-ready"])
+def test_process_exit_after_final_decision_or_finish_barrier_resumes_without_reauthoring(
+    tmp_path, boundary
+):
+    from riverhog_client._prepared_primary_closing import advance_closing, freeze_inventory
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+        freeze_inventory(store, (_member(),))
+    _crash(root, boundary, operation="advance")
+    with _open(root) as store:
+        assert advance_closing(
+            store, limit=1, settle=lambda _member: pytest.fail("replayed decision")
+        )
+        assert store.load(_member()).decision_accepted is not None
+
+
+def test_empty_inventory_and_lost_selection_are_distinct_from_a_fresh_allocation(tmp_path):
+    from riverhog_client._prepared_primary_closing import advance_closing, freeze_inventory
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        assert freeze_inventory(store, ()).members == 0
+        assert store.usage.inventory_selected and store.usage.inventory_bytes == 0
+        assert advance_closing(store, limit=1, settle=_no_author)
+    (root / "closing").unlink()
+    with pytest.raises(PrimaryStateError, match="lost its closing control"):
+        _open(root)
+
+
+def test_corrupt_frozen_inventory_never_publishes_finish_ready(tmp_path):
+    from riverhog_client._prepared_primary_closing import advance_closing, freeze_inventory
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+        freeze_inventory(store, (_member(),))
+        raw = (root / "inventory").read_bytes()
+        value = json.loads(raw)
+        value["prepared_sha256"] = "f" * 64
+        (root / "inventory").write_bytes(
+            json.dumps(value, sort_keys=True, separators=(",", ":")).encode() + b"\n"
+        )
+        assert (root / "inventory").stat().st_size == len(raw)
+        with pytest.raises(PrimaryStateError, match="original preparation"):
+            advance_closing(store, limit=1, settle=_no_author)
+        assert not (root / "finish-ready").exists()
+
+
+def test_finish_barrier_checks_the_complete_frozen_chain_after_settling_every_member(tmp_path):
+    from riverhog_client._prepared_primary_closing import advance_closing, freeze_inventory
+
+    root = tmp_path.resolve() / "state"
+    with _open(root, initialize=True) as store:
+        store.prepare_or_load(_member(), REQUEST, lambda _limit: _author())
+        closing = freeze_inventory(store, (_member(),))
+        changed = closing.model_copy(
+            update={"inventory": closing.inventory.model_copy(update={"chain_sha256": "f" * 64})}
+        )
+        store._write(store._files, "closing", changed, replace=True)
+
+        def settle(member):
+            store.accept_decision(store.load(member), b"exact decision")
+
+        with pytest.raises(PrimaryStateError, match="frozen commitment"):
+            advance_closing(store, limit=1, settle=settle)
+        assert store.load(_member()).decision_accepted is not None
+        assert not (root / "finish-ready").exists()

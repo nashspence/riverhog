@@ -260,6 +260,19 @@ class PrimaryFiles:
         return value
 
     @contextmanager
+    def extent_reader(self, name: str, *, byte_count: int) -> Iterator[BinaryIO]:
+        """Stable extent only; the consuming owner must check its framed commitment."""
+        descriptor = self._open(name)
+        with os.fdopen(descriptor, "rb", buffering=8192) as stream:
+            before = os.fstat(stream.fileno())
+            if before.st_size != byte_count:
+                raise PrimaryStateError("prepared-primary extent differs from its committed length")
+            yield stream
+            if _stamp(before) != _stamp(os.fstat(stream.fileno())):
+                raise PrimaryStateError("prepared-primary extent changed during traversal")
+            self.check_current()
+
+    @contextmanager
     def verified(self, file: PrimaryByteFile) -> Iterator[BinaryIO]:
         """Verify all original bytes before exposing a replay reader; keep its inode open."""
         descriptor = self._open(file.name)

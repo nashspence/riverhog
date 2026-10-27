@@ -161,6 +161,13 @@ def test_durable_primary_replays_after_actual_http_stage_bind_and_decision_ackno
         publisher = PrimaryPublisher(api, store)
         accepted = publisher.replay(prepare(publisher, lazy))
         assert accepted.decision_accepted is not None
+        from riverhog_client._prepared_primary_closing import advance_closing, freeze_inventory
+
+        freeze_inventory(store, (member,))
+        assert advance_closing(
+            store, limit=1, settle=lambda _member: pytest.fail("settled decision replayed")
+        )
+        assert store.load(member).custody is None
         assert len(observations) == 1
         assert (
             api.get_collection_upload_session_artifact_provenance_binding(

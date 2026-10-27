@@ -22,6 +22,8 @@ from riverhog_client._prepared_primary_documents import (
     ByteFile,
     PreparedPrimary,
     PrimaryAllocation,
+    PrimaryClosing,
+    PrimaryClosingIntent,
     PrimaryCreating,
     PrimaryCustody,
     PrimaryDecisionAccepted,
@@ -41,7 +43,18 @@ from riverhog_client._prepared_primary_types import (
 
 _Control = TypeVar("_Control", bound=BaseModel)
 _BYTE_NAMES = ("request", "observation", "graph", "journal", "decision")
-_ROOT_NAMES = ("allocation", "usage", "transition", "create-request", "creating", "session")
+_ROOT_NAMES = (
+    "allocation",
+    "usage",
+    "transition",
+    "create-request",
+    "creating",
+    "session",
+    "closing-intent",
+    "closing",
+    "finish-ready",
+    "inventory",
+)
 _MEMBER_NAMES = (*_BYTE_NAMES, "prepared", "decision-accepted", "custody", "reclaimed")
 
 
@@ -82,7 +95,7 @@ class PrimaryStoreLimits:
 
     @property
     def root_reservation(self) -> int:
-        return 8 * self.control_bytes
+        return 12 * self.control_bytes
 
     @property
     def member_reservation(self) -> int:
@@ -133,6 +146,7 @@ class PrimaryStore:
         self.limits = limits
         self._mutex = threading.RLock()
         self._authoring = False
+        self._closing_advancing = False
         self._files = PrimaryFiles(root, initialize=initialize)
         try:
             expected = PrimaryAllocation.model_validate(
@@ -372,6 +386,11 @@ class PrimaryStore:
                 if existing.prepared.request.commitment() != _commit(request):
                     raise PrimaryStateError("prepared-primary retry inputs changed")
                 return existing
+            if (
+                self._optional(self._files, "closing-intent", PrimaryClosingIntent) is not None
+                or self._optional(self._files, "closing", PrimaryClosing) is not None
+            ):
+                raise PrimaryStateError("closing allocation cannot admit new preparation")
             grant = min(
                 self.limits.preparation_bytes,
                 self.limits.pending_bytes - self._usage.pending_bytes,
@@ -379,7 +398,8 @@ class PrimaryStore:
                 - self.limits.root_reservation
                 - self._usage.control_bytes
                 - self.limits.member_reservation
-                - self._usage.pending_bytes,
+                - self._usage.pending_bytes
+                - self._usage.inventory_bytes,
             )
             if grant <= 0 or grant < len(request):
                 raise PrimaryStateCapacity("prepared-primary allocation admission exhausted")
@@ -448,6 +468,8 @@ class PrimaryStore:
                 "sequence": str(self._usage.sequence + 1),
                 "pending_bytes": str(pending),
                 "control_bytes": str(controls),
+                "inventory_bytes": str(self._usage.inventory_bytes),
+                "inventory_selected": self._usage.inventory_selected,
                 "members": str(members),
             }
         )
@@ -463,6 +485,9 @@ class PrimaryStore:
         self._files.check_current()
         transition = self._optional(self._files, "transition", PrimaryTransition)
         if transition is None:
+            from riverhog_client._prepared_primary_closing import recover_closing
+
+            recover_closing(self)
             return
         if self._usage not in (transition.before, transition.after):
             raise PrimaryStateError(
@@ -504,6 +529,9 @@ class PrimaryStore:
                 )
                 selected = transition.after
         self._finish_transition(selected)
+        from riverhog_client._prepared_primary_closing import recover_closing
+
+        recover_closing(self)
 
     def _usage_from_preparation(
         self, before: PrimaryUsage, prepared: PreparedPrimary
@@ -515,6 +543,8 @@ class PrimaryStore:
                     before.pending_bytes + sum(file.bytes for file in prepared.byte_files)
                 ),
                 "control_bytes": str(before.control_bytes + self.limits.member_reservation),
+                "inventory_bytes": str(before.inventory_bytes),
+                "inventory_selected": before.inventory_selected,
                 "members": str(before.members + 1),
             }
         )
@@ -528,6 +558,8 @@ class PrimaryStore:
                 "sequence": str(before.sequence + 1),
                 "pending_bytes": str(pending),
                 "control_bytes": str(before.control_bytes),
+                "inventory_bytes": str(before.inventory_bytes),
+                "inventory_selected": before.inventory_selected,
                 "members": str(before.members),
             }
         )
