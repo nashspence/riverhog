@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.31.0"]
+requires = ["hatchling>=1.31.0", "setuptools==84.2.1; sys_platform == 'win32'"]
 build-backend = "hatchling.build"
 
 [project]
@@ -35,6 +35,15 @@ dependencies = ["release-documentation-lib>=0.1,<0.2",
   "SQLAlchemy>=2.0,<3.0",
 ]
 
+[tool.uv]
+cache-keys = [
+  { file = "pyproject.toml" },
+  { file = "hatch_build.py" },
+  { file = "native/*.c" },
+  { file = "native/*.h" },
+  { dir = "src" },
+]
+
 [tool.uv.sources]
 release-documentation-lib = { workspace = true }
 riverhog-archive-contracts = { workspace = true }
@@ -53,3 +62,10 @@ modules = ["riverhog_client", "riverhog_client.processing"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/riverhog_client"]
+
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+native-platforms = ["win32"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "native", "hatch_build.py", "pyproject.toml", "LICENSE"]

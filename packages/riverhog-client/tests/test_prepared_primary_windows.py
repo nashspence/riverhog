@@ -45,7 +45,7 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
     raw = report.read_text() if report.is_file() else ""
     evidence = json.loads(raw) if raw else {"missing_report": True, "exit_code": code}
     assert code == 0, evidence
-    assert evidence["passed"] == 153 and evidence["elevated"] is False, evidence
+    assert evidence["passed"] == 155 and evidence["elevated"] is False, evidence
     assert evidence["vfs"] == "win32"
     assert evidence["vfs_faults"]["runtime"]["base_vfs"] == "win32"
     assert len(evidence["vfs_faults"]["faults"]) == 8
@@ -108,6 +108,28 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
     assert database_quota["explicit_rollback_calls"] == 0
     journal_quota = next(case for case in quota_cases if case["refusal"] == "journal")
     assert journal_quota["quota"]["forward"]["database_pages_attempted"] == 0
+    compiled = evidence["compiled_write_quota"]
+    assert compiled["runtime"]["base_vfs"] == "win32"
+    assert compiled["compiled_bank"]["compiler"].startswith("MSVC ")
+    assert len(compiled["compiled_bank"]["module_sha256"]) == 64
+    assert compiled["compiled_bank"]["storage_callbacks_native"] is False
+    assert len(compiled["cases"]) == 2
+    for case in compiled["cases"]:
+        assert case["bank_implementation"] == "compiled-native"
+        assert case["tracking_bytes"] > 0
+        assert case["quota"]["refusals"] == 1
+        assert case["original_control_exact"] and case["original_payload_exact"]
+        assert case["survivor_control_exact"] and case["capacity_retained"]
+        assert case["larger_grant_retry_coldly_verified"]
+        assert not case["production_resource_gate_certified"]
+        assert not case["all_allocating_file_methods_covered"]
+        assert not case["initialization_quota_covered"]
+        if case["refusal"] == "database":
+            assert case["quota"]["forward"]["database_pages_attempted"] == 2
+            assert case["automatic_rollback_pages_before_driver_error"] > 2
+            assert case["explicit_rollback_calls"] == 0
+        else:
+            assert case["quota"]["forward"]["database_pages_attempted"] == 0
     assert len(evidence["space"]["cycles"]) == 3
     assert len(evidence["resource_recovery"]) == 16
     assert all(

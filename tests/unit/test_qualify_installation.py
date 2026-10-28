@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import sys
+import zipfile
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -967,3 +968,78 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
     events = trace.stop()
 
     assert events == ()
+
+
+@pytest.mark.parametrize(
+    "invalid", [None, "compiler", "digest", "tracking", "callbacks", "recovery"]
+)
+def test_installed_native_bank_requires_isolation_and_complete_positive_evidence(
+    tmp_path, monkeypatch, invalid
+):
+    module = load_script()
+    proof = {
+        "compiler": "MSVC 194433519",
+        "module_sha256": "a" * 64,
+        "tracking_bytes": 240,
+        "forward_pages": 2,
+        "recovery_pages": 3,
+        "refusals": 1,
+        "storage_callbacks_native": False,
+    }
+    if invalid == "compiler":
+        proof["compiler"] = "unknown"
+    elif invalid == "digest":
+        proof["module_sha256"] = "invalid"
+    elif invalid == "tracking":
+        proof["tracking_bytes"] = 0
+    elif invalid == "callbacks":
+        proof["storage_callbacks_native"] = True
+    elif invalid == "recovery":
+        proof["recovery_pages"] = 2
+
+    def execute(command, **options):
+        assert command[:3] == [str(tmp_path / "python"), "-I", "-c"]
+        assert options == {"cwd": tmp_path, "env": {}, "capture": True}
+        return subprocess.CompletedProcess(command, 0, json.dumps(proof), "")
+
+    monkeypatch.setattr(module, "_run", execute)
+    if invalid is None:
+        assert (
+            module._installed_client_write_bank(
+                tmp_path / "python", scratch=tmp_path, environment={}
+            )
+            == proof
+        )
+    else:
+        with pytest.raises(module.QualificationError, match="write-bank proof"):
+            module._installed_client_write_bank(
+                tmp_path / "python", scratch=tmp_path, environment={}
+            )
+
+
+@pytest.mark.parametrize(
+    "members",
+    [
+        ["riverhog_client/_prepared_primary_native.cp312-win_amd64.pyd"],
+        [],
+        ["riverhog_client/_prepared_primary_native.pyi"],
+        ["other_package/_prepared_primary_native.pyd"],
+        [
+            "riverhog_client/_prepared_primary_native.cp312-win_amd64.pyd",
+            "riverhog_client/_prepared_primary_native.cp313-win_amd64.pyd",
+        ],
+    ],
+)
+def test_native_wheel_missing_or_ambiguous_module_fails_before_expensive_lifecycles(
+    tmp_path, members
+):
+    module = load_script()
+    wheel = tmp_path / "riverhog_client-1.0.0-cp312-cp312-win_amd64.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        for name in members:
+            archive.writestr(name, b"compiled-module-subject")
+    if len(members) == 1 and members[0].endswith("cp312-win_amd64.pyd"):
+        module._require_client_native_module(wheel)
+    else:
+        with pytest.raises(module.QualificationError, match="unique native"):
+            module._require_client_native_module(wheel)

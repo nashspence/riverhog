@@ -428,3 +428,71 @@ def test_locked_uv_installs_the_selected_platform_subject(
         f"IDENTITY = {platform!r}\nBUILD = {expected_build}\n"
     )
     assert f"Tag: {TAGS[platform]}\n" in (target / "sample_lib-0.1.0.dist-info/WHEEL").read_text()
+
+
+@pytest.mark.parametrize("platform", TAGS)
+def test_host_projection_requires_its_wheel_and_cannot_pass_full_release_verification(
+    tmp_path, subjects, platform
+):
+    projects, records = subjects
+    records = [
+        item
+        for item in records
+        if item["distribution"] != "riverhog-client"
+        or item["name"].endswith(f"-{TAGS[platform]}.whl")
+    ]
+    manifest, _ = installation.build_installation_artifacts(
+        ROOT,
+        tmp_path,
+        projects,
+        records,
+        version="0.1.0",
+        source_sha="1" * 40,
+        source_epoch=1234567890,
+        repository="nashspence/riverhog",
+        simple_index_path="artifacts/v{version}/simple/",
+        platforms=(platform,),
+    )
+    assert manifest["platforms"] == [platform]
+    assert set(manifest["qualification"]["gogurt_providers"]["platforms"]) == {platform}
+    for component in manifest["components"]:
+        for field in ["commands", "first_party_closure", "platform_requirements"]:
+            assert set(component[field]) == {platform}
+    installation.verify_installation_artifacts(tmp_path, manifest, platforms=(platform,))
+    with pytest.raises(installation.InstallationError, match="platform support"):
+        installation.verify_installation_artifacts(tmp_path, manifest)
+
+
+@pytest.mark.parametrize("platforms", [(), ("unknown",), ("windows-x64", "windows-x64")])
+def test_invalid_platform_projection_is_rejected_before_output(tmp_path, subjects, platforms):
+    projects, records = subjects
+    with pytest.raises(installation.InstallationError, match="platform selection"):
+        installation.build_installation_artifacts(
+            ROOT,
+            tmp_path / "output",
+            projects,
+            records,
+            version="0.1.0",
+            source_sha="1" * 40,
+            source_epoch=0,
+            repository="nashspence/riverhog",
+            simple_index_path="artifacts/v{version}/simple/",
+            platforms=platforms,
+        )
+    assert not (tmp_path / "output").exists()
+
+
+def test_native_build_profile_cannot_publish_a_universal_only_fallback(tmp_path, subjects):
+    projects, records = subjects
+    records = [item for item in records if item["distribution"] != "riverhog-client"]
+    records.append(
+        {
+            "kind": "wheel",
+            "distribution": "riverhog-client",
+            "name": "python/riverhog_client-0.1.0-py3-none-any.whl",
+            "sha256": "a" * 64,
+            "size": 10,
+        }
+    )
+    with pytest.raises(installation.InstallationError, match="native build requires"):
+        _build(tmp_path, projects, records)

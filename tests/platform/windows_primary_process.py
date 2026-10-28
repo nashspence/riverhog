@@ -526,22 +526,32 @@ def _fixed_barrier_witness(parent: Path):
     return {"runtime": identity, "cases": reports}
 
 
-def _write_quota_witness(parent: Path):
+def _write_quota_witness(parent: Path, *, compiled=False):
     from tests.support.prepared_primary_write_quota import witness as quota_witness
     from tests.support.sqlite_vfs_faults import FaultVfs
 
     reports = []
     with FaultVfs.windows() as shim:
         for refusal in ("database", "journal"):
-            allocation = ALLOCATION + b"/write-quota/" + refusal.encode("ascii")
+            flavor = b"compiled/" if compiled else b""
+            allocation = ALLOCATION + b"/write-quota/" + flavor + refusal.encode("ascii")
             path = windows_container_path(parent, allocation)
 
             def opened(*, initialize, path=path, allocation=allocation):
                 return _vfs_files(shim, path, allocation, initialize=initialize)
 
-            reports.append(quota_witness(opened, shim, refusal))
+            reports.append(quota_witness(opened, shim, refusal, compiled=compiled))
         identity = shim.identity
-    return {"runtime": identity, "cases": reports}
+    result = {"runtime": identity, "cases": reports}
+    if compiled:
+        from riverhog_client import _prepared_primary_native as native
+
+        result["compiled_bank"] = {
+            "compiler": native.compiler,
+            "module_sha256": hashlib.sha256(Path(native.__file__).read_bytes()).hexdigest(),
+            "storage_callbacks_native": False,
+        }
+    return result
 
 
 def _vfs_fault_witness(parent: Path):
@@ -971,6 +981,8 @@ def witness(root: Path) -> dict:
     cases.extend("fixed-barrier-" + str(index) for index in range(len(fixed_barrier["cases"])))
     write_quota = _write_quota_witness(parent)
     cases.extend("write-quota-" + case["refusal"] for case in write_quota["cases"])
+    compiled_quota = _write_quota_witness(parent, compiled=True)
+    cases.extend("compiled-quota-" + case["refusal"] for case in compiled_quota["cases"])
     resource_recovery = _shared_resource_recovery_witness(parent)
     cases.extend(
         f"shared-resource-{case['role']}-{case['phase']}-{int(case['commit_executed'])}"
@@ -1015,6 +1027,7 @@ def witness(root: Path) -> dict:
         "vfs": "win32",
         "vfs_faults": vfs_faults,
         "write_quota": write_quota,
+        "compiled_write_quota": compiled_quota,
         "fixed_barrier": fixed_barrier,
         "space": space,
         "controls": controls,

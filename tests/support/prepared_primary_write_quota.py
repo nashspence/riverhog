@@ -39,7 +39,7 @@ class _ObservedConnection:
         return self.connection.rollback()
 
 
-def witness(opened, shim, refusal):
+def witness(opened, shim, refusal, *, compiled=False):
     assert refusal in ("database", "journal")
     original_control = b"a" * CAPACITY
     changed_control = b"b" * CAPACITY
@@ -67,7 +67,7 @@ def witness(opened, shim, refusal):
             4 * (limits.database_bytes + limits.journal_bytes),
             65536,
         )
-        with shim.write_quota(forward=forward, recovery=recovery) as quota:
+        with shim.write_quota(forward=forward, recovery=recovery, compiled=compiled) as quota:
             observed = _ObservedConnection(files._connection, quota)
             files._connection = observed
             try:
@@ -111,7 +111,7 @@ def witness(opened, shim, refusal):
         4 * (limits.database_bytes + limits.journal_bytes),
         65536,
     )
-    with shim.write_quota(forward=cold, recovery=recovery):
+    with shim.write_quota(forward=cold, recovery=recovery, compiled=compiled):
         with opened(initialize=False) as files:
             assert files.read_control("changing", byte_limit=CAPACITY) == original_control
             assert files.read_control("survivor", byte_limit=CAPACITY) == survivor_control
@@ -123,7 +123,7 @@ def witness(opened, shim, refusal):
             files.put_control(
                 "changing", changed_control, expected=original_control, byte_limit=CAPACITY
             )
-    with shim.write_quota(forward=cold, recovery=recovery):
+    with shim.write_quota(forward=cold, recovery=recovery, compiled=compiled):
         with opened(initialize=False) as files:
             assert files.read_control("changing", byte_limit=CAPACITY) == changed_control
             assert files.read_control("survivor", byte_limit=CAPACITY) == survivor_control
@@ -131,6 +131,8 @@ def witness(opened, shim, refusal):
                 assert stream.read() == payload
     return {
         "refusal": refusal,
+        "bank_implementation": "compiled-native" if compiled else "python-fixture",
+        "tracking_bytes": quota.tracking_bytes if compiled else None,
         "quota": report,
         "automatic_rollback_pages_before_driver_error": automatic,
         "explicit_rollback_calls": observed.explicit_rollbacks,

@@ -848,6 +848,62 @@ def validate_wheel_inventory(wheels: dict[str, Any], *, version: str) -> None:
             seen.add(asset)
 
 
+def _require_native_wheels(
+    root: Path,
+    projects: Sequence[ProjectLike],
+    wheels: dict[str, list[dict[str, Any]]],
+    platforms: tuple[str, ...],
+    version: str,
+) -> None:
+    native_platforms = {"linux": "linux-x64", "darwin": "macos-arm64", "win32": "windows-x64"}
+    for project in projects:
+        config = tomllib.loads((root / project.path / "pyproject.toml").read_text(encoding="utf-8"))
+        declared = (
+            config.get("tool", {})
+            .get("hatch", {})
+            .get("build", {})
+            .get("targets", {})
+            .get("wheel", {})
+            .get("hooks", {})
+            .get("custom", {})
+            .get("native-platforms", [])
+        )
+        if (
+            not isinstance(declared, list)
+            or any(
+                not isinstance(value, str) or value not in native_platforms for value in declared
+            )
+            or len(declared) != len(set(declared))
+        ):
+            raise InstallationError("native wheel build platform declaration is invalid")
+        for target in declared:
+            platform = native_platforms[target]
+            if platform not in platforms:
+                continue
+            package = {
+                "name": project.name,
+                "version": version,
+                "wheels": [{"url": item["asset"]} for item in wheels[project.name]],
+            }
+            selected = _select_platform_wheel(package, platform)
+            _name, _version, _build, tags = parse_wheel_filename(str(selected["url"]))
+            if all(tag.platform == "any" for tag in tags):
+                raise InstallationError(
+                    f"native build requires a platform wheel: {project.name} {platform}"
+                )
+
+
+def _selected_platforms(platforms: Sequence[str]) -> tuple[str, ...]:
+    selected = tuple(platforms)
+    if (
+        not selected
+        or len(selected) != len(set(selected))
+        or not set(selected) <= set(SUPPORTED_PLATFORMS)
+    ):
+        raise InstallationError("installation platform selection is invalid")
+    return tuple(platform for platform in SUPPORTED_PLATFORMS if platform in selected)
+
+
 def build_installation_artifacts(
     root: Path,
     output: Path,
@@ -861,9 +917,11 @@ def build_installation_artifacts(
     simple_index_path: str,
     asset_base_url: str | None = None,
     index_base_url: str | None = None,
+    platforms: Sequence[str] = SUPPORTED_PLATFORMS,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """Write locks, index snapshot, and manifest; return manifest and evidence subjects."""
 
+    selected_platforms = _selected_platforms(platforms)
     roots = installation_roots(projects)
     graph = project_dependency_graph(root, projects)
     project_by_name = {project.name: project for project in projects}
@@ -894,14 +952,20 @@ def build_installation_artifacts(
         values.sort(key=lambda wheel: wheel["asset"])
     validate_wheel_inventory(wheels, version=version)
     root_platform_closures = {
-        item.name: platform_dependency_closures(
-            graph,
-            item.name,
-            python_version=tools["python"],
-        )
+        item.name: {
+            platform: closure
+            for platform, closure in platform_dependency_closures(
+                graph, item.name, python_version=tools["python"]
+            ).items()
+            if platform in selected_platforms
+        }
         for item in roots
     }
-    gogurt_qualification = gogurt_providers_qualification(root, projects)
+    gogurt_qualification = {
+        platform: selection
+        for platform, selection in gogurt_providers_qualification(root, projects).items()
+        if platform in selected_platforms
+    }
     gogurt_qualification_closures = {
         platform: set().union(
             *(
@@ -928,6 +992,7 @@ def build_installation_artifacts(
     index_names = required_names | set().union(*gogurt_qualification_closures.values())
     if set(wheels) != set(project_by_name):
         raise InstallationError("release wheel records differ from the coordinated project graph")
+    _require_native_wheels(root, projects, wheels, selected_platforms, version)
 
     installation_dir = output / "installation"
     installation_dir.mkdir(parents=True, exist_ok=True)
@@ -968,10 +1033,10 @@ def build_installation_artifacts(
                 platform=platform,
                 python_version=tools["python"],
             )
-            for platform in SUPPORTED_PLATFORMS
+            for platform in selected_platforms
         }
         commands = {
-            "linux-x64": _posix_commands(
+            platform: (_windows_commands if platform == "windows-x64" else _posix_commands)(
                 package=project.name,
                 version=version,
                 lock_name=lock_name,
@@ -980,36 +1045,11 @@ def build_installation_artifacts(
                 python=tools["python"],
                 requirements=[
                     item["requirement"]
-                    for item in platform_requirements["linux-x64"]
+                    for item in platform_requirements[platform]
                     if item["name"] != project.name
                 ],
-            ),
-            "macos-arm64": _posix_commands(
-                package=project.name,
-                version=version,
-                lock_name=lock_name,
-                lock_url=lock_url,
-                index_url=index_url,
-                python=tools["python"],
-                requirements=[
-                    item["requirement"]
-                    for item in platform_requirements["macos-arm64"]
-                    if item["name"] != project.name
-                ],
-            ),
-            "windows-x64": _windows_commands(
-                package=project.name,
-                version=version,
-                lock_name=lock_name,
-                lock_url=lock_url,
-                index_url=index_url,
-                python=tools["python"],
-                requirements=[
-                    item["requirement"]
-                    for item in platform_requirements["windows-x64"]
-                    if item["name"] != project.name
-                ],
-            ),
+            )
+            for platform in selected_platforms
         }
         component_items.append(
             {
@@ -1120,7 +1160,7 @@ def build_installation_artifacts(
         "method": "uv-tool",
         "lock_enforcement": "direct-hashed-wheels-with-pep751-sync-verification",
         "wheel_only": True,
-        "platforms": list(SUPPORTED_PLATFORMS),
+        "platforms": list(selected_platforms),
         "toolchain": {
             "uv": tools["uv"],
             "python": tools["python"],
@@ -1147,7 +1187,7 @@ def build_installation_artifacts(
                             for name in sorted(gogurt_qualification_closures[platform])
                         ],
                     }
-                    for platform in SUPPORTED_PLATFORMS
+                    for platform in selected_platforms
                 },
             }
         },
@@ -1219,12 +1259,18 @@ def _render_listener_reference(contract: dict[str, object], *, version: str) -> 
     )
 
 
-def verify_installation_artifacts(output: Path, manifest: dict[str, Any]) -> None:
+def verify_installation_artifacts(
+    output: Path,
+    manifest: dict[str, Any],
+    *,
+    platforms: Sequence[str] = SUPPORTED_PLATFORMS,
+) -> None:
     """Verify positive parity between the manifest and every generated artifact."""
 
+    selected_platforms = _selected_platforms(platforms)
     if manifest.get("format") != INSTALLATION_FORMAT:
         raise InstallationError("install manifest uses another format")
-    if tuple(manifest.get("platforms", [])) != SUPPORTED_PLATFORMS:
+    if tuple(manifest.get("platforms", [])) != selected_platforms:
         raise InstallationError("install manifest platform support differs from v1")
     components = manifest.get("components")
     if not isinstance(components, list):
@@ -1239,9 +1285,9 @@ def verify_installation_artifacts(output: Path, manifest: dict[str, Any]) -> Non
     qualification_platforms = qualification.get("platforms", {})
     if qualification.get("purpose") != GOGURT_PROVIDERS_PURPOSE or set(
         qualification_platforms
-    ) != set(SUPPORTED_PLATFORMS):
+    ) != set(selected_platforms):
         raise InstallationError("Gogurt provider qualification differs from release policy")
-    for platform in SUPPORTED_PLATFORMS:
+    for platform in selected_platforms:
         reference = qualification_platforms[platform]
         expected_reference_fields = {
             "listener_host_distribution",
@@ -1274,6 +1320,9 @@ def verify_installation_artifacts(output: Path, manifest: dict[str, Any]) -> Non
         ):
             raise InstallationError(f"Gogurt provider closure is invalid: {platform}")
     for component in components:
+        for field in ("commands", "first_party_closure", "platform_requirements"):
+            if set(component[field]) != set(selected_platforms):
+                raise InstallationError("component platform projection differs from selection")
         lock = component["lock"]
         path = output / str(lock["path"])
         if not path.is_file() or sha256_file(path) != lock["sha256"]:
@@ -1292,7 +1341,7 @@ def verify_installation_artifacts(output: Path, manifest: dict[str, Any]) -> Non
         }
         if locked != expected:
             raise InstallationError(f"component lock inventory differs: {component['root']}")
-        for platform in SUPPORTED_PLATFORMS:
+        for platform in selected_platforms:
             commands = component["commands"].get(platform)
             if not isinstance(commands, list) or len(commands) != 5:
                 raise InstallationError(f"component commands are incomplete: {component['root']}")

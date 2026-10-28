@@ -22,6 +22,7 @@ import threading
 import time
 import urllib.parse
 import xml.etree.ElementTree as ET
+import zipfile
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -394,6 +395,20 @@ def _build_distributions(checkout: Path, projects: list[release.Project]) -> Non
         )
 
 
+def _require_client_native_module(wheel: Path) -> None:
+    with zipfile.ZipFile(wheel) as archive:
+        modules = [
+            name
+            for name in archive.namelist()
+            if name.startswith("riverhog_client/_prepared_primary_native.")
+            and name.endswith(".pyd")
+        ]
+    if len(modules) != 1:
+        raise QualificationError(
+            "staged Windows client wheel has no unique native write-bank module"
+        )
+
+
 def _stage_artifacts(
     root: Path,
     scratch: Path,
@@ -409,11 +424,14 @@ def _stage_artifacts(
     projects = release.validate_release_contract(checkout, expected_version=version)
     _build_distributions(checkout, projects)
     wheel_records = _wheel_records(checkout, projects, version)
+    platform = _installation_platform()
 
     web_root = scratch / "web"
     assets = web_root / "assets"
     assets.mkdir(parents=True)
     for wheel in (checkout / "dist").glob("*.whl"):
+        if platform == "windows-x64" and wheel.name.startswith("riverhog_client-"):
+            _require_client_native_module(wheel)
         shutil.copy2(wheel, assets / wheel.name)
 
     output = scratch / "installation"
@@ -436,12 +454,13 @@ def _stage_artifacts(
         source_epoch=source_epoch,
         repository=str(config["governance"]["repository"]),
         simple_index_path=str(config["installation"]["simple_index_path"]),
+        platforms=(platform,),
         asset_base_url=base_url + "/assets/",
         index_base_url=base_url
         + "/"
         + str(config["installation"]["simple_index_path"]).format(version=version),
     )
-    installation.verify_installation_artifacts(output, manifest)
+    installation.verify_installation_artifacts(output, manifest, platforms=(platform,))
     for lock in (output / "installation").glob("pylock.*.toml"):
         shutil.copy2(lock, assets / lock.name)
     snapshot = output / str(manifest["index"]["snapshot_path"])
@@ -1882,6 +1901,50 @@ def _install_command(component: dict[str, Any], manifest: dict[str, Any]) -> lis
     return command
 
 
+def _installed_client_write_bank(
+    python: Path, *, scratch: Path, environment: dict[str, str]
+) -> dict[str, Any]:
+    code = """import hashlib,json
+from pathlib import Path
+from riverhog_client import _prepared_primary_native as native
+limits=(4096,2,32768,32768,65536,32)
+recovery=(4096,8,32768,32768,65536,32)
+quota=native.WriteQuota(limits,recovery)
+assert quota.admit("database",8192,0)
+assert not quota.admit("database",4096,8192)
+assert quota.recovering
+assert quota.admit("database",12288,0)
+report=quota.report()
+assert report["forward"]["database_pages_attempted"]==2
+assert report["recovery"]["database_pages_attempted"]==3
+assert report["refusals"]==1
+assert report["first_refusal"]["reason"]=="database page grant"
+module=Path(native.__file__)
+assert module.suffix.lower()==".pyd"
+assert native.compiler.startswith("MSVC ")
+print(json.dumps({"compiler":native.compiler,
+    "module_sha256":hashlib.sha256(module.read_bytes()).hexdigest(),
+    "tracking_bytes":quota.tracking_bytes,
+    "forward_pages":2,"recovery_pages":3,"refusals":1,
+    "storage_callbacks_native":False}))
+"""
+    result = _run([str(python), "-I", "-c", code], cwd=scratch, env=environment, capture=True)
+    proof = json.loads(result.stdout)
+    if (
+        not isinstance(proof, dict)
+        or proof.get("forward_pages") != 2
+        or proof.get("recovery_pages") != 3
+        or proof.get("refusals") != 1
+        or not isinstance(proof.get("tracking_bytes"), int)
+        or proof["tracking_bytes"] <= 0
+        or re.fullmatch(r"[0-9a-f]{64}", str(proof.get("module_sha256", ""))) is None
+        or not str(proof.get("compiler", "")).startswith("MSVC ")
+        or proof.get("storage_callbacks_native") is not False
+    ):
+        raise QualificationError("installed native client write-bank proof is invalid")
+    return proof
+
+
 def _qualify_component(
     component: dict[str, Any],
     manifest: dict[str, Any],
@@ -1921,6 +1984,11 @@ def _qualify_component(
     }
     if actual_first_party != expected_first_party:
         raise QualificationError(f"{root} installed another first-party closure")
+    native_write_bank = None
+    if platform == "windows-x64" and "riverhog-client" in expected_first_party:
+        native_write_bank = _installed_client_write_bank(
+            python, scratch=scratch, environment=environment
+        )
     locked = {str(item["name"]): str(item["version"]) for item in component["resolved_packages"]}
     if any(locked.get(name) != version for name, version in inventory.items()):
         raise QualificationError(f"{root} installed a version outside its PEP 751 lock")
@@ -2071,6 +2139,7 @@ def _qualify_component(
         "reinstall": "passed",
         "uninstall": "passed",
         "wheel_only": True,
+        "native_client_write_bank": native_write_bank,
     }
 
 

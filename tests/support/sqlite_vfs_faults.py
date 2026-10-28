@@ -385,10 +385,17 @@ class FaultVfs:
             self._transaction_writes = None
 
     @contextmanager
-    def write_quota(self, *, forward, recovery):
+    def write_quota(self, *, forward, recovery, compiled=False):
         if self._write_quota is not None:
             raise RuntimeError("write quotas must not overlap")
-        quota = WriteQuota(WriteBank(forward), WriteBank(recovery))
+        if compiled:
+            from dataclasses import astuple
+
+            from riverhog_client._prepared_primary_native import WriteQuota as NativeWriteQuota
+
+            quota = NativeWriteQuota(astuple(forward), astuple(recovery))
+        else:
+            quota = WriteQuota(WriteBank(forward), WriteBank(recovery))
         self._write_quota = quota
         try:
             yield quota
