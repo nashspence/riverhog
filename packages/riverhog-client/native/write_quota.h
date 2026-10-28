@@ -81,6 +81,20 @@ enum rh_refusal rh_native_work_admit(rh_native_work_quota *, rh_quota *, rh_retr
 enum rh_refusal rh_native_work_acquire(
     rh_native_work_quota *, rh_quota *, rh_retry_cost, rh_retry_cost, rh_native_close_credit *);
 int rh_native_close_consume(rh_native_close_credit *);
+enum rh_native_operation {
+    RH_OP_READ, RH_OP_WRITE, RH_OP_TRUNCATE, RH_OP_SYNC, RH_OP_SIZE,
+    RH_OP_LOCK, RH_OP_UNLOCK, RH_OP_RESERVED, RH_OP_CONTROL, RH_OP_SCALAR,
+    RH_OP_OPEN_DATABASE, RH_OP_OPEN_JOURNAL_PINNED, RH_OP_OPEN_JOURNAL_NEW,
+    RH_OP_DELETE_JOURNAL, RH_OP_ACCESS, RH_OP_FULLPATH,
+    RH_OP_BIND_DATABASE, RH_OP_BIND_JOURNAL, RH_OP_CLOSE, RH_OP_PIN_CLOSE
+};
+/* SQLite 3.45.1 desktop NT, no mmap/chunk expansion/delete-on-close:
+ * acquisition recipes exclude their independently prepaid close. Read/write
+ * include a conservative optional seek. Conversion, formatting, time/random
+ * APIs and caller buffers are outside this filesystem-attempt family.
+ */
+int rh_native_filesystem_cost(enum rh_native_operation, int64_t, int64_t, int64_t, rh_retry_cost *);
+
 
 void rh_forbid_retry(rh_quota *);
 void rh_forbid_control(rh_quota *, enum rh_file);

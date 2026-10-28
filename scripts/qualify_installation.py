@@ -1935,6 +1935,13 @@ assert sleep_calls.admit_sleep(1)
 sleep_report=sleep_calls.report()
 sleep_refused=sleep_writes.report()["first_refusal"]["reason"]=="VFS sleep grant"
 assert sleep_refused and not sleep_report["pending_error"]
+for method,amount,expected in (
+    ("read",7,(4,9000)),("write",7,(10,9000)),
+    ("open_database",0,(24,63000)),("open_journal_pinned",0,(30,63000)),
+    ("open_journal_new",0,(32,63000)),("bind_journal",0,(10,0)),
+    ("close",0,(3,200000)),("pin_close",0,(1,0)),
+):
+    assert native.filesystem_cost(method,(2,3),amount)==expected
 work_writes=native.WriteQuota(sleep_limits,sleep_limits)
 work=native.NativeWorkQuota(work_writes,(4,200000),(4,200000))
 credit=work.acquire((1,0),(3,200000))
@@ -2056,6 +2063,7 @@ print(json.dumps({"compiler":native.compiler,
     "native_work_bank_recovery_sleep_microseconds":
         work_report["recovery"]["internal_sleep_microseconds_charged"],
     "native_work_bank_refusal_verified":work_refused,
+    "native_filesystem_recipes_verified":True,
     "native_close_credit_detached_verified":not credit.report()["pending"],
     "vfs_binding_verified":True,
     "vfs_original_exact":True,"sqlite_source_id":source_id,
@@ -2108,6 +2116,7 @@ print(json.dumps({"compiler":native.compiler,
         or type(proof.get("native_work_bank_recovery_sleep_microseconds")) is not int
         or proof["native_work_bank_recovery_sleep_microseconds"] != 200000
         or proof.get("native_work_bank_refusal_verified") is not True
+        or proof.get("native_filesystem_recipes_verified") is not True
         or proof.get("native_close_credit_detached_verified") is not True
         or type(proof.get("sqlite_heap_limit_bytes")) is not int
         or proof.get("sqlite_heap_limit_bytes") != 67108864

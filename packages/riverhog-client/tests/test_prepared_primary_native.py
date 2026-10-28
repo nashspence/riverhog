@@ -1031,3 +1031,144 @@ def test_native_work_prefixes_match_independent_whole_cost_and_close_models(seed
             assert (report["first_refusal"]["reason"], report["first_refusal"]["bank"]) == first
     for credit in credits:
         credit.consume()
+
+
+@pytest.mark.parametrize("profile", [(1, 1), (2, 3), (10, 25), (46340, 1), (1, 1073741823)])
+@pytest.mark.parametrize(
+    "method,amount,calls,nominal",
+    [
+        ("read", 7, "read", "retry"),
+        ("write", 7, "write", "retry"),
+        ("truncate", 0, 2, 0),
+        ("sync", 0, 1, 0),
+        ("size", 0, 1, 0),
+        ("lock", 0, 6, 2000),
+        ("unlock", 0, 4, 0),
+        ("reserved", 0, 2, 0),
+        ("control", 0, 3, 0),
+        ("scalar", 0, 0, 0),
+        ("open_database", 0, "database", "open"),
+        ("open_journal_pinned", 0, "pinned", "open"),
+        ("open_journal_new", 0, "new", "open"),
+        ("delete_journal", 0, "delete", "retry"),
+        ("access", 0, "access", "retry"),
+        ("fullpath", 0, 2, 0),
+        ("bind_database", 0, 7, 0),
+        ("bind_journal", 0, 10, 0),
+        ("close", 0, 3, 200000),
+        ("pin_close", 0, 1, 0),
+    ],
+)
+def test_native_filesystem_recipes_cover_qualified_method_families(
+    profile, method, amount, calls, nominal
+):
+    count, delay = profile
+    base_open = (count + 1) * (count + 5)
+    expected_calls = {
+        "read": count + 2,
+        "write": amount + count + 1,
+        "database": base_open + 3,
+        "pinned": base_open + 9,
+        "new": base_open + 11,
+        "delete": 2 * (count + 1) + 3,
+        "access": count + 1,
+    }.get(calls, calls)
+    wait = delay * count * (count + 1) // 2 * 1000
+    expected_wait = {"retry": wait, "open": wait * (count + 5)}.get(nominal, nominal)
+    assert native.filesystem_cost(method, profile, amount) == (expected_calls, expected_wait)
+
+
+@pytest.mark.parametrize("method", ["read", "write"])
+@pytest.mark.parametrize("amount", [0, -1, 2**31, True, 1.0, "1", 2**63, -(2**63) - 1])
+def test_native_filesystem_transfer_recipes_require_positive_native_int_amounts(method, amount):
+    with pytest.raises((TypeError, ValueError, OverflowError)):
+        native.filesystem_cost(method, (2, 3), amount)
+
+
+@pytest.mark.parametrize("method", ["close", "open_database", "bind_journal", "scalar"])
+@pytest.mark.parametrize("amount", [-1, 1, 2**63 - 1])
+def test_native_filesystem_nontransfer_recipes_refuse_unused_byte_operands(method, amount):
+    with pytest.raises(ValueError):
+        native.filesystem_cost(method, (2, 3), amount)
+
+
+@pytest.mark.parametrize("method", [True, b"read", None, "", "read\0extra", "other"])
+def test_native_filesystem_recipe_method_is_exact_and_known(method):
+    with pytest.raises((TypeError, ValueError)):
+        native.filesystem_cost(method, (2, 3), 1)
+
+
+@pytest.mark.parametrize(
+    "profile", [(0, 1), (1, 0), (-1, 1), (2, 2**31), (46341, 1), (2, True), [2, 3]]
+)
+def test_native_filesystem_recipe_requires_a_qualified_safe_profile(profile):
+    with pytest.raises((TypeError, ValueError, OverflowError)):
+        native.filesystem_cost("close", profile)
+
+
+def test_native_filesystem_recipes_match_independent_retry_and_wrapper_composition():
+    rng = random.Random(19171028)
+    for _ in range(512):
+        count, delay = rng.randrange(1, 25), rng.randrange(1, 101)
+        profile = (count, delay)
+        # Compose source loops, rather than using the compiled polynomial.
+        attempts = list(range(count + 1))
+        sleeps = [delay * index * 1000 for index in range(1, count + 1)]
+        directories = sum(1 for _mode in ("rw", "ro") for _attempt in attempts)
+        creates = sum(1 for _mode in ("rw", "ro") for _attempt in attempts)
+        nested_access = sum(1 for _outer in attempts for _inner in attempts)
+        open_waits = (
+            sum(sleeps) * 2  # both directory loops
+            + sum(sleeps) * 2  # RW and fallback RO CreateFile loops
+            + sum(sum(sleeps) for _outer in attempts)
+        )
+        metadata = {
+            "open_database": ["information", "standard", "final_path"],
+            "open_journal_pinned": [
+                "pre_information",
+                "pre_standard",
+                "pre_final_path",
+                "information",
+                "standard",
+                "final_path",
+                "post_information",
+                "post_standard",
+                "post_final_path",
+            ],
+            "open_journal_new": [
+                "absence",
+                "information",
+                "standard",
+                "final_path",
+                "pin_create",
+                "pin_information",
+                "pin_standard",
+                "pin_final_path",
+                "post_information",
+                "post_standard",
+                "post_final_path",
+            ],
+        }
+        for method, wrapper_calls in metadata.items():
+            assert native.filesystem_cost(method, profile) == (
+                directories + creates + nested_access + len(wrapper_calls),
+                open_waits,
+            )
+        database = native.filesystem_cost("open_database", profile)
+        close = native.filesystem_cost("close", profile)
+        assert native.retry_bootstrap_cost(profile) == tuple(
+            left + right for left, right in zip(database, close, strict=True)
+        )
+        assert native.filesystem_cost("read", profile, 1) == (1 + len(attempts), sum(sleeps))
+        # Every successful partial write must consume a positive byte; retries
+        # are not reset by intervening progress. Include the optional seek.
+        size = rng.randrange(1, 100)
+        assert native.filesystem_cost("write", profile, size) == (
+            1 + sum(1 for _byte in range(size)) + count,
+            sum(sleeps),
+        )
+        assert native.filesystem_cost("delete_journal", profile) == (
+            3 + sum(2 for _attempt in attempts),
+            sum(sleeps),
+        )
+        assert native.filesystem_cost("access", profile) == (len(attempts), sum(sleeps))

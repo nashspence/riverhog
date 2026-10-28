@@ -243,6 +243,50 @@ int rh_retry_bootstrap_cost(int64_t count, int64_t delay, rh_retry_cost *cost) {
     cost->sleep_microseconds = (milliseconds * (retries + 5) + 200) * 1000;
     return 1;
 }
+int rh_native_filesystem_cost(
+    enum rh_native_operation operation, int64_t count, int64_t delay,
+    int64_t amount, rh_retry_cost *cost
+) {
+    rh_retry_cost bootstrap;
+    uint64_t retries, wait, open;
+    if (!rh_retry_bootstrap_cost(count, delay, &bootstrap)) return 0;
+    if (operation == RH_OP_READ || operation == RH_OP_WRITE) {
+        if (amount <= 0 || amount > INT_MAX) return 0;
+    } else if (amount != 0) return 0;
+    retries = (uint64_t)count;
+    wait = (uint64_t)delay * retries * (retries + 1) / 2 * 1000;
+    open = (retries + 1) * (retries + 5);
+    *cost = (rh_retry_cost){0, 0};
+    switch (operation) {
+        case RH_OP_READ: cost->filesystem_calls = retries + 2; cost->sleep_microseconds = wait; break;
+        case RH_OP_WRITE: cost->filesystem_calls = (uint64_t)amount + retries + 1; cost->sleep_microseconds = wait; break;
+        case RH_OP_TRUNCATE: cost->filesystem_calls = 2; break;
+        case RH_OP_SYNC: case RH_OP_SIZE: case RH_OP_PIN_CLOSE: cost->filesystem_calls = 1; break;
+        case RH_OP_LOCK: cost->filesystem_calls = 6; cost->sleep_microseconds = 2000; break;
+        case RH_OP_UNLOCK: cost->filesystem_calls = 4; break;
+        case RH_OP_RESERVED: case RH_OP_FULLPATH: cost->filesystem_calls = 2; break;
+        case RH_OP_CONTROL: cost->filesystem_calls = 3; break;
+        case RH_OP_SCALAR: break;
+        /* Database identity: two information calls plus final-path lookup.
+         * Pinned J adds its pre/post current checks; new J adds absence,
+         * metadata pin creation, pin identity and final current check.
+         */
+        case RH_OP_OPEN_DATABASE: cost->filesystem_calls = open + 3; cost->sleep_microseconds = wait * (retries + 5); break;
+        case RH_OP_OPEN_JOURNAL_PINNED: cost->filesystem_calls = open + 9; cost->sleep_microseconds = wait * (retries + 5); break;
+        case RH_OP_OPEN_JOURNAL_NEW: cost->filesystem_calls = open + 11; cost->sleep_microseconds = wait * (retries + 5); break;
+        case RH_OP_DELETE_JOURNAL: cost->filesystem_calls = 2 * (retries + 1) + 3; cost->sleep_microseconds = wait; break;
+        case RH_OP_ACCESS: cost->filesystem_calls = retries + 1; cost->sleep_microseconds = wait; break;
+        /* Duplicate + regular metadata + fullpath + current path + J check.
+         * Explicit original J needs pin+three metadata calls; absence needs one.
+         */
+        case RH_OP_BIND_DATABASE: cost->filesystem_calls = 7; break;
+        case RH_OP_BIND_JOURNAL: cost->filesystem_calls = 10; break;
+        case RH_OP_CLOSE: cost->filesystem_calls = 3; cost->sleep_microseconds = 200000; break;
+        default: return 0;
+    }
+    return 1;
+}
+
 static enum rh_refusal native_work_fits(
     const rh_native_work_bank *bank, rh_retry_cost work, rh_retry_cost close
 ) {

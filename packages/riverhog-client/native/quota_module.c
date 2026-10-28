@@ -10,6 +10,7 @@
 #endif
 #include <limits.h>
 #include <stdint.h>
+#include <string.h>
 #include "write_quota.h"
 #include "write_vfs.h"
 #define RH_STR_I(value) #value
@@ -89,6 +90,57 @@ static PyObject *retry_bootstrap_cost(PyObject *module, PyObject *args) {
     }
     return Py_BuildValue("(KK)", (unsigned long long)cost.filesystem_calls,
                                 (unsigned long long)cost.sleep_microseconds);
+}
+
+static PyObject *native_filesystem_cost(PyObject *module, PyObject *args) {
+    PyObject *method, *profile, *value = NULL;
+    const char *name;
+    Py_ssize_t length, index;
+    uint64_t count, delay;
+    int64_t amount = 0;
+    rh_retry_cost cost;
+    static const struct { const char *name; enum rh_native_operation operation; } operations[] = {
+        {"read", RH_OP_READ}, {"write", RH_OP_WRITE},
+        {"truncate", RH_OP_TRUNCATE}, {"sync", RH_OP_SYNC}, {"size", RH_OP_SIZE},
+        {"lock", RH_OP_LOCK}, {"unlock", RH_OP_UNLOCK}, {"reserved", RH_OP_RESERVED},
+        {"control", RH_OP_CONTROL}, {"scalar", RH_OP_SCALAR},
+        {"open_database", RH_OP_OPEN_DATABASE},
+        {"open_journal_pinned", RH_OP_OPEN_JOURNAL_PINNED},
+        {"open_journal_new", RH_OP_OPEN_JOURNAL_NEW},
+        {"delete_journal", RH_OP_DELETE_JOURNAL}, {"access", RH_OP_ACCESS},
+        {"fullpath", RH_OP_FULLPATH}, {"bind_database", RH_OP_BIND_DATABASE},
+        {"bind_journal", RH_OP_BIND_JOURNAL}, {"close", RH_OP_CLOSE}, {"pin_close", RH_OP_PIN_CLOSE}
+    };
+    (void)module;
+    if (!PyArg_ParseTuple(args, "OO|O", &method, &profile, &value)) return NULL;
+    if (!PyUnicode_CheckExact(method)) {
+        PyErr_SetString(PyExc_TypeError, "native filesystem recipe requires an exact method name");
+        return NULL;
+    }
+    name = PyUnicode_AsUTF8AndSize(method, &length);
+    if (!name) return NULL;
+    if (!retry_pair(profile, &count, &delay, 1)) return NULL;
+    if (value) {
+        if (!PyLong_CheckExact(value)) {
+            PyErr_SetString(PyExc_TypeError, "native filesystem byte count requires an exact signed 64-bit integer");
+            return NULL;
+        }
+        amount = (int64_t)PyLong_AsLongLong(value);
+        if (PyErr_Occurred()) return NULL;
+    }
+    for (index = 0; index < (Py_ssize_t)(sizeof(operations) / sizeof(operations[0])); ++index) {
+        const char *candidate = operations[index].name;
+        if ((size_t)length != strlen(candidate) || memcmp(name, candidate, (size_t)length)) continue;
+        if (!rh_native_filesystem_cost(operations[index].operation,
+                                      (int64_t)count, (int64_t)delay, amount, &cost)) {
+            PyErr_SetString(PyExc_ValueError, "native filesystem recipe has an invalid byte count or profile");
+            return NULL;
+        }
+        return Py_BuildValue("(KK)", (unsigned long long)cost.filesystem_calls,
+                                    (unsigned long long)cost.sleep_microseconds);
+    }
+    PyErr_SetString(PyExc_ValueError, "unknown native filesystem recipe");
+    return NULL;
 }
 
 static void free_bank(rh_bank *bank) {
@@ -855,6 +907,8 @@ static PyObject *current_process_budget(PyObject *module, PyObject *unused) {
     return Py_NewRef(process_budget);
 }
 static PyMethodDef module_methods[] = {
+    {"filesystem_cost", native_filesystem_cost, METH_VARARGS,
+        "Qualified desktop-NT filesystem-attempt/internal-wait upper bound, excluding close and non-filesystem APIs."},
     {"retry_bootstrap_cost", retry_bootstrap_cost, METH_VARARGS,
         "Conservative qualified desktop-NT open, identity and close filesystem-attempt/nominal-wait recipe."},
     {"current_process_budget", current_process_budget, METH_NOARGS,

@@ -1006,6 +1006,7 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
         "work-bank-recovery-sleep",
         "work-bank-refusal",
         "work-close-detached",
+        "work-recipes",
         "work-bank-bool",
         "work-bank-float",
         "heap-peak",
@@ -1050,6 +1051,7 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         "native_work_bank_forward_sleep_microseconds": 200000,
         "native_work_bank_recovery_sleep_microseconds": 200000,
         "native_work_bank_refusal_verified": True,
+        "native_filesystem_recipes_verified": True,
         "native_close_credit_detached_verified": True,
         "sqlite_heap_limit_bytes": 67108864,
         "sqlite_heap_peak_bytes": 1048576,
@@ -1120,6 +1122,8 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         proof["native_work_bank_recovery_sleep_microseconds"] = 199999
     elif invalid == "work-bank-refusal":
         proof["native_work_bank_refusal_verified"] = False
+    elif invalid == "work-recipes":
+        proof["native_filesystem_recipes_verified"] = False
     elif invalid == "work-close-detached":
         proof["native_close_credit_detached_verified"] = False
     elif invalid == "work-bank-bool":
