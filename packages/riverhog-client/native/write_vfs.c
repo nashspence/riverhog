@@ -53,8 +53,9 @@ struct rh_write_vfs {
     size_t path_capacity;
     char *database_name, *journal_name;
     wchar_t *database_wide, *journal_wide, *actual_wide;
-    void *database_handle;
+    void *database_handle, *journal_handle;
     uint32_t database_volume, database_index_high, database_index_low;
+    uint32_t journal_index_high, journal_index_low;
     wchar_t library_path[32768];
 };
 
@@ -111,6 +112,34 @@ static int current_path(rh_write_vfs *vfs, HANDLE handle, const wchar_t *expecte
         wcsncmp(vfs->actual_wide, L"\\\\?\\", 4) == 0 &&
         CompareStringOrdinal(vfs->actual_wide + 4, -1, expected, -1, TRUE) == CSTR_EQUAL;
 }
+static int journal_absent(rh_write_vfs *vfs) {
+    DWORD error;
+    if (GetFileAttributesW(vfs->journal_wide) != INVALID_FILE_ATTRIBUTES) return 0;
+    error = GetLastError();
+    return error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND;
+}
+static int journal_current(rh_write_vfs *vfs) {
+    BY_HANDLE_FILE_INFORMATION info;
+    return vfs->journal_handle &&
+        regular_file(vfs->journal_handle, &info) &&
+        current_path(vfs, vfs->journal_handle, vfs->journal_wide) &&
+        info.dwVolumeSerialNumber == vfs->database_volume &&
+        info.nFileIndexHigh == vfs->journal_index_high &&
+        info.nFileIndexLow == vfs->journal_index_low;
+}
+static int pin_journal(rh_write_vfs *vfs, uint32_t high, uint32_t low) {
+    HANDLE handle = CreateFileW(vfs->journal_wide, FILE_READ_ATTRIBUTES,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING,
+        FILE_FLAG_OPEN_REPARSE_POINT, NULL);
+    if (handle == INVALID_HANDLE_VALUE) return 0;
+    /* The delete-sharing metadata pin prevents file-ID reuse. Only a successful
+     * delegated journal deletion releases this generation during a binding.
+     */
+    vfs->journal_handle = handle;
+    vfs->journal_index_high = high;
+    vfs->journal_index_low = low;
+    return journal_current(vfs);
+}
 #endif
 static int opened_identity(rh_write_vfs *vfs, rh_sqlite_file *real, enum rh_file kind) {
 #ifdef _WIN32
@@ -121,8 +150,14 @@ static int opened_identity(rh_write_vfs *vfs, rh_sqlite_file *real, enum rh_file
         !current_path(vfs, handle, kind == RH_DATABASE ? vfs->database_wide : vfs->journal_wide))
         return 0;
     if (info.dwVolumeSerialNumber != vfs->database_volume) return 0;
-    return kind != RH_DATABASE || (info.nFileIndexHigh == vfs->database_index_high &&
-                                   info.nFileIndexLow == vfs->database_index_low);
+    if (kind == RH_DATABASE)
+        return info.nFileIndexHigh == vfs->database_index_high &&
+               info.nFileIndexLow == vfs->database_index_low;
+    if (!vfs->journal_handle &&
+        !pin_journal(vfs, info.nFileIndexHigh, info.nFileIndexLow)) return 0;
+    return journal_current(vfs) &&
+        info.nFileIndexHigh == vfs->journal_index_high &&
+        info.nFileIndexLow == vfs->journal_index_low;
 #else
     (void)vfs; (void)real; (void)kind;
     return 0;
@@ -257,6 +292,13 @@ static int vfs_open(
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
         return RH_CANTOPEN;
     }
+#ifdef _WIN32
+    if (wrapper->kind == RH_JOURNAL &&
+        !(vfs->journal_handle ? journal_current(vfs) : journal_absent(vfs))) {
+        (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
+        return RH_CANTOPEN;
+    }
+#endif
     real = real_file(wrapper);
     real->methods = NULL;
     result = vfs->base->open(vfs->base, name, real, flags, out_flags);
@@ -278,7 +320,23 @@ static int vfs_delete(rh_sqlite_vfs *raw, const char *name, int sync_directory) 
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
         return RH_IOERR;
     }
-    return storage_result(vfs, vfs->base->delete_file(vfs->base, name, sync_directory));
+#ifdef _WIN32
+    if (!(vfs->journal_handle ? journal_current(vfs) : journal_absent(vfs))) {
+        (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
+        return RH_IOERR;
+    }
+    {
+        int result = vfs->base->delete_file(vfs->base, name, sync_directory);
+        if (result == RH_OK && vfs->journal_handle) {
+            if (!CloseHandle(vfs->journal_handle)) return storage_result(vfs, RH_IOERR);
+            vfs->journal_handle = NULL;
+        }
+        return storage_result(vfs, result);
+    }
+#else
+    (void)sync_directory;
+    return RH_IOERR;
+#endif
 }
 static int vfs_access(rh_sqlite_vfs *raw, const char *name, int flags, int *result) {
     rh_write_vfs *vfs = raw->data;
@@ -427,9 +485,11 @@ failed:
     free(vfs);
     return NULL;
 }
-int rh_write_vfs_bind(rh_write_vfs *vfs, const char *path, void *borrowed_handle) {
+int rh_write_vfs_bind(
+    rh_write_vfs *vfs, const char *path, void *borrowed_handle, const uint32_t *journal_identity
+) {
     if (!owned(vfs)) return RH_MISUSE;
-    if (vfs->open_files || vfs->bound || vfs->database_handle) return RH_BUSY;
+    if (vfs->open_files || vfs->bound || vfs->database_handle || vfs->journal_handle) return RH_BUSY;
 #ifdef _WIN32
     {
         HANDLE pinned = NULL;
@@ -457,11 +517,17 @@ int rh_write_vfs_bind(rh_write_vfs *vfs, const char *path, void *borrowed_handle
         vfs->database_volume = info.dwVolumeSerialNumber;
         vfs->database_index_high = info.nFileIndexHigh;
         vfs->database_index_low = info.nFileIndexLow;
+        if (journal_identity) {
+            if (journal_identity[0] != vfs->database_volume ||
+                !pin_journal(vfs, journal_identity[1], journal_identity[2])) return RH_IOERR;
+        } else if (!journal_absent(vfs)) {
+            return RH_IOERR;
+        }
         vfs->bound = 1;
         return RH_OK;
     }
 #else
-    (void)path; (void)borrowed_handle;
+    (void)path; (void)borrowed_handle; (void)journal_identity;
     return RH_IOERR;
 #endif
 }
@@ -469,6 +535,10 @@ int rh_write_vfs_unbind(rh_write_vfs *vfs) {
     if (!owned(vfs)) return RH_MISUSE;
     if (vfs->open_files) return RH_BUSY;
 #ifdef _WIN32
+    if (vfs->journal_handle) {
+        if (!CloseHandle(vfs->journal_handle)) return RH_IOERR;
+        vfs->journal_handle = NULL;
+    }
     if (vfs->database_handle && !CloseHandle(vfs->database_handle)) return RH_IOERR;
 #endif
     vfs->database_handle = NULL;

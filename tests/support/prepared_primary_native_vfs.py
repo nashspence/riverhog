@@ -62,7 +62,7 @@ class NativeWriteShim:
 
     def bind(self, owner):
         owner.check_current()
-        self._native.bind(str(owner.path), owner._database)
+        self._native.bind(str(owner.path), owner._database, owner._journal_identity)
 
     def unbind(self):
         self._native.unbind()

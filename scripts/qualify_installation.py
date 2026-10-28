@@ -1947,7 +1947,7 @@ try:
         assert handle not in (None,ctypes.c_void_p(-1).value)
         connection=None
         try:
-            vfs.bind(str(path.resolve()),handle)
+            vfs.bind(str(path.resolve()),handle,None)
             assert vfs.bound
             connection=sqlite3.connect(uri,uri=True)
             assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone()==("persist",)

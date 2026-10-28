@@ -437,17 +437,41 @@ static void vfs_dealloc(PyObject *object) {
 static PyObject *vfs_bind(PyObject *object, PyObject *args) {
     WriteVfs *self = (WriteVfs *)object;
     const char *path;
-    PyObject *handle_value;
+    PyObject *handle_value, *journal_value;
+    uint32_t journal_identity[3], *journal = NULL;
     void *handle;
+    int i;
     if (!vfs_ready(self)) return NULL;
-    if (!PyArg_ParseTuple(args, "sO", &path, &handle_value)) return NULL;
+    if (!PyArg_ParseTuple(args, "sOO", &path, &handle_value, &journal_value)) return NULL;
+    if (journal_value != Py_None) {
+        if (!PyTuple_CheckExact(journal_value) || PyTuple_GET_SIZE(journal_value) != 3) {
+            PyErr_SetString(PyExc_TypeError, "journal identity requires an exact three-integer tuple");
+            return NULL;
+        }
+        for (i = 0; i < 3; ++i) {
+            PyObject *value = PyTuple_GET_ITEM(journal_value, i);
+            unsigned long long identity;
+            if (!PyLong_CheckExact(value)) {
+                PyErr_SetString(PyExc_TypeError, "journal identity requires exact unsigned integers");
+                return NULL;
+            }
+            identity = PyLong_AsUnsignedLongLong(value);
+            if (PyErr_Occurred()) return NULL;
+            if (identity > UINT32_MAX) {
+                PyErr_SetString(PyExc_OverflowError, "journal identity exceeds a 32-bit field");
+                return NULL;
+            }
+            journal_identity[i] = (uint32_t)identity;
+        }
+        journal = journal_identity;
+    }
     if (!PyLong_CheckExact(handle_value)) {
         PyErr_SetString(PyExc_TypeError, "native binding requires an exact handle integer");
         return NULL;
     }
     handle = PyLong_AsVoidPtr(handle_value);
     if (PyErr_Occurred()) return NULL;
-    if (rh_write_vfs_bind(self->vfs, path, handle)) {
+    if (rh_write_vfs_bind(self->vfs, path, handle, journal)) {
         PyErr_SetString(PyExc_RuntimeError,
             "native binding requires its owning thread, an unbound file-free VFS and matching file identity");
         return NULL;

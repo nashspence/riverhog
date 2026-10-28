@@ -53,6 +53,18 @@ class BoundConnection:
         self.closed = True
 
 
+def journal_identity(path, api):
+    journal = path.with_name(path.name + "-journal")
+    try:
+        handle = api.open(journal, journal=True)
+    except FileNotFoundError:
+        return None
+    try:
+        return api.information(handle, journal, directory=False)
+    finally:
+        api.close(handle)
+
+
 def opened(path, gate, *, readonly=False):
     from riverhog_client._prepared_primary_windows_native import _WindowsAPI
 
@@ -62,7 +74,7 @@ def opened(path, gate, *, readonly=False):
     api = _WindowsAPI()
     handle = api.open(path)
     try:
-        gate.bind(str(path), handle)
+        gate.bind(str(path), handle, journal_identity(path, api))
         uri = path.as_uri() + "?vfs=" + gate.name
         if readonly:
             uri += "&mode=ro"
@@ -178,7 +190,7 @@ def test_native_write_vfs_and_attached_bank_reject_other_thread_access(tmp_path)
                 read_bank.report,
                 gate.close,
                 gate.unbind,
-                lambda: gate.bind(str(tmp_path / "not-opened.sqlite3"), 0),
+                lambda: gate.bind(str(tmp_path / "not-opened.sqlite3"), 0, None),
                 lambda: gate.arm(reads(native, replacement)),
             ):
                 with pytest.raises(RuntimeError, match="thread"):
@@ -282,7 +294,9 @@ def test_native_short_read_keeps_full_charge_without_latching_failure(tmp_path):
 
 
 @contextmanager
-def native_file(path, gate, *, kind="database", flags=None, bind_path=None):
+def native_file(
+    path, gate, *, kind="database", flags=None, bind_path=None, binding=True, before_open=None
+):
     """Call the registered C methods on a real native file with valid SQLite filename metadata."""
     from riverhog_client._prepared_primary_windows_native import _WindowsAPI
 
@@ -308,10 +322,13 @@ def native_file(path, gate, *, kind="database", flags=None, bind_path=None):
     handle = None
     api = _WindowsAPI()
     try:
-        admitted = (bind_path if bind_path is not None else path).resolve()
-        admitted.touch(exist_ok=True)
-        handle = api.open(admitted)
-        gate.bind(str(admitted), handle)
+        if binding:
+            admitted = (bind_path if bind_path is not None else path).resolve()
+            admitted.touch(exist_ok=True)
+            handle = api.open(admitted)
+            gate.bind(str(admitted), handle, journal_identity(admitted, api))
+        if before_open is not None:
+            before_open()
         vfs = library.sqlite3_vfs_find(gate.name.encode("ascii"))
         assert vfs
         # An explicit native-alignment array keeps the delegate correctly aligned.
@@ -335,7 +352,8 @@ def native_file(path, gate, *, kind="database", flags=None, bind_path=None):
                 assert methods.contents.close(raw) == sqlite3.SQLITE_OK
         finally:
             try:
-                gate.unbind()
+                if binding:
+                    gate.unbind()
                 if handle is not None:
                     api.close(handle)
             finally:
@@ -521,7 +539,7 @@ def test_native_binding_rejects_mismatched_handle_and_preserves_pin_until_unboun
     handle = api.open(path)
     try:
         with pytest.raises(RuntimeError, match="identity"):
-            gate.bind(str(other), handle)
+            gate.bind(str(other), handle, None)
         assert not gate.bound
         api.close(handle)
         handle = None
@@ -529,7 +547,7 @@ def test_native_binding_rejects_mismatched_handle_and_preserves_pin_until_unboun
             path.rename(path.with_name("quarantined.sqlite3"))
         gate.unbind()
         handle = api.open(path)
-        gate.bind(str(path), handle)
+        gate.bind(str(path), handle, journal_identity(path, api))
         api.close(handle)
         handle = None
         moved = path.with_name("moved.sqlite3")
@@ -537,7 +555,7 @@ def test_native_binding_rejects_mismatched_handle_and_preserves_pin_until_unboun
             path.rename(moved)
         assert gate.bound
         with pytest.raises(RuntimeError, match="unbound"):
-            gate.bind(str(path), 0)
+            gate.bind(str(path), 0, None)
         gate.unbind()
         assert not gate.bound
         path.rename(moved)
@@ -581,7 +599,7 @@ def test_native_binding_close_releases_its_duplicate_database_pin(tmp_path):
     api = _WindowsAPI()
     handle = api.open(path)
     try:
-        gate.bind(str(path), handle)
+        gate.bind(str(path), handle, journal_identity(path, api))
     finally:
         api.close(handle)
     try:
@@ -601,14 +619,190 @@ def test_native_journal_hardlink_is_rejected_before_any_content_write(tmp_path):
     foreign = tmp_path / "foreign"
     foreign.write_bytes(b"unrelated original")
     journal = path.with_name(path.name + "-journal")
-    os.link(foreign, journal)
     try:
-        with native_file(path, gate, kind="journal") as (rc, raw, methods):
+        with native_file(
+            path, gate, kind="journal", before_open=lambda: os.link(foreign, journal)
+        ) as (rc, raw, methods):
             assert rc == sqlite3.SQLITE_CANTOPEN
-            assert methods is not None and raw.contents.methods
+            assert methods is None and not raw.contents.methods
             assert foreign.read_bytes() == b"unrelated original"
             assert journal.read_bytes() == b"unrelated original"
             assert quota.report()["first_refusal"]["reason"] == "unadmitted file"
         assert gate.open_files == 0
+    finally:
+        gate.close()
+
+
+def native_delete(gate, path):
+    from tests.support.sqlite_vfs_faults import FaultVfs
+
+    library = FaultVfs.windows().library
+    vfs = library.sqlite3_vfs_find(gate.name.encode("ascii"))
+    name = c.create_string_buffer(str(path.resolve()).encode("utf-8"))
+    return vfs.contents.delete(vfs, c.cast(name, c.c_void_p), 0)
+
+
+@pytest.mark.parametrize("change", ["replace", "remove", "appear"])
+def test_native_journal_generation_change_refuses_before_open_or_creation(tmp_path, change):
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, quota))
+    path = tmp_path / "admitted.sqlite3"
+    journal = path.with_name(path.name + "-journal")
+    retained = tmp_path / "retained"
+    if change != "appear":
+        journal.write_bytes(b"original journal")
+
+    def changed():
+        if change == "replace":
+            journal.rename(retained)
+        elif change == "remove":
+            journal.unlink()
+            return
+        journal.write_bytes(b"unrelated replacement")
+
+    try:
+        with native_file(path, gate, kind="journal", before_open=changed) as (rc, raw, methods):
+            assert rc == sqlite3.SQLITE_CANTOPEN
+            assert methods is None and not raw.contents.methods
+            assert quota.report()["first_refusal"]["reason"] == "unadmitted file"
+            if change != "remove":
+                assert journal.read_bytes() == b"unrelated replacement"
+            if change == "replace":
+                assert retained.read_bytes() == b"original journal"
+        if change == "remove":
+            # Delete-sharing metadata pins keep deletion pending until unbind.
+            assert not journal.exists()
+    finally:
+        gate.close()
+
+
+def test_native_journal_replacement_cannot_be_deleted_as_the_original(tmp_path):
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, quota))
+    path = tmp_path / "admitted.sqlite3"
+    journal = path.with_name(path.name + "-journal")
+    retained = tmp_path / "retained"
+    journal.write_bytes(b"original journal")
+    try:
+        with native_file(path, gate) as (rc, _raw, _methods):
+            assert rc == sqlite3.SQLITE_OK
+            journal.rename(retained)
+            journal.write_bytes(b"unrelated replacement")
+            assert native_delete(gate, journal) == sqlite3.SQLITE_IOERR
+            assert journal.read_bytes() == b"unrelated replacement"
+            assert retained.read_bytes() == b"original journal"
+            assert quota.report()["first_refusal"]["reason"] == "unadmitted file"
+    finally:
+        gate.close()
+
+
+def test_native_successful_journal_delete_authorizes_one_native_recreation(tmp_path):
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, quota))
+    path = tmp_path / "admitted.sqlite3"
+    journal = path.with_name(path.name + "-journal")
+    try:
+        with native_file(path, gate, kind="journal") as (rc, raw, methods):
+            assert rc == sqlite3.SQLITE_OK
+            assert methods.contents.truncate(raw, 4096) == sqlite3.SQLITE_OK
+            assert methods.contents.close(raw) == sqlite3.SQLITE_OK
+            assert not raw.contents.methods and gate.open_files == 0
+            assert native_delete(gate, journal) == sqlite3.SQLITE_OK
+            assert not journal.exists()
+            with native_file(path, gate, kind="journal", binding=False) as (rc, raw, methods):
+                assert rc == sqlite3.SQLITE_OK
+                assert methods.contents.truncate(raw, 2048) == sqlite3.SQLITE_OK
+                assert journal.stat().st_size == 2048
+            assert not quota.recovering
+    finally:
+        gate.close()
+
+
+def test_native_failed_journal_delete_retains_generation_for_retry(tmp_path):
+    from riverhog_client._prepared_primary_windows_native import _WindowsAPI
+
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, quota))
+    path = tmp_path / "admitted.sqlite3"
+    journal = path.with_name(path.name + "-journal")
+    api = _WindowsAPI()
+    try:
+        with native_file(path, gate, kind="journal") as (rc, raw, methods):
+            assert rc == sqlite3.SQLITE_OK
+            assert methods.contents.truncate(raw, 4096) == sqlite3.SQLITE_OK
+            assert methods.contents.close(raw) == sqlite3.SQLITE_OK
+            original = journal.read_bytes()
+            pin = api.open(journal)
+            try:
+                assert native_delete(gate, journal) != sqlite3.SQLITE_OK
+                assert quota.recovering and quota.report()["native_failures"] == 1
+                assert journal.read_bytes() == original
+            finally:
+                api.close(pin)
+            with native_file(path, gate, kind="journal", binding=False) as (rc, _raw, _methods):
+                assert rc == sqlite3.SQLITE_OK
+                assert journal.read_bytes() == original
+            assert native_delete(gate, journal) == sqlite3.SQLITE_OK
+            assert not journal.exists()
+    finally:
+        gate.close()
+
+
+def test_native_binding_requires_the_original_journal_identity_or_explicit_absence(tmp_path):
+    from riverhog_client._prepared_primary_windows_native import _WindowsAPI
+
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, quota))
+    path = tmp_path / "admitted.sqlite3"
+    path.touch()
+    journal = path.with_name(path.name + "-journal")
+    journal.write_bytes(b"original journal")
+    api = _WindowsAPI()
+    handle = api.open(path)
+    try:
+        expected = journal_identity(path, api)
+        assert expected is not None
+        wrong = (expected[0], expected[1], expected[2] ^ 1)
+        for identity in (None, wrong):
+            with pytest.raises(RuntimeError, match="identity"):
+                gate.bind(str(path), handle, identity)
+            assert not gate.bound and journal.read_bytes() == b"original journal"
+            with pytest.raises(RuntimeError, match="unbound"):
+                gate.bind(str(path), handle, expected)
+            gate.unbind()
+        gate.bind(str(path), handle, expected)
+        assert gate.bound
+    finally:
+        gate.unbind()
+        api.close(handle)
+        gate.close()
+
+
+@pytest.mark.parametrize(
+    "identity,error",
+    [
+        (True, TypeError),
+        ((1, 2), TypeError),
+        ([1, 2, 3], TypeError),
+        ((1, 2, True), TypeError),
+        ((-1, 2, 3), OverflowError),
+        ((2**32, 2, 3), OverflowError),
+    ],
+)
+def test_native_journal_identity_rejects_malformed_authority_before_binding(
+    tmp_path, identity, error
+):
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, quota))
+    try:
+        with pytest.raises(error, match="journal|unsigned"):
+            gate.bind(str(tmp_path / "unopened.sqlite3"), 0, identity)
+        assert not gate.bound
     finally:
         gate.close()
