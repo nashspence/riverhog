@@ -141,6 +141,11 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
     assert native_vfs["compiled_bank"]["compiler"].startswith("MSVC ")
     assert len(native_vfs["cases"]) == 2
     for case in native_vfs["cases"]:
+        assert case["read_quota"]["forward"]["read_calls"] > 0
+        assert case["read_quota"]["forward"]["read_bytes"] > 0
+        if case["refusal"] == "database":
+            assert case["read_quota"]["recovery"]["read_calls"] > 0
+            assert case["read_quota"]["recovery"]["read_bytes"] > 0
         assert case["bank_implementation"] == "compiled-native"
         assert case["quota"]["refusals"] == 1
         assert case["original_control_exact"] and case["original_payload_exact"]

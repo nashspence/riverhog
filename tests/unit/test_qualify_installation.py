@@ -981,6 +981,9 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
         "callbacks",
         "recovery",
         "vfs-calls",
+        "read-calls",
+        "read-bytes",
+        "bool-read-calls",
         "vfs-exact",
         "source",
         "library",
@@ -999,6 +1002,8 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         "refusals": 1,
         "storage_callbacks_native": True,
         "vfs_write_calls": 7,
+        "vfs_read_calls": 3,
+        "vfs_read_bytes": 4096,
         "vfs_original_exact": True,
         "sqlite_source_id": "qualified-runtime-source",
         "sqlite_library_sha256": "b" * 64,
@@ -1017,6 +1022,12 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         proof["recovery_pages"] = 2
     elif invalid == "vfs-calls":
         proof["vfs_write_calls"] = 0
+    elif invalid == "read-calls":
+        proof["vfs_read_calls"] = 0
+    elif invalid == "read-bytes":
+        proof["vfs_read_bytes"] = 0
+    elif invalid == "bool-read-calls":
+        proof["vfs_read_calls"] = True
     elif invalid == "vfs-exact":
         proof["vfs_original_exact"] = False
     elif invalid == "source":

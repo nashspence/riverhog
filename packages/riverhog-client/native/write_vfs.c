@@ -31,6 +31,7 @@ struct rh_write_vfs {
     rh_sqlite_vfs *base;
     rh_sqlite_api api;
     rh_quota *quota;
+    rh_read_quota *reads;
     unsigned long thread;
     size_t offset;
     int open_files;
@@ -83,6 +84,8 @@ static int file_read(rh_sqlite_file *raw, void *buffer, int amount, rh_sqlite_in
     rh_sqlite_file *real = real_file(file);
     int result;
     if (!owned(file->owner)) return RH_IOERR;
+    if (rh_read_admit(file->owner->reads, file->owner->quota, file->kind,
+                      (int64_t)amount, (int64_t)offset) != RH_ALLOWED) return RH_FULL;
     result = real->methods->read(real, buffer, amount, offset);
     if (result != RH_OK && result != RH_SHORT_READ) rh_failed(file->owner->quota);
     return result;
@@ -262,7 +265,8 @@ static int bind_api(rh_write_vfs *vfs, const char **error) {
 }
 
 rh_write_vfs *rh_write_vfs_create(
-    const char *name, const char *expected_source, rh_quota *quota, const char **error
+    const char *name, const char *expected_source, rh_quota *quota,
+    rh_read_quota *reads, const char **error
 ) {
     rh_write_vfs *vfs = calloc(1, sizeof(*vfs));
     if (!vfs) { *error = "native VFS allocation failed"; return NULL; }
@@ -285,6 +289,7 @@ rh_write_vfs *rh_write_vfs_create(
     }
     vfs->thread = current_thread();
     vfs->quota = quota;
+    vfs->reads = reads;
     vfs->vfs = (rh_sqlite_vfs){
         .version = 1, .file_bytes = (int)(vfs->offset + (size_t)vfs->base->file_bytes),
         .pathname_bytes = vfs->base->pathname_bytes, .name = name, .data = vfs,
@@ -303,10 +308,11 @@ failed:
     free(vfs);
     return NULL;
 }
-int rh_write_vfs_arm(rh_write_vfs *vfs, rh_quota *quota) {
+int rh_write_vfs_arm(rh_write_vfs *vfs, rh_quota *quota, rh_read_quota *reads) {
     if (!owned(vfs)) return RH_MISUSE;
     if (vfs->quota->recovering && vfs->open_files) return RH_BUSY;
     vfs->quota = quota;
+    vfs->reads = reads;
     return RH_OK;
 }
 int rh_write_vfs_close(rh_write_vfs *vfs) {

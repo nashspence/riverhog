@@ -32,13 +32,13 @@ typedef struct {
 static int positive_integer(PyObject *object, uint64_t *value) {
     long long parsed;
     if (!PyLong_CheckExact(object)) {
-        PyErr_SetString(PyExc_TypeError, "write limits require exact integers");
+        PyErr_SetString(PyExc_TypeError, "resource limits require exact integers");
         return -1;
     }
     parsed = PyLong_AsLongLong(object);
     if (PyErr_Occurred()) return -1;
     if (parsed <= 0) {
-        PyErr_SetString(PyExc_ValueError, "write limits must be positive signed 64-bit values");
+        PyErr_SetString(PyExc_ValueError, "resource limits must be positive signed 64-bit values");
         return -1;
     }
     *value = (uint64_t)parsed;
@@ -252,6 +252,95 @@ static PyTypeObject quota_type = {
 
 typedef struct {
     PyObject_HEAD
+    rh_read_quota reads;
+    PyObject *quota;
+    int initialized;
+} ReadQuota;
+
+static int read_limits(rh_read_bank *bank, PyObject *values) {
+    if (!PyTuple_CheckExact(values) || PyTuple_GET_SIZE(values) != 2) {
+        PyErr_SetString(PyExc_TypeError, "read limits require a two-integer tuple");
+        return 0;
+    }
+    return positive_integer(PyTuple_GET_ITEM(values, 0), &bank->byte_limit) == 0 &&
+        positive_integer(PyTuple_GET_ITEM(values, 1), &bank->call_limit) == 0;
+}
+static int read_ready(ReadQuota *self) {
+    if (!self->quota) {
+        PyErr_SetString(PyExc_RuntimeError, "read quota is not initialized");
+        return 0;
+    }
+    return ready((WriteQuota *)self->quota);
+}
+static int read_init(PyObject *object, PyObject *args, PyObject *kwargs) {
+    ReadQuota *self = (ReadQuota *)object;
+    WriteQuota *quota;
+    PyObject *forward, *recovery;
+    static char *keywords[] = {"writes", "forward", "recovery", NULL};
+    if (self->initialized) {
+        PyErr_SetString(PyExc_RuntimeError, "read quota cannot be reinitialized");
+        return -1;
+    }
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!OO", keywords,
+                                    &quota_type, &quota, &forward, &recovery)) return -1;
+    self->initialized = 1;
+    if (!ready(quota) || !read_limits(&self->reads.forward, forward) ||
+        !read_limits(&self->reads.recovery, recovery)) return -1;
+    self->quota = Py_NewRef((PyObject *)quota);
+    return 0;
+}
+static void read_dealloc(PyObject *object) {
+    ReadQuota *self = (ReadQuota *)object;
+    Py_XDECREF(self->quota);
+    Py_TYPE(self)->tp_free(object);
+}
+static PyObject *read_admit(PyObject *object, PyObject *args) {
+    ReadQuota *self = (ReadQuota *)object;
+    PyObject *kind, *amount, *offset;
+    long long length, position;
+    enum rh_file file = RH_OTHER;
+    if (!read_ready(self)) return NULL;
+    if (!PyArg_ParseTuple(args, "OOO", &kind, &amount, &offset)) return NULL;
+    if (!PyUnicode_CheckExact(kind) || !PyLong_CheckExact(amount) || !PyLong_CheckExact(offset)) {
+        PyErr_SetString(PyExc_TypeError, "read admission requires a file kind and exact integer range");
+        return NULL;
+    }
+    length = PyLong_AsLongLong(amount);
+    if (PyErr_Occurred()) return NULL;
+    position = PyLong_AsLongLong(offset);
+    if (PyErr_Occurred()) return NULL;
+    if (PyUnicode_CompareWithASCIIString(kind, "database") == 0) file = RH_DATABASE;
+    else if (PyUnicode_CompareWithASCIIString(kind, "journal") == 0) file = RH_JOURNAL;
+    return PyBool_FromLong(rh_read_admit(&self->reads, &((WriteQuota *)self->quota)->quota,
+        file, (int64_t)length, (int64_t)position) == RH_ALLOWED);
+}
+static PyObject *read_report(PyObject *object, PyObject *unused) {
+    ReadQuota *self = (ReadQuota *)object;
+    (void)unused;
+    if (!read_ready(self)) return NULL;
+    return Py_BuildValue("{s:{s:K,s:K},s:{s:K,s:K}}",
+        "forward", "read_bytes", (unsigned long long)self->reads.forward.bytes,
+        "read_calls", (unsigned long long)self->reads.forward.calls,
+        "recovery", "read_bytes", (unsigned long long)self->reads.recovery.bytes,
+        "read_calls", (unsigned long long)self->reads.recovery.calls);
+}
+static PyMethodDef read_methods[] = {
+    {"admit", read_admit, METH_VARARGS, "Charge a complete attempted read before delegation."},
+    {"report", read_report, METH_NOARGS, "Snapshot fixed read counters outside callbacks."},
+    {NULL, NULL, 0, NULL}
+};
+static PyTypeObject read_type = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "riverhog_client._prepared_primary_native.ReadQuota",
+    .tp_basicsize = (Py_ssize_t)sizeof(ReadQuota),
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_init = read_init,
+    .tp_dealloc = read_dealloc,
+    .tp_methods = read_methods
+};
+
+typedef struct {
+    PyObject_HEAD
     rh_write_vfs *vfs;
     PyObject *quota;
     char name[96];
@@ -281,25 +370,28 @@ static int vfs_ready(WriteVfs *self) {
 }
 static int vfs_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     WriteVfs *self = (WriteVfs *)object;
+    ReadQuota *reads;
     WriteQuota *quota;
     const char *expected, *error;
-    static char *keywords[] = {"expected_source_id", "quota", NULL};
+    static char *keywords[] = {"expected_source_id", "reads", NULL};
     if (self->initialized) {
         PyErr_SetString(PyExc_RuntimeError, "native write VFS cannot be reinitialized");
         return -1;
     }
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sO!", keywords,
-                                    &expected, &quota_type, &quota)) return -1;
+                                    &expected, &read_type, &reads)) return -1;
+    if (!read_ready(reads)) return -1;
+    quota = (WriteQuota *)reads->quota;
     if (!quota_attachable(quota)) return -1;
     self->initialized = 1;
     PyOS_snprintf(self->name, sizeof(self->name), "riverhog-native-write-%p", (void *)self);
-    self->vfs = rh_write_vfs_create(self->name, expected, &quota->quota, &error);
+    self->vfs = rh_write_vfs_create(self->name, expected, &quota->quota, &reads->reads, &error);
     if (!self->vfs) {
         PyErr_SetString(PyExc_RuntimeError, error);
         return -1;
     }
     quota_attach(quota);
-    self->quota = Py_NewRef((PyObject *)quota);
+    self->quota = Py_NewRef((PyObject *)reads);
     /* Registration pins callbacks and their bank until explicit file-free close. */
     Py_INCREF(self);
     return 0;
@@ -313,19 +405,21 @@ static PyObject *vfs_arm(PyObject *object, PyObject *value) {
     WriteVfs *self = (WriteVfs *)object;
     int result;
     if (!vfs_ready(self)) return NULL;
-    if (!Py_IS_TYPE(value, &quota_type)) {
-        PyErr_SetString(PyExc_TypeError, "native write VFS requires an initialized WriteQuota");
+    if (!Py_IS_TYPE(value, &read_type)) {
+        PyErr_SetString(PyExc_TypeError, "native write VFS requires an initialized ReadQuota");
         return NULL;
     }
-    if (!quota_attachable((WriteQuota *)value)) return NULL;
-    result = rh_write_vfs_arm(self->vfs, &((WriteQuota *)value)->quota);
+    if (!read_ready((ReadQuota *)value)) return NULL;
+    if (!quota_attachable((WriteQuota *)((ReadQuota *)value)->quota)) return NULL;
+    result = rh_write_vfs_arm(self->vfs, &((WriteQuota *)((ReadQuota *)value)->quota)->quota,
+                              &((ReadQuota *)value)->reads);
     if (result) {
         PyErr_SetString(PyExc_RuntimeError,
             "native write VFS requires its owning thread and closed poisoned files");
         return NULL;
     }
-    quota_attach((WriteQuota *)value);
-    quota_detach((WriteQuota *)self->quota);
+    quota_attach((WriteQuota *)((ReadQuota *)value)->quota);
+    quota_detach((WriteQuota *)((ReadQuota *)self->quota)->quota);
     Py_SETREF(self->quota, Py_NewRef(value));
     Py_RETURN_NONE;
 }
@@ -341,7 +435,7 @@ static PyObject *vfs_close(PyObject *object, PyObject *unused) {
         return NULL;
     }
     self->vfs = NULL;
-    quota_detach((WriteQuota *)self->quota);
+    quota_detach((WriteQuota *)((ReadQuota *)self->quota)->quota);
     Py_CLEAR(self->quota);
     Py_DECREF(self);
     Py_RETURN_NONE;
@@ -402,7 +496,7 @@ static PyTypeObject vfs_type = {
 static struct PyModuleDef module_definition = {
     PyModuleDef_HEAD_INIT,
     .m_name = "_prepared_primary_native",
-    .m_doc = "Fixed-capacity native write accounting without an embedded SQLite engine.",
+    .m_doc = "Fixed-capacity native storage accounting without an embedded SQLite engine.",
     .m_size = -1
 };
 
@@ -410,11 +504,16 @@ PyMODINIT_FUNC PyInit__prepared_primary_native(void) {
     PyObject *module;
     quota_type.tp_new = PyType_GenericNew;
     if (PyType_Ready(&quota_type) < 0) return NULL;
+    read_type.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&read_type) < 0) return NULL;
     vfs_type.tp_new = PyType_GenericNew;
     if (PyType_Ready(&vfs_type) < 0) return NULL;
     module = PyModule_Create(&module_definition);
     if (!module) return NULL;
     if (PyModule_AddObjectRef(module, "WriteQuota", (PyObject *)&quota_type) < 0) {
+        Py_DECREF(module); return NULL;
+    }
+    if (PyModule_AddObjectRef(module, "ReadQuota", (PyObject *)&read_type) < 0) {
         Py_DECREF(module); return NULL;
     }
     if (PyModule_AddObjectRef(module, "WriteVfs", (PyObject *)&vfs_type) < 0) {

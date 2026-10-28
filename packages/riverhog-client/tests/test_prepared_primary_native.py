@@ -190,3 +190,97 @@ def test_compiled_prefixes_match_the_independent_python_bank(seed):
         for field in ["forward", "recovery", "recovering", "refusals", "native_failures"]:
             assert actual[field] == expected[field], (seed, step, field, actual, expected)
         assert quota.tracking_bytes == tracking
+
+
+@pytest.mark.parametrize("limits", [(0, 1), (1, 0), (-1, 2), (True, 2), (2, 1 << 63), [1, 2], (1,)])
+@pytest.mark.parametrize("bank", ["forward", "recovery"])
+def test_native_read_grants_reject_invalid_values(limits, bank):
+    writes = native.WriteQuota(grant(), grant())
+    values = {"forward": (1024, 16), "recovery": (8192, 32)}
+    values[bank] = limits
+    with pytest.raises((TypeError, ValueError, OverflowError)):
+        native.ReadQuota(writes, **values)
+    assert not writes.recovering
+
+
+@pytest.mark.parametrize(
+    "kind,amount,offset,allowed,reason",
+    [
+        ("database", 8, 0, True, None),
+        ("journal", 8, 4096, True, None),
+        ("database", 9, 0, False, "read byte grant"),
+        ("database", -1, 0, False, "invalid read range"),
+        ("database", 1, -1, False, "invalid read range"),
+        ("journal", 2, (1 << 63) - 2, False, "invalid read range"),
+        ("database", 0, (1 << 63) - 1, True, None),
+        ("other", 1, 0, False, "unadmitted file"),
+    ],
+)
+def test_native_read_whole_attempt_and_recovery_latch(kind, amount, offset, allowed, reason):
+    writes = native.WriteQuota(grant(), grant())
+    reads = native.ReadQuota(writes, (8, 2), (16, 4))
+    assert reads.admit(kind, amount, offset) is allowed
+    assert reads.report()["forward"] == {
+        "read_bytes": amount if allowed else 0,
+        "read_calls": int(allowed),
+    }
+    assert writes.recovering is (not allowed)
+    if not allowed:
+        assert writes.report()["first_refusal"]["reason"] == reason
+        assert writes.report()["first_refusal"]["bank"] == "forward"
+        assert reads.admit("journal", 16, 0)
+        assert reads.report()["recovery"] == {"read_bytes": 16, "read_calls": 1}
+        assert writes.admit("database", 1, 0)
+        assert writes.report()["recovery"]["write_calls"] == 1
+
+
+def test_native_read_call_refusal_and_write_failure_share_reserved_bank():
+    writes = native.WriteQuota(grant(), grant())
+    reads = native.ReadQuota(writes, (16, 2), (32, 2))
+    assert reads.admit("database", 0, (1 << 63) - 1)
+    assert reads.admit("database", 8, 0)
+    assert not reads.admit("database", 0, 0)
+    assert writes.report()["first_refusal"]["reason"] == "read call grant"
+    assert reads.report()["forward"] == {"read_bytes": 8, "read_calls": 2}
+    assert reads.admit("journal", 16, 0)
+    assert not reads.admit("journal", 17, 0)
+    assert reads.report()["recovery"] == {"read_bytes": 16, "read_calls": 1}
+    assert writes.report()["first_refusal"]["reason"] == "read call grant"
+    assert writes.report()["refusals"] == 2
+    assert writes.report()["native_failures"] == 0
+
+    other_writes = native.WriteQuota(grant(), grant())
+    other_reads = native.ReadQuota(other_writes, (1, 1), (32, 2))
+    # Retain the complete admitted read if the native delegate fails.
+    assert other_reads.admit("database", 1, 0)
+    other_writes.failed()
+    assert other_reads.admit("journal", 32, 0)
+    assert other_reads.report()["forward"] == {"read_bytes": 1, "read_calls": 1}
+    assert other_reads.report()["recovery"] == {"read_bytes": 32, "read_calls": 1}
+    assert other_writes.report()["native_failures"] == 1
+
+    refused_writes = native.WriteQuota(grant(database_pages=1), grant())
+    reserved_reads = native.ReadQuota(refused_writes, (1, 1), (16, 2))
+    assert not refused_writes.admit("database", 8192, 0)
+    assert reserved_reads.admit("journal", 16, 0)
+    assert reserved_reads.report()["forward"] == {"read_bytes": 0, "read_calls": 0}
+    assert reserved_reads.report()["recovery"] == {"read_bytes": 16, "read_calls": 1}
+
+
+def test_native_read_bank_cannot_reset_or_use_uninitialized_objects():
+    writes = native.WriteQuota(grant(), grant())
+    reads = native.ReadQuota(writes, (8, 2), (16, 4))
+    with pytest.raises(RuntimeError, match="reinitialized"):
+        reads.__init__(writes, (8, 2), (16, 4))
+    uninitialized = native.ReadQuota.__new__(native.ReadQuota)
+    with pytest.raises(RuntimeError, match="not initialized"):
+        uninitialized.report()
+    with pytest.raises(RuntimeError, match="not initialized"):
+        uninitialized.admit("database", 1, 0)
+    with pytest.raises(RuntimeError, match="not initialized"):
+        native.ReadQuota(native.WriteQuota.__new__(native.WriteQuota), (8, 2), (16, 4))
+    with pytest.raises((TypeError, OverflowError)):
+        reads.admit("database", True, 0)
+    with pytest.raises(OverflowError):
+        reads.admit("database", 1 << 63, 0)
+    assert not writes.recovering

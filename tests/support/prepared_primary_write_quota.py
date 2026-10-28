@@ -14,8 +14,9 @@ CAPACITY = 256 * 1024
 class _ObservedConnection:
     """Snapshot the driver error before the storage owner's exception handler."""
 
-    def __init__(self, connection, quota):
+    def __init__(self, connection, quota, *, read_report=None):
         self.connection, self.quota = connection, quota
+        self.read_report = read_report
         self.commit_error = None
         self.explicit_rollbacks = 0
 
@@ -31,6 +32,7 @@ class _ObservedConnection:
                     "sqlite_errorcode": exc.sqlite_errorcode,
                     "in_transaction": self.connection.in_transaction,
                     "quota": self.quota.report(),
+                    "read_quota": self.read_report() if self.read_report else None,
                 }
             raise
 
@@ -68,7 +70,9 @@ def witness(opened, shim, refusal, *, compiled=False):
             65536,
         )
         with shim.write_quota(forward=forward, recovery=recovery, compiled=compiled) as quota:
-            observed = _ObservedConnection(files._connection, quota)
+            observed = _ObservedConnection(
+                files._connection, quota, read_report=getattr(shim, "read_report", None)
+            )
             files._connection = observed
             try:
                 files.put_control(
@@ -90,6 +94,9 @@ def witness(opened, shim, refusal, *, compiled=False):
                 assert automatic > 2
                 assert observed.commit_error["in_transaction"] is False
                 assert observed.explicit_rollbacks == 0
+                if observed.read_report:
+                    assert observed.commit_error["read_quota"]["recovery"]["read_calls"] > 0
+                    assert observed.commit_error["read_quota"]["recovery"]["read_bytes"] > 0
             else:
                 automatic = 0
                 assert report["forward"]["database_pages_attempted"] == 0
@@ -103,6 +110,7 @@ def witness(opened, shim, refusal, *, compiled=False):
             # Preserve the bank through close; clearing it is not a rollback mechanism.
             files.close()
             report = quota.report()
+            reads = observed.read_report() if observed.read_report else None
     cold = WriteLimits(
         4096,
         256,
@@ -134,6 +142,7 @@ def witness(opened, shim, refusal, *, compiled=False):
         "bank_implementation": "compiled-native" if compiled else "python-fixture",
         "tracking_bytes": quota.tracking_bytes if compiled else None,
         "quota": report,
+        "read_quota": reads,
         "automatic_rollback_pages_before_driver_error": automatic,
         "explicit_rollback_calls": observed.explicit_rollbacks,
         "original_control_exact": True,

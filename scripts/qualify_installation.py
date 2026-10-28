@@ -1926,7 +1926,8 @@ with sqlite3.connect(":memory:") as runtime:
     source_id=runtime.execute("SELECT sqlite_source_id()").fetchone()[0]
 vfs_limits=(4096,128,1048576,1048576,8388608,1024)
 vfs_quota=native.WriteQuota(vfs_limits,vfs_limits)
-vfs=native.WriteVfs(source_id,vfs_quota)
+vfs_reads=native.ReadQuota(vfs_quota,(8388608,1024),(8388608,1024))
+vfs=native.WriteVfs(source_id,vfs_reads)
 try:
     identity=vfs.identity()
     assert identity["sqlite_source_id"]==source_id
@@ -1946,15 +1947,17 @@ try:
         finally:
             connection.close()
     assert vfs.open_files==0
+    read_report=vfs_reads.report()["forward"]
 finally:
     vfs.close()
 vfs_calls=vfs_quota.report()["forward"]["write_calls"]
-assert vfs_calls>0 and not vfs_quota.recovering
+assert vfs_calls>0 and read_report["read_calls"]>0 and not vfs_quota.recovering
 print(json.dumps({"compiler":native.compiler,
     "module_sha256":hashlib.sha256(module.read_bytes()).hexdigest(),
     "tracking_bytes":quota.tracking_bytes,
     "forward_pages":2,"recovery_pages":3,"refusals":1,
     "storage_callbacks_native":True,"vfs_write_calls":vfs_calls,
+    "vfs_read_calls":read_report["read_calls"],"vfs_read_bytes":read_report["read_bytes"],
     "vfs_original_exact":True,"sqlite_source_id":source_id,
     "sqlite_library_sha256":library_digest}))
 """
@@ -1972,6 +1975,10 @@ print(json.dumps({"compiler":native.compiler,
         or proof.get("storage_callbacks_native") is not True
         or type(proof.get("vfs_write_calls")) is not int
         or proof["vfs_write_calls"] <= 0
+        or type(proof.get("vfs_read_calls")) is not int
+        or proof["vfs_read_calls"] <= 0
+        or type(proof.get("vfs_read_bytes")) is not int
+        or proof["vfs_read_bytes"] <= 0
         or proof.get("vfs_original_exact") is not True
         or not isinstance(proof.get("sqlite_source_id"), str)
         or not proof["sqlite_source_id"]

@@ -64,12 +64,10 @@ static enum rh_refusal rh_charge(
     return RH_ALLOWED;
 }
 
-enum rh_refusal rh_admit(
-    rh_quota *quota, enum rh_file file, int64_t amount, int64_t offset
+static enum rh_refusal rh_record(
+    rh_quota *quota, enum rh_refusal result, enum rh_file file, int64_t amount,
+    int64_t offset, int was_recovery
 ) {
-    int was_recovery = quota->recovering;
-    rh_bank *bank = was_recovery ? &quota->recovery : &quota->forward;
-    enum rh_refusal result = rh_charge(bank, file, amount, offset);
     if (result != RH_ALLOWED) {
         /* SQLite may restore originals inside this same failing native call. */
         quota->recovering = 1;
@@ -84,6 +82,32 @@ enum rh_refusal rh_admit(
         }
     }
     return result;
+}
+
+enum rh_refusal rh_admit(
+    rh_quota *quota, enum rh_file file, int64_t amount, int64_t offset
+) {
+    int was_recovery = quota->recovering;
+    rh_bank *bank = was_recovery ? &quota->recovery : &quota->forward;
+    return rh_record(quota, rh_charge(bank, file, amount, offset),
+                     file, amount, offset, was_recovery);
+}
+
+enum rh_refusal rh_read_admit(
+    rh_read_quota *reads, rh_quota *quota, enum rh_file file, int64_t amount, int64_t offset
+) {
+    int was_recovery = quota->recovering;
+    rh_read_bank *bank = was_recovery ? &reads->recovery : &reads->forward;
+    enum rh_refusal result = RH_ALLOWED;
+    if (file != RH_DATABASE && file != RH_JOURNAL) result = RH_FILE;
+    else if (amount < 0 || offset < 0 || amount > INT64_MAX - offset) result = RH_READ_RANGE;
+    else if (bank->calls >= bank->call_limit) result = RH_READ_CALLS;
+    else if ((uint64_t)amount > bank->byte_limit - bank->bytes) result = RH_READ_BYTES;
+    if (result == RH_ALLOWED) {
+        bank->bytes += (uint64_t)amount;
+        ++bank->calls;
+    }
+    return rh_record(quota, result, file, amount, offset, was_recovery);
 }
 
 void rh_failed(rh_quota *quota) {
@@ -101,6 +125,9 @@ const char *rh_reason(enum rh_refusal reason) {
         case RH_JOURNAL_END: return "journal extent grant";
         case RH_PAGES: return "database page grant";
         case RH_TRACKING: return "tracking capacity";
+        case RH_READ_RANGE: return "invalid read range";
+        case RH_READ_CALLS: return "read call grant";
+        case RH_READ_BYTES: return "read byte grant";
         default: return "allowed";
     }
 }

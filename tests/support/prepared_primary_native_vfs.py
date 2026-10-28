@@ -24,7 +24,10 @@ class NativeWriteShim:
             65536,
         )
         self._initial = native.WriteQuota(initial, initial)
-        self._native = native.WriteVfs(expected, self._initial)
+        read_limits = (64 * (limits.database_bytes + limits.journal_bytes), 65536)
+        self._initial_reads = native.ReadQuota(self._initial, read_limits, read_limits)
+        self._active_reads = self._initial_reads
+        self._native = native.WriteVfs(expected, self._initial_reads)
         self.name = self._native.name
         try:
             identity = self._native.identity()
@@ -57,14 +60,24 @@ class NativeWriteShim:
     def __exit__(self, *_args):
         self._native.close()
 
+    def read_report(self):
+        return self._active_reads.report()
+
     @contextmanager
     def write_quota(self, *, forward, recovery, compiled=False):
         from riverhog_client import _prepared_primary_native as native
 
         assert compiled
         quota = native.WriteQuota(astuple(forward), astuple(recovery))
-        self._native.arm(quota)
+        reads = native.ReadQuota(
+            quota,
+            (64 * (forward.database_end + forward.journal_end), forward.calls),
+            (64 * (recovery.database_end + recovery.journal_end), recovery.calls),
+        )
+        self._native.arm(reads)
+        self._active_reads = reads
         try:
             yield quota
         finally:
-            self._native.arm(self._initial)
+            self._native.arm(self._initial_reads)
+            self._active_reads = self._initial_reads

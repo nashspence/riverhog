@@ -6,7 +6,8 @@
 enum rh_file { RH_OTHER = 0, RH_DATABASE = 1, RH_JOURNAL = 2 };
 enum rh_refusal {
     RH_ALLOWED = 0, RH_FILE, RH_RANGE, RH_CALLS, RH_BYTES,
-    RH_DATABASE_END, RH_JOURNAL_END, RH_PAGES, RH_TRACKING
+    RH_DATABASE_END, RH_JOURNAL_END, RH_PAGES, RH_TRACKING,
+    RH_READ_RANGE, RH_READ_CALLS, RH_READ_BYTES
 };
 
 typedef struct {
@@ -31,6 +32,12 @@ typedef struct {
     int first_recovery;
 } rh_quota;
 
+typedef struct {
+    uint64_t byte_limit, call_limit, bytes, calls;
+} rh_read_bank;
+typedef struct { rh_read_bank forward, recovery; } rh_read_quota;
+
+enum rh_refusal rh_read_admit(rh_read_quota *, rh_quota *, enum rh_file, int64_t, int64_t);
 enum rh_refusal rh_admit(rh_quota *, enum rh_file, int64_t, int64_t);
 void rh_failed(rh_quota *);
 const char *rh_reason(enum rh_refusal);
