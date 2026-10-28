@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ctypes
 from contextlib import nullcontext
+from dataclasses import asdict, replace
 
 from riverhog_client import PrimaryStateError
 
@@ -61,6 +62,17 @@ def _fixed_quota(files, shim):
     }
 
 
+def assert_cold_space(before, after, *, start=None):
+    """Closing may release excess allocation; extents and backed reserves stay fixed."""
+    details = {"start": str(start), "before": asdict(before), "after": asdict(after)}
+    assert replace(after, database=before.database, journal=before.journal) == before, details
+    for kind in ("database", "journal"):
+        previous, current = getattr(before, kind), getattr(after, kind)
+        assert current.end_bytes == previous.end_bytes, details
+        assert current.end_bytes <= current.allocated_bytes <= previous.allocated_bytes, details
+    assert after.journal_reserved_bytes <= after.journal.end_bytes, details
+
+
 def progress(opened, start, *, shim=None):
     with opened(initialize=True) as files:
         payload = _prepare(files)
@@ -76,7 +88,13 @@ def progress(opened, start, *, shim=None):
             8,
             (start + 1).to_bytes(8, "big"),
         )
-        assert files.space_usage() == before
+        after_sync = files.space_usage()
+        assert after_sync == before, {
+            "start": str(start),
+            "phase": "runtime",
+            "before": asdict(before),
+            "after": asdict(after_sync),
+        }
         _originals(files, payload)
         measured = None if quota is None else quota.report()
         if measured is not None:
@@ -89,7 +107,9 @@ def progress(opened, start, *, shim=None):
     with opened(initialize=False) as files:
         assert files._one("SELECT barrier FROM primary_format") == ((start + 2).to_bytes(8, "big"),)
         _originals(files, payload)
-        assert files.space_usage() == before
+        after_cold = files.space_usage()
+        assert_cold_space(before, after_cold, start=start)
+        files.require_journal_ready()
     return {
         "start": str(start),
         "after_sync": str(start + 1),
@@ -98,6 +118,10 @@ def progress(opened, start, *, shim=None):
         "original_control_exact": True,
         "original_payload_exact": True,
         "database_and_journal_growth": False,
+        "space_before": asdict(before),
+        "space_after_sync": asdict(after_sync),
+        "space_after_cold_barrier": asdict(after_cold),
+        "cold_backing_preserved": True,
         "derived_bound": bound,
         "quota": measured,
         "quota_phase": "explicit runtime barrier after prepared control readiness",

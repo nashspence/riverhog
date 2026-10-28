@@ -61,6 +61,7 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
     assert all(
         case["fixed_extent_bytes"] == 8
         and not case["database_and_journal_growth"]
+        and case["cold_backing_preserved"]
         and case["quota"]["refusals"] == case["quota"]["native_failures"] == 0
         and case["quota"]["forward"]["database_pages_attempted"]
         <= case["derived_bound"]["database_pages"]
@@ -68,6 +69,16 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
         <= case["derived_bound"]["journal_write_extent_bytes"]
         for case in progress_cases
     )
+    for case in progress_cases:
+        for kind in ("database", "journal"):
+            before = case["space_before"][kind]
+            after = case["space_after_cold_barrier"][kind]
+            assert after["end_bytes"] == before["end_bytes"]
+            assert after["end_bytes"] <= after["allocated_bytes"] <= before["allocated_bytes"]
+        assert (
+            case["space_after_cold_barrier"]["journal_reserved_bytes"]
+            <= case["space_after_cold_barrier"]["journal"]["end_bytes"]
+        )
     rejected = [case for case in barrier_cases if case["kind"] == "reject"]
     assert len(rejected) == 4
     assert all(
