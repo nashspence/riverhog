@@ -228,6 +228,25 @@ void rh_callback_detach(rh_callback_quota *calls) {
     calls->recovery_files = 0;
 }
 
+int rh_retry_bootstrap_cost(int64_t count, int64_t delay, rh_retry_cost *cost) {
+    uint64_t retries, product, milliseconds;
+    if (count <= 0 || count >= INT_MAX || delay <= 0 || delay > INT_MAX) return 0;
+    retries = (uint64_t)count;
+    product = retries * (retries + 1);
+    /* winLogIoerr multiplies before dividing by two, in signed native int. */
+    if ((uint64_t)delay > (uint64_t)INT_MAX / product) return 0;
+    milliseconds = (uint64_t)delay * product / 2;
+    /* Both open modes run winIsDir; each failed RW open also runs winAccess.
+     * Identity adds three metadata calls and close prepays three attempts.
+     */
+    cost->filesystem_calls = (retries + 1) * (retries + 5) + 6;
+    cost->sleep_microseconds = (milliseconds * (retries + 5) + 200) * 1000;
+    return 1;
+}
+void rh_forbid_retry(rh_quota *quota) {
+    (void)rh_record(quota, RH_RETRY, RH_DATABASE, 0, 0, quota->recovering);
+}
+
 void rh_forbid_control(rh_quota *quota, enum rh_file file) {
     (void)rh_record(quota, RH_CONTROL, file, 0, 0, quota->recovering);
 }
@@ -257,6 +276,7 @@ const char *rh_reason(enum rh_refusal reason) {
         case RH_CALLBACK_CLOSE: return "recovery file-close grant";
         case RH_SLEEP_RANGE: return "invalid VFS sleep range";
         case RH_SLEEP_GRANT: return "VFS sleep grant";
+        case RH_RETRY: return "native retry admission";
         default: return "allowed";
     }
 }

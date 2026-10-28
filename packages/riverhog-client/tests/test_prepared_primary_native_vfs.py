@@ -1899,3 +1899,376 @@ print(json.dumps({
         assert cold.execute("SELECT value FROM original").fetchone() == (b"exact original",)
     finally:
         cold.close()
+
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "success",
+        "call_grant",
+        "sleep_grant",
+        "profile_range",
+        "malformed",
+        "unbound",
+        "live_file",
+        "foreign_baseline",
+        "heap_refusal",
+        "open_failure",
+        "close_failure",
+        "sibling_quarantine",
+        "readonly_fallback",
+        "close_retry_success",
+    ],
+)
+def test_native_prepaid_retry_bootstrap_runs_in_an_isolated_application(tmp_path, scenario):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    path = tmp_path / "retry-bootstrap.sqlite3"
+    connection = sqlite3.connect(path)
+    try:
+        connection.execute("CREATE TABLE original(value BLOB)")
+        connection.execute("INSERT INTO original VALUES (?)", (b"exact original",))
+        connection.commit()
+    finally:
+        connection.close()
+    original = path.read_bytes()
+    code = r"""
+import ctypes as c, importlib.util, json, sqlite3, sys
+from contextlib import ExitStack
+from pathlib import Path
+from types import SimpleNamespace
+
+sys.path.insert(0, sys.argv[1])
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_windows_native import _WindowsAPI
+from tests.support.sqlite_vfs_faults import FaultVfs, windows_system_call
+
+spec = importlib.util.spec_from_file_location(
+    "native_vfs_probe",
+    Path(sys.argv[1]) / "packages/riverhog-client/tests/test_prepared_primary_native_vfs.py",
+)
+helpers = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = helpers
+spec.loader.exec_module(helpers)
+native, source = helpers.runtime()
+heap = native.SqliteProcessBudget(source, 64 * 1024 * 1024)
+quota = native.WriteQuota(helpers.grant(), helpers.grant())
+calls = helpers.callbacks(native, quota)
+gate = native.WriteVfs(source, helpers.reads(native, quota), calls, heap)
+path, scenario = Path(sys.argv[2]), sys.argv[3]
+if scenario == "sibling_quarantine":
+    sibling_quota = native.WriteQuota(helpers.grant(), helpers.grant())
+    sibling_calls = helpers.callbacks(native, sibling_quota)
+    sibling = native.WriteVfs(source, helpers.reads(native, sibling_quota), sibling_calls, heap)
+original_bytes = path.read_bytes()
+api = _WindowsAPI()
+borrowed = api.open(path)
+gate.bind(str(path), borrowed, None)
+api.close(borrowed)
+assert heap.retry_report() == {
+    "state": "unconfigured",
+    "qualified_initial_retry_count": 0,
+    "qualified_initial_delay_milliseconds": 0,
+    "selected_retry_count": 0,
+    "selected_delay_milliseconds": 0,
+    "bootstrap_filesystem_api_attempts_prepaid": 0,
+    "bootstrap_sleep_microseconds_prepaid": 0,
+    "first_failure_stage": "",
+    "native_result": 0,
+    "native_close_result": 0,
+    "native_close_attempted": False,
+}
+initial, selected = (10, 25), (2, 3)
+cost = native.retry_bootstrap_cost(initial)
+assert cost == (171, 20825000)
+pointer, dword = c.c_void_p, c.c_ulong
+create_type = c.WINFUNCTYPE(
+    pointer,
+    c.c_wchar_p,
+    dword,
+    dword,
+    pointer,
+    dword,
+    dword,
+    pointer,
+    use_last_error=True,
+)
+io_type = c.WINFUNCTYPE(
+    c.c_int, pointer, pointer, dword, c.POINTER(dword), pointer, use_last_error=True
+)
+close_type = c.WINFUNCTYPE(c.c_int, pointer, use_last_error=True)
+sleep_type = c.WINFUNCTYPE(None, dword, use_last_error=True)
+seen = {"creates": [], "prepaid": [], "reads": 0, "writes": 0, "closes": [], "sleeps": []}
+
+
+def create(original, name, access, sharing, security, creation, flags, template):
+    seen["creates"].append(creation)
+    seen["prepaid"].append(heap.retry_report())
+    if scenario == "open_failure" or (scenario == "readonly_fallback" and access & 0x40000000):
+        c.set_last_error(5)
+        return pointer(-1).value
+    return original(name, access, sharing, security, creation, flags, template)
+
+
+def read(original, *args):
+    seen["reads"] += 1
+    c.set_last_error(5)
+    return 0
+
+
+def write(original, *args):
+    seen["writes"] += 1
+    c.set_last_error(5)
+    return 0
+
+
+def close(original, handle):
+    seen["closes"].append(handle)
+    if scenario in ("close_failure", "sibling_quarantine") or (
+        scenario == "close_retry_success" and len(seen["closes"]) < 3
+    ):
+        c.set_last_error(5)
+        return 0
+    return original(handle)
+
+
+def sleep(original, milliseconds):
+    seen["sleeps"].append(milliseconds)
+
+
+def refuse(operation, message):
+    try:
+        operation()
+    except RuntimeError as exc:
+        assert message in str(exc), str(exc)
+    else:
+        raise AssertionError("invalid retry admission succeeded")
+
+
+def query(methods, raw):
+    values = (c.c_int * 2)(-1, -1)
+    assert methods.contents.control(raw, 9, values) == sqlite3.SQLITE_OK
+    return tuple(values)
+
+
+if scenario == "foreign_baseline":
+    with helpers.native_file(
+        path, SimpleNamespace(name="win32"), binding=False, create=False
+    ) as opened:
+        values = (c.c_int * 2)(1, 1)
+        assert opened[0] == sqlite3.SQLITE_OK
+        assert opened[2].contents.control(opened[1], 9, values) == sqlite3.SQLITE_OK
+        assert query(opened[2], opened[1]) == (1, 1)
+
+with ExitStack() as stack:
+    stack.enter_context(windows_system_call(b"Sleep", sleep_type, sleep))
+    stack.enter_context(windows_system_call(b"CreateFileW", create_type, create))
+    stack.enter_context(windows_system_call(b"ReadFile", io_type, read))
+    stack.enter_context(windows_system_call(b"WriteFile", io_type, write))
+    real_close = stack.enter_context(windows_system_call(b"CloseHandle", close_type, close))
+    if scenario in ("call_grant", "sleep_grant"):
+        smaller = (cost[0] - 1, cost[1]) if scenario == "call_grant" else (cost[0], cost[1] - 1)
+        refuse(lambda: gate.admit_retries(initial, selected, smaller), "grant")
+        assert not seen["creates"] and not seen["closes"]
+        assert heap.retry_report()["state"] == "unconfigured" and not gate.quarantined
+        assert quota.recovering
+        assert quota.report()["first_refusal"]["reason"] == "native retry admission"
+        # A separately authorized larger bootstrap grant can make control progress.
+        gate.admit_retries(initial, selected, cost)
+    elif scenario in ("profile_range", "malformed"):
+        invalid = (
+            ((initial, (1, 1073741824), cost), (initial, (46341, 1), cost))
+            if scenario == "profile_range"
+            else (
+                (list(initial), selected, cost),
+                (initial, (True, 3), cost),
+                (initial, selected, (False, cost[1])),
+                (initial, selected, (1, -1)),
+            )
+        )
+        for arguments in invalid:
+            try:
+                gate.admit_retries(*arguments)
+            except (ValueError, TypeError, OverflowError):
+                pass
+            else:
+                raise AssertionError("invalid retry input was admitted")
+        assert not seen["creates"] and not seen["closes"] and not quota.recovering
+        assert heap.retry_report()["state"] == "unconfigured" and not gate.quarantined
+        gate.admit_retries(initial, selected, cost)
+    elif scenario == "heap_refusal":
+        library = FaultVfs.windows().library
+        library.sqlite3_malloc64.argtypes = [c.c_ulonglong]
+        library.sqlite3_malloc64.restype = pointer
+        library.sqlite3_free.argtypes = [pointer]
+        library.sqlite3_free.restype = None
+        current = heap.report()
+        ballast = library.sqlite3_malloc64(
+            current["heap_limit_bytes"] - current["sqlite_heap_bytes"] - 16
+        )
+        assert ballast
+        try:
+            refuse(lambda: gate.admit_retries(initial, selected, cost), "preallocated")
+            assert not seen["creates"] and not seen["closes"]
+            assert quota.recovering and not gate.quarantined
+        finally:
+            library.sqlite3_free(ballast)
+        assert heap.retry_report()["state"] == "unconfigured"
+        gate.admit_retries(initial, selected, cost)
+    elif scenario == "unbound":
+        gate.unbind()
+        refuse(lambda: gate.admit_retries(initial, selected, cost), "bound")
+        assert not seen["creates"] and not seen["closes"]
+        assert heap.retry_report()["state"] == "unconfigured"
+        handle = api.open(path)
+        gate.bind(str(path), handle, None)
+        api.close(handle)
+        gate.admit_retries(initial, selected, cost)
+    elif scenario == "live_file":
+        # The first native open itself is successful and performs no pager IO.
+        with helpers.native_file(path, gate, binding=False, create=False) as opened:
+            assert opened[0] == sqlite3.SQLITE_OK
+            before = list(seen["creates"])
+            refuse(lambda: gate.admit_retries(initial, selected, cost), "file-free")
+            assert seen["creates"] == before and heap.retry_report()["state"] == "unconfigured"
+        seen["creates"].clear()
+        seen["prepaid"].clear()
+        seen["closes"].clear()
+        gate.admit_retries(initial, selected, cost)
+    elif scenario in (
+        "foreign_baseline",
+        "open_failure",
+        "close_failure",
+        "sibling_quarantine",
+        "readonly_fallback",
+    ):
+        refuse(lambda: gate.admit_retries(initial, selected, cost), "restart required")
+    else:
+        assert scenario in ("success", "close_retry_success")
+        gate.admit_retries(initial, selected, cost)
+
+assert seen["reads"] == seen["writes"] == 0
+assert seen["creates"] and all(value == 3 for value in seen["creates"])  # OPEN_EXISTING
+assert all(
+    report["state"] == "admitting"
+    and report["bootstrap_filesystem_api_attempts_prepaid"] == cost[0]
+    and report["bootstrap_sleep_microseconds_prepaid"] == cost[1]
+    for report in seen["prepaid"]
+)
+report = heap.retry_report()
+assert report["bootstrap_filesystem_api_attempts_prepaid"] == cost[0]
+assert report["bootstrap_sleep_microseconds_prepaid"] == cost[1]
+failed = scenario in (
+    "foreign_baseline",
+    "open_failure",
+    "close_failure",
+    "sibling_quarantine",
+    "readonly_fallback",
+)
+if failed:
+    assert report["state"] == "quarantined" and gate.quarantined and gate.bound
+    assert gate.open_files == 0 and quota.recovering
+    refuse(lambda: gate.admit_retries(initial, selected, cost), "file-free")
+    refuse(gate.unbind, "quarantined")
+    refuse(gate.close, "quarantined")
+    try:
+        native.WriteVfs(
+            source, helpers.reads(native, quota), helpers.callbacks(native, quota), heap
+        )
+    except RuntimeError as exc:
+        assert "retry quarantine" in str(exc)
+    else:
+        raise AssertionError("a new VFS accepted quarantined application retry state")
+    if scenario == "foreign_baseline":
+        assert report["first_failure_stage"] == "baseline" and report["native_result"] == 0
+        assert report["native_close_attempted"]
+        assert report["native_close_result"] == sqlite3.SQLITE_OK
+    elif scenario == "readonly_fallback":
+        assert report["first_failure_stage"] == "identity" and report["native_result"] == 0
+        assert seen["creates"] == [3, 3]
+        assert report["native_close_attempted"]
+        assert report["native_close_result"] == sqlite3.SQLITE_OK
+    elif scenario == "open_failure":
+        assert report["first_failure_stage"] == "open"
+        assert report["native_result"] == sqlite3.SQLITE_CANTOPEN
+        assert not report["native_close_attempted"]
+    if scenario in ("close_failure", "sibling_quarantine"):
+        assert report["first_failure_stage"] == "close"
+        assert report["native_result"] == sqlite3.SQLITE_IOERR_CLOSE
+        assert report["native_close_result"] == sqlite3.SQLITE_IOERR_CLOSE
+        assert report["native_close_attempted"]
+        assert len(seen["closes"]) == 3 and len(set(seen["closes"])) == 1
+        assert seen["sleeps"] == [100, 100]
+        # The hook never closed this handle; this cleanup is qualification-only.
+        assert real_close(seen["closes"][0])
+    if scenario == "sibling_quarantine":
+        library = FaultVfs.windows().library
+        raw_vfs = library.sqlite3_vfs_find(sibling.name.encode("ascii"))
+        before = c.c_double(-7)
+        assert raw_vfs.contents.time(raw_vfs, c.byref(before)) == sqlite3.SQLITE_FULL
+        assert before.value == -7 and sibling_quota.recovering
+        assert sibling_quota.report()["first_refusal"]["reason"] == "native retry admission"
+        assert not sibling.quarantined
+        sibling.close()  # no uncertain sibling resource blocks its safe release
+    try:
+        path.rename(path.with_suffix(".moved"))
+    except PermissionError:
+        pass
+    else:
+        raise AssertionError("failed bootstrap released its binding pin")
+else:
+    assert report["state"] == "admitted"
+    assert report["native_result"] == report["native_close_result"] == sqlite3.SQLITE_OK
+    assert report["native_close_attempted"] and report["first_failure_stage"] == ""
+    assert report["qualified_initial_retry_count"] == 10
+    assert report["qualified_initial_delay_milliseconds"] == 25
+    assert report["selected_retry_count"] == 2 and report["selected_delay_milliseconds"] == 3
+    assert len(seen["creates"]) == 1
+    if scenario == "close_retry_success":
+        assert len(seen["closes"]) == 3 and seen["sleeps"] == [100, 100]
+    else:
+        assert len(seen["closes"]) == 1 and not seen["sleeps"]
+    assert not gate.quarantined and gate.open_files == 0
+    refuse(lambda: gate.admit_retries(initial, selected, cost), "already")
+    with helpers.native_file(path, gate, binding=False, create=False) as opened:
+        assert opened[0] == sqlite3.SQLITE_OK and query(opened[2], opened[1]) == selected
+    assert heap.retry_report() == report  # no per-store reset or cumulative recharge
+    gate.unbind()
+    gate.close()
+    moved = path.with_suffix(".moved")
+    path.rename(moved)
+    moved.rename(path)
+    assert heap.retry_report() == report  # process owner has no successful bootstrap path pin
+
+assert path.read_bytes() == original_bytes
+assert heap.report()["sqlite_heap_peak_bytes"] <= heap.report()["heap_limit_bytes"]
+print(json.dumps({"passed": True, "scenario": scenario, "retry": report}))
+"""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(path),
+            scenario,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] and proof["scenario"] == scenario
+    assert path.read_bytes() == original
+    moved = path.with_suffix(".moved")
+    path.rename(moved)
+    cold = sqlite3.connect(moved)
+    try:
+        assert cold.execute("SELECT value FROM original").fetchone() == (b"exact original",)
+    finally:
+        cold.close()

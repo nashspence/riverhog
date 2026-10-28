@@ -45,6 +45,52 @@ static int positive_integer(PyObject *object, uint64_t *value) {
     return 0;
 }
 
+static int retry_pair(PyObject *values, uint64_t *first, uint64_t *second, int profile) {
+    Py_ssize_t index;
+    uint64_t *fields[2] = {first, second};
+    if (!PyTuple_CheckExact(values) || PyTuple_GET_SIZE(values) != 2) {
+        PyErr_SetString(PyExc_TypeError, "retry profiles and bootstrap grants require exact two-integer tuples");
+        return 0;
+    }
+    for (index = 0; index < 2; ++index) {
+        PyObject *value = PyTuple_GET_ITEM(values, index);
+        long long parsed;
+        if (!PyLong_CheckExact(value)) {
+            PyErr_SetString(PyExc_TypeError, "retry profiles and grants require exact signed 64-bit integers");
+            return 0;
+        }
+        parsed = PyLong_AsLongLong(value);
+        if (PyErr_Occurred()) return 0;
+        if (parsed < 0 || (profile && parsed == 0)) {
+            PyErr_SetString(PyExc_ValueError, "retry profiles must be positive and bootstrap grants nonnegative");
+            return 0;
+        }
+        *fields[index] = (uint64_t)parsed;
+    }
+    if (profile) {
+        rh_retry_cost ignored;
+        if (!rh_retry_bootstrap_cost((int64_t)*first, (int64_t)*second, &ignored)) {
+            PyErr_SetString(PyExc_ValueError, "retry profile exceeds native signed-int delay or logging arithmetic");
+            return 0;
+        }
+    }
+    return 1;
+}
+static PyObject *retry_bootstrap_cost(PyObject *module, PyObject *args) {
+    PyObject *values;
+    uint64_t count, delay;
+    rh_retry_cost cost;
+    (void)module;
+    if (!PyArg_ParseTuple(args, "O", &values)) return NULL;
+    if (!retry_pair(values, &count, &delay, 1)) return NULL;
+    if (!rh_retry_bootstrap_cost((int64_t)count, (int64_t)delay, &cost)) {
+        PyErr_SetString(PyExc_ValueError, "retry bootstrap recipe is invalid");
+        return NULL;
+    }
+    return Py_BuildValue("(KK)", (unsigned long long)cost.filesystem_calls,
+                                (unsigned long long)cost.sleep_microseconds);
+}
+
 static void free_bank(rh_bank *bank) {
     PyMem_Free(bank->pages);
     PyMem_Free(bank->staged_slots);
@@ -592,7 +638,32 @@ static PyObject *heap_increase(PyObject *object, PyObject *value) {
     }
     Py_RETURN_NONE;
 }
+static PyObject *heap_retry_report(PyObject *object, PyObject *unused) {
+    SqliteProcessBudget *self = (SqliteProcessBudget *)object;
+    rh_retry_admission report;
+    const char *states[] = {"unconfigured", "admitting", "admitted", "quarantined"};
+    const char *stages[] = {"", "open", "identity", "baseline", "configure", "verify", "close"};
+    (void)unused;
+    if (!heap_ready(self)) return NULL;
+    if (!rh_sqlite_retry_report(self->heap, &report) || report.state < 0 || report.state > 3 ||
+        report.failed_stage < 0 || report.failed_stage > 6) {
+        PyErr_SetString(PyExc_RuntimeError, "application retry admission or its SQLite heap is invalid");
+        return NULL;
+    }
+    return Py_BuildValue("{s:s,s:i,s:i,s:i,s:i,s:K,s:K,s:s,s:i,s:i,s:O}",
+        "state", states[report.state],
+        "qualified_initial_retry_count", report.initial_count,
+        "qualified_initial_delay_milliseconds", report.initial_delay,
+        "selected_retry_count", report.count,
+        "selected_delay_milliseconds", report.delay,
+        "bootstrap_filesystem_api_attempts_prepaid", (unsigned long long)report.prepaid.filesystem_calls,
+        "bootstrap_sleep_microseconds_prepaid", (unsigned long long)report.prepaid.sleep_microseconds,
+        "first_failure_stage", stages[report.failed_stage],
+        "native_result", report.native_result, "native_close_result", report.close_result,
+        "native_close_attempted", report.close_attempted ? Py_True : Py_False);
+}
 static PyMethodDef heap_methods[] = {
+    {"retry_report", heap_retry_report, METH_NOARGS, "Observe the application retry admission record; no disk query or reconfiguration."},
     {"increase", heap_increase, METH_O, "Apply an explicit larger application grant without resetting use."},
     {"report", heap_report, METH_NOARGS, "Verify and observe the application SQLite heap ceiling."},
     {NULL, NULL, 0, NULL}
@@ -615,6 +686,8 @@ static PyObject *current_process_budget(PyObject *module, PyObject *unused) {
     return Py_NewRef(process_budget);
 }
 static PyMethodDef module_methods[] = {
+    {"retry_bootstrap_cost", retry_bootstrap_cost, METH_VARARGS,
+        "Conservative qualified desktop-NT open, identity and close filesystem-attempt/nominal-wait recipe."},
     {"current_process_budget", current_process_budget, METH_NOARGS,
         "Get the existing application owner without creating or changing a global grant."},
     {NULL, NULL, 0, NULL}
@@ -738,6 +811,24 @@ static PyObject *vfs_bind(PyObject *object, PyObject *args) {
     }
     Py_RETURN_NONE;
 }
+static PyObject *vfs_admit_retries(PyObject *object, PyObject *args) {
+    WriteVfs *self = (WriteVfs *)object;
+    PyObject *initial, *selected, *bootstrap;
+    uint64_t initial_count, initial_delay, count, delay, calls, sleeps;
+    const char *error;
+    if (!vfs_ready(self)) return NULL;
+    if (!PyArg_ParseTuple(args, "OOO", &initial, &selected, &bootstrap)) return NULL;
+    if (!retry_pair(initial, &initial_count, &initial_delay, 1) ||
+        !retry_pair(selected, &count, &delay, 1) ||
+        !retry_pair(bootstrap, &calls, &sleeps, 0)) return NULL;
+    if (!rh_write_vfs_admit_retries(self->vfs, (int64_t)initial_count, (int64_t)initial_delay,
+                                   (int64_t)count, (int64_t)delay, calls, sleeps, &error)) {
+        PyErr_SetString(PyExc_RuntimeError, error);
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
 static PyObject *vfs_unbind(PyObject *object, PyObject *unused) {
     WriteVfs *self = (WriteVfs *)object;
     (void)unused;
@@ -858,6 +949,8 @@ static PyObject *vfs_quarantined(PyObject *object, void *unused) {
     return PyBool_FromLong(quarantined);
 }
 static PyMethodDef vfs_methods[] = {
+    {"admit_retries", vfs_admit_retries, METH_VARARGS,
+        "At controlled quiescent startup, prepay a bound existing-file bootstrap and admit one application retry policy."},
     {"bind", vfs_bind, METH_VARARGS, "Pin the database admitted by the caller's live native owner."},
     {"unbind", vfs_unbind, METH_NOARGS, "Release the binding after every selected native file closes."},
     {"arm", vfs_arm, METH_VARARGS, "Select a bank before entering SQLite on its owning thread."},

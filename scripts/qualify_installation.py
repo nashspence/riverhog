@@ -1962,6 +1962,16 @@ try:
         try:
             vfs.bind(str(path.resolve()),handle,None)
             assert vfs.bound
+            bootstrap_cost=native.retry_bootstrap_cost((10,25))
+            assert bootstrap_cost==(171,20825000)
+            vfs.admit_retries((10,25),(2,3),bootstrap_cost)
+            retry_report=heap.retry_report()
+            assert retry_report["state"]=="admitted"
+            assert retry_report["selected_retry_count"]==2
+            assert retry_report["selected_delay_milliseconds"]==3
+            assert retry_report["native_close_attempted"]
+            assert retry_report["native_result"]==retry_report["native_close_result"]==0
+            assert retry_report["first_failure_stage"]==""
             connection=sqlite3.connect(uri,uri=True)
             assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone()==("persist",)
             connection.execute("PRAGMA synchronous=EXTRA")
@@ -1977,6 +1987,10 @@ try:
             vfs.unbind()
             assert not vfs.bound
             assert kernel.CloseHandle(handle)
+        moved=path.with_name("primary-moved.sqlite3")
+        path.rename(moved)
+        moved.rename(path)
+        assert heap.retry_report()==retry_report
     assert vfs.open_files==0
     read_report=vfs_reads.report()["forward"]
     resize_calls=vfs_quota.resize_report()["forward"]["resize_calls"]
@@ -2001,6 +2015,16 @@ print(json.dumps({"compiler":native.compiler,
     "callback_sleep_forward_microseconds":sleep_report["forward"]["sleep_microseconds_charged"],
     "callback_sleep_recovery_microseconds":sleep_report["recovery"]["sleep_microseconds_charged"],
     "callback_sleep_refusal_verified":sleep_refused,
+    "retry_bootstrap_filesystem_api_attempts_prepaid":
+        retry_report["bootstrap_filesystem_api_attempts_prepaid"],
+    "retry_bootstrap_sleep_microseconds_prepaid":
+        retry_report["bootstrap_sleep_microseconds_prepaid"],
+    "retry_count":retry_report["selected_retry_count"],
+    "retry_delay_milliseconds":retry_report["selected_delay_milliseconds"],
+    "retry_admission_verified":retry_report["state"]=="admitted",
+    "retry_bootstrap_close_verified":retry_report["native_close_attempted"]
+        and retry_report["native_close_result"]==0,
+    "retry_bootstrap_pin_released":True,
     "vfs_binding_verified":True,
     "vfs_original_exact":True,"sqlite_source_id":source_id,
     "sqlite_library_sha256":library_digest}))
@@ -2032,6 +2056,17 @@ print(json.dumps({"compiler":native.compiler,
         or type(proof.get("callback_sleep_recovery_microseconds")) is not int
         or proof["callback_sleep_recovery_microseconds"] != 1000
         or proof.get("callback_sleep_refusal_verified") is not True
+        or type(proof.get("retry_bootstrap_filesystem_api_attempts_prepaid")) is not int
+        or proof["retry_bootstrap_filesystem_api_attempts_prepaid"] != 171
+        or type(proof.get("retry_bootstrap_sleep_microseconds_prepaid")) is not int
+        or proof["retry_bootstrap_sleep_microseconds_prepaid"] != 20825000
+        or type(proof.get("retry_count")) is not int
+        or proof["retry_count"] != 2
+        or type(proof.get("retry_delay_milliseconds")) is not int
+        or proof["retry_delay_milliseconds"] != 3
+        or proof.get("retry_admission_verified") is not True
+        or proof.get("retry_bootstrap_close_verified") is not True
+        or proof.get("retry_bootstrap_pin_released") is not True
         or type(proof.get("sqlite_heap_limit_bytes")) is not int
         or proof.get("sqlite_heap_limit_bytes") != 67108864
         or type(proof.get("sqlite_heap_peak_bytes")) is not int

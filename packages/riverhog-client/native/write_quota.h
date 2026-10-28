@@ -8,7 +8,7 @@ enum rh_refusal {
     RH_ALLOWED = 0, RH_FILE, RH_RANGE, RH_CALLS, RH_BYTES,
     RH_DATABASE_END, RH_JOURNAL_END, RH_PAGES, RH_TRACKING,
     RH_READ_RANGE, RH_READ_CALLS, RH_READ_BYTES,
-    RH_RESIZE_RANGE, RH_RESIZE_CALLS, RH_CONTROL, RH_CALLBACK_CALLS, RH_CALLBACK_CLOSE, RH_SLEEP_RANGE, RH_SLEEP_GRANT
+    RH_RESIZE_RANGE, RH_RESIZE_CALLS, RH_CONTROL, RH_CALLBACK_CALLS, RH_CALLBACK_CLOSE, RH_SLEEP_RANGE, RH_SLEEP_GRANT, RH_RETRY
 };
 
 typedef struct {
@@ -60,6 +60,12 @@ void rh_callback_detach(rh_callback_quota *);
 enum rh_refusal rh_read_admit(rh_read_quota *, rh_quota *, enum rh_file, int64_t, int64_t);
 enum rh_refusal rh_admit(rh_quota *, enum rh_file, int64_t, int64_t);
 enum rh_refusal rh_resize(rh_quota *, enum rh_file, int64_t);
+typedef struct { uint64_t filesystem_calls, sleep_microseconds; } rh_retry_cost;
+/* Desktop-NT native open, opened-handle identity and prepaid native close.
+ * This excludes name conversion, error formatting and caller binding work.
+ */
+int rh_retry_bootstrap_cost(int64_t, int64_t, rh_retry_cost *);
+void rh_forbid_retry(rh_quota *);
 void rh_forbid_control(rh_quota *, enum rh_file);
 void rh_failed(rh_quota *);
 const char *rh_reason(enum rh_refusal);

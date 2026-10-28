@@ -47,6 +47,8 @@ typedef struct {
     void (*release)(void *);
     const char *(*uri_key)(const char *, int);
     const char *(*uri_parameter)(const char *, const char *);
+    const char *(*create_filename)(const char *, const char *, const char *, int, const char **);
+    void (*free_filename)(const char *);
     void *module;
 } rh_sqlite_api;
 
@@ -92,10 +94,16 @@ static unsigned long current_thread(void) {
 #endif
 }
 
+static int retry_usable(rh_sqlite_heap *);
 static int owned(rh_write_vfs *vfs) { return current_thread() == vfs->thread; }
 static int callback(rh_write_vfs *vfs, int can_error) {
-    return owned(vfs) && !vfs->quarantined &&
-        rh_callback_admit(vfs->calls, vfs->quota, can_error) == RH_ALLOWED;
+    if (!owned(vfs) || vfs->quarantined) return 0;
+    if (!retry_usable(vfs->heap)) {
+        rh_forbid_retry(vfs->quota);
+        if (!can_error) vfs->calls->pending_error = 1;
+        return 0;
+    }
+    return rh_callback_admit(vfs->calls, vfs->quota, can_error) == RH_ALLOWED;
 }
 static rh_sqlite_file *real_file(rh_write_file *file) {
     return (rh_sqlite_file *)((char *)file + file->owner->offset);
@@ -354,6 +362,10 @@ static int vfs_open(
     int result, close_bank;
     file->methods = NULL;
     if (!owned(vfs) || vfs->quarantined || vfs->open_files == INT_MAX) return RH_IOERR;
+    if (!retry_usable(vfs->heap)) {
+        rh_forbid_retry(vfs->quota);
+        return RH_IOERR;
+    }
     wrapper->owner = vfs;
     wrapper->kind = (flags & RH_FILE_CLASSES) == RH_MAIN_DB ? RH_DATABASE :
         (flags & RH_FILE_CLASSES) == RH_MAIN_JOURNAL ? RH_JOURNAL : RH_OTHER;
@@ -464,8 +476,13 @@ static int vfs_random(rh_sqlite_vfs *raw, int size, char *out) {
 }
 static int vfs_sleep(rh_sqlite_vfs *raw, int microseconds) {
     rh_write_vfs *vfs = raw->data;
-    if (!owned(vfs) || vfs->quarantined ||
-        rh_callback_sleep(vfs->calls, vfs->quota, (int64_t)microseconds) != RH_ALLOWED) return 0;
+    if (!owned(vfs) || vfs->quarantined) return 0;
+    if (!retry_usable(vfs->heap)) {
+        rh_forbid_retry(vfs->quota);
+        vfs->calls->pending_error = 1;
+        return 0;
+    }
+    if (rh_callback_sleep(vfs->calls, vfs->quota, (int64_t)microseconds) != RH_ALLOWED) return 0;
     return vfs->base->sleep(vfs->base, microseconds);
 }
 static int vfs_time(rh_sqlite_vfs *raw, double *out) {
@@ -513,6 +530,8 @@ static int bind_api(rh_sqlite_api *api, wchar_t *library_path, const char **erro
     RH_BIND(release, "sqlite3_free");
     RH_BIND(uri_key, "sqlite3_uri_key");
     RH_BIND(uri_parameter, "sqlite3_uri_parameter");
+    RH_BIND(create_filename, "sqlite3_create_filename");
+    RH_BIND(free_filename, "sqlite3_free_filename");
 #undef RH_BIND
     length = GetModuleFileNameW(module, library_path, 32768);
     if (!length || length >= 32768) {
@@ -532,9 +551,22 @@ struct rh_sqlite_heap {
     int64_t limit;
     void *sentinel;
     int ready;
+    rh_retry_admission retry;
+    rh_sqlite_file *bootstrap_file;
+    const char *bootstrap_filename;
     wchar_t library_path[32768];
 };
 static rh_sqlite_heap *process_heap;
+static int retry_usable(rh_sqlite_heap *heap) {
+    return heap && (heap->retry.state == 0 || heap->retry.state == 2);
+}
+int rh_sqlite_retry_report(rh_sqlite_heap *heap, rh_retry_admission *report) {
+    int64_t current, peak, allocations;
+    if (!rh_sqlite_heap_report(heap, &current, &peak, &allocations)) return 0;
+    *report = heap->retry;
+    return 1;
+}
+
 
 int rh_sqlite_heap_report(
     rh_sqlite_heap *heap, int64_t *current, int64_t *peak, int64_t *allocations
@@ -630,6 +662,149 @@ quarantined:
     return NULL;
 }
 
+/* This recipe is qualified for the selected desktop-NT source and build.
+ * Its compile-time initial tuple still belongs to the exact runtime profile.
+ */
+#define RH_RETRY_SOURCE "2024-01-30 16:01:20 e876e51a0ed5c5b3126f52e532044363a014bc594cfefa87ffb5b82257cc467a"
+int rh_write_vfs_admit_retries(
+    rh_write_vfs *vfs, int64_t initial_count, int64_t initial_delay,
+    int64_t count, int64_t delay, uint64_t filesystem_calls, uint64_t sleep_microseconds,
+    const char **error
+) {
+    rh_sqlite_heap *heap = vfs->heap;
+    rh_retry_cost required, selected;
+    rh_sqlite_file *file;
+    const char *filename;
+    int result, out_flags = 0, values[2], accepted = 0, retain = 0;
+    int64_t current, peak, allocations;
+    if (!owned(vfs) || vfs->quarantined || !vfs->bound || vfs->open_files ||
+        !rh_sqlite_heap_report(heap, &current, &peak, &allocations)) {
+        *error = "retry admission requires its owning thread, a current heap and a bound file-free owner";
+        return 0;
+    }
+    if (heap->retry.state) {
+        *error = "application retry admission is already configured or quarantined";
+        return 0;
+    }
+    if (strcmp(vfs->api.source_id(), RH_RETRY_SOURCE)) {
+        *error = "the loaded SQLite source has no qualified retry bootstrap recipe";
+        return 0;
+    }
+    if (!rh_retry_bootstrap_cost(initial_count, initial_delay, &required) ||
+        !rh_retry_bootstrap_cost(count, delay, &selected)) {
+        *error = "retry profiles must preserve native signed-int delay and logging arithmetic";
+        return 0;
+    }
+    if (filesystem_calls < required.filesystem_calls ||
+        sleep_microseconds < required.sleep_microseconds) {
+        rh_forbid_retry(vfs->quota);
+        *error = "the explicit retry bootstrap grant is below its complete native envelope";
+        return 0;
+    }
+    file = vfs->api.allocate((uint64_t)vfs->base->file_bytes);
+    filename = vfs->api.create_filename(vfs->database_name, vfs->journal_name, "", 0, NULL);
+    if (!file || !filename) {
+        if (file) vfs->api.release(file);
+        if (filename) vfs->api.free_filename(filename);
+        rh_forbid_retry(vfs->quota);
+        *error = "retry bootstrap storage could not be preallocated under the application heap";
+        return 0;
+    }
+    memset(file, 0, (size_t)vfs->base->file_bytes);
+    /* Precharge the whole attempt and its native close before the first open.
+     * Keep one fixed record, including failure; never reset this global policy.
+     */
+    heap->retry = (rh_retry_admission){
+        .state = 1, .initial_count = (int)initial_count, .initial_delay = (int)initial_delay,
+        .count = (int)count, .delay = (int)delay, .prepaid = required
+    };
+    result = vfs->base->open(vfs->base, filename, file, RH_MAIN_DB | 0x2, &out_flags);
+    if (result != RH_OK) {
+        rh_failed(vfs->quota);
+        heap->retry.failed_stage = 1; heap->retry.native_result = result;
+        *error = "native retry bootstrap open failed; restart required";
+        goto finished;
+    }
+    if (!file->methods || !file->methods->control || !file->methods->close) {
+        retain = 1;
+        rh_forbid_retry(vfs->quota);
+        heap->retry.failed_stage = 2;
+        *error = "native retry bootstrap returned an incomplete file; restart required";
+        goto finished;
+    }
+    if (out_flags != 0x2 || !opened_identity(vfs, file, RH_DATABASE)) {
+        rh_forbid_retry(vfs->quota);
+        heap->retry.failed_stage = 2;
+        *error = "native retry bootstrap identity or read-write mode differs; restart required";
+        goto finished;
+    }
+    values[0] = values[1] = -1;
+    result = file->methods->control(file, RH_WIN32_AV_RETRY, values);
+    if (result != RH_OK) {
+        rh_failed(vfs->quota);
+        heap->retry.failed_stage = 3; heap->retry.native_result = result;
+        *error = "native retry baseline query failed; restart required";
+        goto finished;
+    }
+    if (values[0] != initial_count || values[1] != initial_delay) {
+        rh_forbid_retry(vfs->quota);
+        heap->retry.failed_stage = 3;
+        *error = "native retry baseline differs from the qualified startup profile; restart required";
+        goto finished;
+    }
+    values[0] = (int)count; values[1] = (int)delay;
+    result = file->methods->control(file, RH_WIN32_AV_RETRY, values);
+    if (result != RH_OK) {
+        rh_failed(vfs->quota);
+        heap->retry.failed_stage = 4; heap->retry.native_result = result;
+        *error = "native retry configuration failed; restart required";
+        goto finished;
+    }
+    values[0] = values[1] = -1;
+    result = file->methods->control(file, RH_WIN32_AV_RETRY, values);
+    if (result != RH_OK) {
+        rh_failed(vfs->quota);
+        heap->retry.failed_stage = 5; heap->retry.native_result = result;
+        *error = "native retry configuration query failed; restart required";
+        goto finished;
+    }
+    if (values[0] != count || values[1] != delay) {
+        rh_forbid_retry(vfs->quota);
+        heap->retry.failed_stage = 5;
+        *error = "native retry configuration could not be verified; restart required";
+        goto finished;
+    }
+    accepted = 1;
+finished:
+    if (file->methods) {
+        if (file->methods->close) {
+            heap->retry.close_attempted = 1;
+            heap->retry.close_result = file->methods->close(file);
+        } else heap->retry.close_result = RH_IOERR;
+        if (!heap->retry.close_attempted || heap->retry.close_result != RH_OK) {
+            retain = 1;
+            rh_failed(vfs->quota);
+            if (!heap->retry.failed_stage) heap->retry.failed_stage = 6;
+            if (!heap->retry.native_result) heap->retry.native_result = heap->retry.close_result;
+            *error = "native retry bootstrap close failed; restart required";
+        }
+    }
+    if (retain) {
+        heap->bootstrap_file = file;
+        heap->bootstrap_filename = filename;
+    } else {
+        vfs->api.release(file);
+        vfs->api.free_filename(filename);
+    }
+    if (!accepted || retain) {
+        heap->retry.state = 3;
+        vfs->quarantined = 1;
+        return 0;
+    }
+    heap->retry.state = 2;
+    return 1;
+}
+
 rh_write_vfs *rh_write_vfs_create(
     const char *name, const char *expected_source, rh_quota *quota,
     rh_read_quota *reads, rh_callback_quota *calls, rh_sqlite_heap *heap, const char **error
@@ -640,8 +815,8 @@ rh_write_vfs *rh_write_vfs_create(
     {
         int64_t current, peak, allocations;
         if (!rh_sqlite_heap_report(heap, &current, &peak, &allocations) ||
-            heap->api.module != vfs->api.module) {
-            *error = "a matching current application SQLite heap owner is required";
+            !retry_usable(heap) || heap->api.module != vfs->api.module) {
+            *error = "a matching current application SQLite heap owner without retry quarantine is required";
             goto failed;
         }
     }
@@ -712,7 +887,7 @@ int rh_write_vfs_bind(
     rh_write_vfs *vfs, const char *path, void *borrowed_handle, const uint32_t *journal_identity
 ) {
     if (!owned(vfs)) return RH_MISUSE;
-    if (vfs->quarantined) return RH_IOERR;
+    if (vfs->quarantined || !retry_usable(vfs->heap)) return RH_IOERR;
     {
         int64_t current, peak, allocations;
         if (!rh_sqlite_heap_report(vfs->heap, &current, &peak, &allocations)) return RH_IOERR;
@@ -787,7 +962,7 @@ int rh_write_vfs_arm(
     rh_write_vfs *vfs, rh_quota *quota, rh_read_quota *reads, rh_callback_quota *calls
 ) {
     if (!owned(vfs)) return RH_MISUSE;
-    if (vfs->quarantined) return RH_IOERR;
+    if (vfs->quarantined || !retry_usable(vfs->heap)) return RH_IOERR;
     if (vfs->quota->recovering && vfs->open_files) return RH_BUSY;
     {
         int64_t current, peak, allocations;

@@ -634,3 +634,81 @@ def test_native_sleep_prefixes_match_independent_rounded_wait_model(seed):
             assert report[bank]["callback_slots_charged"] == slots[index]
             assert report[bank]["sleep_microseconds_charged"] == duration[index]
             assert slots[index] <= capacities[index] and duration[index] <= allowances[index]
+
+
+@pytest.mark.parametrize(
+    "count,delay",
+    [(1, 1), (2, 3), (10, 25), (46340, 1), (1, 1073741823), (2000, 500)],
+)
+def test_native_retry_bootstrap_recipe_prepays_complete_open_identity_and_close(count, delay):
+    calls, microseconds = native.retry_bootstrap_cost((count, delay))
+    directory_attributes = 2 * (count + 1)
+    nested_attributes = sum(count + 1 for _ in range(count + 1))
+    create_attempts = 2 * (count + 1)
+    assert calls == directory_attributes + nested_attributes + create_attempts + 3 + 3
+    one_loop = sum(delay * step for step in range(1, count + 1))
+    assert microseconds == (2 * one_loop + (count + 1) * one_loop + 2 * one_loop + 200) * 1000
+
+
+@pytest.mark.parametrize(
+    "profile",
+    [
+        (0, 25),
+        (10, 0),
+        (-1, 25),
+        (10, -1),
+        (2**31 - 1, 1),
+        (2**31 - 2, 1),
+        (46341, 1),
+        (46340, 2),
+        (1, 1073741824),
+        (10, (2**31 - 1) // 110 + 1),
+        (2**31, 1),
+        (1, 2**31),
+        (2**63 - 1, 2**63 - 1),
+    ],
+)
+def test_native_retry_profile_rejects_signed_native_intermediate_overflow(profile):
+    with pytest.raises(ValueError):
+        native.retry_bootstrap_cost(profile)
+
+
+@pytest.mark.parametrize(
+    "profile",
+    [
+        (),
+        (10,),
+        (10, 25, 1),
+        [10, 25],
+        None,
+        (True, 25),
+        (10, False),
+        (1.0, 25),
+        (10, "25"),
+        (2**63, 1),
+        (1, 2**63),
+    ],
+)
+def test_native_retry_recipe_requires_an_exact_signed_integer_pair(profile):
+    with pytest.raises((TypeError, OverflowError)):
+        native.retry_bootstrap_cost(profile)
+
+
+def test_native_retry_bootstrap_recipe_matches_independent_bounded_loop_model():
+    randomizer = random.Random(991823)
+    for _ in range(512):
+        count = randomizer.randint(1, 1000)
+        delay = randomizer.randint(1, (2**31 - 1) // (count * (count + 1)))
+        calls, microseconds = native.retry_bootstrap_cost((count, delay))
+        loop_wait = sum(delay * step for step in range(1, count + 1))
+        expected_calls = expected_wait = 0
+        for readonly in (False, True):
+            expected_calls += count + 1  # winIsDir
+            expected_wait += loop_wait
+            expected_calls += count + 1  # CreateFile
+            expected_wait += loop_wait
+            if not readonly:
+                for _ in range(count + 1):
+                    expected_calls += count + 1  # nested winAccess
+                    expected_wait += loop_wait
+        assert (calls, microseconds) == (expected_calls + 6, (expected_wait + 200) * 1000)

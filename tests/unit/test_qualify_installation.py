@@ -991,6 +991,15 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
         "bool-sleep",
         "sleep-rounding",
         "sleep-refusal",
+        "retry-attempts",
+        "retry-sleep",
+        "retry-count",
+        "retry-delay",
+        "retry-verified",
+        "retry-close",
+        "retry-pin",
+        "retry-bool-count",
+        "retry-float-attempts",
         "heap-peak",
         "zero-heap-peak",
         "bool-heap-peak",
@@ -1021,6 +1030,13 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         "callback_sleep_forward_microseconds": 1000,
         "callback_sleep_recovery_microseconds": 1000,
         "callback_sleep_refusal_verified": True,
+        "retry_bootstrap_filesystem_api_attempts_prepaid": 171,
+        "retry_bootstrap_sleep_microseconds_prepaid": 20825000,
+        "retry_count": 2,
+        "retry_delay_milliseconds": 3,
+        "retry_admission_verified": True,
+        "retry_bootstrap_close_verified": True,
+        "retry_bootstrap_pin_released": True,
         "sqlite_heap_limit_bytes": 67108864,
         "sqlite_heap_peak_bytes": 1048576,
         "vfs_read_calls": 3,
@@ -1062,6 +1078,24 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         proof["callback_sleep_forward_microseconds"] = 999
     elif invalid == "sleep-refusal":
         proof["callback_sleep_refusal_verified"] = False
+    elif invalid == "retry-attempts":
+        proof["retry_bootstrap_filesystem_api_attempts_prepaid"] = 170
+    elif invalid == "retry-sleep":
+        proof["retry_bootstrap_sleep_microseconds_prepaid"] = 20824999
+    elif invalid == "retry-count":
+        proof["retry_count"] = 0
+    elif invalid == "retry-delay":
+        proof["retry_delay_milliseconds"] = 25
+    elif invalid == "retry-verified":
+        proof["retry_admission_verified"] = False
+    elif invalid == "retry-close":
+        proof["retry_bootstrap_close_verified"] = False
+    elif invalid == "retry-pin":
+        proof["retry_bootstrap_pin_released"] = False
+    elif invalid == "retry-bool-count":
+        proof["retry_count"] = True
+    elif invalid == "retry-float-attempts":
+        proof["retry_bootstrap_filesystem_api_attempts_prepaid"] = 171.0
     elif invalid == "heap-limit":
         proof["sqlite_heap_limit_bytes"] = 0
     elif invalid == "heap-peak":
