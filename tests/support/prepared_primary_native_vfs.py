@@ -23,13 +23,22 @@ class NativeWriteShim:
             8 * (limits.database_bytes + limits.journal_bytes),
             65536,
         )
+        try:
+            self.heap = native.current_process_budget()
+        except RuntimeError as exc:
+            if "not configured" not in str(exc):
+                raise
+            self.heap = native.SqliteProcessBudget(expected, 64 * 1024 * 1024)
+        assert self.heap.report()["heap_limit_bytes"] == 64 * 1024 * 1024
         self._initial = native.WriteQuota(initial, initial)
         read_limits = (64 * (limits.database_bytes + limits.journal_bytes), 65536)
         self._initial_reads = native.ReadQuota(self._initial, read_limits, read_limits)
         self._active_reads = self._initial_reads
         self._initial_callbacks = native.CallbackQuota(self._initial, 262144, 262144)
         self._active_callbacks = self._initial_callbacks
-        self._native = native.WriteVfs(expected, self._initial_reads, self._initial_callbacks)
+        self._native = native.WriteVfs(
+            expected, self._initial_reads, self._initial_callbacks, self.heap
+        )
         self.name = self._native.name
         try:
             identity = self._native.identity()
@@ -63,6 +72,7 @@ class NativeWriteShim:
         self._native.close()
 
     def bind(self, owner):
+        self.heap.report()
         owner.check_current()
         self._native.bind(str(owner.path), owner._database, owner._journal_identity)
 
@@ -74,6 +84,9 @@ class NativeWriteShim:
 
     def callback_report(self):
         return self._active_callbacks.report()
+
+    def heap_report(self):
+        return self.heap.report()
 
     @contextmanager
     def write_quota(self, *, forward, recovery, compiled=False):
@@ -87,6 +100,7 @@ class NativeWriteShim:
             (64 * (recovery.database_end + recovery.journal_end), recovery.calls),
         )
         callbacks = native.CallbackQuota(quota, 4 * forward.calls, 4 * recovery.calls)
+        self.heap.report()
         self._native.arm(reads, callbacks)
         self._active_reads = reads
         self._active_callbacks = callbacks

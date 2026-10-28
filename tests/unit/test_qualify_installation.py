@@ -984,6 +984,10 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
         "resize-calls",
         "callback-slots",
         "bool-callback-slots",
+        "heap-limit",
+        "heap-peak",
+        "zero-heap-peak",
+        "bool-heap-peak",
         "read-calls",
         "read-bytes",
         "bool-read-calls",
@@ -1008,6 +1012,8 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         "vfs_write_calls": 7,
         "vfs_resize_calls": 2,
         "vfs_callback_slots": 128,
+        "sqlite_heap_limit_bytes": 67108864,
+        "sqlite_heap_peak_bytes": 1048576,
         "vfs_read_calls": 3,
         "vfs_read_bytes": 4096,
         "vfs_original_exact": True,
@@ -1035,6 +1041,14 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         proof["vfs_callback_slots"] = 0
     elif invalid == "bool-callback-slots":
         proof["vfs_callback_slots"] = True
+    elif invalid == "heap-limit":
+        proof["sqlite_heap_limit_bytes"] = 0
+    elif invalid == "heap-peak":
+        proof["sqlite_heap_peak_bytes"] = 67108865
+    elif invalid == "zero-heap-peak":
+        proof["sqlite_heap_peak_bytes"] = 0
+    elif invalid == "bool-heap-peak":
+        proof["sqlite_heap_peak_bytes"] = True
     elif invalid == "read-calls":
         proof["vfs_read_calls"] = 0
     elif invalid == "read-bytes":

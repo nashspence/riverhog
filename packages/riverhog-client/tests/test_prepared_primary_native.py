@@ -491,3 +491,17 @@ def test_native_callback_prefixes_match_independent_reservation_model(seed):
         assert report["reserved_recovery_closes"] == files.count(True)
         assert report["prepaid_recovery_closes"] == files.count(False)
         assert charged[0] <= 17 and charged[1] + files.count(True) <= 23
+
+
+@pytest.mark.parametrize("value", [0, -1, True, 1 << 63, "4"])
+def test_native_process_heap_grant_rejects_invalid_values_before_runtime_admission(value):
+    with pytest.raises((TypeError, ValueError, OverflowError)):
+        native.SqliteProcessBudget("not-used", value)
+
+
+def test_native_process_heap_owner_rejects_uninitialized_observation():
+    owner = native.SqliteProcessBudget.__new__(native.SqliteProcessBudget)
+    with pytest.raises(RuntimeError, match="not initialized"):
+        owner.report()
+    with pytest.raises(RuntimeError, match="not initialized"):
+        owner.increase(1024)

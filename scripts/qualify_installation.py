@@ -1928,7 +1928,8 @@ vfs_limits=(4096,128,1048576,1048576,8388608,1024)
 vfs_quota=native.WriteQuota(vfs_limits,vfs_limits)
 vfs_reads=native.ReadQuota(vfs_quota,(8388608,1024),(8388608,1024))
 vfs_callbacks=native.CallbackQuota(vfs_quota,8192,8192)
-vfs=native.WriteVfs(source_id,vfs_reads,vfs_callbacks)
+heap=native.SqliteProcessBudget(source_id,67108864)
+vfs=native.WriteVfs(source_id,vfs_reads,vfs_callbacks,heap)
 try:
     identity=vfs.identity()
     assert identity["sqlite_source_id"]==source_id
@@ -1970,6 +1971,8 @@ try:
     resize_calls=vfs_quota.resize_report()["forward"]["resize_calls"]
     callback_report=vfs_callbacks.report()
     callback_slots=callback_report["forward"]["callback_slots_charged"]
+    heap_report=heap.report()
+    assert heap_report["heap_limit_bytes"]==67108864
     assert callback_slots>0 and not callback_report["pending_error"]
 finally:
     vfs.close()
@@ -1982,6 +1985,8 @@ print(json.dumps({"compiler":native.compiler,
     "storage_callbacks_native":True,"vfs_write_calls":vfs_calls,
     "vfs_resize_calls":resize_calls,"vfs_callback_slots":callback_slots,
     "vfs_read_calls":read_report["read_calls"],"vfs_read_bytes":read_report["read_bytes"],
+    "sqlite_heap_limit_bytes":heap_report["heap_limit_bytes"],
+    "sqlite_heap_peak_bytes":heap_report["sqlite_heap_peak_bytes"],
     "vfs_binding_verified":True,
     "vfs_original_exact":True,"sqlite_source_id":source_id,
     "sqlite_library_sha256":library_digest}))
@@ -2008,6 +2013,9 @@ print(json.dumps({"compiler":native.compiler,
         or proof["vfs_read_bytes"] <= 0
         or type(proof.get("vfs_callback_slots")) is not int
         or proof["vfs_callback_slots"] <= 0
+        or proof.get("sqlite_heap_limit_bytes") != 67108864
+        or type(proof.get("sqlite_heap_peak_bytes")) is not int
+        or not 0 < proof["sqlite_heap_peak_bytes"] <= 67108864
         or proof.get("vfs_binding_verified") is not True
         or proof.get("vfs_original_exact") is not True
         or not isinstance(proof.get("sqlite_source_id"), str)

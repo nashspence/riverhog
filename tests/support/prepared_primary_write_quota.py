@@ -117,6 +117,7 @@ def witness(opened, shim, refusal, *, compiled=False):
             report = quota.report()
             reads = observed.read_report() if observed.read_report else None
             callbacks = observed.callback_report() if observed.callback_report else None
+            heap = shim.heap_report() if hasattr(shim, "heap_report") else None
             if callbacks is not None:
                 assert callbacks["recovery"]["callback_slots_charged"] > 0
                 assert callbacks["reserved_recovery_closes"] == 0
@@ -153,6 +154,7 @@ def witness(opened, shim, refusal, *, compiled=False):
         "quota": report,
         "read_quota": reads,
         "callback_quota": callbacks,
+        "sqlite_process_heap": heap,
         "automatic_rollback_pages_before_driver_error": automatic,
         "explicit_rollback_calls": observed.explicit_rollbacks,
         "original_control_exact": True,

@@ -38,6 +38,10 @@ typedef struct {
     rh_sqlite_vfs *(*find)(const char *);
     int (*register_vfs)(rh_sqlite_vfs *, int);
     int (*unregister_vfs)(rh_sqlite_vfs *);
+    rh_sqlite_int64 (*hard_heap_limit)(rh_sqlite_int64);
+    int (*status)(int, rh_sqlite_int64 *, rh_sqlite_int64 *, int);
+    void *(*allocate)(uint64_t);
+    void (*release)(void *);
     void *module;
 } rh_sqlite_api;
 
@@ -48,6 +52,7 @@ struct rh_write_vfs {
     rh_quota *quota;
     rh_read_quota *reads;
     rh_callback_quota *calls;
+    rh_sqlite_heap *heap;
     unsigned long thread;
     size_t offset;
     int open_files, bound;
@@ -435,7 +440,7 @@ static void release_module(rh_sqlite_api *api) {
     (void)api;
 #endif
 }
-static int bind_api(rh_write_vfs *vfs, const char **error) {
+static int bind_api(rh_sqlite_api *api, wchar_t *library_path, const char **error) {
 #ifdef _WIN32
     HMODULE module;
     FARPROC symbol;
@@ -444,37 +449,153 @@ static int bind_api(rh_write_vfs *vfs, const char **error) {
         *error = "the already loaded Windows SQLite module is unavailable";
         return 0;
     }
-    vfs->api.module = module;
+    api->module = module;
 #define RH_BIND(member, exported) \
     symbol = GetProcAddress(module, exported); \
     if (!symbol) { *error = "the loaded SQLite public API is incomplete"; return 0; } \
-    _Static_assert(sizeof(vfs->api.member) == sizeof(symbol), "Windows API pointer size"); \
-    memcpy(&vfs->api.member, &symbol, sizeof(symbol))
+    _Static_assert(sizeof(api->member) == sizeof(symbol), "Windows API pointer size"); \
+    memcpy(&api->member, &symbol, sizeof(symbol))
     RH_BIND(source_id, "sqlite3_sourceid");
     RH_BIND(find, "sqlite3_vfs_find");
     RH_BIND(register_vfs, "sqlite3_vfs_register");
     RH_BIND(unregister_vfs, "sqlite3_vfs_unregister");
+    RH_BIND(hard_heap_limit, "sqlite3_hard_heap_limit64");
+    RH_BIND(status, "sqlite3_status64");
+    RH_BIND(allocate, "sqlite3_malloc64");
+    RH_BIND(release, "sqlite3_free");
 #undef RH_BIND
-    length = GetModuleFileNameW(module, vfs->library_path, 32768);
+    length = GetModuleFileNameW(module, library_path, 32768);
     if (!length || length >= 32768) {
         *error = "the loaded SQLite module path is unavailable";
         return 0;
     }
     return 1;
 #else
-    (void)vfs;
+    (void)api; (void)library_path;
     *error = "native Windows SQLite VFS is required";
     return 0;
 #endif
 }
 
+struct rh_sqlite_heap {
+    rh_sqlite_api api;
+    int64_t limit;
+    void *sentinel;
+    int ready;
+    wchar_t library_path[32768];
+};
+static rh_sqlite_heap *process_heap;
+
+int rh_sqlite_heap_report(
+    rh_sqlite_heap *heap, int64_t *current, int64_t *peak, int64_t *allocations
+) {
+    rh_sqlite_int64 used, high, count, unused, pool, pool_peak;
+    if (!heap || heap != process_heap || !heap->ready ||
+        heap->api.hard_heap_limit(-1) != heap->limit ||
+        heap->api.status(0, &used, &high, 0) != RH_OK ||
+        heap->api.status(9, &count, &unused, 0) != RH_OK ||
+        heap->api.status(1, &pool, &pool_peak, 0) != RH_OK ||
+        used <= 0 || high < used || high > heap->limit || count <= 0 || pool || pool_peak)
+        return 0;
+    *current = (int64_t)used; *peak = (int64_t)high; *allocations = (int64_t)count;
+    return 1;
+}
+int64_t rh_sqlite_heap_limit(rh_sqlite_heap *heap) { return heap->limit; }
+int rh_sqlite_heap_increase(rh_sqlite_heap *heap, int64_t limit) {
+    int64_t current, peak, allocations;
+    if (!rh_sqlite_heap_report(heap, &current, &peak, &allocations) || limit <= heap->limit)
+        return 0;
+    if (heap->api.hard_heap_limit(limit) != heap->limit ||
+        heap->api.hard_heap_limit(-1) != limit) {
+        heap->ready = 0;
+        return 0;
+    }
+    heap->limit = limit;
+    return 1;
+}
+rh_sqlite_heap *rh_sqlite_heap_create(const char *source, int64_t limit, const char **error) {
+    rh_sqlite_heap *heap;
+    rh_sqlite_int64 used, peak, count, ignored, pool, pool_peak;
+    void *sentinel = NULL;
+    int64_t current, high, allocations;
+    if (process_heap) {
+        *error = "this process already has a SQLite heap owner or a quarantined admission";
+        return NULL;
+    }
+    heap = calloc(1, sizeof(*heap));
+    if (!heap) { *error = "SQLite heap owner allocation failed"; return NULL; }
+    if (!bind_api(&heap->api, heap->library_path, error)) goto failed;
+    if (strcmp(heap->api.source_id(), source)) {
+        *error = "the loaded SQLite source identity differs from the heap grant";
+        goto failed;
+    }
+    if (limit <= 0 || heap->api.hard_heap_limit(-1) != 0) {
+        *error = "a positive heap grant and an unconfigured SQLite heap owner are required";
+        goto failed;
+    }
+    /* One fixed lifetime allocation proves enabled accounting even with no
+     * connections. It remains charged to H while this process owner is alive.
+     */
+    sentinel = heap->api.allocate(1);
+    if (!sentinel || heap->api.status(0, &used, &peak, 0) != RH_OK ||
+        heap->api.status(9, &count, &ignored, 0) != RH_OK ||
+        heap->api.status(1, &pool, &pool_peak, 0) != RH_OK ||
+        used <= 0 || count <= 0 || pool || pool_peak) {
+        *error = "SQLite heap accounting and the default heap-backed cache are required";
+        goto failed;
+    }
+    if (used > limit) {
+        *error = "the heap grant is below current SQLite-accounted memory use";
+        goto failed;
+    }
+    heap->limit = limit;
+    /* Once a global change is attempted, retain the library and immutable owner
+     * through process lifetime, including a failed post-admission verification.
+     */
+    heap->sentinel = sentinel;
+    sentinel = NULL;
+    process_heap = heap;
+    if (heap->api.hard_heap_limit(limit) != 0) {
+        *error = "SQLite heap admission conflicted with another owner; restart required";
+        goto quarantined;
+    }
+    if (heap->api.status(0, &used, &peak, 1) != RH_OK) {
+        *error = "SQLite heap admission could not establish its measurement baseline";
+        goto quarantined;
+    }
+    heap->ready = 1;
+    if (!rh_sqlite_heap_report(heap, &current, &high, &allocations)) {
+        heap->ready = 0;
+        *error = "SQLite heap admission verification failed; restart required";
+        goto quarantined;
+    }
+    return heap;
+failed:
+    if (sentinel) heap->api.release(sentinel);
+    release_module(&heap->api);
+    free(heap);
+    return NULL;
+quarantined:
+    if (sentinel) heap->api.release(sentinel);
+    return NULL;
+}
+
 rh_write_vfs *rh_write_vfs_create(
     const char *name, const char *expected_source, rh_quota *quota,
-    rh_read_quota *reads, rh_callback_quota *calls, const char **error
+    rh_read_quota *reads, rh_callback_quota *calls, rh_sqlite_heap *heap, const char **error
 ) {
     rh_write_vfs *vfs = calloc(1, sizeof(*vfs));
     if (!vfs) { *error = "native VFS allocation failed"; return NULL; }
-    if (!bind_api(vfs, error)) goto failed;
+    if (!bind_api(&vfs->api, vfs->library_path, error)) goto failed;
+    {
+        int64_t current, peak, allocations;
+        if (!rh_sqlite_heap_report(heap, &current, &peak, &allocations) ||
+            heap->api.module != vfs->api.module) {
+            *error = "a matching current application SQLite heap owner is required";
+            goto failed;
+        }
+    }
+    vfs->heap = heap;
     if (strcmp(vfs->api.source_id(), expected_source)) {
         *error = "the loaded SQLite source identity differs from stdlib";
         goto failed;
@@ -541,6 +662,10 @@ int rh_write_vfs_bind(
     rh_write_vfs *vfs, const char *path, void *borrowed_handle, const uint32_t *journal_identity
 ) {
     if (!owned(vfs)) return RH_MISUSE;
+    {
+        int64_t current, peak, allocations;
+        if (!rh_sqlite_heap_report(vfs->heap, &current, &peak, &allocations)) return RH_IOERR;
+    }
     if (vfs->open_files || vfs->bound || vfs->database_handle || vfs->journal_handle) return RH_BUSY;
 #ifdef _WIN32
     {
@@ -604,6 +729,10 @@ int rh_write_vfs_arm(
 ) {
     if (!owned(vfs)) return RH_MISUSE;
     if (vfs->quota->recovering && vfs->open_files) return RH_BUSY;
+    {
+        int64_t current, peak, allocations;
+        if (!rh_sqlite_heap_report(vfs->heap, &current, &peak, &allocations)) return RH_IOERR;
+    }
     if (calls == vfs->calls)
         return quota == vfs->quota && reads == vfs->reads ? RH_OK : RH_MISUSE;
     if (!rh_callback_prepare(calls, quota, (uint64_t)vfs->open_files)) return RH_BUSY;

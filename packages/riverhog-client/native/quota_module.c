@@ -486,8 +486,106 @@ static PyTypeObject callback_type = {
 
 typedef struct {
     PyObject_HEAD
+    rh_sqlite_heap *heap;
+    int64_t interpreter;
+    int initialized;
+} SqliteProcessBudget;
+static PyObject *process_budget;
+static int heap_ready(SqliteProcessBudget *self) {
+    if (!self->heap) {
+        PyErr_SetString(PyExc_RuntimeError, "SQLite process budget is not initialized");
+        return 0;
+    }
+    if (self->interpreter != PyInterpreterState_GetID(PyInterpreterState_Get())) {
+        PyErr_SetString(PyExc_RuntimeError, "SQLite process budget belongs to another interpreter");
+        return 0;
+    }
+    return 1;
+}
+static int heap_init(PyObject *object, PyObject *args, PyObject *kwargs) {
+    SqliteProcessBudget *self = (SqliteProcessBudget *)object;
+    const char *source, *error;
+    PyObject *value;
+    uint64_t limit;
+    static char *keywords[] = {"expected_source_id", "heap_bytes", NULL};
+    if (self->initialized) {
+        PyErr_SetString(PyExc_RuntimeError, "SQLite process budget cannot be reinitialized");
+        return -1;
+    }
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sO", keywords, &source, &value)) return -1;
+    self->initialized = 1;
+    if (positive_integer(value, &limit) < 0) return -1;
+    self->heap = rh_sqlite_heap_create(source, (int64_t)limit, &error);
+    if (!self->heap) {
+        PyErr_SetString(PyExc_RuntimeError, error);
+        return -1;
+    }
+    self->interpreter = PyInterpreterState_GetID(PyInterpreterState_Get());
+    process_budget = Py_NewRef(object);
+    return 0;
+}
+static PyObject *heap_report(PyObject *object, PyObject *unused) {
+    SqliteProcessBudget *self = (SqliteProcessBudget *)object;
+    int64_t current, peak, allocations;
+    (void)unused;
+    if (!heap_ready(self)) return NULL;
+    if (!rh_sqlite_heap_report(self->heap, &current, &peak, &allocations)) {
+        PyErr_SetString(PyExc_RuntimeError,
+            "SQLite process heap grant, accounting or default-cache policy changed");
+        return NULL;
+    }
+    return Py_BuildValue("{s:L,s:L,s:L,s:L}",
+        "heap_limit_bytes", (long long)rh_sqlite_heap_limit(self->heap),
+        "sqlite_heap_bytes", (long long)current, "sqlite_heap_peak_bytes", (long long)peak,
+        "sqlite_malloc_count", (long long)allocations);
+}
+static PyObject *heap_increase(PyObject *object, PyObject *value) {
+    SqliteProcessBudget *self = (SqliteProcessBudget *)object;
+    uint64_t limit;
+    if (!heap_ready(self)) return NULL;
+    if (positive_integer(value, &limit) < 0) return NULL;
+    if ((int64_t)limit <= rh_sqlite_heap_limit(self->heap)) {
+        PyErr_SetString(PyExc_ValueError, "an explicit heap increase must exceed the admitted grant");
+        return NULL;
+    }
+    if (!rh_sqlite_heap_increase(self->heap, (int64_t)limit)) {
+        PyErr_SetString(PyExc_RuntimeError, "SQLite heap grant changed or increase verification failed");
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+static PyMethodDef heap_methods[] = {
+    {"increase", heap_increase, METH_O, "Apply an explicit larger application grant without resetting use."},
+    {"report", heap_report, METH_NOARGS, "Verify and observe the application SQLite heap ceiling."},
+    {NULL, NULL, 0, NULL}
+};
+static PyTypeObject heap_type = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "riverhog_client._prepared_primary_native.SqliteProcessBudget",
+    .tp_basicsize = (Py_ssize_t)sizeof(SqliteProcessBudget),
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_init = heap_init,
+    .tp_methods = heap_methods
+};
+static PyObject *current_process_budget(PyObject *module, PyObject *unused) {
+    (void)module; (void)unused;
+    if (!process_budget) {
+        PyErr_SetString(PyExc_RuntimeError, "SQLite process budget is not configured");
+        return NULL;
+    }
+    if (!heap_ready((SqliteProcessBudget *)process_budget)) return NULL;
+    return Py_NewRef(process_budget);
+}
+static PyMethodDef module_methods[] = {
+    {"current_process_budget", current_process_budget, METH_NOARGS,
+        "Get the existing application owner without creating or changing a global grant."},
+    {NULL, NULL, 0, NULL}
+};
+
+typedef struct {
+    PyObject_HEAD
     rh_write_vfs *vfs;
-    PyObject *quota, *callbacks;
+    PyObject *quota, *callbacks, *heap;
     char name[96];
     int initialized;
 } WriteVfs;
@@ -517,16 +615,18 @@ static int vfs_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     WriteVfs *self = (WriteVfs *)object;
     ReadQuota *reads;
     CallbackQuota *callbacks;
+    SqliteProcessBudget *heap;
     WriteQuota *quota;
     const char *expected, *error;
-    static char *keywords[] = {"expected_source_id", "reads", "callbacks", NULL};
+    static char *keywords[] = {"expected_source_id", "reads", "callbacks", "heap", NULL};
     if (self->initialized) {
         PyErr_SetString(PyExc_RuntimeError, "native write VFS cannot be reinitialized");
         return -1;
     }
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sO!O!", keywords,
-                                    &expected, &read_type, &reads, &callback_type, &callbacks)) return -1;
-    if (!read_ready(reads) || !callback_ready(callbacks, 1)) return -1;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sO!O!O!", keywords,
+                                    &expected, &read_type, &reads, &callback_type, &callbacks,
+                                    &heap_type, &heap)) return -1;
+    if (!read_ready(reads) || !callback_ready(callbacks, 1) || !heap_ready(heap)) return -1;
     if (callbacks->quota != reads->quota) {
         PyErr_SetString(PyExc_ValueError, "read and callback grants require the same write owner");
         return -1;
@@ -535,7 +635,7 @@ static int vfs_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     if (!quota_attachable(quota)) return -1;
     self->initialized = 1;
     PyOS_snprintf(self->name, sizeof(self->name), "riverhog-native-write-%p", (void *)self);
-    self->vfs = rh_write_vfs_create(self->name, expected, &quota->quota, &reads->reads, &callbacks->calls, &error);
+    self->vfs = rh_write_vfs_create(self->name, expected, &quota->quota, &reads->reads, &callbacks->calls, heap->heap, &error);
     if (!self->vfs) {
         PyErr_SetString(PyExc_RuntimeError, error);
         return -1;
@@ -543,6 +643,7 @@ static int vfs_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     quota_attach(quota);
     self->quota = Py_NewRef((PyObject *)reads);
     self->callbacks = Py_NewRef((PyObject *)callbacks);
+    self->heap = Py_NewRef((PyObject *)heap);
     callbacks->attached = 1;
     /* Registration pins callbacks and their bank until explicit file-free close. */
     Py_INCREF(self);
@@ -552,6 +653,7 @@ static void vfs_dealloc(PyObject *object) {
     WriteVfs *self = (WriteVfs *)object;
     Py_XDECREF(self->quota);
     Py_XDECREF(self->callbacks);
+    Py_XDECREF(self->heap);
     Py_TYPE(self)->tp_free(object);
 }
 static PyObject *vfs_bind(PyObject *object, PyObject *args) {
@@ -670,6 +772,7 @@ static PyObject *vfs_close(PyObject *object, PyObject *unused) {
     Py_CLEAR(self->quota);
     ((CallbackQuota *)self->callbacks)->attached = 0;
     Py_CLEAR(self->callbacks);
+    Py_CLEAR(self->heap);
     Py_DECREF(self);
     Py_RETURN_NONE;
 }
@@ -733,7 +836,8 @@ static struct PyModuleDef module_definition = {
     PyModuleDef_HEAD_INIT,
     .m_name = "_prepared_primary_native",
     .m_doc = "Fixed-capacity native storage accounting without an embedded SQLite engine.",
-    .m_size = -1
+    .m_size = -1,
+    .m_methods = module_methods
 };
 
 PyMODINIT_FUNC PyInit__prepared_primary_native(void) {
@@ -744,6 +848,8 @@ PyMODINIT_FUNC PyInit__prepared_primary_native(void) {
     if (PyType_Ready(&read_type) < 0) return NULL;
     callback_type.tp_new = PyType_GenericNew;
     if (PyType_Ready(&callback_type) < 0) return NULL;
+    heap_type.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&heap_type) < 0) return NULL;
     vfs_type.tp_new = PyType_GenericNew;
     if (PyType_Ready(&vfs_type) < 0) return NULL;
     module = PyModule_Create(&module_definition);
@@ -755,6 +861,9 @@ PyMODINIT_FUNC PyInit__prepared_primary_native(void) {
         Py_DECREF(module); return NULL;
     }
     if (PyModule_AddObjectRef(module, "CallbackQuota", (PyObject *)&callback_type) < 0) {
+        Py_DECREF(module); return NULL;
+    }
+    if (PyModule_AddObjectRef(module, "SqliteProcessBudget", (PyObject *)&heap_type) < 0) {
         Py_DECREF(module); return NULL;
     }
     if (PyModule_AddObjectRef(module, "WriteVfs", (PyObject *)&vfs_type) < 0) {
