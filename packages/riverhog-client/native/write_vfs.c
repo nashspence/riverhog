@@ -31,6 +31,7 @@
 #define RH_COMMIT_ATOMIC 32
 #define RH_ROLLBACK_ATOMIC 33
 #define RH_NULL_IO 43
+#define RH_GET_HANDLE 29
 
 typedef struct {
     const char *(*source_id)(void);
@@ -48,7 +49,12 @@ struct rh_write_vfs {
     rh_read_quota *reads;
     unsigned long thread;
     size_t offset;
-    int open_files;
+    int open_files, bound;
+    size_t path_capacity;
+    char *database_name, *journal_name;
+    wchar_t *database_wide, *journal_wide, *actual_wide;
+    void *database_handle;
+    uint32_t database_volume, database_index_high, database_index_low;
     wchar_t library_path[32768];
 };
 
@@ -80,6 +86,47 @@ static rh_sqlite_file *real_file(rh_write_file *file) {
 static int storage_result(rh_write_vfs *vfs, int result) {
     if (result != RH_OK) rh_failed(vfs->quota);
     return result;
+}
+
+static int admitted_name(rh_write_vfs *vfs, const char *name, enum rh_file kind) {
+    return vfs->bound && name && strcmp(name,
+        kind == RH_DATABASE ? vfs->database_name : vfs->journal_name) == 0;
+}
+#ifdef _WIN32
+static int regular_file(HANDLE handle, BY_HANDLE_FILE_INFORMATION *info) {
+    FILE_STANDARD_INFO standard;
+    return GetFileInformationByHandle(handle, info) &&
+        GetFileInformationByHandleEx(handle, FileStandardInfo, &standard, (DWORD)sizeof(standard)) &&
+        !(info->dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_REPARSE_POINT |
+          FILE_ATTRIBUTE_SPARSE_FILE | FILE_ATTRIBUTE_COMPRESSED | FILE_ATTRIBUTE_OFFLINE |
+          FILE_ATTRIBUTE_RECALL_ON_OPEN | FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS)) &&
+        info->nNumberOfLinks == 1 && standard.NumberOfLinks == 1 &&
+        !standard.DeletePending && !standard.Directory &&
+        standard.EndOfFile.QuadPart >= 0 && standard.AllocationSize.QuadPart >= 0;
+}
+static int current_path(rh_write_vfs *vfs, HANDLE handle, const wchar_t *expected) {
+    DWORD length = GetFinalPathNameByHandleW(handle, vfs->actual_wide,
+                                           (DWORD)vfs->path_capacity, 0);
+    return length > 4 && length < vfs->path_capacity &&
+        wcsncmp(vfs->actual_wide, L"\\\\?\\", 4) == 0 &&
+        CompareStringOrdinal(vfs->actual_wide + 4, -1, expected, -1, TRUE) == CSTR_EQUAL;
+}
+#endif
+static int opened_identity(rh_write_vfs *vfs, rh_sqlite_file *real, enum rh_file kind) {
+#ifdef _WIN32
+    HANDLE handle = NULL;
+    BY_HANDLE_FILE_INFORMATION info;
+    if (real->methods->control(real, RH_GET_HANDLE, &handle) != RH_OK ||
+        !handle || !regular_file(handle, &info) ||
+        !current_path(vfs, handle, kind == RH_DATABASE ? vfs->database_wide : vfs->journal_wide))
+        return 0;
+    if (info.dwVolumeSerialNumber != vfs->database_volume) return 0;
+    return kind != RH_DATABASE || (info.nFileIndexHigh == vfs->database_index_high &&
+                                   info.nFileIndexLow == vfs->database_index_low);
+#else
+    (void)vfs; (void)real; (void)kind;
+    return 0;
+#endif
 }
 
 static int file_close(rh_sqlite_file *raw) {
@@ -205,7 +252,8 @@ static int vfs_open(
     wrapper->owner = vfs;
     wrapper->kind = (flags & RH_FILE_CLASSES) == RH_MAIN_DB ? RH_DATABASE :
         (flags & RH_FILE_CLASSES) == RH_MAIN_JOURNAL ? RH_JOURNAL : RH_OTHER;
-    if (wrapper->kind == RH_OTHER || !name || flags & (RH_DELETE_ON_CLOSE | RH_MEMORY_FILE)) {
+    if (wrapper->kind == RH_OTHER || !admitted_name(vfs, name, wrapper->kind) ||
+        (flags & (RH_DELETE_ON_CLOSE | RH_MEMORY_FILE))) {
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
         return RH_CANTOPEN;
     }
@@ -216,12 +264,20 @@ static int vfs_open(
         ++vfs->open_files;
         file->methods = &methods;
     }
+    if (result == RH_OK && (!real->methods || !opened_identity(vfs, real, wrapper->kind))) {
+        (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
+        return RH_CANTOPEN;
+    }
     if (result != RH_OK) rh_failed(vfs->quota);
     return result;
 }
 static int vfs_delete(rh_sqlite_vfs *raw, const char *name, int sync_directory) {
     rh_write_vfs *vfs = raw->data;
     if (!owned(vfs)) return RH_IOERR;
+    if (!admitted_name(vfs, name, RH_JOURNAL)) {
+        (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
+        return RH_IOERR;
+    }
     return storage_result(vfs, vfs->base->delete_file(vfs->base, name, sync_directory));
 }
 static int vfs_access(rh_sqlite_vfs *raw, const char *name, int flags, int *result) {
@@ -324,6 +380,24 @@ rh_write_vfs *rh_write_vfs_create(
         *error = "the normal Win32 VFS is unavailable or the wrapper name is registered";
         goto failed;
     }
+    if (vfs->base->pathname_bytes <= 8 || vfs->base->pathname_bytes > INT_MAX - 9) {
+        *error = "the native VFS pathname capacity is invalid";
+        goto failed;
+    }
+    vfs->path_capacity = (size_t)vfs->base->pathname_bytes + 9;
+    if (vfs->path_capacity > SIZE_MAX / (3 * sizeof(wchar_t))) {
+        *error = "the native VFS pathname allocation exceeds addressable capacity";
+        goto failed;
+    }
+    vfs->database_name = calloc(2 * vfs->path_capacity, 1);
+    vfs->database_wide = calloc(3 * vfs->path_capacity, sizeof(wchar_t));
+    if (!vfs->database_name || !vfs->database_wide) {
+        *error = "the native VFS pathname allocation failed";
+        goto failed;
+    }
+    vfs->journal_name = vfs->database_name + vfs->path_capacity;
+    vfs->journal_wide = vfs->database_wide + vfs->path_capacity;
+    vfs->actual_wide = vfs->journal_wide + vfs->path_capacity;
     vfs->offset = (sizeof(rh_write_file) + _Alignof(rh_file_alignment) - 1) /
         _Alignof(rh_file_alignment) * _Alignof(rh_file_alignment);
     if (vfs->offset > (size_t)INT_MAX - (size_t)vfs->base->file_bytes) {
@@ -348,9 +422,61 @@ rh_write_vfs *rh_write_vfs_create(
     return vfs;
 failed:
     release_module(&vfs->api);
+    free(vfs->database_name);
+    free(vfs->database_wide);
     free(vfs);
     return NULL;
 }
+int rh_write_vfs_bind(rh_write_vfs *vfs, const char *path, void *borrowed_handle) {
+    if (!owned(vfs)) return RH_MISUSE;
+    if (vfs->open_files || vfs->bound || vfs->database_handle) return RH_BUSY;
+#ifdef _WIN32
+    {
+        HANDLE pinned = NULL;
+        BY_HANDLE_FILE_INFORMATION info;
+        size_t length;
+        int rc;
+        if (!borrowed_handle || borrowed_handle == INVALID_HANDLE_VALUE ||
+            !DuplicateHandle(GetCurrentProcess(), borrowed_handle, GetCurrentProcess(),
+                             &pinned, 0, FALSE, DUPLICATE_SAME_ACCESS)) return RH_IOERR;
+        /* Retain the pin even if a later check fails, until explicit unbind/close. */
+        vfs->database_handle = pinned;
+        if (!regular_file(pinned, &info)) return RH_IOERR;
+        rc = vfs->base->fullpath(vfs->base, path, vfs->base->pathname_bytes + 1,
+                                vfs->database_name);
+        if (rc != RH_OK) return rc;
+        length = strlen(vfs->database_name);
+        if (length + 8 > (size_t)vfs->base->pathname_bytes) return RH_CANTOPEN;
+        memcpy(vfs->journal_name, vfs->database_name, length);
+        memcpy(vfs->journal_name + length, "-journal", 9);
+        if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, vfs->database_name, -1,
+                                vfs->database_wide, (int)vfs->path_capacity) ||
+            !MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, vfs->journal_name, -1,
+                                vfs->journal_wide, (int)vfs->path_capacity) ||
+            !current_path(vfs, pinned, vfs->database_wide)) return RH_IOERR;
+        vfs->database_volume = info.dwVolumeSerialNumber;
+        vfs->database_index_high = info.nFileIndexHigh;
+        vfs->database_index_low = info.nFileIndexLow;
+        vfs->bound = 1;
+        return RH_OK;
+    }
+#else
+    (void)path; (void)borrowed_handle;
+    return RH_IOERR;
+#endif
+}
+int rh_write_vfs_unbind(rh_write_vfs *vfs) {
+    if (!owned(vfs)) return RH_MISUSE;
+    if (vfs->open_files) return RH_BUSY;
+#ifdef _WIN32
+    if (vfs->database_handle && !CloseHandle(vfs->database_handle)) return RH_IOERR;
+#endif
+    vfs->database_handle = NULL;
+    vfs->bound = 0;
+    return RH_OK;
+}
+int rh_write_vfs_bound(rh_write_vfs *vfs) { return owned(vfs) ? vfs->bound : -1; }
+
 int rh_write_vfs_arm(rh_write_vfs *vfs, rh_quota *quota, rh_read_quota *reads) {
     if (!owned(vfs)) return RH_MISUSE;
     if (vfs->quota->recovering && vfs->open_files) return RH_BUSY;
@@ -362,9 +488,13 @@ int rh_write_vfs_close(rh_write_vfs *vfs) {
     int result;
     if (!owned(vfs)) return RH_MISUSE;
     if (vfs->open_files) return RH_BUSY;
+    result = rh_write_vfs_unbind(vfs);
+    if (result != RH_OK) return result;
     result = vfs->api.unregister_vfs(&vfs->vfs);
     if (result != RH_OK) return result;
     release_module(&vfs->api);
+    free(vfs->database_name);
+    free(vfs->database_wide);
     free(vfs);
     return RH_OK;
 }

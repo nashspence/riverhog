@@ -424,6 +424,14 @@ def _vfs_files(shim, path, allocation, *, initialize, limits=LIMITS):
         def __init__(self):
             self.path = path
             self.native = WindowsContainer(path, initialize=initialize)
+            bind = getattr(shim, "bind", None)
+            if bind is not None:
+                try:
+                    bind(self.native)
+                except BaseException:
+                    shim.unbind()
+                    self.native.close()
+                    raise
 
         def check_current(self):
             self.native.check_current()
@@ -435,6 +443,9 @@ def _vfs_files(shim, path, allocation, *, initialize, limits=LIMITS):
             return self.native.file_space()
 
         def close(self):
+            unbind = getattr(shim, "unbind", None)
+            if unbind is not None:
+                unbind()
             self.native.close()
 
     return TransactionalPrimaryFiles(

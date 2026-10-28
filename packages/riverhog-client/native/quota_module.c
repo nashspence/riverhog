@@ -434,6 +434,50 @@ static void vfs_dealloc(PyObject *object) {
     Py_XDECREF(self->quota);
     Py_TYPE(self)->tp_free(object);
 }
+static PyObject *vfs_bind(PyObject *object, PyObject *args) {
+    WriteVfs *self = (WriteVfs *)object;
+    const char *path;
+    PyObject *handle_value;
+    void *handle;
+    if (!vfs_ready(self)) return NULL;
+    if (!PyArg_ParseTuple(args, "sO", &path, &handle_value)) return NULL;
+    if (!PyLong_CheckExact(handle_value)) {
+        PyErr_SetString(PyExc_TypeError, "native binding requires an exact handle integer");
+        return NULL;
+    }
+    handle = PyLong_AsVoidPtr(handle_value);
+    if (PyErr_Occurred()) return NULL;
+    if (rh_write_vfs_bind(self->vfs, path, handle)) {
+        PyErr_SetString(PyExc_RuntimeError,
+            "native binding requires its owning thread, an unbound file-free VFS and matching file identity");
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+static PyObject *vfs_unbind(PyObject *object, PyObject *unused) {
+    WriteVfs *self = (WriteVfs *)object;
+    (void)unused;
+    if (!vfs_ready(self)) return NULL;
+    if (rh_write_vfs_unbind(self->vfs)) {
+        PyErr_SetString(PyExc_RuntimeError,
+            "native unbind requires its owning thread, no live files and successful pin close");
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+static PyObject *vfs_bound(PyObject *object, void *unused) {
+    WriteVfs *self = (WriteVfs *)object;
+    int bound;
+    (void)unused;
+    if (!vfs_ready(self)) return NULL;
+    bound = rh_write_vfs_bound(self->vfs);
+    if (bound < 0) {
+        PyErr_SetString(PyExc_RuntimeError, "native binding requires its owning thread");
+        return NULL;
+    }
+    return PyBool_FromLong(bound);
+}
+
 static PyObject *vfs_arm(PyObject *object, PyObject *value) {
     WriteVfs *self = (WriteVfs *)object;
     int result;
@@ -505,12 +549,15 @@ static PyObject *vfs_open_files(PyObject *object, void *unused) {
     return PyLong_FromLong(count);
 }
 static PyMethodDef vfs_methods[] = {
+    {"bind", vfs_bind, METH_VARARGS, "Pin the database admitted by the caller's live native owner."},
+    {"unbind", vfs_unbind, METH_NOARGS, "Release the binding after every selected native file closes."},
     {"arm", vfs_arm, METH_O, "Select a bank before entering SQLite on its owning thread."},
     {"close", vfs_close, METH_NOARGS, "Unregister after the owner closes every SQLite connection using this VFS."},
     {"identity", vfs_identity, METH_NOARGS, "Describe the already loaded SQLite module."},
     {NULL, NULL, 0, NULL}
 };
 static PyGetSetDef vfs_getset[] = {
+    {"bound", vfs_bound, NULL, "A validated native database pin is held.", NULL},
     {"name", vfs_name, NULL, "Explicit nondefault VFS name.", NULL},
     {"open_files", vfs_open_files, NULL, "Live delegated native files.", NULL},
     {NULL, NULL, NULL, NULL, NULL}

@@ -60,6 +60,13 @@ class NativeWriteShim:
     def __exit__(self, *_args):
         self._native.close()
 
+    def bind(self, owner):
+        owner.check_current()
+        self._native.bind(str(owner.path), owner._database)
+
+    def unbind(self):
+        self._native.unbind()
+
     def read_report(self):
         return self._active_reads.report()
 

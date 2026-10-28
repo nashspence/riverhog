@@ -1904,7 +1904,7 @@ def _install_command(component: dict[str, Any], manifest: dict[str, Any]) -> lis
 def _installed_client_write_bank(
     python: Path, *, scratch: Path, environment: dict[str, str]
 ) -> dict[str, Any]:
-    code = """import hashlib,json,sqlite3,tempfile
+    code = """import ctypes,hashlib,json,sqlite3,tempfile
 from pathlib import Path
 from riverhog_client import _prepared_primary_native as native
 limits=(4096,2,32768,32768,65536,32)
@@ -1935,8 +1935,21 @@ try:
     library_digest=hashlib.sha256(Path(identity["sqlite_library_path"]).read_bytes()).hexdigest()
     with tempfile.TemporaryDirectory(prefix="native-write-proof-",dir=".") as directory:
         uri=(Path(directory)/"primary.sqlite3").resolve().as_uri()+"?vfs="+vfs.name
-        connection=sqlite3.connect(uri,uri=True)
+        path=Path(directory)/"primary.sqlite3"
+        path.touch()
+        kernel=ctypes.WinDLL("kernel32",use_last_error=True)
+        kernel.CreateFileW.argtypes=[ctypes.c_wchar_p,ctypes.c_uint32,ctypes.c_uint32,
+            ctypes.c_void_p,ctypes.c_uint32,ctypes.c_uint32,ctypes.c_void_p]
+        kernel.CreateFileW.restype=ctypes.c_void_p
+        kernel.CloseHandle.argtypes=[ctypes.c_void_p]
+        kernel.CloseHandle.restype=ctypes.c_int
+        handle=kernel.CreateFileW(str(path.resolve()),0x80,3,None,3,0x00200000,None)
+        assert handle not in (None,ctypes.c_void_p(-1).value)
+        connection=None
         try:
+            vfs.bind(str(path.resolve()),handle)
+            assert vfs.bound
+            connection=sqlite3.connect(uri,uri=True)
             assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone()==("persist",)
             connection.execute("PRAGMA synchronous=EXTRA")
             connection.execute("PRAGMA journal_size_limit=4096")
@@ -1946,7 +1959,11 @@ try:
             row=connection.execute("SELECT body FROM proof").fetchone()
             assert row==(b"exact installed original",)
         finally:
-            connection.close()
+            if connection is not None:
+                connection.close()
+            vfs.unbind()
+            assert not vfs.bound
+            assert kernel.CloseHandle(handle)
     assert vfs.open_files==0
     read_report=vfs_reads.report()["forward"]
     resize_calls=vfs_quota.resize_report()["forward"]["resize_calls"]
@@ -1961,6 +1978,7 @@ print(json.dumps({"compiler":native.compiler,
     "storage_callbacks_native":True,"vfs_write_calls":vfs_calls,
     "vfs_resize_calls":resize_calls,
     "vfs_read_calls":read_report["read_calls"],"vfs_read_bytes":read_report["read_bytes"],
+    "vfs_binding_verified":True,
     "vfs_original_exact":True,"sqlite_source_id":source_id,
     "sqlite_library_sha256":library_digest}))
 """
@@ -1984,6 +2002,7 @@ print(json.dumps({"compiler":native.compiler,
         or proof["vfs_read_calls"] <= 0
         or type(proof.get("vfs_read_bytes")) is not int
         or proof["vfs_read_bytes"] <= 0
+        or proof.get("vfs_binding_verified") is not True
         or proof.get("vfs_original_exact") is not True
         or not isinstance(proof.get("sqlite_source_id"), str)
         or not proof["sqlite_source_id"]
