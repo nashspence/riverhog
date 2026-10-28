@@ -1794,17 +1794,20 @@ elif scenario == "nested_open":
         ))
         with helpers.native_file(path, gate, binding=False, create=False) as failed:
             assert failed[0] == sqlite3.SQLITE_CANTOPEN and failed[2] is None
-    assert observed["create"] == 2 * (retry_count + 1)
-    assert observed["attributes"] == (retry_count + 1) ** 2
-    expected_sleeps = []
+    assert observed["create"] == 2 * (retry_count + 1), observed
+    # Both read-write and fallback read-only opens first call winIsDir,
+    # which has its own complete attribute retry loop.
+    assert observed["attributes"] == (retry_count + 1) * (retry_count + 3), observed
+    expected_sleeps = [delay * i for i in range(1, retry_count + 1)]
     for outer_attempt in range(retry_count + 1):
         expected_sleeps.extend(delay * i for i in range(1, retry_count + 1))
         if outer_attempt < retry_count:
             expected_sleeps.append(delay * (outer_attempt + 1))
-    expected_sleeps.extend(delay * i for i in range(1, retry_count + 1))
-    assert observed["sleeps"] == expected_sleeps
-    assert len(expected_sleeps) == retry_count * (retry_count + 3)
-    assert sum(expected_sleeps) == delay * retry_count * (retry_count + 1) // 2 * (retry_count + 3)
+    expected_sleeps.extend(delay * i for i in range(1, retry_count + 1))  # fallback winIsDir
+    expected_sleeps.extend(delay * i for i in range(1, retry_count + 1))  # fallback CreateFile
+    assert observed["sleeps"] == expected_sleeps, observed
+    assert len(expected_sleeps) == retry_count * (retry_count + 5)
+    assert sum(expected_sleeps) == delay * retry_count * (retry_count + 1) // 2 * (retry_count + 5)
     assert quota.recovering and quota.report()["native_failures"] == 1
     assert gate.open_files == 0 and not gate.quarantined
     assert calls.report()["reserved_recovery_closes"] == 0
