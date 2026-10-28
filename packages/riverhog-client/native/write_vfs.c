@@ -37,6 +37,13 @@ struct rh_write_vfs {
     wchar_t library_path[32768];
 };
 
+/* Align the delegate for native pointer, integer and floating members. */
+typedef union {
+    void *pointer;
+    rh_sqlite_int64 integer;
+    long double real;
+} rh_file_alignment;
+
 typedef struct {
     rh_sqlite_file file;
     rh_write_vfs *owner;
@@ -270,8 +277,8 @@ rh_write_vfs *rh_write_vfs_create(
         *error = "the normal Win32 VFS is unavailable or the wrapper name is registered";
         goto failed;
     }
-    vfs->offset = (sizeof(rh_write_file) + _Alignof(max_align_t) - 1) /
-        _Alignof(max_align_t) * _Alignof(max_align_t);
+    vfs->offset = (sizeof(rh_write_file) + _Alignof(rh_file_alignment) - 1) /
+        _Alignof(rh_file_alignment) * _Alignof(rh_file_alignment);
     if (vfs->offset > (size_t)INT_MAX - (size_t)vfs->base->file_bytes) {
         *error = "the native VFS file allocation exceeds its public ABI";
         goto failed;
