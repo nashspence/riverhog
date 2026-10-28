@@ -45,11 +45,37 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
     raw = report.read_text() if report.is_file() else ""
     evidence = json.loads(raw) if raw else {"missing_report": True, "exit_code": code}
     assert code == 0, evidence
-    assert evidence["passed"] == 143 and evidence["elevated"] is False, evidence
+    assert evidence["passed"] == 153 and evidence["elevated"] is False, evidence
     assert evidence["vfs"] == "win32"
     assert evidence["vfs_faults"]["runtime"]["base_vfs"] == "win32"
     assert len(evidence["vfs_faults"]["faults"]) == 8
     assert all(fault["injected"] for fault in evidence["vfs_faults"]["faults"])
+    assert evidence["fixed_barrier"]["runtime"]["base_vfs"] == "win32"
+    barrier_cases = evidence["fixed_barrier"]["cases"]
+    assert len(barrier_cases) == 10
+    assert all(
+        case["original_control_exact"] and case["original_payload_exact"] for case in barrier_cases
+    )
+    progress_cases = [case for case in barrier_cases if case["kind"] == "progress"]
+    assert len(progress_cases) == 6
+    assert all(
+        case["fixed_extent_bytes"] == 8
+        and not case["database_and_journal_growth"]
+        and case["quota"]["refusals"] == case["quota"]["native_failures"] == 0
+        and case["quota"]["forward"]["database_pages_attempted"]
+        <= case["derived_bound"]["database_pages"]
+        and case["quota"]["forward"]["journal_write_extent_bytes"]
+        <= case["derived_bound"]["journal_write_extent_bytes"]
+        for case in progress_cases
+    )
+    rejected = [case for case in barrier_cases if case["kind"] == "reject"]
+    assert len(rejected) == 4
+    assert all(
+        case["rejected_without_replacement"]
+        and case["owner_poisoned"]
+        and case["cold_open_rejected"]
+        for case in rejected
+    )
     assert evidence["write_quota"]["runtime"]["base_vfs"] == "win32"
     quota_cases = evidence["write_quota"]["cases"]
     assert len(quota_cases) == 2

@@ -503,6 +503,29 @@ def _vfs_selection_fault(shim, parent: Path, operation: str, kind: str, when: st
     return report
 
 
+def _fixed_barrier_witness(parent: Path):
+    from tests.support.prepared_primary_barrier import DAMAGED, STARTS, progress, reject
+    from tests.support.sqlite_vfs_faults import FaultVfs
+
+    reports = []
+    with FaultVfs.windows() as shim:
+        shapes = [("progress", start) for start in STARTS]
+        shapes.extend(("reject", damage) for damage in ("exhausted", *DAMAGED))
+        for index, (kind, value) in enumerate(shapes):
+            allocation = ALLOCATION + b"/fixed-barrier/" + str(index).encode("ascii")
+            path = windows_container_path(parent, allocation)
+
+            def opened(*, initialize, path=path, allocation=allocation):
+                return _vfs_files(shim, path, allocation, initialize=initialize)
+
+            result = (
+                progress(opened, value, shim=shim) if kind == "progress" else reject(opened, value)
+            )
+            reports.append({"kind": kind, **result})
+        identity = shim.identity
+    return {"runtime": identity, "cases": reports}
+
+
 def _write_quota_witness(parent: Path):
     from tests.support.prepared_primary_write_quota import witness as quota_witness
     from tests.support.sqlite_vfs_faults import FaultVfs
@@ -944,6 +967,8 @@ def witness(root: Path) -> dict:
         "vfs-" + fault["operation"] + "-" + fault["file"] + "-" + fault["when"]
         for fault in vfs_faults["faults"]
     )
+    fixed_barrier = _fixed_barrier_witness(parent)
+    cases.extend("fixed-barrier-" + str(index) for index in range(len(fixed_barrier["cases"])))
     write_quota = _write_quota_witness(parent)
     cases.extend("write-quota-" + case["refusal"] for case in write_quota["cases"])
     resource_recovery = _shared_resource_recovery_witness(parent)
@@ -990,6 +1015,7 @@ def witness(root: Path) -> dict:
         "vfs": "win32",
         "vfs_faults": vfs_faults,
         "write_quota": write_quota,
+        "fixed_barrier": fixed_barrier,
         "space": space,
         "controls": controls,
         "journals": journals,

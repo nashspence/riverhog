@@ -28,10 +28,12 @@ Table(
     Column("id", Integer, primary_key=True),
     Column("allocation", LargeBinary, nullable=False),
     Column("geometry", Text, nullable=False),
-    Column("barrier", Integer, nullable=False),
+    Column("barrier", LargeBinary, nullable=False),
     Column("journal_reserve", LargeBinary, nullable=False),
     CheckConstraint("id = 1", name="ck_primary_format_singleton"),
-    CheckConstraint("barrier >= 0", name="ck_primary_format_barrier"),
+    CheckConstraint(
+        "typeof(barrier) = 'blob' AND length(barrier) = 8", name="ck_primary_format_barrier"
+    ),
     CheckConstraint("length(journal_reserve) = 16", name="ck_primary_format_journal_reserve"),
 )
 Table(

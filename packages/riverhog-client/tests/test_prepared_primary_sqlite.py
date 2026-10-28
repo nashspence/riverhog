@@ -1043,3 +1043,36 @@ def test_uncertain_large_control_mutation_retries_coldly_with_original_capacity(
 
     report = witness(opened, change=change, inject=inject)
     assert report["visible_outcome"] == ("after" if committed else "before")
+
+
+@pytest.mark.parametrize("start", [0, 127, 32767, (1 << 32) - 1, (1 << 63) - 1, (1 << 64) - 3])
+def test_barrier_counter_keeps_fixed_capacity_across_integer_encoding_boundaries(tmp_path, start):
+    from tests.support.prepared_primary_barrier import progress
+
+    def opened(*, initialize):
+        return _open(tmp_path / "state.sqlite3", initialize=initialize)
+
+    result = progress(opened, start)
+    assert result["fixed_extent_bytes"] == 8 and not result["database_and_journal_growth"]
+
+
+@pytest.mark.parametrize("damage", ["exhausted", "short", "text", "integer"])
+def test_barrier_invalid_extent_or_exhaustion_preserves_originals_and_rejects_cold_open(
+    tmp_path, damage
+):
+    from tests.support.prepared_primary_barrier import reject
+
+    def opened(*, initialize):
+        return _open(tmp_path / "state.sqlite3", initialize=initialize)
+
+    result = reject(opened, damage)
+    assert result["cold_open_rejected"] and result["original_payload_exact"]
+
+
+@pytest.mark.parametrize("value", [b"", b"x" * 7, b"x" * 9, "00000000", 1])
+def test_barrier_schema_requires_exact_blob_extent(tmp_path, value):
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        previous = files._one("SELECT barrier FROM primary_format")
+        with pytest.raises(sqlite3.IntegrityError, match="ck_primary_format_barrier"):
+            files._db().execute("UPDATE primary_format SET barrier=? WHERE id=1", (value,))
+        assert files._one("SELECT barrier FROM primary_format") == previous

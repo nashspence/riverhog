@@ -34,7 +34,8 @@ if TYPE_CHECKING:
 
 _BLOCK = 4096
 _GEOMETRY = (
-    "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096;controls=fixed/v2;journal=prepared/v1"
+    "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096;"
+    "controls=fixed/v2;journal=prepared/v1;barrier=fixed/v1"
 )
 
 
@@ -164,7 +165,8 @@ class TransactionalPrimaryFiles:
                     with engine.begin() as connection:
                         schema.upgrade_connection(connection)
                         connection.exec_driver_sql(
-                            "INSERT INTO primary_format VALUES (1, ?, ?, 0, zeroblob(16))",
+                            "INSERT INTO primary_format VALUES "
+                            "(1, ?, ?, zeroblob(8), zeroblob(16))",
                             (allocation_descriptor, _GEOMETRY),
                         )
                         connection.exec_driver_sql(
@@ -270,14 +272,20 @@ class TransactionalPrimaryFiles:
     def sync(self) -> None:
         """A successful real update, including after an uncertain prior process."""
         with self._transaction() as db:
-            cursor = db.execute(
-                "UPDATE primary_format SET barrier=barrier+1 "
-                "WHERE id=1 AND barrier<9223372036854775807"
-            )
-            if cursor.rowcount != 1:
-                cursor.close()
-                raise PrimaryStateError("prepared-primary durable barrier is unavailable")
-            cursor.close()
+            if self._one(
+                "SELECT typeof(barrier),length(barrier) FROM primary_format WHERE id=1"
+            ) != (
+                "blob",
+                8,
+            ):
+                raise PrimaryStateError("prepared-primary durable barrier extent is invalid")
+            with db.blobopen("primary_format", "barrier", 1) as blob:
+                raw = blob.read(8)
+                value = int.from_bytes(raw, "big")
+                if len(raw) != 8 or value == (1 << 64) - 1:
+                    raise PrimaryStateError("prepared-primary durable barrier is exhausted")
+                blob.seek(0)
+                blob.write((value + 1).to_bytes(8, "big"))
 
     def journal_reserved_bytes(self) -> int:
         from riverhog_client._prepared_primary_sqlite_journal import reserved_bytes
