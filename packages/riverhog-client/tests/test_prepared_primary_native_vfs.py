@@ -3496,3 +3496,215 @@ print(json.dumps({"passed":True,"operation":sys.argv[2],
         "original_exact": True,
         "heap_limit_unchanged": True,
     }
+
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "success",
+        "live",
+        "metadata-before",
+        "metadata-after",
+        "native-close",
+        "constructor",
+        "construction-quarantine",
+        "thread",
+    ],
+)
+def test_native_metadata_custody_covers_quarantine_population_and_process_exit(tmp_path, scenario):
+    import json
+    import subprocess
+    import sys
+
+    code = r'''
+import ctypes as c,gc,importlib.util,json,sqlite3,subprocess,sys,threading,weakref
+from contextlib import closing
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client import PrimaryStateBusy,PrimaryStateError
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+from tests.support.sqlite_vfs_faults import windows_system_call
+spec=importlib.util.spec_from_file_location("custody_helpers",root/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py")
+helpers=importlib.util.module_from_spec(spec);sys.modules[spec.name]=helpers;spec.loader.exec_module(helpers)
+spec2=importlib.util.spec_from_file_location("custody_parent",root/"tests/platform/windows_primary_process.py")
+parent_helpers=importlib.util.module_from_spec(spec2);sys.modules[spec2.name]=parent_helpers;spec2.loader.exec_module(parent_helpers)
+parent=Path(sys.argv[2])/"custody-private";parent_helpers._parent(parent)
+path=windows_container_path(parent,b"native metadata custody");scenario=sys.argv[3]
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+source=native.runtime_identity()["sqlite_source_id"]
+def make():
+    writes=native.WriteQuota(helpers.grant(),helpers.grant())
+    return native.WriteVfs(
+        source,helpers.reads(native,writes),helpers.callbacks(native,writes),heap)
+def reject(action,message):
+    try:action()
+    except RuntimeError as exc:assert message in str(exc),str(exc)
+    else:raise AssertionError("native custody refusal missing: "+message)
+gate=make()
+if scenario=="construction-quarantine":
+    from riverhog_client._prepared_primary_windows_native import _WindowsAPI
+    info=_WindowsAPI.information;close=_WindowsAPI.close;uncertain=[]
+    def information(api,handle,candidate,*,directory):
+        if candidate==path:
+            uncertain.append(handle)
+            raise PrimaryStateError("injected metadata admission failure")
+        return info(api,handle,candidate,directory=directory)
+    def unknown_close(api,handle):
+        if handle in uncertain:
+            raise PrimaryStateError("injected admission close response loss")
+        return close(api,handle)
+    owner=object.__new__(NativeWindowsContainer);reference=weakref.ref(owner)
+    _WindowsAPI.information=information;_WindowsAPI.close=unknown_close
+    try:
+        try:owner.__init__(path,initialize=True,gate=gate)
+        except PrimaryStateError:pass
+        else:raise AssertionError("uncertain metadata admission reported success")
+    finally:
+        _WindowsAPI.information=info;_WindowsAPI.close=close
+    assert uncertain and gate.quarantined and owner.quarantined
+    assert path.stat().st_size==0 and not Path(str(path)+"-journal").exists()
+    assert heap.native_report()["owners"]==1 and heap.native_report()["files"]==0
+    reject(gate.close,"custody");reject(make,"owner population")
+    try:owner.close()
+    except PrimaryStateError:pass
+    else:raise AssertionError("failed admission metadata was retried")
+    del owner;gc.collect();assert reference() is not None
+    probe="\n".join([
+        "from pathlib import Path", "import sys",
+        "from riverhog_client import PrimaryStateBusy",
+        "from riverhog_client._prepared_primary_windows_native import WindowsContainer",
+        "try:WindowsContainer(Path(sys.argv[1]),initialize=False)",
+        "except PrimaryStateBusy:raise SystemExit(0)",
+        "raise AssertionError('failed admission released exclusive custody')"])
+    result=subprocess.run([sys.executable,"-I","-c",probe,str(path)],
+        capture_output=True,text=True,timeout=30)
+    assert result.returncode==0,(result.stdout,result.stderr)
+    print(json.dumps({"passed":True,"scenario":scenario,"quarantined":True,
+        "filename":path.name,"population":heap.native_report(),"admission_failed":True}))
+    raise SystemExit(0)
+if scenario=="constructor":
+    try:NativeWindowsContainer(parent/"unsupported.sqlite3",initialize=True,gate=gate)
+    except PrimaryStateError:pass
+    else:raise AssertionError("invalid metadata placement accepted")
+    assert heap.native_report()["owners"]==0
+    reject(lambda:gate.name,"closed")
+    gate=make()
+owner=NativeWindowsContainer(path,initialize=True,gate=gate)
+assert owner.vfs==gate.name and gate.bound and heap.native_report()["owners"]==1
+reference=weakref.ref(owner)
+reject(lambda:gate.retain_custodian(object()),"custody")
+reject(lambda:gate.complete_custody(object()),"custody")
+reject(lambda:gate.complete_custody(owner),"custody")
+reject(gate.close,"custody")
+helpers.admit_fixture_retries(gate)
+connection=sqlite3.connect(path.as_uri()+"?vfs="+owner.vfs,uri=True)
+connection.execute("PRAGMA journal_mode=PERSIST")
+connection.execute("PRAGMA synchronous=EXTRA")
+connection.execute("CREATE TABLE original(body BLOB NOT NULL)")
+connection.execute("INSERT INTO original VALUES (?)",(b"exact original",));connection.commit()
+if scenario=="live":
+    try:owner.close()
+    except PrimaryStateBusy:pass
+    else:raise AssertionError("metadata owner closed while SQLite files remain")
+    assert not owner._closed and gate.bound
+    reject(lambda:gate.complete_custody(owner),"custody")
+if scenario=="thread":
+    failures=[]
+    def wrong_thread():
+        for action in (owner.close,lambda:gate.complete_custody(owner),gate.quarantine):
+            try:action()
+            except RuntimeError:failures.append(True)
+            else:failures.append(False)
+    thread=threading.Thread(target=wrong_thread);thread.start();thread.join(10)
+    assert not thread.is_alive() and failures==[True,True,True]
+    assert not owner._closed and not gate.quarantined
+connection.close()
+assert gate.open_files==0
+original=(path.read_bytes(),Path(str(path)+"-journal").read_bytes())
+if scenario=="native-close":
+    signature=c.WINFUNCTYPE(c.c_int,c.c_void_p,use_last_error=True)
+    def fail_close(original_close,handle):
+        c.set_last_error(5);return 0
+    with helpers.native_file(path,gate,binding=False,create=False) as opened:
+        assert opened[0]==sqlite3.SQLITE_OK
+        with windows_system_call(b"CloseHandle",signature,fail_close):
+            assert opened[2].contents.close(opened[1])==sqlite3.SQLITE_IOERR|(16<<8)
+        assert not opened[1].contents.methods
+    assert gate.quarantined and gate.open_files==0
+    try:owner.close()
+    except RuntimeError:pass
+    else:raise AssertionError("native quarantine released metadata custody")
+    assert not owner._closed
+elif scenario.startswith("metadata-"):
+    api=owner._api;real_close=api.close;database=owner._database
+    def uncertain(handle):
+        if handle==database:
+            if scenario=="metadata-after":real_close(handle)
+            raise PrimaryStateError("injected uncertain metadata close")
+        real_close(handle)
+    api.close=uncertain
+    try:owner.close()
+    except PrimaryStateError:pass
+    else:raise AssertionError("uncertain metadata close reported complete")
+    assert owner.quarantined and gate.quarantined and gate.open_files==0
+    api.close=real_close
+else:
+    owner.close();owner.close()
+    assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+    del owner;gc.collect();assert reference() is None
+quarantined=scenario in ("metadata-before","metadata-after","native-close")
+if quarantined:
+    reject(gate.close,"custody")
+    reject(make,"owner population")
+    reject(lambda:gate.complete_custody(owner),"custody")
+    del owner,gate
+    gc.collect()
+    assert reference() is not None
+    population=heap.native_report()
+    assert population["owners"]==1 and population["files"]==int(scenario=="native-close")
+    probe=r"""
+import sys
+from pathlib import Path
+from riverhog_client import PrimaryStateBusy
+from riverhog_client._prepared_primary_windows_native import WindowsContainer
+try:WindowsContainer(Path(sys.argv[1]),initialize=False)
+except PrimaryStateBusy:pass
+else:raise AssertionError("native quarantine released exclusive metadata custody")
+"""
+    result=subprocess.run([sys.executable,"-I","-c",probe,str(path)],capture_output=True,text=True,timeout=30)
+    assert result.returncode==0,(result.stdout,result.stderr)
+assert (path.read_bytes(),Path(str(path)+"-journal").read_bytes())==original
+print(json.dumps({"passed":True,"scenario":scenario,"quarantined":quarantined,
+    "filename":path.name,"population":heap.native_report()}))
+'''
+    # The test process owns final release of deliberately quarantined handles.
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(tmp_path),
+            scenario,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] is True and proof["scenario"] == scenario
+    path = tmp_path / "custody-private" / proof["filename"]
+    if proof.get("admission_failed"):
+        from riverhog_client._prepared_primary_windows_native import _WindowsAPI
+
+        assert path.stat().st_size == 0
+        api = _WindowsAPI()
+        handle = api.open(Path(str(path) + ".owner"), owner=True)
+        api.close(handle)
+        return
+    with closing(sqlite3.connect(path)) as reopened:
+        assert reopened.execute("SELECT body FROM original").fetchall() == [(b"exact original",)]

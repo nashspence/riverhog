@@ -6,15 +6,19 @@ import ctypes
 import hashlib
 import os
 import re
+import sys
 from ctypes import wintypes
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riverhog_client._prepared_primary_types import (
     PrimaryFileSpace,
     PrimaryStateBusy,
     PrimaryStateError,
 )
+
+if TYPE_CHECKING:
+    from riverhog_client._prepared_primary_native import WriteVfs
 
 _DWORD = ctypes.c_uint32
 _BOOL = ctypes.c_int32
@@ -531,3 +535,80 @@ class WindowsContainer:
                 # the exclusive owner which has not yet been attempted.
                 self._close_failure = exc
                 raise
+
+
+class NativeWindowsContainer(WindowsContainer):
+    """Keep metadata custody charged until quiescent native and metadata teardown.
+
+    The application creates the finite native owner before constructing this
+    guard. Its registration retains this guard even if Python callers disappear.
+    All selected SQLite connections must close on that owner's thread first.
+    """
+
+    def __init__(self, path: Path, *, initialize: bool, gate: WriteVfs) -> None:
+        self._native_gate = gate
+        self._native_released = False
+        self._native_constructing = False
+        self._native_failure: BaseException | None = None
+        self._handles = []
+        self._closed = False
+        self._close_failure = None
+        gate.retain_custodian(self)
+        try:
+            self.vfs = gate.name
+            self.path = Path(path)
+            self._validate_path()
+            self._native_constructing = True
+            super().__init__(path, initialize=initialize)
+            gate.bind(str(self.path), self._database, self._journal_identity)
+            self._native_constructing = False
+        except BaseException as exc:
+            if self._native_constructing:
+                self._native_constructing = False
+                if self._native_failure is None:
+                    self._native_failure = exc
+                    self._closed = True
+                    gate.quarantine()
+            elif not self._native_released and self._native_failure is None:
+                self.close()
+            raise
+
+    @property
+    def quarantined(self) -> bool:
+        return self._native_failure is not None or (
+            not self._native_released and self._native_gate.quarantined
+        )
+
+    def close(self) -> None:
+        if self._native_constructing:
+            # Admission can fail during temporary-handle cleanup before a pin
+            # reaches the retained list. Do not infer release from that failure.
+            self._native_failure = sys.exception() or PrimaryStateError(
+                "native metadata construction did not complete"
+            )
+            self._closed = True
+            self._native_gate.quarantine()
+            raise PrimaryStateError(
+                "prepared-primary construction metadata custody is quarantined"
+            ) from self._native_failure
+        if self._native_released:
+            return
+        if self._native_failure is not None:
+            raise PrimaryStateError(
+                "prepared-primary metadata custody is quarantined until process exit"
+            ) from self._native_failure
+        if self._native_gate.open_files:
+            raise PrimaryStateBusy("prepared-primary still has live native SQLite files")
+        # An uncertain native close leaves metadata pins untouched. Native
+        # unbinding closes its independent D/J pins while the exclusive owner
+        # remains held. Metadata closes must then succeed before unregistering.
+        self._native_gate.unbind()
+        try:
+            super().close()
+        except BaseException as exc:
+            self._native_failure = exc
+            self._native_gate.quarantine()
+            raise
+        self._native_gate.complete_custody(self)
+        self._native_gate.close()
+        self._native_released = True

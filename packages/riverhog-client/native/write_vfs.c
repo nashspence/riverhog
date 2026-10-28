@@ -1377,6 +1377,12 @@ int rh_write_vfs_unbind(rh_write_vfs *vfs) {
 }
 int rh_write_vfs_bound(rh_write_vfs *vfs) { return owned(vfs) ? vfs->bound : -1; }
 int rh_write_vfs_quarantined(rh_write_vfs *vfs) { return owned(vfs) ? vfs->quarantined : -1; }
+int rh_write_vfs_quarantine(rh_write_vfs *vfs) {
+    if (!owned(vfs)) return RH_MISUSE;
+    vfs->quarantined = 1;
+    rh_failed(vfs->quota);
+    return RH_OK;
+}
 
 int rh_write_vfs_arm(
     rh_write_vfs *vfs, rh_quota *quota, rh_read_quota *reads, rh_callback_quota *calls,

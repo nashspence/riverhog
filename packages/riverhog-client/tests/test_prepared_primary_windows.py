@@ -464,3 +464,186 @@ print(json.dumps({"passed":True,"delegated":delegated,"exclusive_owner_retained"
         "exclusive_owner_retained": True,
         "close_attempts": 1,
     }
+
+
+@pytest.mark.parametrize(
+    "failure", ["none", "live", "native", "metadata", "interrupt", "complete", "unregister"]
+)
+def test_composed_metadata_teardown_preserves_custody_until_every_owner_finishes(failure):
+    from riverhog_client import PrimaryStateBusy
+    from riverhog_client._prepared_primary_windows_native import NativeWindowsContainer
+
+    events = []
+    guard = object.__new__(NativeWindowsContainer)
+    guard._handles = [(value, Path(str(value)), False, (1, 0, value)) for value in [1, 20, 30]]
+    guard._closed = False
+    guard._close_failure = None
+    guard._native_released = False
+    guard._native_constructing = False
+    guard._native_failure = None
+    error = (
+        KeyboardInterrupt("metadata close interrupted")
+        if failure == "interrupt"
+        else PrimaryStateError("injected teardown failure")
+    )
+
+    class Gate:
+        open_files = int(failure == "live")
+        complete = False
+        quarantined = False
+        released = False
+        stopped = False
+
+        def unbind(self):
+            events.append("unbind")
+            if failure == "native":
+                raise error
+
+        def quarantine(self):
+            events.append("quarantine")
+            self.quarantined = True
+
+        def complete_custody(self, custodian):
+            assert custodian is guard and not guard._handles
+            events.append("complete")
+            if failure == "complete" and not self.stopped:
+                self.stopped = True
+                raise error
+            self.complete = True
+
+        def close(self):
+            assert self.complete and not self.quarantined
+            events.append("unregister")
+            if failure == "unregister" and not self.stopped:
+                self.stopped = True
+                raise error
+            self.released = True
+
+    class API:
+        def close(self, handle):
+            events.append(handle)
+            if handle == 30 and failure in ("metadata", "interrupt"):
+                raise error
+
+    gate = Gate()
+    guard._native_gate = gate
+    guard._api = API()
+    if failure == "none":
+        guard.close()
+    elif failure == "live":
+        with pytest.raises(PrimaryStateBusy, match="live native"):
+            guard.close()
+        assert not events and not guard._closed
+        gate.open_files = 0
+        guard.close()
+    else:
+        with pytest.raises(type(error)) as caught:
+            guard.close()
+        assert caught.value is error and not gate.released
+        if failure == "native":
+            assert events == ["unbind"] and len(guard._handles) == 3 and not guard._closed
+            return
+        if failure in ("metadata", "interrupt"):
+            assert events == ["unbind", 30, "quarantine"]
+            assert gate.quarantined and len(guard._handles) == 3
+            before = list(events)
+            with pytest.raises(PrimaryStateError, match="custody is quarantined") as repeated:
+                guard.close()
+            assert repeated.value.__cause__ is error and events == before
+            return
+        assert not guard._handles and guard._closed
+        guard.close()
+    assert gate.released and guard._native_released
+    assert events[:4] == ["unbind", 30, 20, 1]
+    before = list(events)
+    guard.close()
+    assert events == before
+
+
+@pytest.mark.parametrize("stage", ["placement", "admission", "cleanup", "binding", "success"])
+def test_composed_construction_keeps_uncertain_admission_charged(tmp_path, monkeypatch, stage):
+    from riverhog_client._prepared_primary_windows_native import NativeWindowsContainer
+
+    events = []
+    failure = PrimaryStateError("uncertain native admission")
+    path = windows_container_path(tmp_path, b"composed custody")
+    if stage == "placement":
+        path = tmp_path / "unsupported.sqlite3"
+
+    class API:
+        def close(self, handle):
+            events.append(handle)
+
+    class Gate:
+        name = "compiled-custody"
+        open_files = 0
+        custodian = None
+        quarantined = False
+        complete = False
+        charged = True
+
+        def retain_custodian(self, custodian):
+            self.custodian = custodian
+
+        def bind(self, *args):
+            events.append("bind")
+            if stage == "binding":
+                raise failure
+
+        def unbind(self):
+            events.append("unbind")
+
+        def quarantine(self):
+            events.append("quarantine")
+            self.quarantined = True
+
+        def complete_custody(self, custodian):
+            assert custodian is self.custodian and not custodian._handles
+            events.append("complete")
+            self.complete = True
+
+        def close(self):
+            assert self.complete and not self.quarantined
+            events.append("unregister")
+            self.charged = False
+            self.custodian = None
+
+    def admitted(guard, path, *, initialize):
+        assert initialize and gate.custodian is guard and gate.charged
+        events.append("admission")
+        guard._api = API()
+        guard._handles = [(20, path, False, (1, 0, 20))]
+        guard._database = 30
+        guard._journal_identity = None
+        if stage in ("admission", "cleanup"):
+            try:
+                raise failure
+            except PrimaryStateError:
+                if stage == "cleanup":
+                    guard.close()
+                raise
+
+    monkeypatch.setattr(WindowsContainer, "__init__", admitted)
+    gate = Gate()
+    if stage == "success":
+        guard = NativeWindowsContainer(path, initialize=True, gate=gate)
+        assert guard.vfs == gate.name and gate.custodian is guard
+        guard.close()
+        assert events == ["admission", "bind", "unbind", 20, "complete", "unregister"]
+        assert not gate.charged
+    else:
+        with pytest.raises(PrimaryStateError):
+            NativeWindowsContainer(path, initialize=True, gate=gate)
+        if stage == "placement":
+            assert events == ["unbind", "complete", "unregister"] and not gate.charged
+        else:
+            assert gate.quarantined and gate.charged
+            assert events == ["admission"] + (["bind"] if stage == "binding" else []) + [
+                "quarantine"
+            ]
+            guard = gate.custodian
+            assert guard._native_failure is failure and len(guard._handles) == 1
+            before = list(events)
+            with pytest.raises(PrimaryStateError, match="custody is quarantined"):
+                guard.close()
+            assert events == before

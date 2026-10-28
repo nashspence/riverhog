@@ -1031,9 +1031,9 @@ static PyMethodDef module_methods[] = {
 typedef struct {
     PyObject_HEAD
     rh_write_vfs *vfs;
-    PyObject *quota, *callbacks, *heap;
+    PyObject *quota, *callbacks, *heap, *custodian;
     char name[96];
-    int initialized;
+    int initialized, custody_complete;
 } WriteVfs;
 
 static int quota_attachable(WriteQuota *quota) {
@@ -1102,7 +1102,51 @@ static void vfs_dealloc(PyObject *object) {
     Py_XDECREF(self->quota);
     Py_XDECREF(self->callbacks);
     Py_XDECREF(self->heap);
+    Py_XDECREF(self->custodian);
     Py_TYPE(self)->tp_free(object);
+}
+static PyObject *vfs_retain_custodian(PyObject *object, PyObject *custodian) {
+    WriteVfs *self = (WriteVfs *)object;
+    if (!vfs_ready(self)) return NULL;
+    if (custodian == Py_None || custodian == object || self->custodian ||
+        rh_write_vfs_open_files(self->vfs) != 0 ||
+        rh_write_vfs_bound(self->vfs) != 0 || rh_write_vfs_quarantined(self->vfs) != 0) {
+        PyErr_SetString(PyExc_RuntimeError,
+            "custody requires one new owner on its owning thread before binding or file admission");
+        return NULL;
+    }
+    /* Registration already owns one finite native owner slot and a self pin.
+     * Retaining one custodian adds neither an unbounded registry nor a storage
+     * callback into Python. Failed teardown keeps this reference and slot.
+     */
+    self->custodian = Py_NewRef(custodian);
+    Py_RETURN_NONE;
+}
+static PyObject *vfs_complete_custody(PyObject *object, PyObject *custodian) {
+    WriteVfs *self = (WriteVfs *)object;
+    if (!vfs_ready(self)) return NULL;
+    if (!self->custodian || custodian != self->custodian ||
+        rh_write_vfs_open_files(self->vfs) != 0 ||
+        rh_write_vfs_bound(self->vfs) != 0 || rh_write_vfs_quarantined(self->vfs) != 0) {
+        PyErr_SetString(PyExc_RuntimeError,
+            "custody completion requires the retained owner, its owning thread and unbound nonquarantined files");
+        return NULL;
+    }
+    /* The trusted metadata owner calls this only after all its pins close.
+     * Even interruption before this call cannot release the charged owner.
+     */
+    self->custody_complete = 1;
+    Py_RETURN_NONE;
+}
+static PyObject *vfs_quarantine(PyObject *object, PyObject *unused) {
+    WriteVfs *self = (WriteVfs *)object;
+    (void)unused;
+    if (!vfs_ready(self)) return NULL;
+    if (rh_write_vfs_quarantine(self->vfs)) {
+        PyErr_SetString(PyExc_RuntimeError, "native quarantine requires its owning thread");
+        return NULL;
+    }
+    Py_RETURN_NONE;
 }
 static PyObject *vfs_bind(PyObject *object, PyObject *args) {
     WriteVfs *self = (WriteVfs *)object;
@@ -1112,6 +1156,10 @@ static PyObject *vfs_bind(PyObject *object, PyObject *args) {
     void *handle;
     int i;
     if (!vfs_ready(self)) return NULL;
+    if (self->custody_complete) {
+        PyErr_SetString(PyExc_RuntimeError, "native metadata custody is already complete");
+        return NULL;
+    }
     if (!PyArg_ParseTuple(args, "sOO", &path, &handle_value, &journal_value)) return NULL;
     if (journal_value != Py_None) {
         if (!PyTuple_CheckExact(journal_value) || PyTuple_GET_SIZE(journal_value) != 3) {
@@ -1196,6 +1244,10 @@ static PyObject *vfs_arm(PyObject *object, PyObject *args) {
     CallbackQuota *callbacks;
     int result;
     if (!vfs_ready(self)) return NULL;
+    if (self->custody_complete) {
+        PyErr_SetString(PyExc_RuntimeError, "native metadata custody is already complete");
+        return NULL;
+    }
     if (!PyArg_ParseTuple(args, "O!O!", &read_type, &reads, &callback_type, &callbacks)) return NULL;
     if (!read_ready(reads) || !callback_ready(callbacks, 0)) return NULL;
     if (callbacks->quota != reads->quota) {
@@ -1234,6 +1286,10 @@ static PyObject *vfs_close(PyObject *object, PyObject *unused) {
     int result;
     (void)unused;
     if (!self->vfs) Py_RETURN_NONE;
+    if (self->custodian && !self->custody_complete) {
+        PyErr_SetString(PyExc_RuntimeError, "native metadata custody must complete before unregistering");
+        return NULL;
+    }
     result = rh_write_vfs_close(self->vfs);
     if (result) {
         PyErr_SetString(PyExc_RuntimeError,
@@ -1247,6 +1303,7 @@ static PyObject *vfs_close(PyObject *object, PyObject *unused) {
     ((CallbackQuota *)self->callbacks)->attached = 0;
     Py_CLEAR(self->callbacks);
     Py_CLEAR(self->heap);
+    Py_CLEAR(self->custodian);
     Py_DECREF(self);
     Py_RETURN_NONE;
 }
@@ -1294,6 +1351,12 @@ static PyObject *vfs_quarantined(PyObject *object, void *unused) {
     return PyBool_FromLong(quarantined);
 }
 static PyMethodDef vfs_methods[] = {
+    {"retain_custodian", vfs_retain_custodian, METH_O,
+        "Retain one metadata owner under the already charged native owner slot before binding."},
+    {"complete_custody", vfs_complete_custody, METH_O,
+        "Record the retained owner's completed metadata teardown after native unbinding."},
+    {"quarantine", vfs_quarantine, METH_NOARGS,
+        "Permanently retain the charged native owner after uncertain external metadata teardown."},
     {"admit_retries", vfs_admit_retries, METH_VARARGS,
         "At controlled quiescent startup, prepay a bound existing-file bootstrap and admit one application retry policy."},
     {"bind", vfs_bind, METH_VARARGS, "Pin the database admitted by the caller's live native owner."},
