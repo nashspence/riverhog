@@ -1087,7 +1087,7 @@ kernel.GetModuleHandleW.argtypes=[c.c_wchar_p]
 kernel.GetModuleHandleW.restype=c.c_void_p
 handle=kernel.GetModuleHandleW("sqlite3.dll")
 assert handle
-library=c.CDLL(None,handle=handle)
+library=c.CDLL("sqlite3.dll",handle=handle)
 library.sqlite3_malloc64.argtypes=[c.c_uint64]
 library.sqlite3_malloc64.restype=c.c_void_p
 library.sqlite3_free.argtypes=[c.c_void_p]
