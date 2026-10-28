@@ -110,6 +110,32 @@ enum rh_refusal rh_read_admit(
     return rh_record(quota, result, file, amount, offset, was_recovery);
 }
 
+enum rh_refusal rh_resize(rh_quota *quota, enum rh_file file, int64_t size) {
+    int was_recovery = quota->recovering;
+    rh_bank *bank = was_recovery ? &quota->recovery : &quota->forward;
+    enum rh_refusal result = RH_ALLOWED;
+    if (file != RH_DATABASE && file != RH_JOURNAL) result = RH_FILE;
+    else if (size < 0) result = RH_RESIZE_RANGE;
+    /* Write and resize streams have separate counters under the supplied call ceiling. */
+    else if (bank->resize_calls >= bank->limits.calls) result = RH_RESIZE_CALLS;
+    else if (file == RH_DATABASE && (uint64_t)size > bank->limits.database_end)
+        result = RH_DATABASE_END;
+    else if (file == RH_JOURNAL && (uint64_t)size > bank->limits.journal_end)
+        result = RH_JOURNAL_END;
+    if (result == RH_ALLOWED) {
+        ++bank->resize_calls;
+        if (file == RH_DATABASE && (uint64_t)size > bank->database_resize_extent)
+            bank->database_resize_extent = (uint64_t)size;
+        if (file == RH_JOURNAL && (uint64_t)size > bank->journal_resize_extent)
+            bank->journal_resize_extent = (uint64_t)size;
+    }
+    return rh_record(quota, result, file, size, 0, was_recovery);
+}
+
+void rh_forbid_control(rh_quota *quota, enum rh_file file) {
+    (void)rh_record(quota, RH_CONTROL, file, 0, 0, quota->recovering);
+}
+
 void rh_failed(rh_quota *quota) {
     quota->recovering = 1;
     rh_increment(&quota->native_failures, quota);
@@ -128,6 +154,9 @@ const char *rh_reason(enum rh_refusal reason) {
         case RH_READ_RANGE: return "invalid read range";
         case RH_READ_CALLS: return "read call grant";
         case RH_READ_BYTES: return "read byte grant";
+        case RH_RESIZE_RANGE: return "invalid resize extent";
+        case RH_RESIZE_CALLS: return "resize call grant";
+        case RH_CONTROL: return "disallowed file control";
         default: return "allowed";
     }
 }

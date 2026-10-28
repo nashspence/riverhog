@@ -159,6 +159,37 @@ static PyObject *quota_admit(PyObject *object, PyObject *args) {
     return PyBool_FromLong(rh_admit(&self->quota, file, (int64_t)length, (int64_t)position) == RH_ALLOWED);
 }
 
+static PyObject *quota_resize(PyObject *object, PyObject *args) {
+    WriteQuota *self = (WriteQuota *)object;
+    PyObject *kind, *size;
+    long long extent;
+    enum rh_file file = RH_OTHER;
+    if (!ready(self)) return NULL;
+    if (!PyArg_ParseTuple(args, "OO", &kind, &size)) return NULL;
+    if (!PyUnicode_CheckExact(kind) || !PyLong_CheckExact(size)) {
+        PyErr_SetString(PyExc_TypeError, "resize admission requires a file kind and exact integer extent");
+        return NULL;
+    }
+    extent = PyLong_AsLongLong(size);
+    if (PyErr_Occurred()) return NULL;
+    if (PyUnicode_CompareWithASCIIString(kind, "database") == 0) file = RH_DATABASE;
+    else if (PyUnicode_CompareWithASCIIString(kind, "journal") == 0) file = RH_JOURNAL;
+    return PyBool_FromLong(rh_resize(&self->quota, file, (int64_t)extent) == RH_ALLOWED);
+}
+static PyObject *quota_resize_report(PyObject *object, PyObject *unused) {
+    WriteQuota *self = (WriteQuota *)object;
+    rh_bank *f = &self->quota.forward, *r = &self->quota.recovery;
+    (void)unused;
+    if (!ready(self)) return NULL;
+    return Py_BuildValue("{s:{s:K,s:K,s:K},s:{s:K,s:K,s:K}}",
+        "forward", "resize_calls", (unsigned long long)f->resize_calls,
+        "database_resize_extent", (unsigned long long)f->database_resize_extent,
+        "journal_resize_extent", (unsigned long long)f->journal_resize_extent,
+        "recovery", "resize_calls", (unsigned long long)r->resize_calls,
+        "database_resize_extent", (unsigned long long)r->database_resize_extent,
+        "journal_resize_extent", (unsigned long long)r->journal_resize_extent);
+}
+
 static PyObject *quota_failed(PyObject *object, PyObject *unused) {
     WriteQuota *self = (WriteQuota *)object;
     (void)unused;
@@ -230,6 +261,8 @@ static PyObject *quota_tracking_bytes(PyObject *object, void *unused) {
 
 static PyMethodDef quota_methods[] = {
     {"admit", quota_admit, METH_VARARGS, "Charge a complete attempted write before delegation."},
+    {"resize", quota_resize, METH_VARARGS, "Charge a complete native resize or size hint before delegation."},
+    {"resize_report", quota_resize_report, METH_NOARGS, "Snapshot fixed resize counters outside callbacks."},
     {"failed", quota_failed, METH_NOARGS, "Latch the independent restoration bank."},
     {"report", quota_report, METH_NOARGS, "Snapshot fixed counters outside storage callbacks."},
     {NULL, NULL, 0, NULL}

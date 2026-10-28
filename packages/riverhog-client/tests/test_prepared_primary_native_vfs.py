@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import ctypes as c
 import gc
 import os
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 
 import pytest
 
@@ -53,11 +55,13 @@ def test_native_write_vfs_binds_stdlib_and_preserves_default_registration(tmp_pa
                 assert connection.execute("SELECT sqlite_source_id()").fetchone() == (source,)
                 assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone() == ("persist",)
                 connection.execute("PRAGMA synchronous=EXTRA")
+                connection.execute("PRAGMA journal_size_limit=4096")
                 connection.execute("CREATE TABLE sample (value BLOB NOT NULL)")
                 connection.execute("INSERT INTO sample VALUES (?)", (b"exact original",))
         finally:
             connection.close()
         assert quota.report()["forward"]["database_pages_attempted"] > 0
+        assert quota.resize_report()["forward"]["resize_calls"] > 0
         assert gate.identity()["base_vfs"] == "win32"
         assert gate.identity()["sqlite_source_id"] == source
         assert gate.open_files == 0
@@ -132,6 +136,7 @@ def test_native_write_vfs_and_attached_bank_reject_other_thread_access(tmp_path)
         with ThreadPoolExecutor(max_workers=1) as pool:
             for operation in (
                 quota.report,
+                quota.resize_report,
                 read_bank.report,
                 gate.close,
                 lambda: gate.arm(reads(native, replacement)),
@@ -231,5 +236,185 @@ def test_native_short_read_keeps_full_charge_without_latching_failure(tmp_path):
         finally:
             connection.close()
         assert not quota.recovering
+    finally:
+        gate.close()
+
+
+@contextmanager
+def native_file(path, gate, *, kind="database", flags=None):
+    """Call the registered C methods on a real native file with valid SQLite filename metadata."""
+    from tests.support.sqlite_vfs_faults import FaultVfs, IoMethods, SqliteFile
+
+    library = FaultVfs.windows().library
+    library.sqlite3_create_filename.argtypes = [
+        c.c_char_p,
+        c.c_char_p,
+        c.c_char_p,
+        c.c_int,
+        c.c_void_p,
+    ]
+    library.sqlite3_create_filename.restype = c.c_void_p
+    library.sqlite3_free_filename.argtypes = [c.c_void_p]
+    library.sqlite3_free_filename.restype = None
+    library.sqlite3_filename_journal.argtypes = [c.c_void_p]
+    library.sqlite3_filename_journal.restype = c.c_void_p
+    name = str(path.resolve()).encode("utf-8")
+    filename = library.sqlite3_create_filename(name, name + b"-journal", name + b"-wal", 0, None)
+    assert filename
+    raw = None
+    try:
+        vfs = library.sqlite3_vfs_find(gate.name.encode("ascii"))
+        assert vfs
+        # An explicit native-alignment array keeps the delegate correctly aligned.
+        allocation = (
+            c.c_longdouble
+            * ((vfs.contents.file_bytes + c.sizeof(c.c_longdouble) - 1) // c.sizeof(c.c_longdouble))
+        )()
+        raw = c.cast(allocation, c.POINTER(SqliteFile))
+        selected = library.sqlite3_filename_journal(filename) if kind == "journal" else filename
+        actual_flags = flags if flags is not None else (0x100 if kind == "database" else 0x800)
+        out_flags = c.c_int()
+        result = vfs.contents.open(vfs, selected, raw, 0x6 | actual_flags, c.byref(out_flags))
+        methods = (
+            c.cast(raw.contents.methods, c.POINTER(IoMethods)) if raw.contents.methods else None
+        )
+        yield result, raw, methods
+    finally:
+        try:
+            if raw is not None and raw.contents.methods:
+                methods = c.cast(raw.contents.methods, c.POINTER(IoMethods))
+                assert methods.contents.close(raw) == sqlite3.SQLITE_OK
+        finally:
+            library.sqlite3_free_filename(filename)
+
+
+@pytest.mark.parametrize("kind,ceiling", [("database", 8192), ("journal", 4096)])
+def test_native_resize_growth_shrink_and_refusal_keep_exact_native_file(tmp_path, kind, ceiling):
+    native, source = runtime()
+    forward = (4096, 128, 8192, 4096, 1024 * 1024, 32)
+    recovery = (4096, 128, 16384, 8192, 1024 * 1024, 32)
+    quota = native.WriteQuota(forward, recovery)
+    gate = native.WriteVfs(source, reads(native, quota))
+    path = tmp_path / "resize.sqlite3"
+    actual = path if kind == "database" else path.with_name(path.name + "-journal")
+    try:
+        with native_file(path, gate, kind=kind) as (result, raw, methods):
+            assert result == sqlite3.SQLITE_OK
+            assert methods.contents.truncate(raw, ceiling) == sqlite3.SQLITE_OK
+            assert actual.stat().st_size == ceiling
+            assert methods.contents.truncate(raw, 1) == sqlite3.SQLITE_OK
+            original = actual.read_bytes()
+            assert original == bytes(1)
+            assert methods.contents.truncate(raw, ceiling + 1) == sqlite3.SQLITE_FULL
+            assert actual.read_bytes() == original
+            assert quota.report()["first_refusal"]["reason"] == kind + " extent grant"
+            assert quota.resize_report()["forward"]["resize_calls"] == 2
+            assert methods.contents.truncate(raw, 2 * ceiling) == sqlite3.SQLITE_OK
+            assert actual.stat().st_size == 2 * ceiling
+            assert quota.resize_report()["recovery"]["resize_calls"] == 1
+        assert gate.open_files == 0
+    finally:
+        gate.close()
+
+
+def test_native_size_hint_refuses_before_native_delegation(tmp_path):
+    native, source = runtime()
+    quota = native.WriteQuota((4096, 128, 8192, 4096, 1048576, 32), grant())
+    gate = native.WriteVfs(source, reads(native, quota))
+    path = tmp_path / "hint.sqlite3"
+    try:
+        with native_file(path, gate) as (result, raw, methods):
+            assert result == sqlite3.SQLITE_OK
+            size = c.c_int64(8192)
+            assert methods.contents.control(raw, 5, c.byref(size)) == sqlite3.SQLITE_OK
+            before = path.stat().st_size
+            size.value = 8193
+            assert methods.contents.control(raw, 5, c.byref(size)) == sqlite3.SQLITE_FULL
+            assert size.value == 8193 and path.stat().st_size == before
+            assert quota.resize_report()["forward"]["resize_calls"] == 1
+            assert quota.resize_report()["forward"]["database_resize_extent"] == 8192
+            assert quota.report()["first_refusal"]["reason"] == "database extent grant"
+    finally:
+        gate.close()
+
+
+def test_native_chunk_and_mmap_controls_cannot_bypass_extent_checks(tmp_path):
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, quota))
+    path = tmp_path / "controls.sqlite3"
+    try:
+        with native_file(path, gate) as (result, raw, methods):
+            assert result == sqlite3.SQLITE_OK
+            chunk = c.c_int(0)
+            assert methods.contents.control(raw, 6, c.byref(chunk)) == sqlite3.SQLITE_OK
+            chunk.value = 4096
+            assert methods.contents.control(raw, 6, c.byref(chunk)) == sqlite3.SQLITE_IOERR
+            assert chunk.value == 4096
+            # A delegated chunk setting would round this to 4096.
+            assert methods.contents.truncate(raw, 1) == sqlite3.SQLITE_OK
+            assert path.stat().st_size == 1
+            mapping = c.c_int64(1048576)
+            assert methods.contents.control(raw, 18, c.byref(mapping)) == sqlite3.SQLITE_IOERR
+            assert mapping.value == 1048576
+            mapping.value = -1
+            assert methods.contents.control(raw, 18, c.byref(mapping)) == sqlite3.SQLITE_OK
+            assert mapping.value == 0
+            assert quota.report()["first_refusal"]["reason"] == "disallowed file control"
+    finally:
+        gate.close()
+
+
+@pytest.mark.parametrize("operation", [23, 31, 32, 33, 43])
+def test_native_alternate_handle_and_atomic_controls_fail_explicitly(tmp_path, operation):
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, quota))
+    try:
+        with native_file(tmp_path / "bypass.sqlite3", gate) as (result, raw, methods):
+            assert result == sqlite3.SQLITE_OK
+            assert methods.contents.control(raw, operation, None) == sqlite3.SQLITE_IOERR
+            assert quota.recovering
+            assert quota.report()["native_failures"] == 0
+            assert quota.report()["first_refusal"]["reason"] == "disallowed file control"
+    finally:
+        gate.close()
+
+
+def test_native_retry_policy_is_query_only_and_does_not_change_process_settings(tmp_path):
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, quota))
+    try:
+        with native_file(tmp_path / "retry.sqlite3", gate) as (result, raw, methods):
+            assert result == sqlite3.SQLITE_OK
+            query = (c.c_int * 2)(-1, -1)
+            assert methods.contents.control(raw, 9, query) == sqlite3.SQLITE_OK
+            previous = tuple(query)
+            assert min(previous) >= 0
+            changed = (c.c_int * 2)(previous[0] + 1, previous[1] + 1)
+            assert methods.contents.control(raw, 9, changed) == sqlite3.SQLITE_IOERR
+            query = (c.c_int * 2)(-1, -1)
+            assert methods.contents.control(raw, 9, query) == sqlite3.SQLITE_OK
+            assert tuple(query) == previous
+    finally:
+        gate.close()
+
+
+@pytest.mark.parametrize(
+    "flags", [0x200, 0x400, 0x1000, 0x2000, 0x4000, 0x80000, 0x900, 0x108, 0x180]
+)
+def test_native_unadmitted_file_class_never_creates_a_native_file(tmp_path, flags):
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, quota))
+    path = tmp_path / "unadmitted.sqlite3"
+    try:
+        with native_file(path, gate, flags=flags) as (result, raw, methods):
+            assert result == sqlite3.SQLITE_CANTOPEN
+            assert methods is None and not raw.contents.methods
+            assert not path.exists()
+            assert gate.open_files == 0
+            assert quota.report()["first_refusal"]["reason"] == "unadmitted file"
     finally:
         gate.close()

@@ -284,3 +284,63 @@ def test_native_read_bank_cannot_reset_or_use_uninitialized_objects():
     with pytest.raises(OverflowError):
         reads.admit("database", 1 << 63, 0)
     assert not writes.recovering
+
+
+@pytest.mark.parametrize(
+    "kind,size,allowed,reason",
+    [
+        ("database", 8192, True, None),
+        ("database", 8193, False, "database extent grant"),
+        ("journal", 4096, True, None),
+        ("journal", 4097, False, "journal extent grant"),
+        ("database", 0, True, None),
+        ("journal", -1, False, "invalid resize extent"),
+        ("database", (1 << 63) - 1, False, "database extent grant"),
+        ("other", 0, False, "unadmitted file"),
+    ],
+)
+def test_native_resize_prefix_enforces_absolute_extent_before_delegation(
+    kind, size, allowed, reason
+):
+    quota = native.WriteQuota(grant(database_end=8192, journal_end=4096), grant())
+    assert quota.resize(kind, size) is allowed
+    report = quota.resize_report()
+    assert report["forward"]["resize_calls"] == int(allowed)
+    assert report["forward"]["database_resize_extent"] == (
+        size if allowed and kind == "database" else 0
+    )
+    assert report["forward"]["journal_resize_extent"] == (
+        size if allowed and kind == "journal" else 0
+    )
+    assert quota.report()["forward"]["write_calls"] == 0
+    if not allowed:
+        assert quota.recovering
+        assert quota.report()["first_refusal"]["reason"] == reason
+        assert quota.resize("database", 8192)
+        assert quota.resize_report()["recovery"]["database_resize_extent"] == 8192
+
+
+def test_native_resize_calls_shrink_failure_and_recovery_have_independent_capacity():
+    quota = native.WriteQuota(grant(calls=2), grant(calls=2))
+    assert quota.resize("database", 8192)
+    assert quota.resize("database", 0)
+    assert not quota.resize("database", 0)
+    first = quota.report()["first_refusal"]
+    assert first["reason"] == "resize call grant"
+    assert quota.resize("database", 4096)
+    quota.failed()
+    assert quota.resize("journal", 1024)
+    assert not quota.resize("journal", 0)
+    assert quota.report()["first_refusal"] == first
+    assert quota.resize_report()["forward"]["resize_calls"] == 2
+    assert quota.resize_report()["recovery"]["resize_calls"] == 2
+    assert quota.report()["native_failures"] == 1
+    with pytest.raises(TypeError):
+        quota.resize("database", True)
+    with pytest.raises(OverflowError):
+        quota.resize("database", 1 << 63)
+    uninitialized = native.WriteQuota.__new__(native.WriteQuota)
+    with pytest.raises(RuntimeError, match="not initialized"):
+        uninitialized.resize_report()
+    with pytest.raises(RuntimeError, match="not initialized"):
+        uninitialized.resize("database", 1)

@@ -981,6 +981,7 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
         "callbacks",
         "recovery",
         "vfs-calls",
+        "resize-calls",
         "read-calls",
         "read-bytes",
         "bool-read-calls",
@@ -1002,6 +1003,7 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         "refusals": 1,
         "storage_callbacks_native": True,
         "vfs_write_calls": 7,
+        "vfs_resize_calls": 2,
         "vfs_read_calls": 3,
         "vfs_read_bytes": 4096,
         "vfs_original_exact": True,
@@ -1022,6 +1024,8 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         proof["recovery_pages"] = 2
     elif invalid == "vfs-calls":
         proof["vfs_write_calls"] = 0
+    elif invalid == "resize-calls":
+        proof["vfs_resize_calls"] = 0
     elif invalid == "read-calls":
         proof["vfs_read_calls"] = 0
     elif invalid == "read-bytes":

@@ -14,9 +14,23 @@
 #define RH_IOERR 10
 #define RH_FULL 13
 #define RH_MISUSE 21
+#define RH_CANTOPEN 14
 #define RH_SHORT_READ (RH_IOERR | (2 << 8))
 #define RH_MAIN_DB 0x00000100
 #define RH_MAIN_JOURNAL 0x00000800
+#define RH_FILE_CLASSES 0x00087F00
+#define RH_DELETE_ON_CLOSE 0x00000008
+#define RH_MEMORY_FILE 0x00000080
+/* https://sqlite.org/c3ref/c_fcntl_begin_atomic_write.html */
+#define RH_SIZE_HINT 5
+#define RH_CHUNK_SIZE 6
+#define RH_WIN32_AV_RETRY 9
+#define RH_MMAP_SIZE 18
+#define RH_SET_HANDLE 23
+#define RH_BEGIN_ATOMIC 31
+#define RH_COMMIT_ATOMIC 32
+#define RH_ROLLBACK_ATOMIC 33
+#define RH_NULL_IO 43
 
 typedef struct {
     const char *(*source_id)(void);
@@ -102,6 +116,7 @@ static int file_truncate(rh_sqlite_file *raw, rh_sqlite_int64 size) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
     if (!owned(file->owner)) return RH_IOERR;
+    if (rh_resize(file->owner->quota, file->kind, (int64_t)size) != RH_ALLOWED) return RH_FULL;
     return storage_result(file->owner, real->methods->truncate(real, size));
 }
 static int file_sync(rh_sqlite_file *raw, int flags) {
@@ -138,6 +153,29 @@ static int file_control(rh_sqlite_file *raw, int operation, void *argument) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
     if (!owned(file->owner)) return RH_IOERR;
+    if (operation == RH_SIZE_HINT) {
+        if (!argument) {
+            rh_forbid_control(file->owner->quota, file->kind);
+            return RH_MISUSE;
+        }
+        if (rh_resize(file->owner->quota, file->kind,
+                      (int64_t)*(rh_sqlite_int64 *)argument) != RH_ALLOWED) return RH_FULL;
+        return storage_result(file->owner, real->methods->control(real, operation, argument));
+    }
+    /* Keep native truncation exact: nonzero chunks round beyond the admitted end.
+     * Version-one methods expose no mmap/WAL methods; reject alternate bypass controls.
+     * Win32 retry changes are process-global and belong to the application owner.
+     */
+    if ((operation == RH_CHUNK_SIZE && (!argument || *(int *)argument != 0)) ||
+        (operation == RH_MMAP_SIZE && (!argument || *(rh_sqlite_int64 *)argument > 0)) ||
+        (operation == RH_WIN32_AV_RETRY &&
+         (!argument || ((int *)argument)[0] >= 0 || ((int *)argument)[1] >= 0)) ||
+        operation == RH_SET_HANDLE || operation == RH_BEGIN_ATOMIC ||
+        operation == RH_COMMIT_ATOMIC || operation == RH_ROLLBACK_ATOMIC ||
+        operation == RH_NULL_IO) {
+        rh_forbid_control(file->owner->quota, file->kind);
+        return RH_IOERR;
+    }
     return real->methods->control(real, operation, argument);
 }
 static int file_sector(rh_sqlite_file *raw) {
@@ -165,7 +203,12 @@ static int vfs_open(
     file->methods = NULL;
     if (!owned(vfs) || vfs->open_files == INT_MAX) return RH_IOERR;
     wrapper->owner = vfs;
-    wrapper->kind = flags & RH_MAIN_DB ? RH_DATABASE : flags & RH_MAIN_JOURNAL ? RH_JOURNAL : RH_OTHER;
+    wrapper->kind = (flags & RH_FILE_CLASSES) == RH_MAIN_DB ? RH_DATABASE :
+        (flags & RH_FILE_CLASSES) == RH_MAIN_JOURNAL ? RH_JOURNAL : RH_OTHER;
+    if (wrapper->kind == RH_OTHER || !name || flags & (RH_DELETE_ON_CLOSE | RH_MEMORY_FILE)) {
+        (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
+        return RH_CANTOPEN;
+    }
     real = real_file(wrapper);
     real->methods = NULL;
     result = vfs->base->open(vfs->base, name, real, flags, out_flags);

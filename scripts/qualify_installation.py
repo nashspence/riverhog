@@ -1939,6 +1939,7 @@ try:
         try:
             assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone()==("persist",)
             connection.execute("PRAGMA synchronous=EXTRA")
+            connection.execute("PRAGMA journal_size_limit=4096")
             connection.execute("CREATE TABLE proof (body BLOB NOT NULL)")
             connection.execute("INSERT INTO proof VALUES (?)",(b"exact installed original",))
             connection.commit()
@@ -1948,15 +1949,17 @@ try:
             connection.close()
     assert vfs.open_files==0
     read_report=vfs_reads.report()["forward"]
+    resize_calls=vfs_quota.resize_report()["forward"]["resize_calls"]
 finally:
     vfs.close()
 vfs_calls=vfs_quota.report()["forward"]["write_calls"]
-assert vfs_calls>0 and read_report["read_calls"]>0 and not vfs_quota.recovering
+assert vfs_calls>0 and read_report["read_calls"]>0 and resize_calls>0 and not vfs_quota.recovering
 print(json.dumps({"compiler":native.compiler,
     "module_sha256":hashlib.sha256(module.read_bytes()).hexdigest(),
     "tracking_bytes":quota.tracking_bytes,
     "forward_pages":2,"recovery_pages":3,"refusals":1,
     "storage_callbacks_native":True,"vfs_write_calls":vfs_calls,
+    "vfs_resize_calls":resize_calls,
     "vfs_read_calls":read_report["read_calls"],"vfs_read_bytes":read_report["read_bytes"],
     "vfs_original_exact":True,"sqlite_source_id":source_id,
     "sqlite_library_sha256":library_digest}))
@@ -1975,6 +1978,8 @@ print(json.dumps({"compiler":native.compiler,
         or proof.get("storage_callbacks_native") is not True
         or type(proof.get("vfs_write_calls")) is not int
         or proof["vfs_write_calls"] <= 0
+        or type(proof.get("vfs_resize_calls")) is not int
+        or proof["vfs_resize_calls"] <= 0
         or type(proof.get("vfs_read_calls")) is not int
         or proof["vfs_read_calls"] <= 0
         or type(proof.get("vfs_read_bytes")) is not int
