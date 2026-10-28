@@ -1076,3 +1076,156 @@ def test_barrier_schema_requires_exact_blob_extent(tmp_path, value):
         with pytest.raises(sqlite3.IntegrityError, match="ck_primary_format_barrier"):
             files._db().execute("UPDATE primary_format SET barrier=? WHERE id=1", (value,))
         assert files._one("SELECT barrier FROM primary_format") == previous
+
+
+@pytest.mark.parametrize("kind", ["binding", "sqlite", "native-io", "io-error"])
+@pytest.mark.parametrize("stage", ["begin", "append", "select-before", "select-after"])
+@pytest.mark.parametrize("rollback_failure", [False, True])
+def test_transaction_refusal_preserves_originals_and_requires_cold_reconciliation(
+    tmp_path, monkeypatch, kind, stage, rollback_failure
+):
+    path = tmp_path / "state.sqlite3"
+    if kind == "binding":
+        failure = MemoryError("SQLite allocation refused")
+    else:
+        failure = sqlite3.OperationalError("SQLite allocation refused")
+        failure.sqlite_errorcode = {
+            "sqlite": sqlite3.SQLITE_NOMEM,
+            "native-io": sqlite3.SQLITE_IOERR_NOMEM,
+            "io-error": sqlite3.SQLITE_IOERR,
+        }[kind]
+    expected_error = PrimaryStateError if kind == "io-error" else owner.PrimaryStateCapacity
+    expected_message = "mutation failed" if kind == "io-error" else "memory admission"
+    rollback_attempts = []
+
+    class FailedConnection:
+        def __init__(self, connection):
+            self.connection = connection
+
+        @property
+        def in_transaction(self):
+            return self.connection.in_transaction
+
+        def execute(self, sql, *args):
+            if stage == "begin" and sql == "BEGIN IMMEDIATE":
+                raise failure
+            if stage == "select-before" and sql == "COMMIT":
+                raise failure
+            result = self.connection.execute(sql, *args)
+            if (stage == "append" and sql.startswith("INSERT INTO primary_chunks")) or (
+                stage == "select-after" and sql == "COMMIT"
+            ):
+                result.close()
+                raise failure
+            return result
+
+        def rollback(self):
+            rollback_attempts.append(True)
+            if rollback_failure:
+                raise MemoryError("cleanup allocation refused")
+            self.connection.rollback()
+
+        def close(self):
+            self.connection.close()
+
+    with _open(path, initialize=True) as files:
+        original = files.put_bytes("original", [b"exact original"], byte_limit=14)
+        raw = files._connection
+        wrapped = FailedConnection(raw)
+        if stage.startswith("select"):
+            select = files._select
+
+            def selected(generation, file):
+                files._connection = wrapped
+                return select(generation, file)
+
+            monkeypatch.setattr(files, "_select", selected)
+        else:
+            files._connection = wrapped
+        with pytest.raises(expected_error, match=expected_message) as caught:
+            files.put_bytes("candidate", [b"new candidate"], byte_limit=13)
+        assert type(caught.value) is expected_error
+        assert caught.value.__cause__ is failure
+        assert bool(rollback_attempts) == (stage in ("append", "select-before"))
+        assert files._poisoned
+        with pytest.raises(PrimaryStateError, match="uncertain"):
+            files.exists("original")
+    with _open(path, initialize=False) as reopened:
+        with reopened.verified(original) as stream:
+            assert stream.read() == b"exact original"
+        assert reopened.exists("candidate") is (stage == "select-after")
+        # The interrupted singleton is retained until bounded cleanup settles it.
+        steps = 0
+        while not reopened.recover_step():
+            steps += 1
+            assert steps <= 4
+        if stage == "select-after":
+            candidate = PrimaryByteFile(
+                "candidate", 13, hashlib.sha256(b"new candidate").hexdigest()
+            )
+            with reopened.verified(candidate) as stream:
+                assert stream.read() == b"new candidate"
+        else:
+            assert not reopened.exists("candidate")
+        reopened.put_bytes("later", [b"progress"], byte_limit=8)
+
+
+def test_actual_sqlite_heap_exhaustion_defers_without_disabling_the_grant(tmp_path):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import json,sqlite3,sys
+from contextlib import closing
+from pathlib import Path
+from riverhog_client import PrimaryStateCapacity,PrimaryStateError
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits,TransactionalPrimaryFiles
+from tests.support.prepared_primary import SqlitePrimaryTestGuard
+path=Path(sys.argv[1]);path.touch()
+limits=SqlitePrimaryLimits(16*1024**2,32*1024**2,128*1024)
+def open_store(initialize):
+    return TransactionalPrimaryFiles(SqlitePrimaryTestGuard(path),
+        allocation_descriptor=b"heap deferral fixture",limits=limits,initialize=initialize)
+def heap_limit(db,setting=None):
+    statement="PRAGMA hard_heap_limit"+("" if setting is None else "="+str(setting))
+    with closing(db.execute(statement)) as cursor:return cursor.fetchone()[0]
+with open_store(True) as files:
+    original=files.put_bytes("original",[b"exact original"],byte_limit=14)
+    grant=2*1024*1024
+    assert heap_limit(files._connection)==0
+    assert heap_limit(files._connection,grant)==grant
+    try:
+        with files._transaction() as db:
+            db.execute(
+                "INSERT INTO primary_namespaces(parent,name) VALUES (1,'uncommitted')"
+            ).close()
+            with closing(db.execute("SELECT zeroblob(?)",(2*grant,))) as cursor:
+                cursor.fetchone()
+    except PrimaryStateCapacity as exc:
+        assert isinstance(exc.__cause__,(MemoryError,sqlite3.Error))
+    else:raise AssertionError("actual exhausted SQLite heap admitted an oversized allocation")
+    assert files._poisoned
+    try:files.exists("original")
+    except PrimaryStateError as exc:assert "uncertain" in str(exc)
+    else:raise AssertionError("memory refusal did not poison the operation")
+    assert heap_limit(files._connection)==grant
+with open_store(False) as reopened:
+    with reopened.verified(original) as stream:assert stream.read()==b"exact original"
+    assert reopened._one("SELECT id FROM primary_namespaces WHERE name='uncommitted'") is None
+    reopened.put_bytes("later",[b"progress"],byte_limit=8)
+    assert heap_limit(reopened._connection)==grant
+print(json.dumps({"passed":True,"heap_limit_bytes":grant,"original_exact":True}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code, str(tmp_path / "state.sqlite3")],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "heap_limit_bytes": 2 * 1024**2,
+        "original_exact": True,
+    }

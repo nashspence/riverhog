@@ -18,7 +18,7 @@ class PrimaryStateBusy(PrimaryStateError):
 
 
 class PrimaryStateCapacity(PrimaryStateError):
-    """Explicit durable-byte admission cannot accept this preparation."""
+    """Preparation resources cannot admit the current operation."""
 
 
 def primary_file_name(value: str) -> str:

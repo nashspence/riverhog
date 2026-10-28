@@ -259,8 +259,18 @@ class TransactionalPrimaryFiles:
                 if db.in_transaction:
                     try:
                         db.rollback()
-                    except sqlite3.Error:
+                    except (sqlite3.Error, MemoryError):
+                        # Cleanup failure cannot replace the first operation failure.
+                        # Poison requires close/reopen under the application's grant.
                         pass
+                if isinstance(exc, MemoryError) or (
+                    isinstance(exc, sqlite3.Error)
+                    and getattr(exc, "sqlite_errorcode", None)
+                    in (sqlite3.SQLITE_NOMEM, sqlite3.SQLITE_IOERR_NOMEM)
+                ):
+                    raise PrimaryStateCapacity(
+                        "prepared-primary SQLite memory admission exhausted"
+                    ) from exc
                 if isinstance(exc, sqlite3.Error):
                     if getattr(exc, "sqlite_errorcode", None) == sqlite3.SQLITE_FULL:
                         raise PrimaryStateCapacity(
