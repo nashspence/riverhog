@@ -53,8 +53,9 @@ class ContainerGuard(Protocol):
 class SqlitePrimaryLimits:
     """Page ceiling, retained-journal setting and SQLite cache tuning.
 
-    Journal retention is distinct from peak transaction space and from the
-    calling application's reservations for pending bytes and control progress.
+    Database and retained-journal extents must fit these grants before a cold
+    Windows SQLite open. Journal retention is distinct from peak transaction
+    space and from the application's pending-byte and control reservations.
     """
 
     database_bytes: int
@@ -212,8 +213,27 @@ class TransactionalPrimaryFiles:
             raise ValueError("prepared-primary allocation descriptor is required")
         if path != windows_container_path(path.parent, allocation_descriptor):
             raise PrimaryStateError("prepared-primary container name differs from its allocation")
+        guard = WindowsContainer(path, initialize=initialize)
+        try:
+            if not initialize:
+                # A first pager read may already replay a hot rollback journal.
+                # Inspect owned metadata before StateSchema or any SQLite open.
+                database, journal = guard.file_space()
+                for name, observed, offered in (
+                    ("database", database.end_bytes, limits.database_bytes),
+                    ("journal", journal.end_bytes, limits.journal_bytes),
+                ):
+                    if type(observed) is not int or observed < 0:
+                        raise PrimaryStateError("prepared-primary cold extent is invalid")
+                    if observed > offered:
+                        raise PrimaryStateCapacity(
+                            f"prepared-primary cold recovery {name} exceeds the offered grant"
+                        )
+        except BaseException:
+            guard.close()
+            raise
         return cls(
-            WindowsContainer(path, initialize=initialize),
+            guard,
             allocation_descriptor=allocation_descriptor,
             limits=limits,
             initialize=initialize,

@@ -1229,3 +1229,79 @@ print(json.dumps({"passed":True,"heap_limit_bytes":grant,"original_exact":True})
         "heap_limit_bytes": 2 * 1024**2,
         "original_exact": True,
     }
+
+
+@pytest.mark.parametrize("refused", ["database", "journal"])
+def test_hot_journal_cold_admission_is_nondestructive_and_retries_with_sufficient_grants(
+    tmp_path, monkeypatch, refused
+):
+    import subprocess
+    import sys
+    from dataclasses import replace
+
+    from riverhog_client import _prepared_primary_windows_native as windows
+
+    path = windows.windows_container_path(tmp_path, ALLOCATION)
+    guards = []
+
+    def guarded(location, *, initialize):
+        assert location == path and not initialize
+        guard = _SQLGuard(path)
+        guards.append(guard)
+        return guard
+
+    monkeypatch.setattr(windows, "WindowsContainer", guarded)
+
+    def cold(limits=LIMITS):
+        return owner.TransactionalPrimaryFiles.windows(
+            path, allocation_descriptor=ALLOCATION, limits=limits, initialize=False
+        )
+
+    original = b"original primary" * 16384
+    with _open(path, initialize=True) as files:
+        selected = files.put_bytes("journal", (original,), byte_limit=len(original))
+
+    # This isolated crash fixture spills dirty pages to produce a genuinely hot
+    # journal. The maintained owner continues to disable cache spilling.
+    code = r"""
+import os,sqlite3,sys
+db=sqlite3.connect(sys.argv[1],isolation_level=None)
+assert db.execute("PRAGMA journal_mode=PERSIST").fetchone()==("persist",)
+db.execute("PRAGMA synchronous=EXTRA")
+db.execute("PRAGMA cache_size=1")
+db.execute("PRAGMA cache_spill=ON")
+db.execute("BEGIN IMMEDIATE")
+db.execute("UPDATE primary_chunks SET body=zeroblob(length(body))")
+os._exit(73)
+"""
+    crashed = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(path)], capture_output=True, timeout=30
+    )
+    assert crashed.returncode == 73, crashed.stderr
+    journal = Path(str(path) + "-journal")
+    assert journal.stat().st_size > 4096
+    assert journal.read_bytes()[:8] == bytes.fromhex("d9d505f920a163d7")
+    retained = {file: hashlib.sha256(file.read_bytes()).hexdigest() for file in (path, journal)}
+    offered = replace(LIMITS, **{refused + "_bytes": 4096})
+
+    def forbidden(*_args, **_kwargs):
+        pytest.fail("undersized cold grant opened SQLite before rejecting hot recovery")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(owner.sqlite3, "connect", forbidden)
+        with pytest.raises(owner.PrimaryStateCapacity, match="cold recovery " + refused):
+            cold(offered)
+    assert guards[-1].closed
+    assert all(
+        hashlib.sha256(file.read_bytes()).hexdigest() == sha for file, sha in retained.items()
+    )
+
+    with cold() as files:
+        with files.verified(selected) as stream:
+            assert stream.read() == original
+        assert files._connection.execute("PRAGMA integrity_check").fetchone() == ("ok",)
+        files.put_bytes("later", (b"progress",), byte_limit=8)
+    with cold() as files:
+        assert files.exists("later")
+        with files.verified(selected) as stream:
+            assert stream.read() == original

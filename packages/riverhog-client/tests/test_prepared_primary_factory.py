@@ -91,3 +91,46 @@ def test_factory_failure_preserves_original_allocation_authority(tmp_path):
         )
     assert calls == [(path, DESCRIPTOR, False)]
     assert not path.exists()
+
+
+@pytest.mark.parametrize("kind", ["database", "journal"])
+@pytest.mark.parametrize("observed", [True, -1, 1.5, 4097])
+def test_cold_extent_admission_precedes_every_sqlite_connection_and_schema_read(
+    tmp_path, monkeypatch, kind, observed
+):
+    from riverhog_client import PrimaryStateError
+    from riverhog_client import _prepared_primary_sqlite as owner
+    from riverhog_client import _prepared_primary_windows_native as windows
+    from riverhog_client._prepared_primary_types import PrimaryFileSpace
+
+    def forbidden(*_args, **_kwargs):
+        pytest.fail("unadmitted cold extent reached SQLite or StateSchema")
+
+    monkeypatch.setattr(owner, "_engine_factory", forbidden)
+
+    class Guard:
+        path = tmp_path / "retained.sqlite3"
+        closed = False
+        observations = 0
+
+        def file_space(self):
+            self.observations += 1
+            sizes = {"database": 0, "journal": 0}
+            sizes[kind] = observed
+            return tuple(PrimaryFileSpace(sizes[name], 8192) for name in ("database", "journal"))
+
+        def close(self):
+            self.closed = True
+
+    guard = Guard()
+    path = windows.windows_container_path(tmp_path, b"retained allocation")
+    monkeypatch.setattr(windows, "WindowsContainer", lambda *_args, **_kwargs: guard)
+    error = PrimaryStateCapacity if observed == 4097 else PrimaryStateError
+    with pytest.raises(error, match="cold recovery|cold extent"):
+        TransactionalPrimaryFiles.windows(
+            path,
+            allocation_descriptor=b"retained allocation",
+            limits=SqlitePrimaryLimits(4096, 4096, 4096),
+            initialize=False,
+        )
+    assert guard.closed and guard.observations == 1
