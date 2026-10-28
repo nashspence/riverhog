@@ -60,7 +60,7 @@ struct rh_write_vfs {
     rh_sqlite_heap *heap;
     unsigned long thread;
     size_t offset;
-    int open_files, bound;
+    int open_files, bound, quarantined;
     size_t path_capacity;
     char *database_name, *journal_name;
     wchar_t *database_wide, *journal_wide, *actual_wide;
@@ -94,7 +94,7 @@ static unsigned long current_thread(void) {
 
 static int owned(rh_write_vfs *vfs) { return current_thread() == vfs->thread; }
 static int callback(rh_write_vfs *vfs, int can_error) {
-    return owned(vfs) &&
+    return owned(vfs) && !vfs->quarantined &&
         rh_callback_admit(vfs->calls, vfs->quota, can_error) == RH_ALLOWED;
 }
 static rh_sqlite_file *real_file(rh_write_file *file) {
@@ -217,6 +217,12 @@ static int file_close(rh_sqlite_file *raw) {
                                            file->forward_close);
         file->owner->calls->pending_error = 0;
         result = storage_result(file->owner, real->methods->close(real));
+        /* SQLite discards its file object after xClose, including on error.
+         * A native failure cannot prove that its underlying handle was released.
+         * Keep this owner, its pins and grants until application process exit;
+         * other already-open files must still use their prepaid close paths.
+         */
+        if (result != RH_OK || !accounted) file->owner->quarantined = 1;
         /* SQLite does not retry xClose after its returned error. Always delegate
          * the close, including an impossible accounting inconsistency.
          */
@@ -347,7 +353,7 @@ static int vfs_open(
     rh_sqlite_file *real;
     int result, close_bank;
     file->methods = NULL;
-    if (!owned(vfs) || vfs->open_files == INT_MAX) return RH_IOERR;
+    if (!owned(vfs) || vfs->quarantined || vfs->open_files == INT_MAX) return RH_IOERR;
     wrapper->owner = vfs;
     wrapper->kind = (flags & RH_FILE_CLASSES) == RH_MAIN_DB ? RH_DATABASE :
         (flags & RH_FILE_CLASSES) == RH_MAIN_JOURNAL ? RH_JOURNAL : RH_OTHER;
@@ -402,7 +408,10 @@ static int vfs_delete(rh_sqlite_vfs *raw, const char *name, int sync_directory) 
     {
         int result = vfs->base->delete_file(vfs->base, name, sync_directory);
         if (result == RH_OK && vfs->journal_handle) {
-            if (!CloseHandle(vfs->journal_handle)) return storage_result(vfs, RH_IOERR);
+            if (!CloseHandle(vfs->journal_handle)) {
+                vfs->quarantined = 1;
+                return storage_result(vfs, RH_IOERR);
+            }
             vfs->journal_handle = NULL;
         }
         return storage_result(vfs, result);
@@ -701,6 +710,7 @@ int rh_write_vfs_bind(
     rh_write_vfs *vfs, const char *path, void *borrowed_handle, const uint32_t *journal_identity
 ) {
     if (!owned(vfs)) return RH_MISUSE;
+    if (vfs->quarantined) return RH_IOERR;
     {
         int64_t current, peak, allocations;
         if (!rh_sqlite_heap_report(vfs->heap, &current, &peak, &allocations)) return RH_IOERR;
@@ -749,24 +759,33 @@ int rh_write_vfs_bind(
 }
 int rh_write_vfs_unbind(rh_write_vfs *vfs) {
     if (!owned(vfs)) return RH_MISUSE;
+    if (vfs->quarantined) return RH_IOERR;
     if (vfs->open_files) return RH_BUSY;
 #ifdef _WIN32
     if (vfs->journal_handle) {
-        if (!CloseHandle(vfs->journal_handle)) return RH_IOERR;
+        if (!CloseHandle(vfs->journal_handle)) {
+            vfs->quarantined = 1;
+            return RH_IOERR;
+        }
         vfs->journal_handle = NULL;
     }
-    if (vfs->database_handle && !CloseHandle(vfs->database_handle)) return RH_IOERR;
+    if (vfs->database_handle && !CloseHandle(vfs->database_handle)) {
+        vfs->quarantined = 1;
+        return RH_IOERR;
+    }
 #endif
     vfs->database_handle = NULL;
     vfs->bound = 0;
     return RH_OK;
 }
 int rh_write_vfs_bound(rh_write_vfs *vfs) { return owned(vfs) ? vfs->bound : -1; }
+int rh_write_vfs_quarantined(rh_write_vfs *vfs) { return owned(vfs) ? vfs->quarantined : -1; }
 
 int rh_write_vfs_arm(
     rh_write_vfs *vfs, rh_quota *quota, rh_read_quota *reads, rh_callback_quota *calls
 ) {
     if (!owned(vfs)) return RH_MISUSE;
+    if (vfs->quarantined) return RH_IOERR;
     if (vfs->quota->recovering && vfs->open_files) return RH_BUSY;
     {
         int64_t current, peak, allocations;

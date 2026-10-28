@@ -218,6 +218,7 @@ def test_native_write_vfs_and_attached_bank_reject_other_thread_access(tmp_path)
                 read_bank.report,
                 gate.close,
                 gate.unbind,
+                lambda: gate.quarantined,
                 lambda: gate.bind(str(tmp_path / "not-opened.sqlite3"), 0, None),
                 lambda: gate.arm(reads(native, replacement), callbacks(native, replacement)),
             ):
@@ -1215,6 +1216,7 @@ def test_native_infallible_refusal_can_surface_on_close_without_stranding_the_fi
             assert calls.report()["pending_error"]
             assert methods.contents.close(raw) == sqlite3.SQLITE_FULL
             assert not raw.contents.methods and gate.open_files == 0
+            assert not gate.quarantined
             assert not calls.report()["pending_error"]
             assert calls.report()["recovery"]["callback_slots_charged"] == 1
             assert writes.report()["native_failures"] == 0
@@ -1350,3 +1352,189 @@ def test_native_mode_controls_are_query_only_and_preserve_native_flags(
             assert quota.report()["first_refusal"]["reason"] == "disallowed file control"
     finally:
         gate.close()
+
+
+@pytest.mark.parametrize("failed_kind", ["database", "journal"])
+def test_native_close_failure_quarantines_owner_until_application_exit(tmp_path, failed_kind):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    path = tmp_path / "close-quarantine.sqlite3"
+    connection = sqlite3.connect(path)
+    try:
+        connection.execute("CREATE TABLE original(value BLOB)")
+        connection.execute("INSERT INTO original VALUES (?)", (b"exact original",))
+        connection.commit()
+    finally:
+        connection.close()
+    original = path.read_bytes()
+    code = r"""
+import ctypes as c, json, sqlite3, sys
+from pathlib import Path
+
+sys.path.insert(0, sys.argv[1])
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_windows_native import _WindowsAPI
+
+import importlib.util
+
+spec = importlib.util.spec_from_file_location(
+    "native_vfs_probe",
+    Path(sys.argv[1]) / "packages/riverhog-client/tests/test_prepared_primary_native_vfs.py",
+)
+helpers = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = helpers
+spec.loader.exec_module(helpers)
+from tests.support.sqlite_vfs_faults import FaultVfs, SqliteVfs
+
+connection = sqlite3.connect(":memory:")
+try:
+    source = connection.execute("SELECT sqlite_source_id()").fetchone()[0]
+finally:
+    connection.close()
+heap = native.SqliteProcessBudget(source, 64 * 1024 * 1024)
+quota = native.WriteQuota(helpers.grant(), helpers.grant())
+reads = native.ReadQuota(quota, (1048576, 65536), (1048576, 65536))
+calls = native.CallbackQuota(quota, 262144, 262144)
+gate = native.WriteVfs(source, reads, calls, heap)
+path = Path(sys.argv[2])
+failed_kind = sys.argv[3]
+api = _WindowsAPI()
+borrowed = api.open(path)
+gate.bind(str(path), borrowed, None)
+api.close(borrowed)
+library = FaultVfs.windows().library
+base = library.sqlite3_vfs_find(b"win32")
+set_type = c.CFUNCTYPE(c.c_int, c.POINTER(SqliteVfs), c.c_char_p, c.c_void_p)
+get_type = c.CFUNCTYPE(c.c_void_p, c.POINTER(SqliteVfs), c.c_char_p)
+
+
+class Extended(c.Structure):
+    _fields_ = SqliteVfs._fields_ + [
+        ("time64", c.c_void_p),
+        ("set_call", set_type),
+        ("get_call", get_type),
+        ("next_call", c.c_void_p),
+    ]
+
+
+extended = c.cast(base, c.POINTER(Extended)).contents
+assert extended.version >= 3
+original_close = extended.get_call(base, b"CloseHandle")
+assert original_close
+close_type = c.WINFUNCTYPE(c.c_int, c.c_void_p, use_last_error=True)
+real_close = close_type(original_close)
+target = None
+attempts = 0
+
+
+@close_type
+def refuse_close(handle):
+    global attempts
+    if handle == target:
+        attempts += 1
+        c.set_last_error(5)
+        return 0
+    return real_close(handle)
+
+
+with helpers.native_file(path, gate, binding=False) as database:
+    with helpers.native_file(path, gate, kind="journal", binding=False) as journal:
+        assert database[0] == journal[0] == sqlite3.SQLITE_OK
+        selected = database if failed_kind == "database" else journal
+        other = journal if failed_kind == "database" else database
+        handle = c.c_void_p()
+        assert selected[2].contents.control(selected[1], 29, c.byref(handle)) == sqlite3.SQLITE_OK
+        target = handle.value
+        assert target
+        assert gate.open_files == 2 and not gate.quarantined
+        assert calls.report()["reserved_recovery_closes"] == 2
+        assert (
+            extended.set_call(base, b"CloseHandle", c.cast(refuse_close, c.c_void_p))
+            == sqlite3.SQLITE_OK
+        )
+        try:
+            rc = selected[2].contents.close(selected[1])
+        finally:
+            assert extended.set_call(base, b"CloseHandle", original_close) == sqlite3.SQLITE_OK
+        assert rc == sqlite3.SQLITE_IOERR_CLOSE and attempts == 3
+        assert gate.quarantined and gate.open_files == 1 and gate.bound
+        assert not selected[1].contents.methods
+        assert quota.recovering and quota.report()["native_failures"] == 1
+        before = calls.report()
+        size = c.c_int64(-7)
+        assert other[2].contents.size(other[1], c.byref(size)) == sqlite3.SQLITE_FULL
+        assert size.value == -7 and calls.report() == before
+        with helpers.native_file(path, gate, binding=False) as refused:
+            assert refused[0] == sqlite3.SQLITE_IOERR and refused[2] is None
+        assert calls.report() == before
+        replacement = native.WriteQuota(helpers.grant(), helpers.grant())
+        replacement_reads = native.ReadQuota(replacement, (1048576, 65536), (1048576, 65536))
+        replacement_calls = native.CallbackQuota(replacement, 262144, 262144)
+        for operation in (
+            lambda: gate.arm(reads, calls),
+            lambda: gate.arm(replacement_reads, replacement_calls),
+            gate.unbind,
+            gate.close,
+        ):
+            try:
+                operation()
+            except RuntimeError as exc:
+                assert "quarantined" in str(exc)
+            else:
+                raise AssertionError("quarantined owner was released or rearmed")
+        assert replacement_calls.report()["forward"]["callback_slots_charged"] == 0
+        assert other[2].contents.close(other[1]) == sqlite3.SQLITE_OK
+        assert not other[1].contents.methods and gate.open_files == 0
+        assert calls.report()["reserved_recovery_closes"] == 0
+        assert calls.report()["recovery"]["callback_slots_charged"] == 1
+        # The isolated hook never delegated this handle's close. Test-only cleanup
+        # can therefore release that known still-live handle after restoring it.
+        assert real_close(target)
+        for operation in (gate.unbind, gate.close):
+            try:
+                operation()
+            except RuntimeError as exc:
+                assert "quarantined" in str(exc)
+            else:
+                raise AssertionError("uncertain native teardown was reported complete")
+        assert gate.quarantined and gate.bound
+        assert library.sqlite3_vfs_find(gate.name.encode("ascii"))
+        try:
+            path.rename(path.with_suffix(".moved"))
+        except PermissionError:
+            pass
+        else:
+            raise AssertionError("quarantined database pin was released")
+print(json.dumps({"passed": True, "failed_kind": failed_kind, "native_close_attempts": attempts}))
+"""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(path),
+            failed_kind,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "failed_kind": failed_kind,
+        "native_close_attempts": 3,
+    }
+    assert path.read_bytes() == original
+    moved = path.with_suffix(".moved")
+    path.rename(moved)
+    cold = sqlite3.connect(moved)
+    try:
+        assert cold.execute("SELECT value FROM original").fetchone() == (b"exact original",)
+    finally:
+        cold.close()

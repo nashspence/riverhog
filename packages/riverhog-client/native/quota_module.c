@@ -695,7 +695,7 @@ static PyObject *vfs_bind(PyObject *object, PyObject *args) {
     if (PyErr_Occurred()) return NULL;
     if (rh_write_vfs_bind(self->vfs, path, handle, journal)) {
         PyErr_SetString(PyExc_RuntimeError,
-            "native binding requires its owning thread, an unbound file-free VFS and matching file identity");
+            "native binding requires its owning thread, an unbound file-free nonquarantined VFS and matching file identity");
         return NULL;
     }
     Py_RETURN_NONE;
@@ -706,7 +706,7 @@ static PyObject *vfs_unbind(PyObject *object, PyObject *unused) {
     if (!vfs_ready(self)) return NULL;
     if (rh_write_vfs_unbind(self->vfs)) {
         PyErr_SetString(PyExc_RuntimeError,
-            "native unbind requires its owning thread, no live files and successful pin close");
+            "native unbind requires its owning thread, no live files, no quarantined close and successful pin close");
         return NULL;
     }
     Py_RETURN_NONE;
@@ -745,7 +745,7 @@ static PyObject *vfs_arm(PyObject *object, PyObject *args) {
                               &reads->reads, &callbacks->calls);
     if (result) {
         PyErr_SetString(PyExc_RuntimeError,
-            "native write VFS requires its owning thread, closed poisoned files and close capacity");
+            "native write VFS requires its owning thread, closed poisoned files, no quarantined close and close capacity");
         return NULL;
     }
     quota_attach((WriteQuota *)reads->quota);
@@ -764,7 +764,7 @@ static PyObject *vfs_close(PyObject *object, PyObject *unused) {
     result = rh_write_vfs_close(self->vfs);
     if (result) {
         PyErr_SetString(PyExc_RuntimeError,
-            "native write VFS cannot close with live files or from another thread");
+            "native write VFS cannot close with live files, a quarantined close or from another thread");
         return NULL;
     }
     self->vfs = NULL;
@@ -807,6 +807,18 @@ static PyObject *vfs_open_files(PyObject *object, void *unused) {
     }
     return PyLong_FromLong(count);
 }
+static PyObject *vfs_quarantined(PyObject *object, void *unused) {
+    WriteVfs *self = (WriteVfs *)object;
+    int quarantined;
+    (void)unused;
+    if (!vfs_ready(self)) return NULL;
+    quarantined = rh_write_vfs_quarantined(self->vfs);
+    if (quarantined < 0) {
+        PyErr_SetString(PyExc_RuntimeError, "native write VFS requires its owning thread");
+        return NULL;
+    }
+    return PyBool_FromLong(quarantined);
+}
 static PyMethodDef vfs_methods[] = {
     {"bind", vfs_bind, METH_VARARGS, "Pin the database admitted by the caller's live native owner."},
     {"unbind", vfs_unbind, METH_NOARGS, "Release the binding after every selected native file closes."},
@@ -818,7 +830,8 @@ static PyMethodDef vfs_methods[] = {
 static PyGetSetDef vfs_getset[] = {
     {"bound", vfs_bound, NULL, "A validated native database pin is held.", NULL},
     {"name", vfs_name, NULL, "Explicit nondefault VFS name.", NULL},
-    {"open_files", vfs_open_files, NULL, "Live delegated native files.", NULL},
+    {"open_files", vfs_open_files, NULL, "Selected SQLite files awaiting xClose; quarantine separately blocks release.", NULL},
+    {"quarantined", vfs_quarantined, NULL, "Native close or close accounting failed; the owner stays pinned through process exit.", NULL},
     {NULL, NULL, NULL, NULL, NULL}
 };
 static PyTypeObject vfs_type = {

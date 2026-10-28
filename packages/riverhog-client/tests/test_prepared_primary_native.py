@@ -505,3 +505,9 @@ def test_native_process_heap_owner_rejects_uninitialized_observation():
         owner.report()
     with pytest.raises(RuntimeError, match="not initialized"):
         owner.increase(1024)
+
+
+def test_native_uninitialized_vfs_cannot_report_successful_teardown():
+    owner = native.WriteVfs.__new__(native.WriteVfs)
+    with pytest.raises(RuntimeError, match="uninitialized"):
+        _ = owner.quarantined
