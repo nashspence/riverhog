@@ -935,7 +935,27 @@ static PyObject *current_process_budget(PyObject *module, PyObject *unused) {
     if (!heap_ready((SqliteProcessBudget *)process_budget)) return NULL;
     return Py_NewRef(process_budget);
 }
+static PyObject *runtime_identity(PyObject *module, PyObject *unused) {
+    char source[256];
+    wchar_t path[32768];
+    const char *error;
+    PyObject *library, *result;
+    (void)module; (void)unused;
+    if (!rh_sqlite_runtime_identity(source, sizeof(source), path, &error)) {
+        PyErr_SetString(PyExc_RuntimeError, error);
+        return NULL;
+    }
+    library = PyUnicode_FromWideChar(path, -1);
+    if (!library) return NULL;
+    result = Py_BuildValue("{s:s,s:O}", "sqlite_source_id", source,
+                          "sqlite_library_path", library);
+    Py_DECREF(library);
+    return result;
+}
+
 static PyMethodDef module_methods[] = {
+    {"runtime_identity", runtime_identity, METH_NOARGS,
+        "Read the already loaded SQLite module identity without opening a database or changing global policy."},
     {"filesystem_cost", native_filesystem_cost, METH_VARARGS,
         "Qualified desktop-NT filesystem-attempt/internal-wait upper bound, excluding close and non-filesystem APIs."},
     {"retry_bootstrap_cost", retry_bootstrap_cost, METH_VARARGS,

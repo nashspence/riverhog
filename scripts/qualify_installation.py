@@ -1976,13 +1976,23 @@ vfs_callbacks=native.CallbackQuota(
     vfs_quota,(8192, 0),(8192, 0),
     work=native.NativeWorkQuota(vfs_quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
 )
-heap=native.SqliteProcessBudget(source_id,67108864)
+from riverhog_client._prepared_primary_runtime import _admit_process_budget, _qualified_runtime
+try:
+    native.current_process_budget()
+except RuntimeError as exc:
+    assert "not configured" in str(exc)
+else:
+    raise AssertionError("installed client acquired a heap owner before binary admission")
+qualified_runtime=_qualified_runtime()
+assert qualified_runtime["sqlite_source_id"]==source_id
+heap=_admit_process_budget(67108864)
 vfs=native.WriteVfs(source_id,vfs_reads,vfs_callbacks,heap)
 try:
     identity=vfs.identity()
     assert identity["sqlite_source_id"]==source_id
     assert identity["base_vfs"]=="win32"
     library_digest=hashlib.sha256(Path(identity["sqlite_library_path"]).read_bytes()).hexdigest()
+    assert library_digest==qualified_runtime["sqlite_library_sha256"]
     with tempfile.TemporaryDirectory(prefix="native-write-proof-",dir=".") as directory:
         uri=(Path(directory)/"primary.sqlite3").resolve().as_uri()+"?vfs="+vfs.name
         path=Path(directory)/"primary.sqlite3"
@@ -2096,6 +2106,7 @@ print(json.dumps({"compiler":native.compiler,
         work_report["recovery"]["internal_sleep_microseconds_charged"],
     "native_work_bank_refusal_verified":work_refused,
     "native_filesystem_recipes_verified":True,
+    "runtime_binary_admission_verified":True,
     "native_close_credit_detached_verified":not credit.report()["pending"],
     "vfs_native_filesystem_attempts":
         vfs_work_report["forward"]["filesystem_api_attempts_charged"],
@@ -2166,6 +2177,7 @@ print(json.dumps({"compiler":native.compiler,
         or proof["vfs_native_recovery_close_attempts_prepaid"] <= 0
         or proof.get("vfs_native_work_refusal_verified") is not True
         or proof.get("vfs_native_binding_close_after_rearm_verified") is not True
+        or proof.get("runtime_binary_admission_verified") is not True
         or type(proof.get("sqlite_heap_limit_bytes")) is not int
         or proof.get("sqlite_heap_limit_bytes") != 67108864
         or type(proof.get("sqlite_heap_peak_bytes")) is not int

@@ -7,6 +7,8 @@ typedef struct rh_sqlite_heap rh_sqlite_heap;
 /* The application keeps one SQLite-accounted heap owner for the process.
  * Grant increases are explicit and monotonic. Default heap-backed caches/no supplied pagecache pool are required.
  */
+/* Read the already loaded module identity without changing SQLite configuration. */
+int rh_sqlite_runtime_identity(char *, size_t, wchar_t *, const char **);
 rh_sqlite_heap *rh_sqlite_heap_create(const char *, int64_t, const char **);
 int rh_sqlite_heap_report(rh_sqlite_heap *, int64_t *, int64_t *, int64_t *);
 int64_t rh_sqlite_heap_limit(rh_sqlite_heap *);

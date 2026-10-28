@@ -7,7 +7,7 @@ import gc
 import os
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 
 import pytest
 
@@ -21,7 +21,7 @@ def grant():
 def runtime():
     from riverhog_client import _prepared_primary_native as native
 
-    with sqlite3.connect(":memory:") as connection:
+    with closing(sqlite3.connect(":memory:")) as connection:
         source = connection.execute("SELECT sqlite_source_id()").fetchone()[0]
     return native, source
 
@@ -36,7 +36,9 @@ def heap(native, source):
     except RuntimeError as exc:
         if "not configured" not in str(exc):
             raise
-        budget = native.SqliteProcessBudget(source, 64 * 1024 * 1024)
+        from riverhog_client._prepared_primary_runtime import _admit_process_budget
+
+        budget = _admit_process_budget(64 * 1024 * 1024)
     assert budget.report()["heap_limit_bytes"] == 64 * 1024 * 1024
     return budget
 
@@ -55,7 +57,10 @@ def admit_fixture_retries(gate):
 
     state = native.current_process_budget().retry_report()["state"]
     if state == "unconfigured":
-        gate.admit_retries((10, 25), (2, 3), native.retry_bootstrap_cost((10, 25)))
+        from riverhog_client._prepared_primary_runtime import _QUALIFIED_INITIAL_RETRIES
+
+        initial = _QUALIFIED_INITIAL_RETRIES
+        gate.admit_retries(initial, (2, 3), native.retry_bootstrap_cost(initial))
     else:
         assert state == "admitted"
 
@@ -1418,7 +1423,8 @@ try:
     source = connection.execute("SELECT sqlite_source_id()").fetchone()[0]
 finally:
     connection.close()
-heap = native.SqliteProcessBudget(source, 64 * 1024 * 1024)
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+heap = _admit_process_budget(64 * 1024 * 1024)
 quota = native.WriteQuota(helpers.grant(), helpers.grant())
 reads = native.ReadQuota(quota, (1048576, 65536), (1048576, 65536))
 calls = native.CallbackQuota(
@@ -1572,7 +1578,8 @@ try:
     source = connection.execute("SELECT sqlite_source_id()").fetchone()[0]
 finally:
     connection.close()
-heap = native.SqliteProcessBudget(source, 64 * 1024 * 1024)
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+heap = _admit_process_budget(64 * 1024 * 1024)
 library = FaultVfs.windows().library
 observed = []
 
@@ -1723,7 +1730,8 @@ try:
     source = connection.execute("SELECT sqlite_source_id()").fetchone()[0]
 finally:
     connection.close()
-heap = native.SqliteProcessBudget(source, 64 * 1024 * 1024)
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+heap = _admit_process_budget(64 * 1024 * 1024)
 quota = native.WriteQuota(helpers.grant(), helpers.grant())
 calls = helpers.callbacks(native, quota)
 gate = native.WriteVfs(source, helpers.reads(native, quota), calls, heap)
@@ -2003,7 +2011,8 @@ helpers = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = helpers
 spec.loader.exec_module(helpers)
 native, source = helpers.runtime()
-heap = native.SqliteProcessBudget(source, 64 * 1024 * 1024)
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+heap = _admit_process_budget(64 * 1024 * 1024)
 quota = native.WriteQuota(helpers.grant(), helpers.grant())
 calls = helpers.callbacks(native, quota)
 gate = native.WriteVfs(source, helpers.reads(native, quota), calls, heap)
@@ -2416,7 +2425,8 @@ method=scenario.removeprefix("wait_")
 file_method=method in {"read","write","truncate","sync","size","lock","unlock","reserved","control"}
 original=(path.read_bytes(),journal.read_bytes())
 native,source=helpers.runtime()
-heap=native.SqliteProcessBudget(source,64*1024*1024)
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+heap = _admit_process_budget(64 * 1024 * 1024)
 initial=native.WriteQuota(helpers.grant(),helpers.grant())
 initial_calls=helpers.callbacks(native,initial)
 gate=native.WriteVfs(source,helpers.reads(native,initial),initial_calls,heap)
@@ -2645,7 +2655,8 @@ journal=path.with_name(path.name+"-journal")
 scenario=sys.argv[3]
 original=(path.read_bytes(),journal.read_bytes() if journal.exists() else None)
 native,source=helpers.runtime()
-heap=native.SqliteProcessBudget(source,64*1024*1024)
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+heap = _admit_process_budget(64 * 1024 * 1024)
 initial=native.WriteQuota(helpers.grant(),helpers.grant())
 calls=helpers.callbacks(native,initial)
 gate=native.WriteVfs(source,helpers.reads(native,initial),calls,heap)
@@ -2784,3 +2795,75 @@ print(json.dumps({"passed":True,"scenario":scenario,"pins_released":True,"origin
     assert (path.read_bytes(), journal.read_bytes() if journal.exists() else None) == original
     with sqlite3.connect(path) as cold:
         assert cold.execute("SELECT body FROM original").fetchone() == (b"exact original",)
+
+
+@pytest.mark.parametrize("scenario", ["source", "binary", "qualified"])
+def test_native_binary_admission_precedes_global_policy_in_a_fresh_process(scenario):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import ctypes as c, json, sqlite3, sys
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client import _prepared_primary_runtime as runtime
+scenario=sys.argv[1]
+identity=native.runtime_identity()
+dll=c.CDLL(identity["sqlite_library_path"])
+dll.sqlite3_hard_heap_limit64.argtypes=[c.c_longlong]
+dll.sqlite3_hard_heap_limit64.restype=c.c_longlong
+assert dll.sqlite3_hard_heap_limit64(-1)==0
+connection=sqlite3.connect(":memory:")
+try:
+    observed=connection.execute("SELECT sqlite_source_id()").fetchone()[0]
+    assert observed==identity["sqlite_source_id"]
+finally:
+    connection.close()
+source,digest=runtime._SQLITE_SOURCE_ID,runtime._SQLITE_LIBRARY_SHA256
+if scenario!="qualified":
+    if scenario=="source":
+        runtime._SQLITE_SOURCE_ID="unqualified source"
+    else:
+        runtime._SQLITE_LIBRARY_SHA256="0"*64
+    try:
+        runtime._admit_process_budget(64*1024*1024)
+    except RuntimeError as exc:
+        assert ("source" if scenario=="source" else "binary") in str(exc)
+    else:
+        raise AssertionError("unqualified runtime changed global resource policy")
+    assert dll.sqlite3_hard_heap_limit64(-1)==0
+    try:
+        native.current_process_budget()
+    except RuntimeError as exc:
+        assert "not configured" in str(exc)
+    else:
+        raise AssertionError("rejected runtime acquired an application heap owner")
+    runtime._SQLITE_SOURCE_ID,runtime._SQLITE_LIBRARY_SHA256=source,digest
+qualified=runtime._qualified_runtime()
+assert qualified=={"sqlite_source_id":source,"sqlite_library_sha256":digest}
+assert dll.sqlite3_hard_heap_limit64(-1)==0
+owner=runtime._admit_process_budget(64*1024*1024)
+assert native.current_process_budget() is owner
+assert owner.report()["heap_limit_bytes"]==64*1024*1024
+assert owner.retry_report()["state"]=="unconfigured"
+try:
+    runtime._admit_process_budget(128*1024*1024)
+except RuntimeError as exc:
+    assert "already" in str(exc)
+else:
+    raise AssertionError("runtime admission replaced an existing global heap grant")
+assert dll.sqlite3_hard_heap_limit64(-1)==64*1024*1024
+print(json.dumps({"passed":True,"scenario":scenario,"binary_verified_before_heap":True}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, scenario],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "scenario": scenario,
+        "binary_verified_before_heap": True,
+    }

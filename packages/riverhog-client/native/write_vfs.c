@@ -614,6 +614,26 @@ static int bind_api(rh_sqlite_api *api, wchar_t *library_path, const char **erro
 #endif
 }
 
+int rh_sqlite_runtime_identity(char *source, size_t capacity, wchar_t *path, const char **error) {
+    rh_sqlite_api api = {0};
+    const char *actual;
+    size_t length;
+    if (!bind_api(&api, path, error)) {
+        release_module(&api);
+        return 0;
+    }
+    actual = api.source_id();
+    for (length = 0; length < capacity && actual[length]; ++length) {}
+    if (length >= capacity) {
+        *error = "the loaded SQLite source identity exceeds its fixed buffer";
+        release_module(&api);
+        return 0;
+    }
+    memcpy(source, actual, length + 1);
+    release_module(&api);
+    return 1;
+}
+
 struct rh_sqlite_heap {
     rh_sqlite_api api;
     int64_t limit;

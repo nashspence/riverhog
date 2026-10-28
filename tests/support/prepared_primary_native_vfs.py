@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import sqlite3
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import astuple
 from pathlib import Path
 
@@ -13,7 +13,7 @@ class NativeWriteShim:
     def __init__(self, limits):
         from riverhog_client import _prepared_primary_native as native
 
-        with sqlite3.connect(":memory:") as connection:
+        with closing(sqlite3.connect(":memory:")) as connection:
             expected = connection.execute("SELECT sqlite_source_id()").fetchone()[0]
         initial = (
             4096,
@@ -28,7 +28,9 @@ class NativeWriteShim:
         except RuntimeError as exc:
             if "not configured" not in str(exc):
                 raise
-            self.heap = native.SqliteProcessBudget(expected, 64 * 1024 * 1024)
+            from riverhog_client._prepared_primary_runtime import _admit_process_budget
+
+            self.heap = _admit_process_budget(64 * 1024 * 1024)
         assert self.heap.report()["heap_limit_bytes"] == 64 * 1024 * 1024
         self._initial = native.WriteQuota(initial, initial)
         read_limits = (64 * (limits.database_bytes + limits.journal_bytes), 65536)
@@ -82,8 +84,10 @@ class NativeWriteShim:
         self._native.bind(str(owner.path), owner._database, owner._journal_identity)
         if self.heap.retry_report()["state"] == "unconfigured":
             from riverhog_client import _prepared_primary_native as native
+            from riverhog_client._prepared_primary_runtime import _QUALIFIED_INITIAL_RETRIES
 
-            self._native.admit_retries((10, 25), (2, 3), native.retry_bootstrap_cost((10, 25)))
+            initial = _QUALIFIED_INITIAL_RETRIES
+            self._native.admit_retries(initial, (2, 3), native.retry_bootstrap_cost(initial))
         assert self.heap.retry_report()["state"] == "admitted"
 
     def unbind(self):

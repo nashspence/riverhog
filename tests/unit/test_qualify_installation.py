@@ -1012,6 +1012,9 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
         "native-prepaid-closes",
         "native-work-refusal",
         "native-binding-close",
+        "runtime-binary",
+        "runtime-binary-missing",
+        "runtime-binary-integer",
         "native-bool-fs-calls",
         "native-float-wait",
         "work-bank-bool",
@@ -1059,6 +1062,7 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         "native_work_bank_recovery_sleep_microseconds": 200000,
         "native_work_bank_refusal_verified": True,
         "native_filesystem_recipes_verified": True,
+        "runtime_binary_admission_verified": True,
         "vfs_native_filesystem_attempts": 4096,
         "vfs_native_internal_sleep_microseconds": 600000,
         "vfs_native_recovery_close_attempts_prepaid": 8,
@@ -1146,6 +1150,12 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         proof["vfs_native_work_refusal_verified"] = False
     elif invalid == "native-binding-close":
         proof["vfs_native_binding_close_after_rearm_verified"] = False
+    elif invalid == "runtime-binary":
+        proof["runtime_binary_admission_verified"] = False
+    elif invalid == "runtime-binary-missing":
+        del proof["runtime_binary_admission_verified"]
+    elif invalid == "runtime-binary-integer":
+        proof["runtime_binary_admission_verified"] = 1
     elif invalid == "native-bool-fs-calls":
         proof["vfs_native_filesystem_attempts"] = True
     elif invalid == "native-float-wait":
