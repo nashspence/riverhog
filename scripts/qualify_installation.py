@@ -2044,8 +2044,10 @@ def _qualify_component(
 
     requests = QualificationHandler.requests[request_offset:]
     wheel_assets = {
-        "/assets/" + str(manifest["wheels"][name]["asset"])
-        for name in expected_first_party | qualification_first_party
+        "/assets/" + asset
+        for asset in installation.platform_wheel_assets(
+            manifest, set(expected_first_party | qualification_first_party), platform=platform
+        )
     }
     if not wheel_assets <= set(requests):
         raise QualificationError(f"{root} did not consume every staged first-party wheel")

@@ -17,11 +17,13 @@ def make_index(directory: Path, tag: str, source_sha: str):
     for number, name in enumerate(("a-riverhog-cli", "riverhog-client"), 1):
         file = directory / (name.replace("-", "_") + f"-{tag[1:]}-py3-none-any.whl")
         file.write_bytes(b"synthetic index wheel subject " + name.encode())
-        wheels[name] = {
-            "asset": file.name,
-            "sha256": file_sha256(file),
-            "size": file.stat().st_size,
-        }
+        wheels[name] = [
+            {
+                "asset": file.name,
+                "sha256": file_sha256(file),
+                "size": file.stat().st_size,
+            }
+        ]
         assets[file.name] = {
             "id": number,
             "name": file.name,
