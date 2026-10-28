@@ -31,7 +31,8 @@ configure_processing_fixture() {
   smoke_observation_timeout=$((300 + 60 * smoke_file_count))
   smoke_admission_timeout=$((smoke_observation_timeout + 600))
   smoke_content_timeout=$((300 + 30 * (smoke_file_count > 16 ? smoke_file_count - 16 : 0)))
-  smoke_publication_timeout=$((900 + 30 * (smoke_file_count > 16 ? smoke_file_count - 16 : 0)))
+  # Publication has fixed setup work and per-media journal/settlement work.
+  smoke_publication_timeout=$((900 + 30 * smoke_file_count))
   smoke_max_bytes=$((smoke_file_count * (smoke_audio_frames * 2 + 4096) + 16384))
   smoke_download_quota_bytes=$((8 * (smoke_max_bytes + smoke_claim_file_count * 65552)))
   if (( smoke_download_quota_bytes < 16777216 )); then

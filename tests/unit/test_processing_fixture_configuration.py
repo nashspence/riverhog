@@ -55,7 +55,7 @@ def test_every_physical_fixture_setting_is_independent_of_previous_scenarios(
     assert standalone["smoke_completion_timeout"] == (
         {"processing-overlap": 2400, "processing-e2e": 4800}.get(lane, 600 + 480 * count)
     )
-    assert standalone["smoke_publication_timeout"] == 900 + 30 * max(0, count - 16)
+    assert standalone["smoke_publication_timeout"] == 900 + 30 * count
     assert standalone["smoke_audio_frames"] == int(frames)
 
 
@@ -66,7 +66,7 @@ def test_large_then_small_fixtures_reset_content_capacity_and_deadlines() -> Non
     )
     assert direct == after_scale
     assert direct["smoke_content_timeout"] == 300
-    assert direct["smoke_publication_timeout"] == 900
+    assert direct["smoke_publication_timeout"] == 930
     assert direct["smoke_download_quota_bytes"] == 16 * 1024 * 1024
 
 
