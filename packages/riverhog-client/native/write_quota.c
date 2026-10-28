@@ -159,6 +159,28 @@ enum rh_refusal rh_callback_admit(rh_callback_quota *calls, rh_quota *quota, int
     ++bank->charged;
     return RH_ALLOWED;
 }
+enum rh_refusal rh_callback_sleep(rh_callback_quota *calls, rh_quota *quota, int64_t requested) {
+    int recovery = quota->recovering;
+    rh_callback_bank *bank = recovery ? &calls->recovery : &calls->forward;
+    enum rh_refusal result = rh_callback_admit(calls, quota, 0);
+    uint64_t rounded;
+    if (result != RH_ALLOWED) return result;
+    /* The selected Win32 VFS computes (microseconds+999)/1000 in signed int.
+     * Admit its complete nominal millisecond delay without overflowing that ABI.
+     * Scheduler delay and the native file methods' internal retries are separate.
+     */
+    if (requested < 0 || requested > INT_MAX - 999) {
+        calls->pending_error = 1;
+        return rh_record(quota, RH_SLEEP_RANGE, RH_OTHER, requested, 0, recovery);
+    }
+    rounded = ((uint64_t)requested + 999) / 1000 * 1000;
+    if (rounded > bank->sleep_limit - bank->sleep_charged) {
+        calls->pending_error = 1;
+        return rh_record(quota, RH_SLEEP_GRANT, RH_OTHER, (int64_t)rounded, 0, recovery);
+    }
+    bank->sleep_charged += rounded;
+    return RH_ALLOWED;
+}
 int rh_callback_open(rh_callback_quota *calls, rh_quota *quota) {
     int recovery = quota->recovering;
     rh_callback_bank *bank = recovery ? &calls->recovery : &calls->forward;
@@ -233,6 +255,8 @@ const char *rh_reason(enum rh_refusal reason) {
         case RH_CONTROL: return "disallowed file control";
         case RH_CALLBACK_CALLS: return "VFS callback grant";
         case RH_CALLBACK_CLOSE: return "recovery file-close grant";
+        case RH_SLEEP_RANGE: return "invalid VFS sleep range";
+        case RH_SLEEP_GRANT: return "VFS sleep grant";
         default: return "allowed";
     }
 }

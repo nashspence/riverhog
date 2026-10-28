@@ -985,6 +985,12 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
         "callback-slots",
         "bool-callback-slots",
         "heap-limit",
+        "float-heap-limit",
+        "sleep-forward",
+        "sleep-recovery",
+        "bool-sleep",
+        "sleep-rounding",
+        "sleep-refusal",
         "heap-peak",
         "zero-heap-peak",
         "bool-heap-peak",
@@ -1012,6 +1018,9 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         "vfs_write_calls": 7,
         "vfs_resize_calls": 2,
         "vfs_callback_slots": 128,
+        "callback_sleep_forward_microseconds": 1000,
+        "callback_sleep_recovery_microseconds": 1000,
+        "callback_sleep_refusal_verified": True,
         "sqlite_heap_limit_bytes": 67108864,
         "sqlite_heap_peak_bytes": 1048576,
         "vfs_read_calls": 3,
@@ -1041,6 +1050,18 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         proof["vfs_callback_slots"] = 0
     elif invalid == "bool-callback-slots":
         proof["vfs_callback_slots"] = True
+    elif invalid == "float-heap-limit":
+        proof["sqlite_heap_limit_bytes"] = 67108864.0
+    elif invalid == "sleep-forward":
+        proof["callback_sleep_forward_microseconds"] = 0
+    elif invalid == "sleep-recovery":
+        proof["callback_sleep_recovery_microseconds"] = 0
+    elif invalid == "bool-sleep":
+        proof["callback_sleep_forward_microseconds"] = True
+    elif invalid == "sleep-rounding":
+        proof["callback_sleep_forward_microseconds"] = 999
+    elif invalid == "sleep-refusal":
+        proof["callback_sleep_refusal_verified"] = False
     elif invalid == "heap-limit":
         proof["sqlite_heap_limit_bytes"] = 0
     elif invalid == "heap-peak":

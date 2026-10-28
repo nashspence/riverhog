@@ -486,3 +486,37 @@ class FaultVfs:
                 return sqlite3.SQLITE_IOERR
 
         return call
+
+
+@contextmanager
+def windows_system_call(name, signature, replacement):
+    """Replace one normal SQLite Win32 syscall in an isolated qualification process."""
+    library = FaultVfs.windows().library
+    base = library.sqlite3_vfs_find(b"win32")
+    setter = c.CFUNCTYPE(_INT, _PV, c.c_char_p, _PTR)
+    getter = c.CFUNCTYPE(_PTR, _PV, c.c_char_p)
+
+    class ExtendedVfs(c.Structure):
+        _fields_ = [
+            *SqliteVfs._fields_,
+            ("time64", _PTR),
+            ("set_call", setter),
+            ("get_call", getter),
+            ("next_call", _PTR),
+        ]
+
+    extended = c.cast(base, c.POINTER(ExtendedVfs)).contents
+    if extended.version < 3:
+        raise RuntimeError("native system-call qualification requires VFS version three")
+    original_address = extended.get_call(base, name)
+    if not original_address:
+        raise RuntimeError("native qualification system call is unavailable")
+    original = signature(original_address)
+    callback = signature(lambda *args: replacement(original, *args))
+    if extended.set_call(base, name, c.cast(callback, _PTR)) != sqlite3.SQLITE_OK:
+        raise RuntimeError("native qualification system call could not be replaced")
+    try:
+        yield original
+    finally:
+        if extended.set_call(base, name, original_address) != sqlite3.SQLITE_OK:
+            raise RuntimeError("native qualification system call could not be restored")

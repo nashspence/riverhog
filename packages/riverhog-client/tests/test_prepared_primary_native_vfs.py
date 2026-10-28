@@ -41,8 +41,8 @@ def heap(native, source):
     return budget
 
 
-def callbacks(native, quota, *, forward=262144, recovery=262144):
-    return native.CallbackQuota(quota, forward, recovery)
+def callbacks(native, quota, *, forward=262144, recovery=262144, forward_sleep=0, recovery_sleep=0):
+    return native.CallbackQuota(quota, (forward, forward_sleep), (recovery, recovery_sleep))
 
 
 class BoundConnection:
@@ -1063,6 +1063,7 @@ def test_native_attached_callback_reservations_cannot_be_mutated_from_python():
     try:
         for mutate in (
             calls.admit,
+            lambda: calls.admit_sleep(0),
             calls.opened,
             lambda: calls.closed(True),
             lambda: calls.abandoned(True),
@@ -1145,7 +1146,7 @@ else:
         else:raise AssertionError("changed global profile was accepted")
         writes=native.WriteQuota((4096,8,32768,32768,65536,32),(4096,8,32768,32768,65536,32))
         reads=native.ReadQuota(writes,(65536,32),(65536,32))
-        calls=native.CallbackQuota(writes,128,128)
+        calls=native.CallbackQuota(writes,(128, 0),(128, 0))
         try:native.WriteVfs(source,reads,calls,owner)
         except RuntimeError as exc:assert "heap owner" in str(exc)
         else:raise AssertionError("native files admitted under a changed global profile")
@@ -1387,7 +1388,7 @@ spec = importlib.util.spec_from_file_location(
 helpers = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = helpers
 spec.loader.exec_module(helpers)
-from tests.support.sqlite_vfs_faults import FaultVfs, SqliteVfs
+from tests.support.sqlite_vfs_faults import FaultVfs, windows_system_call
 
 connection = sqlite3.connect(":memory:")
 try:
@@ -1397,7 +1398,7 @@ finally:
 heap = native.SqliteProcessBudget(source, 64 * 1024 * 1024)
 quota = native.WriteQuota(helpers.grant(), helpers.grant())
 reads = native.ReadQuota(quota, (1048576, 65536), (1048576, 65536))
-calls = native.CallbackQuota(quota, 262144, 262144)
+calls = native.CallbackQuota(quota, (262144, 0), (262144, 0))
 gate = native.WriteVfs(source, reads, calls, heap)
 path = Path(sys.argv[2])
 failed_kind = sys.argv[3]
@@ -1406,32 +1407,12 @@ borrowed = api.open(path)
 gate.bind(str(path), borrowed, None)
 api.close(borrowed)
 library = FaultVfs.windows().library
-base = library.sqlite3_vfs_find(b"win32")
-set_type = c.CFUNCTYPE(c.c_int, c.POINTER(SqliteVfs), c.c_char_p, c.c_void_p)
-get_type = c.CFUNCTYPE(c.c_void_p, c.POINTER(SqliteVfs), c.c_char_p)
-
-
-class Extended(c.Structure):
-    _fields_ = SqliteVfs._fields_ + [
-        ("time64", c.c_void_p),
-        ("set_call", set_type),
-        ("get_call", get_type),
-        ("next_call", c.c_void_p),
-    ]
-
-
-extended = c.cast(base, c.POINTER(Extended)).contents
-assert extended.version >= 3
-original_close = extended.get_call(base, b"CloseHandle")
-assert original_close
 close_type = c.WINFUNCTYPE(c.c_int, c.c_void_p, use_last_error=True)
-real_close = close_type(original_close)
 target = None
 attempts = 0
 
 
-@close_type
-def refuse_close(handle):
+def refuse_close(real_close, handle):
     global attempts
     if handle == target:
         attempts += 1
@@ -1451,14 +1432,8 @@ with helpers.native_file(path, gate, binding=False) as database:
         assert target
         assert gate.open_files == 2 and not gate.quarantined
         assert calls.report()["reserved_recovery_closes"] == 2
-        assert (
-            extended.set_call(base, b"CloseHandle", c.cast(refuse_close, c.c_void_p))
-            == sqlite3.SQLITE_OK
-        )
-        try:
+        with windows_system_call(b"CloseHandle", close_type, refuse_close) as real_close:
             rc = selected[2].contents.close(selected[1])
-        finally:
-            assert extended.set_call(base, b"CloseHandle", original_close) == sqlite3.SQLITE_OK
         assert rc == sqlite3.SQLITE_IOERR_CLOSE and attempts == 3
         assert gate.quarantined and gate.open_files == 1 and gate.bound
         assert not selected[1].contents.methods
@@ -1472,7 +1447,7 @@ with helpers.native_file(path, gate, binding=False) as database:
         assert calls.report() == before
         replacement = native.WriteQuota(helpers.grant(), helpers.grant())
         replacement_reads = native.ReadQuota(replacement, (1048576, 65536), (1048576, 65536))
-        replacement_calls = native.CallbackQuota(replacement, 262144, 262144)
+        replacement_calls = native.CallbackQuota(replacement, (262144, 0), (262144, 0))
         for operation in (
             lambda: gate.arm(reads, calls),
             lambda: gate.arm(replacement_reads, replacement_calls),
@@ -1538,3 +1513,136 @@ print(json.dumps({"passed": True, "failed_kind": failed_kind, "native_close_atte
         assert cold.execute("SELECT value FROM original").fetchone() == (b"exact original",)
     finally:
         cold.close()
+
+
+@pytest.mark.parametrize("scenario", ["rounding", "range", "reserved_close"])
+def test_native_sleep_envelope_runs_in_an_isolated_application(tmp_path, scenario):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    code = r"""
+import ctypes as c, importlib.util, json, sqlite3, sys
+from pathlib import Path
+
+sys.path.insert(0, sys.argv[1])
+from riverhog_client import _prepared_primary_native as native
+from tests.support.sqlite_vfs_faults import FaultVfs, windows_system_call
+
+spec = importlib.util.spec_from_file_location(
+    "native_vfs_probe",
+    Path(sys.argv[1]) / "packages/riverhog-client/tests/test_prepared_primary_native_vfs.py",
+)
+helpers = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = helpers
+spec.loader.exec_module(helpers)
+connection = sqlite3.connect(":memory:")
+try:
+    source = connection.execute("SELECT sqlite_source_id()").fetchone()[0]
+finally:
+    connection.close()
+heap = native.SqliteProcessBudget(source, 64 * 1024 * 1024)
+library = FaultVfs.windows().library
+observed = []
+
+
+def nominal_sleep(original, milliseconds):
+    observed.append(milliseconds)
+
+
+def setup(forward, recovery):
+    quota = native.WriteQuota(helpers.grant(), helpers.grant())
+    calls = native.CallbackQuota(quota, (32, forward), (32, recovery))
+    gate = native.WriteVfs(source, helpers.reads(native, quota), calls, heap)
+    vfs = library.sqlite3_vfs_find(gate.name.encode("ascii"))
+    return quota, calls, gate, vfs
+
+
+def surface(vfs):
+    time = c.c_double(-7)
+    assert vfs.contents.time(vfs, c.byref(time)) == sqlite3.SQLITE_FULL
+    assert time.value == -7
+
+
+scenario = sys.argv[3]
+vectors = 0
+with windows_system_call(
+    b"Sleep", c.WINFUNCTYPE(None, c.c_ulong, use_last_error=True), nominal_sleep
+):
+    if scenario == "rounding":
+        for requested in (0, 1, 999, 1000, 1001, 2**31 - 1 - 999):
+            rounded = ((requested + 999) // 1000) * 1000
+            quota, calls, gate, vfs = setup(rounded, 1000)
+            before = list(observed)
+            try:
+                assert vfs.contents.sleep(vfs, requested) == rounded
+                assert observed == before + [rounded // 1000]
+                assert calls.report()["forward"]["sleep_microseconds_charged"] == rounded
+                assert not quota.recovering
+                before = list(observed)
+                assert vfs.contents.sleep(vfs, 1) == 0
+                assert observed == before and calls.report()["pending_error"]
+                assert quota.report()["first_refusal"]["reason"] == "VFS sleep grant"
+                assert vfs.contents.sleep(vfs, 1) == 0 and observed == before
+                assert calls.report()["recovery"]["sleep_microseconds_charged"] == 0
+                surface(vfs)
+                assert vfs.contents.sleep(vfs, 1) == 1000 and observed == before + [1]
+                assert calls.report()["recovery"]["sleep_microseconds_charged"] == 1000
+                assert not gate.quarantined
+            finally:
+                gate.close()
+            vectors += 1
+    elif scenario == "range":
+        for requested in (-1, 2**31 - 999, 2**31 - 1):
+            quota, calls, gate, vfs = setup(2**63 - 1, 2**63 - 1)
+            before = list(observed)
+            try:
+                assert vfs.contents.sleep(vfs, requested) == 0 and observed == before
+                assert calls.report()["pending_error"] and quota.recovering
+                assert quota.report()["first_refusal"]["reason"] == "invalid VFS sleep range"
+                assert calls.report()["forward"]["sleep_microseconds_charged"] == 0
+                surface(vfs)
+                assert not gate.quarantined
+            finally:
+                gate.close()
+            vectors += 1
+    else:
+        quota, calls, gate, vfs = setup(0, 0)
+        before = list(observed)
+        try:
+            with helpers.native_file(Path(sys.argv[2]) / "sleep-close.sqlite3", gate) as opened:
+                assert opened[0] == sqlite3.SQLITE_OK
+                before = list(observed)
+                assert vfs.contents.sleep(vfs, 1) == 0 and observed == before
+                assert opened[2].contents.close(opened[1]) == sqlite3.SQLITE_FULL
+                assert not opened[1].contents.methods and gate.open_files == 0
+                assert not gate.quarantined
+                assert calls.report()["reserved_recovery_closes"] == 0
+                assert calls.report()["recovery"]["callback_slots_charged"] == 1
+            assert not gate.bound
+        finally:
+            gate.close()
+        vectors = 1
+print(json.dumps({"passed": True, "scenario": scenario, "vectors": vectors}))
+"""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(tmp_path),
+            scenario,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "scenario": scenario,
+        "vectors": {"rounding": 6, "range": 3, "reserved_close": 1}[scenario],
+    }

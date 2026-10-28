@@ -8,7 +8,7 @@ enum rh_refusal {
     RH_ALLOWED = 0, RH_FILE, RH_RANGE, RH_CALLS, RH_BYTES,
     RH_DATABASE_END, RH_JOURNAL_END, RH_PAGES, RH_TRACKING,
     RH_READ_RANGE, RH_READ_CALLS, RH_READ_BYTES,
-    RH_RESIZE_RANGE, RH_RESIZE_CALLS, RH_CONTROL, RH_CALLBACK_CALLS, RH_CALLBACK_CLOSE
+    RH_RESIZE_RANGE, RH_RESIZE_CALLS, RH_CONTROL, RH_CALLBACK_CALLS, RH_CALLBACK_CLOSE, RH_SLEEP_RANGE, RH_SLEEP_GRANT
 };
 
 typedef struct {
@@ -39,7 +39,7 @@ typedef struct {
 } rh_read_bank;
 typedef struct { rh_read_bank forward, recovery; } rh_read_quota;
 
-typedef struct { uint64_t limit, charged; } rh_callback_bank;
+typedef struct { uint64_t limit, charged, sleep_limit, sleep_charged; } rh_callback_bank;
 typedef struct {
     rh_callback_bank forward, recovery;
     uint64_t forward_files, recovery_files;
@@ -50,6 +50,7 @@ typedef struct {
  * reserves a recovery close, which ordinary recovery work cannot consume.
  */
 enum rh_refusal rh_callback_admit(rh_callback_quota *, rh_quota *, int);
+enum rh_refusal rh_callback_sleep(rh_callback_quota *, rh_quota *, int64_t);
 int rh_callback_open(rh_callback_quota *, rh_quota *);
 int rh_callback_close(rh_callback_quota *, rh_quota *, int);
 int rh_callback_abandon(rh_callback_quota *, int);

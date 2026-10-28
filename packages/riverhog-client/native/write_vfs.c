@@ -464,7 +464,9 @@ static int vfs_random(rh_sqlite_vfs *raw, int size, char *out) {
 }
 static int vfs_sleep(rh_sqlite_vfs *raw, int microseconds) {
     rh_write_vfs *vfs = raw->data;
-    return callback(vfs, 0) ? vfs->base->sleep(vfs->base, microseconds) : 0;
+    if (!owned(vfs) || vfs->quarantined ||
+        rh_callback_sleep(vfs->calls, vfs->quota, (int64_t)microseconds) != RH_ALLOWED) return 0;
+    return vfs->base->sleep(vfs->base, microseconds);
 }
 static int vfs_time(rh_sqlite_vfs *raw, double *out) {
     rh_write_vfs *vfs = raw->data;

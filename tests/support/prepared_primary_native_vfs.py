@@ -34,7 +34,7 @@ class NativeWriteShim:
         read_limits = (64 * (limits.database_bytes + limits.journal_bytes), 65536)
         self._initial_reads = native.ReadQuota(self._initial, read_limits, read_limits)
         self._active_reads = self._initial_reads
-        self._initial_callbacks = native.CallbackQuota(self._initial, 262144, 262144)
+        self._initial_callbacks = native.CallbackQuota(self._initial, (262144, 0), (262144, 0))
         self._active_callbacks = self._initial_callbacks
         self._native = native.WriteVfs(
             expected, self._initial_reads, self._initial_callbacks, self.heap
@@ -99,7 +99,7 @@ class NativeWriteShim:
             (64 * (forward.database_end + forward.journal_end), forward.calls),
             (64 * (recovery.database_end + recovery.journal_end), recovery.calls),
         )
-        callbacks = native.CallbackQuota(quota, 4 * forward.calls, 4 * recovery.calls)
+        callbacks = native.CallbackQuota(quota, (4 * forward.calls, 0), (4 * recovery.calls, 0))
         self.heap.report()
         self._native.arm(reads, callbacks)
         self._active_reads = reads

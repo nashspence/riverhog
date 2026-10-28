@@ -1904,7 +1904,7 @@ def _install_command(component: dict[str, Any], manifest: dict[str, Any]) -> lis
 def _installed_client_write_bank(
     python: Path, *, scratch: Path, environment: dict[str, str]
 ) -> dict[str, Any]:
-    code = """import ctypes,hashlib,json,sqlite3,tempfile
+    code = r"""import ctypes,hashlib,json,sqlite3,tempfile
 from pathlib import Path
 from riverhog_client import _prepared_primary_native as native
 limits=(4096,2,32768,32768,65536,32)
@@ -1924,10 +1924,21 @@ assert module.suffix.lower()==".pyd"
 assert native.compiler.startswith("MSVC ")
 with sqlite3.connect(":memory:") as runtime:
     source_id=runtime.execute("SELECT sqlite_source_id()").fetchone()[0]
+sleep_limits=(4096,1,4096,4096,8192,8)
+sleep_writes=native.WriteQuota(sleep_limits,sleep_limits)
+sleep_calls=native.CallbackQuota(sleep_writes,(4,1000),(4,1000))
+assert sleep_calls.admit_sleep(1)
+assert not sleep_calls.admit_sleep(1)
+assert not sleep_calls.admit_sleep(1)
+assert not sleep_calls.admit()
+assert sleep_calls.admit_sleep(1)
+sleep_report=sleep_calls.report()
+sleep_refused=sleep_writes.report()["first_refusal"]["reason"]=="VFS sleep grant"
+assert sleep_refused and not sleep_report["pending_error"]
 vfs_limits=(4096,128,1048576,1048576,8388608,1024)
 vfs_quota=native.WriteQuota(vfs_limits,vfs_limits)
 vfs_reads=native.ReadQuota(vfs_quota,(8388608,1024),(8388608,1024))
-vfs_callbacks=native.CallbackQuota(vfs_quota,8192,8192)
+vfs_callbacks=native.CallbackQuota(vfs_quota,(8192, 0),(8192, 0))
 heap=native.SqliteProcessBudget(source_id,67108864)
 vfs=native.WriteVfs(source_id,vfs_reads,vfs_callbacks,heap)
 try:
@@ -1987,6 +1998,9 @@ print(json.dumps({"compiler":native.compiler,
     "vfs_read_calls":read_report["read_calls"],"vfs_read_bytes":read_report["read_bytes"],
     "sqlite_heap_limit_bytes":heap_report["heap_limit_bytes"],
     "sqlite_heap_peak_bytes":heap_report["sqlite_heap_peak_bytes"],
+    "callback_sleep_forward_microseconds":sleep_report["forward"]["sleep_microseconds_charged"],
+    "callback_sleep_recovery_microseconds":sleep_report["recovery"]["sleep_microseconds_charged"],
+    "callback_sleep_refusal_verified":sleep_refused,
     "vfs_binding_verified":True,
     "vfs_original_exact":True,"sqlite_source_id":source_id,
     "sqlite_library_sha256":library_digest}))
@@ -2013,6 +2027,12 @@ print(json.dumps({"compiler":native.compiler,
         or proof["vfs_read_bytes"] <= 0
         or type(proof.get("vfs_callback_slots")) is not int
         or proof["vfs_callback_slots"] <= 0
+        or type(proof.get("callback_sleep_forward_microseconds")) is not int
+        or proof["callback_sleep_forward_microseconds"] != 1000
+        or type(proof.get("callback_sleep_recovery_microseconds")) is not int
+        or proof["callback_sleep_recovery_microseconds"] != 1000
+        or proof.get("callback_sleep_refusal_verified") is not True
+        or type(proof.get("sqlite_heap_limit_bytes")) is not int
         or proof.get("sqlite_heap_limit_bytes") != 67108864
         or type(proof.get("sqlite_heap_peak_bytes")) is not int
         or not 0 < proof["sqlite_heap_peak_bytes"] <= 67108864

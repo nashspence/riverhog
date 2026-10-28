@@ -390,6 +390,28 @@ static int callback_ready(CallbackQuota *self, int mutate) {
     }
     return 1;
 }
+static int callback_limits(PyObject *values, rh_callback_bank *bank) {
+    PyObject *duration;
+    long long microseconds;
+    if (!PyTuple_CheckExact(values) || PyTuple_GET_SIZE(values) != 2) {
+        PyErr_SetString(PyExc_TypeError, "callback limits require a two-integer tuple");
+        return -1;
+    }
+    if (positive_integer(PyTuple_GET_ITEM(values, 0), &bank->limit) < 0) return -1;
+    duration = PyTuple_GET_ITEM(values, 1);
+    if (!PyLong_CheckExact(duration)) {
+        PyErr_SetString(PyExc_TypeError, "sleep grants require exact signed 64-bit integers");
+        return -1;
+    }
+    microseconds = PyLong_AsLongLong(duration);
+    if (PyErr_Occurred()) return -1;
+    if (microseconds < 0) {
+        PyErr_SetString(PyExc_ValueError, "sleep grants must be nonnegative");
+        return -1;
+    }
+    bank->sleep_limit = (uint64_t)microseconds;
+    return 0;
+}
 static int callback_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     CallbackQuota *self = (CallbackQuota *)object;
     WriteQuota *quota;
@@ -402,8 +424,8 @@ static int callback_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!OO", keywords,
                                     &quota_type, &quota, &forward, &recovery)) return -1;
     self->initialized = 1;
-    if (!ready(quota) || positive_integer(forward, &self->calls.forward.limit) < 0 ||
-        positive_integer(recovery, &self->calls.recovery.limit) < 0) return -1;
+    if (!ready(quota) || callback_limits(forward, &self->calls.forward) < 0 ||
+        callback_limits(recovery, &self->calls.recovery) < 0) return -1;
     self->quota = Py_NewRef((PyObject *)quota);
     return 0;
 }
@@ -423,6 +445,19 @@ static PyObject *callback_admit(PyObject *object, PyObject *args) {
     }
     return PyBool_FromLong(rh_callback_admit(&self->calls, &((WriteQuota *)self->quota)->quota,
                                             can_error == Py_True) == RH_ALLOWED);
+}
+static PyObject *callback_sleep(PyObject *object, PyObject *value) {
+    CallbackQuota *self = (CallbackQuota *)object;
+    long long microseconds;
+    if (!callback_ready(self, 1)) return NULL;
+    if (!PyLong_CheckExact(value)) {
+        PyErr_SetString(PyExc_TypeError, "sleep admission requires an exact integer");
+        return NULL;
+    }
+    microseconds = PyLong_AsLongLong(value);
+    if (PyErr_Occurred()) return NULL;
+    return PyBool_FromLong(rh_callback_sleep(&self->calls, &((WriteQuota *)self->quota)->quota,
+                                             (int64_t)microseconds) == RH_ALLOWED);
 }
 static PyObject *callback_open(PyObject *object, PyObject *unused) {
     CallbackQuota *self = (CallbackQuota *)object;
@@ -459,15 +494,18 @@ static PyObject *callback_report(PyObject *object, PyObject *unused) {
     CallbackQuota *self = (CallbackQuota *)object;
     (void)unused;
     if (!callback_ready(self, 0)) return NULL;
-    return Py_BuildValue("{s:{s:K},s:{s:K},s:K,s:K,s:O}",
+    return Py_BuildValue("{s:{s:K,s:K},s:{s:K,s:K},s:K,s:K,s:O}",
         "forward", "callback_slots_charged", (unsigned long long)self->calls.forward.charged,
+        "sleep_microseconds_charged", (unsigned long long)self->calls.forward.sleep_charged,
         "recovery", "callback_slots_charged", (unsigned long long)self->calls.recovery.charged,
+        "sleep_microseconds_charged", (unsigned long long)self->calls.recovery.sleep_charged,
         "reserved_recovery_closes", (unsigned long long)self->calls.forward_files,
         "prepaid_recovery_closes", (unsigned long long)self->calls.recovery_files,
         "pending_error", self->calls.pending_error ? Py_True : Py_False);
 }
 static PyMethodDef callback_methods[] = {
     {"admit", callback_admit, METH_VARARGS, "Charge a callback outside a registered VFS."},
+    {"admit_sleep", callback_sleep, METH_O, "Precharge a complete rounded Win32 VFS sleep outside registration."},
     {"opened", callback_open, METH_NOARGS, "Prepay an open and reserve its close."},
     {"closed", callback_close, METH_O, "Consume an admitted file's prepaid close."},
     {"abandoned", callback_abandon, METH_O, "Release only a failed open's unused close reservation."},
