@@ -1,8 +1,9 @@
 """Admit the qualified loaded Windows SQLite binary before global resource policy.
 
 The binary identity supplies the compiled retry defaults. Controlled application
-startup must still exclude foreign SQLite configuration and VFS mutation; reading
-a source ID or querying retries after opening a file cannot establish that.
+startup must still exclude foreign SQLite configuration, automatic-extension,
+client-data and VFS mutation. A source ID or retries queried after a file open
+cannot establish that.
 """
 
 from __future__ import annotations

@@ -8,6 +8,7 @@ import os
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing, contextmanager
+from pathlib import Path
 
 import pytest
 
@@ -3382,3 +3383,116 @@ print(json.dumps({"passed":True,"scenario":scenario,"population":final}))
     assert (path.read_bytes(), journal.read_bytes()) == original
     with closing(sqlite3.connect(path)) as reopened:
         assert reopened.execute("SELECT body FROM original").fetchall() == [(b"exact original",)]
+
+
+@pytest.mark.parametrize("operation", ["reader", "writer", "close", "multiple"])
+def test_native_memory_observer_covers_implicit_recovery_and_connection_lifetimes(
+    tmp_path, operation
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import json,runpy,sqlite3,sys
+from pathlib import Path
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_runtime import _SQLITE_SOURCE_ID as source
+helpers=runpy.run_path(sys.argv[1])
+heap=_admit_process_budget(64*1024*1024,native_limits=(2,8))
+def bank():
+    writes=native.WriteQuota(helpers["grant"](),helpers["grant"]())
+    return writes,helpers["reads"](native,writes),helpers["callbacks"](native,writes)
+writes,reads,calls=bank()
+gate=native.WriteVfs(source,reads,calls,heap)
+path=Path("primary.sqlite3").resolve()
+connection=helpers["opened"](path,gate)
+original=b"exact original"*4096
+other=None
+try:
+    connection.execute("PRAGMA journal_mode=PERSIST").close()
+    connection.execute("PRAGMA synchronous=EXTRA").close()
+    connection.execute("PRAGMA cache_spill=OFF").close()
+    connection.execute("CREATE TABLE sample(value BLOB NOT NULL)").close()
+    connection.execute("INSERT INTO sample VALUES (?)",(original,)).close()
+    connection.commit()
+    if sys.argv[2]=="multiple":
+        other=sqlite3.connect(path.as_uri()+"?vfs="+gate.name,uri=True)
+    writes,reads,calls=bank()
+    gate.arm(reads,calls)
+    connection.execute("BEGIN IMMEDIATE").close()
+    connection.execute("UPDATE sample SET value=? WHERE rowid=1",(b"uncommitted",)).close()
+    before=writes.report()
+    assert not before["recovering"] and before["native_failures"]==0
+    if sys.argv[2]=="close":
+        connection.close()
+    else:
+        statement=("UPDATE sample SET value=randomblob(?) WHERE rowid=1" if sys.argv[2]=="writer"
+            else "SELECT randomblob(?) FROM sample WHERE rowid=1")
+        try:
+            connection.execute(statement,(128*1024*1024,)).fetchone()
+        except (MemoryError,sqlite3.Error) as exc:
+            if isinstance(exc,sqlite3.Error):
+                assert exc.sqlite_errorcode in (sqlite3.SQLITE_NOMEM,sqlite3.SQLITE_IOERR_NOMEM)
+        else:
+            raise AssertionError("actual SQLite heap exhaustion did not reject the operation")
+    # No explicit rollback or Python-side quota.failed() precedes these facts.
+    after=writes.report()
+    assert after["recovering"],after
+    assert after["native_failures"]==(0 if sys.argv[2]=="close" else 1),after
+    assert after["refusals"]==0 and after["first_refusal"] is None,after
+    if sys.argv[2]!="close":
+        assert not connection.in_transaction
+    assert after["recovery"]["write_calls"]>0,after
+    assert after["forward"]["write_calls"]==before["forward"]["write_calls"],(before,after)
+    assert heap.report()["heap_limit_bytes"]==64*1024*1024
+    assert heap.report()["sqlite_heap_peak_bytes"]<=64*1024*1024
+    if sys.argv[2]!="close":
+        replacement,replacement_reads,replacement_calls=bank()
+        try:
+            gate.arm(replacement_reads,replacement_calls)
+        except RuntimeError as exc:
+            assert "poisoned" in str(exc)
+        else:
+            raise AssertionError("live poisoned connection allowed a replacement operation")
+    if other is not None:
+        # Remove the older main-file observer, then exercise the remaining one.
+        # Its C callback must never retain a pointer to the now-closed connection.
+        connection.connection.close()
+        assert other.execute("SELECT value FROM sample").fetchone()==(original,)
+finally:
+    if other is not None:
+        other.close()
+    connection.close()
+assert gate.open_files==0 and not gate.bound
+replacement,replacement_reads,replacement_calls=bank()
+gate.arm(replacement_reads,replacement_calls)
+connection=helpers["opened"](path,gate)
+try:
+    assert connection.execute("SELECT value FROM sample").fetchone()==(original,)
+    connection.execute("UPDATE sample SET value=? WHERE rowid=1",(b"later progress",)).close()
+    connection.commit()
+    assert connection.execute("SELECT value FROM sample").fetchone()==(b"later progress",)
+finally:
+    connection.close()
+gate.close()
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+print(json.dumps({"passed":True,"operation":sys.argv[2],
+    "recovery_bank_verified":True,"original_exact":True,"heap_limit_unchanged":True}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve()), operation],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "operation": operation,
+        "recovery_bank_verified": True,
+        "original_exact": True,
+        "heap_limit_unchanged": True,
+    }

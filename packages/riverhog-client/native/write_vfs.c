@@ -11,6 +11,8 @@
 
 #define RH_OK 0
 #define RH_BUSY 5
+#define RH_NOMEM 7
+#define RH_IOERR_NOMEM (RH_IOERR | (12 << 8))
 #define RH_IOERR 10
 #define RH_FULL 13
 #define RH_MISUSE 21
@@ -37,8 +39,18 @@
 #define RH_GET_HANDLE 29
 #define RH_RETRY_SOURCE "2024-01-30 16:01:20 e876e51a0ed5c5b3126f52e532044363a014bc594cfefa87ffb5b82257cc467a"
 
+typedef struct sqlite3 rh_sqlite_connection;
+typedef struct sqlite3_api_routines rh_sqlite_api_routines;
+typedef struct rh_write_file rh_write_file;
+
 typedef struct {
     const char *(*source_id)(void);
+    int (*extended_errcode)(rh_sqlite_connection *);
+    int (*get_autocommit)(rh_sqlite_connection *);
+    int (*txn_state)(rh_sqlite_connection *, const char *);
+    int (*file_control)(rh_sqlite_connection *, const char *, int, void *);
+    int (*auto_extension)(void (*)(void));
+    int (*set_clientdata)(rh_sqlite_connection *, const char *, void *, void (*)(void *));
     rh_sqlite_vfs *(*find)(const char *);
     int (*register_vfs)(rh_sqlite_vfs *, int);
     int (*unregister_vfs)(rh_sqlite_vfs *);
@@ -63,6 +75,7 @@ struct rh_write_vfs {
     rh_callback_quota *calls;
     rh_native_work_quota *work;
     rh_sqlite_heap *heap;
+    rh_write_file *databases;
     unsigned long thread;
     size_t offset;
     int open_files, bound, quarantined;
@@ -83,13 +96,15 @@ typedef union {
     long double real;
 } rh_file_alignment;
 
-typedef struct {
+struct rh_write_file {
     rh_sqlite_file file;
     rh_write_vfs *owner;
     enum rh_file kind;
     int forward_close;
     rh_native_close_credit native_close;
-} rh_write_file;
+    rh_sqlite_connection *connection;
+    rh_write_file *next_database;
+};
 
 static unsigned long current_thread(void) {
 #ifdef _WIN32
@@ -112,8 +127,42 @@ static int native_close_allowed(rh_write_vfs *vfs, rh_native_close_credit *credi
     return 0;
 }
 static int owned(rh_write_vfs *vfs) { return current_thread() == vfs->thread; }
+/* A public auto-extension admits the opaque connection before the caller can
+ * enter SQL. In the qualified 3.45.1 engine, public extended_errcode is an
+ * allocation-free observer of mallocFailed during automatic rollback, before
+ * the failing call returns (main.c/sqlite3_extended_errcode).
+ *
+ * Only live main-file objects are linked here; their population already fits
+ * the application's native file grant. No collection rows or Python callbacks
+ * are involved. A memory refusal on any such connection poisons the shared
+ * operation before the next delegated callback spends a bank.
+ */
+static void observe_memory(rh_write_vfs *vfs) {
+    rh_write_file *file;
+    if (vfs->quota->recovering) return;
+    for (file = vfs->databases; file; file = file->next_database) {
+        int result = vfs->api.extended_errcode(file->connection);
+        if (result == RH_NOMEM || result == RH_IOERR_NOMEM) {
+            rh_failed(vfs->quota);
+            return;
+        }
+    }
+}
+static void forget_connection(rh_write_file *file) {
+    rh_write_file **link;
+    if (!file->connection) return;
+    for (link = &file->owner->databases; *link; link = &(*link)->next_database) {
+        if (*link == file) {
+            *link = file->next_database;
+            file->connection = NULL;
+            file->next_database = NULL;
+            return;
+        }
+    }
+}
 static int callback(rh_write_vfs *vfs, int can_error) {
     if (!owned(vfs) || vfs->quarantined) return 0;
+    observe_memory(vfs);
     if (!retry_usable(vfs->heap)) {
         rh_forbid_retry(vfs->quota);
         if (!can_error) vfs->calls->pending_error = 1;
@@ -123,6 +172,7 @@ static int callback(rh_write_vfs *vfs, int can_error) {
 }
 static int buffer_callback(rh_write_vfs *vfs, int amount, char *out, int can_error) {
     if (!owned(vfs) || vfs->quarantined) return 0;
+    observe_memory(vfs);
     if (!retry_usable(vfs->heap)) {
         rh_forbid_retry(vfs->quota);
         if (!can_error) vfs->calls->pending_error = 1;
@@ -262,6 +312,8 @@ static int file_close(rh_sqlite_file *raw) {
     rh_sqlite_file *real = real_file(file);
     int result;
     if (!owned(file->owner)) return RH_IOERR;
+    observe_memory(file->owner);
+    forget_connection(file);
     {
         int pending = file->owner->calls->pending_error;
         int accounted = rh_callback_close(file->owner->calls, file->owner->quota,
@@ -433,6 +485,8 @@ static int vfs_open(
         return RH_IOERR;
     }
     wrapper->owner = vfs;
+    wrapper->connection = NULL;
+    wrapper->next_database = NULL;
     wrapper->kind = (flags & RH_FILE_CLASSES) == RH_MAIN_DB ? RH_DATABASE :
         (flags & RH_FILE_CLASSES) == RH_MAIN_JOURNAL ? RH_JOURNAL : RH_OTHER;
     if (wrapper->kind == RH_OTHER || !admitted_name(vfs, name, wrapper->kind) ||
@@ -444,6 +498,7 @@ static int vfs_open(
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
         return RH_CANTOPEN;
     }
+    observe_memory(vfs);
     close_bank = rh_callback_open(vfs->calls, vfs->quota);
     if (close_bank < 0) return RH_FULL;
     if (!native_acquire(vfs->heap, 0)) {
@@ -591,6 +646,7 @@ static int vfs_random(rh_sqlite_vfs *raw, int size, char *out) {
 static int vfs_sleep(rh_sqlite_vfs *raw, int microseconds) {
     rh_write_vfs *vfs = raw->data;
     if (!owned(vfs) || vfs->quarantined) return 0;
+    observe_memory(vfs);
     if (!retry_usable(vfs->heap)) {
         rh_forbid_retry(vfs->quota);
         vfs->calls->pending_error = 1;
@@ -635,6 +691,12 @@ static int bind_api(rh_sqlite_api *api, wchar_t *library_path, const char **erro
     _Static_assert(sizeof(api->member) == sizeof(symbol), "Windows API pointer size"); \
     memcpy(&api->member, &symbol, sizeof(symbol))
     RH_BIND(source_id, "sqlite3_sourceid");
+    RH_BIND(extended_errcode, "sqlite3_extended_errcode");
+    RH_BIND(get_autocommit, "sqlite3_get_autocommit");
+    RH_BIND(txn_state, "sqlite3_txn_state");
+    RH_BIND(file_control, "sqlite3_file_control");
+    RH_BIND(auto_extension, "sqlite3_auto_extension");
+    RH_BIND(set_clientdata, "sqlite3_set_clientdata");
     RH_BIND(find, "sqlite3_vfs_find");
     RH_BIND(register_vfs, "sqlite3_vfs_register");
     RH_BIND(unregister_vfs, "sqlite3_vfs_unregister");
@@ -696,6 +758,50 @@ struct rh_sqlite_heap {
     wchar_t library_path[32768];
 };
 static rh_sqlite_heap *process_heap;
+/* This connection-admission callback is distinct from storage callbacks:
+ * SQLite's one client-data record is allocated here under H, once per admitted
+ * connection. The native file lifetime grant already bounds their population.
+ * FILE_POINTER is answered by SQLite itself, without delegated storage I/O.
+ */
+static void connection_closing(void *argument) {
+    rh_write_file *file = argument;
+    if (!file->connection) return;
+    observe_memory(file->owner);
+    if (!file->owner->api.get_autocommit(file->connection) ||
+        file->owner->api.txn_state(file->connection, "main") == 2 /* WRITE */)
+        file->owner->quota->recovering = 1;
+    /* Exact qualified main.c invokes client-data destructors before marking a
+     * connection zombie, before rollback/closing its files. Never observe the
+     * opaque connection after this point; close-time rollback uses R.
+     */
+    forget_connection(file);
+}
+static int admit_connection(
+    rh_sqlite_connection *connection, char **message, const rh_sqlite_api_routines *unused
+) {
+    rh_sqlite_file *raw = NULL;
+    rh_write_file *file;
+    int result;
+    (void)message; (void)unused;
+    if (!process_heap) return RH_MISUSE;
+    result = process_heap->api.file_control(connection, "main", 7 /* FILE_POINTER */, &raw);
+    if (result != RH_OK || !raw || raw->methods != &methods) return RH_OK;
+    file = (rh_write_file *)raw;
+    if (!owned(file->owner) || file->connection) return RH_MISUSE;
+    file->connection = connection;
+    file->next_database = file->owner->databases;
+    file->owner->databases = file;
+    result = file->owner->api.set_clientdata(
+        connection, file->owner->vfs.name, file, connection_closing);
+    if (result != RH_OK) {
+        /* SQLite invokes the supplied destructor even if its allocation fails.
+         * Poison before returning admission failure; no SQL has been admitted.
+         */
+        if (!file->owner->quota->recovering) rh_failed(file->owner->quota);
+        return result;
+    }
+    return RH_OK;
+}
 static void native_lock(rh_sqlite_heap *heap) {
 #ifdef _WIN32
     AcquireSRWLockExclusive(&heap->population_lock);
@@ -1131,6 +1237,20 @@ rh_write_vfs *rh_write_vfs_create(
     if (!rh_callback_prepare(calls, quota, 0)) {
         *error = "callback grant has live files or an unreported error";
         goto failed;
+    }
+    {
+        int (*entry)(rh_sqlite_connection *, char **, const rh_sqlite_api_routines *) =
+            admit_connection;
+        void (*opaque)(void);
+        _Static_assert(sizeof(entry) == sizeof(opaque), "SQLite extension pointer size");
+        memcpy(&opaque, &entry, sizeof(opaque));
+        /* Controlled application setup, outside every storage callback. SQLite
+         * registers an identical entry point only once in this loaded engine.
+         */
+        if (vfs->api.auto_extension(opaque) != RH_OK) {
+            *error = "SQLite connection memory observer admission failed";
+            goto failed;
+        }
     }
     vfs->vfs = (rh_sqlite_vfs){
         .version = 1, .file_bytes = (int)(vfs->offset + (size_t)vfs->base->file_bytes),
