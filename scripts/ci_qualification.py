@@ -465,7 +465,11 @@ def qualify_images(targets: Sequence[str], graph: dict[str, Any]) -> None:
 
 
 def native_platform() -> None:
-    run([sys.executable, "-m", "pytest", "-q", "--maxfail=1", *NATIVE_TESTS])
+    evidence = os.environ.get("RIVERHOG_CI_TIMING_DIR")
+    tests = [sys.executable, "-m", "pytest", "-q", "--maxfail=1"]
+    if evidence:
+        tests.extend(("--junitxml", str(Path(evidence) / "native-pytest.xml")))
+    run([*tests, *NATIVE_TESTS])
     command = [
         sys.executable,
         "scripts/qualify_installation.py",
@@ -475,6 +479,8 @@ def native_platform() -> None:
         "--listener-lifecycle-repetitions",
         "12",
     ]
+    if evidence:
+        command.extend(("--summary", str(Path(evidence) / "installation.json")))
     evidence = os.environ.get("GOGURT_FAILURE_EVIDENCE_DIR")
     if evidence:
         command.extend(("--gogurt-evidence-dir", evidence))

@@ -568,6 +568,13 @@ def _write_quota_witness(parent: Path, *, compiled=False, native_vfs=False):
             "module_sha256": hashlib.sha256(Path(native.__file__).read_bytes()).hexdigest(),
             "storage_callbacks_native": native_vfs,
         }
+        if native_vfs:
+            population = shim.heap.native_report()
+            assert population["owner_limit"] == 128 and population["file_limit"] == 512
+            assert population["owners"] == population["files"] == 0
+            assert population["owner_peak"] >= 1 and population["file_peak"] >= 1
+            assert population["owner_refusals"] == population["file_refusals"] == 0
+            result["compiled_bank"]["native_population"] = population
     return result
 
 

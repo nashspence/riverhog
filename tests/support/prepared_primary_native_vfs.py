@@ -30,7 +30,7 @@ class NativeWriteShim:
                 raise
             from riverhog_client._prepared_primary_runtime import _admit_process_budget
 
-            self.heap = _admit_process_budget(64 * 1024 * 1024)
+            self.heap = _admit_process_budget(64 * 1024 * 1024, native_limits=(128, 512))
         assert self.heap.report()["heap_limit_bytes"] == 64 * 1024 * 1024
         self._initial = native.WriteQuota(initial, initial)
         read_limits = (64 * (limits.database_bytes + limits.journal_bytes), 65536)

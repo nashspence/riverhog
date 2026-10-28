@@ -6,6 +6,7 @@ import re
 import subprocess
 import urllib.error
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from threading import Event, Lock
 from types import SimpleNamespace
 
@@ -260,6 +261,7 @@ def test_invalid_local_parallelism_stops_before_fixture_setup(
 def test_native_qualification_preserves_staged_install_and_bounded_failure_evidence(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.delenv("RIVERHOG_CI_TIMING_DIR", raising=False)
     commands = []
     monkeypatch.delenv("RIVERHOG_QUALIFICATION_MOUNT_FIXTURE", raising=False)
     monkeypatch.delenv("RIVERHOG_QUALIFICATION_MOUNT_LOCK", raising=False)
@@ -278,6 +280,7 @@ def test_native_qualification_preserves_staged_install_and_bounded_failure_evide
 def test_native_qualification_forwards_operator_fixture_without_changing_proof(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.delenv("RIVERHOG_CI_TIMING_DIR", raising=False)
     commands = []
     monkeypatch.setenv("RIVERHOG_QUALIFICATION_MOUNT_FIXTURE", "/operator/fixture.json")
     monkeypatch.delenv("RIVERHOG_QUALIFICATION_MOUNT_LOCK", raising=False)
@@ -290,6 +293,7 @@ def test_native_qualification_forwards_operator_fixture_without_changing_proof(
 def test_native_qualification_forwards_the_shared_operator_lock(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.delenv("RIVERHOG_CI_TIMING_DIR", raising=False)
     commands = []
     monkeypatch.setenv("RIVERHOG_QUALIFICATION_MOUNT_FIXTURE", "/operator/fixture.json")
     monkeypatch.setenv("RIVERHOG_QUALIFICATION_MOUNT_LOCK", "/operator/shared.lock")
@@ -938,3 +942,27 @@ def test_qualified_work_does_not_inherit_a_parent_unit_partition(monkeypatch):
     environment = qualification.validation_environment(work, "explicit-partition")
     assert "UNIT_PARTITION" not in environment
     assert work.command[-1] == "UNIT_PARTITION=1"
+
+
+def test_native_qualification_retains_structured_results_without_repeating_work(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    commands = []
+    monkeypatch.setenv("RIVERHOG_CI_TIMING_DIR", str(tmp_path))
+    monkeypatch.delenv("GOGURT_FAILURE_EVIDENCE_DIR", raising=False)
+    monkeypatch.delenv("RIVERHOG_QUALIFICATION_MOUNT_FIXTURE", raising=False)
+    monkeypatch.delenv("RIVERHOG_QUALIFICATION_MOUNT_LOCK", raising=False)
+    monkeypatch.setattr(qualification, "run", lambda command: commands.append(command))
+    qualification.native_platform()
+    assert len(commands) == 2
+    assert commands[0] == [
+        qualification.sys.executable,
+        "-m",
+        "pytest",
+        "-q",
+        "--maxfail=1",
+        "--junitxml",
+        str(tmp_path / "native-pytest.xml"),
+        *qualification.NATIVE_TESTS,
+    ]
+    assert commands[1][-2:] == ["--summary", str(tmp_path / "installation.json")]
