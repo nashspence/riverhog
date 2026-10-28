@@ -472,8 +472,18 @@ static PyTypeObject read_type = {
 
 typedef struct {
     PyObject_HEAD
+    rh_native_work_quota work;
+    PyObject *quota;
+    int initialized, attached;
+} NativeWorkQuota;
+static int native_work_ready(NativeWorkQuota *, int);
+static PyTypeObject native_work_type;
+
+typedef struct {
+    PyObject_HEAD
     rh_callback_quota calls;
     PyObject *quota;
+    NativeWorkQuota *work;
     int initialized, attached;
 } CallbackQuota;
 static int callback_ready(CallbackQuota *self, int mutate) {
@@ -514,22 +524,31 @@ static int callback_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     CallbackQuota *self = (CallbackQuota *)object;
     WriteQuota *quota;
     PyObject *forward, *recovery;
-    static char *keywords[] = {"writes", "forward", "recovery", NULL};
+    NativeWorkQuota *work;
+    static char *keywords[] = {"writes", "forward", "recovery", "work", NULL};
     if (self->initialized) {
         PyErr_SetString(PyExc_RuntimeError, "callback quota cannot be reinitialized");
         return -1;
     }
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!OO", keywords,
-                                    &quota_type, &quota, &forward, &recovery)) return -1;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!OOO!", keywords,
+                                    &quota_type, &quota, &forward, &recovery,
+                                    &native_work_type, &work)) return -1;
     self->initialized = 1;
+    if (!native_work_ready(work, 1)) return -1;
+    if (work->quota != (PyObject *)quota) {
+        PyErr_SetString(PyExc_ValueError, "native work and callback grants require the same write owner");
+        return -1;
+    }
     if (!ready(quota) || callback_limits(forward, &self->calls.forward) < 0 ||
         callback_limits(recovery, &self->calls.recovery) < 0) return -1;
     self->quota = Py_NewRef((PyObject *)quota);
+    self->work = (NativeWorkQuota *)Py_NewRef((PyObject *)work);
     return 0;
 }
 static void callback_dealloc(PyObject *object) {
     CallbackQuota *self = (CallbackQuota *)object;
     Py_XDECREF(self->quota);
+    Py_XDECREF(self->work);
     Py_TYPE(self)->tp_free(object);
 }
 static PyObject *callback_admit(PyObject *object, PyObject *args) {
@@ -610,6 +629,16 @@ static PyMethodDef callback_methods[] = {
     {"report", callback_report, METH_NOARGS, "Snapshot conservative callback slots and close reserves."},
     {NULL, NULL, 0, NULL}
 };
+static PyObject *callback_work(PyObject *object, void *unused) {
+    CallbackQuota *self = (CallbackQuota *)object;
+    (void)unused;
+    if (!callback_ready(self, 0)) return NULL;
+    return Py_NewRef((PyObject *)self->work);
+}
+static PyGetSetDef callback_getset[] = {
+    {"work", callback_work, NULL, "Native filesystem work bank attached with this callback bundle.", NULL},
+    {NULL, NULL, NULL, NULL, NULL}
+};
 static PyTypeObject callback_type = {
     PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "riverhog_client._prepared_primary_native.CallbackQuota",
@@ -617,15 +646,10 @@ static PyTypeObject callback_type = {
     .tp_flags = Py_TPFLAGS_DEFAULT,
     .tp_init = callback_init,
     .tp_dealloc = callback_dealloc,
-    .tp_methods = callback_methods
+    .tp_methods = callback_methods,
+    .tp_getset = callback_getset
 };
 
-typedef struct {
-    PyObject_HEAD
-    rh_native_work_quota work;
-    PyObject *quota;
-    int initialized;
-} NativeWorkQuota;
 typedef struct {
     PyObject_HEAD
     rh_native_close_credit credit;
@@ -634,12 +658,17 @@ typedef struct {
     int64_t interpreter;
 } NativeCloseCredit;
 static PyTypeObject native_close_type;
-static int native_work_ready(NativeWorkQuota *self) {
+static int native_work_ready(NativeWorkQuota *self, int mutate) {
     if (!self->quota) {
         PyErr_SetString(PyExc_RuntimeError, "native work quota is not initialized");
         return 0;
     }
-    return ready((WriteQuota *)self->quota);
+    if (!ready((WriteQuota *)self->quota)) return 0;
+    if (mutate && self->attached) {
+        PyErr_SetString(PyExc_RuntimeError, "attached native work quota is driven only by native files");
+        return 0;
+    }
+    return 1;
 }
 static int native_cost(PyObject *values, rh_retry_cost *cost) {
     return retry_pair(values, &cost->filesystem_calls, &cost->sleep_microseconds, 0);
@@ -669,7 +698,7 @@ static void native_work_dealloc(PyObject *object) {
 static PyObject *native_work_admit(PyObject *object, PyObject *value) {
     NativeWorkQuota *self = (NativeWorkQuota *)object;
     rh_retry_cost cost;
-    if (!native_work_ready(self) || !native_cost(value, &cost)) return NULL;
+    if (!native_work_ready(self, 1) || !native_cost(value, &cost)) return NULL;
     return PyBool_FromLong(rh_native_work_admit(&self->work,
         &((WriteQuota *)self->quota)->quota, cost) == RH_ALLOWED);
 }
@@ -679,7 +708,7 @@ static PyObject *native_work_acquire(PyObject *object, PyObject *args) {
     NativeCloseCredit *credit;
     rh_retry_cost work_cost, close_cost;
     enum rh_refusal result;
-    if (!native_work_ready(self)) return NULL;
+    if (!native_work_ready(self, 1)) return NULL;
     if (!PyArg_ParseTuple(args, "OO", &acquisition, &close) ||
         !native_cost(acquisition, &work_cost) || !native_cost(close, &close_cost)) return NULL;
     if (!close_cost.filesystem_calls) {
@@ -715,7 +744,7 @@ static PyObject *native_work_report(PyObject *object, PyObject *unused) {
     NativeWorkQuota *self = (NativeWorkQuota *)object;
     PyObject *forward, *recovery, *report;
     (void)unused;
-    if (!native_work_ready(self)) return NULL;
+    if (!native_work_ready(self, 0)) return NULL;
     forward = native_work_bank_report(&self->work.forward);
     if (!forward) return NULL;
     recovery = native_work_bank_report(&self->work.recovery);
@@ -960,7 +989,8 @@ static int vfs_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sO!O!O!", keywords,
                                     &expected, &read_type, &reads, &callback_type, &callbacks,
                                     &heap_type, &heap)) return -1;
-    if (!read_ready(reads) || !callback_ready(callbacks, 1) || !heap_ready(heap)) return -1;
+    if (!read_ready(reads) || !callback_ready(callbacks, 1) || !heap_ready(heap) ||
+        !native_work_ready(callbacks->work, 1)) return -1;
     if (callbacks->quota != reads->quota) {
         PyErr_SetString(PyExc_ValueError, "read and callback grants require the same write owner");
         return -1;
@@ -969,7 +999,7 @@ static int vfs_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     if (!quota_attachable(quota)) return -1;
     self->initialized = 1;
     PyOS_snprintf(self->name, sizeof(self->name), "riverhog-native-write-%p", (void *)self);
-    self->vfs = rh_write_vfs_create(self->name, expected, &quota->quota, &reads->reads, &callbacks->calls, heap->heap, &error);
+    self->vfs = rh_write_vfs_create(self->name, expected, &quota->quota, &reads->reads, &callbacks->calls, &callbacks->work->work, heap->heap, &error);
     if (!self->vfs) {
         PyErr_SetString(PyExc_RuntimeError, error);
         return -1;
@@ -979,6 +1009,7 @@ static int vfs_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     self->callbacks = Py_NewRef((PyObject *)callbacks);
     self->heap = Py_NewRef((PyObject *)heap);
     callbacks->attached = 1;
+    callbacks->work->attached = 1;
     /* Registration pins callbacks and their bank until explicit file-free close. */
     Py_INCREF(self);
     return 0;
@@ -1092,9 +1123,14 @@ static PyObject *vfs_arm(PyObject *object, PyObject *args) {
         PyErr_SetString(PyExc_RuntimeError, "callback quota is attached to another VFS");
         return NULL;
     }
+    if (!native_work_ready(callbacks->work, 0)) return NULL;
+    if (callbacks->work->attached && callbacks->work != ((CallbackQuota *)self->callbacks)->work) {
+        PyErr_SetString(PyExc_RuntimeError, "native work quota is attached to another VFS");
+        return NULL;
+    }
     if (!quota_attachable((WriteQuota *)reads->quota)) return NULL;
     result = rh_write_vfs_arm(self->vfs, &((WriteQuota *)reads->quota)->quota,
-                              &reads->reads, &callbacks->calls);
+                              &reads->reads, &callbacks->calls, &callbacks->work->work);
     if (result) {
         PyErr_SetString(PyExc_RuntimeError,
             "native write VFS requires its owning thread, closed poisoned files, no quarantined close and close capacity");
@@ -1102,8 +1138,10 @@ static PyObject *vfs_arm(PyObject *object, PyObject *args) {
     }
     quota_attach((WriteQuota *)reads->quota);
     quota_detach((WriteQuota *)((ReadQuota *)self->quota)->quota);
+    ((CallbackQuota *)self->callbacks)->work->attached = 0;
     ((CallbackQuota *)self->callbacks)->attached = 0;
     callbacks->attached = 1;
+    callbacks->work->attached = 1;
     Py_SETREF(self->quota, Py_NewRef((PyObject *)reads));
     Py_SETREF(self->callbacks, Py_NewRef((PyObject *)callbacks));
     Py_RETURN_NONE;
@@ -1122,6 +1160,7 @@ static PyObject *vfs_close(PyObject *object, PyObject *unused) {
     self->vfs = NULL;
     quota_detach((WriteQuota *)((ReadQuota *)self->quota)->quota);
     Py_CLEAR(self->quota);
+    ((CallbackQuota *)self->callbacks)->work->attached = 0;
     ((CallbackQuota *)self->callbacks)->attached = 0;
     Py_CLEAR(self->callbacks);
     Py_CLEAR(self->heap);

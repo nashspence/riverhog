@@ -42,7 +42,22 @@ def heap(native, source):
 
 
 def callbacks(native, quota, *, forward=262144, recovery=262144, forward_sleep=0, recovery_sleep=0):
-    return native.CallbackQuota(quota, (forward, forward_sleep), (recovery, recovery_sleep))
+    return native.CallbackQuota(
+        quota,
+        (forward, forward_sleep),
+        (recovery, recovery_sleep),
+        work=native.NativeWorkQuota(quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+    )
+
+
+def admit_fixture_retries(gate):
+    from riverhog_client import _prepared_primary_native as native
+
+    state = native.current_process_budget().retry_report()["state"]
+    if state == "unconfigured":
+        gate.admit_retries((10, 25), (2, 3), native.retry_bootstrap_cost((10, 25)))
+    else:
+        assert state == "admitted"
 
 
 class BoundConnection:
@@ -90,6 +105,7 @@ def opened(path, gate, *, readonly=False, query=""):
     handle = api.open(path)
     try:
         gate.bind(str(path), handle, journal_identity(path, api))
+        admit_fixture_retries(gate)
         uri = path.as_uri() + "?vfs=" + gate.name
         if readonly:
             uri += "&mode=ro"
@@ -375,6 +391,7 @@ def native_file(
             admitted.touch(exist_ok=True)
             handle = api.open(admitted)
             gate.bind(str(admitted), handle, journal_identity(admitted, api))
+            admit_fixture_retries(gate)
         if before_open is not None:
             before_open()
         vfs = library.sqlite3_vfs_find(gate.name.encode("ascii"))
@@ -1149,7 +1166,10 @@ else:
         else:raise AssertionError("changed global profile was accepted")
         writes=native.WriteQuota((4096,8,32768,32768,65536,32),(4096,8,32768,32768,65536,32))
         reads=native.ReadQuota(writes,(65536,32),(65536,32))
-        calls=native.CallbackQuota(writes,(128, 0),(128, 0))
+        calls=native.CallbackQuota(
+            writes,(128, 0),(128, 0),
+            work=native.NativeWorkQuota(writes, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+        )
         try:native.WriteVfs(source,reads,calls,owner)
         except RuntimeError as exc:assert "heap owner" in str(exc)
         else:raise AssertionError("native files admitted under a changed global profile")
@@ -1401,7 +1421,10 @@ finally:
 heap = native.SqliteProcessBudget(source, 64 * 1024 * 1024)
 quota = native.WriteQuota(helpers.grant(), helpers.grant())
 reads = native.ReadQuota(quota, (1048576, 65536), (1048576, 65536))
-calls = native.CallbackQuota(quota, (262144, 0), (262144, 0))
+calls = native.CallbackQuota(
+    quota, (262144, 0), (262144, 0),
+    work=native.NativeWorkQuota(quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+)
 gate = native.WriteVfs(source, reads, calls, heap)
 path = Path(sys.argv[2])
 failed_kind = sys.argv[3]
@@ -1409,6 +1432,7 @@ api = _WindowsAPI()
 borrowed = api.open(path)
 gate.bind(str(path), borrowed, None)
 api.close(borrowed)
+helpers.admit_fixture_retries(gate)
 library = FaultVfs.windows().library
 close_type = c.WINFUNCTYPE(c.c_int, c.c_void_p, use_last_error=True)
 target = None
@@ -1450,7 +1474,10 @@ with helpers.native_file(path, gate, binding=False) as database:
         assert calls.report() == before
         replacement = native.WriteQuota(helpers.grant(), helpers.grant())
         replacement_reads = native.ReadQuota(replacement, (1048576, 65536), (1048576, 65536))
-        replacement_calls = native.CallbackQuota(replacement, (262144, 0), (262144, 0))
+        replacement_calls = native.CallbackQuota(
+            replacement, (262144, 0), (262144, 0),
+            work=native.NativeWorkQuota(replacement, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+        )
         for operation in (
             lambda: gate.arm(reads, calls),
             lambda: gate.arm(replacement_reads, replacement_calls),
@@ -1556,7 +1583,10 @@ def nominal_sleep(original, milliseconds):
 
 def setup(forward, recovery):
     quota = native.WriteQuota(helpers.grant(), helpers.grant())
-    calls = native.CallbackQuota(quota, (32, forward), (32, recovery))
+    calls = native.CallbackQuota(
+        quota, (32, forward), (32, recovery),
+        work=native.NativeWorkQuota(quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+    )
     gate = native.WriteVfs(source, helpers.reads(native, quota), calls, heap)
     vfs = library.sqlite3_vfs_find(gate.name.encode("ascii"))
     return quota, calls, gate, vfs
@@ -1749,12 +1779,11 @@ def query(methods, raw):
 with helpers.native_file(path, base_gate, binding=False, create=False) as bootstrap:
     assert bootstrap[0] == sqlite3.SQLITE_OK and bootstrap[2]
     assert query(bootstrap[2], bootstrap[1]) == (10, 25)
-    if policy == "configured":
-        selected = (c.c_int * 2)(2, 3)
-        assert bootstrap[2].contents.control(bootstrap[1], 9, selected) == sqlite3.SQLITE_OK
-    retry_count, delay = query(bootstrap[2], bootstrap[1])
-    assert (retry_count, delay) == ((10, 25) if policy == "default" else (2, 3))
     assert gate.open_files == 0 and gate.bound
+
+retry_count, delay = (10, 25) if policy == "default" else (2, 3)
+gate.admit_retries((10, 25), (retry_count, delay), native.retry_bootstrap_cost((10, 25)))
+before_probe_work = calls.work.report()
 
 # No reset after the native bootstrap close: the configuration is process-global.
 if scenario == "bootstrap":
@@ -1774,6 +1803,7 @@ if scenario == "bootstrap":
     assert observed == {"read": 0, "write": 0, "create": 1, "attributes": 0, "sleeps": []}
     assert creation_modes == [3]  # OPEN_EXISTING
     assert calls.report()["forward"]["callback_slots_charged"] == 0
+    assert calls.work.report() == before_probe_work
 
 elif scenario == "nested_open":
     def refuse_create(original, *arguments):
@@ -1811,12 +1841,23 @@ elif scenario == "nested_open":
     assert quota.recovering and quota.report()["native_failures"] == 1
     assert gate.open_files == 0 and not gate.quarantined
     assert calls.report()["reserved_recovery_closes"] == 0
+    work = calls.work.report()
+    failed_cost = native.retry_bootstrap_cost((retry_count, delay))
+    assert tuple(
+        work["forward"][key] - before_probe_work["forward"][key]
+        for key in ("filesystem_api_attempts_charged", "internal_sleep_microseconds_charged")
+    ) == failed_cost
+    assert tuple(
+        work["recovery"][key] - before_probe_work["recovery"][key]
+        for key in ("filesystem_api_attempts_charged", "internal_sleep_microseconds_charged")
+    ) == (3, 200000)
 
 else:
     with helpers.native_file(path, gate, binding=False, create=False) as opened:
         assert opened[0] == sqlite3.SQLITE_OK
         raw, methods = opened[1:]
         assert query(methods, raw) == (retry_count, delay)
+        before_io = calls.work.report()["forward"]
         with ExitStack() as stack:
             stack.enter_context(windows_system_call(b"Sleep", sleep_type, nominal_sleep))
             if scenario == "read":
@@ -1861,6 +1902,14 @@ else:
             [] if scenario == "zero_write" else
             [delay * i for i in range(1, retry_count + 1)]
         )
+        work = calls.work.report()["forward"]
+        charged = tuple(
+            work[key] - before_io[key]
+            for key in ("filesystem_api_attempts_charged", "internal_sleep_microseconds_charged")
+        )
+        assert charged == native.filesystem_cost(
+            "read" if scenario == "read" else "write", (retry_count, delay), 7
+        ), (scenario, charged, work)
         # Internal file retries bypass xSleep; zero selected-VFS sleep charge
         # cannot certify zero native waits.
         assert calls.report()["forward"]["sleep_microseconds_charged"] == 0
@@ -2128,15 +2177,13 @@ with ExitStack() as stack:
         api.close(handle)
         gate.admit_retries(initial, selected, cost)
     elif scenario == "live_file":
-        # The first native open itself is successful and performs no pager IO.
+        # Ordinary filesystem delegation is forbidden before owned retry
+        # admission, including a raw wrapper open without pager IO.
         with helpers.native_file(path, gate, binding=False, create=False) as opened:
-            assert opened[0] == sqlite3.SQLITE_OK
-            before = list(seen["creates"])
-            refuse(lambda: gate.admit_retries(initial, selected, cost), "file-free")
-            assert seen["creates"] == before and heap.retry_report()["state"] == "unconfigured"
-        seen["creates"].clear()
-        seen["prepaid"].clear()
-        seen["closes"].clear()
+            assert opened[0] == sqlite3.SQLITE_FULL and opened[2] is None
+            assert not seen["creates"] and not seen["closes"]
+            assert heap.retry_report()["state"] == "unconfigured"
+            assert quota.report()["first_refusal"]["reason"] == "native retry admission"
         gate.admit_retries(initial, selected, cost)
     elif scenario in (
         "foreign_baseline",
@@ -2235,6 +2282,9 @@ else:
     refuse(lambda: gate.admit_retries(initial, selected, cost), "already")
     with helpers.native_file(path, gate, binding=False, create=False) as opened:
         assert opened[0] == sqlite3.SQLITE_OK and query(opened[2], opened[1]) == selected
+        if scenario == "live_file":
+            refuse(lambda: gate.admit_retries(initial, selected, cost), "file-free")
+            assert heap.retry_report() == report
     assert heap.retry_report() == report  # no per-store reset or cumulative recharge
     gate.unbind()
     gate.close()
@@ -2272,3 +2322,465 @@ print(json.dumps({"passed": True, "scenario": scenario, "retry": report}))
         assert cold.execute("SELECT value FROM original").fetchone() == (b"exact original",)
     finally:
         cold.close()
+
+
+def test_native_attached_work_bank_rejects_manual_mutation_and_foreign_registration():
+    native, source = runtime()
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, (0, 0), (0, 0))
+    first = native.CallbackQuota(writes, (32, 0), (32, 0), work)
+    alias = native.CallbackQuota(writes, (32, 0), (32, 0), work)
+    gate = native.WriteVfs(source, reads(native, writes), first, heap(native, source))
+    before = work.report()
+    try:
+        for action in (
+            lambda: work.admit((0, 0)),
+            lambda: work.acquire((0, 0), (1, 0)),
+            lambda: native.CallbackQuota(writes, (32, 0), (32, 0), work),
+            lambda: native.WriteVfs(source, reads(native, writes), alias, heap(native, source)),
+        ):
+            with pytest.raises(RuntimeError, match="attached native work"):
+                action()
+        assert work.report() == before and not writes.recovering
+    finally:
+        gate.close()
+    assert work.admit((0, 0))
+    assert work.report() == before
+
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "read",
+        "write",
+        "truncate",
+        "sync",
+        "size",
+        "lock",
+        "unlock",
+        "reserved",
+        "control",
+        "open",
+        "delete",
+        "access",
+        "fullpath",
+        "connect",
+        "wait_read",
+        "wait_write",
+        "wait_lock",
+        "wait_open",
+        "wait_delete",
+        "wait_access",
+    ],
+)
+def test_native_filesystem_work_refusal_and_prepaid_closes_are_isolated(tmp_path, scenario):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    path = tmp_path / "filesystem-work.sqlite3"
+    connection = sqlite3.connect(path)
+    try:
+        assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone() == ("persist",)
+        connection.execute("PRAGMA synchronous=EXTRA")
+        connection.execute("CREATE TABLE original(body BLOB NOT NULL)")
+        connection.execute("INSERT INTO original VALUES (?)", (b"exact original",))
+        connection.commit()
+    finally:
+        connection.close()
+    journal = path.with_name(path.name + "-journal")
+    before = (path.read_bytes(), journal.read_bytes())
+    code = r"""
+import ctypes as c, importlib.util, json, sqlite3, sys
+from contextlib import ExitStack
+from pathlib import Path
+
+sys.path.insert(0, sys.argv[1])
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_windows_native import _WindowsAPI
+from tests.support.sqlite_vfs_faults import FaultVfs, windows_system_call
+
+spec=importlib.util.spec_from_file_location(
+    "native_vfs_probe",
+    Path(sys.argv[1])/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py",
+)
+helpers=importlib.util.module_from_spec(spec)
+sys.modules[spec.name]=helpers
+spec.loader.exec_module(helpers)
+path=Path(sys.argv[2])
+journal=path.with_name(path.name+"-journal")
+scenario=sys.argv[3]
+waiting=scenario.startswith("wait_")
+method=scenario.removeprefix("wait_")
+file_method=method in {"read","write","truncate","sync","size","lock","unlock","reserved","control"}
+original=(path.read_bytes(),journal.read_bytes())
+native,source=helpers.runtime()
+heap=native.SqliteProcessBudget(source,64*1024*1024)
+initial=native.WriteQuota(helpers.grant(),helpers.grant())
+initial_calls=helpers.callbacks(native,initial)
+gate=native.WriteVfs(source,helpers.reads(native,initial),initial_calls,heap)
+api=_WindowsAPI()
+borrowed=api.open(path)
+try:
+    gate.bind(str(path),borrowed,helpers.journal_identity(path,api))
+finally:
+    api.close(borrowed)
+helpers.admit_fixture_retries(gate)
+profile=(2,3)
+recipe={"open":"open_database","delete":"delete_journal","connect":"fullpath"}.get(method,method)
+cost=native.filesystem_cost(recipe,profile,7 if method in ("read","write") else 0)
+close=native.filesystem_cost("close",profile) if method=="open" else (0,0)
+complete=tuple(a+b for a,b in zip(cost,close,strict=True))
+forward=(complete[0],complete[1]-1) if waiting else (0,1<<60)
+recovery=complete if method=="open" else native.filesystem_cost(
+    "read" if file_method else "access",profile,7 if file_method else 0
+)
+dword=c.c_ulong
+pointer=c.c_void_p
+signature=lambda result,*args:c.WINFUNCTYPE(result,*args,use_last_error=True)
+hooks={
+    b"ReadFile":signature(c.c_int,pointer,pointer,dword,c.POINTER(dword),pointer),
+    b"WriteFile":signature(c.c_int,pointer,pointer,dword,c.POINTER(dword),pointer),
+    b"SetFilePointer":signature(dword,pointer,c.c_long,c.POINTER(c.c_long),dword),
+    b"SetEndOfFile":signature(c.c_int,pointer),
+    b"FlushFileBuffers":signature(c.c_int,pointer),
+    b"GetFileSize":signature(dword,pointer,c.POINTER(dword)),
+    b"LockFileEx":signature(c.c_int,pointer,dword,dword,dword,dword,pointer),
+    b"UnlockFileEx":signature(c.c_int,pointer,dword,dword,dword,pointer),
+    b"CreateFileW":signature(pointer,c.c_wchar_p,dword,dword,pointer,dword,dword,pointer),
+    b"DeleteFileW":signature(c.c_int,c.c_wchar_p),
+    b"GetFileAttributesW":signature(dword,c.c_wchar_p),
+    b"GetFileAttributesExW":signature(c.c_int,c.c_wchar_p,c.c_int,pointer),
+    b"GetFullPathNameW":signature(dword,c.c_wchar_p,dword,pointer,pointer),
+    b"CloseHandle":signature(c.c_int,pointer),
+}
+observed={name.decode():0 for name in hooks}
+def observer(name):
+    def call(original,*args):
+        observed[name.decode()]+=1
+        return original(*args)
+    return call
+
+writes=native.WriteQuota(helpers.grant(),helpers.grant())
+work=native.NativeWorkQuota(writes,forward,recovery)
+calls=native.CallbackQuota(writes,(128,0),(128,0),work)
+library=FaultVfs.windows().library
+vfs=library.sqlite3_vfs_find(gate.name.encode())
+raw_name=c.create_string_buffer(str(path.resolve()).encode())
+journal_name=c.create_string_buffer(str(journal.resolve()).encode())
+output=c.create_string_buffer(b"########")
+size=c.c_int64(-7)
+reserved=c.c_int(-7)
+handle=c.c_void_p()
+def file_action(raw,methods):
+    operations={
+        "read":lambda:methods.contents.read(raw,output,7,0),
+        "write":lambda:methods.contents.write(raw,c.create_string_buffer(b"changed"),7,0),
+        "truncate":lambda:methods.contents.truncate(raw,0),
+        "sync":lambda:methods.contents.sync(raw,3),
+        "size":lambda:methods.contents.size(raw,c.byref(size)),
+        "lock":lambda:methods.contents.lock(raw,1),
+        "unlock":lambda:methods.contents.unlock(raw,0),
+        "reserved":lambda:methods.contents.reserved(raw,c.byref(reserved)),
+        "control":lambda:methods.contents.control(raw,29,c.byref(handle)),
+    }
+    return operations[method]()
+
+def verify_refusal():
+    assert not any(observed.values()),observed
+    assert writes.recovering
+    assert writes.report()["first_refusal"]["reason"]==(
+        "native internal sleep grant" if waiting else "native filesystem attempt grant"
+    )
+    assert all(
+        not any(bank.values()) for bank in work.report().values()
+    ),work.report()
+    assert output.raw==b"########\0" and size.value==reserved.value==-7 and handle.value is None
+    assert not gate.quarantined
+
+if file_method:
+    with helpers.native_file(path,gate,binding=False,create=False) as opened:
+        assert opened[0]==sqlite3.SQLITE_OK
+        raw,methods=opened[1:]
+        gate.arm(helpers.reads(native,writes),calls)
+        del initial_calls,initial
+        with ExitStack() as stack:
+            for name,kind in hooks.items():
+                stack.enter_context(windows_system_call(name,kind,observer(name)))
+            assert file_action(raw,methods)==sqlite3.SQLITE_FULL
+            verify_refusal()
+            assert methods.contents.read(raw,output,7,0)==sqlite3.SQLITE_OK
+            assert output.raw[:7]==original[0][:7]
+            spent=work.report()
+            snapshot=dict(observed)
+            assert methods.contents.read(raw,output,7,0)==sqlite3.SQLITE_FULL
+            assert observed==snapshot and work.report()==spent
+            assert methods.contents.close(raw)==sqlite3.SQLITE_OK
+            assert not raw.contents.methods and gate.open_files==0 and not gate.quarantined
+            assert observed["CloseHandle"]==1 and work.report()==spent
+else:
+    gate.arm(helpers.reads(native,writes),calls)
+    del initial_calls,initial
+    with ExitStack() as stack:
+        for name,kind in hooks.items():
+            stack.enter_context(windows_system_call(name,kind,observer(name)))
+        if method=="open":
+            with helpers.native_file(path,gate,binding=False,create=False) as refused:
+                assert refused[0]==sqlite3.SQLITE_FULL and refused[2] is None
+        elif method=="delete":
+            assert vfs.contents.delete(vfs,journal_name,0)==sqlite3.SQLITE_FULL
+        elif method=="access":
+            assert vfs.contents.access(vfs,raw_name,0,c.byref(reserved))==sqlite3.SQLITE_FULL
+        elif method=="connect":
+            try:
+                unexpected=sqlite3.connect(path.as_uri()+"?vfs="+gate.name,uri=True)
+            except sqlite3.Error as exc:
+                assert exc.sqlite_errorcode==sqlite3.SQLITE_FULL
+            else:
+                unexpected.close()
+                raise AssertionError("SQLite connection bypassed an empty native work grant")
+            assert gate.open_files==0
+        else:
+            assert method=="fullpath"
+            assert vfs.contents.pathname(vfs,raw_name,len(output),output)==sqlite3.SQLITE_FULL
+        verify_refusal()
+        if method=="open":
+            with helpers.native_file(path,gate,binding=False,create=False) as reopened:
+                assert reopened[0]==sqlite3.SQLITE_OK
+                spent=work.report()
+                assert tuple(spent["recovery"][key] for key in (
+                    "filesystem_api_attempts_charged","internal_sleep_microseconds_charged"
+                ))==recovery
+            assert work.report()==spent and observed["CloseHandle"]==1
+        else:
+            assert vfs.contents.access(vfs,raw_name,0,c.byref(reserved))==sqlite3.SQLITE_OK
+            assert reserved.value==1
+            spent=work.report()
+            snapshot=dict(observed)
+            reserved.value=-7
+            assert vfs.contents.access(vfs,raw_name,0,c.byref(reserved))==sqlite3.SQLITE_FULL
+            assert reserved.value==-7 and observed==snapshot and work.report()==spent
+before_close=work.report()
+gate.unbind()
+assert not gate.bound and not gate.quarantined and work.report()==before_close
+gate.close()
+for item in (path,journal):
+    moved=item.with_suffix(item.suffix+".moved")
+    item.rename(moved)
+    moved.rename(item)
+assert (path.read_bytes(),journal.read_bytes())==original
+assert heap.report()["sqlite_heap_peak_bytes"]<=64*1024*1024
+print(json.dumps({"passed":True,"scenario":scenario,"closes_prepaid":True,"original_exact":True}))
+"""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(path),
+            scenario,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "scenario": scenario,
+        "closes_prepaid": True,
+        "original_exact": True,
+    }
+    assert (path.read_bytes(), journal.read_bytes()) == before
+    with sqlite3.connect(path) as cold:
+        assert cold.execute("SELECT body FROM original").fetchone() == (b"exact original",)
+    assert (path.read_bytes(), journal.read_bytes()) == before
+
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "binding_forward_absent",
+        "binding_recovery_absent",
+        "binding_forward_present",
+        "binding_recovery_present",
+        "journal_generations",
+    ],
+)
+def test_native_binding_and_journal_pin_work_runs_in_an_isolated_application(tmp_path, scenario):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    path = tmp_path / "pin-work.sqlite3"
+    with sqlite3.connect(path) as connection:
+        connection.execute("PRAGMA journal_mode=PERSIST")
+        connection.execute("CREATE TABLE original(body BLOB NOT NULL)")
+        connection.execute("INSERT INTO original VALUES (?)", (b"exact original",))
+    connection.close()
+    journal = path.with_name(path.name + "-journal")
+    if not scenario.endswith("_present"):
+        journal.unlink()
+    original = (path.read_bytes(), journal.read_bytes() if journal.exists() else None)
+    code = r"""
+import ctypes as c, importlib.util, json, sqlite3, sys
+from pathlib import Path
+sys.path.insert(0,sys.argv[1])
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_windows_native import _WindowsAPI
+from tests.support.sqlite_vfs_faults import FaultVfs
+spec=importlib.util.spec_from_file_location(
+    "native_vfs_probe",
+    Path(sys.argv[1])/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py",
+)
+helpers=importlib.util.module_from_spec(spec)
+sys.modules[spec.name]=helpers
+spec.loader.exec_module(helpers)
+path=Path(sys.argv[2])
+journal=path.with_name(path.name+"-journal")
+scenario=sys.argv[3]
+original=(path.read_bytes(),journal.read_bytes() if journal.exists() else None)
+native,source=helpers.runtime()
+heap=native.SqliteProcessBudget(source,64*1024*1024)
+initial=native.WriteQuota(helpers.grant(),helpers.grant())
+calls=helpers.callbacks(native,initial)
+gate=native.WriteVfs(source,helpers.reads(native,initial),calls,heap)
+api=_WindowsAPI()
+library=FaultVfs.windows().library
+vfs=library.sqlite3_vfs_find(gate.name.encode())
+name=c.create_string_buffer(str(journal.resolve()).encode())
+kernel=c.WinDLL("kernel32",use_last_error=True)
+kernel.GetCurrentProcess.argtypes=[]
+kernel.GetCurrentProcess.restype=c.c_void_p
+kernel.GetProcessHandleCount.argtypes=[c.c_void_p,c.POINTER(c.c_ulong)]
+kernel.GetProcessHandleCount.restype=c.c_int
+def handles():
+    # https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getprocesshandlecount
+    result=c.c_ulong()
+    assert kernel.GetProcessHandleCount(kernel.GetCurrentProcess(),c.byref(result))
+    return result.value
+
+def arm(forward,recovery):
+    writes=native.WriteQuota(helpers.grant(),helpers.grant())
+    work=native.NativeWorkQuota(writes,forward,recovery)
+    callbacks=native.CallbackQuota(writes,(128,0),(128,0),work)
+    gate.arm(helpers.reads(native,writes),callbacks)
+    return writes,callbacks
+
+if scenario.startswith("binding_"):
+    present=scenario.endswith("_present")
+    cost=native.filesystem_cost("bind_journal" if present else "bind_database",(1,1))
+    closes=2 if present else 1
+    forward=(cost[0]+closes-(1 if "_forward_" in scenario else 0),0)
+    recovery=(closes-(1 if "_recovery_" in scenario else 0),0)
+    writes,calls=arm(forward,recovery)
+    baseline=handles()
+    borrowed=api.open(path)
+    identity=helpers.journal_identity(path,api)
+    before=handles()
+    try:
+        try:
+            gate.bind(str(path),borrowed,identity)
+        except RuntimeError:
+            pass
+        else:
+            raise AssertionError("binding delegated without complete acquisition/close funding")
+        assert not gate.bound and not gate.quarantined and handles()==before
+        assert writes.recovering
+        assert writes.report()["first_refusal"]["reason"]=="native filesystem attempt grant"
+        assert all(not any(bank.values()) for bank in calls.work.report().values())
+    finally:
+        api.close(borrowed)
+    assert handles()==baseline
+    moved=path.with_suffix(".moved")
+    path.rename(moved)
+    moved.rename(path)
+    writes,calls=arm((cost[0]+closes,0),(closes,0))
+    borrowed=api.open(path)
+    try:
+        gate.bind(str(path),borrowed,identity)
+    finally:
+        api.close(borrowed)
+    assert gate.bound and handles()==baseline+closes
+    paid=calls.work.report()
+    assert paid["forward"]["filesystem_api_attempts_charged"]==cost[0]+closes
+    assert paid["recovery"]["filesystem_api_attempts_charged"]==closes
+    assert paid["forward"]["close_filesystem_api_attempts_prepaid"]==closes
+    assert paid["recovery"]["close_filesystem_api_attempts_prepaid"]==closes
+    gate.unbind()
+    assert handles()==baseline and calls.work.report()==paid
+    assert heap.retry_report()["state"]=="unconfigured"
+else:
+    assert scenario=="journal_generations" and not journal.exists()
+    baseline=handles()
+    borrowed=api.open(path)
+    try:
+        gate.bind(str(path),borrowed,None)
+    finally:
+        api.close(borrowed)
+    helpers.admit_fixture_retries(gate)
+    assert handles()==baseline+1
+    for generation in range(2):
+        open_cost=native.filesystem_cost("open_journal_new",(2,3))
+        writes,calls=arm((open_cost[0]+4,open_cost[1]+200000),(4,200000))
+        with helpers.native_file(path,gate,kind="journal",binding=False) as opened:
+            assert opened[0]==sqlite3.SQLITE_OK and handles()==baseline+3
+            paid=calls.work.report()
+            assert paid["forward"]["filesystem_api_attempts_charged"]==open_cost[0]+4
+            assert paid["recovery"]["filesystem_api_attempts_charged"]==4
+            assert paid["forward"]["close_filesystem_api_attempts_prepaid"]==4
+            assert paid["recovery"]["close_filesystem_api_attempts_prepaid"]==4
+        assert handles()==baseline+2 and journal.read_bytes()==b""
+        assert calls.work.report()==paid
+        writes,calls=arm((0,0),(0,0))
+        assert vfs.contents.delete(vfs,name,0)==sqlite3.SQLITE_FULL
+        assert handles()==baseline+2 and journal.exists() and not gate.quarantined
+        assert all(not any(bank.values()) for bank in calls.work.report().values())
+        deletion=native.filesystem_cost("delete_journal",(2,3))
+        writes,calls=arm(deletion,(0,0))
+        assert vfs.contents.delete(vfs,name,0)==sqlite3.SQLITE_OK
+        assert not journal.exists() and handles()==baseline+1
+        report=calls.work.report()
+        assert report["forward"]["filesystem_api_attempts_charged"]==deletion[0]
+        assert report["forward"]["internal_sleep_microseconds_charged"]==deletion[1]
+        assert report["forward"]["close_filesystem_api_attempts_prepaid"]==0
+        assert not any(report["recovery"].values())
+    # The original database pin's close was funded by the initial binding, not
+    # either replacement generation/deletion operation bank.
+    paid=calls.work.report()
+    gate.unbind()
+    assert handles()==baseline and calls.work.report()==paid
+
+gate.close()
+assert (path.read_bytes(),journal.read_bytes() if journal.exists() else None)==original
+assert heap.report()["sqlite_heap_peak_bytes"]<=64*1024*1024
+print(json.dumps({"passed":True,"scenario":scenario,"pins_released":True,"original_exact":True}))
+"""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(path),
+            scenario,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "scenario": scenario,
+        "pins_released": True,
+        "original_exact": True,
+    }
+    assert (path.read_bytes(), journal.read_bytes() if journal.exists() else None) == original
+    with sqlite3.connect(path) as cold:
+        assert cold.execute("SELECT body FROM original").fetchone() == (b"exact original",)

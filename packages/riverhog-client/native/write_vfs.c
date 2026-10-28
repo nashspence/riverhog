@@ -35,6 +35,7 @@
 #define RH_ROLLBACK_ATOMIC 33
 #define RH_NULL_IO 43
 #define RH_GET_HANDLE 29
+#define RH_RETRY_SOURCE "2024-01-30 16:01:20 e876e51a0ed5c5b3126f52e532044363a014bc594cfefa87ffb5b82257cc467a"
 
 typedef struct {
     const char *(*source_id)(void);
@@ -59,6 +60,7 @@ struct rh_write_vfs {
     rh_quota *quota;
     rh_read_quota *reads;
     rh_callback_quota *calls;
+    rh_native_work_quota *work;
     rh_sqlite_heap *heap;
     unsigned long thread;
     size_t offset;
@@ -67,6 +69,7 @@ struct rh_write_vfs {
     char *database_name, *journal_name;
     wchar_t *database_wide, *journal_wide, *actual_wide;
     void *database_handle, *journal_handle;
+    rh_native_close_credit database_close, journal_close;
     uint32_t database_volume, database_index_high, database_index_low;
     uint32_t journal_index_high, journal_index_low;
     wchar_t library_path[32768];
@@ -84,6 +87,7 @@ typedef struct {
     rh_write_vfs *owner;
     enum rh_file kind;
     int forward_close;
+    rh_native_close_credit native_close;
 } rh_write_file;
 
 static unsigned long current_thread(void) {
@@ -95,6 +99,15 @@ static unsigned long current_thread(void) {
 }
 
 static int retry_usable(rh_sqlite_heap *);
+static int filesystem_cost(rh_write_vfs *, enum rh_native_operation, int64_t, rh_retry_cost *);
+static int filesystem_work(rh_write_vfs *, enum rh_native_operation, int64_t);
+static int native_close_allowed(rh_write_vfs *vfs, rh_native_close_credit *credit) {
+    if (rh_native_close_consume(credit)) return 1;
+    vfs->quarantined = 1;
+    vfs->quota->diagnostic_overflow = 1;
+    rh_failed(vfs->quota);
+    return 0;
+}
 static int owned(rh_write_vfs *vfs) { return current_thread() == vfs->thread; }
 static int callback(rh_write_vfs *vfs, int can_error) {
     if (!owned(vfs) || vfs->quarantined) return 0;
@@ -178,10 +191,19 @@ static int journal_current(rh_write_vfs *vfs) {
         info.nFileIndexLow == vfs->journal_index_low;
 }
 static int pin_journal(rh_write_vfs *vfs, uint32_t high, uint32_t low) {
-    HANDLE handle = CreateFileW(vfs->journal_wide, FILE_READ_ATTRIBUTES,
+    HANDLE handle;
+    if (!vfs->journal_close.pending) {
+        vfs->quarantined = 1;
+        rh_failed(vfs->quota);
+        return 0;
+    }
+    handle = CreateFileW(vfs->journal_wide, FILE_READ_ATTRIBUTES,
         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING,
         FILE_FLAG_OPEN_REPARSE_POINT, NULL);
-    if (handle == INVALID_HANDLE_VALUE) return 0;
+    if (handle == INVALID_HANDLE_VALUE) {
+        (void)rh_native_close_consume(&vfs->journal_close);
+        return 0;
+    }
     /* The delete-sharing metadata pin prevents file-ID reuse. Only a successful
      * delegated journal deletion releases this generation during a binding.
      */
@@ -224,15 +246,17 @@ static int file_close(rh_sqlite_file *raw) {
         int accounted = rh_callback_close(file->owner->calls, file->owner->quota,
                                            file->forward_close);
         file->owner->calls->pending_error = 0;
-        result = storage_result(file->owner, real->methods->close(real));
+        result = native_close_allowed(file->owner, &file->native_close) ?
+            storage_result(file->owner, real->methods->close(real)) : RH_IOERR;
         /* SQLite discards its file object after xClose, including on error.
          * A native failure cannot prove that its underlying handle was released.
          * Keep this owner, its pins and grants until application process exit;
          * other already-open files must still use their prepaid close paths.
          */
         if (result != RH_OK || !accounted) file->owner->quarantined = 1;
-        /* SQLite does not retry xClose after its returned error. Always delegate
-         * the close, including an impossible accounting inconsistency.
+        /* SQLite does not retry xClose. A callback-slot inconsistency does
+         * not revoke valid native close prepayment; a missing native credit
+         * quarantines without delegating unfunded filesystem work.
          */
         --file->owner->open_files;
         raw->methods = NULL;
@@ -251,6 +275,7 @@ static int file_read(rh_sqlite_file *raw, void *buffer, int amount, rh_sqlite_in
     if (!callback(file->owner, 1)) return RH_FULL;
     if (rh_read_admit(file->owner->reads, file->owner->quota, file->kind,
                       (int64_t)amount, (int64_t)offset) != RH_ALLOWED) return RH_FULL;
+    if (!filesystem_work(file->owner, RH_OP_READ, (int64_t)amount)) return RH_FULL;
     result = real->methods->read(real, buffer, amount, offset);
     if (result != RH_OK && result != RH_SHORT_READ) rh_failed(file->owner->quota);
     return result;
@@ -261,6 +286,7 @@ static int file_write(rh_sqlite_file *raw, const void *buffer, int amount, rh_sq
     if (!callback(file->owner, 1)) return RH_FULL;
     if (rh_admit(file->owner->quota, file->kind, (int64_t)amount, (int64_t)offset) != RH_ALLOWED)
         return RH_FULL;
+    if (!filesystem_work(file->owner, RH_OP_WRITE, (int64_t)amount)) return RH_FULL;
     return storage_result(file->owner, real->methods->write(real, buffer, amount, offset));
 }
 static int file_truncate(rh_sqlite_file *raw, rh_sqlite_int64 size) {
@@ -268,24 +294,28 @@ static int file_truncate(rh_sqlite_file *raw, rh_sqlite_int64 size) {
     rh_sqlite_file *real = real_file(file);
     if (!callback(file->owner, 1)) return RH_FULL;
     if (rh_resize(file->owner->quota, file->kind, (int64_t)size) != RH_ALLOWED) return RH_FULL;
+    if (!filesystem_work(file->owner, RH_OP_TRUNCATE, 0)) return RH_FULL;
     return storage_result(file->owner, real->methods->truncate(real, size));
 }
 static int file_sync(rh_sqlite_file *raw, int flags) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
     if (!callback(file->owner, 1)) return RH_FULL;
+    if (!filesystem_work(file->owner, RH_OP_SYNC, 0)) return RH_FULL;
     return storage_result(file->owner, real->methods->sync(real, flags));
 }
 static int file_size(rh_sqlite_file *raw, rh_sqlite_int64 *size) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
     if (!callback(file->owner, 1)) return RH_FULL;
+    if (!filesystem_work(file->owner, RH_OP_SIZE, 0)) return RH_FULL;
     return storage_result(file->owner, real->methods->size(real, size));
 }
 static int file_lock(rh_sqlite_file *raw, int level) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
     if (!callback(file->owner, 1)) return RH_FULL;
+    if (!filesystem_work(file->owner, RH_OP_LOCK, 0)) return RH_FULL;
     {
         int result = real->methods->lock(real, level);
         return result == RH_BUSY ? result : storage_result(file->owner, result);
@@ -295,12 +325,14 @@ static int file_unlock(rh_sqlite_file *raw, int level) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
     if (!callback(file->owner, 1)) return RH_FULL;
+    if (!filesystem_work(file->owner, RH_OP_UNLOCK, 0)) return RH_FULL;
     return storage_result(file->owner, real->methods->unlock(real, level));
 }
 static int file_reserved(rh_sqlite_file *raw, int *result) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
     if (!callback(file->owner, 1)) return RH_FULL;
+    if (!filesystem_work(file->owner, RH_OP_RESERVED, 0)) return RH_FULL;
     return storage_result(file->owner, real->methods->reserved(real, result));
 }
 static int file_control(rh_sqlite_file *raw, int operation, void *argument) {
@@ -314,6 +346,7 @@ static int file_control(rh_sqlite_file *raw, int operation, void *argument) {
         }
         if (rh_resize(file->owner->quota, file->kind,
                       (int64_t)*(rh_sqlite_int64 *)argument) != RH_ALLOWED) return RH_FULL;
+        if (!filesystem_work(file->owner, RH_OP_CONTROL, 0)) return RH_FULL;
         return storage_result(file->owner, real->methods->control(real, operation, argument));
     }
     /* Keep native truncation exact: nonzero chunks round beyond the admitted end.
@@ -332,6 +365,7 @@ static int file_control(rh_sqlite_file *raw, int operation, void *argument) {
         rh_forbid_control(file->owner->quota, file->kind);
         return RH_IOERR;
     }
+    if (!filesystem_work(file->owner, RH_OP_CONTROL, 0)) return RH_FULL;
     {
         int result = real->methods->control(real, operation, argument);
         return result == 12 /* SQLITE_NOTFOUND: unsupported control */ ?
@@ -352,6 +386,13 @@ static const rh_sqlite_io methods = {
     1, file_close, file_read, file_write, file_truncate, file_sync, file_size,
     file_lock, file_unlock, file_reserved, file_control, file_sector, file_characteristics
 };
+
+static void abandon_native_open(rh_write_file *file) {
+    rh_write_vfs *vfs = file->owner;
+    (void)rh_native_close_consume(&file->native_close);
+    if (file->kind == RH_JOURNAL && !vfs->journal_handle)
+        (void)rh_native_close_consume(&vfs->journal_close);
+}
 
 static int vfs_open(
     rh_sqlite_vfs *raw, const char *name, rh_sqlite_file *file, int flags, int *out_flags
@@ -381,10 +422,33 @@ static int vfs_open(
     close_bank = rh_callback_open(vfs->calls, vfs->quota);
     if (close_bank < 0) return RH_FULL;
     wrapper->forward_close = close_bank;
+    wrapper->native_close = (rh_native_close_credit){{0, 0}, 0};
+    {
+        int new_pin = wrapper->kind == RH_JOURNAL && !vfs->journal_handle;
+        rh_retry_cost cost, close = {(uint64_t)(new_pin ? 4 : 3), 200000};
+        enum rh_native_operation operation = wrapper->kind == RH_DATABASE ?
+            RH_OP_OPEN_DATABASE : (new_pin ? RH_OP_OPEN_JOURNAL_NEW : RH_OP_OPEN_JOURNAL_PINNED);
+        if (new_pin && vfs->journal_close.pending) {
+            vfs->quarantined = 1;
+            rh_failed(vfs->quota);
+            (void)rh_callback_abandon(vfs->calls, close_bank);
+            return RH_IOERR;
+        }
+        if (!filesystem_cost(vfs, operation, 0, &cost) ||
+            rh_native_work_acquire(vfs->work, vfs->quota, cost, close,
+                                    &wrapper->native_close) != RH_ALLOWED) {
+            (void)rh_callback_abandon(vfs->calls, close_bank);
+            return RH_FULL;
+        }
+        /* Split already-paid close obligations; neither retains the bank. */
+        wrapper->native_close.cost = (rh_retry_cost){3, 200000};
+        if (new_pin) vfs->journal_close = (rh_native_close_credit){{1, 0}, 1};
+    }
 #ifdef _WIN32
     if (wrapper->kind == RH_JOURNAL &&
         !(vfs->journal_handle ? journal_current(vfs) : journal_absent(vfs))) {
         (void)rh_callback_abandon(vfs->calls, close_bank);
+        abandon_native_open(wrapper);
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
         return RH_CANTOPEN;
     }
@@ -397,6 +461,7 @@ static int vfs_open(
         file->methods = &methods;
     } else {
         (void)rh_callback_abandon(vfs->calls, close_bank);
+        abandon_native_open(wrapper);
     }
     if (result == RH_OK && (!real->methods || !opened_identity(vfs, real, wrapper->kind))) {
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
@@ -412,6 +477,7 @@ static int vfs_delete(rh_sqlite_vfs *raw, const char *name, int sync_directory) 
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
         return RH_IOERR;
     }
+    if (!filesystem_work(vfs, RH_OP_DELETE_JOURNAL, 0)) return RH_FULL;
 #ifdef _WIN32
     if (!(vfs->journal_handle ? journal_current(vfs) : journal_absent(vfs))) {
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
@@ -420,7 +486,7 @@ static int vfs_delete(rh_sqlite_vfs *raw, const char *name, int sync_directory) 
     {
         int result = vfs->base->delete_file(vfs->base, name, sync_directory);
         if (result == RH_OK && vfs->journal_handle) {
-            if (!CloseHandle(vfs->journal_handle)) {
+            if (!native_close_allowed(vfs, &vfs->journal_close) || !CloseHandle(vfs->journal_handle)) {
                 vfs->quarantined = 1;
                 return storage_result(vfs, RH_IOERR);
             }
@@ -436,12 +502,14 @@ static int vfs_delete(rh_sqlite_vfs *raw, const char *name, int sync_directory) 
 static int vfs_access(rh_sqlite_vfs *raw, const char *name, int flags, int *result) {
     rh_write_vfs *vfs = raw->data;
     if (!callback(vfs, 1)) return RH_FULL;
-    return vfs->base->access(vfs->base, name, flags, result);
+    if (!filesystem_work(vfs, RH_OP_ACCESS, 0)) return RH_FULL;
+    return storage_result(vfs, vfs->base->access(vfs->base, name, flags, result));
 }
 static int vfs_fullpath(rh_sqlite_vfs *raw, const char *name, int size, char *out) {
     rh_write_vfs *vfs = raw->data;
     if (!callback(vfs, 1)) return RH_FULL;
-    return vfs->base->fullpath(vfs->base, name, size, out);
+    if (!filesystem_work(vfs, RH_OP_FULLPATH, 0)) return RH_FULL;
+    return storage_result(vfs, vfs->base->fullpath(vfs->base, name, size, out));
 }
 static void forbid_loading(rh_write_vfs *vfs) {
     if (!owned(vfs)) return;
@@ -560,6 +628,26 @@ static rh_sqlite_heap *process_heap;
 static int retry_usable(rh_sqlite_heap *heap) {
     return heap && (heap->retry.state == 0 || heap->retry.state == 2);
 }
+static int filesystem_cost(
+    rh_write_vfs *vfs, enum rh_native_operation operation, int64_t amount, rh_retry_cost *cost
+) {
+    if (vfs->heap->retry.state != 2) {
+        rh_forbid_retry(vfs->quota);
+        return 0;
+    }
+    if (!rh_native_filesystem_cost(operation, vfs->heap->retry.count,
+                                   vfs->heap->retry.delay, amount, cost)) {
+        rh_forbid_native_range(vfs->quota);
+        return 0;
+    }
+    return 1;
+}
+static int filesystem_work(rh_write_vfs *vfs, enum rh_native_operation operation, int64_t amount) {
+    rh_retry_cost cost;
+    return filesystem_cost(vfs, operation, amount, &cost) &&
+        rh_native_work_admit(vfs->work, vfs->quota, cost) == RH_ALLOWED;
+}
+
 int rh_sqlite_retry_report(rh_sqlite_heap *heap, rh_retry_admission *report) {
     int64_t current, peak, allocations;
     if (!rh_sqlite_heap_report(heap, &current, &peak, &allocations)) return 0;
@@ -665,7 +753,6 @@ quarantined:
 /* This recipe is qualified for the selected desktop-NT source and build.
  * Its compile-time initial tuple still belongs to the exact runtime profile.
  */
-#define RH_RETRY_SOURCE "2024-01-30 16:01:20 e876e51a0ed5c5b3126f52e532044363a014bc594cfefa87ffb5b82257cc467a"
 int rh_write_vfs_admit_retries(
     rh_write_vfs *vfs, int64_t initial_count, int64_t initial_delay,
     int64_t count, int64_t delay, uint64_t filesystem_calls, uint64_t sleep_microseconds,
@@ -807,7 +894,8 @@ finished:
 
 rh_write_vfs *rh_write_vfs_create(
     const char *name, const char *expected_source, rh_quota *quota,
-    rh_read_quota *reads, rh_callback_quota *calls, rh_sqlite_heap *heap, const char **error
+    rh_read_quota *reads, rh_callback_quota *calls, rh_native_work_quota *work,
+    rh_sqlite_heap *heap, const char **error
 ) {
     rh_write_vfs *vfs = calloc(1, sizeof(*vfs));
     if (!vfs) { *error = "native VFS allocation failed"; return NULL; }
@@ -823,6 +911,10 @@ rh_write_vfs *rh_write_vfs_create(
     vfs->heap = heap;
     if (strcmp(vfs->api.source_id(), expected_source)) {
         *error = "the loaded SQLite source identity differs from stdlib";
+        goto failed;
+    }
+    if (strcmp(vfs->api.source_id(), RH_RETRY_SOURCE)) {
+        *error = "the loaded SQLite source has no qualified filesystem work recipe";
         goto failed;
     }
     vfs->base = vfs->api.find("win32");
@@ -859,6 +951,7 @@ rh_write_vfs *rh_write_vfs_create(
     vfs->quota = quota;
     vfs->reads = reads;
     vfs->calls = calls;
+    vfs->work = work;
     if (!rh_callback_prepare(calls, quota, 0)) {
         *error = "callback grant has live files or an unreported error";
         goto failed;
@@ -899,32 +992,55 @@ int rh_write_vfs_bind(
         BY_HANDLE_FILE_INFORMATION info;
         size_t length;
         int rc;
-        if (!borrowed_handle || borrowed_handle == INVALID_HANDLE_VALUE ||
-            !DuplicateHandle(GetCurrentProcess(), borrowed_handle, GetCurrentProcess(),
-                             &pinned, 0, FALSE, DUPLICATE_SAME_ACCESS)) return RH_IOERR;
-        /* Retain the pin even if a later check fails, until explicit unbind/close. */
+        rh_retry_cost cost, close = {(uint64_t)(journal_identity ? 2 : 1), 0};
+        rh_native_close_credit admitted = {{0, 0}, 0};
+        if (!path || !borrowed_handle || borrowed_handle == INVALID_HANDLE_VALUE) return RH_IOERR;
+        /* Binding has no AV retry loop. Its complete fixed recipe is admitted
+         * before the first handle duplicate, including both possible closes.
+         */
+        if (!rh_native_filesystem_cost(journal_identity ? RH_OP_BIND_JOURNAL : RH_OP_BIND_DATABASE,
+                                       1, 1, 0, &cost) ||
+            rh_native_work_acquire(vfs->work, vfs->quota, cost, close, &admitted) != RH_ALLOWED)
+            return RH_FULL;
+        if (!DuplicateHandle(GetCurrentProcess(), borrowed_handle, GetCurrentProcess(),
+                             &pinned, 0, FALSE, DUPLICATE_SAME_ACCESS)) {
+            (void)rh_native_close_consume(&admitted);
+            rh_failed(vfs->quota);
+            return RH_IOERR;
+        }
+        /* A pin owns its complete fixed close cost independently of rearm. */
+        vfs->database_close = (rh_native_close_credit){{1, 0}, 1};
         vfs->database_handle = pinned;
-        if (!regular_file(pinned, &info)) return RH_IOERR;
+        if (!regular_file(pinned, &info)) { rh_failed(vfs->quota); return RH_IOERR; }
         rc = vfs->base->fullpath(vfs->base, path, vfs->base->pathname_bytes + 1,
                                 vfs->database_name);
-        if (rc != RH_OK) return rc;
+        if (rc != RH_OK) return storage_result(vfs, rc);
         length = strlen(vfs->database_name);
-        if (length + 8 > (size_t)vfs->base->pathname_bytes) return RH_CANTOPEN;
+        if (length + 8 > (size_t)vfs->base->pathname_bytes) {
+            rh_failed(vfs->quota); return RH_CANTOPEN;
+        }
         memcpy(vfs->journal_name, vfs->database_name, length);
         memcpy(vfs->journal_name + length, "-journal", 9);
         if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, vfs->database_name, -1,
                                 vfs->database_wide, (int)vfs->path_capacity) ||
             !MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, vfs->journal_name, -1,
                                 vfs->journal_wide, (int)vfs->path_capacity) ||
-            !current_path(vfs, pinned, vfs->database_wide)) return RH_IOERR;
+            !current_path(vfs, pinned, vfs->database_wide)) {
+            rh_failed(vfs->quota); return RH_IOERR;
+        }
         vfs->database_volume = info.dwVolumeSerialNumber;
         vfs->database_index_high = info.nFileIndexHigh;
         vfs->database_index_low = info.nFileIndexLow;
         if (journal_identity) {
-            if (journal_identity[0] != vfs->database_volume ||
-                !pin_journal(vfs, journal_identity[1], journal_identity[2])) return RH_IOERR;
+            if (journal_identity[0] != vfs->database_volume) {
+                rh_failed(vfs->quota); return RH_IOERR;
+            }
+            vfs->journal_close = (rh_native_close_credit){{1, 0}, 1};
+            if (!pin_journal(vfs, journal_identity[1], journal_identity[2])) {
+                rh_failed(vfs->quota); return RH_IOERR;
+            }
         } else if (!journal_absent(vfs)) {
-            return RH_IOERR;
+            rh_failed(vfs->quota); return RH_IOERR;
         }
         vfs->bound = 1;
         return RH_OK;
@@ -940,14 +1056,17 @@ int rh_write_vfs_unbind(rh_write_vfs *vfs) {
     if (vfs->open_files) return RH_BUSY;
 #ifdef _WIN32
     if (vfs->journal_handle) {
-        if (!CloseHandle(vfs->journal_handle)) {
+        if (!native_close_allowed(vfs, &vfs->journal_close) || !CloseHandle(vfs->journal_handle)) {
             vfs->quarantined = 1;
+            rh_failed(vfs->quota);
             return RH_IOERR;
         }
         vfs->journal_handle = NULL;
     }
-    if (vfs->database_handle && !CloseHandle(vfs->database_handle)) {
+    if (vfs->database_handle &&
+        (!native_close_allowed(vfs, &vfs->database_close) || !CloseHandle(vfs->database_handle))) {
         vfs->quarantined = 1;
+        rh_failed(vfs->quota);
         return RH_IOERR;
     }
 #endif
@@ -959,7 +1078,8 @@ int rh_write_vfs_bound(rh_write_vfs *vfs) { return owned(vfs) ? vfs->bound : -1;
 int rh_write_vfs_quarantined(rh_write_vfs *vfs) { return owned(vfs) ? vfs->quarantined : -1; }
 
 int rh_write_vfs_arm(
-    rh_write_vfs *vfs, rh_quota *quota, rh_read_quota *reads, rh_callback_quota *calls
+    rh_write_vfs *vfs, rh_quota *quota, rh_read_quota *reads, rh_callback_quota *calls,
+    rh_native_work_quota *work
 ) {
     if (!owned(vfs)) return RH_MISUSE;
     if (vfs->quarantined || !retry_usable(vfs->heap)) return RH_IOERR;
@@ -969,12 +1089,13 @@ int rh_write_vfs_arm(
         if (!rh_sqlite_heap_report(vfs->heap, &current, &peak, &allocations)) return RH_IOERR;
     }
     if (calls == vfs->calls)
-        return quota == vfs->quota && reads == vfs->reads ? RH_OK : RH_MISUSE;
+        return quota == vfs->quota && reads == vfs->reads && work == vfs->work ? RH_OK : RH_MISUSE;
     if (!rh_callback_prepare(calls, quota, (uint64_t)vfs->open_files)) return RH_BUSY;
     rh_callback_detach(vfs->calls);
     vfs->quota = quota;
     vfs->reads = reads;
     vfs->calls = calls;
+    vfs->work = work;
     return RH_OK;
 }
 int rh_write_vfs_close(rh_write_vfs *vfs) {

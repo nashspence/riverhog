@@ -1926,7 +1926,10 @@ with sqlite3.connect(":memory:") as runtime:
     source_id=runtime.execute("SELECT sqlite_source_id()").fetchone()[0]
 sleep_limits=(4096,1,4096,4096,8192,8)
 sleep_writes=native.WriteQuota(sleep_limits,sleep_limits)
-sleep_calls=native.CallbackQuota(sleep_writes,(4,1000),(4,1000))
+sleep_calls=native.CallbackQuota(
+    sleep_writes,(4,1000),(4,1000),
+    work=native.NativeWorkQuota(sleep_writes, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+)
 assert sleep_calls.admit_sleep(1)
 assert not sleep_calls.admit_sleep(1)
 assert not sleep_calls.admit_sleep(1)
@@ -1969,7 +1972,10 @@ else:
 vfs_limits=(4096,128,1048576,1048576,8388608,1024)
 vfs_quota=native.WriteQuota(vfs_limits,vfs_limits)
 vfs_reads=native.ReadQuota(vfs_quota,(8388608,1024),(8388608,1024))
-vfs_callbacks=native.CallbackQuota(vfs_quota,(8192, 0),(8192, 0))
+vfs_callbacks=native.CallbackQuota(
+    vfs_quota,(8192, 0),(8192, 0),
+    work=native.NativeWorkQuota(vfs_quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+)
 heap=native.SqliteProcessBudget(source_id,67108864)
 vfs=native.WriteVfs(source_id,vfs_reads,vfs_callbacks,heap)
 try:
@@ -2015,9 +2021,32 @@ try:
         finally:
             if connection is not None:
                 connection.close()
+            journal=path.with_name(path.name+"-journal")
+            original_files=(path.read_bytes(),journal.read_bytes())
+            vfs_work_report=vfs_callbacks.work.report()
+            stopped_writes=native.WriteQuota(vfs_limits,vfs_limits)
+            stopped_reads=native.ReadQuota(stopped_writes,(8388608,1024),(8388608,1024))
+            stopped_work=native.NativeWorkQuota(stopped_writes,(0,0),(0,0))
+            stopped_callbacks=native.CallbackQuota(
+                stopped_writes,(32,0),(32,0),stopped_work
+            )
+            vfs.arm(stopped_reads,stopped_callbacks)
+            try:
+                unexpected=sqlite3.connect(uri,uri=True)
+            except sqlite3.Error as exc:
+                assert exc.sqlite_errorcode==sqlite3.SQLITE_FULL
+            else:
+                unexpected.close()
+                raise AssertionError("native filesystem work bypassed an empty grant")
+            assert stopped_writes.recovering and vfs.open_files==0 and not vfs.quarantined
+            stopped_reason=stopped_writes.report()["first_refusal"]["reason"]
+            assert stopped_reason=="native filesystem attempt grant"
+            assert all(not any(bank.values()) for bank in stopped_work.report().values())
             vfs.unbind()
-            assert not vfs.bound
+            assert not vfs.bound and not vfs.quarantined
+            assert all(not any(bank.values()) for bank in stopped_work.report().values())
             assert kernel.CloseHandle(handle)
+            assert (path.read_bytes(),journal.read_bytes())==original_files
         moved=path.with_name("primary-moved.sqlite3")
         path.rename(moved)
         moved.rename(path)
@@ -2027,6 +2056,9 @@ try:
     resize_calls=vfs_quota.resize_report()["forward"]["resize_calls"]
     callback_report=vfs_callbacks.report()
     callback_slots=callback_report["forward"]["callback_slots_charged"]
+    assert vfs_work_report["forward"]["filesystem_api_attempts_charged"]>0
+    assert vfs_work_report["forward"]["internal_sleep_microseconds_charged"]>0
+    assert vfs_work_report["recovery"]["close_filesystem_api_attempts_prepaid"]>0
     heap_report=heap.report()
     assert heap_report["heap_limit_bytes"]==67108864
     assert callback_slots>0 and not callback_report["pending_error"]
@@ -2065,6 +2097,14 @@ print(json.dumps({"compiler":native.compiler,
     "native_work_bank_refusal_verified":work_refused,
     "native_filesystem_recipes_verified":True,
     "native_close_credit_detached_verified":not credit.report()["pending"],
+    "vfs_native_filesystem_attempts":
+        vfs_work_report["forward"]["filesystem_api_attempts_charged"],
+    "vfs_native_internal_sleep_microseconds":
+        vfs_work_report["forward"]["internal_sleep_microseconds_charged"],
+    "vfs_native_recovery_close_attempts_prepaid":
+        vfs_work_report["recovery"]["close_filesystem_api_attempts_prepaid"],
+    "vfs_native_work_refusal_verified":True,
+    "vfs_native_binding_close_after_rearm_verified":True,
     "vfs_binding_verified":True,
     "vfs_original_exact":True,"sqlite_source_id":source_id,
     "sqlite_library_sha256":library_digest}))
@@ -2118,6 +2158,14 @@ print(json.dumps({"compiler":native.compiler,
         or proof.get("native_work_bank_refusal_verified") is not True
         or proof.get("native_filesystem_recipes_verified") is not True
         or proof.get("native_close_credit_detached_verified") is not True
+        or type(proof.get("vfs_native_filesystem_attempts")) is not int
+        or proof["vfs_native_filesystem_attempts"] <= 0
+        or type(proof.get("vfs_native_internal_sleep_microseconds")) is not int
+        or proof["vfs_native_internal_sleep_microseconds"] <= 0
+        or type(proof.get("vfs_native_recovery_close_attempts_prepaid")) is not int
+        or proof["vfs_native_recovery_close_attempts_prepaid"] <= 0
+        or proof.get("vfs_native_work_refusal_verified") is not True
+        or proof.get("vfs_native_binding_close_after_rearm_verified") is not True
         or type(proof.get("sqlite_heap_limit_bytes")) is not int
         or proof.get("sqlite_heap_limit_bytes") != 67108864
         or type(proof.get("sqlite_heap_peak_bytes")) is not int

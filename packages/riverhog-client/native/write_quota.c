@@ -348,6 +348,9 @@ int rh_native_close_consume(rh_native_close_credit *credit) {
     return 1;
 }
 
+void rh_forbid_native_range(rh_quota *quota) {
+    (void)rh_record(quota, RH_NATIVE_RANGE, RH_OTHER, 0, 0, quota->recovering);
+}
 void rh_forbid_retry(rh_quota *quota) {
     (void)rh_record(quota, RH_RETRY, RH_DATABASE, 0, 0, quota->recovering);
 }
@@ -385,6 +388,7 @@ const char *rh_reason(enum rh_refusal reason) {
         case RH_NATIVE_CALLS: return "native filesystem attempt grant";
         case RH_NATIVE_SLEEP: return "native internal sleep grant";
         case RH_NATIVE_CLOSE: return "native close credit";
+        case RH_NATIVE_RANGE: return "invalid native filesystem request";
 
         default: return "allowed";
     }

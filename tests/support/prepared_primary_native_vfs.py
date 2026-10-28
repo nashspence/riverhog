@@ -34,7 +34,12 @@ class NativeWriteShim:
         read_limits = (64 * (limits.database_bytes + limits.journal_bytes), 65536)
         self._initial_reads = native.ReadQuota(self._initial, read_limits, read_limits)
         self._active_reads = self._initial_reads
-        self._initial_callbacks = native.CallbackQuota(self._initial, (262144, 0), (262144, 0))
+        self._initial_callbacks = native.CallbackQuota(
+            self._initial,
+            (262144, 0),
+            (262144, 0),
+            work=native.NativeWorkQuota(self._initial, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+        )
         self._active_callbacks = self._initial_callbacks
         self._native = native.WriteVfs(
             expected, self._initial_reads, self._initial_callbacks, self.heap
@@ -75,6 +80,11 @@ class NativeWriteShim:
         self.heap.report()
         owner.check_current()
         self._native.bind(str(owner.path), owner._database, owner._journal_identity)
+        if self.heap.retry_report()["state"] == "unconfigured":
+            from riverhog_client import _prepared_primary_native as native
+
+            self._native.admit_retries((10, 25), (2, 3), native.retry_bootstrap_cost((10, 25)))
+        assert self.heap.retry_report()["state"] == "admitted"
 
     def unbind(self):
         self._native.unbind()
@@ -99,7 +109,12 @@ class NativeWriteShim:
             (64 * (forward.database_end + forward.journal_end), forward.calls),
             (64 * (recovery.database_end + recovery.journal_end), recovery.calls),
         )
-        callbacks = native.CallbackQuota(quota, (4 * forward.calls, 0), (4 * recovery.calls, 0))
+        callbacks = native.CallbackQuota(
+            quota,
+            (4 * forward.calls, 0),
+            (4 * recovery.calls, 0),
+            work=native.NativeWorkQuota(quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+        )
         self.heap.report()
         self._native.arm(reads, callbacks)
         self._active_reads = reads
