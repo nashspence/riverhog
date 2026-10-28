@@ -340,6 +340,7 @@ def native_file(
     binding=True,
     before_open=None,
     parameters=(),
+    create=True,
 ):
     """Call the registered C methods on a real native file with valid SQLite filename metadata."""
     from riverhog_client._prepared_primary_windows_native import _WindowsAPI
@@ -387,7 +388,9 @@ def native_file(
         selected = library.sqlite3_filename_journal(filename) if kind == "journal" else filename
         actual_flags = flags if flags is not None else (0x100 if kind == "database" else 0x800)
         out_flags = c.c_int()
-        result = vfs.contents.open(vfs, selected, raw, 0x6 | actual_flags, c.byref(out_flags))
+        result = vfs.contents.open(
+            vfs, selected, raw, (0x6 if create else 0x2) | actual_flags, c.byref(out_flags)
+        )
         methods = (
             c.cast(raw.contents.methods, c.POINTER(IoMethods)) if raw.contents.methods else None
         )
@@ -1646,3 +1649,250 @@ print(json.dumps({"passed": True, "scenario": scenario, "vectors": vectors}))
         "scenario": scenario,
         "vectors": {"rounding": 6, "range": 3, "reserved_close": 1}[scenario],
     }
+
+
+@pytest.mark.parametrize("policy", ["default", "configured"])
+@pytest.mark.parametrize(
+    "scenario", ["bootstrap", "read", "partial_write", "zero_write", "nested_open"]
+)
+def test_native_win32_internal_retries_run_in_an_isolated_application(tmp_path, policy, scenario):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    path = tmp_path / "internal-retries.sqlite3"
+    connection = sqlite3.connect(path)
+    try:
+        connection.execute("CREATE TABLE original(value BLOB)")
+        connection.execute("INSERT INTO original VALUES (?)", (b"exact original",))
+        connection.commit()
+    finally:
+        connection.close()
+    original = path.read_bytes()
+    code = r"""
+import ctypes as c, importlib.util, json, sqlite3, sys
+from contextlib import ExitStack
+from pathlib import Path
+from types import SimpleNamespace
+
+sys.path.insert(0, sys.argv[1])
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_windows_native import _WindowsAPI
+from tests.support.sqlite_vfs_faults import FaultVfs, windows_system_call
+
+spec = importlib.util.spec_from_file_location(
+    "native_vfs_probe",
+    Path(sys.argv[1]) / "packages/riverhog-client/tests/test_prepared_primary_native_vfs.py",
+)
+helpers = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = helpers
+spec.loader.exec_module(helpers)
+connection = sqlite3.connect(":memory:")
+try:
+    source = connection.execute("SELECT sqlite_source_id()").fetchone()[0]
+finally:
+    connection.close()
+heap = native.SqliteProcessBudget(source, 64 * 1024 * 1024)
+quota = native.WriteQuota(helpers.grant(), helpers.grant())
+calls = helpers.callbacks(native, quota)
+gate = native.WriteVfs(source, helpers.reads(native, quota), calls, heap)
+path = Path(sys.argv[2])
+policy, scenario = sys.argv[3:]
+before_bytes = path.read_bytes()
+api = _WindowsAPI()
+borrowed = api.open(path)
+gate.bind(str(path), borrowed, None)
+api.close(borrowed)
+base_gate = SimpleNamespace(name="win32")
+dword = c.c_ulong
+pointer = c.c_void_p
+io_type = c.WINFUNCTYPE(
+    c.c_int, pointer, pointer, dword, c.POINTER(dword), pointer, use_last_error=True
+)
+sleep_type = c.WINFUNCTYPE(None, dword, use_last_error=True)
+create_type = c.WINFUNCTYPE(
+    pointer, c.c_wchar_p, dword, dword, pointer, dword, dword, pointer,
+    use_last_error=True,
+)
+attributes_type = c.WINFUNCTYPE(
+    c.c_int, c.c_wchar_p, c.c_int, pointer, use_last_error=True
+)
+observed = {"read": 0, "write": 0, "create": 0, "attributes": 0, "sleeps": []}
+creation_modes = []
+
+
+def nominal_sleep(original, milliseconds):
+    observed["sleeps"].append(milliseconds)
+
+
+def refuse_read(original, handle, buffer, amount, completed, overlapped):
+    observed["read"] += 1
+    c.set_last_error(5)
+    return 0
+
+
+def refuse_write(original, handle, buffer, amount, completed, overlapped):
+    observed["write"] += 1
+    c.set_last_error(5)
+    return 0
+
+
+def query(methods, raw):
+    value = (c.c_int * 2)(-1, -1)
+    assert methods.contents.control(raw, 9, value) == sqlite3.SQLITE_OK
+    return tuple(value)
+
+
+# The normal base VFS receives an existing file and SQLite-created filename,
+# without CREATE. No pager/header/schema/recovery operation is requested.
+with helpers.native_file(path, base_gate, binding=False, create=False) as bootstrap:
+    assert bootstrap[0] == sqlite3.SQLITE_OK and bootstrap[2]
+    assert query(bootstrap[2], bootstrap[1]) == (10, 25)
+    if policy == "configured":
+        selected = (c.c_int * 2)(2, 3)
+        assert bootstrap[2].contents.control(bootstrap[1], 9, selected) == sqlite3.SQLITE_OK
+    retry_count, delay = query(bootstrap[2], bootstrap[1])
+    assert (retry_count, delay) == ((10, 25) if policy == "default" else (2, 3))
+    assert gate.open_files == 0 and gate.bound
+
+# No reset after the native bootstrap close: the configuration is process-global.
+if scenario == "bootstrap":
+    def observe_create(original, name, access, sharing, security, creation, flags, template):
+        observed["create"] += 1
+        creation_modes.append(creation)
+        return original(name, access, sharing, security, creation, flags, template)
+
+    with ExitStack() as stack:
+        stack.enter_context(windows_system_call(b"Sleep", sleep_type, nominal_sleep))
+        stack.enter_context(windows_system_call(b"ReadFile", io_type, refuse_read))
+        stack.enter_context(windows_system_call(b"WriteFile", io_type, refuse_write))
+        stack.enter_context(windows_system_call(b"CreateFileW", create_type, observe_create))
+        with helpers.native_file(path, base_gate, binding=False, create=False) as bootstrap:
+            assert bootstrap[0] == sqlite3.SQLITE_OK
+            assert query(bootstrap[2], bootstrap[1]) == (retry_count, delay)
+    assert observed == {"read": 0, "write": 0, "create": 1, "attributes": 0, "sleeps": []}
+    assert creation_modes == [3]  # OPEN_EXISTING
+    assert calls.report()["forward"]["callback_slots_charged"] == 0
+
+elif scenario == "nested_open":
+    def refuse_create(original, *arguments):
+        observed["create"] += 1
+        c.set_last_error(5)
+        return pointer(-1).value
+
+    def refuse_attributes(original, *arguments):
+        observed["attributes"] += 1
+        c.set_last_error(5)
+        return 0
+
+    with ExitStack() as stack:
+        stack.enter_context(windows_system_call(b"Sleep", sleep_type, nominal_sleep))
+        stack.enter_context(windows_system_call(b"CreateFileW", create_type, refuse_create))
+        stack.enter_context(windows_system_call(
+            b"GetFileAttributesExW", attributes_type, refuse_attributes
+        ))
+        with helpers.native_file(path, gate, binding=False, create=False) as failed:
+            assert failed[0] == sqlite3.SQLITE_CANTOPEN and failed[2] is None
+    assert observed["create"] == 2 * (retry_count + 1)
+    assert observed["attributes"] == (retry_count + 1) ** 2
+    expected_sleeps = []
+    for outer_attempt in range(retry_count + 1):
+        expected_sleeps.extend(delay * i for i in range(1, retry_count + 1))
+        if outer_attempt < retry_count:
+            expected_sleeps.append(delay * (outer_attempt + 1))
+    expected_sleeps.extend(delay * i for i in range(1, retry_count + 1))
+    assert observed["sleeps"] == expected_sleeps
+    assert len(expected_sleeps) == retry_count * (retry_count + 3)
+    assert sum(expected_sleeps) == delay * retry_count * (retry_count + 1) // 2 * (retry_count + 3)
+    assert quota.recovering and quota.report()["native_failures"] == 1
+    assert gate.open_files == 0 and not gate.quarantined
+    assert calls.report()["reserved_recovery_closes"] == 0
+
+else:
+    with helpers.native_file(path, gate, binding=False, create=False) as opened:
+        assert opened[0] == sqlite3.SQLITE_OK
+        raw, methods = opened[1:]
+        assert query(methods, raw) == (retry_count, delay)
+        with ExitStack() as stack:
+            stack.enter_context(windows_system_call(b"Sleep", sleep_type, nominal_sleep))
+            if scenario == "read":
+                stack.enter_context(windows_system_call(b"ReadFile", io_type, refuse_read))
+                buffer = c.create_string_buffer(7)
+                assert methods.contents.read(raw, buffer, 7, 0) == sqlite3.SQLITE_IOERR_READ
+                assert observed["read"] == retry_count + 1
+            else:
+                progress = {"bytes": 0, "failures": 0}
+
+                def partial_write(original, handle, buffer, amount, completed, overlapped):
+                    observed["write"] += 1
+                    if scenario == "zero_write":
+                        completed[0] = 0
+                        c.set_last_error(5)
+                        return 1
+                    if progress["failures"] < retry_count and (
+                        progress["failures"] <= progress["bytes"] or progress["bytes"] == 6
+                    ):
+                        progress["failures"] += 1
+                        c.set_last_error(5)
+                        return 0
+                    result = original(handle, buffer, 1, completed, overlapped)
+                    if result and completed[0] == 1:
+                        progress["bytes"] += 1
+                    return result
+
+                stack.enter_context(windows_system_call(b"WriteFile", io_type, partial_write))
+                buffer = c.create_string_buffer(before_bytes[:7], 7)
+                result = methods.contents.write(raw, buffer, 7, 0)
+                if scenario == "partial_write":
+                    assert result == sqlite3.SQLITE_OK
+                    assert progress == {"bytes": 7, "failures": retry_count}
+                    assert observed["write"] == 7 + retry_count
+                    assert not quota.recovering
+                else:
+                    assert result == sqlite3.SQLITE_IOERR_WRITE
+                    assert observed["write"] == 1
+            if scenario != "partial_write":
+                assert quota.recovering and quota.report()["native_failures"] == 1
+        assert observed["sleeps"] == (
+            [] if scenario == "zero_write" else
+            [delay * i for i in range(1, retry_count + 1)]
+        )
+        # Internal file retries bypass xSleep; zero selected-VFS sleep charge
+        # cannot certify zero native waits.
+        assert calls.report()["forward"]["sleep_microseconds_charged"] == 0
+        assert calls.report()["recovery"]["sleep_microseconds_charged"] == 0
+    assert gate.open_files == 0 and not gate.quarantined
+
+assert path.read_bytes() == before_bytes
+gate.unbind()
+gate.close()
+print(json.dumps({
+    "passed": True, "policy": policy, "scenario": scenario,
+    "retry_count": retry_count, "delay_milliseconds": delay, "observed": observed,
+}))
+"""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(path),
+            policy,
+            scenario,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] and proof["policy"] == policy and proof["scenario"] == scenario
+    assert path.read_bytes() == original
+    cold = sqlite3.connect(path)
+    try:
+        assert cold.execute("SELECT value FROM original").fetchone() == (b"exact original",)
+    finally:
+        cold.close()
