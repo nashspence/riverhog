@@ -11,6 +11,7 @@
 #include <limits.h>
 #include <stdint.h>
 #include "write_quota.h"
+#include "write_vfs.h"
 #define RH_STR_I(value) #value
 #define RH_STR(value) RH_STR_I(value)
 #ifdef _MSC_FULL_VER
@@ -24,6 +25,8 @@ typedef struct {
     rh_quota quota;
     size_t tracking_bytes;
     int initialized;
+    Py_ssize_t native_users;
+    unsigned long native_thread;
 } WriteQuota;
 
 static int positive_integer(PyObject *object, uint64_t *value) {
@@ -125,6 +128,10 @@ static void quota_dealloc(PyObject *object) {
 }
 
 static int ready(WriteQuota *self) {
+    if (self->native_users && self->native_thread != PyThread_get_thread_ident()) {
+        PyErr_SetString(PyExc_RuntimeError, "attached write quota requires its owning thread");
+        return 0;
+    }
     if (!self->quota.forward.pages || !self->quota.recovery.pages) {
         PyErr_SetString(PyExc_RuntimeError, "write quota is not initialized");
         return 0;
@@ -243,6 +250,155 @@ static PyTypeObject quota_type = {
     .tp_getset = quota_getset
 };
 
+typedef struct {
+    PyObject_HEAD
+    rh_write_vfs *vfs;
+    PyObject *quota;
+    char name[96];
+    int initialized;
+} WriteVfs;
+
+static int quota_attachable(WriteQuota *quota) {
+    if (!ready(quota)) return 0;
+    if (quota->native_users == PY_SSIZE_T_MAX) {
+        PyErr_SetString(PyExc_OverflowError, "write quota attachment count exhausted");
+        return 0;
+    }
+    return 1;
+}
+static void quota_attach(WriteQuota *quota) {
+    quota->native_thread = PyThread_get_thread_ident();
+    ++quota->native_users;
+}
+static void quota_detach(WriteQuota *quota) { --quota->native_users; }
+
+static int vfs_ready(WriteVfs *self) {
+    if (!self->vfs) {
+        PyErr_SetString(PyExc_RuntimeError, "native write VFS is closed or uninitialized");
+        return 0;
+    }
+    return 1;
+}
+static int vfs_init(PyObject *object, PyObject *args, PyObject *kwargs) {
+    WriteVfs *self = (WriteVfs *)object;
+    WriteQuota *quota;
+    const char *expected, *error;
+    static char *keywords[] = {"expected_source_id", "quota", NULL};
+    if (self->initialized) {
+        PyErr_SetString(PyExc_RuntimeError, "native write VFS cannot be reinitialized");
+        return -1;
+    }
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sO!", keywords,
+                                    &expected, &quota_type, &quota)) return -1;
+    if (!quota_attachable(quota)) return -1;
+    self->initialized = 1;
+    PyOS_snprintf(self->name, sizeof(self->name), "riverhog-native-write-%p", (void *)self);
+    self->vfs = rh_write_vfs_create(self->name, expected, &quota->quota, &error);
+    if (!self->vfs) {
+        PyErr_SetString(PyExc_RuntimeError, error);
+        return -1;
+    }
+    quota_attach(quota);
+    self->quota = Py_NewRef((PyObject *)quota);
+    /* Registration pins callbacks and their bank until explicit file-free close. */
+    Py_INCREF(self);
+    return 0;
+}
+static void vfs_dealloc(PyObject *object) {
+    WriteVfs *self = (WriteVfs *)object;
+    Py_XDECREF(self->quota);
+    Py_TYPE(self)->tp_free(object);
+}
+static PyObject *vfs_arm(PyObject *object, PyObject *value) {
+    WriteVfs *self = (WriteVfs *)object;
+    int result;
+    if (!vfs_ready(self)) return NULL;
+    if (!Py_IS_TYPE(value, &quota_type)) {
+        PyErr_SetString(PyExc_TypeError, "native write VFS requires an initialized WriteQuota");
+        return NULL;
+    }
+    if (!quota_attachable((WriteQuota *)value)) return NULL;
+    result = rh_write_vfs_arm(self->vfs, &((WriteQuota *)value)->quota);
+    if (result) {
+        PyErr_SetString(PyExc_RuntimeError,
+            "native write VFS requires its owning thread and closed poisoned files");
+        return NULL;
+    }
+    quota_attach((WriteQuota *)value);
+    quota_detach((WriteQuota *)self->quota);
+    Py_SETREF(self->quota, Py_NewRef(value));
+    Py_RETURN_NONE;
+}
+static PyObject *vfs_close(PyObject *object, PyObject *unused) {
+    WriteVfs *self = (WriteVfs *)object;
+    int result;
+    (void)unused;
+    if (!self->vfs) Py_RETURN_NONE;
+    result = rh_write_vfs_close(self->vfs);
+    if (result) {
+        PyErr_SetString(PyExc_RuntimeError,
+            "native write VFS cannot close with live files or from another thread");
+        return NULL;
+    }
+    self->vfs = NULL;
+    quota_detach((WriteQuota *)self->quota);
+    Py_CLEAR(self->quota);
+    Py_DECREF(self);
+    Py_RETURN_NONE;
+}
+static PyObject *vfs_identity(PyObject *object, PyObject *unused) {
+    WriteVfs *self = (WriteVfs *)object;
+    PyObject *path, *result;
+    (void)unused;
+    if (!vfs_ready(self)) return NULL;
+    path = PyUnicode_FromWideChar(rh_write_vfs_library_path(self->vfs), -1);
+    if (!path) return NULL;
+    result = Py_BuildValue("{s:s,s:s,s:O}",
+        "sqlite_source_id", rh_write_vfs_source_id(self->vfs),
+        "base_vfs", "win32", "sqlite_library_path", path);
+    Py_DECREF(path);
+    return result;
+}
+static PyObject *vfs_name(PyObject *object, void *unused) {
+    WriteVfs *self = (WriteVfs *)object;
+    (void)unused;
+    if (!vfs_ready(self)) return NULL;
+    return PyUnicode_FromString(self->name);
+}
+static PyObject *vfs_open_files(PyObject *object, void *unused) {
+    WriteVfs *self = (WriteVfs *)object;
+    int count;
+    (void)unused;
+    if (!vfs_ready(self)) return NULL;
+    count = rh_write_vfs_open_files(self->vfs);
+    if (count < 0) {
+        PyErr_SetString(PyExc_RuntimeError, "native write VFS requires its owning thread");
+        return NULL;
+    }
+    return PyLong_FromLong(count);
+}
+static PyMethodDef vfs_methods[] = {
+    {"arm", vfs_arm, METH_O, "Select a bank before entering SQLite on its owning thread."},
+    {"close", vfs_close, METH_NOARGS, "Unregister after the owner closes every SQLite connection using this VFS."},
+    {"identity", vfs_identity, METH_NOARGS, "Describe the already loaded SQLite module."},
+    {NULL, NULL, 0, NULL}
+};
+static PyGetSetDef vfs_getset[] = {
+    {"name", vfs_name, NULL, "Explicit nondefault VFS name.", NULL},
+    {"open_files", vfs_open_files, NULL, "Live delegated native files.", NULL},
+    {NULL, NULL, NULL, NULL, NULL}
+};
+static PyTypeObject vfs_type = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "riverhog_client._prepared_primary_native.WriteVfs",
+    .tp_basicsize = (Py_ssize_t)sizeof(WriteVfs),
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_init = vfs_init,
+    .tp_dealloc = vfs_dealloc,
+    .tp_methods = vfs_methods,
+    .tp_getset = vfs_getset
+};
+
 static struct PyModuleDef module_definition = {
     PyModuleDef_HEAD_INIT,
     .m_name = "_prepared_primary_native",
@@ -254,9 +410,14 @@ PyMODINIT_FUNC PyInit__prepared_primary_native(void) {
     PyObject *module;
     quota_type.tp_new = PyType_GenericNew;
     if (PyType_Ready(&quota_type) < 0) return NULL;
+    vfs_type.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&vfs_type) < 0) return NULL;
     module = PyModule_Create(&module_definition);
     if (!module) return NULL;
     if (PyModule_AddObjectRef(module, "WriteQuota", (PyObject *)&quota_type) < 0) {
+        Py_DECREF(module); return NULL;
+    }
+    if (PyModule_AddObjectRef(module, "WriteVfs", (PyObject *)&vfs_type) < 0) {
         Py_DECREF(module); return NULL;
     }
     if (PyModule_AddStringConstant(module, "compiler", RH_COMPILER) < 0) {

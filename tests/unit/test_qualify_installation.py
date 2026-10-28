@@ -971,7 +971,20 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
 
 
 @pytest.mark.parametrize(
-    "invalid", [None, "compiler", "digest", "tracking", "callbacks", "recovery"]
+    "invalid",
+    [
+        None,
+        "compiler",
+        "digest",
+        "tracking",
+        "bool-tracking",
+        "callbacks",
+        "recovery",
+        "vfs-calls",
+        "vfs-exact",
+        "source",
+        "library",
+    ],
 )
 def test_installed_native_bank_requires_isolation_and_complete_positive_evidence(
     tmp_path, monkeypatch, invalid
@@ -984,7 +997,11 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         "forward_pages": 2,
         "recovery_pages": 3,
         "refusals": 1,
-        "storage_callbacks_native": False,
+        "storage_callbacks_native": True,
+        "vfs_write_calls": 7,
+        "vfs_original_exact": True,
+        "sqlite_source_id": "qualified-runtime-source",
+        "sqlite_library_sha256": "b" * 64,
     }
     if invalid == "compiler":
         proof["compiler"] = "unknown"
@@ -992,14 +1009,25 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         proof["module_sha256"] = "invalid"
     elif invalid == "tracking":
         proof["tracking_bytes"] = 0
+    elif invalid == "bool-tracking":
+        proof["tracking_bytes"] = True
     elif invalid == "callbacks":
-        proof["storage_callbacks_native"] = True
+        proof["storage_callbacks_native"] = False
     elif invalid == "recovery":
         proof["recovery_pages"] = 2
+    elif invalid == "vfs-calls":
+        proof["vfs_write_calls"] = 0
+    elif invalid == "vfs-exact":
+        proof["vfs_original_exact"] = False
+    elif invalid == "source":
+        proof["sqlite_source_id"] = ""
+    elif invalid == "library":
+        proof["sqlite_library_sha256"] = "invalid"
 
     def execute(command, **options):
         assert command[:3] == [str(tmp_path / "python"), "-I", "-c"]
         assert options == {"cwd": tmp_path, "env": {}, "capture": True}
+        compile(command[3], "<installed-native-proof>", "exec")
         return subprocess.CompletedProcess(command, 0, json.dumps(proof), "")
 
     monkeypatch.setattr(module, "_run", execute)

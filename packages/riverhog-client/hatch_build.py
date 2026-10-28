@@ -24,6 +24,7 @@ class CustomBuildHook(BuildHookInterface):
             sources=[
                 str(root / "native/quota_module.c"),
                 str(root / "native/write_quota.c"),
+                str(root / "native/write_vfs.c"),
             ],
             include_dirs=[str(root / "native")],
             extra_compile_args=["/std:c11", "/W4", "/WX", "/Brepro"],

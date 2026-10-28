@@ -1904,7 +1904,7 @@ def _install_command(component: dict[str, Any], manifest: dict[str, Any]) -> lis
 def _installed_client_write_bank(
     python: Path, *, scratch: Path, environment: dict[str, str]
 ) -> dict[str, Any]:
-    code = """import hashlib,json
+    code = """import hashlib,json,sqlite3,tempfile
 from pathlib import Path
 from riverhog_client import _prepared_primary_native as native
 limits=(4096,2,32768,32768,65536,32)
@@ -1922,11 +1922,41 @@ assert report["first_refusal"]["reason"]=="database page grant"
 module=Path(native.__file__)
 assert module.suffix.lower()==".pyd"
 assert native.compiler.startswith("MSVC ")
+with sqlite3.connect(":memory:") as runtime:
+    source_id=runtime.execute("SELECT sqlite_source_id()").fetchone()[0]
+vfs_limits=(4096,128,1048576,1048576,8388608,1024)
+vfs_quota=native.WriteQuota(vfs_limits,vfs_limits)
+vfs=native.WriteVfs(source_id,vfs_quota)
+try:
+    identity=vfs.identity()
+    assert identity["sqlite_source_id"]==source_id
+    assert identity["base_vfs"]=="win32"
+    library_digest=hashlib.sha256(Path(identity["sqlite_library_path"]).read_bytes()).hexdigest()
+    with tempfile.TemporaryDirectory(prefix="native-write-proof-",dir=".") as directory:
+        uri=(Path(directory)/"primary.sqlite3").resolve().as_uri()+"?vfs="+vfs.name
+        connection=sqlite3.connect(uri,uri=True)
+        try:
+            assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone()==("persist",)
+            connection.execute("PRAGMA synchronous=EXTRA")
+            connection.execute("CREATE TABLE proof (body BLOB NOT NULL)")
+            connection.execute("INSERT INTO proof VALUES (?)",(b"exact installed original",))
+            connection.commit()
+            row=connection.execute("SELECT body FROM proof").fetchone()
+            assert row==(b"exact installed original",)
+        finally:
+            connection.close()
+    assert vfs.open_files==0
+finally:
+    vfs.close()
+vfs_calls=vfs_quota.report()["forward"]["write_calls"]
+assert vfs_calls>0 and not vfs_quota.recovering
 print(json.dumps({"compiler":native.compiler,
     "module_sha256":hashlib.sha256(module.read_bytes()).hexdigest(),
     "tracking_bytes":quota.tracking_bytes,
     "forward_pages":2,"recovery_pages":3,"refusals":1,
-    "storage_callbacks_native":False}))
+    "storage_callbacks_native":True,"vfs_write_calls":vfs_calls,
+    "vfs_original_exact":True,"sqlite_source_id":source_id,
+    "sqlite_library_sha256":library_digest}))
 """
     result = _run([str(python), "-I", "-c", code], cwd=scratch, env=environment, capture=True)
     proof = json.loads(result.stdout)
@@ -1935,11 +1965,17 @@ print(json.dumps({"compiler":native.compiler,
         or proof.get("forward_pages") != 2
         or proof.get("recovery_pages") != 3
         or proof.get("refusals") != 1
-        or not isinstance(proof.get("tracking_bytes"), int)
+        or type(proof.get("tracking_bytes")) is not int
         or proof["tracking_bytes"] <= 0
         or re.fullmatch(r"[0-9a-f]{64}", str(proof.get("module_sha256", ""))) is None
         or not str(proof.get("compiler", "")).startswith("MSVC ")
-        or proof.get("storage_callbacks_native") is not False
+        or proof.get("storage_callbacks_native") is not True
+        or type(proof.get("vfs_write_calls")) is not int
+        or proof["vfs_write_calls"] <= 0
+        or proof.get("vfs_original_exact") is not True
+        or not isinstance(proof.get("sqlite_source_id"), str)
+        or not proof["sqlite_source_id"]
+        or re.fullmatch(r"[0-9a-f]{64}", str(proof.get("sqlite_library_sha256", ""))) is None
     ):
         raise QualificationError("installed native client write-bank proof is invalid")
     return proof

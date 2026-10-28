@@ -526,14 +526,20 @@ def _fixed_barrier_witness(parent: Path):
     return {"runtime": identity, "cases": reports}
 
 
-def _write_quota_witness(parent: Path, *, compiled=False):
+def _write_quota_witness(parent: Path, *, compiled=False, native_vfs=False):
     from tests.support.prepared_primary_write_quota import witness as quota_witness
     from tests.support.sqlite_vfs_faults import FaultVfs
 
     reports = []
-    with FaultVfs.windows() as shim:
+    if native_vfs:
+        from tests.support.prepared_primary_native_vfs import NativeWriteShim
+
+        context = NativeWriteShim(LIMITS)
+    else:
+        context = FaultVfs.windows()
+    with context as shim:
         for refusal in ("database", "journal"):
-            flavor = b"compiled/" if compiled else b""
+            flavor = b"native-vfs/" if native_vfs else b"compiled/" if compiled else b""
             allocation = ALLOCATION + b"/write-quota/" + flavor + refusal.encode("ascii")
             path = windows_container_path(parent, allocation)
 
@@ -549,7 +555,7 @@ def _write_quota_witness(parent: Path, *, compiled=False):
         result["compiled_bank"] = {
             "compiler": native.compiler,
             "module_sha256": hashlib.sha256(Path(native.__file__).read_bytes()).hexdigest(),
-            "storage_callbacks_native": False,
+            "storage_callbacks_native": native_vfs,
         }
     return result
 
@@ -983,6 +989,8 @@ def witness(root: Path) -> dict:
     cases.extend("write-quota-" + case["refusal"] for case in write_quota["cases"])
     compiled_quota = _write_quota_witness(parent, compiled=True)
     cases.extend("compiled-quota-" + case["refusal"] for case in compiled_quota["cases"])
+    native_write_vfs = _write_quota_witness(parent, compiled=True, native_vfs=True)
+    cases.extend("native-write-vfs-" + case["refusal"] for case in native_write_vfs["cases"])
     resource_recovery = _shared_resource_recovery_witness(parent)
     cases.extend(
         f"shared-resource-{case['role']}-{case['phase']}-{int(case['commit_executed'])}"
@@ -1028,6 +1036,7 @@ def witness(root: Path) -> dict:
         "vfs_faults": vfs_faults,
         "write_quota": write_quota,
         "compiled_write_quota": compiled_quota,
+        "native_write_vfs": native_write_vfs,
         "fixed_barrier": fixed_barrier,
         "space": space,
         "controls": controls,
