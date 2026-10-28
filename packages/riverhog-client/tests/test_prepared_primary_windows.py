@@ -327,3 +327,140 @@ def test_native_identity_admission_rejects_sparse_or_compressed_state(attributes
             api.information(1, path, directory=directory)
     else:
         assert api.information(1, path, directory=directory) == (1, 0, 42)
+
+
+@pytest.mark.parametrize("failed_handle", [1, 2, 20, 30])
+@pytest.mark.parametrize("delegated", [False, True])
+@pytest.mark.parametrize("failure_type", [PrimaryStateError, KeyboardInterrupt])
+def test_native_guard_uncertain_close_retains_unattempted_pins_without_retry(
+    failed_handle, delegated, failure_type
+):
+    guard = object.__new__(WindowsContainer)
+    guard._closed = False
+    guard._close_failure = None
+    handles = [1, 2, 20, 30]
+    guard._handles = [(handle, Path(str(handle)), False, (1, 0, handle)) for handle in handles]
+    live = set(handles)
+    attempts = []
+    failure = failure_type("injected close outcome uncertainty")
+
+    class API:
+        def close(self, handle):
+            attempts.append(handle)
+            if handle != failed_handle or delegated:
+                live.remove(handle)
+            if handle == failed_handle:
+                raise failure
+
+    guard._api = API()
+    with pytest.raises(failure_type) as first:
+        guard.close()
+    assert first.value is failure
+    assert guard.quarantined and guard._closed
+    index = handles.index(failed_handle)
+    assert attempts == list(reversed(handles[index:]))
+    assert [item[0] for item in guard._handles] == handles[: index + 1]
+    assert live == set(handles[:index]) | (set() if delegated else {failed_handle})
+    if failed_handle == 30:
+        assert 20 in live and 20 not in attempts
+    with pytest.raises(PrimaryStateError, match="construction owner is closed"):
+        guard.check_current()
+    before = list(attempts)
+    with pytest.raises(PrimaryStateError, match="quarantined") as repeated:
+        guard.close()
+    assert repeated.value.__cause__ is failure
+    assert attempts == before
+
+
+def test_native_guard_successful_close_releases_each_pin_once():
+    guard = object.__new__(WindowsContainer)
+    guard._closed = False
+    guard._close_failure = None
+    guard._handles = [(value, Path(str(value)), False, (1, 0, value)) for value in [1, 2, 20, 30]]
+    closed = []
+
+    class API:
+        def close(self, handle):
+            closed.append(handle)
+
+    guard._api = API()
+    guard.close()
+    guard.close()
+    assert closed == [30, 20, 2, 1]
+    assert guard._handles == [] and not guard.quarantined
+
+
+@pytest.mark.skipif(os.name != "nt", reason="requires native Windows ownership handles")
+@pytest.mark.parametrize("delegated", [False, True])
+def test_native_guard_failed_database_close_keeps_exclusive_owner_after_gc(tmp_path, delegated):
+    import subprocess
+
+    code = r"""
+import gc,json,runpy,sys
+from pathlib import Path
+from riverhog_client import PrimaryStateBusy,PrimaryStateError
+from riverhog_client._prepared_primary_windows_native import WindowsContainer,windows_container_path
+helpers=runpy.run_path(sys.argv[1])
+parent=Path(sys.argv[2])/"guard-private"
+helpers["_parent"](parent)
+path=windows_container_path(parent,b"uncertain metadata close")
+guard=WindowsContainer(path,initialize=True)
+owner_path=Path(str(path)+".owner")
+api=guard._api
+real_close=api.close
+database=guard._database
+owner=guard._owner
+attempts=[]
+delegated=sys.argv[3]=="True"
+def uncertain(handle):
+    attempts.append(handle)
+    if handle==database:
+        if delegated:real_close(handle)
+        raise PrimaryStateError("injected database handle close response loss")
+    real_close(handle)
+api.close=uncertain
+try:guard.close()
+except PrimaryStateError as exc:assert "response loss" in str(exc)
+else:raise AssertionError("uncertain data close reported complete")
+assert guard.quarantined and attempts==[database]
+assert owner not in attempts
+api.information(owner,owner_path,directory=False)
+try:guard.close()
+except PrimaryStateError as exc:assert "quarantined" in str(exc)
+else:raise AssertionError("quarantined metadata handle was retried")
+assert attempts==[database]
+# No Python owner object or test cleanup releases the unattempted native owner.
+api.close=real_close
+del guard
+gc.collect()
+probe=r'''
+import json,sys
+from pathlib import Path
+from riverhog_client import PrimaryStateBusy
+from riverhog_client._prepared_primary_windows_native import WindowsContainer
+try:WindowsContainer(Path(sys.argv[1]),initialize=False)
+except PrimaryStateBusy:print(json.dumps({"exclusive":True}))
+else:raise AssertionError("uncertain database close released the exclusive owner")
+'''
+import subprocess
+result=subprocess.run([sys.executable,"-I","-c",probe,str(path)],
+    capture_output=True,text=True,timeout=30)
+assert result.returncode==0,(result.stdout,result.stderr)
+assert json.loads(result.stdout)=={"exclusive":True}
+print(json.dumps({"passed":True,"delegated":delegated,"exclusive_owner_retained":True,
+    "close_attempts":len(attempts)}))
+"""
+    helper = Path(__file__).resolve().parents[3] / "tests/platform/windows_primary_process.py"
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(helper), str(tmp_path), str(delegated)],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "delegated": delegated,
+        "exclusive_owner_retained": True,
+        "close_attempts": 1,
+    }

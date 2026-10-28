@@ -395,6 +395,7 @@ class WindowsContainer:
         self.path = Path(path)
         self._handles: list[tuple[int, Path, bool, tuple[int, int, int]]] = []
         self._journal_identity: tuple[int, int, int] | None = None
+        self._close_failure: BaseException | None = None
         self._closed = False
         self._validate_path()
         try:
@@ -507,14 +508,26 @@ class WindowsContainer:
         finally:
             self._api.close(handle)
 
+    @property
+    def quarantined(self) -> bool:
+        return self._close_failure is not None
+
     def close(self) -> None:
+        """Stop at an uncertain close; retain unattempted pins until process exit."""
         self._closed = True
-        failures = []
+        if self._close_failure is not None:
+            raise PrimaryStateError(
+                "prepared-primary native teardown is quarantined until process exit"
+            ) from self._close_failure
         while self._handles:
-            handle, _path, _directory, _identity = self._handles.pop()
             try:
+                handle, _path, _directory, _identity = self._handles[-1]
                 self._api.close(handle)
-            except PrimaryStateError as exc:
-                failures.append(exc)
-        if failures:
-            raise failures[0]
+                self._handles.pop()
+            except BaseException as exc:
+                # A failed response or interruption does not prove that the OS
+                # handle stayed open. Never retry that integer or release later
+                # pins. In particular, a database-close failure cannot release
+                # the exclusive owner which has not yet been attempted.
+                self._close_failure = exc
+                raise
