@@ -181,6 +181,30 @@ enum rh_refusal rh_callback_sleep(rh_callback_quota *calls, rh_quota *quota, int
     bank->sleep_charged += rounded;
     return RH_ALLOWED;
 }
+enum rh_refusal rh_callback_buffer(
+    rh_callback_quota *calls, rh_quota *quota, int64_t requested, int can_error
+) {
+    int recovery = quota->recovering;
+    rh_callback_bank *bank = recovery ? &calls->recovery : &calls->forward;
+    enum rh_refusal result = rh_callback_admit(calls, quota, can_error);
+    if (result != RH_ALLOWED) return result;
+    if (requested < 0 || requested > INT_MAX) {
+        calls->pending_error = !can_error;
+        return rh_record(quota, RH_BUFFER_RANGE, RH_OTHER, requested, 0, recovery);
+    }
+    if ((uint64_t)requested > bank->buffer_limit - bank->buffer_charged) {
+        calls->pending_error = !can_error;
+        return rh_record(quota, RH_BUFFER_GRANT, RH_OTHER, requested, 0, recovery);
+    }
+    /* Prepay the entire output capacity, not just a successful return length.
+     * Conversion/formatting scratch and Qio read/write buffers have other owners.
+     */
+    bank->buffer_charged += (uint64_t)requested;
+    return RH_ALLOWED;
+}
+void rh_forbid_buffer_range(rh_quota *quota, int64_t requested) {
+    (void)rh_record(quota, RH_BUFFER_RANGE, RH_OTHER, requested, 0, quota->recovering);
+}
 int rh_callback_open(rh_callback_quota *calls, rh_quota *quota) {
     int recovery = quota->recovering;
     rh_callback_bank *bank = recovery ? &calls->recovery : &calls->forward;
@@ -389,6 +413,8 @@ const char *rh_reason(enum rh_refusal reason) {
         case RH_NATIVE_SLEEP: return "native internal sleep grant";
         case RH_NATIVE_CLOSE: return "native close credit";
         case RH_NATIVE_RANGE: return "invalid native filesystem request";
+        case RH_BUFFER_RANGE: return "invalid VFS buffer range";
+        case RH_BUFFER_GRANT: return "VFS output-buffer grant";
 
         default: return "allowed";
     }

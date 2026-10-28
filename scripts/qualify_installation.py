@@ -1929,6 +1929,7 @@ sleep_writes=native.WriteQuota(sleep_limits,sleep_limits)
 sleep_calls=native.CallbackQuota(
     sleep_writes,(4,1000),(4,1000),
     work=native.NativeWorkQuota(sleep_writes, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+    buffers=(1 << 40, 1 << 40),
 )
 assert sleep_calls.admit_sleep(1)
 assert not sleep_calls.admit_sleep(1)
@@ -1969,12 +1970,28 @@ except ValueError:
     pass
 else:
     raise AssertionError("consumed native close credit was reusable")
+output_writes=native.WriteQuota(sleep_limits,sleep_limits)
+output_calls=native.CallbackQuota(
+    output_writes,(8,0),(8,0),
+    work=native.NativeWorkQuota(output_writes,(0,0),(0,0)),
+    buffers=(7,11),
+)
+assert output_calls.admit_buffer(7,False)
+assert not output_calls.admit_buffer(1,False)
+assert not output_calls.admit_buffer(11,True)
+assert output_calls.admit_buffer(11,True)
+assert not output_calls.admit_buffer(1,True)
+output_report=output_calls.report()
+assert output_report["forward"]["output_buffer_bytes_charged"]==7
+assert output_report["recovery"]["output_buffer_bytes_charged"]==11
+assert output_writes.report()["first_refusal"]["reason"]=="VFS output-buffer grant"
 vfs_limits=(4096,128,1048576,1048576,8388608,1024)
 vfs_quota=native.WriteQuota(vfs_limits,vfs_limits)
 vfs_reads=native.ReadQuota(vfs_quota,(8388608,1024),(8388608,1024))
 vfs_callbacks=native.CallbackQuota(
     vfs_quota,(8192, 0),(8192, 0),
     work=native.NativeWorkQuota(vfs_quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+    buffers=(1 << 40, 1 << 40),
 )
 from riverhog_client._prepared_primary_runtime import _admit_process_budget, _qualified_runtime
 try:
@@ -2038,7 +2055,8 @@ try:
             stopped_reads=native.ReadQuota(stopped_writes,(8388608,1024),(8388608,1024))
             stopped_work=native.NativeWorkQuota(stopped_writes,(0,0),(0,0))
             stopped_callbacks=native.CallbackQuota(
-                stopped_writes,(32,0),(32,0),stopped_work
+                stopped_writes,(32,0),(32,0),stopped_work,
+                buffers=(1 << 40, 1 << 40),
             )
             vfs.arm(stopped_reads,stopped_callbacks)
             try:
@@ -2052,9 +2070,32 @@ try:
             stopped_reason=stopped_writes.report()["first_refusal"]["reason"]
             assert stopped_reason=="native filesystem attempt grant"
             assert all(not any(bank.values()) for bank in stopped_work.report().values())
+            output_stopped=native.WriteQuota(vfs_limits,vfs_limits)
+            output_reads=native.ReadQuota(output_stopped,(8388608,1024),(8388608,1024))
+            output_work=native.NativeWorkQuota(output_stopped,(1<<40,1<<60),(1<<40,1<<60))
+            output_empty=native.CallbackQuota(
+                output_stopped,(32,0),(32,0),output_work,buffers=(0,0),
+            )
+            vfs.arm(output_reads,output_empty)
+            try:
+                unexpected=sqlite3.connect(uri,uri=True)
+            except sqlite3.Error as exc:
+                assert exc.sqlite_errorcode==sqlite3.SQLITE_FULL
+            else:
+                unexpected.close()
+                raise AssertionError("native connection bypassed an empty output-byte grant")
+            assert output_stopped.recovering and vfs.open_files==0 and not vfs.quarantined
+            assert output_stopped.report()["first_refusal"]["reason"]=="VFS output-buffer grant"
+            assert all(not any(bank.values()) for bank in output_work.report().values())
+            assert all(
+                not bank["output_buffer_bytes_charged"]
+                for key,bank in output_empty.report().items()
+                if key in ("forward","recovery")
+            )
             vfs.unbind()
             assert not vfs.bound and not vfs.quarantined
             assert all(not any(bank.values()) for bank in stopped_work.report().values())
+            assert all(not any(bank.values()) for bank in output_work.report().values())
             assert kernel.CloseHandle(handle)
             assert (path.read_bytes(),journal.read_bytes())==original_files
         moved=path.with_name("primary-moved.sqlite3")
@@ -2085,6 +2126,11 @@ print(json.dumps({"compiler":native.compiler,
     "vfs_read_calls":read_report["read_calls"],"vfs_read_bytes":read_report["read_bytes"],
     "sqlite_heap_limit_bytes":heap_report["heap_limit_bytes"],
     "sqlite_heap_peak_bytes":heap_report["sqlite_heap_peak_bytes"],
+    "sqlite_logger_disabled_at_admission":heap_report["logger_disabled_at_admission"],
+    "callback_buffer_forward_bytes":output_report["forward"]["output_buffer_bytes_charged"],
+    "callback_buffer_recovery_bytes":output_report["recovery"]["output_buffer_bytes_charged"],
+    "vfs_auxiliary_buffer_bytes":callback_report["forward"]["output_buffer_bytes_charged"],
+    "vfs_buffer_refusal_verified":True,
     "callback_sleep_forward_microseconds":sleep_report["forward"]["sleep_microseconds_charged"],
     "callback_sleep_recovery_microseconds":sleep_report["recovery"]["sleep_microseconds_charged"],
     "callback_sleep_refusal_verified":sleep_refused,
@@ -2178,6 +2224,14 @@ print(json.dumps({"compiler":native.compiler,
         or proof.get("vfs_native_work_refusal_verified") is not True
         or proof.get("vfs_native_binding_close_after_rearm_verified") is not True
         or proof.get("runtime_binary_admission_verified") is not True
+        or proof.get("sqlite_logger_disabled_at_admission") is not True
+        or type(proof.get("callback_buffer_forward_bytes")) is not int
+        or proof["callback_buffer_forward_bytes"] != 7
+        or type(proof.get("callback_buffer_recovery_bytes")) is not int
+        or proof["callback_buffer_recovery_bytes"] != 11
+        or type(proof.get("vfs_auxiliary_buffer_bytes")) is not int
+        or proof["vfs_auxiliary_buffer_bytes"] <= 0
+        or proof.get("vfs_buffer_refusal_verified") is not True
         or type(proof.get("sqlite_heap_limit_bytes")) is not int
         or proof.get("sqlite_heap_limit_bytes") != 67108864
         or type(proof.get("sqlite_heap_peak_bytes")) is not int

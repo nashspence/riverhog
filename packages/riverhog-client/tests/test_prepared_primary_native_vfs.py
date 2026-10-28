@@ -49,6 +49,7 @@ def callbacks(native, quota, *, forward=262144, recovery=262144, forward_sleep=0
         (forward, forward_sleep),
         (recovery, recovery_sleep),
         work=native.NativeWorkQuota(quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+        buffers=(1 << 40, 1 << 40),
     )
 
 
@@ -1174,6 +1175,7 @@ else:
         calls=native.CallbackQuota(
             writes,(128, 0),(128, 0),
             work=native.NativeWorkQuota(writes, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+            buffers=(1 << 40, 1 << 40),
         )
         try:native.WriteVfs(source,reads,calls,owner)
         except RuntimeError as exc:assert "heap owner" in str(exc)
@@ -1430,6 +1432,7 @@ reads = native.ReadQuota(quota, (1048576, 65536), (1048576, 65536))
 calls = native.CallbackQuota(
     quota, (262144, 0), (262144, 0),
     work=native.NativeWorkQuota(quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+    buffers=(1 << 40, 1 << 40),
 )
 gate = native.WriteVfs(source, reads, calls, heap)
 path = Path(sys.argv[2])
@@ -1483,6 +1486,7 @@ with helpers.native_file(path, gate, binding=False) as database:
         replacement_calls = native.CallbackQuota(
             replacement, (262144, 0), (262144, 0),
             work=native.NativeWorkQuota(replacement, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+            buffers=(1 << 40, 1 << 40),
         )
         for operation in (
             lambda: gate.arm(reads, calls),
@@ -1593,6 +1597,7 @@ def setup(forward, recovery):
     calls = native.CallbackQuota(
         quota, (32, forward), (32, recovery),
         work=native.NativeWorkQuota(quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+        buffers=(1 << 40, 1 << 40),
     )
     gate = native.WriteVfs(source, helpers.reads(native, quota), calls, heap)
     vfs = library.sqlite3_vfs_find(gate.name.encode("ascii"))
@@ -2337,15 +2342,33 @@ def test_native_attached_work_bank_rejects_manual_mutation_and_foreign_registrat
     native, source = runtime()
     writes = native.WriteQuota(grant(), grant())
     work = native.NativeWorkQuota(writes, (0, 0), (0, 0))
-    first = native.CallbackQuota(writes, (32, 0), (32, 0), work)
-    alias = native.CallbackQuota(writes, (32, 0), (32, 0), work)
+    first = native.CallbackQuota(
+        writes,
+        (32, 0),
+        (32, 0),
+        work,
+        buffers=(1 << 40, 1 << 40),
+    )
+    alias = native.CallbackQuota(
+        writes,
+        (32, 0),
+        (32, 0),
+        work,
+        buffers=(1 << 40, 1 << 40),
+    )
     gate = native.WriteVfs(source, reads(native, writes), first, heap(native, source))
     before = work.report()
     try:
         for action in (
             lambda: work.admit((0, 0)),
             lambda: work.acquire((0, 0), (1, 0)),
-            lambda: native.CallbackQuota(writes, (32, 0), (32, 0), work),
+            lambda: native.CallbackQuota(
+                writes,
+                (32, 0),
+                (32, 0),
+                work,
+                buffers=(1 << 40, 1 << 40),
+            ),
             lambda: native.WriteVfs(source, reads(native, writes), alias, heap(native, source)),
         ):
             with pytest.raises(RuntimeError, match="attached native work"):
@@ -2474,7 +2497,9 @@ def observer(name):
 
 writes=native.WriteQuota(helpers.grant(),helpers.grant())
 work=native.NativeWorkQuota(writes,forward,recovery)
-calls=native.CallbackQuota(writes,(128,0),(128,0),work)
+calls=native.CallbackQuota(writes,(128,0),(128,0),work,
+    buffers=(1 << 40, 1 << 40),
+)
 library=FaultVfs.windows().library
 vfs=library.sqlite3_vfs_find(gate.name.encode())
 raw_name=c.create_string_buffer(str(path.resolve()).encode())
@@ -2605,7 +2630,7 @@ print(json.dumps({"passed":True,"scenario":scenario,"closes_prepaid":True,"origi
         "original_exact": True,
     }
     assert (path.read_bytes(), journal.read_bytes()) == before
-    with sqlite3.connect(path) as cold:
+    with closing(sqlite3.connect(path)) as cold:
         assert cold.execute("SELECT body FROM original").fetchone() == (b"exact original",)
     assert (path.read_bytes(), journal.read_bytes()) == before
 
@@ -2678,7 +2703,9 @@ def handles():
 def arm(forward,recovery):
     writes=native.WriteQuota(helpers.grant(),helpers.grant())
     work=native.NativeWorkQuota(writes,forward,recovery)
-    callbacks=native.CallbackQuota(writes,(128,0),(128,0),work)
+    callbacks=native.CallbackQuota(writes,(128,0),(128,0),work,
+        buffers=(1 << 40, 1 << 40),
+    )
     gate.arm(helpers.reads(native,writes),callbacks)
     return writes,callbacks
 
@@ -2793,7 +2820,7 @@ print(json.dumps({"passed":True,"scenario":scenario,"pins_released":True,"origin
         "original_exact": True,
     }
     assert (path.read_bytes(), journal.read_bytes() if journal.exists() else None) == original
-    with sqlite3.connect(path) as cold:
+    with closing(sqlite3.connect(path)) as cold:
         assert cold.execute("SELECT body FROM original").fetchone() == (b"exact original",)
 
 
@@ -2813,6 +2840,18 @@ dll=c.CDLL(identity["sqlite_library_path"])
 dll.sqlite3_hard_heap_limit64.argtypes=[c.c_longlong]
 dll.sqlite3_hard_heap_limit64.restype=c.c_longlong
 assert dll.sqlite3_hard_heap_limit64(-1)==0
+observed_logs=[]
+logger_type=c.CFUNCTYPE(None,c.c_void_p,c.c_int,c.c_char_p)
+@logger_type
+def logger(context,code,message):
+    observed_logs.append((code,message))
+dll.sqlite3_config.argtypes=[c.c_int]
+dll.sqlite3_config.restype=c.c_int
+dll.sqlite3_log.argtypes=[c.c_int,c.c_char_p]
+dll.sqlite3_log.restype=None
+assert dll.sqlite3_config(16,logger,c.c_void_p())==sqlite3.SQLITE_OK
+dll.sqlite3_log(1,b"before application admission")
+assert len(observed_logs)==1
 connection=sqlite3.connect(":memory:")
 try:
     observed=connection.execute("SELECT sqlite_source_id()").fetchone()[0]
@@ -2832,6 +2871,9 @@ if scenario!="qualified":
     else:
         raise AssertionError("unqualified runtime changed global resource policy")
     assert dll.sqlite3_hard_heap_limit64(-1)==0
+    before=len(observed_logs)
+    dll.sqlite3_log(1,b"rejected binary retains existing logger")
+    assert len(observed_logs)==before+1
     try:
         native.current_process_budget()
     except RuntimeError as exc:
@@ -2845,6 +2887,10 @@ assert dll.sqlite3_hard_heap_limit64(-1)==0
 owner=runtime._admit_process_budget(64*1024*1024)
 assert native.current_process_budget() is owner
 assert owner.report()["heap_limit_bytes"]==64*1024*1024
+assert owner.report()["logger_disabled_at_admission"] is True
+before=len(observed_logs)
+dll.sqlite3_log(1,b"owned admission cannot invoke a foreign logger")
+assert len(observed_logs)==before
 assert owner.retry_report()["state"]=="unconfigured"
 try:
     runtime._admit_process_budget(128*1024*1024)
@@ -2867,3 +2913,240 @@ print(json.dumps({"passed":True,"scenario":scenario,"binary_verified_before_heap
         "scenario": scenario,
         "binary_verified_before_heap": True,
     }
+
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "random",
+        "error",
+        "fullpath",
+        "recovery_random",
+        "recovery_error",
+        "recovery_fullpath",
+        "zero_random",
+        "null_random",
+        "negative_error",
+        "zero_fullpath",
+        "long_access",
+        "long_fullpath",
+        "long_binding",
+    ],
+)
+def test_native_output_buffers_and_bounded_paths_preserve_originals_and_paid_closes(
+    tmp_path, scenario
+):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    path = tmp_path / "primary.sqlite3"
+    connection = sqlite3.connect(path)
+    try:
+        connection.execute("PRAGMA journal_mode=PERSIST")
+        connection.execute("PRAGMA synchronous=EXTRA")
+        connection.execute("CREATE TABLE original(body BLOB NOT NULL)")
+        connection.execute("INSERT INTO original VALUES (?)", (b"exact original",))
+        connection.commit()
+    finally:
+        connection.close()
+    journal = path.with_name(path.name + "-journal")
+    original = (path.read_bytes(), journal.read_bytes())
+    code = r"""
+import ctypes as c, importlib.util, json, sqlite3, sys
+from contextlib import ExitStack
+from pathlib import Path
+sys.path.insert(0,sys.argv[1])
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_windows_native import _WindowsAPI
+from tests.support.sqlite_vfs_faults import FaultVfs, windows_system_call
+spec=importlib.util.spec_from_file_location(
+    "native_output_helpers",
+    Path(sys.argv[1])/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py",
+)
+helpers=importlib.util.module_from_spec(spec);sys.modules[spec.name]=helpers
+spec.loader.exec_module(helpers)
+path=Path(sys.argv[2]);scenario=sys.argv[3]
+journal=path.with_name(path.name+"-journal")
+original=(path.read_bytes(),journal.read_bytes())
+source=native.runtime_identity()["sqlite_source_id"]
+heap=_admit_process_budget(64*1024*1024)
+initial=native.WriteQuota(helpers.grant(),helpers.grant())
+initial_calls=helpers.callbacks(native,initial)
+gate=native.WriteVfs(source,helpers.reads(native,initial),initial_calls,heap)
+library=FaultVfs.windows().library
+vfs=library.sqlite3_vfs_find(gate.name.encode("ascii"))
+api=_WindowsAPI();handle=api.open(path)
+original_journal=helpers.journal_identity(path,api)
+bad_name=c.create_string_buffer(b"x"*(vfs.contents.pathname_bytes+9))
+name=c.create_string_buffer(str(path).encode("utf-8"))
+output=c.create_string_buffer(b"?"*(vfs.contents.pathname_bytes+1))
+if scenario=="long_binding":
+    kernel=c.WinDLL("kernel32",use_last_error=True)
+    kernel.GetCurrentProcess.restype=c.c_void_p
+    kernel.GetProcessHandleCount.argtypes=[c.c_void_p,c.POINTER(c.c_ulong)]
+    kernel.GetProcessHandleCount.restype=c.c_int
+    def handles():
+        value=c.c_ulong()
+        assert kernel.GetProcessHandleCount(kernel.GetCurrentProcess(),c.byref(value))
+        return value.value
+    before=handles()
+    try:
+        gate.bind(bad_name.value.decode("ascii"),handle,original_journal)
+    except RuntimeError:
+        pass
+    else:
+        raise AssertionError("oversized binding path delegated native work")
+    assert handles()==before and not gate.bound and not gate.quarantined
+    assert initial.report()["first_refusal"]["reason"]=="invalid VFS buffer range"
+    assert all(not any(bank.values()) for bank in initial_calls.work.report().values())
+else:
+    gate.bind(str(path),handle,original_journal)
+    helpers.admit_fixture_retries(gate)
+    with helpers.native_file(path,gate,binding=False,create=False) as opened:
+        assert opened[0]==sqlite3.SQLITE_OK
+        raw,methods=opened[1],opened[2]
+        method=scenario.removeprefix("recovery_")
+        amount=len(output) if method=="fullpath" else 64
+        regular=method in ("random","error","fullpath")
+        recovering=scenario.startswith("recovery_")
+        grants=(amount-1,amount-1) if recovering else (amount-1,amount)
+        if not regular:
+            grants=(4096,4096)
+        writes=native.WriteQuota(helpers.grant(),helpers.grant())
+        work=native.NativeWorkQuota(writes,(1<<40,1<<60),(1<<40,1<<60))
+        calls=native.CallbackQuota(
+            writes,(128,0),(128,0),work,buffers=grants,
+        )
+        gate.arm(helpers.reads(native,writes),calls)
+        del initial,initial_calls
+        if recovering:writes.failed()
+        observed={}
+        hooks={
+            b"GetSystemTime":c.WINFUNCTYPE(None,c.c_void_p,use_last_error=True),
+            b"GetCurrentProcessId":c.WINFUNCTYPE(c.c_ulong),
+            b"GetTickCount":c.WINFUNCTYPE(c.c_ulong),
+            b"QueryPerformanceCounter":c.WINFUNCTYPE(c.c_int,c.c_void_p,use_last_error=True),
+            b"GetLastError":c.WINFUNCTYPE(c.c_ulong),
+            b"FormatMessageW":c.WINFUNCTYPE(
+                c.c_ulong,c.c_ulong,c.c_void_p,c.c_ulong,c.c_ulong,
+                c.c_void_p,c.c_ulong,c.c_void_p,use_last_error=True,
+            ),
+            b"GetFullPathNameW":c.WINFUNCTYPE(
+                c.c_ulong,c.c_wchar_p,c.c_ulong,c.c_void_p,c.c_void_p,use_last_error=True,
+            ),
+            b"GetFileAttributesExW":c.WINFUNCTYPE(
+                c.c_int,c.c_wchar_p,c.c_int,c.c_void_p,use_last_error=True,
+            ),
+            b"CloseHandle":c.WINFUNCTYPE(c.c_int,c.c_void_p,use_last_error=True),
+        }
+        def observer(name):
+            def observe(original,*args):
+                observed[name]=observed.get(name,0)+1
+                return 2 if name==b"GetLastError" else original(*args)
+            return observe
+        def surface():
+            value=c.c_double(-7)
+            assert vfs.contents.time(vfs,c.byref(value))==sqlite3.SQLITE_FULL
+            assert value.value==-7 and not calls.report()["pending_error"]
+        def invoke():
+            if method=="random":return vfs.contents.randomness(vfs,amount,output)
+            if method=="error":return vfs.contents.error(vfs,amount,output)
+            return vfs.contents.pathname(vfs,name,amount,output)
+        with ExitStack() as stack:
+            for hook,kind in hooks.items():
+                stack.enter_context(windows_system_call(hook,kind,observer(hook)))
+            before=output.raw
+            if regular:
+                refused=invoke()
+                assert refused==(sqlite3.SQLITE_FULL if method=="fullpath" else 0)
+                assert not observed and writes.recovering
+                assert writes.report()["first_refusal"]["reason"]=="VFS output-buffer grant"
+                assert all(
+                    not calls.report()[bank]["output_buffer_bytes_charged"]
+                    for bank in ("forward","recovery")
+                )
+                assert output.raw==(b"\0"+before[1:] if method=="error" else before)
+                assert all(not any(bank.values()) for bank in work.report().values())
+                if calls.report()["pending_error"]:surface()
+                if not recovering:
+                    result=invoke()
+                    if method=="random":
+                        assert 0<result<=amount and observed[b"GetSystemTime"]==1
+                        assert observed[b"GetCurrentProcessId"]==1
+                        assert observed[b"GetTickCount"]==1
+                        assert observed[b"QueryPerformanceCounter"]==1
+                    elif method=="error":
+                        assert result==2 and observed[b"FormatMessageW"]==1
+                    else:
+                        assert result==sqlite3.SQLITE_OK and observed[b"GetFullPathNameW"]<=2
+                    assert calls.report()["recovery"]["output_buffer_bytes_charged"]==amount
+                    snapshot=dict(observed);paid=work.report()
+                    assert invoke()==(sqlite3.SQLITE_FULL if method=="fullpath" else 0)
+                    assert observed==snapshot and work.report()==paid
+                    if calls.report()["pending_error"]:surface()
+            elif scenario=="zero_random":
+                assert vfs.contents.randomness(vfs,0,None)==0
+                assert not observed and not writes.recovering
+                assert calls.report()["forward"]["output_buffer_bytes_charged"]==0
+            else:
+                if scenario=="null_random":
+                    assert vfs.contents.randomness(vfs,7,None)==0
+                elif scenario=="negative_error":
+                    assert vfs.contents.error(vfs,-1,output)==0
+                elif scenario=="zero_fullpath":
+                    assert vfs.contents.pathname(vfs,name,0,output)==sqlite3.SQLITE_FULL
+                elif scenario=="long_access":
+                    value=c.c_int(-7)
+                    assert vfs.contents.access(vfs,bad_name,0,c.byref(value))==sqlite3.SQLITE_FULL
+                    assert value.value==-7
+                else:
+                    assert scenario=="long_fullpath"
+                    assert vfs.contents.pathname(
+                        vfs,bad_name,len(output),output
+                    )==sqlite3.SQLITE_FULL
+                assert not observed and output.raw==before
+                assert writes.report()["first_refusal"]["reason"]=="invalid VFS buffer range"
+                assert all(not any(bank.values()) for bank in work.report().values())
+                if calls.report()["pending_error"]:surface()
+            paid=work.report()
+            charged=calls.report()
+            assert methods.contents.close(raw)==sqlite3.SQLITE_OK
+            assert observed[b"CloseHandle"]==1
+            assert work.report()==paid and gate.open_files==0 and not gate.quarantined
+            for bank in ("forward","recovery"):
+                assert calls.report()[bank]["output_buffer_bytes_charged"]==(
+                    charged[bank]["output_buffer_bytes_charged"]
+                )
+        gate.unbind()
+        assert work.report()==paid and not gate.bound and not gate.quarantined
+gate.close();api.close(handle)
+assert (path.read_bytes(),journal.read_bytes())==original
+print(json.dumps({"passed":True,"scenario":scenario,"original_exact":True,"pins_released":True}))
+"""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(path),
+            scenario,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "scenario": scenario,
+        "original_exact": True,
+        "pins_released": True,
+    }
+    assert (path.read_bytes(), journal.read_bytes()) == original
+    with closing(sqlite3.connect(path)) as cold:
+        assert cold.execute("SELECT body FROM original").fetchone() == (b"exact original",)

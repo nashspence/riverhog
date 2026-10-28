@@ -41,6 +41,7 @@ class NativeWriteShim:
             (262144, 0),
             (262144, 0),
             work=native.NativeWorkQuota(self._initial, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+            buffers=(1 << 40, 1 << 40),
         )
         self._active_callbacks = self._initial_callbacks
         self._native = native.WriteVfs(
@@ -118,6 +119,7 @@ class NativeWriteShim:
             (4 * forward.calls, 0),
             (4 * recovery.calls, 0),
             work=native.NativeWorkQuota(quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+            buffers=(1 << 40, 1 << 40),
         )
         self.heap.report()
         self._native.arm(reads, callbacks)

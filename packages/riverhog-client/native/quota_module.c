@@ -523,16 +523,16 @@ static int callback_limits(PyObject *values, rh_callback_bank *bank) {
 static int callback_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     CallbackQuota *self = (CallbackQuota *)object;
     WriteQuota *quota;
-    PyObject *forward, *recovery;
+    PyObject *forward, *recovery, *buffers;
     NativeWorkQuota *work;
-    static char *keywords[] = {"writes", "forward", "recovery", "work", NULL};
+    static char *keywords[] = {"writes", "forward", "recovery", "work", "buffers", NULL};
     if (self->initialized) {
         PyErr_SetString(PyExc_RuntimeError, "callback quota cannot be reinitialized");
         return -1;
     }
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!OOO!", keywords,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!OOO!O", keywords,
                                     &quota_type, &quota, &forward, &recovery,
-                                    &native_work_type, &work)) return -1;
+                                    &native_work_type, &work, &buffers)) return -1;
     self->initialized = 1;
     if (!native_work_ready(work, 1)) return -1;
     if (work->quota != (PyObject *)quota) {
@@ -540,7 +540,9 @@ static int callback_init(PyObject *object, PyObject *args, PyObject *kwargs) {
         return -1;
     }
     if (!ready(quota) || callback_limits(forward, &self->calls.forward) < 0 ||
-        callback_limits(recovery, &self->calls.recovery) < 0) return -1;
+        callback_limits(recovery, &self->calls.recovery) < 0 ||
+        !retry_pair(buffers, &self->calls.forward.buffer_limit,
+                    &self->calls.recovery.buffer_limit, 0)) return -1;
     self->quota = Py_NewRef((PyObject *)quota);
     self->work = (NativeWorkQuota *)Py_NewRef((PyObject *)work);
     return 0;
@@ -562,6 +564,21 @@ static PyObject *callback_admit(PyObject *object, PyObject *args) {
     }
     return PyBool_FromLong(rh_callback_admit(&self->calls, &((WriteQuota *)self->quota)->quota,
                                             can_error == Py_True) == RH_ALLOWED);
+}
+static PyObject *callback_buffer(PyObject *object, PyObject *args) {
+    CallbackQuota *self = (CallbackQuota *)object;
+    PyObject *value, *can_error = Py_True;
+    long long requested;
+    if (!callback_ready(self, 1)) return NULL;
+    if (!PyArg_ParseTuple(args, "O|O", &value, &can_error)) return NULL;
+    if (!PyLong_CheckExact(value) || !PyBool_Check(can_error)) {
+        PyErr_SetString(PyExc_TypeError, "buffer admission requires exact integer bytes and bool capability");
+        return NULL;
+    }
+    requested = PyLong_AsLongLong(value);
+    if (PyErr_Occurred()) return NULL;
+    return PyBool_FromLong(rh_callback_buffer(&self->calls, &((WriteQuota *)self->quota)->quota,
+        (int64_t)requested, can_error == Py_True) == RH_ALLOWED);
 }
 static PyObject *callback_sleep(PyObject *object, PyObject *value) {
     CallbackQuota *self = (CallbackQuota *)object;
@@ -611,17 +628,20 @@ static PyObject *callback_report(PyObject *object, PyObject *unused) {
     CallbackQuota *self = (CallbackQuota *)object;
     (void)unused;
     if (!callback_ready(self, 0)) return NULL;
-    return Py_BuildValue("{s:{s:K,s:K},s:{s:K,s:K},s:K,s:K,s:O}",
+    return Py_BuildValue("{s:{s:K,s:K,s:K},s:{s:K,s:K,s:K},s:K,s:K,s:O}",
         "forward", "callback_slots_charged", (unsigned long long)self->calls.forward.charged,
         "sleep_microseconds_charged", (unsigned long long)self->calls.forward.sleep_charged,
+        "output_buffer_bytes_charged", (unsigned long long)self->calls.forward.buffer_charged,
         "recovery", "callback_slots_charged", (unsigned long long)self->calls.recovery.charged,
         "sleep_microseconds_charged", (unsigned long long)self->calls.recovery.sleep_charged,
+        "output_buffer_bytes_charged", (unsigned long long)self->calls.recovery.buffer_charged,
         "reserved_recovery_closes", (unsigned long long)self->calls.forward_files,
         "prepaid_recovery_closes", (unsigned long long)self->calls.recovery_files,
         "pending_error", self->calls.pending_error ? Py_True : Py_False);
 }
 static PyMethodDef callback_methods[] = {
     {"admit", callback_admit, METH_VARARGS, "Charge a callback outside a registered VFS."},
+    {"admit_buffer", callback_buffer, METH_VARARGS, "Precharge full VFS output capacity outside registration."},
     {"admit_sleep", callback_sleep, METH_O, "Precharge a complete rounded Win32 VFS sleep outside registration."},
     {"opened", callback_open, METH_NOARGS, "Prepay an open and reserve its close."},
     {"closed", callback_close, METH_O, "Consume an admitted file's prepaid close."},
@@ -868,10 +888,11 @@ static PyObject *heap_report(PyObject *object, PyObject *unused) {
             "SQLite process heap grant, accounting or default-cache policy changed");
         return NULL;
     }
-    return Py_BuildValue("{s:L,s:L,s:L,s:L}",
+    return Py_BuildValue("{s:L,s:L,s:L,s:L,s:O}",
         "heap_limit_bytes", (long long)rh_sqlite_heap_limit(self->heap),
         "sqlite_heap_bytes", (long long)current, "sqlite_heap_peak_bytes", (long long)peak,
-        "sqlite_malloc_count", (long long)allocations);
+        "sqlite_malloc_count", (long long)allocations,
+        "logger_disabled_at_admission", Py_True);
 }
 static PyObject *heap_increase(PyObject *object, PyObject *value) {
     SqliteProcessBudget *self = (SqliteProcessBudget *)object;

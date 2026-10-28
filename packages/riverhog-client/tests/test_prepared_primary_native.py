@@ -353,13 +353,22 @@ def test_native_callback_limits_are_explicit_positive_signed_integers(value, ban
     limits = {"forward": (16, 0), "recovery": (32, 0)}
     limits[bank] = (value, 0)
     with pytest.raises((TypeError, ValueError, OverflowError)):
-        native.CallbackQuota(writes, **limits, work=native.NativeWorkQuota(writes, (0, 0), (0, 0)))
+        native.CallbackQuota(
+            writes,
+            **limits,
+            work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+            buffers=(0, 0),
+        )
 
 
 def test_native_callback_close_reservation_survives_exhaustion_and_failure():
     writes = native.WriteQuota(grant(), grant())
     calls = native.CallbackQuota(
-        writes, (2, 0), (2, 0), work=native.NativeWorkQuota(writes, (0, 0), (0, 0))
+        writes,
+        (2, 0),
+        (2, 0),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
     )
     assert calls.opened() is True
     assert calls.report()["forward"]["callback_slots_charged"] == 2
@@ -380,7 +389,11 @@ def test_native_callback_close_reservation_survives_exhaustion_and_failure():
 def test_native_callback_abandoned_open_keeps_its_charge_and_releases_only_close_reserve():
     writes = native.WriteQuota(grant(), grant())
     calls = native.CallbackQuota(
-        writes, (4, 0), (1, 0), work=native.NativeWorkQuota(writes, (0, 0), (0, 0))
+        writes,
+        (4, 0),
+        (1, 0),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
     )
     assert calls.opened() is True
     calls.abandoned(True)
@@ -395,7 +408,11 @@ def test_native_callback_abandoned_open_keeps_its_charge_and_releases_only_close
 def test_native_callback_infallible_refusal_must_return_error_before_recovery_delegation():
     writes = native.WriteQuota(grant(), grant())
     calls = native.CallbackQuota(
-        writes, (1, 0), (4, 0), work=native.NativeWorkQuota(writes, (0, 0), (0, 0))
+        writes,
+        (1, 0),
+        (4, 0),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
     )
     assert calls.admit()
     assert not calls.admit(False)
@@ -412,7 +429,11 @@ def test_native_callback_infallible_refusal_must_return_error_before_recovery_de
 def test_native_callback_recovery_open_prepays_close_and_never_refunds_failed_native_work():
     writes = native.WriteQuota(grant(), grant())
     calls = native.CallbackQuota(
-        writes, (4, 0), (2, 0), work=native.NativeWorkQuota(writes, (0, 0), (0, 0))
+        writes,
+        (4, 0),
+        (2, 0),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
     )
     writes.failed()
     assert calls.opened() is False
@@ -426,7 +447,11 @@ def test_native_callback_recovery_open_prepays_close_and_never_refunds_failed_na
 def test_native_callback_banks_are_sealed_and_reject_uninitialized_authority():
     writes = native.WriteQuota(grant(), grant())
     calls = native.CallbackQuota(
-        writes, (4, 0), (4, 0), work=native.NativeWorkQuota(writes, (0, 0), (0, 0))
+        writes,
+        (4, 0),
+        (4, 0),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
     )
     with pytest.raises(RuntimeError, match="reinitialized"):
         calls.__init__(writes, (4, 0), (4, 0))
@@ -447,6 +472,7 @@ def test_native_callback_banks_are_sealed_and_reject_uninitialized_authority():
             work=native.NativeWorkQuota(
                 native.WriteQuota.__new__(native.WriteQuota), (0, 0), (0, 0)
             ),
+            buffers=(0, 0),
         )
     with pytest.raises(TypeError):
         calls.admit(1)
@@ -459,7 +485,11 @@ def test_native_callback_prefixes_match_independent_reservation_model(seed):
     rng = random.Random(seed)
     writes = native.WriteQuota(grant(), grant())
     calls = native.CallbackQuota(
-        writes, (17, 0), (23, 0), work=native.NativeWorkQuota(writes, (0, 0), (0, 0))
+        writes,
+        (17, 0),
+        (23, 0),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
     )
     charged = [0, 0]
     files = []
@@ -544,7 +574,12 @@ def test_native_callback_sleep_grants_are_explicit_nonnegative_signed_integers(b
     limits = {"forward": (16, 0), "recovery": (32, 0)}
     limits[bank] = (16, value)
     with pytest.raises((TypeError, ValueError, OverflowError)):
-        native.CallbackQuota(writes, **limits, work=native.NativeWorkQuota(writes, (0, 0), (0, 0)))
+        native.CallbackQuota(
+            writes,
+            **limits,
+            work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+            buffers=(0, 0),
+        )
 
 
 @pytest.mark.parametrize("bank", ["forward", "recovery"])
@@ -554,7 +589,12 @@ def test_native_callback_grants_require_exact_complete_tuples(bank, value):
     limits = {"forward": (16, 0), "recovery": (32, 0)}
     limits[bank] = value
     with pytest.raises(TypeError, match="tuple"):
-        native.CallbackQuota(writes, **limits, work=native.NativeWorkQuota(writes, (0, 0), (0, 0)))
+        native.CallbackQuota(
+            writes,
+            **limits,
+            work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+            buffers=(0, 0),
+        )
 
 
 @pytest.mark.parametrize("requested", [0, 1, 999, 1000, 1001, 2**31 - 1 - 999])
@@ -562,7 +602,11 @@ def test_native_sleep_precharges_whole_rounded_delay_and_independent_recovery(re
     writes = native.WriteQuota(grant(), grant())
     rounded = ((requested + 999) // 1000) * 1000
     calls = native.CallbackQuota(
-        writes, (8, rounded), (8, rounded), work=native.NativeWorkQuota(writes, (0, 0), (0, 0))
+        writes,
+        (8, rounded),
+        (8, rounded),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
     )
     assert calls.admit_sleep(requested)
     assert calls.report()["forward"]["sleep_microseconds_charged"] == rounded
@@ -582,7 +626,11 @@ def test_native_sleep_precharges_whole_rounded_delay_and_independent_recovery(re
 def test_native_sleep_rejects_invalid_native_arithmetic_before_charging_duration(requested):
     writes = native.WriteQuota(grant(), grant())
     calls = native.CallbackQuota(
-        writes, (8, 2**63 - 1), (8, 2**63 - 1), work=native.NativeWorkQuota(writes, (0, 0), (0, 0))
+        writes,
+        (8, 2**63 - 1),
+        (8, 2**63 - 1),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
     )
     assert not calls.admit_sleep(requested)
     assert writes.recovering and calls.report()["pending_error"]
@@ -594,7 +642,11 @@ def test_native_sleep_rejects_invalid_native_arithmetic_before_charging_duration
 def test_native_sleep_rejects_nonexact_or_unrepresentable_input_without_mutating_grants(requested):
     writes = native.WriteQuota(grant(), grant())
     calls = native.CallbackQuota(
-        writes, (8, 1000), (8, 1000), work=native.NativeWorkQuota(writes, (0, 0), (0, 0))
+        writes,
+        (8, 1000),
+        (8, 1000),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
     )
     before = calls.report()
     with pytest.raises((TypeError, OverflowError)):
@@ -605,7 +657,11 @@ def test_native_sleep_rejects_nonexact_or_unrepresentable_input_without_mutating
 def test_native_sleep_refusal_preserves_independent_file_close_capacity():
     writes = native.WriteQuota(grant(), grant())
     calls = native.CallbackQuota(
-        writes, (4, 0), (4, 1000), work=native.NativeWorkQuota(writes, (0, 0), (0, 0))
+        writes,
+        (4, 0),
+        (4, 1000),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
     )
     assert calls.opened() is True
     assert not calls.admit_sleep(1)
@@ -624,7 +680,11 @@ def test_native_sleep_prefixes_match_independent_rounded_wait_model(seed):
     slots, duration = [0, 0], [0, 0]
     capacities, allowances = (17, 23), (3000, 5000)
     calls = native.CallbackQuota(
-        writes, (17, 3000), (23, 5000), work=native.NativeWorkQuota(writes, (0, 0), (0, 0))
+        writes,
+        (17, 3000),
+        (23, 5000),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
     )
     recovering = pending = False
     for _ in range(96):
@@ -1209,16 +1269,43 @@ def test_native_callback_bundle_requires_an_explicit_matching_initialized_work_o
     work = native.NativeWorkQuota(writes, (0, 0), (0, 0))
     foreign = native.NativeWorkQuota(other, (0, 0), (0, 0))
     with pytest.raises(TypeError):
-        native.CallbackQuota(writes, (4, 0), (4, 0))
+        native.CallbackQuota(
+            writes,
+            (4, 0),
+            (4, 0),
+            buffers=(0, 0),
+        )
     with pytest.raises(TypeError):
-        native.CallbackQuota(writes, (4, 0), (4, 0), object())
+        native.CallbackQuota(
+            writes,
+            (4, 0),
+            (4, 0),
+            object(),
+            buffers=(0, 0),
+        )
     with pytest.raises(ValueError, match="same write owner"):
-        native.CallbackQuota(writes, (4, 0), (4, 0), foreign)
+        native.CallbackQuota(
+            writes,
+            (4, 0),
+            (4, 0),
+            foreign,
+            buffers=(0, 0),
+        )
     with pytest.raises(RuntimeError, match="not initialized"):
         native.CallbackQuota(
-            writes, (4, 0), (4, 0), native.NativeWorkQuota.__new__(native.NativeWorkQuota)
+            writes,
+            (4, 0),
+            (4, 0),
+            native.NativeWorkQuota.__new__(native.NativeWorkQuota),
+            buffers=(0, 0),
         )
-    calls = native.CallbackQuota(writes, (4, 0), (4, 0), work)
+    calls = native.CallbackQuota(
+        writes,
+        (4, 0),
+        (4, 0),
+        work,
+        buffers=(0, 0),
+    )
     assert calls.work is work
     with pytest.raises(AttributeError):
         calls.work = foreign
@@ -1227,3 +1314,156 @@ def test_native_callback_bundle_requires_an_explicit_matching_initialized_work_o
         "recovery": native_work_snapshot(),
     }
     assert writes.report()["refusals"] == other.report()["refusals"] == 0
+
+
+def test_native_callback_output_grants_are_required_even_with_a_matching_work_owner():
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, (0, 0), (0, 0))
+    with pytest.raises(TypeError, match="buffers"):
+        native.CallbackQuota(writes, (8, 0), (8, 0), work)
+
+
+@pytest.mark.parametrize(
+    "buffers",
+    [None, [0, 0], (0,), (0, 0, 0), (True, 0), (0, 1.0), (-1, 0), (0, 2**63)],
+)
+def test_native_callback_output_grants_reject_ambiguous_or_unrepresentable_values(buffers):
+    writes = native.WriteQuota(grant(), grant())
+    with pytest.raises((TypeError, ValueError, OverflowError)):
+        native.CallbackQuota(
+            writes,
+            (8, 0),
+            (8, 0),
+            work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+            buffers=buffers,
+        )
+    assert not writes.recovering
+
+
+def test_native_output_capacity_is_prepaid_whole_and_cannot_consume_reserved_closes():
+    writes = native.WriteQuota(grant(), grant())
+    calls = native.CallbackQuota(
+        writes,
+        (8, 0),
+        (8, 0),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(7, 11),
+    )
+    assert calls.opened() is True
+    assert calls.admit_buffer(7, False)
+    assert not calls.admit_buffer(1, False)
+    assert writes.recovering and calls.report()["pending_error"]
+    assert calls.report()["forward"]["output_buffer_bytes_charged"] == 7
+    assert calls.report()["reserved_recovery_closes"] == 1
+    assert not calls.admit_buffer(1, False)
+    assert not calls.admit_buffer(11, True)
+    assert calls.report()["recovery"]["output_buffer_bytes_charged"] == 0
+    assert calls.admit_buffer(11, True)
+    assert not calls.admit_buffer(1, True)
+    assert calls.report()["recovery"]["output_buffer_bytes_charged"] == 11
+    calls.closed(True)
+    assert calls.report()["reserved_recovery_closes"] == 0
+    assert writes.report()["first_refusal"]["reason"] == "VFS output-buffer grant"
+
+
+@pytest.mark.parametrize("requested", [-1, 2**31, 2**63 - 1])
+@pytest.mark.parametrize("can_error", [False, True])
+def test_native_output_capacity_checks_the_signed_native_abi_before_byte_charge(
+    requested, can_error
+):
+    writes = native.WriteQuota(grant(), grant())
+    calls = native.CallbackQuota(
+        writes,
+        (8, 0),
+        (8, 0),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(2**63 - 1, 2**63 - 1),
+    )
+    assert not calls.admit_buffer(requested, can_error)
+    assert calls.report()["forward"]["callback_slots_charged"] == 1
+    assert calls.report()["forward"]["output_buffer_bytes_charged"] == 0
+    assert calls.report()["pending_error"] is (not can_error)
+    assert writes.report()["first_refusal"]["reason"] == "invalid VFS buffer range"
+
+
+@pytest.mark.parametrize("requested,can_error", [(True, True), (1.0, True), ("1", True), (1, 1)])
+def test_native_output_api_rejects_nonexact_input_without_changing_either_bank(
+    requested, can_error
+):
+    writes = native.WriteQuota(grant(), grant())
+    calls = native.CallbackQuota(
+        writes,
+        (8, 0),
+        (8, 0),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(7, 11),
+    )
+    before = calls.report()
+    with pytest.raises(TypeError):
+        calls.admit_buffer(requested, can_error)
+    assert calls.report() == before and not writes.recovering
+
+
+def test_native_zero_output_capacity_uses_a_slot_without_manufacturing_output():
+    writes = native.WriteQuota(grant(), grant())
+    calls = native.CallbackQuota(
+        writes,
+        (8, 0),
+        (8, 0),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(0, 0),
+    )
+    assert calls.admit_buffer(0)
+    assert calls.report()["forward"]["callback_slots_charged"] == 1
+    assert calls.report()["forward"]["output_buffer_bytes_charged"] == 0
+
+
+@pytest.mark.parametrize("seed", range(8))
+def test_native_output_prefixes_match_independent_slot_byte_and_error_model(seed):
+    rng = random.Random(seed)
+    writes = native.WriteQuota(grant(), grant())
+    calls = native.CallbackQuota(
+        writes,
+        (13, 0),
+        (19, 0),
+        work=native.NativeWorkQuota(writes, (0, 0), (0, 0)),
+        buffers=(17, 23),
+    )
+    slots, output = [0, 0], [0, 0]
+    capacities, grants = (13, 19), (17, 23)
+    recovering = pending = False
+    for _ in range(96):
+        action = rng.choice(["buffer", "fallible", "value", "failure"])
+        if action == "failure":
+            writes.failed()
+            recovering = True
+        else:
+            index = int(recovering)
+            can_error = rng.choice([False, True]) if action == "buffer" else action == "fallible"
+            amount = rng.choice([-1, 0, 1, 7, 19, 2**31])
+            expected = False
+            if pending:
+                pending = not can_error
+            elif slots[index] == capacities[index]:
+                recovering, pending = True, not can_error
+            else:
+                slots[index] += 1
+                expected = True
+                if action == "buffer":
+                    if amount < 0 or amount > 2**31 - 1 or amount > grants[index] - output[index]:
+                        expected = False
+                        recovering, pending = True, not can_error
+                    else:
+                        output[index] += amount
+            actual = (
+                calls.admit_buffer(amount, can_error)
+                if action == "buffer"
+                else calls.admit(can_error)
+            )
+            assert actual is expected
+        report = calls.report()
+        assert writes.recovering is recovering and report["pending_error"] is pending
+        for index, bank in enumerate(("forward", "recovery")):
+            assert report[bank]["callback_slots_charged"] == slots[index]
+            assert report[bank]["output_buffer_bytes_charged"] == output[index]
+            assert slots[index] <= capacities[index] and output[index] <= grants[index]

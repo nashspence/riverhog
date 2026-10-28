@@ -44,6 +44,7 @@ typedef struct {
     int (*unregister_vfs)(rh_sqlite_vfs *);
     rh_sqlite_int64 (*hard_heap_limit)(rh_sqlite_int64);
     int (*status)(int, rh_sqlite_int64 *, rh_sqlite_int64 *, int);
+    int (*config)(int, ...);
     void *(*allocate)(uint64_t);
     void (*release)(void *);
     const char *(*uri_key)(const char *, int);
@@ -117,6 +118,24 @@ static int callback(rh_write_vfs *vfs, int can_error) {
         return 0;
     }
     return rh_callback_admit(vfs->calls, vfs->quota, can_error) == RH_ALLOWED;
+}
+static int buffer_callback(rh_write_vfs *vfs, int amount, char *out, int can_error) {
+    if (!owned(vfs) || vfs->quarantined) return 0;
+    if (!retry_usable(vfs->heap)) {
+        rh_forbid_retry(vfs->quota);
+        if (!can_error) vfs->calls->pending_error = 1;
+        return 0;
+    }
+    return rh_callback_buffer(vfs->calls, vfs->quota,
+        amount > 0 && !out ? -1 : (int64_t)amount, can_error) == RH_ALLOWED;
+}
+static int path_input(rh_write_vfs *vfs, const char *name) {
+    size_t length;
+    if (!name) return 0;
+    for (length = 0; length < vfs->path_capacity; ++length) {
+        if (!name[length]) return 1;
+    }
+    return 0;
 }
 static rh_sqlite_file *real_file(rh_write_file *file) {
     return (rh_sqlite_file *)((char *)file + file->owner->offset);
@@ -501,13 +520,21 @@ static int vfs_delete(rh_sqlite_vfs *raw, const char *name, int sync_directory) 
 }
 static int vfs_access(rh_sqlite_vfs *raw, const char *name, int flags, int *result) {
     rh_write_vfs *vfs = raw->data;
+    if (!path_input(vfs, name)) {
+        (void)buffer_callback(vfs, -1, NULL, 1);
+        return RH_FULL;
+    }
     if (!callback(vfs, 1)) return RH_FULL;
     if (!filesystem_work(vfs, RH_OP_ACCESS, 0)) return RH_FULL;
     return storage_result(vfs, vfs->base->access(vfs->base, name, flags, result));
 }
 static int vfs_fullpath(rh_sqlite_vfs *raw, const char *name, int size, char *out) {
     rh_write_vfs *vfs = raw->data;
-    if (!callback(vfs, 1)) return RH_FULL;
+    if (!path_input(vfs, name) || size == 0) {
+        (void)buffer_callback(vfs, -1, NULL, 1);
+        return RH_FULL;
+    }
+    if (!buffer_callback(vfs, size, out, 1)) return RH_FULL;
     if (!filesystem_work(vfs, RH_OP_FULLPATH, 0)) return RH_FULL;
     return storage_result(vfs, vfs->base->fullpath(vfs->base, name, size, out));
 }
@@ -540,7 +567,11 @@ static void vfs_dlclose(rh_sqlite_vfs *raw, void *handle) {
 }
 static int vfs_random(rh_sqlite_vfs *raw, int size, char *out) {
     rh_write_vfs *vfs = raw->data;
-    return callback(vfs, 0) ? vfs->base->randomness(vfs->base, size, out) : 0;
+    if (!buffer_callback(vfs, size, out, 0)) return 0;
+    /* The qualified entropy gatherer assumes a positive buffer. Zero capacity
+     * needs no entropy and must not reach its fixed entropy-mixing writes.
+     */
+    return size ? vfs->base->randomness(vfs->base, size, out) : 0;
 }
 static int vfs_sleep(rh_sqlite_vfs *raw, int microseconds) {
     rh_write_vfs *vfs = raw->data;
@@ -559,7 +590,7 @@ static int vfs_time(rh_sqlite_vfs *raw, double *out) {
 }
 static int vfs_error(rh_sqlite_vfs *raw, int size, char *out) {
     rh_write_vfs *vfs = raw->data;
-    if (!callback(vfs, 0)) {
+    if (!buffer_callback(vfs, size, out, 0)) {
         if (size > 0 && out) out[0] = 0;
         return 0;
     }
@@ -594,6 +625,7 @@ static int bind_api(rh_sqlite_api *api, wchar_t *library_path, const char **erro
     RH_BIND(unregister_vfs, "sqlite3_vfs_unregister");
     RH_BIND(hard_heap_limit, "sqlite3_hard_heap_limit64");
     RH_BIND(status, "sqlite3_status64");
+    RH_BIND(config, "sqlite3_config");
     RH_BIND(allocate, "sqlite3_malloc64");
     RH_BIND(release, "sqlite3_free");
     RH_BIND(uri_key, "sqlite3_uri_key");
@@ -722,6 +754,19 @@ rh_sqlite_heap *rh_sqlite_heap_create(const char *source, int64_t limit, const c
     if (limit <= 0 || heap->api.hard_heap_limit(-1) != 0) {
         *error = "a positive heap grant and an unconfigured SQLite heap owner are required";
         goto failed;
+    }
+    /* SQLITE_CONFIG_LOG is an anytime public option in the qualified engine.
+     * The application owns this policy at quiescent startup. Clear a foreign
+     * logger before our first SQLite allocation so native error paths cannot
+     * execute arbitrary callbacks. Later configuration mutators are excluded
+     * by the application's startup/consumer contract.
+     */
+    {
+        void (*logger)(void *, int, const char *) = NULL;
+        if (heap->api.config(16, logger, (void *)NULL) != RH_OK) {
+            *error = "application SQLite logger admission failed";
+            goto failed;
+        }
     }
     /* One fixed lifetime allocation proves enabled accounting even with no
      * connections. It remains charged to H while this process owner is alive.
@@ -1015,6 +1060,10 @@ int rh_write_vfs_bind(
         rh_retry_cost cost, close = {(uint64_t)(journal_identity ? 2 : 1), 0};
         rh_native_close_credit admitted = {{0, 0}, 0};
         if (!path || !borrowed_handle || borrowed_handle == INVALID_HANDLE_VALUE) return RH_IOERR;
+        if (!path_input(vfs, path)) {
+            rh_forbid_buffer_range(vfs->quota, -1);
+            return RH_FULL;
+        }
         /* Binding has no AV retry loop. Its complete fixed recipe is admitted
          * before the first handle duplicate, including both possible closes.
          */

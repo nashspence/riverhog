@@ -1015,6 +1015,17 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
         "runtime-binary",
         "runtime-binary-missing",
         "runtime-binary-integer",
+        "logger-admission",
+        "logger-admission-missing",
+        "logger-admission-integer",
+        "output-forward",
+        "output-recovery",
+        "output-forward-bool",
+        "output-recovery-float",
+        "output-vfs-zero",
+        "output-vfs-bool",
+        "output-refusal",
+        "output-refusal-integer",
         "native-bool-fs-calls",
         "native-float-wait",
         "work-bank-bool",
@@ -1063,6 +1074,11 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         "native_work_bank_refusal_verified": True,
         "native_filesystem_recipes_verified": True,
         "runtime_binary_admission_verified": True,
+        "sqlite_logger_disabled_at_admission": True,
+        "callback_buffer_forward_bytes": 7,
+        "callback_buffer_recovery_bytes": 11,
+        "vfs_auxiliary_buffer_bytes": 1041,
+        "vfs_buffer_refusal_verified": True,
         "vfs_native_filesystem_attempts": 4096,
         "vfs_native_internal_sleep_microseconds": 600000,
         "vfs_native_recovery_close_attempts_prepaid": 8,
@@ -1156,6 +1172,28 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         del proof["runtime_binary_admission_verified"]
     elif invalid == "runtime-binary-integer":
         proof["runtime_binary_admission_verified"] = 1
+    elif invalid == "logger-admission":
+        proof["sqlite_logger_disabled_at_admission"] = False
+    elif invalid == "logger-admission-missing":
+        del proof["sqlite_logger_disabled_at_admission"]
+    elif invalid == "logger-admission-integer":
+        proof["sqlite_logger_disabled_at_admission"] = 1
+    elif invalid == "output-forward":
+        proof["callback_buffer_forward_bytes"] = 6
+    elif invalid == "output-recovery":
+        proof["callback_buffer_recovery_bytes"] = 10
+    elif invalid == "output-forward-bool":
+        proof["callback_buffer_forward_bytes"] = True
+    elif invalid == "output-recovery-float":
+        proof["callback_buffer_recovery_bytes"] = 11.0
+    elif invalid == "output-vfs-zero":
+        proof["vfs_auxiliary_buffer_bytes"] = 0
+    elif invalid == "output-vfs-bool":
+        proof["vfs_auxiliary_buffer_bytes"] = True
+    elif invalid == "output-refusal":
+        proof["vfs_buffer_refusal_verified"] = False
+    elif invalid == "output-refusal-integer":
+        proof["vfs_buffer_refusal_verified"] = 1
     elif invalid == "native-bool-fs-calls":
         proof["vfs_native_filesystem_attempts"] = True
     elif invalid == "native-float-wait":
