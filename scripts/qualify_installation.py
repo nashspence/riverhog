@@ -1927,7 +1927,8 @@ with sqlite3.connect(":memory:") as runtime:
 vfs_limits=(4096,128,1048576,1048576,8388608,1024)
 vfs_quota=native.WriteQuota(vfs_limits,vfs_limits)
 vfs_reads=native.ReadQuota(vfs_quota,(8388608,1024),(8388608,1024))
-vfs=native.WriteVfs(source_id,vfs_reads)
+vfs_callbacks=native.CallbackQuota(vfs_quota,8192,8192)
+vfs=native.WriteVfs(source_id,vfs_reads,vfs_callbacks)
 try:
     identity=vfs.identity()
     assert identity["sqlite_source_id"]==source_id
@@ -1967,6 +1968,9 @@ try:
     assert vfs.open_files==0
     read_report=vfs_reads.report()["forward"]
     resize_calls=vfs_quota.resize_report()["forward"]["resize_calls"]
+    callback_report=vfs_callbacks.report()
+    callback_slots=callback_report["forward"]["callback_slots_charged"]
+    assert callback_slots>0 and not callback_report["pending_error"]
 finally:
     vfs.close()
 vfs_calls=vfs_quota.report()["forward"]["write_calls"]
@@ -1976,7 +1980,7 @@ print(json.dumps({"compiler":native.compiler,
     "tracking_bytes":quota.tracking_bytes,
     "forward_pages":2,"recovery_pages":3,"refusals":1,
     "storage_callbacks_native":True,"vfs_write_calls":vfs_calls,
-    "vfs_resize_calls":resize_calls,
+    "vfs_resize_calls":resize_calls,"vfs_callback_slots":callback_slots,
     "vfs_read_calls":read_report["read_calls"],"vfs_read_bytes":read_report["read_bytes"],
     "vfs_binding_verified":True,
     "vfs_original_exact":True,"sqlite_source_id":source_id,
@@ -2002,6 +2006,8 @@ print(json.dumps({"compiler":native.compiler,
         or proof["vfs_read_calls"] <= 0
         or type(proof.get("vfs_read_bytes")) is not int
         or proof["vfs_read_bytes"] <= 0
+        or type(proof.get("vfs_callback_slots")) is not int
+        or proof["vfs_callback_slots"] <= 0
         or proof.get("vfs_binding_verified") is not True
         or proof.get("vfs_original_exact") is not True
         or not isinstance(proof.get("sqlite_source_id"), str)

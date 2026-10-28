@@ -8,7 +8,7 @@ enum rh_refusal {
     RH_ALLOWED = 0, RH_FILE, RH_RANGE, RH_CALLS, RH_BYTES,
     RH_DATABASE_END, RH_JOURNAL_END, RH_PAGES, RH_TRACKING,
     RH_READ_RANGE, RH_READ_CALLS, RH_READ_BYTES,
-    RH_RESIZE_RANGE, RH_RESIZE_CALLS, RH_CONTROL
+    RH_RESIZE_RANGE, RH_RESIZE_CALLS, RH_CONTROL, RH_CALLBACK_CALLS, RH_CALLBACK_CLOSE
 };
 
 typedef struct {
@@ -38,6 +38,23 @@ typedef struct {
     uint64_t byte_limit, call_limit, bytes, calls;
 } rh_read_bank;
 typedef struct { rh_read_bank forward, recovery; } rh_read_quota;
+
+typedef struct { uint64_t limit, charged; } rh_callback_bank;
+typedef struct {
+    rh_callback_bank forward, recovery;
+    uint64_t forward_files, recovery_files;
+    int pending_error;
+} rh_callback_quota;
+
+/* Open prepays its own callback and its eventual close. A forward open also
+ * reserves a recovery close, which ordinary recovery work cannot consume.
+ */
+enum rh_refusal rh_callback_admit(rh_callback_quota *, rh_quota *, int);
+int rh_callback_open(rh_callback_quota *, rh_quota *);
+int rh_callback_close(rh_callback_quota *, rh_quota *, int);
+int rh_callback_abandon(rh_callback_quota *, int);
+int rh_callback_prepare(rh_callback_quota *, rh_quota *, uint64_t);
+void rh_callback_detach(rh_callback_quota *);
 
 enum rh_refusal rh_read_admit(rh_read_quota *, rh_quota *, enum rh_file, int64_t, int64_t);
 enum rh_refusal rh_admit(rh_quota *, enum rh_file, int64_t, int64_t);

@@ -47,6 +47,7 @@ struct rh_write_vfs {
     rh_sqlite_api api;
     rh_quota *quota;
     rh_read_quota *reads;
+    rh_callback_quota *calls;
     unsigned long thread;
     size_t offset;
     int open_files, bound;
@@ -70,6 +71,7 @@ typedef struct {
     rh_sqlite_file file;
     rh_write_vfs *owner;
     enum rh_file kind;
+    int forward_close;
 } rh_write_file;
 
 static unsigned long current_thread(void) {
@@ -81,6 +83,10 @@ static unsigned long current_thread(void) {
 }
 
 static int owned(rh_write_vfs *vfs) { return current_thread() == vfs->thread; }
+static int callback(rh_write_vfs *vfs, int can_error) {
+    return owned(vfs) &&
+        rh_callback_admit(vfs->calls, vfs->quota, can_error) == RH_ALLOWED;
+}
 static rh_sqlite_file *real_file(rh_write_file *file) {
     return (rh_sqlite_file *)((char *)file + file->owner->offset);
 }
@@ -169,17 +175,30 @@ static int file_close(rh_sqlite_file *raw) {
     rh_sqlite_file *real = real_file(file);
     int result;
     if (!owned(file->owner)) return RH_IOERR;
-    result = real->methods->close(real);
-    /* SQLite does not retry xClose after its returned error. */
-    --file->owner->open_files;
-    raw->methods = NULL;
-    return storage_result(file->owner, result);
+    {
+        int pending = file->owner->calls->pending_error;
+        int accounted = rh_callback_close(file->owner->calls, file->owner->quota,
+                                           file->forward_close);
+        file->owner->calls->pending_error = 0;
+        result = storage_result(file->owner, real->methods->close(real));
+        /* SQLite does not retry xClose after its returned error. Always delegate
+         * the close, including an impossible accounting inconsistency.
+         */
+        --file->owner->open_files;
+        raw->methods = NULL;
+        if (!accounted) {
+            file->owner->quota->diagnostic_overflow = 1;
+            rh_failed(file->owner->quota);
+            return RH_IOERR;
+        }
+        return result == RH_OK && pending ? RH_FULL : result;
+    }
 }
 static int file_read(rh_sqlite_file *raw, void *buffer, int amount, rh_sqlite_int64 offset) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
     int result;
-    if (!owned(file->owner)) return RH_IOERR;
+    if (!callback(file->owner, 1)) return RH_FULL;
     if (rh_read_admit(file->owner->reads, file->owner->quota, file->kind,
                       (int64_t)amount, (int64_t)offset) != RH_ALLOWED) return RH_FULL;
     result = real->methods->read(real, buffer, amount, offset);
@@ -189,7 +208,7 @@ static int file_read(rh_sqlite_file *raw, void *buffer, int amount, rh_sqlite_in
 static int file_write(rh_sqlite_file *raw, const void *buffer, int amount, rh_sqlite_int64 offset) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
-    if (!owned(file->owner)) return RH_IOERR;
+    if (!callback(file->owner, 1)) return RH_FULL;
     if (rh_admit(file->owner->quota, file->kind, (int64_t)amount, (int64_t)offset) != RH_ALLOWED)
         return RH_FULL;
     return storage_result(file->owner, real->methods->write(real, buffer, amount, offset));
@@ -197,44 +216,47 @@ static int file_write(rh_sqlite_file *raw, const void *buffer, int amount, rh_sq
 static int file_truncate(rh_sqlite_file *raw, rh_sqlite_int64 size) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
-    if (!owned(file->owner)) return RH_IOERR;
+    if (!callback(file->owner, 1)) return RH_FULL;
     if (rh_resize(file->owner->quota, file->kind, (int64_t)size) != RH_ALLOWED) return RH_FULL;
     return storage_result(file->owner, real->methods->truncate(real, size));
 }
 static int file_sync(rh_sqlite_file *raw, int flags) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
-    if (!owned(file->owner)) return RH_IOERR;
+    if (!callback(file->owner, 1)) return RH_FULL;
     return storage_result(file->owner, real->methods->sync(real, flags));
 }
 static int file_size(rh_sqlite_file *raw, rh_sqlite_int64 *size) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
-    if (!owned(file->owner)) return RH_IOERR;
-    return real->methods->size(real, size);
+    if (!callback(file->owner, 1)) return RH_FULL;
+    return storage_result(file->owner, real->methods->size(real, size));
 }
 static int file_lock(rh_sqlite_file *raw, int level) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
-    if (!owned(file->owner)) return RH_IOERR;
-    return real->methods->lock(real, level);
+    if (!callback(file->owner, 1)) return RH_FULL;
+    {
+        int result = real->methods->lock(real, level);
+        return result == RH_BUSY ? result : storage_result(file->owner, result);
+    }
 }
 static int file_unlock(rh_sqlite_file *raw, int level) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
-    if (!owned(file->owner)) return RH_IOERR;
-    return real->methods->unlock(real, level);
+    if (!callback(file->owner, 1)) return RH_FULL;
+    return storage_result(file->owner, real->methods->unlock(real, level));
 }
 static int file_reserved(rh_sqlite_file *raw, int *result) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
-    if (!owned(file->owner)) return RH_IOERR;
-    return real->methods->reserved(real, result);
+    if (!callback(file->owner, 1)) return RH_FULL;
+    return storage_result(file->owner, real->methods->reserved(real, result));
 }
 static int file_control(rh_sqlite_file *raw, int operation, void *argument) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
-    if (!owned(file->owner)) return RH_IOERR;
+    if (!callback(file->owner, 1)) return RH_FULL;
     if (operation == RH_SIZE_HINT) {
         if (!argument) {
             rh_forbid_control(file->owner->quota, file->kind);
@@ -258,17 +280,21 @@ static int file_control(rh_sqlite_file *raw, int operation, void *argument) {
         rh_forbid_control(file->owner->quota, file->kind);
         return RH_IOERR;
     }
-    return real->methods->control(real, operation, argument);
+    {
+        int result = real->methods->control(real, operation, argument);
+        return result == 12 /* SQLITE_NOTFOUND: unsupported control */ ?
+            result : storage_result(file->owner, result);
+    }
 }
 static int file_sector(rh_sqlite_file *raw) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
-    return owned(file->owner) ? real->methods->sector(real) : 0;
+    return callback(file->owner, 0) ? real->methods->sector(real) : 0;
 }
 static int file_characteristics(rh_sqlite_file *raw) {
     rh_write_file *file = (rh_write_file *)raw;
     rh_sqlite_file *real = real_file(file);
-    return owned(file->owner) ? real->methods->characteristics(real) : 0;
+    return callback(file->owner, 0) ? real->methods->characteristics(real) : 0;
 }
 static const rh_sqlite_io methods = {
     1, file_close, file_read, file_write, file_truncate, file_sync, file_size,
@@ -281,7 +307,7 @@ static int vfs_open(
     rh_write_vfs *vfs = raw->data;
     rh_write_file *wrapper = (rh_write_file *)file;
     rh_sqlite_file *real;
-    int result;
+    int result, close_bank;
     file->methods = NULL;
     if (!owned(vfs) || vfs->open_files == INT_MAX) return RH_IOERR;
     wrapper->owner = vfs;
@@ -292,9 +318,13 @@ static int vfs_open(
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
         return RH_CANTOPEN;
     }
+    close_bank = rh_callback_open(vfs->calls, vfs->quota);
+    if (close_bank < 0) return RH_FULL;
+    wrapper->forward_close = close_bank;
 #ifdef _WIN32
     if (wrapper->kind == RH_JOURNAL &&
         !(vfs->journal_handle ? journal_current(vfs) : journal_absent(vfs))) {
+        (void)rh_callback_abandon(vfs->calls, close_bank);
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
         return RH_CANTOPEN;
     }
@@ -305,6 +335,8 @@ static int vfs_open(
     if (real->methods) {
         ++vfs->open_files;
         file->methods = &methods;
+    } else {
+        (void)rh_callback_abandon(vfs->calls, close_bank);
     }
     if (result == RH_OK && (!real->methods || !opened_identity(vfs, real, wrapper->kind))) {
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
@@ -315,7 +347,7 @@ static int vfs_open(
 }
 static int vfs_delete(rh_sqlite_vfs *raw, const char *name, int sync_directory) {
     rh_write_vfs *vfs = raw->data;
-    if (!owned(vfs)) return RH_IOERR;
+    if (!callback(vfs, 1)) return RH_FULL;
     if (!admitted_name(vfs, name, RH_JOURNAL)) {
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
         return RH_IOERR;
@@ -340,44 +372,59 @@ static int vfs_delete(rh_sqlite_vfs *raw, const char *name, int sync_directory) 
 }
 static int vfs_access(rh_sqlite_vfs *raw, const char *name, int flags, int *result) {
     rh_write_vfs *vfs = raw->data;
-    if (!owned(vfs)) return RH_IOERR;
+    if (!callback(vfs, 1)) return RH_FULL;
     return vfs->base->access(vfs->base, name, flags, result);
 }
 static int vfs_fullpath(rh_sqlite_vfs *raw, const char *name, int size, char *out) {
     rh_write_vfs *vfs = raw->data;
-    if (!owned(vfs)) return RH_IOERR;
+    if (!callback(vfs, 1)) return RH_FULL;
     return vfs->base->fullpath(vfs->base, name, size, out);
+}
+static void forbid_loading(rh_write_vfs *vfs) {
+    if (!owned(vfs)) return;
+    rh_forbid_control(vfs->quota, RH_OTHER);
+    vfs->calls->pending_error = 1;
 }
 static void *vfs_dlopen(rh_sqlite_vfs *raw, const char *name) {
     rh_write_vfs *vfs = raw->data;
-    return vfs->base->dlopen_file(vfs->base, name);
+    (void)name;
+    forbid_loading(vfs);
+    return NULL;
 }
 static void vfs_dlerror(rh_sqlite_vfs *raw, int size, char *out) {
     rh_write_vfs *vfs = raw->data;
-    vfs->base->dlerror_file(vfs->base, size, out);
+    forbid_loading(vfs);
+    if (size > 0 && out) out[0] = 0;
 }
 static void (*vfs_dlsym(rh_sqlite_vfs *raw, void *handle, const char *name))(void) {
     rh_write_vfs *vfs = raw->data;
-    return vfs->base->dlsym_file(vfs->base, handle, name);
+    (void)handle; (void)name;
+    forbid_loading(vfs);
+    return NULL;
 }
 static void vfs_dlclose(rh_sqlite_vfs *raw, void *handle) {
     rh_write_vfs *vfs = raw->data;
-    vfs->base->dlclose_file(vfs->base, handle);
+    (void)handle;
+    forbid_loading(vfs);
 }
 static int vfs_random(rh_sqlite_vfs *raw, int size, char *out) {
     rh_write_vfs *vfs = raw->data;
-    return vfs->base->randomness(vfs->base, size, out);
+    return callback(vfs, 0) ? vfs->base->randomness(vfs->base, size, out) : 0;
 }
 static int vfs_sleep(rh_sqlite_vfs *raw, int microseconds) {
     rh_write_vfs *vfs = raw->data;
-    return vfs->base->sleep(vfs->base, microseconds);
+    return callback(vfs, 0) ? vfs->base->sleep(vfs->base, microseconds) : 0;
 }
 static int vfs_time(rh_sqlite_vfs *raw, double *out) {
     rh_write_vfs *vfs = raw->data;
-    return vfs->base->time(vfs->base, out);
+    return callback(vfs, 1) ? vfs->base->time(vfs->base, out) : RH_FULL;
 }
 static int vfs_error(rh_sqlite_vfs *raw, int size, char *out) {
     rh_write_vfs *vfs = raw->data;
+    if (!callback(vfs, 0)) {
+        if (size > 0 && out) out[0] = 0;
+        return 0;
+    }
     return vfs->base->error ? vfs->base->error(vfs->base, size, out) : 0;
 }
 
@@ -423,7 +470,7 @@ static int bind_api(rh_write_vfs *vfs, const char **error) {
 
 rh_write_vfs *rh_write_vfs_create(
     const char *name, const char *expected_source, rh_quota *quota,
-    rh_read_quota *reads, const char **error
+    rh_read_quota *reads, rh_callback_quota *calls, const char **error
 ) {
     rh_write_vfs *vfs = calloc(1, sizeof(*vfs));
     if (!vfs) { *error = "native VFS allocation failed"; return NULL; }
@@ -465,6 +512,11 @@ rh_write_vfs *rh_write_vfs_create(
     vfs->thread = current_thread();
     vfs->quota = quota;
     vfs->reads = reads;
+    vfs->calls = calls;
+    if (!rh_callback_prepare(calls, quota, 0)) {
+        *error = "callback grant has live files or an unreported error";
+        goto failed;
+    }
     vfs->vfs = (rh_sqlite_vfs){
         .version = 1, .file_bytes = (int)(vfs->offset + (size_t)vfs->base->file_bytes),
         .pathname_bytes = vfs->base->pathname_bytes, .name = name, .data = vfs,
@@ -547,11 +599,18 @@ int rh_write_vfs_unbind(rh_write_vfs *vfs) {
 }
 int rh_write_vfs_bound(rh_write_vfs *vfs) { return owned(vfs) ? vfs->bound : -1; }
 
-int rh_write_vfs_arm(rh_write_vfs *vfs, rh_quota *quota, rh_read_quota *reads) {
+int rh_write_vfs_arm(
+    rh_write_vfs *vfs, rh_quota *quota, rh_read_quota *reads, rh_callback_quota *calls
+) {
     if (!owned(vfs)) return RH_MISUSE;
     if (vfs->quota->recovering && vfs->open_files) return RH_BUSY;
+    if (calls == vfs->calls)
+        return quota == vfs->quota && reads == vfs->reads ? RH_OK : RH_MISUSE;
+    if (!rh_callback_prepare(calls, quota, (uint64_t)vfs->open_files)) return RH_BUSY;
+    rh_callback_detach(vfs->calls);
     vfs->quota = quota;
     vfs->reads = reads;
+    vfs->calls = calls;
     return RH_OK;
 }
 int rh_write_vfs_close(rh_write_vfs *vfs) {
@@ -562,6 +621,7 @@ int rh_write_vfs_close(rh_write_vfs *vfs) {
     if (result != RH_OK) return result;
     result = vfs->api.unregister_vfs(&vfs->vfs);
     if (result != RH_OK) return result;
+    rh_callback_detach(vfs->calls);
     release_module(&vfs->api);
     free(vfs->database_name);
     free(vfs->database_wide);

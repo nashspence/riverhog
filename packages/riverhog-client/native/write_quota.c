@@ -132,6 +132,80 @@ enum rh_refusal rh_resize(rh_quota *quota, enum rh_file file, int64_t size) {
     return rh_record(quota, result, file, size, 0, was_recovery);
 }
 
+
+static int callback_fits(rh_callback_quota *calls, int recovery, uint64_t amount) {
+    rh_callback_bank *bank = recovery ? &calls->recovery : &calls->forward;
+    uint64_t available = bank->limit - bank->charged;
+    if (recovery) {
+        if (calls->forward_files > available) return 0;
+        available -= calls->forward_files;
+    }
+    return amount <= available;
+}
+enum rh_refusal rh_callback_admit(rh_callback_quota *calls, rh_quota *quota, int can_error) {
+    int recovery = quota->recovering;
+    rh_callback_bank *bank = recovery ? &calls->recovery : &calls->forward;
+    if (calls->pending_error) {
+        if (can_error) calls->pending_error = 0;
+        return RH_CALLBACK_CALLS;
+    }
+    if (!callback_fits(calls, recovery, 1)) {
+        /* Void/value callbacks cannot return an SQLite error. Do no native work,
+         * and require an explicit error before any later fallible delegation.
+         */
+        calls->pending_error = !can_error;
+        return rh_record(quota, RH_CALLBACK_CALLS, RH_OTHER, 1, 0, recovery);
+    }
+    ++bank->charged;
+    return RH_ALLOWED;
+}
+int rh_callback_open(rh_callback_quota *calls, rh_quota *quota) {
+    int recovery = quota->recovering;
+    rh_callback_bank *bank = recovery ? &calls->recovery : &calls->forward;
+    enum rh_refusal reason = RH_ALLOWED;
+    if (calls->pending_error) {
+        calls->pending_error = 0;
+        return -1;
+    }
+    if (!recovery && !callback_fits(calls, 1, 1)) reason = RH_CALLBACK_CLOSE;
+    else if (!callback_fits(calls, recovery, 2)) reason = RH_CALLBACK_CALLS;
+    if (reason != RH_ALLOWED) {
+        (void)rh_record(quota, reason, RH_OTHER, 2, 0, recovery);
+        return -1;
+    }
+    bank->charged += 2;
+    if (recovery) ++calls->recovery_files;
+    else ++calls->forward_files;
+    return !recovery;
+}
+int rh_callback_abandon(rh_callback_quota *calls, int forward) {
+    uint64_t *files = forward ? &calls->forward_files : &calls->recovery_files;
+    if (!*files) return 0;
+    --*files;
+    return 1;
+}
+int rh_callback_close(rh_callback_quota *calls, rh_quota *quota, int forward) {
+    if (forward) {
+        if (!calls->forward_files) return 0;
+        /* This slot was reserved before the forward native open. */
+        if (quota->recovering) ++calls->recovery.charged;
+    } else if (!calls->recovery_files) return 0;
+    return rh_callback_abandon(calls, forward);
+}
+int rh_callback_prepare(rh_callback_quota *calls, rh_quota *quota, uint64_t files) {
+    if (calls->forward_files || calls->recovery_files || calls->pending_error ||
+        (files && quota->recovering) || !callback_fits(calls, 0, files) ||
+        !callback_fits(calls, 1, files)) return 0;
+    calls->forward.charged += files;
+    calls->forward_files = files;
+    return 1;
+}
+void rh_callback_detach(rh_callback_quota *calls) {
+    /* Transfer live close reservations only after the next bank admits them. */
+    calls->forward_files = 0;
+    calls->recovery_files = 0;
+}
+
 void rh_forbid_control(rh_quota *quota, enum rh_file file) {
     (void)rh_record(quota, RH_CONTROL, file, 0, 0, quota->recovering);
 }
@@ -157,6 +231,8 @@ const char *rh_reason(enum rh_refusal reason) {
         case RH_RESIZE_RANGE: return "invalid resize extent";
         case RH_RESIZE_CALLS: return "resize call grant";
         case RH_CONTROL: return "disallowed file control";
+        case RH_CALLBACK_CALLS: return "VFS callback grant";
+        case RH_CALLBACK_CLOSE: return "recovery file-close grant";
         default: return "allowed";
     }
 }

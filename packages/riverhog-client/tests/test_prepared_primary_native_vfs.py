@@ -30,6 +30,10 @@ def reads(native, quota, *, forward=(8 * 1024 * 1024, 65536), recovery=(8 * 1024
     return native.ReadQuota(quota, forward, recovery)
 
 
+def callbacks(native, quota, *, forward=262144, recovery=262144):
+    return native.CallbackQuota(quota, forward, recovery)
+
+
 class BoundConnection:
     def __init__(self, connection, gate, api, handle):
         self.connection, self.gate, self.api, self.handle = connection, gate, api, handle
@@ -96,7 +100,7 @@ def test_native_write_vfs_binds_stdlib_and_preserves_default_registration(tmp_pa
 
     address = ctypes.cast(before, ctypes.c_void_p).value
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     try:
         connection = opened(tmp_path / "primary.sqlite3", gate)
         try:
@@ -131,14 +135,14 @@ def test_native_write_vfs_cannot_bind_a_different_sqlite_source():
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
     with pytest.raises(RuntimeError, match="identity"):
-        native.WriteVfs(source + "different", reads(native, quota))
+        native.WriteVfs(source + "different", reads(native, quota), callbacks(native, quota))
     assert not quota.recovering
 
 
 def test_native_write_vfs_retains_its_bank_and_refuses_live_unregister(tmp_path):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     connection = opened(tmp_path / "primary.sqlite3", gate)
     try:
         assert gate.open_files > 0
@@ -160,17 +164,17 @@ def test_native_write_vfs_retains_poisoned_bank_until_native_files_close(tmp_pat
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
     replacement = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     connection = opened(tmp_path / "primary.sqlite3", gate)
     try:
         quota.failed()
         with pytest.raises(RuntimeError, match="poisoned"):
-            gate.arm(reads(native, replacement))
+            gate.arm(reads(native, replacement), callbacks(native, replacement))
         assert quota.recovering
     finally:
         connection.close()
     try:
-        gate.arm(reads(native, replacement))
+        gate.arm(reads(native, replacement), callbacks(native, replacement))
         assert not replacement.recovering
     finally:
         gate.close()
@@ -181,7 +185,7 @@ def test_native_write_vfs_and_attached_bank_reject_other_thread_access(tmp_path)
     quota = native.WriteQuota(grant(), grant())
     replacement = native.WriteQuota(grant(), grant())
     read_bank = reads(native, quota)
-    gate = native.WriteVfs(source, read_bank)
+    gate = native.WriteVfs(source, read_bank, callbacks(native, quota))
     try:
         with ThreadPoolExecutor(max_workers=1) as pool:
             for operation in (
@@ -191,7 +195,7 @@ def test_native_write_vfs_and_attached_bank_reject_other_thread_access(tmp_path)
                 gate.close,
                 gate.unbind,
                 lambda: gate.bind(str(tmp_path / "not-opened.sqlite3"), 0, None),
-                lambda: gate.arm(reads(native, replacement)),
+                lambda: gate.arm(reads(native, replacement), callbacks(native, replacement)),
             ):
                 with pytest.raises(RuntimeError, match="thread"):
                     pool.submit(operation).result()
@@ -213,17 +217,19 @@ def test_native_write_vfs_rejects_uninitialized_and_reinitialized_objects():
     quota = native.WriteQuota(grant(), grant())
     uninitialized = native.WriteVfs.__new__(native.WriteVfs)
     with pytest.raises(RuntimeError, match="uninitialized"):
-        uninitialized.arm(reads(native, quota))
+        uninitialized.arm(reads(native, quota), callbacks(native, quota))
     with pytest.raises(RuntimeError, match="not initialized"):
-        native.WriteVfs(source, native.ReadQuota.__new__(native.ReadQuota))
+        native.WriteVfs(
+            source, native.ReadQuota.__new__(native.ReadQuota), callbacks(native, quota)
+        )
     with pytest.raises(TypeError):
-        native.WriteVfs(source, quota)
-    gate = native.WriteVfs(source, reads(native, quota))
+        native.WriteVfs(source, quota, callbacks(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     try:
         with pytest.raises(TypeError, match="ReadQuota"):
-            gate.arm(object())
+            gate.arm(object(), callbacks(native, quota))
         with pytest.raises(RuntimeError, match="reinitialized"):
-            gate.__init__(source, reads(native, quota))
+            gate.__init__(source, reads(native, quota), callbacks(native, quota))
     finally:
         gate.close()
 
@@ -241,7 +247,7 @@ def test_native_read_refusal_before_first_header_preserves_original_and_reopens(
     original = path.read_bytes()
     quota = native.WriteQuota(grant(), grant())
     read_bank = reads(native, quota, forward=(1, 1))
-    gate = native.WriteVfs(source, read_bank)
+    gate = native.WriteVfs(source, read_bank, callbacks(native, quota))
     try:
         with pytest.raises(sqlite3.DatabaseError):
             connection = opened(path, gate, readonly=True)
@@ -259,7 +265,7 @@ def test_native_read_refusal_before_first_header_preserves_original_and_reopens(
     assert path.read_bytes() == original
     replacement = native.WriteQuota(grant(), grant())
     read_bank = reads(native, replacement)
-    gate = native.WriteVfs(source, read_bank)
+    gate = native.WriteVfs(source, read_bank, callbacks(native, replacement))
     try:
         connection = opened(path, gate, readonly=True)
         try:
@@ -277,7 +283,7 @@ def test_native_short_read_keeps_full_charge_without_latching_failure(tmp_path):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
     read_bank = reads(native, quota)
-    gate = native.WriteVfs(source, read_bank)
+    gate = native.WriteVfs(source, read_bank, callbacks(native, quota))
     try:
         connection = opened(tmp_path / "empty.sqlite3", gate)
         try:
@@ -366,7 +372,7 @@ def test_native_resize_growth_shrink_and_refusal_keep_exact_native_file(tmp_path
     forward = (4096, 128, 8192, 4096, 1024 * 1024, 32)
     recovery = (4096, 128, 16384, 8192, 1024 * 1024, 32)
     quota = native.WriteQuota(forward, recovery)
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "resize.sqlite3"
     actual = path if kind == "database" else path.with_name(path.name + "-journal")
     try:
@@ -392,7 +398,7 @@ def test_native_resize_growth_shrink_and_refusal_keep_exact_native_file(tmp_path
 def test_native_size_hint_refuses_before_native_delegation(tmp_path):
     native, source = runtime()
     quota = native.WriteQuota((4096, 128, 8192, 4096, 1048576, 32), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "hint.sqlite3"
     try:
         with native_file(path, gate) as (result, raw, methods):
@@ -413,7 +419,7 @@ def test_native_size_hint_refuses_before_native_delegation(tmp_path):
 def test_native_chunk_and_mmap_controls_cannot_bypass_extent_checks(tmp_path):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "controls.sqlite3"
     try:
         with native_file(path, gate) as (result, raw, methods):
@@ -441,7 +447,7 @@ def test_native_chunk_and_mmap_controls_cannot_bypass_extent_checks(tmp_path):
 def test_native_alternate_handle_and_atomic_controls_fail_explicitly(tmp_path, operation):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     try:
         with native_file(tmp_path / "bypass.sqlite3", gate) as (result, raw, methods):
             assert result == sqlite3.SQLITE_OK
@@ -456,7 +462,7 @@ def test_native_alternate_handle_and_atomic_controls_fail_explicitly(tmp_path, o
 def test_native_retry_policy_is_query_only_and_does_not_change_process_settings(tmp_path):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     try:
         with native_file(tmp_path / "retry.sqlite3", gate) as (result, raw, methods):
             assert result == sqlite3.SQLITE_OK
@@ -479,7 +485,7 @@ def test_native_retry_policy_is_query_only_and_does_not_change_process_settings(
 def test_native_unadmitted_file_class_never_creates_a_native_file(tmp_path, flags):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "unadmitted.sqlite3"
     try:
         with native_file(path, gate, flags=flags, bind_path=tmp_path / "admitted.sqlite3") as (
@@ -499,7 +505,7 @@ def test_native_unadmitted_file_class_never_creates_a_native_file(tmp_path, flag
 def test_native_unbound_gate_refuses_disk_open_before_creating_file(tmp_path):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "unbound.sqlite3"
     try:
         assert not gate.bound
@@ -515,7 +521,7 @@ def test_native_unbound_gate_refuses_disk_open_before_creating_file(tmp_path):
 def test_native_bound_gate_refuses_another_main_database_before_creation(tmp_path):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "unadmitted.sqlite3"
     try:
         with native_file(path, gate, bind_path=tmp_path / "admitted.sqlite3") as (rc, raw, methods):
@@ -531,7 +537,7 @@ def test_native_binding_rejects_mismatched_handle_and_preserves_pin_until_unboun
 
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path, other = tmp_path / "admitted.sqlite3", tmp_path / "other.sqlite3"
     path.touch()
     other.touch()
@@ -572,7 +578,7 @@ def test_native_live_binding_cannot_unbind_and_rejects_database_delete(tmp_path)
 
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "admitted.sqlite3"
     try:
         with native_file(path, gate) as (rc, raw, methods):
@@ -593,7 +599,7 @@ def test_native_binding_close_releases_its_duplicate_database_pin(tmp_path):
 
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "admitted.sqlite3"
     path.touch()
     api = _WindowsAPI()
@@ -614,7 +620,7 @@ def test_native_binding_close_releases_its_duplicate_database_pin(tmp_path):
 def test_native_journal_hardlink_is_rejected_before_any_content_write(tmp_path):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "admitted.sqlite3"
     foreign = tmp_path / "foreign"
     foreign.write_bytes(b"unrelated original")
@@ -646,7 +652,7 @@ def native_delete(gate, path):
 def test_native_journal_generation_change_refuses_before_open_or_creation(tmp_path, change):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "admitted.sqlite3"
     journal = path.with_name(path.name + "-journal")
     retained = tmp_path / "retained"
@@ -680,7 +686,7 @@ def test_native_journal_generation_change_refuses_before_open_or_creation(tmp_pa
 def test_native_journal_replacement_cannot_be_deleted_as_the_original(tmp_path):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "admitted.sqlite3"
     journal = path.with_name(path.name + "-journal")
     retained = tmp_path / "retained"
@@ -701,7 +707,7 @@ def test_native_journal_replacement_cannot_be_deleted_as_the_original(tmp_path):
 def test_native_successful_journal_delete_authorizes_one_native_recreation(tmp_path):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "admitted.sqlite3"
     journal = path.with_name(path.name + "-journal")
     try:
@@ -726,7 +732,7 @@ def test_native_failed_journal_delete_retains_generation_for_retry(tmp_path):
 
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "admitted.sqlite3"
     journal = path.with_name(path.name + "-journal")
     api = _WindowsAPI()
@@ -757,7 +763,7 @@ def test_native_binding_requires_the_original_journal_identity_or_explicit_absen
 
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     path = tmp_path / "admitted.sqlite3"
     path.touch()
     journal = path.with_name(path.name + "-journal")
@@ -799,10 +805,196 @@ def test_native_journal_identity_rejects_malformed_authority_before_binding(
 ):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
-    gate = native.WriteVfs(source, reads(native, quota))
+    gate = native.WriteVfs(source, reads(native, quota), callbacks(native, quota))
     try:
         with pytest.raises(error, match="journal|unsigned"):
             gate.bind(str(tmp_path / "unopened.sqlite3"), 0, identity)
         assert not gate.bound
     finally:
         gate.close()
+
+
+@pytest.mark.parametrize(
+    "method",
+    [
+        "size",
+        "lock",
+        "unlock",
+        "reserved",
+        "control",
+        "sector",
+        "characteristics",
+        "sync",
+        "read",
+        "write",
+        "truncate",
+    ],
+)
+def test_native_callback_exhaustion_blocks_file_delegation_but_pays_for_close(tmp_path, method):
+    native, source = runtime()
+    initial = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, initial), callbacks(native, initial))
+    quota = native.WriteQuota(grant(), grant())
+    calls = callbacks(native, quota, forward=1, recovery=1)
+    try:
+        with native_file(tmp_path / "callbacks.sqlite3", gate) as (rc, raw, methods):
+            assert rc == sqlite3.SQLITE_OK
+            gate.arm(reads(native, quota), calls)
+            assert calls.report()["forward"]["callback_slots_charged"] == 1
+            assert calls.report()["reserved_recovery_closes"] == 1
+            value = c.c_int(42)
+            size = c.c_int64(42)
+            buffer = c.create_string_buffer(b"canary")
+            arguments = {
+                "size": (c.byref(size),),
+                "lock": (1,),
+                "unlock": (0,),
+                "reserved": (c.byref(value),),
+                "control": (1, c.byref(value)),
+                "sector": (),
+                "characteristics": (),
+                "sync": (3,),
+                "read": (buffer, 1, 0),
+                "write": (buffer, 1, 0),
+                "truncate": (4096,),
+            }[method]
+            result = getattr(methods.contents, method)(raw, *arguments)
+            if method in ("sector", "characteristics"):
+                assert result == 0 and calls.report()["pending_error"]
+                assert methods.contents.size(raw, c.byref(size)) == sqlite3.SQLITE_FULL
+            else:
+                assert result == sqlite3.SQLITE_FULL
+            assert not calls.report()["pending_error"]
+            assert calls.report()["recovery"]["callback_slots_charged"] == 0
+            assert size.value == value.value == 42 and buffer.value == b"canary"
+            assert quota.report()["first_refusal"]["reason"] == "VFS callback grant"
+            assert quota.report()["native_failures"] == 0
+        assert gate.open_files == 0
+        assert calls.report()["reserved_recovery_closes"] == 0
+        assert calls.report()["recovery"]["callback_slots_charged"] == 1
+    finally:
+        gate.close()
+
+
+@pytest.mark.parametrize("method", ["access", "pathname", "randomness", "sleep", "time", "error"])
+def test_native_callback_exhaustion_blocks_vfs_delegation_and_surfaces_infallible_error(
+    tmp_path, method
+):
+    from tests.support.sqlite_vfs_faults import FaultVfs
+
+    native, source = runtime()
+    initial = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(source, reads(native, initial), callbacks(native, initial))
+    quota = native.WriteQuota(grant(), grant())
+    calls = callbacks(native, quota, forward=1, recovery=1)
+    path = tmp_path / "callbacks.sqlite3"
+    try:
+        with native_file(path, gate) as (rc, raw, methods):
+            assert rc == sqlite3.SQLITE_OK
+            gate.arm(reads(native, quota), calls)
+            vfs = FaultVfs.windows().library.sqlite3_vfs_find(gate.name.encode("ascii"))
+            name = c.create_string_buffer(str(path.resolve()).encode("utf-8"))
+            output = c.create_string_buffer(b"canary", 2048)
+            value = c.c_int(42)
+            time = c.c_double(42)
+            arguments = {
+                "access": (name, 0, c.byref(value)),
+                "pathname": (name, len(output), output),
+                "randomness": (6, output),
+                "sleep": (1,),
+                "time": (c.byref(time),),
+                "error": (len(output), output),
+            }[method]
+            result = getattr(vfs.contents, method)(vfs, *arguments)
+            if method in ("access", "pathname", "time"):
+                assert result == sqlite3.SQLITE_FULL
+            else:
+                assert result == 0 and calls.report()["pending_error"]
+                size = c.c_int64()
+                assert methods.contents.size(raw, c.byref(size)) == sqlite3.SQLITE_FULL
+            assert value.value == time.value == 42
+            assert output.value == (b"" if method == "error" else b"canary")
+            assert calls.report()["recovery"]["callback_slots_charged"] == 0
+        assert calls.report()["recovery"]["callback_slots_charged"] == 1
+    finally:
+        gate.close()
+
+
+def test_native_dynamic_loading_never_acquires_a_library_handle(tmp_path):
+    from tests.support.sqlite_vfs_faults import FaultVfs
+
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    calls = callbacks(native, quota)
+    gate = native.WriteVfs(source, reads(native, quota), calls)
+    try:
+        with native_file(tmp_path / "callbacks.sqlite3", gate) as (rc, raw, methods):
+            assert rc == sqlite3.SQLITE_OK
+            vfs = FaultVfs.windows().library.sqlite3_vfs_find(gate.name.encode("ascii"))
+            library = c.create_string_buffer(b"kernel32.dll")
+            symbol = c.create_string_buffer(b"GetCurrentProcess")
+            assert not vfs.contents.dlopen(vfs, library)
+            assert not vfs.contents.dlsym(vfs, None, symbol)
+            output = c.create_string_buffer(b"canary")
+            vfs.contents.dlerror(vfs, len(output), output)
+            assert output.value == b""
+            vfs.contents.dlclose(vfs, None)
+            assert calls.report()["pending_error"] and quota.recovering
+            size = c.c_int64()
+            assert methods.contents.size(raw, c.byref(size)) == sqlite3.SQLITE_FULL
+            assert not calls.report()["pending_error"]
+            assert quota.report()["first_refusal"]["reason"] == "disallowed file control"
+            assert quota.report()["native_failures"] == 0
+    finally:
+        gate.close()
+
+
+def test_native_rearm_refuses_inadequate_close_capacity_without_replacing_the_bank(tmp_path):
+    native, source = runtime()
+    initial = native.WriteQuota(grant(), grant())
+    initial_calls = callbacks(native, initial)
+    gate = native.WriteVfs(source, reads(native, initial), initial_calls)
+    quota = native.WriteQuota(grant(), grant())
+    short = callbacks(native, quota, forward=16, recovery=1)
+    path = tmp_path / "callbacks.sqlite3"
+    try:
+        with native_file(path, gate) as (rc, _raw, _methods):
+            assert rc == sqlite3.SQLITE_OK
+            with native_file(path, gate, kind="journal", binding=False) as (rc, raw, methods):
+                assert rc == sqlite3.SQLITE_OK and gate.open_files == 2
+                with pytest.raises(RuntimeError, match="close capacity"):
+                    gate.arm(reads(native, quota), short)
+                assert short.report()["forward"]["callback_slots_charged"] == 0
+                assert short.report()["reserved_recovery_closes"] == 0
+                assert initial_calls.report()["reserved_recovery_closes"] == 2
+                assert methods.contents.truncate(raw, 4096) == sqlite3.SQLITE_OK
+                assert not initial.recovering
+        assert initial_calls.report()["reserved_recovery_closes"] == 0
+    finally:
+        gate.close()
+
+
+def test_native_attached_callback_reservations_cannot_be_mutated_from_python():
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    calls = callbacks(native, quota)
+    gate = native.WriteVfs(source, reads(native, quota), calls)
+    try:
+        for mutate in (
+            calls.admit,
+            calls.opened,
+            lambda: calls.closed(True),
+            lambda: calls.abandoned(True),
+        ):
+            with pytest.raises(RuntimeError, match="attached"):
+                mutate()
+    finally:
+        gate.close()
+
+
+def test_native_read_and_callback_grants_require_the_same_write_owner():
+    native, source = runtime()
+    first = native.WriteQuota(grant(), grant())
+    other = native.WriteQuota(grant(), grant())
+    with pytest.raises(ValueError, match="same write owner"):
+        native.WriteVfs(source, reads(native, first), callbacks(native, other))

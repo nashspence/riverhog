@@ -344,3 +344,150 @@ def test_native_resize_calls_shrink_failure_and_recovery_have_independent_capaci
         uninitialized.resize_report()
     with pytest.raises(RuntimeError, match="not initialized"):
         uninitialized.resize("database", 1)
+
+
+@pytest.mark.parametrize("value", [0, -1, True, 1 << 63, "4"])
+@pytest.mark.parametrize("bank", ["forward", "recovery"])
+def test_native_callback_limits_are_explicit_positive_signed_integers(value, bank):
+    writes = native.WriteQuota(grant(), grant())
+    limits = {"forward": 16, "recovery": 32}
+    limits[bank] = value
+    with pytest.raises((TypeError, ValueError, OverflowError)):
+        native.CallbackQuota(writes, **limits)
+
+
+def test_native_callback_close_reservation_survives_exhaustion_and_failure():
+    writes = native.WriteQuota(grant(), grant())
+    calls = native.CallbackQuota(writes, 2, 2)
+    assert calls.opened() is True
+    assert calls.report()["forward"]["callback_slots_charged"] == 2
+    assert calls.report()["reserved_recovery_closes"] == 1
+    assert not calls.admit()
+    assert writes.report()["first_refusal"]["reason"] == "VFS callback grant"
+    assert calls.admit()
+    assert not calls.admit()
+    assert calls.report()["recovery"]["callback_slots_charged"] == 1
+    calls.closed(True)
+    assert calls.report()["recovery"]["callback_slots_charged"] == 2
+    assert calls.report()["reserved_recovery_closes"] == 0
+    with pytest.raises(ValueError, match="reserved"):
+        calls.closed(True)
+    assert calls.report()["recovery"]["callback_slots_charged"] == 2
+
+
+def test_native_callback_abandoned_open_keeps_its_charge_and_releases_only_close_reserve():
+    writes = native.WriteQuota(grant(), grant())
+    calls = native.CallbackQuota(writes, 4, 1)
+    assert calls.opened() is True
+    calls.abandoned(True)
+    assert calls.report()["forward"]["callback_slots_charged"] == 2
+    assert calls.opened() is True
+    assert calls.opened() is None
+    assert writes.report()["first_refusal"]["reason"] == "recovery file-close grant"
+    calls.closed(True)
+    assert calls.report()["recovery"]["callback_slots_charged"] == 1
+
+
+def test_native_callback_infallible_refusal_must_return_error_before_recovery_delegation():
+    writes = native.WriteQuota(grant(), grant())
+    calls = native.CallbackQuota(writes, 1, 4)
+    assert calls.admit()
+    assert not calls.admit(False)
+    assert writes.recovering and calls.report()["pending_error"]
+    assert not calls.admit(False)
+    assert calls.report()["recovery"]["callback_slots_charged"] == 0
+    assert not calls.admit(True)
+    assert not calls.report()["pending_error"]
+    assert calls.report()["recovery"]["callback_slots_charged"] == 0
+    assert calls.admit()
+    assert calls.report()["recovery"]["callback_slots_charged"] == 1
+
+
+def test_native_callback_recovery_open_prepays_close_and_never_refunds_failed_native_work():
+    writes = native.WriteQuota(grant(), grant())
+    calls = native.CallbackQuota(writes, 4, 2)
+    writes.failed()
+    assert calls.opened() is False
+    assert calls.report()["recovery"]["callback_slots_charged"] == 2
+    assert not calls.admit()
+    calls.closed(False)
+    assert calls.report()["recovery"]["callback_slots_charged"] == 2
+    assert calls.report()["prepaid_recovery_closes"] == 0
+
+
+def test_native_callback_banks_are_sealed_and_reject_uninitialized_authority():
+    writes = native.WriteQuota(grant(), grant())
+    calls = native.CallbackQuota(writes, 4, 4)
+    with pytest.raises(RuntimeError, match="reinitialized"):
+        calls.__init__(writes, 4, 4)
+    uninitialized = native.CallbackQuota.__new__(native.CallbackQuota)
+    for method in (uninitialized.report, uninitialized.admit, uninitialized.opened):
+        with pytest.raises(RuntimeError, match="not initialized"):
+            method()
+    with pytest.raises(RuntimeError, match="not initialized"):
+        native.CallbackQuota(native.WriteQuota.__new__(native.WriteQuota), 4, 4)
+    with pytest.raises(TypeError):
+        calls.admit(1)
+
+
+@pytest.mark.parametrize("seed", range(16))
+def test_native_callback_prefixes_match_independent_reservation_model(seed):
+    import random
+
+    rng = random.Random(seed)
+    writes = native.WriteQuota(grant(), grant())
+    calls = native.CallbackQuota(writes, 17, 23)
+    charged = [0, 0]
+    files = []
+    recovering = pending = False
+    for _step in range(96):
+        event = rng.choice(["call", "open", "close", "abandon", "failure"])
+        if event == "failure":
+            writes.failed()
+            recovering = True
+        elif event in ("close", "abandon"):
+            if not files:
+                continue
+            bank = files.pop(rng.randrange(len(files)))
+            if event == "close":
+                calls.closed(bank)
+                if bank and recovering:
+                    charged[1] += 1
+            else:
+                calls.abandoned(bank)
+        elif event == "open":
+            if pending:
+                expected = None
+                pending = False
+            else:
+                available = [17 - charged[0], 23 - charged[1] - files.count(True)]
+                if available[int(recovering)] < 2 or (not recovering and available[1] < 1):
+                    expected = None
+                    recovering = True
+                else:
+                    expected = not recovering
+                    charged[int(recovering)] += 2
+                    files.append(expected)
+            assert calls.opened() is expected
+        else:
+            can_error = rng.choice([False, True])
+            if pending:
+                expected = False
+                pending = not can_error
+            else:
+                room = (23 - charged[1] - files.count(True)) if recovering else (17 - charged[0])
+                expected = room > 0
+                if expected:
+                    charged[int(recovering)] += 1
+                else:
+                    recovering = True
+                    pending = not can_error
+            assert calls.admit(can_error) is expected
+        report = calls.report()
+        assert writes.recovering is recovering
+        assert report["pending_error"] is pending
+        assert report["forward"]["callback_slots_charged"] == charged[0]
+        assert report["recovery"]["callback_slots_charged"] == charged[1]
+        assert report["reserved_recovery_closes"] == files.count(True)
+        assert report["prepaid_recovery_closes"] == files.count(False)
+        assert charged[0] <= 17 and charged[1] + files.count(True) <= 23

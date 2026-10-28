@@ -14,9 +14,10 @@ CAPACITY = 256 * 1024
 class _ObservedConnection:
     """Snapshot the driver error before the storage owner's exception handler."""
 
-    def __init__(self, connection, quota, *, read_report=None):
+    def __init__(self, connection, quota, *, read_report=None, callback_report=None):
         self.connection, self.quota = connection, quota
         self.read_report = read_report
+        self.callback_report = callback_report
         self.commit_error = None
         self.explicit_rollbacks = 0
 
@@ -33,6 +34,7 @@ class _ObservedConnection:
                     "in_transaction": self.connection.in_transaction,
                     "quota": self.quota.report(),
                     "read_quota": self.read_report() if self.read_report else None,
+                    "callback_quota": self.callback_report() if self.callback_report else None,
                 }
             raise
 
@@ -71,7 +73,10 @@ def witness(opened, shim, refusal, *, compiled=False):
         )
         with shim.write_quota(forward=forward, recovery=recovery, compiled=compiled) as quota:
             observed = _ObservedConnection(
-                files._connection, quota, read_report=getattr(shim, "read_report", None)
+                files._connection,
+                quota,
+                read_report=getattr(shim, "read_report", None),
+                callback_report=getattr(shim, "callback_report", None),
             )
             files._connection = observed
             try:
@@ -111,6 +116,10 @@ def witness(opened, shim, refusal, *, compiled=False):
             files.close()
             report = quota.report()
             reads = observed.read_report() if observed.read_report else None
+            callbacks = observed.callback_report() if observed.callback_report else None
+            if callbacks is not None:
+                assert callbacks["recovery"]["callback_slots_charged"] > 0
+                assert callbacks["reserved_recovery_closes"] == 0
     cold = WriteLimits(
         4096,
         256,
@@ -143,6 +152,7 @@ def witness(opened, shim, refusal, *, compiled=False):
         "tracking_bytes": quota.tracking_bytes if compiled else None,
         "quota": report,
         "read_quota": reads,
+        "callback_quota": callbacks,
         "automatic_rollback_pages_before_driver_error": automatic,
         "explicit_rollback_calls": observed.explicit_rollbacks,
         "original_control_exact": True,
