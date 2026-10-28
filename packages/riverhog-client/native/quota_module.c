@@ -1,5 +1,13 @@
 #define PY_SSIZE_T_CLEAN
+#ifdef _MSC_VER
+/* Keep Python header warnings separate from the extension warning policy. */
+#pragma warning(push)
+#pragma warning(disable: 4100 4115)
+#endif
 #include <Python.h>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 #include <limits.h>
 #include <stdint.h>
 #include "write_quota.h"
@@ -229,7 +237,6 @@ static PyTypeObject quota_type = {
     .tp_name = "riverhog_client._prepared_primary_native.WriteQuota",
     .tp_basicsize = (Py_ssize_t)sizeof(WriteQuota),
     .tp_flags = Py_TPFLAGS_DEFAULT,
-    .tp_new = PyType_GenericNew,
     .tp_init = quota_init,
     .tp_dealloc = quota_dealloc,
     .tp_methods = quota_methods,
@@ -245,6 +252,7 @@ static struct PyModuleDef module_definition = {
 
 PyMODINIT_FUNC PyInit__prepared_primary_native(void) {
     PyObject *module;
+    quota_type.tp_new = PyType_GenericNew;
     if (PyType_Ready(&quota_type) < 0) return NULL;
     module = PyModule_Create(&module_definition);
     if (!module) return NULL;
