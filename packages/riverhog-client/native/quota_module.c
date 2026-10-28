@@ -49,20 +49,20 @@ static int retry_pair(PyObject *values, uint64_t *first, uint64_t *second, int p
     Py_ssize_t index;
     uint64_t *fields[2] = {first, second};
     if (!PyTuple_CheckExact(values) || PyTuple_GET_SIZE(values) != 2) {
-        PyErr_SetString(PyExc_TypeError, "retry profiles and bootstrap grants require exact two-integer tuples");
+        PyErr_SetString(PyExc_TypeError, "native profiles and grants require exact two-integer tuples");
         return 0;
     }
     for (index = 0; index < 2; ++index) {
         PyObject *value = PyTuple_GET_ITEM(values, index);
         long long parsed;
         if (!PyLong_CheckExact(value)) {
-            PyErr_SetString(PyExc_TypeError, "retry profiles and grants require exact signed 64-bit integers");
+            PyErr_SetString(PyExc_TypeError, "native profiles and grants require exact signed 64-bit integers");
             return 0;
         }
         parsed = PyLong_AsLongLong(value);
         if (PyErr_Occurred()) return 0;
         if (parsed < 0 || (profile && parsed == 0)) {
-            PyErr_SetString(PyExc_ValueError, "retry profiles must be positive and bootstrap grants nonnegative");
+            PyErr_SetString(PyExc_ValueError, "native profiles must be positive and resource grants nonnegative");
             return 0;
         }
         *fields[index] = (uint64_t)parsed;
@@ -570,6 +570,175 @@ static PyTypeObject callback_type = {
 
 typedef struct {
     PyObject_HEAD
+    rh_native_work_quota work;
+    PyObject *quota;
+    int initialized;
+} NativeWorkQuota;
+typedef struct {
+    PyObject_HEAD
+    rh_native_close_credit credit;
+    int initialized;
+    unsigned long thread;
+    int64_t interpreter;
+} NativeCloseCredit;
+static PyTypeObject native_close_type;
+static int native_work_ready(NativeWorkQuota *self) {
+    if (!self->quota) {
+        PyErr_SetString(PyExc_RuntimeError, "native work quota is not initialized");
+        return 0;
+    }
+    return ready((WriteQuota *)self->quota);
+}
+static int native_cost(PyObject *values, rh_retry_cost *cost) {
+    return retry_pair(values, &cost->filesystem_calls, &cost->sleep_microseconds, 0);
+}
+static int native_work_init(PyObject *object, PyObject *args, PyObject *kwargs) {
+    NativeWorkQuota *self = (NativeWorkQuota *)object;
+    WriteQuota *quota;
+    PyObject *forward, *recovery;
+    static char *keywords[] = {"writes", "forward", "recovery", NULL};
+    if (self->initialized) {
+        PyErr_SetString(PyExc_RuntimeError, "native work quota cannot be reinitialized");
+        return -1;
+    }
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!OO", keywords,
+                                    &quota_type, &quota, &forward, &recovery)) return -1;
+    self->initialized = 1;
+    if (!ready(quota) || !native_cost(forward, &self->work.forward.limits) ||
+        !native_cost(recovery, &self->work.recovery.limits)) return -1;
+    self->quota = Py_NewRef((PyObject *)quota);
+    return 0;
+}
+static void native_work_dealloc(PyObject *object) {
+    NativeWorkQuota *self = (NativeWorkQuota *)object;
+    Py_XDECREF(self->quota);
+    Py_TYPE(self)->tp_free(object);
+}
+static PyObject *native_work_admit(PyObject *object, PyObject *value) {
+    NativeWorkQuota *self = (NativeWorkQuota *)object;
+    rh_retry_cost cost;
+    if (!native_work_ready(self) || !native_cost(value, &cost)) return NULL;
+    return PyBool_FromLong(rh_native_work_admit(&self->work,
+        &((WriteQuota *)self->quota)->quota, cost) == RH_ALLOWED);
+}
+static PyObject *native_work_acquire(PyObject *object, PyObject *args) {
+    NativeWorkQuota *self = (NativeWorkQuota *)object;
+    PyObject *acquisition, *close;
+    NativeCloseCredit *credit;
+    rh_retry_cost work_cost, close_cost;
+    enum rh_refusal result;
+    if (!native_work_ready(self)) return NULL;
+    if (!PyArg_ParseTuple(args, "OO", &acquisition, &close) ||
+        !native_cost(acquisition, &work_cost) || !native_cost(close, &close_cost)) return NULL;
+    if (!close_cost.filesystem_calls) {
+        PyErr_SetString(PyExc_ValueError, "native close requires a positive filesystem-attempt cost");
+        return NULL;
+    }
+    /* Allocate the fixed credit before changing either bank; allocation failure
+     * cannot leave a newly acquired native resource without its close record.
+     */
+    credit = PyObject_New(NativeCloseCredit, &native_close_type);
+    if (!credit) return NULL;
+    credit->initialized = 0;
+    credit->credit = (rh_native_close_credit){{0, 0}, 0};
+    result = rh_native_work_acquire(&self->work, &((WriteQuota *)self->quota)->quota,
+                                    work_cost, close_cost, &credit->credit);
+    if (result != RH_ALLOWED) {
+        Py_DECREF(credit);
+        Py_RETURN_NONE;
+    }
+    credit->thread = PyThread_get_thread_ident();
+    credit->interpreter = PyInterpreterState_GetID(PyInterpreterState_Get());
+    credit->initialized = 1;
+    return (PyObject *)credit;
+}
+static PyObject *native_work_bank_report(const rh_native_work_bank *bank) {
+    return Py_BuildValue("{s:K,s:K,s:K,s:K}",
+        "filesystem_api_attempts_charged", (unsigned long long)bank->charged.filesystem_calls,
+        "internal_sleep_microseconds_charged", (unsigned long long)bank->charged.sleep_microseconds,
+        "close_filesystem_api_attempts_prepaid", (unsigned long long)bank->close_prepaid.filesystem_calls,
+        "close_internal_sleep_microseconds_prepaid", (unsigned long long)bank->close_prepaid.sleep_microseconds);
+}
+static PyObject *native_work_report(PyObject *object, PyObject *unused) {
+    NativeWorkQuota *self = (NativeWorkQuota *)object;
+    PyObject *forward, *recovery, *report;
+    (void)unused;
+    if (!native_work_ready(self)) return NULL;
+    forward = native_work_bank_report(&self->work.forward);
+    if (!forward) return NULL;
+    recovery = native_work_bank_report(&self->work.recovery);
+    if (!recovery) { Py_DECREF(forward); return NULL; }
+    report = Py_BuildValue("{s:O,s:O}", "forward", forward, "recovery", recovery);
+    Py_DECREF(forward); Py_DECREF(recovery);
+    return report;
+}
+static PyMethodDef native_work_methods[] = {
+    {"admit", native_work_admit, METH_O, "Precharge a complete filesystem-attempt/nominal-wait cost."},
+    {"acquire", native_work_acquire, METH_VARARGS, "Atomically prepay acquisition and independent possible close paths."},
+    {"report", native_work_report, METH_NOARGS, "Snapshot immutable attempted work and complete close prepayment."},
+    {NULL, NULL, 0, NULL}
+};
+static PyTypeObject native_work_type = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "riverhog_client._prepared_primary_native.NativeWorkQuota",
+    .tp_basicsize = (Py_ssize_t)sizeof(NativeWorkQuota),
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_init = native_work_init,
+    .tp_dealloc = native_work_dealloc,
+    .tp_methods = native_work_methods
+};
+static int native_close_ready(NativeCloseCredit *self) {
+    if (!self->initialized) {
+        PyErr_SetString(PyExc_RuntimeError, "native close credit is not initialized");
+        return 0;
+    }
+    if (self->thread != PyThread_get_thread_ident() ||
+        self->interpreter != PyInterpreterState_GetID(PyInterpreterState_Get())) {
+        PyErr_SetString(PyExc_RuntimeError, "native close credit requires its owning interpreter and thread");
+        return 0;
+    }
+    return 1;
+}
+static int native_close_init(PyObject *object, PyObject *args, PyObject *kwargs) {
+    (void)object; (void)args; (void)kwargs;
+    PyErr_SetString(PyExc_TypeError, "native close credits require successful native work acquisition");
+    return -1;
+}
+static PyObject *native_close_consume(PyObject *object, PyObject *unused) {
+    NativeCloseCredit *self = (NativeCloseCredit *)object;
+    (void)unused;
+    if (!native_close_ready(self)) return NULL;
+    if (!rh_native_close_consume(&self->credit)) {
+        PyErr_SetString(PyExc_ValueError, "native close credit was already consumed");
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+static PyObject *native_close_report(PyObject *object, PyObject *unused) {
+    NativeCloseCredit *self = (NativeCloseCredit *)object;
+    (void)unused;
+    if (!native_close_ready(self)) return NULL;
+    return Py_BuildValue("{s:K,s:K,s:O}",
+        "filesystem_api_attempts_prepaid", (unsigned long long)self->credit.cost.filesystem_calls,
+        "internal_sleep_microseconds_prepaid", (unsigned long long)self->credit.cost.sleep_microseconds,
+        "pending", self->credit.pending ? Py_True : Py_False);
+}
+static PyMethodDef native_close_methods[] = {
+    {"consume", native_close_consume, METH_NOARGS, "Use one fully prepaid close; no budget access, charge or refund."},
+    {"report", native_close_report, METH_NOARGS, "Observe fixed prepayment without a reference to its original bank."},
+    {NULL, NULL, 0, NULL}
+};
+static PyTypeObject native_close_type = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "riverhog_client._prepared_primary_native.NativeCloseCredit",
+    .tp_basicsize = (Py_ssize_t)sizeof(NativeCloseCredit),
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_init = native_close_init,
+    .tp_methods = native_close_methods
+};
+
+typedef struct {
+    PyObject_HEAD
     rh_sqlite_heap *heap;
     int64_t interpreter;
     int initialized;
@@ -992,6 +1161,10 @@ PyMODINIT_FUNC PyInit__prepared_primary_native(void) {
     if (PyType_Ready(&read_type) < 0) return NULL;
     callback_type.tp_new = PyType_GenericNew;
     if (PyType_Ready(&callback_type) < 0) return NULL;
+    native_work_type.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&native_work_type) < 0) return NULL;
+    native_close_type.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&native_close_type) < 0) return NULL;
     heap_type.tp_new = PyType_GenericNew;
     if (PyType_Ready(&heap_type) < 0) return NULL;
     vfs_type.tp_new = PyType_GenericNew;
@@ -1005,6 +1178,12 @@ PyMODINIT_FUNC PyInit__prepared_primary_native(void) {
         Py_DECREF(module); return NULL;
     }
     if (PyModule_AddObjectRef(module, "CallbackQuota", (PyObject *)&callback_type) < 0) {
+        Py_DECREF(module); return NULL;
+    }
+    if (PyModule_AddObjectRef(module, "NativeWorkQuota", (PyObject *)&native_work_type) < 0) {
+        Py_DECREF(module); return NULL;
+    }
+    if (PyModule_AddObjectRef(module, "NativeCloseCredit", (PyObject *)&native_close_type) < 0) {
         Py_DECREF(module); return NULL;
     }
     if (PyModule_AddObjectRef(module, "SqliteProcessBudget", (PyObject *)&heap_type) < 0) {

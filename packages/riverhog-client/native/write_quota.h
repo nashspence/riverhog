@@ -8,7 +8,7 @@ enum rh_refusal {
     RH_ALLOWED = 0, RH_FILE, RH_RANGE, RH_CALLS, RH_BYTES,
     RH_DATABASE_END, RH_JOURNAL_END, RH_PAGES, RH_TRACKING,
     RH_READ_RANGE, RH_READ_CALLS, RH_READ_BYTES,
-    RH_RESIZE_RANGE, RH_RESIZE_CALLS, RH_CONTROL, RH_CALLBACK_CALLS, RH_CALLBACK_CLOSE, RH_SLEEP_RANGE, RH_SLEEP_GRANT, RH_RETRY
+    RH_RESIZE_RANGE, RH_RESIZE_CALLS, RH_CONTROL, RH_CALLBACK_CALLS, RH_CALLBACK_CLOSE, RH_SLEEP_RANGE, RH_SLEEP_GRANT, RH_RETRY, RH_NATIVE_CALLS, RH_NATIVE_SLEEP, RH_NATIVE_CLOSE
 };
 
 typedef struct {
@@ -65,6 +65,23 @@ typedef struct { uint64_t filesystem_calls, sleep_microseconds; } rh_retry_cost;
  * This excludes name conversion, error formatting and caller binding work.
  */
 int rh_retry_bootstrap_cost(int64_t, int64_t, rh_retry_cost *);
+/* Complete source-qualified filesystem-attempt and nominal internal-wait costs.
+ * Native conversion/formatting, CPU, RSS and scheduling delay are separate.
+ */
+typedef struct {
+    rh_retry_cost limits, charged, close_prepaid;
+} rh_native_work_bank;
+typedef struct { rh_native_work_bank forward, recovery; } rh_native_work_quota;
+/* Both possible banks are fully charged before forward acquisition. A credit
+ * contains no bank pointer, so replacing/freeing an operation bank cannot lose
+ * the admitted close or retain an old operation's page-tracking allocation.
+ */
+typedef struct { rh_retry_cost cost; int pending; } rh_native_close_credit;
+enum rh_refusal rh_native_work_admit(rh_native_work_quota *, rh_quota *, rh_retry_cost);
+enum rh_refusal rh_native_work_acquire(
+    rh_native_work_quota *, rh_quota *, rh_retry_cost, rh_retry_cost, rh_native_close_credit *);
+int rh_native_close_consume(rh_native_close_credit *);
+
 void rh_forbid_retry(rh_quota *);
 void rh_forbid_control(rh_quota *, enum rh_file);
 void rh_failed(rh_quota *);

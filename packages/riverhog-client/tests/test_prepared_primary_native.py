@@ -712,3 +712,322 @@ def test_native_retry_bootstrap_recipe_matches_independent_bounded_loop_model():
                     expected_calls += count + 1  # nested winAccess
                     expected_wait += loop_wait
         assert (calls, microseconds) == (expected_calls + 6, (expected_wait + 200) * 1000)
+
+
+def native_work_snapshot(calls=0, sleep=0, close_calls=0, close_sleep=0):
+    return {
+        "filesystem_api_attempts_charged": calls,
+        "internal_sleep_microseconds_charged": sleep,
+        "close_filesystem_api_attempts_prepaid": close_calls,
+        "close_internal_sleep_microseconds_prepaid": close_sleep,
+    }
+
+
+@pytest.mark.parametrize(
+    "limits",
+    [
+        True,
+        1,
+        [1, 2],
+        (),
+        (1,),
+        (1, 2, 3),
+        (True, 1),
+        (1, False),
+        (-1, 1),
+        (1, -1),
+        (1.0, 1),
+        (1, "2"),
+        (2**63, 0),
+        (0, 2**63),
+    ],
+)
+@pytest.mark.parametrize("bank", ["forward", "recovery"])
+def test_native_work_grants_reject_nonexact_or_unrepresentable_values(limits, bank):
+    writes = native.WriteQuota(grant(), grant())
+    values = {"forward": (32, 200000), "recovery": (16, 200000)}
+    values[bank] = limits
+    with pytest.raises((TypeError, ValueError, OverflowError)):
+        native.NativeWorkQuota(writes, **values)
+    assert writes.report()["refusals"] == 0
+
+
+@pytest.mark.parametrize(
+    "cost,expected,reason",
+    [
+        ((4, 10), True, None),
+        ((5, 0), False, "native filesystem attempt grant"),
+        ((0, 11), False, "native internal sleep grant"),
+        ((5, 11), False, "native filesystem attempt grant"),
+    ],
+)
+def test_native_work_whole_cost_is_precharged_or_refused_without_partial_debit(
+    cost, expected, reason
+):
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, (4, 10), (8, 20))
+    assert work.admit(cost) is expected
+    assert work.report()["forward"] == native_work_snapshot(*(cost if expected else (0, 0)))
+    assert work.report()["recovery"] == native_work_snapshot()
+    assert writes.recovering is (not expected)
+    if reason:
+        assert writes.report()["first_refusal"]["reason"] == reason
+        assert writes.report()["first_refusal"]["bank"] == "forward"
+        assert work.admit((8, 20))
+        assert work.report()["recovery"] == native_work_snapshot(8, 20)
+
+
+@pytest.mark.parametrize(
+    "forward,recovery,reason",
+    [
+        ((6, 300000), (3, 200000), "native filesystem attempt grant"),
+        ((7, 299999), (3, 200000), "native internal sleep grant"),
+        ((7, 300000), (2, 200000), "native filesystem attempt grant"),
+        ((7, 300000), (3, 199999), "native internal sleep grant"),
+    ],
+)
+def test_native_acquisition_prepays_both_complete_close_paths_atomically(forward, recovery, reason):
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, forward, recovery)
+    assert work.acquire((4, 100000), (3, 200000)) is None
+    assert work.report() == {"forward": native_work_snapshot(), "recovery": native_work_snapshot()}
+    report = writes.report()
+    assert report["recovering"] and report["refusals"] == 1
+    assert report["first_refusal"]["reason"] == reason
+
+
+def test_native_work_prepaid_close_cannot_be_spent_by_ordinary_recovery():
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, (7, 300000), (5, 200001))
+    credit = work.acquire((4, 100000), (3, 200000))
+    assert credit.report() == {
+        "filesystem_api_attempts_prepaid": 3,
+        "internal_sleep_microseconds_prepaid": 200000,
+        "pending": True,
+    }
+    assert work.report() == {
+        "forward": native_work_snapshot(7, 300000, 3, 200000),
+        "recovery": native_work_snapshot(3, 200000, 3, 200000),
+    }
+    writes.failed()
+    assert work.admit((2, 1))
+    assert not work.admit((1, 0))
+    before = work.report()
+    credit.consume()
+    assert not credit.report()["pending"]
+    assert work.report() == before
+    with pytest.raises(ValueError, match="already consumed"):
+        credit.consume()
+    assert work.report() == before
+    # A second acquisition cannot borrow the already prepaid close path.
+    assert work.acquire((0, 0), (1, 0)) is None
+
+
+def test_native_recovery_acquisition_pays_its_close_once_and_never_touches_forward():
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, (0, 0), (7, 300000))
+    writes.failed()
+    credit = work.acquire((4, 100000), (3, 200000))
+    assert credit is not None
+    assert work.report() == {
+        "forward": native_work_snapshot(),
+        "recovery": native_work_snapshot(7, 300000, 3, 200000),
+    }
+    credit.consume()
+    assert not work.admit((1, 0))
+    assert writes.report()["first_refusal"]["bank"] == "recovery"
+
+
+def test_native_close_credit_survives_bank_replacement_without_retaining_old_tracking():
+    import sys
+
+    writes = native.WriteQuota(grant(database_pages=65536), grant(database_pages=65536))
+    original_refs = sys.getrefcount(writes)
+    work = native.NativeWorkQuota(writes, (4, 200000), (3, 200000))
+    credit = work.acquire((1, 0), (3, 200000))
+    assert credit is not None
+    before = work.report()
+    assert sys.getrefcount(writes) == original_refs + 1
+    del work
+    # The detached fixed credit holds neither the old work bank nor its large
+    # WriteQuota tracking arrays. A replacement grant cannot revoke prepayment.
+    assert sys.getrefcount(writes) == original_refs
+    replacement_writes = native.WriteQuota(grant(), grant())
+    replacement = native.NativeWorkQuota(replacement_writes, (0, 0), (0, 0))
+    del writes
+    credit.consume()
+    assert replacement.report() == {
+        "forward": native_work_snapshot(),
+        "recovery": native_work_snapshot(),
+    }
+    assert before["forward"] == native_work_snapshot(4, 200000, 3, 200000)
+    assert before["recovery"] == native_work_snapshot(3, 200000, 3, 200000)
+
+
+def test_native_failed_or_unused_acquisition_never_refunds_prepaid_work():
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, (7, 300000), (3, 200000))
+    credit = work.acquire((4, 100000), (3, 200000))
+    before = work.report()
+    # A failed underlying open can leave no native file. Discarding/consuming
+    # its unused close record does not refund either complete attempted cost.
+    credit.consume()
+    del credit
+    assert work.report() == before
+    writes.failed()
+    assert not work.admit((1, 0))
+    assert work.report() == before
+
+
+@pytest.mark.parametrize("method", ["admit", "acquire"])
+@pytest.mark.parametrize(
+    "cost", [True, [1, 0], (1,), (False, 0), (1, 0.5), (-1, 0), (0, -1), (2**63, 0)]
+)
+def test_native_work_invalid_cost_does_not_change_or_poison_banks(method, cost):
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, (32, 200000), (32, 200000))
+    before = work.report()
+    with pytest.raises((TypeError, ValueError, OverflowError)):
+        if method == "admit":
+            work.admit(cost)
+        else:
+            work.acquire(cost, (3, 200000))
+    assert work.report() == before
+    assert not writes.recovering
+
+
+@pytest.mark.parametrize("close", [(0, 0), (0, 1), (True, 0), (1, False), (1, -1), (1, 2**63)])
+def test_native_close_cost_requires_exact_positive_calls_before_any_bank_change(close):
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, (32, 200000), (32, 200000))
+    before = work.report()
+    with pytest.raises((TypeError, ValueError, OverflowError)):
+        work.acquire((1, 0), close)
+    assert work.report() == before and not writes.recovering
+
+
+def test_native_work_signed64_edge_costs_do_not_wrap_or_partially_debit():
+    maximum = 2**63 - 1
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, (maximum, maximum), (maximum, maximum))
+    assert work.acquire((maximum, maximum), (maximum, maximum)) is None
+    assert work.report() == {"forward": native_work_snapshot(), "recovery": native_work_snapshot()}
+    credit = work.acquire((0, 0), (maximum, maximum))
+    assert credit is not None
+    assert work.report()["forward"] == native_work_snapshot()
+    assert work.report()["recovery"] == native_work_snapshot(maximum, maximum, maximum, maximum)
+    credit.consume()
+    assert not work.admit((0, 1))
+
+
+def test_native_work_and_close_uninitialized_or_reinitialized_objects_have_no_authority():
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, (0, 0), (0, 0))
+    with pytest.raises(RuntimeError, match="reinitialized"):
+        work.__init__(writes, (32, 200000), (32, 200000))
+    uninitialized = native.NativeWorkQuota.__new__(native.NativeWorkQuota)
+    for method, args in (("admit", ((0, 0),)), ("acquire", ((0, 0), (1, 0))), ("report", ())):
+        with pytest.raises(RuntimeError, match="not initialized"):
+            getattr(uninitialized, method)(*args)
+    with pytest.raises(RuntimeError, match="not initialized"):
+        native.NativeWorkQuota(native.WriteQuota.__new__(native.WriteQuota), (0, 0), (0, 0))
+    with pytest.raises(TypeError, match="successful native work acquisition"):
+        native.NativeCloseCredit()
+    empty = native.NativeCloseCredit.__new__(native.NativeCloseCredit)
+    for method in ("consume", "report"):
+        with pytest.raises(RuntimeError, match="not initialized"):
+            getattr(empty, method)()
+
+
+def test_native_close_credit_cannot_move_threads_or_be_forged_or_reset():
+    from concurrent.futures import ThreadPoolExecutor
+
+    writes = native.WriteQuota(grant(), grant())
+    work = native.NativeWorkQuota(writes, (1, 0), (1, 0))
+    credit = work.acquire((0, 0), (1, 0))
+    for method in ("consume", "report"):
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            with pytest.raises(RuntimeError, match="owning interpreter and thread"):
+                pool.submit(getattr(credit, method)).result()
+    for field, value in (("pending", False), ("cost", (0, 0))):
+        with pytest.raises(AttributeError):
+            setattr(credit, field, value)
+    with pytest.raises(TypeError, match="successful native work acquisition"):
+        credit.__init__()
+    assert credit.report()["pending"]
+    credit.consume()
+    with pytest.raises(TypeError, match="successful native work acquisition"):
+        credit.__init__()
+    assert not credit.report()["pending"]
+
+
+@pytest.mark.parametrize("seed", range(16))
+def test_native_work_prefixes_match_independent_whole_cost_and_close_models(seed):
+    rng = random.Random(seed)
+    writes = native.WriteQuota(grant(), grant())
+    limits = ((160, 720000), (180, 960000))
+    work = native.NativeWorkQuota(writes, *limits)
+    charged = [[0, 0], [0, 0]]
+    prepaid = [[0, 0], [0, 0]]
+    recovering = False
+    refusals = 0
+    credits = []
+    first = None
+    for step in range(160):
+        action = rng.choice(("work", "acquire", "consume", "fail"))
+        if action == "fail":
+            writes.failed()
+            recovering = True
+        elif action == "consume" and credits:
+            credit = credits.pop(rng.randrange(len(credits)))
+            credit.consume()
+            assert not credit.report()["pending"]
+        elif action in ("work", "acquire"):
+            current = int(recovering)
+            cost = (rng.randrange(10), rng.randrange(5) * 1000)
+            close = (
+                (rng.randrange(1, 4), rng.choice((0, 2000, 200000)))
+                if action == "acquire"
+                else (0, 0)
+            )
+            debits = [((current), (cost[0] + close[0], cost[1] + close[1]))]
+            if action == "acquire" and not recovering:
+                debits.append((1, close))
+            # Independent arbitrary-precision model; no native formula helpers.
+            reason = None
+            for bank, debit in debits:
+                if charged[bank][0] + debit[0] > limits[bank][0]:
+                    reason = "native filesystem attempt grant"
+                elif charged[bank][1] + debit[1] > limits[bank][1]:
+                    reason = "native internal sleep grant"
+                if reason:
+                    break
+            actual = work.acquire(cost, close) if action == "acquire" else work.admit(cost)
+            if reason:
+                assert actual is (None if action == "acquire" else False)
+                refusals += 1
+                if first is None:
+                    first = (reason, "recovery" if recovering else "forward")
+                recovering = True
+            else:
+                assert actual is not None if action == "acquire" else actual is True
+                if action == "acquire":
+                    credits.append(actual)
+                for bank, debit in debits:
+                    for field in (0, 1):
+                        charged[bank][field] += debit[field]
+                if action == "acquire":
+                    for bank in {current, 1} if not recovering else {1}:
+                        for field in (0, 1):
+                            prepaid[bank][field] += close[field]
+        assert work.report() == {
+            name: native_work_snapshot(*charged[bank], *prepaid[bank])
+            for bank, name in enumerate(("forward", "recovery"))
+        }, (seed, step, action)
+        report = writes.report()
+        assert report["recovering"] is recovering
+        assert report["refusals"] == refusals
+        if first:
+            assert (report["first_refusal"]["reason"], report["first_refusal"]["bank"]) == first
+    for credit in credits:
+        credit.consume()

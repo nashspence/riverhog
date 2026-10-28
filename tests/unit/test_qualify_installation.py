@@ -1000,6 +1000,14 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
         "retry-pin",
         "retry-bool-count",
         "retry-float-attempts",
+        "work-bank-forward",
+        "work-bank-recovery",
+        "work-bank-forward-sleep",
+        "work-bank-recovery-sleep",
+        "work-bank-refusal",
+        "work-close-detached",
+        "work-bank-bool",
+        "work-bank-float",
         "heap-peak",
         "zero-heap-peak",
         "bool-heap-peak",
@@ -1037,6 +1045,12 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         "retry_admission_verified": True,
         "retry_bootstrap_close_verified": True,
         "retry_bootstrap_pin_released": True,
+        "native_work_bank_forward_attempts": 4,
+        "native_work_bank_recovery_attempts": 4,
+        "native_work_bank_forward_sleep_microseconds": 200000,
+        "native_work_bank_recovery_sleep_microseconds": 200000,
+        "native_work_bank_refusal_verified": True,
+        "native_close_credit_detached_verified": True,
         "sqlite_heap_limit_bytes": 67108864,
         "sqlite_heap_peak_bytes": 1048576,
         "vfs_read_calls": 3,
@@ -1096,6 +1110,22 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         proof["retry_count"] = True
     elif invalid == "retry-float-attempts":
         proof["retry_bootstrap_filesystem_api_attempts_prepaid"] = 171.0
+    elif invalid == "work-bank-forward":
+        proof["native_work_bank_forward_attempts"] = 3
+    elif invalid == "work-bank-recovery":
+        proof["native_work_bank_recovery_attempts"] = 3
+    elif invalid == "work-bank-forward-sleep":
+        proof["native_work_bank_forward_sleep_microseconds"] = 199999
+    elif invalid == "work-bank-recovery-sleep":
+        proof["native_work_bank_recovery_sleep_microseconds"] = 199999
+    elif invalid == "work-bank-refusal":
+        proof["native_work_bank_refusal_verified"] = False
+    elif invalid == "work-close-detached":
+        proof["native_close_credit_detached_verified"] = False
+    elif invalid == "work-bank-bool":
+        proof["native_work_bank_forward_attempts"] = True
+    elif invalid == "work-bank-float":
+        proof["native_work_bank_recovery_sleep_microseconds"] = 200000.0
     elif invalid == "heap-limit":
         proof["sqlite_heap_limit_bytes"] = 0
     elif invalid == "heap-peak":

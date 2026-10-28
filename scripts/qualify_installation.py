@@ -1935,6 +1935,30 @@ assert sleep_calls.admit_sleep(1)
 sleep_report=sleep_calls.report()
 sleep_refused=sleep_writes.report()["first_refusal"]["reason"]=="VFS sleep grant"
 assert sleep_refused and not sleep_report["pending_error"]
+work_writes=native.WriteQuota(sleep_limits,sleep_limits)
+work=native.NativeWorkQuota(work_writes,(4,200000),(4,200000))
+credit=work.acquire((1,0),(3,200000))
+assert credit is not None and credit.report()["pending"]
+work_writes.failed()
+assert work.admit((1,0))
+assert not work.admit((1,0))
+work_refused=work_writes.report()["first_refusal"]["reason"]=="native filesystem attempt grant"
+work_report=work.report()
+for bank in ("forward","recovery"):
+    assert work_report[bank]["filesystem_api_attempts_charged"]==4
+    assert work_report[bank]["internal_sleep_microseconds_charged"]==200000
+    assert work_report[bank]["close_filesystem_api_attempts_prepaid"]==3
+    assert work_report[bank]["close_internal_sleep_microseconds_prepaid"]==200000
+assert work_refused
+del work,work_writes
+credit.consume()
+assert not credit.report()["pending"]
+try:
+    credit.consume()
+except ValueError:
+    pass
+else:
+    raise AssertionError("consumed native close credit was reusable")
 vfs_limits=(4096,128,1048576,1048576,8388608,1024)
 vfs_quota=native.WriteQuota(vfs_limits,vfs_limits)
 vfs_reads=native.ReadQuota(vfs_quota,(8388608,1024),(8388608,1024))
@@ -2025,6 +2049,14 @@ print(json.dumps({"compiler":native.compiler,
     "retry_bootstrap_close_verified":retry_report["native_close_attempted"]
         and retry_report["native_close_result"]==0,
     "retry_bootstrap_pin_released":True,
+    "native_work_bank_forward_attempts":work_report["forward"]["filesystem_api_attempts_charged"],
+    "native_work_bank_recovery_attempts":work_report["recovery"]["filesystem_api_attempts_charged"],
+    "native_work_bank_forward_sleep_microseconds":
+        work_report["forward"]["internal_sleep_microseconds_charged"],
+    "native_work_bank_recovery_sleep_microseconds":
+        work_report["recovery"]["internal_sleep_microseconds_charged"],
+    "native_work_bank_refusal_verified":work_refused,
+    "native_close_credit_detached_verified":not credit.report()["pending"],
     "vfs_binding_verified":True,
     "vfs_original_exact":True,"sqlite_source_id":source_id,
     "sqlite_library_sha256":library_digest}))
@@ -2067,6 +2099,16 @@ print(json.dumps({"compiler":native.compiler,
         or proof.get("retry_admission_verified") is not True
         or proof.get("retry_bootstrap_close_verified") is not True
         or proof.get("retry_bootstrap_pin_released") is not True
+        or type(proof.get("native_work_bank_forward_attempts")) is not int
+        or proof["native_work_bank_forward_attempts"] != 4
+        or type(proof.get("native_work_bank_recovery_attempts")) is not int
+        or proof["native_work_bank_recovery_attempts"] != 4
+        or type(proof.get("native_work_bank_forward_sleep_microseconds")) is not int
+        or proof["native_work_bank_forward_sleep_microseconds"] != 200000
+        or type(proof.get("native_work_bank_recovery_sleep_microseconds")) is not int
+        or proof["native_work_bank_recovery_sleep_microseconds"] != 200000
+        or proof.get("native_work_bank_refusal_verified") is not True
+        or proof.get("native_close_credit_detached_verified") is not True
         or type(proof.get("sqlite_heap_limit_bytes")) is not int
         or proof.get("sqlite_heap_limit_bytes") != 67108864
         or type(proof.get("sqlite_heap_peak_bytes")) is not int

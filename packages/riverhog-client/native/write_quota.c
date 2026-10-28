@@ -243,6 +243,67 @@ int rh_retry_bootstrap_cost(int64_t count, int64_t delay, rh_retry_cost *cost) {
     cost->sleep_microseconds = (milliseconds * (retries + 5) + 200) * 1000;
     return 1;
 }
+static enum rh_refusal native_work_fits(
+    const rh_native_work_bank *bank, rh_retry_cost work, rh_retry_cost close
+) {
+    uint64_t calls, sleep;
+    if (bank->charged.filesystem_calls > bank->limits.filesystem_calls ||
+        bank->charged.sleep_microseconds > bank->limits.sleep_microseconds)
+        return RH_NATIVE_CLOSE;
+    calls = bank->limits.filesystem_calls - bank->charged.filesystem_calls;
+    sleep = bank->limits.sleep_microseconds - bank->charged.sleep_microseconds;
+    /* Subtract before adding: caller cost sums need not fit uint64_t. */
+    if (work.filesystem_calls > calls || close.filesystem_calls > calls - work.filesystem_calls)
+        return RH_NATIVE_CALLS;
+    if (work.sleep_microseconds > sleep || close.sleep_microseconds > sleep - work.sleep_microseconds)
+        return RH_NATIVE_SLEEP;
+    return RH_ALLOWED;
+}
+static void native_work_charge(rh_native_work_bank *bank, rh_retry_cost work, rh_retry_cost close) {
+    bank->charged.filesystem_calls += work.filesystem_calls + close.filesystem_calls;
+    bank->charged.sleep_microseconds += work.sleep_microseconds + close.sleep_microseconds;
+    bank->close_prepaid.filesystem_calls += close.filesystem_calls;
+    bank->close_prepaid.sleep_microseconds += close.sleep_microseconds;
+}
+enum rh_refusal rh_native_work_admit(
+    rh_native_work_quota *work, rh_quota *quota, rh_retry_cost cost
+) {
+    rh_native_work_bank *bank = quota->recovering ? &work->recovery : &work->forward;
+    rh_retry_cost none = {0, 0};
+    int recovery = quota->recovering;
+    enum rh_refusal reason = native_work_fits(bank, cost, none);
+    if (reason == RH_ALLOWED) native_work_charge(bank, cost, none);
+    return rh_record(quota, reason, RH_OTHER, 0, 0, recovery);
+}
+enum rh_refusal rh_native_work_acquire(
+    rh_native_work_quota *work, rh_quota *quota, rh_retry_cost acquisition,
+    rh_retry_cost close, rh_native_close_credit *credit
+) {
+    rh_native_work_bank *bank = quota->recovering ? &work->recovery : &work->forward;
+    rh_retry_cost none = {0, 0};
+    int recovery = quota->recovering;
+    enum rh_refusal reason;
+    /* Reusing a live credit would silently discard a close obligation. */
+    if (credit->pending || !close.filesystem_calls)
+        return rh_record(quota, RH_NATIVE_CLOSE, RH_OTHER, 0, 0, recovery);
+    reason = native_work_fits(bank, acquisition, close);
+    if (reason == RH_ALLOWED && !recovery)
+        reason = native_work_fits(&work->recovery, none, close);
+    if (reason != RH_ALLOWED)
+        return rh_record(quota, reason, RH_OTHER, 0, 0, recovery);
+    native_work_charge(bank, acquisition, close);
+    if (!recovery) native_work_charge(&work->recovery, none, close);
+    credit->cost = close;
+    credit->pending = 1;
+    return RH_ALLOWED;
+}
+int rh_native_close_consume(rh_native_close_credit *credit) {
+    if (!credit->pending) return 0;
+    credit->pending = 0;
+    /* No charge/refund here: the native file or pin owns complete prepayment. */
+    return 1;
+}
+
 void rh_forbid_retry(rh_quota *quota) {
     (void)rh_record(quota, RH_RETRY, RH_DATABASE, 0, 0, quota->recovering);
 }
@@ -277,6 +338,10 @@ const char *rh_reason(enum rh_refusal reason) {
         case RH_SLEEP_RANGE: return "invalid VFS sleep range";
         case RH_SLEEP_GRANT: return "VFS sleep grant";
         case RH_RETRY: return "native retry admission";
+        case RH_NATIVE_CALLS: return "native filesystem attempt grant";
+        case RH_NATIVE_SLEEP: return "native internal sleep grant";
+        case RH_NATIVE_CLOSE: return "native close credit";
+
         default: return "allowed";
     }
 }
