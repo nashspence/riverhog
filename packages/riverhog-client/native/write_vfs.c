@@ -25,6 +25,9 @@
 #define RH_SIZE_HINT 5
 #define RH_CHUNK_SIZE 6
 #define RH_WIN32_AV_RETRY 9
+#define RH_PERSIST_WAL 10
+#define RH_POWERSAFE_OVERWRITE 13
+#define RH_TEMP_FILENAME 16
 #define RH_MMAP_SIZE 18
 #define RH_SET_HANDLE 23
 #define RH_BEGIN_ATOMIC 31
@@ -42,6 +45,8 @@ typedef struct {
     int (*status)(int, rh_sqlite_int64 *, rh_sqlite_int64 *, int);
     void *(*allocate)(uint64_t);
     void (*release)(void *);
+    const char *(*uri_key)(const char *, int);
+    const char *(*uri_parameter)(const char *, const char *);
     void *module;
 } rh_sqlite_api;
 
@@ -103,6 +108,32 @@ static int storage_result(rh_write_vfs *vfs, int result) {
 static int admitted_name(rh_write_vfs *vfs, const char *name, enum rh_file kind) {
     return vfs->bound && name && strcmp(name,
         kind == RH_DATABASE ? vfs->database_name : vfs->journal_name) == 0;
+}
+/* SQLite passes the original URI metadata for both database and journal names.
+ * Inspect at most two admitted keys and one terminator; never copy or rewrite
+ * that metadata before delegating the original filename.
+ */
+static int admitted_uri(rh_write_vfs *vfs, const char *name) {
+    int index, seen = 0;
+    for (index = 0; index < 3; ++index) {
+        const char *key = vfs->api.uri_key(name, index);
+        const char *value;
+        int bit;
+        if (!key) return 1;
+        if (index == 2) return 0;
+        value = vfs->api.uri_parameter(name, key);
+        if (!value) return 0;
+        if (strcmp(key, "vfs") == 0) {
+            bit = 1;
+            if (strcmp(value, vfs->vfs.name)) return 0;
+        } else if (strcmp(key, "mode") == 0) {
+            bit = 2;
+            if (strcmp(value, "ro") && strcmp(value, "rw") && strcmp(value, "rwc")) return 0;
+        } else return 0;
+        if (seen & bit) return 0;
+        seen |= bit;
+    }
+    return 0;
 }
 #ifdef _WIN32
 static int regular_file(HANDLE handle, BY_HANDLE_FILE_INFORMATION *info) {
@@ -277,11 +308,13 @@ static int file_control(rh_sqlite_file *raw, int operation, void *argument) {
      */
     if ((operation == RH_CHUNK_SIZE && (!argument || *(int *)argument != 0)) ||
         (operation == RH_MMAP_SIZE && (!argument || *(rh_sqlite_int64 *)argument > 0)) ||
+        ((operation == RH_PERSIST_WAL || operation == RH_POWERSAFE_OVERWRITE) &&
+         (!argument || *(int *)argument >= 0)) ||
         (operation == RH_WIN32_AV_RETRY &&
          (!argument || ((int *)argument)[0] >= 0 || ((int *)argument)[1] >= 0)) ||
         operation == RH_SET_HANDLE || operation == RH_BEGIN_ATOMIC ||
         operation == RH_COMMIT_ATOMIC || operation == RH_ROLLBACK_ATOMIC ||
-        operation == RH_NULL_IO) {
+        operation == RH_NULL_IO || operation == RH_TEMP_FILENAME) {
         rh_forbid_control(file->owner->quota, file->kind);
         return RH_IOERR;
     }
@@ -320,6 +353,10 @@ static int vfs_open(
         (flags & RH_FILE_CLASSES) == RH_MAIN_JOURNAL ? RH_JOURNAL : RH_OTHER;
     if (wrapper->kind == RH_OTHER || !admitted_name(vfs, name, wrapper->kind) ||
         (flags & (RH_DELETE_ON_CLOSE | RH_MEMORY_FILE))) {
+        (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
+        return RH_CANTOPEN;
+    }
+    if (!admitted_uri(vfs, name)) {
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
         return RH_CANTOPEN;
     }
@@ -463,6 +500,8 @@ static int bind_api(rh_sqlite_api *api, wchar_t *library_path, const char **erro
     RH_BIND(status, "sqlite3_status64");
     RH_BIND(allocate, "sqlite3_malloc64");
     RH_BIND(release, "sqlite3_free");
+    RH_BIND(uri_key, "sqlite3_uri_key");
+    RH_BIND(uri_parameter, "sqlite3_uri_parameter");
 #undef RH_BIND
     length = GetModuleFileNameW(module, library_path, 32768);
     if (!length || length >= 32768) {

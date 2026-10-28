@@ -80,7 +80,7 @@ def journal_identity(path, api):
         api.close(handle)
 
 
-def opened(path, gate, *, readonly=False):
+def opened(path, gate, *, readonly=False, query=""):
     from riverhog_client._prepared_primary_windows_native import _WindowsAPI
 
     assert not gate.bound
@@ -93,6 +93,8 @@ def opened(path, gate, *, readonly=False):
         uri = path.as_uri() + "?vfs=" + gate.name
         if readonly:
             uri += "&mode=ro"
+        if query:
+            uri += "&" + query
         connection = sqlite3.connect(uri, uri=True)
         return BoundConnection(connection, gate, api, handle)
     except BaseException:
@@ -328,7 +330,15 @@ def test_native_short_read_keeps_full_charge_without_latching_failure(tmp_path):
 
 @contextmanager
 def native_file(
-    path, gate, *, kind="database", flags=None, bind_path=None, binding=True, before_open=None
+    path,
+    gate,
+    *,
+    kind="database",
+    flags=None,
+    bind_path=None,
+    binding=True,
+    before_open=None,
+    parameters=(),
 ):
     """Call the registered C methods on a real native file with valid SQLite filename metadata."""
     from riverhog_client._prepared_primary_windows_native import _WindowsAPI
@@ -349,7 +359,10 @@ def native_file(
     library.sqlite3_filename_journal.argtypes = [c.c_void_p]
     library.sqlite3_filename_journal.restype = c.c_void_p
     name = str(path.resolve()).encode("utf-8")
-    filename = library.sqlite3_create_filename(name, name + b"-journal", name + b"-wal", 0, None)
+    metadata = (c.c_char_p * (2 * len(parameters)))(*(part for pair in parameters for part in pair))
+    filename = library.sqlite3_create_filename(
+        name, name + b"-journal", name + b"-wal", len(parameters), metadata
+    )
     assert filename
     raw = None
     handle = None
@@ -476,7 +489,7 @@ def test_native_chunk_and_mmap_controls_cannot_bypass_extent_checks(tmp_path):
         gate.close()
 
 
-@pytest.mark.parametrize("operation", [23, 31, 32, 33, 43])
+@pytest.mark.parametrize("operation", [16, 23, 31, 32, 33, 43])
 def test_native_alternate_handle_and_atomic_controls_fail_explicitly(tmp_path, operation):
     native, source = runtime()
     quota = native.WriteQuota(grant(), grant())
@@ -1205,5 +1218,135 @@ def test_native_infallible_refusal_can_surface_on_close_without_stranding_the_fi
             assert not calls.report()["pending_error"]
             assert calls.report()["recovery"]["callback_slots_charged"] == 1
             assert writes.report()["native_failures"] == 0
+    finally:
+        gate.close()
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "immutable=1",
+        "immutable=0",
+        "im%6Dutable=1",
+        "nolock=1",
+        "psow=1",
+        "psow=0",
+        "exclusive=1",
+        "cache=shared",
+        "cache=private",
+        "unknown=value",
+        "mode=rw&mode=ro",
+        "vfs={gate}",
+    ],
+)
+def test_native_uri_policy_rejects_before_open_and_preserves_original(tmp_path, query):
+    native, source = runtime()
+    path = tmp_path / "uri.sqlite3"
+    connection = sqlite3.connect(path)
+    try:
+        connection.execute("CREATE TABLE original(value BLOB)")
+        connection.execute("INSERT INTO original VALUES (?)", (b"exact original",))
+        connection.commit()
+    finally:
+        connection.close()
+    original = path.read_bytes()
+    quota = native.WriteQuota(grant(), grant())
+    calls = callbacks(native, quota)
+    gate = native.WriteVfs(source, reads(native, quota), calls, heap(native, source))
+    try:
+        with pytest.raises(sqlite3.DatabaseError):
+            connection = opened(path, gate, query=query.format(gate=gate.name))
+            connection.close()
+        assert gate.open_files == 0 and not gate.bound
+        assert quota.recovering
+        assert quota.report()["first_refusal"]["reason"] == "unadmitted file"
+        assert quota.report()["native_failures"] == 0
+        # Only bounded path expansion can precede admission; open/close was not charged.
+        assert calls.report()["reserved_recovery_closes"] == 0
+        assert path.read_bytes() == original
+        cold = sqlite3.connect(path)
+        try:
+            assert cold.execute("SELECT value FROM original").fetchone() == (b"exact original",)
+        finally:
+            cold.close()
+    finally:
+        gate.close()
+
+
+@pytest.mark.parametrize("kind", ["database", "journal"])
+@pytest.mark.parametrize(
+    "parameters",
+    [
+        ((b"immutable", b"1"),),
+        ((b"vfs", b"win32"),),
+        ((b"mode", b"rw"), (b"mode", b"ro")),
+        ((b"vfs", b""),),
+        ((b"mode", b""),),
+    ],
+)
+def test_native_uri_metadata_refusal_never_delegates_open(tmp_path, kind, parameters):
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    calls = callbacks(native, quota)
+    gate = native.WriteVfs(source, reads(native, quota), calls, heap(native, source))
+    path = tmp_path / "metadata.sqlite3"
+    try:
+        with native_file(path, gate, kind=kind, parameters=parameters) as (result, raw, methods):
+            assert result == sqlite3.SQLITE_CANTOPEN
+            assert methods is None and not raw.contents.methods
+            assert gate.open_files == 0
+            assert quota.recovering and quota.report()["native_failures"] == 0
+            assert calls.report()["forward"]["callback_slots_charged"] == 0
+            assert calls.report()["reserved_recovery_closes"] == 0
+            assert not path.with_name(path.name + "-journal").exists()
+    finally:
+        gate.close()
+
+
+@pytest.mark.parametrize("kind", ["database", "journal"])
+@pytest.mark.parametrize("mode", [b"ro", b"rw", b"rwc"])
+def test_native_admitted_uri_metadata_reaches_the_original_native_file(tmp_path, kind, mode):
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(
+        source, reads(native, quota), callbacks(native, quota), heap(native, source)
+    )
+    try:
+        parameters = ((b"mode", mode), (b"vfs", gate.name.encode("ascii")))
+        with native_file(
+            tmp_path / "admitted-uri.sqlite3", gate, kind=kind, parameters=parameters
+        ) as (result, _raw, methods):
+            assert result == sqlite3.SQLITE_OK and methods is not None
+            assert gate.open_files == 1 and not quota.recovering
+    finally:
+        gate.close()
+
+
+@pytest.mark.parametrize("operation", [10, 13])
+@pytest.mark.parametrize("setting", [None, 0, 1])
+def test_native_mode_controls_are_query_only_and_preserve_native_flags(
+    tmp_path, operation, setting
+):
+    native, source = runtime()
+    quota = native.WriteQuota(grant(), grant())
+    gate = native.WriteVfs(
+        source, reads(native, quota), callbacks(native, quota), heap(native, source)
+    )
+    try:
+        with native_file(tmp_path / "native-flags.sqlite3", gate) as (result, raw, methods):
+            assert result == sqlite3.SQLITE_OK
+            query = c.c_int(-1)
+            assert methods.contents.control(raw, operation, c.byref(query)) == sqlite3.SQLITE_OK
+            previous = query.value
+            device = methods.contents.characteristics(raw)
+            value = None if setting is None else c.c_int(setting)
+            argument = None if value is None else c.byref(value)
+            assert methods.contents.control(raw, operation, argument) == sqlite3.SQLITE_IOERR
+            query.value = -1
+            assert methods.contents.control(raw, operation, c.byref(query)) == sqlite3.SQLITE_OK
+            assert query.value == previous
+            assert methods.contents.characteristics(raw) == device
+            assert quota.recovering and quota.report()["native_failures"] == 0
+            assert quota.report()["first_refusal"]["reason"] == "disallowed file control"
     finally:
         gate.close()
