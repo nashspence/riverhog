@@ -38,7 +38,7 @@ def heap(native, source):
             raise
         from riverhog_client._prepared_primary_runtime import _admit_process_budget
 
-        budget = _admit_process_budget(64 * 1024 * 1024)
+        budget = _admit_process_budget(64 * 1024 * 1024, native_limits=(128, 512))
     assert budget.report()["heap_limit_bytes"] == 64 * 1024 * 1024
     return budget
 
@@ -1144,25 +1144,25 @@ if scenario=="accounting":
     assert library.sqlite3_shutdown()==0
     assert library.sqlite3_config(9,0)==0
     assert library.sqlite3_initialize()==0
-    try:native.SqliteProcessBudget(source,limit)
+    try:native.SqliteProcessBudget(source,limit,(128,512))
     except RuntimeError as exc:assert "accounting" in str(exc)
     else:raise AssertionError("disabled accounting was accepted")
     assert library.sqlite3_hard_heap_limit64(-1)==0
 elif scenario=="existing":
     assert library.sqlite3_hard_heap_limit64(limit)==0
-    try:native.SqliteProcessBudget(source,2*limit)
+    try:native.SqliteProcessBudget(source,2*limit,(128,512))
     except RuntimeError as exc:assert "unconfigured" in str(exc)
     else:raise AssertionError("existing global authority was replaced")
     assert library.sqlite3_hard_heap_limit64(-1)==limit
 else:
     # A failed undersized admission does not arm a limit or retain an owner.
-    try:native.SqliteProcessBudget(source,1)
+    try:native.SqliteProcessBudget(source,1,(128,512))
     except RuntimeError as exc:assert "below current" in str(exc)
     else:raise AssertionError("an undersized grant was accepted")
     assert library.sqlite3_hard_heap_limit64(-1)==0
-    owner=native.SqliteProcessBudget(source,limit)
+    owner=native.SqliteProcessBudget(source,limit,(128,512))
     assert native.current_process_budget() is owner
-    try:native.SqliteProcessBudget(source,2*limit)
+    try:native.SqliteProcessBudget(source,2*limit,(128,512))
     except RuntimeError as exc:assert "already" in str(exc)
     else:raise AssertionError("second process owner was admitted")
     if scenario=="lowered":
@@ -1426,7 +1426,7 @@ try:
 finally:
     connection.close()
 from riverhog_client._prepared_primary_runtime import _admit_process_budget
-heap = _admit_process_budget(64 * 1024 * 1024)
+heap = _admit_process_budget(64 * 1024 * 1024,native_limits=(128,512))
 quota = native.WriteQuota(helpers.grant(), helpers.grant())
 reads = native.ReadQuota(quota, (1048576, 65536), (1048576, 65536))
 calls = native.CallbackQuota(
@@ -1583,7 +1583,7 @@ try:
 finally:
     connection.close()
 from riverhog_client._prepared_primary_runtime import _admit_process_budget
-heap = _admit_process_budget(64 * 1024 * 1024)
+heap = _admit_process_budget(64 * 1024 * 1024,native_limits=(128,512))
 library = FaultVfs.windows().library
 observed = []
 
@@ -1736,7 +1736,7 @@ try:
 finally:
     connection.close()
 from riverhog_client._prepared_primary_runtime import _admit_process_budget
-heap = _admit_process_budget(64 * 1024 * 1024)
+heap = _admit_process_budget(64 * 1024 * 1024,native_limits=(128,512))
 quota = native.WriteQuota(helpers.grant(), helpers.grant())
 calls = helpers.callbacks(native, quota)
 gate = native.WriteVfs(source, helpers.reads(native, quota), calls, heap)
@@ -2017,7 +2017,7 @@ sys.modules[spec.name] = helpers
 spec.loader.exec_module(helpers)
 native, source = helpers.runtime()
 from riverhog_client._prepared_primary_runtime import _admit_process_budget
-heap = _admit_process_budget(64 * 1024 * 1024)
+heap = _admit_process_budget(64 * 1024 * 1024,native_limits=(128,512))
 quota = native.WriteQuota(helpers.grant(), helpers.grant())
 calls = helpers.callbacks(native, quota)
 gate = native.WriteVfs(source, helpers.reads(native, quota), calls, heap)
@@ -2220,6 +2220,9 @@ assert all(
     for report in seen["prepaid"]
 )
 report = heap.retry_report()
+population = heap.native_report()
+assert population["owners"] >= 1 and population["file_peak"] == 1
+assert population["files"] == int(scenario in ("close_failure", "sibling_quarantine"))
 assert report["bootstrap_filesystem_api_attempts_prepaid"] == cost[0]
 assert report["bootstrap_sleep_microseconds_prepaid"] == cost[1]
 failed = scenario in (
@@ -2449,7 +2452,7 @@ file_method=method in {"read","write","truncate","sync","size","lock","unlock","
 original=(path.read_bytes(),journal.read_bytes())
 native,source=helpers.runtime()
 from riverhog_client._prepared_primary_runtime import _admit_process_budget
-heap = _admit_process_budget(64 * 1024 * 1024)
+heap = _admit_process_budget(64 * 1024 * 1024,native_limits=(128,512))
 initial=native.WriteQuota(helpers.grant(),helpers.grant())
 initial_calls=helpers.callbacks(native,initial)
 gate=native.WriteVfs(source,helpers.reads(native,initial),initial_calls,heap)
@@ -2681,7 +2684,7 @@ scenario=sys.argv[3]
 original=(path.read_bytes(),journal.read_bytes() if journal.exists() else None)
 native,source=helpers.runtime()
 from riverhog_client._prepared_primary_runtime import _admit_process_budget
-heap = _admit_process_budget(64 * 1024 * 1024)
+heap = _admit_process_budget(64 * 1024 * 1024,native_limits=(128,512))
 initial=native.WriteQuota(helpers.grant(),helpers.grant())
 calls=helpers.callbacks(native,initial)
 gate=native.WriteVfs(source,helpers.reads(native,initial),calls,heap)
@@ -2865,7 +2868,7 @@ if scenario!="qualified":
     else:
         runtime._SQLITE_LIBRARY_SHA256="0"*64
     try:
-        runtime._admit_process_budget(64*1024*1024)
+        runtime._admit_process_budget(64*1024*1024,native_limits=(128,512))
     except RuntimeError as exc:
         assert ("source" if scenario=="source" else "binary") in str(exc)
     else:
@@ -2884,7 +2887,7 @@ if scenario!="qualified":
 qualified=runtime._qualified_runtime()
 assert qualified=={"sqlite_source_id":source,"sqlite_library_sha256":digest}
 assert dll.sqlite3_hard_heap_limit64(-1)==0
-owner=runtime._admit_process_budget(64*1024*1024)
+owner=runtime._admit_process_budget(64*1024*1024,native_limits=(128,512))
 assert native.current_process_budget() is owner
 assert owner.report()["heap_limit_bytes"]==64*1024*1024
 assert owner.report()["logger_disabled_at_admission"] is True
@@ -2893,7 +2896,7 @@ dll.sqlite3_log(1,b"owned admission cannot invoke a foreign logger")
 assert len(observed_logs)==before
 assert owner.retry_report()["state"]=="unconfigured"
 try:
-    runtime._admit_process_budget(128*1024*1024)
+    runtime._admit_process_budget(128*1024*1024,native_limits=(128,512))
 except RuntimeError as exc:
     assert "already" in str(exc)
 else:
@@ -2972,7 +2975,7 @@ path=Path(sys.argv[2]);scenario=sys.argv[3]
 journal=path.with_name(path.name+"-journal")
 original=(path.read_bytes(),journal.read_bytes())
 source=native.runtime_identity()["sqlite_source_id"]
-heap=_admit_process_budget(64*1024*1024)
+heap=_admit_process_budget(64*1024*1024,native_limits=(128,512))
 initial=native.WriteQuota(helpers.grant(),helpers.grant())
 initial_calls=helpers.callbacks(native,initial)
 gate=native.WriteVfs(source,helpers.reads(native,initial),initial_calls,heap)
@@ -3150,3 +3153,232 @@ print(json.dumps({"passed":True,"scenario":scenario,"original_exact":True,"pins_
     assert (path.read_bytes(), journal.read_bytes()) == original
     with closing(sqlite3.connect(path)) as cold:
         assert cold.execute("SELECT body FROM original").fetchone() == (b"exact original",)
+
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "owner-zero",
+        "owner-limit",
+        "owner-threads",
+        "file-limit",
+        "file-threads",
+        "bootstrap-zero",
+        "close-failure",
+        "deferred-close",
+    ],
+)
+def test_native_population_grants_cover_lifetime_quarantine_and_concurrent_admission(
+    tmp_path, scenario
+):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    path = tmp_path / "primary.sqlite3"
+    with closing(sqlite3.connect(path)) as connection:
+        connection.execute("PRAGMA journal_mode=PERSIST")
+        connection.execute("PRAGMA synchronous=EXTRA")
+        connection.execute("CREATE TABLE original(body BLOB NOT NULL)")
+        connection.execute("INSERT INTO original VALUES (?)", (b"exact original",))
+        connection.commit()
+    journal = path.with_name(path.name + "-journal")
+    original = (path.read_bytes(), journal.read_bytes())
+    code = r"""
+import ctypes as c, importlib.util, json, sqlite3, sys, threading
+from contextlib import ExitStack
+from pathlib import Path
+sys.path.insert(0,sys.argv[1])
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_windows_native import _WindowsAPI
+from tests.support.sqlite_vfs_faults import FaultVfs, windows_system_call
+spec=importlib.util.spec_from_file_location("population_helpers",
+    Path(sys.argv[1])/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py")
+helpers=importlib.util.module_from_spec(spec);sys.modules[spec.name]=helpers
+spec.loader.exec_module(helpers)
+path=Path(sys.argv[2]);scenario=sys.argv[3]
+journal=path.with_name(path.name+"-journal")
+original=(path.read_bytes(),journal.read_bytes())
+limits={"owner-zero":(0,8),"owner-limit":(1,8),"owner-threads":(2,8),
+    "file-limit":(2,1),"file-threads":(8,2),"bootstrap-zero":(1,0),
+    "close-failure":(1,1),"deferred-close":(1,1)}[scenario]
+heap=_admit_process_budget(64*1024*1024,native_limits=limits)
+source=native.runtime_identity()["sqlite_source_id"]
+def reject(action,message):
+    try:action()
+    except (RuntimeError,ValueError) as exc:assert message in str(exc),str(exc)
+    else:raise AssertionError("native admission should have stopped: "+message)
+def make(source_id=source):
+    writes=native.WriteQuota(helpers.grant(),helpers.grant())
+    calls=helpers.callbacks(native,writes)
+    return native.WriteVfs(source_id,helpers.reads(native,writes),calls,heap),writes,calls
+def bound():
+    gate,writes,calls=make()
+    api=_WindowsAPI();handle=api.open(path)
+    try:gate.bind(str(path),handle,helpers.journal_identity(path,api))
+    finally:api.close(handle)
+    return gate,writes,calls
+def fresh(gate,buffers=(1<<40,1<<40)):
+    writes=native.WriteQuota(helpers.grant(),helpers.grant())
+    work=native.NativeWorkQuota(writes,(1<<40,1<<60),(1<<40,1<<60))
+    calls=native.CallbackQuota(writes,(262144,0),(262144,0),work,buffers=buffers)
+    gate.arm(helpers.reads(native,writes),calls)
+    return writes,calls
+def report():
+    value=heap.native_report()
+    assert 0<=value["owners"]<=value["owner_peak"]<=value["owner_limit"]
+    assert 0<=value["files"]<=value["file_peak"]<=value["file_limit"]
+    return value
+
+if scenario=="owner-zero":
+    reject(make,"owner population")
+    assert report()["owners"]==report()["owner_peak"]==0
+    heap.increase_native((1,8))
+    gate,_,_=make();assert report()["owners"]==1
+    gate.close()
+elif scenario=="owner-limit":
+    gate,_,_=make()
+    reject(make,"owner population")
+    assert report()["owners"]==1 and report()["owner_refusals"]==1
+    for invalid in ((1,8),(0,8),(2,7)):
+        reject(lambda:heap.increase_native(invalid),"no decrease")
+    assert report()["owner_limit"]==1
+    gate.close();assert report()["owners"]==0
+    reject(lambda:make("unqualified source"),"source identity")
+    assert report()["owners"]==0
+    gate,_,_=make();gate.close()
+elif scenario in ("owner-threads","file-threads"):
+    if scenario=="file-threads":
+        first,_,_=bound();helpers.admit_fixture_retries(first);first.close()
+    barrier=threading.Barrier(9,timeout=20);release=threading.Event()
+    errors=[];outcomes=[]
+    def run():
+        gate=None
+        try:
+            with ExitStack() as stack:
+                if scenario=="owner-threads":
+                    try:gate,_,_=make()
+                    except RuntimeError as exc:
+                        assert "owner population" in str(exc)
+                        outcomes.append(False)
+                    else:outcomes.append(True)
+                else:
+                    gate,_,_=bound()
+                    result,raw,methods=stack.enter_context(
+                        helpers.native_file(path,gate,binding=False,create=False))
+                    assert result in (sqlite3.SQLITE_OK,sqlite3.SQLITE_FULL)
+                    assert bool(methods)==(result==sqlite3.SQLITE_OK)
+                    outcomes.append(result==sqlite3.SQLITE_OK)
+                barrier.wait()
+                assert release.wait(20)
+        except BaseException as exc:
+            errors.append(repr(exc))
+            barrier.abort()
+        finally:
+            if gate is not None:
+                try:gate.close()
+                except BaseException as exc:errors.append(repr(exc))
+    threads=[threading.Thread(target=run) for _ in range(8)]
+    for thread in threads:thread.start()
+    try:
+        barrier.wait()
+        held=report()
+        assert len(outcomes)==8 and sum(outcomes)==2,outcomes
+        key="owners" if scenario=="owner-threads" else "files"
+        assert held[key]==2
+        assert held["owner_refusals" if key=="owners" else "file_refusals"]==6
+    finally:
+        release.set()
+        for thread in threads:thread.join(25)
+    assert not any(thread.is_alive() for thread in threads)
+    assert not errors,errors
+elif scenario=="bootstrap-zero":
+    gate,writes,calls=bound()
+    reject(lambda:helpers.admit_fixture_retries(gate),"file population")
+    assert heap.retry_report()["state"]=="unconfigured"
+    assert not gate.quarantined and writes.recovering
+    assert report()["files"]==report()["file_peak"]==0
+    assert report()["file_refusals"]==1
+    assert writes.report()["first_refusal"]["reason"]=="native SQLite file population grant"
+    heap.increase_native((1,1))
+    helpers.admit_fixture_retries(gate)
+    assert report()["file_peak"]==1 and report()["files"]==0
+    gate.close()
+else:
+    gate,writes,calls=bound()
+    helpers.admit_fixture_retries(gate)
+    if scenario=="file-limit":
+        with helpers.native_file(path,gate,binding=False,create=False) as first:
+            assert first[0]==sqlite3.SQLITE_OK and report()["files"]==1
+            before=calls.work.report()
+            with helpers.native_file(path,gate,binding=False,create=False) as stopped:
+                assert stopped[0]==sqlite3.SQLITE_FULL and stopped[2] is None
+                assert calls.work.report()==before
+            assert writes.recovering and not gate.quarantined
+            assert writes.report()["first_refusal"]["reason"]=="native SQLite file population grant"
+        assert report()["files"]==0
+        heap.increase_native((2,2));fresh(gate)
+        with ExitStack() as stack:
+            for _ in range(2):
+                assert stack.enter_context(helpers.native_file(
+                    path,gate,binding=False,create=False))[0]==sqlite3.SQLITE_OK
+            assert report()["files"]==2
+        assert report()["files"]==0
+        gate.close()
+    elif scenario=="close-failure":
+        with helpers.native_file(path,gate,binding=False,create=False) as opened:
+            assert opened[0]==sqlite3.SQLITE_OK
+            signature=c.WINFUNCTYPE(c.c_int,c.c_void_p,use_last_error=True)
+            def fail_close(original,handle):
+                c.set_last_error(5)
+                return 0
+            with windows_system_call(b"CloseHandle",signature,fail_close):
+                assert opened[2].contents.close(opened[1])==sqlite3.SQLITE_IOERR|(16<<8)
+            assert not opened[1].contents.methods
+        assert gate.open_files==0 and gate.quarantined
+        assert report()["owners"]==report()["files"]==1
+        reject(gate.close,"quarantined")
+        reject(make,"owner population")
+        del gate,writes,calls
+        import gc;gc.collect()
+        assert report()["owners"]==report()["files"]==1
+        heap.increase_native((2,2))
+        other,_,_=bound()
+        with helpers.native_file(path,other,binding=False,create=False) as opened:
+            assert opened[0]==sqlite3.SQLITE_OK and report()["files"]==2
+        other.close()
+        assert report()["owners"]==report()["files"]==1
+    else:
+        assert scenario=="deferred-close"
+        with helpers.native_file(path,gate,binding=False,create=False) as opened:
+            assert opened[0]==sqlite3.SQLITE_OK
+            fresh(gate,buffers=(0,0))
+            vfs=FaultVfs.windows().library.sqlite3_vfs_find(gate.name.encode())
+            output=c.create_string_buffer(1)
+            assert vfs.contents.randomness(vfs,1,output)==0
+            assert opened[2].contents.close(opened[1])==sqlite3.SQLITE_FULL
+            assert not opened[1].contents.methods
+        assert report()["files"]==0 and not gate.quarantined
+        gate.close()
+final=report()
+if scenario!="close-failure":
+    assert final["owners"]==final["files"]==0,final
+assert (path.read_bytes(),journal.read_bytes())==original
+print(json.dumps({"passed":True,"scenario":scenario,"population":final}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code, str(Path(__file__).resolve().parents[3]), str(path), scenario],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] is True and proof["scenario"] == scenario
+    assert proof["population"]["owner_peak"] <= proof["population"]["owner_limit"]
+    assert proof["population"]["file_peak"] <= proof["population"]["file_limit"]
+    assert (path.read_bytes(), journal.read_bytes()) == original
+    with closing(sqlite3.connect(path)) as reopened:
+        assert reopened.execute("SELECT body FROM original").fetchall() == [(b"exact original",)]

@@ -9,7 +9,17 @@ typedef struct rh_sqlite_heap rh_sqlite_heap;
  */
 /* Read the already loaded module identity without changing SQLite configuration. */
 int rh_sqlite_runtime_identity(char *, size_t, wchar_t *, const char **);
-rh_sqlite_heap *rh_sqlite_heap_create(const char *, int64_t, const char **);
+/* These grants cover registered shim owners and their selected SQLite files,
+ * including retained uncertain closes; they do not count foreign connections.
+ * Database/journal metadata pins are at most two per registered owner.
+ */
+typedef struct {
+    uint64_t owner_limit, file_limit, owners, files, owner_peak, file_peak;
+    uint64_t owner_refusals, file_refusals;
+} rh_native_population;
+rh_sqlite_heap *rh_sqlite_heap_create(const char *, int64_t, uint64_t, uint64_t, const char **);
+int rh_sqlite_native_report(rh_sqlite_heap *, rh_native_population *);
+int rh_sqlite_native_increase(rh_sqlite_heap *, uint64_t, uint64_t);
 int rh_sqlite_heap_report(rh_sqlite_heap *, int64_t *, int64_t *, int64_t *);
 int64_t rh_sqlite_heap_limit(rh_sqlite_heap *);
 int rh_sqlite_heap_increase(rh_sqlite_heap *, int64_t);

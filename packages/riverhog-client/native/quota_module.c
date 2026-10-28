@@ -856,20 +856,30 @@ static int heap_ready(SqliteProcessBudget *self) {
     }
     return 1;
 }
+static int population_pair(PyObject *value, uint64_t *owners, uint64_t *files) {
+    if (!retry_pair(value, owners, files, 0)) return 0;
+    if (*owners > INT_MAX || *files > INT_MAX) {
+        PyErr_SetString(PyExc_ValueError, "native owner/file grants must fit signed-int lifetime counters");
+        return 0;
+    }
+    return 1;
+}
 static int heap_init(PyObject *object, PyObject *args, PyObject *kwargs) {
     SqliteProcessBudget *self = (SqliteProcessBudget *)object;
     const char *source, *error;
-    PyObject *value;
-    uint64_t limit;
-    static char *keywords[] = {"expected_source_id", "heap_bytes", NULL};
+    PyObject *value, *population;
+    uint64_t limit, owners, files;
+    static char *keywords[] = {"expected_source_id", "heap_bytes", "native_limits", NULL};
     if (self->initialized) {
         PyErr_SetString(PyExc_RuntimeError, "SQLite process budget cannot be reinitialized");
         return -1;
     }
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sO", keywords, &source, &value)) return -1;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sOO", keywords, &source, &value,
+                                    &population)) return -1;
     self->initialized = 1;
-    if (positive_integer(value, &limit) < 0) return -1;
-    self->heap = rh_sqlite_heap_create(source, (int64_t)limit, &error);
+    if (positive_integer(value, &limit) < 0 ||
+        !population_pair(population, &owners, &files)) return -1;
+    self->heap = rh_sqlite_heap_create(source, (int64_t)limit, owners, files, &error);
     if (!self->heap) {
         PyErr_SetString(PyExc_RuntimeError, error);
         return -1;
@@ -933,7 +943,39 @@ static PyObject *heap_retry_report(PyObject *object, PyObject *unused) {
         "native_result", report.native_result, "native_close_result", report.close_result,
         "native_close_attempted", report.close_attempted ? Py_True : Py_False);
 }
+static PyObject *heap_native_report(PyObject *object, PyObject *unused) {
+    SqliteProcessBudget *self = (SqliteProcessBudget *)object;
+    rh_native_population p;
+    (void)unused;
+    if (!heap_ready(self)) return NULL;
+    if (!rh_sqlite_native_report(self->heap, &p)) {
+        PyErr_SetString(PyExc_RuntimeError, "application SQLite native population policy is invalid");
+        return NULL;
+    }
+    return Py_BuildValue("{s:K,s:K,s:K,s:K,s:K,s:K,s:K,s:K}",
+        "owner_limit", (unsigned long long)p.owner_limit,
+        "file_limit", (unsigned long long)p.file_limit,
+        "owners", (unsigned long long)p.owners, "files", (unsigned long long)p.files,
+        "owner_peak", (unsigned long long)p.owner_peak, "file_peak", (unsigned long long)p.file_peak,
+        "owner_refusals", (unsigned long long)p.owner_refusals,
+        "file_refusals", (unsigned long long)p.file_refusals);
+}
+static PyObject *heap_native_increase(PyObject *object, PyObject *value) {
+    SqliteProcessBudget *self = (SqliteProcessBudget *)object;
+    uint64_t owners, files;
+    if (!heap_ready(self) || !population_pair(value, &owners, &files)) return NULL;
+    if (!rh_sqlite_native_increase(self->heap, owners, files)) {
+        PyErr_SetString(PyExc_ValueError,
+            "native limits require a current heap, no decrease and at least one explicit increase");
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
 static PyMethodDef heap_methods[] = {
+    {"native_report", heap_native_report, METH_NOARGS,
+        "Observe lifetime owner/file slots, including uncertain closes; no disk work."},
+    {"increase_native", heap_native_increase, METH_O,
+        "Explicitly raise native lifetime grants without releasing retained obligations."},
     {"retry_report", heap_retry_report, METH_NOARGS, "Observe the application retry admission record; no disk query or reconfiguration."},
     {"increase", heap_increase, METH_O, "Apply an explicit larger application grant without resetting use."},
     {"report", heap_report, METH_NOARGS, "Verify and observe the application SQLite heap ceiling."},

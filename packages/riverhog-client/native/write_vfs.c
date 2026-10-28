@@ -100,6 +100,8 @@ static unsigned long current_thread(void) {
 }
 
 static int retry_usable(rh_sqlite_heap *);
+static int native_acquire(rh_sqlite_heap *, int);
+static void native_release(rh_sqlite_heap *, int);
 static int filesystem_cost(rh_write_vfs *, enum rh_native_operation, int64_t, rh_retry_cost *);
 static int filesystem_work(rh_write_vfs *, enum rh_native_operation, int64_t);
 static int native_close_allowed(rh_write_vfs *vfs, rh_native_close_credit *credit) {
@@ -273,6 +275,10 @@ static int file_close(rh_sqlite_file *raw) {
          * other already-open files must still use their prepaid close paths.
          */
         if (result != RH_OK || !accounted) file->owner->quarantined = 1;
+        /* Only a successful native close releases this lifetime slot. A failed
+         * close keeps it charged even after SQLite discards its file object.
+         */
+        if (result == RH_OK) native_release(file->owner->heap, 0);
         /* SQLite does not retry xClose. A callback-slot inconsistency does
          * not revoke valid native close prepayment; a missing native credit
          * quarantines without delegating unfunded filesystem work.
@@ -440,6 +446,11 @@ static int vfs_open(
     }
     close_bank = rh_callback_open(vfs->calls, vfs->quota);
     if (close_bank < 0) return RH_FULL;
+    if (!native_acquire(vfs->heap, 0)) {
+        (void)rh_callback_abandon(vfs->calls, close_bank);
+        rh_forbid_population(vfs->quota);
+        return RH_FULL;
+    }
     wrapper->forward_close = close_bank;
     wrapper->native_close = (rh_native_close_credit){{0, 0}, 0};
     {
@@ -451,12 +462,14 @@ static int vfs_open(
             vfs->quarantined = 1;
             rh_failed(vfs->quota);
             (void)rh_callback_abandon(vfs->calls, close_bank);
+            native_release(vfs->heap, 0);
             return RH_IOERR;
         }
         if (!filesystem_cost(vfs, operation, 0, &cost) ||
             rh_native_work_acquire(vfs->work, vfs->quota, cost, close,
                                     &wrapper->native_close) != RH_ALLOWED) {
             (void)rh_callback_abandon(vfs->calls, close_bank);
+            native_release(vfs->heap, 0);
             return RH_FULL;
         }
         /* Split already-paid close obligations; neither retains the bank. */
@@ -468,6 +481,7 @@ static int vfs_open(
         !(vfs->journal_handle ? journal_current(vfs) : journal_absent(vfs))) {
         (void)rh_callback_abandon(vfs->calls, close_bank);
         abandon_native_open(wrapper);
+        native_release(vfs->heap, 0);
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
         return RH_CANTOPEN;
     }
@@ -481,6 +495,7 @@ static int vfs_open(
     } else {
         (void)rh_callback_abandon(vfs->calls, close_bank);
         abandon_native_open(wrapper);
+        native_release(vfs->heap, 0);
     }
     if (result == RH_OK && (!real->methods || !opened_identity(vfs, real, wrapper->kind))) {
         (void)rh_admit(vfs->quota, RH_OTHER, 0, 0);
@@ -671,12 +686,77 @@ struct rh_sqlite_heap {
     int64_t limit;
     void *sentinel;
     int ready;
+    rh_native_population population;
+#ifdef _WIN32
+    SRWLOCK population_lock;
+#endif
     rh_retry_admission retry;
     rh_sqlite_file *bootstrap_file;
     const char *bootstrap_filename;
     wchar_t library_path[32768];
 };
 static rh_sqlite_heap *process_heap;
+static void native_lock(rh_sqlite_heap *heap) {
+#ifdef _WIN32
+    AcquireSRWLockExclusive(&heap->population_lock);
+#else
+    (void)heap;
+#endif
+}
+static void native_unlock(rh_sqlite_heap *heap) {
+#ifdef _WIN32
+    ReleaseSRWLockExclusive(&heap->population_lock);
+#else
+    (void)heap;
+#endif
+}
+static int native_acquire(rh_sqlite_heap *heap, int owner) {
+    rh_native_population *p = &heap->population;
+    uint64_t *held = owner ? &p->owners : &p->files;
+    uint64_t *peak = owner ? &p->owner_peak : &p->file_peak;
+    uint64_t *refused = owner ? &p->owner_refusals : &p->file_refusals;
+    int allowed;
+    native_lock(heap);
+    allowed = *held < (owner ? p->owner_limit : p->file_limit);
+    if (allowed) {
+        ++*held;
+        if (*held > *peak) *peak = *held;
+    } else if (*refused < UINT64_MAX) ++*refused;
+    native_unlock(heap);
+    return allowed;
+}
+static void native_release(rh_sqlite_heap *heap, int owner) {
+    uint64_t *held = owner ? &heap->population.owners : &heap->population.files;
+    native_lock(heap);
+    if (*held) --*held;
+    else heap->ready = 0;
+    native_unlock(heap);
+}
+int rh_sqlite_native_report(rh_sqlite_heap *heap, rh_native_population *report) {
+    int64_t current, peak, allocations;
+    if (!rh_sqlite_heap_report(heap, &current, &peak, &allocations)) return 0;
+    native_lock(heap);
+    *report = heap->population;
+    native_unlock(heap);
+    return 1;
+}
+int rh_sqlite_native_increase(rh_sqlite_heap *heap, uint64_t owners, uint64_t files) {
+    int64_t current, peak, allocations;
+    int allowed;
+    if (!rh_sqlite_heap_report(heap, &current, &peak, &allocations) ||
+        owners > INT_MAX || files > INT_MAX) return 0;
+    native_lock(heap);
+    allowed = owners >= heap->population.owner_limit &&
+        files >= heap->population.file_limit &&
+        (owners > heap->population.owner_limit || files > heap->population.file_limit);
+    if (allowed) {
+        heap->population.owner_limit = owners;
+        heap->population.file_limit = files;
+    }
+    native_unlock(heap);
+    return allowed;
+}
+
 static int retry_usable(rh_sqlite_heap *heap) {
     return heap && (heap->retry.state == 0 || heap->retry.state == 2);
 }
@@ -735,7 +815,9 @@ int rh_sqlite_heap_increase(rh_sqlite_heap *heap, int64_t limit) {
     heap->limit = limit;
     return 1;
 }
-rh_sqlite_heap *rh_sqlite_heap_create(const char *source, int64_t limit, const char **error) {
+rh_sqlite_heap *rh_sqlite_heap_create(
+    const char *source, int64_t limit, uint64_t owners, uint64_t files, const char **error
+) {
     rh_sqlite_heap *heap;
     rh_sqlite_int64 used, peak, count, ignored, pool, pool_peak;
     void *sentinel = NULL;
@@ -744,8 +826,17 @@ rh_sqlite_heap *rh_sqlite_heap_create(const char *source, int64_t limit, const c
         *error = "this process already has a SQLite heap owner or a quarantined admission";
         return NULL;
     }
+    if (owners > INT_MAX || files > INT_MAX) {
+        *error = "native owner/file grants exceed their signed-int lifetime counters";
+        return NULL;
+    }
     heap = calloc(1, sizeof(*heap));
     if (!heap) { *error = "SQLite heap owner allocation failed"; return NULL; }
+    heap->population.owner_limit = owners;
+    heap->population.file_limit = files;
+#ifdef _WIN32
+    InitializeSRWLock(&heap->population_lock);
+#endif
     if (!bind_api(&heap->api, heap->library_path, error)) goto failed;
     if (strcmp(heap->api.source_id(), source)) {
         *error = "the loaded SQLite source identity differs from the heap grant";
@@ -853,11 +944,17 @@ int rh_write_vfs_admit_retries(
         *error = "the explicit retry bootstrap grant is below its complete native envelope";
         return 0;
     }
+    if (!native_acquire(heap, 0)) {
+        rh_forbid_population(vfs->quota);
+        *error = "native SQLite file population grant is exhausted before retry bootstrap";
+        return 0;
+    }
     file = vfs->api.allocate((uint64_t)vfs->base->file_bytes);
     filename = vfs->api.create_filename(vfs->database_name, vfs->journal_name, "", 0, NULL);
     if (!file || !filename) {
         if (file) vfs->api.release(file);
         if (filename) vfs->api.free_filename(filename);
+        native_release(heap, 0);
         rh_forbid_retry(vfs->quota);
         *error = "retry bootstrap storage could not be preallocated under the application heap";
         return 0;
@@ -947,6 +1044,7 @@ finished:
     } else {
         vfs->api.release(file);
         vfs->api.free_filename(filename);
+        native_release(heap, 0);
     }
     if (!accepted || retain) {
         heap->retry.state = 3;
@@ -962,11 +1060,24 @@ rh_write_vfs *rh_write_vfs_create(
     rh_read_quota *reads, rh_callback_quota *calls, rh_native_work_quota *work,
     rh_sqlite_heap *heap, const char **error
 ) {
-    rh_write_vfs *vfs = calloc(1, sizeof(*vfs));
-    if (!vfs) { *error = "native VFS allocation failed"; return NULL; }
+    rh_write_vfs *vfs;
+    int64_t current, peak, allocations;
+    if (!rh_sqlite_heap_report(heap, &current, &peak, &allocations)) {
+        *error = "a matching current application SQLite heap owner is required";
+        return NULL;
+    }
+    if (!native_acquire(heap, 1)) {
+        *error = "native SQLite owner population grant is exhausted";
+        return NULL;
+    }
+    vfs = calloc(1, sizeof(*vfs));
+    if (!vfs) {
+        native_release(heap, 1);
+        *error = "native VFS allocation failed";
+        return NULL;
+    }
     if (!bind_api(&vfs->api, vfs->library_path, error)) goto failed;
     {
-        int64_t current, peak, allocations;
         if (!rh_sqlite_heap_report(heap, &current, &peak, &allocations) ||
             !retry_usable(heap) || heap->api.module != vfs->api.module) {
             *error = "a matching current application SQLite heap owner without retry quarantine is required";
@@ -1039,6 +1150,7 @@ failed:
     free(vfs->database_name);
     free(vfs->database_wide);
     free(vfs);
+    native_release(heap, 1);
     return NULL;
 }
 int rh_write_vfs_bind(
@@ -1179,6 +1291,7 @@ int rh_write_vfs_close(rh_write_vfs *vfs) {
     release_module(&vfs->api);
     free(vfs->database_name);
     free(vfs->database_wide);
+    native_release(vfs->heap, 1);
     free(vfs);
     return RH_OK;
 }

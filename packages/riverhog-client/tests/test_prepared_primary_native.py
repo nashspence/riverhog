@@ -550,7 +550,7 @@ def test_native_callback_prefixes_match_independent_reservation_model(seed):
 @pytest.mark.parametrize("value", [0, -1, True, 1 << 63, "4"])
 def test_native_process_heap_grant_rejects_invalid_values_before_runtime_admission(value):
     with pytest.raises((TypeError, ValueError, OverflowError)):
-        native.SqliteProcessBudget("not-used", value)
+        native.SqliteProcessBudget("not-used", value, (128, 512))
 
 
 def test_native_process_heap_owner_rejects_uninitialized_observation():
@@ -1467,3 +1467,42 @@ def test_native_output_prefixes_match_independent_slot_byte_and_error_model(seed
             assert report[bank]["callback_slots_charged"] == slots[index]
             assert report[bank]["output_buffer_bytes_charged"] == output[index]
             assert slots[index] <= capacities[index] and output[index] <= grants[index]
+
+
+@pytest.mark.parametrize(
+    "limits",
+    [
+        None,
+        [],
+        [1, 2],
+        (),
+        (1,),
+        (1, 2, 3),
+        (True, 2),
+        (1, False),
+        (-1, 2),
+        (1, -1),
+        (1 << 31, 2),
+        (1, 1 << 31),
+        (1 << 63, 2),
+        (1, 1 << 63),
+        ("1", 2),
+        (1, 2.0),
+    ],
+)
+def test_native_population_grants_reject_invalid_values_before_runtime_admission(limits):
+    with pytest.raises((TypeError, ValueError, OverflowError)):
+        native.SqliteProcessBudget("not-used", 1048576, limits)
+
+
+def test_native_population_grants_are_required_before_runtime_admission():
+    with pytest.raises(TypeError):
+        native.SqliteProcessBudget("not-used", 1048576)
+
+
+def test_native_population_owner_rejects_uninitialized_observation_and_increase():
+    owner = native.SqliteProcessBudget.__new__(native.SqliteProcessBudget)
+    with pytest.raises(RuntimeError, match="not initialized"):
+        owner.native_report()
+    with pytest.raises(RuntimeError, match="not initialized"):
+        owner.increase_native((1, 2))

@@ -52,8 +52,10 @@ def _qualified_runtime() -> dict[str, str]:
     }
 
 
-def _admit_process_budget(heap_bytes: int) -> SqliteProcessBudget:
+def _admit_process_budget(
+    heap_bytes: int, *, native_limits: tuple[int, int]
+) -> SqliteProcessBudget:
     identity = _qualified_runtime()
     from riverhog_client import _prepared_primary_native as native
 
-    return native.SqliteProcessBudget(identity["sqlite_source_id"], heap_bytes)
+    return native.SqliteProcessBudget(identity["sqlite_source_id"], heap_bytes, native_limits)

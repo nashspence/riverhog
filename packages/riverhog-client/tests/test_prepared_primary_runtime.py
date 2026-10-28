@@ -26,8 +26,8 @@ def loaded(tmp_path, monkeypatch):
         events.append("identity")
         return dict(identity)
 
-    def admit(source, limit):
-        events.append(("heap", source, limit))
+    def admit(source, limit, native_limits):
+        events.append(("heap", source, limit, native_limits))
         return "admitted"
 
     native = SimpleNamespace(SqliteProcessBudget=admit)
@@ -45,11 +45,11 @@ def test_qualified_binary_is_checked_before_the_explicit_heap_grant(loaded):
         "sqlite_library_sha256": expected,
     }
     assert events == ["identity"]
-    assert runtime._admit_process_budget(1048576) == "admitted"
+    assert runtime._admit_process_budget(1048576, native_limits=(128, 512)) == "admitted"
     assert events == [
         "identity",
         "identity",
-        ("heap", identity["sqlite_source_id"], 1048576),
+        ("heap", identity["sqlite_source_id"], 1048576, (128, 512)),
     ]
 
 
@@ -70,7 +70,7 @@ def test_failed_runtime_admission_leaves_the_heap_policy_untouched(loaded, monke
         monkeypatch.setattr(runtime, "_MAX_LIBRARY_BYTES", runtime._LIBRARY_BLOCK_BYTES)
         error, message = RuntimeError, "image envelope"
     with pytest.raises(error, match=message):
-        runtime._admit_process_budget(1048576)
+        runtime._admit_process_budget(1048576, native_limits=(128, 512))
     assert events == ["identity"]
 
 
@@ -99,7 +99,7 @@ def test_binary_reads_have_a_fixed_buffer_and_stop_at_the_startup_envelope(loade
     monkeypatch.setattr(type(image), "open", open_image)
     monkeypatch.setattr(runtime, "_MAX_LIBRARY_BYTES", runtime._LIBRARY_BLOCK_BYTES)
     with pytest.raises(RuntimeError, match="image envelope"):
-        runtime._admit_process_budget(1048576)
+        runtime._admit_process_budget(1048576, native_limits=(128, 512))
     assert reads == [runtime._LIBRARY_BLOCK_BYTES] * 2
     assert events == ["identity"]
 
@@ -110,3 +110,16 @@ def test_loaded_module_probe_uses_stdlib_and_the_private_native_api(monkeypatch)
     monkeypatch.setitem(sys.modules, "riverhog_client._prepared_primary_native", native)
     monkeypatch.setattr(riverhog_client, "_prepared_primary_native", native, raising=False)
     assert runtime._loaded_runtime_identity() is identity
+
+
+def test_application_native_grants_are_required_before_loading_the_runtime(loaded):
+    _image, _identity, _expected, events = loaded
+    with pytest.raises(TypeError):
+        runtime._admit_process_budget(1048576)
+    assert events == []
+
+
+def test_explicit_zero_population_grants_are_forwarded_without_substitution(loaded):
+    _image, identity, _expected, events = loaded
+    assert runtime._admit_process_budget(1048576, native_limits=(0, 0)) == "admitted"
+    assert events == ["identity", ("heap", identity["sqlite_source_id"], 1048576, (0, 0))]

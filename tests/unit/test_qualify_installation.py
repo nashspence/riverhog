@@ -1026,6 +1026,19 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
         "output-vfs-bool",
         "output-refusal",
         "output-refusal-integer",
+        "population-verified",
+        "population-missing",
+        "population-integer",
+        "population-report-missing",
+        "population-report-extra",
+        "population-held-owner",
+        "population-held-file",
+        "population-owner-limit",
+        "population-file-limit",
+        "population-owner-refusal",
+        "population-file-refusal",
+        "population-bool-count",
+        "population-float-count",
         "native-bool-fs-calls",
         "native-float-wait",
         "work-bank-bool",
@@ -1079,6 +1092,17 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         "callback_buffer_recovery_bytes": 11,
         "vfs_auxiliary_buffer_bytes": 1041,
         "vfs_buffer_refusal_verified": True,
+        "native_population_verified": True,
+        "native_population": {
+            "owner_limit": 1,
+            "file_limit": 2,
+            "owners": 0,
+            "files": 0,
+            "owner_peak": 1,
+            "file_peak": 2,
+            "owner_refusals": 1,
+            "file_refusals": 1,
+        },
         "vfs_native_filesystem_attempts": 4096,
         "vfs_native_internal_sleep_microseconds": 600000,
         "vfs_native_recovery_close_attempts_prepaid": 8,
@@ -1194,6 +1218,26 @@ def test_installed_native_bank_requires_isolation_and_complete_positive_evidence
         proof["vfs_buffer_refusal_verified"] = False
     elif invalid == "output-refusal-integer":
         proof["vfs_buffer_refusal_verified"] = 1
+    elif invalid == "population-verified":
+        proof["native_population_verified"] = False
+    elif invalid == "population-missing":
+        del proof["native_population_verified"]
+    elif invalid == "population-integer":
+        proof["native_population_verified"] = 1
+    elif invalid == "population-report-missing":
+        del proof["native_population"]
+    elif invalid == "population-report-extra":
+        proof["native_population"]["extra"] = 0
+    elif invalid in ("population-held-owner", "population-held-file"):
+        proof["native_population"]["owners" if invalid.endswith("owner") else "files"] = 1
+    elif invalid in ("population-owner-limit", "population-file-limit"):
+        proof["native_population"]["owner_limit" if "owner" in invalid else "file_limit"] = 3
+    elif invalid in ("population-owner-refusal", "population-file-refusal"):
+        proof["native_population"]["owner_refusals" if "owner" in invalid else "file_refusals"] = 0
+    elif invalid == "population-bool-count":
+        proof["native_population"]["owner_refusals"] = True
+    elif invalid == "population-float-count":
+        proof["native_population"]["owners"] = 0.0
     elif invalid == "native-bool-fs-calls":
         proof["vfs_native_filesystem_attempts"] = True
     elif invalid == "native-float-wait":

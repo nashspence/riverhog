@@ -8,7 +8,7 @@ enum rh_refusal {
     RH_ALLOWED = 0, RH_FILE, RH_RANGE, RH_CALLS, RH_BYTES,
     RH_DATABASE_END, RH_JOURNAL_END, RH_PAGES, RH_TRACKING,
     RH_READ_RANGE, RH_READ_CALLS, RH_READ_BYTES,
-    RH_RESIZE_RANGE, RH_RESIZE_CALLS, RH_CONTROL, RH_CALLBACK_CALLS, RH_CALLBACK_CLOSE, RH_SLEEP_RANGE, RH_SLEEP_GRANT, RH_RETRY, RH_NATIVE_CALLS, RH_NATIVE_SLEEP, RH_NATIVE_CLOSE, RH_NATIVE_RANGE, RH_BUFFER_RANGE, RH_BUFFER_GRANT
+    RH_RESIZE_RANGE, RH_RESIZE_CALLS, RH_CONTROL, RH_CALLBACK_CALLS, RH_CALLBACK_CLOSE, RH_SLEEP_RANGE, RH_SLEEP_GRANT, RH_RETRY, RH_NATIVE_CALLS, RH_NATIVE_SLEEP, RH_NATIVE_CLOSE, RH_NATIVE_RANGE, RH_BUFFER_RANGE, RH_BUFFER_GRANT, RH_NATIVE_POPULATION
 };
 
 typedef struct {
@@ -98,6 +98,7 @@ enum rh_native_operation {
 int rh_native_filesystem_cost(enum rh_native_operation, int64_t, int64_t, int64_t, rh_retry_cost *);
 
 
+void rh_forbid_population(rh_quota *);
 void rh_forbid_retry(rh_quota *);
 void rh_forbid_native_range(rh_quota *);
 void rh_forbid_control(rh_quota *, enum rh_file);

@@ -2002,7 +2002,7 @@ else:
     raise AssertionError("installed client acquired a heap owner before binary admission")
 qualified_runtime=_qualified_runtime()
 assert qualified_runtime["sqlite_source_id"]==source_id
-heap=_admit_process_budget(67108864)
+heap=_admit_process_budget(67108864,native_limits=(1,2))
 vfs=native.WriteVfs(source_id,vfs_reads,vfs_callbacks,heap)
 try:
     identity=vfs.identity()
@@ -2051,6 +2051,42 @@ try:
             journal=path.with_name(path.name+"-journal")
             original_files=(path.read_bytes(),journal.read_bytes())
             vfs_work_report=vfs_callbacks.work.report()
+            population_writes=native.WriteQuota(vfs_limits,vfs_limits)
+            population_reads=native.ReadQuota(population_writes,(8388608,1024),(8388608,1024))
+            population_calls=native.CallbackQuota(
+                population_writes,(8192,0),(8192,0),
+                native.NativeWorkQuota(population_writes,(1<<40,1<<60),(1<<40,1<<60)),
+                buffers=(1<<40,1<<40),
+            )
+            try:
+                native.WriteVfs(source_id,population_reads,population_calls,heap)
+            except RuntimeError as exc:
+                assert "owner population" in str(exc)
+            else:
+                raise AssertionError("installed client bypassed its native owner population grant")
+            vfs.arm(population_reads,population_calls)
+            connections=[]
+            try:
+                for _ in range(2):
+                    connections.append(sqlite3.connect(uri,uri=True))
+                assert heap.native_report()["files"]==2
+                try:
+                    unexpected=sqlite3.connect(uri,uri=True)
+                except sqlite3.Error as exc:
+                    assert exc.sqlite_errorcode==sqlite3.SQLITE_FULL
+                else:
+                    unexpected.close()
+                    raise AssertionError("installed client bypassed its native file grant")
+                assert population_writes.recovering
+                assert population_writes.report()["first_refusal"]["reason"]==(
+                    "native SQLite file population grant"
+                )
+                assert not vfs.quarantined
+            finally:
+                for item in connections:
+                    item.close()
+            assert heap.native_report()["files"]==0 and vfs.open_files==0
+            assert (path.read_bytes(),journal.read_bytes())==original_files
             stopped_writes=native.WriteQuota(vfs_limits,vfs_limits)
             stopped_reads=native.ReadQuota(stopped_writes,(8388608,1024),(8388608,1024))
             stopped_work=native.NativeWorkQuota(stopped_writes,(0,0),(0,0))
@@ -2115,6 +2151,11 @@ try:
     assert callback_slots>0 and not callback_report["pending_error"]
 finally:
     vfs.close()
+population_report=heap.native_report()
+assert population_report=={
+    "owner_limit":1,"file_limit":2,"owners":0,"files":0,
+    "owner_peak":1,"file_peak":2,"owner_refusals":1,"file_refusals":1,
+}
 vfs_calls=vfs_quota.report()["forward"]["write_calls"]
 assert vfs_calls>0 and read_report["read_calls"]>0 and resize_calls>0 and not vfs_quota.recovering
 print(json.dumps({"compiler":native.compiler,
@@ -2131,6 +2172,7 @@ print(json.dumps({"compiler":native.compiler,
     "callback_buffer_recovery_bytes":output_report["recovery"]["output_buffer_bytes_charged"],
     "vfs_auxiliary_buffer_bytes":callback_report["forward"]["output_buffer_bytes_charged"],
     "vfs_buffer_refusal_verified":True,
+    "native_population_verified":True,"native_population":population_report,
     "callback_sleep_forward_microseconds":sleep_report["forward"]["sleep_microseconds_charged"],
     "callback_sleep_recovery_microseconds":sleep_report["recovery"]["sleep_microseconds_charged"],
     "callback_sleep_refusal_verified":sleep_refused,
@@ -2232,6 +2274,20 @@ print(json.dumps({"compiler":native.compiler,
         or type(proof.get("vfs_auxiliary_buffer_bytes")) is not int
         or proof["vfs_auxiliary_buffer_bytes"] <= 0
         or proof.get("vfs_buffer_refusal_verified") is not True
+        or proof.get("native_population_verified") is not True
+        or not isinstance(proof.get("native_population"), dict)
+        or proof["native_population"]
+        != {
+            "owner_limit": 1,
+            "file_limit": 2,
+            "owners": 0,
+            "files": 0,
+            "owner_peak": 1,
+            "file_peak": 2,
+            "owner_refusals": 1,
+            "file_refusals": 1,
+        }
+        or any(type(value) is not int for value in proof["native_population"].values())
         or type(proof.get("sqlite_heap_limit_bytes")) is not int
         or proof.get("sqlite_heap_limit_bytes") != 67108864
         or type(proof.get("sqlite_heap_peak_bytes")) is not int
