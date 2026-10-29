@@ -35,6 +35,10 @@ if TYPE_CHECKING:
         SqliteDatabaseReserveStep,
     )
     from riverhog_client._prepared_primary_sqlite_journal import FixedControlEnvelope
+    from riverhog_client._prepared_primary_sqlite_operations import (
+        SqliteOperationGrants,
+        SqliteRetainedOperations,
+    )
     from riverhog_client._prepared_primary_sqlite_progress_journal import (
         SqliteProgressJournal,
         SqliteProgressJournalStep,
@@ -46,7 +50,7 @@ if TYPE_CHECKING:
 _BLOCK = 4096
 _GEOMETRY = (
     "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096;"
-    "controls=fixed/v2;journal=prepared/v1;barrier=fixed/v1;resources=grants/v1;database-reserve=v1;progress-journal=v1;physical-ready=v1"
+    "controls=fixed/v2;journal=prepared/v1;barrier=fixed/v1;resources=grants/v1;database-reserve=v1;progress-journal=v1;physical-ready=v1;operation-grants=v1"
 )
 
 
@@ -173,7 +177,16 @@ class TransactionalPrimaryFiles:
         allocation_descriptor: bytes,
         limits: SqlitePrimaryLimits,
         initialize: bool,
+        operations: SqliteOperationGrants | None = None,
     ) -> None:
+        from riverhog_client._prepared_primary_sqlite_operations import (
+            SqliteOperationGrants,
+            SqliteRetainedOperations,
+        )
+
+        if operations is not None and type(operations) is not SqliteOperationGrants:
+            guard.close()
+            raise TypeError("prepared-primary original operations require exact grants")
         if not allocation_descriptor:
             guard.close()
             raise ValueError("prepared-primary allocation descriptor is required")
@@ -203,7 +216,7 @@ class TransactionalPrimaryFiles:
                         schema.upgrade_connection(connection)
                         connection.exec_driver_sql(
                             "INSERT INTO primary_format VALUES "
-                            "(1, ?, ?, zeroblob(8), zeroblob(16), ?, ?, ?, ?)",
+                            "(1, ?, ?, zeroblob(8), zeroblob(16), ?, ?, ?, ?, ?)",
                             (
                                 allocation_descriptor,
                                 _GEOMETRY,
@@ -211,6 +224,7 @@ class TransactionalPrimaryFiles:
                                 SqliteDatabaseReserve().encode(),
                                 SqliteProgressJournal().encode(),
                                 SqlitePhysicalReadiness().encode(),
+                                SqliteRetainedOperations(grants=operations).encode(),
                             ),
                         )
                         connection.exec_driver_sql(
@@ -234,7 +248,7 @@ class TransactionalPrimaryFiles:
                 raise PrimaryStateError("prepared-primary allocation or storage geometry changed")
             from riverhog_client._prepared_primary_sqlite_resources import reconcile
 
-            reconcile(self, limits, geometry=_GEOMETRY)
+            reconcile(self, limits, geometry=_GEOMETRY, offered_operations=operations)
             self.journal_reserved_bytes()
             self.sync()
         except BaseException:
@@ -263,11 +277,22 @@ class TransactionalPrimaryFiles:
         return read(self)
 
     def increase_resource_grants(
-        self, *, database_bytes: int, journal_bytes: int
+        self,
+        *,
+        database_bytes: int,
+        journal_bytes: int,
+        operations: SqliteOperationGrants | None = None,
     ) -> SqliteResourceGrants:
         from riverhog_client._prepared_primary_sqlite_resources import increase
 
-        return increase(self, database_bytes=database_bytes, journal_bytes=journal_bytes)
+        return increase(
+            self, database_bytes=database_bytes, journal_bytes=journal_bytes, operations=operations
+        )
+
+    def operation_grants(self) -> SqliteRetainedOperations:
+        from riverhog_client._prepared_primary_sqlite_operations import read
+
+        return read(self)
 
     def database_reserve(self) -> SqliteDatabaseReserve:
         from riverhog_client._prepared_primary_sqlite_database_reserve import read

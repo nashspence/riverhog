@@ -14,6 +14,7 @@ if TYPE_CHECKING:
         SqlitePrimaryLimits,
         TransactionalPrimaryFiles,
     )
+    from riverhog_client._prepared_primary_sqlite_operations import SqliteOperationGrants
 
 _TAG = b"RHGRANT1"
 _SIZE = 64
@@ -95,7 +96,11 @@ def _configure(files: TransactionalPrimaryFiles, limits: SqlitePrimaryLimits) ->
 
 
 def reconcile(
-    files: TransactionalPrimaryFiles, offered: SqlitePrimaryLimits, *, geometry: str
+    files: TransactionalPrimaryFiles,
+    offered: SqlitePrimaryLimits,
+    *,
+    geometry: str,
+    offered_operations: SqliteOperationGrants | None,
 ) -> None:
     """Validate original grants after engine recovery and before the open barrier."""
     from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
@@ -125,14 +130,35 @@ def reconcile(
     from riverhog_client._prepared_primary_sqlite_ready import read as ready_read
 
     ready_read(files)
+    from riverhog_client._prepared_primary_sqlite_operations import (
+        reconcile as operations_reconcile,
+    )
+
+    operations_reconcile(files, offered_operations)
 
 
 def increase(
-    files: TransactionalPrimaryFiles, *, database_bytes: int, journal_bytes: int
+    files: TransactionalPrimaryFiles,
+    *,
+    database_bytes: int,
+    journal_bytes: int,
+    operations: SqliteOperationGrants | None = None,
 ) -> SqliteResourceGrants:
     """Increase granted ceilings independently of candidate or cleanup progress."""
     from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
+    from riverhog_client._prepared_primary_sqlite_operations import (
+        SqliteOperationGrants,
+        SqliteRetainedOperations,
+    )
+    from riverhog_client._prepared_primary_sqlite_operations import (
+        read as operations_read,
+    )
+    from riverhog_client._prepared_primary_sqlite_operations import (
+        save as operations_save,
+    )
 
+    if operations is not None and type(operations) is not SqliteOperationGrants:
+        raise TypeError("prepared-primary operation increases require exact grants")
     with files._mutex:
         if files is not files._root:
             raise PrimaryStateError(
@@ -145,9 +171,24 @@ def increase(
             )
         limits = SqlitePrimaryLimits(database_bytes, journal_bytes, files._limits.cache_bytes)
         current = read(files)
+        if current.revision == (1 << 64) - 1 and (
+            database_bytes > current.database_bytes or journal_bytes > current.journal_bytes
+        ):
+            raise PrimaryStateCapacity("prepared-primary resource revision is exhausted")
+        original_operations = operations_read(files)
+        selected_operations = original_operations.grants if operations is None else operations
+        if (
+            original_operations.grants is not None
+            and selected_operations is not None
+            and not selected_operations.preserves(original_operations.grants)
+        ):
+            raise ValueError("prepared-primary operation increases cannot lower original grants")
         if database_bytes < current.database_bytes or journal_bytes < current.journal_bytes:
             raise ValueError("prepared-primary resource increases cannot lower retained grants")
-        if (database_bytes, journal_bytes) == (current.database_bytes, current.journal_bytes):
+        if (database_bytes, journal_bytes) == (
+            current.database_bytes,
+            current.journal_bytes,
+        ) and selected_operations == original_operations.grants:
             return current
         if current.revision == (1 << 64) - 1:
             raise PrimaryStateCapacity("prepared-primary resource revision is exhausted")
@@ -195,5 +236,10 @@ def increase(
             reserve_save(db, reserve, revised(reserve, selected.revision))
             journal_save(db, journal, journal_revised(journal, selected.revision))
             ready_revised(files, ready, selected.revision)
+            operations_save(
+                files,
+                original_operations,
+                SqliteRetainedOperations(selected.revision, selected_operations),
+            )
         files._resource_limits = limits
         return selected

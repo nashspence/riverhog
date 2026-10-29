@@ -34,6 +34,7 @@ Table(
     Column("database_reserve", LargeBinary, nullable=False),
     Column("progress_journal", LargeBinary, nullable=False),
     Column("physical_readiness", LargeBinary, nullable=False),
+    Column("operation_grants", LargeBinary, nullable=False),
     CheckConstraint(
         "typeof(progress_journal) = 'blob' AND length(progress_journal) = 64",
         name="ck_primary_format_progress_journal",
@@ -41,6 +42,10 @@ Table(
     CheckConstraint(
         "typeof(physical_readiness) = 'blob' AND length(physical_readiness) = 64",
         name="ck_primary_format_physical_readiness",
+    ),
+    CheckConstraint(
+        "typeof(operation_grants) = 'blob' AND length(operation_grants) = 184",
+        name="ck_primary_format_operation_grants",
     ),
     CheckConstraint("id = 1", name="ck_primary_format_singleton"),
     CheckConstraint(

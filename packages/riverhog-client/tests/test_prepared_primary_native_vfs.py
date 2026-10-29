@@ -4480,7 +4480,7 @@ with files:
         workspace_bytes=128*1024)
     finish_database(files,gate,plan)
     ready=files.prepare_physical_ready()
-    assert ready.minimum_journal_bytes>=guard.control_envelope((64,72,64,64)).journal_bytes
+    assert ready.minimum_journal_bytes>=guard.control_envelope((64,72,64,64,184)).journal_bytes
     with files._transaction(payload=True):
         assert files._one("PRAGMA max_page_count")== (ready.backed_pages,)
     payload=files.put_bytes("payload",(b"payload"*1000,),byte_limit=7000)
@@ -4551,4 +4551,123 @@ print(json.dumps({"passed":True,"original_exact":True,"payload_exact":True,
     )
     record_testsuite_property(
         "prepared_primary_physical_ready", json.dumps(proof["physical_ready"])
+    )
+
+
+def test_native_retained_operation_grants_preserve_cold_authority_and_recovery_caps(
+    tmp_path, record_testsuite_property
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import importlib.util,json,hashlib,sys
+from pathlib import Path
+from dataclasses import replace
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client import PrimaryStateCapacity
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits,TransactionalPrimaryFiles
+from riverhog_client._prepared_primary_sqlite_operations import (
+    SqliteOperationBank,SqliteOperationGrants,native_bank)
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+def load(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    module=importlib.util.module_from_spec(spec);sys.modules[name]=module
+    spec.loader.exec_module(module);return module
+helpers=load("operation_helpers",root/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py")
+parents=load("operation_parents",root/"tests/platform/windows_primary_process.py")
+parent=Path(sys.argv[2])/"operations-private";parents._parent(parent)
+allocation=b"native original operation grants"
+path=windows_container_path(parent,allocation)
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+source=native.runtime_identity()["sqlite_source_id"]
+limits=SqlitePrimaryLimits(512*1024,512*1024,128*1024)
+bank=SqliteOperationBank(128,8*1024*1024,65536,8*1024*1024,65536,
+    262144,0,1<<40,1<<60,1<<40)
+grants=SqliteOperationGrants(bank,bank)
+larger=SqliteOperationGrants(replace(bank,write_bytes=16*1024*1024),
+    replace(bank,read_bytes=16*1024*1024))
+# Exercise actual C admission counters, separately from file-backed SQL below.
+caps=native_bank(grants,limits,database_pages=4,journal_bytes=8192)
+assert not caps.writes.admit("journal",1,8192)
+assert caps.writes.recovering
+assert caps.writes.report()["first_refusal"]["bank"]=="forward"
+assert caps.writes.admit("journal",1,limits.journal_bytes-1)
+assert caps.writes.admit("database",4096,limits.database_bytes-4096)
+assert caps.writes.report()["forward"]["write_calls"]==0
+assert caps.writes.report()["recovery"]["write_calls"]==2
+def opened(initialize,offered):
+    counters=native_bank(offered,limits,recovering=not initialize)
+    gate=native.WriteVfs(source,counters.reads,counters.callbacks,heap)
+    guard=NativeWindowsContainer(path,initialize=initialize,gate=gate)
+    helpers.admit_fixture_retries(gate)
+    files=TransactionalPrimaryFiles(guard,allocation_descriptor=allocation,
+        limits=limits,initialize=initialize,operations=offered)
+    return files,gate,counters
+files,gate,counters=opened(True,grants)
+with files:
+    original=files.put_bytes("original",(b"exact original",),byte_limit=14)
+    assert files.operation_grants().grants==grants
+    files.increase_resource_grants(database_bytes=limits.database_bytes,
+        journal_bytes=limits.journal_bytes,operations=larger)
+    assert files.operation_grants().grants==larger
+    assert files.operation_grants().revision==1
+    assert gate.operation_failure() is None
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+before=hashlib.sha256(path.read_bytes()).digest()
+lower=replace(larger,recovery=replace(larger.recovery,write_bytes=larger.recovery.write_bytes-1))
+try:opened(False,lower)
+except PrimaryStateCapacity as exc:assert "original operation grants" in str(exc)
+else:raise AssertionError("lowered original restoration grant was accepted")
+assert hashlib.sha256(path.read_bytes()).digest()==before
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+offered=replace(larger,forward=replace(larger.forward,write_calls=larger.forward.write_calls+16))
+files,gate,counters=opened(False,offered)
+with files:
+    retained=files.operation_grants()
+    assert retained.grants==larger and retained.revision==1
+    assert len(retained.encode())==184
+    assert counters.writes.recovering
+    assert counters.writes.report()["forward"]["write_calls"]==0
+    assert counters.writes.report()["recovery"]["write_calls"]>0
+    assert not counters.writes.report()["refusals"]
+    assert not counters.writes.report()["native_failures"] and gate.operation_failure() is None
+    with files.verified(original) as stream:assert stream.read()==b"exact original"
+    proof=dict(record_bytes=184,revision=retained.revision,
+        forward_write_bytes=retained.grants.forward.write_bytes,
+        recovery_read_bytes=retained.grants.recovery.read_bytes,
+        cold_forward_write_calls=counters.writes.report()["forward"]["write_calls"],
+        cold_recovery_write_calls=counters.writes.report()["recovery"]["write_calls"],
+        original_database_bytes=limits.database_bytes,original_journal_bytes=limits.journal_bytes,
+        forward_database_bytes=4*4096,forward_journal_bytes=8192,
+        counter_forward_write_calls=caps.writes.report()["forward"]["write_calls"],
+        counter_recovery_write_calls=caps.writes.report()["recovery"]["write_calls"])
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+print(json.dumps({"passed":True,"original_exact":True,"population_released":True,
+    "lower_offer_preserved":True,"counter_caps_verified":True,"operation_grants":proof}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[3]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert all(
+        proof[key] is True
+        for key in (
+            "passed",
+            "original_exact",
+            "population_released",
+            "lower_offer_preserved",
+            "counter_caps_verified",
+        )
+    )
+    record_testsuite_property(
+        "prepared_primary_operation_grants", json.dumps(proof["operation_grants"])
     )

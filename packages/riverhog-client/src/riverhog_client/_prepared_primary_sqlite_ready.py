@@ -194,12 +194,15 @@ def prepare(files: TransactionalPrimaryFiles) -> SqlitePhysicalReadiness:
         journal = files.require_progress_journal()
         from riverhog_client._prepared_primary_sqlite_database_reserve import _SIZE as database_size
         from riverhog_client._prepared_primary_sqlite_journal import _reservation
+        from riverhog_client._prepared_primary_sqlite_operations import _SIZE as operations_size
         from riverhog_client._prepared_primary_sqlite_progress_journal import _SIZE as journal_size
         from riverhog_client._prepared_primary_sqlite_resources import _SIZE as grants_size
 
-        # Grant increase updates all four existing fixed records atomically.
+        # Grant increase updates all five existing fixed records atomically.
         # Control warming updates one existing maximum extent and its 16-byte record.
-        profiles: list[tuple[int, ...]] = [(grants_size, database_size, journal_size, _SIZE)]
+        profiles: list[tuple[int, ...]] = [
+            (grants_size, database_size, journal_size, _SIZE, operations_size)
+        ]
         _floor, representative = _reservation(files)
         if representative:
             row = files._one(

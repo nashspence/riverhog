@@ -67,7 +67,7 @@ def test_ready_covers_both_backings_and_atomic_grant_update_minimum(tmp_path):
         assert ready.free_pages == 8
         assert ready.journal_bytes == files.progress_journal().backed_bytes
         assert ready.minimum_journal_bytes >= files.progress_journal().minimum_bytes
-        envelope = files._guard.control_envelope((64, 72, 64, 64))
+        envelope = files._guard.control_envelope((64, 72, 64, 64, 184))
         assert ready.minimum_journal_bytes >= envelope.journal_bytes
         assert ready.minimum_pages >= envelope.database_pages
         assert ready.journal_bytes >= ready.minimum_journal_bytes
@@ -328,7 +328,7 @@ def test_readiness_minimum_must_fit_verified_floor_before_ready_commit(tmp_path)
                 free_pages=0, target_pages=files.space_usage().database_pages, workspace_bytes=4096
             ),
         )
-        required = files._guard.control_envelope((64, 72, 64, 64)).journal_bytes
+        required = files._guard.control_envelope((64, 72, 64, 64, 184)).journal_bytes
         assert files.progress_journal().backed_bytes < required
         with pytest.raises(PrimaryStateCapacity, match="exceeds journal backing"):
             files.prepare_physical_ready()
