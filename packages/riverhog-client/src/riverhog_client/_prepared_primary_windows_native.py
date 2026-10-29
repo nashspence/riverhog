@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Any
 from riverhog_client._prepared_primary_types import (
     PrimaryFileSpace,
     PrimaryStateBusy,
+    PrimaryStateCapacity,
     PrimaryStateError,
 )
 
@@ -456,9 +457,13 @@ class WindowsContainer:
         self._handles.append((handle, path, directory, identity))
         return handle
 
+    def check_operation(self) -> None:
+        """The metadata-only guard has no compiled operation bank."""
+
     def check_current(self) -> None:
         if self._closed:
             raise PrimaryStateError("prepared-primary construction owner is closed")
+        self.check_operation()
         for handle, path, directory, identity in self._handles:
             if self._api.information(handle, path, directory=directory) != identity:
                 raise PrimaryStateError("prepared-primary container identity changed")
@@ -550,6 +555,7 @@ class NativeWindowsContainer(WindowsContainer):
         self._native_released = False
         self._native_constructing = False
         self._native_failure: BaseException | None = None
+        self._native_operation_failure: PrimaryStateError | None = None
         self._handles = []
         self._closed = False
         self._close_failure = None
@@ -572,6 +578,19 @@ class NativeWindowsContainer(WindowsContainer):
             elif not self._native_released and self._native_failure is None:
                 self.close()
             raise
+
+    def check_operation(self) -> None:
+        """Do not hand back a result after an infallible native callback refused."""
+        if self._native_operation_failure is not None:
+            raise self._native_operation_failure
+        failure = self._native_gate.operation_failure()
+        if failure is None:
+            return
+        error = PrimaryStateCapacity if failure == "capacity" else PrimaryStateError
+        self._native_operation_failure = error(
+            "prepared-primary native operation failed; close and reopen required"
+        )
+        raise self._native_operation_failure
 
     @property
     def quarantined(self) -> bool:

@@ -47,14 +47,15 @@ def _body(
     identifier, capacity = slot
     with owner._db().blobopen("primary_controls", "body", identifier, readonly=True) as blob:
         size = _length(blob, capacity)
-        if size is None:
-            return None
-        if size > byte_limit:
-            raise PrimaryStateCapacity("prepared-primary control exceeds explicit admission")
-        body = blob.read(size)
-        if len(body) != size:
-            raise PrimaryStateError("prepared-primary control extent changed")
-        return body
+        body = None
+        if size is not None:
+            if size > byte_limit:
+                raise PrimaryStateCapacity("prepared-primary control exceeds explicit admission")
+            body = blob.read(size)
+            if len(body) != size:
+                raise PrimaryStateError("prepared-primary control extent changed")
+    owner._guard.check_operation()
+    return body
 
 
 def selected(owner: TransactionalPrimaryFiles, name: str) -> bool:
@@ -64,7 +65,9 @@ def selected(owner: TransactionalPrimaryFiles, name: str) -> bool:
         if slot is None:
             return False
         with owner._db().blobopen("primary_controls", "body", slot[0], readonly=True) as blob:
-            return _length(blob, slot[1]) is not None
+            result = _length(blob, slot[1]) is not None
+        owner._guard.check_operation()
+        return result
 
 
 def reserved(owner: TransactionalPrimaryFiles, name: str) -> bool:

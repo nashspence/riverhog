@@ -1368,6 +1368,25 @@ static PyObject *vfs_quarantined(PyObject *object, void *unused) {
     }
     return PyBool_FromLong(quarantined);
 }
+static PyObject *vfs_operation_failure(PyObject *object, PyObject *unused) {
+    WriteVfs *self = (WriteVfs *)object;
+    rh_quota *quota;
+    int quarantined;
+    (void)unused;
+    if (!vfs_ready(self)) return NULL;
+    quarantined = rh_write_vfs_quarantined(self->vfs);
+    if (quarantined < 0) {
+        PyErr_SetString(PyExc_RuntimeError, "native operation inspection requires its owning thread");
+        return NULL;
+    }
+    quota = &((WriteQuota *)((ReadQuota *)self->quota)->quota)->quota;
+    if (quarantined || quota->native_failures || quota->diagnostic_overflow)
+        return PyUnicode_FromString("native");
+    if (quota->refusals || ((CallbackQuota *)self->callbacks)->calls.pending_error)
+        return PyUnicode_FromString("capacity");
+    /* Expected cold restoration/close can select R without an operation failure. */
+    Py_RETURN_NONE;
+}
 static PyMethodDef vfs_methods[] = {
     {"retain_custodian", vfs_retain_custodian, METH_O,
         "Retain one metadata owner under the already charged native owner slot before binding."},
@@ -1382,6 +1401,8 @@ static PyMethodDef vfs_methods[] = {
     {"arm", vfs_arm, METH_VARARGS, "Select a bank before entering SQLite on its owning thread."},
     {"close", vfs_close, METH_NOARGS, "Unregister after the owner closes every SQLite connection using this VFS."},
     {"identity", vfs_identity, METH_NOARGS, "Describe the already loaded SQLite module."},
+    {"operation_failure", vfs_operation_failure, METH_NOARGS,
+        "Inspect sticky native failure/refusal state outside storage callbacks."},
     {NULL, NULL, 0, NULL}
 };
 static PyGetSetDef vfs_getset[] = {

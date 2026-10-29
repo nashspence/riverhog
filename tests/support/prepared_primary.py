@@ -146,7 +146,11 @@ class SqlitePrimaryTestGuard:
         self.path = path
         self.closed = False
 
+    def check_operation(self):
+        pass
+
     def check_current(self):
+        self.check_operation()
         if self.closed:
             raise PrimaryStateError("fixture owner closed")
 

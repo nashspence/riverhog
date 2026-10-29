@@ -433,6 +433,9 @@ def _vfs_files(shim, path, allocation, *, initialize, limits=LIMITS):
                     self.native.close()
                     raise
 
+        def check_operation(self):
+            self.native.check_operation()
+
         def check_current(self):
             self.native.check_current()
 

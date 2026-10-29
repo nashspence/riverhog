@@ -1305,3 +1305,63 @@ os._exit(73)
         assert files.exists("later")
         with files.verified(selected) as stream:
             assert stream.read() == original
+
+
+@pytest.mark.parametrize("operation", ["query", "body", "unselected", "selected"])
+def test_recorded_callback_failure_blocks_returning_query_and_control_results(
+    tmp_path, monkeypatch, operation
+):
+    from contextlib import contextmanager
+
+    from riverhog_client import PrimaryStateCapacity
+
+    failure = PrimaryStateCapacity("recorded native callback refusal")
+    refused = False
+
+    def checked():
+        if refused:
+            raise failure
+
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        files.prepare_controls(("control",), byte_limit=32)
+        if operation != "unselected":
+            files.put_control("control", b"original", byte_limit=32)
+        connection = files._connection
+        monkeypatch.setattr(files._guard, "check_operation", checked)
+        if operation == "query":
+
+            def trace(query):
+                nonlocal refused
+                if query == "SELECT 7":
+                    refused = True
+
+            connection.set_trace_callback(trace)
+        else:
+
+            class Connection:
+                def __getattr__(self, name):
+                    return getattr(connection, name)
+
+                @contextmanager
+                def blobopen(self, *args, **kwargs):
+                    nonlocal refused
+                    with connection.blobopen(*args, **kwargs) as blob:
+                        yield blob
+                    refused = True
+
+            files._connection = Connection()
+
+        def run():
+            if operation == "query":
+                return files._one("SELECT 7")
+            if operation == "selected":
+                return files.exists("control")
+            return files.read_control("control", byte_limit=32)
+
+        try:
+            with pytest.raises(PrimaryStateCapacity) as caught:
+                run()
+            assert caught.value is failure and refused
+        finally:
+            refused = False
+            connection.set_trace_callback(None)

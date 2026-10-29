@@ -606,6 +606,8 @@ def test_native_uninitialized_vfs_cannot_report_successful_teardown():
     owner = native.WriteVfs.__new__(native.WriteVfs)
     with pytest.raises(RuntimeError, match="uninitialized"):
         _ = owner.quarantined
+    with pytest.raises(RuntimeError, match="uninitialized"):
+        owner.operation_failure()
 
 
 @pytest.mark.parametrize("bank", ["forward", "recovery"])

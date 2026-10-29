@@ -3850,3 +3850,116 @@ print(json.dumps({"passed":True,"hot_journal":True,"original_exact":True,
         "quiescent_forward_rearm": True,
         "population_released": True,
     }
+
+
+@pytest.mark.parametrize("scenario", ["healthy", "capacity", "native"])
+def test_native_recorded_operation_failure_is_checked_before_returning_sql_results(
+    tmp_path, scenario
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import ctypes as c,hashlib,importlib.util,json,sqlite3,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client import PrimaryStateCapacity,PrimaryStateError
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits,TransactionalPrimaryFiles
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+from tests.support.sqlite_vfs_faults import FaultVfs
+def load(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    module=importlib.util.module_from_spec(spec);sys.modules[spec.name]=module
+    spec.loader.exec_module(module);return module
+helpers=load("failure_helpers",root/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py")
+parent_helpers=load("failure_parent",root/"tests/platform/windows_primary_process.py")
+parent=Path(sys.argv[2])/"failure-private";parent_helpers._parent(parent)
+path=windows_container_path(parent,b"native operation failure")
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+source=native.runtime_identity()["sqlite_source_id"]
+writes=native.WriteQuota(helpers.grant(),helpers.grant())
+gate=native.WriteVfs(source,helpers.reads(native,writes),helpers.callbacks(native,writes),heap)
+guard=NativeWindowsContainer(path,initialize=True,gate=gate)
+helpers.admit_fixture_retries(gate)
+files=TransactionalPrimaryFiles(guard,allocation_descriptor=b"native operation failure",
+    limits=SqlitePrimaryLimits(1024*1024,1024*1024,128*1024),initialize=True)
+files.put_bytes("original",(b"exact original",),byte_limit=14)
+original=hashlib.sha256(path.read_bytes()).hexdigest()
+scenario=sys.argv[3]
+writes=native.WriteQuota(helpers.grant(),helpers.grant())
+calls=helpers.callbacks(native,writes,forward=1 if scenario=="capacity" else 262144)
+gate.arm(helpers.reads(native,writes),calls)
+assert gate.operation_failure() is None
+vfs=FaultVfs.windows().library.sqlite3_vfs_find(gate.name.encode())
+touched=[];results=[]
+def trace(query):
+    if query=="SELECT 7":
+        touched.append(True)
+        if scenario=="capacity":
+            output=c.create_string_buffer(b"canary")
+            result=vfs.contents.randomness(vfs,6,output)
+            results.append((result,output.value,calls.report()["pending_error"]))
+        elif scenario=="native":
+            writes.failed()
+files._connection.set_trace_callback(trace)
+try:
+    if scenario=="healthy":
+        assert files._one("SELECT 7")== (7,)
+        assert gate.operation_failure() is None
+        guard.check_operation()
+    else:
+        error=PrimaryStateCapacity if scenario=="capacity" else PrimaryStateError
+        try:files._one("SELECT 7")
+        except error as exc:first=exc
+        else:raise AssertionError("SQLite result escaped a recorded native operation failure")
+        assert gate.operation_failure()==scenario
+        try:guard.check_operation()
+        except error as exc:assert exc is first
+        else:raise AssertionError("recorded operation failure was forgotten")
+        assert gate.bound and gate.open_files==1 and not gate.quarantined
+        assert not guard._closed and heap.native_report()["owners"]==1
+        if scenario=="capacity":
+            assert results==[(0,b"canary",True)],results
+            name=c.create_string_buffer(str(path).encode())
+            out=c.c_int(42)
+            assert vfs.contents.access(vfs,name,0,c.byref(out))==sqlite3.SQLITE_FULL
+            assert out.value==42 and not calls.report()["pending_error"]
+            assert gate.operation_failure()=="capacity"
+            try:guard.check_operation()
+            except PrimaryStateCapacity as exc:assert exc is first
+            else:raise AssertionError("acknowledged infallible refusal erased the first cause")
+    assert touched==[True]
+finally:
+    files._connection.set_trace_callback(None)
+    files.close()
+assert hashlib.sha256(path.read_bytes()).hexdigest()==original
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+print(json.dumps({"passed":True,"scenario":scenario,"result_withheld":scenario!="healthy",
+    "original_exact":True,"population_released":True}))
+"""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(tmp_path),
+            scenario,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "scenario": scenario,
+        "result_withheld": scenario != "healthy",
+        "original_exact": True,
+        "population_released": True,
+    }

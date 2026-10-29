@@ -647,3 +647,37 @@ def test_composed_construction_keeps_uncertain_admission_charged(tmp_path, monke
             with pytest.raises(PrimaryStateError, match="custody is quarantined"):
                 guard.close()
             assert events == before
+
+
+@pytest.mark.parametrize("failure", [None, "capacity", "native"])
+def test_composed_operation_check_retains_first_failure_without_releasing_custody(failure):
+    from riverhog_client import PrimaryStateCapacity
+    from riverhog_client._prepared_primary_windows_native import NativeWindowsContainer
+
+    class Gate:
+        current = failure
+        calls = 0
+
+        def operation_failure(self):
+            self.calls += 1
+            return self.current
+
+    guard = object.__new__(NativeWindowsContainer)
+    gate = Gate()
+    guard._native_gate = gate
+    guard._native_operation_failure = None
+    guard._closed = False
+    if failure is None:
+        guard.check_operation()
+        assert gate.calls == 1 and not guard._closed
+        gate.current = "capacity"
+        failure = "capacity"
+    error = PrimaryStateCapacity if failure == "capacity" else PrimaryStateError
+    with pytest.raises(error) as first:
+        guard.check_operation()
+    gate.current = None
+    before = gate.calls
+    with pytest.raises(error) as repeated:
+        guard.check_operation()
+    assert repeated.value is first.value
+    assert gate.calls == before and not guard._closed

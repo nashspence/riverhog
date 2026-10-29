@@ -44,6 +44,7 @@ class ContainerGuard(Protocol):
     vfs: str
 
     def check_current(self) -> None: ...
+    def check_operation(self) -> None: ...
     def check_journal(self, *, required: bool, recovering: bool = False) -> None: ...
     def close(self) -> None: ...
     def file_space(self) -> tuple[PrimaryFileSpace, PrimaryFileSpace]: ...
@@ -83,7 +84,7 @@ def _connect(guard: ContainerGuard, limits: SqlitePrimaryLimits) -> sqlite3.Conn
         connection.enable_load_extension(False)
         settings = {
             "busy_timeout": 0,
-            # Select retention before a pragma opens the pager in its default delete mode.
+            # Cold rollback can remove the old journal before this setting takes effect.
             "journal_mode": "PERSIST",
             "page_size": _BLOCK,
             "auto_vacuum": 2,
@@ -100,9 +101,11 @@ def _connect(guard: ContainerGuard, limits: SqlitePrimaryLimits) -> sqlite3.Conn
         for key, value in settings.items():
             with closing(connection.execute(f"PRAGMA {key}={value}")):
                 pass
+            guard.check_operation()
         for key, value in settings.items():
             with closing(connection.execute(f"PRAGMA {key}")) as cursor:
                 observed = cursor.fetchone()[0]
+            guard.check_operation()
             if str(observed).casefold() != str(value).casefold():
                 raise PrimaryStateError(f"prepared-primary SQLite setting rejected: {key}")
         guard.check_journal(required=False, recovering=True)
@@ -260,8 +263,10 @@ class TransactionalPrimaryFiles:
         return connection
 
     def _one(self, query: str, parameters: tuple[Any, ...] = ()) -> tuple[Any, ...] | None:
-        with self._mutex, closing(self._db().execute(query, parameters)) as cursor:
-            row = cursor.fetchone()
+        with self._mutex:
+            with closing(self._db().execute(query, parameters)) as cursor:
+                row = cursor.fetchone()
+            self._guard.check_operation()
             return None if row is None else tuple(row)
 
     @contextmanager
