@@ -1721,6 +1721,8 @@ def test_derived_writer_binds_outputs_to_dispositions(
         member_inventory=lambda: inventory_from_rows(api.registered),
         provenance_connection_factory=population,
         on_provenance_storage_open=retained,
+        completion_connection_factory=population,
+        on_completion_storage_open=retained,
         spec=spec,
         claim_id="claim-1",
         fence=1,
@@ -1751,6 +1753,8 @@ def test_derived_writer_binds_outputs_to_dispositions(
     assert receipt.collection_id == 44
     assert captured["init"]["provenance_connection_factory"] is population
     assert captured["init"]["on_provenance_storage_open"] is retained
+    assert captured["init"]["completion_connection_factory"] is population
+    assert captured["init"]["on_completion_storage_open"] is retained
     assert captured["append"] == (
         stream,
         {

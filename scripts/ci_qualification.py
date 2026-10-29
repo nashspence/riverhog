@@ -59,6 +59,7 @@ NATIVE_TESTS = (
     "packages/riverhog-client/tests/test_opaque_producer.py",
     "packages/riverhog-client/tests/test_canonical_provenance_admission.py",
     "packages/riverhog-client/tests/test_processing_provenance_admission.py",
+    "packages/riverhog-client/tests/test_completion_records_admission.py",
     "packages/riverhog-client/tests/test_prepared_primary_native.py",
     "packages/riverhog-client/tests/test_prepared_primary_native_vfs.py",
     "packages/riverhog-client/tests/test_prepared_primary_runtime.py",

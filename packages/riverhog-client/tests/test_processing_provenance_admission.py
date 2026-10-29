@@ -68,9 +68,10 @@ DISPOSITION = ArtifactDispositionSetIdentity(2, 2, 2, "6" * 64)
 class Transport:
     """Controlled claim/member transport; provenance validation remains real."""
 
-    def __init__(self, material, population=None):
+    def __init__(self, material, population=None, *, retained_connections=0):
         self.material = material
         self.population = population
+        self.retained_connections = retained_connections
         self.uploads, self.reservations, self.import_reads = [], [], []
         self.fail_upload = False
         self.changed = None
@@ -109,7 +110,7 @@ class Transport:
 
     def get_collection_upload_session_member_history_inputs(self, _collection, artifact):
         if self.population is not None:
-            assert self.population.active == 0
+            assert self.population.active == self.retained_connections
         self.import_reads.append(artifact)
         return SimpleNamespace(model_dump=lambda **_: {"fixture_import": str(artifact)})
 
@@ -123,7 +124,7 @@ class Transport:
 
     def reserve_collection_upload_session_completion_recording(self, _collection, request):
         if self.population is not None:
-            assert self.population.active == 0
+            assert self.population.active == self.retained_connections
         self.reservations.append(request)
         return CollectionCompletionRecordingDocument(
             **request.model_dump(),
@@ -249,8 +250,9 @@ def composed(monkeypatch):
                 execution_envelope_sha256="c" * 64,
                 **values,
             )
-        for key, value in ports.items():
-            assert writer.producer.options[key] is value
+        for key in ("provenance_connection_factory", "on_provenance_storage_open"):
+            if key in ports:
+                assert writer.producer.options[key] is ports[key]
         return writer
 
     return construct
@@ -400,3 +402,221 @@ def test_processing_upload_failure_releases_validation_and_retries_exact_preimag
     assert population.active == 0 and population.peak == 1
     assert len(population.connections) == 10 and len(handles) == 20
     assert all(not path.exists() for path in paths)
+
+
+@pytest.mark.parametrize("runtime", [False, True])
+def test_processing_completion_spool_admission_preserves_bytes_and_confirms_close_before_upload(
+    material, composed, monkeypatch, runtime
+):
+    from riverhog_client import completion_records as completion_owner
+
+    expected = Transport(material)
+    seal(composed(expected))
+    population, provenance, spools = Population(limit=2), [], []
+
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("completion spool bypassed selected connection factory")
+
+    monkeypatch.setattr(
+        completion_owner,
+        "sqlite3",
+        SimpleNamespace(connect=forbidden, IntegrityError=completion_owner.sqlite3.IntegrityError),
+    )
+    api = Transport(material, population, retained_connections=1)
+    writer = composed(
+        api,
+        runtime=runtime,
+        provenance_connection_factory=population,
+        on_provenance_storage_open=provenance.append,
+        completion_connection_factory=population,
+        on_completion_storage_open=spools.append,
+    )
+    seal(writer)
+    assert api.uploads == expected.uploads and api.reservations == expected.reservations
+    assert len(population.connections) == 6 and population.peak == 2 and population.active == 0
+    assert len(provenance) == 10 and len(spools) == 1
+    assert population.attempts[0][0].name == "records.sqlite3"
+    assert all(db.close_calls == 1 for db in population.connections)
+    assert all(not path.parent.exists() for path, _ in population.attempts)
+
+
+def test_processing_completion_spool_refusal_precedes_preimage_reads_and_publication(
+    material, composed
+):
+    from dataclasses import replace
+
+    population, spools, reads = Population(limit=2), [], []
+    population.refuse = True
+    api = Transport(material, population, retained_connections=1)
+    writer = composed(
+        api,
+        runtime=True,
+        provenance_connection_factory=population,
+        completion_connection_factory=population,
+        on_completion_storage_open=spools.append,
+    )
+    supplied = tuple(
+        replace(record, read=lambda read=record.read: reads.append(1) or read())
+        for record in SUPPLIED
+    )
+    with pytest.raises(Capacity):
+        writer._seal_completion(SUPPLIED[2].sha256, DISPOSITION, supplied, None)
+    assert not reads and not spools and not population.connections
+    assert not api.import_reads and not api.reservations and not api.uploads
+    assert len(population.attempts) == 1 and population.active == 0
+    root = population.attempts[0][0].parent
+    assert root.is_dir() and not list(root.iterdir())
+    shutil.rmtree(root)
+
+
+@pytest.mark.parametrize("after", [False, True])
+def test_processing_completion_spool_uncertain_close_blocks_upload_without_implicit_retry(
+    material, composed, after
+):
+    population, provenance, spools = Population(limit=2), [], []
+
+    def retained(records):
+        spools.append(records)
+        if len(spools) == 1:
+            population.connections[-1].close_failures = 1
+            population.connections[-1].close_after = after
+
+    api = Transport(material, population, retained_connections=1)
+    writer = composed(
+        api,
+        runtime=True,
+        provenance_connection_factory=population,
+        on_provenance_storage_open=provenance.append,
+        completion_connection_factory=population,
+        on_completion_storage_open=retained,
+    )
+    with pytest.raises(OSError, match="close unconfirmed"):
+        seal(writer)
+    gc.collect()
+    assert not api.uploads and len(api.reservations) == 1
+    assert population.active == 1 and population.peak == 2
+    assert len(population.connections) == 6 and population.connections[0].close_calls == 1
+    assert all(db.close_calls == 1 for db in population.connections[1:])
+    root = population.attempts[0][0].parent
+    assert root.is_dir() and len(provenance) == 10 and len(spools) == 1
+    spools[0].close()
+    assert population.active == 0 and not root.exists()
+    seal(writer)
+    assert len(api.uploads) == 1 and api.reservations[0] == api.reservations[1]
+    assert len(population.connections) == 12 and population.active == 0
+    assert population.connections[0].close_calls == 2
+    assert all(db.close_calls == 1 for db in population.connections[1:])
+    assert all(not path.parent.exists() for path, _ in population.attempts)
+
+
+@pytest.mark.parametrize("stage", ["schema", "retention"])
+def test_processing_completion_spool_initialization_failure_precedes_member_and_completion_work(
+    material, composed, stage
+):
+    population, spools = Population(limit=2), []
+    population.fail_schema = stage == "schema"
+
+    def retained(records):
+        spools.append(records)
+        if stage == "retention":
+            raise InterruptedError("completion retention interrupted")
+
+    api = Transport(material, population, retained_connections=1)
+    writer = composed(
+        api,
+        runtime=True,
+        provenance_connection_factory=population,
+        completion_connection_factory=population,
+        on_completion_storage_open=retained,
+    )
+    with pytest.raises(InterruptedError):
+        seal(writer)
+    assert not api.import_reads and not api.reservations and not api.uploads
+    assert len(population.connections) == 1 and len(spools) == 1 and population.active == 0
+    assert population.connections[0].close_calls == 1
+    assert not population.attempts[0][0].parent.exists()
+
+
+def test_processing_completion_upload_response_loss_retries_exact_bytes_after_spool_release(
+    material, composed
+):
+    population, spools, attempts = Population(limit=2), [], []
+    api = Transport(material, population, retained_connections=1)
+    original = api.upload_collection_upload_session_provenance_journal
+
+    def observed(*args, **options):
+        content = tuple(options["content"])
+        attempts.append(b"".join(content))
+        original(*args, **{**options, "content": iter(content)})
+
+    api.upload_collection_upload_session_provenance_journal = observed
+    writer = composed(
+        api,
+        runtime=True,
+        provenance_connection_factory=population,
+        completion_connection_factory=population,
+        on_completion_storage_open=spools.append,
+    )
+    api.fail_upload = True
+    with pytest.raises(ConnectionError, match="response lost"):
+        seal(writer)
+    assert population.active == 0 and len(population.connections) == 6
+    assert all(db.close_calls == 1 for db in population.connections)
+    api.fail_upload = False
+    seal(writer)
+    assert attempts[0] == attempts[1] == api.uploads[0][1]
+    assert api.reservations[0] == api.reservations[1]
+    assert population.active == 0 and population.peak == 2
+    assert len(population.connections) == 12 and len(spools) == 2
+    assert all(db.close_calls == 1 for db in population.connections)
+    assert all(not path.parent.exists() for path, _ in population.attempts)
+
+
+def test_processing_interrupted_completion_preimage_releases_admitted_spool(material, composed):
+    from dataclasses import replace
+
+    population, spools = Population(limit=2), []
+
+    def interrupted():
+        yield b"partial"
+        raise OSError("completion input interrupted")
+
+    api = Transport(material, population, retained_connections=1)
+    writer = composed(
+        api,
+        runtime=True,
+        provenance_connection_factory=population,
+        completion_connection_factory=population,
+        on_completion_storage_open=spools.append,
+    )
+    supplied = (replace(SUPPLIED[0], read=interrupted), *SUPPLIED[1:])
+    with pytest.raises(OSError, match="completion input interrupted"):
+        writer._seal_completion(SUPPLIED[2].sha256, DISPOSITION, supplied, None)
+    assert len(population.connections) == 1 and len(spools) == 1 and population.active == 0
+    assert not api.import_reads and not api.reservations and not api.uploads
+    assert population.connections[0].close_calls == 1
+    assert not population.attempts[0][0].parent.exists()
+
+
+def test_processing_shared_population_refusal_releases_spool_without_publication(
+    material, composed
+):
+    population, spools = Population(limit=1), []
+    api = Transport(material, population, retained_connections=1)
+    writer = composed(
+        api,
+        runtime=True,
+        provenance_connection_factory=population,
+        completion_connection_factory=population,
+        on_completion_storage_open=spools.append,
+    )
+    with pytest.raises(Capacity):
+        seal(writer)
+    assert len(population.connections) == 1 and len(population.attempts) == 2
+    assert len(spools) == 1 and population.peak == 1 and population.active == 0
+    assert population.connections[0].close_calls == 1
+    assert not api.import_reads and not api.reservations and not api.uploads
+    assert not population.attempts[0][0].parent.exists()
+    retained = population.attempts[1][0].parent
+    assert retained.is_dir() and not list(retained.iterdir())
+    shutil.rmtree(retained)

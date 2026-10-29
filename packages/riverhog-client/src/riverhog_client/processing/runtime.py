@@ -16,6 +16,7 @@ from riverhog_provenance import JournalStore
 from time_formats import utc_timestamp_now
 
 from riverhog_client import ApiClient, PrimaryStore
+from riverhog_client.completion_records import CompletionRecords
 from riverhog_client.processing.capability import CapabilityApiClient
 from riverhog_client.processing.models import (
     ClaimedArtifact,
@@ -181,6 +182,8 @@ class CollectionTransformRuntime:
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -202,6 +205,8 @@ class CollectionTransformRuntime:
         self.member_inventory = member_inventory
         self._provenance_connection_factory = provenance_connection_factory
         self._on_provenance_storage_open = on_provenance_storage_open
+        self._completion_connection_factory = completion_connection_factory
+        self._on_completion_storage_open = on_completion_storage_open
         self.spec = spec
         self.work_id = work_id
         self.execution_id = execution_id
@@ -234,6 +239,8 @@ class CollectionTransformRuntime:
             member_inventory=member_inventory,
             provenance_connection_factory=provenance_connection_factory,
             on_provenance_storage_open=on_provenance_storage_open,
+            completion_connection_factory=completion_connection_factory,
+            on_completion_storage_open=on_completion_storage_open,
             spec=spec,
             work_id=work_id,
             claim_id=claim_id,
@@ -387,6 +394,8 @@ class CollectionTransformRuntime:
             member_inventory=self.member_inventory,
             provenance_connection_factory=self._provenance_connection_factory,
             on_provenance_storage_open=self._on_provenance_storage_open,
+            completion_connection_factory=self._completion_connection_factory,
+            on_completion_storage_open=self._on_completion_storage_open,
             spec=self.spec,
             work_id=self.work_id,
             claim_id=self.claim_id,

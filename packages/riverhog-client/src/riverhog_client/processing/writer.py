@@ -87,6 +87,8 @@ class DerivedCollectionWriter:
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -106,6 +108,8 @@ class DerivedCollectionWriter:
         self.api = api
         self._provenance_connection_factory = provenance_connection_factory
         self._on_provenance_storage_open = on_provenance_storage_open
+        self._completion_connection_factory = completion_connection_factory
+        self._on_completion_storage_open = on_completion_storage_open
         self.primary_store = primary_store
         self.member_inventory = member_inventory
         self.spec = spec
@@ -158,6 +162,8 @@ class DerivedCollectionWriter:
             member_inventory=self.member_inventory,
             provenance_connection_factory=self._provenance_connection_factory,
             on_provenance_storage_open=self._on_provenance_storage_open,
+            completion_connection_factory=self._completion_connection_factory,
+            on_completion_storage_open=self._on_completion_storage_open,
             spec=self.spec,
             claim_id=self.claim_id,
             fence=self.fence,
@@ -202,6 +208,8 @@ class IncrementalDerivedCollectionWriter:
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -216,6 +224,8 @@ class IncrementalDerivedCollectionWriter:
         self.api = api
         self._provenance_connection_factory = provenance_connection_factory
         self._on_provenance_storage_open = on_provenance_storage_open
+        self._completion_connection_factory = completion_connection_factory
+        self._on_completion_storage_open = on_completion_storage_open
         self.producer_app = producer_app
         self.producer_version = producer_version
         self.spec = spec
@@ -380,7 +390,10 @@ class IncrementalDerivedCollectionWriter:
         completion_assertions: CompletionAssertions | None,
     ) -> None:
         session = self.api.get_collection_upload_session(self.producer.collection_id)
-        with CompletionRecords() as records:
+        with CompletionRecords(
+            connection_factory=self._completion_connection_factory,
+            on_storage_open=self._on_completion_storage_open,
+        ) as records:
             for record in supplied:
                 retained = records.add(record.kind, record.read())
                 if (retained.bytes, retained.sha256) != (record.bytes, record.sha256):
@@ -472,6 +485,7 @@ class IncrementalDerivedCollectionWriter:
                     journal_id = summary.journal_id
                     byte_count = summary.journal_bytes
                     sha256 = summary.journal_sha256
+                records.close()
                 self.api.upload_collection_upload_session_provenance_journal(
                     self.producer.collection_id,
                     journal_id,

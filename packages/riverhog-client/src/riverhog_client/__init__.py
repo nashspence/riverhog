@@ -40,6 +40,7 @@ from riverhog_client.client import (
     RestorePolicy,
     RetrievalPlanIdempotencyKey,
 )
+from riverhog_client.completion_records import CompletionRecords
 from riverhog_client.downloads import (
     RetrievalDownload,
     configured_download_concurrency,
@@ -73,6 +74,7 @@ __all__ = [
     "PrimaryStateCapacity",
     "PrimaryStateError",
     "PrimaryStore",
+    "CompletionRecords",
     "PrimaryStoreLimits",
     "ordered_primary_inventory",
     "ApiClient",
