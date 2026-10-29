@@ -5015,3 +5015,84 @@ print(json.dumps({"passed":True,"scenario":scenario,"native_factory":proof}))
     record_testsuite_property(
         "prepared_primary_native_factory_" + scenario, json.dumps(proof["native_factory"])
     )
+
+
+def test_native_factory_shared_store_reconciles_sealed_replay_and_terminal_cleanup(
+    tmp_path, record_testsuite_property
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import importlib.util,json,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client._prepared_primary_factory import WindowsPrimaryFactory
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
+from riverhog_client._prepared_primary_sqlite_operations import (
+    SqliteOperationBank,SqliteOperationGrants)
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+from tests.support.prepared_primary_replay import DESCRIPTOR,witness
+spec=importlib.util.spec_from_file_location("shared_factory_parents",
+    root/"tests/platform/windows_primary_process.py")
+parents=importlib.util.module_from_spec(spec);sys.modules[spec.name]=parents
+spec.loader.exec_module(parents)
+parent=Path(sys.argv[2])/"shared-store-private";parents._parent(parent)
+path=windows_container_path(parent,DESCRIPTOR)
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+limits=SqlitePrimaryLimits(16*1024*1024,32*1024*1024,128*1024)
+bank=SqliteOperationBank(512,8*1024*1024,65536,8*1024*1024,65536,
+    262144,0,1<<40,1<<60,1<<40)
+grants=SqliteOperationGrants(bank,bank)
+selected=WindowsPrimaryFactory(limits,grants,heap,(2,3))
+state={"arms":0,"bank":None,"initializations":0,"cold_opens":0}
+arm=NativeWindowsContainer.arm_operation
+def observed(self,grants,limits,**caps):
+    value=arm(self,grants,limits,**caps)
+    state.update(arms=state["arms"]+1,bank=value)
+    return value
+NativeWindowsContainer.arm_operation=observed
+def factory(location,*,allocation_descriptor,initialize):
+    assert allocation_descriptor==DESCRIPTOR and location==path
+    files=selected(location,allocation_descriptor=allocation_descriptor,initialize=initialize)
+    assert files.operation_grants().grants==grants
+    assert state["bank"].writes.report()["forward"]["write_calls"]==0
+    assert not state["bank"].writes.recovering
+    state["initializations" if initialize else "cold_opens"]+=1
+    return files
+# The maintained shared witness verifies exact sealed original bytes, forbids
+# reauthoring on cold replay, acknowledges decision/custody, resumes chunk cleanup
+# across close and releases the original pending-byte reservation exactly once.
+# Its synthetic journal octets do not attest Native observation/authorship.
+witness(path,factory)
+population=heap.native_report();memory=heap.report()
+assert population["owners"]==population["files"]==0
+assert population["owner_peak"]==1 and 1<=population["file_peak"]<=2
+assert not state["bank"].writes.report()["refusals"]
+assert not state["bank"].writes.report()["native_failures"]
+assert state["initializations"]==1 and state["cold_opens"]==3
+assert 0<memory["sqlite_heap_peak_bytes"]<=memory["heap_limit_bytes"]==64*1024*1024
+proof=dict(initializations=1,cold_opens=3,sealed_replay=1,decision_custody=1,
+    once_only_reclaim=1,population_released=1,operation_arms=state["arms"],
+    owner_peak=population["owner_peak"],file_peak=population["file_peak"],
+    heap_limit_bytes=memory["heap_limit_bytes"],
+    sqlite_heap_peak_bytes=memory["sqlite_heap_peak_bytes"],
+    retry_count=heap.retry_report()["selected_retry_count"],
+    retry_delay_milliseconds=heap.retry_report()["selected_delay_milliseconds"])
+print(json.dumps({"passed":True,"native_shared_store":proof}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[3]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] is True
+    record_testsuite_property(
+        "prepared_primary_native_shared_store", json.dumps(proof["native_shared_store"])
+    )
