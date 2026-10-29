@@ -86,7 +86,7 @@ def _reservation(owner: TransactionalPrimaryFiles) -> tuple[int, int]:
 
 
 def reserved_bytes(owner: TransactionalPrimaryFiles) -> int:
-    return _reservation(owner)[0]
+    return max(_reservation(owner)[0], owner.progress_journal().backed_bytes)
 
 
 def _backed(owner: TransactionalPrimaryFiles, floor: int) -> bool:
@@ -98,7 +98,7 @@ def _backed(owner: TransactionalPrimaryFiles, floor: int) -> bool:
 
 def require(owner: TransactionalPrimaryFiles) -> None:
     """Point admission only; never grow, rewrite or scan the journal."""
-    floor, _representative = _reservation(owner)
+    floor = reserved_bytes(owner)
     if not _backed(owner, floor):
         raise PrimaryStateCapacity("prepared-primary reserved journal backing is unavailable")
 
@@ -124,6 +124,8 @@ def _limit(db: sqlite3.Connection, value: int) -> None:
 @contextmanager
 def _retention(owner: TransactionalPrimaryFiles, value: int) -> Iterator[None]:
     """Observe a controlled transaction's full retained extent, then restore policy."""
+    if value != -1 and value < reserved_bytes(owner):
+        raise PrimaryStateCapacity("prepared-primary journal retention cannot lower its reserve")
     db = owner._db()
     failed = False
     try:
@@ -171,9 +173,14 @@ def _warm(owner: TransactionalPrimaryFiles, identifier: int) -> None:
 
 def ensure(owner: TransactionalPrimaryFiles) -> None:
     """Explicit preparation can restore lost backing without changing selected controls."""
-    floor, representative = _reservation(owner)
+    _floor, representative = _reservation(owner)
+    floor = reserved_bytes(owner)
     if _backed(owner, floor):
         return
+    if not representative:
+        raise PrimaryStateCapacity(
+            "prepared-primary progress journal requires explicit preparation"
+        )
     with _retention(owner, -1):
         _warm(owner, representative)
     require(owner)
@@ -183,7 +190,7 @@ def prepare(owner: TransactionalPrimaryFiles, identifier: int) -> None:
     """Warm one fixed extent before marking it usable; interrupted work stays pending."""
     floor, representative = _reservation(owner)
     ensure(owner)
-    if floor == 0:
+    if reserved_bytes(owner) == 0:
         with _retention(owner, 0):
             # No usable control depends on initialization's historical journal extent.
             # Existing reservations are never released to measure another control.

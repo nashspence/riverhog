@@ -168,5 +168,13 @@ class SqlitePrimaryTestGuard:
 
         return space(self.path), space(Path(str(self.path) + "-journal"))
 
+    def control_envelope(self, prefix_lengths):
+        from riverhog_client._prepared_primary_sqlite_journal import control_envelope
+
+        self.check_current()
+        return control_envelope(
+            prefix_lengths, page_bytes=4096, sector_bytes=4096, reserved_bytes=0
+        )
+
     def close(self):
         self.closed = True

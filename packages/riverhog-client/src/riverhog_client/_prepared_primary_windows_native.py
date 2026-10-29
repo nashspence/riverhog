@@ -396,6 +396,9 @@ class WindowsContainer:
 
     vfs = "win32"
 
+    def control_envelope(self, prefix_lengths: tuple[int, ...]) -> FixedControlEnvelope:
+        raise PrimaryStateError("prepared-primary progress backing requires native geometry")
+
     def __init__(self, path: Path, *, initialize: bool) -> None:
         self._api = _WindowsAPI()
         self.path = Path(path)

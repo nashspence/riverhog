@@ -119,6 +119,9 @@ def reconcile(
     from riverhog_client._prepared_primary_sqlite_database_reserve import read as reserve_read
 
     reserve_read(files)
+    from riverhog_client._prepared_primary_sqlite_progress_journal import read as journal_read
+
+    journal_read(files)
 
 
 def increase(
@@ -157,8 +160,18 @@ def increase(
         from riverhog_client._prepared_primary_sqlite_database_reserve import (
             save as reserve_save,
         )
+        from riverhog_client._prepared_primary_sqlite_progress_journal import (
+            read as journal_read,
+        )
+        from riverhog_client._prepared_primary_sqlite_progress_journal import (
+            revised as journal_revised,
+        )
+        from riverhog_client._prepared_primary_sqlite_progress_journal import (
+            save as journal_save,
+        )
 
         reserve = reserve_read(files)
+        journal = journal_read(files)
         with files._transaction():
             _configure(files, limits)
             with db.blobopen("primary_format", "resource_grants", 1) as blob:
@@ -169,5 +182,6 @@ def increase(
                 blob.seek(0)
                 blob.write(selected.encode())
             reserve_save(db, reserve, revised(reserve, selected.revision))
+            journal_save(db, journal, journal_revised(journal, selected.revision))
         files._resource_limits = limits
         return selected

@@ -4310,3 +4310,106 @@ print(json.dumps({"passed":True,"original_exact":True,"population_released":True
     record_testsuite_property(
         "prepared_primary_database_reserve", json.dumps(proof["database_reserve"])
     )
+
+
+def test_native_progress_journal_derives_minimum_and_retains_real_backing_on_cold_open(
+    tmp_path, record_testsuite_property
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import importlib.util,json,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client import PrimaryStateCapacity
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits,TransactionalPrimaryFiles
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+def load(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    module=importlib.util.module_from_spec(spec);sys.modules[name]=module
+    spec.loader.exec_module(module);return module
+helpers=load("journal_helpers",root/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py")
+parents=load("journal_parents",root/"tests/platform/windows_primary_process.py")
+parent=Path(sys.argv[2])/"journal-private";parents._parent(parent)
+path=windows_container_path(parent,b"native progress journal")
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+source=native.runtime_identity()["sqlite_source_id"]
+small=SqlitePrimaryLimits(512*1024,512*1024,128*1024)
+large=SqlitePrimaryLimits(1024*1024,1024*1024,128*1024)
+plan=dict(prefix_lengths=(8201,16),workspace_bytes=65536)
+def opened(initialize,limits):
+    writes=native.WriteQuota(helpers.grant(),helpers.grant())
+    if not initialize:writes.begin_recovery()
+    gate=native.WriteVfs(source,helpers.reads(native,writes),helpers.callbacks(native,writes),heap)
+    guard=NativeWindowsContainer(path,initialize=initialize,gate=gate)
+    helpers.admit_fixture_retries(gate)
+    files=TransactionalPrimaryFiles(guard,allocation_descriptor=b"native progress journal",
+        limits=limits,initialize=initialize)
+    return files,guard,gate,writes
+def finish(files,gate):
+    for _ in range(32):
+        result=files.reserve_journal_step(**plan)
+        assert gate.operation_failure() is None
+        if result.done:return result.reserve
+    raise AssertionError("fixture journal did not finish its explicit workspace")
+files,guard,gate,writes=opened(True,small)
+with files:
+    original=files.put_bytes("original",(b"exact original",),byte_limit=14)
+    reserve=finish(files,gate)
+    envelope=guard.control_envelope((8201,16,64))
+    assert reserve.minimum_bytes==envelope.journal_bytes
+    assert reserve.minimum_pages==envelope.database_pages
+    assert reserve.backed_bytes>=reserve.minimum_bytes
+    assert files.require_progress_journal()==reserve
+    # The independent progress pad must survive control initialization's policy.
+    files.prepare_controls(("receipt",),byte_limit=8192)
+    files.put_control("receipt",b"exact receipt",byte_limit=8192)
+    assert files.require_progress_journal()==reserve
+    files.increase_resource_grants(database_bytes=large.database_bytes,
+        journal_bytes=large.journal_bytes)
+    assert files.progress_journal().phase=="depleted"
+    try:files.require_progress_journal()
+    except PrimaryStateCapacity:pass
+    else:raise AssertionError("resource increase silently retained journal preparation")
+    reserve=finish(files,gate)
+    assert reserve.grant_revision==1
+    assert not writes.recovering and gate.operation_failure() is None
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+files,guard,gate,writes=opened(False,large)
+with files:
+    reserve=files.require_progress_journal()
+    assert reserve.phase=="prepared" and reserve.grant_revision==1
+    assert writes.recovering and not writes.report()["refusals"]
+    assert not writes.report()["native_failures"] and gate.operation_failure() is None
+    with files.verified(original) as stream:assert stream.read()==b"exact original"
+    assert files.read_control("receipt",byte_limit=8192)==b"exact receipt"
+    space=files.space_usage()
+    assert space.journal.end_bytes>=reserve.backed_bytes>=reserve.minimum_bytes
+    assert space.journal.allocated_bytes>=reserve.backed_bytes
+    assert files.journal_reserved_bytes()>=reserve.backed_bytes
+    proof=dict(minimum_bytes=reserve.minimum_bytes,minimum_pages=reserve.minimum_pages,
+        backed_bytes=reserve.backed_bytes,end_bytes=space.journal.end_bytes,
+        allocated_bytes=space.journal.allocated_bytes,workspace_bytes=reserve.workspace_bytes,
+        pad_rows=reserve.pad_rows,grant_revision=reserve.grant_revision)
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+print(json.dumps({"passed":True,"original_exact":True,"population_released":True,
+    "cold_recovery_bank":True,"progress_journal":proof}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[3]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] is True and proof["original_exact"] is True
+    assert proof["population_released"] is True and proof["cold_recovery_bank"] is True
+    record_testsuite_property(
+        "prepared_primary_progress_journal", json.dumps(proof["progress_journal"])
+    )

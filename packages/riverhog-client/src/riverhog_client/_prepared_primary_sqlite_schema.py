@@ -32,6 +32,11 @@ Table(
     Column("journal_reserve", LargeBinary, nullable=False),
     Column("resource_grants", LargeBinary, nullable=False),
     Column("database_reserve", LargeBinary, nullable=False),
+    Column("progress_journal", LargeBinary, nullable=False),
+    CheckConstraint(
+        "typeof(progress_journal) = 'blob' AND length(progress_journal) = 64",
+        name="ck_primary_format_progress_journal",
+    ),
     CheckConstraint("id = 1", name="ck_primary_format_singleton"),
     CheckConstraint(
         "typeof(barrier) = 'blob' AND length(barrier) = 8", name="ck_primary_format_barrier"
@@ -152,5 +157,17 @@ Table(
     CheckConstraint("id > 0", name="ck_primary_reserve_row_id"),
     CheckConstraint(
         "typeof(body) = 'blob' AND length(body) = 4096", name="ck_primary_reserve_row_body"
+    ),
+)
+
+
+Table(
+    "primary_journal_pad",
+    METADATA,
+    Column("id", Integer, primary_key=True),
+    Column("body", LargeBinary, nullable=False),
+    CheckConstraint("id > 0", name="ck_primary_journal_pad_id"),
+    CheckConstraint(
+        "typeof(body) = 'blob' AND length(body) = 4096", name="ck_primary_journal_pad_body"
     ),
 )

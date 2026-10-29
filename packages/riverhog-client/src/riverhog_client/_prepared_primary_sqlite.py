@@ -34,13 +34,18 @@ if TYPE_CHECKING:
         SqliteDatabaseReserve,
         SqliteDatabaseReserveStep,
     )
+    from riverhog_client._prepared_primary_sqlite_journal import FixedControlEnvelope
+    from riverhog_client._prepared_primary_sqlite_progress_journal import (
+        SqliteProgressJournal,
+        SqliteProgressJournalStep,
+    )
     from riverhog_client._prepared_primary_sqlite_resources import SqliteResourceGrants
     from riverhog_client._prepared_primary_sqlite_space import SqlitePrimarySpace, SqliteVacuumStep
 
 _BLOCK = 4096
 _GEOMETRY = (
     "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096;"
-    "controls=fixed/v2;journal=prepared/v1;barrier=fixed/v1;resources=grants/v1;database-reserve=v1"
+    "controls=fixed/v2;journal=prepared/v1;barrier=fixed/v1;resources=grants/v1;database-reserve=v1;progress-journal=v1"
 )
 
 
@@ -53,6 +58,7 @@ class ContainerGuard(Protocol):
     def check_journal(self, *, required: bool, recovering: bool = False) -> None: ...
     def close(self) -> None: ...
     def file_space(self) -> tuple[PrimaryFileSpace, PrimaryFileSpace]: ...
+    def control_envelope(self, prefix_lengths: tuple[int, ...]) -> FixedControlEnvelope: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -183,6 +189,7 @@ class TransactionalPrimaryFiles:
         self._ordering_guard = threading.Lock()
         self._connection: sqlite3.Connection | None = None
         from riverhog_client._prepared_primary_sqlite_database_reserve import SqliteDatabaseReserve
+        from riverhog_client._prepared_primary_sqlite_progress_journal import SqliteProgressJournal
 
         factory = _engine_factory(guard, limits)
         schema = _primary_state_schema(factory)
@@ -194,12 +201,13 @@ class TransactionalPrimaryFiles:
                         schema.upgrade_connection(connection)
                         connection.exec_driver_sql(
                             "INSERT INTO primary_format VALUES "
-                            "(1, ?, ?, zeroblob(8), zeroblob(16), ?, ?)",
+                            "(1, ?, ?, zeroblob(8), zeroblob(16), ?, ?, ?)",
                             (
                                 allocation_descriptor,
                                 _GEOMETRY,
                                 self._initial_resource_grants(connection, limits),
                                 SqliteDatabaseReserve().encode(),
+                                SqliteProgressJournal().encode(),
                             ),
                         )
                         connection.exec_driver_sql(
@@ -279,6 +287,23 @@ class TransactionalPrimaryFiles:
             target_pages=target_pages,
             workspace_bytes=workspace_bytes,
         )
+
+    def progress_journal(self) -> SqliteProgressJournal:
+        from riverhog_client._prepared_primary_sqlite_progress_journal import read
+
+        return read(self)
+
+    def require_progress_journal(self) -> SqliteProgressJournal:
+        from riverhog_client._prepared_primary_sqlite_progress_journal import require
+
+        return require(self)
+
+    def reserve_journal_step(
+        self, *, prefix_lengths: tuple[int, ...], workspace_bytes: int
+    ) -> SqliteProgressJournalStep:
+        from riverhog_client._prepared_primary_sqlite_progress_journal import step
+
+        return step(self, prefix_lengths=prefix_lengths, workspace_bytes=workspace_bytes)
 
     @classmethod
     def windows(
