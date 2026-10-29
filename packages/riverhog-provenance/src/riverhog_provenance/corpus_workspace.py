@@ -223,6 +223,7 @@ class _RetainedOrder(_CorpusOrder):
     def __init__(self, db: sqlite3.Connection, kind: str) -> None:
         self.source, self.db = db, _OrderConnection(db, kind)
         self.kind, self._finished = kind, None
+        self._closing = False
 
     def close(self) -> None:
         pass
@@ -314,7 +315,9 @@ class RetainedCorpusValidator:
             os.close(descriptor)
             result._descriptor = None
             raise
-        result._corpus = CanonicalCorpusValidator._from_workspace(result._db, directory)
+        result._corpus = CanonicalCorpusValidator._from_workspace(
+            result._db, directory, connection_factory=connection_factory
+        )
         try:
             # Retain the handle before initialization or fencing can fail.
             # The caller keeps its lease if a following close is unconfirmed.

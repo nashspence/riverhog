@@ -50,6 +50,7 @@ NATIVE_TESTS = (
     "tests/platform/test_native_provenance.py",
     "packages/riverhog-provenance/tests/test_sqlite_connection_admission.py",
     "packages/riverhog-provenance/tests/test_disposable_sqlite_admission.py",
+    "packages/riverhog-provenance/tests/test_corpus_sqlite_admission.py",
     "packages/riverhog-client/tests/test_prepared_primary_barrier.py",
     "packages/riverhog-client/tests/test_prepared_primary_documents.py",
     "packages/riverhog-client/tests/test_prepared_primary_factory.py",

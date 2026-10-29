@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import shutil
 import sqlite3
+from collections.abc import Callable
 from contextlib import closing
 from dataclasses import dataclass, replace
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from tempfile import mkdtemp
 from typing import Any, Protocol, Self, cast
 
 from .errors import JournalValidationCapacity, ProvenanceValidationError
@@ -75,15 +77,33 @@ class _OrderDatabase(Protocol):
 
 
 class _CorpusOrder:
-    def __init__(self, source: sqlite3.Connection, directory: str, kind: str) -> None:
+    def __init__(
+        self,
+        source: sqlite3.Connection,
+        kind: str,
+        *,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_storage_open: Callable[[Self], None] | None = None,
+    ) -> None:
         self.source: _OrderDatabase = source
         self.kind = kind
         self._finished: CorpusOrderProgress | None = None
-        self.scratch = TemporaryDirectory(prefix="order-", dir=directory)
+        self._closing = self._connection_closed = self._released = False
+        # Independent custody prevents parent cleanup from deleting a factory's
+        # unreturned connection files. No finalizer releases uncertain storage.
+        self._directory = Path(mkdtemp(prefix="riverhog-corpus-order-"))
+        connect = sqlite3.connect if connection_factory is None else connection_factory
         try:
-            self.db: _OrderDatabase = sqlite3.connect(
-                Path(self.scratch.name) / "order.sqlite3", isolation_level=None
+            self.db: _OrderDatabase = connect(
+                self._directory / "order.sqlite3", isolation_level=None
             )
+        except BaseException:
+            if connection_factory is None:
+                shutil.rmtree(self._directory)
+            raise
+        try:
+            if on_storage_open is not None:
+                on_storage_open(self)
             self._write("PRAGMA cache_size=-512")
             self._write("BEGIN IMMEDIATE")
             self._write("CREATE TABLE nodes (id TEXT PRIMARY KEY, degree TEXT NOT NULL)")
@@ -96,22 +116,29 @@ class _CorpusOrder:
             self._write("INSERT INTO checkpoint VALUES (1,'input','','','','','','0','0','0')")
             self._write("COMMIT")
         except BaseException:
-            if hasattr(self, "db"):
-                self.db.close()
-            self.scratch.cleanup()
+            self.close()
             raise
 
     def __enter__(self) -> Self:
+        if self._closing:
+            raise RuntimeError("corpus ordering is closed")
         return self
 
     def __exit__(self, *_exc: object) -> None:
         self.close()
 
     def close(self) -> None:
-        try:
+        self._closing = True
+        if not self._connection_closed:
             self.db.close()
-        finally:
-            self.scratch.cleanup()
+            self._connection_closed = True
+        if not self._released:
+            try:
+                shutil.rmtree(self._directory)
+            except FileNotFoundError:
+                if self._directory.exists():
+                    raise
+            self._released = True
 
     @staticmethod
     def _read(
@@ -281,6 +308,8 @@ class _CorpusOrder:
         )
 
     def advance(self, *, row_budget: int, byte_budget: int) -> CorpusOrderProgress:
+        if self._closing:
+            raise RuntimeError("corpus ordering is closed")
         if type(row_budget) is not int or row_budget < 1:
             raise ValueError("corpus ordering row budget must be positive")
         if type(byte_budget) is not int or byte_budget < 1:

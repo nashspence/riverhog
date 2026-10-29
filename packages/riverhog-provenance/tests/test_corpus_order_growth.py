@@ -138,6 +138,7 @@ class Recorder:
         self.queries = set()
         self.live = self.opened = self.closed = 0
         self.failure_query = self.failure = None
+        self.directories = []
 
     @contextmanager
     def observe(self, current, monkeypatch):
@@ -148,6 +149,7 @@ class Recorder:
             return 0
 
         def connected(*args, **kwargs):
+            self.directories.append(Path(args[0]).parent)
             actual = connect(*args, **kwargs)
             actual.set_progress_handler(stepped, 1)
             self.opened += 1
@@ -187,7 +189,8 @@ class Recorder:
             actual.set_progress_handler(None, 0)
             assert self.live == 0
             assert self.opened == self.closed == 1
-            assert not list(Path(current._scratch.name).glob("order-*"))
+            assert not current._orders
+            assert self.directories and all(not path.exists() for path in self.directories)
 
 
 def dimensions(edges, kind):
@@ -303,6 +306,19 @@ def test_actual_corpus_ordering_visits_complete_sparse_and_dense_edges(
     record_property("growth_samples", records)
 
 
+@pytest.fixture
+def order_directories(tmp_path, monkeypatch):
+    actual, paths = ordering.mkdtemp, []
+
+    def create(**options):
+        path = Path(actual(dir=tmp_path, **options))
+        paths.append(path)
+        return str(path)
+
+    monkeypatch.setattr(ordering, "mkdtemp", create)
+    return paths
+
+
 def reference_acyclic(edges):
     vertices = {value for edge in edges for value in edge}
     reachable = set(edges)
@@ -315,7 +331,7 @@ def reference_acyclic(edges):
 
 
 @pytest.mark.parametrize("kind", ["derivation", "specialization"])
-def test_corpus_ordering_matches_all_three_vertex_directed_graphs(kind):
+def test_corpus_ordering_matches_all_three_vertex_directed_graphs(kind, order_directories):
     possible = list(itertools.product(("a", "b", "c"), repeat=2))
     with corpus.CanonicalCorpusValidator() as current:
         for mask in range(1 << len(possible)):
@@ -330,7 +346,9 @@ def test_corpus_ordering_matches_all_three_vertex_directed_graphs(kind):
                     with pytest.raises(ProvenanceValidationError, match=f"{kind}.*cycle"):
                         current.validate()
             assert current._db.execute("SELECT count(*) FROM edges").fetchone() == (len(edges),)
-            assert not list(Path(current._scratch.name).glob("order-*"))
+            assert order_directories and all(not path.exists() for path in order_directories)
+            order_directories.clear()
+            assert not current._orders
 
 
 @pytest.mark.parametrize("kind", ["derivation", "specialization"])
@@ -364,7 +382,7 @@ def test_corpus_ordering_failure_releases_scratch_and_preserves_retry(kind, quer
 
 
 @pytest.mark.parametrize("kind", ["derivation", "specialization"])
-def test_actual_sqlite_cancellation_retains_corpus_and_allows_retry(kind):
+def test_actual_sqlite_cancellation_retains_corpus_and_allows_retry(kind, order_directories):
     with corpus.CanonicalCorpusValidator() as current:
         insert(current, edges_for("chain", 129), kind)
         current._db.commit()
@@ -374,7 +392,8 @@ def test_actual_sqlite_cancellation_retains_corpus_and_allows_retry(kind):
                 ORDER(current, kind)
         finally:
             current._db.set_progress_handler(None, 0)
-        assert not list(Path(current._scratch.name).glob("order-*"))
+        assert order_directories and all(not path.exists() for path in order_directories)
+        assert not current._orders
         assert current._db.execute("SELECT count(*) FROM edges").fetchone() == (129,)
         current.validate()
 
@@ -481,7 +500,9 @@ def test_actual_corpus_ordering_uses_endpoint_and_pending_key_indexes(kind, monk
 
 @pytest.mark.parametrize("kind", ["derivation", "specialization"])
 @pytest.mark.parametrize("phase", ["build", "pop"])
-def test_real_ordering_database_interrupt_preserves_uncommitted_corpus(kind, phase, monkeypatch):
+def test_real_ordering_database_interrupt_preserves_uncommitted_corpus(
+    kind, phase, monkeypatch, order_directories
+):
     connect = sqlite3.connect
     closed = []
     trigger = "INSERT OR IGNORE INTO nodes" if phase == "build" else "SELECT id FROM ready"
@@ -513,7 +534,8 @@ def test_real_ordering_database_interrupt_preserves_uncommitted_corpus(kind, pha
             with pytest.raises(sqlite3.OperationalError, match="interrupted"):
                 ORDER(current, kind)
         assert closed == [True]
-        assert not list(Path(current._scratch.name).glob("order-*"))
+        assert order_directories and all(not path.exists() for path in order_directories)
+        assert not current._orders
         assert current._db.in_transaction
         assert current._db.execute(
             "SELECT source, target FROM edges WHERE kind = ? ORDER BY source, target", (kind,)

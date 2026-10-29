@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import json
+import shutil
 import sqlite3
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from contextlib import closing
 from dataclasses import dataclass, replace
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from tempfile import mkdtemp
 from typing import Any, Self, cast
 
 from riverhog_archive_contracts import HistoryJournalAnchor
@@ -211,7 +212,8 @@ def _corpus_order_declaration() -> Declaration:
             "Both derivation and specialization are checked independently with the same "
             "exact cycle rule.",
             "Corpus facts and error ordering before cycle checking are unchanged.",
-            "Failure releases ordering state; the ordering phase performs no source corpus writes.",
+            "Unconfirmed ordering close retains storage; confirmed close precedes scratch "
+            "release. The ordering phase performs no source corpus writes.",
         ),
         limitations=(
             "This bounds complete-corpus cycle checking, not incremental per-snapshot "
@@ -1017,26 +1019,56 @@ class CanonicalCorpusValidator:
     contributes its own effective semantic obligations.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_storage_open: Callable[[Self], None] | None = None,
+    ) -> None:
+        """Open disposable indexes through the selected connection admission.
+
+        A supplied factory owns any connection it does not return and the private
+        directory named by its database path. The early callback retains this
+        owner before schema work, including when a later close is unconfirmed.
+        """
         self._initialize_state()
-        self._scratch: TemporaryDirectory[str] | None = TemporaryDirectory(
-            prefix="riverhog-canonical-corpus-"
-        )
-        self._directory = Path(self._scratch.name)
-        self._db = sqlite3.connect(self._directory / "corpus.sqlite3")
-        self._db.execute("PRAGMA cache_size = -512")
-        self._initialize_schema()
+        self._connection_factory = connection_factory
+        self._owns_directory = True
+        self._directory = Path(mkdtemp(prefix="riverhog-canonical-corpus-"))
+        connect = sqlite3.connect if connection_factory is None else connection_factory
+        try:
+            self._db = connect(self._directory / "corpus.sqlite3")
+        except BaseException:
+            if connection_factory is None:
+                shutil.rmtree(self._directory)
+            raise
+        try:
+            if on_storage_open is not None:
+                on_storage_open(self)
+            self._source_write("PRAGMA cache_size = -512")
+            self._initialize_schema()
+        except BaseException:
+            self.close()
+            raise
 
     @classmethod
-    def _from_workspace(cls, db: sqlite3.Connection, directory: Path) -> Self:
+    def _from_workspace(
+        cls,
+        db: sqlite3.Connection,
+        directory: Path,
+        *,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    ) -> Self:
         result = cls.__new__(cls)
         result._initialize_state()
-        result._scratch = None
+        result._connection_factory = connection_factory
+        result._owns_directory = False
         result._directory, result._db = directory, db
         return result
 
     def _initialize_state(self) -> None:
         self._closed = False
+        self._connection_closed = False
         self._semantic_phase = "open"
         self._semantic_after: tuple[str, str] | None = None
         self._semantic_processed = 0
@@ -1087,12 +1119,23 @@ class CanonicalCorpusValidator:
         return self
 
     def __exit__(self, *_exc: object) -> None:
+        self.close()
+
+    def close(self) -> None:
+        """Retain every unconfirmed child/connection close for an explicit retry."""
         self._closed = True
         self._reset_dependencies()
         self._close_orders()
-        self._db.close()
-        if self._scratch is not None:
-            self._scratch.cleanup()
+        if not self._connection_closed:
+            self._db.close()
+            self._connection_closed = True
+        if self._owns_directory:
+            try:
+                shutil.rmtree(self._directory)
+            except FileNotFoundError:
+                if self._directory.exists():
+                    raise
+            self._owns_directory = False
 
     def _source_read(self, query: str, parameters: tuple[object, ...]) -> Any:
         with closing(self._db.execute(query, parameters)) as rows:
@@ -1710,9 +1753,27 @@ class CanonicalCorpusValidator:
         )
 
     def _close_orders(self) -> None:
-        for order in self._orders.values():
-            order.close()
-        self._orders.clear()
+        while self._orders:
+            kind = next(iter(self._orders))
+            self._orders[kind].close()
+            del self._orders[kind]
+
+    def _open_order(self, kind: str) -> _CorpusOrder:
+        def retain(order: _CorpusOrder) -> None:
+            self._orders[kind] = order
+
+        try:
+            return _CorpusOrder(
+                self._db,
+                kind,
+                connection_factory=self._connection_factory,
+                on_storage_open=retain,
+            )
+        except BaseException:
+            order = self._orders.get(kind)
+            if order is not None and order._released:
+                del self._orders[kind]
+            raise
 
     @declare_growth(_order_step_declaration())
     def advance_order(
@@ -1733,7 +1794,7 @@ class CanonicalCorpusValidator:
         if self._semantic_phase != "complete" or self._dependency_phase != "complete":
             raise RuntimeError("corpus ordering requires complete semantics and dependencies")
         if kind not in self._orders:
-            self._orders[kind] = _CorpusOrder(self._db, str(self._directory), kind)
+            self._open_order(kind)
         return self._orders[kind].advance(row_budget=row_budget, byte_budget=byte_budget)
 
     def validate(self) -> None:
@@ -1760,15 +1821,28 @@ class CanonicalCorpusValidator:
 
     @declare_growth(_CORPUS_ORDER_GROWTH)
     def _acyclic(self, kind: str) -> None:
-        with _CorpusOrder(self._db, str(self._directory), kind) as order:
+        order = self._orders.get(kind)
+        if order is None:
+            order = self._open_order(kind)
+        try:
             while not order.advance(
                 row_budget=1024, byte_budget=PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
             ).complete:
                 pass
+        finally:
+            order.close()
+            del self._orders[kind]
 
 
-def validate_canonical_corpus(summaries: Iterable[JournalSummary]) -> None:
-    with CanonicalCorpusValidator() as validator:
+def validate_canonical_corpus(
+    summaries: Iterable[JournalSummary],
+    *,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[CanonicalCorpusValidator], None] | None = None,
+) -> None:
+    with CanonicalCorpusValidator(
+        connection_factory=connection_factory, on_storage_open=on_storage_open
+    ) as validator:
         for summary in summaries:
             validator.add(summary)
         validator.validate()
