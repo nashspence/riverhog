@@ -86,9 +86,17 @@ def vacuum_step(files: TransactionalPrimaryFiles, *, keep_free_pages: int) -> Sq
             raise PrimaryStateBusy("prepared-primary maintenance has a live ordering reader")
         try:
             before = space_usage(files)
-            if before.reusable_pages <= keep_free_pages:
+            reserve = files.database_reserve()
+            retained_floor = max(keep_free_pages, reserve.free_pages)
+            if before.reusable_pages <= retained_floor:
                 return SqliteVacuumStep(before, before, True)
             with files._transaction() as db:
+                if reserve.phase == "prepared":
+                    from dataclasses import replace
+
+                    from riverhog_client._prepared_primary_sqlite_database_reserve import save
+
+                    save(db, reserve, replace(reserve, phase="depleted"))
                 # N=1 bounds both the freelist work and the result rows drained here.
                 with closing(db.execute("PRAGMA incremental_vacuum(1)")) as cursor:
                     cursor.fetchall()
@@ -99,6 +107,6 @@ def vacuum_step(files: TransactionalPrimaryFiles, *, keep_free_pages: int) -> Sq
             ):
                 files._root._poisoned = True
                 raise PrimaryStateError("prepared-primary incremental maintenance did not advance")
-            return SqliteVacuumStep(before, after, after.reusable_pages <= keep_free_pages)
+            return SqliteVacuumStep(before, after, after.reusable_pages <= retained_floor)
         finally:
             guard.release()

@@ -30,13 +30,17 @@ from riverhog_client._prepared_primary_types import (
 )
 
 if TYPE_CHECKING:
+    from riverhog_client._prepared_primary_sqlite_database_reserve import (
+        SqliteDatabaseReserve,
+        SqliteDatabaseReserveStep,
+    )
     from riverhog_client._prepared_primary_sqlite_resources import SqliteResourceGrants
     from riverhog_client._prepared_primary_sqlite_space import SqlitePrimarySpace, SqliteVacuumStep
 
 _BLOCK = 4096
 _GEOMETRY = (
     "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096;"
-    "controls=fixed/v2;journal=prepared/v1;barrier=fixed/v1;resources=grants/v1"
+    "controls=fixed/v2;journal=prepared/v1;barrier=fixed/v1;resources=grants/v1;database-reserve=v1"
 )
 
 
@@ -178,6 +182,8 @@ class TransactionalPrimaryFiles:
         self._pins: dict[str, int] = {}
         self._ordering_guard = threading.Lock()
         self._connection: sqlite3.Connection | None = None
+        from riverhog_client._prepared_primary_sqlite_database_reserve import SqliteDatabaseReserve
+
         factory = _engine_factory(guard, limits)
         schema = _primary_state_schema(factory)
         try:
@@ -188,11 +194,12 @@ class TransactionalPrimaryFiles:
                         schema.upgrade_connection(connection)
                         connection.exec_driver_sql(
                             "INSERT INTO primary_format VALUES "
-                            "(1, ?, ?, zeroblob(8), zeroblob(16), ?)",
+                            "(1, ?, ?, zeroblob(8), zeroblob(16), ?, ?)",
                             (
                                 allocation_descriptor,
                                 _GEOMETRY,
                                 self._initial_resource_grants(connection, limits),
+                                SqliteDatabaseReserve().encode(),
                             ),
                         )
                         connection.exec_driver_sql(
@@ -250,6 +257,28 @@ class TransactionalPrimaryFiles:
         from riverhog_client._prepared_primary_sqlite_resources import increase
 
         return increase(self, database_bytes=database_bytes, journal_bytes=journal_bytes)
+
+    def database_reserve(self) -> SqliteDatabaseReserve:
+        from riverhog_client._prepared_primary_sqlite_database_reserve import read
+
+        return read(self)
+
+    def require_database_reserve(self) -> SqliteDatabaseReserve:
+        from riverhog_client._prepared_primary_sqlite_database_reserve import require
+
+        return require(self)
+
+    def reserve_database_step(
+        self, *, free_pages: int, target_pages: int, workspace_bytes: int
+    ) -> SqliteDatabaseReserveStep:
+        from riverhog_client._prepared_primary_sqlite_database_reserve import step
+
+        return step(
+            self,
+            free_pages=free_pages,
+            target_pages=target_pages,
+            workspace_bytes=workspace_bytes,
+        )
 
     @classmethod
     def windows(

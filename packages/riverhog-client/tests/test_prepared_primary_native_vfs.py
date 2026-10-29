@@ -4210,3 +4210,97 @@ print(json.dumps({"passed":True,"original_exact":True,"cold_recovery_bank":True,
         "lowered_offer_rejected": True,
         "population_released": True,
     }
+
+
+def test_native_database_reserve_prepares_real_backing_and_survives_cold_recovery(
+    tmp_path, record_testsuite_property
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import importlib.util,json,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client import PrimaryStateCapacity
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits,TransactionalPrimaryFiles
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+def load(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    module=importlib.util.module_from_spec(spec);sys.modules[name]=module
+    spec.loader.exec_module(module);return module
+helpers=load("reserve_helpers",root/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py")
+parents=load("reserve_parents",root/"tests/platform/windows_primary_process.py")
+parent=Path(sys.argv[2])/"reserve-private";parents._parent(parent)
+path=windows_container_path(parent,b"native database reserve")
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+source=native.runtime_identity()["sqlite_source_id"]
+small=SqlitePrimaryLimits(512*1024,512*1024,128*1024)
+large=SqlitePrimaryLimits(1024*1024,1024*1024,128*1024)
+def opened(initialize,limits):
+    writes=native.WriteQuota(helpers.grant(),helpers.grant())
+    if not initialize:writes.begin_recovery()
+    gate=native.WriteVfs(source,helpers.reads(native,writes),helpers.callbacks(native,writes),heap)
+    guard=NativeWindowsContainer(path,initialize=initialize,gate=gate)
+    helpers.admit_fixture_retries(gate)
+    files=TransactionalPrimaryFiles(guard,allocation_descriptor=b"native database reserve",
+        limits=limits,initialize=initialize)
+    return files,gate,writes
+files,gate,writes=opened(True,small)
+with files:
+    original=files.put_bytes("original",(b"exact original",),byte_limit=14)
+    target=files.space_usage().database_pages+8
+    plan=dict(free_pages=4,target_pages=target,workspace_bytes=65536)
+    for calls in range(128):
+        result=files.reserve_database_step(**plan)
+        assert gate.operation_failure() is None
+        if result.done:break
+    else:raise AssertionError("fixture reserve did not finish")
+    assert result.reserve.inserted==result.reserve.released>0
+    assert files.require_database_reserve()==result.reserve
+    files.increase_resource_grants(database_bytes=large.database_bytes,
+        journal_bytes=large.journal_bytes)
+    assert files.database_reserve().phase=="depleted"
+    try:files.require_database_reserve()
+    except PrimaryStateCapacity:pass
+    else:raise AssertionError("increased grant silently retained prepared backing")
+    result=files.reserve_database_step(**plan)
+    assert result.done and result.reserve.grant_revision==1
+    assert not writes.recovering and gate.operation_failure() is None
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+files,gate,writes=opened(False,large)
+with files:
+    reserve=files.require_database_reserve()
+    assert reserve.phase=="prepared" and reserve.grant_revision==1
+    assert reserve.inserted==reserve.released
+    assert writes.recovering and not writes.report()["refusals"]
+    assert not writes.report()["native_failures"] and gate.operation_failure() is None
+    with files.verified(original) as stream:assert stream.read()==b"exact original"
+    space=files.space_usage()
+    assert space.reusable_pages>=4 and space.database_pages==reserve.backed_pages>=target
+    assert space.database.allocated_bytes>=space.database.end_bytes==4096*reserve.backed_pages
+    proof=dict(target_pages=target,backed_pages=reserve.backed_pages,
+        free_pages=space.reusable_pages,free_floor=reserve.free_pages,
+        end_bytes=space.database.end_bytes,allocated_bytes=space.database.allocated_bytes,
+        inserted=reserve.inserted,released=reserve.released,grant_revision=reserve.grant_revision)
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+print(json.dumps({"passed":True,"original_exact":True,"population_released":True,
+    "cold_recovery_bank":True,"database_reserve":proof}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[3]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] is True and proof["original_exact"] is True
+    assert proof["population_released"] is True and proof["cold_recovery_bank"] is True
+    record_testsuite_property(
+        "prepared_primary_database_reserve", json.dumps(proof["database_reserve"])
+    )
