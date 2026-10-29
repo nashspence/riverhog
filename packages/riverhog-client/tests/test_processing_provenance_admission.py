@@ -154,8 +154,18 @@ class Transport:
         pass
 
 
-@pytest.fixture
-def material():
+@pytest.fixture(scope="module")
+def material(tmp_path_factory):
+    # Only immutable observed journal bytes survive setup; measured validation stays per case.
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setenv(
+            "RIVERHOG_PROVENANCE_STATE_HOME",
+            str(tmp_path_factory.mktemp("processing-material") / "user-state"),
+        )
+        return _observed_material()
+
+
+def _observed_material():
     result = []
     for index in (1, 2):
         content = b"exact derived output" + bytes((index,))
@@ -182,7 +192,7 @@ def material():
             output_id=f"output-{index}",
         )
         result.append((member, produced))
-    return result
+    return tuple(result)
 
 
 @pytest.fixture

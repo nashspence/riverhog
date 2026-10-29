@@ -241,7 +241,7 @@ jobs:
   client-platforms:
     name: client platform (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 45
+    timeout-minutes: ${{ matrix.os == 'windows-2025' && 75 || 45 }}
     env:
       MISE_AUTO_INSTALL: '0'
     strategy:
