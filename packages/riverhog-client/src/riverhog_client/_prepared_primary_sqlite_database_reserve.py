@@ -211,12 +211,12 @@ def step(
             and before.database.allocated_bytes >= before.database.end_bytes
         ):
             prepared = replace(selected, phase="prepared", backed_pages=before.database_pages)
-            with files._transaction() as db:
+            with files._transaction(preparing=True) as db:
                 deplete(files)
                 save(db, current, prepared)
             after = space_usage(files)
             if not _usable(after, prepared):
-                with files._transaction() as db:
+                with files._transaction(preparing=True) as db:
                     deplete(files)
                     save(db, prepared, replace(prepared, phase="depleted"))
                 raise PrimaryStateCapacity("prepared-primary database reserve lost backing")
@@ -235,7 +235,7 @@ def step(
             if selected.inserted == _MAXIMUM:
                 raise PrimaryStateCapacity("prepared-primary database reserve cursor is exhausted")
             selected = replace(selected, inserted=selected.inserted + 1)
-            with files._transaction() as db:
+            with files._transaction(preparing=True) as db:
                 deplete(files)
                 db.execute(
                     "INSERT INTO primary_reserve_rows(id,body) VALUES (?,zeroblob(4096))",
@@ -245,7 +245,7 @@ def step(
         else:
             identifier = selected.released + 1
             selected = replace(selected, released=identifier)
-            with files._transaction() as db:
+            with files._transaction(preparing=True) as db:
                 deplete(files)
                 cursor = db.execute("DELETE FROM primary_reserve_rows WHERE id=?", (identifier,))
                 removed = cursor.rowcount

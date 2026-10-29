@@ -224,7 +224,14 @@ def increase(
 
         journal = journal_read(files)
         ready = ready_read(files)
-        with files._transaction():
+        offer = None
+        if files._root._native_transactions is not None:
+            from riverhog_client._prepared_primary_sqlite_native import NativeSqliteIncrease
+
+            if selected_operations is None:
+                raise PrimaryStateError("prepared-primary native increase lost original operations")
+            offer = NativeSqliteIncrease(limits, selected_operations)
+        with files._transaction(increase=offer):
             _configure(files, limits)
             with db.blobopen("primary_format", "resource_grants", 1) as blob:
                 if len(blob) != _SIZE or blob.read(_SIZE) != current.encode():

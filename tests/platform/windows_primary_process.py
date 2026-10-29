@@ -19,7 +19,6 @@ from ctypes import wintypes
 from pathlib import Path
 
 from riverhog_client import PrimaryStateBusy, PrimaryStateError
-from riverhog_client._prepared_primary_factory import WindowsPrimaryFactory
 from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits, TransactionalPrimaryFiles
 from riverhog_client._prepared_primary_types import PrimaryByteFile
 from riverhog_client._prepared_primary_windows_native import (
@@ -378,6 +377,11 @@ def _files(path: Path, *, initialize: bool, allocation: bytes = ALLOCATION):
     )
 
 
+def _metadata_factory(path: Path, *, allocation_descriptor: bytes, initialize: bool):
+    """Isolate ordinary Win32 transaction/state witnesses from native admission."""
+    return _files(path, initialize=initialize, allocation=allocation_descriptor)
+
+
 def _crash(path: Path, when: str) -> None:
     with _files(path, initialize=True, allocation=ALLOCATION + when.encode()) as files:
         select = files._select
@@ -695,7 +699,7 @@ def _shared_resource_recovery_witness(parent: Path):
             reports.append(
                 recovery_witness(
                     windows_container_path(directory, DESCRIPTOR),
-                    WindowsPrimaryFactory(LIMITS),
+                    _metadata_factory,
                     role=role,
                     phase=phase,
                     committed=committed,
@@ -944,7 +948,7 @@ def witness(root: Path) -> dict:
     from tests.support.prepared_primary_replay import DESCRIPTOR
     from tests.support.prepared_primary_replay import witness as shared_replay
 
-    shared_replay(windows_container_path(parent, DESCRIPTOR), WindowsPrimaryFactory(LIMITS))
+    shared_replay(windows_container_path(parent, DESCRIPTOR), _metadata_factory)
     cases.extend(
         [
             "shared-store-cold-exact-replay",

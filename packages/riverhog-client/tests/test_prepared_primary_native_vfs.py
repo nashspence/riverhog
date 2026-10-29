@@ -4842,3 +4842,149 @@ print(json.dumps({"passed":True,"original_exact":True,"population_released":True
     record_testsuite_property(
         "prepared_primary_operation_entry_" + scenario, json.dumps(proof["operation_entry"])
     )
+
+
+@pytest.mark.parametrize("scenario", ["lifecycle", "refusal"])
+def test_native_factory_composes_cold_forward_transaction_roles_and_original_grants(
+    tmp_path, record_testsuite_property, scenario
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import importlib.util,json,sys
+from pathlib import Path
+from dataclasses import replace
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+scenario=sys.argv[3]
+from riverhog_client import PrimaryStateCapacity
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_factory import WindowsPrimaryFactory
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
+from riverhog_client._prepared_primary_sqlite_operations import (
+    SqliteOperationBank,SqliteOperationGrants)
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+def load(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    module=importlib.util.module_from_spec(spec);sys.modules[name]=module
+    spec.loader.exec_module(module);return module
+parents=load("factory_parents",root/"tests/platform/windows_primary_process.py")
+parent=Path(sys.argv[2])/"factory-private";parents._parent(parent)
+allocation=b"native composed factory"
+path=windows_container_path(parent,allocation)
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+limits=SqlitePrimaryLimits(2*1024*1024,1024*1024,128*1024)
+bank=SqliteOperationBank(512,8*1024*1024,65536,8*1024*1024,65536,
+    262144,0,1<<40,1<<60,1<<40)
+grants=SqliteOperationGrants(bank,bank)
+factory=WindowsPrimaryFactory(limits,grants,heap,(2,3))
+state={"arms":0,"bank":None,"caps":None}
+arm=NativeWindowsContainer.arm_operation
+def observed(self,grants,limits,**caps):
+    value=arm(self,grants,limits,**caps)
+    state.update(arms=state["arms"]+1,bank=value,caps=caps,grants=grants)
+    return value
+NativeWindowsContainer.arm_operation=observed
+def dependencies(files):
+    for _ in range(32):
+        if files.reserve_journal_step(prefix_lengths=(8201,16),workspace_bytes=65536).done:break
+    else:raise AssertionError("journal fixture did not finish")
+    target=files.database_reserve().target_pages or files.space_usage().database_pages+32
+    for _ in range(256):
+        if files.reserve_database_step(free_pages=8,target_pages=target,
+            workspace_bytes=128*1024).done:return
+    raise AssertionError("database fixture did not finish")
+files=factory(path,allocation_descriptor=allocation,initialize=True)
+with files:
+    assert state["bank"].writes.report()["forward"]["write_calls"]==0
+    original=files.put_bytes("original",(b"exact original",),byte_limit=14)
+    files.prepare_controls(("receipt",),byte_limit=8192)
+    files.put_control("receipt",b"exact receipt",byte_limit=8192)
+    dependencies(files)
+    ready=files.prepare_physical_ready()
+    payload=files.put_bytes("payload",(b"payload"*1000,),byte_limit=7000)
+    assert state["caps"]==dict(database_pages=ready.backed_pages,journal_bytes=ready.journal_bytes)
+    payload_caps=dict(database_bytes=state["caps"]["database_pages"]*4096,
+        journal_bytes=state["caps"]["journal_bytes"])
+    assert state["bank"].writes.report()["forward"]["write_calls"]>0
+    assert state["bank"].writes.report()["refusals"]==0
+    if scenario=="lifecycle":
+        with files._transaction(payload=True) as db:
+            db.execute("INSERT INTO primary_objects VALUES ('pending',1,'pending',0,'',0)").close()
+            db.execute("INSERT INTO primary_operation VALUES (1,'pending',0,'writing')").close()
+        pending=files._one("SELECT generation,cursor,phase FROM primary_operation")
+        grants=replace(grants,forward=replace(bank,write_bytes=16*1024*1024),
+            recovery=replace(bank,read_bytes=16*1024*1024))
+        files.increase_resource_grants(database_bytes=limits.database_bytes,
+            journal_bytes=limits.journal_bytes,operations=grants)
+        assert state["grants"]==grants
+        assert files._one("SELECT generation,cursor,phase FROM primary_operation")==pending
+        assert files.physical_readiness().phase=="depleted"
+        files.put_control("receipt",b"new receipt",byte_limit=8192,expected=b"exact receipt")
+        assert files._one("SELECT generation,cursor,phase FROM primary_operation")==pending
+        dependencies(files)
+        files.prepare_physical_ready()
+        for _ in range(8):
+            if files.recover_step():break
+        else:raise AssertionError("pending fixture did not clean")
+        assert files.operation_grants().revision==1
+        proof=dict(pending_preserved=1,increased_forward_write_bytes=grants.forward.write_bytes,
+            increased_recovery_read_bytes=grants.recovery.read_bytes,grant_revision=1)
+    else:
+        assert not state["bank"].writes.admit("journal",1,limits.journal_bytes)
+        arms=state["arms"]
+        try:files.sync()
+        except PrimaryStateCapacity:pass
+        else:raise AssertionError("failed native bank was silently renewed")
+        assert state["arms"]==arms
+        proof=dict(blocked_renewal=1,first_failure_retained=1)
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+# A larger offer pays initial R but cannot enlarge retained F implicitly.
+offered=replace(grants,forward=replace(grants.forward,write_bytes=32*1024*1024))
+cold=WindowsPrimaryFactory(limits,offered,heap,(2,3))
+files=cold(path,allocation_descriptor=allocation,initialize=False)
+with files:
+    assert files.operation_grants().grants==grants
+    assert state["grants"]==grants
+    assert state["bank"].writes.report()["forward"]["write_calls"]==0
+    assert not state["bank"].writes.recovering
+    with files.verified(original) as stream:assert stream.read()==b"exact original"
+    with files.verified(payload) as stream:assert stream.read()==b"payload"*1000
+    assert files.read_control("receipt",byte_limit=8192)==(
+        b"new receipt" if scenario=="lifecycle" else b"exact receipt")
+    files.put_bytes("after-cold",(b"confirmed cold",),byte_limit=14)
+    assert state["bank"].writes.report()["forward"]["write_calls"]>0
+    assert not state["bank"].writes.report()["refusals"]
+    assert files._guard._native_gate.operation_failure() is None
+    proof.update(cold_forward_before_mutation=0,original_exact=1,
+        payload_database_cap=payload_caps["database_bytes"],
+        payload_journal_cap=payload_caps["journal_bytes"],
+        operation_arms=state["arms"])
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+proof.update(population_released=1,retry_count=heap.retry_report()["selected_retry_count"],
+    retry_delay_milliseconds=heap.retry_report()["selected_delay_milliseconds"])
+print(json.dumps({"passed":True,"scenario":scenario,"native_factory":proof}))
+"""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(tmp_path),
+            scenario,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] is True and proof["scenario"] == scenario
+    record_testsuite_property(
+        "prepared_primary_native_factory_" + scenario, json.dumps(proof["native_factory"])
+    )

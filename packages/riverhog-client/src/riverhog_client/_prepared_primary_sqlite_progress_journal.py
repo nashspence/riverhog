@@ -191,7 +191,7 @@ def step(
             return SqliteProgressJournalStep(current, True)
         if current.pad_rows < workspace_bytes // _BLOCK:
             selected = replace(selected, pad_rows=current.pad_rows + 1)
-            with files._transaction() as db:
+            with files._transaction(preparing=True) as db:
                 deplete(files)
                 db.execute(
                     "INSERT INTO primary_journal_pad(id,body) VALUES (?,zeroblob(4096))",
@@ -200,7 +200,7 @@ def step(
                 save(db, current, selected)
             return SqliteProgressJournalStep(selected, False)
         with _retention(files, -1):
-            with files._transaction() as db:
+            with files._transaction(preparing=True) as db:
                 deplete(files)
                 for identifier in range(1, selected.pad_rows + 1):
                     with db.blobopen("primary_journal_pad", "body", identifier) as blob:
@@ -228,11 +228,11 @@ def step(
         prepared = replace(
             selected, phase="prepared", backed_bytes=max(observed, current.backed_bytes)
         )
-        with files._transaction() as db:
+        with files._transaction(preparing=True) as db:
             deplete(files)
             save(db, selected, prepared)
         if not _backed(files, prepared.backed_bytes):
-            with files._transaction() as db:
+            with files._transaction(preparing=True) as db:
                 deplete(files)
                 save(db, prepared, replace(prepared, phase="depleted"))
             raise PrimaryStateCapacity("prepared-primary progress journal lost backing")

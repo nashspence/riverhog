@@ -226,6 +226,12 @@ def prepare(files: TransactionalPrimaryFiles) -> SqlitePhysicalReadiness:
             minimum,
             pages,
         )
+        if files._root._native_transactions is not None:
+            grants = files.operation_grants().grants
+            if grants is None or grants.forward.database_pages < pages:
+                raise PrimaryStateCapacity(
+                    "prepared-primary native page grant cannot preserve progress"
+                )
         with files._transaction():
             _save(files, pending, selected)
         try:
@@ -236,8 +242,8 @@ def prepare(files: TransactionalPrimaryFiles) -> SqlitePhysicalReadiness:
             raise
 
 
-def begin_payload(files: TransactionalPrimaryFiles) -> SqlitePhysicalReadiness | None:
-    """Run under BEGIN IMMEDIATE, before the first payload mutation or input read."""
+def payload_profile(files: TransactionalPrimaryFiles) -> SqlitePhysicalReadiness | None:
+    """Observe bootstrap or complete backing without selecting a new bank or mutating SQL."""
     current = read(files)
     if (
         current.phase == "unprepared"
@@ -245,7 +251,14 @@ def begin_payload(files: TransactionalPrimaryFiles) -> SqlitePhysicalReadiness |
         and files.progress_journal().phase == "unprepared"
     ):
         return None
-    current = require(files)
+    return require(files)
+
+
+def begin_payload(files: TransactionalPrimaryFiles) -> SqlitePhysicalReadiness | None:
+    """Revalidate under BEGIN IMMEDIATE before the first payload mutation or input read."""
+    current = payload_profile(files)
+    if current is None:
+        return None
     with closing(files._db().execute(f"PRAGMA max_page_count={current.backed_pages}")) as cursor:
         observed = cursor.fetchone()
     files._guard.check_operation()

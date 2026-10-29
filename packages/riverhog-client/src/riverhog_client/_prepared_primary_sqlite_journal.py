@@ -154,7 +154,7 @@ def _warm(owner: TransactionalPrimaryFiles, identifier: int) -> None:
     )
     if row is None or row[1] != "blob" or type(row[0]) is not int or row[0] < 9:
         raise PrimaryStateError("prepared-primary journal representative is unavailable")
-    with owner._transaction() as db:
+    with owner._transaction(preparing=True) as db:
         with db.blobopen("primary_controls", "body", identifier) as blob:
             _length(blob, row[0] - 9)
             for offset in range(0, len(blob), _QUANTUM):
@@ -216,7 +216,7 @@ def prepare(owner: TransactionalPrimaryFiles, identifier: int) -> None:
             raise PrimaryStateCapacity("prepared-primary journal preparation lost its reserve")
     if observed > floor:
         floor, representative = observed, identifier
-    with owner._transaction() as db:
+    with owner._transaction(preparing=True) as db:
         with db.blobopen("primary_format", "journal_reserve", 1) as blob:
             blob.write(floor.to_bytes(8, "big") + representative.to_bytes(8, "big"))
         with db.blobopen("primary_controls", "body", identifier) as blob:

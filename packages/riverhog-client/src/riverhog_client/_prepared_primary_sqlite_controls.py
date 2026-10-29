@@ -114,7 +114,7 @@ def prepare(owner: TransactionalPrimaryFiles, names: tuple[str, ...], *, byte_li
                 (owner._namespace, name),
             ):
                 raise PrimaryStateError("prepared-primary control conflicts with a byte role")
-            with owner._transaction() as db:
+            with owner._transaction(preparing=True) as db:
                 from riverhog_client._prepared_primary_sqlite_ready import deplete
 
                 deplete(owner)

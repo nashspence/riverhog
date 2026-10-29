@@ -134,3 +134,145 @@ def test_cold_extent_admission_precedes_every_sqlite_connection_and_schema_read(
             initialize=False,
         )
     assert guard.closed and guard.observations == 1
+
+
+@pytest.mark.parametrize("initialize", [True, False])
+@pytest.mark.parametrize(
+    "state", ["unconfigured", "admitted", "selected", "initial", "quarantined"]
+)
+def test_native_factory_selects_cold_bank_and_reconciles_retry_policy_before_sql(
+    tmp_path, monkeypatch, initialize, state
+):
+    from types import SimpleNamespace
+
+    import riverhog_client
+    from riverhog_client import PrimaryStateError
+    from riverhog_client import _prepared_primary_runtime as runtime
+    from riverhog_client import _prepared_primary_sqlite as owner
+    from riverhog_client import _prepared_primary_sqlite_operations as operations
+    from riverhog_client import _prepared_primary_windows_native as windows
+    from riverhog_client._prepared_primary_factory import WindowsPrimaryFactory
+    from riverhog_client._prepared_primary_types import PrimaryFileSpace
+
+    events = []
+
+    class Budget:
+        def report(self):
+            events.append("process")
+
+        def retry_report(self):
+            events.append("retry")
+            return {
+                "state": state if state in ("unconfigured", "quarantined") else "admitted",
+                "selected_retry_count": 3 if state == "selected" else 2,
+                "selected_delay_milliseconds": 3,
+                "qualified_initial_retry_count": 9 if state == "initial" else 10,
+                "qualified_initial_delay_milliseconds": 25,
+            }
+
+    budget = Budget()
+
+    class Gate:
+        def __init__(self, *_args):
+            events.append("gate")
+
+        def admit_retries(self, initial, selected, bootstrap):
+            events.append(("admit", initial, selected, bootstrap))
+
+    native = SimpleNamespace(
+        SqliteProcessBudget=Budget,
+        current_process_budget=lambda: budget,
+        retry_bootstrap_cost=lambda pair: (17, 23),
+        WriteVfs=Gate,
+    )
+    monkeypatch.setattr(riverhog_client, "_prepared_primary_native", native, raising=False)
+    monkeypatch.setattr(runtime, "_qualified_runtime", lambda: {"sqlite_source_id": "qualified"})
+
+    class Guard:
+        def __init__(self, *_args, **_kwargs):
+            events.append("metadata")
+
+        def file_space(self):
+            events.append("extent")
+            return PrimaryFileSpace(0, 0), PrimaryFileSpace(0, 0)
+
+        def close(self):
+            events.append("close")
+
+    monkeypatch.setattr(windows, "NativeWindowsContainer", Guard)
+
+    def bank(_grants, _limits, *, recovering):
+        events.append(("bank", recovering))
+        return SimpleNamespace(reads=object(), callbacks=object())
+
+    monkeypatch.setattr(operations, "native_bank", bank)
+
+    def sql(*_args):
+        events.append("sql")
+        raise RuntimeError("SQL boundary observed")
+
+    monkeypatch.setattr(owner, "_engine_factory", sql)
+    bank_values = operations.SqliteOperationBank(*(1,) * 10)
+    grants = operations.SqliteOperationGrants(bank_values, bank_values)
+    factory = WindowsPrimaryFactory(SqlitePrimaryLimits(4096, 4096, 4096), grants, budget, (2, 3))
+    path = windows.windows_container_path(tmp_path, b"native fixture")
+    if state in ("selected", "initial", "quarantined"):
+        with pytest.raises(PrimaryStateError, match="retry admission differs"):
+            factory(path, allocation_descriptor=b"native fixture", initialize=initialize)
+        assert "sql" not in events
+    else:
+        with pytest.raises(RuntimeError, match="SQL boundary observed"):
+            factory(path, allocation_descriptor=b"native fixture", initialize=initialize)
+        assert events.index("retry") < events.index("sql")
+    assert events.index(("bank", not initialize)) < events.index("metadata")
+    if not initialize:
+        assert events.index("extent") < events.index("retry")
+    admissions = [event for event in events if isinstance(event, tuple) and event[0] == "admit"]
+    assert len(admissions) == int(state == "unconfigured")
+    if admissions:
+        assert admissions == [("admit", (10, 25), (2, 3), (17, 23))]
+        assert events.index(admissions[0]) < events.index("sql")
+    assert events[-1] == "close"
+
+
+@pytest.mark.parametrize("fault", ["foreign", "subclass"])
+def test_native_factory_refuses_unowned_process_before_any_metadata(tmp_path, monkeypatch, fault):
+    from types import SimpleNamespace
+
+    import riverhog_client
+    from riverhog_client import PrimaryStateError
+    from riverhog_client import _prepared_primary_runtime as runtime
+    from riverhog_client import _prepared_primary_sqlite_operations as operations
+    from riverhog_client import _prepared_primary_windows_native as windows
+    from riverhog_client._prepared_primary_factory import WindowsPrimaryFactory
+
+    class Budget:
+        pass
+
+    class OtherBudget(Budget):
+        pass
+
+    budget = Budget()
+    offered = Budget() if fault == "foreign" else OtherBudget()
+    native = SimpleNamespace(SqliteProcessBudget=Budget, current_process_budget=lambda: budget)
+    monkeypatch.setattr(riverhog_client, "_prepared_primary_native", native, raising=False)
+    monkeypatch.setattr(runtime, "_qualified_runtime", lambda: {"sqlite_source_id": "qualified"})
+
+    def forbidden(*_args, **_kwargs):
+        pytest.fail("unowned process reached metadata or native bank construction")
+
+    monkeypatch.setattr(windows, "NativeWindowsContainer", forbidden)
+    monkeypatch.setattr(operations, "native_bank", forbidden)
+    bank = operations.SqliteOperationBank(*(1,) * 10)
+    factory = WindowsPrimaryFactory(
+        SqlitePrimaryLimits(4096, 4096, 4096),
+        operations.SqliteOperationGrants(bank, bank),
+        offered,
+        (2, 3),
+    )
+    with pytest.raises(PrimaryStateError, match="current application budget"):
+        factory(
+            windows.windows_container_path(tmp_path, b"native fixture"),
+            allocation_descriptor=b"native fixture",
+            initialize=False,
+        )

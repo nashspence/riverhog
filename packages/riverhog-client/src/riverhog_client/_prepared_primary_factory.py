@@ -9,7 +9,9 @@ from typing import TYPE_CHECKING
 from riverhog_client._prepared_primary_storage import PrimaryStorage
 
 if TYPE_CHECKING:
+    from riverhog_client._prepared_primary_native import SqliteProcessBudget
     from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
+    from riverhog_client._prepared_primary_sqlite_operations import SqliteOperationGrants
 
 
 def posix_primary_files(
@@ -23,18 +25,24 @@ def posix_primary_files(
 
 @dataclass(frozen=True, slots=True)
 class WindowsPrimaryFactory:
-    """Open an explicitly located database using separately supplied SQLite grants."""
+    """Compose native storage using explicit grants and admitted application resources."""
 
     limits: SqlitePrimaryLimits
+    operations: SqliteOperationGrants
+    process: SqliteProcessBudget
+    retry_profile: tuple[int, int]
 
     def __call__(
         self, location: Path, *, allocation_descriptor: bytes, initialize: bool
     ) -> PrimaryStorage:
-        from riverhog_client._prepared_primary_sqlite import TransactionalPrimaryFiles
+        from riverhog_client._prepared_primary_sqlite_native import open_native
 
-        return TransactionalPrimaryFiles.windows(
+        return open_native(
             location,
             allocation_descriptor=allocation_descriptor,
             limits=self.limits,
+            operations=self.operations,
+            process=self.process,
+            retry_profile=self.retry_profile,
             initialize=initialize,
         )

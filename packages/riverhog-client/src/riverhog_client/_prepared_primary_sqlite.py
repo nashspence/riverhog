@@ -35,6 +35,10 @@ if TYPE_CHECKING:
         SqliteDatabaseReserveStep,
     )
     from riverhog_client._prepared_primary_sqlite_journal import FixedControlEnvelope
+    from riverhog_client._prepared_primary_sqlite_native import (
+        NativeSqliteIncrease,
+        NativeSqliteTransactions,
+    )
     from riverhog_client._prepared_primary_sqlite_operations import (
         SqliteOperationGrants,
         SqliteRetainedOperations,
@@ -88,6 +92,21 @@ class SqlitePrimaryLimits:
                 raise ValueError(
                     "SQLite prepared-primary grants must be positive signed-64-bit page multiples"
                 )
+
+
+def _admit_cold_extents(guard: ContainerGuard, limits: SqlitePrimaryLimits) -> None:
+    """Metadata admission precedes every pager, including implicit cold rollback."""
+    database, journal = guard.file_space()
+    for name, observed, offered in (
+        ("database", database.end_bytes, limits.database_bytes),
+        ("journal", journal.end_bytes, limits.journal_bytes),
+    ):
+        if type(observed) is not int or observed < 0:
+            raise PrimaryStateError("prepared-primary cold extent is invalid")
+        if observed > offered:
+            raise PrimaryStateCapacity(
+                f"prepared-primary cold recovery {name} exceeds the offered grant"
+            )
 
 
 def _connect(guard: ContainerGuard, limits: SqlitePrimaryLimits) -> sqlite3.Connection:
@@ -202,6 +221,7 @@ class TransactionalPrimaryFiles:
         self._pins: dict[str, int] = {}
         self._ordering_guard = threading.Lock()
         self._connection: sqlite3.Connection | None = None
+        self._native_transactions: NativeSqliteTransactions | None = None
         from riverhog_client._prepared_primary_sqlite_database_reserve import SqliteDatabaseReserve
         from riverhog_client._prepared_primary_sqlite_progress_journal import SqliteProgressJournal
         from riverhog_client._prepared_primary_sqlite_ready import SqlitePhysicalReadiness
@@ -369,19 +389,7 @@ class TransactionalPrimaryFiles:
         guard = WindowsContainer(path, initialize=initialize)
         try:
             if not initialize:
-                # A first pager read may already replay a hot rollback journal.
-                # Inspect owned metadata before StateSchema or any SQLite open.
-                database, journal = guard.file_space()
-                for name, observed, offered in (
-                    ("database", database.end_bytes, limits.database_bytes),
-                    ("journal", journal.end_bytes, limits.journal_bytes),
-                ):
-                    if type(observed) is not int or observed < 0:
-                        raise PrimaryStateError("prepared-primary cold extent is invalid")
-                    if observed > offered:
-                        raise PrimaryStateCapacity(
-                            f"prepared-primary cold recovery {name} exceeds the offered grant"
-                        )
+                _admit_cold_extents(guard, limits)
         except BaseException:
             guard.close()
             raise
@@ -420,16 +428,37 @@ class TransactionalPrimaryFiles:
             return None if row is None else tuple(row)
 
     @contextmanager
-    def _transaction(self, *, payload: bool = False) -> Iterator[sqlite3.Connection]:
+    def _transaction(
+        self,
+        *,
+        payload: bool = False,
+        preparing: bool = False,
+        increase: NativeSqliteIncrease | None = None,
+    ) -> Iterator[sqlite3.Connection]:
         with self._mutex:
             db = self._db()
+            native = self._root._native_transactions
+            try:
+                selected = (
+                    None
+                    if native is None
+                    else native.arm(self, payload=payload, preparing=preparing, increase=increase)
+                )
+            except sqlite3.Error as exc:
+                self._guard.check_operation()
+                raise PrimaryStateError("prepared-primary native selection failed") from exc
             ready = None
             try:
                 db.execute("BEGIN IMMEDIATE").close()
+                self._guard.check_operation()
                 if payload:
                     from riverhog_client._prepared_primary_sqlite_ready import begin_payload
 
                     ready = begin_payload(self)
+                    if native is not None and ready != selected:
+                        raise PrimaryStateError(
+                            "prepared-primary payload admission changed before BEGIN"
+                        )
                 yield db
                 if ready is not None:
                     from riverhog_client._prepared_primary_sqlite_ready import precommit
