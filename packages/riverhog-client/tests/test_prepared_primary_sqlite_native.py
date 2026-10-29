@@ -268,3 +268,104 @@ def test_native_start_refuses_unsettled_or_unowned_input_without_replacing_pager
         assert files._connection is old and not guard.arms
         if fault == "transaction":
             files._db().rollback()
+
+
+@pytest.mark.parametrize(
+    ("pages", "journal", "required"),
+    [
+        (512, 0, 1),
+        (512, 4103, 1),
+        (512, 4104, 2),
+        (512, 82592, 21),
+        (4, 82592, 4),
+        ((1 << 63) // 4096 - 1, (1 << 63) - 1, 2247410340364225),
+    ],
+)
+def test_native_restoration_page_admission_covers_journal_records_and_original_ceiling(
+    pages, journal, required
+):
+    from riverhog_client._prepared_primary_sqlite_operations import require_recovery_pages
+
+    exact = replace(GRANTS, recovery=replace(BANK, database_pages=required))
+    assert require_recovery_pages(exact, database_pages=pages, journal_bytes=journal) == required
+    short = replace(exact, recovery=replace(exact.recovery, database_pages=required - 1))
+    with pytest.raises(PrimaryStateCapacity, match="restoration page grant"):
+        require_recovery_pages(short, database_pages=pages, journal_bytes=journal)
+
+
+@pytest.mark.parametrize("entry", ["ready", "payload", "progress"])
+def test_native_restoration_page_admission_refuses_before_mutation_and_increase_is_independent(
+    tmp_path, monkeypatch, entry
+):
+    from riverhog_client import _prepared_primary_sqlite_ready as ready_owner
+
+    # Bootstrap and explicit reserve preparation can defer under their own caps.
+    # The retained R page allowance cannot cover the backed progress journal.
+    small = replace(GRANTS, recovery=replace(BANK, database_pages=20))
+    files, guard = managed(tmp_path / "state.sqlite3", operations=small)
+    with files:
+        original = files.put_bytes("original", (b"exact original",), byte_limit=14)
+        dependencies(files)
+        database, journal = files.database_reserve(), files.progress_journal()
+        required = min(database.backed_pages, 1 + journal.backed_bytes // 4104)
+        assert required > small.recovery.database_pages
+        if entry == "payload":
+            selected = ready_owner.SqlitePhysicalReadiness(
+                "ready",
+                0,
+                database.backed_pages,
+                database.free_pages,
+                journal.backed_bytes,
+                journal.minimum_bytes,
+                journal.minimum_pages,
+            )
+            monkeypatch.setattr(ready_owner, "payload_profile", lambda _files: selected)
+        arms, changes = len(guard.arms), files._db().total_changes
+        consumed = []
+
+        def source():
+            consumed.append(True)
+            yield b"refused"
+
+        with pytest.raises(PrimaryStateCapacity, match="restoration page grant"):
+            if entry == "ready":
+                files.prepare_physical_ready()
+            elif entry == "payload":
+                files.put_bytes("refused", source(), byte_limit=7)
+            else:
+                files.sync()
+        assert not consumed and len(guard.arms) == arms
+        assert files._db().total_changes == changes and not files._poisoned
+        assert files.operation_grants().grants == small
+        monkeypatch.undo()
+        # Explicit increases fund their own fixed update even when the old
+        # profile cannot pass progress admission; no cleanup is required first.
+        exact = replace(small, recovery=replace(small.recovery, database_pages=required))
+        files.increase_resource_grants(
+            database_bytes=LIMITS.database_bytes,
+            journal_bytes=LIMITS.journal_bytes,
+            operations=exact,
+        )
+        assert guard.arms[-1][0] == exact
+        dependencies(files)
+        assert files.prepare_physical_ready().phase == "ready"
+        files.sync()
+        with files.verified(original) as stream:
+            assert stream.read() == b"exact original"
+
+
+def test_native_existing_physical_ready_rechecks_restoration_before_reporting_ready(tmp_path):
+    small = replace(GRANTS, recovery=replace(BANK, database_pages=20))
+    files, guard = opened(tmp_path / "state.sqlite3", initialize=True, operations=small)
+    with files:
+        # Physical readiness alone is independent of native operation admission.
+        dependencies(files)
+        assert files.prepare_physical_ready().phase == "ready"
+        start(files, guard)
+        arms, changes = len(guard.arms), files._db().total_changes
+        with pytest.raises(PrimaryStateCapacity, match="restoration page grant"):
+            files.require_physical_ready()
+        with pytest.raises(PrimaryStateCapacity, match="restoration page grant"):
+            files.prepare_physical_ready()
+        assert len(guard.arms) == arms and files._db().total_changes == changes
+        assert not files._poisoned

@@ -64,6 +64,33 @@ class SqliteOperationGrants:
         )
 
 
+def require_recovery_pages(
+    grants: SqliteOperationGrants, *, database_pages: int, journal_bytes: int
+) -> int:
+    """Reserve page tracking for every before-image allowed by a backed journal.
+
+    Each complete saved page consumes at least 4096+8 journal bytes. Include
+    page one and bound distinct original pages by the database ceiling. Padding
+    and headers make this conservative; SQLite remains the journal interpreter.
+    Independent byte/read/callback/file limits can still stop restoration, which
+    must retain the original database and journal for a sufficient later grant.
+    """
+    if (
+        type(grants) is not SqliteOperationGrants
+        or type(database_pages) is not int
+        or not 1 <= database_pages <= _MAXIMUM // 4096
+        or type(journal_bytes) is not int
+        or not 0 <= journal_bytes <= _MAXIMUM
+    ):
+        raise ValueError("native recovery page admission requires exact bounded extents")
+    required = min(database_pages, 1 + journal_bytes // (4096 + 8))
+    if grants.recovery.database_pages < required:
+        raise PrimaryStateCapacity(
+            "prepared-primary native restoration page grant cannot cover the journal envelope"
+        )
+    return required
+
+
 @dataclass(frozen=True, slots=True)
 class SqliteRetainedOperations:
     revision: int = 0

@@ -160,7 +160,23 @@ def require(files: TransactionalPrimaryFiles) -> SqlitePhysicalReadiness:
             or journal.allocated_bytes < current.journal_bytes
         ):
             raise PrimaryStateCapacity("prepared-primary physical readiness backing is unavailable")
+        _native_progress_grants(files, current)
         return current
+
+
+def _native_progress_grants(
+    files: TransactionalPrimaryFiles, current: SqlitePhysicalReadiness
+) -> None:
+    if files._root._native_transactions is None:
+        return
+    grants = files.operation_grants().grants
+    if grants is None or grants.forward.database_pages < current.minimum_pages:
+        raise PrimaryStateCapacity("prepared-primary native page grant cannot preserve progress")
+    from riverhog_client._prepared_primary_sqlite_operations import require_recovery_pages
+
+    require_recovery_pages(
+        grants, database_pages=current.backed_pages, journal_bytes=current.journal_bytes
+    )
 
 
 def prepare(files: TransactionalPrimaryFiles) -> SqlitePhysicalReadiness:
@@ -226,12 +242,7 @@ def prepare(files: TransactionalPrimaryFiles) -> SqlitePhysicalReadiness:
             minimum,
             pages,
         )
-        if files._root._native_transactions is not None:
-            grants = files.operation_grants().grants
-            if grants is None or grants.forward.database_pages < pages:
-                raise PrimaryStateCapacity(
-                    "prepared-primary native page grant cannot preserve progress"
-                )
+        _native_progress_grants(files, selected)
         with files._transaction():
             _save(files, pending, selected)
         try:

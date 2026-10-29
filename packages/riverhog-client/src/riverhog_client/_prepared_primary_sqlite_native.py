@@ -6,7 +6,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol
 
 from riverhog_client._prepared_primary_sqlite import ContainerGuard, SqlitePrimaryLimits
-from riverhog_client._prepared_primary_sqlite_operations import SqliteOperationGrants
+from riverhog_client._prepared_primary_sqlite_operations import (
+    SqliteOperationGrants,
+    require_recovery_pages,
+)
 from riverhog_client._prepared_primary_types import PrimaryStateCapacity, PrimaryStateError
 
 if TYPE_CHECKING:
@@ -94,6 +97,10 @@ class NativeSqliteTransactions:
                         "prepared-primary native progress backing is unavailable"
                     )
                 pages, journal = database.end_bytes // 4096, floor
+        if pages is not None and journal is not None and increase is None:
+            require_recovery_pages(grants, database_pages=pages, journal_bytes=journal)
+        # Preparation is explicitly structural and may defer under its original
+        # banks. An owner increase remains independent of that deferred work.
         self.guard.arm_operation(grants, limits, database_pages=pages, journal_bytes=journal)
         return ready
 

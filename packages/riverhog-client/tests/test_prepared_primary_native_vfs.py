@@ -4844,7 +4844,7 @@ print(json.dumps({"passed":True,"original_exact":True,"population_released":True
     )
 
 
-@pytest.mark.parametrize("scenario", ["lifecycle", "refusal"])
+@pytest.mark.parametrize("scenario", ["lifecycle", "refusal", "restoration"])
 def test_native_factory_composes_cold_forward_transaction_roles_and_original_grants(
     tmp_path, record_testsuite_property, scenario
 ):
@@ -4879,7 +4879,8 @@ heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
 limits=SqlitePrimaryLimits(2*1024*1024,1024*1024,128*1024)
 bank=SqliteOperationBank(512,8*1024*1024,65536,8*1024*1024,65536,
     262144,0,1<<40,1<<60,1<<40)
-grants=SqliteOperationGrants(bank,bank)
+grants=SqliteOperationGrants(bank,
+    replace(bank,database_pages=20) if scenario=="restoration" else bank)
 factory=WindowsPrimaryFactory(limits,grants,heap,(2,3))
 state={"arms":0,"bank":None,"caps":None}
 arm=NativeWindowsContainer.arm_operation
@@ -4904,6 +4905,32 @@ with files:
     files.prepare_controls(("receipt",),byte_limit=8192)
     files.put_control("receipt",b"exact receipt",byte_limit=8192)
     dependencies(files)
+    if scenario=="restoration":
+        journal=files.progress_journal().backed_bytes
+        required=min(files.database_reserve().backed_pages,1+journal//4104)
+        assert required>grants.recovery.database_pages
+        arms,changes=state["arms"],files._db().total_changes
+        try:files.prepare_physical_ready()
+        except PrimaryStateCapacity as exc:assert "restoration page grant" in str(exc)
+        else:raise AssertionError("undersized restoration bank published Ready")
+        assert state["arms"]==arms and files._db().total_changes==changes
+        assert not files._poisoned
+        with files._transaction(preparing=True) as db:
+            db.execute("INSERT INTO primary_objects VALUES ('pending',1,'pending',0,'',0)").close()
+            db.execute("INSERT INTO primary_operation VALUES (1,'pending',0,'writing')").close()
+        pending=files._one("SELECT generation,cursor,phase FROM primary_operation")
+        grants=replace(grants,recovery=replace(grants.recovery,database_pages=required))
+        files.increase_resource_grants(database_bytes=limits.database_bytes,
+            journal_bytes=limits.journal_bytes,operations=grants)
+        assert files._one("SELECT generation,cursor,phase FROM primary_operation")==pending
+        proof=dict(rejected_before_mutation=1,original_recovery_pages=20,
+            required_recovery_pages=required,selected_recovery_pages=required,
+            pending_preserved=1,grant_revision=1)
+        dependencies(files)
+        files.prepare_physical_ready()
+        for _ in range(8):
+            if files.recover_step():break
+        else:raise AssertionError("pending restoration fixture did not clean")
     ready=files.prepare_physical_ready()
     payload=files.put_bytes("payload",(b"payload"*1000,),byte_limit=7000)
     assert state["caps"]==dict(database_pages=ready.backed_pages,journal_bytes=ready.journal_bytes)
@@ -4933,7 +4960,7 @@ with files:
         assert files.operation_grants().revision==1
         proof=dict(pending_preserved=1,increased_forward_write_bytes=grants.forward.write_bytes,
             increased_recovery_read_bytes=grants.recovery.read_bytes,grant_revision=1)
-    else:
+    elif scenario=="refusal":
         assert not state["bank"].writes.admit("journal",1,limits.journal_bytes)
         arms=state["arms"]
         try:files.sync()
