@@ -1168,12 +1168,16 @@ def validate_journal_set(
     catalog: ContractCatalog | None = None,
     require_all_references: bool = True,
     require_profiles: bool = True,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> JournalSetValidation:
     return validate_journal_set_chunks(
         ((journal,) for journal in journals),
         catalog=catalog,
         require_all_references=require_all_references,
         require_profiles=require_profiles,
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
     )
 
 
@@ -1183,13 +1187,19 @@ def validate_journal_set_chunks(
     catalog: ContractCatalog | None = None,
     require_all_references: bool = True,
     require_profiles: bool = True,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> JournalSetValidation:
     """Resolve exact foreign assertions; do not silently import effective graphs."""
     with ExitStack() as owners:
         summaries: dict[str, JournalSummary] = {}
         for chunks in journals:
             journal = validate_journal_chunks(
-                chunks, catalog=catalog, require_profiles=require_profiles
+                chunks,
+                catalog=catalog,
+                require_profiles=require_profiles,
+                connection_factory=connection_factory,
+                on_storage_open=on_storage_open,
             )
             owners.enter_context(journal)
             old = summaries.get(journal.journal_id)
@@ -1300,6 +1310,8 @@ def validate_journal_set_chunks(
                         catalog=catalog,
                         expected_anchor=parent,
                         require_profiles=require_profiles,
+                        connection_factory=connection_factory,
+                        on_storage_open=on_storage_open,
                     ).close()
         if unresolved and require_all_references:
             raise ProvenanceValidationError("unresolved external journal references")
@@ -1350,14 +1362,23 @@ class RecoveryResult:
 
 
 def recover_complete_prefix(
-    raw: bytes, *, catalog: ContractCatalog | None = None
+    raw: bytes,
+    *,
+    catalog: ContractCatalog | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> RecoveryResult:
     """Explicitly return an untrusted torn tail; never mark the whole input valid."""
     last_lf = raw.rfind(LF)
     if last_lf < 0:
         raise ProvenanceValidationError("no complete journal prefix")
     prefix, tail = raw[: last_lf + 1], raw[last_lf + 1 :]
-    summary = validate_journal(prefix, catalog=catalog)
+    summary = validate_journal(
+        prefix,
+        catalog=catalog,
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
+    )
     try:
         if tail and (not tail.startswith(RS) or RS in tail[1:]):
             raise ProvenanceValidationError("tail is not one incomplete RFC 7464 frame")
@@ -1376,6 +1397,8 @@ def append_observation(
     *,
     expected_tail: Mapping[str, Any] | None = None,
     catalog: ContractCatalog | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> bytes:
     """Append a result, omitting only identical already-declared identity objects.
 
@@ -1386,7 +1409,9 @@ def append_observation(
 
     if not isinstance(result, ObservationResult):
         raise TypeError("result must be an ObservationResult")
-    with validate_journal(raw, catalog=catalog) as summary:
+    with validate_journal(
+        raw, catalog=catalog, connection_factory=connection_factory, on_storage_open=on_storage_open
+    ) as summary:
         existing = summary.graph_validation.objects
         retained: list[tuple[str, dict[str, Any]]] = []
         for category, row in iter_assertions(result.graph_fragment()):
@@ -1411,4 +1436,6 @@ def append_observation(
             recorded_by_agent_id=result.observer_agent_id,
             expected_tail=expected_tail,
             catalog=catalog,
+            connection_factory=connection_factory,
+            on_storage_open=on_storage_open,
         )
