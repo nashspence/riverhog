@@ -64,7 +64,7 @@ def test_producer_registers_pathless_member_and_exact_canonical_history(
 
 @pytest.mark.skipif(os.name != "posix", reason="SQL producer composition uses the Unix VFS")
 def test_public_producer_prepares_sql_before_remote_creation_and_cold_replays_native(
-    tmp_path, record_property
+    tmp_path, record_testsuite_property
 ):
     from functools import partial
 
@@ -101,7 +101,7 @@ def test_public_producer_prepares_sql_before_remote_creation_and_cold_replays_na
     assert proof["provenance_connections"] == proof["provenance_close_calls"] == 4
     assert proof["provenance_connection_peak"] == proof["provenance_connections_released"] == 1
     assert proof["provenance_handles"] == 8 and proof["provenance_replay_opens"] == 0
-    record_property(
+    record_testsuite_property(
         "producer_provenance_admission",
         json.dumps({key: value for key, value in proof.items() if key.startswith("provenance_")}),
     )
