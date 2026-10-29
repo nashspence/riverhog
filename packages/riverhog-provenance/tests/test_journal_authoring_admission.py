@@ -22,9 +22,10 @@ from riverhog_provenance import (
 from riverhog_provenance import (
     journal as owner,
 )
-from test_corpus_sqlite_admission import Population
 from test_disposable_sqlite_admission import directories_under
-from test_sqlite_connection_admission import Capacity, no_default_connection
+from test_sqlite_connection_admission import no_default_connection
+
+from tests.support.sqlite_admission import Capacity, Population
 
 KINDS = ("create", "append", "correction", "batches", "spool", "checkpoint")
 CONNECTIONS = dict(zip(KINDS, (1, 2, 2, 2, 2, 3), strict=True))

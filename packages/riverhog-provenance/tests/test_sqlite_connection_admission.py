@@ -12,12 +12,10 @@ from riverhog_provenance.journal_store import JournalStore
 from test_retained_corpus_faults import EmptySource
 from test_retained_journal_session import ATTEMPT, OwnedSource, finish
 
+from tests.support.sqlite_admission import Capacity
+
 _CONNECT = sqlite3.connect
 _POSIX = pytest.mark.skipif(os.name != "posix", reason="retained corpus uses POSIX custody")
-
-
-class Capacity(RuntimeError):
-    pass
 
 
 class Admission:

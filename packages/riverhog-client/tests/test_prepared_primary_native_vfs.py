@@ -5494,6 +5494,9 @@ plan=SqliteReadinessPlan((8201,16),65536,8,192,512*1024)
 def prepare(storage):
     return sqlite_primary_preparation_step(storage,plan=plan)
 proof=witness(path,factory,prepare)
+assert proof["provenance_connections"]==proof["provenance_close_calls"]==4
+assert proof["provenance_connection_peak"]==proof["provenance_connections_released"]==1
+assert proof["provenance_handles"]==8 and proof["provenance_replay_opens"]==0
 population=heap.native_report();memory=heap.report()
 assert population["owners"]==population["files"]==0
 assert population["owner_peak"]==1 and 1<=population["file_peak"]<=2

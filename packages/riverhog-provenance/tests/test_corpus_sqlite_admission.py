@@ -15,57 +15,9 @@ from riverhog_provenance import (
 from riverhog_provenance import _corpus_order as ordering
 from test_corpus_order_growth import edges_for, insert
 from test_corpus_order_steps import finish, ready
-from test_sqlite_connection_admission import Capacity, no_default_connection
+from test_sqlite_connection_admission import no_default_connection
 
-_CONNECT = sqlite3.connect
-
-
-class Population:
-    """Count real opens and release capacity only on confirmed connection close."""
-
-    def __init__(self, limit=3):
-        self.limit = limit
-        self.active = self.peak = 0
-        self.attempts, self.connections = [], []
-        self.refuse = self.unreturned = False
-        self.fail_schema = False
-
-    def __call__(self, database, **options):
-        self.attempts.append((Path(database), options))
-        if self.refuse or self.active >= self.limit:
-            raise Capacity("connection population exhausted")
-        self.active += 1
-        self.peak = max(self.peak, self.active)
-        owner = self
-
-        class Connection(sqlite3.Connection):
-            released = False
-            close_failures = 0
-            close_after = False
-            close_calls = 0
-
-            def execute(self, statement, parameters=()):
-                if owner.fail_schema and statement.startswith("CREATE TABLE"):
-                    raise InterruptedError("schema initialization interrupted")
-                return super().execute(statement, parameters)
-
-            def close(self):
-                self.close_calls += 1
-                if self.close_failures:
-                    self.close_failures -= 1
-                    if self.close_after:
-                        super().close()
-                    raise OSError("connection close unconfirmed")
-                super().close()
-                if not self.released:
-                    self.released = True
-                    owner.active -= 1
-
-        db = _CONNECT(database, factory=Connection, **options)
-        self.connections.append(db)
-        if self.unreturned:
-            raise OSError("connection construction unconfirmed")
-        return db
+from tests.support.sqlite_admission import Capacity, Population
 
 
 @pytest.fixture

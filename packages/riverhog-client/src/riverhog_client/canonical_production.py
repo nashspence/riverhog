@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import base64
 import hashlib
-from collections.abc import Iterable, Mapping, Sequence
+import sqlite3
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -32,6 +33,7 @@ from riverhog_protocol.provenance_transport import (
     CollectionArtifactProvenanceBindingDocument,
 )
 from riverhog_provenance import (
+    JournalStore,
     ObservationResult,
     append_assertion_batches,
     assertion,
@@ -95,6 +97,8 @@ def build_member_journal(
     materialization_hint: tuple[str, ...] | None,
     causal_input_states: Sequence[Mapping[str, Any]] = (),
     output_id: str | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> ProducedMemberJournal:
     """Bind source measurement and producer attribution to one opaque member.
 
@@ -319,6 +323,8 @@ def build_member_journal(
         recorded_by_agent_id=producer_agent_id,
         journal_id=journal_id,
         catalog=catalog,
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
     )
 
     def fragment_batches() -> Iterable[dict[str, Any]]:
@@ -354,16 +360,26 @@ def build_member_journal(
             yield {"extensions": fragment_rows}
 
     raw = append_assertion_batches(
-        raw, fragment_batches(), recorded_by_agent_id=producer_agent_id, catalog=catalog
+        raw,
+        fragment_batches(),
+        recorded_by_agent_id=producer_agent_id,
+        catalog=catalog,
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
     )
-    summary = validate_journal(raw, catalog=catalog)
-    binding = CollectionArtifactProvenanceBindingDocument.model_validate(
-        {
-            "artifact_id": member.artifact_id,
-            "journal": summary.anchor,
-            "delivery_association_id": association["id"],
-        }
-    )
+    with validate_journal(
+        raw,
+        catalog=catalog,
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
+    ) as summary:
+        binding = CollectionArtifactProvenanceBindingDocument.model_validate(
+            {
+                "artifact_id": member.artifact_id,
+                "journal": summary.anchor,
+                "delivery_association_id": association["id"],
+            }
+        )
     return ProducedMemberJournal(journal_id, raw, binding)
 
 
@@ -379,6 +395,8 @@ def bind_produced_member(
     allow_missing_materialization_hint: bool,
     causal_input_states: Sequence[Mapping[str, Any]] = (),
     output_id: str | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> ProducedMemberJournal:
     """Stage and bind one already registered member before finalization."""
 
@@ -395,6 +413,8 @@ def bind_produced_member(
         materialization_hint=materialization_hint,
         causal_input_states=causal_input_states,
         output_id=output_id,
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
     )
     api.upload_collection_upload_session_provenance_journal(
         collection_id,

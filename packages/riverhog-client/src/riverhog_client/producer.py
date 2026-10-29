@@ -5,6 +5,7 @@ from __future__ import annotations
 import builtins
 import hashlib
 import itertools
+import sqlite3
 import tempfile
 import threading
 import time
@@ -31,7 +32,7 @@ from riverhog_protocol.collection_upload_transport import (
 from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.provenance_transport import MaterializationHintDocument
 from riverhog_protocol.storage_names import ArchiveStoreName
-from riverhog_provenance import BoundedSourceObserver, ObservationResult, StreamSource
+from riverhog_provenance import BoundedSourceObserver, JournalStore, ObservationResult, StreamSource
 from time_formats import parse_utc_timestamp, utc_epoch_ns_now
 
 from riverhog_client._prepared_primary_closing import (
@@ -227,6 +228,8 @@ class CollectionProducer:
         primary_store: PrimaryStore,
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
         producer_app: str,
         adapter_id: str,
         adapter_version: str,
@@ -240,6 +243,8 @@ class CollectionProducer:
         self.api = api
         self.primary_store = primary_store
         self._storage_preparation = storage_preparation
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
         self.member_inventory = member_inventory
         self.producer_app = producer_app
         self.adapter_id = adapter_id
@@ -303,6 +308,8 @@ class CollectionProducer:
             primary_store=self.primary_store,
             member_inventory=self.member_inventory,
             storage_preparation=self._storage_preparation,
+            provenance_connection_factory=self._provenance_connection_factory,
+            on_provenance_storage_open=self._on_provenance_storage_open,
             producer_app=self.producer_app,
             adapter_id=self.adapter_id,
             adapter_version=self.adapter_version,
@@ -358,6 +365,8 @@ class IncrementalCollectionProducer:
         primary_store: PrimaryStore,
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
         producer_app: str,
         adapter_id: str,
         adapter_version: str,
@@ -378,7 +387,11 @@ class IncrementalCollectionProducer:
         self.primary_store = primary_store
         self._member_inventory = member_inventory
         self._primary_publisher = PrimaryPublisher(
-            api, primary_store, storage_preparation=storage_preparation
+            api,
+            primary_store,
+            storage_preparation=storage_preparation,
+            provenance_connection_factory=provenance_connection_factory,
+            on_provenance_storage_open=on_provenance_storage_open,
         )
         self._operation_lock = threading.RLock()
         self.progress = progress

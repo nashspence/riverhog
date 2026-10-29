@@ -1280,6 +1280,9 @@ def test_producer_stream_has_no_shared_filesystem_and_is_snapshot_verified(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
+    from tests.support.sqlite_admission import Population
+
+    provenance, handles = Population(limit=1), []
     content = b"generated output"
     api = UploadApi()
     stream = ProducerStream(
@@ -1294,12 +1297,17 @@ def test_producer_stream_has_no_shared_filesystem_and_is_snapshot_verified(
         api,  # type: ignore[arg-type]
         primary_store=primary_store,
         member_inventory=lambda: inventory_from_rows(api.registered),
+        provenance_connection_factory=provenance,
+        on_provenance_storage_open=handles.append,
         producer_app="stove0-worker",
         adapter_id="test-transform/v1",
         adapter_version="1",
         ingest_source="processing:test",
     ).publish_inputs((stream,), source_event_id="event-1")
 
+    assert provenance.active == 0 and provenance.peak == 1
+    assert len(provenance.connections) == 4 and len(handles) == 8
+    assert all(db.close_calls == 1 for db in provenance.connections)
     assert receipt.collection_id == 7
     assert api.work_calls >= 2
     assert api.completion_artifact_set_identity == receipt.artifact_set_identity

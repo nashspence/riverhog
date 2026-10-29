@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 from typing import Any
 
@@ -62,7 +63,9 @@ def test_producer_registers_pathless_member_and_exact_canonical_history(
 
 
 @pytest.mark.skipif(os.name != "posix", reason="SQL producer composition uses the Unix VFS")
-def test_public_producer_prepares_sql_before_remote_creation_and_cold_replays_native(tmp_path):
+def test_public_producer_prepares_sql_before_remote_creation_and_cold_replays_native(
+    tmp_path, record_property
+):
     from functools import partial
 
     from riverhog_client._prepared_primary_factory import sqlite_primary_preparation_step
@@ -95,3 +98,10 @@ def test_public_producer_prepares_sql_before_remote_creation_and_cold_replays_na
     )
     assert proof["root_deferred"] >= 1 and proof["member_calls"] >= 1
     assert proof["observations"] == proof["remote_create_calls"] == 1
+    assert proof["provenance_connections"] == proof["provenance_close_calls"] == 4
+    assert proof["provenance_connection_peak"] == proof["provenance_connections_released"] == 1
+    assert proof["provenance_handles"] == 8 and proof["provenance_replay_opens"] == 0
+    record_property(
+        "producer_provenance_admission",
+        json.dumps({key: value for key, value in proof.items() if key.startswith("provenance_")}),
+    )

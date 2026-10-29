@@ -94,7 +94,7 @@ from .journal_session import (
     JournalValidationSession,
     JournalValidationSource,
 )
-from .journal_store import InvalidJournalWorkspace
+from .journal_store import InvalidJournalWorkspace, JournalStore
 from .model import (
     BinaryReadable,
     ObservationPolicy,
@@ -176,6 +176,7 @@ __all__ = [
     "JournalFrame",
     "JournalSetValidation",
     "JournalSummary",
+    "JournalStore",
     "JournalResultOpening",
     "RecoveryResult",
     "append_assertion_batches",

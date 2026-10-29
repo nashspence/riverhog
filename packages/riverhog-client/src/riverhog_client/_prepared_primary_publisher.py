@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from typing import Any
@@ -16,7 +17,7 @@ from riverhog_protocol import (
     CollectionArtifactProvenanceBindingBatchDocument,
 )
 from riverhog_protocol.errors import NotFound
-from riverhog_provenance import ObservationResult
+from riverhog_provenance import JournalStore, ObservationResult
 from riverhog_provenance_contracts import ContractCatalog, ExternalReference, ProvenanceId
 
 from riverhog_client._prepared_primary_documents import (
@@ -140,10 +141,14 @@ class PrimaryPublisher:
         store: PrimaryStore,
         *,
         storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
     ) -> None:
         self.api = api
         self.store = store
         self._storage_preparation = storage_preparation
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
 
     def _require_open_session(self) -> None:
         retained = self.store.session
@@ -318,6 +323,8 @@ class PrimaryPublisher:
                 materialization_hint=materialization_hint,
                 causal_input_states=causal,
                 output_id=output_id,
+                connection_factory=self._provenance_connection_factory,
+                on_storage_open=self._on_provenance_storage_open,
             )
             return PrimaryPreparation(
                 selected_bytes,

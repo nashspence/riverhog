@@ -9,7 +9,9 @@ import pytest
 from riverhog_provenance import journal_store, validate_journal_chunks
 from riverhog_provenance.journal_session import JournalValidationSession
 from riverhog_provenance.journal_store import JournalStore
-from test_sqlite_connection_admission import Admission, Capacity, no_default_connection
+from test_sqlite_connection_admission import Admission, no_default_connection
+
+from tests.support.sqlite_admission import Capacity
 
 
 def directories_under(tmp_path, monkeypatch):

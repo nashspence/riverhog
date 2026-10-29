@@ -13,6 +13,7 @@ from riverhog_protocol.artifact_identity import ArtifactId, ArtifactMemberIdenti
 from riverhog_protocol.errors import NotFound
 
 from tests.support.prepared_primary_replay import ALLOCATION, LIMITS, SCOPE
+from tests.support.sqlite_admission import Population
 
 
 class PreparedProducerApi:
@@ -121,6 +122,7 @@ def witness(
     from riverhog_client import producer as owner
 
     api = PreparedProducerApi()
+    provenance, provenance_handles = Population(limit=1), []
     content = b"exact original bytes"
     artifact_id = ArtifactId("a" * 64)
     member = ArtifactMemberIdentityDocument.model_validate(
@@ -166,6 +168,8 @@ def witness(
                     primary_store=store,
                     member_inventory=lambda: (),
                     storage_preparation=prepare,
+                    provenance_connection_factory=provenance,
+                    on_provenance_storage_open=provenance_handles.append,
                     producer_app="a-test-producer",
                     adapter_id="test-adapter/v1",
                     adapter_version="1",
@@ -209,6 +213,9 @@ def witness(
                 registered=len(api.registered), journals=len(api.journals), **counts
             )
             assert len(api.bindings) == len(api.decisions) == 1
+            assert len(provenance.connections) == 4 and provenance.active == 0
+            assert provenance.peak == 1 and len(provenance_handles) == 8
+            assert all(db.close_calls == 1 for db in provenance.connections)
             record = store.load(member)
             assert record is not None
             with store.byte_reader(record, "journal") as stream:
@@ -233,6 +240,8 @@ def witness(
     finally:
         owner._observe_source, owner.upload_collection_units = observe, upload
     assert counts["root_deferred"] >= 1
+    assert len(provenance.connections) == 4 and provenance.active == 0
+    assert all(db.close_calls == 1 for db in provenance.connections)
     return dict(
         **counts,
         remote_create_calls=api.create_calls,
@@ -240,4 +249,10 @@ def witness(
         journal_exact=1,
         usage_exact=1,
         journal_bytes=len(original),
+        provenance_connections=4,
+        provenance_connection_peak=1,
+        provenance_connections_released=1,
+        provenance_handles=8,
+        provenance_close_calls=4,
+        provenance_replay_opens=0,
     )
