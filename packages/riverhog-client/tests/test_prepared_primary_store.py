@@ -2431,3 +2431,66 @@ def test_shared_sql_resource_preparation_uncertainty_coldly_rolls_back_without_r
         committed=committed,
     )
     assert evidence["survivor_exact"] and evidence["member_grant_charged_once"]
+
+
+@pytest.mark.parametrize("interruption", ["defer", "exception"])
+def test_member_preparation_defers_authorship_and_cold_resumes_without_double_charge(
+    tmp_path, sql_core_storage, interruption
+):
+    from functools import partial
+
+    from riverhog_client import PrimaryStateBusy
+    from riverhog_client._prepared_primary_factory import sqlite_primary_preparation_step
+    from riverhog_client._prepared_primary_sqlite_preparation import SqliteReadinessPlan
+
+    root = tmp_path / "prepared-member.sqlite3"
+    member = _member(2)
+    calls = []
+    plan = SqliteReadinessPlan((8201, 16), 65536, 8, 192, 512 * 1024)
+    execute = partial(sqlite_primary_preparation_step, plan=plan)
+
+    def author(_grant):
+        calls.append(True)
+        return _author(member)
+
+    def interrupted(storage):
+        assert not execute(storage)
+        if interruption == "exception":
+            raise RuntimeError("member preparation interrupted")
+        return False
+
+    with _open(root, initialize=True, storage_factory=sql_core_storage) as store:
+        survivor = store.prepare_or_load(_member(), REQUEST, lambda _grant: _author())
+        usage = store.usage
+        error = RuntimeError if interruption == "exception" else PrimaryStateBusy
+        with pytest.raises(error, match="preparation"):
+            store.prepare_or_load(member, REQUEST, author, storage_preparation=interrupted)
+        assert not calls and store._usage == usage
+        cursor = store._files.progress_journal()
+        assert cursor.pad_rows == 1
+        assert store._files.read_control("transition", byte_limit=LIMITS.control_bytes)
+
+    with _open(root, storage_factory=sql_core_storage) as store:
+        assert store._files.progress_journal() == cursor and store.usage == usage
+        for _ in range(512):
+            try:
+                selected = store.prepare_or_load(
+                    member, REQUEST, author, storage_preparation=execute
+                )
+            except PrimaryStateBusy:
+                assert not calls and store.usage == usage
+            else:
+                break
+        else:
+            pytest.fail("interrupted member preparation did not finish")
+        assert calls == [True]
+        assert store.load(_member()) == survivor
+        assert store.usage.members == usage.members + 1
+        assert store.usage.sequence == usage.sequence + 1
+        assert store.usage.control_bytes == usage.control_bytes + LIMITS.member_reservation
+        settled = store.usage
+    with _open(root, storage_factory=sql_core_storage) as store:
+        assert store.load(member) == selected
+        assert store.load(_member()) == survivor
+        assert store.prepare_or_load(member, REQUEST, _no_author) == selected
+        assert store.usage == settled

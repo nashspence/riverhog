@@ -3,15 +3,16 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Callable
 from pathlib import Path
 
-from riverhog_client import PrimaryScope, PrimaryStore, PrimaryStoreLimits
+from riverhog_client import PrimaryScope, PrimaryStateBusy, PrimaryStore, PrimaryStoreLimits
 from riverhog_client._prepared_primary_documents import (
     PrimaryAllocation,
     PrimarySession,
     primary_control_bytes,
 )
-from riverhog_client._prepared_primary_storage import PrimaryStorageFactory
+from riverhog_client._prepared_primary_storage import PrimaryStorage, PrimaryStorageFactory
 from riverhog_client._prepared_primary_store import PrimaryPreparation
 from riverhog_protocol import (
     ArtifactMemberIdentityDocument,
@@ -37,7 +38,12 @@ ALLOCATION = PrimaryAllocation.model_validate(
 DESCRIPTOR = primary_control_bytes(ALLOCATION)
 
 
-def witness(path: Path, factory: PrimaryStorageFactory) -> None:
+def witness(
+    path: Path,
+    factory: PrimaryStorageFactory,
+    *,
+    prepare_storage: Callable[[PrimaryStorage], bool] | None = None,
+) -> None:
     """Use original sealed controls with synthetic octets, without claiming Native authorship."""
     create, request, decision = b"exact creation", b"exact member retry", b"exact decision"
     journal = b"original retained journal\x00" * 800
@@ -75,7 +81,15 @@ def witness(path: Path, factory: PrimaryStorageFactory) -> None:
             storage_factory=factory,
         )
 
+    def prepare_root(store: PrimaryStore) -> None:
+        if prepare_storage is not None:
+            for _ in range(512):
+                if store.prepare_storage_step(prepare_storage):
+                    return
+            raise AssertionError("shared replay fixture root preparation did not finish")
+
     with opened(initialize=True) as store:
+        prepare_root(store)
         assert store.allocation == ALLOCATION
         assert store.session_for(create) is None
         store.bind_session(
@@ -92,21 +106,56 @@ def witness(path: Path, factory: PrimaryStorageFactory) -> None:
                 completion_requirement_sha256=None,
             )
         )
-        original = store.prepare_or_load(
-            member,
-            request,
-            lambda _grant: PrimaryPreparation(
+        author_calls = 0
+        preparation_result: list[bool] = []
+
+        def prepare(storage: PrimaryStorage) -> bool:
+            assert prepare_storage is not None
+            done = prepare_storage(storage)
+            preparation_result.append(done)
+            return done
+
+        def author(_grant: int) -> PrimaryPreparation:
+            nonlocal author_calls
+            author_calls += 1
+            return PrimaryPreparation(
                 b"original observation", b"original graph", journal, decision, primary, None
-            ),
-        )
+            )
+
+        pristine = store.usage
+        for _ in range(512):
+            preparation_result.clear()
+            try:
+                original = store.prepare_or_load(
+                    member,
+                    request,
+                    author,
+                    storage_preparation=None if prepare_storage is None else prepare,
+                )
+            except PrimaryStateBusy:
+                assert preparation_result == [False] and author_calls == 0
+                assert store.usage == pristine
+            else:
+                break
+        else:
+            raise AssertionError("shared replay fixture member preparation did not finish")
+        assert author_calls == 1
         before = store.usage
 
     def no_author(_grant):
         raise AssertionError("cold replay authored a replacement primary")
 
     with opened() as store:
+        prepare_root(store)
         assert store.session_for(create) == store.session
-        assert store.prepare_or_load(member, request, no_author) == original
+
+        def no_preparation(_storage: PrimaryStorage) -> bool:
+            raise AssertionError("cold sealed replay performed member preparation")
+
+        assert (
+            store.prepare_or_load(member, request, no_author, storage_preparation=no_preparation)
+            == original
+        )
         assert store.usage == before
         with store.byte_reader(original, "journal") as stream:
             assert stream.read() == journal
@@ -120,6 +169,7 @@ def witness(path: Path, factory: PrimaryStorageFactory) -> None:
         assert store.session_for(create) == store.session
 
     with opened() as store:
+        prepare_root(store)
         for _ in range(64):
             if store.recover_step():
                 break
@@ -134,6 +184,7 @@ def witness(path: Path, factory: PrimaryStorageFactory) -> None:
         after = store.usage
 
     with opened() as store:
+        prepare_root(store)
         assert store.load_controls(member).compact
         assert store.reclaim(member)
         assert store.usage == after

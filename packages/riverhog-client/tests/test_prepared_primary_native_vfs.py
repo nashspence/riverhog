@@ -5338,3 +5338,106 @@ print(json.dumps({"passed":True,"native_owner_preparation":proof}))
     record_testsuite_property(
         "prepared_primary_native_owner_preparation", json.dumps(proof["native_owner_preparation"])
     )
+
+
+def test_native_shared_member_preparation_replays_sealed_winner_and_reclaims(
+    tmp_path, record_testsuite_property
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import importlib.util,json,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client._prepared_primary_factory import (
+    WindowsPrimaryFactory,sqlite_primary_preparation_step)
+from riverhog_client._prepared_primary_sqlite_preparation import SqliteReadinessPlan
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
+from riverhog_client._prepared_primary_sqlite_operations import (
+    SqliteOperationBank,SqliteOperationGrants)
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+from tests.support.prepared_primary_replay import DESCRIPTOR,witness
+spec=importlib.util.spec_from_file_location("member_preparation_parents",
+    root/"tests/platform/windows_primary_process.py")
+parents=importlib.util.module_from_spec(spec);sys.modules[spec.name]=parents
+spec.loader.exec_module(parents)
+parent=Path(sys.argv[2])/"member-preparation-private";parents._parent(parent)
+path=windows_container_path(parent,DESCRIPTOR)
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+limits=SqlitePrimaryLimits(4*1024*1024,2*1024*1024,128*1024)
+bank=SqliteOperationBank(512,8*1024*1024,65536,8*1024*1024,65536,
+    262144,0,1<<40,1<<60,1<<40)
+grants=SqliteOperationGrants(bank,bank)
+selected=WindowsPrimaryFactory(limits,grants,heap,(2,3))
+state={"arms":0,"bank":None,"initializations":0,"cold_opens":0}
+arm=NativeWindowsContainer.arm_operation
+def observed(self,grants,limits,**caps):
+    value=arm(self,grants,limits,**caps)
+    state.update(arms=state["arms"]+1,bank=value)
+    return value
+NativeWindowsContainer.arm_operation=observed
+def factory(location,*,allocation_descriptor,initialize):
+    assert allocation_descriptor==DESCRIPTOR and location==path
+    files=selected(location,allocation_descriptor=allocation_descriptor,initialize=initialize)
+    assert files.operation_grants().grants==grants
+    assert state["bank"].writes.report()["forward"]["write_calls"]==0
+    assert not state["bank"].writes.recovering
+    state["initializations" if initialize else "cold_opens"]+=1
+    return files
+plan=SqliteReadinessPlan((8201,16),65536,8,192,512*1024)
+preparation={"calls":0,"deferred":0,"ready":0,"pages":0,"journal":0}
+def prepare(storage):
+    before_journal,before_database=storage.progress_journal(),storage.database_reserve()
+    done=sqlite_primary_preparation_step(storage,plan=plan)
+    journal,database=storage.progress_journal(),storage.database_reserve()
+    assert journal.pad_rows-before_journal.pad_rows<=1
+    assert database.inserted-before_database.inserted<=1
+    assert database.released-before_database.released<=1
+    preparation["calls"]+=1
+    preparation["ready" if done else "deferred"]+=1
+    if done:
+        ready=storage.require_physical_ready()
+        preparation.update(pages=ready.minimum_pages,journal=ready.minimum_journal_bytes)
+    return done
+# The maintained shared witness verifies exact sealed original bytes, forbids
+# reauthoring on cold replay, acknowledges decision/custody, resumes chunk cleanup
+# across close and releases the original pending-byte reservation exactly once.
+# Its synthetic journal octets do not attest Native observation/authorship.
+witness(path,factory,prepare_storage=prepare)
+population=heap.native_report();memory=heap.report()
+assert population["owners"]==population["files"]==0
+assert population["owner_peak"]==1 and 1<=population["file_peak"]<=2
+assert not state["bank"].writes.report()["refusals"]
+assert not state["bank"].writes.report()["native_failures"]
+assert state["initializations"]==1 and state["cold_opens"]==3
+assert 0<memory["sqlite_heap_peak_bytes"]<=memory["heap_limit_bytes"]==64*1024*1024
+proof=dict(initializations=1,cold_opens=3,sealed_replay=1,decision_custody=1,
+    once_only_reclaim=1,population_released=1,operation_arms=state["arms"],
+    owner_peak=population["owner_peak"],file_peak=population["file_peak"],
+    heap_limit_bytes=memory["heap_limit_bytes"],
+    sqlite_heap_peak_bytes=memory["sqlite_heap_peak_bytes"],
+    retry_count=heap.retry_report()["selected_retry_count"],
+    retry_delay_milliseconds=heap.retry_report()["selected_delay_milliseconds"])
+assert preparation["deferred"]>=16 and preparation["ready"]>=5
+assert preparation["pages"]>=16 and preparation["journal"]>=73872
+proof.update(preparation_calls=preparation["calls"],deferred_preparation=preparation["deferred"],
+    ready_preparation=preparation["ready"],minimum_ready_pages=preparation["pages"],
+    minimum_ready_journal=preparation["journal"])
+print(json.dumps({"passed":True,"native_prepared_member":proof}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[3]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] is True
+    record_testsuite_property(
+        "prepared_primary_native_prepared_member", json.dumps(proof["native_prepared_member"])
+    )

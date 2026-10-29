@@ -382,3 +382,46 @@ def test_shared_owner_preparation_resumes_after_callback_failure_without_status_
         with pytest.raises(PrimaryStateError, match="uncertain outcome"):
             store.session_for(b"exact creation")
         assert store.allocation == ALLOCATION and store.usage == usage
+
+
+def test_shared_member_preparation_runs_before_authorship_and_cold_replays_sealed_bytes(tmp_path):
+    from functools import partial
+
+    from riverhog_client._prepared_primary_factory import sqlite_primary_preparation_step
+
+    from tests.support.prepared_primary_replay import DESCRIPTOR, witness
+
+    roots = []
+    preparations = []
+
+    def factory(path, *, allocation_descriptor, initialize):
+        assert allocation_descriptor == DESCRIPTOR
+        if initialize:
+            path.touch(exist_ok=False)
+        guard = Guard(path)
+        files = TransactionalPrimaryFiles(
+            guard,
+            allocation_descriptor=allocation_descriptor,
+            limits=LIMITS,
+            initialize=initialize,
+            operations=GRANTS,
+        )
+        roots[:] = [start(files, guard)]
+        return files
+
+    plan = SqliteReadinessPlan((8201, 16), 65536, 8, 192, 512 * 1024)
+    execute = partial(sqlite_primary_preparation_step, plan=plan)
+
+    def prepare(storage):
+        before_journal, before_database = roots[0].progress_journal(), roots[0].database_reserve()
+        done = execute(storage)
+        journal, database = roots[0].progress_journal(), roots[0].database_reserve()
+        assert journal.pad_rows - before_journal.pad_rows <= 1
+        assert database.inserted - before_database.inserted <= 1
+        assert database.released - before_database.released <= 1
+        preparations.append(done)
+        return done
+
+    witness(tmp_path / "member.sqlite3", factory, prepare_storage=prepare)
+    assert len(preparations) >= 16 and preparations[-1] is True
+    assert False in preparations

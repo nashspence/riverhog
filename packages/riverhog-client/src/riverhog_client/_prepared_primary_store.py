@@ -522,8 +522,17 @@ class PrimaryStore:
         member: ArtifactMemberIdentityDocument,
         request: bytes,
         author: Callable[[int], PrimaryPreparation],
+        *,
+        storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
     ) -> PrimaryRecord:
-        """Load before authoring; the author receives the available byte admission."""
+        """Load before authoring, with optional bounded storage preparation.
+
+        The explicit adapter runs after member controls are allocated under the
+        retained transition. An incomplete step raises Busy before authorship;
+        callers schedule another execution attempt. Existing records bypass the
+        adapter, and the author receives the available byte admission only after
+        preparation completes.
+        """
         with self._mutex:
             self._recover()
             existing = self.load(member)
@@ -559,6 +568,13 @@ class PrimaryStore:
                 operation="prepare", member=member, before=self._usage, after=after
             )
             self._write(self._files, "transition", transition)
+            if storage_preparation is not None:
+                with self._member(str(member.artifact_id), create=True):
+                    pass
+                if not self.prepare_storage_step(storage_preparation):
+                    raise PrimaryStateBusy(
+                        "prepared-primary storage requires another preparation execution step"
+                    )
             self._authoring = True
             try:
                 authored = author(grant - len(request))
