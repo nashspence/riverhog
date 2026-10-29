@@ -21,13 +21,13 @@ class TransactionWriteTotals:
         original = files._transaction
 
         @contextmanager
-        def transaction():
+        def transaction(*, payload=False):
             with shim.transaction_writes(
                 page_bytes=4096, tracked_pages=self.tracked_pages
             ) as trace:
                 completed = False
                 try:
-                    with original() as db:
+                    with original(payload=payload) as db:
                         yield db
                     completed = True
                 finally:

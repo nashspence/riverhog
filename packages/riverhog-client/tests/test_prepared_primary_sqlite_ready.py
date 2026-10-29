@@ -363,3 +363,39 @@ def test_post_ready_commit_backing_loss_leaves_depleted_until_explicit_recheck(
         assert files.physical_readiness().phase == "depleted"
         monkeypatch.setattr(files._guard, "file_space", actual)
         assert files.prepare_physical_ready().phase == "ready"
+
+
+def test_transaction_write_instrumentation_preserves_payload_admission_and_failure(tmp_path):
+    from contextlib import nullcontext
+    from types import SimpleNamespace
+
+    from tests.support.prepared_primary_transaction_writes import TransactionWriteTotals
+
+    class SyntheticShim:
+        """Test wrapper forwarding; native qualification owns actual write measurements."""
+
+        def transaction_writes(self, *, page_bytes, tracked_pages):
+            assert page_bytes == 4096 and tracked_pages == 128
+            return nullcontext(SimpleNamespace(report=lambda: {}))
+
+    path = tmp_path / "state.sqlite3"
+    with opened(path, initialize=True) as files:
+        original = files.put_bytes("original", (b"original",), byte_limit=8)
+        plan = dependencies(files)
+        plan["free_pages"] = files.space_usage().reusable_pages
+        finish_database(files, plan)
+        ready = files.prepare_physical_ready()
+        totals = TransactionWriteTotals(tracked_pages=128)
+        totals.attach(files, SyntheticShim())
+        with files._transaction(payload=True):
+            assert files._one("PRAGMA max_page_count") == (ready.backed_pages,)
+        files.sync()
+        with pytest.raises(PrimaryStateCapacity, match="progress headroom"):
+            files.put_bytes("new", (b"x" * 8192,), byte_limit=8192)
+        assert totals.report()["completed_transactions"] >= 2
+        assert totals.report()["failed_transactions"] == 1
+    with opened(path) as files:
+        assert not files.exists("new")
+        assert files.space_usage().reusable_pages >= ready.free_pages
+        with files.verified(original) as stream:
+            assert stream.read() == b"original"
