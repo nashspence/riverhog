@@ -10,7 +10,8 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
-from collections.abc import Iterable, Iterator, Mapping, Sequence, Set
+import sqlite3
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence, Set
 from contextlib import ExitStack
 from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any, BinaryIO, Self, cast
@@ -754,10 +755,16 @@ def validate_journal_chunks(
     require_profiles: bool = True,
     expected_anchor: Mapping[str, Any] | None = None,
     require_exact_tail: bool = False,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> JournalSummary:
     from uuid import uuid4
 
     from .journal_session import JournalValidationSession
+
+    def retain_storage(session: JournalValidationSession) -> None:
+        if on_storage_open is not None:
+            on_storage_open(session._store)
 
     with JournalValidationSession(
         chunks,
@@ -766,6 +773,8 @@ def validate_journal_chunks(
         require_profiles=require_profiles,
         expected_anchor=expected_anchor,
         require_exact_tail=require_exact_tail,
+        connection_factory=connection_factory,
+        on_storage_open=retain_storage,
     ) as session:
         while not session.advance().complete:
             pass

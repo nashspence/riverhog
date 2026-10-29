@@ -947,8 +947,8 @@ def _lifecycle_declaration(mode: str) -> Declaration:
             "retention_callbacks",
             COUNT,
             "upper",
-            count(int(retained_open)),
-            "One optional early-retention callback precedes retained initialization.",
+            count(int(mode in ("__init__", "open_retained"))),
+            "One optional early-retention callback precedes storage initialization.",
         ),
         Bound(
             "opened_files",
@@ -1159,9 +1159,9 @@ def _lifecycle_declaration(mode: str) -> Declaration:
                 "optional default construction reads only the packaged core schemas."
             ),
             (
-                "Source-currentness, early-retention and release callback bodies execute "
-                "normally, with their provider-owned internal work composed by that "
-                "owner."
+                "Connection factories, source-currentness, early-retention and release "
+                "callbacks retain provider-owned internal work, composed separately "
+                "by that owner."
             ),
         ),
         invariants=(
@@ -1209,6 +1209,8 @@ class JournalValidationSession:
     The caller retains ownership of its iterable. This disposable stream mode
     does not promise recovery after process death. A successful result owns an
     independent reader handle and remains usable after this session is closed.
+    Optional connection admission and early handle retention delegate to the
+    disposable JournalStore; no input chunk is consumed before storage opens.
     """
 
     def __init__(
@@ -1220,6 +1222,8 @@ class JournalValidationSession:
         require_profiles: bool = True,
         expected_anchor: Mapping[str, Any] | None = None,
         require_exact_tail: bool = False,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_storage_open: Callable[[Self], None] | None = None,
     ) -> None:
         self.attempt_id = attempt_id
         self._closed = False
@@ -1227,10 +1231,18 @@ class JournalValidationSession:
         self._summary: JournalSummary | None = None
         self._failure: BaseException | None = None
         self._catalog = catalog or ContractCatalog()
-        self._store = JournalStore()
         self._source: JournalValidationSource | None = None
         self._source_binding: JournalReplayBinding | None = None
         self._input: _ChunkInput | RetainedInput
+
+        def retain_storage(store: JournalStore) -> None:
+            self._store = store
+            if on_storage_open is not None:
+                on_storage_open(self)
+
+        self._store = JournalStore(
+            connection_factory=connection_factory, on_storage_open=retain_storage
+        )
         try:
             self._prefix = JournalPrefix(
                 self._store.db,

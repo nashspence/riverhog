@@ -426,18 +426,26 @@ def constructor_samples(
                 catalog_octets=catalog_octets,
                 catalog_entries=catalog_entries,
             )
+            retained_handles = []
+            retain = recorder.retention_callback(retained_handles.append)
             with recorder.kernel():
                 session, sample = recorder.measured(
                     operation,
                     catalog,
                     dimensions,
-                    lambda default=default: JournalValidationSession(
+                    lambda default=default, retain=retain: JournalValidationSession(
                         (),
                         attempt_id=ATTEMPT,
                         catalog=None if default else catalog,
+                        connection_factory=lambda *values, **options: sqlite3.connect(
+                            *values, **options
+                        ),
+                        on_storage_open=retain,
                     ),
                 )
                 samples.append(sample)
+                assert retained_handles == [session]
+                assert sample["metrics"]["retention_callbacks"] == 1
                 try:
                     assert session._ledger.load().checkpoint.version == 0
                     assert session._input.cursor.byte_offset == 0

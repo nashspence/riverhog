@@ -635,8 +635,28 @@ class _SnapshotLease:
 
 
 class JournalStore:
-    def __init__(self) -> None:
-        self._open(Path(mkdtemp(prefix="riverhog-journal-")), retained=False, reopen=False)
+    def __init__(
+        self,
+        *,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_storage_open: Callable[[Self], None] | None = None,
+    ) -> None:
+        """Create disposable storage through an optional application connection factory.
+
+        The open callback retains a returned handle before schema execution.
+        If a supplied factory raises, it owns its unreturned connection and
+        the private directory named by the database path. This storage leaves
+        that directory intact, so uncertain construction cannot remove live
+        files. The factory must settle its own failure and directory cleanup.
+        A returned connection follows the existing final-reader close path.
+        """
+        self._open(
+            Path(mkdtemp(prefix="riverhog-journal-")),
+            retained=False,
+            reopen=False,
+            connection_factory=connection_factory,
+            on_storage_open=on_storage_open,
+        )
 
     @classmethod
     def open_retained(
@@ -722,11 +742,11 @@ class JournalStore:
                     cached_statements=0,
                 )
             else:
-                connection = sqlite3.connect(
+                connection = connect(
                     directory / "snapshot.sqlite3", check_same_thread=False, cached_statements=0
                 )
         except BaseException:
-            if not retained:
+            if not retained and connection_factory is None:
                 shutil.rmtree(directory)
             raise
         self._storage = _SnapshotStorage(connection, directory, remove_on_release=not retained)
