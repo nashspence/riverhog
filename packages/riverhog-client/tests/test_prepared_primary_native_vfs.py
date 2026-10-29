@@ -4671,3 +4671,174 @@ print(json.dumps({"passed":True,"original_exact":True,"population_released":True
     record_testsuite_property(
         "prepared_primary_operation_grants", json.dumps(proof["operation_grants"])
     )
+
+
+@pytest.mark.parametrize("scenario", ["settled", "capacity", "native", "cold"])
+def test_native_operation_entry_preserves_settled_and_sticky_boundaries(
+    tmp_path, record_testsuite_property, scenario
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import importlib.util,json,sys
+from pathlib import Path
+from dataclasses import replace
+from concurrent.futures import ThreadPoolExecutor
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+scenario=sys.argv[3]
+from riverhog_client import PrimaryStateBusy,PrimaryStateCapacity,PrimaryStateError
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import (
+    SqlitePrimaryLimits,TransactionalPrimaryFiles,_connect)
+from riverhog_client._prepared_primary_sqlite_operations import (
+    SqliteOperationBank,SqliteOperationGrants,native_bank)
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+def load(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    module=importlib.util.module_from_spec(spec);sys.modules[name]=module
+    spec.loader.exec_module(module);return module
+helpers=load("entry_helpers",root/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py")
+parents=load("entry_parents",root/"tests/platform/windows_primary_process.py")
+parent=Path(sys.argv[2])/"entry-private";parents._parent(parent)
+allocation=b"native settled operation entry"
+path=windows_container_path(parent,allocation)
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,4))
+source=native.runtime_identity()["sqlite_source_id"]
+limits=SqlitePrimaryLimits(512*1024,512*1024,128*1024)
+bank=SqliteOperationBank(128,8*1024*1024,65536,8*1024*1024,65536,
+    262144,0,1<<40,1<<60,1<<40)
+grants=SqliteOperationGrants(bank,bank)
+def opened(initialize):
+    counters=native_bank(grants,limits,recovering=not initialize)
+    gate=native.WriteVfs(source,counters.reads,counters.callbacks,heap)
+    guard=NativeWindowsContainer(path,initialize=initialize,gate=gate)
+    helpers.admit_fixture_retries(gate)
+    files=TransactionalPrimaryFiles(guard,allocation_descriptor=allocation,
+        limits=limits,initialize=initialize,operations=grants)
+    return files,guard,gate,counters
+def refused(kind,call):
+    try:call()
+    except kind:return
+    raise AssertionError("operation entry accepted unadmitted replacement")
+files,guard,gate,initial=opened(True)
+with files:
+    original=files.put_bytes("original",(b"exact original",),byte_limit=14)
+    files.child("second",initialize=True).close()
+    if scenario=="settled":
+        counters=guard.arm_operation(grants,limits)
+        with files._transaction() as db:
+            with db.blobopen("primary_format","barrier",1) as blob:
+                old=blob.read(8);blob.seek(0);blob.write(bytes([old[0]^1])+old[1:])
+            before=counters.writes.report()
+            refused(PrimaryStateBusy,lambda:guard.arm_operation(grants,limits))
+            assert counters.writes.report()==before and gate.operation_failure() is None
+        assert counters.writes.report()["forward"]["write_calls"]>0
+        cursor=files._db().execute("SELECT id FROM primary_namespaces ORDER BY id")
+        assert cursor.fetchone()==(1,)
+        before=counters.writes.report()
+        refused(PrimaryStateBusy,lambda:guard.arm_operation(grants,limits))
+        assert counters.writes.report()==before
+        cursor.close()
+        second=_connect(guard,limits)
+        try:
+            second.execute("BEGIN").close()
+            second.execute("SELECT id FROM primary_namespaces WHERE id=1").fetchone()
+            refused(PrimaryStateBusy,lambda:guard.arm_operation(grants,limits))
+            second.rollback()
+        finally:second.close()
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            refused(RuntimeError,lambda:pool.submit(
+                gate.arm_operation,counters.reads,counters.callbacks).result())
+        # Candidate refusal must leave both counters and paid close slots untouched.
+        pending=native_bank(grants,limits,recovering=True)
+        before=(counters.writes.report(),pending.writes.report(),counters.callbacks.report())
+        refused(RuntimeError,lambda:gate.arm_operation(pending.reads,pending.callbacks))
+        assert before==(counters.writes.report(),pending.writes.report(),
+            counters.callbacks.report())
+        refused(RuntimeError,lambda:gate.arm_operation(counters.reads,counters.callbacks))
+        second=_connect(guard,limits)
+        try:
+            assert gate.open_files>=2
+            short=native_bank(replace(grants,forward=replace(bank,callback_calls=1)),limits)
+            before=(counters.writes.report(),short.writes.report(),counters.callbacks.report())
+            refused(BlockingIOError,lambda:gate.arm_operation(short.reads,short.callbacks))
+            assert before==(counters.writes.report(),short.writes.report(),
+                counters.callbacks.report())
+        finally:second.close()
+        replacement=guard.arm_operation(grants,limits,
+            database_pages=limits.database_bytes//4096,journal_bytes=limits.journal_bytes)
+        assert replacement is not counters and not replacement.writes.recovering
+        files.put_bytes("after-entry",(b"confirmed replacement",),byte_limit=21)
+        assert replacement.writes.report()["forward"]["write_calls"]>0
+        assert not replacement.writes.report()["refusals"]
+        proof=dict(blocked_write=1,blocked_reader=1,blocked_second_pager=1,
+            blocked_thread=1,blocked_candidates=3,fresh_forward=1)
+    elif scenario in ("capacity","native"):
+        counters=guard.arm_operation(grants,limits)
+        if scenario=="capacity":
+            assert not counters.writes.admit("database",1,limits.database_bytes)
+        else:counters.writes.failed()
+        assert gate.operation_failure()==scenario
+        before=counters.writes.report()
+        refused(PrimaryStateError,lambda:guard.arm_operation(grants,limits))
+        fresh=native_bank(grants,limits)
+        refused(RuntimeError,lambda:gate.arm_operation(fresh.reads,fresh.callbacks))
+        assert counters.writes.report()==before
+        files._connection.close();files._connection=None
+        before=counters.writes.report()
+        refused(RuntimeError,lambda:gate.arm_operation(fresh.reads,fresh.callbacks))
+        refused(PrimaryStateError,lambda:guard.arm_operation(grants,limits))
+        assert counters.writes.report()==before
+        proof=dict(blocked_before_close=1,blocked_after_close=1,first_failure_retained=1)
+if scenario=="cold":
+    files,guard,gate,recovery=opened(False)
+    with files:
+        assert recovery.writes.recovering and gate.operation_failure() is None
+        before=recovery.writes.report()
+        refused(PrimaryStateBusy,lambda:guard.arm_operation(grants,limits))
+        assert recovery.writes.report()==before
+        files._connection.close();files._connection=None
+        assert gate.open_files==0 and gate.bound
+        forward=guard.arm_operation(grants,limits)
+        files._connection=_connect(guard,limits)
+        files.put_bytes("after-cold",(b"confirmed cold",),byte_limit=14)
+        with files.verified(original) as stream:assert stream.read()==b"exact original"
+        assert not forward.writes.recovering and gate.operation_failure() is None
+        assert recovery.writes.report()["forward"]["write_calls"]==0
+        assert recovery.writes.report()["recovery"]["write_calls"]>0
+        assert forward.writes.report()["forward"]["write_calls"]>0
+        proof=dict(blocked_live_recovery=1,closed_pagers=1,fresh_forward=1,
+            recovery_write_calls=recovery.writes.report()["recovery"]["write_calls"])
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+files,guard,gate,recovery=opened(False)
+with files:
+    with files.verified(original) as stream:assert stream.read()==b"exact original"
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+print(json.dumps({"passed":True,"original_exact":True,"population_released":True,
+    "scenario":scenario,"operation_entry":proof}))
+"""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(tmp_path),
+            scenario,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["scenario"] == scenario
+    assert all(proof[key] is True for key in ("passed", "original_exact", "population_released"))
+    record_testsuite_property(
+        "prepared_primary_operation_entry_" + scenario, json.dumps(proof["operation_entry"])
+    )

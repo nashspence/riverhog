@@ -1256,7 +1256,7 @@ static PyObject *vfs_bound(PyObject *object, void *unused) {
     return PyBool_FromLong(bound);
 }
 
-static PyObject *vfs_arm(PyObject *object, PyObject *args) {
+static PyObject *vfs_arm_common(PyObject *object, PyObject *args, int operation) {
     WriteVfs *self = (WriteVfs *)object;
     ReadQuota *reads;
     CallbackQuota *callbacks;
@@ -1282,11 +1282,16 @@ static PyObject *vfs_arm(PyObject *object, PyObject *args) {
         return NULL;
     }
     if (!quota_attachable((WriteQuota *)reads->quota)) return NULL;
-    result = rh_write_vfs_arm(self->vfs, &((WriteQuota *)reads->quota)->quota,
-                              &reads->reads, &callbacks->calls, &callbacks->work->work);
+    result = operation
+        ? rh_write_vfs_arm_operation(self->vfs, &((WriteQuota *)reads->quota)->quota,
+                                    &reads->reads, &callbacks->calls, &callbacks->work->work)
+        : rh_write_vfs_arm(self->vfs, &((WriteQuota *)reads->quota)->quota,
+                          &reads->reads, &callbacks->calls, &callbacks->work->work);
     if (result) {
-        PyErr_SetString(PyExc_RuntimeError,
-            "native write VFS requires its owning thread, closed poisoned files, no quarantined close and close capacity");
+        PyErr_SetString(operation && result == 5 ? PyExc_BlockingIOError : PyExc_RuntimeError,
+            operation
+                ? "native operation arming requires its owning thread, a healthy bound owner, settled pagers and a new forward bank with close capacity"
+                : "native write VFS requires its owning thread, closed poisoned files, no quarantined close and close capacity");
         return NULL;
     }
     quota_attach((WriteQuota *)reads->quota);
@@ -1298,6 +1303,12 @@ static PyObject *vfs_arm(PyObject *object, PyObject *args) {
     Py_SETREF(self->quota, Py_NewRef((PyObject *)reads));
     Py_SETREF(self->callbacks, Py_NewRef((PyObject *)callbacks));
     Py_RETURN_NONE;
+}
+static PyObject *vfs_arm(PyObject *object, PyObject *args) {
+    return vfs_arm_common(object, args, 0);
+}
+static PyObject *vfs_arm_operation(PyObject *object, PyObject *args) {
+    return vfs_arm_common(object, args, 1);
 }
 static PyObject *vfs_close(PyObject *object, PyObject *unused) {
     WriteVfs *self = (WriteVfs *)object;
@@ -1418,6 +1429,8 @@ static PyMethodDef vfs_methods[] = {
     {"bind", vfs_bind, METH_VARARGS, "Pin the database admitted by the caller's live native owner."},
     {"unbind", vfs_unbind, METH_NOARGS, "Release the binding after every selected native file closes."},
     {"arm", vfs_arm, METH_VARARGS, "Select a bank before entering SQLite on its owning thread."},
+    {"arm_operation", vfs_arm_operation, METH_VARARGS,
+        "Select a new forward bank only on a healthy bound owner after all selected pagers settle."},
     {"close", vfs_close, METH_NOARGS, "Unregister after the owner closes every SQLite connection using this VFS."},
     {"identity", vfs_identity, METH_NOARGS, "Describe the already loaded SQLite module."},
     {"geometry", vfs_geometry, METH_NOARGS,

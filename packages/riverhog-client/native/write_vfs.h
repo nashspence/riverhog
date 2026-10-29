@@ -42,6 +42,7 @@ int rh_write_vfs_bound(rh_write_vfs *);
 int rh_write_vfs_quarantined(rh_write_vfs *);
 int rh_write_vfs_quarantine(rh_write_vfs *);
 int rh_write_vfs_arm(rh_write_vfs *, rh_quota *, rh_read_quota *, rh_callback_quota *, rh_native_work_quota *);
+int rh_write_vfs_arm_operation(rh_write_vfs *, rh_quota *, rh_read_quota *, rh_callback_quota *, rh_native_work_quota *);
 int rh_write_vfs_close(rh_write_vfs *);
 typedef struct {
     uint32_t page_bytes, reserved_bytes, sector_bytes, device_characteristics;

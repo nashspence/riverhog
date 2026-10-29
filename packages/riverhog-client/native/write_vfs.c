@@ -1405,6 +1405,29 @@ int rh_write_vfs_arm(
     vfs->work = work;
     return RH_OK;
 }
+/* Operation replacement is stricter than low-level accounting/fault arming.
+ * Refusal is observational: retain both banks and every paid close obligation.
+ */
+int rh_write_vfs_arm_operation(
+    rh_write_vfs *vfs, rh_quota *quota, rh_read_quota *reads, rh_callback_quota *calls,
+    rh_native_work_quota *work
+) {
+    rh_write_file *file;
+    if (!owned(vfs)) return RH_MISUSE;
+    if (!vfs->bound || vfs->quarantined || !retry_usable(vfs->heap)) return RH_IOERR;
+    if (vfs->quota->native_failures || vfs->quota->diagnostic_overflow) return RH_IOERR;
+    if (vfs->quota->refusals || vfs->calls->pending_error) return RH_FULL;
+    /* Expected cold recovery is not failure, but all of its pagers must close. */
+    if (vfs->quota->recovering && vfs->open_files) return RH_BUSY;
+    for (file = vfs->databases; file; file = file->next_database) {
+        if (!file->connection || !vfs->api.get_autocommit(file->connection) ||
+            vfs->api.txn_state(file->connection, "main") != 0) return RH_BUSY;
+    }
+    if (calls == vfs->calls || quota == vfs->quota || quota->recovering ||
+        quota->refusals || quota->native_failures || quota->diagnostic_overflow ||
+        calls->pending_error) return RH_MISUSE;
+    return rh_write_vfs_arm(vfs, quota, reads, calls, work);
+}
 int rh_write_vfs_close(rh_write_vfs *vfs) {
     int result;
     if (!owned(vfs)) return RH_MISUSE;

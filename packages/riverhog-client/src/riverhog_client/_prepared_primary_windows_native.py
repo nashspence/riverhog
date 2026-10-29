@@ -20,7 +20,12 @@ from riverhog_client._prepared_primary_types import (
 
 if TYPE_CHECKING:
     from riverhog_client._prepared_primary_native import WriteVfs
+    from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
     from riverhog_client._prepared_primary_sqlite_journal import FixedControlEnvelope
+    from riverhog_client._prepared_primary_sqlite_operations import (
+        NativeOperationBank,
+        SqliteOperationGrants,
+    )
 
 _DWORD = ctypes.c_uint32
 _BOOL = ctypes.c_int32
@@ -582,6 +587,38 @@ class NativeWindowsContainer(WindowsContainer):
             elif not self._native_released and self._native_failure is None:
                 self.close()
             raise
+
+    def arm_operation(
+        self,
+        grants: SqliteOperationGrants,
+        limits: SqlitePrimaryLimits,
+        *,
+        database_pages: int | None = None,
+        journal_bytes: int | None = None,
+    ) -> NativeOperationBank:
+        """Select fresh counters before BEGIN; never renew unsettled or failed work.
+
+        Physical caps narrow forward admission only. Cold restoration must close
+        every selected pager before this transition under the same custodian.
+        The caller owns operation-class minima and application admission.
+        """
+        from riverhog_client._prepared_primary_sqlite_operations import native_bank
+
+        self.check_current()
+        bank = native_bank(
+            grants, limits, database_pages=database_pages, journal_bytes=journal_bytes
+        )
+        try:
+            self._native_gate.arm_operation(bank.reads, bank.callbacks)
+        except BlockingIOError as exc:
+            raise PrimaryStateBusy(
+                "prepared-primary operation arming requires settled pagers"
+            ) from exc
+        except RuntimeError as exc:
+            self.check_operation()
+            raise PrimaryStateError("prepared-primary native operation arming failed") from exc
+        self.check_operation()
+        return bank
 
     def control_envelope(self, prefix_lengths: tuple[int, ...]) -> FixedControlEnvelope:
         """Derive a minimum from observed geometry; this does not prepare backing."""

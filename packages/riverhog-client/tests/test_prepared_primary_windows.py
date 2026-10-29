@@ -807,3 +807,114 @@ def test_composed_control_envelope_uses_observed_geometry_or_defers(monkeypatch,
         error = errors.get(fault, PrimaryStateError)
         with pytest.raises(error):
             guard.control_envelope((9,))
+
+
+@pytest.mark.parametrize("failure", [None, "capacity", "native"])
+def test_composed_operation_entry_checks_failure_before_constructing_new_counters(
+    monkeypatch, failure
+):
+    from types import SimpleNamespace
+
+    from riverhog_client import PrimaryStateCapacity
+    from riverhog_client import _prepared_primary_sqlite_operations as operations
+    from riverhog_client._prepared_primary_windows_native import NativeWindowsContainer
+
+    events = []
+
+    class Gate:
+        def operation_failure(self):
+            events.append("check")
+            return failure
+
+        def arm_operation(self, reads, callbacks):
+            events.append(("arm", reads, callbacks))
+
+    guard = object.__new__(NativeWindowsContainer)
+    guard._closed = False
+    guard._handles = [(7, None, False, (1, 2, 3))] * 3
+    guard._owner = guard._database = 7
+    guard._api = SimpleNamespace(
+        information=lambda *_args, **_kwargs: (1, 2, 3),
+        private=lambda *_args, **_kwargs: None,
+    )
+    guard._native_operation_failure = None
+    guard._native_gate = Gate()
+    bank = SimpleNamespace(reads=object(), callbacks=object())
+
+    def construct(grants, limits, **caps):
+        events.append(("construct", grants, limits, caps))
+        return bank
+
+    monkeypatch.setattr(operations, "native_bank", construct)
+    if failure:
+        error = PrimaryStateCapacity if failure == "capacity" else PrimaryStateError
+        with pytest.raises(error) as first:
+            guard.arm_operation("original", "limits")
+        assert events == ["check"]
+        with pytest.raises(error) as repeated:
+            guard.arm_operation("original", "limits")
+        assert repeated.value is first.value and events == ["check"]
+    else:
+        assert (
+            guard.arm_operation("original", "limits", database_pages=7, journal_bytes=82592) is bank
+        )
+        assert events == [
+            "check",
+            ("construct", "original", "limits", {"database_pages": 7, "journal_bytes": 82592}),
+            ("arm", bank.reads, bank.callbacks),
+            "check",
+        ]
+
+
+@pytest.mark.parametrize("fault", ["busy", "unknown", "capacity", "native"])
+def test_composed_operation_entry_maps_refusal_without_releasing_metadata(monkeypatch, fault):
+    from types import SimpleNamespace
+
+    from riverhog_client import PrimaryStateBusy, PrimaryStateCapacity
+    from riverhog_client import _prepared_primary_sqlite_operations as operations
+    from riverhog_client._prepared_primary_windows_native import NativeWindowsContainer
+
+    class Gate:
+        current = None
+        attempts = 0
+
+        def operation_failure(self):
+            return self.current
+
+        def arm_operation(self, _reads, _callbacks):
+            self.attempts += 1
+            if fault == "busy":
+                raise BlockingIOError("pager is active")
+            self.current = fault if fault in ("capacity", "native") else None
+            raise RuntimeError("operation refused")
+
+    gate = Gate()
+    guard = object.__new__(NativeWindowsContainer)
+    guard._closed = False
+    guard._handles = [(7, None, False, (1, 2, 3))] * 3
+    guard._owner = guard._database = 7
+    guard._api = SimpleNamespace(
+        information=lambda *_args, **_kwargs: (1, 2, 3),
+        private=lambda *_args, **_kwargs: None,
+    )
+    guard._native_operation_failure = None
+    guard._native_gate = gate
+    monkeypatch.setattr(
+        operations,
+        "native_bank",
+        lambda *_args, **_kwargs: SimpleNamespace(reads=object(), callbacks=object()),
+    )
+    error = (
+        PrimaryStateBusy
+        if fault == "busy"
+        else PrimaryStateCapacity
+        if fault == "capacity"
+        else PrimaryStateError
+    )
+    with pytest.raises(error):
+        guard.arm_operation("original", "limits")
+    assert gate.attempts == 1 and not guard._closed
+    if fault in ("capacity", "native"):
+        with pytest.raises(error):
+            guard.arm_operation("original", "limits")
+        assert gate.attempts == 1
