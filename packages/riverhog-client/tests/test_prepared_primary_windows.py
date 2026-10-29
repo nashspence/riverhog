@@ -769,9 +769,9 @@ def test_fixed_control_envelope_rejects_unrepresentable_page_and_journal_bounds(
         control_envelope((length,), page_bytes=4096, sector_bytes=sector_bytes, reserved_bytes=0)
 
 
-@pytest.mark.parametrize("fault", [None, "busy", "native", "page", "sector"])
+@pytest.mark.parametrize("fault", [None, "busy", "capacity", "native", "page", "sector"])
 def test_composed_control_envelope_uses_observed_geometry_or_defers(monkeypatch, fault):
-    from riverhog_client import PrimaryStateBusy
+    from riverhog_client import PrimaryStateBusy, PrimaryStateCapacity
     from riverhog_client._prepared_primary_windows_native import NativeWindowsContainer
 
     class Gate:
@@ -783,8 +783,8 @@ def test_composed_control_envelope_uses_observed_geometry_or_defers(monkeypatch,
         def geometry(self):
             if fault == "busy":
                 raise BlockingIOError("active transaction")
-            if fault == "native":
-                self.failure = "native"
+            if fault in ("capacity", "native"):
+                self.failure = fault
                 raise RuntimeError("metadata read failed")
             return {
                 "page_bytes": 2048 if fault == "page" else 4096,
@@ -803,6 +803,7 @@ def test_composed_control_envelope_uses_observed_geometry_or_defers(monkeypatch,
         envelope = guard.control_envelope((8192 + 9, 16))
         assert (envelope.database_pages, envelope.journal_bytes) == (9, 45144)
     else:
-        error = PrimaryStateBusy if fault == "busy" else PrimaryStateError
+        errors = {"busy": PrimaryStateBusy, "capacity": PrimaryStateCapacity}
+        error = errors.get(fault, PrimaryStateError)
         with pytest.raises(error):
             guard.control_envelope((9,))

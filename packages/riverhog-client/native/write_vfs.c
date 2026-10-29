@@ -1449,7 +1449,11 @@ int rh_write_vfs_geometry(rh_write_vfs *vfs, rh_primary_geometry *out) {
     if (vfs->quota->refusals || vfs->calls->pending_error) return RH_FULL;
     if (vfs->quota->native_failures || vfs->quota->diagnostic_overflow) return RH_IOERR;
     result = file_read(&file->file, header, (int)sizeof(header), 0);
-    if (result != RH_OK) return storage_result(vfs, result);
+    /* The callback already separates admission refusal from native failure.
+     * A short header is invalid here, rather than SQLite's ordinary EOF case.
+     */
+    if (result == RH_SHORT_READ) return storage_result(vfs, RH_IOERR);
+    if (result != RH_OK) return result;
     if (rh_native_work_admit(vfs->work, vfs->quota, metadata) != RH_ALLOWED) return RH_FULL;
     if (!GetFileInformationByHandleEx(vfs->database_handle, (FILE_INFO_BY_HANDLE_CLASS)16,
                                      &info, (DWORD)sizeof(info))) return storage_result(vfs, RH_IOERR);

@@ -3970,7 +3970,15 @@ print(json.dumps({"passed":True,"scenario":scenario,"result_withheld":scenario!=
 
 @pytest.mark.parametrize(
     "scenario",
-    ["observed", "busy", "read-refusal", "metadata-refusal", "invalid-header", "fixed-control"],
+    [
+        "observed",
+        "busy",
+        "read-refusal",
+        "metadata-refusal",
+        "invalid-header",
+        "short-header",
+        "fixed-control",
+    ],
 )
 def test_native_geometry_and_fixed_control_envelope_preserve_ownership(
     tmp_path, scenario, record_testsuite_property
@@ -4010,8 +4018,9 @@ files=TransactionalPrimaryFiles(guard,allocation_descriptor=b"native geometry",
 selected=files.put_bytes("original",(b"exact original",),byte_limit=14)
 scenario=sys.argv[3]
 if scenario=="fixed-control":files.prepare_controls(("slot",),byte_limit=8192)
-original=hashlib.sha256(path.read_bytes()).hexdigest()
-header=path.read_bytes()[:24]
+original_image=path.read_bytes()
+original=hashlib.sha256(original_image).hexdigest()
+header=original_image[:24]
 geometry=None;proof={}
 try:
     if scenario=="busy":
@@ -4043,9 +4052,11 @@ try:
         assert not any(work.report()["recovery"].values())
         if scenario=="metadata-refusal":
             assert work.report()["forward"]["filesystem_api_attempts_charged"]==cost[0]
-    elif scenario=="invalid-header":
+    elif scenario in ("invalid-header","short-header"):
         with path.open("r+b") as damaged:
-            damaged.write(b"X");damaged.flush();os.fsync(damaged.fileno())
+            if scenario=="short-header":damaged.truncate(8)
+            else:damaged.write(b"X")
+            damaged.flush();os.fsync(damaged.fileno())
         try:guard.control_envelope((9,))
         except PrimaryStateError:pass
         else:raise AssertionError("invalid durable header supplied qualified geometry")
@@ -4090,9 +4101,9 @@ try:
             assert writes.report()==before
 finally:
     files.close()
-if scenario=="invalid-header":
+if scenario in ("invalid-header","short-header"):
     with path.open("r+b") as restored:
-        restored.write(header);restored.flush();os.fsync(restored.fileno())
+        restored.write(original_image);restored.flush();os.fsync(restored.fileno())
 if scenario!="fixed-control":
     assert hashlib.sha256(path.read_bytes()).hexdigest()==original
 assert heap.native_report()["owners"]==heap.native_report()["files"]==0
