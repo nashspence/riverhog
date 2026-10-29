@@ -39,13 +39,14 @@ if TYPE_CHECKING:
         SqliteProgressJournal,
         SqliteProgressJournalStep,
     )
+    from riverhog_client._prepared_primary_sqlite_ready import SqlitePhysicalReadiness
     from riverhog_client._prepared_primary_sqlite_resources import SqliteResourceGrants
     from riverhog_client._prepared_primary_sqlite_space import SqlitePrimarySpace, SqliteVacuumStep
 
 _BLOCK = 4096
 _GEOMETRY = (
     "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096;"
-    "controls=fixed/v2;journal=prepared/v1;barrier=fixed/v1;resources=grants/v1;database-reserve=v1;progress-journal=v1"
+    "controls=fixed/v2;journal=prepared/v1;barrier=fixed/v1;resources=grants/v1;database-reserve=v1;progress-journal=v1;physical-ready=v1"
 )
 
 
@@ -190,6 +191,7 @@ class TransactionalPrimaryFiles:
         self._connection: sqlite3.Connection | None = None
         from riverhog_client._prepared_primary_sqlite_database_reserve import SqliteDatabaseReserve
         from riverhog_client._prepared_primary_sqlite_progress_journal import SqliteProgressJournal
+        from riverhog_client._prepared_primary_sqlite_ready import SqlitePhysicalReadiness
 
         factory = _engine_factory(guard, limits)
         schema = _primary_state_schema(factory)
@@ -201,13 +203,14 @@ class TransactionalPrimaryFiles:
                         schema.upgrade_connection(connection)
                         connection.exec_driver_sql(
                             "INSERT INTO primary_format VALUES "
-                            "(1, ?, ?, zeroblob(8), zeroblob(16), ?, ?, ?)",
+                            "(1, ?, ?, zeroblob(8), zeroblob(16), ?, ?, ?, ?)",
                             (
                                 allocation_descriptor,
                                 _GEOMETRY,
                                 self._initial_resource_grants(connection, limits),
                                 SqliteDatabaseReserve().encode(),
                                 SqliteProgressJournal().encode(),
+                                SqlitePhysicalReadiness().encode(),
                             ),
                         )
                         connection.exec_driver_sql(
@@ -305,6 +308,21 @@ class TransactionalPrimaryFiles:
 
         return step(self, prefix_lengths=prefix_lengths, workspace_bytes=workspace_bytes)
 
+    def physical_readiness(self) -> SqlitePhysicalReadiness:
+        from riverhog_client._prepared_primary_sqlite_ready import read
+
+        return read(self)
+
+    def require_physical_ready(self) -> SqlitePhysicalReadiness:
+        from riverhog_client._prepared_primary_sqlite_ready import require
+
+        return require(self)
+
+    def prepare_physical_ready(self) -> SqlitePhysicalReadiness:
+        from riverhog_client._prepared_primary_sqlite_ready import prepare
+
+        return prepare(self)
+
     @classmethod
     def windows(
         cls,
@@ -377,15 +395,28 @@ class TransactionalPrimaryFiles:
             return None if row is None else tuple(row)
 
     @contextmanager
-    def _transaction(self) -> Iterator[sqlite3.Connection]:
+    def _transaction(self, *, payload: bool = False) -> Iterator[sqlite3.Connection]:
         with self._mutex:
             db = self._db()
+            ready = None
             try:
                 db.execute("BEGIN IMMEDIATE").close()
+                if payload:
+                    from riverhog_client._prepared_primary_sqlite_ready import begin_payload
+
+                    ready = begin_payload(self)
                 yield db
+                if ready is not None:
+                    from riverhog_client._prepared_primary_sqlite_ready import precommit
+
+                    precommit(self, ready)
                 self._guard.check_current()
                 db.execute("COMMIT").close()
                 self._guard.check_journal(required=True)
+                if ready is not None:
+                    from riverhog_client._prepared_primary_sqlite_ready import restore_ceiling
+
+                    restore_ceiling(self)
             except BaseException as exc:
                 self._root._poisoned = True
                 if db.in_transaction:
@@ -465,7 +496,7 @@ class TransactionalPrimaryFiles:
                 ):
                     raise FileExistsError(name)
                 self._require_idle()
-                with self._transaction() as db:
+                with self._transaction(payload=True) as db:
                     cursor = db.execute(
                         "INSERT INTO primary_namespaces(parent,name) VALUES (?,?)",
                         (self._namespace, name),
@@ -595,7 +626,7 @@ class TransactionalPrimaryFiles:
                 )
             self.require_journal_ready()
             generation = uuid.uuid4().hex
-            with self._transaction() as db:
+            with self._transaction(payload=True) as db:
                 db.execute(
                     "INSERT INTO primary_objects VALUES (?,?,?,0,'',0)",
                     (generation, self._namespace, name),
@@ -638,7 +669,7 @@ class TransactionalPrimaryFiles:
                 raise
 
     def _append(self, generation: str, ordinal: int, body: bytes) -> None:
-        with self._transaction() as db:
+        with self._transaction(payload=True) as db:
             if self._one("SELECT generation,cursor,phase FROM primary_operation WHERE id=1") != (
                 generation,
                 ordinal,
@@ -658,7 +689,7 @@ class TransactionalPrimaryFiles:
             ).close()
 
     def _select(self, generation: str, file: PrimaryByteFile) -> None:
-        with self._transaction() as db:
+        with self._transaction(payload=True) as db:
             if self._one("SELECT generation,cursor,phase FROM primary_operation WHERE id=1") != (
                 generation,
                 (file.bytes + _BLOCK - 1) // _BLOCK,

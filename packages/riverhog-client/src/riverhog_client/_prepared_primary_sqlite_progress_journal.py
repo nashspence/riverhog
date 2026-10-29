@@ -151,6 +151,7 @@ def step(
         _retention,
         _validate_control_prefixes,
     )
+    from riverhog_client._prepared_primary_sqlite_ready import deplete
 
     _validate_control_prefixes(prefix_lengths)
     if (
@@ -191,6 +192,7 @@ def step(
         if current.pad_rows < workspace_bytes // _BLOCK:
             selected = replace(selected, pad_rows=current.pad_rows + 1)
             with files._transaction() as db:
+                deplete(files)
                 db.execute(
                     "INSERT INTO primary_journal_pad(id,body) VALUES (?,zeroblob(4096))",
                     (selected.pad_rows,),
@@ -199,6 +201,7 @@ def step(
             return SqliteProgressJournalStep(selected, False)
         with _retention(files, -1):
             with files._transaction() as db:
+                deplete(files)
                 for identifier in range(1, selected.pad_rows + 1):
                     with db.blobopen("primary_journal_pad", "body", identifier) as blob:
                         if len(blob) != _BLOCK:
@@ -226,9 +229,11 @@ def step(
             selected, phase="prepared", backed_bytes=max(observed, current.backed_bytes)
         )
         with files._transaction() as db:
+            deplete(files)
             save(db, selected, prepared)
         if not _backed(files, prepared.backed_bytes):
             with files._transaction() as db:
+                deplete(files)
                 save(db, prepared, replace(prepared, phase="depleted"))
             raise PrimaryStateCapacity("prepared-primary progress journal lost backing")
         return SqliteProgressJournalStep(prepared, True)

@@ -115,6 +115,9 @@ def prepare(owner: TransactionalPrimaryFiles, names: tuple[str, ...], *, byte_li
             ):
                 raise PrimaryStateError("prepared-primary control conflicts with a byte role")
             with owner._transaction() as db:
+                from riverhog_client._prepared_primary_sqlite_ready import deplete
+
+                deplete(owner)
                 cursor = db.execute(
                     "INSERT INTO primary_controls VALUES (?,?,zeroblob(?))",
                     (owner._namespace, name, byte_limit + _HEADER),

@@ -105,7 +105,7 @@ def ordered_rows(
     with owner._mutex:
         _primary_idle(owner)
         base_pages = _live_pages(owner)
-        with owner._transaction() as db:
+        with owner._transaction(payload=True) as db:
             db.execute(
                 "INSERT INTO primary_ordering VALUES (1,?,?, 'building',NULL,?,?)",
                 (generation, owner._namespace, base_pages, str(byte_limit)),
@@ -117,7 +117,7 @@ def ordered_rows(
                 (generation, key),
             ):
                 raise PrimaryStateError("owner inventory contains duplicate artifact IDs")
-            with owner._transaction() as db:
+            with owner._transaction(payload=True) as db:
                 db.execute(
                     "INSERT INTO primary_order_rows VALUES (?,?,?,?)",
                     (generation, key, str(byte_count), digest),
@@ -125,7 +125,7 @@ def ordered_rows(
                 charged_pages = max(root_pages, root_pages + _live_pages(owner) - base_pages)
                 if charged_pages * _BLOCK > byte_limit:
                     raise PrimaryStateCapacity("owner inventory ordering exceeds scratch admission")
-    with owner._transaction() as db:
+    with owner._transaction(payload=True) as db:
         db.execute(
             "UPDATE primary_ordering SET phase='ready' WHERE id=1 AND generation=?",
             (generation,),

@@ -33,9 +33,14 @@ Table(
     Column("resource_grants", LargeBinary, nullable=False),
     Column("database_reserve", LargeBinary, nullable=False),
     Column("progress_journal", LargeBinary, nullable=False),
+    Column("physical_readiness", LargeBinary, nullable=False),
     CheckConstraint(
         "typeof(progress_journal) = 'blob' AND length(progress_journal) = 64",
         name="ck_primary_format_progress_journal",
+    ),
+    CheckConstraint(
+        "typeof(physical_readiness) = 'blob' AND length(physical_readiness) = 64",
+        name="ck_primary_format_physical_readiness",
     ),
     CheckConstraint("id = 1", name="ck_primary_format_singleton"),
     CheckConstraint(

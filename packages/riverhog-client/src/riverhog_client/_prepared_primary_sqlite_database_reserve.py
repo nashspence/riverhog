@@ -151,6 +151,7 @@ def step(
     grants independently admit structural work and database/journal allocation.
     Prepared database headroom is one dependency of the complete resource barrier.
     """
+    from riverhog_client._prepared_primary_sqlite_ready import deplete
     from riverhog_client._prepared_primary_sqlite_space import space_usage
 
     if (
@@ -211,10 +212,12 @@ def step(
         ):
             prepared = replace(selected, phase="prepared", backed_pages=before.database_pages)
             with files._transaction() as db:
+                deplete(files)
                 save(db, current, prepared)
             after = space_usage(files)
             if not _usable(after, prepared):
                 with files._transaction() as db:
+                    deplete(files)
                     save(db, prepared, replace(prepared, phase="depleted"))
                 raise PrimaryStateCapacity("prepared-primary database reserve lost backing")
             return SqliteDatabaseReserveStep(prepared, after, True)
@@ -233,6 +236,7 @@ def step(
                 raise PrimaryStateCapacity("prepared-primary database reserve cursor is exhausted")
             selected = replace(selected, inserted=selected.inserted + 1)
             with files._transaction() as db:
+                deplete(files)
                 db.execute(
                     "INSERT INTO primary_reserve_rows(id,body) VALUES (?,zeroblob(4096))",
                     (selected.inserted,),
@@ -242,6 +246,7 @@ def step(
             identifier = selected.released + 1
             selected = replace(selected, released=identifier)
             with files._transaction() as db:
+                deplete(files)
                 cursor = db.execute("DELETE FROM primary_reserve_rows WHERE id=?", (identifier,))
                 removed = cursor.rowcount
                 cursor.close()

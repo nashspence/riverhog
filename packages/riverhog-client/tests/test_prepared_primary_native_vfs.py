@@ -4413,3 +4413,142 @@ print(json.dumps({"passed":True,"original_exact":True,"population_released":True
     record_testsuite_property(
         "prepared_primary_progress_journal", json.dumps(proof["progress_journal"])
     )
+
+
+def test_native_physical_ready_protects_payload_and_rearms_after_cold_recovery(
+    tmp_path, record_testsuite_property
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import importlib.util,json,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client import PrimaryStateCapacity
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import (
+    SqlitePrimaryLimits,TransactionalPrimaryFiles,_connect)
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+def load(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    module=importlib.util.module_from_spec(spec);sys.modules[name]=module
+    spec.loader.exec_module(module);return module
+helpers=load("ready_helpers",root/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py")
+parents=load("ready_parents",root/"tests/platform/windows_primary_process.py")
+parent=Path(sys.argv[2])/"ready-private";parents._parent(parent)
+path=windows_container_path(parent,b"native physical ready")
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+source=native.runtime_identity()["sqlite_source_id"]
+small=SqlitePrimaryLimits(512*1024,512*1024,128*1024)
+large=SqlitePrimaryLimits(1024*1024,1024*1024,128*1024)
+journal_plan=dict(prefix_lengths=(8201,16),workspace_bytes=65536)
+def bank():
+    writes=native.WriteQuota(helpers.grant(),helpers.grant())
+    return writes,helpers.reads(native,writes),helpers.callbacks(native,writes)
+def opened(initialize,limits):
+    writes,reads,calls=bank()
+    if not initialize:writes.begin_recovery()
+    gate=native.WriteVfs(source,reads,calls,heap)
+    guard=NativeWindowsContainer(path,initialize=initialize,gate=gate)
+    helpers.admit_fixture_retries(gate)
+    files=TransactionalPrimaryFiles(guard,allocation_descriptor=b"native physical ready",
+        limits=limits,initialize=initialize)
+    return files,guard,gate,writes
+def finish_journal(files,gate):
+    for _ in range(32):
+        result=files.reserve_journal_step(**journal_plan)
+        assert gate.operation_failure() is None
+        if result.done:return
+    raise AssertionError("fixture journal did not finish")
+def finish_database(files,gate,plan):
+    for _ in range(256):
+        result=files.reserve_database_step(**plan)
+        assert gate.operation_failure() is None
+        if result.done:return
+    raise AssertionError("fixture database headroom did not finish")
+files,guard,gate,writes=opened(True,small)
+with files:
+    original=files.put_bytes("original",(b"exact original",),byte_limit=14)
+    files.prepare_controls(("receipt",),byte_limit=8192)
+    files.put_control("receipt",b"exact receipt",byte_limit=8192)
+    finish_journal(files,gate)
+    plan=dict(free_pages=8,target_pages=files.space_usage().database_pages+32,
+        workspace_bytes=128*1024)
+    finish_database(files,gate,plan)
+    ready=files.prepare_physical_ready()
+    assert ready.minimum_journal_bytes>=guard.control_envelope((64,72,64,64)).journal_bytes
+    with files._transaction(payload=True):
+        assert files._one("PRAGMA max_page_count")== (ready.backed_pages,)
+    payload=files.put_bytes("payload",(b"payload"*1000,),byte_limit=7000)
+    assert files.require_physical_ready()==ready
+    files.increase_resource_grants(database_bytes=large.database_bytes,
+        journal_bytes=large.journal_bytes)
+    assert files.physical_readiness().phase=="depleted"
+    try:files.require_physical_ready()
+    except PrimaryStateCapacity:pass
+    else:raise AssertionError("resource increase silently retained Ready")
+    finish_journal(files,gate);finish_database(files,gate,plan)
+    assert files.prepare_physical_ready().grant_revision==1
+    assert not writes.recovering and gate.operation_failure() is None
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+files,guard,gate,recovery=opened(False,large)
+with files:
+    ready=files.require_physical_ready()
+    assert recovery.recovering and recovery.report()["forward"]["write_calls"]==0
+    assert not recovery.report()["refusals"] and not recovery.report()["native_failures"]
+    # Close the recovered pager before selecting a fresh F bank under the same custodian.
+    files._connection.close();files._connection=None
+    assert gate.open_files==0
+    forward,reads,calls=bank();gate.arm(reads,calls)
+    files._connection=_connect(guard,files._limits)
+    assert not forward.recovering and files.require_physical_ready()==ready
+    with files.verified(original) as stream:assert stream.read()==b"exact original"
+    with files.verified(payload) as stream:assert stream.read()==b"payload"*1000
+    assert files.read_control("receipt",byte_limit=8192)==b"exact receipt"
+    files.put_bytes("after-cold",(b"confirmed cold payload",),byte_limit=22)
+    assert files.require_physical_ready()==ready
+    assert forward.report()["forward"]["write_calls"]>0
+    assert not forward.report()["refusals"] and not forward.report()["native_failures"]
+    assert gate.operation_failure() is None
+    space=files.space_usage()
+    assert space.database_pages==ready.backed_pages
+    assert space.reusable_pages>=ready.free_pages
+    assert space.database.allocated_bytes>=space.database.end_bytes==4096*ready.backed_pages
+    assert space.journal.end_bytes>=ready.journal_bytes>=ready.minimum_journal_bytes
+    assert space.journal.allocated_bytes>=ready.journal_bytes
+    proof=dict(backed_pages=ready.backed_pages,free_floor=ready.free_pages,
+        free_pages=space.reusable_pages,database_end_bytes=space.database.end_bytes,
+        database_allocated_bytes=space.database.allocated_bytes,
+        journal_backed_bytes=ready.journal_bytes,journal_end_bytes=space.journal.end_bytes,
+        journal_allocated_bytes=space.journal.allocated_bytes,
+        minimum_journal_bytes=ready.minimum_journal_bytes,minimum_pages=ready.minimum_pages,
+        grant_revision=ready.grant_revision)
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+print(json.dumps({"passed":True,"original_exact":True,"payload_exact":True,
+    "population_released":True,"cold_recovery_rearmed":True,"physical_ready":proof}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[3]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert all(
+        proof[key] is True
+        for key in (
+            "passed",
+            "original_exact",
+            "payload_exact",
+            "population_released",
+            "cold_recovery_rearmed",
+        )
+    )
+    record_testsuite_property(
+        "prepared_primary_physical_ready", json.dumps(proof["physical_ready"])
+    )

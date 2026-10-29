@@ -91,6 +91,9 @@ def vacuum_step(files: TransactionalPrimaryFiles, *, keep_free_pages: int) -> Sq
             if before.reusable_pages <= retained_floor:
                 return SqliteVacuumStep(before, before, True)
             with files._transaction() as db:
+                from riverhog_client._prepared_primary_sqlite_ready import deplete
+
+                deplete(files)
                 if reserve.phase == "prepared":
                     from dataclasses import replace
 
