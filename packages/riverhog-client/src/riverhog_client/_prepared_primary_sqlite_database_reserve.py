@@ -221,6 +221,10 @@ def step(
         if selected.phase == "releasing" and not live:
             selected = replace(selected, phase="building")
         if selected.phase == "building":
+            if not live:
+                # Every known row has a confirmed deletion. Reuse its ID range
+                # instead of imposing a cumulative lifetime preparation limit.
+                selected = replace(selected, inserted=0, released=0)
             if live >= workspace_bytes // _BLOCK:
                 raise PrimaryStateCapacity(
                     "prepared-primary database reserve needs larger workspace"

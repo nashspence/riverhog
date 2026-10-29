@@ -369,3 +369,23 @@ def test_prepared_record_does_not_replace_a_current_backing_observation(tmp_path
         with pytest.raises(PrimaryStateCapacity, match="unavailable"):
             files.require_database_reserve()
         assert files.database_reserve() == previous and files._db().total_changes == changes
+
+
+def test_completed_cursor_range_is_reused_without_a_lifetime_preparation_limit(tmp_path):
+    with opened(tmp_path / "state.sqlite3", initialize=True) as files:
+        selected = plan(files)
+        finish(files, selected)
+        completed = files.database_reserve()
+        assert files._one("SELECT count(*) FROM primary_reserve_rows") == (0,)
+        retained = replace(completed, inserted=(1 << 63) - 1, released=(1 << 63) - 1)
+        files._db().execute(
+            "UPDATE primary_format SET database_reserve=?", (retained.encode(),)
+        ).close()
+        selected["target_pages"] = completed.backed_pages + 8
+        first = files.reserve_database_step(**selected)
+        assert first.reserve.inserted == 1 and first.reserve.released == 0
+        assert first.reserve.phase == "building"
+        assert finish(files, selected)[-1].done
+        assert (
+            files.require_database_reserve().inserted == files.require_database_reserve().released
+        )

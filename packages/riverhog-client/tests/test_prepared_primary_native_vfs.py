@@ -4268,7 +4268,13 @@ with files:
     try:files.require_database_reserve()
     except PrimaryStateCapacity:pass
     else:raise AssertionError("increased grant silently retained prepared backing")
-    result=files.reserve_database_step(**plan)
+    target+=8;plan["target_pages"]=target
+    first=files.reserve_database_step(**plan)
+    assert first.reserve.inserted==1 and first.reserve.released==0
+    for _ in range(128):
+        result=files.reserve_database_step(**plan)
+        if result.done:break
+    else:raise AssertionError("fixture replenishment did not finish")
     assert result.done and result.reserve.grant_revision==1
     assert not writes.recovering and gate.operation_failure() is None
 assert heap.native_report()["owners"]==heap.native_report()["files"]==0
