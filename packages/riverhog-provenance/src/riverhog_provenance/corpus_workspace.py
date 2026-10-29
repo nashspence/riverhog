@@ -265,7 +265,16 @@ class RetainedCorpusValidator:
         metadata_byte_budget: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX,
         on_storage_close: Callable[[], None] | None = None,
         on_storage_open: Callable[[Self], None] | None = None,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
     ) -> Self:
+        """Open exact retained work through an optional application connection factory.
+
+        The SQLite-compatible factory admits resources before connecting and
+        receives the existing URI and thread options. It owns unconfirmed
+        construction or close obligations. A returned connection stays with
+        this workspace through confirmed close; on_storage_open retains the
+        workspace before schema work or worker replacement can fail.
+        """
         if type(worker_epoch) is not int or worker_epoch < 0:
             raise ValueError("retained corpus requires a nonnegative worker epoch")
         if type(metadata_byte_budget) is not int or metadata_byte_budget < 1:
@@ -299,9 +308,8 @@ class RetainedCorpusValidator:
         result._directory, result._descriptor = directory, descriptor
         try:
             result._verify_file()
-            result._db = sqlite3.connect(
-                path.as_uri() + "?mode=rw", uri=True, check_same_thread=False
-            )
+            connect = sqlite3.connect if connection_factory is None else connection_factory
+            result._db = connect(path.as_uri() + "?mode=rw", uri=True, check_same_thread=False)
         except BaseException:
             os.close(descriptor)
             result._descriptor = None

@@ -647,6 +647,7 @@ class JournalStore:
         read_only: bool = False,
         on_storage_close: Callable[[], None] | None = None,
         on_storage_open: Callable[[Self], None] | None = None,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
     ) -> Self:
         """Open an owner-created private directory without deleting it on close.
 
@@ -664,6 +665,14 @@ class JournalStore:
         other work, so a failed cleanup remains reachable for an explicit retry.
         Read-only admission opens the existing database with SQLite mode=ro;
         it never creates, upgrades or advances a checkpoint.
+
+        An application may supply a SQLite-compatible connection factory to
+        admit process and connection resources before opening the database.
+        The factory receives the same URI, thread and statement-cache options
+        as sqlite3.connect. It retains any unconfirmed construction or close
+        obligations; the storage closes a returned connection only after its
+        final reader releases it. The open callback still runs before schema
+        work, after the connection has been returned.
         """
         if create and read_only:
             raise ValueError("read-only journal admission cannot create a workspace")
@@ -686,6 +695,7 @@ class JournalStore:
             reopen=not create,
             read_only=read_only,
             on_storage_open=on_storage_open,
+            connection_factory=connection_factory,
         )
         store._storage.on_close = on_storage_close
         return store
@@ -698,11 +708,13 @@ class JournalStore:
         reopen: bool,
         read_only: bool = False,
         on_storage_open: Callable[[Self], None] | None = None,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
     ) -> None:
         # Frozen reader leases share this connection but require independent statement state.
+        connect = sqlite3.connect if connection_factory is None else connection_factory
         try:
             if retained:
-                connection = sqlite3.connect(
+                connection = connect(
                     (directory / "snapshot.sqlite3").resolve().as_uri()
                     + ("?mode=ro" if read_only else "?mode=rw"),
                     uri=True,

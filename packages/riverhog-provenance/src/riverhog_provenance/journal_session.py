@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import sqlite3
 from collections.abc import Callable, Iterable, Mapping
 from contextlib import closing
 from dataclasses import dataclass, replace
@@ -1288,6 +1289,7 @@ class JournalValidationSession:
         certificates: JournalGraphCertificates | None = None,
         on_storage_close: Callable[[], None] | None = None,
         on_storage_open: Callable[[Self], None] | None = None,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
     ) -> Self:
         """Open this owner's workspace; a replacement requires a newer worker epoch.
 
@@ -1303,6 +1305,8 @@ class JournalValidationSession:
         The optional open callback receives the closeable Session before native
         schema or prefix initialization. It must retain the handle first; a
         cleanup failure then remains reachable for a later explicit close.
+        The optional connection factory is delegated to JournalStore before
+        schema work or source reads, with the same retained-reader lifetime.
         """
         selected = catalog or ContractCatalog()
         binding = source.binding
@@ -1342,7 +1346,10 @@ class JournalValidationSession:
         store_opened = False
         try:
             result._store = JournalStore.open_retained(
-                directory, create=create, on_storage_open=retain_storage
+                directory,
+                create=create,
+                on_storage_open=retain_storage,
+                connection_factory=connection_factory,
             )
             store_opened = True
             result._prefix = JournalPrefix(
