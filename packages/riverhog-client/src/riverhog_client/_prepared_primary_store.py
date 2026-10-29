@@ -223,6 +223,12 @@ class PrimaryStore:
                 )
             return done
 
+    def _require_storage_prepared(self, execute: Callable[[PrimaryStorage], bool] | None) -> None:
+        if execute is not None and not self.prepare_storage_step(execute):
+            raise PrimaryStateBusy(
+                "prepared-primary storage requires another preparation execution step"
+            )
+
     @property
     def publication_started(self) -> bool:
         """Distinguish pristine allocation from a possibly committed remote creation."""
@@ -337,7 +343,12 @@ class PrimaryStore:
                 raise PrimaryStateError("prepared-primary immutable control conflicts") from None
         files.sync()
 
-    def session_for(self, create_request: bytes) -> PrimarySession | None:
+    def session_for(
+        self,
+        create_request: bytes,
+        *,
+        storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
+    ) -> PrimarySession | None:
         """Compare before any remote mutation; record first-create ambiguity durably."""
         with self._mutex:
             complete = self._recover(require_complete=False, verify_preimages=False)
@@ -349,6 +360,7 @@ class PrimaryStore:
                     or session.create_request != commitment
                 ):
                     raise PrimaryStateError("prepared-primary creation inputs changed")
+                self._require_storage_prepared(storage_preparation)
                 self._files.sync()
                 return session
             if not complete:
@@ -359,6 +371,7 @@ class PrimaryStore:
                     "initial session creation has an uncertain outcome; "
                     "retain state for reconciliation"
                 )
+            self._require_storage_prepared(storage_preparation)
             reference = _reference("create-request", create_request)
             try:
                 self._files.put_bytes(
@@ -571,10 +584,7 @@ class PrimaryStore:
             if storage_preparation is not None:
                 with self._member(str(member.artifact_id), create=True):
                     pass
-                if not self.prepare_storage_step(storage_preparation):
-                    raise PrimaryStateBusy(
-                        "prepared-primary storage requires another preparation execution step"
-                    )
+                self._require_storage_prepared(storage_preparation)
             self._authoring = True
             try:
                 authored = author(grant - len(request))

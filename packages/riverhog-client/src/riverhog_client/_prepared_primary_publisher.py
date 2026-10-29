@@ -26,6 +26,7 @@ from riverhog_client._prepared_primary_documents import (
     Sha256,
     primary_control_bytes,
 )
+from riverhog_client._prepared_primary_storage import PrimaryStorage
 from riverhog_client._prepared_primary_store import (
     PrimaryPreparation,
     PrimaryRecord,
@@ -133,9 +134,16 @@ def _observation_identity(observation: ObservationResult) -> dict[str, Any]:
 class PrimaryPublisher:
     """The shared producer's prepared-byte owner; payload/history keep their owners."""
 
-    def __init__(self, api: ApiClient, store: PrimaryStore) -> None:
+    def __init__(
+        self,
+        api: ApiClient,
+        store: PrimaryStore,
+        *,
+        storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
+    ) -> None:
         self.api = api
         self.store = store
+        self._storage_preparation = storage_preparation
 
     def _require_open_session(self) -> None:
         retained = self.store.session
@@ -320,7 +328,9 @@ class PrimaryPublisher:
                 requirement_identity,
             )
 
-        return self.store.prepare_or_load(member, request, author)
+        return self.store.prepare_or_load(
+            member, request, author, storage_preparation=self._storage_preparation
+        )
 
     def replay(self, record: PrimaryRecord) -> PrimaryRecord:
         """Use only the retained winner; never author a replacement after uncertainty."""

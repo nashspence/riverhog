@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import replace
 from typing import Any
 
@@ -13,6 +13,7 @@ from riverhog_protocol import CollectionDescription, CollectionTag
 from riverhog_protocol.storage_names import ArchiveStoreName
 
 from riverhog_client._prepared_primary_documents import PrimarySession, primary_control_bytes
+from riverhog_client._prepared_primary_storage import PrimaryStorage
 from riverhog_client._prepared_primary_store import PrimaryStore
 from riverhog_client._prepared_primary_types import PrimaryStateError
 from riverhog_client.canonical_production import ProducerAttribution
@@ -32,6 +33,7 @@ def open_primary_session(
     description: CollectionDescription | None,
     tags: Sequence[CollectionTag],
     event_context: Mapping[str, object] | None,
+    storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
 ) -> tuple[dict[str, Any], ProducerAttribution]:
     """Compare the complete creation intent before create, tag or completion writes."""
     initial_identity = hashlib.sha256(
@@ -78,7 +80,7 @@ def open_primary_session(
                 },
             }
         )
-        retained = store.session_for(request)
+        retained = store.session_for(request, storage_preparation=storage_preparation)
         fresh = retained is None
         batches = initial_tags.iter_batches()
         first_batch = next(batches, ())

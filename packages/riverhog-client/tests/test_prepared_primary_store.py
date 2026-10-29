@@ -2494,3 +2494,102 @@ def test_member_preparation_defers_authorship_and_cold_resumes_without_double_ch
         assert store.load(_member()) == survivor
         assert store.prepare_or_load(member, REQUEST, _no_author) == selected
         assert store.usage == settled
+
+
+@pytest.mark.parametrize("outcome", ["incomplete", "exception"])
+def test_creation_preparation_yields_before_remote_work_and_checks_inputs_first(tmp_path, outcome):
+    from riverhog_client import PrimaryStateBusy
+
+    api = _CreationApi()
+    calls = []
+
+    def prepare(storage):
+        calls.append(storage)
+        if outcome == "exception":
+            raise RuntimeError("creation preparation interrupted")
+        return False
+
+    with _unbound(tmp_path / "state") as store:
+        error = RuntimeError if outcome == "exception" else PrimaryStateBusy
+        with pytest.raises(error, match="preparation"):
+            _create(api, store, storage_preparation=prepare)
+        assert calls == [store._files]
+        assert api.create_calls == api.get_calls == api.tag_calls == 0
+        assert not store.publication_started and not store.session_bound
+        _create(api, store, storage_preparation=lambda _storage: True)
+        assert api.create_calls == 1 and api.get_calls == 0
+
+        def forbidden(_storage):
+            pytest.fail("changed creation inputs reached resource preparation")
+
+        with pytest.raises(PrimaryStateError, match="creation inputs changed"):
+            _create(api, store, description="different intent", storage_preparation=forbidden)
+        assert api.create_calls == 1 and api.get_calls == 0
+        with pytest.raises(PrimaryStateBusy, match="preparation"):
+            _create(api, store, storage_preparation=lambda _storage: False)
+        assert api.create_calls == 1 and api.get_calls == 0
+        _create(api, store, storage_preparation=lambda _storage: True)
+        assert api.create_calls == api.get_calls == 1
+
+
+def test_uncertain_creation_refuses_preparation_and_another_remote_create(tmp_path):
+    api = _CreationApi()
+    api.lose_create_ack = True
+
+    def forbidden(_storage):
+        pytest.fail("uncertain creation reached new resource execution")
+
+    with _unbound(tmp_path / "state") as store:
+        with pytest.raises(RuntimeError, match="lost first-create response"):
+            _create(api, store, storage_preparation=lambda _storage: True)
+        assert api.create_calls == 1
+        with pytest.raises(PrimaryStateError, match="uncertain outcome"):
+            _create(api, store, storage_preparation=forbidden)
+        assert api.create_calls == 1 and api.get_calls == 0
+
+
+def test_publisher_preparation_yields_before_remote_reads_and_native_observation(
+    tmp_path, native_observation, monkeypatch
+):
+    from riverhog_client import PrimaryStateBusy
+    from riverhog_client._prepared_primary_publisher import (
+        DeclaredPrimaryObservation,
+        PrimaryPublisher,
+    )
+
+    api = _PublicationApi()
+    events = []
+    selected = [False]
+
+    def prepare(_storage):
+        events.append("prepare")
+        return selected[0]
+
+    def observe():
+        events.append("observe")
+        return native_observation
+
+    original = api.get_collection_upload_session
+
+    def current(collection):
+        events.append("remote")
+        return original(collection)
+
+    monkeypatch.setattr(api, "get_collection_upload_session", current)
+    lazy = DeclaredPrimaryObservation(
+        "fixture-observer/v1", {}, native_observation.catalog.checkpoint_sha256(), observe
+    )
+    with _open(tmp_path / "state", initialize=True) as store:
+        publisher = PrimaryPublisher(api, store, storage_preparation=prepare)
+        with pytest.raises(PrimaryStateBusy, match="preparation"):
+            _publish(publisher, lazy)
+        assert events == ["prepare"]
+        selected[0] = True
+        record = _publish(publisher, lazy)
+        assert events == ["prepare", "prepare", "remote", "observe"]
+        events.clear()
+        assert _publish(publisher, lazy) == record
+        assert not events
+        with pytest.raises(PrimaryStateError, match="retry inputs changed"):
+            _publish(publisher, lazy, output_id="changed-output")
+        assert not events

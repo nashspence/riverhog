@@ -45,6 +45,7 @@ from riverhog_client._prepared_primary_publisher import (
     RetainedPrimaryObservation,
 )
 from riverhog_client._prepared_primary_session import open_primary_session
+from riverhog_client._prepared_primary_storage import PrimaryStorage
 from riverhog_client._prepared_primary_store import PrimaryStore
 from riverhog_client._prepared_primary_types import PrimaryStateError
 from riverhog_client.canonical_production import ProducerAttribution
@@ -225,6 +226,7 @@ class CollectionProducer:
         *,
         primary_store: PrimaryStore,
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
+        storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
         producer_app: str,
         adapter_id: str,
         adapter_version: str,
@@ -237,6 +239,7 @@ class CollectionProducer:
     ) -> None:
         self.api = api
         self.primary_store = primary_store
+        self._storage_preparation = storage_preparation
         self.member_inventory = member_inventory
         self.producer_app = producer_app
         self.adapter_id = adapter_id
@@ -299,6 +302,7 @@ class CollectionProducer:
             self.api,
             primary_store=self.primary_store,
             member_inventory=self.member_inventory,
+            storage_preparation=self._storage_preparation,
             producer_app=self.producer_app,
             adapter_id=self.adapter_id,
             adapter_version=self.adapter_version,
@@ -353,6 +357,7 @@ class IncrementalCollectionProducer:
         *,
         primary_store: PrimaryStore,
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
+        storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
         producer_app: str,
         adapter_id: str,
         adapter_version: str,
@@ -372,7 +377,9 @@ class IncrementalCollectionProducer:
         self.api = api
         self.primary_store = primary_store
         self._member_inventory = member_inventory
-        self._primary_publisher = PrimaryPublisher(api, primary_store)
+        self._primary_publisher = PrimaryPublisher(
+            api, primary_store, storage_preparation=storage_preparation
+        )
         self._operation_lock = threading.RLock()
         self.progress = progress
         construction_identity = hashlib.sha256(
@@ -410,6 +417,7 @@ class IncrementalCollectionProducer:
             description=description,
             tags=tags,
             event_context=event_context,
+            storage_preparation=storage_preparation,
         )
         self._heartbeat_interval_seconds = _custody_heartbeat_interval(session)
         self.resumed = bool(session.get("resumed"))

@@ -5441,3 +5441,85 @@ print(json.dumps({"passed":True,"native_prepared_member":proof}))
     record_testsuite_property(
         "prepared_primary_native_prepared_member", json.dumps(proof["native_prepared_member"])
     )
+
+
+def test_native_public_producer_prepares_before_remote_creation_and_replays_original(
+    tmp_path, record_testsuite_property
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import importlib.util,json,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client._prepared_primary_factory import (
+    WindowsPrimaryFactory,sqlite_primary_preparation_step)
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
+from riverhog_client._prepared_primary_sqlite_operations import (
+    SqliteOperationBank,SqliteOperationGrants)
+from riverhog_client._prepared_primary_sqlite_preparation import SqliteReadinessPlan
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+from tests.support.prepared_primary_producer import witness
+from tests.support.prepared_primary_replay import DESCRIPTOR
+spec=importlib.util.spec_from_file_location("producer_preparation_parents",
+    root/"tests/platform/windows_primary_process.py")
+parents=importlib.util.module_from_spec(spec);sys.modules[spec.name]=parents
+spec.loader.exec_module(parents)
+parent=Path(sys.argv[2])/"producer-preparation-private";parents._parent(parent)
+path=windows_container_path(parent,DESCRIPTOR)
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+limits=SqlitePrimaryLimits(4*1024*1024,2*1024*1024,128*1024)
+bank=SqliteOperationBank(512,8*1024*1024,65536,8*1024*1024,65536,
+    262144,0,1<<40,1<<60,1<<40)
+grants=SqliteOperationGrants(bank,bank)
+selected=WindowsPrimaryFactory(limits,grants,heap,(2,3))
+state={"arms":0,"bank":None,"initializations":0,"cold_opens":0}
+arm=NativeWindowsContainer.arm_operation
+def observed(self,grants,limits,**caps):
+    value=arm(self,grants,limits,**caps)
+    state.update(arms=state["arms"]+1,bank=value)
+    return value
+NativeWindowsContainer.arm_operation=observed
+def factory(location,*,allocation_descriptor,initialize):
+    assert allocation_descriptor==DESCRIPTOR and location==path
+    files=selected(location,allocation_descriptor=allocation_descriptor,initialize=initialize)
+    assert files.operation_grants().grants==grants
+    state["initializations" if initialize else "cold_opens"]+=1
+    return files
+plan=SqliteReadinessPlan((8201,16),65536,8,192,512*1024)
+def prepare(storage):
+    return sqlite_primary_preparation_step(storage,plan=plan)
+proof=witness(path,factory,prepare)
+population=heap.native_report();memory=heap.report()
+assert population["owners"]==population["files"]==0
+assert population["owner_peak"]==1 and 1<=population["file_peak"]<=2
+assert not state["bank"].writes.report()["refusals"]
+assert not state["bank"].writes.report()["native_failures"]
+assert state["initializations"]==state["cold_opens"]==1
+assert 0<memory["sqlite_heap_peak_bytes"]<=memory["heap_limit_bytes"]==64*1024*1024
+assert proof["root_calls"]==proof["root_deferred"]+2
+assert proof["member_calls"]==proof["member_deferred"]+1
+proof.update(initializations=1,cold_opens=1,population_released=1,
+    operation_arms=state["arms"],owner_peak=population["owner_peak"],file_peak=population["file_peak"],
+    heap_limit_bytes=memory["heap_limit_bytes"],sqlite_heap_peak_bytes=memory["sqlite_heap_peak_bytes"],
+    retry_count=heap.retry_report()["selected_retry_count"],
+    retry_delay_milliseconds=heap.retry_report()["selected_delay_milliseconds"])
+print(json.dumps({"passed":True,"native_producer_preparation":proof}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[3]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] is True
+    record_testsuite_property(
+        "prepared_primary_native_producer_preparation",
+        json.dumps(proof["native_producer_preparation"]),
+    )
