@@ -681,3 +681,128 @@ def test_composed_operation_check_retains_first_failure_without_releasing_custod
         guard.check_operation()
     assert repeated.value is first.value
     assert gate.calls == before and not guard._closed
+
+
+@pytest.mark.parametrize("length,expected", [(8192 + 9, (9, 45144)), (262144 + 9, (71, 299592))])
+def test_fixed_control_envelope_matches_approved_extents(length, expected):
+    from riverhog_client._prepared_primary_sqlite_journal import control_envelope
+
+    result = control_envelope((length, 16), page_bytes=4096, sector_bytes=4096, reserved_bytes=0)
+    assert (result.database_pages, result.journal_bytes) == expected
+
+
+@pytest.mark.parametrize("page_bytes", [512, 4096, 65536])
+@pytest.mark.parametrize("sector_bytes", [512, 4096, 8192, 65536])
+@pytest.mark.parametrize("reserved_bytes", [0, 16, 255])
+def test_fixed_control_envelope_covers_offset_and_sector_rounding(
+    page_bytes, sector_bytes, reserved_bytes
+):
+    import math
+    from fractions import Fraction
+
+    from riverhog_client._prepared_primary_sqlite_journal import control_envelope
+
+    lengths = (1, 9, page_bytes - 4, page_bytes - 3, 8193, 1 << 30)
+    peers = max(1, math.ceil(Fraction(sector_bytes, page_bytes)))
+    records = 1 + sum(
+        2 + math.ceil(Fraction(length, page_bytes - reserved_bytes - 4)) for length in lengths
+    )
+    result = control_envelope(
+        lengths, page_bytes=page_bytes, sector_bytes=sector_bytes, reserved_bytes=reserved_bytes
+    )
+    assert result.database_pages == peers * records
+    assert result.journal_bytes == 2 * sector_bytes + result.database_pages * (page_bytes + 8) + 16
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("page_bytes", 0),
+        ("page_bytes", True),
+        ("page_bytes", 3000),
+        ("page_bytes", 128),
+        ("page_bytes", 1 << 17),
+        ("sector_bytes", 0),
+        ("sector_bytes", True),
+        ("sector_bytes", 3000),
+        ("sector_bytes", 1 << 63),
+        ("reserved_bytes", -1),
+        ("reserved_bytes", True),
+        ("reserved_bytes", 256),
+    ],
+)
+def test_fixed_control_envelope_rejects_unqualified_geometry(field, value):
+    from riverhog_client._prepared_primary_sqlite_journal import control_envelope
+
+    geometry = dict(page_bytes=4096, sector_bytes=4096, reserved_bytes=0)
+    geometry[field] = value
+    with pytest.raises(ValueError, match="geometry"):
+        control_envelope((9,), **geometry)
+
+
+@pytest.mark.parametrize("length", [0, -1, True, 1 << 63, "4", 1.5])
+def test_fixed_control_envelope_rejects_invalid_prefix_without_native_work(length):
+    from riverhog_client._prepared_primary_windows_native import NativeWindowsContainer
+
+    guard = object.__new__(NativeWindowsContainer)
+    with pytest.raises(ValueError, match="prefixes"):
+        guard.control_envelope((length,))
+
+
+def test_fixed_control_envelope_requires_an_exact_prefix_tuple_before_native_work():
+    from riverhog_client._prepared_primary_windows_native import NativeWindowsContainer
+
+    guard = object.__new__(NativeWindowsContainer)
+    with pytest.raises(TypeError, match="tuple"):
+        guard.control_envelope([9])
+
+
+@pytest.mark.parametrize(
+    "length,sector_bytes", [((1 << 63) - 1, 4096), (1, 1 << 62), ((1 << 63) - 1, 1 << 62)]
+)
+def test_fixed_control_envelope_rejects_unrepresentable_page_and_journal_bounds(
+    length, sector_bytes
+):
+    from riverhog_client._prepared_primary_sqlite_journal import control_envelope
+
+    with pytest.raises(OverflowError, match="signed-64-bit admission"):
+        control_envelope((length,), page_bytes=4096, sector_bytes=sector_bytes, reserved_bytes=0)
+
+
+@pytest.mark.parametrize("fault", [None, "busy", "native", "page", "sector"])
+def test_composed_control_envelope_uses_observed_geometry_or_defers(monkeypatch, fault):
+    from riverhog_client import PrimaryStateBusy
+    from riverhog_client._prepared_primary_windows_native import NativeWindowsContainer
+
+    class Gate:
+        failure = None
+
+        def operation_failure(self):
+            return self.failure
+
+        def geometry(self):
+            if fault == "busy":
+                raise BlockingIOError("active transaction")
+            if fault == "native":
+                self.failure = "native"
+                raise RuntimeError("metadata read failed")
+            return {
+                "page_bytes": 2048 if fault == "page" else 4096,
+                "reserved_bytes": 0,
+                "sector_bytes": 512,
+                "logical_sector_bytes": 512,
+                "atomic_sector_bytes": 4096,
+                "filesystem_atomic_sector_bytes": 3000 if fault == "sector" else 4096,
+            }
+
+    guard = object.__new__(NativeWindowsContainer)
+    guard._native_gate = Gate()
+    guard._native_operation_failure = None
+    monkeypatch.setattr(WindowsContainer, "check_current", lambda self: None)
+    if fault is None:
+        envelope = guard.control_envelope((8192 + 9, 16))
+        assert (envelope.database_pages, envelope.journal_bytes) == (9, 45144)
+    else:
+        error = PrimaryStateBusy if fault == "busy" else PrimaryStateError
+        with pytest.raises(error):
+            guard.control_envelope((9,))

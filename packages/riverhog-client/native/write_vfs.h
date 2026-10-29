@@ -43,6 +43,14 @@ int rh_write_vfs_quarantined(rh_write_vfs *);
 int rh_write_vfs_quarantine(rh_write_vfs *);
 int rh_write_vfs_arm(rh_write_vfs *, rh_quota *, rh_read_quota *, rh_callback_quota *, rh_native_work_quota *);
 int rh_write_vfs_close(rh_write_vfs *);
+typedef struct {
+    uint32_t page_bytes, reserved_bytes, sector_bytes, device_characteristics;
+    uint32_t logical_sector_bytes, atomic_sector_bytes, filesystem_atomic_sector_bytes;
+} rh_primary_geometry;
+/* A settled selected connection, its charged header read and owned-handle metadata.
+ * This observation does not allocate reserve space or establish hardware durability.
+ */
+int rh_write_vfs_geometry(rh_write_vfs *, rh_primary_geometry *);
 int rh_write_vfs_open_files(rh_write_vfs *);
 const char *rh_write_vfs_source_id(rh_write_vfs *);
 const wchar_t *rh_write_vfs_library_path(rh_write_vfs *);

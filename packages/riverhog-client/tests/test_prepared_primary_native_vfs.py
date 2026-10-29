@@ -3891,8 +3891,11 @@ files.put_bytes("original",(b"exact original",),byte_limit=14)
 original=hashlib.sha256(path.read_bytes()).hexdigest()
 scenario=sys.argv[3]
 writes=native.WriteQuota(helpers.grant(),helpers.grant())
-calls=helpers.callbacks(native,writes,forward=1 if scenario=="capacity" else 262144)
+held_files=gate.open_files
+assert held_files>0
+calls=helpers.callbacks(native,writes,forward=held_files if scenario=="capacity" else 262144)
 gate.arm(helpers.reads(native,writes),calls)
+assert calls.report()["forward"]["callback_slots_charged"]==held_files
 assert gate.operation_failure() is None
 vfs=FaultVfs.windows().library.sqlite3_vfs_find(gate.name.encode())
 touched=[];results=[]
@@ -3920,7 +3923,7 @@ try:
         try:guard.check_operation()
         except error as exc:assert exc is first
         else:raise AssertionError("recorded operation failure was forgotten")
-        assert gate.bound and gate.open_files==1 and not gate.quarantined
+        assert gate.bound and gate.open_files==held_files and not gate.quarantined
         assert not guard._closed and heap.native_report()["owners"]==1
         if scenario=="capacity":
             assert results==[(0,b"canary",True)],results
@@ -3963,3 +3966,159 @@ print(json.dumps({"passed":True,"scenario":scenario,"result_withheld":scenario!=
         "original_exact": True,
         "population_released": True,
     }
+
+
+@pytest.mark.parametrize(
+    "scenario",
+    ["observed", "busy", "read-refusal", "metadata-refusal", "invalid-header", "fixed-control"],
+)
+def test_native_geometry_and_fixed_control_envelope_preserve_ownership(
+    tmp_path, scenario, record_testsuite_property
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import hashlib,importlib.util,json,os,sqlite3,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client import PrimaryStateBusy,PrimaryStateCapacity,PrimaryStateError
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits,TransactionalPrimaryFiles
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+def load(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    module=importlib.util.module_from_spec(spec);sys.modules[spec.name]=module
+    spec.loader.exec_module(module);return module
+helpers=load("geometry_helpers",root/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py")
+parent_helpers=load("geometry_parent",root/"tests/platform/windows_primary_process.py")
+parent=Path(sys.argv[2])/"geometry-private";parent_helpers._parent(parent)
+path=windows_container_path(parent,b"native geometry")
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+source=native.runtime_identity()["sqlite_source_id"]
+writes=native.WriteQuota(helpers.grant(),helpers.grant())
+initial_reads=helpers.reads(native,writes)
+initial_calls=helpers.callbacks(native,writes)
+gate=native.WriteVfs(source,initial_reads,initial_calls,heap)
+guard=NativeWindowsContainer(path,initialize=True,gate=gate)
+helpers.admit_fixture_retries(gate)
+files=TransactionalPrimaryFiles(guard,allocation_descriptor=b"native geometry",
+    limits=SqlitePrimaryLimits(1024*1024,1024*1024,128*1024),initialize=True)
+selected=files.put_bytes("original",(b"exact original",),byte_limit=14)
+scenario=sys.argv[3]
+if scenario=="fixed-control":files.prepare_controls(("slot",),byte_limit=8192)
+original=hashlib.sha256(path.read_bytes()).hexdigest()
+header=path.read_bytes()[:24]
+geometry=None;proof={}
+try:
+    if scenario=="busy":
+        files._connection.execute("BEGIN IMMEDIATE").close()
+        before=(writes.report(),initial_reads.report(),initial_calls.report(),initial_calls.work.report())
+        try:guard.control_envelope((9,))
+        except PrimaryStateBusy:pass
+        else:raise AssertionError("active writer allowed a geometry observation")
+        after=(writes.report(),initial_reads.report(),initial_calls.report(),initial_calls.work.report())
+        assert after==before
+        files._connection.rollback()
+        geometry=gate.geometry()
+    elif scenario in ("read-refusal","metadata-refusal"):
+        writes=native.WriteQuota(helpers.grant(),helpers.grant())
+        reads=native.ReadQuota(writes,(23,65536) if scenario=="read-refusal" else
+            (8*1024*1024,65536),(8*1024*1024,65536))
+        cost=native.filesystem_cost("read",(2,3),24)
+        work=native.NativeWorkQuota(writes,cost if scenario=="metadata-refusal" else
+            (1<<40,1<<60),(1<<40,1<<60))
+        calls=native.CallbackQuota(writes,(262144,0),(262144,0),work=work,
+            buffers=(1<<40,1<<40))
+        gate.arm(reads,calls)
+        try:guard.control_envelope((9,))
+        except PrimaryStateCapacity:pass
+        else:raise AssertionError("geometry escaped an insufficient read/metadata grant")
+        assert gate.operation_failure()=="capacity" and writes.report()["native_failures"]==0
+        assert reads.report()["forward"]["read_bytes"]==(0 if scenario=="read-refusal" else 24)
+        assert not any(reads.report()["recovery"].values())
+        assert not any(work.report()["recovery"].values())
+        if scenario=="metadata-refusal":
+            assert work.report()["forward"]["filesystem_api_attempts_charged"]==cost[0]
+    elif scenario=="invalid-header":
+        with path.open("r+b") as damaged:
+            damaged.write(b"X");damaged.flush();os.fsync(damaged.fileno())
+        try:guard.control_envelope((9,))
+        except PrimaryStateError:pass
+        else:raise AssertionError("invalid durable header supplied qualified geometry")
+        assert gate.operation_failure()=="native"
+    else:
+        before=writes.report()
+        geometry=gate.geometry()
+        assert geometry["page_bytes"]==4096 and geometry["reserved_bytes"]==header[20]
+        assert writes.report()==before
+        assert all(geometry[k]>0 and not(geometry[k]&(geometry[k]-1)) for k in (
+            "sector_bytes","logical_sector_bytes","atomic_sector_bytes",
+            "filesystem_atomic_sector_bytes"))
+        envelope=guard.control_envelope((8192+9,16))
+        sector=max(geometry[k] for k in (
+            "sector_bytes","logical_sector_bytes","atomic_sector_bytes",
+            "filesystem_atomic_sector_bytes"))
+        peers=max(1,(sector+4095)//4096)
+        payload=4096-geometry["reserved_bytes"]-4
+        pages=peers*(1+2+(8192+9+payload-1)//payload+2+(16+payload-1)//payload)
+        assert envelope.database_pages==pages
+        assert envelope.journal_bytes==2*sector+pages*(4096+8)+16
+        if scenario=="fixed-control":
+            for deleting,length in ((False,8192+9),(True,9)):
+                bound=guard.control_envelope((length,))
+                forward=(4096,bound.database_pages,1024*1024,bound.journal_bytes,
+                    8*1024*1024,65536)
+                writes=native.WriteQuota(forward,helpers.grant())
+                calls=helpers.callbacks(native,writes)
+                gate.arm(helpers.reads(native,writes),calls)
+                if deleting:files.remove_control("slot",expected=b"c"*8192)
+                else:files.put_control("slot",b"c"*8192,byte_limit=8192)
+                report=writes.report()
+                assert gate.operation_failure() is None and not report["recovering"]
+                assert 0<report["forward"]["database_pages_attempted"]<=bound.database_pages
+                assert report["forward"]["journal_write_extent_bytes"]<=bound.journal_bytes
+                proof["remove" if deleting else "put"]={
+                    "page_bound":bound.database_pages,"journal_bound":bound.journal_bytes,
+                    "pages":report["forward"]["database_pages_attempted"],
+                    "journal_extent":report["forward"]["journal_write_extent_bytes"]}
+            with files.verified(selected) as stream:assert stream.read()==b"exact original"
+        else:
+            assert writes.report()==before
+finally:
+    files.close()
+if scenario=="invalid-header":
+    with path.open("r+b") as restored:
+        restored.write(header);restored.flush();os.fsync(restored.fileno())
+if scenario!="fixed-control":
+    assert hashlib.sha256(path.read_bytes()).hexdigest()==original
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+print(json.dumps({"passed":True,"scenario":scenario,"geometry":geometry,"writes":proof,
+    "original_exact":True,"population_released":True}))
+"""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[3]),
+            str(tmp_path),
+            scenario,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] is True and proof["scenario"] == scenario
+    assert proof["original_exact"] is True and proof["population_released"] is True
+    if scenario == "observed":
+        record_testsuite_property("prepared_primary_native_geometry", json.dumps(proof["geometry"]))
+    if scenario == "fixed-control":
+        assert set(proof["writes"]) == {"put", "remove"}
+        record_testsuite_property("prepared_primary_control_envelopes", json.dumps(proof["writes"]))

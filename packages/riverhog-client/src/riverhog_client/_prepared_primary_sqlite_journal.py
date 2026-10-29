@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sqlite3
 from contextlib import closing, contextmanager
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from riverhog_client._prepared_primary_types import PrimaryStateCapacity, PrimaryStateError
@@ -12,6 +13,58 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from riverhog_client._prepared_primary_sqlite import TransactionalPrimaryFiles
+
+
+@dataclass(frozen=True, slots=True)
+class FixedControlEnvelope:
+    database_pages: int
+    journal_bytes: int
+
+
+def _validate_control_prefixes(prefix_lengths: tuple[int, ...]) -> None:
+    if type(prefix_lengths) is not tuple:
+        raise TypeError("fixed control prefixes require an exact tuple")
+    for length in prefix_lengths:
+        if type(length) is not int or not 0 < length <= (1 << 63) - 1:
+            raise ValueError("fixed control prefixes require positive signed-64-bit lengths")
+
+
+def control_envelope(
+    prefix_lengths: tuple[int, ...], *, page_bytes: int, sector_bytes: int, reserved_bytes: int
+) -> FixedControlEnvelope:
+    """Bound one fixed-extent, no-topology-change transaction, not its allocation."""
+    maximum = (1 << 63) - 1
+    _validate_control_prefixes(prefix_lengths)
+    if (
+        type(page_bytes) is not int
+        or not 512 <= page_bytes <= 65536
+        or page_bytes & (page_bytes - 1)
+        or type(sector_bytes) is not int
+        or not 0 < sector_bytes <= maximum
+        or sector_bytes & (sector_bytes - 1)
+        or type(reserved_bytes) is not int
+        or not 0 <= reserved_bytes <= 255
+    ):
+        raise ValueError("fixed control geometry is not qualified")
+    usable = page_bytes - reserved_bytes - 4
+    frames = 1
+    for length in prefix_lengths:
+        # Quotient/remainder avoids an overflowing rounded-up numerator.
+        added = 2 + length // usable + int(length % usable != 0)
+        if added > maximum - frames:
+            raise OverflowError("fixed control page bound exceeds signed-64-bit admission")
+        frames += added
+    peers = max(1, sector_bytes // page_bytes + int(sector_bytes % page_bytes != 0))
+    if frames > maximum // peers:
+        raise OverflowError("fixed control page bound exceeds signed-64-bit admission")
+    pages = frames * peers
+    if sector_bytes > (maximum - 16) // 2:
+        raise OverflowError("fixed control journal bound exceeds signed-64-bit admission")
+    headers = 2 * sector_bytes + 16
+    if pages > (maximum - headers) // (page_bytes + 8):
+        raise OverflowError("fixed control journal bound exceeds signed-64-bit admission")
+    return FixedControlEnvelope(pages, headers + pages * (page_bytes + 8))
+
 
 _RESERVE_BYTES = 16
 _QUANTUM = 4096

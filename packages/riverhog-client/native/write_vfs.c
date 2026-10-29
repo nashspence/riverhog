@@ -1421,6 +1421,53 @@ int rh_write_vfs_close(rh_write_vfs *vfs) {
     free(vfs);
     return RH_OK;
 }
+int rh_write_vfs_geometry(rh_write_vfs *vfs, rh_primary_geometry *out) {
+#ifdef _WIN32
+    /* FILE_STORAGE_INFO, FileStorageInfo=16, as defined by the public Win32 ABI.
+     * https://learn.microsoft.com/windows/win32/api/winbase/ns-winbase-file_storage_info
+     */
+    struct {
+        DWORD logical, atomic, performance, filesystem_atomic;
+        DWORD flags, sector_offset, partition_offset;
+    } info;
+    rh_write_file *file;
+    unsigned char header[24];
+    rh_retry_cost metadata = {1, 0};
+    int result, sector, characteristics;
+    uint32_t page;
+    if (!owned(vfs) || !vfs->bound || vfs->quarantined) return RH_MISUSE;
+    if (!vfs->databases) return RH_BUSY;
+    if (vfs->quota->refusals || vfs->calls->pending_error) return RH_FULL;
+    if (vfs->quota->native_failures || vfs->quota->diagnostic_overflow) return RH_IOERR;
+    for (file = vfs->databases; file; file = file->next_database) {
+        if (!file->connection || !vfs->api.get_autocommit(file->connection) ||
+            vfs->api.txn_state(file->connection, "main") != 0) return RH_BUSY;
+    }
+    file = vfs->databases;
+    sector = file_sector(&file->file);
+    characteristics = file_characteristics(&file->file);
+    if (vfs->quota->refusals || vfs->calls->pending_error) return RH_FULL;
+    if (vfs->quota->native_failures || vfs->quota->diagnostic_overflow) return RH_IOERR;
+    result = file_read(&file->file, header, (int)sizeof(header), 0);
+    if (result != RH_OK) return storage_result(vfs, result);
+    if (rh_native_work_admit(vfs->work, vfs->quota, metadata) != RH_ALLOWED) return RH_FULL;
+    if (!GetFileInformationByHandleEx(vfs->database_handle, (FILE_INFO_BY_HANDLE_CLASS)16,
+                                     &info, (DWORD)sizeof(info))) return storage_result(vfs, RH_IOERR);
+    page = ((uint32_t)header[16] << 8) | header[17];
+    if (page == 1) page = 65536;
+    if (memcmp(header, "SQLite format 3", 16) != 0 || header[18] != 1 || header[19] != 1 ||
+        page < 512 || page > 65536 || (page & (page - 1)) || sector <= 0)
+        return storage_result(vfs, RH_IOERR);
+    *out = (rh_primary_geometry){
+        page, header[20], (uint32_t)sector, (uint32_t)characteristics,
+        info.logical, info.atomic, info.filesystem_atomic
+    };
+    return RH_OK;
+#else
+    (void)vfs; (void)out;
+    return RH_MISUSE;
+#endif
+}
 int rh_write_vfs_open_files(rh_write_vfs *vfs) {
     return owned(vfs) ? vfs->open_files : -1;
 }

@@ -20,6 +20,7 @@ from riverhog_client._prepared_primary_types import (
 
 if TYPE_CHECKING:
     from riverhog_client._prepared_primary_native import WriteVfs
+    from riverhog_client._prepared_primary_sqlite_journal import FixedControlEnvelope
 
 _DWORD = ctypes.c_uint32
 _BOOL = ctypes.c_int32
@@ -578,6 +579,47 @@ class NativeWindowsContainer(WindowsContainer):
             elif not self._native_released and self._native_failure is None:
                 self.close()
             raise
+
+    def control_envelope(self, prefix_lengths: tuple[int, ...]) -> FixedControlEnvelope:
+        """Derive a minimum from observed geometry; this does not prepare backing."""
+        from riverhog_client._prepared_primary_sqlite_journal import (
+            _validate_control_prefixes,
+            control_envelope,
+        )
+
+        _validate_control_prefixes(prefix_lengths)
+        self.check_current()
+        try:
+            geometry = self._native_gate.geometry()
+        except BlockingIOError as exc:
+            raise PrimaryStateBusy(
+                "prepared-primary geometry requires settled connections"
+            ) from exc
+        except RuntimeError as exc:
+            self.check_operation()
+            raise PrimaryStateError("prepared-primary native geometry is unavailable") from exc
+        self.check_operation()
+        sectors = tuple(
+            geometry[key]
+            for key in (
+                "sector_bytes",
+                "logical_sector_bytes",
+                "atomic_sector_bytes",
+                "filesystem_atomic_sector_bytes",
+            )
+        )
+        if geometry["page_bytes"] != 4096 or any(
+            type(value) is not int or value <= 0 or value & (value - 1) for value in sectors
+        ):
+            raise PrimaryStateError("prepared-primary native geometry is not qualified")
+        envelope = control_envelope(
+            prefix_lengths,
+            page_bytes=geometry["page_bytes"],
+            sector_bytes=max(sectors),
+            reserved_bytes=geometry["reserved_bytes"],
+        )
+        self.check_current()
+        return envelope
 
     def check_operation(self) -> None:
         """Do not hand back a result after an infallible native callback refused."""

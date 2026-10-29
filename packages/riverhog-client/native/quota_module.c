@@ -1387,6 +1387,25 @@ static PyObject *vfs_operation_failure(PyObject *object, PyObject *unused) {
     /* Expected cold restoration/close can select R without an operation failure. */
     Py_RETURN_NONE;
 }
+static PyObject *vfs_geometry(PyObject *object, PyObject *unused) {
+    WriteVfs *self = (WriteVfs *)object;
+    rh_primary_geometry info;
+    int result;
+    (void)unused;
+    if (!vfs_ready(self)) return NULL;
+    result = rh_write_vfs_geometry(self->vfs, &info);
+    if (result) {
+        PyErr_SetString(result == 5 ? PyExc_BlockingIOError : PyExc_RuntimeError,
+            "native geometry requires a settled owned connection, valid header and admitted metadata/read work");
+        return NULL;
+    }
+    return Py_BuildValue("{s:I,s:I,s:I,s:I,s:I,s:I,s:I}",
+        "page_bytes", info.page_bytes, "reserved_bytes", info.reserved_bytes,
+        "sector_bytes", info.sector_bytes, "device_characteristics", info.device_characteristics,
+        "logical_sector_bytes", info.logical_sector_bytes,
+        "atomic_sector_bytes", info.atomic_sector_bytes,
+        "filesystem_atomic_sector_bytes", info.filesystem_atomic_sector_bytes);
+}
 static PyMethodDef vfs_methods[] = {
     {"retain_custodian", vfs_retain_custodian, METH_O,
         "Retain one metadata owner under the already charged native owner slot before binding."},
@@ -1401,6 +1420,8 @@ static PyMethodDef vfs_methods[] = {
     {"arm", vfs_arm, METH_VARARGS, "Select a bank before entering SQLite on its owning thread."},
     {"close", vfs_close, METH_NOARGS, "Unregister after the owner closes every SQLite connection using this VFS."},
     {"identity", vfs_identity, METH_NOARGS, "Describe the already loaded SQLite module."},
+    {"geometry", vfs_geometry, METH_NOARGS,
+        "Observe the settled owned header and native sector metadata through charged reads/work."},
     {"operation_failure", vfs_operation_failure, METH_NOARGS,
         "Inspect sticky native failure/refusal state outside storage callbacks."},
     {NULL, NULL, 0, NULL}
