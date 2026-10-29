@@ -1,0 +1,390 @@
+diff --git a/scripts/validation_timeouts.py b/scripts/validation_timeouts.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/validation_timeouts.py
+@@ -0,0 +1,119 @@
++"""Explicit environment scaling for incidental validation watchdogs only."""
++
++from __future__ import annotations
++
++import math
++import os
++import threading
++import time
++from collections.abc import Callable, Mapping
++from dataclasses import dataclass, field
++
++ENVIRONMENT_VARIABLE = "RIVERHOG_VALIDATION_TIMEOUT_SCALE"
++
++
++class ValidationTimeoutConfigurationError(ValueError):
++    """The requested watchdog cannot be represented by its consumer."""
++
++
++class ValidationWatchdogExpired(TimeoutError):
++    """Validation stopped observing before it established an outcome."""
++
++
++def _positive(value: float, name: str) -> float:
++    if isinstance(value, bool) or not isinstance(value, (float, int)):
++        raise ValidationTimeoutConfigurationError(f"{name} must be finite and positive")
++    try:
++        result = float(value)
++    except (OverflowError, ValueError) as error:
++        raise ValidationTimeoutConfigurationError(f"{name} is not representable") from error
++    if not math.isfinite(result) or result <= 0:
++        raise ValidationTimeoutConfigurationError(f"{name} must be finite and positive")
++    return result
++
++
++@dataclass(frozen=True)
++class ValidationTimeouts:
++    """Capture once per invocation; do not apply to product configuration or clocks."""
++
++    scale: float = 1.0
++
++    def __post_init__(self) -> None:
++        object.__setattr__(self, "scale", _positive(self.scale, ENVIRONMENT_VARIABLE))
++
++    @classmethod
++    def from_environment(cls, environ: Mapping[str, str] | None = None) -> ValidationTimeouts:
++        values = os.environ if environ is None else environ
++        raw = values.get(ENVIRONMENT_VARIABLE, "1")
++        try:
++            factor = float(raw)
++        except (TypeError, ValueError, OverflowError) as error:
++            raise ValidationTimeoutConfigurationError(
++                f"{ENVIRONMENT_VARIABLE} must be a positive finite number"
++            ) from error
++        return cls(factor)
++
++    def seconds(self, nominal: float, *, maximum: float | None = None) -> float:
++        """Scale a nominal duration exactly once; maximum is a backend capability."""
++        effective = _positive(_positive(nominal, "nominal watchdog") * self.scale, "watchdog")
++        if maximum is not None and effective > _positive(maximum, "backend maximum"):
++            raise ValidationTimeoutConfigurationError("watchdog exceeds backend maximum")
++        return effective
++
++    def thread_seconds(self, nominal: float) -> float:
++        return self.seconds(nominal, maximum=threading.TIMEOUT_MAX)
++
++    def integer_units(
++        self, nominal: float, *, units_per_second: float, maximum: int | None = None
++    ) -> int:
++        """Round upward, so a short positive budget never becomes a zero sentinel."""
++        units = _positive(
++            self.seconds(nominal) * _positive(units_per_second, "units per second"),
++            "encoded watchdog",
++        )
++        result = math.ceil(units)
++        if maximum is not None:
++            if type(maximum) is not int or maximum < 1:
++                raise ValidationTimeoutConfigurationError("unit maximum must be a positive integer")
++            if result > maximum:
++                raise ValidationTimeoutConfigurationError("watchdog exceeds backend unit maximum")
++        return result
++
++    def deadline(
++        self, nominal: float, *, clock: Callable[[], float] | None = None
++    ) -> ValidationDeadline:
++        selected = time.monotonic if clock is None else clock
++        effective = self.seconds(nominal)
++        now = selected()
++        end = now + effective
++        if not math.isfinite(now) or not math.isfinite(end) or end <= now:
++            raise ValidationTimeoutConfigurationError("monotonic deadline is not representable")
++        return ValidationDeadline(nominal, self.scale, effective, end, selected)
++
++
++@dataclass(frozen=True)
++class ValidationDeadline:
++    """One effective monotonic budget: consuming it never rescales or resets it."""
++
++    nominal_seconds: float
++    scale: float
++    effective_seconds: float
++    expires_at: float
++    clock: Callable[[], float] = field(repr=False, compare=False)
++
++    def remaining(self, *, maximum_effective: float | None = None) -> float:
++        now = self.clock()
++        if not math.isfinite(now):
++            raise ValidationTimeoutConfigurationError("monotonic clock is not finite")
++        left = self.expires_at - now
++        if left <= 0:
++            raise ValidationWatchdogExpired(
++                "validation watchdog expired: "
++                f"nominal={self.nominal_seconds:g}s scale={self.scale:g} "
++                f"effective={self.effective_seconds:g}s; outcome not established"
++            )
++        if not math.isfinite(left):
++            raise ValidationTimeoutConfigurationError("remaining watchdog is not representable")
++        if maximum_effective is None:
++            return left
++        return min(left, _positive(maximum_effective, "effective per-call maximum"))
+diff --git a/tests/unit/test_validation_timeouts.py b/tests/unit/test_validation_timeouts.py
+new file mode 100644
+--- /dev/null
++++ b/tests/unit/test_validation_timeouts.py
+@@ -0,0 +1,139 @@
++"""Focused tests of validation budgets, not product timing guarantees."""
++
++from __future__ import annotations
++
++import json
++import math
++import os
++import subprocess
++import sys
++import threading
++import unittest
++from pathlib import Path
++from unittest.mock import patch
++
++from scripts.validation_timeouts import (
++    ENVIRONMENT_VARIABLE,
++    ValidationTimeoutConfigurationError,
++    ValidationTimeouts,
++    ValidationWatchdogExpired,
++)
++
++
++class ValidationTimeoutTests(unittest.TestCase):
++    def test_absent_environment_preserves_nominal_budget(self) -> None:
++        self.assertEqual(ValidationTimeouts.from_environment({}).seconds(5), 5)
++
++    def test_scale_is_positive_finite_and_applied_once(self) -> None:
++        for raw, expected in (("4", 20), ("0.5", 2.5), (" 2e0 ", 10)):
++            with self.subTest(raw=raw):
++                policy = ValidationTimeouts.from_environment({ENVIRONMENT_VARIABLE: raw})
++                self.assertEqual(policy.seconds(5), expected)
++
++    def test_invalid_environment_never_falls_back_to_one(self) -> None:
++        for raw in ("", " ", "0", "-1", "NaN", "inf", "-inf", "1e309", "1e-400", "slow"):
++            with self.subTest(raw=raw), self.assertRaises(ValidationTimeoutConfigurationError):
++                ValidationTimeouts.from_environment({ENVIRONMENT_VARIABLE: raw})
++
++    def test_programmatic_boolean_is_not_a_factor(self) -> None:
++        with self.assertRaises(ValidationTimeoutConfigurationError):
++            ValidationTimeouts(True)
++
++    def test_policy_is_captured_without_import_time_environment(self) -> None:
++        with patch.dict(os.environ, {ENVIRONMENT_VARIABLE: "2"}):
++            original = ValidationTimeouts.from_environment()
++        with patch.dict(os.environ, {ENVIRONMENT_VARIABLE: "4"}):
++            self.assertEqual(original.seconds(3), 6)
++            self.assertEqual(ValidationTimeouts.from_environment().seconds(3), 12)
++
++    def test_zero_infinite_and_negative_nominal_values_are_not_reinterpreted(self) -> None:
++        for nominal in (0, -1, True, math.inf, math.nan):
++            with (
++                self.subTest(nominal=nominal),
++                self.assertRaises(ValidationTimeoutConfigurationError),
++            ):
++                ValidationTimeouts().seconds(nominal)
++
++    def test_overflow_and_underflow_are_configuration_errors(self) -> None:
++        for factor, nominal in ((1e308, 1e308), (1e-300, 1e-300)):
++            with (
++                self.subTest(factor=factor),
++                self.assertRaises(ValidationTimeoutConfigurationError),
++            ):
++                ValidationTimeouts(factor).seconds(nominal)
++
++    def test_backend_capability_is_checked_not_silently_clamped(self) -> None:
++        self.assertEqual(ValidationTimeouts(4).seconds(5, maximum=20), 20)
++        with self.assertRaises(ValidationTimeoutConfigurationError):
++            ValidationTimeouts(4).seconds(5, maximum=19)
++
++    def test_thread_backend_limit_is_respected(self) -> None:
++        with patch("scripts.validation_timeouts.threading.TIMEOUT_MAX", 10):
++            self.assertEqual(ValidationTimeouts(2).thread_seconds(5), 10)
++            with self.assertRaises(ValidationTimeoutConfigurationError):
++                ValidationTimeouts(2).thread_seconds(6)
++
++    def test_integer_adapters_round_up_and_never_disable_timeouts(self) -> None:
++        policy = ValidationTimeouts(0.5)
++        self.assertEqual(policy.integer_units(0.0001, units_per_second=1000), 1)
++        self.assertEqual(policy.integer_units(3, units_per_second=1), 2)
++        self.assertEqual(ValidationTimeouts(4).integer_units(5, units_per_second=1000), 20000)
++
++    def test_encoded_limit_and_unit_overflow_are_errors(self) -> None:
++        with self.assertRaises(ValidationTimeoutConfigurationError):
++            ValidationTimeouts(4).integer_units(5, units_per_second=1000, maximum=19999)
++        with self.assertRaises(ValidationTimeoutConfigurationError):
++            ValidationTimeouts(1e308).integer_units(1, units_per_second=1000)
++
++    def test_fixed_deadline_neither_rescales_nor_resets_on_retries(self) -> None:
++        now = [100.0]
++        policy = ValidationTimeouts(4)
++        deadline = policy.deadline(5, clock=lambda: now[0])
++        self.assertEqual(deadline.expires_at, 120)
++        self.assertEqual(deadline.remaining(), 20)
++        now[0] = 112
++        self.assertEqual(deadline.remaining(), 8)
++        self.assertEqual(deadline.remaining(maximum_effective=policy.seconds(3)), 8)
++        self.assertEqual(deadline.remaining(maximum_effective=2), 2)
++        self.assertEqual(deadline.expires_at, 120)
++
++    def test_expiry_is_diagnostic_and_does_not_return_zero(self) -> None:
++        now = [100.0]
++        deadline = ValidationTimeouts(4).deadline(5, clock=lambda: now[0])
++        now[0] = 120
++        with self.assertRaisesRegex(ValidationWatchdogExpired, "nominal=5s scale=4 effective=20s"):
++            deadline.remaining()
++
++    def test_deadline_rejects_arithmetic_without_clock_resolution(self) -> None:
++        with self.assertRaises(ValidationTimeoutConfigurationError):
++            ValidationTimeouts().deadline(1, clock=lambda: 1e300)
++        with self.assertRaises(ValidationTimeoutConfigurationError):
++            ValidationTimeouts().deadline(1, clock=lambda: math.inf)
++
++    def test_subprocess_receives_factor_not_already_scaled_budget(self) -> None:
++        root = Path(__file__).resolve().parents[2]
++        source = (
++            "import json; from scripts.validation_timeouts import ValidationTimeouts; "
++            "p=ValidationTimeouts.from_environment(); "
++            "print(json.dumps({'scale':p.scale,'effective':p.seconds(3)}))"
++        )
++        result = subprocess.run(
++            [sys.executable, "-c", source],
++            cwd=root,
++            env={**os.environ, ENVIRONMENT_VARIABLE: "4", "PYTHONPATH": str(root)},
++            text=True,
++            capture_output=True,
++            check=True,
++            timeout=ValidationTimeouts.from_environment().seconds(30),
++        )
++        self.assertEqual(json.loads(result.stdout), {"scale": 4, "effective": 12})
++
++    def test_completed_synchronization_does_not_sleep_for_scaled_budget(self) -> None:
++        ready = threading.Event()
++        ready.set()
++        policy = ValidationTimeouts.from_environment()
++        self.assertTrue(ready.wait(policy.thread_seconds(2)))
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tests/unit/test_api_client_downloads.py b/tests/unit/test_api_client_downloads.py
+--- a/tests/unit/test_api_client_downloads.py
++++ b/tests/unit/test_api_client_downloads.py
+@@ -6,6 +6,8 @@
+ from pathlib import Path
+ 
+ from riverhog_client.downloads import RetrievalDownload, download_retrieval_files
++
++from scripts.validation_timeouts import ValidationTimeouts
+ 
+ 
+ class DownloadApi:
+@@ -58,12 +60,13 @@
+ 
+ 
+ def test_retrieval_files_download_concurrently_and_preserve_identity(tmp_path: Path) -> None:
++    timeouts = ValidationTimeouts.from_environment()
+     contents = {_artifact("one"): b"one", _artifact("two"): b"two"}
+     rendezvous = threading.Barrier(2)
+     completed: list[str] = []
+ 
+     def transfer(path: str) -> None:
+-        rendezvous.wait(timeout=2)
++        rendezvous.wait(timeout=timeouts.thread_seconds(2))
+         completed.append(path)
+ 
+     api = DownloadApi(contents, transfer)
+@@ -84,6 +87,7 @@
+ 
+ 
+ def test_download_progress_does_not_block_transfer_workers(tmp_path: Path) -> None:
++    timeouts = ValidationTimeouts.from_environment()
+     contents = {_artifact(str(index)): bytes([index]) for index in range(4)}
+     condition = threading.Condition()
+     callback_started = threading.Event()
+@@ -94,7 +98,7 @@
+     def transfer(path: str) -> None:
+         nonlocal completed
+         if path != _artifact("0"):
+-            assert callback_started.wait(timeout=2)
++            assert callback_started.wait(timeout=timeouts.thread_seconds(2))
+         with condition:
+             completed += 1
+             condition.notify_all()
+@@ -105,7 +109,9 @@
+             if len(callbacks) == 1:
+                 callback_started.set()
+                 with condition:
+-                    assert condition.wait_for(lambda: completed == 4, timeout=2)
++                    assert condition.wait_for(
++                        lambda: completed == 4, timeout=timeouts.thread_seconds(2)
++                    )
+ 
+     api = DownloadApi(contents, transfer)
+ 
+@@ -124,10 +130,11 @@
+ 
+ 
+ def test_download_heartbeat_runs_while_one_unbounded_file_is_active(tmp_path: Path) -> None:
++    timeouts = ValidationTimeouts.from_environment()
+     heartbeat = threading.Event()
+ 
+     def transfer(_path: str) -> None:
+-        assert heartbeat.wait(timeout=2)
++        assert heartbeat.wait(timeout=timeouts.thread_seconds(2))
+ 
+     api = DownloadApi({_artifact("large"): b"content"}, transfer)
+ 
+diff --git a/tests/unit/test_api_client_uploads.py b/tests/unit/test_api_client_uploads.py
+--- a/tests/unit/test_api_client_uploads.py
++++ b/tests/unit/test_api_client_uploads.py
+@@ -11,6 +11,8 @@
+     CollectionUploadVolumeSummaryDocument,
+     CollectionUploadWorkBatchDocument,
+ )
++
++from scripts.validation_timeouts import ValidationTimeouts
+ 
+ 
+ @dataclass(frozen=True)
+@@ -136,11 +138,12 @@
+ 
+ 
+ def test_independent_volume_checkpoints_are_created_concurrently() -> None:
++    timeouts = ValidationTimeouts.from_environment()
+     rendezvous = threading.Barrier(2)
+     completed: list[str] = []
+ 
+     def put(volume_id: str, _unit: int) -> None:
+-        rendezvous.wait(timeout=2)
++        rendezvous.wait(timeout=timeouts.thread_seconds(2))
+         completed.append(volume_id)
+ 
+     api = UploadApi([_volume(0, 1), _volume(1, 1)], put)
+@@ -165,6 +168,7 @@
+ 
+ 
+ def test_progress_callback_does_not_block_upload_workers() -> None:
++    timeouts = ValidationTimeouts.from_environment()
+     condition = threading.Condition()
+     callback_started = threading.Event()
+     callback_lock = threading.Lock()
+@@ -174,7 +178,7 @@
+     def put(volume_id: str, _unit: int) -> None:
+         nonlocal completed
+         if volume_id != f"pack-{0:064x}":
+-            assert callback_started.wait(timeout=2)
++            assert callback_started.wait(timeout=timeouts.thread_seconds(2))
+         with condition:
+             completed += 1
+             condition.notify_all()
+@@ -185,7 +189,9 @@
+             if len(callbacks) == 1:
+                 callback_started.set()
+                 with condition:
+-                    assert condition.wait_for(lambda: completed == 4, timeout=2)
++                    assert condition.wait_for(
++                        lambda: completed == 4, timeout=timeouts.thread_seconds(2)
++                    )
+ 
+     api = UploadApi([_volume(index, 1) for index in range(4)], put)
+ 
