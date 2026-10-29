@@ -748,6 +748,20 @@ class JournalSummary:
         }
 
 
+def _retain_validation_result(
+    summary: JournalSummary, on_storage_open: Callable[[JournalStore], None] | None
+) -> JournalSummary:
+    # A closed constructor handle cannot retry an uncertain result-reader close.
+    # Retain the actual reader before authoring work or cleanup can fail.
+    try:
+        if on_storage_open is not None and summary._store is not None:
+            on_storage_open(summary._store)
+    except BaseException:
+        summary.close()
+        raise
+    return summary
+
+
 def validate_journal_chunks(
     chunks: Iterable[bytes],
     *,
@@ -758,6 +772,12 @@ def validate_journal_chunks(
     connection_factory: Callable[..., sqlite3.Connection] | None = None,
     on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> JournalSummary:
+    """Validate exact bytes through the maintained snapshot owner.
+
+    The storage callback receives both constructor storage and the independently
+    owned result reader before handoff. Retaining each handle keeps uncertain
+    initialization, handoff and final-reader close reachable for explicit retry.
+    """
     from uuid import uuid4
 
     from .journal_session import JournalValidationSession
@@ -778,7 +798,7 @@ def validate_journal_chunks(
     ) as session:
         while not session.advance().complete:
             pass
-        return session.result()
+        return _retain_validation_result(session.result(), on_storage_open)
 
 
 def validate_journal(raw: bytes, **options: Any) -> JournalSummary:
@@ -827,7 +847,15 @@ def create_journal(
     recorded_at: str | None = None,
     entry_id: str | None = None,
     catalog: ContractCatalog | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> bytes:
+    """Author canonical bytes through the maintained complete validation.
+
+    The callback receives constructor storage and each internally owned validated
+    reader before work or cleanup can fail. A supplied connection factory owns
+    connections it does not return, including their received private directories.
+    """
     identity = journal_id or new_id()
     require_canonical_uuid_urn(identity)
     policy: dict[str, Any] = {
@@ -849,7 +877,9 @@ def create_journal(
         entry_id=entry_id,
     )
     raw = encode_entry(document, catalog=catalog)
-    validate_journal(raw, catalog=catalog).close()
+    validate_journal(
+        raw, catalog=catalog, connection_factory=connection_factory, on_storage_open=on_storage_open
+    ).close()
     return raw
 
 
@@ -862,8 +892,12 @@ def _append(
     expected_tail: Mapping[str, Any] | None,
     recorded_at: str | None,
     catalog: ContractCatalog | None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> bytes:
-    with validate_journal(raw, catalog=catalog) as summary:
+    with validate_journal(
+        raw, catalog=catalog, connection_factory=connection_factory, on_storage_open=on_storage_open
+    ) as summary:
         if expected_tail is not None and dict(expected_tail) != summary.tail.reference:
             raise ConcurrentJournalChangeError(
                 "expected predecessor differs from supplied journal tail"
@@ -878,7 +912,12 @@ def _append(
             recorded_at=recorded_at,
         )
         appended = raw + encode_entry(document, catalog=catalog)
-        validate_journal(appended, catalog=catalog).close()
+        validate_journal(
+            appended,
+            catalog=catalog,
+            connection_factory=connection_factory,
+            on_storage_open=on_storage_open,
+        ).close()
         return appended
 
 
@@ -890,6 +929,8 @@ def append_assertions(
     expected_tail: Mapping[str, Any] | None = None,
     recorded_at: str | None = None,
     catalog: ContractCatalog | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> bytes:
     return _append(
         raw,
@@ -899,6 +940,8 @@ def append_assertions(
         expected_tail=expected_tail,
         recorded_at=recorded_at,
         catalog=catalog,
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
     )
 
 
@@ -908,10 +951,14 @@ def _assertion_batch_entries(
     *,
     recorded_by_agent_id: str,
     catalog: ContractCatalog | None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
     recorded_at: str | None,
     entry_ids: Iterable[str] | None,
 ) -> Iterator[bytes]:
-    with validate_journal(raw, catalog=catalog) as summary:
+    with validate_journal(
+        raw, catalog=catalog, connection_factory=connection_factory, on_storage_open=on_storage_open
+    ) as summary:
         previous = summary.tail.reference
         sequence = len(summary.frames)
         journal_id = summary.journal_id
@@ -941,6 +988,8 @@ def write_assertion_batches(
     *,
     recorded_by_agent_id: str,
     catalog: ContractCatalog | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
     recorded_at: str | None = None,
     entry_ids: Iterable[str] | None = None,
 ) -> JournalSummary:
@@ -959,13 +1008,18 @@ def write_assertion_batches(
         catalog=catalog,
         recorded_at=recorded_at,
         entry_ids=entry_ids,
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
     ):
         if destination.write(encoded) != len(encoded):
             raise OSError("short journal spool write")
     destination.flush()
     destination.seek(0)
     summary = validate_journal_chunks(
-        iter(lambda: destination.read(1024 * 1024), b""), catalog=catalog
+        iter(lambda: destination.read(1024 * 1024), b""),
+        catalog=catalog,
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
     )
     try:
         destination.seek(0)
@@ -981,6 +1035,8 @@ def append_assertion_batches(
     *,
     recorded_by_agent_id: str,
     catalog: ContractCatalog | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
     recorded_at: str | None = None,
     entry_ids: Iterable[str] | None = None,
 ) -> bytes:
@@ -993,9 +1049,16 @@ def append_assertion_batches(
             catalog=catalog,
             recorded_at=recorded_at,
             entry_ids=entry_ids,
+            connection_factory=connection_factory,
+            on_storage_open=on_storage_open,
         )
     )
-    validate_journal(result, catalog=catalog).close()
+    validate_journal(
+        result,
+        catalog=catalog,
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
+    ).close()
     return result
 
 
@@ -1009,6 +1072,8 @@ def append_correction(
     expected_tail: Mapping[str, Any] | None = None,
     recorded_at: str | None = None,
     catalog: ContractCatalog | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> bytes:
     body: dict[str, Any] = {"reason": reason, "retracts": [dict(item) for item in retracts]}
     if assertions is not None:
@@ -1021,13 +1086,23 @@ def append_correction(
         expected_tail=expected_tail,
         recorded_at=recorded_at,
         catalog=catalog,
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
     )
 
 
 def append_checkpoint(
-    raw: bytes, *, recorded_by_agent_id: str, purpose: str, catalog: ContractCatalog | None = None
+    raw: bytes,
+    *,
+    recorded_by_agent_id: str,
+    purpose: str,
+    catalog: ContractCatalog | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> bytes:
-    with validate_journal(raw, catalog=catalog) as summary:
+    with validate_journal(
+        raw, catalog=catalog, connection_factory=connection_factory, on_storage_open=on_storage_open
+    ) as summary:
         return _append(
             raw,
             {
@@ -1041,6 +1116,8 @@ def append_checkpoint(
             expected_tail=summary.tail.reference,
             recorded_at=None,
             catalog=catalog,
+            connection_factory=connection_factory,
+            on_storage_open=on_storage_open,
         )
 
 

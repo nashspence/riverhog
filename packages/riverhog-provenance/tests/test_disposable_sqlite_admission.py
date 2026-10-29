@@ -146,7 +146,8 @@ def test_disposable_validated_summary_keeps_one_real_connection_until_final_read
     summary = validate_journal_chunks(
         (journal,), catalog=catalog, connection_factory=admission, on_storage_open=handles.append
     )
-    assert len(admission.connections) == len(handles) == 1
+    assert len(admission.connections) == 1
+    assert len(handles) == 2 and handles[1] is summary._store
     expected = summary.anchor
     last = summary.borrow()
     summary.close()
