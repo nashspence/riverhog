@@ -1337,7 +1337,7 @@ stove0_compose exec -T a-stove0-rclone-target python -c "from pathlib import Pat
 # Review0's ordinary finalized collection is inspected before introducing the
 # independent delivery admission policy. This makes the collection boundary
 # observable instead of relying on a race with fast local rclone delivery.
-ci_phase review-delivery
+ci_phase review-input-upload
 review_input_root="${smoke_root}/review-input"
 install -d -m 0700 "${review_input_root}"
 python3 -c "import sys, wave
@@ -1354,6 +1354,7 @@ review_input_receipt_json="$(
     --json
 )"
 review_qualification="$(cat "${ROOT_DIR}/scripts/qualify_review0_delivery.py")"
+ci_phase review-evaluation
 review_result_json="$(stove0_compose exec -T \
   --env "REVIEW_INPUT_RECEIPT=${review_input_receipt_json}" \
   api python -c "${review_qualification}" review)"
@@ -1361,6 +1362,7 @@ review_output_collection_id="$(printf '%s' "${review_result_json}" | jq -r '.col
 review_source_collection_id="$(printf '%s' "${review_result_json}" | jq -r '.source_collection_id')"
 test -n "${review_output_collection_id}"
 
+ci_phase review-delivery-admission
 full_admission_config="${smoke_root}/stove0.full-admissions.yaml"
 sed '/^admissions:/,$d' "${STOVE0_CONFIG_HOST_PATH}" > "${full_admission_config}"
 printf '%s\n' 'admissions:' >> "${full_admission_config}"
@@ -1377,6 +1379,7 @@ delivery_result_json="$(stove0_compose exec -T \
   api python -c "${review_qualification}" delivery)"
 delivery_id="$(printf '%s' "${delivery_result_json}" | jq -r '.delivery_id')"
 manifest_sha256="$(printf '%s' "${delivery_result_json}" | jq -r '.manifest_sha256')"
+ci_phase review-delivery-verification
 stove0_compose exec -T \
   --env "RCLONE_DELIVERY_ID=${delivery_id}" \
   --env "RCLONE_MANIFEST_SHA256=${manifest_sha256}" \
@@ -1392,6 +1395,7 @@ for artifact in manifest['artifacts']:
     delivered = (root / 'objects' / artifact['delivered_path']).read_bytes()
     assert len(delivered) == int(artifact['bytes'])
     assert hashlib.sha256(delivered).hexdigest() == artifact['sha256']"
+ci_phase review-delivery-replay
 stove0_compose restart api controller worker a-stove0-rclone-target
 stove0_compose up --detach --wait api controller worker a-stove0-rclone-target
 stove0_compose exec -T \

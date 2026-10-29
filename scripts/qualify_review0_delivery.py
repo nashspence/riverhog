@@ -89,6 +89,7 @@ def _report_failure(
     *,
     evaluation: dict[str, object] | None = None,
     work: dict[str, object] | None = None,
+    error: Exception | None = None,
 ) -> dict[str, object]:
     """Expose bounded control state without payloads, config or failure messages.
 
@@ -101,6 +102,22 @@ def _report_failure(
         "format": "riverhog-review-qualification-diagnostic/v1",
         "stage": stage,
     }
+    if error is not None:
+        result["error_type"] = _diagnostic_token(type(error).__name__)
+        cause = error if isinstance(error, urllib.error.HTTPError) else error.__cause__
+        if isinstance(cause, urllib.error.HTTPError):
+            result["http_status"] = cause.code
+        frames = []
+        trace = error.__traceback__
+        while trace is not None and len(frames) < 8:
+            frames.append(
+                {
+                    "function": _diagnostic_token(trace.tb_frame.f_code.co_name),
+                    "line": trace.tb_lineno,
+                }
+            )
+            trace = trace.tb_next
+        result["frames"] = frames
     pending = []
     if evaluation is not None:
         children = evaluation.get("children") or []
@@ -150,7 +167,7 @@ def _report_failure(
                 "phase": _diagnostic_token(current.get("phase")),
                 "failure_code": _failure_code(current.get("failure")),
                 "inapplicable_code": _failure_code(current.get("inapplicable")),
-                "target_phase": _diagnostic_token(status.get("phase")),
+                "target_state": _diagnostic_token(status.get("state")),
                 "target_failure_code": _failure_code(status.get("failure")),
                 "target_inapplicable_code": _failure_code(status.get("inapplicable")),
             }
@@ -336,10 +353,24 @@ def delivery() -> None:
     )
 
 
-if __name__ == "__main__":
-    if sys.argv[1:] == ["review"]:
-        review()
-    elif sys.argv[1:] == ["delivery"]:
-        delivery()
-    else:
+def run(mode: str) -> None:
+    operations = {"review": review, "delivery": delivery}
+    if mode not in operations:
         raise SystemExit("expected review or delivery")
+    try:
+        operations[mode]()
+    except Exception as error:
+        reported = (
+            len(error.args) == 1
+            and isinstance(error.args[0], dict)
+            and error.args[0].get("format") == "riverhog-review-qualification-diagnostic/v1"
+        )
+        if not reported:
+            _report_failure(mode, error=error)
+        raise
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        raise SystemExit("expected review or delivery")
+    run(sys.argv[1])

@@ -46,7 +46,7 @@ def test_evaluation_timeout_reports_bounded_work_state_without_payloads_or_messa
             "failure": {"code": "capacity_busy", "message": CANARY},
             "preview_acceptance": {"target_plans": [{"work_id": identities[index + 1]}]},
             "target_status": {
-                "phase": "running",
+                "state": "running",
                 "failure": {"code": "sample_busy", "message": CANARY},
             },
             "work": CANARY,
@@ -65,6 +65,7 @@ def test_evaluation_timeout_reports_bounded_work_state_without_payloads_or_messa
     assert len(calls) == 5 and len(result["works"]) == 4 and sleeps == [0.5]
     assert [row["work_id"] for row in result["works"]] == identities[:4]
     assert all(row["failure_code"] == "capacity_busy" for row in result["works"])
+    assert all(row["target_state"] == "running" for row in result["works"])
     assert CANARY not in json.dumps(result) and len(json.dumps(result)) < 6000
 
 
@@ -230,3 +231,65 @@ def test_delivery_failure_reuses_observed_work_and_preserves_the_failure(monkeyp
     assert result == failed.value.args[0] and result["stage"] == "delivery-work"
     assert len(calls) == 3 and result["works"][0]["failure_code"] == "delivery_failed"
     assert CANARY not in json.dumps(result)
+
+
+@pytest.mark.parametrize("mode", ["review", "delivery"])
+@pytest.mark.parametrize("error_type", [AssertionError, ValueError, RuntimeError])
+def test_unreported_qualification_failure_retains_identity_without_printing_detail(
+    monkeypatch, capsys, mode, error_type
+):
+    failure = error_type(CANARY)
+
+    def fail():
+        raise failure
+
+    monkeypatch.setattr(owner, mode, fail)
+    with pytest.raises(error_type) as caught:
+        owner.run(mode)
+    result = annotation(capsys)
+    assert caught.value is failure
+    assert result["stage"] == mode and result["error_type"] == error_type.__name__
+    assert result["frames"][-1]["function"] == "fail"
+    assert all(isinstance(frame["line"], int) for frame in result["frames"])
+    assert CANARY not in json.dumps(result)
+
+
+def test_operation_failure_reports_http_status_without_serializing_cause_or_body(
+    monkeypatch, capsys
+):
+    http_error = urllib.error.HTTPError("http://unit.invalid/" + CANARY, 409, CANARY, None, None)
+    failure = RuntimeError(CANARY)
+
+    def fail():
+        raise failure from http_error
+
+    monkeypatch.setattr(owner, "review", fail)
+    with pytest.raises(RuntimeError) as caught:
+        owner.run("review")
+    result = annotation(capsys)
+    assert caught.value is failure and caught.value.__cause__ is http_error
+    assert result["http_status"] == 409 and result["error_type"] == "RuntimeError"
+    assert CANARY not in json.dumps(result)
+
+
+def test_operation_wrapper_preserves_one_existing_control_diagnostic(monkeypatch, capsys):
+    failure = None
+
+    def fail():
+        nonlocal failure
+        failure = TimeoutError(owner._report_failure("review-evaluation"))
+        raise failure
+
+    monkeypatch.setattr(owner, "review", fail)
+    with pytest.raises(TimeoutError) as caught:
+        owner.run("review")
+    result = annotation(capsys)
+    assert caught.value is failure and result["stage"] == "review-evaluation"
+    assert "error_type" not in result
+
+
+def test_operation_success_adds_no_annotation_or_control_reads(monkeypatch, capsys):
+    calls = []
+    monkeypatch.setattr(owner, "review", lambda: calls.append("review"))
+    owner.run("review")
+    assert calls == ["review"] and not capsys.readouterr().err
