@@ -276,3 +276,47 @@ def test_native_factory_refuses_unowned_process_before_any_metadata(tmp_path, mo
             allocation_descriptor=b"native fixture",
             initialize=False,
         )
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX shared-owner execution guard")
+def test_shared_preparation_port_refuses_reentry_closed_storage_and_foreign_backend(tmp_path):
+    from functools import partial
+
+    from riverhog_client import PrimaryStateBusy, PrimaryStateError
+    from riverhog_client._prepared_primary_factory import sqlite_primary_preparation_step
+    from riverhog_client._prepared_primary_sqlite_preparation import SqliteReadinessPlan
+
+    store = PrimaryStore(
+        tmp_path / "state",
+        allocation_id=ALLOCATION.allocation_id,
+        scope=SCOPE,
+        limits=LIMITS,
+        initialize=True,
+    )
+    called = []
+
+    def execute(storage):
+        called.append(storage)
+        return False
+
+    try:
+        store._authoring = True
+        with pytest.raises(PrimaryStateBusy, match="authoring"):
+            store.prepare_storage_step(execute)
+        assert not called
+        store._authoring = False
+        before = store.usage
+        plan = SqliteReadinessPlan((8201, 16), 65536, 8, 128, 256 * 1024)
+        with pytest.raises(PrimaryStateError, match="original SQL root"):
+            store.prepare_storage_step(partial(sqlite_primary_preparation_step, plan=plan))
+        assert store.usage == before
+        for invalid in (None, 0, 1, object()):
+            with pytest.raises(PrimaryStateError, match="completion boolean"):
+                store.prepare_storage_step(lambda _storage, value=invalid: value)
+        assert store.prepare_storage_step(execute) is False
+        assert len(called) == 1
+    finally:
+        store.close()
+    with pytest.raises(PrimaryStateError):
+        store.prepare_storage_step(execute)
+    assert len(called) == 1

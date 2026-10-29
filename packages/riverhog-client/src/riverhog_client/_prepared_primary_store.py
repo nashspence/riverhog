@@ -204,6 +204,25 @@ class PrimaryStore:
         with self._mutex:
             self._files.close()
 
+    def prepare_storage_step(self, execute: Callable[[PrimaryStorage], bool]) -> bool:
+        """Execute one synchronous preparation quantum against borrowed storage.
+
+        The backend adapter owns the preparation plan and its bounded work. It
+        must return an exact completion boolean and leave storage open. Callers
+        schedule subsequent steps before dependent payload; status and close
+        never drive preparation.
+        """
+        with self._mutex:
+            if self._authoring:
+                raise PrimaryStateBusy("prepared-primary authoring is still running")
+            self._files.check_current()
+            done = execute(self._files)
+            if type(done) is not bool:
+                raise PrimaryStateError(
+                    "prepared-primary preparation requires a completion boolean"
+                )
+            return done
+
     @property
     def publication_started(self) -> bool:
         """Distinguish pristine allocation from a possibly committed remote creation."""

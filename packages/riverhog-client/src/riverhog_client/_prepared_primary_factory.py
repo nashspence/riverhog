@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from riverhog_client._prepared_primary_native import SqliteProcessBudget
     from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
     from riverhog_client._prepared_primary_sqlite_operations import SqliteOperationGrants
+    from riverhog_client._prepared_primary_sqlite_preparation import SqliteReadinessPlan
 
 
 def posix_primary_files(
@@ -21,6 +22,16 @@ def posix_primary_files(
     from riverhog_client._prepared_primary_posix import PrimaryFiles
 
     return PrimaryFiles(location, initialize=initialize)
+
+
+def sqlite_primary_preparation_step(storage: PrimaryStorage, *, plan: SqliteReadinessPlan) -> bool:
+    """Advance one SQL preparation quantum through the shared owner's execution port."""
+    from riverhog_client._prepared_primary_sqlite import TransactionalPrimaryFiles
+    from riverhog_client._prepared_primary_types import PrimaryStateError
+
+    if type(storage) is not TransactionalPrimaryFiles or storage._root is not storage:
+        raise PrimaryStateError("prepared-primary preparation requires original SQL root storage")
+    return storage.prepare_payload_step(plan).done
 
 
 @dataclass(frozen=True, slots=True)

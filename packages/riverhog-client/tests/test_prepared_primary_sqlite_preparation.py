@@ -293,3 +293,92 @@ def test_compound_journal_rewarm_retains_its_quantum_even_when_the_record_is_unc
         assert guard.arms > arms
         monkeypatch.undo()
         drain(files, plan)
+
+
+def test_shared_owner_preparation_resumes_after_callback_failure_without_status_work(tmp_path):
+    from functools import partial
+
+    from riverhog_client import PrimaryStore
+    from riverhog_client._prepared_primary_factory import sqlite_primary_preparation_step
+
+    from tests.support.prepared_primary_replay import ALLOCATION, DESCRIPTOR, SCOPE
+    from tests.support.prepared_primary_replay import LIMITS as STORE_LIMITS
+
+    roots = []
+
+    def factory(path, *, allocation_descriptor, initialize):
+        assert allocation_descriptor == DESCRIPTOR
+        if initialize:
+            path.touch(exist_ok=False)
+        guard = Guard(path)
+        files = TransactionalPrimaryFiles(
+            guard,
+            allocation_descriptor=allocation_descriptor,
+            limits=LIMITS,
+            initialize=initialize,
+            operations=GRANTS,
+        )
+        roots.append(start(files, guard))
+        return files
+
+    def opened_store(initialize=False):
+        return PrimaryStore(
+            tmp_path / "shared.sqlite3",
+            allocation_id=ALLOCATION.allocation_id,
+            scope=SCOPE,
+            limits=STORE_LIMITS,
+            initialize=initialize,
+            storage_factory=factory,
+        )
+
+    plan = SqliteReadinessPlan((8201, 16), 65536, 8, 128, 256 * 1024)
+    execute = partial(sqlite_primary_preparation_step, plan=plan)
+    calls = []
+
+    def interrupted(storage):
+        calls.append(storage)
+        assert not execute(storage)
+        raise RuntimeError("execution interrupted after committed cursor")
+
+    with opened_store(initialize=True) as store:
+        usage = store.usage
+        with pytest.raises(RuntimeError, match="after committed cursor"):
+            store.prepare_storage_step(interrupted)
+        assert calls == [roots[-1]]
+        cursor = roots[-1].progress_journal()
+        assert cursor.pad_rows == 1
+        assert roots[-1].database_reserve().phase == "unprepared"
+        assert store.usage == usage
+        assert not store.publication_started and not store.session_bound
+        assert roots[-1].progress_journal() == cursor
+    with opened_store() as store:
+        assert roots[-1].progress_journal() == cursor
+        assert roots[-1].operation_grants().grants == GRANTS
+        assert store.allocation == ALLOCATION and store.usage == usage
+        for _ in range(256):
+            journal, database = roots[-1].progress_journal(), roots[-1].database_reserve()
+            done = store.prepare_storage_step(execute)
+            assert roots[-1].progress_journal().pad_rows - journal.pad_rows <= 1
+            after = roots[-1].database_reserve()
+            assert after.inserted - database.inserted <= 1
+            assert after.released - database.released <= 1
+            if done:
+                break
+        else:
+            pytest.fail("shared preparation fixture did not finish")
+        assert roots[-1].require_physical_ready().phase == "ready"
+        assert store.session_for(b"exact creation") is None
+        assert store.publication_started and store.usage == usage
+    with opened_store() as store:
+        import hashlib
+
+        from riverhog_client._prepared_primary_types import PrimaryByteFile
+
+        original = PrimaryByteFile(
+            "create-request", 14, hashlib.sha256(b"exact creation").hexdigest()
+        )
+        with roots[-1].verified(original) as stream:
+            assert stream.read() == b"exact creation"
+        with pytest.raises(PrimaryStateError, match="uncertain outcome"):
+            store.session_for(b"exact creation")
+        assert store.allocation == ALLOCATION and store.usage == usage

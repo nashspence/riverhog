@@ -5218,3 +5218,123 @@ print(json.dumps({"passed":True,"native_compound_preparation":proof}))
         "prepared_primary_native_compound_preparation",
         json.dumps(proof["native_compound_preparation"]),
     )
+
+
+def test_native_shared_owner_executes_preparation_and_retains_creation_across_cold_open(
+    tmp_path, record_testsuite_property
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import hashlib,importlib.util,json,sys
+from functools import partial
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client import PrimaryStateError,PrimaryStore
+from riverhog_client._prepared_primary_factory import (
+    WindowsPrimaryFactory,sqlite_primary_preparation_step)
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
+from riverhog_client._prepared_primary_sqlite_operations import (
+    SqliteOperationBank,SqliteOperationGrants)
+from riverhog_client._prepared_primary_sqlite_preparation import SqliteReadinessPlan
+from riverhog_client._prepared_primary_types import PrimaryByteFile
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+from tests.support.prepared_primary_replay import ALLOCATION,DESCRIPTOR,LIMITS,SCOPE
+spec=importlib.util.spec_from_file_location("owner_preparation_parents",
+    root/"tests/platform/windows_primary_process.py")
+parents=importlib.util.module_from_spec(spec);sys.modules[spec.name]=parents
+spec.loader.exec_module(parents)
+parent=Path(sys.argv[2])/"owner-preparation-private";parents._parent(parent)
+path=windows_container_path(parent,DESCRIPTOR)
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+limits=SqlitePrimaryLimits(2*1024*1024,1024*1024,128*1024)
+bank=SqliteOperationBank(512,8*1024*1024,65536,8*1024*1024,65536,
+    262144,0,1<<40,1<<60,1<<40)
+grants=SqliteOperationGrants(bank,bank)
+selected=WindowsPrimaryFactory(limits,grants,heap,(2,3))
+state={"arms":0,"bank":None,"initializations":0,"cold_opens":0}
+arm=NativeWindowsContainer.arm_operation
+def observed(self,grants,limits,**caps):
+    value=arm(self,grants,limits,**caps)
+    state.update(arms=state["arms"]+1,bank=value)
+    return value
+NativeWindowsContainer.arm_operation=observed
+roots=[]
+def factory(location,*,allocation_descriptor,initialize):
+    assert allocation_descriptor==DESCRIPTOR and location==path
+    files=selected(location,allocation_descriptor=allocation_descriptor,initialize=initialize)
+    assert files.operation_grants().grants==grants
+    roots[:]=[files]
+    state["initializations" if initialize else "cold_opens"]+=1
+    return files
+def opened(initialize=False):
+    return PrimaryStore(path,allocation_id=ALLOCATION.allocation_id,scope=SCOPE,
+        limits=LIMITS,initialize=initialize,storage_factory=factory)
+plan=SqliteReadinessPlan((8201,16),65536,8,128,256*1024)
+execute=partial(sqlite_primary_preparation_step,plan=plan)
+steps=0
+with opened(True) as store:
+    usage=store.usage
+    assert not store.prepare_storage_step(execute);steps+=1
+    cursor=roots[0].progress_journal()
+    assert cursor.pad_rows==1 and roots[0].database_reserve().phase=="unprepared"
+    assert not store.publication_started and not store.session_bound and store.usage==usage
+    assert roots[0].progress_journal()==cursor
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+with opened() as store:
+    assert roots[0].progress_journal()==cursor
+    assert store.allocation==ALLOCATION and store.usage==usage
+    for _ in range(256):
+        before_journal,before_database=roots[0].progress_journal(),roots[0].database_reserve()
+        done=store.prepare_storage_step(execute);steps+=1
+        journal,database=roots[0].progress_journal(),roots[0].database_reserve()
+        assert journal.pad_rows-before_journal.pad_rows<=1
+        assert database.inserted-before_database.inserted<=1
+        assert database.released-before_database.released<=1
+        if done:break
+    else:raise AssertionError("shared-owner preparation fixture did not finish")
+    ready=roots[0].require_physical_ready()
+    assert ready.minimum_pages>=16 and ready.minimum_journal_bytes>=73872
+    assert store.session_for(b"exact creation") is None
+    assert store.publication_started and store.usage==usage
+with opened() as store:
+    original=PrimaryByteFile("create-request",14,hashlib.sha256(b"exact creation").hexdigest())
+    with roots[0].verified(original) as stream:assert stream.read()==b"exact creation"
+    try:store.session_for(b"exact creation")
+    except PrimaryStateError as error:assert "uncertain outcome" in str(error)
+    else:raise AssertionError("uncertain creation was treated as a new session")
+    assert store.allocation==ALLOCATION and store.usage==usage
+    assert roots[0].operation_grants().grants==grants
+    assert roots[0]._guard._native_gate.operation_failure() is None
+population=heap.native_report();memory=heap.report()
+assert population["owners"]==population["files"]==0
+assert population["owner_peak"]==1 and 1<=population["file_peak"]<=2
+assert not state["bank"].writes.report()["refusals"]
+assert not state["bank"].writes.report()["native_failures"]
+assert state["initializations"]==1 and state["cold_opens"]==2
+proof=dict(initializations=1,cold_opens=2,first_cursor_retained=1,status_did_not_advance=1,
+    ready_before_creation=1,exact_original_creation=1,uncertainty_preserved=1,
+    usage_unchanged=1,population_released=1,preparation_steps=steps,operation_arms=state["arms"],
+    owner_peak=population["owner_peak"],file_peak=population["file_peak"],
+    heap_limit_bytes=memory["heap_limit_bytes"],
+    sqlite_heap_peak_bytes=memory["sqlite_heap_peak_bytes"],
+    retry_count=heap.retry_report()["selected_retry_count"],
+    retry_delay_milliseconds=heap.retry_report()["selected_delay_milliseconds"])
+print(json.dumps({"passed":True,"native_owner_preparation":proof}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[3]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] is True
+    record_testsuite_property(
+        "prepared_primary_native_owner_preparation", json.dumps(proof["native_owner_preparation"])
+    )
