@@ -970,6 +970,9 @@ def test_small_retention_rejects_before_ready_and_larger_grant_can_resume_the_or
         slot = files._one("SELECT rowid,length(body) FROM primary_controls")
         assert files.space_usage().journal.end_bytes <= 4096
     with _open(path, initialize=False) as files:
+        files.increase_resource_grants(
+            database_bytes=LIMITS.database_bytes, journal_bytes=LIMITS.journal_bytes
+        )
         files.prepare_controls(("receipt",), byte_limit=65536)
         assert files._one("SELECT rowid,length(body) FROM primary_controls") == slot
         files.put_control("receipt", b"original", byte_limit=65536)

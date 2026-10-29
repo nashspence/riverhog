@@ -4133,3 +4133,80 @@ print(json.dumps({"passed":True,"scenario":scenario,"geometry":geometry,"writes"
     if scenario == "fixed-control":
         assert set(proof["writes"]) == {"put", "remove"}
         record_testsuite_property("prepared_primary_control_envelopes", json.dumps(proof["writes"]))
+
+
+def test_native_resource_grants_survive_recovery_and_explicit_increase(tmp_path):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import hashlib,importlib.util,json,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client import PrimaryStateCapacity
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits,TransactionalPrimaryFiles
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+def load(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    m=importlib.util.module_from_spec(spec);sys.modules[name]=m;spec.loader.exec_module(m);return m
+helpers=load("resource_helpers",root/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py")
+parents=load("resource_parents",root/"tests/platform/windows_primary_process.py")
+parent=Path(sys.argv[2])/"resources-private";parents._parent(parent)
+path=windows_container_path(parent,b"native retained resources")
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+source=native.runtime_identity()["sqlite_source_id"]
+small=SqlitePrimaryLimits(256*1024,256*1024,128*1024)
+large=SqlitePrimaryLimits(512*1024,512*1024,128*1024)
+def opened(initialize,limits):
+    writes=native.WriteQuota(helpers.grant(),helpers.grant())
+    if not initialize:writes.begin_recovery()
+    gate=native.WriteVfs(source,helpers.reads(native,writes),helpers.callbacks(native,writes),heap)
+    guard=NativeWindowsContainer(path,initialize=initialize,gate=gate)
+    helpers.admit_fixture_retries(gate)
+    return TransactionalPrimaryFiles(guard,allocation_descriptor=b"native retained resources",
+        limits=limits,initialize=initialize),gate,writes
+files,gate,writes=opened(True,small)
+with files:
+    selected=files.put_bytes("original",(b"exact original",),byte_limit=14)
+    first=files.resource_grants()
+    child=files.child("child",initialize=True)
+    changed=files.increase_resource_grants(database_bytes=large.database_bytes,journal_bytes=large.journal_bytes)
+    assert changed.revision==1 and changed.identity==first.identity
+    assert child.resource_grants()==changed and child._limits is files._limits
+    assert gate.operation_failure() is None and not writes.recovering
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+files,gate,writes=opened(False,large)
+with files:
+    assert writes.recovering and not writes.report()["refusals"]
+    assert not writes.report()["native_failures"]
+    assert files.resource_grants()==changed
+    with files.verified(selected) as stream:assert stream.read()==b"exact original"
+    assert gate.operation_failure() is None
+original=hashlib.sha256(path.read_bytes()).hexdigest()
+try:opened(False,small)
+except PrimaryStateCapacity as exc:assert "original resource grants" in str(exc)
+else:raise AssertionError("cold open lowered original ceilings")
+assert hashlib.sha256(path.read_bytes()).hexdigest()==original
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+print(json.dumps({"passed":True,"original_exact":True,"cold_recovery_bank":True,
+    "explicit_increase":True,"lowered_offer_rejected":True,"population_released":True}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[3]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "original_exact": True,
+        "cold_recovery_bank": True,
+        "explicit_increase": True,
+        "lowered_offer_rejected": True,
+        "population_released": True,
+    }

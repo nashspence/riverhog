@@ -30,12 +30,13 @@ from riverhog_client._prepared_primary_types import (
 )
 
 if TYPE_CHECKING:
+    from riverhog_client._prepared_primary_sqlite_resources import SqliteResourceGrants
     from riverhog_client._prepared_primary_sqlite_space import SqlitePrimarySpace, SqliteVacuumStep
 
 _BLOCK = 4096
 _GEOMETRY = (
     "riverhog-prepared-primary-sqlite/v1;page=4096;chunk=4096;"
-    "controls=fixed/v2;journal=prepared/v1;barrier=fixed/v1"
+    "controls=fixed/v2;journal=prepared/v1;barrier=fixed/v1;resources=grants/v1"
 )
 
 
@@ -57,6 +58,9 @@ class SqlitePrimaryLimits:
     Database and retained-journal extents must fit these grants before a cold
     Windows SQLite open. Journal retention is distinct from peak transaction
     space and from the application's pending-byte and control reservations.
+
+    Original ceilings are retained with the allocation. Larger cold-open offers
+    permit recovery; explicit resource increases change the retained ceilings.
     """
 
     database_bytes: int
@@ -65,8 +69,10 @@ class SqlitePrimaryLimits:
 
     def __post_init__(self) -> None:
         for value in (self.database_bytes, self.journal_bytes, self.cache_bytes):
-            if type(value) is not int or value < _BLOCK or value % _BLOCK:
-                raise ValueError("SQLite prepared-primary grants must be positive page multiples")
+            if type(value) is not int or not _BLOCK <= value <= (1 << 63) - 1 or value % _BLOCK:
+                raise ValueError(
+                    "SQLite prepared-primary grants must be positive signed-64-bit page multiples"
+                )
 
 
 def _connect(guard: ContainerGuard, limits: SqlitePrimaryLimits) -> sqlite3.Connection:
@@ -99,6 +105,17 @@ def _connect(guard: ContainerGuard, limits: SqlitePrimaryLimits) -> sqlite3.Conn
             "journal_size_limit": limits.journal_bytes,
         }
         for key, value in settings.items():
+            with closing(connection.execute(f"PRAGMA {key}")) as cursor:
+                row = cursor.fetchone()
+            guard.check_operation()
+            if row is not None and str(row[0]).casefold() == str(value).casefold():
+                continue
+            if key in ("page_size", "auto_vacuum"):
+                with closing(connection.execute("PRAGMA page_count")) as cursor:
+                    count = cursor.fetchone()
+                guard.check_operation()
+                if count != (0,):
+                    raise PrimaryStateError("prepared-primary persistent storage geometry changed")
             with closing(connection.execute(f"PRAGMA {key}={value}")):
                 pass
             guard.check_operation()
@@ -150,7 +167,8 @@ class TransactionalPrimaryFiles:
             guard.close()
             raise ValueError("prepared-primary allocation descriptor is required")
         self._guard = guard
-        self._limits = limits
+        self._resource_limits = limits
+        self._resource_identity = b""
         self._mutex = threading.RLock()
         self._closed = False
         self._poisoned = False
@@ -170,8 +188,12 @@ class TransactionalPrimaryFiles:
                         schema.upgrade_connection(connection)
                         connection.exec_driver_sql(
                             "INSERT INTO primary_format VALUES "
-                            "(1, ?, ?, zeroblob(8), zeroblob(16))",
-                            (allocation_descriptor, _GEOMETRY),
+                            "(1, ?, ?, zeroblob(8), zeroblob(16), ?)",
+                            (
+                                allocation_descriptor,
+                                _GEOMETRY,
+                                self._initial_resource_grants(connection, limits),
+                            ),
                         )
                         connection.exec_driver_sql(
                             "INSERT INTO primary_namespaces VALUES (1, NULL, 'root')"
@@ -192,11 +214,42 @@ class TransactionalPrimaryFiles:
             identity = self._one("SELECT allocation, geometry FROM primary_format WHERE id=1")
             if identity != (allocation_descriptor, _GEOMETRY):
                 raise PrimaryStateError("prepared-primary allocation or storage geometry changed")
+            from riverhog_client._prepared_primary_sqlite_resources import reconcile
+
+            reconcile(self, limits, geometry=_GEOMETRY)
             self.journal_reserved_bytes()
             self.sync()
         except BaseException:
             self.close()
             raise
+
+    @property
+    def _limits(self) -> SqlitePrimaryLimits:
+        return self._root._resource_limits
+
+    @staticmethod
+    def _initial_resource_grants(connection: Connection, limits: SqlitePrimaryLimits) -> bytes:
+        from riverhog_client._prepared_primary_sqlite_resources import (
+            SqliteResourceGrants,
+            identity,
+        )
+
+        source = connection.exec_driver_sql("SELECT sqlite_source_id()").scalar_one()
+        return SqliteResourceGrants(
+            identity(source, _GEOMETRY), limits.database_bytes, limits.journal_bytes, 0
+        ).encode()
+
+    def resource_grants(self) -> SqliteResourceGrants:
+        from riverhog_client._prepared_primary_sqlite_resources import read
+
+        return read(self)
+
+    def increase_resource_grants(
+        self, *, database_bytes: int, journal_bytes: int
+    ) -> SqliteResourceGrants:
+        from riverhog_client._prepared_primary_sqlite_resources import increase
+
+        return increase(self, database_bytes=database_bytes, journal_bytes=journal_bytes)
 
     @classmethod
     def windows(
@@ -376,7 +429,7 @@ class TransactionalPrimaryFiles:
                     raise FileNotFoundError(name)
                 identifier = row[0]
             child = object.__new__(TransactionalPrimaryFiles)
-            child._guard, child._limits = self._guard, self._limits
+            child._guard = self._guard
             child._mutex, child._root = self._mutex, self._root
             child._closed, child._namespace = False, identifier
             return child

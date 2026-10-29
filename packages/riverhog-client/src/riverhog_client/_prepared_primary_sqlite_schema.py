@@ -30,11 +30,16 @@ Table(
     Column("geometry", Text, nullable=False),
     Column("barrier", LargeBinary, nullable=False),
     Column("journal_reserve", LargeBinary, nullable=False),
+    Column("resource_grants", LargeBinary, nullable=False),
     CheckConstraint("id = 1", name="ck_primary_format_singleton"),
     CheckConstraint(
         "typeof(barrier) = 'blob' AND length(barrier) = 8", name="ck_primary_format_barrier"
     ),
     CheckConstraint("length(journal_reserve) = 16", name="ck_primary_format_journal_reserve"),
+    CheckConstraint(
+        "typeof(resource_grants) = 'blob' AND length(resource_grants) = 64",
+        name="ck_primary_format_resource_grants",
+    ),
 )
 Table(
     "primary_namespaces",
