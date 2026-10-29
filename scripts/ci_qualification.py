@@ -62,6 +62,7 @@ NATIVE_TESTS = (
     "packages/riverhog-client/tests/test_prepared_primary_sqlite_ready.py",
     "packages/riverhog-client/tests/test_prepared_primary_sqlite_operations.py",
     "packages/riverhog-client/tests/test_prepared_primary_sqlite_native.py",
+    "packages/riverhog-client/tests/test_prepared_primary_sqlite_preparation.py",
     "packages/riverhog-client/tests/test_prepared_primary_sqlite_space.py",
     "packages/riverhog-client/tests/test_prepared_primary_windows.py",
     "packages/riverhog-client/tests/test_prepared_primary_vfs.py",

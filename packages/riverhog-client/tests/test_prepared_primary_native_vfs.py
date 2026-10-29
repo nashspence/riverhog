@@ -5096,3 +5096,125 @@ print(json.dumps({"passed":True,"native_shared_store":proof}))
     record_testsuite_property(
         "prepared_primary_native_shared_store", json.dumps(proof["native_shared_store"])
     )
+
+
+def test_native_compound_preparation_resumes_cursors_before_payload_and_replenishes(
+    tmp_path, record_testsuite_property
+):
+    import json
+    import subprocess
+    import sys
+
+    code = r"""
+import importlib.util,json,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client import PrimaryStateCapacity
+from riverhog_client._prepared_primary_factory import WindowsPrimaryFactory
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
+from riverhog_client._prepared_primary_sqlite_operations import (
+    SqliteOperationBank,SqliteOperationGrants)
+from riverhog_client._prepared_primary_sqlite_preparation import SqliteReadinessPlan
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+spec=importlib.util.spec_from_file_location("preparation_parents",
+    root/"tests/platform/windows_primary_process.py")
+parents=importlib.util.module_from_spec(spec);sys.modules[spec.name]=parents
+spec.loader.exec_module(parents)
+parent=Path(sys.argv[2])/"preparation-private";parents._parent(parent)
+allocation=b"bounded compound preparation"
+path=windows_container_path(parent,allocation)
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+limits=SqlitePrimaryLimits(2*1024*1024,1024*1024,128*1024)
+bank=SqliteOperationBank(512,8*1024*1024,65536,8*1024*1024,65536,
+    262144,0,1<<40,1<<60,1<<40)
+grants=SqliteOperationGrants(bank,bank)
+factory=WindowsPrimaryFactory(limits,grants,heap,(2,3))
+state={"arms":0,"bank":None,"caps":None}
+stages={"journal":0,"database":0,"ready":0}
+arm=NativeWindowsContainer.arm_operation
+def observed(self,grants,limits,**caps):
+    value=arm(self,grants,limits,**caps)
+    state.update(arms=state["arms"]+1,bank=value,caps=caps)
+    return value
+NativeWindowsContainer.arm_operation=observed
+files=factory(path,allocation_descriptor=allocation,initialize=True)
+with files:
+    original=files.put_bytes("original",(b"exact original",),byte_limit=14)
+    files.prepare_controls(("receipt",),byte_limit=8192)
+    files.put_control("receipt",b"exact receipt",byte_limit=8192)
+    plan=SqliteReadinessPlan(prefix_lengths=(8201,16),journal_workspace_bytes=65536,
+        free_pages=8,target_pages=files.space_usage().database_pages+32,
+        database_workspace_bytes=128*1024)
+    first=files.prepare_payload_step(plan)
+    assert first.stage=="journal" and not first.done
+    stages[first.stage]+=1
+    cursor=files.progress_journal()
+    assert cursor.pad_rows==1 and files.database_reserve().phase=="unprepared"
+    consumed=[];arms=state["arms"]
+    def source():
+        consumed.append(True);yield b"refused"
+    try:files.put_bytes("refused",source(),byte_limit=7)
+    except PrimaryStateCapacity:pass
+    else:raise AssertionError("payload entered before compound preparation finished")
+    assert not consumed and state["arms"]==arms and not files._poisoned
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+files=factory(path,allocation_descriptor=allocation,initialize=False)
+with files:
+    assert files.progress_journal()==cursor and files.operation_grants().grants==grants
+    with files._transaction(preparing=True) as db:
+        db.execute("INSERT INTO primary_objects VALUES ('pending',1,'pending',0,'',0)").close()
+        db.execute("INSERT INTO primary_operation VALUES (1,'pending',0,'writing')").close()
+    pending=files._one("SELECT generation,cursor,phase FROM primary_operation")
+    def drain():
+        for _ in range(256):
+            before_journal,before_database=files.progress_journal(),files.database_reserve()
+            result=files.prepare_payload_step(plan);stages[result.stage]+=1
+            journal,database=files.progress_journal(),files.database_reserve()
+            assert journal.pad_rows-before_journal.pad_rows<=1
+            assert database.inserted-before_database.inserted<=1
+            assert database.released-before_database.released<=1
+            if result.done:
+                assert result.stage=="ready";return
+        raise AssertionError("compound preparation fixture did not finish")
+    drain()
+    assert files._one("SELECT generation,cursor,phase FROM primary_operation")==pending
+    ready=files.require_physical_ready()
+    assert ready.minimum_pages>=16 and ready.minimum_journal_bytes>=73872
+    for _ in range(8):
+        if files.recover_step():break
+    else:raise AssertionError("pending fixture did not clean")
+    stored=files.put_bytes("payload",(b"payload"*1000,),byte_limit=7000)
+    assert state["caps"]==dict(database_pages=ready.backed_pages,journal_bytes=ready.journal_bytes)
+    files.prepare_controls(("later-control",),byte_limit=8192)
+    assert files.physical_readiness().phase=="depleted"
+    drain()
+    final=files.require_physical_ready()
+    with files.verified(original) as stream:assert stream.read()==b"exact original"
+    with files.verified(stored) as stream:assert stream.read()==b"payload"*1000
+    assert files.read_control("receipt",byte_limit=8192)==b"exact receipt"
+    assert files._guard._native_gate.operation_failure() is None
+    assert not state["bank"].writes.report()["refusals"]
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+proof=dict(first_cursor_retained=1,blocked_payload_before_ready=1,pending_preserved=1,
+    payload_after_ready=1,replenished=1,original_exact=1,population_released=1,
+    journal_steps=stages["journal"],database_steps=stages["database"],ready_steps=stages["ready"],
+    final_database_cap=final.backed_pages*4096,final_journal_cap=final.journal_bytes,
+    operation_arms=state["arms"],retry_count=heap.retry_report()["selected_retry_count"],
+    retry_delay_milliseconds=heap.retry_report()["selected_delay_milliseconds"])
+print(json.dumps({"passed":True,"native_compound_preparation":proof}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[3]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    proof = json.loads(result.stdout)
+    assert proof["passed"] is True
+    record_testsuite_property(
+        "prepared_primary_native_compound_preparation",
+        json.dumps(proof["native_compound_preparation"]),
+    )

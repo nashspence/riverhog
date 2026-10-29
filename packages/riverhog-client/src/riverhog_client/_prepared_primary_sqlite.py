@@ -43,6 +43,10 @@ if TYPE_CHECKING:
         SqliteOperationGrants,
         SqliteRetainedOperations,
     )
+    from riverhog_client._prepared_primary_sqlite_preparation import (
+        SqlitePreparationStep,
+        SqliteReadinessPlan,
+    )
     from riverhog_client._prepared_primary_sqlite_progress_journal import (
         SqliteProgressJournal,
         SqliteProgressJournalStep,
@@ -367,6 +371,12 @@ class TransactionalPrimaryFiles:
         from riverhog_client._prepared_primary_sqlite_ready import prepare
 
         return prepare(self)
+
+    def prepare_payload_step(self, plan: SqliteReadinessPlan) -> SqlitePreparationStep:
+        """Execution only: one bounded resource cursor step before dependent payload."""
+        from riverhog_client._prepared_primary_sqlite_preparation import step
+
+        return step(self, plan)
 
     @classmethod
     def windows(

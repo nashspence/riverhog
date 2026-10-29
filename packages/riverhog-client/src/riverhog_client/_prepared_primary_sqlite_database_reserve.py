@@ -138,6 +138,19 @@ def require(files: TransactionalPrimaryFiles) -> SqliteDatabaseReserve:
         return reserve
 
 
+def _validate_plan(free_pages: int, target_pages: int, workspace_bytes: int) -> None:
+    if (
+        type(free_pages) is not int
+        or not 0 <= free_pages <= _MAXIMUM
+        or type(target_pages) is not int
+        or not 1 <= target_pages <= _MAXIMUM
+        or type(workspace_bytes) is not int
+        or not _BLOCK <= workspace_bytes <= _MAXIMUM
+        or workspace_bytes % _BLOCK
+    ):
+        raise ValueError("prepared-primary database reserve grants are invalid")
+
+
 def step(
     files: TransactionalPrimaryFiles,
     *,
@@ -154,16 +167,7 @@ def step(
     from riverhog_client._prepared_primary_sqlite_ready import deplete
     from riverhog_client._prepared_primary_sqlite_space import space_usage
 
-    if (
-        type(free_pages) is not int
-        or not 0 <= free_pages <= _MAXIMUM
-        or type(target_pages) is not int
-        or not 1 <= target_pages <= _MAXIMUM
-        or type(workspace_bytes) is not int
-        or not _BLOCK <= workspace_bytes <= _MAXIMUM
-        or workspace_bytes % _BLOCK
-    ):
-        raise ValueError("prepared-primary database reserve grants are invalid")
+    _validate_plan(free_pages, target_pages, workspace_bytes)
     with files._mutex:
         if files is not files._root:
             raise PrimaryStateError("prepared-primary database reserve requires the container root")

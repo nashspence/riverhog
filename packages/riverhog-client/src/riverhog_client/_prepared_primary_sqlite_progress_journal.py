@@ -134,6 +134,15 @@ def require(files: TransactionalPrimaryFiles) -> SqliteProgressJournal:
         return reserve
 
 
+def _validate_workspace(workspace_bytes: int) -> None:
+    if (
+        type(workspace_bytes) is not int
+        or not _BLOCK <= workspace_bytes <= _MAXIMUM
+        or workspace_bytes % _BLOCK
+    ):
+        raise ValueError("prepared-primary journal workspace must be a positive page multiple")
+
+
 def step(
     files: TransactionalPrimaryFiles,
     *,
@@ -154,12 +163,7 @@ def step(
     from riverhog_client._prepared_primary_sqlite_ready import deplete
 
     _validate_control_prefixes(prefix_lengths)
-    if (
-        type(workspace_bytes) is not int
-        or not _BLOCK <= workspace_bytes <= _MAXIMUM
-        or workspace_bytes % _BLOCK
-    ):
-        raise ValueError("prepared-primary journal workspace must be a positive page multiple")
+    _validate_workspace(workspace_bytes)
     with files._mutex:
         if files is not files._root:
             raise PrimaryStateError("prepared-primary progress journal requires the container root")
