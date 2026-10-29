@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sqlite3
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import replace
 from tempfile import TemporaryFile
@@ -35,6 +36,7 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_sha256,
 )
 from riverhog_provenance import (
+    JournalStore,
     external_reference,
     selected_delivery_occurrence,
     software_agent_id,
@@ -83,6 +85,8 @@ class DerivedCollectionWriter:
         *,
         primary_store: PrimaryStore,
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -100,6 +104,8 @@ class DerivedCollectionWriter:
         if not evidence:
             raise ValueError("derived collection writer requires controller evidence")
         self.api = api
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
         self.primary_store = primary_store
         self.member_inventory = member_inventory
         self.spec = spec
@@ -150,6 +156,8 @@ class DerivedCollectionWriter:
             self.api,
             primary_store=self.primary_store,
             member_inventory=self.member_inventory,
+            provenance_connection_factory=self._provenance_connection_factory,
+            on_provenance_storage_open=self._on_provenance_storage_open,
             spec=self.spec,
             claim_id=self.claim_id,
             fence=self.fence,
@@ -192,6 +200,8 @@ class IncrementalDerivedCollectionWriter:
         *,
         primary_store: PrimaryStore,
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -204,6 +214,8 @@ class IncrementalDerivedCollectionWriter:
         source_context: Mapping[str, object] | None = None,
     ) -> None:
         self.api = api
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
         self.producer_app = producer_app
         self.producer_version = producer_version
         self.spec = spec
@@ -235,6 +247,8 @@ class IncrementalDerivedCollectionWriter:
             api,
             primary_store=primary_store,
             member_inventory=member_inventory,
+            provenance_connection_factory=provenance_connection_factory,
+            on_provenance_storage_open=on_provenance_storage_open,
             producer_app=producer_app,
             adapter_id="riverhog-derived-collection/v1",
             adapter_version=producer_version,
@@ -431,7 +445,7 @@ class IncrementalDerivedCollectionWriter:
                 ),
             )
             with TemporaryFile("w+b") as journal:
-                summary = write_completion_journal(
+                with write_completion_journal(
                     journal,
                     requirement=self.requirement,
                     records=records.records(),
@@ -452,13 +466,18 @@ class IncrementalDerivedCollectionWriter:
                     disposition_set_sha256=disposition.sha256,
                     producer_app=self.producer_app,
                     producer_version=self.producer_version,
-                )
+                    connection_factory=self._provenance_connection_factory,
+                    on_storage_open=self._on_provenance_storage_open,
+                ) as summary:
+                    journal_id = summary.journal_id
+                    byte_count = summary.journal_bytes
+                    sha256 = summary.journal_sha256
                 self.api.upload_collection_upload_session_provenance_journal(
                     self.producer.collection_id,
-                    summary.journal_id,
+                    journal_id,
                     content=iter(lambda: journal.read(1024 * 1024), b""),
-                    byte_count=summary.journal_bytes,
-                    sha256=summary.journal_sha256,
+                    byte_count=byte_count,
+                    sha256=sha256,
                     selection_role="completion",
                 )
 
@@ -493,26 +512,29 @@ class IncrementalDerivedCollectionWriter:
                 with self.api.stream_collection_upload_session_provenance_journal(
                     self.producer.collection_id, primary.journal.journal_id
                 ) as chunks:
-                    summary = validate_journal_chunks(
+                    with validate_journal_chunks(
                         chunks,
                         expected_anchor=primary.journal.model_dump(mode="json"),
                         require_exact_tail=True,
                         require_profiles=False,
-                    )
-                state, _ = selected_delivery_occurrence(
-                    summary,
-                    binding=primary.model_dump(mode="json"),
-                    artifact_id=str(artifact_id),
-                    byte_count=int(member["bytes"]),
-                    sha256=member["sha256"],
-                    member_role=COLLECTION_MEMBER_ROLE,
-                )
-                output_id = validate_member_completion_requirement(
-                    summary.graph_validation.view,
-                    delivery_context_id=self.producer.delivery_context_id,
-                    state_id=state["id"],
-                    requirement=self.requirement,
-                )
+                        connection_factory=self._provenance_connection_factory,
+                        on_storage_open=self._on_provenance_storage_open,
+                    ) as summary:
+                        state, _ = selected_delivery_occurrence(
+                            summary,
+                            binding=primary.model_dump(mode="json"),
+                            artifact_id=str(artifact_id),
+                            byte_count=int(member["bytes"]),
+                            sha256=member["sha256"],
+                            member_role=COLLECTION_MEMBER_ROLE,
+                        )
+                        output_id = validate_member_completion_requirement(
+                            summary.graph_validation.view,
+                            delivery_context_id=self.producer.delivery_context_id,
+                            state_id=state["id"],
+                            requirement=self.requirement,
+                        )
+                        state_reference = external_reference(summary, state["id"])
                 imports = self.api.get_collection_upload_session_member_history_inputs(
                     self.producer.collection_id, artifact_id
                 )
@@ -526,7 +548,7 @@ class IncrementalDerivedCollectionWriter:
                             "journal": primary.journal.model_dump(mode="json"),
                             "delivery_association_id": primary.delivery_association_id,
                         },
-                        "state": external_reference(summary, state["id"]),
+                        "state": state_reference,
                     },
                     {"artifact_id": str(artifact_id), "imports": imports.model_dump(mode="json")},
                 )

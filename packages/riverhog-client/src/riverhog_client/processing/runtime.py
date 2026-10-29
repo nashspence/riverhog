@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sqlite3
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal, Self
@@ -11,6 +12,7 @@ from riverhog_protocol.collection_workflows import (
     CollectionRootIdentity,
 )
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
+from riverhog_provenance import JournalStore
 from time_formats import utc_timestamp_now
 
 from riverhog_client import ApiClient, PrimaryStore
@@ -177,6 +179,8 @@ class CollectionTransformRuntime:
         *,
         primary_store: PrimaryStore,
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -196,6 +200,8 @@ class CollectionTransformRuntime:
         )
         self.primary_store = primary_store
         self.member_inventory = member_inventory
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
         self.spec = spec
         self.work_id = work_id
         self.execution_id = execution_id
@@ -226,6 +232,8 @@ class CollectionTransformRuntime:
             self.api,
             primary_store=primary_store,
             member_inventory=member_inventory,
+            provenance_connection_factory=provenance_connection_factory,
+            on_provenance_storage_open=on_provenance_storage_open,
             spec=spec,
             work_id=work_id,
             claim_id=claim_id,
@@ -377,6 +385,8 @@ class CollectionTransformRuntime:
             self.api,
             primary_store=self.primary_store,
             member_inventory=self.member_inventory,
+            provenance_connection_factory=self._provenance_connection_factory,
+            on_provenance_storage_open=self._on_provenance_storage_open,
             spec=self.spec,
             work_id=self.work_id,
             claim_id=self.claim_id,

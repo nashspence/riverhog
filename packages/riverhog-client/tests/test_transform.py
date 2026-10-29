@@ -1711,10 +1711,16 @@ def test_derived_writer_binds_outputs_to_dispositions(
 
     monkeypatch.setattr(module, "IncrementalDerivedCollectionWriter", StubWriter)
     api = UploadApi()
+    from tests.support.sqlite_admission import Population
+
+    population, handles = Population(limit=1), []
+    retained = handles.append
     writer = DerivedCollectionWriter(
         api,
         primary_store=primary_store,
         member_inventory=lambda: inventory_from_rows(api.registered),
+        provenance_connection_factory=population,
+        on_provenance_storage_open=retained,
         spec=spec,
         claim_id="claim-1",
         fence=1,
@@ -1724,6 +1730,7 @@ def test_derived_writer_binds_outputs_to_dispositions(
         producer_app="fixture-transform",
     )
 
+    writer.replace_api(api)
     identity = ProducerArtifactIdentity(stream.artifact_id, stream.bytes, stream.sha256)
     histories = (object(),)
     records = (object(),)
@@ -1742,6 +1749,8 @@ def test_derived_writer_binds_outputs_to_dispositions(
         source_context={"target": "fixture"},
     )
     assert receipt.collection_id == 44
+    assert captured["init"]["provenance_connection_factory"] is population
+    assert captured["init"]["on_provenance_storage_open"] is retained
     assert captured["append"] == (
         stream,
         {
