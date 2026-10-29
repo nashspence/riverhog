@@ -296,6 +296,22 @@ static PyObject *quota_failed(PyObject *object, PyObject *unused) {
     Py_RETURN_NONE;
 }
 
+static PyObject *quota_begin_recovery(PyObject *object, PyObject *unused) {
+    WriteQuota *self = (WriteQuota *)object;
+    (void)unused;
+    if (!ready(self)) return NULL;
+    if (self->native_users) {
+        PyErr_SetString(PyExc_RuntimeError,
+            "cold recovery must be selected before native attachment");
+        return NULL;
+    }
+    /* Cold restoration is expected work, not a failed native delegation.
+     * This one-way latch never resets a counter or restores spent capacity.
+     */
+    self->quota.recovering = 1;
+    Py_RETURN_NONE;
+}
+
 static PyObject *bank_report(rh_bank *bank) {
     return Py_BuildValue(
         "{s:K,s:K,s:K,s:K,s:K,s:K}",
@@ -361,6 +377,8 @@ static PyMethodDef quota_methods[] = {
     {"admit", quota_admit, METH_VARARGS, "Charge a complete attempted write before delegation."},
     {"resize", quota_resize, METH_VARARGS, "Charge a complete native resize or size hint before delegation."},
     {"resize_report", quota_resize_report, METH_NOARGS, "Snapshot fixed resize counters outside callbacks."},
+    {"begin_recovery", quota_begin_recovery, METH_NOARGS,
+        "Select cold restoration before native attachment without recording a failure."},
     {"failed", quota_failed, METH_NOARGS, "Latch the independent restoration bank."},
     {"report", quota_report, METH_NOARGS, "Snapshot fixed counters outside storage callbacks."},
     {NULL, NULL, 0, NULL}

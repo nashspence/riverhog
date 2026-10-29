@@ -132,6 +132,46 @@ def test_native_failed_delegation_keeps_full_charge_and_separate_recovery_capaci
     assert report["refusals"] == 0
 
 
+def test_native_cold_recovery_starts_reserved_bank_without_manufacturing_failure():
+    quota = native.WriteQuota(grant(database_pages=1), grant(database_pages=3))
+    reads = native.ReadQuota(quota, (1, 1), (8192, 2))
+    tracking = quota.tracking_bytes
+    quota.begin_recovery()
+    assert quota.recovering
+    assert reads.admit("database", 8192, 0)
+    assert quota.admit("database", 3 * 4096, 0)
+    assert quota.resize("database", 3 * 4096)
+    before = quota.report()
+    quota.begin_recovery()
+    assert quota.report() == before
+    assert before["native_failures"] == before["refusals"] == 0
+    assert before["first_refusal"] is None
+    assert not any(before["forward"].values())
+    assert before["recovery"]["database_pages_attempted"] == 3
+    assert reads.report()["forward"] == {"read_bytes": 0, "read_calls": 0}
+    assert reads.report()["recovery"] == {"read_bytes": 8192, "read_calls": 1}
+    assert quota.resize_report()["forward"]["resize_calls"] == 0
+    assert quota.resize_report()["recovery"]["resize_calls"] == 1
+    assert quota.tracking_bytes == tracking
+
+
+def test_native_cold_recovery_preserves_spent_capacity_and_first_failure():
+    quota = native.WriteQuota(grant(database_pages=1), grant(database_pages=1))
+    assert quota.admit("database", 1, 0)
+    assert not quota.admit("database", 1, 4096)
+    quota.failed()
+    before = quota.report()
+    quota.begin_recovery()
+    assert quota.report() == before
+    assert quota.admit("database", 1, 0)
+    before = quota.report()
+    quota.begin_recovery()
+    assert quota.report() == before
+    assert not quota.admit("database", 1, 4096)
+    assert quota.report()["first_refusal"] == before["first_refusal"]
+    assert quota.report()["native_failures"] == 1
+
+
 def test_native_recovery_refusal_never_rearms_or_erases_the_first_refusal():
     quota = native.WriteQuota(grant(database_pages=1), grant(database_pages=1))
     assert not quota.admit("database", 8192, 0)
@@ -160,7 +200,8 @@ def test_native_tracking_is_preallocated_readonly_and_independent():
 
 
 @pytest.mark.parametrize(
-    "method,arguments", [("report", ()), ("failed", ()), ("admit", ("database", 1, 0))]
+    "method,arguments",
+    [("report", ()), ("failed", ()), ("begin_recovery", ()), ("admit", ("database", 1, 0))],
 )
 def test_native_uninitialized_object_cannot_access_storage_or_report_success(method, arguments):
     quota = native.WriteQuota.__new__(native.WriteQuota)

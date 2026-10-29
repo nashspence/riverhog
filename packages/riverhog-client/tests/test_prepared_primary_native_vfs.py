@@ -3708,3 +3708,145 @@ print(json.dumps({"passed":True,"scenario":scenario,"quarantined":quarantined,
         return
     with closing(sqlite3.connect(path)) as reopened:
         assert reopened.execute("SELECT body FROM original").fetchall() == [(b"exact original",)]
+
+
+def test_native_cold_recovery_uses_reserved_bank_before_first_pager_read(tmp_path):
+    import json
+    import subprocess
+    import sys
+
+    code = r'''
+import hashlib,importlib.util,json,sqlite3,subprocess,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from riverhog_client import _prepared_primary_native as native
+from riverhog_client._prepared_primary_runtime import _admit_process_budget
+from riverhog_client._prepared_primary_windows_native import (
+    NativeWindowsContainer,windows_container_path)
+def load(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    module=importlib.util.module_from_spec(spec);sys.modules[spec.name]=module
+    spec.loader.exec_module(module);return module
+helpers=load("cold_helpers",root/"packages/riverhog-client/tests/test_prepared_primary_native_vfs.py")
+parent_helpers=load("cold_parent",root/"tests/platform/windows_primary_process.py")
+parent=Path(sys.argv[2])/"cold-private";parent_helpers._parent(parent)
+path=windows_container_path(parent,b"native cold recovery")
+journal=Path(str(path)+"-journal")
+heap=_admit_process_budget(64*1024*1024,native_limits=(1,2))
+source=native.runtime_identity()["sqlite_source_id"]
+def bank(*,cold=False):
+    writes=native.WriteQuota(helpers.grant(),helpers.grant())
+    if cold:writes.begin_recovery()
+    return writes,helpers.reads(native,writes),helpers.callbacks(native,writes)
+def connect(gate):
+    return sqlite3.connect(path.as_uri()+"?vfs="+gate.name,uri=True,isolation_level=None)
+writes,reads,calls=bank()
+gate=native.WriteVfs(source,reads,calls,heap)
+owner=NativeWindowsContainer(path,initialize=True,gate=gate)
+helpers.admit_fixture_retries(gate)
+connection=connect(gate)
+original=b"exact original"+b"x"*(4096-len(b"exact original"))
+expected=[(i,original) for i in range(12)]
+try:
+    assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone()==("persist",)
+    connection.execute("PRAGMA synchronous=EXTRA")
+    connection.execute("PRAGMA cache_spill=OFF")
+    connection.execute("CREATE TABLE sample(id INTEGER PRIMARY KEY,body BLOB NOT NULL)")
+    connection.execute("BEGIN IMMEDIATE")
+    connection.executemany("INSERT INTO sample VALUES (?,?)",expected)
+    connection.commit()
+finally:
+    connection.close()
+owner.check_journal(required=True,recovering=True);owner.close()
+original_database=hashlib.sha256(path.read_bytes()).hexdigest()
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+# Only this crash fixture enables spilling to leave an actual hot journal.
+crash=r"""
+import os,sqlite3,sys
+connection=sqlite3.connect(sys.argv[1],isolation_level=None)
+assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone()==("persist",)
+connection.execute("PRAGMA synchronous=EXTRA")
+connection.execute("PRAGMA cache_size=1")
+connection.execute("PRAGMA cache_spill=ON")
+connection.execute("BEGIN IMMEDIATE")
+connection.execute("UPDATE sample SET body=zeroblob(length(body))")
+os._exit(73)
+"""
+result=subprocess.run([sys.executable,"-I","-c",crash,str(path)],
+    capture_output=True,text=True,timeout=30)
+assert result.returncode==73,(result.stdout,result.stderr)
+assert journal.stat().st_size>4096
+assert journal.read_bytes()[:8]==bytes.fromhex("d9d505f920a163d7")
+assert hashlib.sha256(path.read_bytes()).hexdigest()!=original_database
+writes,reads,calls=bank(cold=True)
+gate=native.WriteVfs(source,reads,calls,heap)
+owner=NativeWindowsContainer(path,initialize=False,gate=gate)
+before=writes.report()
+try:writes.begin_recovery()
+except RuntimeError as exc:assert "before native attachment" in str(exc)
+else:raise AssertionError("attached owner accepted a cold-mode transition")
+assert writes.report()==before
+connection=connect(gate)
+try:
+    assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone()==("persist",)
+    assert connection.execute("SELECT id,body FROM sample ORDER BY id").fetchall()==expected
+    assert connection.execute("PRAGMA integrity_check").fetchone()==("ok",)
+    owner.check_journal(required=False,recovering=True)
+finally:
+    connection.close()
+assert gate.open_files==0 and gate.bound and not gate.quarantined
+after=writes.report()
+assert after["recovering"] and after["recovery"]["write_calls"]>0,after
+assert after["native_failures"]==after["refusals"]==0 and after["first_refusal"] is None,after
+assert not any(after["forward"].values()),after
+assert reads.report()["recovery"]["read_calls"]>0
+assert not any(reads.report()["forward"].values())
+assert calls.report()["recovery"]["callback_slots_charged"]>0
+assert not any(calls.report()["forward"].values())
+assert calls.work.report()["recovery"]["filesystem_api_attempts_charged"]>0
+assert not any(calls.work.report()["forward"].values())
+assert hashlib.sha256(path.read_bytes()).hexdigest()==original_database
+# Closing every cold connection permits a fresh forward operation while the
+# same metadata custodian still holds exclusive ownership of the database.
+forward,forward_reads,forward_calls=bank()
+gate.arm(forward_reads,forward_calls)
+connection=connect(gate)
+try:
+    assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone()==("persist",)
+    connection.execute("PRAGMA synchronous=EXTRA")
+    connection.execute("PRAGMA cache_spill=OFF")
+    connection.execute("BEGIN IMMEDIATE")
+    connection.execute("INSERT INTO sample VALUES (?,?)",(20,b"later progress"))
+    connection.commit()
+    originals=connection.execute("SELECT id,body FROM sample WHERE id<20 ORDER BY id").fetchall()
+    assert originals==expected
+    later=connection.execute("SELECT body FROM sample WHERE id=20").fetchone()
+    assert later==(b"later progress",)
+    owner.check_journal(required=True,recovering=True)
+    owner.check_journal(required=True)
+finally:
+    connection.close()
+assert forward.report()["forward"]["write_calls"]>0 and not forward.recovering
+owner.close()
+assert heap.native_report()["owners"]==heap.native_report()["files"]==0
+assert heap.report()["heap_limit_bytes"]==64*1024*1024
+print(json.dumps({"passed":True,"hot_journal":True,"original_exact":True,
+    "cold_forward_untouched":True,"recovery_without_failure":True,
+    "quiescent_forward_rearm":True,"population_released":True}))
+'''
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[3]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout) == {
+        "passed": True,
+        "hot_journal": True,
+        "original_exact": True,
+        "cold_forward_untouched": True,
+        "recovery_without_failure": True,
+        "quiescent_forward_rearm": True,
+        "population_released": True,
+    }
