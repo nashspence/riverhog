@@ -64,6 +64,16 @@ class WindowsUploadState:
                     "Windows upload identity and preparation admissions must be positive"
                 )
 
+    def preparation_step(self, storage: PrimaryStorage) -> bool:
+        """Advance one execution quantum for the selected producer's payload.
+
+        Pass this callback to the producer's storage_preparation port. Its
+        caller schedules another execution attempt after a not-ready result;
+        the callback does not drain preparation, change grants or run on close.
+        """
+        self.process.verify()
+        return sqlite_primary_preparation_step(storage, plan=self.readiness)
+
 
 @contextmanager
 def prepare_windows_upload(
@@ -136,11 +146,7 @@ def prepare_windows_upload(
 
             def prepare() -> None:
                 for _ in range(selection.preparation_steps):
-                    if store.prepare_storage_step(
-                        lambda storage: sqlite_primary_preparation_step(
-                            storage, plan=selection.readiness
-                        )
-                    ):
+                    if store.prepare_storage_step(selection.preparation_step):
                         return
                 raise PrimaryStateBusy(
                     "upload primary preparation requires another execution grant"

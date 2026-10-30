@@ -404,3 +404,91 @@ print(json.dumps({"passed":True,"original_allocation_replayed":True,"missing_ide
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert json.loads(result.stdout)["passed"]
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual Unix-VFS application binding fixture")
+def test_selected_application_preparation_reaches_session_barrier_and_reopens_originals(binding):
+    chosen = binding[2]
+    request = b'{"request":"selected application preparation"}'
+    with open_upload(binding, initialize=True) as (original, store):
+        assert not store.publication_started
+        for _ in range(chosen.preparation_steps):
+            try:
+                retained = store.session_for(request, storage_preparation=chosen.preparation_step)
+            except PrimaryStateBusy:
+                continue
+            assert retained is None
+            break
+        else:
+            pytest.fail("application session preparation did not finish within its grant")
+        assert store.publication_started
+    with open_upload(binding, initialize=False) as (resumed, store):
+        assert resumed == original and store.publication_started
+    assert chosen.resources.status.connections == chosen.resources.status.blobs == 0
+
+
+@pytest.mark.skipif(os.name != "nt", reason="qualified Windows engine and private local NTFS")
+def test_native_windows_selected_preparation_reaches_session_barrier_and_reopens_originals(
+    tmp_path,
+):
+    code = r"""
+import importlib.util,json,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from a_riverhog_cli import directory_upload
+from a_riverhog_cli.upload_sqlite import UploadSqlitePolicy,UploadSqliteResources
+from a_riverhog_cli.upload_windows import WindowsUploadState
+from riverhog_client import (WindowsSqliteProcess,PrimaryStatePolicy,PrimaryStateBusy,
+    SqlitePrimaryLimits,SqliteOperationBank,SqliteOperationGrants,SqliteReadinessPlan)
+spec=importlib.util.spec_from_file_location("callback_parent",
+    root/"tests/platform/windows_primary_process.py")
+parents=importlib.util.module_from_spec(spec);sys.modules[spec.name]=parents
+spec.loader.exec_module(parents)
+parent=Path(sys.argv[2])/"private-parent";parents._parent(parent)
+source=Path(sys.argv[2])/"source";source.mkdir();(source/"member").write_bytes(b"original")
+process=WindowsSqliteProcess(heap_bytes=64*1024**2,native_limits=(1,2))
+resources=UploadSqliteResources(UploadSqlitePolicy(connections=1,blobs=1),process=process)
+bank=SqliteOperationBank(1024,8*1024**2,65536,8*1024**2,65536,
+    262144,0,1<<40,1<<60,1<<40)
+chosen=WindowsUploadState(parent=parent,process=process,resources=resources,
+    limits=SqlitePrimaryLimits(16*1024**2,32*1024**2,128*1024),
+    operations=SqliteOperationGrants(bank,bank),retry_profile=(2,3),
+    readiness=SqliteReadinessPlan((1033,16),65536,8,128,1024*1024),
+    identity_bytes=8192,preparation_steps=512)
+policy=PrimaryStatePolicy(scope={"service":"fixture-service","account":"fixture-account"},
+    control_bytes=1024,inventory_order_bytes=4096)
+def opened(initialize):
+    return directory_upload.prepare_primary_upload(
+        source,"retained",policy,initialize=initialize,windows=chosen)
+request=b'{"request":"selected application preparation"}'
+try:
+    with opened(True) as (original,store):
+        assert not store.publication_started
+        for _ in range(chosen.preparation_steps):
+            try:retained=store.session_for(request,storage_preparation=chosen.preparation_step)
+            except PrimaryStateBusy:continue
+            assert retained is None
+            break
+        else:raise AssertionError("application session preparation exceeded its execution grant")
+        assert store.publication_started
+    def forbidden(*args,**kwargs):
+        raise AssertionError("cold session barrier generated replacement source IDs")
+    directory_upload.secrets.token_hex=forbidden
+    with opened(False) as (resumed,store):
+        assert resumed==original and store.publication_started
+    assert resources.status.connections==resources.status.blobs==0
+    assert process.native_report()["owners"]==process.native_report()["files"]==0
+finally:
+    resources.close()
+assert process.report()["heap_limit_bytes"]==64*1024**2
+print(json.dumps({"passed":True,"local_session_barrier":True,"cold_originals_preserved":True}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[2]), str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=180,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert json.loads(result.stdout)["passed"]
