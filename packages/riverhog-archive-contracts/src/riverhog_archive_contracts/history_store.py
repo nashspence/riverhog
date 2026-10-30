@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sqlite3
 from collections.abc import Callable, Iterable, Iterator
 
 from .member_history import (
@@ -9,6 +10,7 @@ from .member_history import (
     RETAINED_HISTORY_EXTENT,
     MemberHistoryBinding,
     MemberHistoryDocument,
+    MemberHistoryHeads,
     MemberHistoryImport,
     MemberHistoryRoot,
     history_record_page_object_path,
@@ -35,10 +37,20 @@ class MemberHistoryStore:
     A starting binding comes from the enclosing authenticated provenance root.
     An inherited binding comes only from an exact verified source membership proof.
     This reader never follows a network address or chooses a newer journal head.
+    Each verification admits its own heads worklist; the supplied callback retains
+    actual close-ready owners, including uncertain cleanup across independent reads.
     """
 
-    def __init__(self, read_object: Callable[[str], Iterable[bytes]]) -> None:
+    def __init__(
+        self,
+        read_object: Callable[[str], Iterable[bytes]],
+        *,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
+    ) -> None:
         self.read_object = read_object
+        self._connection_factory = connection_factory
+        self._on_storage_open = on_storage_open
 
     def pages(self, authority: RecordSetRef) -> Iterator[RecordPage]:
         for ordinal in range(authority.record_count + 1):
@@ -65,7 +77,11 @@ class MemberHistoryStore:
             )
         )
         verify_member_history_sets(
-            history, root_pages=self.pages(history.roots), import_pages=self.pages(history.imports)
+            history,
+            root_pages=self.pages(history.roots),
+            import_pages=self.pages(history.imports),
+            connection_factory=self._connection_factory,
+            on_storage_open=self._on_storage_open,
         )
         return history
 

@@ -17,6 +17,7 @@ from .member_history import (
     MEMBER_HISTORY_ROOTS_SCHEMA,
     MemberHistoryBinding,
     MemberHistoryDocument,
+    MemberHistoryHeads,
     MemberHistoryImport,
     MemberHistoryPrimary,
     MemberHistoryRoot,
@@ -34,6 +35,8 @@ class MemberHistoryBuilder:
     A supplied factory admits the selection connection before schema setup and
     owns unreturned connection files. Early retention receives a close-ready owner;
     unconfirmed cleanup freezes further work until explicit close retry.
+    Verification has separate factory and retention ports; uncertain child cleanup
+    stays attached to the builder and freezes subsequent work.
     """
 
     def __init__(
@@ -45,10 +48,15 @@ class MemberHistoryBuilder:
         primary: MemberHistoryPrimary,
         connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_storage_open: Callable[[Self], None] | None = None,
+        verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
     ) -> None:
         self.member = (artifact_id, bytes, sha256)
         self.primary = primary
         self._sealed: MemberHistoryDocument | None = None
+        self._verification_connection_factory = verification_connection_factory
+        self._on_verification_storage_open = on_verification_storage_open
+        self._verification: MemberHistoryHeads | None = None
         self._closing = False
         self._connection_closed = False
         self._directory_removed = False
@@ -95,8 +103,17 @@ class MemberHistoryBuilder:
             if self._root.exists():
                 raise
 
+    def _retain_verification(self, heads: MemberHistoryHeads) -> None:
+        self._verification = heads
+        self._require_open()
+        if self._on_verification_storage_open is not None:
+            self._on_verification_storage_open(heads)
+
     def close(self) -> None:
         self._closing = True
+        if self._verification is not None:
+            self._verification.close()
+            self._verification = None
         for cursor in tuple(self._cursors):
             cursor.close()
             self._cursors.remove(cursor)
@@ -178,11 +195,23 @@ class MemberHistoryBuilder:
                 self._ref(MEMBER_HISTORY_ROOTS_SCHEMA),
                 self._ref(MEMBER_HISTORY_IMPORTS_SCHEMA),
             )
-            verify_member_history_sets(
-                history,
-                root_pages=self.pages(history.roots),
-                import_pages=self.pages(history.imports),
-            )
+            try:
+                verify_member_history_sets(
+                    history,
+                    root_pages=self.pages(history.roots),
+                    import_pages=self.pages(history.imports),
+                    connection_factory=self._verification_connection_factory,
+                    on_storage_open=self._retain_verification,
+                )
+            except BaseException:
+                if self._verification is not None:
+                    if self._verification.cleanup_complete:
+                        self._verification = None
+                    else:
+                        self._closing = True
+                raise
+            self._require_open()
+            self._verification = None
             self._sealed = history
         history = self._sealed
         return MemberHistoryBinding(

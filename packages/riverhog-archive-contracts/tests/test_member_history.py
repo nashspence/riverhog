@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import sqlite3
-import tempfile
 import uuid
 
 import pytest
@@ -56,16 +55,17 @@ def test_history_validation_closes_database_before_removing_scratch(
         connections.append(connection)
         return connection
 
-    class CheckCleanup(tempfile.TemporaryDirectory):
-        def __exit__(self, *exc):
-            assert connections
-            for connection in connections:
-                with pytest.raises(sqlite3.ProgrammingError, match="closed"):
-                    connection.execute("SELECT 1")
-            return super().__exit__(*exc)
+    remove = history_contract.MemberHistoryHeads._remove_directory
+
+    def check_cleanup(heads):
+        assert connections
+        for connection in connections:
+            with pytest.raises(sqlite3.ProgrammingError, match="closed"):
+                connection.execute("SELECT 1")
+        remove(heads)
 
     monkeypatch.setattr(history_contract.sqlite3, "connect", track_connection)
-    monkeypatch.setattr(history_contract.tempfile, "TemporaryDirectory", CheckCleanup)
+    monkeypatch.setattr(history_contract.MemberHistoryHeads, "_remove_directory", check_cleanup)
     if missing_terminal:
         with pytest.raises(ValueError):
             verify_member_history_sets(
