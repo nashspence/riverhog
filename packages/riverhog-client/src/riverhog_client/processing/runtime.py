@@ -7,6 +7,7 @@ from collections.abc import Callable, Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal, Self
 
+from riverhog_archive_contracts import MemberHistoryHeads
 from riverhog_protocol.collection_workflows import (
     ArtifactDispositionSetIdentity,
     CollectionRootIdentity,
@@ -55,6 +56,8 @@ class ClaimedCollectionRuntime:
         owned_api: bool = False,
         history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
         provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
     ) -> None:
@@ -81,6 +84,8 @@ class ClaimedCollectionRuntime:
             heartbeat=self.heartbeat,
             history_connection_factory=history_connection_factory,
             on_history_storage_open=on_history_storage_open,
+            history_verification_connection_factory=history_verification_connection_factory,
+            on_history_verification_storage_open=on_history_verification_storage_open,
             provenance_connection_factory=provenance_connection_factory,
             on_provenance_storage_open=on_provenance_storage_open,
         )
@@ -205,6 +210,8 @@ class CollectionTransformRuntime:
         owned_api: bool = False,
         history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
     ) -> None:
         self.api = (
             api
@@ -244,6 +251,8 @@ class CollectionTransformRuntime:
             heartbeat=self.heartbeat,
             history_connection_factory=history_connection_factory,
             on_history_storage_open=on_history_storage_open,
+            history_verification_connection_factory=history_verification_connection_factory,
+            on_history_verification_storage_open=on_history_verification_storage_open,
             provenance_connection_factory=provenance_connection_factory,
             on_provenance_storage_open=on_provenance_storage_open,
         )

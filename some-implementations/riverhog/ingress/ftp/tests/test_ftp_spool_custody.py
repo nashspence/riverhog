@@ -6,7 +6,6 @@ import json
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import closing
 from pathlib import Path
 from typing import Any
 
@@ -137,10 +136,10 @@ def _append_invalid_completion(source: SourceConfig, raw: bytes = b"invalid\n") 
 
 
 def _completion_event_rows(adapter: FtpSpool, source: SourceConfig) -> list[tuple[str, str]]:
-    with closing(adapter._open_state(source)) as connection:
+    with adapter._open_state(source) as connection:
         return [
             (str(event_id), str(claim_id))
-            for event_id, claim_id in connection.execute(
+            for event_id, claim_id in connection.all(
                 "SELECT event_id, claim_id FROM completion_events ORDER BY event_id"
             )
         ]
@@ -1181,10 +1180,8 @@ def test_completion_source_names_share_persisted_view_across_independent_observa
         config,
         provenance_observer=native_provenance_provider(),
     )
-    with closing(restarted._open_state(source)) as connection:
-        stored = connection.execute(
-            "SELECT value FROM adapter_state WHERE key = 'naming_view_id'"
-        ).fetchone()[0]
+    with restarted._open_state(source) as connection:
+        stored = connection.one("SELECT value FROM adapter_state WHERE key = 'naming_view_id'")[0]
     assert stored == naming_contexts[0]["identifiers"][0]["value"]["text"]
 
 

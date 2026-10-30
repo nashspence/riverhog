@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Literal, Protocol, Self
 
 from pydantic import TypeAdapter
+from riverhog_archive_contracts import MemberHistoryHeads
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.collection_workflows import CollectionRootIdentity
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
@@ -133,6 +134,8 @@ class ClaimedCollectionReader:
         heartbeat: Heartbeat | None = None,
         history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
         provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
     ) -> None:
@@ -158,6 +161,8 @@ class ClaimedCollectionReader:
         self.heartbeat = heartbeat
         self._history_connection_factory = history_connection_factory
         self._on_history_storage_open = on_history_storage_open
+        self._history_verification_connection_factory = history_verification_connection_factory
+        self._on_history_verification_storage_open = on_history_verification_storage_open
         self._provenance_connection_factory = provenance_connection_factory
         self._on_provenance_storage_open = on_provenance_storage_open
         self._retrievals: dict[str, ClaimedRetrieval] = {}
@@ -215,6 +220,8 @@ class ClaimedCollectionReader:
             heartbeat=self.heartbeat or (lambda: None),
             history_connection_factory=self._history_connection_factory,
             on_history_storage_open=self._on_history_storage_open,
+            history_verification_connection_factory=self._history_verification_connection_factory,
+            on_history_verification_storage_open=self._on_history_verification_storage_open,
             provenance_connection_factory=self._provenance_connection_factory,
             on_provenance_storage_open=self._on_provenance_storage_open,
         )

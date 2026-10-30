@@ -16,6 +16,7 @@ from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
     HistoryJournalAnchor,
     MemberHistoryBinding,
+    MemberHistoryHeads,
     MemberHistoryImport,
     MemberHistoryStore,
     SourceMemberHistoryBindingProof,
@@ -91,6 +92,8 @@ class ClaimedProvenance:
         heartbeat: Callable[[], None],
         history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
         provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
     ) -> None:
@@ -100,6 +103,8 @@ class ClaimedProvenance:
         self.heartbeat = heartbeat
         self._history_connection_factory = history_connection_factory
         self._on_history_storage_open = on_history_storage_open
+        self._history_verification_connection_factory = history_verification_connection_factory
+        self._on_history_verification_storage_open = on_history_verification_storage_open
         self._provenance_connection_factory = provenance_connection_factory
         self._on_provenance_storage_open = on_provenance_storage_open
         self.verify_root()
@@ -135,7 +140,11 @@ class ClaimedProvenance:
             or self.history.primary.delivery_association_id != binding.delivery_association_id
         ):
             raise RuntimeError("member history differs from its exact primary/member binding")
-        self.history_store = MemberHistoryStore(self._read_structure)
+        self.history_store = MemberHistoryStore(
+            self._read_structure,
+            connection_factory=history_verification_connection_factory,
+            on_storage_open=on_history_verification_storage_open,
+        )
         self.verify_root()
 
     def _read_structure(self, path: str) -> Iterator[bytes]:
@@ -252,7 +261,11 @@ class ClaimedProvenance:
                 self.verify_root()
 
             with MemberHistoryClosure(
-                MemberHistoryStore(read_object),
+                MemberHistoryStore(
+                    read_object,
+                    connection_factory=self._history_verification_connection_factory,
+                    on_storage_open=self._on_history_verification_storage_open,
+                ),
                 self._read_journal,
                 member_role=COLLECTION_MEMBER_ROLE,
                 connection_factory=self._history_connection_factory,
