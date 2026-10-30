@@ -11,6 +11,7 @@ from typing import Any, cast
 from riverhog_archive_contracts import (
     HistoryJournalAnchor,
     MemberHistoryBuilder,
+    MemberHistoryHeads,
     MemberHistoryPrimary,
 )
 from riverhog_canonical_json import canonical_json_bytes
@@ -89,6 +90,10 @@ class DerivedCollectionWriter:
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
         completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
+        history_selection_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_selection_storage_open: Callable[[MemberHistoryBuilder], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -110,6 +115,10 @@ class DerivedCollectionWriter:
         self._on_provenance_storage_open = on_provenance_storage_open
         self._completion_connection_factory = completion_connection_factory
         self._on_completion_storage_open = on_completion_storage_open
+        self._history_selection_connection_factory = history_selection_connection_factory
+        self._on_history_selection_storage_open = on_history_selection_storage_open
+        self._history_verification_connection_factory = history_verification_connection_factory
+        self._on_history_verification_storage_open = on_history_verification_storage_open
         self.primary_store = primary_store
         self.member_inventory = member_inventory
         self.spec = spec
@@ -164,6 +173,10 @@ class DerivedCollectionWriter:
             on_provenance_storage_open=self._on_provenance_storage_open,
             completion_connection_factory=self._completion_connection_factory,
             on_completion_storage_open=self._on_completion_storage_open,
+            history_selection_connection_factory=self._history_selection_connection_factory,
+            on_history_selection_storage_open=self._on_history_selection_storage_open,
+            history_verification_connection_factory=self._history_verification_connection_factory,
+            on_history_verification_storage_open=self._on_history_verification_storage_open,
             spec=self.spec,
             claim_id=self.claim_id,
             fence=self.fence,
@@ -210,6 +223,10 @@ class IncrementalDerivedCollectionWriter:
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
         completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
+        history_selection_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_selection_storage_open: Callable[[MemberHistoryBuilder], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -226,6 +243,10 @@ class IncrementalDerivedCollectionWriter:
         self._on_provenance_storage_open = on_provenance_storage_open
         self._completion_connection_factory = completion_connection_factory
         self._on_completion_storage_open = on_completion_storage_open
+        self._history_selection_connection_factory = history_selection_connection_factory
+        self._on_history_selection_storage_open = on_history_selection_storage_open
+        self._history_verification_connection_factory = history_verification_connection_factory
+        self._on_history_verification_storage_open = on_history_verification_storage_open
         self.producer_app = producer_app
         self.producer_version = producer_version
         self.spec = spec
@@ -324,6 +345,10 @@ class IncrementalDerivedCollectionWriter:
             self.producer.collection_id, identity.artifact_id
         )
         with MemberHistoryBuilder(
+            connection_factory=self._history_selection_connection_factory,
+            on_storage_open=self._on_history_selection_storage_open,
+            verification_connection_factory=self._history_verification_connection_factory,
+            on_verification_storage_open=self._on_history_verification_storage_open,
             artifact_id=str(identity.artifact_id),
             bytes=identity.bytes,
             sha256=identity.sha256,

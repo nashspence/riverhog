@@ -7,7 +7,7 @@ from collections.abc import Callable, Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal, Self
 
-from riverhog_archive_contracts import MemberHistoryHeads
+from riverhog_archive_contracts import MemberHistoryBuilder, MemberHistoryHeads
 from riverhog_protocol.collection_workflows import (
     ArtifactDispositionSetIdentity,
     CollectionRootIdentity,
@@ -197,6 +197,8 @@ class CollectionTransformRuntime:
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
         completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
+        history_selection_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_selection_storage_open: Callable[[MemberHistoryBuilder], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -224,6 +226,10 @@ class CollectionTransformRuntime:
         self._on_provenance_storage_open = on_provenance_storage_open
         self._completion_connection_factory = completion_connection_factory
         self._on_completion_storage_open = on_completion_storage_open
+        self._history_selection_connection_factory = history_selection_connection_factory
+        self._on_history_selection_storage_open = on_history_selection_storage_open
+        self._history_verification_connection_factory = history_verification_connection_factory
+        self._on_history_verification_storage_open = on_history_verification_storage_open
         self.spec = spec
         self.work_id = work_id
         self.execution_id = execution_id
@@ -264,6 +270,10 @@ class CollectionTransformRuntime:
             on_provenance_storage_open=on_provenance_storage_open,
             completion_connection_factory=completion_connection_factory,
             on_completion_storage_open=on_completion_storage_open,
+            history_selection_connection_factory=history_selection_connection_factory,
+            on_history_selection_storage_open=on_history_selection_storage_open,
+            history_verification_connection_factory=history_verification_connection_factory,
+            on_history_verification_storage_open=on_history_verification_storage_open,
             spec=spec,
             work_id=work_id,
             claim_id=claim_id,
@@ -419,6 +429,10 @@ class CollectionTransformRuntime:
             on_provenance_storage_open=self._on_provenance_storage_open,
             completion_connection_factory=self._completion_connection_factory,
             on_completion_storage_open=self._on_completion_storage_open,
+            history_selection_connection_factory=self._history_selection_connection_factory,
+            on_history_selection_storage_open=self._on_history_selection_storage_open,
+            history_verification_connection_factory=self._history_verification_connection_factory,
+            on_history_verification_storage_open=self._on_history_verification_storage_open,
             spec=self.spec,
             work_id=self.work_id,
             claim_id=self.claim_id,
