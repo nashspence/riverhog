@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import secrets
+import stat
 import tempfile
 import uuid
 from collections.abc import Iterator
@@ -69,8 +70,7 @@ def preview_upload(root: Path) -> tuple[dict[str, object], ...]:
     return tuple(
         {
             "relative_components": list(path.relative_to(root).parts),
-            "bytes": path.stat().st_size,
-            "sha256": _sha256(path),
+            **_source_fixity(path),
         }
         for path in paths
     )
@@ -89,12 +89,52 @@ def _source_paths(root: Path) -> tuple[Path, ...]:
     return tuple(sorted(paths, key=lambda path: path.relative_to(root).as_posix()))
 
 
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while chunk := handle.read(8 * 1024 * 1024):
+def _source_stamp(value: os.stat_result) -> tuple[int, int, int, int, int]:
+    return value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_ctime_ns
+
+
+def _source_fixity(path: Path) -> dict[str, object]:
+    """Hash one observed regular file without chasing a growing EOF.
+
+    The byte count comes from the same descriptor as the hash. Metadata checks
+    reject observed replacement or mutation; they do not freeze a mutable
+    filesystem. Publication still verifies the original source commitment.
+    """
+    observed = path.lstat()
+    if not stat.S_ISREG(observed.st_mode):
+        raise ValueError("upload source is not a regular file")
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    descriptor = os.open(path, flags)
+    try:
+        before = os.fstat(descriptor)
+        stamp = _source_stamp(before)
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or stamp != _source_stamp(observed)
+            or stamp != _source_stamp(path.lstat())
+        ):
+            raise ValueError("upload source changed while hashing")
+        digest = hashlib.sha256()
+        count = 0
+        while chunk := os.read(descriptor, min(8 * 1024 * 1024, before.st_size - count + 1)):
+            count += len(chunk)
+            if count > before.st_size:
+                raise ValueError("upload source changed while hashing")
             digest.update(chunk)
-    return digest.hexdigest()
+        if (
+            count != before.st_size
+            or _source_stamp(os.fstat(descriptor)) != stamp
+            or _source_stamp(path.lstat()) != stamp
+        ):
+            raise ValueError("upload source changed while hashing")
+        return {"bytes": count, "sha256": digest.hexdigest()}
+    finally:
+        os.close(descriptor)
 
 
 def _allocation_id(root: Path, key: str) -> str:
