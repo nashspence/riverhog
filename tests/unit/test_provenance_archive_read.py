@@ -5,7 +5,6 @@ import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import Any
 
 import pytest
@@ -128,10 +127,11 @@ def test_prepared_reader_closes_partly_consumed_cursors_before_directory_cleanup
                 pending.append(cursor)
             return cursor.execute(sql, parameters)
 
-    class CheckedDirectory(TemporaryDirectory):
-        def cleanup(self) -> None:
-            assert pending and all(cursor.explicitly_closed for cursor in pending)
-            super().cleanup()
+    remove_directory = archive_read.ProvenanceMetadataIndex._remove_directory
+
+    def checked_remove(owner: archive_read.ProvenanceMetadataIndex) -> None:
+        assert pending and all(cursor.explicitly_closed for cursor in pending)
+        remove_directory(owner)
 
     original_connect = sqlite3.connect
 
@@ -139,7 +139,7 @@ def test_prepared_reader_closes_partly_consumed_cursors_before_directory_cleanup
         return original_connect(*args, **kwargs, factory=TrackedConnection)
 
     monkeypatch.setattr(archive_read.sqlite3, "connect", connect)
-    monkeypatch.setattr(scratch_workspace.tempfile, "TemporaryDirectory", CheckedDirectory)
+    monkeypatch.setattr(archive_read.ProvenanceMetadataIndex, "_remove_directory", checked_remove)
     with reader.prepared():
         headers = reader.iter_journal_headers()
         next(headers)
@@ -153,14 +153,14 @@ def test_prepared_journal_stream_hands_off_workers_and_cleans_scratch(
 ) -> None:
     reader, _, journal_id, journal_text = archive_reader_fixture()
     scratch_paths: list[Path] = []
-    original_directory = scratch_workspace.tempfile.TemporaryDirectory
+    original_directory = scratch_workspace.tempfile.mkdtemp
 
-    def directory(*args: Any, **kwargs: Any) -> TemporaryDirectory:
+    def directory(*args: Any, **kwargs: Any) -> str:
         scratch = original_directory(*args, **kwargs)
-        scratch_paths.append(Path(scratch.name))
+        scratch_paths.append(Path(scratch))
         return scratch
 
-    monkeypatch.setattr(scratch_workspace.tempfile, "TemporaryDirectory", directory)
+    monkeypatch.setattr(scratch_workspace.tempfile, "mkdtemp", directory)
 
     def body():
         with reader.prepared():
