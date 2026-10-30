@@ -49,6 +49,7 @@ IMAGE_GROUPS = ("core", "observers", "targets", "companions")
 NATIVE_TESTS = (
     "tests/platform/test_native_provenance.py",
     "tests/unit/test_cli_upload_source_hashing.py",
+    "tests/unit/test_cli_upload_preview.py",
     "tests/unit/test_cli_upload_state_admission.py",
     "tests/unit/test_cli_upload_sqlite_resources.py",
     "tests/unit/test_cli_upload_sqlite_policy.py",

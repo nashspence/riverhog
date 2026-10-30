@@ -9,11 +9,11 @@ import secrets
 import stat
 import tempfile
 import uuid
-from collections.abc import Iterator
-from contextlib import contextmanager
+from collections.abc import Generator, Iterator
+from contextlib import ExitStack, closing, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import PrimaryStatePolicy, PrimaryStore, ProducerFile
@@ -58,6 +58,47 @@ class LocalUpload:
     source_naming_view_id: str
 
 
+@dataclass(frozen=True, slots=True)
+class UploadPreview:
+    artifact_count: int
+    total_bytes: int
+    sources: tuple[dict[str, object], ...]
+
+
+def summarize_upload(root: Path) -> UploadPreview:
+    """Read every source while retaining only the first five canonical examples.
+
+    Enumeration holds one iterator per directory depth. Hashing keeps its
+    bounded byte window; counts include zero-byte and equal-byte members.
+    No allocation state or remote connection is opened for this preview.
+    """
+    root = root.expanduser().resolve()
+    if not root.is_dir():
+        raise ValueError("collection source must be a directory")
+    artifact_count = total_bytes = 0
+    sample: list[tuple[str, dict[str, object]]] = []
+    with closing(_walk_source_paths(root)) as paths:
+        for path in paths:
+            fixity = _source_fixity(path)
+            artifact_count += 1
+            total_bytes += cast(int, fixity["bytes"])
+            key = path.relative_to(root).as_posix()
+            item = {"relative_components": list(path.relative_to(root).parts), **fixity}
+            if len(sample) < 5:
+                sample.append((key, item))
+            else:
+                largest = max(range(len(sample)), key=lambda index: sample[index][0])
+                if key < sample[largest][0]:
+                    sample[largest] = key, item
+    if artifact_count == 0:
+        raise ValueError("collection source has no regular files")
+    return UploadPreview(
+        artifact_count,
+        total_bytes,
+        tuple(item for _key, item in sorted(sample, key=lambda pair: pair[0])),
+    )
+
+
 def preview_upload(root: Path) -> tuple[dict[str, object], ...]:
     """Inspect local bytes and proposed advice without allocating member IDs."""
 
@@ -76,17 +117,35 @@ def preview_upload(root: Path) -> tuple[dict[str, object], ...]:
     )
 
 
+def _walk_source_paths(root: Path) -> Generator[Path, None, None]:
+    opened = [os.scandir(root)]
+    try:
+        while opened:
+            try:
+                entry = next(opened[-1])
+            except StopIteration:
+                opened[-1].close()
+                opened.pop()
+                continue
+            path = Path(entry.path)
+            relative = path.relative_to(root)
+            if entry.is_symlink():
+                raise ValueError(f"upload source is a symbolic link: {relative}")
+            if entry.is_dir(follow_symlinks=False):
+                opened.append(os.scandir(path))
+            elif entry.is_file(follow_symlinks=False):
+                yield path
+            else:
+                raise ValueError(f"upload source is not a regular file: {relative}")
+    finally:
+        with ExitStack() as cleanup:
+            for iterator in opened:
+                cleanup.callback(iterator.close)
+
+
 def _source_paths(root: Path) -> tuple[Path, ...]:
-    paths: list[Path] = []
-    for path in root.rglob("*"):
-        relative = path.relative_to(root)
-        if path.is_symlink():
-            raise ValueError(f"upload source is a symbolic link: {relative}")
-        if path.is_file():
-            paths.append(path)
-        elif not path.is_dir():
-            raise ValueError(f"upload source is not a regular file: {relative}")
-    return tuple(sorted(paths, key=lambda path: path.relative_to(root).as_posix()))
+    with closing(_walk_source_paths(root)) as paths:
+        return tuple(sorted(paths, key=lambda path: path.relative_to(root).as_posix()))
 
 
 def _source_stamp(value: os.stat_result) -> tuple[int, int, int, int, int]:

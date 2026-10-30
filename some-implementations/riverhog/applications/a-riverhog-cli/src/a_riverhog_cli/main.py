@@ -52,7 +52,7 @@ from a_riverhog_cli.cli_support import (
     format_lifecycle_events,
     format_list_ids,
 )
-from a_riverhog_cli.directory_upload import prepare_primary_upload, preview_upload
+from a_riverhog_cli.directory_upload import prepare_primary_upload, summarize_upload
 from a_riverhog_cli.local import local_app
 from a_riverhog_cli.output import (
     format_app_access,
@@ -1590,16 +1590,16 @@ def upload_cmd(
             raise typer.BadParameter(str(exc), param_hint="--description") from exc
     try:
         if dry_run:
-            preview = preview_upload(resolved_root)
+            preview = summarize_upload(resolved_root)
             payload = {
                 "format": "a-riverhog-cli-upload-preview/v1",
                 "idempotency_key": key,
-                "artifact_count": len(preview),
-                "total_bytes": sum(int(str(item["bytes"])) for item in preview),
-                "sources": preview[:5],
+                "artifact_count": preview.artifact_count,
+                "total_bytes": preview.total_bytes,
+                "sources": preview.sources,
             }
             emit(
-                payload if json_mode else f"would upload {len(preview)} artifacts",
+                payload if json_mode else f"would upload {preview.artifact_count} artifacts",
                 json_mode=json_mode,
             )
             return
