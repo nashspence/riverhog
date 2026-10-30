@@ -90,7 +90,7 @@ def test_claimed_history_uncertain_worklist_close_retains_explicit_retry(api, af
 
 @pytest.mark.parametrize("runtime_type", [ClaimedCollectionRuntime, CollectionTransformRuntime])
 def test_processing_runtime_preserves_history_admission_across_capability_refresh(
-    api, primary_store, monkeypatch, runtime_type
+    api, monkeypatch, runtime_type
 ):
     population, handles = Population(), []
     common = dict(
@@ -123,13 +123,14 @@ def test_processing_runtime_preserves_history_admission_across_capability_refres
     if runtime_type is ClaimedCollectionRuntime:
         runtime = runtime_type.from_capability(inputs=(api.root,), **common)
     else:
-        spec = DerivedCollectionSpec(
-            inputs=(api.root,),
-            recipe=RecipeIdentity("fixture/v1", 1, "a" * 64),
-            operation=OperationIdentity("fixture/v1", "b" * 64),
-        )
+
+        class UnusedPrimary:
+            # This read exercises real history storage and must not touch payload storage.
+            def __getattr__(self, name):
+                pytest.fail(f"claimed-history read accessed primary storage: {name}")
+
         runtime = runtime_type.from_capability(
-            primary_store=primary_store,
+            primary_store=UnusedPrimary(),
             member_inventory=lambda: (),
             spec=spec,
             controller_evidence={"execution_id": "e" * 64},
