@@ -182,3 +182,66 @@ def test_short_source_read_cannot_publish_an_inconsistent_byte_count(tmp_path, m
     with pytest.raises(ValueError, match="source changed while hashing"):
         directory_upload.prepare_upload(root, "original-request")
     assert not state.exists()
+
+
+def _stat_with_ctime(value, changed):
+    return SimpleNamespace(
+        st_mode=value.st_mode,
+        st_dev=value.st_dev,
+        st_ino=value.st_ino,
+        st_size=value.st_size,
+        st_mtime_ns=value.st_mtime_ns,
+        st_ctime_ns=changed,
+    )
+
+
+def test_source_fixity_compares_change_time_within_each_stat_api(tmp_path, monkeypatch):
+    root = tmp_path / "source"
+    root.mkdir()
+    source = root / "member"
+    source.write_bytes(b"original")
+    actual_fstat = os.fstat
+
+    def descriptor_stat(descriptor):
+        value = actual_fstat(descriptor)
+        return _stat_with_ctime(value, value.st_ctime_ns + 1_000_000_000)
+
+    monkeypatch.setattr(directory_upload.os, "fstat", descriptor_stat)
+    assert directory_upload.preview_upload(root) == (
+        {
+            "relative_components": ["member"],
+            "bytes": 8,
+            "sha256": hashlib.sha256(b"original").hexdigest(),
+        },
+    )
+
+
+@pytest.mark.parametrize("domain", ["path", "descriptor"])
+def test_source_fixity_keeps_each_change_time_check_when_apis_differ(tmp_path, monkeypatch, domain):
+    root = tmp_path / "source"
+    root.mkdir()
+    source = root / "member"
+    source.write_bytes(b"original")
+    state = _forbid_identity(monkeypatch, tmp_path)
+    changed = [False]
+    actual_fstat, actual_lstat = os.fstat, Path.lstat
+
+    def descriptor_stat(descriptor):
+        value = actual_fstat(descriptor)
+        delta = 1_000_000_000 + (3_000_000_000 if changed[0] and domain == "descriptor" else 0)
+        return _stat_with_ctime(value, value.st_ctime_ns + delta)
+
+    def path_stat(path, *args, **kwargs):
+        value = actual_lstat(path, *args, **kwargs)
+        if path == source:
+            delta = 3_000_000_000 if changed[0] and domain == "path" else 0
+            return _stat_with_ctime(value, value.st_ctime_ns + delta)
+        return value
+
+    monkeypatch.setattr(directory_upload.os, "fstat", descriptor_stat)
+    monkeypatch.setattr(Path, "lstat", path_stat)
+    hashed = _mutating_digest(monkeypatch, lambda _: changed.__setitem__(0, True))
+    with pytest.raises(ValueError, match="source changed while hashing") as error:
+        directory_upload.prepare_upload(root, "original-request")
+    assert str(error.value) == f"upload source changed while hashing ({domain}: ctime)"
+    assert hashed == [8] and not state.exists()

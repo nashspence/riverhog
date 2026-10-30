@@ -93,6 +93,17 @@ def _source_stamp(value: os.stat_result) -> tuple[int, int, int, int, int]:
     return value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_ctime_ns
 
 
+def _require_source_stamp(
+    expected: tuple[int, ...], current: tuple[int, ...], *, phase: str
+) -> None:
+    names = ("device", "inode", "bytes", "mtime", "ctime")[: len(expected)]
+    changed = [
+        name for name, left, right in zip(names, expected, current, strict=True) if left != right
+    ]
+    if changed:
+        raise ValueError(f"upload source changed while hashing ({phase}: {','.join(changed)})")
+
+
 def _source_fixity(path: Path) -> dict[str, object]:
     """Hash one observed regular file without chasing a growing EOF.
 
@@ -109,16 +120,18 @@ def _source_fixity(path: Path) -> dict[str, object]:
         | getattr(os, "O_NOFOLLOW", 0)
         | getattr(os, "O_NONBLOCK", 0)
     )
+    observed_stamp = _source_stamp(observed)
     descriptor = os.open(path, flags)
     try:
         before = os.fstat(descriptor)
         stamp = _source_stamp(before)
-        if (
-            not stat.S_ISREG(before.st_mode)
-            or stamp != _source_stamp(observed)
-            or stamp != _source_stamp(path.lstat())
-        ):
-            raise ValueError("upload source changed while hashing")
+        if not stat.S_ISREG(before.st_mode):
+            raise ValueError("upload source changed while hashing (opened nonregular file)")
+        # Windows path ctime can describe creation while descriptor ctime
+        # describes metadata change. Check it within each API, preserving both
+        # observations; device/inode/size/mtime still bind the opened source.
+        _require_source_stamp(observed_stamp[:4], stamp[:4], phase="open")
+        _require_source_stamp(observed_stamp, _source_stamp(path.lstat()), phase="path")
         digest = hashlib.sha256()
         count = 0
         while chunk := os.read(descriptor, min(8 * 1024 * 1024, before.st_size - count + 1)):
@@ -126,12 +139,10 @@ def _source_fixity(path: Path) -> dict[str, object]:
             if count > before.st_size:
                 raise ValueError("upload source changed while hashing")
             digest.update(chunk)
-        if (
-            count != before.st_size
-            or _source_stamp(os.fstat(descriptor)) != stamp
-            or _source_stamp(path.lstat()) != stamp
-        ):
-            raise ValueError("upload source changed while hashing")
+        if count != before.st_size:
+            raise ValueError("upload source changed while hashing (read byte count)")
+        _require_source_stamp(stamp, _source_stamp(os.fstat(descriptor)), phase="descriptor")
+        _require_source_stamp(observed_stamp, _source_stamp(path.lstat()), phase="path")
         return {"bytes": count, "sha256": digest.hexdigest()}
     finally:
         os.close(descriptor)
