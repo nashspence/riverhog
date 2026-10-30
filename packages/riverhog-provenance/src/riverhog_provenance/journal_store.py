@@ -1115,6 +1115,11 @@ class JournalStore:
             raise RuntimeError("journal summary is closed")
 
     @property
+    def cleanup_complete(self) -> bool:
+        """This handle released its lease; other readers may still retain storage."""
+        return self._lease.closed
+
+    @property
     def db(self) -> sqlite3.Connection:
         self.require_open()
         return self._storage.connection

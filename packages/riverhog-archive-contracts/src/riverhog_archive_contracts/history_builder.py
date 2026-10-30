@@ -88,6 +88,16 @@ class MemberHistoryBuilder:
         if self._closing:
             raise RuntimeError("member history builder is closed")
 
+    @property
+    def cleanup_complete(self) -> bool:
+        """All retained selection and verification cleanup is confirmed."""
+        return (
+            self._verification is None
+            and not self._cursors
+            and self._connection_closed
+            and self._directory_removed
+        )
+
     def __enter__(self) -> Self:
         self._require_open()
         return self

@@ -30,11 +30,21 @@ class Population:
         self.peak = max(self.peak, self.active)
         owner = self
 
+        class Cursor(sqlite3.Cursor):
+            def execute(self, statement, parameters=()):
+                if owner.fail_schema and statement.startswith("CREATE TABLE"):
+                    raise InterruptedError("schema initialization interrupted")
+                return super().execute(statement, parameters)
+
         class Connection(sqlite3.Connection):
             released = False
             close_failures = 0
             close_after = False
             close_calls = 0
+
+            def cursor(self, *args, **options):
+                options.setdefault("factory", Cursor)
+                return super().cursor(*args, **options)
 
             def execute(self, statement, parameters=()):
                 if owner.fail_schema and statement.startswith("CREATE TABLE"):
