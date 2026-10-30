@@ -39,7 +39,9 @@ def publication_count(name: str, value: int) -> None:
     _counts[name] = value
 
 
-def install_publication_diagnostics(stage: str) -> None:
+def install_publication_diagnostics(
+    stage: str, *, api_error_type: type[BaseException] | None = None
+) -> None:
     """Annotate failure without copying messages, paths, URLs or response bodies.
 
     Preserve the original exception hook and process failure. These observations
@@ -58,6 +60,11 @@ def install_publication_diagnostics(stage: str) -> None:
         if isinstance(error, httpx.HTTPStatusError):
             category = "http-status"
             diagnostic["http_status"] = error.response.status_code
+        elif api_error_type is not None and isinstance(error, api_error_type):
+            status = getattr(error, "status", None)
+            if type(status) is int and 100 <= status <= 599:
+                category = "http-status"
+                diagnostic["http_status"] = status
         elif isinstance(error, httpx.TimeoutException):
             category = "http-timeout"
         elif isinstance(error, AssertionError):

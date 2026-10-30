@@ -677,7 +677,6 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
 upload_media_fixture() {
 configure_media_ftp
 adapter_run_code="$(cat "${ROOT_DIR}/scripts/ftp_publication_diagnostics.py")
-install_publication_diagnostics('fixture')
 from ftplib import FTP, all_errors
 from io import BytesIO
 import json
@@ -685,7 +684,8 @@ import os
 from pathlib import Path
 import time
 import wave
-from a_riverhog_ftp_spool_client import RiverhogFtpSpoolClient
+from a_riverhog_ftp_spool_client import FtpSpoolApiError, RiverhogFtpSpoolClient
+install_publication_diagnostics('fixture', api_error_type=FtpSpoolApiError)
 payload = BytesIO()
 with wave.open(payload, 'wb') as audio:
     audio.setnchannels(1)

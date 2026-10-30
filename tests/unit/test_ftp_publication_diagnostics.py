@@ -92,3 +92,23 @@ def test_uncaught_fixture_failure_still_fails_the_process_and_clears_prior_stage
         "counts": {},
         "failure_class": "assertion",
     }
+
+
+def test_operator_client_error_preserves_http_status_without_message_or_code(monkeypatch, capsys):
+    from a_riverhog_ftp_spool_client import FtpSpoolApiError
+
+    module = load_script()
+    observed = []
+    monkeypatch.setattr(sys, "excepthook", lambda *args: observed.append(args))
+    module.install_publication_diagnostics("spool-status", api_error_type=FtpSpoolApiError)
+    error = FtpSpoolApiError("private response body", code="private code", status=500)
+    sys.excepthook(type(error), error, None)
+    diagnostic = json.loads(capsys.readouterr().err.removeprefix(PREFIX))
+    assert diagnostic == {
+        "format": "riverhog-ftp-publication-diagnostic/v1",
+        "stage": "spool-status",
+        "counts": {},
+        "failure_class": "http-status",
+        "http_status": 500,
+    }
+    assert observed == [(type(error), error, None)]

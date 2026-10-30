@@ -1,11 +1,18 @@
 from __future__ import annotations
 
 import sqlite3
+from concurrent.futures import ThreadPoolExecutor
+from threading import Event
+from types import SimpleNamespace
 
+import httpx
 import pytest
+from a_riverhog_ftp_spool.app import FtpSpoolComposition, create_app
 from a_riverhog_ftp_spool.config import FtpSpoolConfig, SourceConfig
 from a_riverhog_ftp_spool.landing import FtpSpool
 from a_riverhog_ftp_spool.operational_state import FtpOperationalState
+from a_riverhog_ftp_spool_client import RiverhogFtpSpoolClient
+from fastapi.testclient import TestClient
 
 _CONNECT = sqlite3.connect
 
@@ -438,6 +445,7 @@ def test_spool_retains_failed_owner_and_blocks_new_connections_until_explicit_cl
         with adapter._open_state(source) as state:
             probe.connections[-1].close_failure = after
     assert adapter.retained_state_storage == (state,)
+    assert state.cleanup_unconfirmed
     attempts = probe.attempts
     for _ in range(3):
         with pytest.raises(RuntimeError, match="cleanup is unconfirmed"):
@@ -526,6 +534,7 @@ def test_spool_cursor_failure_stays_with_adapter_until_explicit_cleanup(tmp_path
         adapter._claim_summary(cfg.sources[0])
     (state,) = adapter.retained_state_storage
     assert probe.connections[-1].close_calls == 0
+    assert state.cleanup_unconfirmed
     attempts = probe.attempts
     with pytest.raises(RuntimeError, match="cleanup is unconfirmed"):
         adapter._completion_cursor(cfg.sources[0])
@@ -552,3 +561,126 @@ def test_spool_commit_acknowledgement_loss_preserves_exact_resume_cursor(tmp_pat
         assert state.one("SELECT value FROM adapter_state WHERE key = 'reconcile_after'") == (
             "7" if after else "6",
         )
+
+
+@pytest.mark.parametrize("boundary", ["cursor", "connection"])
+def test_http_status_remains_available_during_another_normal_state_close(
+    tmp_path, monkeypatch, boundary
+):
+    probe = Probe()
+    cfg = config(tmp_path)
+    adapter = FtpSpool(
+        object(), cfg, state_connection_factory=probe, on_state_storage_open=probe.retain
+    )
+    entered, release = Event(), Event()
+    retained = []
+
+    def finish_state():
+        with adapter._open_state(cfg.sources[0]) as state:
+            retained.append(state)
+            actual = probe.connections[-1] if boundary == "connection" else probe.cursors[-1]
+            original = type(actual).close
+
+            def waiting(resource):
+                entered.set()
+                if not release.wait(5):
+                    raise RuntimeError("test did not release actual state cleanup")
+                return original(resource)
+
+            monkeypatch.setattr(type(actual), "close", waiting)
+            if boundary == "cursor":
+                assert state.one("SELECT 41") == (41,)
+
+    composition = FtpSpoolComposition(cfg, SimpleNamespace(close=lambda: None), adapter)
+    http = TestClient(create_app(composition), raise_server_exceptions=False)
+
+    def forward(request):
+        response = http.request(request.method, request.url.path, headers=request.headers)
+        return httpx.Response(
+            response.status_code,
+            headers=response.headers,
+            content=response.content,
+            request=request,
+        )
+
+    try:
+        with RiverhogFtpSpoolClient(
+            base_url="https://ftp-spool.invalid",
+            token=cfg.api_token,
+            transport=httpx.MockTransport(forward),
+        ) as client:
+            with ThreadPoolExecutor(max_workers=1) as worker:
+                result = worker.submit(finish_state)
+                assert entered.wait(5)
+                try:
+                    assert adapter.retained_state_storage == (retained[0],)
+                    assert not retained[0].cleanup_unconfirmed
+                    assert retained[0].closing is (boundary == "connection")
+                    status = client.get_ftp_spool_status()
+                    assert len(status.sources) == 1
+                    assert status.sources[0].claims == 0
+                    assert type(status.sources[0].claims) is int
+                    assert adapter.retained_state_storage == (retained[0],)
+                    assert probe.active == 1
+                finally:
+                    release.set()
+                result.result(timeout=5)
+        assert not adapter.retained_state_storage
+        assert probe.active == probe.cursor_active == 0
+        assert adapter._state_path(cfg.sources[0]).is_file()
+    finally:
+        release.set()
+        http.close()
+
+
+@pytest.mark.parametrize("after", [False, True])
+def test_failed_state_cleanup_stays_blocking_during_an_explicit_retry(tmp_path, monkeypatch, after):
+    probe = Probe()
+    cfg = config(tmp_path)
+    adapter = FtpSpool(
+        object(), cfg, state_connection_factory=probe, on_state_storage_open=probe.retain
+    )
+    source = cfg.sources[0]
+    adapter._save_reconcile_cursor(source, 31)
+    entered, release = Event(), Event()
+
+    def fail_close():
+        with pytest.raises(OSError, match="close unconfirmed"):
+            with adapter._open_state(source) as state:
+                assert state.one(
+                    "SELECT value FROM adapter_state WHERE key = 'reconcile_after'"
+                ) == ("31",)
+                probe.connections[-1].close_failure = after
+        return state, probe.connections[-1]
+
+    with ThreadPoolExecutor(max_workers=1) as worker:
+        state, connection = worker.submit(fail_close).result(timeout=5)
+        assert state.cleanup_unconfirmed and not state.cleanup_complete
+        original = type(connection).close
+
+        def waiting(resource):
+            entered.set()
+            if not release.wait(5):
+                raise RuntimeError("test did not release explicit cleanup")
+            return original(resource)
+
+        monkeypatch.setattr(type(connection), "close", waiting)
+        result = worker.submit(state.close)
+        assert entered.wait(5)
+        try:
+            attempts = probe.attempts
+            assert state.cleanup_unconfirmed
+            with pytest.raises(RuntimeError, match="cleanup is unconfirmed"):
+                adapter._claim_summary(source)
+            assert probe.attempts == attempts
+            assert adapter.retained_state_storage == (state,)
+        finally:
+            release.set()
+        result.result(timeout=5)
+    assert state.cleanup_complete and not state.cleanup_unconfirmed
+    with adapter._open_state(source) as restarted:
+        assert restarted.one("SELECT value FROM adapter_state WHERE key = 'reconcile_after'") == (
+            "31",
+        )
+        assert restarted.one("PRAGMA user_version") == (3,)
+    assert not adapter.retained_state_storage and probe.active == probe.cursor_active == 0

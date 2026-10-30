@@ -202,7 +202,7 @@ class FtpSpool:
             self._state_storage = {
                 owner for owner in self._state_storage if not owner.cleanup_complete
             }
-            if any(owner.closing for owner in self._state_storage):
+            if any(owner.cleanup_unconfirmed for owner in self._state_storage):
                 raise RuntimeError("FTP operational-state cleanup is unconfirmed")
         retained: list[FtpOperationalState] = []
 
