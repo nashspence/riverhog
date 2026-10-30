@@ -33,6 +33,9 @@ class SqliteAdmissionStatus:
     blobs: int
     blob_peak: int
     unreturned_blobs: int
+    operation_limit: int
+    operations: int
+    operation_peak: int
 
 
 @dataclass(eq=False)
@@ -72,11 +75,15 @@ class _BlobLease:
 
 
 class SqliteConnectionAdmission:
-    """Bound actual connections and cursors after application process admission.
+    """Bound actual SQLite work and retained handles after process admission.
 
     verify_process must verify the application's already installed process-wide
     engine/heap policy without opening a database. The application owns that
-    policy, operation admission, priorities and per-owner cache/temp settings.
+    policy, per-operation native budgets, priorities and per-owner cache/temp settings.
+    A finite shared operation grant covers actual work calls, including opens,
+    cursor/blob work and transactions. One backup call retains both connections
+    under one operation grant. Physical close uses the already retained finite
+    handle grants, so independent cleanup can proceed while work is full.
     This counter supplies neither heap enforcement nor scheduling fairness.
     Blob handles have their own finite active grant; zero explicitly disables
     blob acquisition until the application supplies a larger grant.
@@ -92,6 +99,7 @@ class SqliteConnectionAdmission:
         *,
         connection_limit: int,
         cursor_limit: int,
+        operation_limit: int,
         verify_process: Callable[[], object],
         blob_limit: int = 0,
     ) -> None:
@@ -101,6 +109,10 @@ class SqliteConnectionAdmission:
             raise ValueError("SQLite blob grant must be a nonnegative integer")
         if not callable(verify_process):
             raise TypeError("SQLite process verification is required")
+        if type(operation_limit) is not int or operation_limit < 1:
+            raise ValueError("SQLite operation grant must be a positive integer")
+        self._operation_limit = operation_limit
+        self._operations = self._operation_peak = 0
         self._connection_limit = connection_limit
         self._cursor_limit = cursor_limit
         self._blob_limit = blob_limit
@@ -131,28 +143,48 @@ class SqliteConnectionAdmission:
                 len(self._blobs),
                 self._blob_peak,
                 sum(not lease.returned for lease in self._blobs),
+                self._operation_limit,
+                self._operations,
+                self._operation_peak,
             )
 
     def increase(
-        self, *, connection_limit: int, cursor_limit: int, blob_limit: int | None = None
+        self,
+        *,
+        connection_limit: int,
+        cursor_limit: int,
+        blob_limit: int | None = None,
+        operation_limit: int | None = None,
     ) -> None:
         """Raise explicit active grants without forgetting any retained obligation."""
         if any(type(value) is not int or value < 1 for value in (connection_limit, cursor_limit)):
             raise ValueError("SQLite connection and cursor grants must be positive integers")
         if blob_limit is not None and (type(blob_limit) is not int or blob_limit < 0):
             raise ValueError("SQLite blob grant must be a nonnegative integer")
+        if operation_limit is not None and (
+            type(operation_limit) is not int or operation_limit < 1
+        ):
+            raise ValueError("SQLite operation grant must be a positive integer")
         with self._lock:
             blobs = self._blob_limit if blob_limit is None else blob_limit
+            operations = self._operation_limit if operation_limit is None else operation_limit
             if (
-                blobs < self._blob_limit
+                operations < self._operation_limit
+                or blobs < self._blob_limit
                 or connection_limit < self._connection_limit
                 or cursor_limit < self._cursor_limit
-                or (connection_limit, cursor_limit, blobs)
-                == (self._connection_limit, self._cursor_limit, self._blob_limit)
+                or (connection_limit, cursor_limit, blobs, operations)
+                == (
+                    self._connection_limit,
+                    self._cursor_limit,
+                    self._blob_limit,
+                    self._operation_limit,
+                )
             ):
                 raise ValueError("SQLite grants require no decrease and at least one increase")
             self._connection_limit, self._cursor_limit = connection_limit, cursor_limit
             self._blob_limit = blobs
+            self._operation_limit = operations
 
     @property
     def pending_connections(self) -> tuple[sqlite3.Connection, ...]:
@@ -163,6 +195,31 @@ class SqliteConnectionAdmission:
             )
 
     def connect(self, database: Any, **options: Any) -> sqlite3.Connection:
+        """Admit the actual open call before process verification or driver work."""
+        self._begin_operation()
+        try:
+            return self._connect(database, **options)
+        finally:
+            self._end_operation()
+
+    def _begin_operation(self) -> None:
+        with self._lock:
+            if self._operations >= self._operation_limit:
+                raise SqliteCapacity("active SQLite operation grant exhausted")
+            self._operations += 1
+            self._operation_peak = max(self._operation_peak, self._operations)
+            _admissions.add(self)
+
+    def _forget_if_settled(self) -> None:
+        if not self._connections and not self._cursors and not self._blobs and not self._operations:
+            _admissions.discard(self)
+
+    def _end_operation(self) -> None:
+        with self._lock:
+            self._operations -= 1
+            self._forget_if_settled()
+
+    def _connect(self, database: Any, **options: Any) -> sqlite3.Connection:
         """Use the selected actual driver and preserve owner URI/thread/transaction options."""
         if "factory" in options:
             raise ValueError("SQLite admission owns the connection and cursor factories")
@@ -223,8 +280,7 @@ class SqliteConnectionAdmission:
     def _release_connection(self, lease: _ConnectionLease) -> None:
         with self._lock:
             self._connections.discard(lease)
-            if not self._connections and not self._cursors and not self._blobs:
-                _admissions.discard(self)
+            self._forget_if_settled()
 
 
 _connect = sqlite3.connect
@@ -256,14 +312,18 @@ class _Connection(sqlite3.Connection):
         if self._closing:
             raise SqliteCleanupPending("SQLite connection is closing")
 
-    def _begin(self) -> None:
+    def _begin(self, *, operation: bool = True) -> None:
         with self._lock:
             self._require_open()
+            if operation:
+                self._lease.admission._begin_operation()
             self._calls += 1
 
-    def _end(self) -> None:
+    def _end(self, *, operation: bool = True) -> None:
         with self._lock:
             self._calls -= 1
+            if operation:
+                self._lease.admission._end_operation()
 
     @overload
     def cursor(self, factory: None = None) -> sqlite3.Cursor: ...
@@ -345,13 +405,13 @@ class _Connection(sqlite3.Connection):
             raise ValueError("SQLite backup requires the same application's admitted target")
         self._begin()
         try:
-            target._begin()
+            target._begin(operation=False)
             try:
                 super().backup(target, pages=pages, progress=progress, name=name, sleep=sleep)
                 self._require_open()
                 target._require_open()
             finally:
-                target._end()
+                target._end(operation=False)
         finally:
             self._end()
 
@@ -538,7 +598,7 @@ class _Cursor(sqlite3.Cursor):
             self._lease.owner._lease.admission._release_cursor(self._lease)
         finally:
             self._close_active = False
-            self._owner._end()
+            self._owner._end(operation=False)
 
     def __del__(self) -> None:
         # Confirm the actual close before retirement. Failed finalization keeps
@@ -634,7 +694,7 @@ class _Blob:
             self._owner._lease.admission._release_blob(self._lease)
         finally:
             self._close_active = False
-            self._owner._end()
+            self._owner._end(operation=False)
 
     def __del__(self) -> None:
         if not getattr(self, "_cleanup_complete", True):

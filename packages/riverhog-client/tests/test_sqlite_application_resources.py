@@ -93,7 +93,7 @@ def test_foreign_process_owner_cannot_open_or_change_policy(process, tmp_path, a
 def test_process_verification_precedes_an_actual_ordinary_connection(process):
     owner, _budget, selected, events = process
     pool = SqliteConnectionAdmission(
-        connection_limit=1, cursor_limit=4, verify_process=owner.verify
+        operation_limit=8, connection_limit=1, cursor_limit=4, verify_process=owner.verify
     )
     with closing(pool.connect(":memory:")) as db:
         with closing(db.execute("SELECT 17")) as cursor:
@@ -183,6 +183,7 @@ def test_schema_cold_verification_and_replacement_share_actual_connection_admiss
 
     verified = []
     pool = SqliteConnectionAdmission(
+        operation_limit=8,
         connection_limit=2,
         cursor_limit=32,
         blob_limit=1,
@@ -239,7 +240,7 @@ from riverhog_client import WindowsSqliteProcess
 from sqlite_admission import SqliteConnectionAdmission
 limit=2*1024*1024
 process=WindowsSqliteProcess(heap_bytes=limit,native_limits=(2,8))
-pool=SqliteConnectionAdmission(connection_limit=2,cursor_limit=8,verify_process=process.verify)
+pool=SqliteConnectionAdmission(operation_limit=8,connection_limit=2,cursor_limit=8,verify_process=process.verify)
 with closing(pool.connect(":memory:")) as first, closing(pool.connect(":memory:")) as second:
     first.execute("CREATE TABLE original(value)").close()
     first.execute("INSERT INTO original VALUES ('exact original')").close()
@@ -290,7 +291,11 @@ def test_primary_barrier_blob_uncertainty_keeps_database_and_guard_until_explici
     from tests.support.prepared_primary import SqlitePrimaryTestGuard
 
     pool = SqliteConnectionAdmission(
-        connection_limit=1, cursor_limit=32, blob_limit=1, verify_process=lambda: None
+        operation_limit=8,
+        connection_limit=1,
+        cursor_limit=32,
+        blob_limit=1,
+        verify_process=lambda: None,
     )
     path = tmp_path / "primary.sqlite3"
     path.touch()

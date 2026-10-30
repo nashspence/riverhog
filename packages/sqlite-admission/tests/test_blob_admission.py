@@ -13,7 +13,11 @@ from sqlite_admission import SqliteCapacity, SqliteCleanupPending, SqliteConnect
 
 def opened(*, blobs=1, **options):
     pool = SqliteConnectionAdmission(
-        connection_limit=1, cursor_limit=8, blob_limit=blobs, verify_process=lambda: None
+        operation_limit=8,
+        connection_limit=1,
+        cursor_limit=8,
+        blob_limit=blobs,
+        verify_process=lambda: None,
     )
     db = pool.connect(":memory:", **options)
     with closing(db.execute("CREATE TABLE items(value BLOB)")):
@@ -31,7 +35,11 @@ def test_invalid_blob_grant_never_reaches_process_or_driver(grant):
 
     with pytest.raises(ValueError, match="blob grant"):
         SqliteConnectionAdmission(
-            connection_limit=1, cursor_limit=1, blob_limit=grant, verify_process=forbidden
+            operation_limit=8,
+            connection_limit=1,
+            cursor_limit=1,
+            blob_limit=grant,
+            verify_process=forbidden,
         )
 
 

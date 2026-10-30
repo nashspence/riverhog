@@ -13,6 +13,7 @@ from sqlite_admission import SqliteCapacity, SqliteCleanupPending, SqliteConnect
 
 def admitted(**options):
     return SqliteConnectionAdmission(
+        operation_limit=8,
         connection_limit=options.get("connections", 1),
         cursor_limit=options.get("cursors", 8),
         verify_process=options.get("verify", lambda: None),
@@ -54,6 +55,7 @@ def test_connection_capacity_precedes_driver_and_refills_only_after_close(tmp_pa
 def test_invalid_grants_do_not_run_process_admission(grant, value):
     events = []
     options = {
+        "operation_limit": 8,
         "connection_limit": 1,
         "cursor_limit": 2,
         "verify_process": lambda: events.append(True),
