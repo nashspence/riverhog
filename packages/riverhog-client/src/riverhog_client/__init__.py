@@ -17,7 +17,12 @@ from riverhog_protocol import (
     Unauthorized,
 )
 
+from riverhog_client._prepared_primary_application import WindowsSqliteProcess
 from riverhog_client._prepared_primary_documents import PrimaryScope
+from riverhog_client._prepared_primary_factory import (
+    WindowsPrimaryFactory,
+    sqlite_primary_preparation_step,
+)
 from riverhog_client._prepared_primary_inventory import ordered_primary_inventory
 from riverhog_client._prepared_primary_policy import PrimaryStatePolicy
 from riverhog_client._prepared_primary_publisher import (
@@ -25,6 +30,12 @@ from riverhog_client._prepared_primary_publisher import (
     RetainedPrimaryObservation,
     retained_primary_observation,
 )
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
+from riverhog_client._prepared_primary_sqlite_operations import (
+    SqliteOperationBank,
+    SqliteOperationGrants,
+)
+from riverhog_client._prepared_primary_sqlite_preparation import SqliteReadinessPlan
 from riverhog_client._prepared_primary_store import PrimaryStore, PrimaryStoreLimits
 from riverhog_client._prepared_primary_types import (
     PrimaryStateBusy,
@@ -65,6 +76,13 @@ from riverhog_client.uploads import (
 )
 
 __all__ = [
+    "WindowsSqliteProcess",
+    "WindowsPrimaryFactory",
+    "SqlitePrimaryLimits",
+    "SqliteOperationBank",
+    "SqliteOperationGrants",
+    "SqliteReadinessPlan",
+    "sqlite_primary_preparation_step",
     "DeclaredPrimaryObservation",
     "RetainedPrimaryObservation",
     "retained_primary_observation",

@@ -8,7 +8,7 @@ import operator
 import sqlite3
 import threading
 import uuid
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -113,10 +113,15 @@ def _admit_cold_extents(guard: ContainerGuard, limits: SqlitePrimaryLimits) -> N
             )
 
 
-def _connect(guard: ContainerGuard, limits: SqlitePrimaryLimits) -> sqlite3.Connection:
+def _connect(
+    guard: ContainerGuard,
+    limits: SqlitePrimaryLimits,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+) -> sqlite3.Connection:
     guard.check_current()
     uri = guard.path.as_uri() + "?mode=rw&vfs=" + guard.vfs
-    connection = sqlite3.connect(
+    connect = sqlite3.connect if connection_factory is None else connection_factory
+    connection = connect(
         uri,
         uri=True,
         timeout=0,
@@ -170,10 +175,16 @@ def _connect(guard: ContainerGuard, limits: SqlitePrimaryLimits) -> sqlite3.Conn
         raise
 
 
-def _engine_factory(guard: ContainerGuard, limits: SqlitePrimaryLimits) -> EngineFactory:
+def _engine_factory(
+    guard: ContainerGuard,
+    limits: SqlitePrimaryLimits,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+) -> EngineFactory:
     def factory() -> Engine:
         engine = create_engine(
-            "sqlite://", creator=lambda: _connect(guard, limits), poolclass=NullPool
+            "sqlite://",
+            creator=lambda: _connect(guard, limits, connection_factory),
+            poolclass=NullPool,
         )
 
         @event.listens_for(engine, "begin")
@@ -201,6 +212,7 @@ class TransactionalPrimaryFiles:
         limits: SqlitePrimaryLimits,
         initialize: bool,
         operations: SqliteOperationGrants | None = None,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
     ) -> None:
         from riverhog_client._prepared_primary_sqlite_operations import (
             SqliteOperationGrants,
@@ -224,13 +236,14 @@ class TransactionalPrimaryFiles:
         self._readers: set[_ChunkReader] = set()
         self._pins: dict[str, int] = {}
         self._ordering_guard = threading.Lock()
+        self._connection_factory = connection_factory
         self._connection: sqlite3.Connection | None = None
         self._native_transactions: NativeSqliteTransactions | None = None
         from riverhog_client._prepared_primary_sqlite_database_reserve import SqliteDatabaseReserve
         from riverhog_client._prepared_primary_sqlite_progress_journal import SqliteProgressJournal
         from riverhog_client._prepared_primary_sqlite_ready import SqlitePhysicalReadiness
 
-        factory = _engine_factory(guard, limits)
+        factory = _engine_factory(guard, limits, connection_factory)
         schema = _primary_state_schema(factory)
         try:
             if initialize:
@@ -266,7 +279,7 @@ class TransactionalPrimaryFiles:
                         _verify_shape(connection)
                 finally:
                     engine.dispose()
-            self._connection = _connect(guard, limits)
+            self._connection = _connect(guard, limits, connection_factory)
             identity = self._one("SELECT allocation, geometry FROM primary_format WHERE id=1")
             if identity != (allocation_descriptor, _GEOMETRY):
                 raise PrimaryStateError("prepared-primary allocation or storage geometry changed")

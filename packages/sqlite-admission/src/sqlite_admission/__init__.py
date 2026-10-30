@@ -29,6 +29,10 @@ class SqliteAdmissionStatus:
     cursor_peak: int
     unreturned_connections: int
     closing_connections: int
+    blob_limit: int
+    blobs: int
+    blob_peak: int
+    unreturned_blobs: int
 
 
 @dataclass(eq=False)
@@ -52,6 +56,21 @@ class _CursorLease:
         return None if self.reference is None else self.reference()
 
 
+@dataclass(eq=False)
+class _BlobLease:
+    owner: _Connection
+    reference: weakref.ReferenceType[_Blob] | None = None
+    retained: _Blob | None = None
+    returned: bool = False
+    unconfirmed: bool = False
+    quarantined: bool = False
+
+    def actual(self) -> _Blob | None:
+        if self.retained is not None:
+            return self.retained
+        return None if self.reference is None else self.reference()
+
+
 class SqliteConnectionAdmission:
     """Bound actual connections and cursors after application process admission.
 
@@ -59,6 +78,8 @@ class SqliteConnectionAdmission:
     engine/heap policy without opening a database. The application owns that
     policy, operation admission, priorities and per-owner cache/temp settings.
     This counter supplies neither heap enforcement nor scheduling fairness.
+    Blob handles have their own finite active grant; zero explicitly disables
+    blob acquisition until the application supplies a larger grant.
 
     Admission precedes the driver call. Unreturned construction stays charged,
     even when no closeable Python handle was returned. Actual handles remain
@@ -72,18 +93,23 @@ class SqliteConnectionAdmission:
         connection_limit: int,
         cursor_limit: int,
         verify_process: Callable[[], object],
+        blob_limit: int = 0,
     ) -> None:
         if any(type(value) is not int or value < 1 for value in (connection_limit, cursor_limit)):
             raise ValueError("SQLite connection and cursor grants must be positive integers")
+        if type(blob_limit) is not int or blob_limit < 0:
+            raise ValueError("SQLite blob grant must be a nonnegative integer")
         if not callable(verify_process):
             raise TypeError("SQLite process verification is required")
         self._connection_limit = connection_limit
         self._cursor_limit = cursor_limit
+        self._blob_limit = blob_limit
         self._verify_process = verify_process
         self._lock = RLock()
         self._connections: set[_ConnectionLease] = set()
         self._cursors: set[_CursorLease] = set()
-        self._connection_peak = self._cursor_peak = 0
+        self._blobs: set[_BlobLease] = set()
+        self._connection_peak = self._cursor_peak = self._blob_peak = 0
 
     @property
     def status(self) -> SqliteAdmissionStatus:
@@ -101,20 +127,32 @@ class SqliteConnectionAdmission:
                     lease.connection is not None and lease.connection._closing
                     for lease in self._connections
                 ),
+                self._blob_limit,
+                len(self._blobs),
+                self._blob_peak,
+                sum(not lease.returned for lease in self._blobs),
             )
 
-    def increase(self, *, connection_limit: int, cursor_limit: int) -> None:
+    def increase(
+        self, *, connection_limit: int, cursor_limit: int, blob_limit: int | None = None
+    ) -> None:
         """Raise explicit active grants without forgetting any retained obligation."""
         if any(type(value) is not int or value < 1 for value in (connection_limit, cursor_limit)):
             raise ValueError("SQLite connection and cursor grants must be positive integers")
+        if blob_limit is not None and (type(blob_limit) is not int or blob_limit < 0):
+            raise ValueError("SQLite blob grant must be a nonnegative integer")
         with self._lock:
+            blobs = self._blob_limit if blob_limit is None else blob_limit
             if (
-                connection_limit < self._connection_limit
+                blobs < self._blob_limit
+                or connection_limit < self._connection_limit
                 or cursor_limit < self._cursor_limit
-                or (connection_limit, cursor_limit) == (self._connection_limit, self._cursor_limit)
+                or (connection_limit, cursor_limit, blobs)
+                == (self._connection_limit, self._cursor_limit, self._blob_limit)
             ):
                 raise ValueError("SQLite grants require no decrease and at least one increase")
             self._connection_limit, self._cursor_limit = connection_limit, cursor_limit
+            self._blob_limit = blobs
 
     @property
     def pending_connections(self) -> tuple[sqlite3.Connection, ...]:
@@ -166,10 +204,26 @@ class SqliteConnectionAdmission:
             self._cursors.discard(lease)
             lease.retained = None
 
+    def _reserve_blob(self, owner: _Connection) -> _BlobLease:
+        with self._lock:
+            if len(self._blobs) >= self._blob_limit:
+                raise SqliteCapacity("active SQLite blob grant exhausted")
+            lease = _BlobLease(owner)
+            self._blobs.add(lease)
+            owner._blobs.add(lease)
+            self._blob_peak = max(self._blob_peak, len(self._blobs))
+            return lease
+
+    def _release_blob(self, lease: _BlobLease) -> None:
+        with self._lock:
+            lease.owner._blobs.discard(lease)
+            self._blobs.discard(lease)
+            lease.retained = None
+
     def _release_connection(self, lease: _ConnectionLease) -> None:
         with self._lock:
             self._connections.discard(lease)
-            if not self._connections and not self._cursors:
+            if not self._connections and not self._cursors and not self._blobs:
                 _admissions.discard(self)
 
 
@@ -191,6 +245,7 @@ class _Connection(sqlite3.Connection):
         self._cleanup_notice_delivered = False
         self._lock = RLock()
         self._cursors: set[_CursorLease] = set()
+        self._blobs: set[_BlobLease] = set()
         super().__init__(*args, **options)
 
     @property
@@ -317,8 +372,28 @@ class _Connection(sqlite3.Connection):
         finally:
             self._end()
 
+    def _driver_blobopen(self, *args: Any, **options: Any) -> sqlite3.Blob:
+        return super().blobopen(*args, **options)
+
     def blobopen(self, *args: Any, **options: Any) -> Any:
-        raise ValueError("SQLite blob handles require separate explicit lifetime admission")
+        """Admit a wrapper retaining the actual SQLite blob until confirmed close."""
+        self._begin()
+        lease = None
+        try:
+            lease = self._lease.admission._reserve_blob(self)
+            blob = _Blob(self, lease)
+            blob._actual = self._driver_blobopen(*args, **options)
+            self._require_open()
+            lease.reference = weakref.ref(blob)
+            lease.retained = None
+            lease.returned = True
+            return blob
+        except BaseException:
+            if lease is not None:
+                self._closing = True
+            raise
+        finally:
+            self._end()
 
     def __enter__(self) -> Self:
         self._require_open()
@@ -352,27 +427,27 @@ class _Connection(sqlite3.Connection):
             if self._calls or self._close_active:
                 raise SqliteCleanupPending("SQLite operation is still active")
             # A failed finalizer has no caller to authorize another close attempt.
-            if any(lease.quarantined for lease in self._cursors):
+            resources: tuple[_CursorLease | _BlobLease, ...] = (*self._cursors, *self._blobs)
+            if any(lease.quarantined for lease in resources):
                 raise SqliteCleanupPending(
                     "SQLite finalizer cleanup is quarantined until process exit"
                 )
-            if (
-                any(lease.unconfirmed for lease in self._cursors)
-                and not self._cleanup_notice_delivered
-            ):
+            if any(lease.unconfirmed for lease in resources) and not self._cleanup_notice_delivered:
                 # Notify a containing owner before any explicit retry can occur.
                 self._cleanup_notice_delivered = True
-                raise SqliteCleanupPending("SQLite cursor close remains unconfirmed")
+                raise SqliteCleanupPending("SQLite cursor or blob close remains unconfirmed")
             self._close_active = True
         try:
-            for lease in tuple(self._cursors):
-                cursor = lease.actual()
-                if cursor is None:
-                    raise SqliteCleanupPending("SQLite cursor construction remains unconfirmed")
-                cursor.close()
+            for lease in resources:
+                resource = lease.actual()
+                if resource is None:
+                    raise SqliteCleanupPending(
+                        "SQLite cursor or blob construction remains unconfirmed"
+                    )
+                resource.close()
             with self._lock:
-                if self._calls or self._cursors:
-                    raise SqliteCleanupPending("SQLite cursor cleanup is still active")
+                if self._calls or self._cursors or self._blobs:
+                    raise SqliteCleanupPending("SQLite cursor or blob cleanup is still active")
             self._driver_close()
             self._cleanup_complete = True
             self._lease.admission._release_connection(self._lease)
@@ -469,6 +544,99 @@ class _Cursor(sqlite3.Cursor):
         # Confirm the actual close before retirement. Failed finalization keeps
         # a strong owner reference and its grants, rather than refunding them
         # from a weak-reference callback before the driver has released storage.
+        if not getattr(self, "_cleanup_complete", True):
+            try:
+                self.close()
+            except BaseException:
+                self._lease.quarantined = True
+
+
+class _Blob:
+    def __init__(self, owner: _Connection, lease: _BlobLease) -> None:
+        self._owner, self._lease = owner, lease
+        self._actual: sqlite3.Blob | None = None
+        self._cleanup_complete = self._close_active = False
+        lease.retained = self
+
+    def _call(self, method: str, *args: Any) -> Any:
+        self._owner._begin()
+        try:
+            if self._actual is None:
+                raise SqliteCleanupPending("SQLite blob construction remains unconfirmed")
+            result = getattr(self._actual, method)(*args)
+            self._owner._require_open()
+            return result
+        finally:
+            self._owner._end()
+
+    def read(self, length: int = -1, /) -> bytes:
+        result: bytes = self._call("read", length)
+        return result
+
+    def write(self, data: Any, /) -> None:
+        self._call("write", data)
+
+    def seek(self, offset: int, origin: int = 0, /) -> None:
+        self._call("seek", offset, origin)
+
+    def tell(self) -> int:
+        result: int = self._call("tell")
+        return result
+
+    def __len__(self) -> int:
+        result: int = self._call("__len__")
+        return result
+
+    def __getitem__(self, key: int | slice) -> Any:
+        return self._call("__getitem__", key)
+
+    def __setitem__(self, key: int | slice, value: Any) -> None:
+        self._call("__setitem__", key, value)
+
+    def __enter__(self) -> Self:
+        self._call("__enter__")
+        return self
+
+    def __exit__(self, *args: Any) -> Literal[False]:
+        if not self._lease.unconfirmed and not self._lease.quarantined:
+            self.close()
+        return False
+
+    def _driver_close(self) -> None:
+        if self._actual is None:
+            raise SqliteCleanupPending("SQLite blob construction remains unconfirmed")
+        self._actual.close()
+
+    def close(self) -> None:
+        with self._owner._lock:
+            if self._cleanup_complete:
+                self._owner._lease.admission._release_blob(self._lease)
+                return
+            if self._lease.quarantined:
+                raise SqliteCleanupPending(
+                    "SQLite finalizer cleanup is quarantined until process exit"
+                )
+            if self._close_active:
+                raise SqliteCleanupPending("SQLite blob close is still active")
+            self._lease.retained = self
+            self._close_active = True
+            self._owner._calls += 1
+        try:
+            self._driver_close()
+        except BaseException:
+            self._owner._closing = True
+            self._lease.unconfirmed = True
+            if not self._owner._close_active:
+                self._owner._cleanup_notice_delivered = False
+            raise
+        else:
+            self._cleanup_complete = True
+            self._owner._lease.admission._release_blob(self._lease)
+        finally:
+            self._close_active = False
+            self._owner._end()
+
+    def __del__(self) -> None:
         if not getattr(self, "_cleanup_complete", True):
             try:
                 self.close()

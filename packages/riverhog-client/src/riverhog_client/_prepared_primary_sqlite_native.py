@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sqlite3
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol
 
@@ -125,7 +127,7 @@ def start(
         db.close()
         files._connection = None
         guard.arm_operation(retained.grants, files._limits)
-        files._connection = _connect(guard, files._limits)
+        files._connection = _connect(guard, files._limits, files._connection_factory)
         files._native_transactions = NativeSqliteTransactions(guard)
         return files
 
@@ -139,6 +141,7 @@ def open_native(
     process: SqliteProcessBudget,
     retry_profile: tuple[int, int],
     initialize: bool,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
 ) -> TransactionalPrimaryFiles:
     """Compose a finite native owner under an already admitted application process.
 
@@ -212,6 +215,7 @@ def open_native(
             limits=limits,
             initialize=initialize,
             operations=operations,
+            connection_factory=connection_factory,
         )
         try:
             return start(files, guard)

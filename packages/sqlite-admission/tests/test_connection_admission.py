@@ -318,7 +318,7 @@ def test_factory_reinitialization_and_unadmitted_handles_are_refused(tmp_path):
         db.__init__(tmp_path / "other.sqlite3")
     with pytest.raises(ValueError, match="cursor factory"):
         db.cursor(factory=sqlite3.Cursor)
-    with pytest.raises(ValueError, match="blob handles"):
+    with pytest.raises(SqliteCapacity, match="blob grant"):
         db.blobopen("items", "value", 1)
     with sqlite3.connect(":memory:") as unadmitted:
         with pytest.raises(ValueError, match="admitted target"):

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sqlite3
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -42,6 +44,7 @@ class WindowsPrimaryFactory:
     operations: SqliteOperationGrants
     process: SqliteProcessBudget
     retry_profile: tuple[int, int]
+    connection_factory: Callable[..., sqlite3.Connection] | None = None
 
     def __call__(
         self, location: Path, *, allocation_descriptor: bytes, initialize: bool
@@ -56,4 +59,5 @@ class WindowsPrimaryFactory:
             process=self.process,
             retry_profile=self.retry_profile,
             initialize=initialize,
+            connection_factory=self.connection_factory,
         )
