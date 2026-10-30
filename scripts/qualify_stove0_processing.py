@@ -12,9 +12,11 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from collections import deque
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from types import FunctionType
 from typing import Any, Literal, get_args
 
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
@@ -338,7 +340,7 @@ def await_admission() -> None:
             assert current in state_order, row
             assert state_order[current] < state_order[expected], row
         if current != previous or now >= next_progress:
-            planning = []
+            planning: list[dict[str, object]] = []
             for job_id in preview_ids:
                 try:
                     status = stove("/v1/workflow-previews/" + job_id, timeout=5)
@@ -692,15 +694,71 @@ def target_records() -> None:
     print(f"settled target queue: {len(jobs)} distinct successful jobs")
 
 
+def qualification_failure_annotation(error: Exception) -> None:
+    """Locate an uncaught qualification failure without copying its payload.
+
+    Only this source's declared function names and line numbers are retained;
+    imported callbacks and exception messages do not enter the annotation.
+    The caller re-raises the original exception and preserves process failure.
+    """
+    owned = {
+        value.__code__
+        for value in globals().values()
+        if isinstance(value, FunctionType) and value.__globals__ is globals()
+    }
+    frames: deque[dict[str, object]] = deque(maxlen=3)
+    trace = error.__traceback__
+    while trace is not None:
+        code = trace.tb_frame.f_code
+        if code in owned:
+            frames.append({"function": code.co_name, "line": trace.tb_lineno})
+        trace = trace.tb_next
+    diagnostic: dict[str, object] = {
+        "format": "riverhog-processing-failure-diagnostic/v1",
+        "failure_class": "unexpected",
+        "source_frames": list(frames),
+    }
+    if isinstance(error, urllib.error.HTTPError):
+        if type(error.code) is int and 100 <= error.code <= 599:
+            diagnostic.update(failure_class="http-status", http_status=error.code)
+    else:
+        for error_type, category in (
+            (AssertionError, "assertion"),
+            (TimeoutError, "timeout"),
+            (OSError, "filesystem"),
+            (ValueError, "value"),
+            (KeyError, "key"),
+            (TypeError, "type"),
+            (RuntimeError, "runtime"),
+        ):
+            if isinstance(error, error_type):
+                diagnostic["failure_class"] = category
+                break
+    print(
+        "::error title=Processing qualification::"
+        + json.dumps(diagnostic, sort_keys=True, separators=(",", ":")),
+        file=sys.stderr,
+        flush=True,
+    )
+
+
 def main() -> None:
-    {
-        "admission": await_admission,
-        "admission-work": admission_work,
-        "invoke": invoke,
-        "wait": wait,
-        "snapshot": snapshot,
-        "target-records": target_records,
-    }[sys.argv[1]]()
+    try:
+        {
+            "admission": await_admission,
+            "admission-work": admission_work,
+            "invoke": invoke,
+            "wait": wait,
+            "snapshot": snapshot,
+            "target-records": target_records,
+        }[sys.argv[1]]()
+    except Exception as error:
+        try:
+            qualification_failure_annotation(error)
+        except Exception:
+            # A reporting failure does not replace the failure being qualified.
+            pass
+        raise
 
 
 if __name__ == "__main__":
