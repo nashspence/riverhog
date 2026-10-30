@@ -55,6 +55,7 @@ NATIVE_TESTS = (
     "packages/riverhog-provenance/tests/test_journal_helper_admission.py",
     "packages/riverhog-provenance/tests/test_history_worklist_admission.py",
     "packages/riverhog-provenance/tests/test_history_snapshot_admission.py",
+    "packages/riverhog-provenance/tests/test_history_membership_admission.py",
     "packages/riverhog-client/tests/test_prepared_primary_barrier.py",
     "packages/riverhog-client/tests/test_prepared_primary_documents.py",
     "packages/riverhog-client/tests/test_prepared_primary_factory.py",

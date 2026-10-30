@@ -9,7 +9,7 @@ from collections import OrderedDict
 from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from tempfile import TemporaryDirectory, mkdtemp
+from tempfile import mkdtemp
 from typing import Any, Self, cast
 
 from riverhog_archive_contracts import (
@@ -228,58 +228,125 @@ def _prefix(chunks: Iterable[bytes], count: int) -> Iterator[bytes]:
             close()
 
 
+def _remove_directory(path: Path) -> None:
+    try:
+        shutil.rmtree(path)
+    except FileNotFoundError:
+        if path.exists():
+            raise
+
+
 class MemberHistoryMembership:
     """Transient local query projection of a previously verified closure.
 
     Images are process-local cache data, never archive authority or wire evidence.
     The caller retains the exact root, selection and extent and current read fences.
+    A supplied factory admits the connection before query setup and owns unreturned
+    connection files. Early retention preserves a close-ready owner; unconfirmed
+    cursor, connection or directory cleanup requires explicit retry.
     """
 
-    def __init__(self, image: bytes) -> None:
-        self._scratch = TemporaryDirectory(prefix="riverhog-history-membership-")
-        path = Path(self._scratch.name) / "membership.sqlite3"
-        path.write_bytes(image)
-        self._db = sqlite3.connect(path)
+    def __init__(
+        self,
+        image: bytes,
+        *,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_storage_open: Callable[[Self], None] | None = None,
+    ) -> None:
+        self._closing = False
+        self._connection_closed = False
+        self._directory_removed = False
         self._cursors: set[sqlite3.Cursor] = set()
+        self._root = Path(mkdtemp(prefix="riverhog-history-membership-"))
+        path = self._root / "membership.sqlite3"
         try:
+            path.write_bytes(image)
+        except BaseException:
+            _remove_directory(self._root)
+            raise
+        connect = sqlite3.connect if connection_factory is None else connection_factory
+        try:
+            self._db = connect(path)
+        except BaseException:
+            if connection_factory is None:
+                _remove_directory(self._root)
+            raise
+        try:
+            if on_storage_open is not None:
+                on_storage_open(self)
+            self._require_open()
             self._db.execute("PRAGMA query_only = ON")
             self._db.execute("PRAGMA cache_size = -512")
         except BaseException:
-            self._db.close()
-            self._scratch.cleanup()
+            if not self._closing:
+                self.close()
             raise
 
+    def _require_open(self) -> None:
+        if self._closing:
+            raise RuntimeError("member history membership is closed")
+
     def __enter__(self) -> Self:
+        self._require_open()
         return self
 
     def __exit__(self, *_exc: object) -> None:
-        for cursor in self._cursors:
-            cursor.close()
-        self._cursors.clear()
-        self._db.close()
-        self._scratch.cleanup()
+        if not self._closing:
+            self.close()
 
-    def journal_anchors(self) -> Iterator[HistoryJournalAnchor]:
-        cursor = self._db.execute("SELECT anchor FROM journals ORDER BY identity")
+    def close(self) -> None:
+        self._closing = True
+        for cursor in tuple(self._cursors):
+            cursor.close()
+            self._cursors.remove(cursor)
+        if not self._connection_closed:
+            self._db.close()
+            self._connection_closed = True
+        if not self._directory_removed:
+            _remove_directory(self._root)
+            self._directory_removed = True
+
+    def _execute(self, statement: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self._require_open()
+        return self._db.execute(statement, parameters)
+
+    def _release_cursor(self, cursor: sqlite3.Cursor) -> None:
+        if not self._closing and cursor in self._cursors:
+            try:
+                cursor.close()
+            except BaseException:
+                self._closing = True
+                raise
+            self._cursors.remove(cursor)
+
+    def _row(self, statement: str, parameters: tuple[Any, ...] = ()) -> tuple[Any, ...] | None:
+        cursor = self._execute(statement, parameters)
         self._cursors.add(cursor)
         try:
-            for (encoded,) in cursor:
-                yield HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
+            self._require_open()
+            return cast(tuple[Any, ...] | None, cursor.fetchone())
         finally:
-            if cursor in self._cursors:
-                self._cursors.remove(cursor)
-                cursor.close()
+            self._release_cursor(cursor)
+
+    def journal_anchors(self) -> Iterator[HistoryJournalAnchor]:
+        cursor = self._execute("SELECT anchor FROM journals ORDER BY identity")
+        self._cursors.add(cursor)
+        try:
+            while True:
+                self._require_open()
+                row = cursor.fetchone()
+                if row is None:
+                    break
+                yield HistoryJournalAnchor.from_mapping(require_canonical_json(row[0]))
+        finally:
+            self._release_cursor(cursor)
 
     def journal_anchor(self, journal_id: str) -> HistoryJournalAnchor | None:
-        row = self._db.execute(
-            "SELECT anchor FROM journals WHERE identity = ?", (journal_id,)
-        ).fetchone()
+        row = self._row("SELECT anchor FROM journals WHERE identity = ?", (journal_id,))
         return HistoryJournalAnchor.from_mapping(require_canonical_json(row[0])) if row else None
 
     def contains_structure_object(self, path: str) -> bool:
-        return (
-            self._db.execute("SELECT 1 FROM objects WHERE path = ?", (path,)).fetchone() is not None
-        )
+        return self._row("SELECT 1 FROM objects WHERE path = ?", (path,)) is not None
 
 
 class MemberHistoryClosure:
@@ -373,14 +440,6 @@ class MemberHistoryClosure:
         if not self._closing:
             self.close()
 
-    @staticmethod
-    def _remove_directory(path: Path) -> None:
-        try:
-            shutil.rmtree(path)
-        except FileNotFoundError:
-            if path.exists():
-                raise
-
     def _discard_copy(self) -> None:
         if self._copy_connection is None:
             return
@@ -389,7 +448,7 @@ class MemberHistoryClosure:
                 self._copy_connection.close()
                 self._copy_connection_closed = True
             assert self._copy_directory is not None
-            self._remove_directory(self._copy_directory)
+            _remove_directory(self._copy_directory)
         except BaseException:
             self._closing = True
             raise
@@ -415,7 +474,7 @@ class MemberHistoryClosure:
             self._db.close()
             self._connection_closed = True
         if not self._directory_removed:
-            self._remove_directory(self._root)
+            _remove_directory(self._root)
             self._directory_removed = True
 
     def _execute(self, statement: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
@@ -783,7 +842,7 @@ class MemberHistoryClosure:
             copy = connect(path)
         except BaseException:
             if self._connection_factory is None:
-                self._remove_directory(directory)
+                _remove_directory(directory)
             raise
         self._copy_connection = copy
         self._copy_directory = directory
