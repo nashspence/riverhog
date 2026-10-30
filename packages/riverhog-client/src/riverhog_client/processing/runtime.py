@@ -18,6 +18,7 @@ from time_formats import utc_timestamp_now
 
 from riverhog_client import ApiClient, PrimaryStore
 from riverhog_client.completion_records import CompletionRecords
+from riverhog_client.initial_tags import PreparedInitialCollectionTags
 from riverhog_client.processing.capability import CapabilityApiClient
 from riverhog_client.processing.models import (
     ClaimedArtifact,
@@ -195,6 +196,8 @@ class CollectionTransformRuntime:
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        initial_tags_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_initial_tags_storage_open: Callable[[PreparedInitialCollectionTags], None] | None = None,
         completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
         history_selection_connection_factory: Callable[..., sqlite3.Connection] | None = None,
@@ -224,6 +227,8 @@ class CollectionTransformRuntime:
         self.member_inventory = member_inventory
         self._provenance_connection_factory = provenance_connection_factory
         self._on_provenance_storage_open = on_provenance_storage_open
+        self._initial_tags_connection_factory = initial_tags_connection_factory
+        self._on_initial_tags_storage_open = on_initial_tags_storage_open
         self._completion_connection_factory = completion_connection_factory
         self._on_completion_storage_open = on_completion_storage_open
         self._history_selection_connection_factory = history_selection_connection_factory
@@ -268,6 +273,8 @@ class CollectionTransformRuntime:
             member_inventory=member_inventory,
             provenance_connection_factory=provenance_connection_factory,
             on_provenance_storage_open=on_provenance_storage_open,
+            initial_tags_connection_factory=initial_tags_connection_factory,
+            on_initial_tags_storage_open=on_initial_tags_storage_open,
             completion_connection_factory=completion_connection_factory,
             on_completion_storage_open=on_completion_storage_open,
             history_selection_connection_factory=history_selection_connection_factory,
@@ -427,6 +434,8 @@ class CollectionTransformRuntime:
             member_inventory=self.member_inventory,
             provenance_connection_factory=self._provenance_connection_factory,
             on_provenance_storage_open=self._on_provenance_storage_open,
+            initial_tags_connection_factory=self._initial_tags_connection_factory,
+            on_initial_tags_storage_open=self._on_initial_tags_storage_open,
             completion_connection_factory=self._completion_connection_factory,
             on_completion_storage_open=self._on_completion_storage_open,
             history_selection_connection_factory=self._history_selection_connection_factory,

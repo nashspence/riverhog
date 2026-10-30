@@ -68,6 +68,7 @@ NATIVE_TESTS = (
     "packages/riverhog-client/tests/test_claimed_history_admission.py",
     "packages/riverhog-client/tests/test_claimed_snapshot_admission.py",
     "packages/riverhog-client/tests/test_claimed_verification_admission.py",
+    "packages/riverhog-client/tests/test_initial_tags_admission.py",
     "packages/riverhog-client/tests/test_prepared_primary_native.py",
     "packages/riverhog-client/tests/test_prepared_primary_native_vfs.py",
     "packages/riverhog-client/tests/test_prepared_primary_runtime.py",

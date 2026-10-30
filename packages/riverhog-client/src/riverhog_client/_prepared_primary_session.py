@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import replace
 from typing import Any
@@ -18,7 +19,10 @@ from riverhog_client._prepared_primary_store import PrimaryStore
 from riverhog_client._prepared_primary_types import PrimaryStateError
 from riverhog_client.canonical_production import ProducerAttribution
 from riverhog_client.client import ApiClient
-from riverhog_client.initial_tags import prepare_initial_collection_tags
+from riverhog_client.initial_tags import (
+    PreparedInitialCollectionTags,
+    prepare_initial_collection_tags,
+)
 
 
 def open_primary_session(
@@ -34,6 +38,8 @@ def open_primary_session(
     tags: Sequence[CollectionTag],
     event_context: Mapping[str, object] | None,
     storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
+    initial_tags_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_initial_tags_storage_open: Callable[[PreparedInitialCollectionTags], None] | None = None,
 ) -> tuple[dict[str, Any], ProducerAttribution]:
     """Compare the complete creation intent before create, tag or completion writes."""
     initial_identity = hashlib.sha256(
@@ -54,7 +60,11 @@ def open_primary_session(
     )
     copy_to = None if copy_to is None else tuple(copy_to)
     requirement_identity = None if requirement is None else requirement.identity
-    with prepare_initial_collection_tags(tags) as initial_tags:
+    with prepare_initial_collection_tags(
+        tags,
+        connection_factory=initial_tags_connection_factory,
+        on_storage_open=on_initial_tags_storage_open,
+    ) as initial_tags:
         request = canonical_json_bytes(
             {
                 "format": "riverhog-prepared-primary-creation/v1",

@@ -51,6 +51,7 @@ from riverhog_client._prepared_primary_store import PrimaryStore
 from riverhog_client._prepared_primary_types import PrimaryStateError
 from riverhog_client.canonical_production import ProducerAttribution
 from riverhog_client.client import ApiClient
+from riverhog_client.initial_tags import PreparedInitialCollectionTags
 from riverhog_client.source_hashing import RawSourceHash, hash_raw_source_chunks
 from riverhog_client.uploads import (
     configured_upload_concurrency,
@@ -230,6 +231,8 @@ class CollectionProducer:
         storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
         provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        initial_tags_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_initial_tags_storage_open: Callable[[PreparedInitialCollectionTags], None] | None = None,
         producer_app: str,
         adapter_id: str,
         adapter_version: str,
@@ -245,6 +248,8 @@ class CollectionProducer:
         self._storage_preparation = storage_preparation
         self._provenance_connection_factory = provenance_connection_factory
         self._on_provenance_storage_open = on_provenance_storage_open
+        self._initial_tags_connection_factory = initial_tags_connection_factory
+        self._on_initial_tags_storage_open = on_initial_tags_storage_open
         self.member_inventory = member_inventory
         self.producer_app = producer_app
         self.adapter_id = adapter_id
@@ -310,6 +315,8 @@ class CollectionProducer:
             storage_preparation=self._storage_preparation,
             provenance_connection_factory=self._provenance_connection_factory,
             on_provenance_storage_open=self._on_provenance_storage_open,
+            initial_tags_connection_factory=self._initial_tags_connection_factory,
+            on_initial_tags_storage_open=self._on_initial_tags_storage_open,
             producer_app=self.producer_app,
             adapter_id=self.adapter_id,
             adapter_version=self.adapter_version,
@@ -367,6 +374,8 @@ class IncrementalCollectionProducer:
         storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
         provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        initial_tags_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_initial_tags_storage_open: Callable[[PreparedInitialCollectionTags], None] | None = None,
         producer_app: str,
         adapter_id: str,
         adapter_version: str,
@@ -431,6 +440,8 @@ class IncrementalCollectionProducer:
             tags=tags,
             event_context=event_context,
             storage_preparation=storage_preparation,
+            initial_tags_connection_factory=initial_tags_connection_factory,
+            on_initial_tags_storage_open=on_initial_tags_storage_open,
         )
         self._heartbeat_interval_seconds = _custody_heartbeat_interval(session)
         self.resumed = bool(session.get("resumed"))

@@ -47,6 +47,7 @@ from riverhog_provenance import (
 from riverhog_client import PrimaryStore
 from riverhog_client.canonical_completion import CompletionRecord, write_completion_journal
 from riverhog_client.completion_records import CompletionRecords
+from riverhog_client.initial_tags import PreparedInitialCollectionTags
 from riverhog_client.processing.history_transfer import CanonicalHistoryTransfer
 from riverhog_client.processing.models import (
     DerivedCollectionReceipt,
@@ -88,6 +89,8 @@ class DerivedCollectionWriter:
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        initial_tags_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_initial_tags_storage_open: Callable[[PreparedInitialCollectionTags], None] | None = None,
         completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
         history_selection_connection_factory: Callable[..., sqlite3.Connection] | None = None,
@@ -113,6 +116,8 @@ class DerivedCollectionWriter:
         self.api = api
         self._provenance_connection_factory = provenance_connection_factory
         self._on_provenance_storage_open = on_provenance_storage_open
+        self._initial_tags_connection_factory = initial_tags_connection_factory
+        self._on_initial_tags_storage_open = on_initial_tags_storage_open
         self._completion_connection_factory = completion_connection_factory
         self._on_completion_storage_open = on_completion_storage_open
         self._history_selection_connection_factory = history_selection_connection_factory
@@ -171,6 +176,8 @@ class DerivedCollectionWriter:
             member_inventory=self.member_inventory,
             provenance_connection_factory=self._provenance_connection_factory,
             on_provenance_storage_open=self._on_provenance_storage_open,
+            initial_tags_connection_factory=self._initial_tags_connection_factory,
+            on_initial_tags_storage_open=self._on_initial_tags_storage_open,
             completion_connection_factory=self._completion_connection_factory,
             on_completion_storage_open=self._on_completion_storage_open,
             history_selection_connection_factory=self._history_selection_connection_factory,
@@ -221,6 +228,8 @@ class IncrementalDerivedCollectionWriter:
         member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        initial_tags_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_initial_tags_storage_open: Callable[[PreparedInitialCollectionTags], None] | None = None,
         completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
         history_selection_connection_factory: Callable[..., sqlite3.Connection] | None = None,
@@ -241,6 +250,8 @@ class IncrementalDerivedCollectionWriter:
         self.api = api
         self._provenance_connection_factory = provenance_connection_factory
         self._on_provenance_storage_open = on_provenance_storage_open
+        self._initial_tags_connection_factory = initial_tags_connection_factory
+        self._on_initial_tags_storage_open = on_initial_tags_storage_open
         self._completion_connection_factory = completion_connection_factory
         self._on_completion_storage_open = on_completion_storage_open
         self._history_selection_connection_factory = history_selection_connection_factory
@@ -280,6 +291,8 @@ class IncrementalDerivedCollectionWriter:
             member_inventory=member_inventory,
             provenance_connection_factory=provenance_connection_factory,
             on_provenance_storage_open=on_provenance_storage_open,
+            initial_tags_connection_factory=initial_tags_connection_factory,
+            on_initial_tags_storage_open=on_initial_tags_storage_open,
             producer_app=producer_app,
             adapter_id="riverhog-derived-collection/v1",
             adapter_version=producer_version,
