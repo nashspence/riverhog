@@ -7,9 +7,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from threading import RLock, get_ident
 from types import TracebackType
-from typing import Protocol, Self
+from typing import Literal, Protocol, Self
 
 from pydantic import BaseModel, ConfigDict, Field
+from riverhog_client import WindowsSqliteProcess
 from riverhog_provenance.journal_store import JournalStore
 from sqlite_admission import (
     SqliteAdmissionStatus,
@@ -54,6 +55,12 @@ _live: set[UploadSqliteResources] = set()
 class UploadSqliteResources:
     """Retain actual projection owners and their exact disposable directories.
 
+    A supplied Windows process must already own the qualified engine's aggregate
+    heap and native population policy before this owner or any consumer opens.
+    Memory temporary storage requires that process; every admitted open checks
+    the same owner. Cleanup settles handles without resetting its process grants.
+    Cache targets do not provide heap enforcement or scheduling priorities.
+
     Both connection and early-retention ports must use this same application
     owner. An unsuccessful factory call retains the exact supplied directory,
     without guessing ownership from a filename. Unknown construction remains
@@ -62,12 +69,23 @@ class UploadSqliteResources:
     does not settle the application's connection or directory obligation.
     """
 
-    def __init__(self, policy: UploadSqlitePolicy) -> None:
+    def __init__(
+        self,
+        policy: UploadSqlitePolicy,
+        *,
+        process: WindowsSqliteProcess | None = None,
+        temporary_storage: Literal["FILE", "MEMORY"] = "FILE",
+    ) -> None:
+        if temporary_storage not in ("FILE", "MEMORY"):
+            raise ValueError("upload SQLite temporary storage must be FILE or MEMORY")
+        if temporary_storage == "MEMORY" and process is None:
+            raise ValueError("memory temporary storage requires the admitted SQLite process")
         with _process_lock:
             if _live:
                 raise SqliteCleanupPending("previous upload SQLite ownership is unsettled")
             self._lock = RLock()
             self._closing = False
+            self._process = process
             self._resources: list[_Resource] = []
             self._awaiting: dict[int, _Resource] = {}
             self._admission = SqliteConnectionAdmission(
@@ -76,9 +94,10 @@ class UploadSqliteResources:
                 operation_limit=policy.operations,
                 verify_process=self._require_open,
                 connection_settings=SqliteConnectionSettings(
-                    cache_kib=policy.cache_kib, temporary_storage="FILE"
+                    cache_kib=policy.cache_kib, temporary_storage=temporary_storage
                 ),
             )
+            self._require_open()
             _live.add(self)
 
     @property
@@ -95,6 +114,8 @@ class UploadSqliteResources:
         with self._lock:
             if self._closing:
                 raise SqliteCleanupPending("upload SQLite ownership is closing")
+            if self._process is not None:
+                self._process.verify()
 
     @staticmethod
     def _directory_absent(directory: Path) -> bool:

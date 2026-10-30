@@ -83,6 +83,7 @@ NATIVE_TESTS = (
     "tests/unit/test_cli_upload_state_admission.py",
     "tests/unit/test_cli_upload_sqlite_resources.py",
     "tests/unit/test_cli_upload_sqlite_policy.py",
+    "tests/unit/test_cli_upload_sqlite_process.py",
     "packages/riverhog-client/tests/test_prepared_primary_posix.py",
     "packages/riverhog-client/tests/test_prepared_primary_sqlite.py",
     "packages/riverhog-client/tests/test_prepared_primary_sqlite_resources.py",
