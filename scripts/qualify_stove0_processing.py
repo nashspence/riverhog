@@ -15,11 +15,12 @@ import urllib.request
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, get_args
 
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
+from stove0_operator_contracts import WorkPhase
 from stove0_protocol import CollectionRootIdentityRef, PlanningJobStatus
-from stove0_target_protocol import AcceptedTargetJob, TargetJobStatus, TransformPlan
+from stove0_target_protocol import AcceptedTargetJob, TargetJobState, TargetJobStatus, TransformPlan
 
 
 def stove(path: str, payload: Any = None, *, timeout: float = 30) -> dict[str, Any]:
@@ -80,6 +81,59 @@ def work_diagnostic(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def wait_failure_annotation(
+    reason: Literal["terminal-work", "completion-deadline"],
+    *,
+    rows: list[dict[str, Any]],
+    progress: list[dict[str, Any]],
+    elapsed_seconds: int,
+    snapshot_age_seconds: int | None,
+    status_timeouts: int,
+) -> None:
+    """Report only fixed state names and counts from already-observed metadata.
+
+    The full-work snapshot may predate the latest progress read. Keep their
+    counts separate and state its age. Never copy identities, failure messages,
+    response bodies, paths or scheduler payloads into the annotation.
+    """
+    phases = get_args(WorkPhase)
+    target_states = get_args(TargetJobState)
+
+    def phase_counts(values: list[dict[str, Any]]) -> dict[str, int]:
+        return {phase: sum(row.get("phase") == phase for row in values) for phase in phases}
+
+    targets = [row["target_status"] for row in rows if isinstance(row.get("target_status"), dict)]
+    diagnostic = {
+        "format": "riverhog-processing-wait-diagnostic/v1",
+        "reason": reason,
+        "elapsed_seconds": elapsed_seconds,
+        "full_work_snapshot_age_seconds": snapshot_age_seconds,
+        "status_timeouts": status_timeouts,
+        "full_work_count": len(rows),
+        "latest_progress_count": len(progress),
+        "full_work_phase_counts": phase_counts(rows),
+        "latest_progress_phase_counts": phase_counts(progress),
+        "full_work_target_state_counts": {
+            state: sum(target.get("state") == state for target in targets)
+            for state in target_states
+        },
+        "full_work_with_output": sum(row.get("output") is not None for row in rows),
+        "full_work_with_target_settlement": sum(
+            row.get("target_settlement") is not None for row in rows
+        ),
+        "full_work_failure_count": sum(row.get("failure") is not None for row in rows),
+        "full_work_target_failure_count": sum(
+            target.get("failure") is not None for target in targets
+        ),
+    }
+    print(
+        "::error title=Processing wait qualification::"
+        + json.dumps(diagnostic, sort_keys=True, separators=(",", ":")),
+        file=sys.stderr,
+        flush=True,
+    )
+
+
 def wait() -> None:
     from stove0_operator_contracts import WorkProgress
 
@@ -90,10 +144,14 @@ def wait() -> None:
     previous = None
     next_progress = started
     next_work_refresh = started
+    latest_progress: list[dict[str, Any]] = []
+    snapshot_at: float | None = None
+    status_timeouts = 0
     while (now := time.monotonic()) < deadline:
         try:
             if not work_ids or now >= next_work_refresh:
                 rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
+                snapshot_at = now
                 work_ids = tuple(row["work_id"] for row in rows)
                 next_work_refresh = now + 60
             progress = []
@@ -104,8 +162,10 @@ def wait() -> None:
                 assert status.work_id == work_id
                 progress.append(status.model_dump(mode="json"))
         except TimeoutError:
+            status_timeouts += 1
             time.sleep(0.5)
             continue
+        latest_progress = progress
         terminal_failure = next(
             (
                 row
@@ -115,12 +175,21 @@ def wait() -> None:
             None,
         )
         if terminal_failure is not None:
+            wait_failure_annotation(
+                "terminal-work",
+                rows=rows,
+                progress=latest_progress,
+                elapsed_seconds=int(now - started),
+                snapshot_age_seconds=None if snapshot_at is None else int(now - snapshot_at),
+                status_timeouts=status_timeouts,
+            )
             exact = stove("/v1/work/" + terminal_failure["work_id"], timeout=5)
             raise RuntimeError(canonical_json_bytes(work_diagnostic(exact)).decode())
         if progress and all(row["phase"] == "complete" for row in progress):
             # Completion still inspects every complete work and its target/output
             # evidence. Newly created work remains in the wait set.
             rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
+            snapshot_at = now
             work_ids = tuple(row["work_id"] for row in rows)
             if rows and all(row["phase"] == "complete" for row in rows):
                 assert any(
@@ -142,6 +211,14 @@ def wait() -> None:
             )
             previous, next_progress = current, now + 60
         time.sleep(0.5)
+    wait_failure_annotation(
+        "completion-deadline",
+        rows=rows,
+        progress=latest_progress,
+        elapsed_seconds=int(now - started),
+        snapshot_age_seconds=None if snapshot_at is None else int(now - snapshot_at),
+        status_timeouts=status_timeouts,
+    )
     read_error = None
     try:
         rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
