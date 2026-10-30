@@ -23,7 +23,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    if: always()
+    if: always() && !cancelled()
     needs:
       - plan
       - repository
