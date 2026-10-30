@@ -29,6 +29,7 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_provenance import (
+    JournalStore,
     JournalSummary,
     MemberHistoryClosure,
     external_reference,
@@ -90,6 +91,8 @@ class ClaimedProvenance:
         heartbeat: Callable[[], None],
         history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
     ) -> None:
         self.api = api
         self.artifact = artifact
@@ -97,6 +100,8 @@ class ClaimedProvenance:
         self.heartbeat = heartbeat
         self._history_connection_factory = history_connection_factory
         self._on_history_storage_open = on_history_storage_open
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
         self.verify_root()
         self.heartbeat()
         value = api.get_collection_artifact_provenance(
@@ -252,6 +257,8 @@ class ClaimedProvenance:
                 member_role=COLLECTION_MEMBER_ROLE,
                 connection_factory=self._history_connection_factory,
                 on_storage_open=self._on_history_storage_open,
+                journal_connection_factory=self._provenance_connection_factory,
+                on_journal_storage_open=self._on_provenance_storage_open,
             ) as closure:
                 closure.resolve(self.history_binding, extent=extent)
                 self.verify_root()
@@ -340,13 +347,20 @@ class ClaimedProvenance:
         )
         if journal is None or anchor.prefix_bytes > journal.bytes:
             raise RuntimeError("selected provenance journal is absent or shorter than its anchor")
-        with self.stream_journal(journal, end=int(anchor.prefix_bytes)) as chunks:
-            return validate_journal_chunks(
-                chunks,
-                expected_anchor=anchor.to_mapping(),
-                require_exact_tail=True,
-                require_profiles=False,
-            )
+        with ExitStack() as owned:
+            with self.stream_journal(journal, end=int(anchor.prefix_bytes)) as chunks:
+                summary = owned.enter_context(
+                    validate_journal_chunks(
+                        chunks,
+                        expected_anchor=anchor.to_mapping(),
+                        require_exact_tail=True,
+                        require_profiles=False,
+                        connection_factory=self._provenance_connection_factory,
+                        on_storage_open=self._on_provenance_storage_open,
+                    )
+                )
+            owned.pop_all()
+            return summary
 
     def resolve_external_reference(self, reference: Mapping[str, Any]) -> dict[str, Any]:
         """Verify an exact foreign assertion in this collection's frozen corpus."""
@@ -361,7 +375,12 @@ class ClaimedProvenance:
         with ExitStack() as owned:
             with self.stream_journal(journal) as chunks:
                 summary = owned.enter_context(
-                    validate_journal_chunks(chunks, require_profiles=False)
+                    validate_journal_chunks(
+                        chunks,
+                        require_profiles=False,
+                        connection_factory=self._provenance_connection_factory,
+                        on_storage_open=self._on_provenance_storage_open,
+                    )
                 )
             if summary.journal_id != selected.journal_id:
                 raise ValueError("referenced canonical journal identity differs")

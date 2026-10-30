@@ -46,6 +46,7 @@ from .journal import (
     iter_journal_frames,
     validate_journal_chunks,
 )
+from .journal_store import JournalStore
 
 
 def _pending_declaration(kind: str) -> Declaration:
@@ -292,8 +293,10 @@ class MemberHistoryClosure:
     The optional factory admits the worklist and temporary membership-copy
     connections. Early retention receives a close-ready owner before schema work.
     Unreturned factory connections keep independent file custody; an uncertain
-    close requires an explicit retry. Journal snapshots and membership-image
-    loading have their own storage owners.
+    close requires an explicit retry. Journal snapshots use a separate factory
+    and retain both validation storage and each actual returned reader before
+    handoff. Borrowed readers share their snapshot connection and outlive cache
+    eviction or closure close. Membership-image loading has its own owner.
     """
 
     def __init__(
@@ -305,6 +308,8 @@ class MemberHistoryClosure:
         catalog: ContractCatalog | None = None,
         connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_storage_open: Callable[[Self], None] | None = None,
+        journal_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_journal_storage_open: Callable[[JournalStore], None] | None = None,
     ) -> None:
         self.store = store
         self.read_journal = read_journal
@@ -313,6 +318,8 @@ class MemberHistoryClosure:
         self._summaries: OrderedDict[bytes, JournalSummary] = OrderedDict()
         self._summary_bytes = 0
         self._connection_factory = connection_factory
+        self._journal_connection_factory = journal_connection_factory
+        self._on_journal_storage_open = on_journal_storage_open
         self._closing = False
         self._connection_closed = False
         self._directory_removed = False
@@ -475,6 +482,23 @@ class MemberHistoryClosure:
                 (anchor.journal_id, str(anchor.prefix_bytes), encoded),
             )
 
+    def _borrow_summary(self, summary: JournalSummary) -> JournalSummary:
+        reader = summary.borrow()
+        self._pending_summary = reader
+        try:
+            if self._on_journal_storage_open is not None and reader._store is not None:
+                self._on_journal_storage_open(reader._store)
+        except BaseException:
+            try:
+                reader.close()
+            except BaseException:
+                self._closing = True
+                raise
+            self._pending_summary = None
+            raise
+        self._pending_summary = None
+        return reader
+
     def summary_at(self, anchor: HistoryJournalAnchor) -> JournalSummary:
         """Return an owned exact snapshot; cache eviction does not close its lease."""
         self._require_open()
@@ -492,16 +516,20 @@ class MemberHistoryClosure:
             if digest.hexdigest() != anchor.prefix_sha256:
                 raise ProvenanceValidationError("canonical journal prefix identity changed")
             self._summaries.move_to_end(key)
-            return cached.borrow()
+            self._require_open()
+            return self._borrow_summary(cached)
         summary = validate_journal_chunks(
             chunks,
             catalog=self.catalog,
             expected_anchor=anchor.to_mapping(),
             require_exact_tail=True,
             require_profiles=False,
+            connection_factory=self._journal_connection_factory,
+            on_storage_open=self._on_journal_storage_open,
         )
         # Cache capacity bounds working state, never accepted journal extents.
         self._pending_summary = summary
+        self._require_open()
         budget = 4 * 1024 * 1024
         if summary.journal_bytes <= budget:
             while self._summaries and (
@@ -518,7 +546,7 @@ class MemberHistoryClosure:
             self._summaries[key] = summary
             self._pending_summary = None
             self._summary_bytes += summary.journal_bytes
-            return summary.borrow()
+            return self._borrow_summary(summary)
         self._pending_summary = None
         return summary
 

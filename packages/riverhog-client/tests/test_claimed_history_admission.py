@@ -27,7 +27,7 @@ def api():
     value.summary.close()
 
 
-def reader(api, population, handles):
+def reader(api, population, handles, **ports):
     return ClaimedCollectionReader(
         api,
         inputs=(api.root,),
@@ -36,6 +36,7 @@ def reader(api, population, handles):
         fence=1,
         history_connection_factory=population,
         on_history_storage_open=handles.append,
+        **ports,
     )
 
 
@@ -93,6 +94,7 @@ def test_processing_runtime_preserves_history_admission_across_capability_refres
     api, monkeypatch, runtime_type
 ):
     population, handles = Population(), []
+    journals, journal_handles = Population(), []
     common = dict(
         base_url="https://riverhog.invalid",
         capability_token="fixture-capability",
@@ -102,6 +104,8 @@ def test_processing_runtime_preserves_history_admission_across_capability_refres
         execution_id="e" * 64,
         history_connection_factory=population,
         on_history_storage_open=handles.append,
+        provenance_connection_factory=journals,
+        on_provenance_storage_open=journal_handles.append,
     )
     spec = DerivedCollectionSpec(
         inputs=(api.root,),
@@ -149,6 +153,7 @@ def test_processing_runtime_preserves_history_admission_across_capability_refres
     finally:
         runtime.close()
     assert len(handles) == len(population.connections) == 1 and population.active == 0
+    assert len(journals.connections) == 1 and len(journal_handles) == 3 and journals.active == 0
 
 
 @pytest.mark.parametrize("failure", [None, "identity", "fence"])
@@ -156,14 +161,18 @@ def test_foreign_reference_lookup_confirms_summary_close_on_return_and_failure(
     api, monkeypatch, failure
 ):
     population, handles = Population(), []
-    view = reader(api, Population(), []).provenance(api.artifact)
+    view = reader(
+        api,
+        Population(),
+        [],
+        provenance_connection_factory=population,
+        on_provenance_storage_open=handles.append,
+    ).provenance(api.artifact)
     reference = external_reference(api.summary, api.summary.states[0]["id"])
     validate = owner.validate_journal_chunks
 
     def admitted(chunks, **options):
-        summary = validate(
-            chunks, connection_factory=population, on_storage_open=handles.append, **options
-        )
+        summary = validate(chunks, **options)
         if failure == "fence":
 
             def revoked():
