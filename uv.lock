@@ -83,6 +83,7 @@ members = [
     "riverhog-storage-adapter-protocol",
     "riverhog-storage-adapter-support",
     "sha256-continuation",
+    "sqlite-admission",
     "state-schema",
     "stove0-api-client",
     "stove0-extension-support",
@@ -3487,6 +3488,17 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/6a/c6/673e618e6f4f297e126d9b56ea2f6478708f6c1af4e3223835c22e2c3697/sqlalchemy-2.0.51-cp314-cp314t-win_amd64.whl", hash = "sha256:159bb6ba32059f57ad7375a8f50d844dd2f19d14954ecf820cd33e20debd46b2", size = 2186280, upload-time = "2026-06-15T16:03:40.569Z" },
     { url = "https://files.pythonhosted.org/packages/e2/22/dbf013a12ec759e54a34a119e9e217435b3f71b2dd5c61a7ade0a25dae87/sqlalchemy-2.0.51-py3-none-any.whl", hash = "sha256:bb024d8b621d0be75f4f44ecc7c950450026e76d66dc8f791bb5331d7fed59d5", size = 1944334, upload-time = "2026-06-15T16:09:22.418Z" },
 ]
+
+[[package]]
+name = "sqlite-admission"
+version = "0.1.0"
+source = { editable = "packages/sqlite-admission" }
+dependencies = [
+    { name = "release-documentation-lib" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "release-documentation-lib", editable = "packages/release-documentation-lib" }]
 
 [[package]]
 name = "starlette"
