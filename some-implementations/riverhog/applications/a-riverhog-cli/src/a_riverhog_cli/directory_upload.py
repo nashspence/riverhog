@@ -12,12 +12,15 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import PrimaryStatePolicy, PrimaryStore, ProducerFile
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.provenance_transport import MaterializationHintDocument
+
+if TYPE_CHECKING:
+    from a_riverhog_cli.upload_windows import WindowsUploadState
 
 _FORMAT = "a-riverhog-cli-directory-upload/v1"
 
@@ -94,13 +97,16 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _allocation_id(root: Path, key: str) -> str:
+    return hashlib.sha256(canonical_json_bytes([str(root), key])).hexdigest()
+
+
 def _state_path(root: Path, key: str, *, create_parent: bool = True) -> Path:
     state_root = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local/state")
     directory = state_root / "a-riverhog-cli" / "uploads"
     if create_parent:
         directory.mkdir(parents=True, exist_ok=True, mode=0o700)
-    digest = hashlib.sha256(canonical_json_bytes([str(root), key])).hexdigest()
-    return directory / f"{digest}.json"
+    return directory / f"{_allocation_id(root, key)}.json"
 
 
 def _validated_upload_root(root: Path, idempotency_key: str) -> Path:
@@ -146,13 +152,7 @@ def _prepare_verified_upload(
             "retained upload identity is missing; resume cannot allocate replacements"
         )
     if initialize and not destination.exists():
-        document = {
-            "format": _FORMAT,
-            "root": str(root),
-            "idempotency_key": idempotency_key,
-            "source_naming_view_id": "urn:uuid:" + str(uuid.uuid4()),
-            "sources": [{**item, "artifact_id": secrets.token_hex(32)} for item in current],
-        }
+        document = _new_upload_identity(root, idempotency_key, current)
         temporary: str | None = None
         try:
             with tempfile.NamedTemporaryFile(
@@ -174,7 +174,26 @@ def _prepare_verified_upload(
         finally:
             if temporary is not None:
                 Path(temporary).unlink(missing_ok=True)
-    loaded = json.loads(destination.read_bytes())
+    return _load_upload_identity(
+        json.loads(destination.read_bytes()), root, idempotency_key, current
+    )
+
+
+def _new_upload_identity(
+    root: Path, idempotency_key: str, current: list[dict[str, object]]
+) -> dict[str, object]:
+    return {
+        "format": _FORMAT,
+        "root": str(root),
+        "idempotency_key": idempotency_key,
+        "source_naming_view_id": "urn:uuid:" + str(uuid.uuid4()),
+        "sources": [{**item, "artifact_id": secrets.token_hex(32)} for item in current],
+    }
+
+
+def _load_upload_identity(
+    loaded: object, root: Path, idempotency_key: str, current: list[dict[str, object]]
+) -> LocalUpload:
     if (
         not isinstance(loaded, dict)
         or loaded.get("format") != _FORMAT
@@ -214,12 +233,25 @@ def _prepare_verified_upload(
 
 @contextmanager
 def prepare_primary_upload(
-    root: Path, idempotency_key: str, policy: PrimaryStatePolicy, *, initialize: bool
+    root: Path,
+    idempotency_key: str,
+    policy: PrimaryStatePolicy,
+    *,
+    initialize: bool,
+    windows: WindowsUploadState | None = None,
 ) -> Iterator[tuple[LocalUpload, PrimaryStore]]:
     """Own an explicitly fresh or resumed allocation before touching Riverhog."""
     if type(initialize) is not bool:
         raise ValueError("upload state initialization requires explicit boolean authority")
     root = _validated_upload_root(root, idempotency_key)
+    if windows is not None:
+        from a_riverhog_cli.upload_windows import prepare_windows_upload
+
+        with prepare_windows_upload(
+            root, idempotency_key, policy, windows, initialize=initialize
+        ) as prepared:
+            yield prepared
+        return
     destination = _state_path(root, idempotency_key, create_parent=False)
     if initialize and destination.exists():
         raise FileExistsError("fresh upload initialization conflicts with retained identity")
