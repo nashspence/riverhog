@@ -98,8 +98,38 @@ def test_process_loss_refuses_another_consumer_and_still_permits_exact_cleanup()
     assert resources.status.connections == 0
 
 
+def test_projection_cleanup_removes_only_its_dedicated_scratch(tmp_path, monkeypatch):
+    import tempfile
+
+    sentinel = tmp_path / "independent-state"
+    sentinel.write_bytes(b"independently retained")
+    before = set(tmp_path.iterdir())
+    scratch = tmp_path / "projection-scratch"
+    scratch.mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(scratch))
+    with UploadSqliteResources(
+        UploadSqlitePolicy(), process=_Process(), temporary_storage="MEMORY"
+    ) as resources:
+        tags = PreparedInitialCollectionTags(
+            ["z", "a"], connection_factory=resources.connect, on_storage_open=resources.retain
+        )
+        journal = JournalStore(
+            connection_factory=resources.connect, on_storage_open=resources.retain
+        )
+        assert list(tags.iter_batches()) == [("a", "z")]
+        assert len(resources.pending_directories) == 2
+        assert all(path.parent == scratch for path in resources.pending_directories)
+        with closing(journal.db.execute("SELECT count(*) FROM identities")) as cursor:
+            assert cursor.fetchone() == (0,)
+    assert not list(scratch.iterdir())
+    assert sentinel.read_bytes() == b"independently retained"
+    assert set(tmp_path.iterdir()) == before | {scratch}
+
+
 @pytest.mark.skipif(os.name != "nt", reason="qualified loaded Windows SQLite engine")
 def test_actual_upload_consumers_share_one_heap_and_preserve_original_on_nomem(tmp_path):
+    scratch = tmp_path / "projection-scratch"
+    scratch.mkdir()
     code = r"""
 import json, sqlite3, sys, tempfile
 from pathlib import Path
@@ -165,11 +195,12 @@ with UploadSqliteResources(
     )) as next_journal:
         with closing(next_journal.db.execute("SELECT count(*) FROM identities")) as cursor:
             assert cursor.fetchone()==(0,)
-assert not list(Path(sys.argv[1]).iterdir())
+remaining=tuple(sorted(path.name for path in Path(sys.argv[1]).iterdir()))
+assert remaining==(), ("projection scratch remains",remaining)
 print(json.dumps({"passed":True,"heap_limit_bytes":limit*2,"connections":resources.status.connection_peak}))
 """
     result = subprocess.run(
-        [sys.executable, "-I", "-c", code, str(tmp_path)],
+        [sys.executable, "-I", "-c", code, str(scratch)],
         capture_output=True,
         text=True,
         timeout=120,

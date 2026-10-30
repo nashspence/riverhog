@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from threading import RLock, get_ident
 from types import TracebackType
-from typing import Literal, Protocol, Self
+from typing import Any, Literal, Protocol, Self
 
 from pydantic import BaseModel, ConfigDict, Field
 from riverhog_client import WindowsSqliteProcess
@@ -31,6 +31,7 @@ class UploadSqlitePolicy(BaseModel):
     connections: int = Field(default=8, strict=True, gt=0)
     cursors: int = Field(default=32, strict=True, gt=0)
     operations: int = Field(default=4, strict=True, gt=0)
+    blobs: int = Field(default=1, strict=True, ge=0)
     cache_kib: int = Field(default=512, strict=True, ge=0)
 
 
@@ -61,7 +62,11 @@ class UploadSqliteResources:
     the same owner. Cleanup settles handles without resetting its process grants.
     Cache targets do not provide heap enforcement or scheduling priorities.
 
-    Both connection and early-retention ports must use this same application
+    Primary factories share this admission through connect_primary. Their
+    persistent files retain primary custody and are never projection scratch.
+    Callers close primary handles before settling this application owner.
+
+    Both projection connection and early-retention ports use this same application
     owner. An unsuccessful factory call retains the exact supplied directory,
     without guessing ownership from a filename. Unknown construction remains
     charged through process exit. Borrowed journal readers retain the original
@@ -91,6 +96,7 @@ class UploadSqliteResources:
             self._admission = SqliteConnectionAdmission(
                 connection_limit=policy.connections,
                 cursor_limit=policy.cursors,
+                blob_limit=policy.blobs,
                 operation_limit=policy.operations,
                 verify_process=self._require_open,
                 connection_settings=SqliteConnectionSettings(
@@ -159,6 +165,26 @@ class UploadSqliteResources:
                 self._closing = True
                 raise
             return resource.connection
+
+    def connect_primary(self, database: Any, **options: Any) -> sqlite3.Connection:
+        """Share actual pager/schema admission without acquiring disposable custody.
+
+        The selected primary factory owns its exact URI, native handles,
+        allocation identity and persistent files. It must close those handles
+        before this application's admission can settle. No primary path is
+        inferred, parsed or added to projection-directory cleanup.
+        """
+        with self._lock:
+            self._require_open()
+            if self._process is None:
+                raise ValueError("primary SQLite admission requires the admitted process")
+            if get_ident() in self._awaiting:
+                raise SqliteCleanupPending("upload SQLite open lacks its early owner retention")
+            try:
+                return self._admission.connect(database, **options)
+            except BaseException:
+                self._closing = True
+                raise
 
     def retain(self, owner: _Storage) -> None:
         """Retain constructor and independently handed-off result-reader leases."""

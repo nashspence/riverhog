@@ -48,6 +48,11 @@ PROCESSING_LANES = frozenset(
 IMAGE_GROUPS = ("core", "observers", "targets", "companions")
 NATIVE_TESTS = (
     "tests/platform/test_native_provenance.py",
+    "tests/unit/test_cli_upload_state_admission.py",
+    "tests/unit/test_cli_upload_sqlite_resources.py",
+    "tests/unit/test_cli_upload_sqlite_policy.py",
+    "tests/unit/test_cli_upload_sqlite_process.py",
+    "tests/unit/test_cli_upload_primary_sqlite.py",
     "packages/riverhog-provenance/tests/test_sqlite_connection_admission.py",
     "packages/riverhog-provenance/tests/test_disposable_sqlite_admission.py",
     "packages/riverhog-provenance/tests/test_corpus_sqlite_admission.py",
@@ -80,10 +85,6 @@ NATIVE_TESTS = (
     "packages/riverhog-client/tests/test_prepared_primary_native_vfs.py",
     "packages/riverhog-client/tests/test_prepared_primary_runtime.py",
     "packages/riverhog-client/tests/test_sqlite_application_resources.py",
-    "tests/unit/test_cli_upload_state_admission.py",
-    "tests/unit/test_cli_upload_sqlite_resources.py",
-    "tests/unit/test_cli_upload_sqlite_policy.py",
-    "tests/unit/test_cli_upload_sqlite_process.py",
     "packages/riverhog-client/tests/test_prepared_primary_posix.py",
     "packages/riverhog-client/tests/test_prepared_primary_sqlite.py",
     "packages/riverhog-client/tests/test_prepared_primary_sqlite_resources.py",
