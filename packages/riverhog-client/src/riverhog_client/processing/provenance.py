@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import os
+import sqlite3
 from collections.abc import Callable, Iterator, Mapping
-from contextlib import AbstractContextManager, contextmanager
+from contextlib import AbstractContextManager, ExitStack, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -87,11 +88,15 @@ class ClaimedProvenance:
         artifact: ClaimedArtifact,
         verify_root: Callable[[], None],
         heartbeat: Callable[[], None],
+        history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
     ) -> None:
         self.api = api
         self.artifact = artifact
         self.verify_root = verify_root
         self.heartbeat = heartbeat
+        self._history_connection_factory = history_connection_factory
+        self._on_history_storage_open = on_history_storage_open
         self.verify_root()
         self.heartbeat()
         value = api.get_collection_artifact_provenance(
@@ -245,6 +250,8 @@ class ClaimedProvenance:
                 MemberHistoryStore(read_object),
                 self._read_journal,
                 member_role=COLLECTION_MEMBER_ROLE,
+                connection_factory=self._history_connection_factory,
+                on_storage_open=self._on_history_storage_open,
             ) as closure:
                 closure.resolve(self.history_binding, extent=extent)
                 self.verify_root()
@@ -351,28 +358,33 @@ class ClaimedProvenance:
         )
         if journal is None:
             raise ValueError("referenced canonical journal is absent from the selected root")
-        with self.stream_journal(journal) as chunks:
-            summary = validate_journal_chunks(chunks, require_profiles=False)
-        if summary.journal_id != selected.journal_id:
-            raise ValueError("referenced canonical journal identity differs")
-        expected_entry = selected.entry.model_dump(mode="json")
-        frame = next((item for item in summary.frames if item.reference == expected_entry), None)
-        if frame is None:
-            raise ValueError("referenced canonical entry anchor is absent")
-        for rows in frame.document["body"].get("assertions", {}).values():
-            for row in rows:
-                if row["assertion_id"] != selected.assertion_id:
-                    continue
-                if row["id"] != selected.object_id or row["type"] != selected.object_type:
-                    raise ValueError("referenced canonical assertion differs")
-                return {
-                    "journal_id": selected.journal_id,
-                    "entry": expected_entry,
-                    "assertion_id": selected.assertion_id,
-                    "object_id": selected.object_id,
-                    "object_type": selected.object_type,
-                }
-        raise ValueError("referenced canonical assertion is absent")
+        with ExitStack() as owned:
+            with self.stream_journal(journal) as chunks:
+                summary = owned.enter_context(
+                    validate_journal_chunks(chunks, require_profiles=False)
+                )
+            if summary.journal_id != selected.journal_id:
+                raise ValueError("referenced canonical journal identity differs")
+            expected_entry = selected.entry.model_dump(mode="json")
+            frame = next(
+                (item for item in summary.frames if item.reference == expected_entry), None
+            )
+            if frame is None:
+                raise ValueError("referenced canonical entry anchor is absent")
+            for rows in frame.document["body"].get("assertions", {}).values():
+                for row in rows:
+                    if row["assertion_id"] != selected.assertion_id:
+                        continue
+                    if row["id"] != selected.object_id or row["type"] != selected.object_type:
+                        raise ValueError("referenced canonical assertion differs")
+                    return {
+                        "journal_id": selected.journal_id,
+                        "entry": expected_entry,
+                        "assertion_id": selected.assertion_id,
+                        "object_id": selected.object_id,
+                        "object_type": selected.object_type,
+                    }
+            raise ValueError("referenced canonical assertion is absent")
 
 
 __all__ = ["ClaimedProvenance", "ClaimedProvenanceApi", "ProvenanceJournal"]

@@ -12,7 +12,7 @@ from riverhog_protocol.collection_workflows import (
     CollectionRootIdentity,
 )
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
-from riverhog_provenance import JournalStore
+from riverhog_provenance import JournalStore, MemberHistoryClosure
 from time_formats import utc_timestamp_now
 
 from riverhog_client import ApiClient, PrimaryStore
@@ -53,6 +53,8 @@ class ClaimedCollectionRuntime:
         cancellation_check: CancellationCheck | None = None,
         input_retrieval_policy: Literal["available-only", "allow"] = "available-only",
         owned_api: bool = False,
+        history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
     ) -> None:
         self.api = (
             api
@@ -75,6 +77,8 @@ class ClaimedCollectionRuntime:
             claim_id=claim_id,
             fence=fence,
             heartbeat=self.heartbeat,
+            history_connection_factory=history_connection_factory,
+            on_history_storage_open=on_history_storage_open,
         )
 
     @classmethod
@@ -195,6 +199,8 @@ class CollectionTransformRuntime:
         cancellation_check: CancellationCheck | None = None,
         input_retrieval_policy: Literal["available-only", "allow"] = "available-only",
         owned_api: bool = False,
+        history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
     ) -> None:
         self.api = (
             api
@@ -232,6 +238,8 @@ class CollectionTransformRuntime:
             claim_id=claim_id,
             fence=fence,
             heartbeat=self.heartbeat,
+            history_connection_factory=history_connection_factory,
+            on_history_storage_open=on_history_storage_open,
         )
         self.writer = DerivedCollectionWriter(
             self.api,
