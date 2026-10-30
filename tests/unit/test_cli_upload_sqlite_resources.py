@@ -10,6 +10,7 @@ from contextlib import closing
 import pytest
 from a_riverhog_cli import main
 from a_riverhog_cli.upload_sqlite import UploadSqlitePolicy, UploadSqliteResources
+from click import unstyle
 from riverhog_client.initial_tags import PreparedInitialCollectionTags
 from riverhog_provenance.journal_store import JournalStore
 from sqlite_admission import SqliteCleanupPending
@@ -144,12 +145,19 @@ def test_completed_projection_owners_do_not_accumulate_over_members():
         '{"heap_bytes":1024}',
     ],
 )
-def test_invalid_cli_sqlite_grants_fail_before_state_or_remote_work(tmp_path, monkeypatch, payload):
+@pytest.mark.parametrize("color", [False, True])
+def test_invalid_cli_sqlite_grants_fail_before_state_or_remote_work(
+    tmp_path, monkeypatch, payload, color
+):
     root = tmp_path / "source"
     root.mkdir()
     (root / "member").write_bytes(b"original")
     state = tmp_path / "state"
     monkeypatch.setenv("XDG_STATE_HOME", str(state))
+    if color:
+        monkeypatch.setenv("FORCE_COLOR", "1")
+    else:
+        monkeypatch.delenv("FORCE_COLOR", raising=False)
     monkeypatch.setenv(
         "A_RIVERHOG_CLI_PRIMARY_STATE",
         json.dumps({"scope": {"service": "fixture-service", "account": "fixture-account"}}),
@@ -161,10 +169,14 @@ def test_invalid_cli_sqlite_grants_fail_before_state_or_remote_work(tmp_path, mo
     monkeypatch.setattr(main, "prepare_primary_upload", forbidden)
     monkeypatch.setattr(main, "client", forbidden)
     result = CliRunner().invoke(
-        main.app, ["collection", "upload", "start", str(root), "--sqlite-resources", payload]
+        main.app,
+        ["collection", "upload", "start", str(root), "--sqlite-resources", payload],
+        color=color,
     )
     assert result.exit_code == 2
-    assert "--sqlite-resources" in result.output
+    if color:
+        assert "\x1b[" in result.output
+    assert "--sqlite-resources" in unstyle(result.output)
     assert not state.exists()
 
 
