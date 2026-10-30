@@ -1573,7 +1573,7 @@ def upload_cmd(
         typer.Option(
             "--sqlite-resources",
             envvar="A_RIVERHOG_CLI_SQLITE_RESOURCES",
-            help="Active upload projection connection, cursor and operation grants as JSON.",
+            help="Upload projection handle/call grants and cache_kib target as JSON.",
         ),
     ] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,

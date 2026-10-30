@@ -15,6 +15,7 @@ from sqlite_admission import (
     SqliteAdmissionStatus,
     SqliteCleanupPending,
     SqliteConnectionAdmission,
+    SqliteConnectionSettings,
 )
 
 
@@ -29,6 +30,7 @@ class UploadSqlitePolicy(BaseModel):
     connections: int = Field(default=8, strict=True, gt=0)
     cursors: int = Field(default=32, strict=True, gt=0)
     operations: int = Field(default=4, strict=True, gt=0)
+    cache_kib: int = Field(default=512, strict=True, ge=0)
 
 
 class _Storage(Protocol):
@@ -73,6 +75,9 @@ class UploadSqliteResources:
                 cursor_limit=policy.cursors,
                 operation_limit=policy.operations,
                 verify_process=self._require_open,
+                connection_settings=SqliteConnectionSettings(
+                    cache_kib=policy.cache_kib, temporary_storage="FILE"
+                ),
             )
             _live.add(self)
 

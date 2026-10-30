@@ -10,6 +10,38 @@ from threading import RLock
 from types import TracebackType
 from typing import Any, Literal, Self, overload
 
+from sqlite_admission.settings import (
+    SqliteConfigurationError,
+    SqliteConnectionSettings,
+    _configure,
+)
+
+
+def configure_sqlite_connection(
+    connection: sqlite3.Connection,
+    *,
+    defaults: SqliteConnectionSettings,
+    read_rows: Callable[[str, int], list[Any]] | None = None,
+) -> None:
+    """Apply the admitted application's selected profile after early retention.
+
+    Owners call this on a fresh connection before schema/input work. Their
+    defaults apply when its factory selected no profile. Settings on a shared
+    admission are immutable; closing/reopening does not change that selection.
+    A supplied read_rows executes the exact statement with its bounded row
+    count through existing owner cursor retention. Failed cleanup must leave
+    that cursor retained for explicit retry. This does not install a process
+    heap ceiling or admit filesystem scratch.
+    """
+    if not isinstance(defaults, SqliteConnectionSettings):
+        raise TypeError("SQLite owner defaults require an explicit profile")
+    selected = defaults
+    if isinstance(connection, _Connection):
+        offered = connection._lease.admission._connection_settings
+        if offered is not None:
+            selected = offered
+    _configure(connection, selected, read_rows)
+
 
 class SqliteCapacity(RuntimeError):
     """An explicit active resource grant cannot admit more work."""
@@ -102,6 +134,7 @@ class SqliteConnectionAdmission:
         operation_limit: int,
         verify_process: Callable[[], object],
         blob_limit: int = 0,
+        connection_settings: SqliteConnectionSettings | None = None,
     ) -> None:
         if any(type(value) is not int or value < 1 for value in (connection_limit, cursor_limit)):
             raise ValueError("SQLite connection and cursor grants must be positive integers")
@@ -111,6 +144,11 @@ class SqliteConnectionAdmission:
             raise TypeError("SQLite process verification is required")
         if type(operation_limit) is not int or operation_limit < 1:
             raise ValueError("SQLite operation grant must be a positive integer")
+        if connection_settings is not None and not isinstance(
+            connection_settings, SqliteConnectionSettings
+        ):
+            raise TypeError("SQLite connection settings require an explicit profile")
+        self._connection_settings = connection_settings
         self._operation_limit = operation_limit
         self._operations = self._operation_peak = 0
         self._connection_limit = connection_limit
@@ -709,4 +747,7 @@ __all__ = [
     "SqliteCapacity",
     "SqliteCleanupPending",
     "SqliteConnectionAdmission",
+    "SqliteConfigurationError",
+    "SqliteConnectionSettings",
+    "configure_sqlite_connection",
 ]

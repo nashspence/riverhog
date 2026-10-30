@@ -33,6 +33,7 @@ dependencies = ["release-documentation-lib>=0.1,<0.2",
   "state-schema>=0.1,<0.2",
   "alembic>=1.18.5,<2.0",
   "SQLAlchemy>=2.0,<3.0",
+  "sqlite-admission>=0.1,<0.2",
 ]
 
 [tool.uv]
@@ -45,6 +46,7 @@ cache-keys = [
 ]
 
 [tool.uv.sources]
+sqlite-admission = { workspace = true }
 release-documentation-lib = { workspace = true }
 riverhog-archive-contracts = { workspace = true }
 riverhog-application-access = { workspace = true }

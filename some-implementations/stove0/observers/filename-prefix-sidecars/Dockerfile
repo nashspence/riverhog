@@ -26,6 +26,7 @@ COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
 COPY packages/riverhog-growth-contracts packages/riverhog-growth-contracts
+COPY packages/sqlite-admission packages/sqlite-admission
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/state-schema packages/state-schema
 COPY packages/riverhog-protocol packages/riverhog-protocol

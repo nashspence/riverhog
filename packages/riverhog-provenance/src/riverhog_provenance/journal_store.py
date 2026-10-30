@@ -36,6 +36,7 @@ from riverhog_growth_contracts import (
     declare_growth,
 )
 from riverhog_provenance_contracts import ContractCatalog
+from sqlite_admission import SqliteConnectionSettings, configure_sqlite_connection
 
 from ._assertion_staging import AssertionStaging
 from ._assertion_staging import install as install_assertion_staging
@@ -758,6 +759,7 @@ class JournalStore:
         try:
             if on_storage_open is not None:
                 on_storage_open(self)
+            configure_sqlite_connection(self.db, defaults=SqliteConnectionSettings(cache_kib=512))
             if reopen:
                 self._restore_workspace()
             else:
@@ -771,8 +773,6 @@ class JournalStore:
                 self.db.execute("PRAGMA synchronous=" + ("FULL" if retained else "OFF")).close()
                 if retained:
                     self.db.execute("PRAGMA fullfsync=ON").close()
-                self.db.execute("PRAGMA cache_size=-512").close()
-                self.db.execute("PRAGMA temp_store=FILE").close()
                 self._initialize_schema()
                 if retained:
                     self.db.execute(
@@ -848,8 +848,6 @@ class JournalStore:
                     raise InvalidJournalWorkspace("retained journal reclamation format changed")
             self.db.execute("PRAGMA synchronous=FULL").close()
             self.db.execute("PRAGMA fullfsync=ON").close()
-            self.db.execute("PRAGMA cache_size=-512").close()
-            self.db.execute("PRAGMA temp_store=FILE").close()
             self._dag_runs = {}
             for kind in ("derivation", "specialization"):
                 with closing(

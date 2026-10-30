@@ -21,6 +21,7 @@ from riverhog_protocol import (
     validate_collection_tag,
 )
 from riverhog_protocol.paths import CollectionId
+from sqlite_admission import SqliteConnectionSettings, configure_sqlite_connection
 
 
 class _SqliteTagNodeStore:
@@ -81,11 +82,15 @@ class PreparedInitialCollectionTags:
             if on_storage_open is not None:
                 on_storage_open(self)
             self._require_open()
+            configure_sqlite_connection(
+                self._connection,
+                defaults=SqliteConnectionSettings(),
+                read_rows=self._configuration_rows,
+            )
             self._run(
                 """
                 PRAGMA journal_mode = DELETE;
                 PRAGMA synchronous = FULL;
-                PRAGMA temp_store = FILE;
                 CREATE TABLE tags (
                     tag_key BLOB PRIMARY KEY,
                     tag TEXT NOT NULL UNIQUE
@@ -190,6 +195,16 @@ class PreparedInitialCollectionTags:
                 self._release_cursor(cursor)
         self._require_open()
         return row
+
+    def _configuration_rows(self, statement: str, count: int) -> list[Any]:
+        cursor = self._execute(statement)
+        try:
+            rows = cursor.fetchmany(count)
+            self._require_open()
+            return rows
+        finally:
+            if not self._closing:
+                self._release_cursor(cursor)
 
     def _commit(self) -> None:
         self._require_open()
