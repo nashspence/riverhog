@@ -94,6 +94,15 @@ def prepare_windows_upload(
         allocation_id=allocation_id, scope=policy.scope, limits=policy.limits()
     )
     location = selection.process.primary_location(selection.parent, descriptor)
+    if initialize:
+        try:
+            location.lstat()
+        except FileNotFoundError:
+            pass
+        else:
+            raise FileExistsError(
+                "fresh upload initialization conflicts with retained primary state"
+            )
     factory = selection.process.primary_factory(
         limits=selection.limits,
         operations=selection.operations,

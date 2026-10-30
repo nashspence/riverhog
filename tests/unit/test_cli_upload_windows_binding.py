@@ -187,7 +187,12 @@ def test_fresh_windows_selection_refuses_retained_container_before_enumeration(
         pass
     with monkeypatch.context() as blocked:
         forbid_reconstruction(blocked)
-        with pytest.raises(FileExistsError):
+
+        def no_native_open(*args, **kwargs):
+            pytest.fail("known retained primary conflict reached native construction")
+
+        blocked.setattr(binding[2].process, "primary_factory", no_native_open)
+        with pytest.raises(FileExistsError, match="conflicts with retained primary state"):
             with open_upload(binding, initialize=True):
                 pytest.fail("fresh authority replaced retained source state")
     with open_upload(binding, initialize=False) as (resumed, _store):
