@@ -1539,6 +1539,13 @@ def collection_archive_copies_cmd(
 def upload_cmd(
     root: Annotated[Path, typer.Argument(help="Local collection root directory")],
     idempotency_key: Annotated[str | None, typer.Option("--idempotency-key")] = None,
+    initialize_state: Annotated[
+        bool,
+        typer.Option(
+            "--initialize-state",
+            help="Initialize state for a supplied key; otherwise resume it.",
+        ),
+    ] = False,
     archive_store: Annotated[str | None, typer.Option("--archive-store")] = None,
     use_cache: Annotated[bool | None, typer.Option("--use-cache/--no-use-cache")] = None,
     copy_to: Annotated[list[str] | None, typer.Option("--copy-to")] = None,
@@ -1565,7 +1572,7 @@ def upload_cmd(
 ) -> None:
     """Upload every regular source as an opaque artifact with canonical provenance."""
 
-    key = idempotency_key or uuid.uuid4().hex
+    key = uuid.uuid4().hex if idempotency_key is None else idempotency_key
     resolved_root = root.expanduser().resolve()
     if description is not None:
         try:
@@ -1610,7 +1617,12 @@ def upload_cmd(
         version = importlib.metadata.version("a-riverhog-cli")
     except importlib.metadata.PackageNotFoundError:
         version = "development"
-    with prepare_primary_upload(resolved_root, key, primary_policy) as (upload, store):
+    with prepare_primary_upload(
+        resolved_root,
+        key,
+        primary_policy,
+        initialize=initialize_state or idempotency_key is None,
+    ) as (upload, store):
         observation_selection: dict[str, object] = {
             "mode": "automatic",
             "observer": "riverhog-provenance/BoundedSourceObserver",

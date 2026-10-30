@@ -138,7 +138,7 @@ def test_upload_cli_forwards_persisted_ids_and_source_advice_to_producer(
         "upload-once",
         "--json",
     ]
-    first = RUNNER.invoke(riverhog_main.app, arguments)
+    first = RUNNER.invoke(riverhog_main.app, [*arguments, "--initialize-state"])
     assert first.exit_code == 0, first.output
     identity = next(iter(calls["expected_identities"].values()))
     assert len(identity.artifact_id) == 64
@@ -251,7 +251,7 @@ def test_cli_reuses_declared_native_observation_and_rejects_changed_finalized_in
         "urn:uuid:11111111-1111-4111-8111-111111111111",
         "--json",
     ]
-    first = RUNNER.invoke(riverhog_main.app, arguments)
+    first = RUNNER.invoke(riverhog_main.app, [*arguments, "--initialize-state"])
     assert first.exit_code == 0, first.output
     second = RUNNER.invoke(riverhog_main.app, arguments)
     assert second.exit_code == 0, second.output

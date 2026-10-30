@@ -110,6 +110,34 @@ class PrimaryStoreLimits:
         return 5 * self.control_bytes
 
 
+def _allocation_document(
+    allocation_id: str, scope: PrimaryScope, limits: PrimaryStoreLimits
+) -> tuple[PrimaryAllocation, bytes]:
+    expected = PrimaryAllocation.model_validate(
+        {
+            "allocation_id": allocation_id,
+            "scope": scope,
+            "control_record_bytes": str(limits.control_bytes),
+        }
+    )
+    descriptor = primary_control_bytes(expected)
+    if len(descriptor) > limits.control_bytes:
+        raise PrimaryStateCapacity("prepared-primary allocation exceeds control admission")
+    return expected, descriptor
+
+
+def primary_allocation_descriptor(
+    *, allocation_id: str, scope: PrimaryScope, limits: PrimaryStoreLimits
+) -> bytes:
+    """Validate and encode exact allocation authority before selecting storage.
+
+    Applications use these bytes for the selected backend's stable location.
+    The store independently validates the same identity before any factory call;
+    a derived filename does not replace the stored allocation comparison.
+    """
+    return _allocation_document(allocation_id, scope, limits)[1]
+
+
 @dataclass(frozen=True, slots=True)
 class PrimaryPreparation:
     """Already authored bytes; the producer owns Native validation and memory admission."""
@@ -153,16 +181,7 @@ class PrimaryStore:
     ) -> None:
         if type(initialize) is not bool:
             raise ValueError("prepared-primary initialization requires explicit boolean authority")
-        expected = PrimaryAllocation.model_validate(
-            {
-                "allocation_id": allocation_id,
-                "scope": scope,
-                "control_record_bytes": str(limits.control_bytes),
-            }
-        )
-        descriptor = primary_control_bytes(expected)
-        if len(descriptor) > limits.control_bytes:
-            raise PrimaryStateCapacity("prepared-primary allocation exceeds control admission")
+        expected, descriptor = _allocation_document(allocation_id, scope, limits)
         self.limits = limits
         self._mutex = threading.RLock()
         self._authoring = False

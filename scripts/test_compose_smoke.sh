@@ -676,7 +676,9 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
 
 upload_media_fixture() {
 configure_media_ftp
-adapter_run_code="from ftplib import FTP, all_errors
+adapter_run_code="$(cat "${ROOT_DIR}/scripts/ftp_publication_diagnostics.py")
+install_publication_diagnostics('fixture')
+from ftplib import FTP, all_errors
 from io import BytesIO
 import json
 import os
@@ -728,6 +730,7 @@ def upload(source, content, *, rest=None):
             time.sleep(0.25)
     raise RuntimeError('FTP listener did not accept completed input') from last_error
 
+publication_stage('listener-uploads')
 if os.environ['STOVE0_SMOKE_INTERRUPT_TRANSFER'] == '1':
     first_source, first_content = uploads[0]
     split = max(1, len(first_content) // 3)
@@ -780,6 +783,7 @@ else:
 for source, content in uploads[1:]:
     upload(source, content)
 assert all(not source.exists() for source, _content in uploads)
+publication_stage('listener-handoff')
 completion_log = Path('/intake/ftp/.a-riverhog-ftp-spool/completed-transfers.log')
 deadline = time.monotonic() + 10
 while time.monotonic() < deadline:
@@ -794,19 +798,30 @@ with RiverhogFtpSpoolClient(
     allow_insecure_http=True,
     timeout_seconds=int(os.environ['STOVE0_SMOKE_PUBLICATION_TIMEOUT']),
 ) as client:
+    publication_stage('spool-health')
     health = client.ftp_spool_health_ready()
     assert health.service == 'a-riverhog-ftp-spool'
     assert health.status == 'ok'
+    publication_stage('spool-flush')
     result = client.flush_ftp_spool_source('ftp-smoke')
+    publication_stage('flush-result')
+    publication_count('completed', result['completed'])
+    publication_count('failed', len(result['failed']))
     assert result['completed'] == 1, result
     assert result['failed'] == [], result
+    publication_stage('spool-status')
     status = client.get_ftp_spool_status()
+    publication_count('claims', status.sources[0].claims)
     assert status.sources[0].claims == 0, status
+publication_stage('source-cleanup')
 assert all(not source.exists() for source, _content in uploads)
+publication_stage('receipt-confirmation')
 receipts = sorted(receipt_root.glob('*.json'))
 new_receipts = [path for path in receipts if path.name not in existing_receipts]
+publication_count('new_receipts', len(new_receipts))
 assert len(receipts) == len(existing_receipts) + 1, receipts
 assert len(new_receipts) == 1, new_receipts
+publication_stage('receipt-read')
 receipt = json.loads(new_receipts[0].read_text(encoding='utf-8'))
 print(json.dumps({
     key: receipt[key]
@@ -824,7 +839,9 @@ input_receipt_json="$(adapter_compose exec -T \
 test -n "${input_receipt_json}"
 input_collection_id="$(printf '%s' "${input_receipt_json}" | jq -r '.collection_id')"
 
-classification_code="import os
+classification_code="$(cat "${ROOT_DIR}/scripts/ftp_publication_diagnostics.py")
+install_publication_diagnostics('classification')
+import os
 from riverhog_client import ApiClient
 with ApiClient() as client:
     collection_id = int(os.environ['INPUT_COLLECTION_ID'])

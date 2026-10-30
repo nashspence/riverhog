@@ -94,22 +94,28 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _state_path(root: Path, key: str) -> Path:
+def _state_path(root: Path, key: str, *, create_parent: bool = True) -> Path:
     state_root = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local/state")
     directory = state_root / "a-riverhog-cli" / "uploads"
-    directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if create_parent:
+        directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     digest = hashlib.sha256(canonical_json_bytes([str(root), key])).hexdigest()
     return directory / f"{digest}.json"
 
 
-def _verified_upload_sources(
-    root: Path, idempotency_key: str
-) -> tuple[Path, list[dict[str, object]]]:
+def _validated_upload_root(root: Path, idempotency_key: str) -> Path:
     root = root.expanduser().resolve()
     if not root.is_dir():
         raise ValueError("collection source must be a directory")
     if not idempotency_key or idempotency_key != idempotency_key.strip():
         raise ValueError("upload idempotency key must be nonempty and canonical")
+    return root
+
+
+def _verified_upload_sources(
+    root: Path, idempotency_key: str
+) -> tuple[Path, list[dict[str, object]]]:
+    root = _validated_upload_root(root, idempotency_key)
     current = [
         {
             "relative_parts": item["relative_components"],
@@ -128,10 +134,18 @@ def prepare_upload(root: Path, idempotency_key: str) -> LocalUpload:
 
 
 def _prepare_verified_upload(
-    root: Path, idempotency_key: str, current: list[dict[str, object]]
+    root: Path,
+    idempotency_key: str,
+    current: list[dict[str, object]],
+    *,
+    initialize: bool = True,
 ) -> LocalUpload:
-    destination = _state_path(root, idempotency_key)
-    if not destination.exists():
+    destination = _state_path(root, idempotency_key, create_parent=initialize)
+    if not initialize and not destination.is_file():
+        raise FileNotFoundError(
+            "retained upload identity is missing; resume cannot allocate replacements"
+        )
+    if initialize and not destination.exists():
         document = {
             "format": _FORMAT,
             "root": str(root),
@@ -200,17 +214,27 @@ def _prepare_verified_upload(
 
 @contextmanager
 def prepare_primary_upload(
-    root: Path, idempotency_key: str, policy: PrimaryStatePolicy
+    root: Path, idempotency_key: str, policy: PrimaryStatePolicy, *, initialize: bool
 ) -> Iterator[tuple[LocalUpload, PrimaryStore]]:
-    """Own publication state before allocating a new upload or touching Riverhog."""
+    """Own an explicitly fresh or resumed allocation before touching Riverhog."""
+    if type(initialize) is not bool:
+        raise ValueError("upload state initialization requires explicit boolean authority")
+    root = _validated_upload_root(root, idempotency_key)
+    destination = _state_path(root, idempotency_key, create_parent=False)
+    if initialize and destination.exists():
+        raise FileExistsError("fresh upload initialization conflicts with retained identity")
+    if not initialize and not destination.is_file():
+        raise FileNotFoundError(
+            "retained upload identity is missing; resume cannot allocate replacements"
+        )
     root, current = _verified_upload_sources(root, idempotency_key)
-    destination = _state_path(root, idempotency_key)
-    # An accepted allocation never implicitly replaces a missing store.
+    if initialize:
+        destination = _state_path(root, idempotency_key)
     with PrimaryStore(
         destination.with_suffix(".primary"),
         allocation_id=destination.stem,
         scope=policy.scope,
         limits=policy.limits(),
-        initialize=not destination.exists(),
+        initialize=initialize,
     ) as store:
-        yield _prepare_verified_upload(root, idempotency_key, current), store
+        yield _prepare_verified_upload(root, idempotency_key, current, initialize=initialize), store
