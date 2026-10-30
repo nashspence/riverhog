@@ -759,7 +759,21 @@ class JournalStore:
         try:
             if on_storage_open is not None:
                 on_storage_open(self)
-            configure_sqlite_connection(self.db, defaults=SqliteConnectionSettings(cache_kib=512))
+            try:
+                configure_sqlite_connection(
+                    self.db, defaults=SqliteConnectionSettings(cache_kib=512)
+                )
+            except sqlite3.DatabaseError as error:
+                code = getattr(error, "sqlite_errorcode", None)
+                if (
+                    reopen
+                    and type(code) is int
+                    and code & 0xFF in {sqlite3.SQLITE_CORRUPT, sqlite3.SQLITE_NOTADB}
+                ):
+                    raise InvalidJournalWorkspace(
+                        "retained journal storage is corrupt or incomplete"
+                    ) from error
+                raise
             if reopen:
                 self._restore_workspace()
             else:

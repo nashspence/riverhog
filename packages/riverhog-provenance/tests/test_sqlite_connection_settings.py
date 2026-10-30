@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import hashlib
+import sqlite3
 from contextlib import closing
 
 import pytest
 from riverhog_provenance import validate_journal_chunks
-from riverhog_provenance.journal_store import JournalStore
+from riverhog_provenance.journal_store import InvalidJournalWorkspace, JournalStore
 from sqlite_admission import SqliteConnectionAdmission, SqliteConnectionSettings
 
 
@@ -84,3 +85,27 @@ def test_journal_helper_result_reader_keeps_selected_profile_and_exact_anchor(
     finally:
         summary.close()
     assert admission.status.connections == admission.status.cursors == 0
+
+
+@pytest.mark.parametrize("temporary", ["FILE", "MEMORY"])
+def test_corrupt_retained_journal_settings_preserve_error_custody_and_original_bytes(
+    tmp_path, temporary
+):
+    directory = tmp_path / "retained"
+    directory.mkdir()
+    path = directory / "snapshot.sqlite3"
+    original = b"original corrupt retained bytes"
+    path.write_bytes(original)
+    admission, retained, released = selected(temporary), [], []
+    with pytest.raises(InvalidJournalWorkspace) as caught:
+        JournalStore.open_retained(
+            directory,
+            connection_factory=admission.connect,
+            on_storage_open=retained.append,
+            on_storage_close=lambda: released.append(True),
+        )
+    assert isinstance(caught.value.__cause__, sqlite3.DatabaseError)
+    assert caught.value.__cause__.sqlite_errorcode == sqlite3.SQLITE_NOTADB
+    assert len(retained) == 1 and retained[0].cleanup_complete
+    assert admission.status.connections == admission.status.cursors == 0
+    assert released == [] and path.read_bytes() == original
