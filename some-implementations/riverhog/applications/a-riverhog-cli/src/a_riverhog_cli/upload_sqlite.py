@@ -62,6 +62,12 @@ class UploadSqliteResources:
     the same owner. Cleanup settles handles without resetting its process grants.
     Cache targets do not provide heap enforcement or scheduling priorities.
 
+    Disposable projections may explicitly select MEMORY databases and temporary
+    storage under that process H. Their private directories retain cleanup
+    custody while SQLite stores no database or journal there. Existing paths and
+    retained-workspace URI opens are refused by this selection. FILE projection
+    storage still requires separate physical scratch admission.
+
     Primary factories share this admission through connect_primary. Their
     persistent files retain primary custody and are never projection scratch.
     Callers close primary handles before settling this application owner.
@@ -80,17 +86,26 @@ class UploadSqliteResources:
         *,
         process: WindowsSqliteProcess | None = None,
         temporary_storage: Literal["FILE", "MEMORY"] = "FILE",
+        projection_storage: Literal["FILE", "MEMORY"] = "FILE",
     ) -> None:
         if temporary_storage not in ("FILE", "MEMORY"):
             raise ValueError("upload SQLite temporary storage must be FILE or MEMORY")
+        if projection_storage not in ("FILE", "MEMORY"):
+            raise ValueError("upload SQLite projection storage must be FILE or MEMORY")
         if temporary_storage == "MEMORY" and process is None:
             raise ValueError("memory temporary storage requires the admitted SQLite process")
+        if projection_storage == "MEMORY" and (process is None or temporary_storage != "MEMORY"):
+            raise ValueError(
+                "memory projections require the admitted SQLite process "
+                "and MEMORY temporary storage"
+            )
         with _process_lock:
             if _live:
                 raise SqliteCleanupPending("previous upload SQLite ownership is unsettled")
             self._lock = RLock()
             self._closing = False
             self._process = process
+            self._projection_storage = projection_storage
             self._resources: list[_Resource] = []
             self._awaiting: dict[int, _Resource] = {}
             self._admission = SqliteConnectionAdmission(
@@ -147,11 +162,27 @@ class UploadSqliteResources:
         ]
 
     def connect(self, database: Path, **options: object) -> sqlite3.Connection:
-        """Admit the exact disposable database path before its actual driver call."""
+        """Admit a disposable projection and retain its exact private directory.
+
+        FILE opens the supplied path. Explicit MEMORY storage opens an isolated
+        SQLite memory database only for an absent disposable path; it never
+        substitutes an empty database for an existing or retained workspace.
+        """
         if not isinstance(database, Path) or not database.is_absolute():
             raise ValueError("upload projection storage requires its exact absolute database path")
         with self._lock:
             self._require_open()
+            target: str | Path = database
+            if self._projection_storage == "MEMORY":
+                if options.get("uri", False):
+                    raise ValueError("memory projection storage cannot open a retained URI")
+                try:
+                    database.lstat()
+                except FileNotFoundError:
+                    pass
+                else:
+                    raise FileExistsError("memory projection storage requires an absent database")
+                target = ":memory:"
             self._prune()
             thread = get_ident()
             if thread in self._awaiting:
@@ -160,7 +191,7 @@ class UploadSqliteResources:
             self._resources.append(resource)
             self._awaiting[thread] = resource
             try:
-                resource.connection = self._admission.connect(database, **options)
+                resource.connection = self._admission.connect(target, **options)
             except BaseException:
                 self._closing = True
                 raise

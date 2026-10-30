@@ -116,8 +116,7 @@ def test_primary_capacity_refusal_preserves_the_existing_projection_until_explic
     assert journal.cleanup_complete
 
 
-@pytest.mark.skipif(os.name != "posix", reason="actual primary schema/pager uses Unix VFS fixture")
-def test_actual_primary_cold_replay_shares_application_admission_with_live_projections(tmp_path):
+def _actual_primary_replay_with_projections(tmp_path, projection_storage):
     from riverhog_client import SqlitePrimaryLimits
     from riverhog_client._prepared_primary_sqlite import TransactionalPrimaryFiles
 
@@ -126,7 +125,10 @@ def test_actual_primary_cold_replay_shares_application_admission_with_live_proje
 
     path = tmp_path / "retained primary.sqlite3"
     resources = UploadSqliteResources(
-        UploadSqlitePolicy(connections=3, blobs=1), process=_Process(), temporary_storage="MEMORY"
+        UploadSqlitePolicy(connections=3, blobs=1),
+        process=_Process(),
+        temporary_storage="MEMORY",
+        projection_storage=projection_storage,
     )
     try:
         tags = PreparedInitialCollectionTags(
@@ -158,13 +160,26 @@ def test_actual_primary_cold_replay_shares_application_admission_with_live_proje
         assert resources.status.blob_peak == 1
         directories = resources.pending_directories
         assert len(directories) == 2 and path.parent not in directories
+        if projection_storage == "MEMORY":
+            assert all(not list(directory.iterdir()) for directory in directories)
+            with closing(journal.db.execute("PRAGMA database_list")) as cursor:
+                assert cursor.fetchone() == (0, "main", "")
     finally:
         resources.close()
     assert path.is_file() and all(not directory.exists() for directory in directories)
 
 
-@pytest.mark.skipif(os.name != "nt", reason="qualified Windows engine and private local NTFS")
-def test_actual_windows_primary_replay_and_projections_share_the_application_process(tmp_path):
+@pytest.mark.skipif(os.name != "posix", reason="actual primary schema/pager uses Unix VFS fixture")
+def test_actual_primary_cold_replay_shares_application_admission_with_live_projections(tmp_path):
+    _actual_primary_replay_with_projections(tmp_path, "FILE")
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual primary schema/pager uses Unix VFS fixture")
+def test_actual_primary_cold_replay_preserves_original_with_memory_projections(tmp_path):
+    _actual_primary_replay_with_projections(tmp_path, "MEMORY")
+
+
+def _actual_windows_primary_replay_with_projections(tmp_path, projection_storage):
     code = r"""
 import importlib.util,json,sys,tempfile
 from pathlib import Path
@@ -185,7 +200,7 @@ tempfile.tempdir=str(scratch)
 parent=Path(sys.argv[2])/"private-primary";parents._parent(parent)
 process=WindowsSqliteProcess(heap_bytes=64*1024**2,native_limits=(1,2))
 resources=UploadSqliteResources(UploadSqlitePolicy(connections=3,blobs=1),
-    process=process,temporary_storage="MEMORY")
+    process=process,temporary_storage="MEMORY",projection_storage=sys.argv[3])
 path=process.primary_location(parent,DESCRIPTOR)
 limits=SqlitePrimaryLimits(16*1024**2,32*1024**2,128*1024)
 bank=SqliteOperationBank(512,8*1024**2,65536,8*1024**2,65536,
@@ -213,6 +228,10 @@ try:
     assert resources.status.connection_peak==3 and resources.status.connections==2
     assert resources.status.blob_peak==1 and resources.status.blobs==0
     assert len(resources.pending_directories)==2
+    if sys.argv[3]=="MEMORY":
+        assert all(not list(directory.iterdir()) for directory in resources.pending_directories)
+        with closing(state["journal"].db.execute("PRAGMA database_list")) as cursor:
+            assert cursor.fetchone()==(0,"main","")
     assert process.native_report()["owners"]==process.native_report()["files"]==0
     report=process.report()
     assert 0<report["sqlite_heap_peak_bytes"]<=report["heap_limit_bytes"]==64*1024**2
@@ -225,7 +244,15 @@ print(json.dumps({"passed":True,"initializations":1,"cold_opens":3,
     "connections":3,"blob_peak":1,"persistent_primary_preserved":True}))
 """
     result = subprocess.run(
-        [sys.executable, "-I", "-c", code, str(Path(__file__).resolve().parents[2]), str(tmp_path)],
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[2]),
+            str(tmp_path),
+            projection_storage,
+        ],
         capture_output=True,
         text=True,
         timeout=180,
@@ -239,3 +266,13 @@ print(json.dumps({"passed":True,"initializations":1,"cold_opens":3,
         "blob_peak": 1,
         "persistent_primary_preserved": True,
     }
+
+
+@pytest.mark.skipif(os.name != "nt", reason="qualified Windows engine and private local NTFS")
+def test_actual_windows_primary_replay_and_projections_share_the_application_process(tmp_path):
+    _actual_windows_primary_replay_with_projections(tmp_path, "FILE")
+
+
+@pytest.mark.skipif(os.name != "nt", reason="qualified Windows engine and private local NTFS")
+def test_actual_windows_primary_replay_preserves_original_with_memory_projections(tmp_path):
+    _actual_windows_primary_replay_with_projections(tmp_path, "MEMORY")
