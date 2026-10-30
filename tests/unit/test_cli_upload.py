@@ -236,6 +236,20 @@ def test_cli_reuses_declared_native_observation_and_rejects_changed_finalized_in
             return BoundedSourceObserver().observe(BytesSource(path.read_bytes()))
 
     api = _CustodyApi()
+    from a_riverhog_cli.upload_sqlite import UploadSqliteResources
+
+    resource_owners = []
+
+    def application_resources(policy):
+        owner = UploadSqliteResources(policy)
+        resource_owners.append(owner)
+        return owner
+
+    monkeypatch.setenv(
+        "A_RIVERHOG_CLI_SQLITE_RESOURCES",
+        json.dumps({"connections": 8, "cursors": 32, "operations": 4}),
+    )
+    monkeypatch.setattr(riverhog_main, "UploadSqliteResources", application_resources)
     monkeypatch.setattr(riverhog_main, "client", lambda: api)
     monkeypatch.setattr(riverhog_main, "resolve_provenance_observer", lambda _name: Observer())
     arguments = [
@@ -256,6 +270,13 @@ def test_cli_reuses_declared_native_observation_and_rejects_changed_finalized_in
     second = RUNNER.invoke(riverhog_main.app, arguments)
     assert second.exit_code == 0, second.output
     assert len(observed) == 1 and len(api.journals) == 1 and api.session_calls == 1
+    assert resource_owners[0].status.connection_peak > 0
+    assert resource_owners[0].status.cursor_peak > 0
+    assert resource_owners[0].status.operation_peak > 0
+    assert all(
+        owner.status.connections == 0 and owner.pending_directories == ()
+        for owner in resource_owners
+    )
     changed = list(arguments)
     changed[-2] = "urn:uuid:22222222-2222-4222-8222-222222222222"
     rejected = RUNNER.invoke(riverhog_main.app, changed)

@@ -91,6 +91,7 @@ from a_riverhog_cli.output import (
     format_retrieval_cache_status,
     format_tags,
 )
+from a_riverhog_cli.upload_sqlite import UploadSqlitePolicy, UploadSqliteResources
 
 _ERROR_RESPONSE_OUTPUT = {
     "kind": "python-model",
@@ -1567,6 +1568,14 @@ def upload_cmd(
             help="Publication state scope and byte budgets as JSON.",
         ),
     ] = None,
+    sqlite_resources: Annotated[
+        str | None,
+        typer.Option(
+            "--sqlite-resources",
+            envvar="A_RIVERHOG_CLI_SQLITE_RESOURCES",
+            help="Active upload projection connection, cursor and operation grants as JSON.",
+        ),
+    ] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
     dry_run: Annotated[bool, typer.Option("--dry-run")] = False,
 ) -> None:
@@ -1602,6 +1611,14 @@ def upload_cmd(
         primary_policy = PrimaryStatePolicy.model_validate_json(primary_state)
     except ValueError as exc:
         raise typer.BadParameter(str(exc), param_hint="--primary-state") from exc
+    try:
+        sqlite_policy = (
+            UploadSqlitePolicy()
+            if sqlite_resources is None
+            else UploadSqlitePolicy.model_validate_json(sqlite_resources)
+        )
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc), param_hint="--sqlite-resources") from exc
     selected_observer = (
         resolve_provenance_observer(provenance_observer)
         if provenance_observer is not None
@@ -1617,12 +1634,15 @@ def upload_cmd(
         version = importlib.metadata.version("a-riverhog-cli")
     except importlib.metadata.PackageNotFoundError:
         version = "development"
-    with prepare_primary_upload(
-        resolved_root,
-        key,
-        primary_policy,
-        initialize=initialize_state or idempotency_key is None,
-    ) as (upload, store):
+    with (
+        UploadSqliteResources(sqlite_policy) as sqlite_owner,
+        prepare_primary_upload(
+            resolved_root,
+            key,
+            primary_policy,
+            initialize=initialize_state or idempotency_key is None,
+        ) as (upload, store),
+    ):
         observation_selection: dict[str, object] = {
             "mode": "automatic",
             "observer": "riverhog-provenance/BoundedSourceObserver",
@@ -1652,6 +1672,10 @@ def upload_cmd(
                     for source in upload.sources
                 ),
             ),
+            provenance_connection_factory=sqlite_owner.connect,
+            on_provenance_storage_open=sqlite_owner.retain,
+            initial_tags_connection_factory=sqlite_owner.connect,
+            on_initial_tags_storage_open=sqlite_owner.retain,
             producer_app="a-riverhog-cli",
             adapter_id="a-riverhog-cli.directory/v1",
             adapter_version=version,
