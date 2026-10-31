@@ -67,9 +67,11 @@ from riverhog_core.services.retrieval import SqlAlchemyRetrievalService
 from riverhog_protocol import (
     COLLECTION_DESCRIPTION_UTF8_BYTES_MAX,
     MAX_COLLECTION_DESCRIPTION_REVISION,
+    CollectionUploadRawDigestBatchDocument,
     collection_description_identity,
 )
 from riverhog_protocol.errors import ServiceUnavailable
+from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
 from sqlalchemy import event, inspect, select, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import IntegrityError
@@ -996,17 +998,26 @@ def test_postgres_catalog_rejects_changed_journal_validation_predicates(
         engine.dispose()
 
 
-def test_postgres_acquisition_generic_plan_skips_sealed_volume_prefix(
-    isolated_database_url: str, record_property
+@pytest.mark.parametrize(
+    "prefix_mode", ["sealed", "raw-unready", "raw-ready-tail", "raw-parts-frontier"]
+)
+def test_postgres_acquisition_and_readiness_use_generic_index_plans(
+    isolated_database_url: str, prefix_mode: str, record_property
 ) -> None:
     initialize_db(isolated_database_url)
     factory = make_session_factory(isolated_database_url)
     with session_scope(factory) as session:
         seed_storage_incarnation(session, "archive", "archive")
+    policy = CollectionVolumePolicy(
+        pack_artifacts=1,
+        pack_member_bytes=1,
+        raw_part_plaintext_bytes=CHUNK_SIZE,
+        raw_volume_plaintext_bytes=CHUNK_SIZE,
+    )
     service = SqlAlchemyCollectionUploadService(
         RuntimeConfig.for_testing(database_url=isolated_database_url),
         ArchiveStoreRegistry({"archive": archive_store_binding(MemoryArchiveStore())}),
-        policy=CollectionVolumePolicy(pack_artifacts=1),
+        policy=policy,
         session_factory=factory,
     )
     collection_id = int(
@@ -1022,14 +1033,46 @@ def test_postgres_acquisition_generic_plan_skips_sealed_volume_prefix(
             event_context=None,
         )["collection_id"]
     )
-    members = [
-        {
-            "artifact_id": f"{index + 1:064x}",
-            "bytes": "0",
-            "sha256": hashlib.sha256(b"").hexdigest(),
-        }
-        for index in range(1002)
-    ]
+    empty_sha = hashlib.sha256(b"").hexdigest()
+    raw_sha = hashlib.sha256(b"x").hexdigest()
+    _, one_commitment = ordered_raw_part_commitment((raw_sha,))
+    members = []
+    if prefix_mode == "raw-parts-frontier":
+        block = b"x" * CHUNK_SIZE
+        raw_sha = hashlib.sha256(block).hexdigest()
+        source_hash = hashlib.sha256()
+        for _ in range(1000):
+            source_hash.update(block)
+        _, commitment = ordered_raw_part_commitment([raw_sha] * 1000)
+        members.append(
+            {
+                "artifact_id": f"{1:064x}",
+                "bytes": str(1000 * CHUNK_SIZE),
+                "sha256": source_hash.hexdigest(),
+                "raw_parts": {
+                    "part_plaintext_bytes": str(CHUNK_SIZE),
+                    "part_count": "1000",
+                    "ordered_sha256": commitment,
+                },
+            }
+        )
+        members.extend(
+            {"artifact_id": f"{index:064x}", "bytes": "0", "sha256": empty_sha} for index in (2, 3)
+        )
+    else:
+        for index in range(1002):
+            member = {"artifact_id": f"{index + 1:064x}", "bytes": "0", "sha256": empty_sha}
+            if prefix_mode != "sealed" and index < 1000:
+                member.update(
+                    bytes="1",
+                    sha256=raw_sha,
+                    raw_parts={
+                        "part_plaintext_bytes": str(CHUNK_SIZE),
+                        "part_count": "1",
+                        "ordered_sha256": one_commitment,
+                    },
+                )
+            members.append(member)
     for start in range(0, len(members), 16):
         service.register_artifacts(collection_id, members[start : start + 16])
     with session_scope(factory) as session:
@@ -1042,63 +1085,96 @@ def test_postgres_acquisition_generic_plan_skips_sealed_volume_prefix(
         )
         assert len(volumes) == 1001
         expected_volume = volumes[-1].object_id
-        # Model catalog state only, independently of payload/custody qualification.
-        for volume in volumes[:-1]:
-            volume.state = "sealed"
-            volume.uploaded_units = volume.total_units
+        if prefix_mode == "sealed":
+            # Model catalog state only, independently of payload/custody qualification.
+            for volume in volumes[:-1]:
+                volume.state = "sealed"
+                volume.uploaded_units = volume.total_units
+        elif prefix_mode == "raw-ready-tail":
+            expected_volume = volumes[-2].object_id
+        elif prefix_mode == "raw-parts-frontier":
+            expected_volume = volumes[0].object_id
     engine = factory.kw["bind"]
     captured = []
+    promotions = []
 
     def capture(_connection, _cursor, statement, parameters, _context, _many):
-        if statement.lstrip().upper().startswith("SELECT") and (
+        if statement.startswith("UPDATE collection_archive_object_uploads SET work_ready="):
+            promotions.append((statement, parameters))
+        elif statement.lstrip().upper().startswith("SELECT") and (
             "FROM collection_archive_object_uploads" in statement
         ):
             captured.append((statement, parameters))
 
     event.listen(engine, "before_cursor_execute", capture)
     try:
+        promoted = 0
+        if prefix_mode in ("raw-ready-tail", "raw-parts-frontier"):
+            promoted = 16 if prefix_mode == "raw-parts-frontier" else 1
+            artifact_id = members[0 if promoted == 16 else 999]["artifact_id"]
+            service.register_raw_part_digests(
+                collection_id,
+                CollectionUploadRawDigestBatchDocument(
+                    artifact_id=artifact_id, first_part="0", sha256s=[raw_sha] * promoted
+                ),
+            )
         reply = service.acquire_work(collection_id, limit=1)
     finally:
         event.remove(engine, "before_cursor_execute", capture)
     assert len(reply["work"]) == 1
     assert reply["work"][0]["volume"]["volume_id"] == expected_volume
     assert len(captured) == 1
-    statement, parameters = captured[0]
-    keys = []
+    assert len(promotions) == bool(promoted)
 
-    def bind_parameter(match):
-        key = match.group(1)
-        if key not in keys:
-            keys.append(key)
-        return "$" + str(keys.index(key) + 1)
+    def prepare(cursor, name, statement, parameters):
+        keys = []
 
-    prepared = re.sub(r"%\(([^)]+)\)s", bind_parameter, statement)
+        def bind_parameter(match):
+            key = match.group(1)
+            if key not in keys:
+                keys.append(key)
+            return "$" + str(keys.index(key) + 1)
+
+        prepared = re.sub(r"%\(([^)]+)\)s", bind_parameter, statement)
+        cursor.execute("PREPARE " + name + " AS " + prepared)
+        arguments = pgsql.SQL(", ").join(pgsql.Literal(parameters[key]) for key in keys)
+        return pgsql.SQL("EXECUTE " + name + " (") + arguments + pgsql.SQL(")")
+
     with engine.begin() as connection:
         connection.exec_driver_sql("ANALYZE collection_archive_object_uploads")
         with connection.connection.driver_connection.cursor() as cursor:
             cursor.execute("SET LOCAL plan_cache_mode = force_generic_plan")
-            cursor.execute("PREPARE acquisition_work AS " + prepared)
-            arguments = pgsql.SQL(", ").join(pgsql.Literal(parameters[key]) for key in keys)
-            execute = pgsql.SQL("EXECUTE acquisition_work (") + arguments + pgsql.SQL(")")
+            execute = prepare(cursor, "acquisition_work", *captured[0])
             cursor.execute(execute)
             rows = cursor.fetchall()
             assert len(rows) == 1 and rows[0][1] == expected_volume
             cursor.execute(pgsql.SQL("EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) ") + execute)
             plan = cursor.fetchone()[0][0]["Plan"]
             cursor.execute("DEALLOCATE acquisition_work")
+            promotion_plan = None
+            if promotions:
+                execute = prepare(cursor, "readiness_promotion", *promotions[0])
+                cursor.execute(pgsql.SQL("EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) ") + execute)
+                promotion_plan = cursor.fetchone()[0][0]["Plan"]
+                cursor.execute("DEALLOCATE readiness_promotion")
 
     def nodes(node):
         yield node
         for child in node.get("Plans", []):
             yield from nodes(child)
 
-    examined = sum(
-        (node["Actual Rows"] + node.get("Rows Removed by Filter", 0)) * node["Actual Loops"]
-        for node in nodes(plan)
-        if node.get("Relation Name") == "collection_archive_object_uploads"
-    )
-    record_property("sealed_prefix", 1000)
+    def examined(root):
+        return sum(
+            (node["Actual Rows"] + node.get("Rows Removed by Filter", 0)) * node["Actual Loops"]
+            for node in nodes(root)
+            if node.get("Relation Name") == "collection_archive_object_uploads"
+        )
+
+    record_property("prefix_mode", prefix_mode)
     record_property("returned_units", len(rows))
-    record_property("postgres_archive_rows_examined", examined)
-    assert examined == 1
+    record_property("postgres_archive_rows_examined", examined(plan))
+    assert examined(plan) == 1
+    if promotion_plan is not None:
+        record_property("postgres_promotion_rows_examined", examined(promotion_plan))
+        assert examined(promotion_plan) == promoted
     engine.dispose()

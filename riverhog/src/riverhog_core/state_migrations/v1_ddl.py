@@ -1155,10 +1155,12 @@ CREATE TABLE collection_archive_object_uploads (
 	source_artifact_id VARCHAR(64),
 	source_first_part BIGINT,
 	source_part_count BIGINT,
+	source_last_part BIGINT GENERATED ALWAYS AS (source_first_part + source_part_count) STORED,
 	unit_plaintext_bytes BIGINT NOT NULL,
 	plan_json TEXT NOT NULL,
 	plan_sha256 VARCHAR(64) NOT NULL,
 	state VARCHAR NOT NULL,
+	work_ready BOOLEAN DEFAULT false NOT NULL,
 	checkpoint_json TEXT,
 	sealed_receipt_json TEXT,
 	metadata_receipt_json TEXT,
@@ -1188,7 +1190,10 @@ CREATE TABLE collection_archive_object_uploads (
 CREATE UNIQUE INDEX ux_collection_archive_object_uploads_sequence ON collection_archive_object_uploads (collection_id, sequence)
     """.strip(),
     """
-CREATE INDEX ix_collection_archive_object_uploads_unsealed_sequence ON collection_archive_object_uploads (collection_id, sequence) WHERE state != 'sealed'
+CREATE INDEX ix_collection_archive_object_uploads_ready_sequence ON collection_archive_object_uploads (collection_id, sequence) WHERE state != 'sealed' AND work_ready IS 1
+    """.strip(),
+    """
+CREATE INDEX ix_collection_archive_object_uploads_raw_boundary ON collection_archive_object_uploads (collection_id, source_artifact_id, source_last_part)
     """.strip(),
     """
 CREATE TABLE collection_archive_objects (
@@ -3789,10 +3794,12 @@ CREATE TABLE collection_archive_object_uploads (
 	source_artifact_id VARCHAR(64),
 	source_first_part BIGINT,
 	source_part_count BIGINT,
+	source_last_part BIGINT GENERATED ALWAYS AS (source_first_part + source_part_count) STORED,
 	unit_plaintext_bytes BIGINT NOT NULL,
 	plan_json TEXT NOT NULL,
 	plan_sha256 VARCHAR(64) NOT NULL,
 	state VARCHAR NOT NULL,
+	work_ready BOOLEAN DEFAULT false NOT NULL,
 	checkpoint_json TEXT,
 	sealed_receipt_json TEXT,
 	metadata_receipt_json TEXT,
@@ -3822,7 +3829,10 @@ CREATE TABLE collection_archive_object_uploads (
 CREATE UNIQUE INDEX ux_collection_archive_object_uploads_sequence ON collection_archive_object_uploads (collection_id, sequence)
     """.strip(),
     """
-CREATE INDEX ix_collection_archive_object_uploads_unsealed_sequence ON collection_archive_object_uploads (collection_id, sequence) WHERE (state) != 'sealed'
+CREATE INDEX ix_collection_archive_object_uploads_ready_sequence ON collection_archive_object_uploads (collection_id, sequence) WHERE ((state) != 'sealed') AND (work_ready IS true)
+    """.strip(),
+    """
+CREATE INDEX ix_collection_archive_object_uploads_raw_boundary ON collection_archive_object_uploads (collection_id, source_artifact_id, source_last_part)
     """.strip(),
     """
 CREATE TABLE collection_archive_objects (

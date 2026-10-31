@@ -3896,10 +3896,14 @@ class CollectionArchiveObjectUploadRecord(Base):
     source_artifact_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     source_first_part: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     source_part_count: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    source_last_part: Mapped[int | None] = mapped_column(
+        BigInteger, Computed("source_first_part + source_part_count", persisted=True)
+    )
     unit_plaintext_bytes: Mapped[int] = mapped_column(BigInteger)
     plan_json: Mapped[str] = mapped_column(Text)
     plan_sha256: Mapped[str] = mapped_column(String(64))
     state: Mapped[str] = mapped_column(String, default="planned")
+    work_ready: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("false"))
     checkpoint_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     sealed_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     metadata_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -3923,11 +3927,17 @@ class CollectionArchiveObjectUploadRecord(Base):
             unique=True,
         ),
         Index(
-            "ix_collection_archive_object_uploads_unsealed_sequence",
+            "ix_collection_archive_object_uploads_ready_sequence",
             "collection_id",
             "sequence",
-            postgresql_where=text("(state) != 'sealed'"),
-            sqlite_where=text("state != 'sealed'"),
+            postgresql_where=text("((state) != 'sealed') AND (work_ready IS true)"),
+            sqlite_where=text("state != 'sealed' AND work_ready IS 1"),
+        ),
+        Index(
+            "ix_collection_archive_object_uploads_raw_boundary",
+            "collection_id",
+            "source_artifact_id",
+            "source_last_part",
         ),
         CheckConstraint(
             _fixed_lowercase_integer_check("sequence", 64),

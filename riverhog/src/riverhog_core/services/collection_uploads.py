@@ -1040,6 +1040,17 @@ class SqlAlchemyCollectionUploadService:
                 and commitment != artifact.raw_part_ordered_sha256
             ):
                 raise BadRequest("raw source digest sequence differs from its registered authority")
+            session.execute(
+                update(CollectionArchiveObjectUploadRecord)
+                .where(
+                    CollectionArchiveObjectUploadRecord.collection_id == normalized_id,
+                    CollectionArchiveObjectUploadRecord.source_artifact_id == batch.artifact_id,
+                    CollectionArchiveObjectUploadRecord.source_last_part > accepted,
+                    CollectionArchiveObjectUploadRecord.source_last_part <= next_part,
+                )
+                .values(work_ready=True),
+                execution_options={"synchronize_session": False},
+            )
             _touch_upload(upload, config=self._config)
             session.flush()
             return _raw_digest_progress(artifact)
@@ -1978,6 +1989,7 @@ class SqlAlchemyCollectionUploadService:
                         CollectionArchiveObjectUploadRecord.collection_id == normalized_id,
                         # Keep the partial-index predicate provable in generic prepared plans.
                         CollectionArchiveObjectUploadRecord.state != literal_column("'sealed'"),
+                        CollectionArchiveObjectUploadRecord.work_ready.is_(true()),
                         or_(
                             CollectionArchiveObjectUploadRecord.kind == "pack",
                             exists(
@@ -6738,6 +6750,7 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
                 plan_json=plan_json,
                 plan_sha256=plan.plan_sha256,
                 state="planned",
+                work_ready=True,
                 uploaded_bytes=0,
                 uploaded_units=0,
                 total_units=len(plan.units),
@@ -6772,6 +6785,8 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
                 plan_json=plan_json,
                 plan_sha256=hashlib.sha256(plan_json.encode()).hexdigest(),
                 state="planned",
+                # Raw plans precede acceptance of their source digest batches.
+                work_ready=False,
                 uploaded_bytes=0,
                 uploaded_units=0,
                 total_units=max(
