@@ -572,3 +572,110 @@ def test_record_identity_publication_keeps_only_a_complete_selected_original(
     assert restored.source_naming_view_id == original["source_naming_view_id"]
     assert [source.bytes for source in restored.sources] == [0, 11, 11]
     assert destination.read_bytes() == exact
+
+
+def _replay_original(tmp_path, members=3):
+    root = tmp_path / "source"
+    (root / "nested").mkdir(parents=True)
+    for index in range(members):
+        (root / "nested" / f"member-{index}-雪.bin").write_bytes(
+            b"" if index == 0 else b"equal bytes"
+        )
+    root, current = directory_upload._verified_upload_sources(root, "retained")
+    original = directory_upload._new_upload_identity(root, "retained", current)
+    return root, current, original
+
+
+@pytest.mark.parametrize("members", [1, 3])
+def test_retained_source_descriptors_preserve_original_paths_and_producer_inputs(
+    tmp_path, monkeypatch, members
+):
+    root, current, original = _replay_original(tmp_path, members)
+    original["sources"][0]["opaque-extra"] = {"uninterpreted": [1, 2]}
+    exact = canonical_json_bytes(original)
+    current_exact = canonical_json_bytes(current)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("retained source replay allocated replacement identities")
+
+    monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
+    monkeypatch.setattr(directory_upload.uuid, "uuid4", forbidden)
+    upload = directory_upload._load_upload_identity(original, root, "retained", current)
+    assert upload.source_naming_view_id == original["source_naming_view_id"]
+    assert len(upload.sources) == members
+    for source, recorded in zip(upload.sources, original["sources"], strict=True):
+        expected_path = root.joinpath(*recorded["relative_parts"])
+        assert source.path == expected_path
+        assert source.relative_parts == tuple(recorded["relative_parts"])
+        assert (source.artifact_id, source.bytes, source.sha256) == (
+            recorded["artifact_id"],
+            recorded["bytes"],
+            recorded["sha256"],
+        )
+        consumed = source.producer_file()
+        assert consumed.source == expected_path
+        assert consumed.artifact_id == recorded["artifact_id"]
+        assert consumed.materialization_hint == tuple(recorded["relative_parts"])
+        assert consumed.allow_missing_materialization_hint is False
+    assert canonical_json_bytes(original) == exact
+    assert canonical_json_bytes(current) == current_exact
+
+
+@pytest.mark.parametrize(
+    "changed",
+    [
+        "fewer",
+        "extra",
+        "different-source",
+        "non-object-source",
+        "missing-id",
+        "short-id",
+        "upper-id",
+        "nonhex-id",
+        "null-id",
+        "list-id",
+        "object-id",
+        "duplicate-last-id",
+        "view",
+    ],
+)
+def test_retained_source_preflight_finishes_before_descriptor_materialization(
+    tmp_path, monkeypatch, changed
+):
+    root, current, original = _replay_original(tmp_path)
+    if changed == "fewer":
+        original["sources"].pop()
+    elif changed == "extra":
+        original["sources"].append(dict(original["sources"][-1]))
+    elif changed == "different-source":
+        original["sources"][-1]["sha256"] = "0" * 64
+    elif changed == "non-object-source":
+        original["sources"][-1] = None
+    elif changed == "missing-id":
+        original["sources"][-1].pop("artifact_id")
+    elif changed == "view":
+        original["source_naming_view_id"] = "invalid"
+    else:
+        replacement = {
+            "short-id": "a" * 63,
+            "upper-id": "A" * 64,
+            "nonhex-id": "g" * 64,
+            "null-id": None,
+            "list-id": [],
+            "object-id": {},
+            "duplicate-last-id": original["sources"][0]["artifact_id"],
+        }[changed]
+        original["sources"][-1]["artifact_id"] = replacement
+    exact = canonical_json_bytes(original)
+    current_exact = canonical_json_bytes(current)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("invalid retained identity reached descriptor creation or new IDs")
+
+    monkeypatch.setattr(directory_upload, "LocalSource", forbidden)
+    monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
+    monkeypatch.setattr(directory_upload.uuid, "uuid4", forbidden)
+    with pytest.raises((ValueError, TypeError, AttributeError)):
+        directory_upload._load_upload_identity(original, root, "retained", current)
+    assert canonical_json_bytes(original) == exact
+    assert canonical_json_bytes(current) == current_exact

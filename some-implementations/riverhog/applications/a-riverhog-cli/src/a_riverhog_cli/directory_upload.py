@@ -28,11 +28,16 @@ _FORMAT = "a-riverhog-cli-directory-upload/v1"
 
 @dataclass(frozen=True, slots=True)
 class LocalSource:
-    path: Path
+    root: Path
     relative_parts: tuple[str, ...]
     artifact_id: str
     bytes: int
     sha256: str
+
+    @property
+    def path(self) -> Path:
+        """Materialize the pathname when a source is consumed."""
+        return self.root.joinpath(*self.relative_parts)
 
     def producer_file(self, *, observation: Any = None) -> ProducerFile:
         try:
@@ -331,27 +336,34 @@ def _load_upload_identity(
         or loaded.get("root") != str(root)
         or loaded.get("idempotency_key") != idempotency_key
         or not isinstance(loaded.get("sources"), list)
-        or [
-            {key: item.get(key) for key in ("relative_parts", "bytes", "sha256")}
-            for item in loaded["sources"]
-        ]
-        != current
+        or len(loaded["sources"]) != len(current)
+        or any(
+            not isinstance(item, dict)
+            or {key: item.get(key) for key in ("relative_parts", "bytes", "sha256")} != expected
+            for item, expected in zip(loaded["sources"], current, strict=True)
+        )
     ):
         raise ValueError("saved upload identity differs from the current local sources")
     view_id = loaded.get("source_naming_view_id")
     if not isinstance(view_id, str) or not view_id.startswith("urn:uuid:"):
         raise ValueError("saved upload source view identity is invalid")
-    ids = [item.get("artifact_id") for item in loaded["sources"]]
-    if len(ids) != len(set(ids)) or any(
-        not isinstance(value, str)
-        or len(value) != 64
-        or any(character not in "0123456789abcdef" for character in value)
-        for value in ids
-    ):
-        raise ValueError("saved upload artifact identities are invalid")
+    ids: set[str] = set()
+    for item in loaded["sources"]:
+        value = item.get("artifact_id")
+        if (
+            not isinstance(value, str)
+            or len(value) != 64
+            or any(character not in "0123456789abcdef" for character in value)
+            or value in ids
+        ):
+            raise ValueError("saved upload artifact identities are invalid")
+        ids.add(value)
+    # The original IDs are validated before materialization, without retaining
+    # another collection of them while the source descriptors are constructed.
+    del ids
     sources = tuple(
         LocalSource(
-            path=root.joinpath(*item["relative_parts"]),
+            root=root,
             relative_parts=tuple(item["relative_parts"]),
             artifact_id=item["artifact_id"],
             bytes=item["bytes"],
@@ -400,4 +412,7 @@ def prepare_primary_upload(
         limits=policy.limits(),
         initialize=initialize,
     ) as store:
-        yield _prepare_verified_upload(root, idempotency_key, current, initialize=initialize), store
+        upload = _prepare_verified_upload(root, idempotency_key, current, initialize=initialize)
+        # Verification input is no longer needed during remote publication.
+        del current
+        yield upload, store

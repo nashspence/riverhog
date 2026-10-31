@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import sys
+import weakref
 from dataclasses import replace
 from pathlib import Path
 
@@ -492,3 +493,41 @@ print(json.dumps({"passed":True,"local_session_barrier":True,"cold_originals_pre
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert json.loads(result.stdout)["passed"]
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual Unix-VFS application binding fixture")
+@pytest.mark.parametrize("initialize", [True, False])
+def test_windows_binding_releases_source_inventory_before_publication(
+    binding, monkeypatch, initialize
+):
+    if not initialize:
+        with open_upload(binding, initialize=True):
+            pass
+    verified = directory_upload._verified_upload_sources
+    retained = []
+
+    class Inventory(list):
+        pass
+
+    def observed(*args, **kwargs):
+        selected, rows = verified(*args, **kwargs)
+        inventory = Inventory(rows)
+        retained.append(weakref.ref(inventory))
+        return selected, inventory
+
+    monkeypatch.setattr(directory_upload, "_verified_upload_sources", observed)
+    chosen = binding[2]
+    with open_upload(binding, initialize=initialize) as (upload, store):
+        assert len(retained) == 1 and retained[0]() is None
+        assert not store.publication_started
+        assert upload.sources[0].producer_file().source.read_bytes() == b"original source"
+        identity = chosen.process.storage.child("directory-upload", initialize=False)
+        exact = read_upload_identity(identity, byte_limit=chosen.identity_bytes)
+        assert json.loads(exact)["sources"][0]["artifact_id"] == upload.sources[0].artifact_id
+    assert chosen.resources.status.connections == chosen.resources.status.blobs == 0
+    with open_upload(binding, initialize=False) as (replayed, store):
+        assert replayed == upload and not store.publication_started
+        assert retained[-1]() is None
+        identity = chosen.process.storage.child("directory-upload", initialize=False)
+        assert read_upload_identity(identity, byte_limit=chosen.identity_bytes) == exact
+    assert chosen.resources.status.connections == chosen.resources.status.blobs == 0

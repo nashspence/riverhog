@@ -208,7 +208,11 @@ def prepare_windows_upload(
                 control_capacity=policy.control_bytes,
                 prepare_payload=prepare,
             )
+            del original
         else:
             body = read_upload_identity(identity, byte_limit=selection.identity_bytes)
             root, current = _verified_upload_sources(root, idempotency_key)
-        yield _load_upload_identity(json.loads(body), root, idempotency_key, current), store
+        upload = _load_upload_identity(json.loads(body), root, idempotency_key, current)
+        # The verified descriptors own the required values for publication.
+        del body, current
+        yield upload, store

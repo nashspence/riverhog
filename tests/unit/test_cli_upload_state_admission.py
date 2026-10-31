@@ -4,6 +4,7 @@ import json
 import os
 import re
 import shutil
+import weakref
 from contextlib import contextmanager
 
 import pytest
@@ -200,3 +201,45 @@ def test_invalid_supplied_key_is_never_replaced_by_a_generated_request(source, m
     assert isinstance(result.exception, ValueError)
     assert "idempotency key must be nonempty and canonical" in str(result.exception)
     assert not state.exists()
+
+
+@pytest.mark.skipif(
+    os.name != "posix", reason="actual retained POSIX CLI identity and primary store"
+)
+@pytest.mark.parametrize("initialize", [True, False])
+def test_source_verification_inventory_is_released_before_publication(
+    source, monkeypatch, initialize
+):
+    root, _state, policy = source
+    if not initialize:
+        with directory_upload.prepare_primary_upload(root, "retained", policy, initialize=True):
+            pass
+    verified = directory_upload._verified_upload_sources
+    retained = []
+
+    class Inventory(list):
+        pass
+
+    def observed(*args, **kwargs):
+        selected, rows = verified(*args, **kwargs)
+        inventory = Inventory(rows)
+        retained.append(weakref.ref(inventory))
+        return selected, inventory
+
+    monkeypatch.setattr(directory_upload, "_verified_upload_sources", observed)
+    with directory_upload.prepare_primary_upload(
+        root, "retained", policy, initialize=initialize
+    ) as (upload, store):
+        assert len(retained) == 1 and retained[0]() is None
+        assert not store.publication_started
+        assert upload.sources[0].producer_file().source.read_bytes() == b"exact original"
+        path = directory_upload._state_path(root, "retained", create_parent=False)
+        original = path.read_bytes()
+        assert json.loads(original)["sources"][0]["artifact_id"] == upload.sources[0].artifact_id
+    with directory_upload.prepare_primary_upload(root, "retained", policy, initialize=False) as (
+        replayed,
+        store,
+    ):
+        assert replayed == upload and not store.publication_started
+        assert retained[-1]() is None
+    assert path.read_bytes() == original
