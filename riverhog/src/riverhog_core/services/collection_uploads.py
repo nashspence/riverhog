@@ -921,7 +921,15 @@ class SqlAlchemyCollectionUploadService:
                 batch.checkpoint
             ).decode("utf-8")
             _touch_upload(upload, config=self._config)
-            upload.archive_phase = "uploading" if upload.archive_objects else "planning"
+            has_archive_objects = (
+                session.scalar(
+                    select(CollectionArchiveObjectUploadRecord.object_id)
+                    .where(CollectionArchiveObjectUploadRecord.collection_id == normalized_id)
+                    .limit(1)
+                )
+                is not None
+            )
+            upload.archive_phase = "uploading" if has_archive_objects else "planning"
             upload.archive_phase_updated_at = upload.last_activity_at
             session.flush()
             records = [
@@ -6702,7 +6710,7 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
     for plan in batch.packs:
         plan_json = pack_volume_plan_bytes(plan).decode("utf-8")
         relative = f"volumes/{plan.volume_id}.tar.age"
-        upload.archive_objects.append(
+        session.add(
             CollectionArchiveObjectUploadRecord(
                 collection_id=upload.collection_id,
                 object_id=plan.volume_id,
@@ -6727,7 +6735,7 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
     for plan in batch.raw_volumes:
         plan_json = raw_volume_plan_bytes(plan).decode("utf-8")
         relative = f"volumes/{plan.volume_id}.bin.age"
-        upload.archive_objects.append(
+        session.add(
             CollectionArchiveObjectUploadRecord(
                 collection_id=upload.collection_id,
                 object_id=plan.volume_id,
@@ -6761,8 +6769,7 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
             )
         )
         coverage.append((plan.artifact_id, plan.volume_id))
-    # The archive objects are appended through a relationship. Flush their
-    # primary keys before adding the independent coverage rows with two FKs.
+    # Flush archive object keys before adding coverage rows with two FKs.
     session.flush()
     for artifact_id, volume_id in coverage:
         session.add(
@@ -6773,6 +6780,7 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
             )
         )
     session.flush()
+    session.expire(upload, ["archive_objects"])
 
 
 def _require_pending_pack_matches_registration(
