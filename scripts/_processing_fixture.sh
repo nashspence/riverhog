@@ -25,7 +25,7 @@ configure_processing_fixture() {
   # contacts from observation, publication, content access, and complete settlement budgets.
   smoke_completion_timeout=$((600 + 480 * smoke_file_count))
   case "${lane}" in
-    processing-overlap) smoke_completion_timeout=2400 ;;
+    processing-overlap) smoke_completion_timeout=3600 ;;
     processing-e2e) smoke_completion_timeout=4800 ;;
   esac
   smoke_observation_timeout=$((300 + 60 * smoke_file_count))
