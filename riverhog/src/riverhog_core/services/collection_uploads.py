@@ -8618,11 +8618,42 @@ def _record_payload_custody_progress(
         )
     )
     for artifact_id in artifact_ids:
-        artifact = session.get(CollectionUploadArtifactRecord, (upload.collection_id, artifact_id))
+        # Read durable progress even if this session retains an older member object.
+        artifact = session.execute(
+            select(
+                CollectionUploadArtifactRecord.bytes,
+                CollectionUploadArtifactRecord.raw_part_count,
+                CollectionUploadArtifactRecord.payload_sealed_at,
+            ).where(
+                CollectionUploadArtifactRecord.collection_id == upload.collection_id,
+                CollectionUploadArtifactRecord.artifact_id == artifact_id,
+            )
+        ).one_or_none()
         if artifact is None:
             raise RuntimeError("payload volume names an unregistered artifact")
         if artifact.payload_sealed_at is not None:
             continue
+        if artifact.raw_part_count is not None:
+            # The current verified receipt and its indexed state change belong
+            # to this transaction. Sessions deliberately disable autoflush.
+            session.flush()
+            pending = session.scalar(
+                select(CollectionArchiveObjectUploadRecord.object_id)
+                .where(
+                    CollectionArchiveObjectUploadRecord.collection_id == upload.collection_id,
+                    CollectionArchiveObjectUploadRecord.source_artifact_id == artifact_id,
+                    or_(
+                        # Keep the partial predicate provable in generic prepared plans.
+                        CollectionArchiveObjectUploadRecord.state != literal_column("'sealed'"),
+                        CollectionArchiveObjectUploadRecord.sealed_receipt_json.is_(None),
+                    ),
+                )
+                .limit(1)
+            )
+            if pending is not None:
+                continue
+        # The pending index only identifies completion candidates. Preserve
+        # complete coverage and receipt validation before recording member progress.
         volumes = list(
             session.scalars(
                 select(CollectionArchiveObjectUploadRecord)

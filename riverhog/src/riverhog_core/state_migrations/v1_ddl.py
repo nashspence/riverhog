@@ -1196,6 +1196,9 @@ CREATE INDEX ix_collection_archive_object_uploads_ready_sequence ON collection_a
 CREATE INDEX ix_collection_archive_object_uploads_raw_boundary ON collection_archive_object_uploads (collection_id, source_artifact_id, source_last_part)
     """.strip(),
     """
+CREATE INDEX ix_collection_archive_object_uploads_pending_source ON collection_archive_object_uploads (collection_id, source_artifact_id) WHERE state != 'sealed' OR sealed_receipt_json IS NULL
+    """.strip(),
+    """
 CREATE TABLE collection_archive_objects (
 	collection_id INTEGER NOT NULL,
 	store VARCHAR NOT NULL,
@@ -2233,7 +2236,7 @@ CREATE TABLE collection_upload_artifact_volumes (
 )
     """.strip(),
     """
-CREATE INDEX ix_collection_upload_artifact_volumes_object ON collection_upload_artifact_volumes (collection_id, object_id)
+CREATE INDEX ix_collection_upload_artifact_volumes_object ON collection_upload_artifact_volumes (collection_id, object_id, artifact_id)
     """.strip(),
     """
 CREATE TABLE collection_upload_member_histories (
@@ -3835,6 +3838,9 @@ CREATE INDEX ix_collection_archive_object_uploads_ready_sequence ON collection_a
 CREATE INDEX ix_collection_archive_object_uploads_raw_boundary ON collection_archive_object_uploads (collection_id, source_artifact_id, source_last_part)
     """.strip(),
     """
+CREATE INDEX ix_collection_archive_object_uploads_pending_source ON collection_archive_object_uploads (collection_id, source_artifact_id) WHERE ((state) != 'sealed') OR (sealed_receipt_json IS NULL)
+    """.strip(),
+    """
 CREATE TABLE collection_archive_objects (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
@@ -4872,7 +4878,7 @@ CREATE TABLE collection_upload_artifact_volumes (
 )
     """.strip(),
     """
-CREATE INDEX ix_collection_upload_artifact_volumes_object ON collection_upload_artifact_volumes (collection_id, object_id)
+CREATE INDEX ix_collection_upload_artifact_volumes_object ON collection_upload_artifact_volumes (collection_id, object_id, artifact_id)
     """.strip(),
     """
 CREATE TABLE collection_upload_member_histories (

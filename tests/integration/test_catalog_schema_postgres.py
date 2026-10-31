@@ -62,7 +62,10 @@ from riverhog_core.services.collection_descriptions import (
     SqlAlchemyCollectionDescriptionService,
 )
 from riverhog_core.services.collection_tags import SqlAlchemyCollectionTagService
-from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
+from riverhog_core.services.collection_uploads import (
+    SqlAlchemyCollectionUploadService,
+    _record_payload_custody_progress,
+)
 from riverhog_core.services.retrieval import SqlAlchemyRetrievalService
 from riverhog_protocol import (
     COLLECTION_DESCRIPTION_UTF8_BYTES_MAX,
@@ -1177,4 +1180,148 @@ def test_postgres_acquisition_and_readiness_use_generic_index_plans(
     if promotion_plan is not None:
         record_property("postgres_promotion_rows_examined", examined(promotion_plan))
         assert examined(promotion_plan) == promoted
+    engine.dispose()
+
+
+@pytest.mark.parametrize("pending_state", ["unsealed", "receipt-missing", "complete"])
+def test_postgres_payload_accounting_uses_generic_index_plans(
+    isolated_database_url: str, pending_state: str, record_property
+) -> None:
+    initialize_db(isolated_database_url)
+    factory = make_session_factory(isolated_database_url)
+    with session_scope(factory) as session:
+        seed_storage_incarnation(session, "archive", "archive")
+    policy = CollectionVolumePolicy(
+        pack_member_bytes=1,
+        raw_part_plaintext_bytes=CHUNK_SIZE,
+        raw_volume_plaintext_bytes=CHUNK_SIZE,
+    )
+    service = SqlAlchemyCollectionUploadService(
+        RuntimeConfig.for_testing(database_url=isolated_database_url),
+        ArchiveStoreRegistry({"archive": archive_store_binding(MemoryArchiveStore())}),
+        policy=policy,
+        session_factory=factory,
+    )
+    collection_id = int(
+        service.create_or_resume(
+            idempotency_key="generic-payload-accounting",
+            ingest_source="fixture",
+            archive_store=None,
+            initiator=Principal(
+                id="uploader",
+                key_id="key",
+                access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
+            ),
+            event_context=None,
+        )["collection_id"]
+    )
+    block = b"x" * CHUNK_SIZE
+    part_sha = hashlib.sha256(block).hexdigest()
+    source_sha = hashlib.sha256()
+    for _ in range(1000):
+        source_sha.update(block)
+    _, commitment = ordered_raw_part_commitment([part_sha] * 1000)
+    artifact_id = "a" * 64
+    service.register_artifacts(
+        collection_id,
+        [
+            {
+                "artifact_id": artifact_id,
+                "bytes": str(1000 * CHUNK_SIZE),
+                "sha256": source_sha.hexdigest(),
+                "raw_parts": {
+                    "part_plaintext_bytes": str(CHUNK_SIZE),
+                    "part_count": "1000",
+                    "ordered_sha256": commitment,
+                },
+            }
+        ],
+    )
+    with session_scope(factory) as session:
+        volumes = list(
+            session.scalars(
+                select(CollectionArchiveObjectUploadRecord)
+                .where(CollectionArchiveObjectUploadRecord.collection_id == collection_id)
+                .order_by(CollectionArchiveObjectUploadRecord.sequence)
+            )
+        )
+        assert len(volumes) == 1000
+        first_id, last_id = volumes[0].object_id, volumes[-1].object_id
+        # Supply catalog accounting inputs, independently of archive custody.
+        for volume in volumes:
+            volume.state = "sealed"
+            volume.sealed_receipt_json = "{}"
+        if pending_state != "complete":
+            volumes[-1].sealed_receipt_json = None
+        if pending_state == "unsealed":
+            volumes[-1].state = "planned"
+
+    engine = factory.kw["bind"]
+    captured = {}
+
+    def capture(_connection, _cursor, statement, parameters, _context, _many):
+        if statement.startswith("SELECT collection_upload_artifact_volumes.artifact_id"):
+            captured["reverse"] = (statement, parameters)
+        elif statement.startswith("SELECT collection_archive_object_uploads.object_id"):
+            captured["pending"] = (statement, parameters)
+
+    event.listen(engine, "before_cursor_execute", capture)
+    try:
+        with session_scope(factory) as session:
+            upload = session.get(CollectionUploadRecord, collection_id)
+            volume = session.get(CollectionArchiveObjectUploadRecord, (collection_id, first_id))
+            _record_payload_custody_progress(session, upload, volume, now="2026-01-01T00:00:00Z")
+            expected = int(pending_state == "complete")
+            assert upload.payload_sealed_artifact_count == expected
+            assert upload.payload_sealed_artifact_bytes == expected * 1000 * CHUNK_SIZE
+    finally:
+        event.remove(engine, "before_cursor_execute", capture)
+    assert set(captured) == {"reverse", "pending"}
+
+    def explain(cursor, name, statement, parameters):
+        keys = []
+
+        def parameter(match):
+            key = match.group(1)
+            if key not in keys:
+                keys.append(key)
+            return "$" + str(keys.index(key) + 1)
+
+        prepared = re.sub(r"%\(([^)]+)\)s", parameter, statement)
+        cursor.execute("PREPARE " + name + " AS " + prepared)
+        arguments = pgsql.SQL(", ").join(pgsql.Literal(parameters[key]) for key in keys)
+        execute = pgsql.SQL("EXECUTE " + name + " (") + arguments + pgsql.SQL(")")
+        cursor.execute(execute)
+        rows = cursor.fetchall()
+        cursor.execute(pgsql.SQL("EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) ") + execute)
+        plan = cursor.fetchone()[0][0]["Plan"]
+        cursor.execute("DEALLOCATE " + name)
+        return rows, plan
+
+    with engine.begin() as connection:
+        connection.exec_driver_sql("ANALYZE collection_archive_object_uploads")
+        connection.exec_driver_sql("ANALYZE collection_upload_artifact_volumes")
+        with connection.connection.driver_connection.cursor() as cursor:
+            cursor.execute("SET LOCAL plan_cache_mode = force_generic_plan")
+            reverse_rows, reverse_plan = explain(cursor, "payload_reverse", *captured["reverse"])
+            pending_rows, pending_plan = explain(cursor, "payload_pending", *captured["pending"])
+    assert reverse_rows == [(artifact_id,)]
+    assert pending_rows == ([] if pending_state == "complete" else [(last_id,)])
+
+    def examined(node, relation):
+        own = (
+            (node["Actual Rows"] + node.get("Rows Removed by Filter", 0)) * node["Actual Loops"]
+            if node.get("Relation Name") == relation
+            else 0
+        )
+        return own + sum(examined(child, relation) for child in node.get("Plans", []))
+
+    reverse_examined = examined(reverse_plan, "collection_upload_artifact_volumes")
+    pending_examined = examined(pending_plan, "collection_archive_object_uploads")
+    assert reverse_examined == 1
+    assert pending_examined == int(pending_state != "complete")
+    record_property("source_volumes", 1000)
+    record_property("pending_state", pending_state)
+    record_property("postgres_reverse_rows_examined", reverse_examined)
+    record_property("postgres_pending_rows_examined", pending_examined)
     engine.dispose()

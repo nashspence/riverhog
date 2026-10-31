@@ -1083,6 +1083,8 @@ CREATE INDEX ix_collection_archive_object_uploads_ready_sequence ON collection_a
 
 CREATE INDEX ix_collection_archive_object_uploads_raw_boundary ON collection_archive_object_uploads (collection_id, source_artifact_id, source_last_part);
 
+CREATE INDEX ix_collection_archive_object_uploads_pending_source ON collection_archive_object_uploads (collection_id, source_artifact_id) WHERE ((state) != 'sealed') OR (sealed_receipt_json IS NULL);
+
 CREATE TABLE collection_archive_objects (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
@@ -2064,7 +2066,7 @@ CREATE TABLE collection_upload_artifact_volumes (
 	CONSTRAINT ck_collection_upload_artifact_volumes_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_collection_upload_artifact_volumes_object ON collection_upload_artifact_volumes (collection_id, object_id);
+CREATE INDEX ix_collection_upload_artifact_volumes_object ON collection_upload_artifact_volumes (collection_id, object_id, artifact_id);
 
 CREATE TABLE collection_upload_member_histories (
 	collection_id BIGINT NOT NULL,

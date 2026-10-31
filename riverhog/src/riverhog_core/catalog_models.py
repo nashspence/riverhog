@@ -3939,6 +3939,13 @@ class CollectionArchiveObjectUploadRecord(Base):
             "source_artifact_id",
             "source_last_part",
         ),
+        Index(
+            "ix_collection_archive_object_uploads_pending_source",
+            "collection_id",
+            "source_artifact_id",
+            postgresql_where=text("((state) != 'sealed') OR (sealed_receipt_json IS NULL)"),
+            sqlite_where=text("state != 'sealed' OR sealed_receipt_json IS NULL"),
+        ),
         CheckConstraint(
             _fixed_lowercase_integer_check("sequence", 64),
             name="ck_archive_object_uploads_sequence",
@@ -3995,5 +4002,10 @@ class CollectionUploadArtifactVolumeRecord(Base):
             ],
             ondelete="CASCADE",
         ),
-        Index("ix_collection_upload_artifact_volumes_object", "collection_id", "object_id"),
+        Index(
+            "ix_collection_upload_artifact_volumes_object",
+            "collection_id",
+            "object_id",
+            "artifact_id",
+        ),
     )
