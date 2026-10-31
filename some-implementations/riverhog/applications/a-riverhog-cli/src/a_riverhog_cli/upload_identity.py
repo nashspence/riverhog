@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from threading import RLock
+from typing import BinaryIO
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import PrimaryByteFile, PrimaryStateCapacity, PrimaryStateError, PrimaryStorage
@@ -44,23 +46,23 @@ def _reference(body: bytes) -> PrimaryByteFile:
         raise PrimaryStateError("retained upload identity reference is invalid") from error
 
 
-def read_upload_identity(storage: PrimaryStorage, *, byte_limit: int) -> bytes:
-    """Verify the recorded original bytes; absence never authorizes initialization.
+@contextmanager
+def open_upload_identity(storage: PrimaryStorage, *, byte_limit: int) -> Iterator[BinaryIO]:
+    """Borrow a verified original reader under the selected storage owner.
 
-    The byte admission covers this stored identity and its replay buffer. The
-    caller separately owns source enumeration and identity serialization buffers.
+    Verification completes before the reader is exposed. The caller owns its
+    decoding buffers and must consume the reader within this context. Absence
+    never authorizes initialization, and reader close performs no reclamation.
     """
     _admit(byte_limit)
     reference = _reference(storage.read_control(_REFERENCE, byte_limit=_REFERENCE_BYTES))
     if reference.bytes > byte_limit:
         raise PrimaryStateCapacity("retained upload identity exceeds the byte admission")
     with storage.verified(reference) as stream:
-        body = stream.read(reference.bytes + 1)
-    if len(body) != reference.bytes:
-        raise PrimaryStateError("retained upload identity length differs")
-    return body
+        yield stream
 
 
+@contextmanager
 def initialize_upload_identity(
     storage: PrimaryStorage,
     body: bytes,
@@ -68,8 +70,8 @@ def initialize_upload_identity(
     byte_limit: int,
     control_capacity: int,
     prepare_payload: Callable[[], None],
-) -> bytes:
-    """Record original authority, prepare resources, then select the exact bytes.
+) -> Iterator[BinaryIO]:
+    """Record original authority, prepare resources, then borrow the exact bytes.
 
     Fresh initialization is serialized within this application. Selected
     references and content are never replaced. The original reference commits
@@ -78,6 +80,9 @@ def initialize_upload_identity(
     supplies actual resource preparation before immutable byte publication.
     Its selected fixed control capacity backs the slot; reference encoding,
     reads and writes retain their independent bounded admission.
+    Initialization ownership lasts through the borrowed reader. The input
+    encoding is released before exposing it; the caller can release its own
+    encoding before decoding. Reader exit closes only that reader.
     This function neither erases failed state nor drives initialization on read.
     """
     _admit(byte_limit)
@@ -112,4 +117,6 @@ def initialize_upload_identity(
         if selected != reference:
             raise PrimaryStateError("upload identity selected a different original")
         storage.sync()
-        return read_upload_identity(storage, byte_limit=byte_limit)
+        del body
+        with open_upload_identity(storage, byte_limit=byte_limit) as stream:
+            yield stream

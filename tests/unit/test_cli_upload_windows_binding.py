@@ -6,12 +6,13 @@ import os
 import subprocess
 import sys
 import weakref
+from contextlib import contextmanager
 from dataclasses import replace
 from pathlib import Path
 
 import pytest
-from a_riverhog_cli import directory_upload
-from a_riverhog_cli.upload_identity import read_upload_identity
+from a_riverhog_cli import directory_upload, upload_identity, upload_windows
+from a_riverhog_cli.upload_identity import open_upload_identity
 from a_riverhog_cli.upload_sqlite import UploadSqlitePolicy, UploadSqliteResources
 from a_riverhog_cli.upload_windows import WindowsUploadState
 from riverhog_client import (
@@ -26,6 +27,11 @@ from riverhog_client import (
 )
 
 from tests.unit.test_cli_upload_sqlite_process import _Process
+
+
+def identity_body(storage, *, byte_limit):
+    with open_upload_identity(storage, byte_limit=byte_limit) as stream:
+        return stream.read()
 
 
 def selection(parent, process=None, resources=None):
@@ -163,7 +169,7 @@ def test_windows_selection_binds_actual_primary_and_reopens_original_source_allo
         assert store.allocation.allocation_id == directory_upload._allocation_id(source, "retained")
         assert not store.publication_started
         identity = chosen.process.storage.child("directory-upload", initialize=False)
-        exact = read_upload_identity(identity, byte_limit=chosen.identity_bytes)
+        exact = identity_body(identity, byte_limit=chosen.identity_bytes)
     assert path.is_file() and chosen.resources.status.connections == 0
 
     def no_new_ids(*args, **kwargs):
@@ -173,7 +179,7 @@ def test_windows_selection_binds_actual_primary_and_reopens_original_source_allo
     with open_upload(binding, initialize=False) as (resumed, store):
         assert resumed == first and not store.publication_started
         identity = chosen.process.storage.child("directory-upload", initialize=False)
-        assert read_upload_identity(identity, byte_limit=chosen.identity_bytes) == exact
+        assert identity_body(identity, byte_limit=chosen.identity_bytes) == exact
     assert chosen.process.opens == [True, False]
     assert chosen.resources.status.connection_peak == 1
     assert chosen.resources.status.connections == chosen.resources.status.blobs == 0
@@ -260,7 +266,7 @@ def test_changed_source_refusal_preserves_original_windows_identity(binding, mon
     source, _state, chosen, _policy, _descriptor, _path = binding
     with open_upload(binding, initialize=True) as (original, _store):
         identity = chosen.process.storage.child("directory-upload", initialize=False)
-        exact = read_upload_identity(identity, byte_limit=chosen.identity_bytes)
+        exact = identity_body(identity, byte_limit=chosen.identity_bytes)
     (source / "member").write_bytes(b"changed source")
 
     def no_new_ids(*args, **kwargs):
@@ -274,7 +280,7 @@ def test_changed_source_refusal_preserves_original_windows_identity(binding, mon
     with open_upload(binding, initialize=False) as (resumed, _store):
         assert resumed == original
         identity = chosen.process.storage.child("directory-upload", initialize=False)
-        assert read_upload_identity(identity, byte_limit=chosen.identity_bytes) == exact
+        assert identity_body(identity, byte_limit=chosen.identity_bytes) == exact
 
 
 @pytest.mark.skipif(os.name != "posix", reason="actual Unix-VFS application binding fixture")
@@ -334,7 +340,14 @@ import importlib.util,json,sys
 from pathlib import Path
 root=Path(sys.argv[1]);sys.path.insert(0,str(root))
 from a_riverhog_cli import directory_upload
-from a_riverhog_cli.upload_identity import read_upload_identity
+from a_riverhog_cli.upload_identity import open_upload_identity
+def identity_body(storage, *, byte_limit):
+    with open_upload_identity(storage, byte_limit=byte_limit) as stream:
+        return stream.read()
+
+
+
+
 from a_riverhog_cli.upload_sqlite import UploadSqlitePolicy,UploadSqliteResources
 from a_riverhog_cli.upload_windows import WindowsUploadState
 from riverhog_client import (WindowsSqliteProcess,PrimaryStatePolicy,SqlitePrimaryLimits,
@@ -382,7 +395,7 @@ try:
     with factory(path,allocation_descriptor=descriptor,initialize=False) as physical:
         identity=physical.child("directory-upload",initialize=False)
         exact=identity.read_control("upload-identity",byte_limit=1024)
-        body=read_upload_identity(identity,byte_limit=8192)
+        body=identity_body(identity,byte_limit=8192)
         assert json.loads(body)["sources"][0]["artifact_id"]==original.sources[0].artifact_id
         identity.remove_control("upload-identity",expected=exact)
     try:
@@ -522,12 +535,51 @@ def test_windows_binding_releases_source_inventory_before_publication(
         assert not store.publication_started
         assert upload.sources[0].producer_file().source.read_bytes() == b"original source"
         identity = chosen.process.storage.child("directory-upload", initialize=False)
-        exact = read_upload_identity(identity, byte_limit=chosen.identity_bytes)
+        exact = identity_body(identity, byte_limit=chosen.identity_bytes)
         assert json.loads(exact)["sources"][0]["artifact_id"] == upload.sources[0].artifact_id
     assert chosen.resources.status.connections == chosen.resources.status.blobs == 0
     with open_upload(binding, initialize=False) as (replayed, store):
         assert replayed == upload and not store.publication_started
         assert retained[-1]() is None
         identity = chosen.process.storage.child("directory-upload", initialize=False)
-        assert read_upload_identity(identity, byte_limit=chosen.identity_bytes) == exact
+        assert identity_body(identity, byte_limit=chosen.identity_bytes) == exact
     assert chosen.resources.status.connections == chosen.resources.status.blobs == 0
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual Unix-VFS application binding fixture")
+@pytest.mark.parametrize("initialize", [True, False])
+def test_windows_identity_reader_is_scoped_through_preflight_and_closed_before_publication(
+    binding, monkeypatch, initialize
+):
+    if not initialize:
+        with open_upload(binding, initialize=True):
+            pass
+    actual_open = upload_identity.open_upload_identity
+    verified = directory_upload._verified_upload_sources
+    readers = []
+    enumerations = []
+
+    @contextmanager
+    def observed(storage, *, byte_limit):
+        with actual_open(storage, byte_limit=byte_limit) as stream:
+            readers.append(stream)
+            yield stream
+
+    def enumerate_sources(*args, **kwargs):
+        if initialize:
+            assert readers == []
+        else:
+            assert len(readers) == 1 and not readers[0].closed
+        enumerations.append(True)
+        return verified(*args, **kwargs)
+
+    monkeypatch.setattr(upload_identity, "open_upload_identity", observed)
+    monkeypatch.setattr(upload_windows, "open_upload_identity", observed)
+    monkeypatch.setattr(directory_upload, "_verified_upload_sources", enumerate_sources)
+    with open_upload(binding, initialize=initialize) as (upload, store):
+        assert enumerations == [True]
+        assert len(readers) == 1 and readers[0].closed
+        assert upload.sources[0].producer_file().source.read_bytes() == b"original source"
+        assert not store.publication_started
+    assert readers[0].closed
+    assert binding[2].resources.status.connections == binding[2].resources.status.blobs == 0

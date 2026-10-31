@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import os
 import subprocess
@@ -9,14 +10,25 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing, contextmanager
 from pathlib import Path
 from threading import Event
+from types import SimpleNamespace
 
 import pytest
-from a_riverhog_cli import directory_upload
-from a_riverhog_cli.upload_identity import initialize_upload_identity, read_upload_identity
+from a_riverhog_cli import directory_upload, upload_identity_records
+from a_riverhog_cli.upload_identity import initialize_upload_identity, open_upload_identity
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import PrimaryStateCapacity, PrimaryStateError
 
 from tests.support.prepared_primary import SqlitePrimaryTestGuard
+
+
+def identity_body(storage, *, byte_limit):
+    with open_upload_identity(storage, byte_limit=byte_limit) as stream:
+        return stream.read()
+
+
+def initialized_body(*args, **kwargs):
+    with initialize_upload_identity(*args, **kwargs) as stream:
+        return stream.read()
 
 
 @contextmanager
@@ -73,14 +85,18 @@ def test_identity_codec_preserves_original_allocation_without_generating_replace
 
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     if changed == "none":
-        upload = directory_upload._load_upload_identity(loaded, root, key, current)
+        upload = directory_upload._load_upload_identity(
+            io.BytesIO(canonical_json_bytes(loaded)), root, key, current
+        )
         assert tuple(source.artifact_id for source in upload.sources) == tuple(
             source["artifact_id"] for source in original["sources"]
         )
         assert upload.source_naming_view_id == original["source_naming_view_id"]
     else:
         with pytest.raises(ValueError):
-            directory_upload._load_upload_identity(loaded, root, key, current)
+            directory_upload._load_upload_identity(
+                io.BytesIO(canonical_json_bytes(loaded)), root, key, current
+            )
     assert canonical_json_bytes(original) == exact
 
 
@@ -102,7 +118,7 @@ def test_storage_identity_commits_original_reference_before_payload_and_reopens_
             events.append("prepared")
 
         assert (
-            initialize_upload_identity(
+            initialized_body(
                 storage, body, byte_limit=len(body), control_capacity=1024, prepare_payload=prepared
             )
             == body
@@ -110,17 +126,17 @@ def test_storage_identity_commits_original_reference_before_payload_and_reopens_
         assert events == ["prepared"]
         exact = storage.read_control("upload-identity", byte_limit=1024)
     with opened(path, backend, initialize=False) as storage:
-        assert read_upload_identity(storage, byte_limit=len(body)) == body
+        assert identity_body(storage, byte_limit=len(body)) == body
         assert storage.read_control("upload-identity", byte_limit=1024) == exact
         with pytest.raises(FileExistsError, match="conflicts with retained identity"):
-            initialize_upload_identity(
+            initialized_body(
                 storage,
                 b"replacement",
                 byte_limit=len(body),
                 control_capacity=1024,
                 prepare_payload=lambda: None,
             )
-        assert read_upload_identity(storage, byte_limit=len(body)) == body
+        assert identity_body(storage, byte_limit=len(body)) == body
 
 
 @pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
@@ -133,7 +149,7 @@ def test_identity_capacity_refusal_does_not_prepare_or_publish_state(tmp_path, b
             pytest.fail("unadmitted identity reached preparation")
 
         with pytest.raises(PrimaryStateCapacity):
-            initialize_upload_identity(
+            initialized_body(
                 storage, b"original", byte_limit=7, control_capacity=1024, prepare_payload=forbidden
             )
         assert not storage.exists("upload-identity") and not storage.exists("source-identity")
@@ -149,7 +165,7 @@ def test_preparation_failure_keeps_reference_and_forbids_replacement_on_resume(t
 
     with opened(path, backend, initialize=True) as storage:
         with pytest.raises(OSError, match="preparation not confirmed"):
-            initialize_upload_identity(
+            initialized_body(
                 storage,
                 b"original",
                 byte_limit=64,
@@ -160,9 +176,9 @@ def test_preparation_failure_keeps_reference_and_forbids_replacement_on_resume(t
         assert not storage.exists("source-identity")
     with opened(path, backend, initialize=False) as storage:
         with pytest.raises(FileNotFoundError):
-            read_upload_identity(storage, byte_limit=64)
+            identity_body(storage, byte_limit=64)
         with pytest.raises(FileExistsError):
-            initialize_upload_identity(
+            initialized_body(
                 storage,
                 b"different",
                 byte_limit=64,
@@ -178,7 +194,7 @@ def test_preparation_failure_keeps_reference_and_forbids_replacement_on_resume(t
 def test_missing_or_invalid_identity_half_never_reconstructs_authority(tmp_path, backend, missing):
     path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
     with opened(path, backend, initialize=True) as storage:
-        initialize_upload_identity(
+        initialized_body(
             storage, b"original", byte_limit=64, control_capacity=1024, prepare_payload=lambda: None
         )
         exact = storage.read_control("upload-identity", byte_limit=1024)
@@ -194,9 +210,9 @@ def test_missing_or_invalid_identity_half_never_reconstructs_authority(tmp_path,
                 pytest.fail("fixture identity cleanup did not finish")
     with opened(path, backend, initialize=False) as storage:
         with pytest.raises((FileNotFoundError, PrimaryStateError)):
-            read_upload_identity(storage, byte_limit=64)
+            identity_body(storage, byte_limit=64)
         with pytest.raises(FileExistsError):
-            initialize_upload_identity(
+            initialized_body(
                 storage,
                 b"replacement",
                 byte_limit=64,
@@ -210,14 +226,14 @@ def test_missing_or_invalid_identity_half_never_reconstructs_authority(tmp_path,
 def test_smaller_replay_admission_keeps_original_identity_for_larger_offer(tmp_path, backend):
     path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
     with opened(path, backend, initialize=True) as storage:
-        initialize_upload_identity(
+        initialized_body(
             storage, b"original", byte_limit=64, control_capacity=1024, prepare_payload=lambda: None
         )
         exact = storage.read_control("upload-identity", byte_limit=1024)
         with pytest.raises(PrimaryStateCapacity):
-            read_upload_identity(storage, byte_limit=7)
+            identity_body(storage, byte_limit=7)
         assert storage.read_control("upload-identity", byte_limit=1024) == exact
-        assert read_upload_identity(storage, byte_limit=64) == b"original"
+        assert identity_body(storage, byte_limit=64) == b"original"
 
 
 @pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
@@ -233,7 +249,7 @@ def test_concurrent_initialization_cannot_replace_the_first_committed_identity(t
 
         def competing():
             second_started.set()
-            return initialize_upload_identity(
+            return initialized_body(
                 storage,
                 b"replacement",
                 byte_limit=64,
@@ -243,7 +259,7 @@ def test_concurrent_initialization_cannot_replace_the_first_committed_identity(t
 
         with ThreadPoolExecutor(max_workers=2) as workers:
             first = workers.submit(
-                initialize_upload_identity,
+                initialized_body,
                 storage,
                 b"original",
                 byte_limit=64,
@@ -260,10 +276,10 @@ def test_concurrent_initialization_cannot_replace_the_first_committed_identity(t
             with pytest.raises(FileExistsError):
                 second.result(5)
         exact = storage.read_control("upload-identity", byte_limit=1024)
-        assert read_upload_identity(storage, byte_limit=64) == b"original"
+        assert identity_body(storage, byte_limit=64) == b"original"
     with opened(path, backend, initialize=False) as storage:
         assert storage.read_control("upload-identity", byte_limit=1024) == exact
-        assert read_upload_identity(storage, byte_limit=64) == b"original"
+        assert identity_body(storage, byte_limit=64) == b"original"
 
 
 @pytest.mark.skipif(os.name != "nt", reason="qualified Windows engine and private local NTFS")
@@ -271,11 +287,22 @@ def test_native_windows_upload_identity_keeps_exact_ids_and_never_reinitializes_
     tmp_path,
 ):
     code = r"""
-import importlib.util,json,sys
+import importlib.util,io,json,sys
 from pathlib import Path
 root=Path(sys.argv[1]);sys.path.insert(0,str(root))
 from a_riverhog_cli import directory_upload
-from a_riverhog_cli.upload_identity import initialize_upload_identity,read_upload_identity
+from a_riverhog_cli.upload_identity import initialize_upload_identity,open_upload_identity
+def identity_body(storage, *, byte_limit):
+    with open_upload_identity(storage, byte_limit=byte_limit) as stream:
+        return stream.read()
+
+
+def initialized_body(*args, **kwargs):
+    with initialize_upload_identity(*args, **kwargs) as stream:
+        return stream.read()
+
+
+
 from a_riverhog_cli.upload_sqlite import UploadSqlitePolicy,UploadSqliteResources
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import (
@@ -307,26 +334,30 @@ try:
             for _ in range(512):
                 if sqlite_primary_preparation_step(storage,plan=plan):return
             raise AssertionError("identity preparation did not finish")
-        assert initialize_upload_identity(
+        assert initialized_body(
             identity,body,byte_limit=8192,control_capacity=1024, prepare_payload=prepare)==body
     def forbidden(*args,**kwargs):
         raise AssertionError("resume generated replacement identities")
     directory_upload.secrets.token_hex=forbidden
     with factory(path,allocation_descriptor=descriptor,initialize=False) as storage:
         identity=storage.child("directory-upload",initialize=False)
-        assert read_upload_identity(identity,byte_limit=8192)==body
+        assert identity_body(identity,byte_limit=8192)==body
+        with open_upload_identity(identity,byte_limit=8192) as replay:
+            assert replay.read(7)==body[:7]
+            assert replay.read()==body[7:]
+        assert replay.closed
         loaded=directory_upload._load_upload_identity(
-            json.loads(body),source,"retained",current)
+            io.BytesIO(body),source,"retained",current)
         assert loaded.sources[0].artifact_id==document["sources"][0]["artifact_id"]
         assert loaded.source_naming_view_id==document["source_naming_view_id"]
         exact=identity.read_control("upload-identity",byte_limit=1024)
         identity.remove_control("upload-identity",expected=exact)
     with factory(path,allocation_descriptor=descriptor,initialize=False) as storage:
         identity=storage.child("directory-upload",initialize=False)
-        try:read_upload_identity(identity,byte_limit=8192)
+        try:identity_body(identity,byte_limit=8192)
         except FileNotFoundError:pass
         else:raise AssertionError("missing original reference was reconstructed")
-        try:initialize_upload_identity(
+        try:initialized_body(
             identity,b"replacement",byte_limit=8192,control_capacity=1024,
             prepare_payload=lambda:None)
         except FileExistsError:pass
@@ -371,7 +402,7 @@ def test_identity_uses_owner_slot_capacity_without_changing_reference_bytes(
         storage.put_control("unrelated", b"kept", byte_limit=control_capacity)
         with closing(storage.child("directory-upload", initialize=True)) as identity:
             assert (
-                initialize_upload_identity(
+                initialized_body(
                     identity,
                     body,
                     byte_limit=len(body),
@@ -384,7 +415,7 @@ def test_identity_uses_owner_slot_capacity_without_changing_reference_bytes(
             assert storage.read_control("unrelated", byte_limit=4) == b"kept"
     with opened(path, backend, initialize=False) as storage:
         with closing(storage.child("directory-upload", initialize=False)) as identity:
-            assert read_upload_identity(identity, byte_limit=len(body)) == body
+            assert identity_body(identity, byte_limit=len(body)) == body
             assert identity.read_control("upload-identity", byte_limit=1024) == expected
 
 
@@ -396,7 +427,7 @@ def test_identity_cannot_change_the_selected_construction_control_capacity(tmp_p
         storage.put_control("unrelated", b"kept", byte_limit=8192)
         with closing(storage.child("directory-upload", initialize=True)) as identity:
             with pytest.raises(PrimaryStateError, match="control capacity changed"):
-                initialize_upload_identity(
+                initialized_body(
                     identity,
                     b"original",
                     byte_limit=64,
@@ -419,7 +450,7 @@ def test_small_identity_reference_slot_refuses_before_preparation_or_publication
             pytest.fail("unadmitted reference reached payload preparation")
 
         with pytest.raises(PrimaryStateCapacity, match="reference exceeds"):
-            initialize_upload_identity(
+            initialized_body(
                 storage, b"original", byte_limit=64, control_capacity=1, prepare_payload=forbidden
             )
         assert not storage.exists("upload-identity") and not storage.exists("source-identity")
@@ -428,7 +459,7 @@ def test_small_identity_reference_slot_refuses_before_preparation_or_publication
 @pytest.mark.parametrize("capacity", [True, 0, -1, 1.5])
 def test_identity_reference_capacity_is_explicit_before_storage_access(capacity):
     with pytest.raises(ValueError, match="positive byte admission"):
-        initialize_upload_identity(
+        initialized_body(
             object(),
             b"original",
             byte_limit=64,
@@ -442,16 +473,16 @@ def test_identity_reference_capacity_is_explicit_before_storage_access(capacity)
 def test_larger_physical_slot_does_not_raise_the_reference_read_bound(tmp_path, backend):
     path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
     with opened(path, backend, initialize=True) as storage:
-        initialize_upload_identity(
+        initialized_body(
             storage, b"original", byte_limit=64, control_capacity=8192, prepare_payload=lambda: None
         )
         original = storage.read_control("upload-identity", byte_limit=1024)
         oversized = b"x" * 1025
         storage.put_control("upload-identity", oversized, byte_limit=8192, expected=original)
         with pytest.raises(PrimaryStateCapacity):
-            read_upload_identity(storage, byte_limit=64)
+            identity_body(storage, byte_limit=64)
         storage.put_control("upload-identity", original, byte_limit=8192, expected=oversized)
-        assert read_upload_identity(storage, byte_limit=64) == b"original"
+        assert identity_body(storage, byte_limit=64) == b"original"
 
 
 @pytest.mark.parametrize("members", [1, 3, 128, 1024])
@@ -600,7 +631,9 @@ def test_retained_source_descriptors_preserve_original_paths_and_producer_inputs
 
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     monkeypatch.setattr(directory_upload.uuid, "uuid4", forbidden)
-    upload = directory_upload._load_upload_identity(original, root, "retained", current)
+    upload = directory_upload._load_upload_identity(
+        io.BytesIO(canonical_json_bytes(original)), root, "retained", current
+    )
     assert upload.source_naming_view_id == original["source_naming_view_id"]
     assert len(upload.sources) == members
     for source, recorded in zip(upload.sources, original["sources"], strict=True):
@@ -676,6 +709,328 @@ def test_retained_source_preflight_finishes_before_descriptor_materialization(
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     monkeypatch.setattr(directory_upload.uuid, "uuid4", forbidden)
     with pytest.raises((ValueError, TypeError, AttributeError)):
-        directory_upload._load_upload_identity(original, root, "retained", current)
+        directory_upload._load_upload_identity(
+            io.BytesIO(canonical_json_bytes(original)), root, "retained", current
+        )
     assert canonical_json_bytes(original) == exact
     assert canonical_json_bytes(current) == current_exact
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("initialize", [True, False])
+@pytest.mark.parametrize("interrupted", [False, True])
+def test_identity_stream_has_no_implicit_consumer_read_and_closes_before_reuse(
+    tmp_path, monkeypatch, backend, initialize, interrupted
+):
+    path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
+    body = b"original opaque identity " * 257
+    with opened(path, backend, initialize=True) as storage:
+        if not initialize:
+            assert (
+                initialized_body(
+                    storage,
+                    body,
+                    byte_limit=len(body),
+                    control_capacity=1024,
+                    prepare_payload=lambda: None,
+                )
+                == body
+            )
+        verified = storage.verified
+        reads = []
+        retained = []
+
+        class ConsumerFailure(RuntimeError):
+            pass
+
+        class ConsumerWindow:
+            def __init__(self, actual):
+                self.actual = actual
+
+            @property
+            def closed(self):
+                return self.actual.closed
+
+            def read(self, size=-1):
+                assert type(size) is int and 0 < size <= 31
+                reads.append(size)
+                return self.actual.read(size)
+
+        @contextmanager
+        def guarded(reference):
+            with verified(reference) as actual:
+                retained.append(actual)
+                yield ConsumerWindow(actual)
+
+        with monkeypatch.context() as observed:
+            observed.setattr(storage, "verified", guarded)
+            reader = (
+                initialize_upload_identity(
+                    storage,
+                    body,
+                    byte_limit=len(body),
+                    control_capacity=1024,
+                    prepare_payload=lambda: None,
+                )
+                if initialize
+                else open_upload_identity(storage, byte_limit=len(body))
+            )
+            try:
+                with reader as stream:
+                    assert reads == []
+                    first = stream.read(7)
+                    assert first == body[:7]
+                    if interrupted:
+                        raise ConsumerFailure("consumer interrupted")
+                    chunks = [first]
+                    while chunk := stream.read(31):
+                        chunks.append(chunk)
+                    assert b"".join(chunks) == body
+            except ConsumerFailure:
+                assert interrupted and reads == [7]
+            else:
+                assert not interrupted
+            assert len(retained) == 1 and retained[0].closed and stream.closed
+        exact = storage.read_control("upload-identity", byte_limit=1024)
+        assert identity_body(storage, byte_limit=len(body)) == body
+    with opened(path, backend, initialize=False) as storage:
+        assert storage.read_control("upload-identity", byte_limit=1024) == exact
+        assert identity_body(storage, byte_limit=len(body)) == body
+        with pytest.raises(FileExistsError):
+            with initialize_upload_identity(
+                storage,
+                b"replacement",
+                byte_limit=len(body),
+                control_capacity=1024,
+                prepare_payload=lambda: None,
+            ):
+                pytest.fail("retained stream state was replaced")
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("changed", ["length", "hash"])
+def test_identity_stream_rejects_a_mismatched_original_before_exposing_a_reader(
+    tmp_path, backend, changed
+):
+    path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
+    body = b"original identity"
+    with opened(path, backend, initialize=True) as storage:
+        assert (
+            initialized_body(
+                storage,
+                body,
+                byte_limit=128,
+                control_capacity=1024,
+                prepare_payload=lambda: None,
+            )
+            == body
+        )
+        original = storage.read_control("upload-identity", byte_limit=1024)
+        modified = json.loads(original)
+        modified["bytes" if changed == "length" else "sha256"] = (
+            str(len(body) + 1) if changed == "length" else "0" * 64
+        )
+        encoded = canonical_json_bytes(modified)
+        storage.put_control("upload-identity", encoded, byte_limit=1024, expected=original)
+        with pytest.raises(PrimaryStateError):
+            with open_upload_identity(storage, byte_limit=128):
+                pytest.fail("unverified identity reached the consumer")
+        assert storage.read_control("upload-identity", byte_limit=1024) == encoded
+        storage.put_control("upload-identity", original, byte_limit=1024, expected=encoded)
+        assert identity_body(storage, byte_limit=128) == body
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_empty_opaque_identity_stream_keeps_the_exact_zero_length_commitment(tmp_path, backend):
+    path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
+    with opened(path, backend, initialize=True) as storage:
+        with initialize_upload_identity(
+            storage,
+            b"",
+            byte_limit=1,
+            control_capacity=1024,
+            prepare_payload=lambda: None,
+        ) as stream:
+            assert stream.read(1) == b""
+        assert stream.closed
+        reference = json.loads(storage.read_control("upload-identity", byte_limit=1024))
+        assert reference["bytes"] == "0" and reference["sha256"] == hashlib.sha256(b"").hexdigest()
+    with opened(path, backend, initialize=False) as storage:
+        with open_upload_identity(storage, byte_limit=1) as stream:
+            assert stream.read(1) == b""
+        assert stream.closed
+
+
+def _record_document(members, *, extra_bytes=0):
+    root = Path("/fixture")
+    return {
+        "format": directory_upload._FORMAT,
+        "idempotency_key": 'quote-"',
+        "root": str(root),
+        "source_naming_view_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
+        "sources": [
+            {
+                "relative_parts": ["nested", f"member-{index}-雪-😀", 'brace-}quote-"'],
+                "artifact_id": f"{index:064x}",
+                "bytes": 0 if index == 0 else 11,
+                "sha256": hashlib.sha256(b"" if index == 0 else b"equal bytes").hexdigest(),
+                "opaque-extra": {
+                    "nested": ["\\\\", "line\\n", [True, None, "]}"]],
+                    "padding": "x" * extra_bytes,
+                },
+            }
+            for index in range(members)
+        ],
+    }
+
+
+class _ShortIdentityReader(io.BytesIO):
+    def __init__(self, body, short):
+        super().__init__(body)
+        self.short = short
+        self.returned_bytes = 0
+        self.request_sizes = []
+
+    def read(self, size=-1):
+        assert type(size) is int and 0 < size <= 64 * 1024
+        self.request_sizes.append(size)
+        body = super().read(min(size, self.short))
+        self.returned_bytes += len(body)
+        return body
+
+
+@pytest.mark.parametrize("members", [0, 1, 3, 128])
+@pytest.mark.parametrize("short", [1, 7, 65536])
+def test_identity_records_preserve_values_and_complete_bytes_across_short_reads(members, short):
+    document = _record_document(members)
+    body = canonical_json_bytes(document)
+    source = _ShortIdentityReader(body, short)
+    records = upload_identity_records.UploadIdentityRecords(source)
+    assert records.header() == {key: value for key, value in document.items() if key != "sources"}
+    with pytest.raises(ValueError, match="has not completed"):
+        _ = records.commitment
+    assert list(records.records()) == document["sources"]
+    assert records.commitment == (len(body), hashlib.sha256(body).hexdigest())
+    assert source.returned_bytes == len(body) and not source.closed
+    with pytest.raises(ValueError, match="already have a consumer"):
+        list(records.records())
+
+
+@pytest.mark.parametrize(
+    "changed",
+    [
+        "truncated-header",
+        "truncated-record",
+        "missing-array-end",
+        "missing-object-end",
+        "trailing-data",
+        "trailing-comma",
+        "non-object-row",
+        "invalid-escape",
+        "duplicate-header",
+        "unknown-header",
+        "missing-header",
+        "non-string-header",
+    ],
+)
+def test_identity_records_reject_incomplete_or_ambiguous_documents(changed):
+    body = canonical_json_bytes(_record_document(2))
+    if changed == "truncated-header":
+        body = body[:5]
+    elif changed == "truncated-record":
+        body = body[: body.rfind(b'"sha256":') + 12]
+    elif changed == "missing-array-end":
+        body = body[:-2] + b"}"
+    elif changed == "missing-object-end":
+        body = body[:-1]
+    elif changed == "trailing-data":
+        body += b"x"
+    elif changed == "trailing-comma":
+        body = body[:-2] + b",]}"
+    elif changed == "non-object-row":
+        body = body.replace(b'"sources":[', b'"sources":[null,', 1)
+    elif changed == "invalid-escape":
+        root = canonical_json_bytes(str(Path("/fixture")))
+        body = body.replace(b'"root":' + root, b'"root":"' + bytes((92, 113)) + b'"', 1)
+    elif changed == "duplicate-header":
+        body = body.replace(b'{"format":', b'{"format":"duplicate","format":', 1)
+    elif changed == "unknown-header":
+        body = body.replace(b'{"format":', b'{"unknown":"x","format":', 1)
+    elif changed == "missing-header":
+        body = body.replace(b'"root":' + canonical_json_bytes(str(Path("/fixture"))) + b",", b"", 1)
+    elif changed == "non-string-header":
+        body = body.replace(
+            b'"root":' + canonical_json_bytes(str(Path("/fixture"))), b'"root":1', 1
+        )
+    records = upload_identity_records.UploadIdentityRecords(_ShortIdentityReader(body, 1))
+    with pytest.raises(ValueError):
+        list(records.records())
+    with pytest.raises(ValueError, match="has not completed"):
+        _ = records.commitment
+
+
+@pytest.mark.parametrize("changed", ["header", "id", "source", "trailing"])
+def test_identity_replay_rejects_changed_bytes_before_exposing_an_upload(monkeypatch, changed):
+    document = _record_document(3)
+    original = canonical_json_bytes(document)
+    current = [
+        {key: row[key] for key in ("relative_parts", "bytes", "sha256")}
+        for row in document["sources"]
+    ]
+    modified = json.loads(original)
+    if changed == "header":
+        modified["source_naming_view_id"] = "urn:uuid:changed"
+    elif changed == "id":
+        modified["sources"][-1]["artifact_id"] = "f" * 64
+    elif changed == "source":
+        modified["sources"][-1]["bytes"] += 1
+    replacement = canonical_json_bytes(modified) + (b"x" if changed == "trailing" else b"")
+
+    class ChangedReader(_ShortIdentityReader):
+        def seek(self, offset, whence=0):
+            assert offset == 0 and whence == 0
+            io.BytesIO.seek(self, 0)
+            io.BytesIO.truncate(self, 0)
+            io.BytesIO.write(self, replacement)
+            return io.BytesIO.seek(self, 0)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("changed original bytes exposed an upload or generated replacement IDs")
+
+    monkeypatch.setattr(directory_upload, "LocalUpload", forbidden)
+    monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
+    with pytest.raises(ValueError, match="changed during replay|trailing document"):
+        directory_upload._load_upload_identity(
+            ChangedReader(original, 7), Path("/fixture"), document["idempotency_key"], current
+        )
+
+
+@pytest.mark.parametrize("members", [32, 128, 1024])
+@pytest.mark.parametrize("extra_bytes", [0, 512])
+def test_identity_record_framing_reads_and_decodes_each_original_value_once(
+    monkeypatch, members, extra_bytes
+):
+    body = canonical_json_bytes(_record_document(members, extra_bytes=extra_bytes))
+    source = _ShortIdentityReader(body, 4096)
+    decode_sizes = []
+    decode = upload_identity_records.json.loads
+
+    def observed(raw):
+        decode_sizes.append(len(raw))
+        return decode(raw)
+
+    monkeypatch.setattr(upload_identity_records, "json", SimpleNamespace(loads=observed))
+    records = upload_identity_records.UploadIdentityRecords(source)
+    count = 0
+    for row in records.records():
+        assert row["artifact_id"] == f"{count:064x}"
+        count += 1
+    assert count == members
+    assert len(decode_sizes) == members + 9
+    assert sum(decode_sizes) <= len(body)
+    assert source.returned_bytes == len(body)
+    assert all(size == 64 * 1024 for size in source.request_sizes)
+    assert records.commitment == (len(body), hashlib.sha256(body).hexdigest())

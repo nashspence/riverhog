@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -24,7 +23,7 @@ from riverhog_client import (
     sqlite_primary_preparation_step,
 )
 
-from a_riverhog_cli.upload_identity import initialize_upload_identity, read_upload_identity
+from a_riverhog_cli.upload_identity import initialize_upload_identity, open_upload_identity
 from a_riverhog_cli.upload_sqlite import UploadSqliteResources
 
 if TYPE_CHECKING:
@@ -201,18 +200,19 @@ def prepare_windows_upload(
                     "upload primary preparation requires another execution grant"
                 )
 
-            body = initialize_upload_identity(
+            with initialize_upload_identity(
                 identity,
                 original,
                 byte_limit=selection.identity_bytes,
                 control_capacity=policy.control_bytes,
                 prepare_payload=prepare,
-            )
-            del original
+            ) as stream:
+                del original
+                upload = _load_upload_identity(stream, root, idempotency_key, current)
         else:
-            body = read_upload_identity(identity, byte_limit=selection.identity_bytes)
-            root, current = _verified_upload_sources(root, idempotency_key)
-        upload = _load_upload_identity(json.loads(body), root, idempotency_key, current)
+            with open_upload_identity(identity, byte_limit=selection.identity_bytes) as stream:
+                root, current = _verified_upload_sources(root, idempotency_key)
+                upload = _load_upload_identity(stream, root, idempotency_key, current)
         # The verified descriptors own the required values for publication.
-        del body, current
+        del current
         yield upload, store

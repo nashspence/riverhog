@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import os
 import secrets
 import stat
@@ -13,12 +12,14 @@ from collections.abc import Generator, Iterator
 from contextlib import ExitStack, closing, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, BinaryIO, cast
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import PrimaryStatePolicy, PrimaryStore, ProducerFile
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.provenance_transport import MaterializationHintDocument
+
+from a_riverhog_cli.upload_identity_records import UploadIdentityRecords
 
 if TYPE_CHECKING:
     from a_riverhog_cli.upload_windows import WindowsUploadState
@@ -292,9 +293,8 @@ def _prepare_verified_upload(
                 Path(temporary).unlink(missing_ok=True)
         # Drop serialization input before decoding the selected original.
         del document
-    return _load_upload_identity(
-        json.loads(destination.read_bytes()), root, idempotency_key, current
-    )
+    with destination.open("rb") as stream:
+        return _load_upload_identity(stream, root, idempotency_key, current)
 
 
 def _new_upload_identity(
@@ -327,28 +327,28 @@ def _upload_identity_chunks(document: dict[str, object]) -> Iterator[bytes]:
     yield b"]}"
 
 
-def _load_upload_identity(
-    loaded: object, root: Path, idempotency_key: str, current: list[dict[str, object]]
-) -> LocalUpload:
+def _validate_upload_identity(
+    records: UploadIdentityRecords,
+    root: Path,
+    idempotency_key: str,
+    current: list[dict[str, object]],
+) -> tuple[dict[str, str], tuple[int, str]]:
+    header = records.header()
     if (
-        not isinstance(loaded, dict)
-        or loaded.get("format") != _FORMAT
-        or loaded.get("root") != str(root)
-        or loaded.get("idempotency_key") != idempotency_key
-        or not isinstance(loaded.get("sources"), list)
-        or len(loaded["sources"]) != len(current)
-        or any(
-            not isinstance(item, dict)
-            or {key: item.get(key) for key in ("relative_parts", "bytes", "sha256")} != expected
-            for item, expected in zip(loaded["sources"], current, strict=True)
-        )
+        header["format"] != _FORMAT
+        or header["root"] != str(root)
+        or header["idempotency_key"] != idempotency_key
     ):
         raise ValueError("saved upload identity differs from the current local sources")
-    view_id = loaded.get("source_naming_view_id")
-    if not isinstance(view_id, str) or not view_id.startswith("urn:uuid:"):
-        raise ValueError("saved upload source view identity is invalid")
     ids: set[str] = set()
-    for item in loaded["sources"]:
+    count = 0
+    for item in records.records():
+        if (
+            count >= len(current)
+            or {key: item.get(key) for key in ("relative_parts", "bytes", "sha256")}
+            != current[count]
+        ):
+            raise ValueError("saved upload identity differs from the current local sources")
         value = item.get("artifact_id")
         if (
             not isinstance(value, str)
@@ -358,20 +358,39 @@ def _load_upload_identity(
         ):
             raise ValueError("saved upload artifact identities are invalid")
         ids.add(value)
-    # The original IDs are validated before materialization, without retaining
-    # another collection of them while the source descriptors are constructed.
-    del ids
+        count += 1
+    if count != len(current):
+        raise ValueError("saved upload identity differs from the current local sources")
+    if not header["source_naming_view_id"].startswith("urn:uuid:"):
+        raise ValueError("saved upload source view identity is invalid")
+    return header, records.commitment
+
+
+def _load_upload_identity(
+    stream: BinaryIO, root: Path, idempotency_key: str, current: list[dict[str, object]]
+) -> LocalUpload:
+    # Complete preflight before constructing any descriptor. The validator's
+    # record and uniqueness set leave scope before the materialization pass.
+    header, commitment = _validate_upload_identity(
+        UploadIdentityRecords(stream), root, idempotency_key, current
+    )
+    stream.seek(0)
+    replay = UploadIdentityRecords(stream)
+    if replay.header() != header:
+        raise ValueError("saved upload identity changed during replay")
     sources = tuple(
         LocalSource(
             root=root,
-            relative_parts=tuple(item["relative_parts"]),
-            artifact_id=item["artifact_id"],
-            bytes=item["bytes"],
-            sha256=item["sha256"],
+            relative_parts=tuple(cast(list[str], item["relative_parts"])),
+            artifact_id=cast(str, item["artifact_id"]),
+            bytes=cast(int, item["bytes"]),
+            sha256=cast(str, item["sha256"]),
         )
-        for item in loaded["sources"]
+        for item in replay.records()
     )
-    return LocalUpload(sources=sources, source_naming_view_id=view_id)
+    if replay.commitment != commitment:
+        raise ValueError("saved upload identity changed during replay")
+    return LocalUpload(sources=sources, source_naming_view_id=header["source_naming_view_id"])
 
 
 @contextmanager
