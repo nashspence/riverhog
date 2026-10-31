@@ -24,6 +24,7 @@ from riverhog_client import (
     PrimaryStateError,
     PrimaryStatePolicy,
     ProducerArtifactIdentity,
+    WindowsSqliteProcess,
     ordered_primary_inventory,
 )
 from riverhog_protocol.artifact_identity import ArtifactId
@@ -92,6 +93,7 @@ from a_riverhog_cli.output import (
     format_tags,
 )
 from a_riverhog_cli.upload_sqlite import UploadSqlitePolicy, UploadSqliteResources
+from a_riverhog_cli.upload_windows import WindowsUploadPolicy
 
 _ERROR_RESPONSE_OUTPUT = {
     "kind": "python-model",
@@ -1576,6 +1578,14 @@ def upload_cmd(
             help="Upload projection handle/call grants and cache_kib target as JSON.",
         ),
     ] = None,
+    windows_primary: Annotated[
+        str | None,
+        typer.Option(
+            "--windows-primary",
+            envvar="A_RIVERHOG_CLI_WINDOWS_PRIMARY",
+            help="Windows primary placement and process/resource grants as JSON.",
+        ),
+    ] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
     dry_run: Annotated[bool, typer.Option("--dry-run")] = False,
 ) -> None:
@@ -1619,6 +1629,14 @@ def upload_cmd(
         )
     except ValueError as exc:
         raise typer.BadParameter(str(exc), param_hint="--sqlite-resources") from exc
+    try:
+        windows_policy = (
+            None
+            if windows_primary is None
+            else WindowsUploadPolicy.model_validate_json(windows_primary)
+        )
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc), param_hint="--windows-primary") from exc
     selected_observer = (
         resolve_provenance_observer(provenance_observer)
         if provenance_observer is not None
@@ -1634,97 +1652,118 @@ def upload_cmd(
         version = importlib.metadata.version("a-riverhog-cli")
     except importlib.metadata.PackageNotFoundError:
         version = "development"
-    with (
-        UploadSqliteResources(sqlite_policy) as sqlite_owner,
-        prepare_primary_upload(
+    process = None
+    if windows_policy is not None:
+        process = WindowsSqliteProcess(
+            heap_bytes=windows_policy.heap_bytes, native_limits=windows_policy.native_limits
+        )
+    resources = (
+        UploadSqliteResources(sqlite_policy)
+        if process is None
+        else UploadSqliteResources(
+            sqlite_policy,
+            process=process,
+            temporary_storage="MEMORY",
+            projection_storage="MEMORY",
+        )
+    )
+    with resources as sqlite_owner:
+        windows = None
+        if windows_policy is not None:
+            assert process is not None
+            windows = windows_policy.selection(process, sqlite_owner)
+        with prepare_primary_upload(
             resolved_root,
             key,
             primary_policy,
             initialize=initialize_state or idempotency_key is None,
-        ) as (upload, store),
-    ):
-        observation_selection: dict[str, object] = {
-            "mode": "automatic",
-            "observer": "riverhog-provenance/BoundedSourceObserver",
-            "catalog_sha256": ContractCatalog().checkpoint_sha256(),
-        }
-        if selected_observer is not None:
-            observation_selection = {
-                "mode": "lazy",
-                "observer": str(provenance_observer),
-                "configuration": {
-                    "host_id": source_host_id,
-                    "naming_view_id": upload.source_naming_view_id,
-                },
-                "catalog_sha256": ContractCatalog(
-                    (selected_observer.contract,)
-                ).checkpoint_sha256(),
+            windows=windows,
+        ) as (upload, store):
+            observation_selection: dict[str, object] = {
+                "mode": "automatic",
+                "observer": "riverhog-provenance/BoundedSourceObserver",
+                "catalog_sha256": ContractCatalog().checkpoint_sha256(),
             }
-        producer = IncrementalCollectionProducer(
-            client(),
-            primary_store=store,
-            member_inventory=lambda: ordered_primary_inventory(
-                store,
-                (
-                    ProducerArtifactIdentity(
-                        ArtifactId(source.artifact_id), source.bytes, source.sha256
-                    )
-                    for source in upload.sources
-                ),
-            ),
-            provenance_connection_factory=sqlite_owner.connect,
-            on_provenance_storage_open=sqlite_owner.retain,
-            initial_tags_connection_factory=sqlite_owner.connect,
-            on_initial_tags_storage_open=sqlite_owner.retain,
-            producer_app="a-riverhog-cli",
-            adapter_id="a-riverhog-cli.directory/v1",
-            adapter_version=version,
-            ingest_source="local-directory",
-            source_event_id=key,
-            source_context={"kind": "local-directory", "observation": observation_selection},
-            idempotency_key=key,
-            archive_store=cast(Any, archive_store),
-            use_cache=use_cache,
-            copy_to=cast(Any, copy_to),
-            description=description,
-            tags=tag or (),
-        )
-        try:
-            if producer.constraints is not None:
-                for start in range(
-                    0, len(upload.sources), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
-                ):
-                    inputs = []
-                    expected = {}
-                    for source in upload.sources[
-                        start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
-                    ]:
-                        observation = None
-                        if selected_observer is not None and source_host_id is not None:
-                            native_observer = selected_observer
-                            observation = DeclaredPrimaryObservation(
-                                str(provenance_observer),
-                                {
-                                    "host_id": source_host_id,
-                                    "naming_view_id": upload.source_naming_view_id,
-                                },
-                                ContractCatalog((native_observer.contract,)).checkpoint_sha256(),
-                                partial(
-                                    native_observer.observe_native_file,
-                                    source.path,
-                                    host_id=source_host_id,
-                                    naming_view_id=upload.source_naming_view_id,
-                                ),
-                            )
-                        item = source.producer_file(observation=observation)
-                        inputs.append(item)
-                        expected[item.artifact_id] = ProducerArtifactIdentity(
-                            item.artifact_id, source.bytes, source.sha256
+            if selected_observer is not None:
+                observation_selection = {
+                    "mode": "lazy",
+                    "observer": str(provenance_observer),
+                    "configuration": {
+                        "host_id": source_host_id,
+                        "naming_view_id": upload.source_naming_view_id,
+                    },
+                    "catalog_sha256": ContractCatalog(
+                        (selected_observer.contract,)
+                    ).checkpoint_sha256(),
+                }
+            producer = IncrementalCollectionProducer(
+                client(),
+                primary_store=store,
+                member_inventory=lambda: ordered_primary_inventory(
+                    store,
+                    (
+                        ProducerArtifactIdentity(
+                            ArtifactId(source.artifact_id), source.bytes, source.sha256
                         )
-                    producer.append_inputs(inputs, expected_identities=expected)
-            result = producer.finish()
-        finally:
-            producer.stop()
+                        for source in upload.sources
+                    ),
+                ),
+                storage_preparation=None if windows is None else windows.preparation_step,
+                provenance_connection_factory=sqlite_owner.connect,
+                on_provenance_storage_open=sqlite_owner.retain,
+                initial_tags_connection_factory=sqlite_owner.connect,
+                on_initial_tags_storage_open=sqlite_owner.retain,
+                producer_app="a-riverhog-cli",
+                adapter_id="a-riverhog-cli.directory/v1",
+                adapter_version=version,
+                ingest_source="local-directory",
+                source_event_id=key,
+                source_context={"kind": "local-directory", "observation": observation_selection},
+                idempotency_key=key,
+                archive_store=cast(Any, archive_store),
+                use_cache=use_cache,
+                copy_to=cast(Any, copy_to),
+                description=description,
+                tags=tag or (),
+            )
+            try:
+                if producer.constraints is not None:
+                    for start in range(
+                        0, len(upload.sources), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
+                    ):
+                        inputs = []
+                        expected = {}
+                        for source in upload.sources[
+                            start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
+                        ]:
+                            observation = None
+                            if selected_observer is not None and source_host_id is not None:
+                                native_observer = selected_observer
+                                observation = DeclaredPrimaryObservation(
+                                    str(provenance_observer),
+                                    {
+                                        "host_id": source_host_id,
+                                        "naming_view_id": upload.source_naming_view_id,
+                                    },
+                                    ContractCatalog(
+                                        (native_observer.contract,)
+                                    ).checkpoint_sha256(),
+                                    partial(
+                                        native_observer.observe_native_file,
+                                        source.path,
+                                        host_id=source_host_id,
+                                        naming_view_id=upload.source_naming_view_id,
+                                    ),
+                                )
+                            item = source.producer_file(observation=observation)
+                            inputs.append(item)
+                            expected[item.artifact_id] = ProducerArtifactIdentity(
+                                item.artifact_id, source.bytes, source.sha256
+                            )
+                        producer.append_inputs(inputs, expected_identities=expected)
+                result = producer.finish()
+            finally:
+                producer.stop()
     emit(
         result.receipt if json_mode else format_collection_upload(result.receipt),
         json_mode=json_mode,

@@ -7,8 +7,9 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import (
     PrimaryStateBusy,
@@ -28,6 +29,54 @@ from a_riverhog_cli.upload_sqlite import UploadSqliteResources
 
 if TYPE_CHECKING:
     from a_riverhog_cli.directory_upload import LocalUpload
+
+
+_PositiveGrant = Annotated[int, Field(strict=True, gt=0, le=(1 << 63) - 1)]
+_NonnegativeGrant = Annotated[int, Field(strict=True, ge=0, le=(1 << 63) - 1)]
+
+
+class WindowsUploadPolicy(BaseModel):
+    """Explicit command input for application-owned Windows resource grants.
+
+    Parsing selects no runtime and opens no state. The command installs one
+    process policy before its consumers, then passes that same process and
+    connection owner into selection. Resource grants are required inputs;
+    qualification fixture values are not application defaults.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+    parent: Path
+    heap_bytes: _PositiveGrant
+    native_limits: tuple[_PositiveGrant, _PositiveGrant]
+    limits: SqlitePrimaryLimits
+    operations: SqliteOperationGrants
+    retry_profile: tuple[_NonnegativeGrant, _NonnegativeGrant]
+    readiness: SqliteReadinessPlan
+    identity_bytes: _PositiveGrant
+    preparation_steps: _PositiveGrant
+
+    @field_validator("parent")
+    @classmethod
+    def absolute_parent(cls, value: Path) -> Path:
+        if not value.is_absolute():
+            raise ValueError("Windows upload state requires an explicit absolute durable parent")
+        return value
+
+    def selection(
+        self, process: WindowsSqliteProcess, resources: UploadSqliteResources
+    ) -> WindowsUploadState:
+        """Bind an already admitted process and its actual shared connection owner."""
+        return WindowsUploadState(
+            parent=self.parent,
+            process=process,
+            resources=resources,
+            limits=self.limits,
+            operations=self.operations,
+            retry_profile=self.retry_profile,
+            readiness=self.readiness,
+            identity_bytes=self.identity_bytes,
+            preparation_steps=self.preparation_steps,
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -156,6 +205,7 @@ def prepare_windows_upload(
                 identity,
                 original,
                 byte_limit=selection.identity_bytes,
+                control_capacity=policy.control_bytes,
                 prepare_payload=prepare,
             )
         else:

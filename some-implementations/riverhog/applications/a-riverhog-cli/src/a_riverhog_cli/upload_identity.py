@@ -66,6 +66,7 @@ def initialize_upload_identity(
     body: bytes,
     *,
     byte_limit: int,
+    control_capacity: int,
     prepare_payload: Callable[[], None],
 ) -> bytes:
     """Record original authority, prepare resources, then select the exact bytes.
@@ -75,9 +76,12 @@ def initialize_upload_identity(
     before payload work, so interruption cannot authorize a new hash or IDs.
     Missing/incomplete content on resume remains an error. The calling owner
     supplies actual resource preparation before immutable byte publication.
+    Its selected fixed control capacity backs the slot; reference encoding,
+    reads and writes retain their independent bounded admission.
     This function neither erases failed state nor drives initialization on read.
     """
     _admit(byte_limit)
+    _admit(control_capacity)
     if type(body) is not bytes:
         raise TypeError("upload identity requires immutable bytes")
     if len(body) > byte_limit:
@@ -93,7 +97,9 @@ def initialize_upload_identity(
         encoded = canonical_json_bytes(
             {"format": _FORMAT, "bytes": str(reference.bytes), "sha256": reference.sha256}
         )
-        storage.prepare_controls((_REFERENCE,), byte_limit=_REFERENCE_BYTES)
+        if len(encoded) > min(_REFERENCE_BYTES, control_capacity):
+            raise PrimaryStateCapacity("upload identity reference exceeds the control admission")
+        storage.prepare_controls((_REFERENCE,), byte_limit=control_capacity)
         storage.put_control(_REFERENCE, encoded, byte_limit=_REFERENCE_BYTES)
         storage.sync()
         prepare_payload()

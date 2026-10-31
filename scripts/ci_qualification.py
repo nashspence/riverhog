@@ -57,6 +57,7 @@ NATIVE_TESTS = (
     "tests/unit/test_cli_upload_primary_sqlite.py",
     "tests/unit/test_cli_upload_storage_identity.py",
     "tests/unit/test_cli_upload_windows_binding.py",
+    "tests/unit/test_cli_upload_windows_policy.py",
     "packages/riverhog-provenance/tests/test_sqlite_connection_admission.py",
     "packages/riverhog-provenance/tests/test_disposable_sqlite_admission.py",
     "packages/riverhog-provenance/tests/test_corpus_sqlite_admission.py",

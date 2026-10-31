@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from pathlib import Path
 from threading import Event
 
@@ -103,7 +103,7 @@ def test_storage_identity_commits_original_reference_before_payload_and_reopens_
 
         assert (
             initialize_upload_identity(
-                storage, body, byte_limit=len(body), prepare_payload=prepared
+                storage, body, byte_limit=len(body), control_capacity=1024, prepare_payload=prepared
             )
             == body
         )
@@ -114,7 +114,11 @@ def test_storage_identity_commits_original_reference_before_payload_and_reopens_
         assert storage.read_control("upload-identity", byte_limit=1024) == exact
         with pytest.raises(FileExistsError, match="conflicts with retained identity"):
             initialize_upload_identity(
-                storage, b"replacement", byte_limit=len(body), prepare_payload=lambda: None
+                storage,
+                b"replacement",
+                byte_limit=len(body),
+                control_capacity=1024,
+                prepare_payload=lambda: None,
             )
         assert read_upload_identity(storage, byte_limit=len(body)) == body
 
@@ -130,7 +134,7 @@ def test_identity_capacity_refusal_does_not_prepare_or_publish_state(tmp_path, b
 
         with pytest.raises(PrimaryStateCapacity):
             initialize_upload_identity(
-                storage, b"original", byte_limit=7, prepare_payload=forbidden
+                storage, b"original", byte_limit=7, control_capacity=1024, prepare_payload=forbidden
             )
         assert not storage.exists("upload-identity") and not storage.exists("source-identity")
 
@@ -146,7 +150,11 @@ def test_preparation_failure_keeps_reference_and_forbids_replacement_on_resume(t
     with opened(path, backend, initialize=True) as storage:
         with pytest.raises(OSError, match="preparation not confirmed"):
             initialize_upload_identity(
-                storage, b"original", byte_limit=64, prepare_payload=unavailable
+                storage,
+                b"original",
+                byte_limit=64,
+                control_capacity=1024,
+                prepare_payload=unavailable,
             )
         exact = storage.read_control("upload-identity", byte_limit=1024)
         assert not storage.exists("source-identity")
@@ -155,7 +163,11 @@ def test_preparation_failure_keeps_reference_and_forbids_replacement_on_resume(t
             read_upload_identity(storage, byte_limit=64)
         with pytest.raises(FileExistsError):
             initialize_upload_identity(
-                storage, b"different", byte_limit=64, prepare_payload=lambda: None
+                storage,
+                b"different",
+                byte_limit=64,
+                control_capacity=1024,
+                prepare_payload=lambda: None,
             )
         assert storage.read_control("upload-identity", byte_limit=1024) == exact
 
@@ -167,7 +179,7 @@ def test_missing_or_invalid_identity_half_never_reconstructs_authority(tmp_path,
     path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
     with opened(path, backend, initialize=True) as storage:
         initialize_upload_identity(
-            storage, b"original", byte_limit=64, prepare_payload=lambda: None
+            storage, b"original", byte_limit=64, control_capacity=1024, prepare_payload=lambda: None
         )
         exact = storage.read_control("upload-identity", byte_limit=1024)
         if missing == "reference":
@@ -185,7 +197,11 @@ def test_missing_or_invalid_identity_half_never_reconstructs_authority(tmp_path,
             read_upload_identity(storage, byte_limit=64)
         with pytest.raises(FileExistsError):
             initialize_upload_identity(
-                storage, b"replacement", byte_limit=64, prepare_payload=lambda: None
+                storage,
+                b"replacement",
+                byte_limit=64,
+                control_capacity=1024,
+                prepare_payload=lambda: None,
             )
 
 
@@ -195,7 +211,7 @@ def test_smaller_replay_admission_keeps_original_identity_for_larger_offer(tmp_p
     path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
     with opened(path, backend, initialize=True) as storage:
         initialize_upload_identity(
-            storage, b"original", byte_limit=64, prepare_payload=lambda: None
+            storage, b"original", byte_limit=64, control_capacity=1024, prepare_payload=lambda: None
         )
         exact = storage.read_control("upload-identity", byte_limit=1024)
         with pytest.raises(PrimaryStateCapacity):
@@ -218,7 +234,11 @@ def test_concurrent_initialization_cannot_replace_the_first_committed_identity(t
         def competing():
             second_started.set()
             return initialize_upload_identity(
-                storage, b"replacement", byte_limit=64, prepare_payload=lambda: None
+                storage,
+                b"replacement",
+                byte_limit=64,
+                control_capacity=1024,
+                prepare_payload=lambda: None,
             )
 
         with ThreadPoolExecutor(max_workers=2) as workers:
@@ -227,6 +247,7 @@ def test_concurrent_initialization_cannot_replace_the_first_committed_identity(t
                 storage,
                 b"original",
                 byte_limit=64,
+                control_capacity=1024,
                 prepare_payload=prepare,
             )
             try:
@@ -287,7 +308,7 @@ try:
                 if sqlite_primary_preparation_step(storage,plan=plan):return
             raise AssertionError("identity preparation did not finish")
         assert initialize_upload_identity(
-            identity,body,byte_limit=8192,prepare_payload=prepare)==body
+            identity,body,byte_limit=8192,control_capacity=1024, prepare_payload=prepare)==body
     def forbidden(*args,**kwargs):
         raise AssertionError("resume generated replacement identities")
     directory_upload.secrets.token_hex=forbidden
@@ -306,7 +327,8 @@ try:
         except FileNotFoundError:pass
         else:raise AssertionError("missing original reference was reconstructed")
         try:initialize_upload_identity(
-            identity,b"replacement",byte_limit=8192,prepare_payload=lambda:None)
+            identity,b"replacement",byte_limit=8192,control_capacity=1024,
+            prepare_payload=lambda:None)
         except FileExistsError:pass
         else:raise AssertionError("retained original content was replaced")
 finally:
@@ -327,3 +349,106 @@ print(json.dumps({"passed":True,"exact_original_ids":True,"missing_reference_sto
         "exact_original_ids": True,
         "missing_reference_stops": True,
     }
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("control_capacity", [1024, 8192, 65536])
+def test_identity_uses_owner_slot_capacity_without_changing_reference_bytes(
+    tmp_path, backend, control_capacity
+):
+    path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
+    body = b"original immutable source identity"
+    expected = canonical_json_bytes(
+        {
+            "format": "a-riverhog-cli-source-identity/v1",
+            "bytes": str(len(body)),
+            "sha256": hashlib.sha256(body).hexdigest(),
+        }
+    )
+    with opened(path, backend, initialize=True) as storage:
+        storage.prepare_controls(("unrelated",), byte_limit=control_capacity)
+        storage.put_control("unrelated", b"kept", byte_limit=control_capacity)
+        with closing(storage.child("directory-upload", initialize=True)) as identity:
+            assert (
+                initialize_upload_identity(
+                    identity,
+                    body,
+                    byte_limit=len(body),
+                    control_capacity=control_capacity,
+                    prepare_payload=lambda: None,
+                )
+                == body
+            )
+            assert identity.read_control("upload-identity", byte_limit=1024) == expected
+            assert storage.read_control("unrelated", byte_limit=4) == b"kept"
+    with opened(path, backend, initialize=False) as storage:
+        with closing(storage.child("directory-upload", initialize=False)) as identity:
+            assert read_upload_identity(identity, byte_limit=len(body)) == body
+            assert identity.read_control("upload-identity", byte_limit=1024) == expected
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual Unix-VFS uniform control capacity")
+@pytest.mark.parametrize("offered", [1024, 16384])
+def test_identity_cannot_change_the_selected_construction_control_capacity(tmp_path, offered):
+    with opened(tmp_path / "identity.sqlite3", "sqlite", initialize=True) as storage:
+        storage.prepare_controls(("unrelated",), byte_limit=8192)
+        storage.put_control("unrelated", b"kept", byte_limit=8192)
+        with closing(storage.child("directory-upload", initialize=True)) as identity:
+            with pytest.raises(PrimaryStateError, match="control capacity changed"):
+                initialize_upload_identity(
+                    identity,
+                    b"original",
+                    byte_limit=64,
+                    control_capacity=offered,
+                    prepare_payload=lambda: None,
+                )
+            assert not identity.exists("upload-identity") and (
+                not identity.exists("source-identity")
+            )
+            assert storage.read_control("unrelated", byte_limit=4) == b"kept"
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_small_identity_reference_slot_refuses_before_preparation_or_publication(tmp_path, backend):
+    path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
+    with opened(path, backend, initialize=True) as storage:
+
+        def forbidden():
+            pytest.fail("unadmitted reference reached payload preparation")
+
+        with pytest.raises(PrimaryStateCapacity, match="reference exceeds"):
+            initialize_upload_identity(
+                storage, b"original", byte_limit=64, control_capacity=1, prepare_payload=forbidden
+            )
+        assert not storage.exists("upload-identity") and not storage.exists("source-identity")
+
+
+@pytest.mark.parametrize("capacity", [True, 0, -1, 1.5])
+def test_identity_reference_capacity_is_explicit_before_storage_access(capacity):
+    with pytest.raises(ValueError, match="positive byte admission"):
+        initialize_upload_identity(
+            object(),
+            b"original",
+            byte_limit=64,
+            control_capacity=capacity,
+            prepare_payload=lambda: None,
+        )
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_larger_physical_slot_does_not_raise_the_reference_read_bound(tmp_path, backend):
+    path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
+    with opened(path, backend, initialize=True) as storage:
+        initialize_upload_identity(
+            storage, b"original", byte_limit=64, control_capacity=8192, prepare_payload=lambda: None
+        )
+        original = storage.read_control("upload-identity", byte_limit=1024)
+        oversized = b"x" * 1025
+        storage.put_control("upload-identity", oversized, byte_limit=8192, expected=original)
+        with pytest.raises(PrimaryStateCapacity):
+            read_upload_identity(storage, byte_limit=64)
+        storage.put_control("upload-identity", original, byte_limit=8192, expected=oversized)
+        assert read_upload_identity(storage, byte_limit=64) == b"original"

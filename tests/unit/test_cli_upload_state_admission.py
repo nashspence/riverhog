@@ -73,7 +73,8 @@ def test_cli_generated_and_supplied_keys_select_explicit_state_authority(
         pass
 
     @contextmanager
-    def admitted(path, selected_key, policy, *, initialize):
+    def admitted(path, selected_key, policy, *, initialize, windows=None):
+        assert windows is None
         calls.append((path, selected_key, initialize))
         raise Boundary("state authority observed")
         yield  # pragma: no cover
