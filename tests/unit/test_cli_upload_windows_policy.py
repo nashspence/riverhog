@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from contextlib import closing, contextmanager
 from dataclasses import asdict
 from pathlib import Path
@@ -266,7 +267,24 @@ def test_windows_command_dry_run_opens_no_process_or_state_even_with_unparsed_po
     assert not parent.exists()
 
 
-def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
+def exercise_selected_command(tmp_path, monkeypatch, member_count, native, progress=None):
+    started = time.monotonic()
+    phases = []
+
+    def observe(phase, **fields):
+        phases.append(
+            {"phase": phase, "elapsed_seconds": round(time.monotonic() - started, 3), **fields}
+        )
+        if progress is not None:
+            progress(phases)
+
+    def invoke(arguments, phase, target_pages):
+        observe(phase + "_started", target_pages=target_pages)
+        result = CliRunner().invoke(main.app, arguments)
+        observe(phase + "_returned", target_pages=target_pages, exit_code=result.exit_code)
+        return result
+
+    observe("started", members=member_count, actual_windows_sqlite=native)
     source, parent = command_fixture(tmp_path, monkeypatch)
     if native:
         import importlib.util
@@ -294,7 +312,9 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
         new_members = sum(row["artifact_id"] not in api.rows for row in artifacts)
         if new_members:
             first_registration_sizes.append(new_members)
-        return actual_register(collection_id, artifacts, **options)
+        result = actual_register(collection_id, artifacts, **options)
+        observe("registered", batch_members=len(artifacts), registered_members=len(api.rows))
+        return result
 
     monkeypatch.setattr(api, "register_collection_upload_session_artifacts", register)
     events, processes, resources, projections, identities = [], [], [], [], []
@@ -333,6 +353,7 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
         with actual_prepare(*args, **options) as (upload, store):
             identities.append(tuple(read_upload_sources(upload)))
             events.append("state")
+            observe("state_opened", members=len(identities[-1]))
             yield upload, store
 
     def client():
@@ -364,7 +385,7 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
         args += ["--windows-primary", json.dumps(payload)]
     else:
         monkeypatch.setenv("A_RIVERHOG_CLI_WINDOWS_PRIMARY", json.dumps(payload))
-    first = CliRunner().invoke(main.app, [*args, "--initialize-state"])
+    first = invoke([*args, "--initialize-state"], "fresh", payload["readiness"]["target_pages"])
     if member_count >= 16:
         assert isinstance(first.exception, PrimaryStateCapacity)
         assert "payload would consume progress headroom" in str(first.exception)
@@ -376,7 +397,7 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
         for target_pages in (256, 384, 512):
             payload["readiness"]["target_pages"] = target_pages
             args[args.index("--windows-primary") + 1] = json.dumps(payload)
-            first = CliRunner().invoke(main.app, args)
+            first = invoke(args, "replenished", target_pages)
             if first.exit_code == 0:
                 break
             assert isinstance(first.exception, PrimaryStateCapacity)
@@ -396,7 +417,7 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
     )
     assert api.initial_tags == ("a", "z")
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
-    resumed = CliRunner().invoke(main.app, args)
+    resumed = invoke(args, "cold_reopen", payload["readiness"]["target_pages"])
     assert resumed.exit_code == 0, resumed.exception
     first_receipt, resumed_receipt = json.loads(first.stdout), json.loads(resumed.stdout)
     for key in ("state", "artifact_set_identity", "archive_root_sha256", "collection"):
@@ -405,7 +426,9 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
     assert tuple(api.rows.items()) == original and api.session_calls == 1
     monkeypatch.setattr(directory_upload, "_verified_upload_sources", forbidden)
     monkeypatch.setattr(directory_upload, "_verified_ordered_upload_sources", forbidden)
-    conflict = CliRunner().invoke(main.app, [*args, "--initialize-state"])
+    conflict = invoke(
+        [*args, "--initialize-state"], "fresh_conflict", payload["readiness"]["target_pages"]
+    )
     assert isinstance(conflict.exception, FileExistsError)
     assert api.session_calls == 1
     assert len(resources) == len(identities) + 1
@@ -430,6 +453,8 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
             0 < heap["sqlite_heap_peak_bytes"] <= heap["heap_limit_bytes"] == payload["heap_bytes"]
         )
         assert processes[0].native_report()["owners"] == processes[0].native_report()["files"] == 0
+    observe("verified", members=member_count, exact_original_identity=True)
+    return phases
 
 
 @pytest.mark.skipif(os.name != "posix", reason="actual Unix-SQL command integration fixture")
@@ -437,13 +462,39 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
 def test_selected_cli_command_completes_and_cold_reopens_original_state(
     tmp_path, monkeypatch, member_count
 ):
-    exercise_selected_command(tmp_path, monkeypatch, member_count, False)
+    recorded = []
+    phases = exercise_selected_command(
+        tmp_path,
+        monkeypatch,
+        member_count,
+        False,
+        progress=lambda observations: recorded.append(list(observations)),
+    )
+    assert recorded[-1] == phases
+    assert phases[-1]["phase"] == "verified"
+    commands = [phase for phase in phases if phase["phase"].endswith("_returned")]
+    assert commands[0]["phase"] == "fresh_returned"
+    assert commands[-2]["phase"] == "cold_reopen_returned"
+    assert commands[-2]["exit_code"] == 0
+    assert commands[-1]["phase"] == "fresh_conflict_returned"
+    assert commands[-1]["exit_code"] != 0
+    if member_count >= 16:
+        assert commands[0]["exit_code"] != 0
+        replenished = [phase for phase in commands if phase["phase"] == "replenished_returned"]
+        assert 1 <= len(replenished) <= 3 and replenished[-1]["exit_code"] == 0
+        assert [phase["target_pages"] for phase in replenished] == [256, 384, 512][
+            : len(replenished)
+        ]
+    assert all(
+        before["elapsed_seconds"] <= after["elapsed_seconds"]
+        for before, after in zip(phases, phases[1:], strict=False)
+    )
 
 
 @pytest.mark.skipif(os.name != "nt", reason="qualified Windows engine and private local NTFS")
 @pytest.mark.parametrize("member_count", [1, 3, 16, 17])
 def test_native_windows_cli_command_completes_and_cold_reopens_original_state(
-    tmp_path, member_count
+    tmp_path, member_count, record_testsuite_property
 ):
     code = """
 import json,sys
@@ -451,23 +502,49 @@ from pathlib import Path
 sys.path.insert(0, sys.argv[1])
 import pytest
 from tests.unit.test_cli_upload_windows_policy import exercise_selected_command
+progress = Path(sys.argv[4])
+def retain(phases):
+    staged = progress.with_suffix(".staged")
+    staged.write_text(json.dumps(phases), encoding="utf-8")
+    staged.replace(progress)
 with pytest.MonkeyPatch.context() as patch:
-    exercise_selected_command(Path(sys.argv[2]), patch, int(sys.argv[3]), True)
+    exercise_selected_command(Path(sys.argv[2]), patch, int(sys.argv[3]), True, retain)
 print(json.dumps({"passed": True, "actual_windows_sqlite": True}))
 """
-    result = subprocess.run(
-        [
-            sys.executable,
-            "-I",
-            "-c",
-            code,
-            str(Path(__file__).resolve().parents[2]),
-            str(tmp_path),
-            str(member_count),
-        ],
-        capture_output=True,
-        text=True,
-        timeout=300,
-    )
+    progress = tmp_path / "command-phases.json"
+    # Registration-boundary cases also exercise refusal and up to three replenishments.
+    # Retain a finite execution guard, separately from the unchanged resource grants.
+    timeout_seconds = 900 if member_count >= 16 else 300
+    result = None
+    try:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-I",
+                "-c",
+                code,
+                str(Path(__file__).resolve().parents[2]),
+                str(tmp_path),
+                str(member_count),
+                str(progress),
+            ],
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+        )
+    finally:
+        record_testsuite_property(
+            f"windows_cli_command_{member_count}",
+            json.dumps(
+                {
+                    "members": member_count,
+                    "timeout_seconds": timeout_seconds,
+                    "child_returned": result is not None,
+                    "phases": json.loads(progress.read_text(encoding="utf-8"))
+                    if progress.exists()
+                    else [],
+                }
+            ),
+        )
     assert result.returncode == 0, result.stdout + result.stderr
     assert json.loads(result.stdout)["actual_windows_sqlite"]
