@@ -4,6 +4,7 @@ import hashlib
 import os
 import re
 import threading
+import weakref
 from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
@@ -1255,6 +1256,7 @@ def test_postgres_payload_accounting_uses_generic_index_plans(
             volumes[-1].sealed_receipt_json = None
         if pending_state == "unsealed":
             volumes[-1].state = "planned"
+    del volume, volumes
 
     engine = factory.kw["bind"]
     captured = {}
@@ -1270,7 +1272,24 @@ def test_postgres_payload_accounting_uses_generic_index_plans(
         with session_scope(factory) as session:
             upload = session.get(CollectionUploadRecord, collection_id)
             volume = session.get(CollectionArchiveObjectUploadRecord, (collection_id, first_id))
-            _record_payload_custody_progress(session, upload, volume, now="2026-01-01T00:00:00Z")
+            live = weakref.WeakSet([volume])
+            working_set = {"peak_live_archive_records": 1}
+
+            def loaded(_session, row):
+                if isinstance(row, CollectionArchiveObjectUploadRecord):
+                    live.add(row)
+                    working_set["peak_live_archive_records"] = max(
+                        working_set["peak_live_archive_records"], len(live)
+                    )
+
+            event.listen(session, "loaded_as_persistent", loaded)
+            try:
+                _record_payload_custody_progress(
+                    session, upload, volume, now="2026-01-01T00:00:00Z"
+                )
+            finally:
+                event.remove(session, "loaded_as_persistent", loaded)
+            assert working_set["peak_live_archive_records"] <= 130
             expected = int(pending_state == "complete")
             assert upload.payload_sealed_artifact_count == expected
             assert upload.payload_sealed_artifact_bytes == expected * 1000 * CHUNK_SIZE
@@ -1324,4 +1343,5 @@ def test_postgres_payload_accounting_uses_generic_index_plans(
     record_property("pending_state", pending_state)
     record_property("postgres_reverse_rows_examined", reverse_examined)
     record_property("postgres_pending_rows_examined", pending_examined)
+    record_property("postgres_peak_live_archive_records", working_set["peak_live_archive_records"])
     engine.dispose()

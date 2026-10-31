@@ -8654,29 +8654,36 @@ def _record_payload_custody_progress(
                 continue
         # The pending index only identifies completion candidates. Preserve
         # complete coverage and receipt validation before recording member progress.
-        volumes = list(
-            session.scalars(
-                select(CollectionArchiveObjectUploadRecord)
-                .join(
-                    CollectionUploadArtifactVolumeRecord,
-                    (
-                        CollectionUploadArtifactVolumeRecord.collection_id
-                        == CollectionArchiveObjectUploadRecord.collection_id
-                    )
-                    & (
-                        CollectionUploadArtifactVolumeRecord.object_id
-                        == CollectionArchiveObjectUploadRecord.object_id
-                    ),
+        volumes = session.scalars(
+            select(CollectionArchiveObjectUploadRecord)
+            .join(
+                CollectionUploadArtifactVolumeRecord,
+                (
+                    CollectionUploadArtifactVolumeRecord.collection_id
+                    == CollectionArchiveObjectUploadRecord.collection_id
                 )
-                .where(
-                    CollectionUploadArtifactVolumeRecord.collection_id == upload.collection_id,
-                    CollectionUploadArtifactVolumeRecord.artifact_id == artifact_id,
-                )
+                & (
+                    CollectionUploadArtifactVolumeRecord.object_id
+                    == CollectionArchiveObjectUploadRecord.object_id
+                ),
             )
+            .where(
+                CollectionUploadArtifactVolumeRecord.collection_id == upload.collection_id,
+                CollectionUploadArtifactVolumeRecord.artifact_id == artifact_id,
+            )
+            .execution_options(yield_per=64)
         )
-        if not volumes or any(
-            volume.state != "sealed" or volume.sealed_receipt_json is None for volume in volumes
-        ):
+        found = False
+        complete = True
+        try:
+            for volume in volumes:
+                found = True
+                if volume.state != "sealed" or volume.sealed_receipt_json is None:
+                    complete = False
+                    break
+        finally:
+            volumes.close()
+        if not found or not complete:
             continue
         result = cast(
             CursorResult[Any],
