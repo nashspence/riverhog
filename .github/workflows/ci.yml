@@ -23,7 +23,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    if: always()
+    if: always() && !cancelled()
     needs:
       - plan
       - repository
@@ -32,7 +32,7 @@ jobs:
       - client-platforms
       - images
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 20
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -140,10 +140,10 @@ jobs:
     name: unit ${{ matrix.shard }}
     needs: plan
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: ${{ startsWith(matrix.shard, 'unit-') && 180 || 90 }}
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 6
       matrix: ${{ fromJSON(needs.plan.outputs.units) }}
     steps:
       - name: Check out repository
@@ -241,7 +241,7 @@ jobs:
   client-platforms:
     name: client platform (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 45
+    timeout-minutes: ${{ matrix.os == 'windows-2025' && 75 || 45 }}
     env:
       MISE_AUTO_INSTALL: '0'
     strategy:

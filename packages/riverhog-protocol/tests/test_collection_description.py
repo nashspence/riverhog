@@ -90,6 +90,7 @@ def test_description_contract_accepts_exact_bounded_nfc_unicode() -> None:
         "a" * (COLLECTION_DESCRIPTION_UTF8_BYTES_MAX + 1),
         "🦆" * (COLLECTION_DESCRIPTION_UTF8_BYTES_MAX // 4 + 1),
     ),
+    ids=("empty", "whitespace", "non-nfc", "control", "oversized-ascii", "oversized-utf8"),
 )
 def test_description_contract_rejects_noncanonical_or_oversized_text(value: str) -> None:
     with pytest.raises(ValidationError):

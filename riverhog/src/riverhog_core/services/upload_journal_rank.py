@@ -6,7 +6,7 @@ import json
 from dataclasses import dataclass, replace
 from typing import Any
 
-from riverhog_canonical_json import canonical_json_bytes
+from riverhog_canonical_json import canonical_json_bytes, format_scalar, parse_scalar
 from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
@@ -33,7 +33,6 @@ from riverhog_core.catalog_models import CollectionUploadProvenanceEpochVertexRe
 from riverhog_core.catalog_models import CollectionUploadProvenanceJournalRecord as Journal
 
 from . import collection_uploads as source_owner
-from . import upload_journal_topology as facts_owner
 from . import upload_journal_union as union
 
 _BUDGET = 64
@@ -61,22 +60,27 @@ class _Header:
 def _encode(header: _Header) -> str:
     value = {name: getattr(header, name) for name in _Header.__dataclass_fields__}
     for name in ("epoch", "vertices", "arcs", "seeded", "settled", "visited", "ready"):
-        value[name] = str(value[name])
+        value[name] = format_scalar("nonnegative", value[name])
     if header.last_vertex is not None:
         epoch, kind, vertex, degree, rank, ready = header.last_vertex
         value["last_vertex"] = [
-            str(epoch),
+            format_scalar("nonnegative", epoch),
             kind,
             vertex,
-            str(degree),
-            None if rank is None else str(rank),
+            format_scalar("nonnegative", degree),
+            None if rank is None else format_scalar("nonnegative", rank),
             ready,
         ]
     if header.last_arc is not None:
-        value["last_arc"] = [str(header.last_arc[0]), *header.last_arc[1:]]
+        value["last_arc"] = [format_scalar("nonnegative", header.last_arc[0]), *header.last_arc[1:]]
     if header.last_graph is not None:
         epoch, kind, state, *counts = header.last_graph
-        value["last_graph"] = [str(epoch), kind, state, *(str(n) for n in counts)]
+        value["last_graph"] = [
+            format_scalar("nonnegative", epoch),
+            kind,
+            state,
+            *(format_scalar("nonnegative", n) for n in counts),
+        ]
     return canonical_json_bytes(value).decode()
 
 
@@ -93,7 +97,7 @@ def _decode(raw: str) -> _Header:
         }:
             raise ValueError("invalid private rank phase")
         for name in ("epoch", "vertices", "arcs", "seeded", "settled", "visited", "ready"):
-            value[name] = facts_owner._number(value[name])
+            value[name] = parse_scalar("nonnegative", value[name])
         for name in ("seed_after", "active", "edge_after"):
             if value[name] is not None:
                 value[name] = require_canonical_uuid_urn(value[name])
@@ -107,11 +111,11 @@ def _decode(raw: str) -> _Header:
             ):
                 raise ValueError("invalid private rank vertex marker")
             value["last_vertex"] = (
-                facts_owner._number(last[0]),
+                parse_scalar("nonnegative", last[0]),
                 last[1],
                 require_canonical_uuid_urn(last[2]),
-                facts_owner._number(last[3]),
-                None if last[4] is None else facts_owner._number(last[4]),
+                parse_scalar("nonnegative", last[3]),
+                None if last[4] is None else parse_scalar("nonnegative", last[4]),
                 last[5],
             )
         arc = value["last_arc"]
@@ -119,7 +123,7 @@ def _decode(raw: str) -> _Header:
             if not isinstance(arc, list) or len(arc) != 4 or arc[1] not in GRAPH_KINDS:
                 raise ValueError("invalid private rank arc marker")
             value["last_arc"] = (
-                facts_owner._number(arc[0]),
+                parse_scalar("nonnegative", arc[0]),
                 arc[1],
                 require_canonical_uuid_urn(arc[2]),
                 require_canonical_uuid_urn(arc[3]),
@@ -134,10 +138,10 @@ def _decode(raw: str) -> _Header:
             ):
                 raise ValueError("invalid private rank graph marker")
             value["last_graph"] = (
-                facts_owner._number(graph[0]),
+                parse_scalar("nonnegative", graph[0]),
                 graph[1],
                 graph[2],
-                *(facts_owner._number(n) for n in graph[3:]),
+                *(parse_scalar("nonnegative", n) for n in graph[3:]),
             )
         header = _Header(**value)
         if (

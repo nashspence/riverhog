@@ -13,8 +13,8 @@ import stat
 import threading
 import uuid
 from bisect import bisect_right
-from collections.abc import Mapping, Sequence
-from contextlib import closing
+from collections.abc import Callable, Iterator, Mapping, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any, Protocol
@@ -30,8 +30,13 @@ from a_riverhog_ftp_spool_client.events import (
 )
 from lifecycle_events import lifecycle_event
 from riverhog_canonical_json import CanonicalJsonError, canonical_json_bytes
-from riverhog_client import ApiClient
-from riverhog_client.producer import CollectionProducer, ProducedCollection, ProducerFile
+from riverhog_client import ApiClient, PrimaryStore, ordered_primary_inventory
+from riverhog_client.producer import (
+    CollectionProducer,
+    ProducedCollection,
+    ProducerArtifactIdentity,
+    ProducerFile,
+)
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_provenance import (
     ObservationResult,
@@ -62,6 +67,7 @@ from a_riverhog_ftp_spool.completion import (
     read_completion_header,
 )
 from a_riverhog_ftp_spool.config import FtpSpoolConfig, SourceConfig
+from a_riverhog_ftp_spool.operational_state import FtpOperationalState
 from a_riverhog_ftp_spool.state_contract import (
     FTP_OPERATIONAL_STATE_DDL,
     FtpClaimState,
@@ -154,11 +160,17 @@ class FtpSpool:
         config: FtpSpoolConfig,
         *,
         provenance_observer: NativeObservationPort | None = None,
+        state_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_state_storage_open: Callable[[FtpOperationalState], None] | None = None,
     ) -> None:
         self.api = api
         self.config = config
         self._provenance_observer = provenance_observer
         self._custody_pass_lock = threading.Lock()
+        self._state_connection_factory = state_connection_factory
+        self._on_state_storage_open = on_state_storage_open
+        self._state_storage: set[FtpOperationalState] = set()
+        self._state_storage_lock = threading.Lock()
         for source in config.sources:
             self._initialize_source(source)
 
@@ -178,41 +190,66 @@ class FtpSpool:
     def _completion_log_path(self, source: SourceConfig) -> Path:
         return completion_log_path(source.root)
 
-    def _open_state(self, source: SourceConfig) -> sqlite3.Connection:
-        connection = sqlite3.connect(self._state_path(source))
-        connection.execute("PRAGMA foreign_keys = ON")
-        connection.execute("PRAGMA synchronous = FULL")
-        return connection
+    @property
+    def retained_state_storage(self) -> tuple[FtpOperationalState, ...]:
+        """Actual state owners whose cleanup has not yet been confirmed."""
+        with self._state_storage_lock:
+            return tuple(owner for owner in self._state_storage if not owner.cleanup_complete)
+
+    @contextmanager
+    def _open_state(self, source: SourceConfig) -> Iterator[FtpOperationalState]:
+        with self._state_storage_lock:
+            self._state_storage = {
+                owner for owner in self._state_storage if not owner.cleanup_complete
+            }
+            if any(owner.cleanup_unconfirmed for owner in self._state_storage):
+                raise RuntimeError("FTP operational-state cleanup is unconfirmed")
+        retained: list[FtpOperationalState] = []
+
+        def retain(owner: FtpOperationalState) -> None:
+            retained.append(owner)
+            with self._state_storage_lock:
+                self._state_storage.add(owner)
+            if self._on_state_storage_open is not None:
+                self._on_state_storage_open(owner)
+
+        try:
+            with FtpOperationalState(
+                self._state_path(source),
+                connection_factory=self._state_connection_factory,
+                on_storage_open=retain,
+            ) as connection:
+                yield connection
+        finally:
+            if retained and retained[0].cleanup_complete:
+                with self._state_storage_lock:
+                    self._state_storage.discard(retained[0])
 
     def _initialize_source(self, source: SourceConfig) -> None:
         source.root.mkdir(mode=0o700, parents=True, exist_ok=True)
         self._control_root(source).mkdir(mode=0o700, parents=True, exist_ok=True)
-        with closing(self._open_state(source)) as connection:
-            version = int(connection.execute("PRAGMA user_version").fetchone()[0])
+        with self._open_state(source) as connection:
+            version = int(connection.one("PRAGMA user_version")[0])
             if version not in {0, 3}:
                 raise FtpSpoolError("unsupported FTP spool operational-state revision")
             connection.executescript(FTP_OPERATIONAL_STATE_DDL)
             naming_view_id = _state_value(connection, "naming_view_id")
             if naming_view_id is None:
-                if connection.execute("SELECT 1 FROM claims LIMIT 1").fetchone() is not None:
+                if connection.one("SELECT 1 FROM claims LIMIT 1") is not None:
                     raise FtpSpoolError("FTP claims have no persisted source naming view identity")
                 _set_state_value(connection, "naming_view_id", f"urn:uuid:{uuid.uuid4()}")
             else:
                 require_canonical_uuid_urn(naming_view_id, "FTP source naming view")
             event_generation = _state_value(connection, "event_generation")
             if event_generation is None:
-                count = int(
-                    connection.execute("SELECT COUNT(*) FROM lifecycle_events").fetchone()[0]
-                )
+                count = int(connection.one("SELECT COUNT(*) FROM lifecycle_events")[0])
                 if count:
                     raise FtpSpoolError("FTP event history has no source generation")
                 _set_state_value(connection, "event_generation", uuid.uuid4().hex)
             claim_count = _state_value(connection, "claim_count")
             claim_bytes = _state_value(connection, "claim_bytes")
             if claim_count is None or claim_bytes is None:
-                existing_claims = int(
-                    connection.execute("SELECT COUNT(*) FROM claims").fetchone()[0]
-                )
+                existing_claims = int(connection.one("SELECT COUNT(*) FROM claims")[0])
                 if existing_claims:
                     raise FtpSpoolError(
                         "FTP claim accounting is absent for existing operational custody"
@@ -222,7 +259,7 @@ class FtpSpool:
             failure_count = _state_value(connection, "completion_failure_count")
             if failure_count is None:
                 existing_failures = int(
-                    connection.execute("SELECT COUNT(*) FROM completion_failures").fetchone()[0]
+                    connection.one("SELECT COUNT(*) FROM completion_failures")[0]
                 )
                 if existing_failures:
                     raise FtpSpoolError(
@@ -231,7 +268,7 @@ class FtpSpool:
                 _set_state_value(connection, "completion_failure_count", "0")
             connection.commit()
         generation, header_bytes = initialize_completion_authority(source.root)
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             stored_generation = _state_value(connection, "completion_generation")
             stored_offset = _state_value(connection, "completion_offset")
             if stored_generation is None:
@@ -260,23 +297,21 @@ class FtpSpool:
         source = self.config.source(source_id)
         if not 1 <= limit <= 100:
             raise ValueError("FTP event page limit must be between 1 and 100")
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             generation = _state_value(connection, "event_generation")
             if generation is None:
                 raise FtpSpoolError("FTP event history has no source generation")
             sequence = _parse_event_cursor(after, source_id=source_id, generation=generation)
             greatest = int(
-                connection.execute(
-                    "SELECT COALESCE(MAX(sequence), 0) FROM lifecycle_events"
-                ).fetchone()[0]
+                connection.one("SELECT COALESCE(MAX(sequence), 0) FROM lifecycle_events")[0]
             )
             if sequence > greatest:
                 raise ValueError("FTP event cursor is ahead of this source")
-            rows = connection.execute(
+            rows = connection.all(
                 "SELECT sequence, event_json FROM lifecycle_events "
                 "WHERE sequence > ? ORDER BY sequence LIMIT ?",
                 (sequence, limit + 1),
-            ).fetchall()
+            )
         selected = rows[:limit]
         return FtpEventPage(
             events=[validate_ftp_event(json.loads(str(row[1]))) for row in selected],
@@ -295,10 +330,10 @@ class FtpSpool:
         *,
         event_type: str,
         details: Mapping[str, object] | None = None,
-        connection: sqlite3.Connection | None = None,
+        connection: FtpOperationalState | None = None,
     ) -> None:
         if connection is None:
-            with closing(self._open_state(source)) as current:
+            with self._open_state(source) as current:
                 self._record_claim_event(
                     source,
                     manifest,
@@ -347,9 +382,9 @@ class FtpSpool:
             "INSERT OR IGNORE INTO lifecycle_events(event_id, event_json) VALUES (?, ?)",
             (event.id, encoded),
         )
-        existing = connection.execute(
+        existing = connection.one(
             "SELECT event_json FROM lifecycle_events WHERE event_id = ?", (event.id,)
-        ).fetchone()
+        )
         if existing is None:
             raise FtpSpoolError("FTP lifecycle event was not recorded")
         prior = validate_ftp_event(json.loads(str(existing[0])))
@@ -469,15 +504,6 @@ class FtpSpool:
         *,
         page_size: int = 25,
         page_token: str | None = None,
-    ) -> dict[str, object]:
-        with self._custody_pass_lock:
-            return self._status(page_size=page_size, page_token=page_token)
-
-    def _status(
-        self,
-        *,
-        page_size: int,
-        page_token: str | None,
     ) -> dict[str, object]:
         if page_size < 1 or page_size > 100:
             raise ValueError("FTP spool status page_size must be in 1..100")
@@ -602,6 +628,8 @@ class FtpSpool:
                         }
                     ],
                 }
+                with self._primary_store(claim_root, str(manifest["claim_id"]), initialize=True):
+                    pass
                 _write_json(claim_root / _MANIFEST, manifest)
                 self._register_claim(source, manifest)
             except BaseException:
@@ -614,9 +642,12 @@ class FtpSpool:
         return source.root / _CONTROL_DIR / "claims"
 
     def _claim_summary(self, source: SourceConfig) -> tuple[int, int]:
-        with closing(self._open_state(source)) as connection:
-            claim_count = _state_value(connection, "claim_count")
-            claim_bytes = _state_value(connection, "claim_bytes")
+        with self._open_state(source) as connection:
+            claim_count, claim_bytes = connection.one(
+                "SELECT "
+                "(SELECT value FROM adapter_state WHERE key = 'claim_count'), "
+                "(SELECT value FROM adapter_state WHERE key = 'claim_bytes')"
+            )
         if claim_count is None or claim_bytes is None:
             raise FtpSpoolError("FTP claim accounting is unavailable")
         return int(claim_count), int(claim_bytes)
@@ -629,20 +660,20 @@ class FtpSpool:
     ) -> tuple[_ClaimWork, ...]:
         if limit < 1:
             return ()
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             raw_after = _state_value(connection, "reconcile_after")
             after = int(raw_after) if raw_after is not None else 0
-            rows = connection.execute(
+            rows = connection.all(
                 "SELECT ordinal, claim_id FROM claims WHERE ordinal > ? ORDER BY ordinal LIMIT ?",
                 (after, limit),
-            ).fetchall()
+            )
             if len(rows) < limit:
                 rows.extend(
-                    connection.execute(
+                    connection.all(
                         "SELECT ordinal, claim_id FROM claims "
                         "WHERE ordinal <= ? ORDER BY ordinal LIMIT ?",
                         (after, limit - len(rows)),
-                    ).fetchall()
+                    )
                 )
         return tuple(
             _ClaimWork(int(ordinal), self._claims_root(source) / str(claim_id))
@@ -650,12 +681,12 @@ class FtpSpool:
         )
 
     def _save_reconcile_cursor(self, source: SourceConfig, ordinal: int) -> None:
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             _set_state_value(connection, "reconcile_after", str(ordinal))
             connection.commit()
 
     def _completion_cursor(self, source: SourceConfig) -> tuple[str, int]:
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             generation = _state_value(connection, "completion_generation")
             raw_offset = _state_value(connection, "completion_offset")
         if generation is None or raw_offset is None:
@@ -669,7 +700,7 @@ class FtpSpool:
         generation: str,
         offset: int,
     ) -> None:
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             current_generation = _state_value(connection, "completion_generation")
             current_offset = _state_value(connection, "completion_offset")
             if current_generation != generation:
@@ -680,18 +711,18 @@ class FtpSpool:
             connection.commit()
 
     def _completion_failure_count(self, source: SourceConfig) -> int:
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             value = _state_value(connection, "completion_failure_count")
         if value is None:
             raise FtpSpoolError("FTP completion failure accounting is unavailable")
         return int(value)
 
     def _oldest_completion_failure(self, source: SourceConfig) -> dict[str, object] | None:
-        with closing(self._open_state(source)) as connection:
-            row = connection.execute(
+        with self._open_state(source) as connection:
+            row = connection.one(
                 "SELECT reason, retryable, attempts FROM completion_failures "
                 "ORDER BY ordinal LIMIT 1"
-            ).fetchone()
+            )
         if row is None:
             return None
         return {
@@ -701,11 +732,11 @@ class FtpSpool:
         }
 
     def _known_completion_event(self, source: SourceConfig, event_id: str) -> bool:
-        with closing(self._open_state(source)) as connection:
-            row = connection.execute(
+        with self._open_state(source) as connection:
+            row = connection.one(
                 "SELECT 1 FROM completion_events WHERE event_id = ?",
                 (event_id,),
-            ).fetchone()
+            )
         return row is not None
 
     def _reclaim_completion_events(self, source: SourceConfig, *, limit: int) -> int:
@@ -713,26 +744,26 @@ class FtpSpool:
 
         if limit < 1:
             return 0
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             after = _state_value(connection, "completion_event_reclaim_after") or ""
-            rows = connection.execute(
+            rows = connection.all(
                 "SELECT events.event_id, events.claim_id "
                 "FROM completion_events AS events "
                 "LEFT JOIN claims ON claims.claim_id = events.claim_id "
                 "WHERE claims.claim_id IS NULL AND events.event_id > ? "
                 "ORDER BY events.event_id LIMIT ?",
                 (after, limit),
-            ).fetchall()
+            )
             if len(rows) < limit:
                 rows.extend(
-                    connection.execute(
+                    connection.all(
                         "SELECT events.event_id, events.claim_id "
                         "FROM completion_events AS events "
                         "LEFT JOIN claims ON claims.claim_id = events.claim_id "
                         "WHERE claims.claim_id IS NULL AND events.event_id <= ? "
                         "ORDER BY events.event_id LIMIT ?",
                         (after, limit - len(rows)),
-                    ).fetchall()
+                    )
                 )
         candidates = tuple((str(event_id), str(claim_id)) for event_id, claim_id in rows)
         if not candidates:
@@ -762,7 +793,7 @@ class FtpSpool:
             finally:
                 fcntl.lockf(stream.fileno(), fcntl.LOCK_UN)
         reclaimed = 0
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             for event_id, claim_id in candidates:
                 if (event_id, claim_id) in eligible:
                     reclaimed += connection.execute(
@@ -798,7 +829,7 @@ class FtpSpool:
                 )
             )
         ).hexdigest()
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             current_generation = _state_value(connection, "completion_generation")
             current_offset = _state_value(connection, "completion_offset")
             current_count = _state_value(connection, "completion_failure_count")
@@ -809,10 +840,10 @@ class FtpSpool:
                 or current_count is None
             ):
                 raise FtpSpoolError("FTP completion failure cursor changed during admission")
-            existing = connection.execute(
+            existing = connection.one(
                 "SELECT raw, reason, retryable FROM completion_failures WHERE failure_id = ?",
                 (failure_id,),
-            ).fetchone()
+            )
             if existing is None:
                 if int(current_count) >= self.config.completion_failure_capacity:
                     raise FtpSpoolError(
@@ -847,21 +878,21 @@ class FtpSpool:
 
     def _reconcile_completion_failures(self, source: SourceConfig) -> int:
         budget = self.config.completion_failure_attempt_budget
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             raw_after = _state_value(connection, "completion_failure_after")
             after = int(raw_after) if raw_after is not None else 0
-            rows = connection.execute(
+            rows = connection.all(
                 "SELECT ordinal, failure_id, raw FROM completion_failures "
                 "WHERE retryable = 1 AND ordinal > ? ORDER BY ordinal LIMIT ?",
                 (after, budget),
-            ).fetchall()
+            )
             if len(rows) < budget:
                 rows.extend(
-                    connection.execute(
+                    connection.all(
                         "SELECT ordinal, failure_id, raw FROM completion_failures "
                         "WHERE retryable = 1 AND ordinal <= ? ORDER BY ordinal LIMIT ?",
                         (after, budget - len(rows)),
-                    ).fetchall()
+                    )
                 )
         attempts = 0
         for ordinal, failure_id, raw_value in rows:
@@ -880,7 +911,7 @@ class FtpSpool:
             else:
                 self._append_completion_record(source, raw)
                 recovered = True
-            with closing(self._open_state(source)) as connection:
+            with self._open_state(source) as connection:
                 current_count = _state_value(connection, "completion_failure_count")
                 if current_count is None:
                     raise FtpSpoolError("FTP completion failure accounting is unavailable")
@@ -917,11 +948,11 @@ class FtpSpool:
                 fcntl.lockf(stream.fileno(), fcntl.LOCK_UN)
 
     def _claim_record(self, source: SourceConfig, claim_id: str) -> tuple[int, str] | None:
-        with closing(self._open_state(source)) as connection:
-            row = connection.execute(
+        with self._open_state(source) as connection:
+            row = connection.one(
                 "SELECT ordinal, manifest_json FROM claims WHERE claim_id = ?",
                 (claim_id,),
-            ).fetchone()
+            )
         return None if row is None else (int(row[0]), str(row[1]))
 
     def _register_claim(
@@ -935,11 +966,11 @@ class FtpSpool:
         claim_id = str(manifest["claim_id"])
         encoded = json.dumps(manifest, sort_keys=True, separators=(",", ":"))
         claim_bytes = sum(int(str(row["bytes"])) for row in _file_rows(manifest))
-        with closing(self._open_state(source)) as connection:
-            existing = connection.execute(
+        with self._open_state(source) as connection:
+            existing = connection.one(
                 "SELECT ordinal, manifest_json FROM claims WHERE claim_id = ?",
                 (claim_id,),
-            ).fetchone()
+            )
             if existing is None:
                 cursor = connection.execute(
                     "INSERT INTO claims(claim_id, manifest_json, claim_bytes) VALUES (?, ?, ?)",
@@ -968,10 +999,10 @@ class FtpSpool:
             ):
                 raise FtpSpoolError("FTP claim completion event identities are invalid")
             for event_id in raw_event_ids:
-                claimed = connection.execute(
+                claimed = connection.one(
                     "SELECT claim_id FROM completion_events WHERE event_id = ?",
                     (event_id,),
-                ).fetchone()
+                )
                 if claimed is None:
                     connection.execute(
                         "INSERT INTO completion_events(event_id, claim_id) VALUES (?, ?)",
@@ -1023,11 +1054,11 @@ class FtpSpool:
         return payload
 
     def _forget_claim(self, source: SourceConfig, claim_id: str) -> None:
-        with closing(self._open_state(source)) as connection:
-            row = connection.execute(
+        with self._open_state(source) as connection:
+            row = connection.one(
                 "SELECT claim_bytes FROM claims WHERE claim_id = ?",
                 (claim_id,),
-            ).fetchone()
+            )
             if row is not None:
                 current_count = _state_value(connection, "claim_count")
                 current_bytes = _state_value(connection, "claim_bytes")
@@ -1279,6 +1310,8 @@ class FtpSpool:
                 "completion_event_ids": [row.event_identity for row in discovery.files],
                 "files": files,
             }
+            with self._primary_store(claim_root, str(manifest["claim_id"]), initialize=True):
+                pass
             _write_json(claim_root / _MANIFEST, manifest)
             ordinal = self._register_claim(
                 source,
@@ -1310,7 +1343,7 @@ class FtpSpool:
         source_view_path: bool = False,
     ) -> dict[str, object]:
         observer = self._native_observer()
-        with closing(self._open_state(source)) as connection:
+        with self._open_state(source) as connection:
             naming_view_id = _state_value(connection, "naming_view_id")
         if naming_view_id is None:
             raise FtpSpoolError("FTP source naming view identity is unavailable")
@@ -1440,55 +1473,87 @@ class FtpSpool:
             },
         )
 
+    def _primary_store(
+        self, claim_root: Path, allocation_id: str, *, initialize: bool = False
+    ) -> PrimaryStore:
+        return PrimaryStore(
+            claim_root / "prepared-primary",
+            allocation_id=allocation_id,
+            scope=self.config.primary_state.scope,
+            limits=self.config.primary_state.limits(),
+            initialize=initialize,
+        )
+
     def _complete_receipted_claim(
         self, source: SourceConfig, claim_id: str, receipt: ProducedCollection
     ) -> ProducedCollection:
-        self._record_publication(source, claim_id, receipt)
-        self._finish_claim_cleanup(source, claim_id)
+        claim_root = self._claims_root(source) / claim_id
+        if claim_root.exists():
+            with self._primary_store(claim_root, claim_id) as store:
+                if not store.custody_settled:
+                    raise FtpSpoolError("FTP claim has unresolved prepared-primary custody")
+                self._record_publication(source, claim_id, receipt)
+                self._finish_claim_cleanup(source, claim_id)
+        else:
+            self._record_publication(source, claim_id, receipt)
+            self._finish_claim_cleanup(source, claim_id)
         return receipt
 
     def _publish_claim_once(self, source: SourceConfig, claim_root: Path) -> ProducedCollection:
         durable_receipt = self._durable_receipt(source, claim_root.name)
         if durable_receipt is not None:
             return self._complete_receipted_claim(source, claim_root.name, durable_receipt)
-        manifest = self._reconcile_claim(source, claim_root)
-        files = tuple(
-            ProducerFile(
-                source=claim_root / "payload" / str(row["path"]),
-                artifact_id=ArtifactId(str(row["artifact_id"])),
-                materialization_hint=PurePosixPath(str(row["path"])).parts,
-                observation=self._load_observation(claim_root, row),
+        with self._primary_store(claim_root, claim_root.name) as store:
+            manifest = self._reconcile_claim(source, claim_root)
+            files = tuple(
+                ProducerFile(
+                    source=claim_root / "payload" / str(row["path"]),
+                    artifact_id=ArtifactId(str(row["artifact_id"])),
+                    materialization_hint=PurePosixPath(str(row["path"])).parts,
+                    observation=self._load_observation(claim_root, row),
+                )
+                for row in _file_rows(manifest)
             )
-            for row in _file_rows(manifest)
-        )
-        producer = CollectionProducer(
-            self.api,
-            producer_app="a-riverhog-ftp-spool/v1",
-            adapter_id="ftp/v1",
-            adapter_version="1.0.0",
-            ingest_source=source.ingest_source,
-            archive_store=source.archive_store,
-            description=source.description,
-            tags=source.tags,
-        )
-        receipt = producer.publish(
-            files,
-            source_event_id=str(manifest["source_event_id"]),
-            source_context={"adapter": "ftp", "source": source.id},
-            idempotency_key=str(manifest["claim_id"]),
-            event_context={"adapter": "ftp", "source": source.id},
-        )
-        receipt_payload = {
-            "format": "a-riverhog-ftp-spool-receipt/v1",
-            "claim_id": claim_root.name,
-            "source_event_id": str(manifest["source_event_id"]),
-            "collection_id": str(receipt.collection_id),
-            "archive_root_sha256": receipt.archive_root_sha256,
-            "artifact_set_identity": receipt.artifact_set_identity,
-            "riverhog_receipt": receipt.receipt,
-        }
-        _write_json(claim_root / _RECEIPT, receipt_payload)
-        _write_json(self._receipt_path(source, claim_root.name), receipt_payload)
+            producer = CollectionProducer(
+                self.api,
+                primary_store=store,
+                member_inventory=lambda: ordered_primary_inventory(
+                    store,
+                    (
+                        ProducerArtifactIdentity(
+                            ArtifactId(str(row["artifact_id"])),
+                            int(str(row["bytes"])),
+                            str(row["sha256"]),
+                        )
+                        for row in _file_rows(manifest)
+                    ),
+                ),
+                producer_app="a-riverhog-ftp-spool/v1",
+                adapter_id="ftp/v1",
+                adapter_version="1.0.0",
+                ingest_source=source.ingest_source,
+                archive_store=source.archive_store,
+                description=source.description,
+                tags=source.tags,
+            )
+            receipt = producer.publish(
+                files,
+                source_event_id=str(manifest["source_event_id"]),
+                source_context={"adapter": "ftp", "source": source.id},
+                idempotency_key=str(manifest["claim_id"]),
+                event_context={"adapter": "ftp", "source": source.id},
+            )
+            receipt_payload = {
+                "format": "a-riverhog-ftp-spool-receipt/v1",
+                "claim_id": claim_root.name,
+                "source_event_id": str(manifest["source_event_id"]),
+                "collection_id": str(receipt.collection_id),
+                "archive_root_sha256": receipt.archive_root_sha256,
+                "artifact_set_identity": receipt.artifact_set_identity,
+                "riverhog_receipt": receipt.receipt,
+            }
+            _write_json(claim_root / _RECEIPT, receipt_payload)
+            _write_json(self._receipt_path(source, claim_root.name), receipt_payload)
         return self._complete_receipted_claim(source, claim_root.name, receipt)
 
     def _receipt_path(self, source: SourceConfig, claim_id: str) -> Path:
@@ -1750,15 +1815,15 @@ def _parse_event_cursor(
     return int(raw_sequence)
 
 
-def _state_value(connection: sqlite3.Connection, key: str) -> str | None:
-    row = connection.execute(
+def _state_value(connection: FtpOperationalState, key: str) -> str | None:
+    row = connection.one(
         "SELECT value FROM adapter_state WHERE key = ?",
         (key,),
-    ).fetchone()
+    )
     return None if row is None else str(row[0])
 
 
-def _set_state_value(connection: sqlite3.Connection, key: str, value: str) -> None:
+def _set_state_value(connection: FtpOperationalState, key: str, value: str) -> None:
     connection.execute(
         "INSERT INTO adapter_state(key, value) VALUES (?, ?) "
         "ON CONFLICT(key) DO UPDATE SET value = excluded.value",

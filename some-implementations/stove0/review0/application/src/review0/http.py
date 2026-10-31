@@ -15,6 +15,7 @@ from fastapi.security import HTTPBearer
 from http_api_contracts import ErrorOut, HealthOut, error_payload, operation_openapi
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from review0_sampler_client import ReviewSamplerClient
+from riverhog_client import PrimaryStatePolicy
 from stove0_protocol import OciImageId
 from stove0_target_support import TARGET_HTTP_OPERATIONS, TargetHttpBinding
 
@@ -53,6 +54,7 @@ class Review0Config(BaseModel):
     )
 
     token_file: Path
+    primary_state: PrimaryStatePolicy
     samplers: tuple[SamplerConfig, ...] = Field(min_length=1)
 
     @field_validator("token_file")

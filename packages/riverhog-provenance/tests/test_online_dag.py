@@ -468,16 +468,27 @@ class GraphConnection(sqlite3.Connection):
         if self.recording:
             cursor.observation = (self, sql)
             self.statements.append((sql, parameters, cursor))
+            octets = sum(
+                len(value if isinstance(value, bytes) else str(value).encode())
+                for value in parameters
+                if value is not None
+            )
+            self.metrics["bound_parameter_octets"] += octets
+            if sql.startswith(("INSERT", "UPDATE", "DELETE")):
+                self.metrics["written_value_octets"] += octets
         return cursor.execute(sql, parameters)
 
     @contextmanager
     def observe(self):
+        was_in_transaction = self.in_transaction
         self.metrics = {
             "sql_statements": 0,
             "returned_rows": 0,
             "returned_metadata_octets": 0,
             "adjacency_rows": 0,
             "source_payload_octets": 0,
+            "bound_parameter_octets": 0,
+            "written_value_octets": 0,
             "sqlite_vm_instructions": 0,
         }
         self.statements, self.denied = [], []
@@ -508,7 +519,7 @@ class GraphConnection(sqlite3.Connection):
             self.set_progress_handler(None, 0)
             self.set_authorizer(None)
             self.metrics["changed_rows"] = self.total_changes - changes
-        assert not self.in_transaction and not self.denied
+        assert self.in_transaction == was_in_transaction and not self.denied
         assert all(cursor.closed for _, _, cursor in self.statements)
         for sql, parameters, _cursor in self.statements:
             if sql.startswith(("SELECT", "UPDATE", "DELETE")):
@@ -517,7 +528,7 @@ class GraphConnection(sqlite3.Connection):
                 assert "SEARCH" in plan and "SCAN" not in plan and "USE TEMP" not in plan
 
 
-def graph_dimensions(dag, budget):
+def graph_dimensions(dag, budget, *, identities=()):
     retained = sum(
         dag.db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
         for table in (*TABLES, "dag_runs", "dag_retired", "dag_algorithm")
@@ -529,7 +540,7 @@ def graph_dimensions(dag, budget):
     scalar_width = max(len(str(value).encode()) for value in scalars)
     identity_width = max(
         len(canonical_json_bytes(value))
-        for value in (dag.kind, dag.run_id, state.work.operation_id or "")
+        for value in (dag.kind, dag.run_id, state.work.operation_id or "", *identities)
     )
     return {
         "retained_rows": retained,
@@ -590,20 +601,14 @@ def graph_sample(method, dimensions, metrics):
             canonical_json_bytes(projection["declarations"][binding.declaration.id])
         ).hexdigest(),
         "dimensions": dimensions,
-        "metrics": metrics,
+        "metrics": {bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds},
         "delegates": {},
     }
     validate_execution_samples(projection, binding.declaration.id, [sample])
     return sample
 
 
-@pytest.mark.growth_witness(
-    "riverhog-online-graph-transition-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_provenance._online_dag.OnlineDag.advance",
-)
-def test_actual_online_graph_transition_work(tmp_path, record_property):
-    samples = []
+def graph_transition_samples(tmp_path, measured_operation, *, samples):
     for phase in PHASES:
         for count, budget in [(1, 1), (17, 16), (129, 16), (1025, 64)]:
             identity = 'owned-µ"\\' * (17 if count == 1025 else 1)
@@ -618,10 +623,37 @@ def test_actual_online_graph_transition_work(tmp_path, record_property):
                     dag.db.commit()
                 with cold_graph(dag, tmp_path / f"{phase}-{count}.sqlite3") as actual:
                     dimensions = graph_dimensions(actual, budget)
-                    with actual.db.observe() as metrics:
-                        progress = actual.advance(budget)
-                    assert progress.adjacency_visits <= metrics["adjacency_rows"] <= budget
-                    samples.append(graph_sample(OnlineDag.advance, dimensions, metrics))
+                    if measured_operation == "_prepare":
+                        before = actual.db.total_changes
+                        with actual.db.observe() as metrics:
+                            plan = actual._prepare(budget)
+                        assert not actual.db.in_transaction and actual.db.total_changes == before
+                        assert actual._load() == plan.before
+                        progress = actual._commit(plan)
+                    elif measured_operation == "_apply":
+                        plan = actual._prepare(budget)
+                        unchanged = tuple(actual.db.iterdump())
+                        actual.db.execute("BEGIN IMMEDIATE").close()
+                        try:
+                            with actual.db.observe() as metrics:
+                                assert actual._apply(plan)
+                            assert actual.db.in_transaction
+                        finally:
+                            actual.db.rollback()
+                        assert tuple(actual.db.iterdump()) == unchanged
+                        progress = actual._commit(plan)
+                    else:
+                        assert measured_operation == "advance"
+                        with actual.db.observe() as metrics:
+                            progress = actual.advance(budget)
+                    assert metrics["adjacency_rows"] <= budget
+                    if measured_operation == "_apply":
+                        assert metrics["adjacency_rows"] == 0
+                    else:
+                        assert progress.adjacency_visits <= metrics["adjacency_rows"]
+                    samples.append(
+                        graph_sample(getattr(OnlineDag, measured_operation), dimensions, metrics)
+                    )
                     # Only the measured cold unit requires the file-backed FULL pager.
                     # Drain its exact committed output in memory; crash recovery is
                     # exercised independently at every phase and inside a transaction.
@@ -635,7 +667,42 @@ def test_actual_online_graph_transition_work(tmp_path, record_property):
                             assert outcome == "accepted"
                             expected.add((source, target))
                         invariants(suffix, expected)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-online-graph-transition-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._online_dag.OnlineDag.advance",
+)
+def test_actual_online_graph_transition_work(tmp_path, record_property):
+    samples = []
     record_property("growth_samples", samples)
+    graph_transition_samples(tmp_path, "advance", samples=samples)
+    assert len(samples) == 52
+
+
+@pytest.mark.growth_witness(
+    "riverhog-online-graph-transition-plan-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._online_dag.OnlineDag._prepare",
+)
+def test_actual_detached_online_graph_transition_plan(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    graph_transition_samples(tmp_path, "_prepare", samples=samples)
+    assert len(samples) == 52
+
+
+@pytest.mark.growth_witness(
+    "riverhog-online-graph-transition-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._online_dag.OnlineDag._apply",
+)
+def test_actual_owner_transaction_online_graph_transition_application(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    graph_transition_samples(tmp_path, "_apply", samples=samples)
+    assert len(samples) == 52
 
 
 def retired_rows(table, count):
@@ -653,15 +720,14 @@ def retired_rows(table, count):
             yield "old-operation", "incoming", first, second, "1"
 
 
-@pytest.mark.growth_witness(
-    "riverhog-online-graph-retirement-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_provenance._online_dag.OnlineDag.retire",
-)
-def test_actual_online_graph_retirement_work(tmp_path, record_property):
-    samples = []
+def graph_retirement_samples(tmp_path, measured_operation, *, samples):
     for phase, table in enumerate(TABLES):
-        for count, budget in [(1, 1), (17, 16), (129, 16), (1025, 64)]:
+        regimes = [
+            (count, budget, admission)
+            for count, budget in [(1, 1), (17, 16), (129, 16), (1025, 64)]
+            for admission in ([None] if measured_operation == "retire" else [None, 8192])
+        ]
+        for count, budget, admission in regimes:
             with workspace() as dag:
                 other = OnlineDag(dag.db, "specialization", "other-kind")
                 other.bind()
@@ -682,20 +748,93 @@ def test_actual_online_graph_retirement_work(tmp_path, record_property):
                     "INSERT INTO dag_retired VALUES (?, 'retired', ?)", (dag.kind, phase)
                 ).close()
                 dag.db.commit()
-                with cold_graph(dag, tmp_path / f"retire-{phase}-{count}.sqlite3") as actual:
+                with cold_graph(
+                    dag, tmp_path / f"retire-{phase}-{count}-{admission}.sqlite3"
+                ) as actual:
                     dimensions = graph_dimensions(actual, budget)
-                    with actual.db.observe() as metrics:
-                        assert actual.retire(budget)
+                    if measured_operation == "_prepare_retirement":
+                        before = actual.db.total_changes
+                        with actual.db.observe() as metrics:
+                            batch = actual._prepare_retirement(budget, byte_budget=admission)
+                        assert batch is not None
+                        assert not actual.db.in_transaction and actual.db.total_changes == before
+                        actual._commit(batch.plan)
+                    elif measured_operation == "_apply_retirement":
+                        batch = actual._prepare_retirement(budget, byte_budget=admission)
+                        assert batch is not None
+                        unchanged = tuple(actual.db.iterdump())
+                        actual.db.execute("BEGIN IMMEDIATE").close()
+                        try:
+                            with actual.db.observe() as metrics:
+                                actual._apply_retirement(batch)
+                            assert actual.db.in_transaction
+                        finally:
+                            actual.db.rollback()
+                        assert tuple(actual.db.iterdump()) == unchanged
+                        actual._commit(batch.plan)
+                    else:
+                        assert measured_operation == "retire"
+                        batch = None
+                        with actual.db.observe() as metrics:
+                            assert actual.retire(budget)
+                    deleted = (
+                        min(count, budget)
+                        if batch is None
+                        else sum(
+                            statement.startswith(f"DELETE FROM {table} WHERE")
+                            for statement, _parameters in batch.plan.writes
+                        )
+                    )
+                    assert 0 < deleted <= min(count, budget)
+                    if batch is not None and admission is not None:
+                        assert 0 < batch.octets <= admission
                     assert metrics["adjacency_rows"] == 0
                     assert metrics["changed_rows"] <= budget + 2
-                    samples.append(graph_sample(OnlineDag.retire, dimensions, metrics))
+                    samples.append(
+                        graph_sample(getattr(OnlineDag, measured_operation), dimensions, metrics)
+                    )
                     for kind, run in scopes:
                         remaining = actual.db.execute(
                             f"SELECT COUNT(*) FROM {table} WHERE kind = ? AND run_id = ?",
                             (kind, run),
                         ).fetchone()[0]
-                        assert remaining == count - (min(count, budget) if run == "retired" else 0)
+                        assert remaining == count - (deleted if run == "retired" else 0)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-online-graph-retirement-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._online_dag.OnlineDag.retire",
+)
+def test_actual_online_graph_retirement_work(tmp_path, record_property):
+    samples = []
     record_property("growth_samples", samples)
+    graph_retirement_samples(tmp_path, "retire", samples=samples)
+    assert len(samples) == 24
+
+
+@pytest.mark.growth_witness(
+    "riverhog-online-graph-retirement-plan-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._online_dag.OnlineDag._prepare_retirement",
+)
+def test_actual_detached_online_graph_retirement_plan(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    graph_retirement_samples(tmp_path, "_prepare_retirement", samples=samples)
+    assert len(samples) == 48
+
+
+@pytest.mark.growth_witness(
+    "riverhog-online-graph-retirement-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._online_dag.OnlineDag._apply_retirement",
+)
+def test_actual_owner_transaction_online_graph_retirement_application(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    graph_retirement_samples(tmp_path, "_apply_retirement", samples=samples)
+    assert len(samples) == 48
 
 
 @pytest.mark.parametrize("count", [17, 129, 1025])
@@ -783,3 +922,160 @@ def test_mixed_order_stream_accounts_for_accepted_work_and_repeated_rejections(
                 "rejected_work": rejections,
             },
         )
+
+
+def graph_start_samples(tmp_path, measured_operation, *, samples):
+    for count in (1, 17, 129, 1025):
+        for mode in ("new", "self", "duplicate", "repeat"):
+            identity = 'owned-µ"\\' * (17 if count == 1025 else 1)
+            operation = "start-" + identity
+            with workspace(run=identity) as dag:
+                source, target, expected = seeded_growth_graph(dag, count, cycle=False)
+                if mode == "self":
+                    target = source
+                elif mode == "duplicate":
+                    source, target = vertex(0), source
+                elif mode == "repeat":
+                    dag.start(operation, source, target)
+                with cold_graph(dag, tmp_path / f"start-{mode}-{count}.sqlite3") as actual:
+                    dimensions = graph_dimensions(actual, 1, identities=(operation, source, target))
+                    unchanged = tuple(actual.db.iterdump())
+                    if measured_operation == "_prepare_start":
+                        changes = actual.db.total_changes
+                        with actual.db.observe() as metrics:
+                            plan = actual._prepare_start(operation, source, target)
+                        assert not actual.db.in_transaction and actual.db.total_changes == changes
+                        assert actual._load() == plan.before
+                    else:
+                        assert measured_operation == "_apply"
+                        plan = actual._prepare_start(operation, source, target)
+                        actual.db.execute("BEGIN IMMEDIATE").close()
+                        try:
+                            with actual.db.observe() as metrics:
+                                assert actual._apply(plan)
+                            assert actual.db.in_transaction
+                        finally:
+                            actual.db.rollback()
+                    assert tuple(actual.db.iterdump()) == unchanged
+                    assert metrics["adjacency_rows"] == 0
+                    samples.append(
+                        graph_sample(getattr(OnlineDag, measured_operation), dimensions, metrics)
+                    )
+                    actual.start(operation, source, target)
+                    with closing(sqlite3.connect(":memory:")) as suffix_db:
+                        actual.db.backup(suffix_db)
+                        suffix = OnlineDag(suffix_db, actual.kind, actual.run_id)
+                        outcome = complete(suffix, 64)
+                        if mode == "self":
+                            assert outcome == "self"
+                        else:
+                            assert outcome == "accepted"
+                            expected.add((source, target))
+                        invariants(suffix, expected)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-online-graph-start-plan-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._online_dag.OnlineDag._prepare_start",
+)
+def test_actual_detached_online_graph_start_plan(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    graph_start_samples(tmp_path, "_prepare_start", samples=samples)
+    assert len(samples) == 16
+
+
+@pytest.mark.growth_witness(
+    "riverhog-online-graph-start-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._online_dag.OnlineDag._apply",
+)
+def test_actual_owner_transaction_online_graph_start_application(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    graph_start_samples(tmp_path, "_apply", samples=samples)
+    assert len(samples) == 16
+
+
+def graph_replacement_samples(tmp_path, measured_operation, *, samples):
+    for kind in KINDS:
+        for pending in (False, True):
+            for count in (0, 1, 17, 129, 1025):
+                identity = 'owned-µ"\\' * (17 if count == 1025 else 1)
+                next_run = "replacement-" + identity
+                with workspace(kind=kind, run=identity) as dag:
+                    source, target, _expected = seeded_growth_graph(dag, count, cycle=False)
+                    other_kind = "specialization" if kind == "derivation" else "derivation"
+                    other = OnlineDag(dag.db, other_kind, "other-run")
+                    other.bind()
+                    assert insert(other, vertex(8000), vertex(8001)) == "accepted"
+                    other_before = snapshot(other, working=True)
+                    if pending:
+                        dag.start("pending-" + identity, source, target)
+                        dag.advance(1)
+                    old_before = snapshot(dag, working=True)
+                    with cold_graph(
+                        dag, tmp_path / f"replacement-{kind}-{pending}-{count}.sqlite3"
+                    ) as actual:
+                        dimensions = graph_dimensions(actual, 1, identities=(next_run,))
+                        unchanged = tuple(actual.db.iterdump())
+                        if measured_operation == "_prepare_replacement":
+                            changes = actual.db.total_changes
+                            with actual.db.observe() as metrics:
+                                batch = actual._prepare_replacement(next_run)
+                            assert (
+                                not actual.db.in_transaction and actual.db.total_changes == changes
+                            )
+                            assert actual._load() == batch.before
+                        else:
+                            assert measured_operation == "_apply_replacement"
+                            batch = actual._prepare_replacement(next_run)
+                            actual.db.execute("BEGIN IMMEDIATE").close()
+                            try:
+                                with actual.db.observe() as metrics:
+                                    prepared = actual._apply_replacement(batch)
+                                assert actual.db.in_transaction and prepared.run_id == next_run
+                                assert prepared.db is actual.db
+                            finally:
+                                actual.db.rollback()
+                        assert tuple(actual.db.iterdump()) == unchanged
+                        assert metrics["adjacency_rows"] == 0
+                        samples.append(
+                            graph_sample(
+                                getattr(OnlineDag, measured_operation), dimensions, metrics
+                            )
+                        )
+                        replacement = actual.replace_run(next_run)
+                        with pytest.raises(StaleDagWork):
+                            actual.advance(1)
+                        assert snapshot(actual, working=True) == old_before
+                        assert not any(snapshot(replacement, working=True).values())
+                        foreign = OnlineDag(actual.db, other_kind, "other-run")
+                        assert snapshot(foreign, working=True) == other_before
+                        assert insert(replacement, vertex(8002), vertex(8003)) == "accepted"
+                        invariants(replacement, {(vertex(8002), vertex(8003))})
+
+
+@pytest.mark.growth_witness(
+    "riverhog-online-graph-replacement-plan-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._online_dag.OnlineDag._prepare_replacement",
+)
+def test_actual_detached_online_graph_replacement_plan(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    graph_replacement_samples(tmp_path, "_prepare_replacement", samples=samples)
+    assert len(samples) == 20
+
+
+@pytest.mark.growth_witness(
+    "riverhog-online-graph-replacement-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._online_dag.OnlineDag._apply_replacement",
+)
+def test_actual_owner_transaction_online_graph_replacement_application(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    graph_replacement_samples(tmp_path, "_apply_replacement", samples=samples)
+    assert len(samples) == 20

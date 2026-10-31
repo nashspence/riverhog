@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 from dataclasses import replace
 
 import pytest
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import hash_raw_source_chunks
 from riverhog_growth_contracts import (
     COUNT,
@@ -15,6 +17,8 @@ from riverhog_growth_contracts import (
     declare_growth,
     evaluate_bound,
     growth_binding,
+    project_bindings,
+    validate_execution_samples,
 )
 from riverhog_protocol.raw_ingress import advance_raw_part_commitment
 
@@ -185,3 +189,69 @@ def test_dimension_and_metric_meanings_require_text(meaning):
         Dimension("bytes", OCTETS, meaning)
     with pytest.raises(ValueError):
         Bound("bytes", OCTETS, "equal", Expression("dimension", name="bytes"), meaning)
+
+
+def _execution_sample(binding, dimensions, *, delegates=None):
+    return {
+        "declaration": binding.declaration.id,
+        "declaration_sha256": hashlib.sha256(canonical_json_bytes(binding.project())).hexdigest(),
+        "dimensions": dimensions,
+        "metrics": {
+            bound.metric: evaluate_bound(binding, bound.metric, dimensions)
+            for bound in binding.declaration.bounds
+        },
+        "delegates": {} if delegates is None else delegates,
+    }
+
+
+@pytest.mark.parametrize("invalid_last_root", [False, True])
+def test_execution_reader_checks_complete_batches_with_independently_bounded_roots(
+    invalid_last_root,
+):
+    binding = growth_binding(attach(declaration(Expression("dimension", name="bytes"))))
+    projection = project_bindings((binding,))
+    sample = _execution_sample(binding, {"bytes": 1})
+    roots = [sample] * 65536
+    final = {**sample, "metrics": {"processed_bytes": 2}} if invalid_last_root else sample
+    roots.append(final)
+    if invalid_last_root:
+        with pytest.raises(ValueError, match="declared growth bound"):
+            validate_execution_samples(projection, binding.declaration.id, roots)
+    else:
+        validate_execution_samples(projection, binding.declaration.id, roots)
+
+
+@pytest.mark.parametrize("children", [65535, 65536])
+def test_execution_reader_retains_the_complete_single_root_node_budget(children):
+    child = attach(declaration(Expression("dimension", name="bytes")))
+    value = declaration(
+        Expression(
+            "delegate",
+            name="child",
+            metric="processed_bytes",
+            terms=(Expression("dimension", name="calls"),),
+            arguments=(("bytes", Expression("dimension", name="bytes")),),
+        )
+    )
+    value = replace(
+        value,
+        id="fixture.parent.growth/v1",
+        subjects=("fixture.parent",),
+        dimensions=(*value.dimensions, Dimension("calls", COUNT, "Actual child calls.")),
+    )
+
+    def parent_operation():
+        return "exact-output"
+
+    parent = declare_growth(value, delegates=(("child", child),))(parent_operation)
+    binding = growth_binding(parent)
+    projection = project_bindings((binding,))
+    leaf = _execution_sample(growth_binding(child), {"bytes": 1})
+    root = _execution_sample(
+        binding, {"bytes": 1, "calls": children}, delegates={"child": [leaf] * children}
+    )
+    if children == 65536:
+        with pytest.raises(ValueError, match="reader budget"):
+            validate_execution_samples(projection, binding.declaration.id, [root])
+    else:
+        validate_execution_samples(projection, binding.declaration.id, [root])

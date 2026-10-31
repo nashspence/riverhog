@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sqlite3
 import time
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import AbstractContextManager, contextmanager
@@ -9,11 +10,13 @@ from pathlib import Path
 from typing import Any, Literal, Protocol, Self
 
 from pydantic import TypeAdapter
+from riverhog_archive_contracts import MemberHistoryHeads
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.collection_workflows import CollectionRootIdentity
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.portable_collection import PortableCollectionInventoryPage
+from riverhog_provenance import JournalStore, MemberHistoryClosure
 
 from riverhog_client.processing.models import ClaimedArtifact
 from riverhog_client.processing.provenance import ClaimedProvenance, ClaimedProvenanceApi
@@ -129,6 +132,12 @@ class ClaimedCollectionReader:
         claim_id: str,
         fence: int,
         heartbeat: Heartbeat | None = None,
+        history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
     ) -> None:
         if not claim_id or claim_id != claim_id.strip():
             raise ValueError("claimed collection reader requires a canonical claim id")
@@ -150,6 +159,12 @@ class ClaimedCollectionReader:
         self.claim_id = claim_id
         self.fence = fence
         self.heartbeat = heartbeat
+        self._history_connection_factory = history_connection_factory
+        self._on_history_storage_open = on_history_storage_open
+        self._history_verification_connection_factory = history_verification_connection_factory
+        self._on_history_verification_storage_open = on_history_verification_storage_open
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
         self._retrievals: dict[str, ClaimedRetrieval] = {}
 
     def replace_api(self, api: ClaimedCollectionApi) -> None:
@@ -203,6 +218,12 @@ class ClaimedCollectionReader:
             artifact=artifact,
             verify_root=lambda: self._verify_root(artifact.root),
             heartbeat=self.heartbeat or (lambda: None),
+            history_connection_factory=self._history_connection_factory,
+            on_history_storage_open=self._on_history_storage_open,
+            history_verification_connection_factory=self._history_verification_connection_factory,
+            on_history_verification_storage_open=self._on_history_verification_storage_open,
+            provenance_connection_factory=self._provenance_connection_factory,
+            on_provenance_storage_open=self._on_provenance_storage_open,
         )
 
     def prepare(

@@ -19,6 +19,12 @@ from state_schema import (
 
 # The catalog database composition boundary owns registration of every current
 # v1 table with the shared declarative metadata. Model modules remain acyclic.
+from riverhog_core import (
+    catalog_discovery_validation_models as _catalog_discovery_validation_models,  # noqa: E402,F401
+)
+from riverhog_core import (
+    catalog_journal_validation_models as _catalog_journal_validation_models,  # noqa: E402,F401
+)
 from riverhog_core import catalog_models as _catalog_models  # noqa: E402,F401
 from riverhog_core import (
     catalog_provenance_index_models as _catalog_provenance_index_models,  # noqa: E402,F401

@@ -150,7 +150,14 @@ def test_native_staged_corpus_cache_eviction_preserves_an_independent_reader(tmp
                         collection_id=1, journal_id=identity, ordinal=0, byte_offset=0, content=raw
                     )
                 )
-        with Session(engine) as session, _StagedCanonicalCorpus(session, 1) as corpus:
+        with (
+            Session(engine) as session,
+            _StagedCanonicalCorpus(
+                session,
+                1,
+                open_summary=lambda identity: validate_journal(content[identities.index(identity)]),
+            ) as corpus,
+        ):
             with corpus[identities[0]].borrow() as selected:
                 directory = selected._store._storage.directory
                 expected = selected.materialize()
@@ -158,6 +165,8 @@ def test_native_staged_corpus_cache_eviction_preserves_an_independent_reader(tmp
                 corpus[identities[2]]
                 assert identities[0] not in corpus.cache
                 assert selected.materialize() == expected and directory.exists()
+                assert corpus[identities[0]].anchor == selected.anchor
+                assert selected.materialize() == expected
             assert not directory.exists()
             remaining = [row._store._storage.directory for row in corpus.cache.values()]
         assert not any(path.exists() for path in remaining)

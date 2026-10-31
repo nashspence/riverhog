@@ -15,6 +15,7 @@ from riverhog_archive_contracts import (
     normalize_passphrase_id,
 )
 from riverhog_protocol import CATALOG_SYNC_PAGE_SIZE_MAX
+from sqlalchemy.engine import make_url
 
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
@@ -119,6 +120,8 @@ class RuntimeConfig:
     archive_passphrases: Mapping[str, str] = field(default_factory=dict, repr=False)
     archive_active_passphrase_id: str = ""
     archive_scrypt_work_factor: int = DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR
+    journal_validation_workspace: Path = Path("/scratch/journal-validation")
+    journal_validation_concurrency: int = 2
     archive_upload_sweep_interval: timedelta = field(default_factory=lambda: timedelta(seconds=30))
     collection_upload_custody_lease: timedelta = field(default_factory=lambda: timedelta(hours=1))
     retrieval_restore_poll_interval: timedelta = field(default_factory=lambda: timedelta(minutes=5))
@@ -152,9 +155,25 @@ class RuntimeConfig:
         )
         values.setdefault("archive_active_passphrase_id", TEST_ARCHIVE_PASSPHRASE_ID)
         values.setdefault("browse_token_signing_key", TEST_BROWSE_TOKEN_SIGNING_KEY)
+        if values.get("database_url") and "journal_validation_workspace" not in values:
+            url = make_url(values["database_url"])
+            database_path = url.database
+            if url.get_backend_name() == "sqlite" and database_path not in (None, "", ":memory:"):
+                assert database_path is not None
+                database = Path(database_path).resolve()
+                values["journal_validation_workspace"] = database.with_name(
+                    database.name + ".journal-validation"
+                )
         return cls(**values)
 
     def __post_init__(self) -> None:
+        if not self.journal_validation_workspace.is_absolute():
+            raise ValueError("journal_validation_workspace must be an absolute retained directory")
+        if (
+            type(self.journal_validation_concurrency) is not int
+            or self.journal_validation_concurrency < 1
+        ):
+            raise ValueError("journal_validation_concurrency must be positive")
         if len(self.browse_token_signing_key.encode("utf-8")) < 32:
             raise ValueError("browse_token_signing_key_file must contain at least 32 bytes")
         if self.browse_token_lifetime.total_seconds() < 1:

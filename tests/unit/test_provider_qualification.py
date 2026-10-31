@@ -1153,12 +1153,14 @@ def test_runtime_configuration_rejects_mismatched_cloudfront_signing_keys(
         ),
     ),
 )
+@pytest.mark.parametrize("initialize_state", [False, True])
 def test_official_upload_client_writes_directly_and_resumes_after_interruption(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
     profile: str,
     expected_processes: int,
     resumable_observations: tuple[str, ...],
+    initialize_state: bool,
 ) -> None:
     module = load_script()
     captured: dict[str, object] = {"commands": []}
@@ -1288,12 +1290,14 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
         base_url="http://127.0.0.1:8000",
         token="token",
         allow_insecure_http=True,
+        initialize_state=initialize_state,
     )
 
     commands = captured["commands"]
     assert isinstance(commands, list)
     assert len(commands) == expected_processes
-    for command in commands:
+    for index, command in enumerate(commands):
+        assert ("--initialize-state" in command) is (initialize_state and index == 0)
         archive_store_index = command.index("--archive-store")
         assert command[archive_store_index + 1] == "b2-archive"
         idempotency_index = command.index("--idempotency-key")
@@ -1309,9 +1313,11 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
     }
 
 
+@pytest.mark.parametrize("initialize_upload_state", [False, True])
 def test_operator_advances_across_short_restore_invocations(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    initialize_upload_state: bool,
 ) -> None:
     module = load_script()
     config = module.load_config(CONFIG)
@@ -1450,10 +1456,11 @@ def test_operator_advances_across_short_restore_invocations(
         yield api, "rotated-token", "a" * 16
 
     monkeypatch.setattr(module, "_qualification_api", qualification_api)
-    monkeypatch.setattr(
-        module,
-        "_upload_collection_with_observation",
-        lambda *_args, **_kwargs: (
+    upload_authorities = []
+
+    def upload_with_observation(*_args, **kwargs):
+        upload_authorities.append(kwargs["initialize_state"])
+        return (
             42,
             (
                 "committed-payload-progress",
@@ -1462,8 +1469,9 @@ def test_operator_advances_across_short_restore_invocations(
                 "unit-readback",
                 "upload-work-acquisition",
             ),
-        ),
-    )
+        )
+
+    monkeypatch.setattr(module, "_upload_collection_with_observation", upload_with_observation)
     for name in (
         "_wait_archive_copy",
         "_assert_catalog_sync",
@@ -1501,6 +1509,7 @@ def test_operator_advances_across_short_restore_invocations(
         checkpoint_path=checkpoint_path,
         corpus=corpus,
         corpus_root=corpus_root,
+        initialize_upload_state=initialize_upload_state,
         base_url="http://127.0.0.1:8000",
         allow_insecure_http=True,
         buckets=module.resolve_buckets(config, values),
@@ -1508,6 +1517,7 @@ def test_operator_advances_across_short_restore_invocations(
         values=values,
     )
 
+    assert upload_authorities == [initialize_upload_state]
     assert first.phase == "restore-pending"
     assert module.load_checkpoint(checkpoint_path) == first
     assert first.collection_id == 42

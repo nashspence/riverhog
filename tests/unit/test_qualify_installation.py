@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import sys
+import zipfile
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -967,3 +968,353 @@ def test_windows_trace_defers_to_durable_failure_snapshot(
     events = trace.stop()
 
     assert events == ()
+
+
+@pytest.mark.parametrize(
+    "invalid",
+    [
+        None,
+        "compiler",
+        "digest",
+        "tracking",
+        "bool-tracking",
+        "callbacks",
+        "recovery",
+        "vfs-calls",
+        "resize-calls",
+        "callback-slots",
+        "bool-callback-slots",
+        "heap-limit",
+        "float-heap-limit",
+        "sleep-forward",
+        "sleep-recovery",
+        "bool-sleep",
+        "sleep-rounding",
+        "sleep-refusal",
+        "retry-attempts",
+        "retry-sleep",
+        "retry-count",
+        "retry-delay",
+        "retry-verified",
+        "retry-close",
+        "retry-pin",
+        "retry-bool-count",
+        "retry-float-attempts",
+        "work-bank-forward",
+        "work-bank-recovery",
+        "work-bank-forward-sleep",
+        "work-bank-recovery-sleep",
+        "work-bank-refusal",
+        "work-close-detached",
+        "work-recipes",
+        "native-fs-calls",
+        "native-internal-wait",
+        "native-prepaid-closes",
+        "native-work-refusal",
+        "native-binding-close",
+        "runtime-binary",
+        "runtime-binary-missing",
+        "runtime-binary-integer",
+        "logger-admission",
+        "logger-admission-missing",
+        "logger-admission-integer",
+        "output-forward",
+        "output-recovery",
+        "output-forward-bool",
+        "output-recovery-float",
+        "output-vfs-zero",
+        "output-vfs-bool",
+        "output-refusal",
+        "output-refusal-integer",
+        "population-verified",
+        "population-missing",
+        "population-integer",
+        "population-report-missing",
+        "population-report-extra",
+        "population-held-owner",
+        "population-held-file",
+        "population-owner-limit",
+        "population-file-limit",
+        "population-owner-refusal",
+        "population-file-refusal",
+        "population-bool-count",
+        "population-float-count",
+        "native-bool-fs-calls",
+        "native-float-wait",
+        "work-bank-bool",
+        "work-bank-float",
+        "heap-peak",
+        "zero-heap-peak",
+        "bool-heap-peak",
+        "read-calls",
+        "read-bytes",
+        "bool-read-calls",
+        "vfs-exact",
+        "vfs-binding",
+        "source",
+        "library",
+    ],
+)
+def test_installed_native_bank_requires_isolation_and_complete_positive_evidence(
+    tmp_path, monkeypatch, invalid
+):
+    module = load_script()
+    proof = {
+        "compiler": "MSVC 194433519",
+        "module_sha256": "a" * 64,
+        "tracking_bytes": 240,
+        "forward_pages": 2,
+        "recovery_pages": 3,
+        "refusals": 1,
+        "storage_callbacks_native": True,
+        "vfs_write_calls": 7,
+        "vfs_resize_calls": 2,
+        "vfs_callback_slots": 128,
+        "callback_sleep_forward_microseconds": 1000,
+        "callback_sleep_recovery_microseconds": 1000,
+        "callback_sleep_refusal_verified": True,
+        "retry_bootstrap_filesystem_api_attempts_prepaid": 171,
+        "retry_bootstrap_sleep_microseconds_prepaid": 20825000,
+        "retry_count": 2,
+        "retry_delay_milliseconds": 3,
+        "retry_admission_verified": True,
+        "retry_bootstrap_close_verified": True,
+        "retry_bootstrap_pin_released": True,
+        "native_work_bank_forward_attempts": 4,
+        "native_work_bank_recovery_attempts": 4,
+        "native_work_bank_forward_sleep_microseconds": 200000,
+        "native_work_bank_recovery_sleep_microseconds": 200000,
+        "native_work_bank_refusal_verified": True,
+        "native_filesystem_recipes_verified": True,
+        "runtime_binary_admission_verified": True,
+        "sqlite_logger_disabled_at_admission": True,
+        "callback_buffer_forward_bytes": 7,
+        "callback_buffer_recovery_bytes": 11,
+        "vfs_auxiliary_buffer_bytes": 1041,
+        "vfs_buffer_refusal_verified": True,
+        "native_population_verified": True,
+        "native_population": {
+            "owner_limit": 1,
+            "file_limit": 2,
+            "owners": 0,
+            "files": 0,
+            "owner_peak": 1,
+            "file_peak": 2,
+            "owner_refusals": 1,
+            "file_refusals": 1,
+        },
+        "vfs_native_filesystem_attempts": 4096,
+        "vfs_native_internal_sleep_microseconds": 600000,
+        "vfs_native_recovery_close_attempts_prepaid": 8,
+        "vfs_native_work_refusal_verified": True,
+        "vfs_native_binding_close_after_rearm_verified": True,
+        "native_close_credit_detached_verified": True,
+        "sqlite_heap_limit_bytes": 67108864,
+        "sqlite_heap_peak_bytes": 1048576,
+        "vfs_read_calls": 3,
+        "vfs_read_bytes": 4096,
+        "vfs_original_exact": True,
+        "vfs_binding_verified": True,
+        "sqlite_source_id": "qualified-runtime-source",
+        "sqlite_library_sha256": "b" * 64,
+    }
+    if invalid == "compiler":
+        proof["compiler"] = "unknown"
+    elif invalid == "digest":
+        proof["module_sha256"] = "invalid"
+    elif invalid == "tracking":
+        proof["tracking_bytes"] = 0
+    elif invalid == "bool-tracking":
+        proof["tracking_bytes"] = True
+    elif invalid == "callbacks":
+        proof["storage_callbacks_native"] = False
+    elif invalid == "recovery":
+        proof["recovery_pages"] = 2
+    elif invalid == "vfs-calls":
+        proof["vfs_write_calls"] = 0
+    elif invalid == "resize-calls":
+        proof["vfs_resize_calls"] = 0
+    elif invalid == "callback-slots":
+        proof["vfs_callback_slots"] = 0
+    elif invalid == "bool-callback-slots":
+        proof["vfs_callback_slots"] = True
+    elif invalid == "float-heap-limit":
+        proof["sqlite_heap_limit_bytes"] = 67108864.0
+    elif invalid == "sleep-forward":
+        proof["callback_sleep_forward_microseconds"] = 0
+    elif invalid == "sleep-recovery":
+        proof["callback_sleep_recovery_microseconds"] = 0
+    elif invalid == "bool-sleep":
+        proof["callback_sleep_forward_microseconds"] = True
+    elif invalid == "sleep-rounding":
+        proof["callback_sleep_forward_microseconds"] = 999
+    elif invalid == "sleep-refusal":
+        proof["callback_sleep_refusal_verified"] = False
+    elif invalid == "retry-attempts":
+        proof["retry_bootstrap_filesystem_api_attempts_prepaid"] = 170
+    elif invalid == "retry-sleep":
+        proof["retry_bootstrap_sleep_microseconds_prepaid"] = 20824999
+    elif invalid == "retry-count":
+        proof["retry_count"] = 0
+    elif invalid == "retry-delay":
+        proof["retry_delay_milliseconds"] = 25
+    elif invalid == "retry-verified":
+        proof["retry_admission_verified"] = False
+    elif invalid == "retry-close":
+        proof["retry_bootstrap_close_verified"] = False
+    elif invalid == "retry-pin":
+        proof["retry_bootstrap_pin_released"] = False
+    elif invalid == "retry-bool-count":
+        proof["retry_count"] = True
+    elif invalid == "retry-float-attempts":
+        proof["retry_bootstrap_filesystem_api_attempts_prepaid"] = 171.0
+    elif invalid == "work-bank-forward":
+        proof["native_work_bank_forward_attempts"] = 3
+    elif invalid == "work-bank-recovery":
+        proof["native_work_bank_recovery_attempts"] = 3
+    elif invalid == "work-bank-forward-sleep":
+        proof["native_work_bank_forward_sleep_microseconds"] = 199999
+    elif invalid == "work-bank-recovery-sleep":
+        proof["native_work_bank_recovery_sleep_microseconds"] = 199999
+    elif invalid == "work-bank-refusal":
+        proof["native_work_bank_refusal_verified"] = False
+    elif invalid == "work-recipes":
+        proof["native_filesystem_recipes_verified"] = False
+    elif invalid == "native-fs-calls":
+        proof["vfs_native_filesystem_attempts"] = 0
+    elif invalid == "native-internal-wait":
+        proof["vfs_native_internal_sleep_microseconds"] = 0
+    elif invalid == "native-prepaid-closes":
+        proof["vfs_native_recovery_close_attempts_prepaid"] = 0
+    elif invalid == "native-work-refusal":
+        proof["vfs_native_work_refusal_verified"] = False
+    elif invalid == "native-binding-close":
+        proof["vfs_native_binding_close_after_rearm_verified"] = False
+    elif invalid == "runtime-binary":
+        proof["runtime_binary_admission_verified"] = False
+    elif invalid == "runtime-binary-missing":
+        del proof["runtime_binary_admission_verified"]
+    elif invalid == "runtime-binary-integer":
+        proof["runtime_binary_admission_verified"] = 1
+    elif invalid == "logger-admission":
+        proof["sqlite_logger_disabled_at_admission"] = False
+    elif invalid == "logger-admission-missing":
+        del proof["sqlite_logger_disabled_at_admission"]
+    elif invalid == "logger-admission-integer":
+        proof["sqlite_logger_disabled_at_admission"] = 1
+    elif invalid == "output-forward":
+        proof["callback_buffer_forward_bytes"] = 6
+    elif invalid == "output-recovery":
+        proof["callback_buffer_recovery_bytes"] = 10
+    elif invalid == "output-forward-bool":
+        proof["callback_buffer_forward_bytes"] = True
+    elif invalid == "output-recovery-float":
+        proof["callback_buffer_recovery_bytes"] = 11.0
+    elif invalid == "output-vfs-zero":
+        proof["vfs_auxiliary_buffer_bytes"] = 0
+    elif invalid == "output-vfs-bool":
+        proof["vfs_auxiliary_buffer_bytes"] = True
+    elif invalid == "output-refusal":
+        proof["vfs_buffer_refusal_verified"] = False
+    elif invalid == "output-refusal-integer":
+        proof["vfs_buffer_refusal_verified"] = 1
+    elif invalid == "population-verified":
+        proof["native_population_verified"] = False
+    elif invalid == "population-missing":
+        del proof["native_population_verified"]
+    elif invalid == "population-integer":
+        proof["native_population_verified"] = 1
+    elif invalid == "population-report-missing":
+        del proof["native_population"]
+    elif invalid == "population-report-extra":
+        proof["native_population"]["extra"] = 0
+    elif invalid in ("population-held-owner", "population-held-file"):
+        proof["native_population"]["owners" if invalid.endswith("owner") else "files"] = 1
+    elif invalid in ("population-owner-limit", "population-file-limit"):
+        proof["native_population"]["owner_limit" if "owner" in invalid else "file_limit"] = 3
+    elif invalid in ("population-owner-refusal", "population-file-refusal"):
+        proof["native_population"]["owner_refusals" if "owner" in invalid else "file_refusals"] = 0
+    elif invalid == "population-bool-count":
+        proof["native_population"]["owner_refusals"] = True
+    elif invalid == "population-float-count":
+        proof["native_population"]["owners"] = 0.0
+    elif invalid == "native-bool-fs-calls":
+        proof["vfs_native_filesystem_attempts"] = True
+    elif invalid == "native-float-wait":
+        proof["vfs_native_internal_sleep_microseconds"] = 600000.0
+    elif invalid == "work-close-detached":
+        proof["native_close_credit_detached_verified"] = False
+    elif invalid == "work-bank-bool":
+        proof["native_work_bank_forward_attempts"] = True
+    elif invalid == "work-bank-float":
+        proof["native_work_bank_recovery_sleep_microseconds"] = 200000.0
+    elif invalid == "heap-limit":
+        proof["sqlite_heap_limit_bytes"] = 0
+    elif invalid == "heap-peak":
+        proof["sqlite_heap_peak_bytes"] = 67108865
+    elif invalid == "zero-heap-peak":
+        proof["sqlite_heap_peak_bytes"] = 0
+    elif invalid == "bool-heap-peak":
+        proof["sqlite_heap_peak_bytes"] = True
+    elif invalid == "read-calls":
+        proof["vfs_read_calls"] = 0
+    elif invalid == "read-bytes":
+        proof["vfs_read_bytes"] = 0
+    elif invalid == "bool-read-calls":
+        proof["vfs_read_calls"] = True
+    elif invalid == "vfs-binding":
+        proof["vfs_binding_verified"] = False
+    elif invalid == "vfs-exact":
+        proof["vfs_original_exact"] = False
+    elif invalid == "source":
+        proof["sqlite_source_id"] = ""
+    elif invalid == "library":
+        proof["sqlite_library_sha256"] = "invalid"
+
+    def execute(command, **options):
+        assert command[:3] == [str(tmp_path / "python"), "-I", "-c"]
+        assert options == {"cwd": tmp_path, "env": {}, "capture": True}
+        compile(command[3], "<installed-native-proof>", "exec")
+        return subprocess.CompletedProcess(command, 0, json.dumps(proof), "")
+
+    monkeypatch.setattr(module, "_run", execute)
+    if invalid is None:
+        assert (
+            module._installed_client_write_bank(
+                tmp_path / "python", scratch=tmp_path, environment={}
+            )
+            == proof
+        )
+    else:
+        with pytest.raises(module.QualificationError, match="write-bank proof"):
+            module._installed_client_write_bank(
+                tmp_path / "python", scratch=tmp_path, environment={}
+            )
+
+
+@pytest.mark.parametrize(
+    "members",
+    [
+        ["riverhog_client/_prepared_primary_native.cp312-win_amd64.pyd"],
+        [],
+        ["riverhog_client/_prepared_primary_native.pyi"],
+        ["other_package/_prepared_primary_native.pyd"],
+        [
+            "riverhog_client/_prepared_primary_native.cp312-win_amd64.pyd",
+            "riverhog_client/_prepared_primary_native.cp313-win_amd64.pyd",
+        ],
+    ],
+)
+def test_native_wheel_missing_or_ambiguous_module_fails_before_expensive_lifecycles(
+    tmp_path, members
+):
+    module = load_script()
+    wheel = tmp_path / "riverhog_client-1.0.0-cp312-cp312-win_amd64.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        for name in members:
+            archive.writestr(name, b"compiled-module-subject")
+    if len(members) == 1 and members[0].endswith("cp312-win_amd64.pyd"):
+        module._require_client_native_module(wheel)
+    else:
+        with pytest.raises(module.QualificationError, match="unique native"):
+            module._require_client_native_module(wheel)

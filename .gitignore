@@ -16,3 +16,4 @@ __pycache__/
 /qualification/contracts/riverhog-v1/
 mise.local.lock
 mise.local.toml
+/packages/riverhog-client/src/riverhog_client/_prepared_primary_native*.pyd

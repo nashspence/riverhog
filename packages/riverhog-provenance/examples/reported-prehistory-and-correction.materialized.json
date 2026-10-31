@@ -1,15 +1,4 @@
 {
-  "format": "riverhog-provenance-materialized/v1",
-  "journal": {
-    "journal_id": "urn:uuid:b6367f21-6b52-50df-8797-21dfd9a7c5a6",
-    "through": {
-      "entry_id": "urn:uuid:ffd6f2a1-c269-5e13-b490-081f57129387",
-      "sequence": "7",
-      "json_sha256": "87f5e4535cab2f5010e2cfebc222ebe1b4946231155ea6d1a2a25d9e059fd08d"
-    },
-    "prefix_sha256": "18c338d20cab755c9c4ebb1f7af46e4acf464e2923e7c83dccef5fdcc9da5a6d",
-    "prefix_bytes": "33143"
-  },
   "effective_assertions": {
     "activities": [
       {
@@ -987,6 +976,17 @@
         "type": "state"
       }
     ]
+  },
+  "format": "riverhog-provenance-materialized/v1",
+  "journal": {
+    "journal_id": "urn:uuid:b6367f21-6b52-50df-8797-21dfd9a7c5a6",
+    "prefix_bytes": "33143",
+    "prefix_sha256": "18c338d20cab755c9c4ebb1f7af46e4acf464e2923e7c83dccef5fdcc9da5a6d",
+    "through": {
+      "entry_id": "urn:uuid:ffd6f2a1-c269-5e13-b490-081f57129387",
+      "json_sha256": "87f5e4535cab2f5010e2cfebc222ebe1b4946231155ea6d1a2a25d9e059fd08d",
+      "sequence": "7"
+    }
   },
   "retracted_assertion_ids": [
     "urn:uuid:8805ead3-5a6b-529f-b681-9268eb3272e3"

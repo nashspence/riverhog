@@ -12,6 +12,7 @@ from alembic.config import Config
 from alembic.migration import MigrationContext
 from alembic.script import ScriptDirectory
 from alembic.script.revision import ResolutionError
+from alembic.util.exc import CommandError
 from sqlalchemy import CheckConstraint, MetaData, String, create_engine, event, inspect, text
 from sqlalchemy.engine import URL, Connection, Engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -131,7 +132,7 @@ class StateSchema:
             return StateStatus(self.name, "current", current, head)
         try:
             revision = script.get_revision(current)
-        except ResolutionError:
+        except (ResolutionError, CommandError):
             return StateStatus(self.name, "incompatible", current, head)
         if revision is None:
             return StateStatus(self.name, "incompatible", current, head)
@@ -203,7 +204,7 @@ class StateSchema:
             return StateStatus(self.name, "current", current, head)
         try:
             revision = script.get_revision(current)
-        except ResolutionError:
+        except (ResolutionError, CommandError):
             return StateStatus(self.name, "incompatible", current, head)
         if revision is None:
             return StateStatus(self.name, "incompatible", current, head)

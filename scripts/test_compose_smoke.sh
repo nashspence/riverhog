@@ -1,5 +1,35 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+
+qualification_failure_source="${BASH_SOURCE[0]}"
+qualification_failure_reported=0
+qualification_failure() {
+  local status="$1" index line separator="" lines="" retained=0
+  # ERR is inherited by command substitutions whose errexit may be disabled.
+  # Report only an unhandled failure under the script's active exit policy.
+  if [[ "$-" != *e* || "${qualification_failure_reported}" == "1" ||
+        ! "${status}" =~ ^[1-9][0-9]*$ ]] || (( status > 255 )); then
+    return 0
+  fi
+  for ((index=1; index<${#BASH_SOURCE[@]} && retained<3; index++)); do
+    if [[ "${BASH_SOURCE[index]}" != "${qualification_failure_source}" ]]; then
+      continue
+    fi
+    line="${BASH_LINENO[index-1]}"
+    if [[ "${line}" =~ ^[1-9][0-9]*$ ]]; then
+      lines+="${separator}${line}"
+      separator=","
+      retained=$((retained + 1))
+    fi
+  done
+  if (( retained )); then
+    qualification_failure_reported=1
+    printf '::error title=Compose qualification::{"format":"riverhog-compose-failure-diagnostic/v1","exit_status":%s,"source_lines":[%s]}\n' \
+      "${status}" "${lines}" >&2 || true
+  fi
+  return 0
+}
+trap 'qualification_failure "$?"' ERR
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_compose_env.sh"
 source "${ROOT_DIR}/scripts/_ci_timing.sh"
@@ -282,6 +312,10 @@ chmod 0640 "${secret_root}"/*
 
 adapter_config="${smoke_root}/ftp-spool.yaml"
 cat > "${adapter_config}" <<EOF
+primary_state:
+  scope:
+    service: qualification-service
+    account: qualification-account
 host_id: urn:uuid:00000000-0000-4000-8000-000000000522
 riverhog_base_url: http://app:8000
 riverhog_token_file: /run/secrets/riverhog_token
@@ -338,6 +372,8 @@ export A_STOVE0_MAGIC_OBSERVER_IMAGE_ID="sha256:$(printf '9%.0s' {1..64})"
 export A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_IMAGE_ID="sha256:$(printf 'a%.0s' {1..64})"
 export A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID="sha256:$(printf '6%.0s' {1..64})"
 export A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID="sha256:$(printf '2%.0s' {1..64})"
+export A_STOVE0_OPUS_TARGET_PRIMARY_STATE='{"scope":{"service":"qualification-service","account":"qualification-account"}}'
+export A_STOVE0_NVENC_AV1_OPUS_TARGET_PRIMARY_STATE='{"scope":{"service":"qualification-service","account":"qualification-account"}}'
 export A_STOVE0_OPUS_TARGET_IMAGE_ID="sha256:$(printf '3%.0s' {1..64})"
 export REVIEW0_IMAGE_ID="sha256:$(printf '4%.0s' {1..64})"
 export A_STOVE0_RCLONE_TARGET_IMAGE_ID="sha256:$(printf '7%.0s' {1..64})"
@@ -351,13 +387,17 @@ export REVIEW0_CONFIG_HOST_PATH="${materializer_config}"
 export A_STOVE0_RCLONE_TARGET_CONFIG_HOST_PATH="${rclone_target_config}"
 write_review_configs() {
   cat > "${materializer_config}" <<EOF
+primary_state:
+  scope:
+    service: qualification-service
+    account: qualification-account
 token_file: /run/secrets/review0_token
 samplers:
   - id: opus
     base_url: http://a-review0-opus-sampler:8080
     token_file: /run/secrets/a_review0_opus_sampler_token
     allow_insecure_http: true
-    descriptor_sha256: ${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256}
+    descriptor_sha256: "${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256}"
     image_id: ${A_STOVE0_OPUS_TARGET_IMAGE_ID}
 EOF
   cat > "${rclone_target_config}" <<EOF
@@ -385,6 +425,7 @@ export A_RIVERHOG_FTP_SPOOL_API_TOKEN_FILE="${secret_root}/ftp-spool-api-token"
 export A_RIVERHOG_FTP_SPOOL_PASSWORD_FILE="${secret_root}/ftp-spool-password"
 
 client_environment=(
+  --env 'A_RIVERHOG_CLI_PRIMARY_STATE={"scope":{"service":"qualification-service","account":"qualification-account"}}'
   --env RIVERHOG_BASE_URL=http://app:8000
   --env RIVERHOG_ALLOW_INSECURE_HTTP=true
   --env "RIVERHOG_TOKEN=${smoke_token}"
@@ -528,9 +569,11 @@ start_ftp
 partition_run_code="from ftplib import FTP, all_errors
 from io import BytesIO
 import json
+import os
 from pathlib import Path
 import time
 from a_riverhog_ftp_spool_client import RiverhogFtpSpoolClient
+publication_timeout = int(os.environ['STOVE0_SMOKE_PUBLICATION_TIMEOUT'])
 same_path = Path('/intake/ftp/same-path.bin')
 expected = (b'first exact FTP event', b'second distinct exact FTP event')
 
@@ -564,15 +607,16 @@ with RiverhogFtpSpoolClient(
     base_url='http://127.0.0.1:8080',
     token='a-riverhog-ftp-spool-compose-smoke-token',
     allow_insecure_http=True,
+    timeout_seconds=publication_timeout,
 ) as client:
     result = client.flush_ftp_spool_source('ftp-smoke')
     assert result['failed'] == [], result
-    deadline = time.monotonic() + 60
+    deadline = time.monotonic() + publication_timeout
     while time.monotonic() < deadline:
+        status = client.get_ftp_spool_status()
         receipt_paths = sorted(
             Path('/intake/ftp/.a-riverhog-ftp-spool/receipts').glob('*.json')
         )
-        status = client.get_ftp_spool_status()
         if len(receipt_paths) == 2 and status.sources[0].claims == 0:
             break
         time.sleep(0.25)
@@ -593,6 +637,7 @@ print(json.dumps([
 ], sort_keys=True))"
 partition_receipts_json="$(adapter_compose exec -T \
   --env RIVERHOG_SMOKE_PARTITION_OUTPUT=1 \
+  --env "STOVE0_SMOKE_PUBLICATION_TIMEOUT=${smoke_publication_timeout}" \
   ftp-spool python -c "${partition_run_code}")"
 test "$(printf '%s' "${partition_receipts_json}" | jq 'length')" -eq 2
 
@@ -661,14 +706,16 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
 
 upload_media_fixture() {
 configure_media_ftp
-adapter_run_code="from ftplib import FTP, all_errors
+adapter_run_code="$(cat "${ROOT_DIR}/scripts/ftp_publication_diagnostics.py")
+from ftplib import FTP, all_errors
 from io import BytesIO
 import json
 import os
 from pathlib import Path
 import time
 import wave
-from a_riverhog_ftp_spool_client import RiverhogFtpSpoolClient
+from a_riverhog_ftp_spool_client import FtpSpoolApiError, RiverhogFtpSpoolClient
+install_publication_diagnostics('fixture', api_error_type=FtpSpoolApiError)
 payload = BytesIO()
 with wave.open(payload, 'wb') as audio:
     audio.setnchannels(1)
@@ -713,6 +760,7 @@ def upload(source, content, *, rest=None):
             time.sleep(0.25)
     raise RuntimeError('FTP listener did not accept completed input') from last_error
 
+publication_stage('listener-uploads')
 if os.environ['STOVE0_SMOKE_INTERRUPT_TRANSFER'] == '1':
     first_source, first_content = uploads[0]
     split = max(1, len(first_content) // 3)
@@ -765,6 +813,7 @@ else:
 for source, content in uploads[1:]:
     upload(source, content)
 assert all(not source.exists() for source, _content in uploads)
+publication_stage('listener-handoff')
 completion_log = Path('/intake/ftp/.a-riverhog-ftp-spool/completed-transfers.log')
 deadline = time.monotonic() + 10
 while time.monotonic() < deadline:
@@ -777,21 +826,32 @@ with RiverhogFtpSpoolClient(
     base_url='http://127.0.0.1:8080',
     token='a-riverhog-ftp-spool-compose-smoke-token',
     allow_insecure_http=True,
-    timeout_seconds=300 + 30 * max(0, int(os.environ['STOVE0_SMOKE_FILE_COUNT']) - 16),
+    timeout_seconds=int(os.environ['STOVE0_SMOKE_PUBLICATION_TIMEOUT']),
 ) as client:
+    publication_stage('spool-health')
     health = client.ftp_spool_health_ready()
     assert health.service == 'a-riverhog-ftp-spool'
     assert health.status == 'ok'
+    publication_stage('spool-flush')
     result = client.flush_ftp_spool_source('ftp-smoke')
+    publication_stage('flush-result')
+    publication_count('completed', result['completed'])
+    publication_count('failed', len(result['failed']))
     assert result['completed'] == 1, result
     assert result['failed'] == [], result
+    publication_stage('spool-status')
     status = client.get_ftp_spool_status()
+    publication_count('claims', status.sources[0].claims)
     assert status.sources[0].claims == 0, status
+publication_stage('source-cleanup')
 assert all(not source.exists() for source, _content in uploads)
+publication_stage('receipt-confirmation')
 receipts = sorted(receipt_root.glob('*.json'))
 new_receipts = [path for path in receipts if path.name not in existing_receipts]
+publication_count('new_receipts', len(new_receipts))
 assert len(receipts) == len(existing_receipts) + 1, receipts
 assert len(new_receipts) == 1, new_receipts
+publication_stage('receipt-read')
 receipt = json.loads(new_receipts[0].read_text(encoding='utf-8'))
 print(json.dumps({
     key: receipt[key]
@@ -803,12 +863,15 @@ input_receipt_json="$(adapter_compose exec -T \
   --env RIVERHOG_SMOKE_RECEIPT_OUTPUT=1 \
   --env "STOVE0_SMOKE_FILE_COUNT=${smoke_file_count}" \
   --env "STOVE0_SMOKE_AUDIO_FRAMES=${smoke_audio_frames}" \
+  --env "STOVE0_SMOKE_PUBLICATION_TIMEOUT=${smoke_publication_timeout}" \
   --env "STOVE0_SMOKE_INTERRUPT_TRANSFER=${interrupt_transfer}" \
   ftp-spool python -c "${adapter_run_code}")"
 test -n "${input_receipt_json}"
 input_collection_id="$(printf '%s' "${input_receipt_json}" | jq -r '.collection_id')"
 
-classification_code="import os
+classification_code="$(cat "${ROOT_DIR}/scripts/ftp_publication_diagnostics.py")
+install_publication_diagnostics('classification')
+import os
 from riverhog_client import ApiClient
 with ApiClient() as client:
     collection_id = int(os.environ['INPUT_COLLECTION_ID'])
@@ -1321,7 +1384,7 @@ stove0_compose exec -T a-stove0-rclone-target python -c "from pathlib import Pat
 # Review0's ordinary finalized collection is inspected before introducing the
 # independent delivery admission policy. This makes the collection boundary
 # observable instead of relying on a race with fast local rclone delivery.
-ci_phase review-delivery
+ci_phase review-input-upload
 review_input_root="${smoke_root}/review-input"
 install -d -m 0700 "${review_input_root}"
 python3 -c "import sys, wave
@@ -1338,6 +1401,7 @@ review_input_receipt_json="$(
     --json
 )"
 review_qualification="$(cat "${ROOT_DIR}/scripts/qualify_review0_delivery.py")"
+ci_phase review-evaluation
 review_result_json="$(stove0_compose exec -T \
   --env "REVIEW_INPUT_RECEIPT=${review_input_receipt_json}" \
   api python -c "${review_qualification}" review)"
@@ -1345,6 +1409,7 @@ review_output_collection_id="$(printf '%s' "${review_result_json}" | jq -r '.col
 review_source_collection_id="$(printf '%s' "${review_result_json}" | jq -r '.source_collection_id')"
 test -n "${review_output_collection_id}"
 
+ci_phase review-delivery-admission
 full_admission_config="${smoke_root}/stove0.full-admissions.yaml"
 sed '/^admissions:/,$d' "${STOVE0_CONFIG_HOST_PATH}" > "${full_admission_config}"
 printf '%s\n' 'admissions:' >> "${full_admission_config}"
@@ -1361,6 +1426,7 @@ delivery_result_json="$(stove0_compose exec -T \
   api python -c "${review_qualification}" delivery)"
 delivery_id="$(printf '%s' "${delivery_result_json}" | jq -r '.delivery_id')"
 manifest_sha256="$(printf '%s' "${delivery_result_json}" | jq -r '.manifest_sha256')"
+ci_phase review-delivery-verification
 stove0_compose exec -T \
   --env "RCLONE_DELIVERY_ID=${delivery_id}" \
   --env "RCLONE_MANIFEST_SHA256=${manifest_sha256}" \
@@ -1376,6 +1442,7 @@ for artifact in manifest['artifacts']:
     delivered = (root / 'objects' / artifact['delivered_path']).read_bytes()
     assert len(delivered) == int(artifact['bytes'])
     assert hashlib.sha256(delivered).hexdigest() == artifact['sha256']"
+ci_phase review-delivery-replay
 stove0_compose restart api controller worker a-stove0-rclone-target
 stove0_compose up --detach --wait api controller worker a-stove0-rclone-target
 stove0_compose exec -T \

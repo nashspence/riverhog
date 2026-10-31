@@ -7,8 +7,7 @@ import re
 import secrets
 import uuid
 from collections import OrderedDict
-from collections.abc import Generator, Iterator, Mapping, Sequence
-from contextlib import closing
+from collections.abc import Callable, Generator, Iterator, Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import timedelta
 from itertools import islice
@@ -65,6 +64,7 @@ from riverhog_growth_contracts import (
     Dimension,
     Expression,
     declare_growth,
+    growth_binding,
 )
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
@@ -100,6 +100,7 @@ from riverhog_protocol import (
     collection_upload_raw_digest_summary,
     decode_collection_tag_node,
     validate_collection_tag,
+    validate_collection_upload_artifact_custody_receipt,
     validate_collection_upload_batch_against_registration_constraints,
 )
 from riverhog_protocol.collection_completion import (
@@ -151,7 +152,7 @@ from riverhog_provenance import (
     external_reference,
     validate_journal_chunks,
 )
-from sqlalchemy import asc, case, desc, exists, func, insert, or_, select, true, update
+from sqlalchemy import asc, case, desc, exists, func, insert, or_, select, true, tuple_, update
 from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import Session, selectinload
 from state_schema import read_snapshot
@@ -323,6 +324,7 @@ from riverhog_core.services.operation_plans import (
     plan_challenge,
 )
 from riverhog_core.services.retrieval_cache import register_cache_ready
+from riverhog_core.services.upload_custody_growth import custody_readback_declaration
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
     MirroredArchiveResumableObjectStore,
 )
@@ -393,6 +395,20 @@ class SqlAlchemyCollectionUploadService:
         self._retrieval_cache = retrieval_cache
         self._policy = policy or config.volume_policy
         self._session_factory = session_factory or make_session_factory(config.database_url)
+        from .upload_journal_validation_owner import UploadJournalValidationOwner
+
+        self._journal_validation_owner = UploadJournalValidationOwner(
+            self._session_factory,
+            config.journal_validation_workspace,
+            concurrency=config.journal_validation_concurrency,
+        )
+        self._journal_validation_after: tuple[int, str] | None = None
+        from .upload_journal_validation_retirement import UploadJournalValidationRetirement
+
+        self._journal_validation_retirement = UploadJournalValidationRetirement(
+            self._session_factory, config.journal_validation_workspace
+        )
+        self._journal_validation_cleanup_turn = False
         self._checkpoints = SqlAlchemyArchiveUploadCheckpointStore(
             config,
             session_factory=self._session_factory,
@@ -412,6 +428,9 @@ class SqlAlchemyCollectionUploadService:
             )
             for passphrase_id, passphrase in config.archive_passphrases.items()
         }
+
+    def close(self) -> None:
+        self._journal_validation_owner.close()
 
     def create_or_resume(
         self,
@@ -1605,7 +1624,16 @@ class SqlAlchemyCollectionUploadService:
         self._advance_provenance_journal_validation(normalized_id, journal_id)
         return self.get_provenance_journal(normalized_id, journal_id)
 
-    def _advance_provenance_journal_validation(self, collection_id: int, journal_id: str) -> None:
+    def _advance_provenance_journal_validation(self, collection_id: int, journal_id: str) -> bool:
+        before = _upload_journal_validation_stamp(self._session_factory, collection_id, journal_id)
+        self._advance_provenance_journal_validation_unit(collection_id, journal_id)
+        return before != _upload_journal_validation_stamp(
+            self._session_factory, collection_id, journal_id
+        )
+
+    def _advance_provenance_journal_validation_unit(
+        self, collection_id: int, journal_id: str
+    ) -> None:
         work = _read_upload_journal_capture(self._session_factory, collection_id, journal_id)
         if work is not None:
             # Source and catalog readers have closed before this detached scan.
@@ -1647,11 +1675,11 @@ class SqlAlchemyCollectionUploadService:
             self._session_factory, validation, catalog=admission_provenance_catalog()
         ):
             return
-        try:
-            outcome = _compute_upload_journal_validation(self._session_factory, validation)
-        except _StaleUploadJournalValidation:
-            return
-        _commit_upload_journal_validation(self._session_factory, validation, outcome)
+        step = self._journal_validation_owner.advance(
+            validation, catalog=admission_provenance_catalog()
+        )
+        if step.outcome is not None:
+            _commit_upload_journal_validation(self._session_factory, validation, step.outcome)
 
     def get_provenance_journal(
         self,
@@ -1686,26 +1714,45 @@ class SqlAlchemyCollectionUploadService:
     def process_due_provenance_journal_validations(self, *, limit: int = 1) -> int:
         processed = 0
         for _ in range(max(0, limit)):
-            with session_scope(self._session_factory) as session:
-                selected = session.execute(
-                    select(
-                        CollectionUploadProvenanceJournalRecord.collection_id,
-                        CollectionUploadProvenanceJournalRecord.journal_id,
-                    )
-                    .where(CollectionUploadProvenanceJournalRecord.state == "validating")
-                    .order_by(
-                        CollectionUploadProvenanceJournalRecord.collection_id,
-                        CollectionUploadProvenanceJournalRecord.journal_id,
-                    )
-                    .with_for_update(skip_locked=True)
-                    .limit(1)
-                ).first()
-            if selected is None:
+            self._journal_validation_owner.release_stale()
+            cleanup_first = self._journal_validation_cleanup_turn
+            self._journal_validation_cleanup_turn = not cleanup_first
+            if cleanup_first and self._journal_validation_retirement.advance(limit=1):
+                processed += 1
+                continue
+            active = self._journal_validation_owner.active_keys()
+            after = self._journal_validation_after
+            warm = sorted(active)
+            if after is not None:
+                warm = [key for key in warm if key > after] + [key for key in warm if key <= after]
+            fresh: list[tuple[int, str]] = []
+            cursor = after
+            for _candidate in range(self._config.journal_validation_concurrency + 1):
+                key = _next_upload_journal_validation(
+                    self._session_factory, after=cursor, excluding=(*active, *fresh)
+                )
+                if key is None:
+                    break
+                fresh.append(key)
+                cursor = key
+            candidates = (
+                [*fresh, *warm]
+                if len(active) < self._config.journal_validation_concurrency
+                else [*warm, *fresh]
+            )
+            progressed = False
+            for collection_id, journal_id in candidates:
+                self._journal_validation_after = collection_id, journal_id
+                if self._advance_provenance_journal_validation(collection_id, journal_id):
+                    self._schedule_finalization_if_ready(collection_id)
+                    processed += 1
+                    progressed = True
+                    break
+            if not progressed:
+                if not cleanup_first and self._journal_validation_retirement.advance(limit=1):
+                    processed += 1
+                    continue
                 break
-            collection_id, journal_id = selected
-            self._advance_provenance_journal_validation(collection_id, journal_id)
-            self._schedule_finalization_if_ready(collection_id)
-            processed += 1
         return processed
 
     def complete(
@@ -1748,18 +1795,46 @@ class SqlAlchemyCollectionUploadService:
         self._schedule_finalization_if_ready(normalized_id)
         return self.get(normalized_id)
 
+    @declare_growth(custody_readback_declaration())
     def get_artifact(self, collection_id: int, artifact_id: ArtifactId) -> dict[str, object]:
         """Read one accepted member and its exact safe-release receipt by immutable ID."""
         normalized_id = _collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
-            if session.get(CollectionUploadRecord, normalized_id) is None:
-                raise NotFound(f"collection upload session not found: {normalized_id}")
-            member = session.get(CollectionUploadArtifactRecord, (normalized_id, str(artifact_id)))
-            if member is None:
-                raise NotFound(
-                    f"collection upload artifact not found: {normalized_id}/{artifact_id}"
+            upload_session_row_id = session.scalar(
+                select(CollectionUploadRecord.collection_id).where(
+                    CollectionUploadRecord.collection_id == normalized_id
                 )
-            return _artifact_payload(member)
+            )
+            if upload_session_row_id is not None:
+                member = session.get(
+                    CollectionUploadArtifactRecord, (normalized_id, str(artifact_id))
+                )
+                if member is not None:
+                    return _artifact_payload(member)
+            else:
+                is_published = session.scalar(
+                    select(CollectionRecord.is_published).where(
+                        CollectionRecord.id == normalized_id
+                    )
+                )
+                if is_published:
+                    published = session.get(
+                        CollectionArtifactRecord, (normalized_id, str(artifact_id))
+                    )
+                    if published is not None and published.custody_receipt_json is not None:
+                        receipt = _validate_member_custody_receipt(
+                            normalized_id, published, published.custody_receipt_json
+                        )
+                        return {
+                            "artifact_id": published.artifact_id,
+                            "bytes": format_scalar("nonnegative", published.bytes),
+                            "sha256": published.sha256,
+                            "payload_sealed": True,
+                            "custody_receipt": receipt,
+                        }
+            raise NotFound(
+                f"collection upload artifact custody unavailable: {normalized_id}/{artifact_id}"
+            )
 
     def list_artifacts(
         self,
@@ -3466,7 +3541,19 @@ class SqlAlchemyCollectionUploadService:
             elif phase == "artifact-objects":
                 _advance_catalog_artifact_objects(session, upload)
             elif phase == "index":
-                _advance_catalog_canonical_index(session, upload)
+                from .upload_journal_result import open_upload_journal_result
+
+                _advance_catalog_canonical_index(
+                    session,
+                    upload,
+                    open_summary=lambda journal_id: open_upload_journal_result(
+                        session,
+                        self._journal_validation_owner.root,
+                        collection_id,
+                        journal_id,
+                        catalog=admission_provenance_catalog(),
+                    ),
+                )
             elif phase == "terminal":
                 self._publish_catalog_collection(session, upload)
             else:  # pragma: no cover - constrained durable state
@@ -5010,18 +5097,40 @@ def _advance_catalog_artifacts(session: Session, upload: CollectionUploadRecord)
         upload.catalog_phase = "journals"
         upload.catalog_cursor_json = "{}"
         return
-    session.execute(
-        insert(CollectionArtifactRecord),
-        [
+    requirement = (
+        None
+        if upload.completion_requirement_json is None
+        else CollectionCompletionRequirementDocument.model_validate_json(
+            upload.completion_requirement_json
+        ).identity
+    )
+    projected: list[dict[str, object]] = []
+    for row in rows:
+        original = row.custody_receipt_json
+        if original is None:
+            raise RuntimeError("catalog publication requires original artifact custody")
+        receipt = _validate_member_custody_receipt(upload.collection_id, row, original)
+        binding = session.get(
+            CollectionUploadArtifactProvenanceBindingRecord,
+            (upload.collection_id, row.artifact_id),
+        )
+        if (
+            binding is None
+            or receipt.primary.model_dump(mode="json") != _provenance_binding_row(binding)
+            or receipt.completion_requirement_sha256 != requirement
+        ):
+            raise Conflict("catalog custody differs from the accepted primary construction")
+        projected.append(
             {
                 "collection_id": upload.collection_id,
                 "artifact_id": row.artifact_id,
                 "bytes": row.bytes,
                 "sha256": row.sha256,
+                "custody_receipt_json": original,
             }
-            for row in rows
-        ],
-    )
+        )
+    # The original octets and the cursor commit in the same finalizer transaction.
+    session.execute(insert(CollectionArtifactRecord), projected)
     _set_catalog_cursor(
         upload,
         {
@@ -5383,9 +5492,16 @@ def _advance_catalog_artifact_objects(session: Session, upload: CollectionUpload
 class _StagedCanonicalCorpus(Mapping[str, JournalSummary]):
     """Read exact sealed upload journals on demand while indexing one member."""
 
-    def __init__(self, session: Session, collection_id: int) -> None:
+    def __init__(
+        self,
+        session: Session,
+        collection_id: int,
+        *,
+        open_summary: Callable[[str], JournalSummary],
+    ) -> None:
         self.session = session
         self.collection_id = collection_id
+        self._open_summary = open_summary
         self.cache: OrderedDict[str, JournalSummary] = OrderedDict()
 
     def __enter__(self) -> _StagedCanonicalCorpus:
@@ -5406,12 +5522,12 @@ class _StagedCanonicalCorpus(Mapping[str, JournalSummary]):
         )
         if record is None or record.state != "sealed":
             raise KeyError(journal_id)
-        summary = validate_journal_chunks(
-            _iter_upload_journal_chunks(self.session, record),
-            catalog=admission_provenance_catalog(),
-            require_profiles=False,
-        )
-        if summary.journal_sha256 != record.sha256 or summary.journal_bytes != record.bytes:
+        summary = self._open_summary(journal_id)
+        if (
+            summary.journal_id != record.journal_id
+            or summary.journal_sha256 != record.sha256
+            or summary.journal_bytes != record.bytes
+        ):
             summary.close()
             raise ProvenanceValidationError("staged canonical journal identity changed")
         self.cache[journal_id] = summary
@@ -5438,7 +5554,12 @@ class _StagedCanonicalCorpus(Mapping[str, JournalSummary]):
         )
 
 
-def _advance_catalog_canonical_index(session: Session, upload: CollectionUploadRecord) -> None:
+def _advance_catalog_canonical_index(
+    session: Session,
+    upload: CollectionUploadRecord,
+    *,
+    open_summary: Callable[[str], JournalSummary],
+) -> None:
     """Stage one member's exact canonical discovery support before publication."""
 
     cursor = _catalog_cursor(upload)
@@ -5510,7 +5631,7 @@ def _advance_catalog_canonical_index(session: Session, upload: CollectionUploadR
         _provenance_binding_row(binding_record)
     )
     with (
-        _StagedCanonicalCorpus(session, upload.collection_id) as corpus,
+        _StagedCanonicalCorpus(session, upload.collection_id, open_summary=open_summary) as corpus,
         corpus[binding.journal.journal_id].borrow() as full_primary,
     ):
         expected_primary = binding.journal.model_dump(mode="json")
@@ -6686,8 +6807,320 @@ def _require_pending_pack_matches_registration(
         raise Conflict("collection upload volume plans differ from registered artifacts")
 
 
+def _finalization_readiness_declaration() -> Declaration:
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(Expression("constant", value=value), term))
+
+    def admitted(term: Expression) -> Expression:
+        return Expression(
+            "product",
+            terms=(
+                Expression("constant", value=1, unit=(("count", -1),)),
+                dimension("count_admitted"),
+                term,
+            ),
+        )
+
+    return Declaration(
+        id="riverhog-server.finalization-readiness.growth/v1",
+        authority="riverhog-server",
+        subjects=("riverhog_core.services.collection_uploads._ready_for_finalization",),
+        scope=(
+            "exact finalization readiness with canonical planner controls and "
+            "phase-admitted volume verification"
+        ),
+        starts_at=(
+            "receive fully loaded upload scalars in the caller's existing catalog transaction"
+        ),
+        ends_at=(
+            "return the exact readiness predicate or reject invalid planner "
+            "controls without catalog mutation"
+        ),
+        dimensions=(
+            Dimension(
+                "checkpoint_octets",
+                OCTETS,
+                (
+                    "Complete incoming planner checkpoint "
+                    "text, including malformed or empty "
+                    "controls."
+                ),
+            ),
+            Dimension(
+                "volume_rows",
+                COUNT,
+                ("All retained volume rows in the selected collection, including unsealed rows."),
+            ),
+            Dimension(
+                "catalog_volume_rows",
+                COUNT,
+                ("Independent total rows in the volume index across collections."),
+            ),
+            Dimension(
+                "count_admitted",
+                COUNT,
+                (
+                    "One only for a valid closed nonempty plan "
+                    "with complete payload sealing; otherwise "
+                    "zero."
+                ),
+            ),
+            Dimension(
+                "lookup_octets",
+                OCTETS,
+                ("Complete decimal width of the exact incoming collection identity."),
+            ),
+            Dimension(
+                "counter_octets",
+                OCTETS,
+                (
+                    "Decimal width sufficient for the actual "
+                    "selected volume population, including "
+                    "zero."
+                ),
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sealed_count_calls_limit",
+                COUNT,
+                "upper",
+                count(1),
+                ("The phase guard admits at most one exact count."),
+            ),
+            Bound(
+                "sealed_count_calls",
+                COUNT,
+                "equal",
+                dimension("count_admitted"),
+                (
+                    "Open, empty or "
+                    "payload-incomplete "
+                    "plans perform no "
+                    "volume census; "
+                    "eligible plans "
+                    "retain the exact "
+                    "sealed count."
+                ),
+            ),
+            *(
+                Bound(
+                    metric,
+                    COUNT,
+                    "upper",
+                    dimension("count_admitted"),
+                    (
+                        "One exact "
+                        "borrowed-context "
+                        "SELECT and its "
+                        "single scalar "
+                        "result, with no "
+                        "owned connection "
+                        "setup."
+                    ),
+                )
+                for metric in ("sql_statements", "driver_statements", "returned_rows")
+            ),
+            Bound(
+                "returned_metadata_octets",
+                OCTETS,
+                "upper",
+                admitted(dimension("counter_octets")),
+                ("The only returned field is the complete exact sealed-volume count."),
+            ),
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "upper",
+                admitted(
+                    Expression(
+                        "sum",
+                        terms=(
+                            dimension("lookup_octets"),
+                            Expression("constant", value=6, unit=OCTETS),
+                        ),
+                    )
+                ),
+                ("Bind the exact collection identity and the literal sealed state."),
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                admitted(
+                    Expression(
+                        "sum",
+                        terms=(
+                            count(128),
+                            scale(16, dimension("volume_rows")),
+                            Expression(
+                                "product",
+                                terms=(
+                                    count(512),
+                                    Expression(
+                                        "log2_ceil",
+                                        terms=(
+                                            Expression(
+                                                "sum",
+                                                terms=(count(2), dimension("catalog_volume_rows")),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    )
+                ),
+                (
+                    "An admitted exact "
+                    "count visits the "
+                    "selected "
+                    "collection's volume "
+                    "interval; irrelevant"
+                    " collections "
+                    "contribute only "
+                    "indexed lookup "
+                    "depth."
+                ),
+            ),
+            *(
+                Bound(
+                    metric,
+                    COUNT,
+                    "equal",
+                    count(0),
+                    (
+                        "Readiness neither mutates catalog "
+                        "state nor acquires unrelated payload"
+                        " authority or ownership."
+                    ),
+                )
+                for metric in ("connection_statements", "changed_rows", "uuid_values")
+            ),
+            *(
+                Bound(
+                    metric,
+                    OCTETS,
+                    "equal",
+                    Expression("constant", value=0, unit=OCTETS),
+                    ("No source/archive bytes are read or hashed."),
+                )
+                for metric in ("source_payload_octets", "hashed_octets")
+            ),
+            Bound(
+                "json_decodes",
+                COUNT,
+                "upper",
+                count(1),
+                (
+                    "Canonical planner parsing "
+                    "decodes the incoming text "
+                    "once; empty controls reject "
+                    "before parsing."
+                ),
+            ),
+            Bound(
+                "json_decoded_octets",
+                OCTETS,
+                "upper",
+                dimension("checkpoint_octets"),
+                ("The complete actual text enters the decoder without a short control substitute."),
+            ),
+            Bound(
+                "json_encodes",
+                COUNT,
+                "upper",
+                count(3),
+                (
+                    "Canonical input validation and"
+                    " exact reconstructed "
+                    "checkpoint comparison each "
+                    "retain their actual encoder "
+                    "calls."
+                ),
+            ),
+            Bound(
+                "json_encoded_octets",
+                OCTETS,
+                "upper",
+                scale(8, dimension("checkpoint_octets")),
+                (
+                    "The incoming "
+                    "canonical check "
+                    "allows compact "
+                    "numeric lexemes to "
+                    "expand up to "
+                    "sixfold; two later "
+                    "valid checkpoint "
+                    "reconstructions "
+                    "preserve their "
+                    "complete input "
+                    "width."
+                ),
+            ),
+        ),
+        conditions=(
+            (
+                "The caller already holds the catalog transaction and fully loaded"
+                " upload scalars; automatic flushing and unrelated pending "
+                "mutations are excluded."
+            ),
+            (
+                "The maintained collection/volume keys support exact indexed "
+                "selected-collection lookup."
+            ),
+            (
+                "The admission dimension comes from the supplied canonical plan "
+                "and payload-seal controls, independently of observed SQL work."
+            ),
+        ),
+        invariants=(
+            "Cheap negative prerequisites do not scan retained volumes.",
+            (
+                "Once prerequisites hold, readiness still requires the exact "
+                "sealed count to equal the positive planned sequence count."
+            ),
+            (
+                "Missing or excess sealed volume rows cannot become ready through "
+                "an existence or maximum-sequence substitute."
+            ),
+            (
+                "Planner validation, catalog/archive authority and complete "
+                "payload-seal checks retain their existing meaning."
+            ),
+        ),
+        limitations=(
+            (
+                "Eligible volume verification remains linear in the selected "
+                "volume interval; repeated finalization calls retain that owner's "
+                "separate total-work obligation."
+            ),
+            (
+                "Logical SQL, VM, codec and metadata observations exclude internal"
+                " byte comparisons, allocation, physical I/O and lock/CPU latency."
+            ),
+            (
+                "The caller's upload lookup, scheduling updates, transaction "
+                "lifecycle and whole service orchestration remain separate "
+                "composed work."
+            ),
+        ),
+    )
+
+
+@declare_growth(_finalization_readiness_declaration())
 def _ready_for_finalization(session: Session, upload: CollectionUploadRecord) -> bool:
     checkpoint = _planner_checkpoint(upload)
+    if not (
+        checkpoint.closed and checkpoint.next_sequence > 0 and _has_complete_payload_seal(upload)
+    ):
+        return False
     sealed = int(
         session.scalar(
             select(func.count(CollectionArchiveObjectUploadRecord.object_id)).where(
@@ -6697,12 +7130,7 @@ def _ready_for_finalization(session: Session, upload: CollectionUploadRecord) ->
         )
         or 0
     )
-    return bool(
-        checkpoint.closed
-        and checkpoint.next_sequence > 0
-        and sealed == checkpoint.next_sequence
-        and _has_complete_payload_seal(upload)
-    )
+    return bool(sealed == checkpoint.next_sequence)
 
 
 def _has_complete_payload_seal(upload: CollectionUploadRecord) -> bool:
@@ -6727,6 +7155,24 @@ def _registration_constraints_payload(policy: CollectionVolumePolicy) -> dict[st
         "pack_member_bytes": format_scalar("nonnegative", policy.pack_member_bytes),
         "raw_part_plaintext_bytes": format_scalar("nonnegative", policy.raw_part_plaintext_bytes),
     }
+
+
+def _validate_member_custody_receipt(
+    collection_id: int,
+    member: CollectionUploadArtifactRecord | CollectionArtifactRecord,
+    original: str,
+) -> CollectionUploadArtifactCustodyReceiptDocument:
+    return validate_collection_upload_artifact_custody_receipt(
+        collection_id,
+        ArtifactMemberIdentityDocument.model_validate(
+            {
+                "artifact_id": member.artifact_id,
+                "bytes": format_scalar("nonnegative", member.bytes),
+                "sha256": member.sha256,
+            }
+        ),
+        CollectionUploadArtifactCustodyReceiptDocument.model_validate_json(original),
+    )
 
 
 def _artifact_payload(record: CollectionUploadArtifactRecord) -> dict[str, object]:
@@ -6874,7 +7320,7 @@ def _begin_upload_journal_capture(
         raise RuntimeError("journal extension differs from its captured prefix")
     # A new authenticated source snapshot gets a new attempt fence. Immutable
     # prefix positions retain their directory without copying earlier rows.
-    session.execute(
+    changed = session.execute(
         update(journal)
         .where(
             journal.collection_id == record.collection_id,
@@ -6902,7 +7348,12 @@ def _begin_upload_journal_capture(
             capture_failure=None,
         )
         .execution_options(synchronize_session=False)
-    )
+        .returning(journal.collection_id)
+    ).scalar_one_or_none()
+    if changed is not None and record.capture_attempt_id is not None:
+        from .upload_journal_validation_jobs import retire_source
+
+        retire_source(session, record.collection_id, record.journal_id, record.capture_attempt_id)
     session.refresh(record)
 
 
@@ -7149,6 +7600,63 @@ def _commit_upload_journal_capture(
         return True
 
 
+def _upload_journal_validation_stamp(
+    factory: SessionFactory, collection_id: int, journal_id: str
+) -> tuple[Any, ...] | None:
+    from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
+
+    journal = CollectionUploadProvenanceJournalRecord
+    from riverhog_core.catalog_models import CollectionUploadProvenanceEpochScanRecord as scan
+
+    query = (
+        select(journal.state, journal.capture_version, scan.version, Job.version)
+        .select_from(journal)
+        .outerjoin(
+            scan,
+            (scan.collection_id == journal.collection_id)
+            & (scan.journal_id == journal.journal_id)
+            & (scan.attempt_id == journal.capture_attempt_id),
+        )
+        .outerjoin(
+            Job,
+            (Job.collection_id == journal.collection_id)
+            & (Job.journal_id == journal.journal_id)
+            & (Job.attempt_id == journal.capture_attempt_id),
+        )
+        .where(journal.collection_id == collection_id, journal.journal_id == journal_id)
+    )
+    with read_snapshot(factory) as session:
+        with session.execute(query) as rows:
+            row = rows.one_or_none()
+    return None if row is None else tuple(row)
+
+
+def _next_upload_journal_validation(
+    factory: SessionFactory,
+    *,
+    after: tuple[int, str] | None,
+    excluding: tuple[tuple[int, str], ...],
+) -> tuple[int, str] | None:
+    journal = CollectionUploadProvenanceJournalRecord
+    query = select(journal.collection_id, journal.journal_id).where(journal.state == "validating")
+    for collection_id, journal_id in excluding:
+        query = query.where(
+            or_(journal.collection_id != collection_id, journal.journal_id != journal_id)
+        )
+    query = query.order_by(journal.collection_id, journal.journal_id).limit(1)
+    with read_snapshot(factory) as session:
+        if after is not None:
+            with session.execute(
+                query.where(tuple_(journal.collection_id, journal.journal_id) > after)
+            ) as rows:
+                row = rows.one_or_none()
+            if row is not None:
+                return row[0], row[1]
+        with session.execute(query) as rows:
+            row = rows.one_or_none()
+    return None if row is None else (row[0], row[1])
+
+
 @dataclass(frozen=True, slots=True)
 class _UploadJournalValidationWork:
     collection_id: int
@@ -7383,193 +7891,6 @@ def _read_upload_journal_capture_segment(
     return raw
 
 
-@declare_growth(
-    Declaration(
-        id="riverhog-server.sqlite-staged-journal-validation-source.growth/v1",
-        authority="riverhog-server",
-        subjects=(
-            "riverhog_core.services.collection_uploads._read_upload_journal_validation_chunk",
-        ),
-        scope="native-sqlite-successful-fenced-source-unit",
-        starts_at="check the detached attempt and seek one retained source ordinal",
-        ends_at="return that source unit after its catalog snapshot closes",
-        dimensions=(
-            Dimension("staged_chunks", COUNT, "Retained transport chunks in the selected journal."),
-        ),
-        bounds=(
-            Bound(
-                "sql_statements",
-                COUNT,
-                "equal",
-                Expression("constant", value=2, unit=COUNT),
-                "One fixed-shape authority probe and one indexed source ordinal probe.",
-            ),
-            Bound(
-                "source_rows",
-                COUNT,
-                "equal",
-                Expression("constant", value=1, unit=COUNT),
-                "One actual retained source row; no earlier chunks are enumerated.",
-            ),
-            Bound(
-                "loaded_chunk_octets",
-                OCTETS,
-                "upper",
-                Expression(
-                    "constant", value=COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX, unit=OCTETS
-                ),
-                "Octets materialized from the selected transport row.",
-            ),
-            Bound(
-                "returned_octets",
-                OCTETS,
-                "upper",
-                Expression(
-                    "constant", value=COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX, unit=OCTETS
-                ),
-                "Detached exact source bytes returned to the native validator.",
-            ),
-            Bound(
-                "sqlite_vm_instructions",
-                COUNT,
-                "upper",
-                Expression(
-                    "sum",
-                    terms=(
-                        Expression("constant", value=128, unit=COUNT),
-                        Expression(
-                            "product",
-                            terms=(
-                                Expression("constant", value=64, unit=COUNT),
-                                Expression(
-                                    "log2_ceil",
-                                    terms=(
-                                        Expression(
-                                            "sum",
-                                            terms=(
-                                                Expression("constant", value=2, unit=COUNT),
-                                                Expression("dimension", name="staged_chunks"),
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-                "Maintained native SQLite instruction envelope for the two point probes.",
-            ),
-        ),
-        conditions=(
-            "The catalog uses its maintained journal and source-ordinal primary keys.",
-            "The owner retains immutable source chunks no larger than the append extent.",
-            "A successful read still belongs to the exact detached source and attempt.",
-        ),
-        invariants=(
-            "Only the requested ordinal and exact next source offset may be returned.",
-            "The result and read-only snapshot close before native computation continues.",
-        ),
-        limitations=(
-            "Other database engines require their own instruction/index-cost qualification.",
-            "SQLite VM instructions exclude internal B-tree comparisons, page I/O and CPU.",
-            "This source unit does not establish semantic acceptance or bounded total native "
-            "graph/schema execution, retries, preparation, terminal publication or cleanup.",
-        ),
-    )
-)
-def _read_upload_journal_validation_chunk(
-    factory: SessionFactory,
-    work: _UploadJournalValidationWork,
-    *,
-    ordinal: int,
-    offset: int,
-) -> bytes:
-    if (
-        type(ordinal) is not int
-        or ordinal < 0
-        or type(offset) is not int
-        or not 0 <= offset < work.source_bytes
-    ):
-        raise ValueError("invalid retained journal source position")
-    with read_snapshot(factory) as session:
-        if (
-            session.scalar(
-                select(CollectionUploadProvenanceJournalRecord.collection_id).where(
-                    *_upload_journal_validation_fence(work)
-                )
-            )
-            is None
-        ):
-            raise _StaleUploadJournalValidation
-        chunk = CollectionUploadProvenanceJournalChunkRecord
-        with session.execute(
-            select(chunk.byte_offset, chunk.content).where(
-                chunk.collection_id == work.collection_id,
-                chunk.journal_id == work.journal_id,
-                chunk.ordinal == ordinal,
-            )
-        ) as rows:
-            row = rows.one_or_none()
-            if row is None or row.byte_offset != offset:
-                raise ProvenanceValidationError("staged canonical journal chunks are discontinuous")
-            raw = bytes(row.content)
-            if not 1 <= len(raw) <= COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX:
-                raise ProvenanceValidationError("staged canonical journal chunk extent is invalid")
-            return raw[: work.source_bytes - offset]
-
-
-def _iter_upload_journal_validation_chunks(
-    factory: SessionFactory,
-    work: _UploadJournalValidationWork,
-) -> Generator[bytes]:
-    ordinal = offset = 0
-    while offset < work.source_bytes:
-        raw = _read_upload_journal_validation_chunk(factory, work, ordinal=ordinal, offset=offset)
-        yield raw
-        ordinal += 1
-        offset += len(raw)
-
-
-def _compute_upload_journal_validation(
-    factory: SessionFactory,
-    work: _UploadJournalValidationWork,
-) -> _UploadJournalValidationOutcome:
-    """Run the native pass with no catalog reader or write transaction retained.
-
-    This whole native graph/schema pass remains outside the source-unit work claim.
-    Framing findings are speculative; native replay retains exact error ordering.
-    Its temporary summary is owned here and never becomes a durable checkpoint.
-    """
-    from .upload_journal_replay import verify_upload_journal_replay_binding
-
-    try:
-        selected = admission_provenance_catalog()
-        if not verify_upload_journal_replay_binding(factory, work, selected):
-            raise _StaleUploadJournalValidation
-        with (
-            closing(_iter_upload_journal_validation_chunks(factory, work)) as chunks,
-            validate_journal_chunks(chunks, catalog=selected, require_profiles=False) as summary,
-        ):
-            if (
-                summary.journal_id != work.journal_id
-                or summary.journal_sha256 != work.source_sha256
-                or summary.journal_bytes != work.source_bytes
-            ):
-                raise ProvenanceValidationError(
-                    "staged canonical journal differs from its authority"
-                )
-            tail = summary.tail.reference
-            return _UploadJournalValidationOutcome(
-                None,
-                len(summary.frames),
-                tail["entry_id"],
-                int(tail["sequence"]),
-                tail["json_sha256"],
-            )
-    except (ProvenanceValidationError, ValueError) as exc:
-        return _UploadJournalValidationOutcome(str(exc)[:1000])
-
-
 def _commit_upload_journal_validation(
     factory: SessionFactory,
     work: _UploadJournalValidationWork,
@@ -7626,7 +7947,12 @@ def _commit_upload_journal_validation(
                 .values(**values)
             ),
         )
-        return changed.rowcount == 1
+        published = changed.rowcount == 1
+        if published and outcome.failure is not None:
+            from .upload_journal_validation_jobs import retire_source
+
+            retire_source(session, work.collection_id, work.journal_id, work.attempt_id)
+        return published
 
 
 def _volume_summary(plan: PackVolumePlan | RawVolumePlan) -> dict[str, object]:
@@ -8550,3 +8876,1296 @@ def _copy_intent_payloads(
             }
         )
     return result
+
+
+def _journal_service_catalog_declaration(mode: str) -> Declaration:
+    selecting = mode == "next"
+
+    def number(value: int, unit: tuple[tuple[str, int], ...] = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(number(value, ()), term))
+
+    excluded = add(number(1), dimension("excluded_keys"))
+    depth = Expression("log2_ceil", terms=(add(number(2), dimension("retained_rows")),))
+    comparisons = (
+        Expression("product", terms=(number(64, (("count", -1),)), excluded, excluded))
+        if selecting
+        else number(128)
+    )
+    return Declaration(
+        id="riverhog-server.validation-service-" + mode + ".growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            "riverhog_core.services.collection_uploads._"
+            + (
+                "next_upload_journal_validation" if selecting else "upload_journal_validation_stamp"
+            ),
+        ),
+        scope="complete indexed journal selection"
+        if selecting
+        else ("complete exact attempt-fenced progress stamp"),
+        starts_at="receive the session factory, exact key/cursor and complete exclusions",
+        ends_at="close the owned snapshot and return a detached key or progress stamp",
+        dimensions=(
+            Dimension(
+                "retained_rows",
+                COUNT,
+                ("Independent Journal, epoch-scan and validation-job index population."),
+            ),
+            Dimension(
+                "metadata_row_octets",
+                OCTETS,
+                (
+                    "Largest complete supplied/retained "
+                    "metadata row, including actual "
+                    "key/version widths and connection "
+                    "controls."
+                ),
+            ),
+            Dimension(
+                "control_octets",
+                OCTETS,
+                ("Complete encoded lookup, cursor and exclusion identities supplied at entry."),
+            ),
+            Dimension(
+                "excluded_keys",
+                COUNT,
+                ("Actual exclusion tuple cardinality; zero for exact stamps."),
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                number(2 if selecting else 1),
+                (
+                    "Selection uses one "
+                    "forward seek and at "
+                    "most one wrap; "
+                    "stamps use one point"
+                    " join."
+                ),
+            ),
+            Bound(
+                "driver_statements",
+                COUNT,
+                "upper",
+                number(24),
+                ("Include actual cold pool, snapshot and rollback controls."),
+            ),
+            Bound(
+                "connection_statements",
+                COUNT,
+                "upper",
+                number(20),
+                ("Observe native connection controls independently of application SQL."),
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                number(12),
+                ("One application result plus cold connection-control results."),
+            ),
+            Bound(
+                "returned_metadata_octets",
+                OCTETS,
+                "upper",
+                scale(12, dimension("metadata_row_octets")),
+                (
+                    "Retain complete "
+                    "returned scalar "
+                    "widths, including "
+                    "fixed-width "
+                    "authority ordinals."
+                ),
+            ),
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "upper",
+                add(scale(4, dimension("control_octets")), number(64, OCTETS)),
+                (
+                    "Both forward and "
+                    "wrap probes bind "
+                    "complete exclusions;"
+                    " point stamps bind "
+                    "exact keys."
+                ),
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                add(number(4096), comparisons, Expression("product", terms=(number(256), depth))),
+                (
+                    "Composite-index "
+                    "seeks avoid "
+                    "revisiting the "
+                    "retained prefix. "
+                    "Selection can visit "
+                    "at most K+1 "
+                    "candidates, each "
+                    "comparing K "
+                    "exclusions; stamps "
+                    "perform fixed "
+                    "indexed joins."
+                ),
+            ),
+            *(
+                Bound(
+                    metric,
+                    unit,
+                    "equal",
+                    number(0, unit),
+                    (
+                        "Selection/stamps neither "
+                        "mutate nor decode, encode, "
+                        "hash or acquire payload "
+                        "authority."
+                    ),
+                )
+                for metric, unit in (
+                    ("changed_rows", COUNT),
+                    ("source_payload_octets", OCTETS),
+                    ("json_decodes", COUNT),
+                    ("json_encodes", COUNT),
+                    ("json_decoded_octets", OCTETS),
+                    ("json_encoded_octets", OCTETS),
+                    ("hashed_octets", OCTETS),
+                    ("uuid_values", COUNT),
+                )
+            ),
+        ),
+        conditions=(
+            (
+                "Maintained Journal state/collection/journal, scan primary key and"
+                " linked-job unique indexes are present."
+            ),
+            (
+                "Factories disable automatic flushing; unrelated pending writes do"
+                " not enter the snapshot."
+            ),
+            (
+                "Journal identities and collection IDs are non-null; the "
+                "maintained database collation defines both ordered selection and "
+                "tuple seek."
+            ),
+            (
+                "Exclusion cardinality comes from caller scheduling admission and "
+                "remains within the database's explicit statement capacity."
+            ),
+        ),
+        invariants=(
+            (
+                "Selection returns the least eligible key after the cursor, or the"
+                " least eligible key on wrap, without changing durable state."
+            ),
+            "Stamps include scan and job versions only for the exact current capture attempt.",
+            (
+                "No source/capture/documentary payload is fetched, interpreted or "
+                "accepted by coordination."
+            ),
+        ),
+        limitations=(
+            (
+                "SQL VM and metadata primitives exclude physical I/O, internal "
+                "byte comparisons, allocations, and lock/CPU latency."
+            ),
+            (
+                "Caller scheduling, actual validation and finalization readiness "
+                "have separate composed work."
+            ),
+        ),
+    )
+
+
+def _journal_service_schedule_declaration() -> Declaration:
+    child = _ready_for_finalization
+    binding = growth_binding(child)
+
+    def number(value: int, unit: tuple[tuple[str, int], ...] = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(number(value, ()), term))
+
+    own = {
+        "sql_statements": number(2),
+        "driver_statements": number(24),
+        "connection_statements": number(20),
+        "returned_rows": number(12),
+        "returned_metadata_octets": scale(12, dimension("metadata_row_octets")),
+        "bound_parameter_octets": add(
+            scale(4, dimension("metadata_row_octets")), scale(4, dimension("control_octets"))
+        ),
+        "changed_rows": number(1),
+        "sqlite_vm_instructions": add(
+            number(4096),
+            Expression(
+                "product",
+                terms=(
+                    number(256),
+                    Expression("log2_ceil", terms=(add(number(2), dimension("retained_rows")),)),
+                ),
+            ),
+        ),
+    }
+    return Declaration(
+        id="riverhog-server.validation-service-schedule.growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            "riverhog_core.services.collection_uploads.SqlAlchemyCollectionUploadSe"
+            "rvice._schedule_finalization_if_ready",
+        ),
+        scope="complete readiness scheduling transaction including the real planner/count child",
+        starts_at="receive the exact collection identity and owning session factory",
+        ends_at=(
+            "commit or roll back the owned transaction and return or propagate"
+            " the real readiness rejection"
+        ),
+        dimensions=(
+            Dimension("retained_rows", COUNT, "Independent retained upload index population."),
+            Dimension(
+                "metadata_row_octets",
+                OCTETS,
+                (
+                    "Largest complete actual upload row "
+                    "and proposed queued-state update, "
+                    "including full planner and authority "
+                    "controls."
+                ),
+            ),
+            Dimension(
+                "control_octets", OCTETS, ("Full collection lookup and timestamp/update controls.")
+            ),
+            Dimension(
+                "readiness_calls",
+                COUNT,
+                ("Actual child invocations, independently capped at one by the point lookup."),
+            ),
+            *(
+                Dimension(
+                    "readiness_" + item.name,
+                    item.unit,
+                    ("Exact input of the borrowed readiness child, or zero only when absent. ")
+                    + item.meaning,
+                )
+                for item in binding.declaration.dimensions
+            ),
+        ),
+        bounds=(
+            *(
+                Bound(
+                    bound.metric,
+                    bound.unit,
+                    "upper",
+                    add(
+                        Expression(
+                            "delegate",
+                            name="readiness",
+                            metric=bound.metric,
+                            terms=(dimension("readiness_calls"),),
+                            arguments=tuple(
+                                (item.name, dimension("readiness_" + item.name))
+                                for item in binding.declaration.dimensions
+                            ),
+                        ),
+                        own.get(bound.metric, number(0, bound.unit)),
+                    ),
+                    (
+                        "Complete actual readiness work plus the owning exact upload "
+                        "lookup, optional queued-state update, and transaction lifecycle."
+                    ),
+                )
+                for bound in binding.declaration.bounds
+            ),
+            Bound(
+                "readiness_calls",
+                COUNT,
+                "equal",
+                dimension("readiness_calls"),
+                ("Every invocation retains its real child sample, including rejected calls."),
+            ),
+            Bound(
+                "readiness_calls_limit",
+                COUNT,
+                "upper",
+                number(1),
+                ("Only one exact upload can be selected."),
+            ),
+        ),
+        conditions=(
+            "Factories disable automatic flushing and own the complete scheduling transaction.",
+            (
+                "Actual child dimensions retain the complete planner, payload seal"
+                " and selected volume populations."
+            ),
+        ),
+        invariants=(
+            "Missing uploads and incomplete readiness never queue publication.",
+            (
+                "Only the existing exact readiness predicate permits the existing "
+                "finalizing/queued state transition."
+            ),
+            "Malformed planner rejection rolls back without changing durable upload state.",
+        ),
+        limitations=(
+            (
+                "This call retains the readiness child's admitted linear "
+                "selected-volume count; whole finalization cadence and publication"
+                " have separate total-work obligations."
+            ),
+            (
+                "Logical primitives exclude physical I/O, allocations, internal "
+                "byte comparisons, and lock/CPU latency."
+            ),
+        ),
+    )
+
+
+declare_growth(_journal_service_catalog_declaration("stamp"))(_upload_journal_validation_stamp)
+declare_growth(_journal_service_catalog_declaration("next"))(_next_upload_journal_validation)
+declare_growth(
+    _journal_service_schedule_declaration(), delegates=(("readiness", _ready_for_finalization),)
+)(SqlAlchemyCollectionUploadService._schedule_finalization_if_ready)
+
+
+def _service_validation_unit_children() -> tuple[tuple[str, Callable[..., Any]], ...]:
+    from riverhog_provenance.epoch_boundaries import classify_epoch_boundary
+    from riverhog_provenance.topology_facts import advance_topology_frame, plan_topology_frame
+
+    from .upload_journal_validation_owner import UploadJournalValidationOwner
+
+    return (
+        ("framing", advance_journal_framing),
+        ("epoch", classify_epoch_boundary),
+        ("plan", plan_topology_frame),
+        ("topology", advance_topology_frame),
+        ("owner", UploadJournalValidationOwner.advance),
+    )
+
+
+def _service_validation_unit_declaration() -> Declaration:
+    from riverhog_core.growth_bounds import bound_envelope
+
+    children = {
+        tag: growth_binding(operation) for tag, operation in _service_validation_unit_children()
+    }
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def number(value: int, unit: tuple[tuple[str, int], ...] = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(number(value, ()), term))
+
+    def add(*terms: Expression) -> Expression:
+        return terms[0] if len(terms) == 1 else Expression("sum", terms=terms)
+
+    def times(calls: Expression, term: Expression) -> Expression:
+        return Expression("product", terms=(number(1, (("count", -1),)), calls, term))
+
+    pages = dimension("maximum_frame_pages")
+    statements = add(number(1024), scale(8, pages))
+    returned = add(number(1024), scale(4, pages))
+    payload = add(
+        dimension("transport_extent_octets"),
+        number(12 * _JOURNAL_CAPTURE_SEGMENT_OCTETS, OCTETS),
+        Expression(
+            "product", terms=(number(4 * _JOURNAL_CAPTURE_SEGMENT_OCTETS, OCTETS_PER_COUNT), pages)
+        ),
+    )
+    metadata = Expression(
+        "product", terms=(number(1, (("count", -1),)), returned, dimension("metadata_row_octets"))
+    )
+    own: dict[str, tuple[tuple[tuple[str, int], ...], Expression, str]] = {
+        "sql_statements": (
+            COUNT,
+            statements,
+            (
+                "At most 64 frame publications, 64 fact insertions, four union transitions and "
+                "sixteen rank transitions sharing 64 row items, plus indexed source-page probes."
+            ),
+        ),
+        "driver_statements": (
+            COUNT,
+            add(number(4096), scale(24, pages)),
+            (
+                "Include actual transaction begin, commit and rollback controls for each bounded "
+                "phase and page."
+            ),
+        ),
+        "connection_statements": (
+            COUNT,
+            add(number(3072), scale(16, pages)),
+            "Native connection lifecycle remains separately observable.",
+        ),
+        "returned_rows": (
+            COUNT,
+            returned,
+            (
+                "Fixed metadata probes, bounded preparation pages and point reads, without a "
+                "retained-resource census."
+            ),
+        ),
+        "returned_metadata_octets": (
+            OCTETS,
+            metadata,
+            "Every scalar of every returned metadata row is charged at its complete width.",
+        ),
+        "bound_parameter_octets": (
+            OCTETS,
+            add(
+                times(statements, scale(2, dimension("metadata_row_octets"))),
+                number(4 * _JOURNAL_CAPTURE_SEGMENT_OCTETS, OCTETS),
+            ),
+            (
+                "Full lookup, version/cursor and update controls, plus bounded capture-page "
+                "writes and old-tail fences."
+            ),
+        ),
+        "source_payload_octets": (
+            OCTETS,
+            payload,
+            (
+                "One transport extent; tail verification and capture preparation; contiguous "
+                "epoch reads; one topology plan or resumed item window. Complete fetched pages "
+                "remain charged."
+            ),
+        ),
+        "hashed_octets": (
+            OCTETS,
+            add(payload, number(2 * _JOURNAL_CAPTURE_SEGMENT_OCTETS, OCTETS)),
+            (
+                "Hash every fetched capture page and at most two prepared capture pages; Native "
+                "hashes are separate children."
+            ),
+        ),
+        "changed_rows": (
+            COUNT,
+            number(1024),
+            (
+                "Capture/epoch/fact admissions, one retired 64-row page, union/rank admitted "
+                "items and fixed checkpoints; rolled-back attempted changes remain charged."
+            ),
+        ),
+        "sqlite_vm_instructions": (
+            COUNT,
+            Expression(
+                "product",
+                terms=(
+                    number(256, ()),
+                    statements,
+                    Expression("log2_ceil", terms=(add(number(2), dimension("retained_rows")),)),
+                ),
+            ),
+            (
+                "Bounded statements use maintained primary/unique/range indexes; include their "
+                "logarithmic retained-population cost and bounded row/index maintenance."
+            ),
+        ),
+        "json_decodes": (
+            COUNT,
+            number(512),
+            (
+                "Fixed-shape preparation headers and replay bindings, including all sixteen rank "
+                "transitions."
+            ),
+        ),
+        "json_encodes": (
+            COUNT,
+            number(512),
+            (
+                "Canonical preparation headers and replay controls, including rejected retained "
+                "controls."
+            ),
+        ),
+        "json_decoded_octets": (
+            OCTETS,
+            scale(512, dimension("metadata_row_octets")),
+            "Whole incoming private controls, including malformed controls, are measured.",
+        ),
+        "json_encoded_octets": (
+            OCTETS,
+            scale(3072, dimension("metadata_row_octets")),
+            (
+                "Charge complete canonical output, including JSON escaping expansion, "
+                "independently of byte decoding."
+            ),
+        ),
+    }
+    selected_metrics = {
+        "framing": ("consumed_octets", OCTETS),
+        "epoch": ("json_decoded_octets", OCTETS),
+        "plan": ("hashed_octets", OCTETS),
+        "topology": ("visited_octets", OCTETS),
+        "owner": ("sql_statements", COUNT),
+    }
+
+    def child(tag: str, metric: str, unit: tuple[tuple[str, int], ...]) -> Expression:
+        binding = children[tag]
+        if metric not in {bound.metric for bound in binding.declaration.bounds}:
+            return number(0, unit)
+        arguments = {
+            item.name: dimension(tag + "_" + item.name) for item in binding.declaration.dimensions
+        }
+        if tag != "epoch":
+            return Expression(
+                "delegate",
+                name=tag,
+                metric=metric,
+                terms=(dimension(tag + "_calls"),),
+                arguments=tuple(arguments.items()),
+            )
+        return times(
+            dimension(tag + "_calls"), bound_envelope(binding.operation, metric, arguments)
+        )
+
+    return Declaration(
+        id="riverhog-server.validation-service-unit.growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            (
+                "riverhog_core.services.collection_uploads.SqlAlchemyCollectionUploadService._adv"
+                "ance_provenance_journal_validation_unit"
+            ),
+        ),
+        scope=(
+            "complete actual capture, preparation, Native validation and fenced terminal "
+            "publication unit"
+        ),
+        starts_at="receive the exact collection/journal key on the owning service",
+        ends_at=(
+            "return after the real bounded phase, early rejection, stale publication or "
+            "committed Native outcome, with owned catalog readers closed"
+        ),
+        dimensions=(
+            Dimension(
+                "retained_rows",
+                COUNT,
+                (
+                    "Independent population of the related catalog indexes across current, "
+                    "retired and unrelated attempts."
+                ),
+            ),
+            Dimension(
+                "metadata_row_octets",
+                OCTETS,
+                (
+                    "Largest complete input/private metadata row and proposed fixed-shape "
+                    "controls, including incoming keys, malformed headers and outcome; payload "
+                    "BLOBs are charged separately."
+                ),
+            ),
+            Dimension(
+                "transport_extent_octets",
+                OCTETS,
+                (
+                    "Maximum complete retained transport chunk width, independently established "
+                    "from this source's stored chunk boundaries."
+                ),
+            ),
+            Dimension(
+                "maximum_frame_pages",
+                COUNT,
+                (
+                    "Ceiling of the largest captured frame extent including framing bytes "
+                    "divided by the existing capture-page width; independent of observed reads."
+                ),
+            ),
+            *(
+                Dimension(
+                    tag + "_calls",
+                    COUNT,
+                    "Actual invocations, independently capped by the service phase admission.",
+                )
+                for tag in children
+            ),
+            *(
+                Dimension(
+                    tag + "_" + item.name,
+                    item.unit,
+                    "Dominating envelope of actual child inputs, zero only if absent. "
+                    + item.meaning,
+                )
+                for tag, binding in children.items()
+                for item in binding.declaration.dimensions
+            ),
+        ),
+        bounds=(
+            *(
+                Bound("core_" + metric, unit, "upper", expression, rationale)
+                for metric, (unit, expression, rationale) in own.items()
+            ),
+            *(
+                Bound(
+                    "native_" + tag + "_" + metric,
+                    unit,
+                    "upper",
+                    child(tag, metric, unit),
+                    (
+                        "Actual child input/call composition; every other Native primitive "
+                        "remains independently enforced in the mandatory child execution records."
+                    ),
+                )
+                for tag, (metric, unit) in selected_metrics.items()
+            ),
+            *(
+                Bound(
+                    tag + "_calls",
+                    COUNT,
+                    "equal",
+                    dimension(tag + "_calls"),
+                    (
+                        "Every real child invocation retains its own input dimensions and "
+                        "execution sample."
+                    ),
+                )
+                for tag in children
+            ),
+            *(
+                Bound(
+                    tag + "_calls_limit",
+                    COUNT,
+                    "upper",
+                    number(64 if tag == "epoch" else 1),
+                    (
+                        "Framing, planning, topology advancement and Native ownership each "
+                        "execute at most once; epoch classification admits at most 64 frames."
+                    ),
+                )
+                for tag in children
+            ),
+        ),
+        conditions=(
+            (
+                "Current capture, epoch, topology, union, rank, retired preparation and "
+                "linked-job primary/unique/range indexes are present; native SQLite VM "
+                "accounting is qualified separately from other engines."
+            ),
+            (
+                "Factories disable autoflush and retain detached scalars; unrelated pending "
+                "writes do not enter owned work."
+            ),
+            (
+                "Existing admissions remain unchanged: 64 KiB/64-frame capture and epoch "
+                "windows, 64 topology items with a 64 KiB atom admission, four union and sixteen "
+                "rank transitions sharing their existing row budgets."
+            ),
+            (
+                "Frame extents retain the existing Native entry capacity; maximum_frame_pages "
+                "comes from actual independently authenticated source positions, never measured "
+                "resource usage."
+            ),
+            (
+                "Each child envelope dominates its real inputs, and each invocation retains an "
+                "independently validated sample, including actual rejected calls."
+            ),
+        ),
+        invariants=(
+            (
+                "Source bytes, algorithm, attempt, version and cursor fences remain exact at "
+                "publication; stale or invalid findings cannot become semantic authority."
+            ),
+            (
+                "Native validation and framing run detached from catalog transactions; committed "
+                "Native outcomes precede Core terminal publication."
+            ),
+            (
+                "No source is replaced by a different prefix, and no private graph fact replaces "
+                "ordered Native schema or graph acceptance."
+            ),
+            (
+                "Every acquired catalog reader closes on success, early return, interruption and "
+                "rejection; rollback preserves the previous durable checkpoint."
+            ),
+        ),
+        limitations=(
+            (
+                "Core primitives are exclusive core_* metrics. Complete Native SQL, source, "
+                "filesystem, codec and lifecycle costs remain in mandatory independently "
+                "validated child records."
+            ),
+            (
+                "Primitive SQL/byte/codec counts exclude internal comparisons, JSON value "
+                "traversal, allocation, physical I/O and machine latency; timing remains an "
+                "observation."
+            ),
+            (
+                "This is one actual unit, not total-work qualification of the scheduler, archive "
+                "publication or complete member ingest."
+            ),
+        ),
+    )
+
+
+def _service_validation_advance_children() -> tuple[tuple[str, Callable[..., Any]], ...]:
+    return (
+        ("stamp", _upload_journal_validation_stamp),
+        ("unit", SqlAlchemyCollectionUploadService._advance_provenance_journal_validation_unit),
+    )
+
+
+def _service_validation_advance_declaration() -> Declaration:
+    from riverhog_core.growth_bounds import bound_envelope
+
+    children = {
+        tag: growth_binding(operation) for tag, operation in _service_validation_advance_children()
+    }
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def number(value: int, unit: tuple[tuple[str, int], ...] = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(number(value, ()), term))
+
+    def stamp(metric: str) -> Expression:
+        binding = children["stamp"]
+        return Expression(
+            "product",
+            terms=(
+                number(1, (("count", -1),)),
+                dimension("stamp_calls"),
+                bound_envelope(
+                    binding.operation,
+                    metric,
+                    {
+                        item.name: dimension("stamp_" + item.name)
+                        for item in binding.declaration.dimensions
+                    },
+                ),
+            ),
+        )
+
+    return Declaration(
+        id="riverhog-server.validation-service-advance.growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            (
+                "riverhog_core.services.collection_uploads.SqlAlchemyCollectionUplo"
+                "adService._advance"
+                "_provenance_journal_validation"
+            ),
+        ),
+        scope=(
+            "complete stamped validation call with actual before/after snapshots and its real "
+            "validation unit"
+        ),
+        starts_at="receive the exact collection and journal key from service coordination",
+        ends_at=(
+            "return the actual durable stamp inequality, or propagate the real child rejection "
+            "without a fabricated after snapshot"
+        ),
+        dimensions=(
+            Dimension(
+                "stamp_operand_octets",
+                OCTETS,
+                (
+                    "Largest complete stamp tuple returned by the actual child and "
+                    "supplied as an "
+                    "operand to the builtin comparison; zero for absence."
+                ),
+            ),
+            *(
+                Dimension(
+                    tag + "_calls",
+                    COUNT,
+                    (
+                        "Actual child invocations, independently capped by the "
+                        "straight-line service "
+                        "call."
+                    ),
+                )
+                for tag in children
+            ),
+            *(
+                Dimension(
+                    tag + "_" + item.name,
+                    item.unit,
+                    (
+                        "Exact unit inputs, or a dominating envelope of actual "
+                        "stamp inputs; zero only "
+                        "when absent. "
+                    )
+                    + item.meaning,
+                )
+                for tag, binding in children.items()
+                for item in binding.declaration.dimensions
+            ),
+        ),
+        bounds=(
+            Bound(
+                "comparison_operations",
+                COUNT,
+                "upper",
+                number(1),
+                (
+                    "One real builtin tuple inequality, including a reflected comparison against "
+                    "absence; no comparison follows an exceptional child."
+                ),
+            ),
+            Bound(
+                "comparison_operand_fields",
+                COUNT,
+                "upper",
+                number(8),
+                (
+                    "At most two complete four-scalar source/capture/scan/job "
+                    "stamps are provided to "
+                    "the real comparison."
+                ),
+            ),
+            Bound(
+                "comparison_operand_octets",
+                OCTETS,
+                "upper",
+                scale(2, dimension("stamp_operand_octets")),
+                (
+                    "Charge complete operand controls independently of which tuple scalar first "
+                    "differs."
+                ),
+            ),
+            Bound(
+                "unscoped_operations",
+                COUNT,
+                "equal",
+                number(0),
+                (
+                    "SQL, filesystem, direct SQLite, codec and source hashing "
+                    "belong to the actual "
+                    "mandatory children."
+                ),
+            ),
+            Bound(
+                "stamp_sql_statements",
+                COUNT,
+                "upper",
+                stamp("sql_statements"),
+                (
+                    "Both heterogeneous point snapshots retain their actual inputs "
+                    "and independently "
+                    "validated full child costs."
+                ),
+            ),
+            Bound(
+                "stamp_returned_metadata_octets",
+                OCTETS,
+                "upper",
+                stamp("returned_metadata_octets"),
+                (
+                    "Full returned controls remain charged when the unit changes "
+                    "capture, scan, job "
+                    "or terminal state."
+                ),
+            ),
+            Bound(
+                "unit_native_owner_sql_statements",
+                COUNT,
+                "upper",
+                Expression(
+                    "delegate",
+                    name="unit",
+                    metric="native_owner_sql_statements",
+                    terms=(dimension("unit_calls"),),
+                    arguments=tuple(
+                        (item.name, dimension("unit_" + item.name))
+                        for item in children[("unit")].declaration.dimensions
+                    ),
+                ),
+                (
+                    "The actual unit input link retains every exclusive Core primitive and "
+                    "complete Native child cost in the mandatory hierarchical record."
+                ),
+            ),
+            *(
+                Bound(
+                    tag + "_calls",
+                    COUNT,
+                    "equal",
+                    dimension(tag + "_calls"),
+                    (
+                        "Every invoked child retains its actual execution sample, "
+                        "including a recorded "
+                        "rejection."
+                    ),
+                )
+                for tag in children
+            ),
+            Bound(
+                "stamp_calls_limit",
+                COUNT,
+                "upper",
+                number(2),
+                ("One before snapshot and one after snapshot; rejection prevents the latter."),
+            ),
+            Bound(
+                "unit_calls_limit",
+                COUNT,
+                "upper",
+                number(1),
+                ("Exactly one unit is attempted after the before snapshot succeeds."),
+            ),
+        ),
+        conditions=(
+            (
+                "The actual stamp child retains its current-attempt joins and indexes; the unit "
+                "retains its source and budget conditions."
+            ),
+            (
+                "Each heterogeneous stamp sample is independently validated and dominated by the "
+                "declared input envelope; the single unit input mapping is exact."
+            ),
+            (
+                "Only durable source/capture/scan/job state enters the four-field comparison; "
+                "complete counter widths are retained."
+            ),
+        ),
+        invariants=(
+            (
+                "The returned boolean is the actual before/after durable stamp inequality, "
+                "including unchanged or absent work."
+            ),
+            (
+                "A real unit rejection propagates unchanged; no after stamp or successful "
+                "progress is invented."
+            ),
+            (
+                "The owning children close their catalog snapshots before control returns to "
+                "coordination."
+            ),
+            (
+                "All Core and Native work remains in mandatory independently validated child "
+                "records, including source fences, rollback and acceptance authority."
+            ),
+        ),
+        limitations=(
+            (
+                "Operand extents count complete supplied metadata, not internal Python "
+                "scalar-comparison instructions or machine latency."
+            ),
+            (
+                "This call reports durable progress; total scheduler fairness, complete member "
+                "ingest and publication require their owning qualifications."
+            ),
+        ),
+    )
+
+
+def _declare_service_validation_unit_growth() -> None:
+    declare_growth(
+        _service_validation_unit_declaration(), delegates=_service_validation_unit_children()
+    )(SqlAlchemyCollectionUploadService._advance_provenance_journal_validation_unit)
+    declare_growth(
+        _service_validation_advance_declaration(), delegates=_service_validation_advance_children()
+    )(SqlAlchemyCollectionUploadService._advance_provenance_journal_validation)
+
+
+def _service_scheduler_children() -> tuple[tuple[str, Callable[..., Any]], ...]:
+    from .upload_journal_validation_owner import UploadJournalValidationOwner
+    from .upload_journal_validation_retirement import UploadJournalValidationRetirement
+
+    return (
+        ("sweep", UploadJournalValidationOwner.release_stale),
+        ("keys", UploadJournalValidationOwner.active_keys),
+        ("retirement", UploadJournalValidationRetirement.advance),
+        ("select", _next_upload_journal_validation),
+        ("validation", SqlAlchemyCollectionUploadService._advance_provenance_journal_validation),
+        ("schedule", SqlAlchemyCollectionUploadService._schedule_finalization_if_ready),
+    )
+
+
+def _service_scheduler_declaration() -> Declaration:
+    from riverhog_core.growth_bounds import bound_envelope
+
+    children = {tag: growth_binding(operation) for tag, operation in _service_scheduler_children()}
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def number(value: int, unit: tuple[tuple[str, int], ...] = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(number(value, ()), term))
+
+    def times(calls: Expression, term: Expression) -> Expression:
+        return Expression("product", terms=(number(1, (("count", -1),)), calls, term))
+
+    limit, concurrency = dimension("unit_limit"), dimension("configured_slots")
+    candidates = add(scale(2, concurrency), number(1))
+    probes = add(concurrency, number(1))
+    active_visits = times(limit, times(concurrency, add(concurrency, number(2))))
+    exclusions = times(limit, times(probes, candidates))
+    comparisons = times(
+        limit,
+        add(
+            Expression(
+                "product",
+                terms=(number(2, ()), concurrency, Expression("log2_ceil", terms=(probes,))),
+            ),
+            scale(2, concurrency),
+        ),
+    )
+    caps = {
+        "sweep": limit,
+        "keys": limit,
+        "retirement": limit,
+        "select": times(limit, probes),
+        "validation": times(limit, candidates),
+        "schedule": limit,
+    }
+    representative = {
+        "sweep": ("sql_statements", COUNT),
+        "keys": ("returned_keys", COUNT),
+        "retirement": ("outer_iterations", COUNT),
+        "select": ("sql_statements", COUNT),
+        "validation": ("comparison_operations", COUNT),
+        "schedule": ("readiness_calls", COUNT),
+    }
+    own = {
+        "outer_iterations": (
+            COUNT,
+            limit,
+            "Actual yielded outer iterations never exceed the nonnegative caller admission.",
+        ),
+        "fresh_iterations": (
+            COUNT,
+            times(limit, probes),
+            "Each eligible outer iteration requests at most C+1 exact fresh candidates.",
+        ),
+        "sort_calls": (COUNT, limit, "At most one actual warm-key sort per outer iteration."),
+        "active_key_visits": (
+            COUNT,
+            active_visits,
+            "One active-key sort input and at most C+1 active-key exclusion "
+            "expansions per outer iteration.",
+        ),
+        "active_key_octets": (
+            OCTETS,
+            times(active_visits, dimension("maximum_key_octets")),
+            "Charge complete keys supplied by each observed active-key iteration.",
+        ),
+        "ordering_comparisons": (
+            COUNT,
+            comparisons,
+            "Native tuple comparisons from the actual C-key sort and two optional "
+            "C-key cursor rotations.",
+        ),
+        "ordering_operand_octets": (
+            OCTETS,
+            scale(2, times(comparisons, dimension("maximum_key_octets"))),
+            "Both complete key operands remain charged regardless of the first differing scalar.",
+        ),
+        "exclusion_key_references": (
+            COUNT,
+            exclusions,
+            "Every actual constructed selector exclusion tuple contains at most "
+            "2C+1 keys across at most C+1 probes per outer iteration.",
+        ),
+        "exclusion_operand_octets": (
+            OCTETS,
+            times(exclusions, dimension("maximum_key_octets")),
+            "Complete actual exclusion controls are supplied to the real indexed selector.",
+        ),
+        "excluded_keys_per_call": (
+            COUNT,
+            candidates,
+            "Active and previously selected fresh keys remain within the explicit "
+            "scheduling admission.",
+        ),
+        "retirement_unit_limit_per_call": (
+            COUNT,
+            number(1),
+            "Cleanup-first and fallback retirement are mutually exclusive within "
+            "each outer iteration.",
+        ),
+        "progressed_units": (
+            COUNT,
+            limit,
+            "Only actual child progress increments the returned count, at most "
+            "once per outer iteration.",
+        ),
+        "unscoped_operations": (
+            COUNT,
+            number(0),
+            "Catalog, direct SQLite, filesystem, source interpretation and "
+            "publication remain with mandatory actual child calls.",
+        ),
+    }
+    return Declaration(
+        id="riverhog-server.validation-service-scheduler.growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            "riverhog_core.services.collection_uploads.SqlAlchemyCollectionUploadSe"
+            "rvice.process_due_provenance_journal_validations",
+        ),
+        scope=(
+            "complete bounded service scheduling including stale release, actual "
+            "validation, readiness and retirement"
+        ),
+        starts_at="receive the finite caller admission on the configured owning service",
+        ends_at=(
+            "return actual progressed units or propagate a real child rejection, with "
+            "owned readers and nonblocking slot attempts accounted"
+        ),
+        dimensions=(
+            Dimension(
+                "unit_limit",
+                COUNT,
+                "Effective nonnegative caller range admission, independently of observed progress.",
+            ),
+            Dimension(
+                "configured_slots",
+                COUNT,
+                "Positive configured validation concurrency, matching the actual "
+                "live Native owner's capacity.",
+            ),
+            Dimension(
+                "maximum_key_octets",
+                OCTETS,
+                "Largest complete actual incoming cursor, active key or selected "
+                "fresh key presented to scheduling; independent of measured SQL or "
+                "byte costs.",
+            ),
+            *(
+                Dimension(
+                    tag + "_calls",
+                    COUNT,
+                    "Actual invocations independently capped by the finite scheduling loops.",
+                )
+                for tag in children
+            ),
+            *(
+                Dimension(
+                    tag + "_" + item.name,
+                    item.unit,
+                    "Dominating envelope of the actual heterogeneous child inputs; "
+                    "absent children may use zero. " + item.meaning,
+                )
+                for tag, binding in children.items()
+                for item in binding.declaration.dimensions
+            ),
+        ),
+        bounds=(
+            *(
+                Bound(
+                    metric,
+                    unit,
+                    "upper" if metric != "unscoped_operations" else "equal",
+                    expression,
+                    meaning,
+                )
+                for metric, (unit, expression, meaning) in own.items()
+            ),
+            *(
+                Bound(
+                    tag + "_" + metric,
+                    unit,
+                    "upper",
+                    times(
+                        dimension(tag + "_calls"),
+                        bound_envelope(
+                            children[tag].operation,
+                            metric,
+                            {
+                                item.name: dimension(tag + "_" + item.name)
+                                for item in children[tag].declaration.dimensions
+                            },
+                        ),
+                    ),
+                    "Actual independently validated child records retain all "
+                    "Core/Native/catalog/filesystem costs; this compact "
+                    "representative envelope avoids repeating unrelated primitive "
+                    "formulas.",
+                )
+                for tag, (metric, unit) in representative.items()
+            ),
+            *(
+                Bound(
+                    tag + "_calls",
+                    COUNT,
+                    "equal",
+                    dimension(tag + "_calls"),
+                    "Every actual invocation retains its complete independently "
+                    "validated child sample, including a recorded rejection.",
+                )
+                for tag in children
+            ),
+            *(
+                Bound(
+                    tag + "_calls_limit",
+                    COUNT,
+                    "upper",
+                    cap,
+                    "Straight-line cleanup branches, candidate admission and the "
+                    "first-progress break independently cap each child.",
+                )
+                for tag, cap in caps.items()
+            ),
+        ),
+        conditions=(
+            "The service and Native owner agree on positive configured "
+            "concurrency; the active-key snapshot contains at most that many "
+            "actual reservations.",
+            "Every child retains its source-owned input, index, budget, reader, "
+            "lease and capacity conditions; all actual inputs are dominated by "
+            "their declared envelopes.",
+            "The interpreter's maintained tuple ordering and O(C log C) builtin "
+            "sort apply to complete collection/journal scalar keys; no alternate "
+            "ordering authority is introduced.",
+            "Selector exclusion inputs remain within the database's explicit "
+            "statement capacity; capacity rejection never removes queued work or "
+            "silently omits a candidate.",
+        ),
+        invariants=(
+            "Cleanup-first and fallback cleanup each use the real retirement loop, "
+            "with at most one cleanup call in any outer iteration.",
+            "The actual keyset selector supplies fresh work; active slots retain "
+            "bounded warm priority and exact cursor rotation.",
+            "Busy or unchanged validation does not claim progress or prevent the "
+            "bounded attempt of another admitted candidate.",
+            "Readiness is scheduled only after the real stamped caller reports "
+            "durable progress; all existing source and Native acceptance fences "
+            "remain intact.",
+            "No coordinator step replaces archive, source, graph, schema or lease "
+            "authority supplied by its owning child.",
+        ),
+        limitations=(
+            "The selected control/operand primitives exclude physical list copies, "
+            "allocations, internal scalar-comparison instructions and machine "
+            "latency; timing remains an observation.",
+            "Complete child costs remain mandatory hierarchical evidence. A "
+            "one-call scheduler bound is not a complete-member ingest or "
+            "archive-publication qualification.",
+        ),
+    )
+
+
+def _declare_service_scheduler_growth() -> None:
+    declare_growth(_service_scheduler_declaration(), delegates=_service_scheduler_children())(
+        SqlAlchemyCollectionUploadService.process_due_provenance_journal_validations
+    )

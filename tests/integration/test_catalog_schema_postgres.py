@@ -956,3 +956,37 @@ def test_postgres_archive_sequence_state_round_trips_full_v1_domain(
                 {"sequence": "g" * 64, "collection_id": collection_id},
             )
     engine.dispose()
+
+
+@pytest.mark.parametrize("changed", ["check", "partial-index"])
+def test_postgres_catalog_rejects_changed_journal_validation_predicates(
+    isolated_database_url: str, changed: str
+) -> None:
+    from state_schema import StateSchemaError
+
+    initialize_db(isolated_database_url)
+    engine = create_catalog_engine(isolated_database_url)
+    try:
+        with engine.begin() as connection:
+            if changed == "check":
+                connection.exec_driver_sql(
+                    "ALTER TABLE journal_validation_jobs DROP CONSTRAINT "
+                    "ck_journal_validation_outcome"
+                )
+                connection.exec_driver_sql(
+                    "ALTER TABLE journal_validation_jobs ADD CONSTRAINT "
+                    "ck_journal_validation_outcome CHECK "
+                    "(state NOT IN ('complete','failed') OR outcome_json IS NULL)"
+                )
+            else:
+                connection.exec_driver_sql("DROP INDEX ix_journal_validation_orphan_workspace")
+                connection.exec_driver_sql(
+                    "CREATE INDEX ix_journal_validation_orphan_workspace "
+                    "ON journal_validation_jobs(workspace_id) WHERE collection_id IS NULL"
+                )
+        with pytest.raises(
+            StateSchemaError, match="checks" if changed == "check" else "index definitions"
+        ):
+            validate_db(isolated_database_url)
+    finally:
+        engine.dispose()

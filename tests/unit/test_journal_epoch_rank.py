@@ -9,7 +9,6 @@ from dataclasses import replace
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_core.services import collection_uploads as owner
 from riverhog_core.services import upload_journal_rank as rank
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import parse_journal, validate_journal
@@ -22,7 +21,7 @@ from tests.unit.test_journal_epoch_union import correction, edge, raw_edges, rea
 from tests.unit.test_journal_epoch_union import finish as finish_union
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_journal_topology_capture import entry, raw_journal
-from tests.unit.test_journal_validation_handoff import service_for, terminal
+from tests.unit.test_journal_validation_handoff import native_outcome, service_for, terminal
 from tests.unit.test_staged_journal_range import JOURNAL, Journal
 
 Scan, Ranked, Result = rank.Scan, rank.Ranked, rank.Result
@@ -356,20 +355,29 @@ def test_native_acceptance_follows_private_rank_completion(tmp_path, monkeypatch
     raw = source(journal_id=JOURNAL)
     with retained(tmp_path, raw) as (engine, factory):
         prepared(factory)
-        native = owner._compute_upload_journal_validation
+        service = service_for(factory)
+        native = service._journal_validation_owner.advance
         observed = []
 
-        def detached(*args):
-            assert checkpoint(factory)[1] == "complete" and engine.pool.checkedout() == 0
-            assert terminal(factory)["anchor"] is None
+        def detached(*args, **kwargs):
+            assert checkpoint(factory)[1] == "complete"
+            assert engine.pool.checkedout() == 0 and terminal(factory)["anchor"] is None
             observed.append(True)
-            return native(*args)
+            return native(*args, **kwargs)
 
-        monkeypatch.setattr(owner, "_compute_upload_journal_validation", detached)
-        service_for(factory)._advance_provenance_journal_validation(1, JOURNAL)
-        assert observed == [True]
-        with validate_journal(raw) as expected:
-            assert terminal(factory)["anchor"] == expected.anchor
+        monkeypatch.setattr(service._journal_validation_owner, "advance", detached)
+        try:
+            for _ in range(10000):
+                service._advance_provenance_journal_validation(1, JOURNAL)
+                if terminal(factory)["state"] == "sealed":
+                    break
+            else:
+                pytest.fail("small native handoff did not complete")
+            assert len(observed) > 1
+            with validate_journal(raw) as expected:
+                assert terminal(factory)["anchor"] == expected.anchor
+        finally:
+            service.close()
 
 
 def test_cyclic_private_result_never_outranks_an_earlier_native_error(tmp_path):
@@ -382,9 +390,7 @@ def test_cyclic_private_result_never_outranks_an_earlier_native_error(tmp_path):
         work = prepared(factory)
         finish(factory, work)
         assert snapshot(factory)["graphs"][0][-1] == "cyclic"
-        assert owner._compute_upload_journal_validation(factory, work).failure == str(
-            expected.value
-        )
+        assert native_outcome(factory, work).failure == str(expected.value)
 
 
 def test_rank_headers_use_the_actual_scalar_domain_and_neutral_changes_visit_only_targets():

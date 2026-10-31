@@ -66,8 +66,8 @@ def create(path):
     )
     with closing(connect(path)) as db:
         db.execute(
-            "INSERT INTO frames VALUES (?,?,?)",
-            ("0", prior.json_bytes, canonical_json_bytes(prior.reference)),
+            "INSERT INTO frames VALUES (?,?,?,?)",
+            ("0", prior.json_bytes, canonical_json_bytes(prior.reference), prefix.sha256_state),
         )
         db.execute(
             "INSERT INTO journal_prefix VALUES (1,?,?,?)",
@@ -618,19 +618,28 @@ def test_native_correction_uses_staging_without_early_prefix_publication(
     journal, who, catalog, monkeypatch
 ):
     observed = []
-    original = AssertionStaging.advance
+    original_prepare, original_apply = AssertionStaging.prepare, AssertionStaging._apply
 
-    def advance(self, **options):
-        prefix = self.db.execute("SELECT * FROM journal_prefix").fetchall()
-        before = self.load()
-        state = original(self, row_budget=1, byte_budget=options["byte_budget"])
-        assert self.db.execute("SELECT * FROM journal_prefix").fetchall() == prefix
-        assert state.position - before.position <= 1
+    def prepare(self, **options):
         assert not self.db.in_transaction
+        before = self.load()
+        changes = self.db.total_changes
+        batch = original_prepare(self, row_budget=1, byte_budget=options["byte_budget"])
+        assert batch.after.position - before.position <= 1
+        assert self.db.total_changes == changes and not self.db.in_transaction
+        return batch
+
+    def apply(self, batch):
+        assert self.db.in_transaction
+        prefix = self.db.execute("SELECT * FROM journal_prefix").fetchall()
+        state = original_apply(self, batch)
+        assert self.db.execute("SELECT * FROM journal_prefix").fetchall() == prefix
+        assert self.db.in_transaction
         observed.append(self.sequence)
         return state
 
-    monkeypatch.setattr(AssertionStaging, "advance", advance)
+    monkeypatch.setattr(AssertionStaging, "prepare", prepare)
+    monkeypatch.setattr(AssertionStaging, "_apply", apply)
     with validate_journal(journal, catalog=catalog) as old:
         agent = copy.deepcopy(old.graph["agents"][0])
         retired = agent["assertion_id"]
@@ -802,6 +811,7 @@ class WorkConnection(sqlite3.Connection):
 
     @contextmanager
     def observe(self):
+        was_in_transaction = self.in_transaction
         self.metrics = {
             name: 0
             for name in (
@@ -860,7 +870,7 @@ class WorkConnection(sqlite3.Connection):
             self.set_progress_handler(None, 0)
             self.set_authorizer(None)
             self.metrics["changed_rows"] = self.total_changes - before
-        assert not self.in_transaction
+        assert self.in_transaction == was_in_transaction
         assert all(cursor.closed for _sql, _parameters, cursor in self.statements)
         for sql, parameters, _cursor in self.statements:
             if not sql.startswith(("SELECT", "UPDATE")):
@@ -870,18 +880,12 @@ class WorkConnection(sqlite3.Connection):
             assert "SEARCH" in plan and "SCAN" not in plan and "USE TEMP" not in plan, (sql, plan)
 
 
-@pytest.mark.growth_witness(
-    "riverhog-assertion-staging-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_provenance._assertion_staging.AssertionStaging.advance",
-)
-def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_property):
-    binding = growth_binding(AssertionStaging.advance)
+def staging_unit_samples(tmp_path, operation):
+    binding = growth_binding(getattr(AssertionStaging, operation))
     projection = project_bindings((binding,))
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
-    samples = []
     regimes = [
         (0, 0, 64, 0, 0, False),
         (1, 0, 1, 0, 0, False),
@@ -1063,8 +1067,23 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                     if payload
                     else 65536
                 )
-                with db.observe() as metrics:
-                    current.advance(row_budget=quantum, byte_budget=admission)
+                unchanged = contents(db) if operation != "advance" else None
+                if operation == "_apply":
+                    batch = current.prepare(row_budget=quantum, byte_budget=admission)
+                    db.execute("BEGIN IMMEDIATE").close()
+                    with db.observe() as metrics:
+                        after = current._apply(batch)
+                    assert after == batch.after and db.in_transaction
+                    db.rollback()
+                elif operation == "prepare":
+                    with db.observe() as metrics:
+                        batch = current.prepare(row_budget=quantum, byte_budget=admission)
+                    assert not db.in_transaction
+                else:
+                    with db.observe() as metrics:
+                        current.advance(row_budget=quantum, byte_budget=admission)
+                if unchanged is not None:
+                    assert contents(db) == unchanged
                 sample = {
                     "declaration": binding.declaration.id,
                     "declaration_sha256": digest,
@@ -1080,18 +1099,51 @@ def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_pro
                     "delegates": {},
                 }
                 validate_execution_samples(projection, binding.declaration.id, [sample])
-                samples.append(sample)
-    from test_observation_staging import growth_samples as observer_growth_samples
+                yield sample
+    if operation == "advance":
+        from test_comparison_semantics import staging_growth_samples as comparison_staging_samples
+        from test_edge_row_semantics import staging_growth_samples
+        from test_observation_staging import growth_samples as observer_growth_samples
 
-    samples.extend(observer_growth_samples(tmp_path))
-    from test_edge_row_semantics import staging_growth_samples
+        yield from observer_growth_samples(tmp_path)
+        yield from staging_growth_samples(tmp_path)
+        yield from comparison_staging_samples(tmp_path)
 
-    samples.extend(staging_growth_samples(tmp_path))
-    from test_comparison_semantics import staging_growth_samples as comparison_staging_samples
 
-    samples.extend(comparison_staging_samples(tmp_path))
-    assert len(samples) == 196
+@pytest.mark.growth_witness(
+    "riverhog-assertion-staging-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._assertion_staging.AssertionStaging.advance",
+)
+def test_actual_cold_indexed_staging_rows_bytes_and_vm_work(tmp_path, record_property):
+    samples = []
     record_property("growth_samples", samples)
+    samples.extend(staging_unit_samples(tmp_path, "advance"))
+    assert len(samples) == 196
+
+
+@pytest.mark.growth_witness(
+    "riverhog-assertion-staging-plan-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._assertion_staging.AssertionStaging.prepare",
+)
+def test_actual_detached_assertion_staging_plan(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    samples.extend(staging_unit_samples(tmp_path, "prepare"))
+    assert len(samples) == 88
+
+
+@pytest.mark.growth_witness(
+    "riverhog-assertion-staging-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._assertion_staging.AssertionStaging._apply",
+)
+def test_actual_owner_transaction_assertion_staging_application(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    samples.extend(staging_unit_samples(tmp_path, "_apply"))
+    assert len(samples) == 88
 
 
 @pytest.mark.parametrize("completed", [False, True])

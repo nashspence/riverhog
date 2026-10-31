@@ -31,6 +31,7 @@ from http_api_contracts import (
     operation_interface,
 )
 from http_api_contracts.browse import BrowseTokenCodec, BrowseTokenError
+from http_api_contracts.control import ControlBudgetExhausted
 from http_api_contracts.metadata_exchange import MetadataPreparationPending
 from pydantic import TypeAdapter, ValidationError
 from riverhog_client import ApiClient
@@ -603,6 +604,15 @@ def create_app(
             code=error_code_for_status(exc.status_code),
             message=str(exc.detail),
             headers=dict(exc.headers or {}),
+        )
+
+    @app.exception_handler(ControlBudgetExhausted)
+    async def metadata_unavailable(_request: Request, _exc: ControlBudgetExhausted) -> JSONResponse:
+        return _error_response(
+            503,
+            code=error_code_for_status(503),
+            message="metadata contact is temporarily unavailable",
+            headers={"Retry-After": "1"},
         )
 
     @app.exception_handler(Exception)

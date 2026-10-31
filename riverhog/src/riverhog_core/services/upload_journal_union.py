@@ -6,7 +6,7 @@ import json
 from dataclasses import dataclass, replace
 from typing import Any
 
-from riverhog_canonical_json import canonical_json_bytes
+from riverhog_canonical_json import canonical_json_bytes, format_scalar, parse_scalar
 from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
@@ -25,6 +25,10 @@ from riverhog_provenance.epoch_union import (
     VertexKey,
     plan_epoch_union_additions,
 )
+from riverhog_provenance.topology_checkpoint import (
+    TopologyCaptureCheckpoint,
+    validate_checkpoint_digest,
+)
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
@@ -41,7 +45,6 @@ from riverhog_core.catalog_models import CollectionUploadProvenanceJournalRecord
 from riverhog_core.catalog_models import CollectionUploadProvenanceTopologyFactRecord as Fact
 
 from . import collection_uploads as source_owner
-from . import upload_journal_topology as facts_owner
 
 _BUDGET = 64
 
@@ -62,24 +65,24 @@ class _Header:
 def _encode(header: _Header) -> str:
     return canonical_json_bytes(
         {
-            "active": str(header.active_count),
-            "seeded": str(header.seeded_count),
-            "epoch": str(header.epoch),
+            "active": format_scalar("nonnegative", header.active_count),
+            "seeded": format_scalar("nonnegative", header.seeded_count),
+            "epoch": format_scalar("nonnegative", header.epoch),
             "phase": header.phase,
-            "item": str(header.item),
+            "item": format_scalar("nonnegative", header.item),
             "seed_after": header.seed_after,
-            "consumed": str(header.consumed),
+            "consumed": format_scalar("nonnegative", header.consumed),
             "last_source": None
             if header.last_source is None
             else [
-                str(header.last_source[0]),
+                format_scalar("nonnegative", header.last_source[0]),
                 header.last_source[1],
-                str(header.last_source[2]),
+                format_scalar("nonnegative", header.last_source[2]),
                 header.last_source[3],
             ],
             "last_arc": None
             if header.last_arc is None
-            else [str(header.last_arc[0]), *header.last_arc[1:]],
+            else [format_scalar("nonnegative", header.last_arc[0]), *header.last_arc[1:]],
         }
     ).decode()
 
@@ -116,31 +119,31 @@ def _decode(raw: str) -> _Header:
             ):
                 raise ValueError("invalid private union source marker")
             last = (
-                facts_owner._number(last[0]),
+                parse_scalar("nonnegative", last[0]),
                 last[1],
-                facts_owner._number(last[2]),
-                facts_owner._digest(last[3]),
+                parse_scalar("nonnegative", last[2]),
+                validate_checkpoint_digest(last[3]),
             )
         arc = value["last_arc"]
         if arc is not None:
             if not isinstance(arc, list) or len(arc) != 4 or arc[1] not in GRAPH_KINDS:
                 raise ValueError("invalid private union arc marker")
             arc = (
-                facts_owner._number(arc[0]),
+                parse_scalar("nonnegative", arc[0]),
                 arc[1],
                 require_canonical_uuid_urn(arc[2]),
                 require_canonical_uuid_urn(arc[3]),
             )
         header = _Header(
-            facts_owner._number(value["epoch"]),
+            parse_scalar("nonnegative", value["epoch"]),
             value["phase"],
-            facts_owner._number(value["item"]),
+            parse_scalar("nonnegative", value["item"]),
             after,
-            facts_owner._number(value["consumed"]),
+            parse_scalar("nonnegative", value["consumed"]),
             last,
             arc,
-            facts_owner._number(value["active"]),
-            facts_owner._number(value["seeded"]),
+            parse_scalar("nonnegative", value["active"]),
+            parse_scalar("nonnegative", value["seeded"]),
         )
         if (
             (header.consumed == 0) != (last is None)
@@ -225,7 +228,7 @@ def _begin(
         if row.directory_id != source.directory_id or row.union_algorithm != EPOCH_UNION_ALGORITHM:
             raise RuntimeError("epoch union checkpoint binding differs from its source")
         header = _decode(row.union_cursor_json)
-        fact_count = facts_owner._decode(row.topology_cursor_json).facts
+        fact_count = TopologyCaptureCheckpoint.from_json(row.topology_cursor_json).facts
         work = _Work(
             source,
             row.version,

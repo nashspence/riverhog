@@ -6,6 +6,8 @@ import hashlib
 import sys
 from collections.abc import Iterator, Mapping, Sequence
 from contextlib import contextmanager
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from typing import Any
 
@@ -26,6 +28,9 @@ from riverhog_archive_contracts import (
 )
 from riverhog_client import (
     ApiClient,
+    PrimaryScope,
+    PrimaryStore,
+    PrimaryStoreLimits,
     ProducerArtifactIdentity,
     ProducerStream,
     RawSourceHash,
@@ -34,7 +39,13 @@ from riverhog_client import (
 )
 from riverhog_client.canonical_completion import CompletionRecord
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
-from riverhog_protocol import ArtifactMemberIdentityDocument, PortableCollectionInventoryPage
+from riverhog_protocol import (
+    ArtifactMemberIdentityDocument,
+    CollectionUploadArtifactCustodyReceiptDocument,
+    CollectionUploadCustodyObjectDocument,
+    CollectionUploadProvenanceCustodyObjectDocument,
+    PortableCollectionInventoryPage,
+)
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.collection_completion import CollectionCompletionRecordingDocument
 from riverhog_protocol.collection_workflow_transport import (
@@ -456,10 +467,14 @@ class UploadApi(ReadApi):
         for binding in batch.bindings:
             assert self.bindings.setdefault(binding.artifact_id, binding) == binding
 
+        return batch
+
     def set_collection_upload_session_materialization_decisions(
         self, _collection_id: int, batch: Any
     ) -> None:
         self.decisions.extend(batch.model_dump(mode="json")["decisions"])
+
+        return batch
 
     def heartbeat_collection_upload_session(self, _collection_id: int) -> dict[str, str]:
         return {"state": "open"}
@@ -593,9 +608,50 @@ class UploadApi(ReadApi):
         return value
 
     def get_collection_upload_session(self, _collection_id: int) -> dict[str, object]:
+        header = {
+            "collection_id": "2",
+            "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
+            "construction_identity_sha256": "c" * 64,
+            "registration_constraints": {
+                "pack_member_bytes": "1048576",
+                "raw_part_plaintext_bytes": "65536",
+            },
+        }
         if self.finalized:
-            return self.complete_collection_upload_session(_collection_id)
-        return {"state": "open", "construction_identity_sha256": "c" * 64}
+            return {**header, **self.complete_collection_upload_session(_collection_id)}
+        return {**header, "state": "open"}
+
+    def get_collection_upload_session_artifact(self, _collection_id, artifact_id):
+        if artifact_id not in self.registered:
+            raise NotFound("member absent")
+        row = self.registered[artifact_id]
+        receipt = None
+        if self.finalized:
+            primary = self.bindings[artifact_id]
+            receipt = CollectionUploadArtifactCustodyReceiptDocument.seal(
+                collection_id=2,
+                artifact_id=artifact_id,
+                bytes=int(row["bytes"]),
+                sha256=row["sha256"],
+                primary=primary,
+                completion_requirement_sha256=self.requirement.identity,
+                archive_objects=(
+                    CollectionUploadCustodyObjectDocument(
+                        volume_id="pack-" + "0" * 64,
+                        sealed_receipt_sha256="a" * 64,
+                    ),
+                ),
+                provenance_objects=(
+                    CollectionUploadProvenanceCustodyObjectDocument(
+                        object_id="fixture-primary",
+                        relative_path="provenance/payloads/fixture.bin.age",
+                        plaintext_bytes=str(primary.journal.prefix_bytes),
+                        plaintext_sha256=primary.journal.prefix_sha256,
+                        sealed_receipt_sha256="b" * 64,
+                    ),
+                ),
+            ).model_dump(mode="json")
+        return {**row, "custody_receipt": receipt}
 
     def list_collection_upload_session_artifacts(
         self, _collection_id: int, **_kwargs: Any
@@ -675,51 +731,69 @@ def main() -> None:
         recipe=RecipeIdentity("external.recipe/v1", 1, "e" * 64),
         operation=OperationIdentity("external.transform/v1", "f" * 64),
     )
-    runtime = CollectionTransformRuntime(
-        upload_api,
-        spec=spec,
-        claim_id=CLAIM_ID,
-        fence=1,
-        work_id=WORK_ID,
-        execution_id=EXECUTION_ID,
-        controller_evidence={"format": "external-controller-evidence/v1"},
-        producer_app="external-riverhog-client-fixture",
-    )
-    writer = runtime.open_incremental_publication(execution_envelope_sha256="0" * 64)
-    identity = ProducerArtifactIdentity(OUTPUT_ID, len(OUTPUT_CONTENT), OUTPUT_SHA256)
-    writer.append(
-        ProducerStream(
-            artifact_id=OUTPUT_ID,
-            bytes=identity.bytes,
-            sha256=identity.sha256,
-            read_range=lambda offset, size: OUTPUT_CONTENT[offset : offset + size],
-            materialization_hint=("output.bin",),
-        ),
-        identity=identity,
-        output_id="external-output",
-        source_histories=(_INPUT_HISTORY.accepted(),),
-        history_extent=BOUND_HISTORY_EXTENT,
-    )
-    raw_evidence = b'{"optional":null,"quality":1.2300}'
-    evidence_digest = hashlib.sha256(raw_evidence).hexdigest()
-    completion_records = tuple(
-        CompletionRecord(kind, len(raw_evidence), evidence_digest, lambda: (raw_evidence,))
-        for kind in (
-            "implementation",
-            "invocation",
-            "target-execution",
-            "target-output-declarations",
-            "target-result",
-        )
-    )
-    receipt = runtime.finish_incremental_publication(
-        writer,
-        execution_sha256=evidence_digest,
-        disposition_set=DISPOSITIONS,
-        completion_records=completion_records,
-        poll_seconds=0.01,
-    )
-    runtime.close()
+    with TemporaryDirectory(prefix="riverhog-external-publication-") as state_home:
+        with PrimaryStore(
+            Path(state_home) / "primary",
+            allocation_id="external-application-fixture",
+            scope=PrimaryScope(service="fixture-service", account="fixture-account"),
+            limits=PrimaryStoreLimits(
+                pending_bytes=16 * 1024**2,
+                total_bytes=32 * 1024**2,
+                preparation_bytes=8 * 1024**2,
+                control_bytes=64 * 1024,
+            ),
+            initialize=True,
+        ) as primary_store:
+            with CollectionTransformRuntime(
+                upload_api,
+                primary_store=primary_store,
+                member_inventory=lambda: (
+                    ProducerArtifactIdentity(OUTPUT_ID, len(OUTPUT_CONTENT), OUTPUT_SHA256),
+                ),
+                spec=spec,
+                claim_id=CLAIM_ID,
+                fence=1,
+                work_id=WORK_ID,
+                execution_id=EXECUTION_ID,
+                controller_evidence={"format": "external-controller-evidence/v1"},
+                producer_app="external-riverhog-client-fixture",
+            ) as runtime:
+                writer = runtime.open_incremental_publication(execution_envelope_sha256="0" * 64)
+                identity = ProducerArtifactIdentity(OUTPUT_ID, len(OUTPUT_CONTENT), OUTPUT_SHA256)
+                writer.append(
+                    ProducerStream(
+                        artifact_id=OUTPUT_ID,
+                        bytes=identity.bytes,
+                        sha256=identity.sha256,
+                        read_range=lambda offset, size: OUTPUT_CONTENT[offset : offset + size],
+                        materialization_hint=("output.bin",),
+                    ),
+                    identity=identity,
+                    output_id="external-output",
+                    source_histories=(_INPUT_HISTORY.accepted(),),
+                    history_extent=BOUND_HISTORY_EXTENT,
+                )
+                raw_evidence = b'{"optional":null,"quality":1.2300}'
+                evidence_digest = hashlib.sha256(raw_evidence).hexdigest()
+                completion_records = tuple(
+                    CompletionRecord(
+                        kind, len(raw_evidence), evidence_digest, lambda: (raw_evidence,)
+                    )
+                    for kind in (
+                        "implementation",
+                        "invocation",
+                        "target-execution",
+                        "target-output-declarations",
+                        "target-result",
+                    )
+                )
+                receipt = runtime.finish_incremental_publication(
+                    writer,
+                    execution_sha256=evidence_digest,
+                    disposition_set=DISPOSITIONS,
+                    completion_records=completion_records,
+                    poll_seconds=0.01,
+                )
     assert receipt.collection_id == 2
     assert len(upload_api.registered) == len(upload_api.bindings) == 1
     assert len(upload_api.journals) == 4  # two inherited snapshots, primary, completion

@@ -5,7 +5,6 @@ import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import Any
 
 import pytest
@@ -19,7 +18,6 @@ from riverhog_archive_contracts import (
     RETAINED_HISTORY_EXTENT,
     HistoryJournalAnchor,
     MemberHistoryBinding,
-    MemberHistoryBuilder,
     MemberHistoryDocument,
     MemberHistoryPrimary,
     MemberHistoryRoot,
@@ -30,6 +28,7 @@ from riverhog_archive_contracts import (
     RecordPage,
     RecordSetCommitment,
     binding_tree_commitment,
+    format_archive_sequence,
     history_record_page_object_path,
     member_history_object_path,
     ordered_provenance_commitment,
@@ -41,118 +40,11 @@ from riverhog_core.provenance_archive_read import (
     ProvenanceArchiveReadError,
 )
 
-
-def _archive() -> tuple[CanonicalProvenanceArchiveReader, dict[str, bytes], str, str]:
-    generation = "a" * 64
-    artifact_set = "b" * 64
-    journal_id = "urn:uuid:11111111-1111-4111-8111-111111111111"
-    journal_bytes = b"first-frame\nsecond-frame\n"
-    primary = MemberHistoryPrimary(
-        HistoryJournalAnchor(
-            journal_id,
-            "urn:uuid:33333333-3333-4333-8333-333333333333",
-            0,
-            "d" * 64,
-            hashlib.sha256(journal_bytes).hexdigest(),
-            len(journal_bytes),
-        ),
-        "urn:uuid:22222222-2222-4222-8222-222222222222",
-    )
-    with MemberHistoryBuilder(
-        artifact_id="c" * 64, bytes=7, sha256="a" * 64, primary=primary
-    ) as builder:
-        final, _history = builder.seal()
-        binding = final.to_mapping()
-        structures = {
-            provenance_structure_identity(raw).relative_path: raw for raw in builder.objects()
-        }
-    binding_bytes = canonical_json_bytes(
-        {"format": PROVENANCE_BINDINGS_FORMAT, "bindings": [binding]}
-    )
-    descriptors = (
-        ProvenanceVolumeDocument(
-            archive_generation=generation,
-            artifact_set_sha256=artifact_set,
-            sequence=0,
-            payload=ProvenancePayload(
-                kind="bindings",
-                sequence=0,
-                bytes=len(binding_bytes),
-                sha256=hashlib.sha256(binding_bytes).hexdigest(),
-            ),
-            first_artifact_id="c" * 64,
-            last_artifact_id="c" * 64,
-            binding_count=1,
-        ),
-        ProvenanceVolumeDocument(
-            archive_generation=generation,
-            artifact_set_sha256=artifact_set,
-            sequence=1,
-            payload=ProvenancePayload(
-                kind="journal",
-                sequence=1,
-                bytes=len(journal_bytes[:12]),
-                sha256=hashlib.sha256(journal_bytes[:12]).hexdigest(),
-            ),
-            journal_id=journal_id,
-            journal_offset=0,
-            journal_bytes=len(journal_bytes),
-            journal_sha256=hashlib.sha256(journal_bytes).hexdigest(),
-        ),
-        ProvenanceVolumeDocument(
-            archive_generation=generation,
-            artifact_set_sha256=artifact_set,
-            sequence=2,
-            payload=ProvenancePayload(
-                kind="journal",
-                sequence=2,
-                bytes=len(journal_bytes[12:]),
-                sha256=hashlib.sha256(journal_bytes[12:]).hexdigest(),
-            ),
-            journal_id=journal_id,
-            journal_offset=12,
-            journal_bytes=len(journal_bytes),
-            journal_sha256=hashlib.sha256(journal_bytes).hexdigest(),
-        ),
-    )
-    terminal = ProvenanceTerminalDocument(
-        archive_generation=generation,
-        artifact_set_sha256=artifact_set,
-        sequence=3,
-    )
-    root = ProvenanceRootDocument(
-        archive_generation=generation,
-        artifact_set_sha256=artifact_set,
-        delivery_context_id="urn:uuid:44444444-4444-4444-8444-444444444444",
-        binding_count=1,
-        binding_tree_sha256=binding_tree_commitment(
-            (MemberHistoryBinding.from_mapping(binding),)
-        ).root_sha256,
-        journal_count=1,
-        ordered_volume_sha256=ordered_provenance_commitment((*descriptors, terminal)),
-    )
-    objects = {"provenance/root.json.age": root.to_json_bytes()}
-    objects.update(structures)
-    for document in (*descriptors, terminal):
-        objects[document.metadata_path] = document.to_json_bytes()
-    objects[descriptors[0].payload.path] = binding_bytes
-    objects[descriptors[1].payload.path] = journal_bytes[:12]
-    objects[descriptors[2].payload.path] = journal_bytes[12:]
-
-    def read_object(path: str):
-        yield objects[path]
-
-    reader = CanonicalProvenanceArchiveReader(
-        read_object,
-        expected_root_sha256=root.identity,
-        archive_generation=generation,
-        artifact_set_sha256=artifact_set,
-    )
-    return reader, objects, journal_id, journal_bytes.decode()
+from tests.support.provenance_archive import archive_reader_fixture
 
 
 def test_root_bound_reader_streams_exact_journal_and_member_bindings() -> None:
-    reader, _, journal_id, journal_text = _archive()
+    reader, _, journal_id, journal_text = archive_reader_fixture()
     assert reader.scan().volume_count == 3
     assert list(reader.iter_journal_ids()) == [journal_id]
     assert list(reader.iter_journal_headers()) == [
@@ -171,19 +63,19 @@ def test_root_bound_reader_streams_exact_journal_and_member_bindings() -> None:
 
 
 def test_root_bound_reader_rejects_changed_sequence_and_payload() -> None:
-    reader, objects, journal_id, _ = _archive()
+    reader, objects, journal_id, _ = archive_reader_fixture()
     payload_path = next(path for path in objects if path.startswith("provenance/payloads/"))
     objects[payload_path] = b"changed"
     with pytest.raises(ProvenanceArchiveReadError):
         list(reader.iter_bindings())
-    reader, objects, journal_id, _ = _archive()
+    reader, objects, journal_id, _ = archive_reader_fixture()
     objects["provenance/metadata/volume-" + "0" * 63 + "1.json.age"] = b"{}"
     with pytest.raises((ProvenanceArchiveReadError, ValueError)):
         list(reader.iter_journal_range(journal_id))
 
 
 def test_content_addressed_history_read_authenticates_root_without_walking_journals() -> None:
-    source, objects, _, _ = _archive()
+    source, objects, _, _ = archive_reader_fixture()
     binding = MemberHistoryBinding.from_mapping(next(source.iter_bindings()))
     raw = objects[member_history_object_path(binding.history_sha256)]
     identity = provenance_structure_identity(raw)
@@ -217,7 +109,7 @@ def test_content_addressed_history_read_authenticates_root_without_walking_journ
 def test_prepared_reader_closes_partly_consumed_cursors_before_directory_cleanup(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    reader, _, _, _ = _archive()
+    reader, _, _, _ = archive_reader_fixture()
     pending: list[TrackedCursor] = []
 
     class TrackedCursor(sqlite3.Cursor):
@@ -235,10 +127,11 @@ def test_prepared_reader_closes_partly_consumed_cursors_before_directory_cleanup
                 pending.append(cursor)
             return cursor.execute(sql, parameters)
 
-    class CheckedDirectory(TemporaryDirectory):
-        def cleanup(self) -> None:
-            assert pending and all(cursor.explicitly_closed for cursor in pending)
-            super().cleanup()
+    remove_directory = archive_read.ProvenanceMetadataIndex._remove_directory
+
+    def checked_remove(owner: archive_read.ProvenanceMetadataIndex) -> None:
+        assert pending and all(cursor.explicitly_closed for cursor in pending)
+        remove_directory(owner)
 
     original_connect = sqlite3.connect
 
@@ -246,7 +139,7 @@ def test_prepared_reader_closes_partly_consumed_cursors_before_directory_cleanup
         return original_connect(*args, **kwargs, factory=TrackedConnection)
 
     monkeypatch.setattr(archive_read.sqlite3, "connect", connect)
-    monkeypatch.setattr(scratch_workspace.tempfile, "TemporaryDirectory", CheckedDirectory)
+    monkeypatch.setattr(archive_read.ProvenanceMetadataIndex, "_remove_directory", checked_remove)
     with reader.prepared():
         headers = reader.iter_journal_headers()
         next(headers)
@@ -258,16 +151,16 @@ def test_prepared_reader_closes_partly_consumed_cursors_before_directory_cleanup
 def test_prepared_journal_stream_hands_off_workers_and_cleans_scratch(
     interrupted: bool, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    reader, _, journal_id, journal_text = _archive()
+    reader, _, journal_id, journal_text = archive_reader_fixture()
     scratch_paths: list[Path] = []
-    original_directory = scratch_workspace.tempfile.TemporaryDirectory
+    original_directory = scratch_workspace.tempfile.mkdtemp
 
-    def directory(*args: Any, **kwargs: Any) -> TemporaryDirectory:
+    def directory(*args: Any, **kwargs: Any) -> str:
         scratch = original_directory(*args, **kwargs)
-        scratch_paths.append(Path(scratch.name))
+        scratch_paths.append(Path(scratch))
         return scratch
 
-    monkeypatch.setattr(scratch_workspace.tempfile, "TemporaryDirectory", directory)
+    monkeypatch.setattr(scratch_workspace.tempfile, "mkdtemp", directory)
 
     def body():
         with reader.prepared():
@@ -292,7 +185,7 @@ def test_prepared_journal_stream_hands_off_workers_and_cleans_scratch(
 
 
 def test_member_binding_tree_must_match_the_archived_binding_pages() -> None:
-    reader, objects, _, _ = _archive()
+    reader, objects, _, _ = archive_reader_fixture()
     root = reader.scan().root
     for selected, valid in ((root.binding_tree_sha256, True), ("0" * 64, False)):
         amended = replace(root, binding_tree_sha256=selected)
@@ -393,7 +286,7 @@ def test_binding_pages_progress_across_the_bounded_archive_extent() -> None:
 
 
 def test_member_history_requires_exact_root_and_terminal_pages() -> None:
-    reader, objects, journal_id, _ = _archive()
+    reader, objects, journal_id, _ = archive_reader_fixture()
     primary = HistoryJournalAnchor(
         journal_id=journal_id,
         through_entry_id="urn:uuid:33333333-3333-4333-8333-333333333333",
@@ -453,3 +346,37 @@ def test_member_history_requires_exact_root_and_terminal_pages() -> None:
     del objects[root_terminal]
     with pytest.raises(KeyError):
         reader.member_history(binding)
+
+
+def test_candidate_descriptor_closes_failed_source_iterator_before_returning():
+    _, objects, _, _ = archive_reader_fixture()
+    root = ProvenanceRootDocument.from_json_bytes(objects["provenance/root.json.age"])
+    closed = []
+    retained = []
+
+    def read(path):
+        try:
+            if path.startswith("provenance/metadata/"):
+                yield b"x" * (archive_read.PROVENANCE_METADATA_BYTES_MAX + 1)
+            else:
+                yield objects[path]
+        finally:
+            closed.append(path)
+
+    def retained_read(path):
+        iterator = read(path)
+        retained.append(iterator)
+        return iterator
+
+    reader = CanonicalProvenanceArchiveReader(
+        retained_read,
+        expected_root_sha256=root.identity,
+        archive_generation=root.archive_generation,
+        artifact_set_sha256=root.artifact_set_sha256,
+    )
+    with pytest.raises(ProvenanceArchiveReadError, match="bounded contract"):
+        reader.descriptor_at(0)
+    assert closed == [
+        "provenance/root.json.age",
+        f"provenance/metadata/volume-{format_archive_sequence(0)}.json.age",
+    ]

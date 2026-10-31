@@ -406,7 +406,7 @@ def _upload_provenance_journal(
         )
         offset += len(chunk)
     service.seal_provenance_journal(collection_id, journal_id)
-    for _ in range(64):
+    for _ in range(10000):
         status = service.get_provenance_journal(collection_id, journal_id)
         if status["state"] in {"sealed", "failed"}:
             assert status["state"] == "sealed", status["failure"]
@@ -1086,10 +1086,33 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
     assert queued["archive_phase"] == "finalization_queued"
     assert queued["latest_failure"] is None
     assert queued["archive_next_attempt_at"] is not None
+    artifact_id = ArtifactId(f"{2:064x}")
+    original_receipt = _custody_until(service, collection_id, artifact_id)
+    with session_scope(make_session_factory(config.database_url)) as session:
+        original_octets = session.get(
+            CollectionUploadArtifactRecord, (collection_id, str(artifact_id))
+        ).custody_receipt_json
     finalized = _process_until(service, collection_id)
     assert finalized["state"] == "finalized"
     assert finalized["custody"] == {"state": "complete"}
     assert finalized["custody_mode"] == custody_mode
+    published_member = service.get_artifact(collection_id, artifact_id)
+    assert published_member["custody_receipt"] == original_receipt
+    assert published_member["payload_sealed"] is True
+    with session_scope(make_session_factory(config.database_url)) as session:
+        assert session.get(CollectionUploadRecord, collection_id) is None
+        assert (
+            session.get(
+                CollectionArtifactRecord, (collection_id, str(artifact_id))
+            ).custody_receipt_json
+            == original_octets
+        )
+    service.require_read_access(collection_id, _CREATOR)
+    service.require_read_access(collection_id, _DELETER)
+    with pytest.raises(NotFound):
+        service.require_read_access(collection_id, replace(_CREATOR, access=frozenset()))
+    with pytest.raises(NotFound):
+        service.require_read_access(collection_id, _OTHER_DELETER)
     assert finalized["description"] == description
     assert finalized["description_revision"] == (1 if description is not None else 0)
     assert finalized["description_publication"] == (
@@ -1184,6 +1207,7 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
     )
     assert resumed["collection_id"] == str(collection_id)
     assert resumed["state"] == "finalized"
+    assert service.get_artifact(collection_id, artifact_id) == published_member
     changed_custody_mode = (
         "custody-transfer" if custody_mode == "producer-retained" else "producer-retained"
     )

@@ -3,10 +3,15 @@
 from __future__ import annotations
 
 import hashlib
+import sqlite3
 from collections.abc import Callable, Iterator, Sequence
 from dataclasses import dataclass
 
-from riverhog_archive_contracts import ARCHIVE_ROOT_DOCUMENT_BYTES_MAX, read_bounded_history_object
+from riverhog_archive_contracts import (
+    ARCHIVE_ROOT_DOCUMENT_BYTES_MAX,
+    MemberHistoryHeads,
+    read_bounded_history_object,
+)
 from riverhog_protocol.errors import InvalidState, NotFound
 from sqlalchemy import select
 from state_schema import read_snapshot
@@ -20,6 +25,7 @@ from riverhog_core.catalog_models import (
 from riverhog_core.ports.archive_store import ArchiveObjectIdentity
 from riverhog_core.ports.download_allowance import DownloadAttribution
 from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
+from riverhog_core.provenance_metadata_index import ProvenanceMetadataIndex
 from riverhog_core.provenance_read_cache import ProvenanceReadCache
 from riverhog_core.services.archive_records import select_readable_archive_copy
 
@@ -53,10 +59,18 @@ class PublishedCanonicalProvenance:
         archive_stores: ArchiveStoreRegistry,
         *,
         read_order: Sequence[str],
+        metadata_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_metadata_storage_open: Callable[[ProvenanceMetadataIndex], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
     ) -> None:
         self._session_factory = session_factory
         self._archive_stores = archive_stores
         self._read_order = tuple(read_order)
+        self._metadata_connection_factory = metadata_connection_factory
+        self._on_metadata_storage_open = on_metadata_storage_open
+        self._history_verification_connection_factory = history_verification_connection_factory
+        self._on_history_verification_storage_open = on_history_verification_storage_open
         # Immutable verified plaintext is reusable across requests. Capacity bounds
         # working memory, not history extent; misses always use normal custody I/O.
         self._objects = ProvenanceReadCache(
@@ -85,6 +99,10 @@ class PublishedCanonicalProvenance:
             expected_root_sha256=selected.provenance_identity,
             archive_generation=selected.archive_generation,
             artifact_set_sha256=selected.artifact_set_identity,
+            metadata_connection_factory=self._metadata_connection_factory,
+            on_metadata_storage_open=self._on_metadata_storage_open,
+            history_verification_connection_factory=self._history_verification_connection_factory,
+            on_history_verification_storage_open=self._on_history_verification_storage_open,
         )
 
     def archive_root_preimage(

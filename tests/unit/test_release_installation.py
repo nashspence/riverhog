@@ -57,6 +57,16 @@ def _wheel_records(projects: list[Any]) -> list[dict[str, object]]:
                 "distribution": name,
             }
         )
+    name = "riverhog_client-0.1.0-cp312-cp312-win_amd64.whl"
+    records.append(
+        {
+            "kind": "wheel",
+            "name": f"python/{name}",
+            "sha256": hashlib.sha256(name.encode()).hexdigest(),
+            "size": len(name),
+            "distribution": "riverhog-client",
+        }
+    )
     return records
 
 

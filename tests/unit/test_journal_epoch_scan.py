@@ -17,7 +17,12 @@ from sqlalchemy import delete, event, select, update
 
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_summary_consumers import source
-from tests.unit.test_journal_validation_handoff import complete_capture, service_for, terminal
+from tests.unit.test_journal_validation_handoff import (
+    complete_capture,
+    native_outcome,
+    service_for,
+    terminal,
+)
 from tests.unit.test_staged_journal_range import JOURNAL, Journal
 
 Frame, Scan = epochs.Frame, epochs.Scan
@@ -147,21 +152,29 @@ def test_native_replay_remains_the_only_acceptance_authority(tmp_path, monkeypat
     raw = source(journal_id=JOURNAL)
     with retained(tmp_path, raw) as (engine, factory):
         complete_capture(factory)
-        native = owner._compute_upload_journal_validation
-        calls = []
+        service = service_for(factory)
+        native = service._journal_validation_owner.advance
+        observed = []
 
-        def observed(*args):
-            assert engine.pool.checkedout() == 0
+        def detached(*args, **kwargs):
             assert progress(factory)[-1] == "complete"
-            assert terminal(factory)["anchor"] is None
-            calls.append(True)
-            return native(*args)
+            assert engine.pool.checkedout() == 0 and terminal(factory)["anchor"] is None
+            observed.append(True)
+            return native(*args, **kwargs)
 
-        monkeypatch.setattr(owner, "_compute_upload_journal_validation", observed)
-        service_for(factory)._advance_provenance_journal_validation(1, JOURNAL)
-        assert calls == [True]
-        with validate_journal(raw) as expected:
-            assert terminal(factory)["anchor"] == expected.anchor
+        monkeypatch.setattr(service._journal_validation_owner, "advance", detached)
+        try:
+            for _ in range(10000):
+                service._advance_provenance_journal_validation(1, JOURNAL)
+                if terminal(factory)["state"] == "sealed":
+                    break
+            else:
+                pytest.fail("small native handoff did not complete")
+            assert len(observed) > 1
+            with validate_journal(raw) as expected:
+                assert terminal(factory)["anchor"] == expected.anchor
+        finally:
+            service.close()
 
 
 @pytest.mark.parametrize("suffix", [b"\x1e{}\n", b"\x1e[1]\n", b"\x1e", b"x"])
@@ -175,7 +188,7 @@ def test_late_speculative_failure_never_outranks_an_earlier_native_prefix_error(
         work = complete_capture(factory)
         finish(factory, work)
         assert progress(factory)[-1] == "deferred"
-        outcome = owner._compute_upload_journal_validation(factory, work)
+        outcome = native_outcome(factory, work)
         assert outcome.failure == str(expected.value)
         assert terminal(factory)["anchor"] is None
 

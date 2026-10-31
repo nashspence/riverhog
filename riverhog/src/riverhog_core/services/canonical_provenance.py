@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Iterator
+import sqlite3
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from typing import Any
 from uuid import uuid4
@@ -11,6 +12,7 @@ from uuid import uuid4
 from riverhog_archive_contracts import (
     RETAINED_HISTORY_EXTENT,
     MemberHistoryBinding,
+    MemberHistoryHeads,
     SourceMemberHistoryBindingProof,
     provenance_structure_object_path,
 )
@@ -19,7 +21,7 @@ from riverhog_protocol import ArtifactId, CollectionArtifactProvenanceBindingDoc
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_protocol.errors import InvalidState, NotFound, PreconditionFailed
 from riverhog_protocol.paths import validate_collection_id
-from riverhog_provenance import MemberHistoryClosure, MemberHistoryMembership
+from riverhog_provenance import JournalStore, MemberHistoryClosure, MemberHistoryMembership
 from riverhog_provenance_contracts import ProvenanceJournalId
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -49,6 +51,7 @@ from riverhog_core.catalog_models import (
 from riverhog_core.collection_access import require_collection_access
 from riverhog_core.ports.download_allowance import DownloadAttribution
 from riverhog_core.provenance_archive_read import CanonicalProvenanceArchiveReader
+from riverhog_core.provenance_metadata_index import ProvenanceMetadataIndex
 from riverhog_core.provenance_read_cache import ProvenanceReadCache
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.app_keys import require_current_principal
@@ -63,14 +66,34 @@ class SqlAlchemyCanonicalProvenanceService:
         archive_stores: ArchiveStoreRegistry,
         *,
         session_factory: SessionFactory | None = None,
+        metadata_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_metadata_storage_open: Callable[[ProvenanceMetadataIndex], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
+        history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        membership_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_membership_storage_open: Callable[[MemberHistoryMembership], None] | None = None,
     ) -> None:
         self._session_factory = session_factory or make_session_factory(config.database_url)
         self._archives = PublishedCanonicalProvenance(
             self._session_factory,
             archive_stores,
             read_order=config.archive_read_order,
+            metadata_connection_factory=metadata_connection_factory,
+            on_metadata_storage_open=on_metadata_storage_open,
+            history_verification_connection_factory=history_verification_connection_factory,
+            on_history_verification_storage_open=on_history_verification_storage_open,
         )
         self._memberships = ProvenanceReadCache(byte_budget=8 * 1024 * 1024, entry_budget=128)
+        self._history_connection_factory = history_connection_factory
+        self._on_history_storage_open = on_history_storage_open
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
+        self._membership_connection_factory = membership_connection_factory
+        self._on_membership_storage_open = on_membership_storage_open
 
     def rebuild_index(self, collection_id: int) -> str:
         return rebuild_canonical_index(
@@ -427,13 +450,21 @@ class SqlAlchemyCanonicalProvenanceService:
             key = (collection_id, root_identity, RETAINED_HISTORY_EXTENT, selection.hexdigest())
             image = self._memberships.get(key)
             if image is not None:
-                with MemberHistoryMembership(image) as membership:
+                with MemberHistoryMembership(
+                    image,
+                    connection_factory=self._membership_connection_factory,
+                    on_storage_open=self._on_membership_storage_open,
+                ) as membership:
                     yield membership
                 return
         with MemberHistoryClosure(
             reader.history_store(),
             lambda journal_id, end: reader.iter_journal_range(journal_id, size=end),
             member_role=COLLECTION_MEMBER_ROLE,
+            connection_factory=self._history_connection_factory,
+            on_storage_open=self._on_history_storage_open,
+            journal_connection_factory=self._provenance_connection_factory,
+            on_journal_storage_open=self._on_provenance_storage_open,
         ) as closure:
             if principal.has_artifact_scope:
                 allowed = iter(self._scoped_artifacts(collection_id, principal))

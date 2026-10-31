@@ -2715,6 +2715,7 @@ def _upload_collection_with_observation(
     base_url: str,
     token: str,
     allow_insecure_http: bool,
+    initialize_state: bool,
 ) -> tuple[int, tuple[str, ...]]:
     executable = shutil.which("a-riverhog-cli")
     if executable is None:
@@ -2813,7 +2814,9 @@ def _upload_collection_with_observation(
             if interrupted:
                 observed.add("resumable-client-restarted")
             process = subprocess.Popen(  # noqa: S603
-                command,
+                [*command, "--initialize-state"]
+                if initialize_state and not interrupted
+                else command,
                 env=environment,
                 stdout=subprocess.PIPE,
                 stderr=stderr,
@@ -3692,6 +3695,7 @@ def operate_qualification(
     buckets: Sequence[ResolvedBucket],
     cloudfront: CloudFrontManager,
     values: Mapping[str, str],
+    initialize_upload_state: bool = False,
 ) -> QualificationCheckpoint:
     if checkpoint.config_sha256 != config.config_sha256:
         raise QualificationError("checkpoint and provider configuration do not match")
@@ -3719,6 +3723,7 @@ def operate_qualification(
                 base_url=base_url,
                 token=token,
                 allow_insecure_http=allow_insecure_http,
+                initialize_state=initialize_upload_state,
             )
             session = api.get_collection_upload_session(collection_id)
             if session.get("state") != "finalized":
@@ -4194,6 +4199,11 @@ def _parser() -> argparse.ArgumentParser:
     operate.add_argument("--corpus-root", type=Path, required=True)
     operate.add_argument("--base-url", required=True)
     operate.add_argument(
+        "--initialize-upload-state",
+        action="store_true",
+        help="explicitly initialize the first CLI upload; omit when resuming retained state",
+    )
+    operate.add_argument(
         "--allow-insecure-http",
         action="store_true",
         help="explicitly opt into HTTP for a local disposable deployment",
@@ -4289,6 +4299,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 checkpoint_path=args.checkpoint,
                 corpus=corpus,
                 corpus_root=args.corpus_root,
+                initialize_upload_state=args.initialize_upload_state,
                 base_url=args.base_url,
                 allow_insecure_http=args.allow_insecure_http,
                 buckets=buckets,

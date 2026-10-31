@@ -16,7 +16,11 @@ from riverhog_provenance import (
 )
 
 
-@pytest.mark.parametrize("payload", [b"", b"\x00\xff", b"{not valid JSON", bytes(range(256)) * 257])
+@pytest.mark.parametrize(
+    "payload",
+    [b"", b"\x00\xff", b"{not valid JSON", bytes(range(256)) * 257],
+    ids=("empty", "non-text", "invalid-json", "binary-range"),
+)
 def test_arbitrary_primary_bytes_are_not_interpreted(payload, catalog):
     result = BoundedSourceObserver(catalog=catalog).observe(BytesSource(payload))
     assert result.observation["content"]["size_bytes"] == str(len(payload))
@@ -96,9 +100,12 @@ def test_second_hash_is_not_silently_downgraded(catalog):
 
 
 def test_result_graph_is_deeply_isolated(observation):
+    raw = observation.graph_json
+    assert isinstance(raw, bytes)
     first = observation.graph_fragment()
     first["states"][0]["extent"]["kind"] = "made-up"
     assert observation.graph_fragment()["states"][0]["extent"]["kind"] == "whole_object"
+    assert observation.graph_json == raw
 
 
 @pytest.mark.parametrize(

@@ -22,6 +22,7 @@ import threading
 import time
 import urllib.parse
 import xml.etree.ElementTree as ET
+import zipfile
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -394,6 +395,20 @@ def _build_distributions(checkout: Path, projects: list[release.Project]) -> Non
         )
 
 
+def _require_client_native_module(wheel: Path) -> None:
+    with zipfile.ZipFile(wheel) as archive:
+        modules = [
+            name
+            for name in archive.namelist()
+            if name.startswith("riverhog_client/_prepared_primary_native.")
+            and name.endswith(".pyd")
+        ]
+    if len(modules) != 1:
+        raise QualificationError(
+            "staged Windows client wheel has no unique native write-bank module"
+        )
+
+
 def _stage_artifacts(
     root: Path,
     scratch: Path,
@@ -409,11 +424,14 @@ def _stage_artifacts(
     projects = release.validate_release_contract(checkout, expected_version=version)
     _build_distributions(checkout, projects)
     wheel_records = _wheel_records(checkout, projects, version)
+    platform = _installation_platform()
 
     web_root = scratch / "web"
     assets = web_root / "assets"
     assets.mkdir(parents=True)
     for wheel in (checkout / "dist").glob("*.whl"):
+        if platform == "windows-x64" and wheel.name.startswith("riverhog_client-"):
+            _require_client_native_module(wheel)
         shutil.copy2(wheel, assets / wheel.name)
 
     output = scratch / "installation"
@@ -436,12 +454,13 @@ def _stage_artifacts(
         source_epoch=source_epoch,
         repository=str(config["governance"]["repository"]),
         simple_index_path=str(config["installation"]["simple_index_path"]),
+        platforms=(platform,),
         asset_base_url=base_url + "/assets/",
         index_base_url=base_url
         + "/"
         + str(config["installation"]["simple_index_path"]).format(version=version),
     )
-    installation.verify_installation_artifacts(output, manifest)
+    installation.verify_installation_artifacts(output, manifest, platforms=(platform,))
     for lock in (output / "installation").glob("pylock.*.toml"):
         shutil.copy2(lock, assets / lock.name)
     snapshot = output / str(manifest["index"]["snapshot_path"])
@@ -1882,6 +1901,407 @@ def _install_command(component: dict[str, Any], manifest: dict[str, Any]) -> lis
     return command
 
 
+def _installed_client_write_bank(
+    python: Path, *, scratch: Path, environment: dict[str, str]
+) -> dict[str, Any]:
+    code = r"""import ctypes,hashlib,json,sqlite3,tempfile
+from pathlib import Path
+from riverhog_client import _prepared_primary_native as native
+limits=(4096,2,32768,32768,65536,32)
+recovery=(4096,8,32768,32768,65536,32)
+quota=native.WriteQuota(limits,recovery)
+assert quota.admit("database",8192,0)
+assert not quota.admit("database",4096,8192)
+assert quota.recovering
+assert quota.admit("database",12288,0)
+report=quota.report()
+assert report["forward"]["database_pages_attempted"]==2
+assert report["recovery"]["database_pages_attempted"]==3
+assert report["refusals"]==1
+assert report["first_refusal"]["reason"]=="database page grant"
+module=Path(native.__file__)
+assert module.suffix.lower()==".pyd"
+assert native.compiler.startswith("MSVC ")
+with sqlite3.connect(":memory:") as runtime:
+    source_id=runtime.execute("SELECT sqlite_source_id()").fetchone()[0]
+sleep_limits=(4096,1,4096,4096,8192,8)
+sleep_writes=native.WriteQuota(sleep_limits,sleep_limits)
+sleep_calls=native.CallbackQuota(
+    sleep_writes,(4,1000),(4,1000),
+    work=native.NativeWorkQuota(sleep_writes, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+    buffers=(1 << 40, 1 << 40),
+)
+assert sleep_calls.admit_sleep(1)
+assert not sleep_calls.admit_sleep(1)
+assert not sleep_calls.admit_sleep(1)
+assert not sleep_calls.admit()
+assert sleep_calls.admit_sleep(1)
+sleep_report=sleep_calls.report()
+sleep_refused=sleep_writes.report()["first_refusal"]["reason"]=="VFS sleep grant"
+assert sleep_refused and not sleep_report["pending_error"]
+for method,amount,expected in (
+    ("read",7,(4,9000)),("write",7,(10,9000)),
+    ("open_database",0,(24,63000)),("open_journal_pinned",0,(30,63000)),
+    ("open_journal_new",0,(32,63000)),("bind_journal",0,(10,0)),
+    ("close",0,(3,200000)),("pin_close",0,(1,0)),
+):
+    assert native.filesystem_cost(method,(2,3),amount)==expected
+work_writes=native.WriteQuota(sleep_limits,sleep_limits)
+work=native.NativeWorkQuota(work_writes,(4,200000),(4,200000))
+credit=work.acquire((1,0),(3,200000))
+assert credit is not None and credit.report()["pending"]
+work_writes.failed()
+assert work.admit((1,0))
+assert not work.admit((1,0))
+work_refused=work_writes.report()["first_refusal"]["reason"]=="native filesystem attempt grant"
+work_report=work.report()
+for bank in ("forward","recovery"):
+    assert work_report[bank]["filesystem_api_attempts_charged"]==4
+    assert work_report[bank]["internal_sleep_microseconds_charged"]==200000
+    assert work_report[bank]["close_filesystem_api_attempts_prepaid"]==3
+    assert work_report[bank]["close_internal_sleep_microseconds_prepaid"]==200000
+assert work_refused
+del work,work_writes
+credit.consume()
+assert not credit.report()["pending"]
+try:
+    credit.consume()
+except ValueError:
+    pass
+else:
+    raise AssertionError("consumed native close credit was reusable")
+output_writes=native.WriteQuota(sleep_limits,sleep_limits)
+output_calls=native.CallbackQuota(
+    output_writes,(8,0),(8,0),
+    work=native.NativeWorkQuota(output_writes,(0,0),(0,0)),
+    buffers=(7,11),
+)
+assert output_calls.admit_buffer(7,False)
+assert not output_calls.admit_buffer(1,False)
+assert not output_calls.admit_buffer(11,True)
+assert output_calls.admit_buffer(11,True)
+assert not output_calls.admit_buffer(1,True)
+output_report=output_calls.report()
+assert output_report["forward"]["output_buffer_bytes_charged"]==7
+assert output_report["recovery"]["output_buffer_bytes_charged"]==11
+assert output_writes.report()["first_refusal"]["reason"]=="VFS output-buffer grant"
+vfs_limits=(4096,128,1048576,1048576,8388608,1024)
+vfs_quota=native.WriteQuota(vfs_limits,vfs_limits)
+vfs_reads=native.ReadQuota(vfs_quota,(8388608,1024),(8388608,1024))
+vfs_callbacks=native.CallbackQuota(
+    vfs_quota,(8192, 0),(8192, 0),
+    work=native.NativeWorkQuota(vfs_quota, (1 << 40, 1 << 60), (1 << 40, 1 << 60)),
+    buffers=(1 << 40, 1 << 40),
+)
+from riverhog_client._prepared_primary_runtime import _admit_process_budget, _qualified_runtime
+try:
+    native.current_process_budget()
+except RuntimeError as exc:
+    assert "not configured" in str(exc)
+else:
+    raise AssertionError("installed client acquired a heap owner before binary admission")
+qualified_runtime=_qualified_runtime()
+assert qualified_runtime["sqlite_source_id"]==source_id
+heap=_admit_process_budget(67108864,native_limits=(1,2))
+vfs=native.WriteVfs(source_id,vfs_reads,vfs_callbacks,heap)
+try:
+    identity=vfs.identity()
+    assert identity["sqlite_source_id"]==source_id
+    assert identity["base_vfs"]=="win32"
+    library_digest=hashlib.sha256(Path(identity["sqlite_library_path"]).read_bytes()).hexdigest()
+    assert library_digest==qualified_runtime["sqlite_library_sha256"]
+    with tempfile.TemporaryDirectory(prefix="native-write-proof-",dir=".") as directory:
+        uri=(Path(directory)/"primary.sqlite3").resolve().as_uri()+"?vfs="+vfs.name
+        path=Path(directory)/"primary.sqlite3"
+        path.touch()
+        kernel=ctypes.WinDLL("kernel32",use_last_error=True)
+        kernel.CreateFileW.argtypes=[ctypes.c_wchar_p,ctypes.c_uint32,ctypes.c_uint32,
+            ctypes.c_void_p,ctypes.c_uint32,ctypes.c_uint32,ctypes.c_void_p]
+        kernel.CreateFileW.restype=ctypes.c_void_p
+        kernel.CloseHandle.argtypes=[ctypes.c_void_p]
+        kernel.CloseHandle.restype=ctypes.c_int
+        handle=kernel.CreateFileW(str(path.resolve()),0x80,3,None,3,0x00200000,None)
+        assert handle not in (None,ctypes.c_void_p(-1).value)
+        connection=None
+        try:
+            vfs.bind(str(path.resolve()),handle,None)
+            assert vfs.bound
+            bootstrap_cost=native.retry_bootstrap_cost((10,25))
+            assert bootstrap_cost==(171,20825000)
+            vfs.admit_retries((10,25),(2,3),bootstrap_cost)
+            retry_report=heap.retry_report()
+            assert retry_report["state"]=="admitted"
+            assert retry_report["selected_retry_count"]==2
+            assert retry_report["selected_delay_milliseconds"]==3
+            assert retry_report["native_close_attempted"]
+            assert retry_report["native_result"]==retry_report["native_close_result"]==0
+            assert retry_report["first_failure_stage"]==""
+            connection=sqlite3.connect(uri,uri=True)
+            assert connection.execute("PRAGMA journal_mode=PERSIST").fetchone()==("persist",)
+            connection.execute("PRAGMA synchronous=EXTRA")
+            connection.execute("PRAGMA journal_size_limit=4096")
+            connection.execute("CREATE TABLE proof (body BLOB NOT NULL)")
+            connection.execute("INSERT INTO proof VALUES (?)",(b"exact installed original",))
+            connection.commit()
+            row=connection.execute("SELECT body FROM proof").fetchone()
+            assert row==(b"exact installed original",)
+        finally:
+            if connection is not None:
+                connection.close()
+            journal=path.with_name(path.name+"-journal")
+            original_files=(path.read_bytes(),journal.read_bytes())
+            vfs_work_report=vfs_callbacks.work.report()
+            population_writes=native.WriteQuota(vfs_limits,vfs_limits)
+            population_reads=native.ReadQuota(population_writes,(8388608,1024),(8388608,1024))
+            population_calls=native.CallbackQuota(
+                population_writes,(8192,0),(8192,0),
+                native.NativeWorkQuota(population_writes,(1<<40,1<<60),(1<<40,1<<60)),
+                buffers=(1<<40,1<<40),
+            )
+            try:
+                native.WriteVfs(source_id,population_reads,population_calls,heap)
+            except RuntimeError as exc:
+                assert "owner population" in str(exc)
+            else:
+                raise AssertionError("installed client bypassed its native owner population grant")
+            vfs.arm(population_reads,population_calls)
+            connections=[]
+            try:
+                for _ in range(2):
+                    connections.append(sqlite3.connect(uri,uri=True))
+                assert heap.native_report()["files"]==2
+                try:
+                    unexpected=sqlite3.connect(uri,uri=True)
+                except sqlite3.Error as exc:
+                    assert exc.sqlite_errorcode==sqlite3.SQLITE_FULL
+                else:
+                    unexpected.close()
+                    raise AssertionError("installed client bypassed its native file grant")
+                assert population_writes.recovering
+                assert population_writes.report()["first_refusal"]["reason"]==(
+                    "native SQLite file population grant"
+                )
+                assert not vfs.quarantined
+            finally:
+                for item in connections:
+                    item.close()
+            assert heap.native_report()["files"]==0 and vfs.open_files==0
+            assert (path.read_bytes(),journal.read_bytes())==original_files
+            stopped_writes=native.WriteQuota(vfs_limits,vfs_limits)
+            stopped_reads=native.ReadQuota(stopped_writes,(8388608,1024),(8388608,1024))
+            stopped_work=native.NativeWorkQuota(stopped_writes,(0,0),(0,0))
+            stopped_callbacks=native.CallbackQuota(
+                stopped_writes,(32,0),(32,0),stopped_work,
+                buffers=(1 << 40, 1 << 40),
+            )
+            vfs.arm(stopped_reads,stopped_callbacks)
+            try:
+                unexpected=sqlite3.connect(uri,uri=True)
+            except sqlite3.Error as exc:
+                assert exc.sqlite_errorcode==sqlite3.SQLITE_FULL
+            else:
+                unexpected.close()
+                raise AssertionError("native filesystem work bypassed an empty grant")
+            assert stopped_writes.recovering and vfs.open_files==0 and not vfs.quarantined
+            stopped_reason=stopped_writes.report()["first_refusal"]["reason"]
+            assert stopped_reason=="native filesystem attempt grant"
+            assert all(not any(bank.values()) for bank in stopped_work.report().values())
+            output_stopped=native.WriteQuota(vfs_limits,vfs_limits)
+            output_reads=native.ReadQuota(output_stopped,(8388608,1024),(8388608,1024))
+            output_work=native.NativeWorkQuota(output_stopped,(1<<40,1<<60),(1<<40,1<<60))
+            output_empty=native.CallbackQuota(
+                output_stopped,(32,0),(32,0),output_work,buffers=(0,0),
+            )
+            vfs.arm(output_reads,output_empty)
+            try:
+                unexpected=sqlite3.connect(uri,uri=True)
+            except sqlite3.Error as exc:
+                assert exc.sqlite_errorcode==sqlite3.SQLITE_FULL
+            else:
+                unexpected.close()
+                raise AssertionError("native connection bypassed an empty output-byte grant")
+            assert output_stopped.recovering and vfs.open_files==0 and not vfs.quarantined
+            assert output_stopped.report()["first_refusal"]["reason"]=="VFS output-buffer grant"
+            assert all(not any(bank.values()) for bank in output_work.report().values())
+            assert all(
+                not bank["output_buffer_bytes_charged"]
+                for key,bank in output_empty.report().items()
+                if key in ("forward","recovery")
+            )
+            vfs.unbind()
+            assert not vfs.bound and not vfs.quarantined
+            assert all(not any(bank.values()) for bank in stopped_work.report().values())
+            assert all(not any(bank.values()) for bank in output_work.report().values())
+            assert kernel.CloseHandle(handle)
+            assert (path.read_bytes(),journal.read_bytes())==original_files
+        moved=path.with_name("primary-moved.sqlite3")
+        path.rename(moved)
+        moved.rename(path)
+        assert heap.retry_report()==retry_report
+    assert vfs.open_files==0
+    read_report=vfs_reads.report()["forward"]
+    resize_calls=vfs_quota.resize_report()["forward"]["resize_calls"]
+    callback_report=vfs_callbacks.report()
+    callback_slots=callback_report["forward"]["callback_slots_charged"]
+    assert vfs_work_report["forward"]["filesystem_api_attempts_charged"]>0
+    assert vfs_work_report["forward"]["internal_sleep_microseconds_charged"]>0
+    assert vfs_work_report["recovery"]["close_filesystem_api_attempts_prepaid"]>0
+    heap_report=heap.report()
+    assert heap_report["heap_limit_bytes"]==67108864
+    assert callback_slots>0 and not callback_report["pending_error"]
+finally:
+    vfs.close()
+population_report=heap.native_report()
+assert population_report=={
+    "owner_limit":1,"file_limit":2,"owners":0,"files":0,
+    "owner_peak":1,"file_peak":2,"owner_refusals":1,"file_refusals":1,
+}
+vfs_calls=vfs_quota.report()["forward"]["write_calls"]
+assert vfs_calls>0 and read_report["read_calls"]>0 and resize_calls>0 and not vfs_quota.recovering
+print(json.dumps({"compiler":native.compiler,
+    "module_sha256":hashlib.sha256(module.read_bytes()).hexdigest(),
+    "tracking_bytes":quota.tracking_bytes,
+    "forward_pages":2,"recovery_pages":3,"refusals":1,
+    "storage_callbacks_native":True,"vfs_write_calls":vfs_calls,
+    "vfs_resize_calls":resize_calls,"vfs_callback_slots":callback_slots,
+    "vfs_read_calls":read_report["read_calls"],"vfs_read_bytes":read_report["read_bytes"],
+    "sqlite_heap_limit_bytes":heap_report["heap_limit_bytes"],
+    "sqlite_heap_peak_bytes":heap_report["sqlite_heap_peak_bytes"],
+    "sqlite_logger_disabled_at_admission":heap_report["logger_disabled_at_admission"],
+    "callback_buffer_forward_bytes":output_report["forward"]["output_buffer_bytes_charged"],
+    "callback_buffer_recovery_bytes":output_report["recovery"]["output_buffer_bytes_charged"],
+    "vfs_auxiliary_buffer_bytes":callback_report["forward"]["output_buffer_bytes_charged"],
+    "vfs_buffer_refusal_verified":True,
+    "native_population_verified":True,"native_population":population_report,
+    "callback_sleep_forward_microseconds":sleep_report["forward"]["sleep_microseconds_charged"],
+    "callback_sleep_recovery_microseconds":sleep_report["recovery"]["sleep_microseconds_charged"],
+    "callback_sleep_refusal_verified":sleep_refused,
+    "retry_bootstrap_filesystem_api_attempts_prepaid":
+        retry_report["bootstrap_filesystem_api_attempts_prepaid"],
+    "retry_bootstrap_sleep_microseconds_prepaid":
+        retry_report["bootstrap_sleep_microseconds_prepaid"],
+    "retry_count":retry_report["selected_retry_count"],
+    "retry_delay_milliseconds":retry_report["selected_delay_milliseconds"],
+    "retry_admission_verified":retry_report["state"]=="admitted",
+    "retry_bootstrap_close_verified":retry_report["native_close_attempted"]
+        and retry_report["native_close_result"]==0,
+    "retry_bootstrap_pin_released":True,
+    "native_work_bank_forward_attempts":work_report["forward"]["filesystem_api_attempts_charged"],
+    "native_work_bank_recovery_attempts":work_report["recovery"]["filesystem_api_attempts_charged"],
+    "native_work_bank_forward_sleep_microseconds":
+        work_report["forward"]["internal_sleep_microseconds_charged"],
+    "native_work_bank_recovery_sleep_microseconds":
+        work_report["recovery"]["internal_sleep_microseconds_charged"],
+    "native_work_bank_refusal_verified":work_refused,
+    "native_filesystem_recipes_verified":True,
+    "runtime_binary_admission_verified":True,
+    "native_close_credit_detached_verified":not credit.report()["pending"],
+    "vfs_native_filesystem_attempts":
+        vfs_work_report["forward"]["filesystem_api_attempts_charged"],
+    "vfs_native_internal_sleep_microseconds":
+        vfs_work_report["forward"]["internal_sleep_microseconds_charged"],
+    "vfs_native_recovery_close_attempts_prepaid":
+        vfs_work_report["recovery"]["close_filesystem_api_attempts_prepaid"],
+    "vfs_native_work_refusal_verified":True,
+    "vfs_native_binding_close_after_rearm_verified":True,
+    "vfs_binding_verified":True,
+    "vfs_original_exact":True,"sqlite_source_id":source_id,
+    "sqlite_library_sha256":library_digest}))
+"""
+    result = _run([str(python), "-I", "-c", code], cwd=scratch, env=environment, capture=True)
+    proof = json.loads(result.stdout)
+    if (
+        not isinstance(proof, dict)
+        or proof.get("forward_pages") != 2
+        or proof.get("recovery_pages") != 3
+        or proof.get("refusals") != 1
+        or type(proof.get("tracking_bytes")) is not int
+        or proof["tracking_bytes"] <= 0
+        or re.fullmatch(r"[0-9a-f]{64}", str(proof.get("module_sha256", ""))) is None
+        or not str(proof.get("compiler", "")).startswith("MSVC ")
+        or proof.get("storage_callbacks_native") is not True
+        or type(proof.get("vfs_write_calls")) is not int
+        or proof["vfs_write_calls"] <= 0
+        or type(proof.get("vfs_resize_calls")) is not int
+        or proof["vfs_resize_calls"] <= 0
+        or type(proof.get("vfs_read_calls")) is not int
+        or proof["vfs_read_calls"] <= 0
+        or type(proof.get("vfs_read_bytes")) is not int
+        or proof["vfs_read_bytes"] <= 0
+        or type(proof.get("vfs_callback_slots")) is not int
+        or proof["vfs_callback_slots"] <= 0
+        or type(proof.get("callback_sleep_forward_microseconds")) is not int
+        or proof["callback_sleep_forward_microseconds"] != 1000
+        or type(proof.get("callback_sleep_recovery_microseconds")) is not int
+        or proof["callback_sleep_recovery_microseconds"] != 1000
+        or proof.get("callback_sleep_refusal_verified") is not True
+        or type(proof.get("retry_bootstrap_filesystem_api_attempts_prepaid")) is not int
+        or proof["retry_bootstrap_filesystem_api_attempts_prepaid"] != 171
+        or type(proof.get("retry_bootstrap_sleep_microseconds_prepaid")) is not int
+        or proof["retry_bootstrap_sleep_microseconds_prepaid"] != 20825000
+        or type(proof.get("retry_count")) is not int
+        or proof["retry_count"] != 2
+        or type(proof.get("retry_delay_milliseconds")) is not int
+        or proof["retry_delay_milliseconds"] != 3
+        or proof.get("retry_admission_verified") is not True
+        or proof.get("retry_bootstrap_close_verified") is not True
+        or proof.get("retry_bootstrap_pin_released") is not True
+        or type(proof.get("native_work_bank_forward_attempts")) is not int
+        or proof["native_work_bank_forward_attempts"] != 4
+        or type(proof.get("native_work_bank_recovery_attempts")) is not int
+        or proof["native_work_bank_recovery_attempts"] != 4
+        or type(proof.get("native_work_bank_forward_sleep_microseconds")) is not int
+        or proof["native_work_bank_forward_sleep_microseconds"] != 200000
+        or type(proof.get("native_work_bank_recovery_sleep_microseconds")) is not int
+        or proof["native_work_bank_recovery_sleep_microseconds"] != 200000
+        or proof.get("native_work_bank_refusal_verified") is not True
+        or proof.get("native_filesystem_recipes_verified") is not True
+        or proof.get("native_close_credit_detached_verified") is not True
+        or type(proof.get("vfs_native_filesystem_attempts")) is not int
+        or proof["vfs_native_filesystem_attempts"] <= 0
+        or type(proof.get("vfs_native_internal_sleep_microseconds")) is not int
+        or proof["vfs_native_internal_sleep_microseconds"] <= 0
+        or type(proof.get("vfs_native_recovery_close_attempts_prepaid")) is not int
+        or proof["vfs_native_recovery_close_attempts_prepaid"] <= 0
+        or proof.get("vfs_native_work_refusal_verified") is not True
+        or proof.get("vfs_native_binding_close_after_rearm_verified") is not True
+        or proof.get("runtime_binary_admission_verified") is not True
+        or proof.get("sqlite_logger_disabled_at_admission") is not True
+        or type(proof.get("callback_buffer_forward_bytes")) is not int
+        or proof["callback_buffer_forward_bytes"] != 7
+        or type(proof.get("callback_buffer_recovery_bytes")) is not int
+        or proof["callback_buffer_recovery_bytes"] != 11
+        or type(proof.get("vfs_auxiliary_buffer_bytes")) is not int
+        or proof["vfs_auxiliary_buffer_bytes"] <= 0
+        or proof.get("vfs_buffer_refusal_verified") is not True
+        or proof.get("native_population_verified") is not True
+        or not isinstance(proof.get("native_population"), dict)
+        or proof["native_population"]
+        != {
+            "owner_limit": 1,
+            "file_limit": 2,
+            "owners": 0,
+            "files": 0,
+            "owner_peak": 1,
+            "file_peak": 2,
+            "owner_refusals": 1,
+            "file_refusals": 1,
+        }
+        or any(type(value) is not int for value in proof["native_population"].values())
+        or type(proof.get("sqlite_heap_limit_bytes")) is not int
+        or proof.get("sqlite_heap_limit_bytes") != 67108864
+        or type(proof.get("sqlite_heap_peak_bytes")) is not int
+        or not 0 < proof["sqlite_heap_peak_bytes"] <= 67108864
+        or proof.get("vfs_binding_verified") is not True
+        or proof.get("vfs_original_exact") is not True
+        or not isinstance(proof.get("sqlite_source_id"), str)
+        or not proof["sqlite_source_id"]
+        or re.fullmatch(r"[0-9a-f]{64}", str(proof.get("sqlite_library_sha256", ""))) is None
+    ):
+        raise QualificationError("installed native client write-bank proof is invalid")
+    return proof
+
+
 def _qualify_component(
     component: dict[str, Any],
     manifest: dict[str, Any],
@@ -1921,6 +2341,11 @@ def _qualify_component(
     }
     if actual_first_party != expected_first_party:
         raise QualificationError(f"{root} installed another first-party closure")
+    native_write_bank = None
+    if platform == "windows-x64" and "riverhog-client" in expected_first_party:
+        native_write_bank = _installed_client_write_bank(
+            python, scratch=scratch, environment=environment
+        )
     locked = {str(item["name"]): str(item["version"]) for item in component["resolved_packages"]}
     if any(locked.get(name) != version for name, version in inventory.items()):
         raise QualificationError(f"{root} installed a version outside its PEP 751 lock")
@@ -2044,8 +2469,10 @@ def _qualify_component(
 
     requests = QualificationHandler.requests[request_offset:]
     wheel_assets = {
-        "/assets/" + str(manifest["wheels"][name]["asset"])
-        for name in expected_first_party | qualification_first_party
+        "/assets/" + asset
+        for asset in installation.platform_wheel_assets(
+            manifest, set(expected_first_party | qualification_first_party), platform=platform
+        )
     }
     if not wheel_assets <= set(requests):
         raise QualificationError(f"{root} did not consume every staged first-party wheel")
@@ -2069,6 +2496,7 @@ def _qualify_component(
         "reinstall": "passed",
         "uninstall": "passed",
         "wheel_only": True,
+        "native_client_write_bank": native_write_bank,
     }
 
 

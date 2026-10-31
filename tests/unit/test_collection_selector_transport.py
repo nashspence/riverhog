@@ -116,7 +116,11 @@ def test_http_search_accepts_the_full_selector_domain(
     assert collections.calls[0]["tags"] == valid_large_tags
 
 
-@pytest.mark.parametrize("tag", ["x" * 65_536, "é" * 32_768])
+@pytest.mark.parametrize(
+    "tag",
+    ["x" * 65_536, "é" * 32_768],
+    ids=("long-ascii", "long-utf8"),
+)
 def test_tag_membership_selector_uses_json_through_client_cli_and_http(
     monkeypatch: pytest.MonkeyPatch,
     tag: str,

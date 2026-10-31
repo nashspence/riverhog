@@ -32,7 +32,7 @@ from a_stove0_media_archive_lib import (
     seal_publication_plan,
 )
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_client import ProducerFile
+from riverhog_client import PrimaryStatePolicy, ProducerFile
 from riverhog_client.processing import ProcessingWorkspace
 from riverhog_protocol import canonical_json_sha256
 from riverhog_protocol.artifact_identity import ArtifactId
@@ -86,6 +86,7 @@ class OpusTargetService(PersistentTargetService):
         self,
         *,
         state_root: Path,
+        primary_state: PrimaryStatePolicy,
         workspace_root: Path,
         ffmpeg: str = "ffmpeg",
         source_revision: str = "unknown",
@@ -116,6 +117,7 @@ class OpusTargetService(PersistentTargetService):
             descriptor=descriptor,
             operations={AUDIO_ARCHIVE_OPERATION.id: AUDIO_ARCHIVE_OPERATION},
             state_root=state_root,
+            primary_state=primary_state,
             execute=self._execute,
             intent_semantic_validators={
                 AUDIO_ARCHIVE_OPERATION.intent_semantics.profile_sha256: (

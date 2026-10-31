@@ -24,6 +24,7 @@ if __package__ in (None, ""):
 
 from scripts.validation_identity import source_identity as source_identity
 from scripts.validation_process import ValidationInterrupted, run_validation_child
+from scripts.validation_resources import validation_storage_budget
 
 if TYPE_CHECKING:
     from scripts.validation_evidence import ValidationWork
@@ -406,7 +407,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             + b"\n"
         )
-        budget = int(os.environ.get("RIVERHOG_VALIDATION_MAX_BYTES", str(64 * 1024 * 1024)))
+        budget = validation_storage_budget()
         previous = args.output.stat().st_size if args.output.exists() else 0
         if budget < 1 or previous + len(encoded) > budget:
             print("validation phase storage budget is exhausted", file=sys.stderr)

@@ -175,6 +175,33 @@ def test_shared_definitions_cover_every_declared_direct_make_validation_target()
         assert definitions[0]["name"] == identity
 
 
+@pytest.mark.parametrize("goal", ["owner", "one", "build-", "build-foreign/path"])
+def test_unowned_make_goals_do_not_resolve_repository_growth_operations(monkeypatch, goal):
+    from scripts import ci_qualification
+
+    def unexpected_lookup(_name):
+        pytest.fail("unowned Make goals must not resolve repository growth operations")
+
+    monkeypatch.setattr(ci_qualification, "validation_work", unexpected_lookup)
+    with pytest.raises(ValueError, match="unknown maintained Make target"):
+        ci_make.make_work_definitions((goal,), {})
+
+
+def test_declared_make_build_pattern_resolves_its_exact_work(monkeypatch):
+    from scripts import ci_qualification
+
+    calls = []
+    definition = {"name": "build-fixture", "command": ["make", "build-fixture"]}
+
+    def lookup(name):
+        calls.append(name)
+        return SimpleNamespace(definition=lambda: definition)
+
+    monkeypatch.setattr(ci_qualification, "validation_work", lookup)
+    assert ci_make.make_work_definitions(("build-fixture",), {}) == [definition]
+    assert calls == ["build-fixture"]
+
+
 @pytest.mark.parametrize("identity", ["", ".", "..", "../foreign", "x/y", "x" * 129])
 def test_invalid_path_identity_never_redirects_evidence(identity):
     with pytest.raises(ValueError):
@@ -400,3 +427,27 @@ def test_parent_cannot_consume_a_still_running_descendant(nested_qualified_spans
     timing, _rows = nested_qualified_spans
     with pytest.raises(ValueError, match="descendant execution is not bound"):
         ci_make.owned_execution_spans(timing, "nested-qualified", "parent", "a" * 40)
+
+
+def test_unit_partition_parameters_bind_the_exact_owning_work():
+    from scripts.ci_unit import UNIT_PARTITIONS
+
+    for part in UNIT_PARTITIONS:
+        definition = ci_make.make_work_definitions(
+            ("unit-shard",), {"UNIT_SHARD": "unit", "UNIT_PARTITION": part}
+        )[0]
+        assert definition["name"] == "unit-unit-" + part
+        assert definition["command"] == [
+            "make",
+            "unit-shard",
+            "UNIT_SHARD=unit",
+            "UNIT_PARTITION=" + part,
+        ]
+
+
+@pytest.mark.parametrize("shard,part", [("release", "1"), ("contract", "2"), ("unit", "5")])
+def test_invalid_unit_partition_does_not_claim_whole_family_work(shard, part):
+    with pytest.raises(ValueError, match="canonical unit"):
+        ci_make.make_work_definitions(
+            ("unit-shard",), {"UNIT_SHARD": shard, "UNIT_PARTITION": part}
+        )

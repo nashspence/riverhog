@@ -14,12 +14,14 @@ from typing import TYPE_CHECKING, Any, Protocol, cast
 
 from riverhog_growth_contracts import (
     COUNT,
+    OCTETS,
     SCALAR,
     Bound,
     Declaration,
     Dimension,
     Expression,
     declare_growth,
+    growth_binding,
 )
 from riverhog_provenance_contracts import PROFILE, canonical_document
 
@@ -116,10 +118,70 @@ def _index_declaration() -> Declaration:
     )
 
 
+def _composed_index_declaration() -> Declaration:
+    base = _index_declaration()
+    coverage = growth_binding(ObservationCoverage.__init__).declaration
+    return replace(
+        base,
+        dimensions=(
+            *base.dimensions,
+            Dimension(
+                "coverage_calls",
+                COUNT,
+                "One for an admitted observation atom; zero for every other native assertion kind.",
+            ),
+            Dimension(
+                "coverage_rows",
+                COUNT,
+                "Actual current observation coverage rows, including duplicates.",
+            ),
+            Dimension(
+                "coverage_key_octets",
+                OCTETS,
+                "Actual UTF-8 profile/category key octets across those current coverage rows.",
+            ),
+        ),
+        bounds=(
+            *base.bounds,
+            *(
+                Bound(
+                    "coverage_" + bound.metric,
+                    bound.unit,
+                    "upper",
+                    Expression(
+                        "delegate",
+                        name="coverage",
+                        metric=bound.metric,
+                        terms=(Expression("dimension", name="coverage_calls"),),
+                        arguments=(
+                            ("input_rows", Expression("dimension", name="coverage_rows")),
+                            ("key_octets", Expression("dimension", name="coverage_key_octets")),
+                        ),
+                    ),
+                    (
+                        "Actual nested current-observation coverage index, already included in "
+                        "the inclusive node-index opcode observation."
+                    ),
+                )
+                for bound in coverage.bounds
+            ),
+        ),
+        invariants=(
+            *base.invariants,
+            (
+                "Observation coverage is constructed once through its actual owning "
+                "index; all of that Python kernel work is included."
+            ),
+        ),
+    )
+
+
 class Nodes:
     """Index an already admitted immutable JSON atom once, outside transactions."""
 
-    @declare_growth(_index_declaration())
+    @declare_growth(
+        _composed_index_declaration(), delegates=(("coverage", ObservationCoverage.__init__),)
+    )
     def __init__(self, value: Mapping[str, Any]) -> None:
         self.values: list[Any] = []
         self.identities: dict[int, int] = {}

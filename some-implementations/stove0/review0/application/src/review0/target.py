@@ -28,7 +28,7 @@ from review0_sampler_protocol import (
     validate_result,
 )
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_client import ProducerFile
+from riverhog_client import PrimaryStatePolicy, ProducerFile
 from riverhog_client.processing import ProcessingWorkspace
 from riverhog_protocol import canonical_json_sha256
 from riverhog_protocol.artifact_identity import ArtifactId
@@ -109,6 +109,7 @@ class ReviewMaterializeTargetService(PersistentTargetService):
         self,
         *,
         state_root: Path,
+        primary_state: PrimaryStatePolicy,
         workspace_root: Path,
         samplers: tuple[SamplerRegistration, ...],
         source_revision: str = "unknown",
@@ -147,6 +148,7 @@ class ReviewMaterializeTargetService(PersistentTargetService):
             descriptor=descriptor,
             operations={operation.id: operation},
             state_root=state_root,
+            primary_state=primary_state,
             execute=self._execute,
             intent_semantic_validators={
                 operation.intent_semantics.profile_sha256: validate_review_materialize_intent

@@ -333,6 +333,7 @@ def _seed_collection(
     database_url = database_url or sqlite_url(tmp_path / "catalog.sqlite3")
     config = RuntimeConfig.for_testing(
         database_url=database_url,
+        journal_validation_workspace=tmp_path / "journal-validation",
         archive_scrypt_work_factor=1,
         retrieval_pending_timeout=pending_timeout or timedelta(hours=72),
     )

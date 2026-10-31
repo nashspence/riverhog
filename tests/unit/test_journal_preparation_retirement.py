@@ -158,7 +158,18 @@ def test_replacement_atomically_queues_and_reclaims_only_its_private_attempt(tmp
         assert counts(factory, uid(900001)) == (3,) * 7
         assert not queued(factory)
         assert owner._read_upload_journal_validation(factory, 1, JOURNAL) == before_source
-        assert b"".join(owner._iter_upload_journal_validation_chunks(factory, current)) == raw
+        from riverhog_core.services.upload_journal_source import UploadJournalValidationSource
+
+        source_reader = UploadJournalValidationSource(
+            factory, current, catalog=owner.admission_provenance_catalog()
+        )
+        pieces, offset = [], 0
+        while offset < len(raw):
+            piece = source_reader.read_window(offset, min(65536, len(raw) - offset))
+            assert piece
+            pieces.append(piece)
+            offset += len(piece)
+        assert b"".join(pieces) == raw
         with factory() as session:
             assert (
                 session.scalar(select(func.count()).select_from(Frame))

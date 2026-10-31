@@ -178,7 +178,7 @@ unit-shards-check:
 	$(call UV_CMD,python scripts/ci_unit.py check $(CANONICAL_UNIT_TESTS) $(args))
 
 unit-shard:
-	$(call UV_CMD,python scripts/ci_unit.py run --shard "$(UNIT_SHARD)" $(CANONICAL_UNIT_TESTS) -- $(UNIT_SHARD_PYTEST_ARGS) $(args))
+	$(call UV_CMD,python scripts/ci_unit.py run --shard "$(UNIT_SHARD)" $(if $(strip $(UNIT_PARTITION)),--partition "$(UNIT_PARTITION)") $(CANONICAL_UNIT_TESTS) -- $(UNIT_SHARD_PYTEST_ARGS) $(args))
 
 .PHONY: image-qualification client-platform-qualification linux-qualification
 image-qualification:

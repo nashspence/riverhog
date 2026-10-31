@@ -29,12 +29,14 @@ from stove0_target_support import (
 )
 
 from tests.fixtures.stove0_media import sealed_media_job
+from tests.support.prepared_primary import PRIMARY_STATE_POLICY
 
 
 def test_opus_executor_resumes_partial_receipted_production_without_encoding_again(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     target = OpusTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         state_root=tmp_path / "state",
         workspace_root=tmp_path / "workspace",
         image_id="sha256:" + "9" * 64,
