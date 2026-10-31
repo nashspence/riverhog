@@ -1,5 +1,35 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+
+qualification_failure_source="${BASH_SOURCE[0]}"
+qualification_failure_reported=0
+qualification_failure() {
+  local status="$1" index line separator="" lines="" retained=0
+  # ERR is inherited by command substitutions whose errexit may be disabled.
+  # Report only an unhandled failure under the script's active exit policy.
+  if [[ "$-" != *e* || "${qualification_failure_reported}" == "1" ||
+        ! "${status}" =~ ^[1-9][0-9]*$ ]] || (( status > 255 )); then
+    return 0
+  fi
+  for ((index=1; index<${#BASH_SOURCE[@]} && retained<3; index++)); do
+    if [[ "${BASH_SOURCE[index]}" != "${qualification_failure_source}" ]]; then
+      continue
+    fi
+    line="${BASH_LINENO[index-1]}"
+    if [[ "${line}" =~ ^[1-9][0-9]*$ ]]; then
+      lines+="${separator}${line}"
+      separator=","
+      retained=$((retained + 1))
+    fi
+  done
+  if (( retained )); then
+    qualification_failure_reported=1
+    printf '::error title=Compose qualification::{"format":"riverhog-compose-failure-diagnostic/v1","exit_status":%s,"source_lines":[%s]}\n' \
+      "${status}" "${lines}" >&2 || true
+  fi
+  return 0
+}
+trap 'qualification_failure "$?"' ERR
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_compose_env.sh"
 source "${ROOT_DIR}/scripts/_ci_timing.sh"
