@@ -1704,7 +1704,7 @@ def upload_cmd(
                 client(),
                 primary_store=store,
                 member_inventory=member_inventory,
-                storage_preparation=None if windows is None else windows.preparation_step,
+                storage_preparation=None if windows is None else windows.prepare_storage,
                 provenance_connection_factory=sqlite_owner.connect,
                 on_provenance_storage_open=sqlite_owner.retain,
                 initial_tags_connection_factory=sqlite_owner.connect,

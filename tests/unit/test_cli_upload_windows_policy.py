@@ -15,6 +15,7 @@ from a_riverhog_cli.upload_windows import WindowsUploadPolicy
 from pydantic import ValidationError
 from rich.text import Text
 from riverhog_client import (
+    PrimaryStateCapacity,
     SqliteOperationBank,
     SqliteOperationGrants,
     SqlitePrimaryLimits,
@@ -280,12 +281,22 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
         parents._parent(parent)
     else:
         parent.mkdir()
-    contents = [b"", b"equal bytes", b"equal bytes"][:member_count]
+    contents = [b"" if index % 3 == 0 else b"equal bytes" for index in range(member_count)]
     for index, content in enumerate(contents):
         (source / f"member-{index}").write_bytes(content)
     payload = policy_payload(parent)
     payload["readiness"]["prefix_lengths"] = [8201, 16]
     api = _CustodyApi()
+    first_registration_sizes = []
+    actual_register = api.register_collection_upload_session_artifacts
+
+    def register(collection_id, artifacts, **options):
+        new_members = sum(row["artifact_id"] not in api.rows for row in artifacts)
+        if new_members:
+            first_registration_sizes.append(new_members)
+        return actual_register(collection_id, artifacts, **options)
+
+    monkeypatch.setattr(api, "register_collection_upload_session_artifacts", register)
     events, processes, resources, projections, identities = [], [], [], [], []
     actual_process = main.WindowsSqliteProcess
     actual_prepare = main.prepare_primary_upload
@@ -345,22 +356,44 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
         "z",
         "--tag",
         "a",
+        "--sqlite-resources",
+        json.dumps({"connections": 2, "cursors": 2, "operations": 1, "blobs": 1}),
         "--json",
     ]
-    if member_count == 3:
+    if member_count > 1:
         args += ["--windows-primary", json.dumps(payload)]
     else:
         monkeypatch.setenv("A_RIVERHOG_CLI_WINDOWS_PRIMARY", json.dumps(payload))
     first = CliRunner().invoke(main.app, [*args, "--initialize-state"])
+    if member_count >= 16:
+        assert isinstance(first.exception, PrimaryStateCapacity)
+        assert "payload would consume progress headroom" in str(first.exception)
+        assert api.session_calls == 1 and api.rows == {} and api.completed is None
+        assert len(identities) == 1
+        monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
+        # Replenish physical backing within the original database/journal grants.
+        # Keep the progress floor and all logical, heap and operation limits.
+        for target_pages in (256, 384, 512):
+            payload["readiness"]["target_pages"] = target_pages
+            args[args.index("--windows-primary") + 1] = json.dumps(payload)
+            first = CliRunner().invoke(main.app, args)
+            if first.exit_code == 0:
+                break
+            assert isinstance(first.exception, PrimaryStateCapacity)
+            assert "payload would consume progress headroom" in str(first.exception)
+            assert api.session_calls == 1 and api.completed is None
     assert first.exit_code == 0, first.exception
     original = tuple(api.rows.items())
     assert len(original) == member_count
     assert len({row["artifact_id"] for _, row in original}) == member_count
     assert sorted(int(row["bytes"]) for _, row in original) == sorted(map(len, contents))
-    if member_count == 3:
+    if member_count > 1:
         equal = [row for _, row in original if row["bytes"] != "0"]
-        assert equal[0]["sha256"] == equal[1]["sha256"]
-        assert equal[0]["artifact_id"] != equal[1]["artifact_id"]
+        assert len({row["sha256"] for row in equal}) == 1
+        assert len({row["artifact_id"] for row in equal}) == len(equal)
+    assert first_registration_sizes == [16] * (member_count // 16) + (
+        [member_count % 16] if member_count % 16 else []
+    )
     assert api.initial_tags == ("a", "z")
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     resumed = CliRunner().invoke(main.app, args)
@@ -368,25 +401,39 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
     first_receipt, resumed_receipt = json.loads(first.stdout), json.loads(resumed.stdout)
     for key in ("state", "artifact_set_identity", "archive_root_sha256", "collection"):
         assert resumed_receipt[key] == first_receipt[key]
-    assert identities[1] == identities[0]
+    assert all(value == identities[0] for value in identities)
     assert tuple(api.rows.items()) == original and api.session_calls == 1
     monkeypatch.setattr(directory_upload, "_verified_upload_sources", forbidden)
     monkeypatch.setattr(directory_upload, "_verified_ordered_upload_sources", forbidden)
     conflict = CliRunner().invoke(main.app, [*args, "--initialize-state"])
     assert isinstance(conflict.exception, FileExistsError)
     assert api.session_calls == 1
-    assert all(owner.status.connections == owner.status.blobs == 0 for owner in resources)
+    assert len(resources) == len(identities) + 1
+    for index, owner in enumerate(resources):
+        status = owner.status
+        expected_peak = 0 if index == len(resources) - 1 else 2
+        assert status.connection_limit == status.cursor_limit == 2
+        assert status.operation_limit == status.blob_limit == 1
+        assert status.connection_peak == status.cursor_peak == expected_peak
+        assert status.operation_peak == status.blob_peak == bool(expected_peak)
+        assert status.connections == status.cursors == status.operations == status.blobs == 0
+        assert status.unreturned_connections == status.closing_connections == 0
+        assert status.unreturned_blobs == 0
     assert all(owner.pending_directories == () for owner in resources)
     assert projections and all(all(name == "" for name in files) for files in projections)
     assert list(parent.glob("*.sqlite3"))
     assert not (tmp_path / "unused-posix").exists()
+    assert [(source / f"member-{index}").read_bytes() for index in range(member_count)] == contents
     if native:
-        assert processes[0].report()["heap_limit_bytes"] == payload["heap_bytes"]
+        heap = processes[0].report()
+        assert (
+            0 < heap["sqlite_heap_peak_bytes"] <= heap["heap_limit_bytes"] == payload["heap_bytes"]
+        )
         assert processes[0].native_report()["owners"] == processes[0].native_report()["files"] == 0
 
 
 @pytest.mark.skipif(os.name != "posix", reason="actual Unix-SQL command integration fixture")
-@pytest.mark.parametrize("member_count", [1, 3])
+@pytest.mark.parametrize("member_count", [1, 3, 16, 17])
 def test_selected_cli_command_completes_and_cold_reopens_original_state(
     tmp_path, monkeypatch, member_count
 ):
@@ -394,7 +441,7 @@ def test_selected_cli_command_completes_and_cold_reopens_original_state(
 
 
 @pytest.mark.skipif(os.name != "nt", reason="qualified Windows engine and private local NTFS")
-@pytest.mark.parametrize("member_count", [1, 3])
+@pytest.mark.parametrize("member_count", [1, 3, 16, 17])
 def test_native_windows_cli_command_completes_and_cold_reopens_original_state(
     tmp_path, member_count
 ):

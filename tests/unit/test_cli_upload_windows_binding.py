@@ -53,6 +53,31 @@ def selection(parent, process=None, resources=None):
     )
 
 
+@pytest.mark.parametrize("ready_after", [1, 3, None, "error"])
+def test_producer_preparation_spends_only_its_explicit_execution_grant(
+    tmp_path, monkeypatch, ready_after
+):
+    calls = []
+    storage = object()
+    chosen = replace(selection(tmp_path), preparation_steps=3)
+
+    def step(self, supplied):
+        assert self is chosen and supplied is storage
+        calls.append(supplied)
+        if ready_after == "error":
+            raise OSError("fixture preparation failure")
+        return len(calls) == ready_after
+
+    monkeypatch.setattr(WindowsUploadState, "preparation_step", step)
+    if ready_after == "error":
+        with pytest.raises(OSError, match="fixture preparation failure"):
+            chosen.prepare_storage(storage)
+        assert len(calls) == 1
+    else:
+        assert chosen.prepare_storage(storage) is (ready_after is not None)
+        assert len(calls) == (ready_after or chosen.preparation_steps)
+
+
 @pytest.mark.parametrize("field", ["identity_bytes", "preparation_steps"])
 @pytest.mark.parametrize("value", [True, 0, -1, 1.5])
 def test_windows_upload_admissions_are_explicit_positive_integers(tmp_path, field, value):

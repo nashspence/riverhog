@@ -130,6 +130,13 @@ class WindowsUploadState:
         self.process.verify()
         return sqlite_primary_preparation_step(storage, plan=self.readiness)
 
+    def prepare_storage(self, storage: PrimaryStorage) -> bool:
+        """Spend the explicit execution grant before deferring dependent payload."""
+        for _ in range(self.preparation_steps):
+            if self.preparation_step(storage):
+                return True
+        return False
+
 
 @contextmanager
 def prepare_windows_upload(
@@ -216,15 +223,17 @@ def prepare_windows_upload(
             prepare_payload=prepare,
         )
 
+        def recover() -> None:
+            for _ in range(selection.preparation_steps):
+                if store.recover_step():
+                    return
+            raise PrimaryStateBusy("upload primary recovery requires another execution grant")
+
         def canonical_inventory(
             members: Iterable[ProducerArtifactIdentity],
         ) -> PreparedPrimaryInventory:
             # Execution settles retained byte cleanup before selecting a new index.
-            for _ in range(selection.preparation_steps):
-                if store.recover_step():
-                    break
-            else:
-                raise PrimaryStateBusy("upload primary recovery requires another execution grant")
+            recover()
             prepare()
 
             def prepared_members() -> Iterator[ProducerArtifactIdentity]:
@@ -260,6 +269,7 @@ def prepare_windows_upload(
                     )
             else:
                 stream = original.enter_context(open_original())
+                recover()
                 with current_sources() as (root, current):
                     validated = _validate_upload_identity(
                         UploadIdentityRecords(stream), root, idempotency_key, current
