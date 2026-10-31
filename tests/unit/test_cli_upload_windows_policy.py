@@ -13,6 +13,7 @@ import pytest
 from a_riverhog_cli import directory_upload, main, upload_windows
 from a_riverhog_cli.upload_windows import WindowsUploadPolicy
 from pydantic import ValidationError
+from rich.text import Text
 from riverhog_client import (
     SqliteOperationBank,
     SqliteOperationGrants,
@@ -202,7 +203,7 @@ def test_invalid_windows_command_policy_precedes_process_state_and_remote_work(
         ["collection", "upload", "start", str(source), "--windows-primary", json.dumps(payload)],
     )
     assert result.exit_code == 2
-    assert "--windows-primary" in result.output
+    assert "--windows-primary" in Text.from_ansi(result.output).plain
     assert not parent.exists()
 
 
