@@ -1086,7 +1086,7 @@ def test_fresh_identity_generation_allocates_only_the_consumed_record(monkeypatc
     assert allocated == serialized == members
     expected = {
         "format": "a-riverhog-cli-directory-upload/v1",
-        "root": "/source",
+        "root": str(Path("/source")),
         "idempotency_key": "streamed",
         "source_naming_view_id": "urn:uuid:" + view,
         "sources": [{**item, "artifact_id": f"{index:064x}"} for index, item in enumerate(current)],
