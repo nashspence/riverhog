@@ -7,6 +7,8 @@ from pathlib import Path
 import pytest
 from riverhog_client import _prepared_primary_posix as owner
 
+from tests.support.prepared_primary import ordered_primary_rows
+
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX filesystem backend")
 
 
@@ -307,7 +309,7 @@ def test_ordering_closes_transactions_and_cursors_before_external_iteration(
             yield f"opaque-{number:08}", number, "a" * 64
 
     with owner.PrimaryFiles(tmp_path.resolve() / "state", initialize=True) as files:
-        iterator = files.ordered_rows(rows(), byte_limit=1024 * 1024)
+        iterator = ordered_primary_rows(files, rows(), byte_limit=1024 * 1024)
         for number, row in enumerate(iterator):
             assert row == (f"opaque-{number:08}", number, "a" * 64)
             assert not connections[0].in_transaction
@@ -322,14 +324,14 @@ def test_ordering_has_one_live_reader_across_construction_children(tmp_path):
     rows = [("b", 2, "b" * 64), ("a", 1, "a" * 64)]
     with owner.PrimaryFiles(tmp_path.resolve() / "state", initialize=True) as files:
         with files.child("member", initialize=True) as child:
-            iterator = files.ordered_rows(rows, byte_limit=32 * 1024)
+            iterator = ordered_primary_rows(files, rows, byte_limit=32 * 1024)
             assert next(iterator) == rows[1]
             for contender in [files, child]:
                 with pytest.raises(owner.PrimaryStateBusy, match="live reader"):
-                    next(contender.ordered_rows(rows, byte_limit=32 * 1024))
+                    next(ordered_primary_rows(contender, rows, byte_limit=32 * 1024))
             iterator.close()
-            assert list(child.ordered_rows(rows, byte_limit=32 * 1024)) == rows[::-1]
-        assert list(files.ordered_rows(rows, byte_limit=32 * 1024)) == rows[::-1]
+            assert list(ordered_primary_rows(child, rows, byte_limit=32 * 1024)) == rows[::-1]
+        assert list(ordered_primary_rows(files, rows, byte_limit=32 * 1024)) == rows[::-1]
 
 
 @pytest.mark.parametrize("failure", ["input", "duplicate", "capacity"])
@@ -353,12 +355,12 @@ def test_ordering_failure_releases_scratch_and_preserves_unrelated_primary(tmp_p
             "capacity": owner.PrimaryStateCapacity,
         }[failure]
         with pytest.raises(error):
-            list(files.ordered_rows(rows(), byte_limit=16 * 1024))
+            list(ordered_primary_rows(files, rows(), byte_limit=16 * 1024))
         scratch = files.root / "inventory-ordering" / "selection.sqlite3"
         assert not scratch.exists()
         with files.verified(original) as stream:
             assert stream.read() == b"original"
-        assert list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=32 * 1024)) == [
+        assert list(ordered_primary_rows(files, [("a", 1, "a" * 64)], byte_limit=32 * 1024)) == [
             ("a", 1, "a" * 64)
         ]
 
@@ -375,7 +377,7 @@ def test_ordering_rebuilds_only_exact_interrupted_scratch_names_after_cold_open(
             ]:
                 scratch.put(name, (b"interrupted",), byte_limit=11)
     with owner.PrimaryFiles(root, initialize=False) as files:
-        assert list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=32 * 1024)) == [
+        assert list(ordered_primary_rows(files, [("a", 1, "a" * 64)], byte_limit=32 * 1024)) == [
             ("a", 1, "a" * 64)
         ]
         with files.child("inventory-ordering", initialize=False) as scratch:

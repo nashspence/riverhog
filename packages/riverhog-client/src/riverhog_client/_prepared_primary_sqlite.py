@@ -20,6 +20,7 @@ from sqlalchemy.pool import NullPool
 from state_schema import EngineFactory
 
 from riverhog_client._prepared_primary_sqlite_schema import _primary_state_schema, _verify_shape
+from riverhog_client._prepared_primary_storage import PrimaryOrdering
 from riverhog_client._prepared_primary_types import (
     PrimaryByteFile,
     PrimaryFileSpace,
@@ -617,9 +618,10 @@ class TransactionalPrimaryFiles:
         if candidate == (self._namespace, name):
             raise PrimaryStateBusy("prepared-primary control conflicts with its byte candidate")
 
+    @contextmanager
     def ordered_rows(
         self, rows: Iterable[tuple[str, int, str]], *, byte_limit: int
-    ) -> Iterator[tuple[str, int, str]]:
+    ) -> Iterator[PrimaryOrdering]:
         """Keep derived ordering inside this container under one live reader."""
         from riverhog_client._prepared_primary_sqlite_ordering import ordered_rows
 
@@ -628,7 +630,8 @@ class TransactionalPrimaryFiles:
         if not guard.acquire(blocking=False):
             raise PrimaryStateBusy("prepared-primary inventory ordering has a live reader")
         try:
-            yield from ordered_rows(self, rows, byte_limit=byte_limit)
+            with ordered_rows(self, rows, byte_limit=byte_limit) as selected:
+                yield selected
         finally:
             guard.release()
 

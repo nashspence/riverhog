@@ -377,8 +377,15 @@ class _Connection(sqlite3.Connection):
         self._begin()
         lease = None
         try:
-            lease = self._lease.admission._reserve_cursor(self)
-            cursor = _Cursor(self, lease)
+            reserved = self._lease.admission._reserve_cursor(self)
+            lease = reserved
+
+            def construct(_connection: sqlite3.Connection) -> _Cursor:
+                return _Cursor(self, reserved)
+
+            # The connection factory also retires dead driver cursor references.
+            # Reserve and retain our exact owner before its constructor can run.
+            cursor = super().cursor(factory=construct)
             cursor.row_factory = self.row_factory
             self._require_open()
             lease.reference = weakref.ref(cursor)

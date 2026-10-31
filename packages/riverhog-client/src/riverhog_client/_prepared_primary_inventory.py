@@ -32,7 +32,8 @@ def ordered_primary_inventory(
 
     with store._mutex:
         store._admit_ordering()
-        for key, byte_count, digest in store._files.ordered_rows(
+        with store._files.ordered_rows(
             rows(), byte_limit=store.limits.inventory_order_bytes
-        ):
-            yield ProducerArtifactIdentity(ArtifactId(key), byte_count, digest)
+        ) as selected:
+            for key, byte_count, digest in selected.rows():
+                yield ProducerArtifactIdentity(ArtifactId(key), byte_count, digest)

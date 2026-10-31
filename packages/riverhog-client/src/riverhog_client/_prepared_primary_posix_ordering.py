@@ -5,8 +5,11 @@ from __future__ import annotations
 import os
 import sqlite3
 from collections.abc import Iterable, Iterator
+from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
+from riverhog_client._prepared_primary_ordering import OrderedRows
+from riverhog_client._prepared_primary_storage import PrimaryOrdering
 from riverhog_client._prepared_primary_types import PrimaryStateCapacity, PrimaryStateError
 
 if TYPE_CHECKING:
@@ -52,9 +55,10 @@ def cleanup_step(owner: PrimaryFiles) -> bool:
     return True
 
 
+@contextmanager
 def ordered_rows(
     owner: PrimaryFiles, rows: Iterable[tuple[str, int, str]], *, byte_limit: int
-) -> Iterator[tuple[str, int, str]]:
+) -> Iterator[PrimaryOrdering]:
     """Order opaque rows in admitted scratch; retain no membership authority."""
     if type(byte_limit) is not int or byte_limit < 0:
         raise ValueError("ordering scratch admission must be nonnegative")
@@ -80,52 +84,69 @@ def ordered_rows(
             files.root / "selection.sqlite3", isolation_level=None, timeout=0
         )
         try:
-            for setting in (
-                f"page_size = {page_size}",
-                f"max_page_count = {page_limit}",
-                "cache_size = -512",
-                "journal_mode = OFF",
-                "synchronous = OFF",
-            ):
-                connection.execute("PRAGMA " + setting).close()
-            connection.execute(
-                "CREATE TABLE members (artifact_id TEXT PRIMARY KEY, bytes TEXT NOT NULL, "
-                "sha256 TEXT NOT NULL) WITHOUT ROWID"
-            ).close()
-            for key, byte_count, digest in rows:
-                files.check_current()
+            with _errors():
+                for setting in (
+                    f"page_size = {page_size}",
+                    f"max_page_count = {page_limit}",
+                    "cache_size = -512",
+                    "journal_mode = OFF",
+                    "synchronous = OFF",
+                ):
+                    connection.execute("PRAGMA " + setting).close()
                 connection.execute(
-                    "INSERT INTO members VALUES (?, ?, ?)", (key, str(byte_count), digest)
+                    "CREATE TABLE members (artifact_id TEXT PRIMARY KEY, bytes TEXT NOT NULL, "
+                    "sha256 TEXT NOT NULL) WITHOUT ROWID"
                 ).close()
-            files.sync()
-            after: str | None = None
-            while True:
+                count = 0
+                for key, byte_count, digest in rows:
+                    files.check_current()
+                    connection.execute(
+                        "INSERT INTO members VALUES (?, ?, ?)", (key, str(byte_count), digest)
+                    ).close()
+                    count += 1
+                files.sync()
+
+            def read(after: str | None) -> tuple[str, int, str] | None:
                 files.check_current()
-                cursor = connection.execute(
-                    "SELECT artifact_id, bytes, sha256 FROM members ORDER BY artifact_id LIMIT 1"
-                    if after is None
-                    else (
+                with _errors():
+                    cursor = connection.execute(
                         "SELECT artifact_id, bytes, sha256 FROM members "
-                        "WHERE artifact_id>? ORDER BY artifact_id LIMIT 1"
-                    ),
-                    () if after is None else (after,),
-                )
-                try:
-                    row = cursor.fetchone()
-                finally:
-                    cursor.close()
+                        "ORDER BY artifact_id LIMIT 1"
+                        if after is None
+                        else (
+                            "SELECT artifact_id, bytes, sha256 FROM members "
+                            "WHERE artifact_id>? ORDER BY artifact_id LIMIT 1"
+                        ),
+                        () if after is None else (after,),
+                    )
+                    try:
+                        row = cursor.fetchone()
+                    finally:
+                        cursor.close()
                 if row is None:
-                    return
-                after, byte_count, digest = row
-                yield after, int(byte_count), digest
-        except sqlite3.IntegrityError as exc:
-            raise PrimaryStateError("owner inventory contains duplicate artifact IDs") from exc
-        except sqlite3.OperationalError as exc:
-            if getattr(exc, "sqlite_errorcode", None) == sqlite3.SQLITE_FULL:
-                raise PrimaryStateCapacity(
-                    "owner inventory ordering exceeds scratch admission"
-                ) from exc
-            raise
+                    return None
+                key, byte_count, digest = row
+                return key, int(byte_count), digest
+
+            selected = OrderedRows(count, read)
+            try:
+                yield selected
+            finally:
+                selected.close()
         finally:
             connection.close()
             files.remove("selection.sqlite3")
+
+
+@contextmanager
+def _errors() -> Iterator[None]:
+    try:
+        yield
+    except sqlite3.IntegrityError as error:
+        raise PrimaryStateError("owner inventory contains duplicate artifact IDs") from error
+    except sqlite3.OperationalError as error:
+        if getattr(error, "sqlite_errorcode", None) == sqlite3.SQLITE_FULL:
+            raise PrimaryStateCapacity(
+                "owner inventory ordering exceeds scratch admission"
+            ) from error
+        raise

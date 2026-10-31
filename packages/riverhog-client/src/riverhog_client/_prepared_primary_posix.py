@@ -12,6 +12,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import BinaryIO
 
+from riverhog_client._prepared_primary_storage import PrimaryOrdering
 from riverhog_client._prepared_primary_types import (
     PrimaryByteFile,
     PrimaryStateBusy,
@@ -147,9 +148,10 @@ class PrimaryFiles:
             child.close()
             raise
 
+    @contextmanager
     def ordered_rows(
         self, rows: Iterable[tuple[str, int, str]], *, byte_limit: int
-    ) -> Iterator[tuple[str, int, str]]:
+    ) -> Iterator[PrimaryOrdering]:
         """Keep disposable physical ordering with the filesystem backend."""
         from riverhog_client._prepared_primary_posix_ordering import ordered_rows
 
@@ -158,7 +160,8 @@ class PrimaryFiles:
         if not guard.acquire(blocking=False):
             raise PrimaryStateBusy("prepared-primary inventory ordering has a live reader")
         try:
-            yield from ordered_rows(self, rows, byte_limit=byte_limit)
+            with ordered_rows(self, rows, byte_limit=byte_limit) as selected:
+                yield selected
         finally:
             guard.release()
 

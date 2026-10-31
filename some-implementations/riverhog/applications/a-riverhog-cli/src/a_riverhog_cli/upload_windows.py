@@ -89,7 +89,8 @@ class WindowsUploadState:
 
     Identity bytes have their own explicit admission in addition to primary
     member admission. Physical container grants cover both. This selection
-    does not bound whole source enumeration, serialization, Python or RSS.
+    admits derived source ordering in the selected primary. Fresh identity
+    encoding and uniqueness checks retain separate Python and RSS costs.
     Preparation is execution with an explicit quantum count, never status or
     close work. Exhaustion retains state and does not increase any grant.
     """
@@ -144,7 +145,7 @@ def prepare_windows_upload(
         _load_upload_identity,
         _new_upload_identity,
         _upload_identity_chunks,
-        _verified_upload_sources,
+        _verified_ordered_upload_sources,
     )
 
     if type(initialize) is not bool:
@@ -191,40 +192,47 @@ def prepare_windows_upload(
         assert physical is not None
         identity = physical.child("directory-upload", initialize=initialize)
         open_original = partial(open_upload_identity, identity, byte_limit=selection.identity_bytes)
+
+        def prepare() -> None:
+            for _ in range(selection.preparation_steps):
+                if store.prepare_storage_step(selection.preparation_step):
+                    return
+            raise PrimaryStateBusy("upload primary preparation requires another execution grant")
+
+        current_sources = partial(
+            _verified_ordered_upload_sources,
+            root,
+            idempotency_key,
+            identity,
+            byte_limit=policy.inventory_order_bytes,
+            prepare_payload=prepare,
+        )
+
         if initialize:
-            root, current = _verified_upload_sources(root, idempotency_key)
-            with BytesIO() as encoded:
-                for chunk in _upload_identity_chunks(
-                    _new_upload_identity(root, idempotency_key, current)
-                ):
-                    encoded.write(chunk)
-                original = encoded.getvalue()
-
-            def prepare() -> None:
-                for _ in range(selection.preparation_steps):
-                    if store.prepare_storage_step(selection.preparation_step):
-                        return
-                raise PrimaryStateBusy(
-                    "upload primary preparation requires another execution grant"
-                )
-
-            with initialize_upload_identity(
-                identity,
-                original,
-                byte_limit=selection.identity_bytes,
-                control_capacity=policy.control_bytes,
-                prepare_payload=prepare,
-            ) as stream:
-                del original
-                upload = _load_upload_identity(
-                    stream, root, idempotency_key, current, open_original=open_original
-                )
+            with current_sources() as (root, current):
+                with BytesIO() as encoded:
+                    for chunk in _upload_identity_chunks(
+                        _new_upload_identity(root, idempotency_key, current)
+                    ):
+                        encoded.write(chunk)
+                    original = encoded.getvalue()
+                with initialize_upload_identity(
+                    identity,
+                    original,
+                    byte_limit=selection.identity_bytes,
+                    control_capacity=policy.control_bytes,
+                    prepare_payload=prepare,
+                ) as stream:
+                    del original
+                    upload = _load_upload_identity(
+                        stream, root, idempotency_key, current, open_original=open_original
+                    )
         else:
-            with open_upload_identity(identity, byte_limit=selection.identity_bytes) as stream:
-                root, current = _verified_upload_sources(root, idempotency_key)
-                upload = _load_upload_identity(
-                    stream, root, idempotency_key, current, open_original=open_original
-                )
+            with open_original() as stream:
+                with current_sources() as (root, current):
+                    upload = _load_upload_identity(
+                        stream, root, idempotency_key, current, open_original=open_original
+                    )
         # The verified descriptors own the required values for publication.
         del current
         yield upload, store

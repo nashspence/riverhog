@@ -33,6 +33,8 @@ from riverhog_protocol import (
     CollectionUploadProvenanceCustodyObjectDocument,
 )
 
+from tests.support.prepared_primary import ordered_primary_rows
+
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX filesystem backend")
 
 SCOPE = PrimaryScope(service="fixture-service", account="fixture-account")
@@ -2168,9 +2170,9 @@ def test_retained_ordering_stays_charged_until_explicit_cleanup_after_budget_red
         original = store.prepare_or_load(_member(), REQUEST, lambda _grant: _author())
         before = store.usage
         if backend == "sqlite":
-            assert list(store._files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024)) == [
-                ("a", 1, "a" * 64)
-            ]
+            assert list(
+                ordered_primary_rows(store._files, [("a", 1, "a" * 64)], byte_limit=128 * 1024)
+            ) == [("a", 1, "a" * 64)]
         else:
             with store._files.child("inventory-ordering", initialize=True) as scratch:
                 scratch.put("selection.sqlite3", [b"x" * (128 * 1024)], byte_limit=128 * 1024)
@@ -2381,7 +2383,7 @@ def test_explicit_recovery_steps_finish_interrupted_ordering_without_status_drai
             raise RuntimeError("interrupted derived input")
 
         with pytest.raises(RuntimeError, match="derived input"):
-            list(store._files.ordered_rows(interrupted(), byte_limit=128 * 1024))
+            list(ordered_primary_rows(store._files, interrupted(), byte_limit=128 * 1024))
 
     with _open(root, storage_factory=_deny_primary_chunk_bodies(sql_core_storage)) as store:
         for _ in range(3):
@@ -2408,7 +2410,7 @@ def test_explicit_recovery_steps_finish_interrupted_ordering_without_status_drai
 def test_explicit_recovery_keeps_ready_ordering_admitted(tmp_path, sql_core_storage):
     root = tmp_path.resolve() / "state.sqlite3"
     with _open(root, initialize=True, storage_factory=sql_core_storage) as store:
-        list(store._files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024))
+        list(ordered_primary_rows(store._files, [("a", 1, "a" * 64)], byte_limit=128 * 1024))
     with _open(root, storage_factory=sql_core_storage) as store:
         assert store.recover_step()
         assert store._files.ordering_reserved_bytes() == 128 * 1024

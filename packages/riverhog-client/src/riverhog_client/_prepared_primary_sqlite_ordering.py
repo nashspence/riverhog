@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import Iterable, Iterator
+from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
+from riverhog_client._prepared_primary_ordering import OrderedRows
 from riverhog_client._prepared_primary_sqlite import _BLOCK
+from riverhog_client._prepared_primary_storage import PrimaryOrdering
 from riverhog_client._prepared_primary_types import (
     PrimaryStateBusy,
     PrimaryStateCapacity,
@@ -73,12 +76,13 @@ def cleanup_step(owner: TransactionalPrimaryFiles) -> bool:
         return row is None
 
 
+@contextmanager
 def ordered_rows(
     owner: TransactionalPrimaryFiles,
     rows: Iterable[tuple[str, int, str]],
     *,
     byte_limit: int,
-) -> Iterator[tuple[str, int, str]]:
+) -> Iterator[PrimaryOrdering]:
     """Build and dispose only in execution work; yields hold no SQL cursor or transaction.
 
     Charge live page growth and the scratch B-tree roots. The database ceiling,
@@ -110,6 +114,7 @@ def ordered_rows(
                 "INSERT INTO primary_ordering VALUES (1,?,?, 'building',NULL,?,?)",
                 (generation, owner._namespace, base_pages, str(byte_limit)),
             ).close()
+    count = 0
     for key, byte_count, digest in rows:
         with owner._mutex:
             if owner._one(
@@ -125,13 +130,14 @@ def ordered_rows(
                 charged_pages = max(root_pages, root_pages + _live_pages(owner) - base_pages)
                 if charged_pages * _BLOCK > byte_limit:
                     raise PrimaryStateCapacity("owner inventory ordering exceeds scratch admission")
+        count += 1
     with owner._transaction(payload=True) as db:
         db.execute(
             "UPDATE primary_ordering SET phase='ready' WHERE id=1 AND generation=?",
             (generation,),
         ).close()
-    after: str | None = None
-    while True:
+
+    def read(after: str | None) -> tuple[str, int, str] | None:
         row = owner._one(
             "SELECT artifact_id,bytes,sha256 FROM primary_order_rows "
             "WHERE generation=? ORDER BY artifact_id LIMIT 1"
@@ -143,7 +149,7 @@ def ordered_rows(
             (generation,) if after is None else (generation, after),
         )
         if row is None:
-            return
+            return None
         key, byte_count, digest = row
         if (
             not isinstance(key, str)
@@ -151,5 +157,10 @@ def ordered_rows(
             or not isinstance(digest, str)
         ):
             raise PrimaryStateError("prepared-primary ordering row is not its original encoding")
-        after = key
-        yield key, int(byte_count), digest
+        return key, int(byte_count), digest
+
+    selected = OrderedRows(count, read)
+    try:
+        yield selected
+    finally:
+        selected.close()

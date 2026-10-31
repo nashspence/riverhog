@@ -11,6 +11,7 @@ from riverhog_client import _prepared_primary_sqlite as owner
 from riverhog_client._prepared_primary_types import PrimaryByteFile
 
 from tests.support.prepared_primary import SqlitePrimaryTestGuard as _SQLGuard
+from tests.support.prepared_primary import ordered_primary_rows
 
 pytestmark = pytest.mark.skipif(os.name == "nt", reason="SQL core isolation uses the Unix VFS")
 
@@ -195,7 +196,7 @@ def test_cold_open_has_no_whole_database_integrity_or_payload_scan(tmp_path, mon
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
         files.put_bytes("journal", [b"x" * 50000], byte_limit=50000)
-        list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024))
+        list(ordered_primary_rows(files, [("a", 1, "a" * 64)], byte_limit=128 * 1024))
     original = owner.sqlite3.connect
     observed = []
 
@@ -553,7 +554,7 @@ def test_same_container_ordering_has_point_growth_and_no_transaction_across_yiel
                         files.put_bytes("new", [b"new"], byte_limit=3)
                 yield f"opaque-{number:08}", number, "a" * 64
 
-        for number, row in enumerate(files.ordered_rows(rows(), byte_limit=1024 * 1024)):
+        for number, row in enumerate(ordered_primary_rows(files, rows(), byte_limit=1024 * 1024)):
             assert row == (f"opaque-{number:08}", number, "a" * 64)
             assert not files._connection.in_transaction
         assert number == count - 1
@@ -569,16 +570,16 @@ def test_ordering_reader_excludes_replacement_and_cleanup_but_not_ready_payload_
     rows = [("b", 2, "b" * 64), ("a", 1, "a" * 64)]
     with _open(path, initialize=True) as files:
         with files.child("other", initialize=True) as other:
-            ordered = files.ordered_rows(rows, byte_limit=128 * 1024)
+            ordered = ordered_primary_rows(files, rows, byte_limit=128 * 1024)
             assert next(ordered) == rows[1]
             with pytest.raises(PrimaryStateBusy, match="live reader"):
-                next(other.ordered_rows(rows, byte_limit=128 * 1024))
+                next(ordered_primary_rows(other, rows, byte_limit=128 * 1024))
             with pytest.raises(PrimaryStateBusy, match="live reader"):
                 files.ordering_cleanup_step()
             retained = files.put_bytes("original", [b"original"], byte_limit=8)
             assert next(ordered) == rows[0]
             ordered.close()
-            assert list(other.ordered_rows(rows, byte_limit=128 * 1024)) == rows[::-1]
+            assert list(ordered_primary_rows(other, rows, byte_limit=128 * 1024)) == rows[::-1]
             with files.verified(retained) as stream:
                 assert stream.read() == b"original"
 
@@ -597,11 +598,11 @@ def test_ordering_failure_retains_only_derived_generation_and_preserves_primary(
 
         error = RuntimeError if failure == "input" else PrimaryStateError
         with pytest.raises(error):
-            list(files.ordered_rows(rows(), byte_limit=128 * 1024))
+            list(ordered_primary_rows(files, rows(), byte_limit=128 * 1024))
         with pytest.raises(PrimaryStateBusy, match="ordering"):
             files.put_control("new", b"new", byte_limit=3)
     with _open(path, initialize=False) as files:
-        assert list(files.ordered_rows([("b", 2, "b" * 64)], byte_limit=128 * 1024)) == [
+        assert list(ordered_primary_rows(files, [("b", 2, "b" * 64)], byte_limit=128 * 1024)) == [
             ("b", 2, "b" * 64)
         ]
         with files.verified(original) as stream:
@@ -616,8 +617,8 @@ def test_ordering_page_admission_rejects_and_cold_cleanup_preserves_primary(tmp_
         original = files.put_bytes("original", [b"original"], byte_limit=8)
         with pytest.raises(PrimaryStateCapacity, match="scratch admission"):
             list(
-                files.ordered_rows(
-                    ((f"{n:064}", n, "a" * 64) for n in range(257)), byte_limit=3 * 4096
+                ordered_primary_rows(
+                    files, ((f"{n:064}", n, "a" * 64) for n in range(257)), byte_limit=3 * 4096
                 )
             )
     with _open(path, initialize=False) as files:
@@ -627,7 +628,7 @@ def test_ordering_page_admission_rejects_and_cold_cleanup_preserves_primary(tmp_
         else:
             pytest.fail("bounded scratch fixture cleanup did not finish")
         assert files._one("SELECT generation FROM primary_ordering") is None
-        assert list(files.ordered_rows([("b", 2, "b" * 64)], byte_limit=128 * 1024)) == [
+        assert list(ordered_primary_rows(files, [("b", 2, "b" * 64)], byte_limit=128 * 1024)) == [
             ("b", 2, "b" * 64)
         ]
         with files.verified(original) as stream:
@@ -638,7 +639,9 @@ def test_ordering_cleanup_cursor_survives_cold_steps_and_deletes_one_row_at_a_ti
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
         list(
-            files.ordered_rows(((f"{n:08}", n, "a" * 64) for n in range(17)), byte_limit=128 * 1024)
+            ordered_primary_rows(
+                files, ((f"{n:08}", n, "a" * 64) for n in range(17)), byte_limit=128 * 1024
+            )
         )
         assert not files.ordering_cleanup_step()
         assert not files.ordering_cleanup_step()
@@ -710,11 +713,11 @@ def test_ordering_rechecks_byte_idle_after_finishing_old_scratch(tmp_path, monke
         with monkeypatch.context() as patch:
             patch.setattr(ordering, "cleanup_step", interleaved)
             with pytest.raises(PrimaryStateBusy, match="byte mutation"):
-                list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024))
+                list(ordered_primary_rows(files, [("a", 1, "a" * 64)], byte_limit=128 * 1024))
         assert files._one("SELECT generation FROM primary_ordering") is None
         while not files.remove_step("journal"):
             pass
-        assert list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024)) == [
+        assert list(ordered_primary_rows(files, [("a", 1, "a" * 64)], byte_limit=128 * 1024)) == [
             ("a", 1, "a" * 64)
         ]
 
@@ -725,7 +728,7 @@ def test_retained_scratch_grant_is_a_control_only_point_read_until_final_cleanup
     rows = [(f"{number:064x}", number, "a" * 64) for number in range(members)]
     with _open(path, initialize=True) as files:
         assert files.ordering_reserved_bytes() == 0
-        assert list(files.ordered_rows(rows, byte_limit=128 * 1024)) == rows
+        assert list(ordered_primary_rows(files, rows, byte_limit=128 * 1024)) == rows
     with _open(path, initialize=False) as files:
         statements = []
 
@@ -754,7 +757,7 @@ def test_retained_scratch_grant_is_a_control_only_point_read_until_final_cleanup
 def test_invalid_retained_scratch_grant_is_not_replaced_by_current_configuration(tmp_path, damaged):
     path = tmp_path / "state.sqlite3"
     with _open(path, initialize=True) as files:
-        list(files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024))
+        list(ordered_primary_rows(files, [("a", 1, "a" * 64)], byte_limit=128 * 1024))
     with sqlite3.connect(path) as db:
         db.execute("UPDATE primary_ordering SET byte_limit=?", (damaged,))
     with _open(path, initialize=False) as files:
@@ -1368,3 +1371,102 @@ def test_recorded_callback_failure_blocks_returning_query_and_control_results(
         finally:
             refused = False
             connection.set_trace_callback(None)
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("count", [0, 1, 17, 257])
+def test_scoped_ordering_builds_once_and_replays_independent_cursors(tmp_path, backend, count):
+    from riverhog_client._prepared_primary_posix import PrimaryFiles
+
+    opened = (
+        PrimaryFiles(tmp_path.resolve() / "state", initialize=True)
+        if backend == "posix"
+        else _open(tmp_path / "state.sqlite3", initialize=True)
+    )
+    expected = [(f"key-{number:08}", number, "a" * 64) for number in range(count)]
+    observed = []
+
+    def rows():
+        for row in reversed(expected):
+            observed.append(row[0])
+            yield row
+
+    with opened as files:
+        original = files.put_bytes("original", (b"original",), byte_limit=8)
+        with files.child("child", initialize=True) as child:
+            with files.ordered_rows(rows(), byte_limit=128 * 1024) as selected:
+                assert len(observed) == count and selected.count == count
+                first, second = selected.rows(), selected.rows()
+                if count:
+                    assert next(first) == next(second) == expected[0]
+                    first.close()
+                    assert list(second) == expected[1:]
+                else:
+                    assert list(first) == list(second) == []
+                for contender in [files, child]:
+                    with pytest.raises(PrimaryStateBusy, match="live reader"):
+                        with contender.ordered_rows(expected, byte_limit=128 * 1024):
+                            pytest.fail("another order displaced a live selection")
+                    with pytest.raises(PrimaryStateBusy, match="live reader"):
+                        contender.ordering_cleanup_step()
+                assert list(selected.rows()) == expected
+                assert list(selected.rows()) == expected
+                assert len(observed) == count
+                escaped = selected.rows()
+                with files.verified(original) as stream:
+                    assert stream.read() == b"original"
+            with pytest.raises(PrimaryStateError, match="view is closed"):
+                next(escaped)
+            with child.ordered_rows(reversed(expected), byte_limit=128 * 1024) as replacement:
+                assert replacement.count == count and list(replacement.rows()) == expected
+        with files.verified(original) as stream:
+            assert stream.read() == b"original"
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("failure", ["ordinary", "sqlite-full"])
+def test_scoped_ordering_preserves_consumer_failure_and_releases_its_lease(
+    tmp_path, backend, failure
+):
+    from riverhog_client._prepared_primary_posix import PrimaryFiles
+
+    opened = (
+        PrimaryFiles(tmp_path.resolve() / "state", initialize=True)
+        if backend == "posix"
+        else _open(tmp_path / "state.sqlite3", initialize=True)
+    )
+    error = RuntimeError("consumer interrupted")
+    if failure == "sqlite-full":
+        error = sqlite3.OperationalError("consumer database full")
+        error.sqlite_errorcode = sqlite3.SQLITE_FULL
+    rows = [("a", 1, "a" * 64), ("b", 2, "b" * 64)]
+    with opened as files:
+        with pytest.raises(type(error)) as raised:
+            with files.ordered_rows(rows, byte_limit=128 * 1024) as selected:
+                iterator = selected.rows()
+                assert next(iterator) == rows[0]
+                raise error
+        assert raised.value is error
+        with pytest.raises(PrimaryStateError, match="view is closed"):
+            next(iterator)
+        with files.ordered_rows(rows, byte_limit=128 * 1024) as replayed:
+            assert replayed.count == 2 and list(replayed.rows()) == rows
+
+
+@pytest.mark.parametrize("mutation", ["missing", "additional"])
+def test_scoped_ordering_refuses_a_changed_row_count_instead_of_partial_success(tmp_path, mutation):
+    rows = [("a", 1, "a" * 64), ("b", 2, "b" * 64)]
+    with _open(tmp_path / "state.sqlite3", initialize=True) as files:
+        with files.ordered_rows(rows, byte_limit=128 * 1024) as selected:
+            if mutation == "missing":
+                files._connection.execute(
+                    "DELETE FROM primary_order_rows WHERE artifact_id='b'"
+                ).close()
+            else:
+                files._connection.execute(
+                    "INSERT INTO primary_order_rows SELECT generation,'c','3',? "
+                    "FROM primary_order_rows LIMIT 1",
+                    ("c" * 64,),
+                ).close()
+            with pytest.raises(PrimaryStateError, match="count changed|rows changed"):
+                list(selected.rows())

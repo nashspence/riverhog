@@ -931,7 +931,15 @@ def witness(root: Path) -> dict:
                 assert not files._connection.in_transaction
                 yield row
 
-        assert list(files.ordered_rows(inventory(), byte_limit=128 * 1024)) == rows[::-1]
+        with files.ordered_rows(inventory(), byte_limit=128 * 1024) as selected:
+            assert selected.count == len(rows)
+            changes = files._connection.total_changes
+            first, second = selected.rows(), selected.rows()
+            assert next(first) == next(second) == rows[1]
+            assert list(first) == list(second) == [rows[0]]
+            assert list(selected.rows()) == rows[::-1]
+            assert not files._connection.in_transaction
+        assert files._connection.total_changes == changes
         assert files._one("PRAGMA journal_mode") == ("persist",)
         assert files._one("PRAGMA synchronous") == (3,)
     with _files(path, initialize=False) as files:

@@ -371,6 +371,7 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
     assert identities[1] == identities[0]
     assert tuple(api.rows.items()) == original and api.session_calls == 1
     monkeypatch.setattr(directory_upload, "_verified_upload_sources", forbidden)
+    monkeypatch.setattr(directory_upload, "_verified_ordered_upload_sources", forbidden)
     conflict = CliRunner().invoke(main.app, [*args, "--initialize-state"])
     assert isinstance(conflict.exception, FileExistsError)
     assert api.session_calls == 1

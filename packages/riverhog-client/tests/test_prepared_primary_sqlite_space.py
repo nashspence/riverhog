@@ -9,7 +9,7 @@ import pytest
 from riverhog_client import PrimaryStateBusy, PrimaryStateError
 from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits, TransactionalPrimaryFiles
 
-from tests.support.prepared_primary import SqlitePrimaryTestGuard
+from tests.support.prepared_primary import SqlitePrimaryTestGuard, ordered_primary_rows
 from tests.support.prepared_primary_space import witness
 
 pytestmark = pytest.mark.skipif(os.name == "nt", reason="portable Unix-VFS physical-space witness")
@@ -68,7 +68,7 @@ def test_maintenance_respects_live_readers_namespaces_and_interrupted_work(tmp_p
             with pytest.raises(PrimaryStateError, match="container root"):
                 member.vacuum_step(keep_free_pages=0)
         rows = [("a", 1, "a" * 64), ("b", 2, "b" * 64)]
-        ordering = files.ordered_rows(rows, byte_limit=128 * 1024)
+        ordering = ordered_primary_rows(files, rows, byte_limit=128 * 1024)
         assert next(ordering) == rows[0]
         with pytest.raises(PrimaryStateBusy, match="ordering reader"):
             files.vacuum_step(keep_free_pages=0)

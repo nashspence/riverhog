@@ -9,6 +9,7 @@ import weakref
 from contextlib import contextmanager
 from dataclasses import replace
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from a_riverhog_cli import directory_upload, upload_identity, upload_windows
@@ -126,7 +127,7 @@ def binding(tmp_path, monkeypatch):
     policy = PrimaryStatePolicy(
         scope={"service": "fixture-service", "account": "fixture-account"},
         control_bytes=1024,
-        inventory_order_bytes=4096,
+        inventory_order_bytes=65536,
     )
     descriptor = primary_allocation_descriptor(
         allocation_id=directory_upload._allocation_id(source, "retained"),
@@ -157,6 +158,7 @@ def forbid_reconstruction(monkeypatch):
         pytest.fail("retained state admission reached source reconstruction or new IDs")
 
     monkeypatch.setattr(directory_upload, "_verified_upload_sources", forbidden)
+    monkeypatch.setattr(directory_upload, "_verified_ordered_upload_sources", forbidden)
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
 
 
@@ -303,7 +305,16 @@ def test_identity_byte_refusal_retains_allocation_and_never_invents_resume_ident
 def test_preparation_quantum_exhaustion_retains_original_reference_and_stops_resume(
     binding, monkeypatch
 ):
-    chosen = replace(binding[2], preparation_steps=1)
+    chosen = binding[2]
+    actual_step = WindowsUploadState.preparation_step
+
+    def withhold_after_reference(self, storage):
+        identity = storage.child("directory-upload", initialize=False)
+        if identity.exists("upload-identity"):
+            return False
+        return actual_step(self, storage)
+
+    monkeypatch.setattr(WindowsUploadState, "preparation_step", withhold_after_reference)
     with pytest.raises(PrimaryStateBusy, match="another execution grant"):
         with open_upload(binding, initialize=True, chosen=chosen):
             pytest.fail("incomplete preparation entered publication")
@@ -373,7 +384,7 @@ chosen=WindowsUploadState(parent=parent,process=process,resources=resources,
     readiness=SqliteReadinessPlan((1033,16),65536,8,128,1024*1024),
     identity_bytes=8192,preparation_steps=512)
 policy=PrimaryStatePolicy(scope={"service":"fixture-service","account":"fixture-account"},
-    control_bytes=1024,inventory_order_bytes=4096)
+    control_bytes=1024,inventory_order_bytes=65536)
 def open_upload(initialize):
     return directory_upload.prepare_primary_upload(
         source,"retained",policy,initialize=initialize,windows=chosen)
@@ -389,6 +400,7 @@ try:
         assert resumed==original and not store.publication_started
     saved=directory_upload._verified_upload_sources
     directory_upload._verified_upload_sources=forbidden
+    directory_upload._verified_ordered_upload_sources=forbidden
     try:
         with open_upload(True):raise AssertionError("fresh initialization replaced state")
     except FileExistsError:pass
@@ -476,7 +488,7 @@ chosen=WindowsUploadState(parent=parent,process=process,resources=resources,
     readiness=SqliteReadinessPlan((1033,16),65536,8,128,1024*1024),
     identity_bytes=8192,preparation_steps=512)
 policy=PrimaryStatePolicy(scope={"service":"fixture-service","account":"fixture-account"},
-    control_bytes=1024,inventory_order_bytes=4096)
+    control_bytes=1024,inventory_order_bytes=65536)
 def opened(initialize):
     return directory_upload.prepare_primary_upload(
         source,"retained",policy,initialize=initialize,windows=chosen)
@@ -522,19 +534,16 @@ def test_windows_binding_releases_source_inventory_before_publication(
     if not initialize:
         with open_upload(binding, initialize=True):
             pass
-    verified = directory_upload._verified_upload_sources
+    verified = directory_upload._verified_ordered_upload_sources
     retained = []
 
-    class Inventory(list):
-        pass
-
+    @contextmanager
     def observed(*args, **kwargs):
-        selected, rows = verified(*args, **kwargs)
-        inventory = Inventory(rows)
-        retained.append(weakref.ref(inventory))
-        return selected, inventory
+        with verified(*args, **kwargs) as (selected, current):
+            retained.append(weakref.ref(current))
+            yield selected, current
 
-    monkeypatch.setattr(directory_upload, "_verified_upload_sources", observed)
+    monkeypatch.setattr(directory_upload, "_verified_ordered_upload_sources", observed)
     chosen = binding[2]
     with open_upload(binding, initialize=initialize) as (upload, store):
         assert len(retained) == 1 and retained[0]() is None
@@ -566,7 +575,7 @@ def test_windows_identity_reader_is_scoped_through_preflight_and_closed_before_p
         with open_upload(binding, initialize=True):
             pass
     actual_open = upload_identity.open_upload_identity
-    verified = directory_upload._verified_upload_sources
+    verified = directory_upload._verified_ordered_upload_sources
     readers = []
     enumerations = []
 
@@ -576,17 +585,19 @@ def test_windows_identity_reader_is_scoped_through_preflight_and_closed_before_p
             readers.append(stream)
             yield stream
 
+    @contextmanager
     def enumerate_sources(*args, **kwargs):
         if initialize:
             assert readers == []
         else:
             assert len(readers) == 1 and not readers[0].closed
         enumerations.append(True)
-        return verified(*args, **kwargs)
+        with verified(*args, **kwargs) as selected:
+            yield selected
 
     monkeypatch.setattr(upload_identity, "open_upload_identity", observed)
     monkeypatch.setattr(upload_windows, "open_upload_identity", observed)
-    monkeypatch.setattr(directory_upload, "_verified_upload_sources", enumerate_sources)
+    monkeypatch.setattr(directory_upload, "_verified_ordered_upload_sources", enumerate_sources)
     with open_upload(binding, initialize=initialize) as (upload, store):
         assert enumerations == [True]
         assert len(readers) == 1 and readers[0].closed
@@ -596,3 +607,94 @@ def test_windows_identity_reader_is_scoped_through_preflight_and_closed_before_p
         assert not store.publication_started
     assert readers[0].closed
     assert binding[2].resources.status.connections == binding[2].resources.status.blobs == 0
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual Unix-VFS application binding fixture")
+def test_source_preparation_exhaustion_stops_before_source_ids_or_original_reference(
+    binding, monkeypatch
+):
+    chosen = replace(binding[2], preparation_steps=1)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("source preparation exhaustion reached source hashing or identity allocation")
+
+    monkeypatch.setattr(directory_upload, "_source_fixity", forbidden)
+    monkeypatch.setattr(directory_upload, "uuid", SimpleNamespace(uuid4=forbidden))
+    monkeypatch.setattr(directory_upload, "secrets", SimpleNamespace(token_hex=forbidden))
+    with pytest.raises(PrimaryStateBusy, match="another execution grant"):
+        with open_upload(binding, initialize=True, chosen=chosen):
+            pytest.fail("unprepared source ordering entered publication")
+    assert chosen.resources.status.connections == chosen.resources.status.blobs == 0
+    factory = chosen.process.primary_factory(
+        limits=chosen.limits,
+        operations=chosen.operations,
+        retry_profile=chosen.retry_profile,
+        connection_factory=chosen.resources.connect_primary,
+    )
+    with factory(binding[5], allocation_descriptor=binding[4], initialize=False) as physical:
+        identity = physical.child("directory-upload", initialize=False)
+        assert not identity.exists("upload-identity")
+        assert not identity.exists("source-identity")
+    forbid_reconstruction(monkeypatch)
+    with pytest.raises(FileNotFoundError):
+        with open_upload(binding, initialize=False):
+            pytest.fail("missing original identity was reconstructed")
+    assert chosen.resources.status.connections == chosen.resources.status.blobs == 0
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual Unix-VFS application binding fixture")
+@pytest.mark.parametrize("member_count", [1, 3, 128])
+def test_windows_source_ordering_verifies_every_member_before_allocating_ids(
+    binding, monkeypatch, member_count
+):
+    source = binding[0]
+    for number in range(member_count - 1):
+        (source / f"é-{number:04d}").write_bytes(b"" if number % 2 else b"equal")
+    expected = sorted(source.iterdir(), key=lambda path: path.relative_to(source).as_posix())
+    chosen = replace(binding[2], identity_bytes=256 * 1024)
+    actual_fixity = directory_upload._source_fixity
+    actual_uuid = directory_upload.uuid.uuid4
+    actual_token = directory_upload.secrets.token_hex
+    hashed = []
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Windows source ordering retained the complete path or metadata inventory")
+
+    def fixity(path):
+        hashed.append(path)
+        return actual_fixity(path)
+
+    def fresh_view():
+        assert len(hashed) == member_count
+        return actual_uuid()
+
+    def fresh_id(size):
+        assert len(hashed) == member_count
+        return actual_token(size)
+
+    monkeypatch.setattr(directory_upload, "_source_paths", forbidden)
+    monkeypatch.setattr(directory_upload, "preview_upload", forbidden)
+    monkeypatch.setattr(directory_upload, "_verified_upload_sources", forbidden)
+    monkeypatch.setattr(directory_upload, "_source_fixity", fixity)
+    monkeypatch.setattr(directory_upload, "uuid", SimpleNamespace(uuid4=fresh_view))
+    monkeypatch.setattr(directory_upload, "secrets", SimpleNamespace(token_hex=fresh_id))
+    with open_upload(binding, initialize=True, chosen=chosen) as (original, store):
+        assert original.source_count == member_count
+        sources = read_upload_sources(original)
+        assert [item.path for item in sources] == expected
+        assert len({item.artifact_id for item in sources}) == member_count
+        assert not store.publication_started
+        assert chosen.resources.status.connections == 1
+        original_ids = tuple(item.artifact_id for item in sources)
+    assert chosen.resources.status.connections == chosen.resources.status.blobs == 0
+    hashed.clear()
+    monkeypatch.setattr(directory_upload, "uuid", SimpleNamespace(uuid4=forbidden))
+    monkeypatch.setattr(directory_upload, "secrets", SimpleNamespace(token_hex=forbidden))
+    with open_upload(binding, initialize=False, chosen=chosen) as (resumed, store):
+        assert resumed == original
+        assert tuple(item.artifact_id for item in read_upload_sources(resumed)) == original_ids
+        assert len(hashed) == member_count
+        assert not store.publication_started
+    assert chosen.resources.status.connections == chosen.resources.status.blobs == 0
+    assert chosen.resources.status.connection_peak == 1
+    assert chosen.resources.pending_directories == ()

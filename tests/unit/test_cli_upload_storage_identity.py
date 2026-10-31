@@ -1316,3 +1316,33 @@ def test_scoped_source_replay_readers_advance_and_close_independently():
         assert next(first).artifact_id == f"{2:064x}"
         assert next(first, None) is None
     assert all(reader.closed for reader in readers)
+
+
+@pytest.mark.parametrize("ending", ["additional", "failed"])
+def test_identity_preflight_requires_complete_ordered_metadata_exhaustion(tmp_path, ending):
+    root = tmp_path / "source"
+    root.mkdir()
+    (root / "member").write_bytes(b"original")
+    root, rows = directory_upload._verified_upload_sources(root, "retained")
+    body = canonical_json_bytes(identity_document(root, "retained", rows))
+
+    class IncompleteMetadata:
+        def __len__(self):
+            return len(rows)
+
+        def __iter__(self):
+            yield from rows
+            if ending == "additional":
+                yield rows[0]
+            else:
+                raise PrimaryStateError("ordered metadata completeness check failed")
+
+    error = ValueError if ending == "additional" else PrimaryStateError
+    with pytest.raises(error, match="current local sources|completeness check failed"):
+        directory_upload._load_upload_identity(
+            io.BytesIO(body),
+            root,
+            "retained",
+            IncompleteMetadata(),
+            open_original=lambda: io.BytesIO(body),
+        )

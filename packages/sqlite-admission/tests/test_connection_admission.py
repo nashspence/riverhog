@@ -581,3 +581,30 @@ def test_metadata_acknowledgement_loss_does_not_repeat_confirmed_driver_close(
     db.close()
     assert driver_calls == ["cursor", "connection"]
     assert pool.status.connections == pool.status.cursors == 0
+
+
+@pytest.mark.parametrize("calls", [128, 2048, 8192])
+def test_closed_cursor_driver_references_remain_bounded_while_connection_stays_live(
+    tmp_path, calls
+):
+    pool = admitted(cursors=2)
+    with closing(pool.connect(tmp_path / "cursor-housekeeping.sqlite3")) as db:
+        with closing(db.execute("SELECT 0 UNION ALL SELECT 1")) as held:
+            assert next(held) == (0,)
+            for _ in range(calls):
+                with closing(db.execute("SELECT 7")) as cursor:
+                    assert cursor.fetchone() == (7,)
+            assert pool.status.connections == pool.status.cursors == 1
+            # Qualify the actual driver's closed-cursor weak-reference window,
+            # independently of the application's refunded cursor grants.
+            references = [
+                reference
+                for value in gc.get_referents(db)
+                if isinstance(value, list)
+                for reference in value
+                if isinstance(reference, weakref.ReferenceType)
+            ]
+            assert len(references) <= 1024
+            assert next(held) == (1,)
+        assert pool.status.cursors == 0 and pool.status.cursor_peak == 2
+    assert pool.status.connections == pool.status.cursors == 0

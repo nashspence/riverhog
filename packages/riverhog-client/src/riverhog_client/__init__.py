@@ -36,7 +36,11 @@ from riverhog_client._prepared_primary_sqlite_operations import (
     SqliteOperationGrants,
 )
 from riverhog_client._prepared_primary_sqlite_preparation import SqliteReadinessPlan
-from riverhog_client._prepared_primary_storage import PrimaryStorage, PrimaryStorageFactory
+from riverhog_client._prepared_primary_storage import (
+    PrimaryOrdering,
+    PrimaryStorage,
+    PrimaryStorageFactory,
+)
 from riverhog_client._prepared_primary_store import (
     PrimaryStore,
     PrimaryStoreLimits,
@@ -82,6 +86,7 @@ from riverhog_client.uploads import (
 )
 
 __all__ = [
+    "PrimaryOrdering",
     "PrimaryStorage",
     "PrimaryStorageFactory",
     "PrimaryByteFile",

@@ -12,7 +12,7 @@ from riverhog_client import PrimaryStateCapacity, PrimaryStateError
 from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits, TransactionalPrimaryFiles
 from riverhog_client._prepared_primary_types import PrimaryFileSpace
 
-from tests.support.prepared_primary import SqlitePrimaryTestGuard
+from tests.support.prepared_primary import SqlitePrimaryTestGuard, ordered_primary_rows
 
 pytestmark = pytest.mark.skipif(os.name == "nt", reason="SQL core isolation uses the Unix VFS")
 LIMITS = SqlitePrimaryLimits(2 * 1024 * 1024, 1024 * 1024, 128 * 1024)
@@ -132,7 +132,7 @@ def test_selected_preparation_blocks_new_payload_before_input(tmp_path, operatio
             elif operation == "namespace":
                 files.child("new", initialize=True)
             else:
-                list(files.ordered_rows(rows(), byte_limit=65536))
+                list(ordered_primary_rows(files, rows(), byte_limit=65536))
         assert not consumed
     with opened(path) as files:
         assert not files.exists("new")

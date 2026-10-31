@@ -4,11 +4,17 @@ from __future__ import annotations
 
 import hashlib
 import uuid
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Iterator, Mapping
 from pathlib import Path
 from typing import Any
 
-from riverhog_client import PrimaryScope, PrimaryStateError, PrimaryStatePolicy, PrimaryStore
+from riverhog_client import (
+    PrimaryScope,
+    PrimaryStateError,
+    PrimaryStatePolicy,
+    PrimaryStorage,
+    PrimaryStore,
+)
 from riverhog_client._prepared_primary_closing import (
     advance_closing,
     advance_custody,
@@ -178,3 +184,11 @@ class SqlitePrimaryTestGuard:
 
     def close(self):
         self.closed = True
+
+
+def ordered_primary_rows(
+    files: PrimaryStorage, rows: Iterable[tuple[str, int, str]], *, byte_limit: int
+) -> Iterator[tuple[str, int, str]]:
+    """Consume one pass while retaining the selected index's explicit lifetime."""
+    with files.ordered_rows(rows, byte_limit=byte_limit) as selected:
+        yield from selected.rows()

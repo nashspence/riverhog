@@ -8,14 +8,14 @@ import secrets
 import stat
 import tempfile
 import uuid
-from collections.abc import Generator, Iterable, Iterator
+from collections.abc import Callable, Generator, Iterable, Iterator
 from contextlib import ExitStack, closing, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, BinaryIO, cast
+from typing import TYPE_CHECKING, BinaryIO, Protocol, cast
 
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_client import PrimaryStatePolicy, PrimaryStore
+from riverhog_client import PrimaryOrdering, PrimaryStatePolicy, PrimaryStorage, PrimaryStore
 
 from a_riverhog_cli.upload_identity_records import UploadIdentityRecords
 from a_riverhog_cli.upload_sources import LocalUpload, SourceReaderFactory
@@ -24,6 +24,24 @@ if TYPE_CHECKING:
     from a_riverhog_cli.upload_windows import WindowsUploadState
 
 _FORMAT = "a-riverhog-cli-directory-upload/v1"
+
+
+class _VerifiedSources(Protocol):
+    def __len__(self) -> int: ...
+
+    def __iter__(self) -> Iterator[dict[str, object]]: ...
+
+
+@dataclass(frozen=True, slots=True, weakref_slot=True)
+class _OrderedSources:
+    ordering: PrimaryOrdering
+
+    def __len__(self) -> int:
+        return self.ordering.count
+
+    def __iter__(self) -> Iterator[dict[str, object]]:
+        for key, byte_count, digest in self.ordering.rows():
+            yield {"relative_parts": key.split("/"), "bytes": byte_count, "sha256": digest}
 
 
 @dataclass(frozen=True, slots=True)
@@ -211,6 +229,36 @@ def _verified_upload_sources(
     return root, current
 
 
+@contextmanager
+def _verified_ordered_upload_sources(
+    root: Path,
+    idempotency_key: str,
+    storage: PrimaryStorage,
+    *,
+    byte_limit: int,
+    prepare_payload: Callable[[], None],
+) -> Iterator[tuple[Path, _OrderedSources]]:
+    """Verify all observed sources into one admitted derived ordering view."""
+    root = _validated_upload_root(root, idempotency_key)
+
+    def rows() -> Iterator[tuple[str, int, str]]:
+        with closing(_walk_source_paths(root)) as paths:
+            for path in paths:
+                fixity = _source_fixity(path)
+                prepare_payload()
+                yield (
+                    path.relative_to(root).as_posix(),
+                    cast(int, fixity["bytes"]),
+                    cast(str, fixity["sha256"]),
+                )
+
+    prepare_payload()
+    with storage.ordered_rows(rows(), byte_limit=byte_limit) as ordered:
+        if ordered.count == 0:
+            raise ValueError("collection source has no regular files")
+        yield root, _OrderedSources(ordered)
+
+
 def prepare_upload(root: Path, idempotency_key: str) -> LocalUpload:
     """Reuse an exact persisted allocation or publish one before opening a session."""
     root, current = _verified_upload_sources(root, idempotency_key)
@@ -220,7 +268,7 @@ def prepare_upload(root: Path, idempotency_key: str) -> LocalUpload:
 def _prepare_verified_upload(
     root: Path,
     idempotency_key: str,
-    current: list[dict[str, object]],
+    current: _VerifiedSources,
     *,
     initialize: bool = True,
 ) -> LocalUpload:
@@ -300,7 +348,7 @@ def _validate_upload_identity(
     records: UploadIdentityRecords,
     root: Path,
     idempotency_key: str,
-    current: list[dict[str, object]],
+    current: _VerifiedSources,
 ) -> tuple[dict[str, str], tuple[int, str]]:
     header = records.header()
     if (
@@ -311,11 +359,14 @@ def _validate_upload_identity(
         raise ValueError("saved upload identity differs from the current local sources")
     ids: set[str] = set()
     count = 0
+    expected_count = len(current)
+    current_rows = iter(current)
     for item in records.records():
+        expected = next(current_rows, None)
         if (
-            count >= len(current)
-            or {key: item.get(key) for key in ("relative_parts", "bytes", "sha256")}
-            != current[count]
+            count >= expected_count
+            or expected is None
+            or {key: item.get(key) for key in ("relative_parts", "bytes", "sha256")} != expected
         ):
             raise ValueError("saved upload identity differs from the current local sources")
         value = item.get("artifact_id")
@@ -328,7 +379,7 @@ def _validate_upload_identity(
             raise ValueError("saved upload artifact identities are invalid")
         ids.add(value)
         count += 1
-    if count != len(current):
+    if count != expected_count or next(current_rows, None) is not None:
         raise ValueError("saved upload identity differs from the current local sources")
     if not header["source_naming_view_id"].startswith("urn:uuid:"):
         raise ValueError("saved upload source view identity is invalid")
@@ -339,7 +390,7 @@ def _load_upload_identity(
     stream: BinaryIO,
     root: Path,
     idempotency_key: str,
-    current: list[dict[str, object]],
+    current: _VerifiedSources,
     *,
     open_original: SourceReaderFactory,
 ) -> LocalUpload:
