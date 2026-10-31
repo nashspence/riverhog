@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+from contextlib import closing, contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -10,6 +12,8 @@ import pytest
 from a_riverhog_cli import main as riverhog_main
 from a_riverhog_cli.directory_upload import prepare_upload, preview_upload
 from typer.testing import CliRunner
+
+from tests.support.cli_upload import read_upload_sources
 
 RUNNER = CliRunner()
 
@@ -26,12 +30,12 @@ def test_local_upload_allocates_distinct_stable_artifact_ids_before_registration
     first = prepare_upload(root, "same-request")
     second = prepare_upload(root, "same-request")
     assert first == second
-    assert len(first.sources) == 2
-    assert len({source.artifact_id for source in first.sources}) == 2
-    assert {source.sha256 for source in first.sources} == {
+    assert len(read_upload_sources(first)) == 2
+    assert len({source.artifact_id for source in read_upload_sources(first)}) == 2
+    assert {source.sha256 for source in read_upload_sources(first)} == {
         hashlib.sha256(b"same bytes").hexdigest()
     }
-    assert all(len(source.artifact_id) == 64 for source in first.sources)
+    assert all(len(source.artifact_id) == 64 for source in read_upload_sources(first))
     assert first.source_naming_view_id.startswith("urn:uuid:")
 
     (root / "two.bin").write_bytes(b"changed bytes")
@@ -282,3 +286,92 @@ def test_cli_reuses_declared_native_observation_and_rejects_changed_finalized_in
     rejected = RUNNER.invoke(riverhog_main.app, changed)
     assert rejected.exit_code != 0 and isinstance(rejected.exception, PrimaryStateError)
     assert len(observed) == 1 and len(api.journals) == 1 and api.session_calls == 1
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX CLI allocation")
+@pytest.mark.parametrize("failure", ["none", "append", "inventory"])
+def test_upload_cli_owns_one_source_traversal_per_batch_pass_and_closes_on_failure(
+    monkeypatch, tmp_path, failure
+):
+    from a_riverhog_cli.upload_sources import LocalUpload
+
+    root = tmp_path / "sources"
+    root.mkdir()
+    for index in range(5):
+        (root / f"member-{index}").write_bytes(b"" if index == 0 else b"equal bytes")
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    monkeypatch.setenv(
+        "A_RIVERHOG_CLI_PRIMARY_STATE",
+        json.dumps({"scope": {"service": "fixture-service", "account": "fixture-account"}}),
+    )
+    active = opened = stopped = 0
+    batches = []
+    actual = LocalUpload.open_sources
+
+    @contextmanager
+    def tracked(self):
+        nonlocal active, opened
+        with actual(self) as sources:
+            active += 1
+            opened += 1
+            try:
+                yield sources
+            finally:
+                active -= 1
+
+    class Producer:
+        constraints = object()
+
+        def __init__(self, _api, **options):
+            self.inventory = options["member_inventory"]
+
+        def append_inputs(self, inputs, *, expected_identities):
+            assert active == 1 and 0 < len(inputs) <= 2
+            assert set(expected_identities) == {value.artifact_id for value in inputs}
+            batches.append(tuple(value.artifact_id for value in inputs))
+            if failure == "append":
+                raise OSError("append interrupted")
+
+        def finish(self):
+            assert active == 0
+            with closing(self.inventory()) as inventory:
+                first = next(inventory)
+                assert active == 1
+                if failure == "inventory":
+                    raise OSError("inventory interrupted")
+                observed = [first, *inventory]
+                assert len(observed) == 5
+                assert {value.artifact_id for value in observed} == {
+                    value for batch in batches for value in batch
+                }
+            assert active == 0
+            return SimpleNamespace(receipt={"collection_id": 41, "state": "finalized"})
+
+        def stop(self):
+            nonlocal stopped
+            assert active == 0
+            stopped += 1
+
+    monkeypatch.setattr(LocalUpload, "open_sources", tracked)
+    monkeypatch.setattr(riverhog_main, "COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES", 2)
+    monkeypatch.setattr(riverhog_main, "IncrementalCollectionProducer", Producer)
+    monkeypatch.setattr(riverhog_main, "client", object)
+    result = RUNNER.invoke(
+        riverhog_main.app,
+        [
+            "collection",
+            "upload",
+            "start",
+            str(root),
+            "--idempotency-key",
+            "scoped",
+            "--initialize-state",
+            "--json",
+        ],
+    )
+    assert (result.exit_code == 0) is (failure == "none")
+    if failure != "none":
+        assert isinstance(result.exception, OSError)
+    assert active == 0 and stopped == 1
+    assert opened == (1 if failure == "append" else 2)
+    assert [len(batch) for batch in batches] == ([2] if failure == "append" else [2, 2, 1])

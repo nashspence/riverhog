@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
+from functools import partial
 from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Annotated
@@ -27,7 +28,7 @@ from a_riverhog_cli.upload_identity import initialize_upload_identity, open_uplo
 from a_riverhog_cli.upload_sqlite import UploadSqliteResources
 
 if TYPE_CHECKING:
-    from a_riverhog_cli.directory_upload import LocalUpload
+    from a_riverhog_cli.upload_sources import LocalUpload
 
 
 _PositiveGrant = Annotated[int, Field(strict=True, gt=0, le=(1 << 63) - 1)]
@@ -189,6 +190,7 @@ def prepare_windows_upload(
     ) as store:
         assert physical is not None
         identity = physical.child("directory-upload", initialize=initialize)
+        open_original = partial(open_upload_identity, identity, byte_limit=selection.identity_bytes)
         if initialize:
             root, current = _verified_upload_sources(root, idempotency_key)
             with BytesIO() as encoded:
@@ -214,11 +216,15 @@ def prepare_windows_upload(
                 prepare_payload=prepare,
             ) as stream:
                 del original
-                upload = _load_upload_identity(stream, root, idempotency_key, current)
+                upload = _load_upload_identity(
+                    stream, root, idempotency_key, current, open_original=open_original
+                )
         else:
             with open_upload_identity(identity, byte_limit=selection.identity_bytes) as stream:
                 root, current = _verified_upload_sources(root, idempotency_key)
-                upload = _load_upload_identity(stream, root, idempotency_key, current)
+                upload = _load_upload_identity(
+                    stream, root, idempotency_key, current, open_original=open_original
+                )
         # The verified descriptors own the required values for publication.
         del current
         yield upload, store

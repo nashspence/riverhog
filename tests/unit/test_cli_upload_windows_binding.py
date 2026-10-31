@@ -26,6 +26,7 @@ from riverhog_client import (
     primary_allocation_descriptor,
 )
 
+from tests.support.cli_upload import read_upload_sources
 from tests.unit.test_cli_upload_sqlite_process import _Process
 
 
@@ -165,7 +166,7 @@ def test_windows_selection_binds_actual_primary_and_reopens_original_source_allo
 ):
     source, _state, chosen, _policy, _descriptor, path = binding
     with open_upload(binding, initialize=True) as (first, store):
-        assert first.sources[0].path == source / "member"
+        assert read_upload_sources(first)[0].path == source / "member"
         assert store.allocation.allocation_id == directory_upload._allocation_id(source, "retained")
         assert not store.publication_started
         identity = chosen.process.storage.child("directory-upload", initialize=False)
@@ -336,6 +337,10 @@ def test_lost_process_refuses_windows_placement_before_source_or_state(binding, 
 @pytest.mark.skipif(os.name != "nt", reason="qualified Windows engine and private local NTFS")
 def test_native_windows_application_upload_opens_and_replays_original_allocation(tmp_path):
     code = r"""
+def read_upload_sources(upload):
+    with upload.open_sources() as sources:
+        return tuple(sources)
+
 import importlib.util,json,sys
 from pathlib import Path
 root=Path(sys.argv[1]);sys.path.insert(0,str(root))
@@ -378,6 +383,7 @@ directory_upload._state_path=forbidden
 try:
     with open_upload(True) as (original,store):
         assert not store.publication_started
+        original_id=read_upload_sources(original)[0].artifact_id
     directory_upload.secrets.token_hex=forbidden
     with open_upload(False) as (resumed,store):
         assert resumed==original and not store.publication_started
@@ -396,7 +402,7 @@ try:
         identity=physical.child("directory-upload",initialize=False)
         exact=identity.read_control("upload-identity",byte_limit=1024)
         body=identity_body(identity,byte_limit=8192)
-        assert json.loads(body)["sources"][0]["artifact_id"]==original.sources[0].artifact_id
+        assert json.loads(body)["sources"][0]["artifact_id"]==original_id
         identity.remove_control("upload-identity",expected=exact)
     try:
         with open_upload(False):raise AssertionError("lost identity reached source reconstruction")
@@ -533,10 +539,15 @@ def test_windows_binding_releases_source_inventory_before_publication(
     with open_upload(binding, initialize=initialize) as (upload, store):
         assert len(retained) == 1 and retained[0]() is None
         assert not store.publication_started
-        assert upload.sources[0].producer_file().source.read_bytes() == b"original source"
+        assert (
+            read_upload_sources(upload)[0].producer_file().source.read_bytes() == b"original source"
+        )
         identity = chosen.process.storage.child("directory-upload", initialize=False)
         exact = identity_body(identity, byte_limit=chosen.identity_bytes)
-        assert json.loads(exact)["sources"][0]["artifact_id"] == upload.sources[0].artifact_id
+        assert (
+            json.loads(exact)["sources"][0]["artifact_id"]
+            == read_upload_sources(upload)[0].artifact_id
+        )
     assert chosen.resources.status.connections == chosen.resources.status.blobs == 0
     with open_upload(binding, initialize=False) as (replayed, store):
         assert replayed == upload and not store.publication_started
@@ -579,7 +590,9 @@ def test_windows_identity_reader_is_scoped_through_preflight_and_closed_before_p
     with open_upload(binding, initialize=initialize) as (upload, store):
         assert enumerations == [True]
         assert len(readers) == 1 and readers[0].closed
-        assert upload.sources[0].producer_file().source.read_bytes() == b"original source"
+        assert (
+            read_upload_sources(upload)[0].producer_file().source.read_bytes() == b"original source"
+        )
         assert not store.publication_started
     assert readers[0].closed
     assert binding[2].resources.status.connections == binding[2].resources.status.blobs == 0

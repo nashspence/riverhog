@@ -12,6 +12,8 @@ from a_riverhog_cli import directory_upload, main
 from riverhog_client import PrimaryStatePolicy
 from typer.testing import CliRunner
 
+from tests.support.cli_upload import read_upload_sources
+
 
 @pytest.fixture
 def source(tmp_path, monkeypatch):
@@ -118,7 +120,10 @@ def test_fresh_state_cannot_replace_retained_identity_and_resume_keeps_originals
     ):
         assert resumed == original
     assert path.read_bytes() == exact
-    assert json.loads(exact)["sources"][0]["artifact_id"] == original.sources[0].artifact_id
+    assert (
+        json.loads(exact)["sources"][0]["artifact_id"]
+        == read_upload_sources(original)[0].artifact_id
+    )
 
 
 @pytest.mark.skipif(
@@ -232,10 +237,15 @@ def test_source_verification_inventory_is_released_before_publication(
     ) as (upload, store):
         assert len(retained) == 1 and retained[0]() is None
         assert not store.publication_started
-        assert upload.sources[0].producer_file().source.read_bytes() == b"exact original"
+        assert (
+            read_upload_sources(upload)[0].producer_file().source.read_bytes() == b"exact original"
+        )
         path = directory_upload._state_path(root, "retained", create_parent=False)
         original = path.read_bytes()
-        assert json.loads(original)["sources"][0]["artifact_id"] == upload.sources[0].artifact_id
+        assert (
+            json.loads(original)["sources"][0]["artifact_id"]
+            == read_upload_sources(upload)[0].artifact_id
+        )
     with directory_upload.prepare_primary_upload(root, "retained", policy, initialize=False) as (
         replayed,
         store,

@@ -12,56 +12,18 @@ from collections.abc import Generator, Iterable, Iterator
 from contextlib import ExitStack, closing, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, BinaryIO, cast
+from typing import TYPE_CHECKING, BinaryIO, cast
 
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_client import PrimaryStatePolicy, PrimaryStore, ProducerFile
-from riverhog_protocol.artifact_identity import ArtifactId
-from riverhog_protocol.provenance_transport import MaterializationHintDocument
+from riverhog_client import PrimaryStatePolicy, PrimaryStore
 
 from a_riverhog_cli.upload_identity_records import UploadIdentityRecords
+from a_riverhog_cli.upload_sources import LocalUpload, SourceReaderFactory
 
 if TYPE_CHECKING:
     from a_riverhog_cli.upload_windows import WindowsUploadState
 
 _FORMAT = "a-riverhog-cli-directory-upload/v1"
-
-
-@dataclass(frozen=True, slots=True)
-class LocalSource:
-    root: Path
-    relative_parts: tuple[str, ...]
-    artifact_id: str
-    bytes: int
-    sha256: str
-
-    @property
-    def path(self) -> Path:
-        """Materialize the pathname when a source is consumed."""
-        return self.root.joinpath(*self.relative_parts)
-
-    def producer_file(self, *, observation: Any = None) -> ProducerFile:
-        try:
-            MaterializationHintDocument(components=list(self.relative_parts))
-        except ValueError:
-            return ProducerFile(
-                source=self.path,
-                artifact_id=ArtifactId(self.artifact_id),
-                allow_missing_materialization_hint=True,
-                observation=observation,
-            )
-        return ProducerFile(
-            source=self.path,
-            artifact_id=ArtifactId(self.artifact_id),
-            materialization_hint=self.relative_parts,
-            observation=observation,
-        )
-
-
-@dataclass(frozen=True, slots=True)
-class LocalUpload:
-    sources: tuple[LocalSource, ...]
-    source_naming_view_id: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -294,7 +256,13 @@ def _prepare_verified_upload(
         # Drop serialization input before decoding the selected original.
         del document
     with destination.open("rb") as stream:
-        return _load_upload_identity(stream, root, idempotency_key, current)
+        return _load_upload_identity(
+            stream,
+            root,
+            idempotency_key,
+            current,
+            open_original=lambda: destination.open("rb"),
+        )
 
 
 def _new_upload_identity(
@@ -368,10 +336,15 @@ def _validate_upload_identity(
 
 
 def _load_upload_identity(
-    stream: BinaryIO, root: Path, idempotency_key: str, current: list[dict[str, object]]
+    stream: BinaryIO,
+    root: Path,
+    idempotency_key: str,
+    current: list[dict[str, object]],
+    *,
+    open_original: SourceReaderFactory,
 ) -> LocalUpload:
-    # Complete preflight before constructing any descriptor. The validator's
-    # record and uniqueness set leave scope before the materialization pass.
+    # Complete both original-byte passes before exposing a scoped inventory.
+    # No descriptor or uniqueness set is retained during publication.
     header, commitment = _validate_upload_identity(
         UploadIdentityRecords(stream), root, idempotency_key, current
     )
@@ -379,19 +352,17 @@ def _load_upload_identity(
     replay = UploadIdentityRecords(stream)
     if replay.header() != header:
         raise ValueError("saved upload identity changed during replay")
-    sources = tuple(
-        LocalSource(
-            root=root,
-            relative_parts=tuple(cast(list[str], item["relative_parts"])),
-            artifact_id=cast(str, item["artifact_id"]),
-            bytes=cast(int, item["bytes"]),
-            sha256=cast(str, item["sha256"]),
-        )
-        for item in replay.records()
-    )
+    for _item in replay.records():
+        pass
     if replay.commitment != commitment:
         raise ValueError("saved upload identity changed during replay")
-    return LocalUpload(sources=sources, source_naming_view_id=header["source_naming_view_id"])
+    return LocalUpload(
+        source_count=len(current),
+        source_naming_view_id=header["source_naming_view_id"],
+        _root=root,
+        _commitment=commitment,
+        _reader=open_original,
+    )
 
 
 @contextmanager

@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import sys
+import weakref
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing, contextmanager
 from pathlib import Path
@@ -13,11 +14,12 @@ from threading import Event
 from types import SimpleNamespace
 
 import pytest
-from a_riverhog_cli import directory_upload, upload_identity_records
+from a_riverhog_cli import directory_upload, upload_identity_records, upload_sources
 from a_riverhog_cli.upload_identity import initialize_upload_identity, open_upload_identity
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import PrimaryStateCapacity, PrimaryStateError
 
+from tests.support.cli_upload import read_upload_sources
 from tests.support.prepared_primary import SqlitePrimaryTestGuard
 
 
@@ -92,16 +94,24 @@ def test_identity_codec_preserves_original_allocation_without_generating_replace
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     if changed == "none":
         upload = directory_upload._load_upload_identity(
-            io.BytesIO(canonical_json_bytes(loaded)), root, key, current
+            io.BytesIO(canonical_json_bytes(loaded)),
+            root,
+            key,
+            current,
+            open_original=lambda: io.BytesIO(canonical_json_bytes(loaded)),
         )
-        assert tuple(source.artifact_id for source in upload.sources) == tuple(
+        assert tuple(source.artifact_id for source in read_upload_sources(upload)) == tuple(
             source["artifact_id"] for source in original["sources"]
         )
         assert upload.source_naming_view_id == original["source_naming_view_id"]
     else:
         with pytest.raises(ValueError):
             directory_upload._load_upload_identity(
-                io.BytesIO(canonical_json_bytes(loaded)), root, key, current
+                io.BytesIO(canonical_json_bytes(loaded)),
+                root,
+                key,
+                current,
+                open_original=lambda: io.BytesIO(canonical_json_bytes(loaded)),
             )
     assert canonical_json_bytes(original) == exact
 
@@ -293,6 +303,10 @@ def test_native_windows_upload_identity_keeps_exact_ids_and_never_reinitializes_
     tmp_path,
 ):
     code = r"""
+def read_upload_sources(upload):
+    with upload.open_sources() as sources:
+        return tuple(sources)
+
 import importlib.util,io,json,sys
 from pathlib import Path
 root=Path(sys.argv[1]);sys.path.insert(0,str(root))
@@ -354,8 +368,8 @@ try:
             assert replay.read()==body[7:]
         assert replay.closed
         loaded=directory_upload._load_upload_identity(
-            io.BytesIO(body),source,"retained",current)
-        assert loaded.sources[0].artifact_id==document["sources"][0]["artifact_id"]
+            io.BytesIO(body),source,"retained",current,open_original=lambda:io.BytesIO(body))
+        assert read_upload_sources(loaded)[0].artifact_id==document["sources"][0]["artifact_id"]
         assert loaded.source_naming_view_id==document["source_naming_view_id"]
         exact=identity.read_control("upload-identity",byte_limit=1024)
         identity.remove_control("upload-identity",expected=exact)
@@ -604,11 +618,11 @@ def test_record_identity_publication_keeps_only_a_complete_selected_original(
     restored = directory_upload._prepare_verified_upload(
         root, "retained", current, initialize=False
     )
-    assert [source.artifact_id for source in restored.sources] == [
+    assert [source.artifact_id for source in read_upload_sources(restored)] == [
         row["artifact_id"] for row in original["sources"]
     ]
     assert restored.source_naming_view_id == original["source_naming_view_id"]
-    assert [source.bytes for source in restored.sources] == [0, 11, 11]
+    assert [source.bytes for source in read_upload_sources(restored)] == [0, 11, 11]
     assert destination.read_bytes() == exact
 
 
@@ -639,11 +653,15 @@ def test_retained_source_descriptors_preserve_original_paths_and_producer_inputs
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     monkeypatch.setattr(directory_upload.uuid, "uuid4", forbidden)
     upload = directory_upload._load_upload_identity(
-        io.BytesIO(canonical_json_bytes(original)), root, "retained", current
+        io.BytesIO(canonical_json_bytes(original)),
+        root,
+        "retained",
+        current,
+        open_original=lambda: io.BytesIO(canonical_json_bytes(original)),
     )
     assert upload.source_naming_view_id == original["source_naming_view_id"]
-    assert len(upload.sources) == members
-    for source, recorded in zip(upload.sources, original["sources"], strict=True):
+    assert len(read_upload_sources(upload)) == members
+    for source, recorded in zip(read_upload_sources(upload), original["sources"], strict=True):
         expected_path = root.joinpath(*recorded["relative_parts"])
         assert source.path == expected_path
         assert source.relative_parts == tuple(recorded["relative_parts"])
@@ -712,12 +730,16 @@ def test_retained_source_preflight_finishes_before_descriptor_materialization(
     def forbidden(*args, **kwargs):
         pytest.fail("invalid retained identity reached descriptor creation or new IDs")
 
-    monkeypatch.setattr(directory_upload, "LocalSource", forbidden)
+    monkeypatch.setattr(upload_sources, "LocalSource", forbidden)
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     monkeypatch.setattr(directory_upload.uuid, "uuid4", forbidden)
     with pytest.raises((ValueError, TypeError, AttributeError)):
         directory_upload._load_upload_identity(
-            io.BytesIO(canonical_json_bytes(original)), root, "retained", current
+            io.BytesIO(canonical_json_bytes(original)),
+            root,
+            "retained",
+            current,
+            open_original=lambda: io.BytesIO(canonical_json_bytes(original)),
         )
     assert canonical_json_bytes(original) == exact
     assert canonical_json_bytes(current) == current_exact
@@ -1011,7 +1033,11 @@ def test_identity_replay_rejects_changed_bytes_before_exposing_an_upload(monkeyp
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     with pytest.raises(ValueError, match="changed during replay|trailing document"):
         directory_upload._load_upload_identity(
-            ChangedReader(original, 7), Path("/fixture"), document["idempotency_key"], current
+            ChangedReader(original, 7),
+            Path("/fixture"),
+            document["idempotency_key"],
+            current,
+            open_original=lambda: pytest.fail("invalid preflight reached a replay reader"),
         )
 
 
@@ -1127,7 +1153,7 @@ def test_streamed_identity_publication_preserves_the_concurrent_original(
             directory_upload._prepare_verified_upload(root, "retained", current)
     else:
         upload = directory_upload._prepare_verified_upload(root, "retained", current)
-        assert [item.artifact_id for item in upload.sources] == [
+        assert [item.artifact_id for item in read_upload_sources(upload)] == [
             item["artifact_id"] for item in winner["sources"]
         ]
         assert upload.source_naming_view_id == winner["source_naming_view_id"]
@@ -1149,3 +1175,144 @@ def test_streamed_identity_publication_preserves_the_concurrent_original(
             == upload
         )
     assert destination.read_bytes() == exact
+
+
+@pytest.mark.parametrize("members", [0, 1, 128, 1024])
+@pytest.mark.parametrize("consumption", ["complete", "partial", "interrupted"])
+def test_scoped_source_replay_retains_only_consumed_descriptors_and_closes(
+    monkeypatch, members, consumption
+):
+    original = _record_document(members)
+    body = canonical_json_bytes(original)
+    current = [
+        {key: item[key] for key in ("relative_parts", "bytes", "sha256")}
+        for item in original["sources"]
+    ]
+    readers, constructed = [], []
+    actual_source = upload_sources.LocalSource
+
+    class ObservedSource(actual_source):
+        pass
+
+    def source(**values):
+        value = ObservedSource(**values)
+        constructed.append(weakref.ref(value))
+        return value
+
+    def opened():
+        reader = _ShortIdentityReader(body, 65536)
+        readers.append(reader)
+        return reader
+
+    monkeypatch.setattr(upload_sources, "LocalSource", source)
+    upload = directory_upload._load_upload_identity(
+        io.BytesIO(body),
+        Path(original["root"]),
+        original["idempotency_key"],
+        current,
+        open_original=opened,
+    )
+    assert upload.source_count == members and not constructed and not readers
+    for attempt in range(2):
+        count = 0
+        try:
+            with upload.open_sources() as sources:
+                assert not readers[-1].closed and readers[-1].returned_bytes >= len(body)
+                for value in sources:
+                    item = original["sources"][count]
+                    assert (value.artifact_id, value.bytes, value.sha256) == (
+                        item["artifact_id"],
+                        item["bytes"],
+                        item["sha256"],
+                    )
+                    assert value.path == Path(original["root"]).joinpath(*item["relative_parts"])
+                    assert sum(reference() is not None for reference in constructed) <= 2
+                    count += 1
+                    if attempt == 0 and consumption == "interrupted":
+                        raise OSError("consumer interrupted")
+                    if attempt == 0 and consumption == "partial":
+                        break
+        except OSError as error:
+            assert attempt == 0 and consumption == "interrupted"
+            assert str(error) == "consumer interrupted"
+        assert count == (min(1, members) if attempt == 0 and consumption != "complete" else members)
+        assert len(readers) == attempt + 1 and readers[-1].closed
+        assert all(0 < size <= 65536 for size in readers[-1].request_sizes)
+        # One raw commitment pass and one record pass, independent of batch count.
+        assert readers[-1].returned_bytes <= 2 * len(body)
+        with pytest.raises(StopIteration):
+            next(sources)
+
+
+@pytest.mark.parametrize("changed", ["header", "id", "source", "trailing"])
+def test_scoped_source_replay_refuses_changed_original_before_any_descriptor(monkeypatch, changed):
+    original = _record_document(3)
+    body = canonical_json_bytes(original)
+    current = [
+        {key: item[key] for key in ("relative_parts", "bytes", "sha256")}
+        for item in original["sources"]
+    ]
+    edited = json.loads(body)
+    if changed == "header":
+        edited["source_naming_view_id"] = "urn:uuid:22222222-2222-4222-8222-222222222222"
+    elif changed == "id":
+        edited["sources"][-1]["artifact_id"] = "f" * 64
+    elif changed == "source":
+        edited["sources"][-1]["sha256"] = "0" * 64
+    changed_body = canonical_json_bytes(edited) + (b"x" if changed == "trailing" else b"")
+    readers = []
+
+    def opened():
+        reader = _ShortIdentityReader(changed_body, 7)
+        readers.append(reader)
+        return reader
+
+    upload = directory_upload._load_upload_identity(
+        io.BytesIO(body),
+        Path(original["root"]),
+        original["idempotency_key"],
+        current,
+        open_original=opened,
+    )
+
+    def forbidden(**values):
+        pytest.fail("changed original exposed a descriptor")
+
+    monkeypatch.setattr(upload_sources, "LocalSource", forbidden)
+    with pytest.raises(ValueError, match="changed during replay"):
+        with upload.open_sources():
+            pytest.fail("changed original exposed an inventory")
+    assert len(readers) == 1 and readers[0].closed
+
+
+def test_scoped_source_replay_readers_advance_and_close_independently():
+    original = _record_document(3)
+    body = canonical_json_bytes(original)
+    current = [
+        {key: item[key] for key in ("relative_parts", "bytes", "sha256")}
+        for item in original["sources"]
+    ]
+    readers = []
+
+    def opened():
+        reader = _ShortIdentityReader(body, 7)
+        readers.append(reader)
+        return reader
+
+    upload = directory_upload._load_upload_identity(
+        io.BytesIO(body),
+        Path(original["root"]),
+        original["idempotency_key"],
+        current,
+        open_original=opened,
+    )
+    with upload.open_sources() as first:
+        assert next(first).artifact_id == f"{0:064x}"
+        with upload.open_sources() as second:
+            assert next(second).artifact_id == f"{0:064x}"
+            assert next(first).artifact_id == f"{1:064x}"
+            assert next(second).artifact_id == f"{1:064x}"
+        assert readers[1].closed and not readers[0].closed
+        assert next(first).artifact_id == f"{2:064x}"
+        assert next(first, None) is None
+    assert all(reader.closed for reader in readers)

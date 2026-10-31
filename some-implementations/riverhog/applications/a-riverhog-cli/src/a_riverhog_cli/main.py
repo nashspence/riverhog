@@ -6,8 +6,9 @@ import re
 import sys
 import time
 import uuid
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
 from functools import partial
+from itertools import batched
 from pathlib import Path
 from typing import Annotated, Any, cast
 
@@ -1696,18 +1697,23 @@ def upload_cmd(
                         (selected_observer.contract,)
                     ).checkpoint_sha256(),
                 }
+
+            def member_inventory() -> Iterator[ProducerArtifactIdentity]:
+                with upload.open_sources() as sources:
+                    yield from ordered_primary_inventory(
+                        store,
+                        (
+                            ProducerArtifactIdentity(
+                                ArtifactId(source.artifact_id), source.bytes, source.sha256
+                            )
+                            for source in sources
+                        ),
+                    )
+
             producer = IncrementalCollectionProducer(
                 client(),
                 primary_store=store,
-                member_inventory=lambda: ordered_primary_inventory(
-                    store,
-                    (
-                        ProducerArtifactIdentity(
-                            ArtifactId(source.artifact_id), source.bytes, source.sha256
-                        )
-                        for source in upload.sources
-                    ),
-                ),
+                member_inventory=member_inventory,
                 storage_preparation=None if windows is None else windows.preparation_step,
                 provenance_connection_factory=sqlite_owner.connect,
                 on_provenance_storage_open=sqlite_owner.retain,
@@ -1728,39 +1734,36 @@ def upload_cmd(
             )
             try:
                 if producer.constraints is not None:
-                    for start in range(
-                        0, len(upload.sources), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
-                    ):
-                        inputs = []
-                        expected = {}
-                        for source in upload.sources[
-                            start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
-                        ]:
-                            observation = None
-                            if selected_observer is not None and source_host_id is not None:
-                                native_observer = selected_observer
-                                observation = DeclaredPrimaryObservation(
-                                    str(provenance_observer),
-                                    {
-                                        "host_id": source_host_id,
-                                        "naming_view_id": upload.source_naming_view_id,
-                                    },
-                                    ContractCatalog(
-                                        (native_observer.contract,)
-                                    ).checkpoint_sha256(),
-                                    partial(
-                                        native_observer.observe_native_file,
-                                        source.path,
-                                        host_id=source_host_id,
-                                        naming_view_id=upload.source_naming_view_id,
-                                    ),
+                    with upload.open_sources() as sources:
+                        for batch in batched(sources, COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES):
+                            inputs = []
+                            expected = {}
+                            for source in batch:
+                                observation = None
+                                if selected_observer is not None and source_host_id is not None:
+                                    native_observer = selected_observer
+                                    observation = DeclaredPrimaryObservation(
+                                        str(provenance_observer),
+                                        {
+                                            "host_id": source_host_id,
+                                            "naming_view_id": upload.source_naming_view_id,
+                                        },
+                                        ContractCatalog(
+                                            (native_observer.contract,)
+                                        ).checkpoint_sha256(),
+                                        partial(
+                                            native_observer.observe_native_file,
+                                            source.path,
+                                            host_id=source_host_id,
+                                            naming_view_id=upload.source_naming_view_id,
+                                        ),
+                                    )
+                                item = source.producer_file(observation=observation)
+                                inputs.append(item)
+                                expected[item.artifact_id] = ProducerArtifactIdentity(
+                                    item.artifact_id, source.bytes, source.sha256
                                 )
-                            item = source.producer_file(observation=observation)
-                            inputs.append(item)
-                            expected[item.artifact_id] = ProducerArtifactIdentity(
-                                item.artifact_id, source.bytes, source.sha256
-                            )
-                        producer.append_inputs(inputs, expected_identities=expected)
+                            producer.append_inputs(inputs, expected_identities=expected)
                 result = producer.finish()
             finally:
                 producer.stop()

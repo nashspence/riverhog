@@ -22,6 +22,7 @@ from riverhog_client import (
 )
 from typer.testing import CliRunner
 
+from tests.support.cli_upload import read_upload_sources
 from tests.unit.test_cli_upload_windows_binding import _SqlOnlyProcess, selection
 from tests.unit.test_incremental_collection_producer import _CustodyApi
 
@@ -319,7 +320,7 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native):
         assert options["windows"].process is processes[0]
         assert options["windows"].resources is resources[-1]
         with actual_prepare(*args, **options) as (upload, store):
-            identities.append(tuple(upload.sources))
+            identities.append(tuple(read_upload_sources(upload)))
             events.append("state")
             yield upload, store
 
