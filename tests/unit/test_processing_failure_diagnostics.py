@@ -174,3 +174,46 @@ def test_failure_reporting_cannot_replace_the_original_processing_failure(monkey
         processing.main()
     assert error.value is original
     assert capsys.readouterr().err == ""
+
+
+@pytest.mark.parametrize("invalid_record", [False, True])
+def test_target_record_command_does_not_require_api_operator_contracts(tmp_path, invalid_record):
+    if invalid_record:
+        (tmp_path / "fixture.accepted.json").write_text('{"private": "fixture payload"}')
+    code = """
+import importlib.abc
+import pathlib
+import sys
+
+class TargetDependencies(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == "stove0_operator_contracts":
+            raise ModuleNotFoundError("API-only dependency unavailable", name=fullname)
+
+sys.meta_path.insert(0, TargetDependencies())
+scope = {"__name__": "qualification_fixture"}
+source = pathlib.Path(sys.argv[1])
+exec(compile(source.read_text(), str(source), "exec"), scope)
+state = pathlib.Path(sys.argv[2])
+scope["Path"] = lambda _selected: state
+sys.argv = ["qualification", "target-records"]
+scope["main"]()
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code, processing.__file__, str(tmp_path)],
+        capture_output=True,
+        text=True,
+    )
+    if invalid_record:
+        assert result.returncode == 1
+        payload = annotation(result.stderr)
+        assert payload["failure_class"] == "value"
+        assert [row["function"] for row in payload["source_frames"]] == [
+            "main",
+            "target_records",
+        ]
+        assert "private" not in json.dumps(payload)
+    else:
+        assert result.returncode == 0, result.stderr
+        assert result.stdout.strip() == "preflight-only: zero accepted target jobs"
+        assert result.stderr == ""

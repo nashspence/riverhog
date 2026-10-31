@@ -20,7 +20,6 @@ from types import FunctionType
 from typing import Any, Literal, get_args
 
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
-from stove0_operator_contracts import WorkPhase
 from stove0_protocol import CollectionRootIdentityRef, PlanningJobStatus
 from stove0_target_protocol import AcceptedTargetJob, TargetJobState, TargetJobStatus, TransformPlan
 
@@ -98,6 +97,8 @@ def wait_failure_annotation(
     counts separate and state its age. Never copy identities, failure messages,
     response bodies, paths or scheduler payloads into the annotation.
     """
+    from stove0_operator_contracts import WorkPhase
+
     phases = get_args(WorkPhase)
     target_states = get_args(TargetJobState)
 
