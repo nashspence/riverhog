@@ -417,7 +417,7 @@ class IncrementalCollectionProducer:
             construction_identity=construction_identity,
             completion_requirement=completion_requirement,
         )
-        self._sources: dict[ArtifactId, _Source] = {}
+        self._sources: OrderedDict[ArtifactId, _Source] = OrderedDict()
         self._pending_source_resolver: Callable[[ArtifactId], ProducerInput] | None = None
         self._restored_sources: OrderedDict[ArtifactId, _Source] = OrderedDict()
         self._source_lock = threading.RLock()
@@ -809,27 +809,31 @@ class IncrementalCollectionProducer:
         return receipts
 
     def _reconcile_pending_sources(self) -> tuple[ProducerArtifactCustody, ...]:
-        receipts: list[ProducerArtifactCustody] = []
         constraints = self.constraints
         if constraints is None:
             raise RuntimeError("incremental collection producer has no registration constraints")
-        pending = list(self._sources.values())
-        for start in range(0, len(pending), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES):
-            source_batch = pending[start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES]
-            payload = self.api.register_collection_upload_session_artifacts(
-                self.collection_id,
-                [_source_registration(source) for source in source_batch],
-                registration_constraints=constraints,
-            )
-            rows = payload.get("artifacts")
-            if not isinstance(rows, list):
-                raise RuntimeError("Riverhog returned invalid registered artifacts")
-            receipts.extend(self._accept_registered_rows(iter(rows), expected=source_batch))
-        return tuple(receipts)
+        pending = list(
+            itertools.islice(self._sources.values(), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES)
+        )
+        if not pending:
+            return ()
+        payload = self.api.register_collection_upload_session_artifacts(
+            self.collection_id,
+            [_source_registration(source) for source in pending],
+            registration_constraints=constraints,
+        )
+        rows = payload.get("artifacts")
+        if not isinstance(rows, list):
+            raise RuntimeError("Riverhog returned invalid registered artifacts")
+        receipts = self._accept_registered_rows(iter(rows), expected=pending)
+        for source in pending:
+            if source.artifact_id in self._sources:
+                self._sources.move_to_end(source.artifact_id)
+        return receipts
 
     @_producer_operation
     def reconcile_custody(self) -> tuple[ProducerArtifactCustody, ...]:
-        """Poll exact pending identities after accepting their required history."""
+        """Poll one rotating batch of exact pending identities after accepting history."""
         self._require_heartbeat()
         return self._reconcile_pending_sources()
 
