@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import os
+import re
 import threading
 from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
@@ -9,6 +11,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
+from psycopg import sql as pgsql
 from riverhog_age import CHUNK_SIZE
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
@@ -48,6 +51,7 @@ from riverhog_core.catalog_models import (
     RetrievalPlanObjectRecord,
     RetrievalPlanPlacementRecord,
 )
+from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services import collection_tags as collection_tags_module
 from riverhog_core.services.catalog_sync import (
@@ -66,7 +70,7 @@ from riverhog_protocol import (
     collection_description_identity,
 )
 from riverhog_protocol.errors import ServiceUnavailable
-from sqlalchemy import inspect, select, text
+from sqlalchemy import event, inspect, select, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import IntegrityError
 
@@ -990,3 +994,111 @@ def test_postgres_catalog_rejects_changed_journal_validation_predicates(
             validate_db(isolated_database_url)
     finally:
         engine.dispose()
+
+
+def test_postgres_acquisition_generic_plan_skips_sealed_volume_prefix(
+    isolated_database_url: str, record_property
+) -> None:
+    initialize_db(isolated_database_url)
+    factory = make_session_factory(isolated_database_url)
+    with session_scope(factory) as session:
+        seed_storage_incarnation(session, "archive", "archive")
+    service = SqlAlchemyCollectionUploadService(
+        RuntimeConfig.for_testing(database_url=isolated_database_url),
+        ArchiveStoreRegistry({"archive": archive_store_binding(MemoryArchiveStore())}),
+        policy=CollectionVolumePolicy(pack_artifacts=1),
+        session_factory=factory,
+    )
+    collection_id = int(
+        service.create_or_resume(
+            idempotency_key="generic-acquisition-work",
+            ingest_source="fixture",
+            archive_store=None,
+            initiator=Principal(
+                id="uploader",
+                key_id="key",
+                access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
+            ),
+            event_context=None,
+        )["collection_id"]
+    )
+    members = [
+        {
+            "artifact_id": f"{index + 1:064x}",
+            "bytes": "0",
+            "sha256": hashlib.sha256(b"").hexdigest(),
+        }
+        for index in range(1002)
+    ]
+    for start in range(0, len(members), 16):
+        service.register_artifacts(collection_id, members[start : start + 16])
+    with session_scope(factory) as session:
+        volumes = list(
+            session.scalars(
+                select(CollectionArchiveObjectUploadRecord)
+                .where(CollectionArchiveObjectUploadRecord.collection_id == collection_id)
+                .order_by(CollectionArchiveObjectUploadRecord.sequence)
+            )
+        )
+        assert len(volumes) == 1001
+        expected_volume = volumes[-1].object_id
+        # Model catalog state only, independently of payload/custody qualification.
+        for volume in volumes[:-1]:
+            volume.state = "sealed"
+            volume.uploaded_units = volume.total_units
+    engine = factory.kw["bind"]
+    captured = []
+
+    def capture(_connection, _cursor, statement, parameters, _context, _many):
+        if statement.lstrip().upper().startswith("SELECT") and (
+            "FROM collection_archive_object_uploads" in statement
+        ):
+            captured.append((statement, parameters))
+
+    event.listen(engine, "before_cursor_execute", capture)
+    try:
+        reply = service.acquire_work(collection_id, limit=1)
+    finally:
+        event.remove(engine, "before_cursor_execute", capture)
+    assert len(reply["work"]) == 1
+    assert reply["work"][0]["volume"]["volume_id"] == expected_volume
+    assert len(captured) == 1
+    statement, parameters = captured[0]
+    keys = []
+
+    def bind_parameter(match):
+        key = match.group(1)
+        if key not in keys:
+            keys.append(key)
+        return "$" + str(keys.index(key) + 1)
+
+    prepared = re.sub(r"%\(([^)]+)\)s", bind_parameter, statement)
+    with engine.begin() as connection:
+        connection.exec_driver_sql("ANALYZE collection_archive_object_uploads")
+        with connection.connection.driver_connection.cursor() as cursor:
+            cursor.execute("SET LOCAL plan_cache_mode = force_generic_plan")
+            cursor.execute("PREPARE acquisition_work AS " + prepared)
+            arguments = pgsql.SQL(", ").join(pgsql.Literal(parameters[key]) for key in keys)
+            execute = pgsql.SQL("EXECUTE acquisition_work (") + arguments + pgsql.SQL(")")
+            cursor.execute(execute)
+            rows = cursor.fetchall()
+            assert len(rows) == 1 and rows[0][1] == expected_volume
+            cursor.execute(pgsql.SQL("EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) ") + execute)
+            plan = cursor.fetchone()[0][0]["Plan"]
+            cursor.execute("DEALLOCATE acquisition_work")
+
+    def nodes(node):
+        yield node
+        for child in node.get("Plans", []):
+            yield from nodes(child)
+
+    examined = sum(
+        (node["Actual Rows"] + node.get("Rows Removed by Filter", 0)) * node["Actual Loops"]
+        for node in nodes(plan)
+        if node.get("Relation Name") == "collection_archive_object_uploads"
+    )
+    record_property("sealed_prefix", 1000)
+    record_property("returned_units", len(rows))
+    record_property("postgres_archive_rows_examined", examined)
+    assert examined == 1
+    engine.dispose()

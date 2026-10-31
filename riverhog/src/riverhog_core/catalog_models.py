@@ -3922,6 +3922,13 @@ class CollectionArchiveObjectUploadRecord(Base):
             "sequence",
             unique=True,
         ),
+        Index(
+            "ix_collection_archive_object_uploads_unsealed_sequence",
+            "collection_id",
+            "sequence",
+            postgresql_where=text("(state) != 'sealed'"),
+            sqlite_where=text("state != 'sealed'"),
+        ),
         CheckConstraint(
             _fixed_lowercase_integer_check("sequence", 64),
             name="ck_archive_object_uploads_sequence",

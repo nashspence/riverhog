@@ -152,7 +152,20 @@ from riverhog_provenance import (
     external_reference,
     validate_journal_chunks,
 )
-from sqlalchemy import asc, case, desc, exists, func, insert, or_, select, true, tuple_, update
+from sqlalchemy import (
+    asc,
+    case,
+    desc,
+    exists,
+    func,
+    insert,
+    literal_column,
+    or_,
+    select,
+    true,
+    tuple_,
+    update,
+)
 from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import Session, selectinload
 from state_schema import read_snapshot
@@ -1963,7 +1976,8 @@ class SqlAlchemyCollectionUploadService:
                     select(CollectionArchiveObjectUploadRecord)
                     .where(
                         CollectionArchiveObjectUploadRecord.collection_id == normalized_id,
-                        CollectionArchiveObjectUploadRecord.state != "sealed",
+                        # Keep the partial-index predicate provable in generic prepared plans.
+                        CollectionArchiveObjectUploadRecord.state != literal_column("'sealed'"),
                         or_(
                             CollectionArchiveObjectUploadRecord.kind == "pack",
                             exists(

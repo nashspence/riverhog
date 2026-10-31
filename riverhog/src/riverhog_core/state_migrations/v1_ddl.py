@@ -1188,6 +1188,9 @@ CREATE TABLE collection_archive_object_uploads (
 CREATE UNIQUE INDEX ux_collection_archive_object_uploads_sequence ON collection_archive_object_uploads (collection_id, sequence)
     """.strip(),
     """
+CREATE INDEX ix_collection_archive_object_uploads_unsealed_sequence ON collection_archive_object_uploads (collection_id, sequence) WHERE state != 'sealed'
+    """.strip(),
+    """
 CREATE TABLE collection_archive_objects (
 	collection_id INTEGER NOT NULL,
 	store VARCHAR NOT NULL,
@@ -3817,6 +3820,9 @@ CREATE TABLE collection_archive_object_uploads (
     """.strip(),
     """
 CREATE UNIQUE INDEX ux_collection_archive_object_uploads_sequence ON collection_archive_object_uploads (collection_id, sequence)
+    """.strip(),
+    """
+CREATE INDEX ix_collection_archive_object_uploads_unsealed_sequence ON collection_archive_object_uploads (collection_id, sequence) WHERE (state) != 'sealed'
     """.strip(),
     """
 CREATE TABLE collection_archive_objects (

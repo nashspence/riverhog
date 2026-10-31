@@ -1077,6 +1077,8 @@ CREATE TABLE collection_archive_object_uploads (
 
 CREATE UNIQUE INDEX ux_collection_archive_object_uploads_sequence ON collection_archive_object_uploads (collection_id, sequence);
 
+CREATE INDEX ix_collection_archive_object_uploads_unsealed_sequence ON collection_archive_object_uploads (collection_id, sequence) WHERE (state) != 'sealed';
+
 CREATE TABLE collection_archive_objects (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
