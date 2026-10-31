@@ -750,3 +750,95 @@ def test_resume_custody_rejects_every_changed_receipt_coordinate(primary_store, 
         assert len(api.journals) == 1 and not source.exists()
     finally:
         producer.stop()
+
+
+def _completion_producer(api, primary_store, tmp_path):
+    source = tmp_path / "completion-member"
+    source.write_bytes(b"original completion member")
+    producer = _producer(api, primary_store)
+    try:
+        producer.append_inputs(
+            (ProducerFile(source, "a" * 64, allow_missing_materialization_hint=True),)
+        )
+    except BaseException:
+        producer.stop()
+        raise
+    return producer
+
+
+def test_completion_settles_retained_recovery_before_inventory(
+    primary_store, tmp_path, monkeypatch
+):
+    api = _CustodyApi()
+    producer = _completion_producer(api, primary_store, tmp_path)
+    recover = primary_store.recover_step
+    steps = []
+    inventory = producer._member_inventory
+
+    def pending():
+        steps.append(None)
+        return False if len(steps) < 4 else recover()
+
+    def selected_inventory():
+        assert len(steps) == 4
+        return inventory()
+
+    monkeypatch.setattr(primary_store, "recover_step", pending)
+    monkeypatch.setattr(producer, "_member_inventory", selected_inventory)
+    try:
+        result = producer.finish(timeout_seconds=30)
+    finally:
+        producer.stop()
+    assert result.collection_id == 42 and api.completed is not None
+    assert len(steps) == 4 and api.session_calls == 1
+
+
+def test_completion_recovery_progress_keeps_original_deadline_and_retry_authority(
+    primary_store, tmp_path, monkeypatch
+):
+    from riverhog_client import producer as owner
+
+    api = _CustodyApi()
+    producer = _completion_producer(api, primary_store, tmp_path)
+    clock, steps = [0.0], []
+
+    def pending():
+        steps.append(None)
+        clock[0] += 10.0
+        return False
+
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(owner.time, "monotonic", lambda: clock[0])
+            patch.setattr(primary_store, "recover_step", pending)
+            with pytest.raises(
+                TimeoutError, match="local recovery exceeded the completion deadline"
+            ):
+                producer.finish(timeout_seconds=30)
+        assert len(steps) == 3 and api.completed is None
+        assert producer.finish(timeout_seconds=30).collection_id == 42
+    finally:
+        producer.stop()
+    assert api.session_calls == 1
+
+
+def test_completion_recovery_failure_preserves_failure_and_retries_same_session(
+    primary_store, tmp_path, monkeypatch
+):
+    api = _CustodyApi()
+    producer = _completion_producer(api, primary_store, tmp_path)
+    failure = OSError("retained cleanup refused")
+
+    def failed():
+        raise failure
+
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(primary_store, "recover_step", failed)
+            with pytest.raises(OSError) as observed:
+                producer.finish(timeout_seconds=30)
+        assert observed.value is failure and api.completed is None
+        assert producer.finish(timeout_seconds=30).collection_id == 42
+    finally:
+        producer.stop()
+    assert api.session_calls == 1

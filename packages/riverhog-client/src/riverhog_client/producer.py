@@ -596,6 +596,15 @@ class IncrementalCollectionProducer:
         )
         if self._needs_upload_scan:
             self._upload_available()
+        # Completion execution settles retained cleanup before freezing inventory.
+        while True:
+            self._require_heartbeat()
+            if time.monotonic() >= deadline:
+                raise TimeoutError(
+                    "collection upload local recovery exceeded the completion deadline"
+                )
+            if self.primary_store.recover_step():
+                break
         inventory = self._member_inventory()
         try:
             freeze_inventory(self.primary_store, (_member_identity(item) for item in inventory))
