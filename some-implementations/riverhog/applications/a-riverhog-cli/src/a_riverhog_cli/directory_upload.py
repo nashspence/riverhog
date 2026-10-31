@@ -15,7 +15,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING, BinaryIO, Protocol, cast
 
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_client import PrimaryOrdering, PrimaryStatePolicy, PrimaryStorage, PrimaryStore
+from riverhog_client import (
+    PrimaryOrdering,
+    PrimaryStatePolicy,
+    PrimaryStorage,
+    PrimaryStore,
+    posix_primary_files,
+)
 
 from a_riverhog_cli.upload_identity_records import UploadIdentityRecords
 from a_riverhog_cli.upload_sources import LocalUpload, SourceReaderFactory
@@ -214,19 +220,32 @@ def _validated_upload_root(root: Path, idempotency_key: str) -> Path:
     return root
 
 
+@contextmanager
 def _verified_upload_sources(
-    root: Path, idempotency_key: str
-) -> tuple[Path, list[dict[str, object]]]:
+    root: Path, idempotency_key: str, *, byte_limit: int
+) -> Iterator[tuple[Path, _OrderedSources]]:
+    """Spool verified POSIX metadata before creating persistent allocation state.
+
+    The temporary directory follows the process temporary-storage placement.
+    Its fixed scratch names contain only rebuildable ordering, charged under
+    the caller's ordering admission. This owner closes before publication;
+    original source IDs and identity bytes never live in this scratch.
+    """
     root = _validated_upload_root(root, idempotency_key)
-    current = [
-        {
-            "relative_parts": item["relative_components"],
-            "bytes": item["bytes"],
-            "sha256": item["sha256"],
-        }
-        for item in preview_upload(root)
-    ]
-    return root, current
+    with tempfile.TemporaryDirectory(prefix="a-riverhog-cli-source-order-") as temporary:
+        with posix_primary_files(
+            Path(temporary).resolve() / "sources",
+            allocation_descriptor=b"temporary-source-ordering",
+            initialize=True,
+        ) as storage:
+            with _verified_ordered_upload_sources(
+                root,
+                idempotency_key,
+                storage,
+                byte_limit=byte_limit,
+                prepare_payload=lambda: None,
+            ) as selected:
+                yield selected
 
 
 @contextmanager
@@ -259,10 +278,13 @@ def _verified_ordered_upload_sources(
         yield root, _OrderedSources(ordered)
 
 
-def prepare_upload(root: Path, idempotency_key: str) -> LocalUpload:
-    """Reuse an exact persisted allocation or publish one before opening a session."""
-    root, current = _verified_upload_sources(root, idempotency_key)
-    return _prepare_verified_upload(root, idempotency_key, current)
+def prepare_upload(root: Path, idempotency_key: str, *, ordering_bytes: int) -> LocalUpload:
+    """Persist or replay exact POSIX source identity under explicit ordering admission."""
+    with _verified_upload_sources(root, idempotency_key, byte_limit=ordering_bytes) as (
+        root,
+        current,
+    ):
+        return _prepare_verified_upload(root, idempotency_key, current)
 
 
 def _prepare_verified_upload(
@@ -444,17 +466,22 @@ def prepare_primary_upload(
         raise FileNotFoundError(
             "retained upload identity is missing; resume cannot allocate replacements"
         )
-    root, current = _verified_upload_sources(root, idempotency_key)
-    if initialize:
-        destination = _state_path(root, idempotency_key)
-    with PrimaryStore(
-        destination.with_suffix(".primary"),
-        allocation_id=destination.stem,
-        scope=policy.scope,
-        limits=policy.limits(),
-        initialize=initialize,
-    ) as store:
-        upload = _prepare_verified_upload(root, idempotency_key, current, initialize=initialize)
-        # Verification input is no longer needed during remote publication.
+    with ExitStack() as primary:
+        with _verified_upload_sources(
+            root, idempotency_key, byte_limit=policy.inventory_order_bytes
+        ) as (root, current):
+            if initialize:
+                destination = _state_path(root, idempotency_key)
+            store = primary.enter_context(
+                PrimaryStore(
+                    destination.with_suffix(".primary"),
+                    allocation_id=destination.stem,
+                    scope=policy.scope,
+                    limits=policy.limits(),
+                    initialize=initialize,
+                )
+            )
+            upload = _prepare_verified_upload(root, idempotency_key, current, initialize=initialize)
+        # The metadata owner and its disposable scratch close before publication.
         del current
         yield upload, store

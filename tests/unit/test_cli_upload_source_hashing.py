@@ -3,6 +3,7 @@ from __future__ import annotations
 import errno
 import hashlib
 import os
+from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -18,6 +19,22 @@ def _forbid_identity(monkeypatch, tmp_path):
         pytest.fail("unstable source reached fresh identity allocation")
 
     monkeypatch.setattr(directory_upload, "_new_upload_identity", forbidden)
+    if os.name != "posix":
+        # Exercise common source rejection before allocation without selecting
+        # a POSIX filesystem owner on this platform. Accepted NTFS workflows
+        # use the separate actual native application binding.
+        @contextmanager
+        def ordered(rows, *, byte_limit):
+            for _ in rows:
+                pass
+            pytest.fail("unstable source completed metadata verification")
+            yield  # pragma: no cover
+
+        @contextmanager
+        def physical(*args, **kwargs):
+            yield SimpleNamespace(ordered_rows=ordered)
+
+        monkeypatch.setattr(directory_upload, "posix_primary_files", physical)
     return state
 
 
@@ -99,7 +116,7 @@ def test_source_mutation_during_hash_refuses_identity_and_closes_the_actual_desc
 
     _mutating_digest(monkeypatch, change)
     with pytest.raises(ValueError, match="source changed while hashing"):
-        directory_upload.prepare_upload(root, "original-request")
+        directory_upload.prepare_upload(root, "original-request", ordering_bytes=64 * 1024)
     assert not state.exists()
     assert len(descriptors) == 1
     with pytest.raises(OSError) as error:
@@ -130,7 +147,7 @@ def test_continuously_growing_source_has_a_bounded_failed_read_prefix(tmp_path, 
 
     hashed = _mutating_digest(monkeypatch, append)
     with pytest.raises(ValueError, match="source changed while hashing"):
-        directory_upload.prepare_upload(root, "original-request")
+        directory_upload.prepare_upload(root, "original-request", ordering_bytes=64 * 1024)
     assert sum(observed) <= admitted + 1 and sum(hashed) <= admitted
     assert len(observed) <= 2
     assert not state.exists()
@@ -168,7 +185,7 @@ def test_source_replacement_between_observation_and_open_refuses_identity(tmp_pa
     monkeypatch.setattr(directory_upload.os, "open", opened)
     monkeypatch.setattr(Path, "open", path_open)
     with pytest.raises(ValueError, match="source changed while hashing"):
-        directory_upload.prepare_upload(root, "original-request")
+        directory_upload.prepare_upload(root, "original-request", ordering_bytes=64 * 1024)
     assert replaced and not state.exists()
 
 
@@ -180,7 +197,7 @@ def test_short_source_read_cannot_publish_an_inconsistent_byte_count(tmp_path, m
     state = _forbid_identity(monkeypatch, tmp_path)
     monkeypatch.setattr(directory_upload.os, "read", lambda _descriptor, _count: b"")
     with pytest.raises(ValueError, match="source changed while hashing"):
-        directory_upload.prepare_upload(root, "original-request")
+        directory_upload.prepare_upload(root, "original-request", ordering_bytes=64 * 1024)
     assert not state.exists()
 
 
@@ -225,9 +242,12 @@ def test_source_fixity_keeps_each_change_time_check_when_apis_differ(tmp_path, m
     state = _forbid_identity(monkeypatch, tmp_path)
     changed = [False]
     actual_fstat, actual_lstat = os.fstat, Path.lstat
+    original_source = source.stat()
 
     def descriptor_stat(descriptor):
         value = actual_fstat(descriptor)
+        if (value.st_dev, value.st_ino) != (original_source.st_dev, original_source.st_ino):
+            return value
         delta = 1_000_000_000 + (3_000_000_000 if changed[0] and domain == "descriptor" else 0)
         return _stat_with_ctime(value, value.st_ctime_ns + delta)
 
@@ -242,6 +262,6 @@ def test_source_fixity_keeps_each_change_time_check_when_apis_differ(tmp_path, m
     monkeypatch.setattr(Path, "lstat", path_stat)
     hashed = _mutating_digest(monkeypatch, lambda _: changed.__setitem__(0, True))
     with pytest.raises(ValueError, match="source changed while hashing") as error:
-        directory_upload.prepare_upload(root, "original-request")
+        directory_upload.prepare_upload(root, "original-request", ordering_bytes=64 * 1024)
     assert str(error.value) == f"upload source changed while hashing ({domain}: ctime)"
     assert hashed == [8] and not state.exists()

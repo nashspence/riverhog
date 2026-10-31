@@ -27,8 +27,8 @@ def test_local_upload_allocates_distinct_stable_artifact_ids_before_registration
     (root / "one.bin").write_bytes(b"same bytes")
     (root / "two.bin").write_bytes(b"same bytes")
 
-    first = prepare_upload(root, "same-request")
-    second = prepare_upload(root, "same-request")
+    first = prepare_upload(root, "same-request", ordering_bytes=64 * 1024)
+    second = prepare_upload(root, "same-request", ordering_bytes=64 * 1024)
     assert first == second
     assert len(read_upload_sources(first)) == 2
     assert len({source.artifact_id for source in read_upload_sources(first)}) == 2
@@ -40,7 +40,7 @@ def test_local_upload_allocates_distinct_stable_artifact_ids_before_registration
 
     (root / "two.bin").write_bytes(b"changed bytes")
     with pytest.raises(ValueError, match="saved upload identity differs"):
-        prepare_upload(root, "same-request")
+        prepare_upload(root, "same-request", ordering_bytes=64 * 1024)
 
 
 def test_upload_preview_streams_hashes_without_allocating_ids_or_opening_api(

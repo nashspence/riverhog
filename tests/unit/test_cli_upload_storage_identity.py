@@ -19,7 +19,7 @@ from a_riverhog_cli.upload_identity import initialize_upload_identity, open_uplo
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import PrimaryStateCapacity, PrimaryStateError
 
-from tests.support.cli_upload import read_upload_sources
+from tests.support.cli_upload import read_upload_sources, verified_upload_sources
 from tests.support.prepared_primary import SqlitePrimaryTestGuard
 
 
@@ -89,7 +89,7 @@ def test_identity_codec_preserves_original_allocation_without_generating_replace
     root.mkdir()
     (root / "a").write_bytes(b"original a")
     (root / "b").write_bytes(b"original b")
-    root, current = directory_upload._verified_upload_sources(root, "retained")
+    root, current = verified_upload_sources(root, "retained")
     original = identity_document(root, "retained", current)
     exact = canonical_json_bytes(original)
     loaded = json.loads(exact)
@@ -366,7 +366,8 @@ parents=importlib.util.module_from_spec(spec);sys.modules[spec.name]=parents
 spec.loader.exec_module(parents)
 parent=Path(sys.argv[2])/"private-parent";parents._parent(parent)
 source=Path(sys.argv[2])/"source";source.mkdir();(source/"member").write_bytes(b"original")
-source,current=directory_upload._verified_upload_sources(source,"retained")
+from tests.support.cli_upload import verified_upload_sources
+source,current=verified_upload_sources(source,"retained")
 document=directory_upload._new_upload_identity(source,"retained",current)
 document["sources"]=list(document["sources"])
 body=canonical_json_bytes(document)
@@ -606,7 +607,7 @@ def test_record_identity_publication_keeps_only_a_complete_selected_original(
     (root / "one").write_bytes(b"equal bytes")
     (root / "two").write_bytes(b"equal bytes")
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
-    root, current = directory_upload._verified_upload_sources(root, "retained")
+    root, current = verified_upload_sources(root, "retained")
     original = identity_document(root, "retained", current)
     exact = canonical_json_bytes(original)
     monkeypatch.setattr(directory_upload, "_new_upload_identity", lambda *args: original)
@@ -672,7 +673,7 @@ def _replay_original(tmp_path, members=3):
         (root / "nested" / f"member-{index}-雪.bin").write_bytes(
             b"" if index == 0 else b"equal bytes"
         )
-    root, current = directory_upload._verified_upload_sources(root, "retained")
+    root, current = verified_upload_sources(root, "retained")
     original = identity_document(root, "retained", current)
     return root, current, original
 
@@ -1366,7 +1367,7 @@ def test_identity_preflight_requires_complete_ordered_metadata_exhaustion(tmp_pa
     root = tmp_path / "source"
     root.mkdir()
     (root / "member").write_bytes(b"original")
-    root, rows = directory_upload._verified_upload_sources(root, "retained")
+    root, rows = verified_upload_sources(root, "retained")
     body = canonical_json_bytes(identity_document(root, "retained", rows))
 
     class IncompleteMetadata:

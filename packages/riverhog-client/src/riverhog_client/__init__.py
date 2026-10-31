@@ -21,6 +21,7 @@ from riverhog_client._prepared_primary_application import WindowsSqliteProcess
 from riverhog_client._prepared_primary_documents import PrimaryScope
 from riverhog_client._prepared_primary_factory import (
     WindowsPrimaryFactory,
+    posix_primary_files,
     sqlite_primary_preparation_step,
 )
 from riverhog_client._prepared_primary_inventory import ordered_primary_inventory
@@ -93,6 +94,7 @@ __all__ = [
     "primary_allocation_descriptor",
     "WindowsSqliteProcess",
     "WindowsPrimaryFactory",
+    "posix_primary_files",
     "SqlitePrimaryLimits",
     "SqliteOperationBank",
     "SqliteOperationGrants",

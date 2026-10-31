@@ -6,6 +6,7 @@ import re
 import shutil
 import weakref
 from contextlib import contextmanager
+from pathlib import Path
 
 import pytest
 from a_riverhog_cli import directory_upload, main
@@ -222,14 +223,11 @@ def test_source_verification_inventory_is_released_before_publication(
     verified = directory_upload._verified_upload_sources
     retained = []
 
-    class Inventory(list):
-        pass
-
+    @contextmanager
     def observed(*args, **kwargs):
-        selected, rows = verified(*args, **kwargs)
-        inventory = Inventory(rows)
-        retained.append(weakref.ref(inventory))
-        return selected, inventory
+        with verified(*args, **kwargs) as (selected, rows):
+            retained.append(weakref.ref(rows))
+            yield selected, rows
 
     monkeypatch.setattr(directory_upload, "_verified_upload_sources", observed)
     with directory_upload.prepare_primary_upload(
@@ -253,3 +251,214 @@ def test_source_verification_inventory_is_released_before_publication(
         assert replayed == upload and not store.publication_started
         assert retained[-1]() is None
     assert path.read_bytes() == original
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual disposable POSIX metadata ordering")
+@pytest.mark.parametrize("members", [1, 3, 128])
+def test_posix_metadata_spools_before_ids_and_closes_before_publication(
+    source, tmp_path, monkeypatch, members
+):
+    from types import SimpleNamespace
+
+    root, state, policy = source
+    (root / "member.bin").unlink()
+    (root / "nested").mkdir()
+    for number in reversed(range(members)):
+        (root / "nested" / f"雪-{number:04}.bin").write_bytes(b"" if number % 2 else b"equal")
+    policy = policy.model_copy(update={"inventory_order_bytes": 64 * 1024})
+    expected = sorted(root.rglob("*.bin"), key=lambda path: path.relative_to(root).as_posix())
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    opened = []
+    temporary = directory_upload.tempfile.TemporaryDirectory
+
+    def tracked(*args, **kwargs):
+        result = temporary(*args, dir=scratch, **kwargs)
+        opened.append(Path(result.name))
+        return result
+
+    actual = directory_upload._source_fixity
+    hashed = []
+    token = directory_upload.secrets.token_hex
+    view = directory_upload.uuid.uuid4
+
+    def fixity(path):
+        assert not state.exists()
+        hashed.append(path)
+        return actual(path)
+
+    def allocate(size):
+        assert len(hashed) == members
+        return token(size)
+
+    def allocate_view():
+        assert len(hashed) == members
+        return view()
+
+    def no_inventory(*args, **kwargs):
+        pytest.fail("publication preparation materialized the complete source inventory")
+
+    monkeypatch.setattr(directory_upload.tempfile, "TemporaryDirectory", tracked)
+    monkeypatch.setattr(directory_upload, "_source_paths", no_inventory)
+    monkeypatch.setattr(directory_upload, "preview_upload", no_inventory)
+    monkeypatch.setattr(directory_upload, "_source_fixity", fixity)
+    monkeypatch.setattr(directory_upload, "secrets", SimpleNamespace(token_hex=allocate))
+    monkeypatch.setattr(directory_upload, "uuid", SimpleNamespace(uuid4=allocate_view))
+    with directory_upload.prepare_primary_upload(root, "retained", policy, initialize=True) as (
+        original,
+        store,
+    ):
+        assert original.source_count == members and len(hashed) == members
+        assert opened and all(not path.exists() for path in opened)
+        assert not store.publication_started
+        values = read_upload_sources(original)
+        assert [value.path for value in values] == expected
+        ids = tuple(value.artifact_id for value in values)
+        assert len(set(ids)) == members
+    identity = directory_upload._state_path(root, "retained", create_parent=False)
+    exact = identity.read_bytes()
+    hashed.clear()
+
+    def cold_fixity(path):
+        hashed.append(path)
+        return actual(path)
+
+    monkeypatch.setattr(directory_upload, "_source_fixity", cold_fixity)
+    monkeypatch.setattr(directory_upload, "secrets", SimpleNamespace(token_hex=no_inventory))
+    monkeypatch.setattr(directory_upload, "uuid", SimpleNamespace(uuid4=no_inventory))
+    with directory_upload.prepare_primary_upload(root, "retained", policy, initialize=False) as (
+        replayed,
+        store,
+    ):
+        assert replayed == original and len(hashed) == members
+        assert all(not path.exists() for path in opened)
+        assert tuple(value.artifact_id for value in read_upload_sources(replayed)) == ids
+        assert not store.publication_started
+    assert identity.read_bytes() == exact and not list(scratch.iterdir())
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual disposable POSIX metadata ordering")
+@pytest.mark.parametrize("failure", ["empty", "symlink", "hash", "capacity", "identity"])
+def test_posix_metadata_failure_closes_scratch_and_preserves_allocation_boundary(
+    source, tmp_path, monkeypatch, failure
+):
+    root, state, policy = source
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    temporary = directory_upload.tempfile.TemporaryDirectory
+    opened = []
+
+    def tracked(*args, **kwargs):
+        result = temporary(*args, dir=scratch, **kwargs)
+        opened.append(Path(result.name))
+        return result
+
+    monkeypatch.setattr(directory_upload.tempfile, "TemporaryDirectory", tracked)
+    if failure == "empty":
+        (root / "member.bin").unlink()
+    elif failure == "symlink":
+        (root / "link").symlink_to(root / "member.bin")
+    elif failure == "hash":
+
+        def failed_hash(path):
+            raise OSError("source read interrupted")
+
+        monkeypatch.setattr(directory_upload, "_source_fixity", failed_hash)
+    elif failure == "capacity":
+        policy = policy.model_copy(update={"inventory_order_bytes": 8192})
+    else:
+
+        def failed_identity(*args, **kwargs):
+            raise OSError("identity publication interrupted")
+
+        monkeypatch.setattr(directory_upload, "_prepare_verified_upload", failed_identity)
+    if failure != "identity":
+        monkeypatch.setattr(directory_upload, "_new_upload_identity", forbidden)
+        monkeypatch.setattr(directory_upload, "PrimaryStore", forbidden)
+    from riverhog_client import PrimaryStateCapacity
+
+    error = (
+        ValueError
+        if failure in {"empty", "symlink"}
+        else PrimaryStateCapacity
+        if failure == "capacity"
+        else OSError
+    )
+    with pytest.raises(error):
+        with directory_upload.prepare_primary_upload(root, "retained", policy, initialize=True):
+            pytest.fail("failed metadata preparation reached publication")
+    assert opened and all(not path.exists() for path in opened)
+    assert not list(scratch.iterdir())
+    if failure != "identity":
+        assert not state.exists()
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual disposable POSIX metadata ordering")
+def test_posix_metadata_scope_admits_physical_scratch_and_closes_on_interruption(
+    source, tmp_path, monkeypatch
+):
+    root, state, _policy = source
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    temporary = directory_upload.tempfile.TemporaryDirectory
+    opened = []
+
+    def tracked(*args, **kwargs):
+        result = temporary(*args, dir=scratch, **kwargs)
+        opened.append(Path(result.name))
+        return result
+
+    monkeypatch.setattr(directory_upload.tempfile, "TemporaryDirectory", tracked)
+    with pytest.raises(RuntimeError, match="consumer interrupted"):
+        with directory_upload._verified_upload_sources(root, "retained", byte_limit=64 * 1024) as (
+            _root,
+            current,
+        ):
+            assert len(current) == 1
+            assert (
+                sum(path.stat().st_size for path in opened[0].rglob("*") if path.is_file())
+                <= 64 * 1024
+            )
+            escaped = iter(current)
+            assert next(escaped)["bytes"] == len(b"exact original")
+            raise RuntimeError("consumer interrupted")
+    assert all(not path.exists() for path in opened)
+    from riverhog_client import PrimaryStateError
+
+    with pytest.raises(PrimaryStateError, match="closed"):
+        next(escaped)
+    assert not state.exists()
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual disposable POSIX metadata ordering")
+def test_posix_metadata_resolves_process_temporary_placement_before_storage_selection(
+    source, tmp_path, monkeypatch
+):
+    root, state, _policy = source
+    parent = tmp_path / "actual-temporary"
+    parent.mkdir()
+    alias = tmp_path / "temporary-alias"
+    alias.symlink_to(parent, target_is_directory=True)
+    temporary = directory_upload.tempfile.TemporaryDirectory
+    physical = directory_upload.posix_primary_files
+    selected = []
+
+    def placed(*args, **kwargs):
+        return temporary(*args, dir=alias, **kwargs)
+
+    def opened(location, **kwargs):
+        assert location == location.resolve()
+        assert not any(path.is_symlink() for path in (location, *location.parents))
+        selected.append(location)
+        return physical(location, **kwargs)
+
+    monkeypatch.setattr(directory_upload.tempfile, "TemporaryDirectory", placed)
+    monkeypatch.setattr(directory_upload, "posix_primary_files", opened)
+    with directory_upload._verified_upload_sources(root, "retained", byte_limit=64 * 1024) as (
+        _root,
+        current,
+    ):
+        assert len(current) == 1
+        assert list(current)[0]["bytes"] == len(b"exact original")
+    assert selected and not selected[0].parent.exists()
+    assert alias.is_symlink() and not list(parent.iterdir()) and not state.exists()
