@@ -8,7 +8,7 @@ import secrets
 import stat
 import tempfile
 import uuid
-from collections.abc import Generator, Iterator
+from collections.abc import Generator, Iterable, Iterator
 from contextlib import ExitStack, closing, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -298,14 +298,15 @@ def _prepare_verified_upload(
 
 
 def _new_upload_identity(
-    root: Path, idempotency_key: str, current: list[dict[str, object]]
+    root: Path, idempotency_key: str, current: Iterable[dict[str, object]]
 ) -> dict[str, object]:
+    """Allocate the view now and each member ID only when its record is consumed."""
     return {
         "format": _FORMAT,
         "root": str(root),
         "idempotency_key": idempotency_key,
         "source_naming_view_id": "urn:uuid:" + str(uuid.uuid4()),
-        "sources": [{**item, "artifact_id": secrets.token_hex(32)} for item in current],
+        "sources": ({**item, "artifact_id": secrets.token_hex(32)} for item in current),
     }
 
 
@@ -314,13 +315,13 @@ def _upload_identity_chunks(document: dict[str, object]) -> Iterator[bytes]:
 
     This application's fixed header sorts before its sources array. Each value
     still uses the shared canonical codec; the stored format and original IDs
-    are unchanged. Enumeration and decoded replay have their own lifetimes.
+    are unchanged. Source rows are consumed once; enumeration and replay own their lifetimes.
     """
     if set(document) != {"format", "idempotency_key", "root", "source_naming_view_id", "sources"}:
         raise ValueError("upload identity encoding requires the complete known document")
     header = {key: value for key, value in document.items() if key != "sources"}
     yield canonical_json_bytes(header)[:-1] + b',"sources":['
-    for index, row in enumerate(cast(list[dict[str, object]], document["sources"])):
+    for index, row in enumerate(cast(Iterable[dict[str, object]], document["sources"])):
         if index:
             yield b","
         yield canonical_json_bytes(row)

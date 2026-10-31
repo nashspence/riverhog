@@ -21,6 +21,12 @@ from riverhog_client import PrimaryStateCapacity, PrimaryStateError
 from tests.support.prepared_primary import SqlitePrimaryTestGuard
 
 
+def identity_document(*args):
+    document = directory_upload._new_upload_identity(*args)
+    document["sources"] = list(document["sources"])
+    return document
+
+
 def identity_body(storage, *, byte_limit):
     with open_upload_identity(storage, byte_limit=byte_limit) as stream:
         return stream.read()
@@ -66,7 +72,7 @@ def test_identity_codec_preserves_original_allocation_without_generating_replace
     (root / "a").write_bytes(b"original a")
     (root / "b").write_bytes(b"original b")
     root, current = directory_upload._verified_upload_sources(root, "retained")
-    original = directory_upload._new_upload_identity(root, "retained", current)
+    original = identity_document(root, "retained", current)
     exact = canonical_json_bytes(original)
     loaded = json.loads(exact)
     key = "retained"
@@ -316,6 +322,7 @@ parent=Path(sys.argv[2])/"private-parent";parents._parent(parent)
 source=Path(sys.argv[2])/"source";source.mkdir();(source/"member").write_bytes(b"original")
 source,current=directory_upload._verified_upload_sources(source,"retained")
 document=directory_upload._new_upload_identity(source,"retained",current)
+document["sources"]=list(document["sources"])
 body=canonical_json_bytes(document)
 process=WindowsSqliteProcess(heap_bytes=64*1024**2,native_limits=(1,2))
 resources=UploadSqliteResources(UploadSqlitePolicy(connections=1,blobs=1),process=process)
@@ -502,7 +509,7 @@ def test_upload_identity_record_encoding_preserves_canonical_originals(monkeypat
         }
         for index in range(members)
     ]
-    original = directory_upload._new_upload_identity(Path("/source"), "record-encoding", current)
+    original = identity_document(Path("/source"), "record-encoding", current)
     exact = canonical_json_bytes(original)
     before = json.loads(exact)
     serialized = []
@@ -526,7 +533,7 @@ def test_upload_identity_record_encoding_preserves_canonical_originals(monkeypat
 
 @pytest.mark.parametrize("changed", ["missing", "extra"])
 def test_upload_identity_record_encoding_rejects_unknown_document_shapes(changed):
-    original = directory_upload._new_upload_identity(Path("/source"), "record-encoding", [])
+    original = identity_document(Path("/source"), "record-encoding", [])
     if changed == "missing":
         original.pop("root")
     else:
@@ -547,7 +554,7 @@ def test_record_identity_publication_keeps_only_a_complete_selected_original(
     (root / "two").write_bytes(b"equal bytes")
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
     root, current = directory_upload._verified_upload_sources(root, "retained")
-    original = directory_upload._new_upload_identity(root, "retained", current)
+    original = identity_document(root, "retained", current)
     exact = canonical_json_bytes(original)
     monkeypatch.setattr(directory_upload, "_new_upload_identity", lambda *args: original)
     destination = directory_upload._state_path(root, "retained")
@@ -613,7 +620,7 @@ def _replay_original(tmp_path, members=3):
             b"" if index == 0 else b"equal bytes"
         )
     root, current = directory_upload._verified_upload_sources(root, "retained")
-    original = directory_upload._new_upload_identity(root, "retained", current)
+    original = identity_document(root, "retained", current)
     return root, current, original
 
 
@@ -1034,3 +1041,111 @@ def test_identity_record_framing_reads_and_decodes_each_original_value_once(
     assert source.returned_bytes == len(body)
     assert all(size == 64 * 1024 for size in source.request_sizes)
     assert records.commitment == (len(body), hashlib.sha256(body).hexdigest())
+
+
+@pytest.mark.parametrize("members", [1, 3, 128, 1024])
+def test_fresh_identity_generation_allocates_only_the_consumed_record(monkeypatch, members):
+    current = [
+        {
+            "relative_parts": ["nested", f"member-{index}-雪"],
+            "bytes": 0 if index % 3 == 0 else 11,
+            "sha256": hashlib.sha256(b"" if index % 3 == 0 else b"equal bytes").hexdigest(),
+        }
+        for index in range(members)
+    ]
+    before = canonical_json_bytes(current)
+    allocated = serialized = 0
+    view = "01234567-89ab-4def-8123-456789abcdef"
+
+    def allocate(size):
+        nonlocal allocated
+        assert size == 32 and allocated == serialized
+        value = f"{allocated:064x}"
+        allocated += 1
+        return value
+
+    def serialize(value):
+        nonlocal serialized
+        assert "sources" not in value
+        if "artifact_id" in value:
+            assert allocated == serialized + 1
+            serialized += 1
+        return canonical_json_bytes(value)
+
+    monkeypatch.setattr(directory_upload.secrets, "token_hex", allocate)
+    monkeypatch.setattr(directory_upload.uuid, "uuid4", lambda: view)
+    monkeypatch.setattr(directory_upload, "canonical_json_bytes", serialize)
+    document = directory_upload._new_upload_identity(Path("/source"), "streamed", current)
+    assert allocated == serialized == 0
+    chunks = directory_upload._upload_identity_chunks(document)
+    encoded = bytearray(next(chunks))
+    assert allocated == serialized == 0
+    for chunk in chunks:
+        assert 0 <= allocated - serialized <= 1
+        encoded.extend(chunk)
+    assert allocated == serialized == members
+    expected = {
+        "format": "a-riverhog-cli-directory-upload/v1",
+        "root": "/source",
+        "idempotency_key": "streamed",
+        "source_naming_view_id": "urn:uuid:" + view,
+        "sources": [{**item, "artifact_id": f"{index:064x}"} for index, item in enumerate(current)],
+    }
+    assert bytes(encoded) == canonical_json_bytes(expected)
+    assert canonical_json_bytes(current) == before
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX no-clobber identity selection")
+@pytest.mark.parametrize("winner_sources", ["same", "different"])
+def test_streamed_identity_publication_preserves_the_concurrent_original(
+    tmp_path, monkeypatch, winner_sources
+):
+    root, current, winner = _replay_original(tmp_path)
+    if winner_sources == "different":
+        winner["sources"][-1]["sha256"] = "0" * 64
+    exact = canonical_json_bytes(winner)
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    destination = directory_upload._state_path(root, "retained")
+    attempts = []
+    real_allocate = directory_upload.secrets.token_hex
+
+    def allocate(size):
+        value = real_allocate(size)
+        attempts.append(value)
+        return value
+
+    def another_winner(temporary, selected):
+        assert Path(selected) == destination
+        assert Path(temporary).read_bytes() != exact
+        destination.write_bytes(exact)
+        raise FileExistsError("concurrent original selected")
+
+    monkeypatch.setattr(directory_upload.secrets, "token_hex", allocate)
+    monkeypatch.setattr(directory_upload.os, "link", another_winner)
+    if winner_sources == "different":
+        with pytest.raises(ValueError, match="differs from the current local sources"):
+            directory_upload._prepare_verified_upload(root, "retained", current)
+    else:
+        upload = directory_upload._prepare_verified_upload(root, "retained", current)
+        assert [item.artifact_id for item in upload.sources] == [
+            item["artifact_id"] for item in winner["sources"]
+        ]
+        assert upload.source_naming_view_id == winner["source_naming_view_id"]
+    assert len(attempts) == len(current)
+    assert not set(attempts).intersection(item["artifact_id"] for item in winner["sources"])
+    assert destination.read_bytes() == exact
+    assert not list(destination.parent.glob(".upload-*"))
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("a selected original generated replacements")
+
+    monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
+    if winner_sources == "different":
+        with pytest.raises(ValueError, match="differs from the current local sources"):
+            directory_upload._prepare_verified_upload(root, "retained", current, initialize=False)
+    else:
+        assert (
+            directory_upload._prepare_verified_upload(root, "retained", current, initialize=False)
+            == upload
+        )
+    assert destination.read_bytes() == exact

@@ -5,11 +5,11 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
+from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import (
     PrimaryStateBusy,
     PrimaryStatePolicy,
@@ -142,6 +142,7 @@ def prepare_windows_upload(
         _allocation_id,
         _load_upload_identity,
         _new_upload_identity,
+        _upload_identity_chunks,
         _verified_upload_sources,
     )
 
@@ -190,7 +191,12 @@ def prepare_windows_upload(
         identity = physical.child("directory-upload", initialize=initialize)
         if initialize:
             root, current = _verified_upload_sources(root, idempotency_key)
-            original = canonical_json_bytes(_new_upload_identity(root, idempotency_key, current))
+            with BytesIO() as encoded:
+                for chunk in _upload_identity_chunks(
+                    _new_upload_identity(root, idempotency_key, current)
+                ):
+                    encoded.write(chunk)
+                original = encoded.getvalue()
 
             def prepare() -> None:
                 for _ in range(selection.preparation_steps):
