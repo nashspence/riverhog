@@ -24,7 +24,11 @@ from riverhog_client._prepared_primary_factory import (
     posix_primary_files,
     sqlite_primary_preparation_step,
 )
-from riverhog_client._prepared_primary_inventory import ordered_primary_inventory
+from riverhog_client._prepared_primary_inventory import (
+    PreparedPrimaryInventory,
+    ordered_primary_inventory,
+    prepare_primary_inventory,
+)
 from riverhog_client._prepared_primary_policy import PrimaryStatePolicy
 from riverhog_client._prepared_primary_publisher import (
     DeclaredPrimaryObservation,
@@ -41,6 +45,7 @@ from riverhog_client._prepared_primary_storage import (
     PrimaryOrdering,
     PrimaryStorage,
     PrimaryStorageFactory,
+    RetainedPrimaryOrdering,
 )
 from riverhog_client._prepared_primary_store import (
     PrimaryStore,
@@ -88,6 +93,9 @@ from riverhog_client.uploads import (
 
 __all__ = [
     "PrimaryOrdering",
+    "RetainedPrimaryOrdering",
+    "PreparedPrimaryInventory",
+    "prepare_primary_inventory",
     "PrimaryStorage",
     "PrimaryStorageFactory",
     "PrimaryByteFile",

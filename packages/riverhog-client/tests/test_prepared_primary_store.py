@@ -2595,3 +2595,116 @@ def test_publisher_preparation_yields_before_remote_reads_and_native_observation
         with pytest.raises(PrimaryStateError, match="retry inputs changed"):
             _publish(publisher, lazy, output_id="changed-output")
         assert not events
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("count", [0, 1, 17, 257])
+def test_prepared_canonical_inventory_replays_after_recovery_without_retaining_input_members(
+    tmp_path, sql_core_storage, backend, count
+):
+    from weakref import WeakValueDictionary
+
+    from riverhog_client import prepare_primary_inventory
+    from riverhog_client.producer import ProducerArtifactIdentity
+
+    class Member(ProducerArtifactIdentity):
+        pass
+
+    live = WeakValueDictionary()
+    consumed = 0
+    limits = replace(LIMITS, inventory_order_bytes=128 * 1024)
+    factory = sql_core_storage if backend == "sqlite" else None
+    root = tmp_path.resolve() / ("state.sqlite3" if factory else "state")
+
+    def members():
+        nonlocal consumed
+        for number in reversed(range(count)):
+            member = Member(_member(number).artifact_id, 1, "a" * 64)
+            live[number] = member
+            consumed += 1
+            yield member
+
+    with PrimaryStore(
+        root,
+        allocation_id="existing-app-allocation",
+        scope=SCOPE,
+        limits=limits,
+        initialize=True,
+        **({"storage_factory": factory} if factory is not None else {}),
+    ) as store:
+        inventory = prepare_primary_inventory(store, members())
+        assert inventory.count == consumed == count and not live
+        assert store._files.ordering_reserved_bytes() > 0
+        assert store.recover_step()
+        assert store._files.ordering_reserved_bytes() > 0
+        for _ in range(2):
+            with inventory.open() as replay:
+                observed = tuple(replay)
+                assert tuple(str(member.artifact_id) for member in observed) == tuple(
+                    str(_member(number).artifact_id) for number in range(count)
+                )
+                assert all(member.bytes == 1 and member.sha256 == "a" * 64 for member in observed)
+            assert consumed == count and not live
+        with inventory.open() as replay:
+            if count:
+                next(replay)
+        assert list(replay) == []
+        assert not store.publication_started and not store.session_bound
+    with pytest.raises(PrimaryStateError, match="closed"):
+        with inventory.open():
+            pytest.fail("prepared inventory survived its original store owner")
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("count", [0, 3])
+def test_prepared_canonical_inventory_hands_the_same_ordering_to_original_freeze(
+    tmp_path, sql_core_storage, backend, count
+):
+    from riverhog_client import prepare_primary_inventory
+    from riverhog_client._prepared_primary_closing import freeze_inventory
+    from riverhog_client.producer import ProducerArtifactIdentity, _member_identity
+
+    limits = replace(LIMITS, inventory_order_bytes=128 * 1024)
+    factory = sql_core_storage if backend == "sqlite" else None
+    root = tmp_path.resolve() / ("state.sqlite3" if factory else "state")
+    with _open(root, initialize=True, limits=limits, storage_factory=factory) as store:
+        inventory = prepare_primary_inventory(
+            store,
+            (
+                ProducerArtifactIdentity(member.artifact_id, member.bytes, member.sha256)
+                for member in (_member(number) for number in reversed(range(count)))
+            ),
+        )
+        for number in range(count):
+            member = _member(number)
+            store.prepare_or_load(member, REQUEST, lambda _grant, member=member: _author(member))
+        assert store.recover_step()
+        with inventory.open() as members:
+            selected = freeze_inventory(store, (_member_identity(member) for member in members))
+        assert selected.members == count and store.usage.inventory_selected
+        assert store._files.ordering_reserved_bytes() > 0
+        with inventory.open() as members:
+            assert tuple(member.artifact_id for member in members) == tuple(
+                _member(number).artifact_id for number in range(count)
+            )
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_prepared_canonical_inventory_admits_before_consuming_owner_input(
+    tmp_path, sql_core_storage, backend
+):
+    from riverhog_client import prepare_primary_inventory
+
+    limits = replace(LIMITS, inventory_order_bytes=0)
+    factory = sql_core_storage if backend == "sqlite" else None
+    root = tmp_path.resolve() / ("state.sqlite3" if factory else "state")
+
+    def unadmitted():
+        pytest.fail("unadmitted inventory consumed original source input")
+        yield  # pragma: no cover
+
+    with _open(root, initialize=True, limits=limits, storage_factory=factory) as store:
+        original = store.prepare_or_load(_member(), REQUEST, lambda _grant: _author())
+        with pytest.raises(PrimaryStateCapacity):
+            prepare_primary_inventory(store, unadmitted())
+        assert store.load(_member()) == original

@@ -5,11 +5,12 @@ from __future__ import annotations
 import uuid
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from riverhog_client._prepared_primary_ordering import OrderedRows
 from riverhog_client._prepared_primary_sqlite import _BLOCK
-from riverhog_client._prepared_primary_storage import PrimaryOrdering
+from riverhog_client._prepared_primary_storage import PrimaryOrdering, RetainedPrimaryOrdering
 from riverhog_client._prepared_primary_types import (
     PrimaryStateBusy,
     PrimaryStateCapacity,
@@ -137,6 +138,45 @@ def ordered_rows(
             (generation,),
         ).close()
 
+    selected = _selection(owner, generation, count)
+    try:
+        yield selected
+    finally:
+        selected.close()
+
+
+@dataclass(frozen=True, slots=True)
+class _RetainedOrdering:
+    owner: TransactionalPrimaryFiles
+    generation: str
+    count: int
+
+    @contextmanager
+    def open(self) -> Iterator[PrimaryOrdering]:
+        """Select the same ready generation, without mutation or input replay."""
+        self.owner.check_current()
+        guard = self.owner._root._ordering_guard
+        if not guard.acquire(blocking=False):
+            raise PrimaryStateBusy("prepared-primary inventory ordering has a live reader")
+        try:
+            with self.owner._mutex:
+                state = self.owner._one(
+                    "SELECT generation,namespace,phase FROM primary_ordering WHERE id=1"
+                )
+                if state != (self.generation, self.owner._namespace, "ready"):
+                    raise PrimaryStateError(
+                        "prepared-primary retained ordering is no longer selected"
+                    )
+            selected = _selection(self.owner, self.generation, self.count)
+            try:
+                yield selected
+            finally:
+                selected.close()
+        finally:
+            guard.release()
+
+
+def _selection(owner: TransactionalPrimaryFiles, generation: str, count: int) -> OrderedRows:
     def read(after: str | None) -> tuple[str, int, str] | None:
         row = owner._one(
             "SELECT artifact_id,bytes,sha256 FROM primary_order_rows "
@@ -159,8 +199,8 @@ def ordered_rows(
             raise PrimaryStateError("prepared-primary ordering row is not its original encoding")
         return key, int(byte_count), digest
 
-    selected = OrderedRows(count, read)
-    try:
-        yield selected
-    finally:
-        selected.close()
+    def retain() -> RetainedPrimaryOrdering:
+        owner.check_current()
+        return _RetainedOrdering(owner, generation, count)
+
+    return OrderedRows(count, read, retain)

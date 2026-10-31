@@ -939,10 +939,26 @@ def witness(root: Path) -> dict:
             assert list(first) == list(second) == [rows[0]]
             assert list(selected.rows()) == rows[::-1]
             assert not files._connection.in_transaction
+            retained_ordering = selected.retain()
+        assert files._connection.total_changes == changes
+        with retained_ordering.open() as replayed:
+            assert replayed.count == len(rows) and list(replayed.rows()) == rows[::-1]
+            try:
+                files.ordering_cleanup_step()
+            except PrimaryStateBusy:
+                pass
+            else:
+                raise AssertionError("cleanup displaced the live retained ordering")
+            assert not files._connection.in_transaction
         assert files._connection.total_changes == changes
         assert files._one("PRAGMA journal_mode") == ("persist",)
         assert files._one("PRAGMA synchronous") == (3,)
     with _files(path, initialize=False) as files:
+        try:
+            with retained_ordering.open():
+                raise AssertionError("cold owner adopted old retained ordering")
+        except PrimaryStateError:
+            pass
         assert files.ordering_reserved_bytes() == 128 * 1024
         cleanup_steps = 0
         while not files.ordering_cleanup_step():

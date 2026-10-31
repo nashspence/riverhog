@@ -10,7 +10,7 @@ import uuid
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import BinaryIO
+from typing import TYPE_CHECKING, BinaryIO
 
 from riverhog_client._prepared_primary_storage import PrimaryOrdering
 from riverhog_client._prepared_primary_types import (
@@ -20,6 +20,10 @@ from riverhog_client._prepared_primary_types import (
     PrimaryStateError,
     primary_file_name,
 )
+
+if TYPE_CHECKING:
+    from riverhog_client._prepared_primary_posix_ordering import _RetainedOrdering
+
 
 _BLOCK = 128 * 1024
 
@@ -53,6 +57,7 @@ class PrimaryFiles:
         self._owner = -1
         self._owner_root = self
         self._ordering_guard = threading.Lock()
+        self._retained_ordering: _RetainedOrdering | None = None
         for parent in (self.root, *self.root.parents):
             if parent.is_symlink():
                 raise PrimaryStateError("prepared-primary state cannot traverse symlinks")
@@ -94,6 +99,9 @@ class PrimaryFiles:
         self.close()
 
     def close(self) -> None:
+        retained = self._owner_root._retained_ordering
+        if retained is not None and retained.owner is self:
+            retained.invalidate()
         if self._owner >= 0:
             os.close(self._owner)
             self._owner = -1
@@ -172,7 +180,11 @@ class PrimaryFiles:
         return reserved_bytes(self)
 
     def recover_ordering_step(self) -> bool:
-        """Disposable POSIX scratch has a fixed set of names, without row traversal."""
+        """Retain a live replay derivation; recover other fixed scratch without a scan."""
+        self.check_current()
+        retained = self._owner_root._retained_ordering
+        if retained is not None and retained.valid:
+            return True
         return self.ordering_cleanup_step()
 
     def ordering_cleanup_step(self) -> bool:

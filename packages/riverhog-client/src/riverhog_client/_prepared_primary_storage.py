@@ -10,6 +10,15 @@ from typing import BinaryIO, Protocol, Self
 from riverhog_client._prepared_primary_types import PrimaryByteFile
 
 
+class RetainedPrimaryOrdering(Protocol):
+    """Replay metadata under its original live owner, without rebuilding or preparing."""
+
+    @property
+    def count(self) -> int: ...
+
+    def open(self) -> AbstractContextManager[PrimaryOrdering]: ...
+
+
 class PrimaryOrdering(Protocol):
     """One completed derived index, valid only in its selected context."""
 
@@ -17,6 +26,8 @@ class PrimaryOrdering(Protocol):
     def count(self) -> int: ...
 
     def rows(self) -> Iterator[tuple[str, int, str]]: ...
+
+    def retain(self) -> RetainedPrimaryOrdering: ...
 
 
 class PrimaryStorage(Protocol):

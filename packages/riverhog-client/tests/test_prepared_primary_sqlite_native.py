@@ -369,3 +369,26 @@ def test_native_existing_physical_ready_rechecks_restoration_before_reporting_re
             files.prepare_physical_ready()
         assert len(guard.arms) == arms and files._db().total_changes == changes
         assert not files._poisoned
+
+
+def test_retained_ordering_replay_keeps_original_grants_without_arming_another_operation(tmp_path):
+    files, guard = managed(tmp_path / "state.sqlite3")
+    with files:
+        dependencies(files)
+        assert files.prepare_physical_ready().phase == "ready"
+        rows = [(f"{number:064x}", number, "a" * 64) for number in range(17)]
+        with files.ordered_rows(rows, byte_limit=128 * 1024) as selected:
+            retained = selected.retain()
+        offered = files.resource_grants(), files.operation_grants()
+        arms = len(guard.arms)
+        guard.events.clear()
+        files._connection.set_trace_callback(guard.events.append)
+        for _ in range(2):
+            with retained.open() as selected:
+                assert list(selected.rows()) == rows
+        assert len(guard.arms) == arms
+        assert (files.resource_grants(), files.operation_grants()) == offered
+        assert not any(
+            statement.startswith(("INSERT", "UPDATE", "DELETE", "BEGIN", "COMMIT"))
+            for statement in guard.events
+        )

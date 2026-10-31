@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator
 
+from riverhog_client._prepared_primary_storage import RetainedPrimaryOrdering
 from riverhog_client._prepared_primary_types import PrimaryStateError
 
 _Row = tuple[str, int, str]
@@ -12,10 +13,16 @@ _Row = tuple[str, int, str]
 class OrderedRows:
     """Retain only a count and a backend-owned point reader, never the rows."""
 
-    def __init__(self, count: int, read: Callable[[str | None], _Row | None]) -> None:
+    def __init__(
+        self,
+        count: int,
+        read: Callable[[str | None], _Row | None],
+        retain: Callable[[], RetainedPrimaryOrdering],
+    ) -> None:
         self._count = count
         self._read = read
         self._closed = False
+        self._retain = retain
 
     @property
     def count(self) -> int:
@@ -23,6 +30,12 @@ class OrderedRows:
 
     def close(self) -> None:
         self._closed = True
+
+    def retain(self) -> RetainedPrimaryOrdering:
+        """Retain this completed derivation explicitly; never extend the selected lease."""
+        if self._closed:
+            raise PrimaryStateError("prepared-primary ordering view is closed")
+        return self._retain()
 
     def rows(self) -> Iterator[_Row]:
         after: str | None = None

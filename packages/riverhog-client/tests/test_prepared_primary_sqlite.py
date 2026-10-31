@@ -1470,3 +1470,227 @@ def test_scoped_ordering_refuses_a_changed_row_count_instead_of_partial_success(
                 ).close()
             with pytest.raises(PrimaryStateError, match="count changed|rows changed"):
                 list(selected.rows())
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("count", [0, 1, 17, 257])
+def test_retained_ordering_reopens_without_input_mutation_or_a_live_lease(
+    tmp_path, monkeypatch, backend, count
+):
+    from riverhog_client._prepared_primary_posix import PrimaryFiles
+
+    opened = (
+        PrimaryFiles(tmp_path.resolve() / "state", initialize=True)
+        if backend == "posix"
+        else _open(tmp_path / "state.sqlite3", initialize=True)
+    )
+    expected = [(f"{number:064x}", number, "a" * 64) for number in range(count)]
+    consumed = 0
+
+    def rows():
+        nonlocal consumed
+        for row in reversed(expected):
+            consumed += 1
+            yield row
+
+    with opened as files:
+        original = files.put_bytes("original", [b"original"], byte_limit=8)
+        with files.ordered_rows(rows(), byte_limit=128 * 1024) as selected:
+            retained = selected.retain()
+            assert retained.count == selected.count == consumed == count
+            escaped = selected.rows()
+        with pytest.raises(PrimaryStateError, match="closed"):
+            next(escaped)
+        assert files.ordering_reserved_bytes() > 0
+        assert files.recover_ordering_step()
+        assert files.ordering_reserved_bytes() > 0
+        independent = files.put_bytes("independent", [b"work"], byte_limit=4)
+        statements = []
+        connections = []
+        if backend == "sqlite":
+            files._connection.set_trace_callback(statements.append)
+        else:
+            from riverhog_client import _prepared_primary_posix_ordering as owner
+
+            connect = owner.sqlite3.connect
+
+            def read_only(*args, **kwargs):
+                assert kwargs.get("uri") is True and str(args[0]).endswith("?mode=ro")
+                result = connect(*args, **kwargs)
+                result.set_trace_callback(statements.append)
+                connections.append(result)
+                return result
+
+            monkeypatch.setattr(owner.sqlite3, "connect", read_only)
+        for _ in range(2):
+            with retained.open() as replay:
+                assert replay.count == count
+                first, second = replay.rows(), replay.rows()
+                if count:
+                    assert next(first) == next(second) == expected[0]
+                    first.close()
+                    assert list(second) == expected[1:]
+                else:
+                    assert list(first) == list(second) == []
+                assert list(replay.rows()) == expected
+                with pytest.raises(PrimaryStateBusy, match="live reader"):
+                    with retained.open():
+                        pytest.fail("another replay displaced its live view")
+                with pytest.raises(PrimaryStateBusy, match="live reader"):
+                    files.ordering_cleanup_step()
+                escaped = replay.rows()
+            with pytest.raises(PrimaryStateError, match="closed"):
+                next(escaped)
+        assert consumed == count
+        assert sum(statement.startswith("SELECT artifact_id") for statement in statements) <= 6 * (
+            count + 1
+        )
+        assert not any(
+            statement.startswith(("INSERT", "UPDATE", "DELETE", "BEGIN", "COMMIT"))
+            for statement in statements
+        )
+        for connection in connections:
+            with pytest.raises(sqlite3.ProgrammingError, match="closed"):
+                connection.execute("SELECT 1")
+        for selected_file, body in [(original, b"original"), (independent, b"work")]:
+            with files.verified(selected_file) as reader:
+                assert reader.read() == body
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("action", ["cleanup", "replacement", "namespace-close", "root-close"])
+def test_retained_ordering_refuses_lost_selection_without_rebuilding_or_losing_primary(
+    tmp_path, backend, action
+):
+    from riverhog_client._prepared_primary_posix import PrimaryFiles
+
+    opened = (
+        PrimaryFiles(tmp_path.resolve() / "state", initialize=True)
+        if backend == "posix"
+        else _open(tmp_path / "state.sqlite3", initialize=True)
+    )
+    rows = [("a", 1, "a" * 64), ("b", 2, "b" * 64)]
+    with opened as files:
+        original = files.put_bytes("original", [b"original"], byte_limit=8)
+        with files.child("scope", initialize=True) as child:
+            with child.ordered_rows(rows, byte_limit=128 * 1024) as selected:
+                retained = selected.retain()
+            assert files.ordering_reserved_bytes() > 0
+            if action == "cleanup":
+                files.ordering_cleanup_step()
+            elif action == "replacement":
+                with files.ordered_rows([("new", 3, "c" * 64)], byte_limit=128 * 1024):
+                    pass
+            elif action == "namespace-close":
+                child.close()
+            else:
+                files.close()
+            with pytest.raises(PrimaryStateError):
+                with retained.open():
+                    pytest.fail("lost derivation was silently recreated")
+            if action != "root-close":
+                with files.verified(original) as reader:
+                    assert reader.read() == b"original"
+                for _ in range(len(rows) + 2):
+                    if files.ordering_cleanup_step():
+                        break
+                else:
+                    pytest.fail("bounded retained cleanup did not finish")
+                assert files.ordering_reserved_bytes() == 0
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("failure", ["ordinary", "sqlite-full"])
+def test_retained_ordering_preserves_consumer_failure_and_can_reopen_after_partial_use(
+    tmp_path, backend, failure
+):
+    from riverhog_client._prepared_primary_posix import PrimaryFiles
+
+    opened = (
+        PrimaryFiles(tmp_path.resolve() / "state", initialize=True)
+        if backend == "posix"
+        else _open(tmp_path / "state.sqlite3", initialize=True)
+    )
+    error = RuntimeError("consumer interrupted")
+    if failure == "sqlite-full":
+        error = sqlite3.OperationalError("consumer database full")
+        error.sqlite_errorcode = sqlite3.SQLITE_FULL
+    rows = [("a", 1, "a" * 64), ("b", 2, "b" * 64)]
+    with opened as files:
+        with files.ordered_rows(rows, byte_limit=128 * 1024) as selected:
+            retained = selected.retain()
+        before = files.ordering_reserved_bytes()
+        with pytest.raises(type(error)) as caught:
+            with retained.open() as selected:
+                iterator = selected.rows()
+                assert next(iterator) == rows[0]
+                raise error
+        assert caught.value is error
+        assert files.ordering_reserved_bytes() == before
+        with retained.open() as selected:
+            assert list(selected.rows()) == rows
+        with pytest.raises(PrimaryStateError, match="closed"):
+            next(iterator)
+
+
+@pytest.mark.parametrize("mutation", ["missing", "replaced", "symlink"])
+def test_retained_posix_ordering_refuses_changed_physical_scratch_without_recreating_it(
+    tmp_path, mutation
+):
+    from riverhog_client._prepared_primary_posix import PrimaryFiles
+
+    with PrimaryFiles(tmp_path.resolve() / "state", initialize=True) as files:
+        original = files.put_bytes("original", [b"original"], byte_limit=8)
+        with files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024) as selected:
+            retained = selected.retain()
+        path = files.root / "inventory-ordering" / "selection.sqlite3"
+        path.unlink()
+        if mutation == "replaced":
+            path.write_bytes(b"unrelated derived bytes")
+            path.chmod(0o600)
+        elif mutation == "symlink":
+            path.symlink_to(tmp_path / "absent-unrelated")
+        with pytest.raises((OSError, PrimaryStateError)):
+            with retained.open():
+                pytest.fail("changed retained file exposed a reader")
+        assert (
+            path.is_symlink() if mutation == "symlink" else path.exists() is (mutation != "missing")
+        )
+        with files.verified(original) as reader:
+            assert reader.read() == b"original"
+        if mutation == "symlink":
+            with pytest.raises(OSError):
+                files.ordering_cleanup_step()
+            assert path.is_symlink() and not (tmp_path / "absent-unrelated").exists()
+        else:
+            assert files.ordering_cleanup_step()
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_retained_ordering_never_adopts_an_old_owner_after_cold_reopen(tmp_path, backend):
+    from riverhog_client._prepared_primary_posix import PrimaryFiles
+
+    root = tmp_path.resolve() / ("state" if backend == "posix" else "state.sqlite3")
+
+    def opened(initialize):
+        return (
+            PrimaryFiles(root, initialize=initialize)
+            if backend == "posix"
+            else _open(root, initialize=initialize)
+        )
+
+    with opened(True) as files:
+        original = files.put_bytes("original", [b"original"], byte_limit=8)
+        with files.ordered_rows([("a", 1, "a" * 64)], byte_limit=128 * 1024) as selected:
+            retained = selected.retain()
+    with opened(False) as files:
+        assert files.ordering_reserved_bytes() > 0
+        with pytest.raises(PrimaryStateError, match="closed"):
+            with retained.open():
+                pytest.fail("cold open adopted the old derivation handle")
+        with files.ordered_rows([("b", 2, "b" * 64)], byte_limit=128 * 1024) as selected:
+            current = selected.retain()
+        with current.open() as selected:
+            assert list(selected.rows()) == [("b", 2, "b" * 64)]
+        with files.verified(original) as reader:
+            assert reader.read() == b"original"
