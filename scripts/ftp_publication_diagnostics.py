@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 
@@ -39,6 +40,22 @@ def publication_count(name: str, value: int) -> None:
     _counts[name] = value
 
 
+def _claim_error_fingerprints(error: AssertionError) -> list[str]:
+    """Fingerprint a bounded sample from the fixture's failed flush assertion."""
+    if not error.args or not isinstance(error.args[0], dict):
+        return []
+    failures = error.args[0].get("failed")
+    if not isinstance(failures, list):
+        return []
+    fingerprints: list[str] = []
+    for row in failures[:8]:
+        message = row.get("error") if isinstance(row, dict) else None
+        if isinstance(message, str):
+            encoded = message[:1000].encode("utf-8", errors="replace")
+            fingerprints.append(hashlib.sha256(encoded).hexdigest())
+    return fingerprints
+
+
 def install_publication_diagnostics(
     stage: str, *, api_error_type: type[BaseException] | None = None
 ) -> None:
@@ -69,6 +86,10 @@ def install_publication_diagnostics(
             category = "http-timeout"
         elif isinstance(error, AssertionError):
             category = "assertion"
+            if _stage == "flush-result":
+                fingerprints = _claim_error_fingerprints(error)
+                if fingerprints:
+                    diagnostic["claim_error_sha256s"] = fingerprints
         elif isinstance(error, OSError):
             category = "filesystem"
         diagnostic["failure_class"] = category

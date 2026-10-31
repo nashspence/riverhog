@@ -1318,3 +1318,150 @@ def test_native_wheel_missing_or_ambiguous_module_fails_before_expensive_lifecyc
     else:
         with pytest.raises(module.QualificationError, match="unique native"):
             module._require_client_native_module(wheel)
+
+
+@pytest.fixture
+def installation_observation_fixture(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> SimpleNamespace:
+    module = load_script()
+    summary = tmp_path / "installation.json"
+    faults: list[str] = []
+    snapshots: list[dict[str, object]] = []
+    cleanup: list[str] = []
+
+    def fail_at(stage: str) -> None:
+        if stage in faults:
+            raise OSError("private qualification failure")
+
+    def write(path, payload):
+        module_write(path, payload)
+        snapshots.append(json.loads(path.read_text()))
+
+    module_write = module._write_qualification_summary
+    monkeypatch.setattr(module, "_write_qualification_summary", write)
+    monkeypatch.setattr(module.release, "_ensure_clean", lambda _root: fail_at("source"))
+    monkeypatch.setattr(module.release, "_source_sha", lambda _root: "a" * 40)
+    monkeypatch.setattr(
+        module.installation,
+        "qualified_tool_versions",
+        lambda _root: {"uv": "fixture", "python": "fixture"},
+    )
+    monkeypatch.setattr(
+        module, "_run", lambda *_args, **_kwargs: SimpleNamespace(stdout="uv fixture")
+    )
+    monkeypatch.setattr(
+        module.release, "validate_release_contract", lambda _root: [SimpleNamespace(name="alpha")]
+    )
+
+    class Server:
+        def shutdown(self):
+            cleanup.append("shutdown")
+            fail_at("cleanup")
+
+        def server_close(self):
+            cleanup.append("close")
+
+    class Thread:
+        def join(self, *, timeout):
+            assert timeout == 5
+            cleanup.append("join")
+
+    monkeypatch.setattr(module, "_server", lambda _root: (Server(), Thread(), "http://127.0.0.1:1"))
+
+    def stage(*_args, **_kwargs):
+        fail_at("staging")
+        return {
+            "index": {"path": "index/", "url": "http://127.0.0.1:1/index/"},
+            "components": ["alpha", "bravo"],
+        }
+
+    def component(name, *_args, **kwargs):
+        assert kwargs["listener_lifecycle_repetitions"] == 12
+        fail_at(name)
+        return {"component": name, "qualified": True}
+
+    monkeypatch.setattr(module, "_stage_artifacts", stage)
+    monkeypatch.setattr(module, "_qualify_component", component)
+    return SimpleNamespace(
+        module=module, summary=summary, faults=faults, snapshots=snapshots, cleanup=cleanup
+    )
+
+
+@pytest.mark.parametrize(
+    "fault,stage,completed,total",
+    [
+        ("staging", "staging-artifacts", 0, None),
+        ("bravo", "qualifying-components", 1, 2),
+        ("cleanup", "cleaning-up", 2, 2),
+    ],
+)
+def test_interrupted_installation_retains_partial_progress_without_claiming_completion(
+    installation_observation_fixture, fault, stage, completed, total
+):
+    fixture = installation_observation_fixture
+    fixture.faults.append(fault)
+    with pytest.raises(SystemExit, match="private qualification failure"):
+        fixture.module.main(
+            [
+                "--version",
+                "1.0.0",
+                "--summary",
+                str(fixture.summary),
+                "--listener-lifecycle",
+                "--listener-lifecycle-repetitions",
+                "12",
+            ]
+        )
+    encoded = fixture.summary.read_text()
+    progress = json.loads(encoded)
+    assert progress["format"] == fixture.module.PROGRESS_FORMAT
+    assert progress["format"] != fixture.module.FORMAT
+    assert progress["source_sha"] == "a" * 40 and progress["source_clean"] is True
+    assert progress["state"] == "running" and progress["stage"] == stage
+    assert progress["components_completed"] == completed and progress["components_total"] == total
+    assert progress["elapsed_seconds"] >= 0
+    assert "private qualification failure" not in encoded
+    assert not fixture.summary.with_name(fixture.summary.name + ".tmp").exists()
+    assert fixture.cleanup[0] == "shutdown"
+
+
+def test_completed_installation_replaces_partial_progress_after_cleanup(
+    installation_observation_fixture, capsys
+):
+    fixture = installation_observation_fixture
+    assert (
+        fixture.module.main(
+            [
+                "--version",
+                "1.0.0",
+                "--summary",
+                str(fixture.summary),
+                "--listener-lifecycle",
+                "--listener-lifecycle-repetitions",
+                "12",
+            ]
+        )
+        == 0
+    )
+    summary = json.loads(fixture.summary.read_text())
+    assert summary["format"] == fixture.module.FORMAT
+    assert summary["staged_http"] == "passed" and len(summary["components"]) == 2
+    assert summary["listener_lifecycle_repetitions"] == 12 and summary["published"] is False
+    assert "state" not in summary and fixture.cleanup == ["shutdown", "close", "join"]
+    assert [row["stage"] for row in fixture.snapshots[:-1]] == [
+        "checking-toolchain",
+        "staging-artifacts",
+        "qualifying-components",
+        "qualifying-components",
+        "cleaning-up",
+    ]
+    assert fixture.snapshots[-1] == json.loads(capsys.readouterr().out)
+
+
+def test_installation_progress_requires_verified_clean_source(installation_observation_fixture):
+    fixture = installation_observation_fixture
+    fixture.faults.append("source")
+    with pytest.raises(SystemExit, match="private qualification failure"):
+        fixture.module.main(["--version", "1.0.0", "--summary", str(fixture.summary)])
+    assert not fixture.summary.exists() and fixture.snapshots == []

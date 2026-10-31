@@ -34,6 +34,7 @@ import release_installation as installation
 
 ROOT = Path(__file__).resolve().parents[1]
 FORMAT = "riverhog-installation-qualification/v1"
+PROGRESS_FORMAT = "riverhog-installation-qualification-progress/v1"
 EVENT_SUBJECT = "1"
 NATIVE_TRACE_INTERVAL_SECONDS = 1.0
 NATIVE_TRACE_EVENT_LIMIT = 128
@@ -2500,6 +2501,13 @@ def _qualify_component(
     }
 
 
+def _write_qualification_summary(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary.replace(path)
+
+
 def qualify(
     root: Path,
     *,
@@ -2509,6 +2517,7 @@ def qualify(
     gogurt_evidence_dir: Path | None = None,
     listener_mount_fixture: Path | None = None,
     listener_mount_lock: Path | None = None,
+    progress_path: Path | None = None,
 ) -> dict[str, Any]:
     if listener_lifecycle_repetitions < 1:
         raise QualificationError("listener lifecycle repetitions must be at least one")
@@ -2525,6 +2534,25 @@ def qualify(
     )
     release._ensure_clean(root)
     source_sha = release._source_sha(root)
+    started = time.monotonic()
+
+    def observe(stage: str, *, completed: int = 0, total: int | None = None) -> None:
+        if progress_path is not None:
+            _write_qualification_summary(
+                progress_path,
+                {
+                    "format": PROGRESS_FORMAT,
+                    "source_sha": source_sha,
+                    "source_clean": True,
+                    "state": "running",
+                    "stage": stage,
+                    "components_completed": completed,
+                    "components_total": total,
+                    "elapsed_seconds": round(time.monotonic() - started, 6),
+                },
+            )
+
+    observe("checking-toolchain")
     actual_uv = _run(["uv", "--version"], cwd=root, capture=True).stdout.split()[1]
     tools = installation.qualified_tool_versions(root)
     if actual_uv != tools["uv"]:
@@ -2535,6 +2563,7 @@ def qualify(
         web_root.mkdir()
         server, thread, base_url = _server(web_root)
         try:
+            observe("staging-artifacts")
             manifest = _stage_artifacts(
                 root,
                 scratch,
@@ -2548,22 +2577,26 @@ def qualify(
                 raise QualificationError("staged index URL does not match its HTTP origin")
             projects = release.validate_release_contract(root)
             all_project_names = {project.name for project in projects}
-            results = [
-                _qualify_component(
-                    component,
-                    manifest,
-                    source_root=root,
-                    artifact_root=artifact_root,
-                    scratch=scratch,
-                    base_url=base_url,
-                    all_project_names=all_project_names,
-                    listener_lifecycle=listener_lifecycle,
-                    listener_lifecycle_repetitions=listener_lifecycle_repetitions,
-                    gogurt_evidence_dir=gogurt_evidence_dir,
-                    listener_mount_fixture=fixture,
+            results: list[dict[str, Any]] = []
+            total = len(manifest["components"])
+            for component in manifest["components"]:
+                observe("qualifying-components", completed=len(results), total=total)
+                results.append(
+                    _qualify_component(
+                        component,
+                        manifest,
+                        source_root=root,
+                        artifact_root=artifact_root,
+                        scratch=scratch,
+                        base_url=base_url,
+                        all_project_names=all_project_names,
+                        listener_lifecycle=listener_lifecycle,
+                        listener_lifecycle_repetitions=listener_lifecycle_repetitions,
+                        gogurt_evidence_dir=gogurt_evidence_dir,
+                        listener_mount_fixture=fixture,
+                    )
                 )
-                for component in manifest["components"]
-            ]
+            observe("cleaning-up", completed=len(results), total=total)
         finally:
             server.shutdown()
             server.server_close()
@@ -2630,6 +2663,7 @@ def main(argv: list[str] | None = None) -> int:
             gogurt_evidence_dir=args.gogurt_evidence_dir,
             listener_mount_fixture=args.listener_mount_fixture,
             listener_mount_lock=args.listener_mount_lock,
+            progress_path=args.summary,
         )
     except (
         OSError,
@@ -2642,8 +2676,7 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit(f"installation qualification error: {exc}") from exc
     rendered = json.dumps(payload, indent=2, sort_keys=True) + "\n"
     if args.summary is not None:
-        args.summary.parent.mkdir(parents=True, exist_ok=True)
-        args.summary.write_text(rendered, encoding="utf-8")
+        _write_qualification_summary(args.summary, payload)
     print(rendered, end="")
     return 0
 

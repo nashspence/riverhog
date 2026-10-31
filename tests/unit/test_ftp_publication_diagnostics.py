@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import subprocess
@@ -112,3 +113,73 @@ def test_operator_client_error_preserves_http_status_without_message_or_code(mon
         "http_status": 500,
     }
     assert observed == [(type(error), error, None)]
+
+
+def test_failed_claim_annotation_fingerprints_without_copying_response_contents(
+    monkeypatch, capsys
+):
+    module = load_script()
+    observed = []
+    monkeypatch.setattr(sys, "excepthook", lambda *args: observed.append(args))
+    module.install_publication_diagnostics("flush-result")
+    result = {
+        "completed": 0,
+        "failed": [
+            {"source": "private source", "claim": "private path", "error": "private response body"}
+        ],
+    }
+    error = AssertionError(result)
+    sys.excepthook(type(error), error, None)
+    encoded = capsys.readouterr().err.removeprefix(PREFIX)
+    diagnostic = json.loads(encoded)
+    assert diagnostic["claim_error_sha256s"] == [
+        hashlib.sha256(b"private response body").hexdigest()
+    ]
+    assert not any(
+        value in encoded for value in ["private source", "private path", "private response"]
+    )
+    assert observed == [(type(error), error, None)]
+
+
+@pytest.mark.parametrize("count", [0, 1, 8, 9])
+def test_claim_error_fingerprint_observation_is_bounded(monkeypatch, capsys, count):
+    module = load_script()
+    monkeypatch.setattr(sys, "excepthook", lambda *_args: None)
+    module.install_publication_diagnostics("flush-result")
+    result = {"failed": [{"error": "x" * 1001} for _ in range(count)]}
+    error = AssertionError(result)
+    sys.excepthook(type(error), error, None)
+    diagnostic = json.loads(capsys.readouterr().err.removeprefix(PREFIX))
+    fingerprints = diagnostic.get("claim_error_sha256s", [])
+    assert fingerprints == [hashlib.sha256(b"x" * 1000).hexdigest()] * min(count, 8)
+
+
+@pytest.mark.parametrize(
+    "result",
+    [
+        "private response",
+        {"failed": "private response"},
+        {"failed": [None, {"error": 123}, {"message": "private response"}]},
+    ],
+)
+def test_malformed_claim_diagnostic_preserves_original_failure(monkeypatch, capsys, result):
+    module = load_script()
+    observed = []
+    monkeypatch.setattr(sys, "excepthook", lambda *args: observed.append(args))
+    module.install_publication_diagnostics("flush-result")
+    error = AssertionError(result)
+    sys.excepthook(type(error), error, None)
+    diagnostic = json.loads(capsys.readouterr().err.removeprefix(PREFIX))
+    assert "claim_error_sha256s" not in diagnostic
+    assert diagnostic["failure_class"] == "assertion"
+    assert observed == [(type(error), error, None)]
+
+
+def test_claim_error_fingerprint_is_scoped_to_failed_flush(monkeypatch, capsys):
+    module = load_script()
+    monkeypatch.setattr(sys, "excepthook", lambda *_args: None)
+    module.install_publication_diagnostics("source-cleanup")
+    error = AssertionError({"failed": [{"error": "private response"}]})
+    sys.excepthook(type(error), error, None)
+    diagnostic = json.loads(capsys.readouterr().err.removeprefix(PREFIX))
+    assert "claim_error_sha256s" not in diagnostic
