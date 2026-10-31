@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, BinaryIO, cast
 
-from riverhog_client import ProducerFile
+from riverhog_client import PreparedPrimaryInventory, ProducerArtifactIdentity, ProducerFile
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.provenance_transport import MaterializationHintDocument
 
@@ -56,6 +56,15 @@ class LocalUpload:
     _root: Path
     _commitment: tuple[int, str]
     _reader: SourceReaderFactory = field(compare=False, repr=False)
+    _inventory: PreparedPrimaryInventory = field(compare=False, repr=False)
+
+    @contextmanager
+    def open_inventory(self) -> Iterator[Iterator[ProducerArtifactIdentity]]:
+        """Replay the same canonical derivation after verifying original authority."""
+        with self._reader() as stream:
+            self._verify(stream)
+            with self._inventory.open() as members:
+                yield members
 
     @contextmanager
     def open_sources(self) -> Iterator[Iterator[LocalSource]]:

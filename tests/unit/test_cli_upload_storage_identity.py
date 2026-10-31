@@ -19,7 +19,12 @@ from a_riverhog_cli.upload_identity import initialize_upload_identity, open_uplo
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import PrimaryStateCapacity, PrimaryStateError
 
-from tests.support.cli_upload import read_upload_sources, verified_upload_sources
+from tests.support.cli_upload import (
+    load_upload_identity_fixture,
+    prepare_verified_upload_fixture,
+    read_upload_sources,
+    verified_upload_sources,
+)
 from tests.support.prepared_primary import SqlitePrimaryTestGuard
 
 
@@ -109,7 +114,7 @@ def test_identity_codec_preserves_original_allocation_without_generating_replace
 
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     if changed == "none":
-        upload = directory_upload._load_upload_identity(
+        upload = load_upload_identity_fixture(
             io.BytesIO(canonical_json_bytes(loaded)),
             root,
             key,
@@ -121,8 +126,9 @@ def test_identity_codec_preserves_original_allocation_without_generating_replace
         )
         assert upload.source_naming_view_id == original["source_naming_view_id"]
     else:
-        with pytest.raises(ValueError):
-            directory_upload._load_upload_identity(
+        error = PrimaryStateError if changed == "duplicate-id" else ValueError
+        with pytest.raises(error):
+            load_upload_identity_fixture(
                 io.BytesIO(canonical_json_bytes(loaded)),
                 root,
                 key,
@@ -366,7 +372,7 @@ parents=importlib.util.module_from_spec(spec);sys.modules[spec.name]=parents
 spec.loader.exec_module(parents)
 parent=Path(sys.argv[2])/"private-parent";parents._parent(parent)
 source=Path(sys.argv[2])/"source";source.mkdir();(source/"member").write_bytes(b"original")
-from tests.support.cli_upload import verified_upload_sources
+from tests.support.cli_upload import verified_upload_sources, load_upload_identity_fixture
 source,current=verified_upload_sources(source,"retained")
 document=directory_upload._new_upload_identity(source,"retained",current)
 document["sources"]=list(document["sources"])
@@ -404,7 +410,7 @@ try:
             assert replay.read(7)==body[:7]
             assert replay.read()==body[7:]
         assert replay.closed
-        loaded=directory_upload._load_upload_identity(
+        loaded=load_upload_identity_fixture(
             io.BytesIO(body),source,"retained",current,open_original=lambda:io.BytesIO(body))
         assert read_upload_sources(loaded)[0].artifact_id==document["sources"][0]["artifact_id"]
         assert loaded.source_naming_view_id==document["source_naming_view_id"]
@@ -640,10 +646,10 @@ def test_record_identity_publication_keeps_only_a_complete_selected_original(
         elif failure != "none":
             faults.setattr(directory_upload.os, "fsync", failed_sync)
         if failure == "none":
-            directory_upload._prepare_verified_upload(root, "retained", current)
+            prepare_verified_upload_fixture(root, "retained", current)
         else:
             with pytest.raises(OSError, match="injected"):
-                directory_upload._prepare_verified_upload(root, "retained", current)
+                prepare_verified_upload_fixture(root, "retained", current)
     assert not list(destination.parent.glob(".upload-*"))
     if failure not in ("none", "directory-sync"):
         assert not destination.exists()
@@ -655,9 +661,7 @@ def test_record_identity_publication_keeps_only_a_complete_selected_original(
 
     monkeypatch.setattr(directory_upload, "_new_upload_identity", forbidden)
     monkeypatch.setattr(directory_upload, "_upload_identity_chunks", forbidden)
-    restored = directory_upload._prepare_verified_upload(
-        root, "retained", current, initialize=False
-    )
+    restored = prepare_verified_upload_fixture(root, "retained", current, initialize=False)
     assert [source.artifact_id for source in read_upload_sources(restored)] == [
         row["artifact_id"] for row in original["sources"]
     ]
@@ -692,7 +696,7 @@ def test_retained_source_descriptors_preserve_original_paths_and_producer_inputs
 
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     monkeypatch.setattr(directory_upload.uuid, "uuid4", forbidden)
-    upload = directory_upload._load_upload_identity(
+    upload = load_upload_identity_fixture(
         io.BytesIO(canonical_json_bytes(original)),
         root,
         "retained",
@@ -773,8 +777,13 @@ def test_retained_source_preflight_finishes_before_descriptor_materialization(
     monkeypatch.setattr(upload_sources, "LocalSource", forbidden)
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     monkeypatch.setattr(directory_upload.uuid, "uuid4", forbidden)
-    with pytest.raises((ValueError, TypeError, AttributeError)):
-        directory_upload._load_upload_identity(
+    error = (
+        PrimaryStateError
+        if changed == "duplicate-last-id"
+        else (ValueError, TypeError, AttributeError)
+    )
+    with pytest.raises(error):
+        load_upload_identity_fixture(
             io.BytesIO(canonical_json_bytes(original)),
             root,
             "retained",
@@ -1076,7 +1085,7 @@ def test_identity_replay_rejects_changed_bytes_before_exposing_an_upload(monkeyp
     monkeypatch.setattr(directory_upload, "LocalUpload", forbidden)
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     with pytest.raises(ValueError, match="changed during replay|trailing document"):
-        directory_upload._load_upload_identity(
+        load_upload_identity_fixture(
             ChangedReader(original, 7),
             Path("/fixture"),
             document["idempotency_key"],
@@ -1194,9 +1203,9 @@ def test_streamed_identity_publication_preserves_the_concurrent_original(
     monkeypatch.setattr(directory_upload.os, "link", another_winner)
     if winner_sources == "different":
         with pytest.raises(ValueError, match="differs from the current local sources"):
-            directory_upload._prepare_verified_upload(root, "retained", current)
+            prepare_verified_upload_fixture(root, "retained", current)
     else:
-        upload = directory_upload._prepare_verified_upload(root, "retained", current)
+        upload = prepare_verified_upload_fixture(root, "retained", current)
         assert [item.artifact_id for item in read_upload_sources(upload)] == [
             item["artifact_id"] for item in winner["sources"]
         ]
@@ -1212,11 +1221,10 @@ def test_streamed_identity_publication_preserves_the_concurrent_original(
     monkeypatch.setattr(directory_upload.secrets, "token_hex", forbidden)
     if winner_sources == "different":
         with pytest.raises(ValueError, match="differs from the current local sources"):
-            directory_upload._prepare_verified_upload(root, "retained", current, initialize=False)
+            prepare_verified_upload_fixture(root, "retained", current, initialize=False)
     else:
         assert (
-            directory_upload._prepare_verified_upload(root, "retained", current, initialize=False)
-            == upload
+            prepare_verified_upload_fixture(root, "retained", current, initialize=False) == upload
         )
     assert destination.read_bytes() == exact
 
@@ -1249,7 +1257,7 @@ def test_scoped_source_replay_retains_only_consumed_descriptors_and_closes(
         return reader
 
     monkeypatch.setattr(upload_sources, "LocalSource", source)
-    upload = directory_upload._load_upload_identity(
+    upload = load_upload_identity_fixture(
         io.BytesIO(body),
         Path(original["root"]),
         original["idempotency_key"],
@@ -1311,7 +1319,7 @@ def test_scoped_source_replay_refuses_changed_original_before_any_descriptor(mon
         readers.append(reader)
         return reader
 
-    upload = directory_upload._load_upload_identity(
+    upload = load_upload_identity_fixture(
         io.BytesIO(body),
         Path(original["root"]),
         original["idempotency_key"],
@@ -1343,7 +1351,7 @@ def test_scoped_source_replay_readers_advance_and_close_independently():
         readers.append(reader)
         return reader
 
-    upload = directory_upload._load_upload_identity(
+    upload = load_upload_identity_fixture(
         io.BytesIO(body),
         Path(original["root"]),
         original["idempotency_key"],
@@ -1383,7 +1391,7 @@ def test_identity_preflight_requires_complete_ordered_metadata_exhaustion(tmp_pa
 
     error = ValueError if ending == "additional" else PrimaryStateError
     with pytest.raises(error, match="current local sources|completeness check failed"):
-        directory_upload._load_upload_identity(
+        load_upload_identity_fixture(
             io.BytesIO(body),
             root,
             "retained",

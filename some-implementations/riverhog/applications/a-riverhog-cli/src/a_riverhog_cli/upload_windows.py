@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator
-from contextlib import contextmanager
+from collections.abc import Iterable, Iterator
+from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
@@ -11,14 +11,17 @@ from typing import TYPE_CHECKING, Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from riverhog_client import (
+    PreparedPrimaryInventory,
     PrimaryStateBusy,
     PrimaryStatePolicy,
     PrimaryStorage,
     PrimaryStore,
+    ProducerArtifactIdentity,
     SqliteOperationGrants,
     SqlitePrimaryLimits,
     SqliteReadinessPlan,
     WindowsSqliteProcess,
+    prepare_primary_inventory,
     primary_allocation_descriptor,
     sqlite_primary_preparation_step,
 )
@@ -93,7 +96,7 @@ class WindowsUploadState:
     Identity bytes have their own explicit admission in addition to primary
     member admission. Physical container grants cover both. This selection
     admits source ordering and original encoding in the selected primary.
-    Identity uniqueness checks retain separate Python and RSS costs.
+    Canonical identity uniqueness uses that same retained derived ordering.
     Preparation is execution with an explicit quantum count, never status or
     close work. Exhaustion retains state and does not increase any grant.
     """
@@ -148,8 +151,10 @@ def prepare_windows_upload(
         _load_upload_identity,
         _new_upload_identity,
         _upload_identity_chunks,
+        _validate_upload_identity,
         _verified_ordered_upload_sources,
     )
+    from a_riverhog_cli.upload_identity_records import UploadIdentityRecords
 
     if type(initialize) is not bool:
         raise ValueError("upload state initialization requires explicit boolean authority")
@@ -211,31 +216,60 @@ def prepare_windows_upload(
             prepare_payload=prepare,
         )
 
-        if initialize:
-            with current_sources() as (root, current):
-                original = stage_upload_identity(
-                    identity,
-                    _upload_identity_chunks(_new_upload_identity(root, idempotency_key, current)),
-                    byte_limit=selection.identity_bytes,
-                    prepare_payload=prepare,
-                )
-                with initialize_upload_identity(
-                    identity,
-                    original,
-                    byte_limit=selection.identity_bytes,
-                    control_capacity=policy.control_bytes,
-                    prepare_payload=prepare,
-                ) as stream:
-                    del original
-                    upload = _load_upload_identity(
-                        stream, root, idempotency_key, current, open_original=open_original
-                    )
-        else:
-            with open_original() as stream:
+        def canonical_inventory(
+            members: Iterable[ProducerArtifactIdentity],
+        ) -> PreparedPrimaryInventory:
+            # Execution settles retained byte cleanup before selecting a new index.
+            for _ in range(selection.preparation_steps):
+                if store.recover_step():
+                    break
+            else:
+                raise PrimaryStateBusy("upload primary recovery requires another execution grant")
+            prepare()
+
+            def prepared_members() -> Iterator[ProducerArtifactIdentity]:
+                for member in members:
+                    prepare()
+                    yield member
+
+            return prepare_primary_inventory(store, prepared_members())
+
+        with ExitStack() as original:
+            if initialize:
                 with current_sources() as (root, current):
-                    upload = _load_upload_identity(
-                        stream, root, idempotency_key, current, open_original=open_original
+                    staged = stage_upload_identity(
+                        identity,
+                        _upload_identity_chunks(
+                            _new_upload_identity(root, idempotency_key, current)
+                        ),
+                        byte_limit=selection.identity_bytes,
+                        prepare_payload=prepare,
                     )
-        # The verified descriptors own the required values for publication.
-        del current
+                    stream = original.enter_context(
+                        initialize_upload_identity(
+                            identity,
+                            staged,
+                            byte_limit=selection.identity_bytes,
+                            control_capacity=policy.control_bytes,
+                            prepare_payload=prepare,
+                        )
+                    )
+                    del staged
+                    validated = _validate_upload_identity(
+                        UploadIdentityRecords(stream), root, idempotency_key, current
+                    )
+            else:
+                stream = original.enter_context(open_original())
+                with current_sources() as (root, current):
+                    validated = _validate_upload_identity(
+                        UploadIdentityRecords(stream), root, idempotency_key, current
+                    )
+            del current
+            upload = _load_upload_identity(
+                stream,
+                root,
+                validated,
+                open_original=open_original,
+                prepare_inventory=canonical_inventory,
+            )
         yield upload, store

@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 from a_riverhog_cli import directory_upload, main
-from riverhog_client import PrimaryStatePolicy
+from riverhog_client import PrimaryStateError, PrimaryStatePolicy
 from typer.testing import CliRunner
 
 from tests.support.cli_upload import read_upload_sources
@@ -371,7 +371,7 @@ def test_posix_metadata_failure_closes_scratch_and_preserves_allocation_boundary
         def failed_identity(*args, **kwargs):
             raise OSError("identity publication interrupted")
 
-        monkeypatch.setattr(directory_upload, "_prepare_verified_upload", failed_identity)
+        monkeypatch.setattr(directory_upload, "_open_validated_upload_identity", failed_identity)
     if failure != "identity":
         monkeypatch.setattr(directory_upload, "_new_upload_identity", forbidden)
         monkeypatch.setattr(directory_upload, "PrimaryStore", forbidden)
@@ -462,3 +462,164 @@ def test_posix_metadata_resolves_process_temporary_placement_before_storage_sele
         assert list(current)[0]["bytes"] == len(b"exact original")
     assert selected and not selected[0].parent.exists()
     assert alias.is_symlink() and not list(parent.iterdir()) and not state.exists()
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX canonical inventory")
+@pytest.mark.parametrize("members", [1, 3, 128])
+@pytest.mark.parametrize("initialize", [True, False])
+def test_posix_original_id_inventory_orders_once_after_metadata_and_replays_original_authority(
+    source, monkeypatch, members, initialize
+):
+    from types import SimpleNamespace
+
+    root, _state, policy = source
+    for number in range(members - 1):
+        (root / f"member-{number:04d}-雪").write_bytes(b"" if number % 2 else b"equal")
+    issued = iter(f"{number:064x}" for number in reversed(range(members)))
+    monkeypatch.setattr(
+        directory_upload, "secrets", SimpleNamespace(token_hex=lambda _size: next(issued))
+    )
+    if not initialize:
+        with directory_upload.prepare_primary_upload(root, "canonical", policy, initialize=True):
+            pass
+
+        def no_new_ids(*_args):
+            pytest.fail("cold preflight allocated replacement identities")
+
+        monkeypatch.setattr(directory_upload, "secrets", SimpleNamespace(token_hex=no_new_ids))
+
+    metadata_active = False
+    derivations = 0
+    record_passes = 0
+    verified = directory_upload._verified_upload_sources
+    prepare = directory_upload.prepare_primary_inventory
+    records = directory_upload.UploadIdentityRecords.records
+
+    @contextmanager
+    def metadata(*args, **kwargs):
+        nonlocal metadata_active
+        with verified(*args, **kwargs) as selected:
+            metadata_active = True
+            try:
+                yield selected
+            finally:
+                metadata_active = False
+
+    def original_records(reader):
+        nonlocal record_passes
+        record_passes += 1
+        yield from records(reader)
+
+    def canonical(store, rows):
+        nonlocal derivations
+        assert not metadata_active and record_passes == 1
+        derivations += 1
+        return prepare(store, rows)
+
+    monkeypatch.setattr(directory_upload, "_verified_upload_sources", metadata)
+    monkeypatch.setattr(directory_upload, "prepare_primary_inventory", canonical)
+    monkeypatch.setattr(directory_upload.UploadIdentityRecords, "records", original_records)
+    with directory_upload.prepare_primary_upload(
+        root, "canonical", policy, initialize=initialize
+    ) as (upload, store):
+        assert record_passes == 2 and derivations == 1
+        original = directory_upload._state_path(root, "canonical").read_bytes()
+        expected = sorted(
+            (item["artifact_id"], item["bytes"], item["sha256"])
+            for item in json.loads(original)["sources"]
+        )
+        assert store.recover_step()
+        for _ in range(2):
+            with upload.open_inventory() as rows:
+                assert [(str(row.artifact_id), row.bytes, row.sha256) for row in rows] == expected
+            assert list(rows) == []
+        with upload.open_inventory() as rows:
+            next(rows)
+        assert list(rows) == []
+        assert record_passes == 2 and derivations == 1
+        assert not store.publication_started and not store.session_bound
+        assert store._files.ordering_reserved_bytes() > 0
+        assert directory_upload._state_path(root, "canonical").read_bytes() == original
+    with pytest.raises(PrimaryStateError, match="closed"):
+        with upload.open_inventory():
+            pytest.fail("canonical inventory outlived its original live store")
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX command allocation")
+@pytest.mark.parametrize("initialize", [True, False])
+def test_duplicate_original_ids_fail_before_remote_client_or_producer_construction(
+    source, monkeypatch, initialize
+):
+    from types import SimpleNamespace
+
+    from a_riverhog_cli import main
+    from typer.testing import CliRunner
+
+    root, _state, _policy = source
+    monkeypatch.setenv("A_RIVERHOG_CLI_PRIMARY_STATE", _policy.model_dump_json())
+    (root / "second").write_bytes(b"equal")
+    monkeypatch.setattr(
+        directory_upload, "secrets", SimpleNamespace(token_hex=lambda _size: "a" * 64)
+    )
+
+    def no_remote(*_args, **_kwargs):
+        pytest.fail("invalid original identities reached remote producer construction")
+
+    monkeypatch.setattr(main, "client", no_remote)
+    monkeypatch.setattr(main, "IncrementalCollectionProducer", no_remote)
+    arguments = [
+        "collection",
+        "upload",
+        "start",
+        str(root),
+        "--idempotency-key",
+        "duplicate",
+        "--initialize-state",
+        "--json",
+    ]
+    first = CliRunner().invoke(main.app, arguments)
+    assert first.exit_code != 0 and isinstance(first.exception, PrimaryStateError)
+    assert "duplicate" in str(first.exception)
+    destination = directory_upload._state_path(root, "duplicate")
+    exact = destination.read_bytes()
+    assert len(json.loads(exact)["sources"]) == 2
+    if not initialize:
+        monkeypatch.setattr(directory_upload, "secrets", SimpleNamespace(token_hex=no_remote))
+        arguments.remove("--initialize-state")
+        second = CliRunner().invoke(main.app, arguments)
+        assert second.exit_code != 0 and isinstance(second.exception, PrimaryStateError)
+        assert "duplicate" in str(second.exception)
+        assert destination.read_bytes() == exact
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX original-byte authority")
+@pytest.mark.parametrize("changed", ["same-length", "additional", "missing"])
+def test_canonical_inventory_checks_original_bytes_before_opening_its_derived_reader(
+    source, monkeypatch, changed
+):
+    from riverhog_client import PreparedPrimaryInventory
+
+    root, _state, policy = source
+    with directory_upload.prepare_primary_upload(root, "original", policy, initialize=True) as (
+        upload,
+        _store,
+    ):
+        destination = directory_upload._state_path(root, "original")
+        exact = destination.read_bytes()
+        if changed == "same-length":
+            altered = bytearray(exact)
+            altered[10] ^= 1
+            destination.write_bytes(altered)
+        elif changed == "additional":
+            destination.write_bytes(exact + b" ")
+        else:
+            destination.unlink()
+
+        def no_derived_reader(*_args):
+            pytest.fail("changed original authority reached the retained derived index")
+
+        monkeypatch.setattr(PreparedPrimaryInventory, "open", no_derived_reader)
+        error = FileNotFoundError if changed == "missing" else ValueError
+        with pytest.raises(error):
+            with upload.open_inventory():
+                pytest.fail("changed original authority exposed cached members")

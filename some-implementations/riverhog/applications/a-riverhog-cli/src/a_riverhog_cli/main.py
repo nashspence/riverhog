@@ -26,9 +26,7 @@ from riverhog_client import (
     PrimaryStatePolicy,
     ProducerArtifactIdentity,
     WindowsSqliteProcess,
-    ordered_primary_inventory,
 )
-from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.collection_description import validate_collection_description
 from riverhog_protocol.errors import RiverhogError
 from riverhog_protocol.paths import (
@@ -1699,16 +1697,8 @@ def upload_cmd(
                 }
 
             def member_inventory() -> Iterator[ProducerArtifactIdentity]:
-                with upload.open_sources() as sources:
-                    yield from ordered_primary_inventory(
-                        store,
-                        (
-                            ProducerArtifactIdentity(
-                                ArtifactId(source.artifact_id), source.bytes, source.sha256
-                            )
-                            for source in sources
-                        ),
-                    )
+                with upload.open_inventory() as members:
+                    yield from members
 
             producer = IncrementalCollectionProducer(
                 client(),

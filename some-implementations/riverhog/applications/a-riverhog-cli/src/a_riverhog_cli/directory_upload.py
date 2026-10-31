@@ -16,11 +16,14 @@ from typing import TYPE_CHECKING, BinaryIO, Protocol, cast
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import (
+    PreparedPrimaryInventory,
     PrimaryOrdering,
     PrimaryStatePolicy,
     PrimaryStorage,
     PrimaryStore,
+    ProducerArtifactIdentity,
     posix_primary_files,
+    prepare_primary_inventory,
 )
 
 from a_riverhog_cli.upload_identity_records import UploadIdentityRecords
@@ -278,22 +281,14 @@ def _verified_ordered_upload_sources(
         yield root, _OrderedSources(ordered)
 
 
-def prepare_upload(root: Path, idempotency_key: str, *, ordering_bytes: int) -> LocalUpload:
-    """Persist or replay exact POSIX source identity under explicit ordering admission."""
-    with _verified_upload_sources(root, idempotency_key, byte_limit=ordering_bytes) as (
-        root,
-        current,
-    ):
-        return _prepare_verified_upload(root, idempotency_key, current)
-
-
-def _prepare_verified_upload(
+@contextmanager
+def _open_validated_upload_identity(
     root: Path,
     idempotency_key: str,
     current: _VerifiedSources,
     *,
     initialize: bool = True,
-) -> LocalUpload:
+) -> Iterator[tuple[BinaryIO, _ValidatedUploadIdentity, SourceReaderFactory]]:
     destination = _state_path(root, idempotency_key, create_parent=initialize)
     if not initialize and not destination.is_file():
         raise FileNotFoundError(
@@ -326,13 +321,10 @@ def _prepare_verified_upload(
         # Drop serialization input before decoding the selected original.
         del document
     with destination.open("rb") as stream:
-        return _load_upload_identity(
-            stream,
-            root,
-            idempotency_key,
-            current,
-            open_original=lambda: destination.open("rb"),
+        validated = _validate_upload_identity(
+            UploadIdentityRecords(stream), root, idempotency_key, current
         )
+        yield stream, validated, lambda: destination.open("rb")
 
 
 def _new_upload_identity(
@@ -366,12 +358,19 @@ def _upload_identity_chunks(document: dict[str, object]) -> Iterator[bytes]:
     yield b"]}"
 
 
+@dataclass(frozen=True, slots=True)
+class _ValidatedUploadIdentity:
+    header: dict[str, str]
+    commitment: tuple[int, str]
+    source_count: int
+
+
 def _validate_upload_identity(
     records: UploadIdentityRecords,
     root: Path,
     idempotency_key: str,
     current: _VerifiedSources,
-) -> tuple[dict[str, str], tuple[int, str]]:
+) -> _ValidatedUploadIdentity:
     header = records.header()
     if (
         header["format"] != _FORMAT
@@ -379,7 +378,6 @@ def _validate_upload_identity(
         or header["idempotency_key"] != idempotency_key
     ):
         raise ValueError("saved upload identity differs from the current local sources")
-    ids: set[str] = set()
     count = 0
     expected_count = len(current)
     current_rows = iter(current)
@@ -396,45 +394,56 @@ def _validate_upload_identity(
             not isinstance(value, str)
             or len(value) != 64
             or any(character not in "0123456789abcdef" for character in value)
-            or value in ids
         ):
             raise ValueError("saved upload artifact identities are invalid")
-        ids.add(value)
         count += 1
     if count != expected_count or next(current_rows, None) is not None:
         raise ValueError("saved upload identity differs from the current local sources")
     if not header["source_naming_view_id"].startswith("urn:uuid:"):
         raise ValueError("saved upload source view identity is invalid")
-    return header, records.commitment
+    return _ValidatedUploadIdentity(header, records.commitment, count)
 
 
 def _load_upload_identity(
     stream: BinaryIO,
     root: Path,
-    idempotency_key: str,
-    current: _VerifiedSources,
+    validated: _ValidatedUploadIdentity,
     *,
     open_original: SourceReaderFactory,
+    prepare_inventory: Callable[[Iterable[ProducerArtifactIdentity]], PreparedPrimaryInventory],
 ) -> LocalUpload:
-    # Complete both original-byte passes before exposing a scoped inventory.
-    # No descriptor or uniqueness set is retained during publication.
-    header, commitment = _validate_upload_identity(
-        UploadIdentityRecords(stream), root, idempotency_key, current
-    )
+    """Finish the second complete original pass into its one canonical derivation."""
     stream.seek(0)
     replay = UploadIdentityRecords(stream)
-    if replay.header() != header:
+    if replay.header() != validated.header:
         raise ValueError("saved upload identity changed during replay")
-    for _item in replay.records():
-        pass
-    if replay.commitment != commitment:
-        raise ValueError("saved upload identity changed during replay")
+    complete = False
+
+    def members() -> Generator[ProducerArtifactIdentity, None, None]:
+        nonlocal complete
+        from riverhog_protocol.artifact_identity import ArtifactId
+
+        for item in replay.records():
+            yield ProducerArtifactIdentity(
+                ArtifactId(cast(str, item["artifact_id"])),
+                cast(int, item["bytes"]),
+                cast(str, item["sha256"]),
+            )
+        if replay.commitment != validated.commitment:
+            raise ValueError("saved upload identity changed during replay")
+        complete = True
+
+    with closing(members()) as rows:
+        inventory = prepare_inventory(rows)
+    if not complete or inventory.count != validated.source_count:
+        raise ValueError("saved upload inventory did not consume the complete original")
     return LocalUpload(
-        source_count=len(current),
-        source_naming_view_id=header["source_naming_view_id"],
+        source_count=validated.source_count,
+        source_naming_view_id=validated.header["source_naming_view_id"],
         _root=root,
-        _commitment=commitment,
+        _commitment=validated.commitment,
         _reader=open_original,
+        _inventory=inventory,
     )
 
 
@@ -467,21 +476,33 @@ def prepare_primary_upload(
             "retained upload identity is missing; resume cannot allocate replacements"
         )
     with ExitStack() as primary:
-        with _verified_upload_sources(
-            root, idempotency_key, byte_limit=policy.inventory_order_bytes
-        ) as (root, current):
-            if initialize:
-                destination = _state_path(root, idempotency_key)
-            store = primary.enter_context(
-                PrimaryStore(
-                    destination.with_suffix(".primary"),
-                    allocation_id=destination.stem,
-                    scope=policy.scope,
-                    limits=policy.limits(),
-                    initialize=initialize,
+        with ExitStack() as original:
+            with _verified_upload_sources(
+                root, idempotency_key, byte_limit=policy.inventory_order_bytes
+            ) as (root, current):
+                if initialize:
+                    destination = _state_path(root, idempotency_key)
+                store = primary.enter_context(
+                    PrimaryStore(
+                        destination.with_suffix(".primary"),
+                        allocation_id=destination.stem,
+                        scope=policy.scope,
+                        limits=policy.limits(),
+                        initialize=initialize,
+                    )
                 )
+                stream, validated, open_original = original.enter_context(
+                    _open_validated_upload_identity(
+                        root, idempotency_key, current, initialize=initialize
+                    )
+                )
+            # Current-metadata scratch closes before canonical ID ordering.
+            del current
+            upload = _load_upload_identity(
+                stream,
+                root,
+                validated,
+                open_original=open_original,
+                prepare_inventory=lambda members: prepare_primary_inventory(store, members),
             )
-            upload = _prepare_verified_upload(root, idempotency_key, current, initialize=initialize)
-        # The metadata owner and its disposable scratch close before publication.
-        del current
         yield upload, store

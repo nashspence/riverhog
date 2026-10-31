@@ -390,16 +390,27 @@ def open_upload(initialize):
         source,"retained",policy,initialize=initialize,windows=chosen)
 def forbidden(*args,**kwargs):
     raise AssertionError("resume or conflict generated replacement source authority")
+def cached_inventory(upload, store):
+    assert store.recover_step()
+    changes=store._files._connection.total_changes
+    for _ in range(2):
+        with upload.open_inventory() as members:
+            assert [str(row.artifact_id) for row in members]==[original_id]
+        assert list(members)==[]
+    assert store._files._connection.total_changes==changes
 directory_upload._state_path=forbidden
 try:
     with open_upload(True) as (original,store):
         assert not store.publication_started
         original_id=read_upload_sources(original)[0].artifact_id
+        cached_inventory(original,store)
     directory_upload.secrets.token_hex=forbidden
     with open_upload(False) as (resumed,store):
         assert resumed==original and not store.publication_started
+        cached_inventory(resumed,store)
     saved=directory_upload._verified_upload_sources
     directory_upload._verified_upload_sources=forbidden
+    original_ordered=directory_upload._verified_ordered_upload_sources
     directory_upload._verified_ordered_upload_sources=forbidden
     try:
         with open_upload(True):raise AssertionError("fresh initialization replaced state")
@@ -419,6 +430,21 @@ try:
     try:
         with open_upload(False):raise AssertionError("lost identity reached source reconstruction")
     except FileNotFoundError:pass
+    directory_upload._verified_ordered_upload_sources=original_ordered
+    from types import SimpleNamespace
+    from riverhog_client import PrimaryStateError
+    (source/"second").write_bytes(b"equal")
+    directory_upload.secrets=SimpleNamespace(token_hex=lambda _size:"a"*64)
+    def duplicate(initialize):
+        return directory_upload.prepare_primary_upload(
+            source,"duplicate",policy,initialize=initialize,windows=chosen)
+    try:
+        with duplicate(True):raise AssertionError("duplicate original IDs exposed an upload")
+    except PrimaryStateError as error:assert "duplicate" in str(error)
+    directory_upload.secrets=SimpleNamespace(token_hex=forbidden)
+    try:
+        with duplicate(False):raise AssertionError("cold duplicate IDs exposed an upload")
+    except PrimaryStateError as error:assert "duplicate" in str(error)
     assert resources.status.connections==resources.status.blobs==0
     assert path.is_file() and resources.pending_directories==()
     assert process.native_report()["owners"]==process.native_report()["files"]==0
@@ -698,3 +724,61 @@ def test_windows_source_ordering_verifies_every_member_before_allocating_ids(
     assert chosen.resources.status.connections == chosen.resources.status.blobs == 0
     assert chosen.resources.status.connection_peak == 1
     assert chosen.resources.pending_directories == ()
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual Unix-VFS application binding fixture")
+@pytest.mark.parametrize("initialize", [True, False])
+def test_windows_canonical_inventory_reuses_original_generation_after_metadata_and_recovery(
+    binding, monkeypatch, initialize
+):
+    if not initialize:
+        with open_upload(binding, initialize=True):
+            pass
+    metadata_live = False
+    canonical_calls = 0
+    selected = directory_upload._verified_ordered_upload_sources
+    prepare = upload_windows.prepare_primary_inventory
+
+    @contextmanager
+    def metadata(*args, **kwargs):
+        nonlocal metadata_live
+        with selected(*args, **kwargs) as values:
+            metadata_live = True
+            try:
+                yield values
+            finally:
+                metadata_live = False
+
+    def canonical(store, members):
+        nonlocal canonical_calls
+        assert not metadata_live and not store.publication_started
+        canonical_calls += 1
+        return prepare(store, members)
+
+    monkeypatch.setattr(directory_upload, "_verified_ordered_upload_sources", metadata)
+    monkeypatch.setattr(upload_windows, "prepare_primary_inventory", canonical)
+    with open_upload(binding, initialize=initialize) as (upload, store):
+        assert canonical_calls == 1
+        files = binding[2].process.storage
+        original = identity_body(files.child("directory-upload", initialize=False), byte_limit=8192)
+        expected = json.loads(original)["sources"][0]["artifact_id"]
+        assert files._one("SELECT namespace,phase FROM primary_ordering") == (
+            files._namespace,
+            "ready",
+        )
+        assert store.recover_step()
+        changes = files._connection.total_changes
+        for _ in range(2):
+            with upload.open_inventory() as members:
+                assert [(str(member.artifact_id), member.bytes) for member in members] == [
+                    (expected, len(b"original source"))
+                ]
+            assert list(members) == []
+        assert files._connection.total_changes == changes and canonical_calls == 1
+        assert binding[2].resources.status.connections == 1
+        assert binding[2].resources.status.blobs == 0
+        assert (
+            identity_body(files.child("directory-upload", initialize=False), byte_limit=8192)
+            == original
+        )
+    assert binding[2].resources.status.connections == binding[2].resources.status.blobs == 0

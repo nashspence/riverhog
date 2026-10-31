@@ -10,10 +10,10 @@ from typing import Any
 
 import pytest
 from a_riverhog_cli import main as riverhog_main
-from a_riverhog_cli.directory_upload import prepare_upload, preview_upload
+from a_riverhog_cli.directory_upload import preview_upload
 from typer.testing import CliRunner
 
-from tests.support.cli_upload import read_upload_sources
+from tests.support.cli_upload import prepare_upload_fixture, read_upload_sources
 
 RUNNER = CliRunner()
 
@@ -27,8 +27,8 @@ def test_local_upload_allocates_distinct_stable_artifact_ids_before_registration
     (root / "one.bin").write_bytes(b"same bytes")
     (root / "two.bin").write_bytes(b"same bytes")
 
-    first = prepare_upload(root, "same-request", ordering_bytes=64 * 1024)
-    second = prepare_upload(root, "same-request", ordering_bytes=64 * 1024)
+    first = prepare_upload_fixture(root, "same-request", ordering_bytes=64 * 1024)
+    second = prepare_upload_fixture(root, "same-request", ordering_bytes=64 * 1024)
     assert first == second
     assert len(read_upload_sources(first)) == 2
     assert len({source.artifact_id for source in read_upload_sources(first)}) == 2
@@ -40,7 +40,7 @@ def test_local_upload_allocates_distinct_stable_artifact_ids_before_registration
 
     (root / "two.bin").write_bytes(b"changed bytes")
     with pytest.raises(ValueError, match="saved upload identity differs"):
-        prepare_upload(root, "same-request", ordering_bytes=64 * 1024)
+        prepare_upload_fixture(root, "same-request", ordering_bytes=64 * 1024)
 
 
 def test_upload_preview_streams_hashes_without_allocating_ids_or_opening_api(
@@ -306,23 +306,36 @@ def test_upload_cli_owns_one_source_traversal_per_batch_pass_and_closes_on_failu
     )
     active = opened = stopped = 0
     batches = []
-    actual = LocalUpload.open_sources
+    from a_riverhog_cli import directory_upload
 
-    @contextmanager
-    def tracked(self):
-        nonlocal active, opened
-        with actual(self) as sources:
-            active += 1
-            opened += 1
-            try:
-                yield sources
-            finally:
-                active -= 1
+    actual_prepare = directory_upload.prepare_primary_inventory
+    derivations = 0
+
+    def prepared(store, members):
+        nonlocal derivations
+        derivations += 1
+        assert derivations == 1
+        return actual_prepare(store, members)
+
+    def tracked(actual):
+        @contextmanager
+        def scope(self):
+            nonlocal active, opened
+            with actual(self) as values:
+                active += 1
+                opened += 1
+                try:
+                    yield values
+                finally:
+                    active -= 1
+
+        return scope
 
     class Producer:
         constraints = object()
 
         def __init__(self, _api, **options):
+            assert derivations == 1 and active == 0
             self.inventory = options["member_inventory"]
 
         def append_inputs(self, inputs, *, expected_identities):
@@ -352,7 +365,9 @@ def test_upload_cli_owns_one_source_traversal_per_batch_pass_and_closes_on_failu
             assert active == 0
             stopped += 1
 
-    monkeypatch.setattr(LocalUpload, "open_sources", tracked)
+    monkeypatch.setattr(directory_upload, "prepare_primary_inventory", prepared)
+    monkeypatch.setattr(LocalUpload, "open_sources", tracked(LocalUpload.open_sources))
+    monkeypatch.setattr(LocalUpload, "open_inventory", tracked(LocalUpload.open_inventory))
     monkeypatch.setattr(riverhog_main, "COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES", 2)
     monkeypatch.setattr(riverhog_main, "IncrementalCollectionProducer", Producer)
     monkeypatch.setattr(riverhog_main, "client", object)
@@ -372,6 +387,6 @@ def test_upload_cli_owns_one_source_traversal_per_batch_pass_and_closes_on_failu
     assert (result.exit_code == 0) is (failure == "none")
     if failure != "none":
         assert isinstance(result.exception, OSError)
-    assert active == 0 and stopped == 1
+    assert active == 0 and stopped == 1 and derivations == 1
     assert opened == (1 if failure == "append" else 2)
     assert [len(batch) for batch in batches] == ([2] if failure == "append" else [2, 2, 1])
