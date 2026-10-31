@@ -269,7 +269,8 @@ def _prepare_verified_upload(
                 mode="wb", dir=destination.parent, prefix=".upload-", delete=False
             ) as handle:
                 temporary = handle.name
-                handle.write(canonical_json_bytes(document))
+                for chunk in _upload_identity_chunks(document):
+                    handle.write(chunk)
                 handle.flush()
                 os.fsync(handle.fileno())
             try:
@@ -284,6 +285,8 @@ def _prepare_verified_upload(
         finally:
             if temporary is not None:
                 Path(temporary).unlink(missing_ok=True)
+        # Drop serialization input before decoding the selected original.
+        del document
     return _load_upload_identity(
         json.loads(destination.read_bytes()), root, idempotency_key, current
     )
@@ -299,6 +302,24 @@ def _new_upload_identity(
         "source_naming_view_id": "urn:uuid:" + str(uuid.uuid4()),
         "sources": [{**item, "artifact_id": secrets.token_hex(32)} for item in current],
     }
+
+
+def _upload_identity_chunks(document: dict[str, object]) -> Iterator[bytes]:
+    """Encode the original allocation with one record-sized serialization buffer.
+
+    This application's fixed header sorts before its sources array. Each value
+    still uses the shared canonical codec; the stored format and original IDs
+    are unchanged. Enumeration and decoded replay have their own lifetimes.
+    """
+    if set(document) != {"format", "idempotency_key", "root", "source_naming_view_id", "sources"}:
+        raise ValueError("upload identity encoding requires the complete known document")
+    header = {key: value for key, value in document.items() if key != "sources"}
+    yield canonical_json_bytes(header)[:-1] + b',"sources":['
+    for index, row in enumerate(cast(list[dict[str, object]], document["sources"])):
+        if index:
+            yield b","
+        yield canonical_json_bytes(row)
+    yield b"]}"
 
 
 def _load_upload_identity(

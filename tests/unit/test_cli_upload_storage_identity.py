@@ -452,3 +452,123 @@ def test_larger_physical_slot_does_not_raise_the_reference_read_bound(tmp_path, 
             read_upload_identity(storage, byte_limit=64)
         storage.put_control("upload-identity", original, byte_limit=8192, expected=oversized)
         assert read_upload_identity(storage, byte_limit=64) == b"original"
+
+
+@pytest.mark.parametrize("members", [1, 3, 128, 1024])
+def test_upload_identity_record_encoding_preserves_canonical_originals(monkeypatch, members):
+    current = [
+        {
+            "relative_parts": [
+                'quote-"',
+                "backslash-\\",
+                "unicode-雪-😀",
+                "tab\tnewline\n",
+                "long-" + "x" * 512,
+                str(index),
+            ],
+            "bytes": 0 if index % 3 == 0 else 11,
+            "sha256": hashlib.sha256(b"" if index % 3 == 0 else b"equal bytes").hexdigest(),
+        }
+        for index in range(members)
+    ]
+    original = directory_upload._new_upload_identity(Path("/source"), "record-encoding", current)
+    exact = canonical_json_bytes(original)
+    before = json.loads(exact)
+    serialized = []
+
+    def bounded(value):
+        # Reaching the shared codec with the complete collection would retain
+        # its recursively prepared copy and serialized bytes at once.
+        assert "sources" not in value
+        serialized.append(value)
+        return canonical_json_bytes(value)
+
+    monkeypatch.setattr(directory_upload, "canonical_json_bytes", bounded)
+    encoded = directory_upload._upload_identity_chunks(original)
+    first = next(encoded)
+    assert len(serialized) == 1
+    assert b"".join((first, *encoded)) == exact
+    assert len(serialized) == members + 1
+    assert original == before
+    assert len({row["artifact_id"] for row in original["sources"]}) == members
+
+
+@pytest.mark.parametrize("changed", ["missing", "extra"])
+def test_upload_identity_record_encoding_rejects_unknown_document_shapes(changed):
+    original = directory_upload._new_upload_identity(Path("/source"), "record-encoding", [])
+    if changed == "missing":
+        original.pop("root")
+    else:
+        original["unrecorded"] = "must not be silently omitted"
+    with pytest.raises(ValueError, match="complete known document"):
+        next(directory_upload._upload_identity_chunks(original))
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX link and directory fsync publication")
+@pytest.mark.parametrize("failure", ["none", "record", "file-sync", "link", "directory-sync"])
+def test_record_identity_publication_keeps_only_a_complete_selected_original(
+    tmp_path, monkeypatch, failure
+):
+    root = tmp_path / "sources"
+    root.mkdir()
+    (root / "empty").write_bytes(b"")
+    (root / "one").write_bytes(b"equal bytes")
+    (root / "two").write_bytes(b"equal bytes")
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    root, current = directory_upload._verified_upload_sources(root, "retained")
+    original = directory_upload._new_upload_identity(root, "retained", current)
+    exact = canonical_json_bytes(original)
+    monkeypatch.setattr(directory_upload, "_new_upload_identity", lambda *args: original)
+    destination = directory_upload._state_path(root, "retained")
+    real_chunks = directory_upload._upload_identity_chunks
+    real_sync = directory_upload.os.fsync
+
+    def failed_chunks(document):
+        for index, chunk in enumerate(real_chunks(document)):
+            if index == 2:
+                raise OSError("injected record interruption")
+            yield chunk
+
+    sync_calls = []
+
+    def failed_sync(descriptor):
+        sync_calls.append(descriptor)
+        if len(sync_calls) == (1 if failure == "file-sync" else 2):
+            raise OSError("injected sync interruption")
+        return real_sync(descriptor)
+
+    def failed_link(*args, **kwargs):
+        raise OSError("injected link interruption")
+
+    with monkeypatch.context() as faults:
+        if failure == "record":
+            faults.setattr(directory_upload, "_upload_identity_chunks", failed_chunks)
+        elif failure == "link":
+            faults.setattr(directory_upload.os, "link", failed_link)
+        elif failure != "none":
+            faults.setattr(directory_upload.os, "fsync", failed_sync)
+        if failure == "none":
+            directory_upload._prepare_verified_upload(root, "retained", current)
+        else:
+            with pytest.raises(OSError, match="injected"):
+                directory_upload._prepare_verified_upload(root, "retained", current)
+    assert not list(destination.parent.glob(".upload-*"))
+    if failure not in ("none", "directory-sync"):
+        assert not destination.exists()
+        return
+    assert destination.read_bytes() == exact
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("cold replay generated replacement identities")
+
+    monkeypatch.setattr(directory_upload, "_new_upload_identity", forbidden)
+    monkeypatch.setattr(directory_upload, "_upload_identity_chunks", forbidden)
+    restored = directory_upload._prepare_verified_upload(
+        root, "retained", current, initialize=False
+    )
+    assert [source.artifact_id for source in restored.sources] == [
+        row["artifact_id"] for row in original["sources"]
+    ]
+    assert restored.source_naming_view_id == original["source_naming_view_id"]
+    assert [source.bytes for source in restored.sources] == [0, 11, 11]
+    assert destination.read_bytes() == exact
