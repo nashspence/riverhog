@@ -34,8 +34,24 @@ def identity_body(storage, *, byte_limit):
         return stream.read()
 
 
-def initialized_body(*args, **kwargs):
-    with initialize_upload_identity(*args, **kwargs) as stream:
+def candidate_body(storage, body):
+    from hashlib import sha256
+
+    from riverhog_client import PrimaryByteFile
+
+    digest = sha256(body).hexdigest()
+    candidate = PrimaryByteFile("fixture-stage-" + digest, len(body), digest)
+    if not storage.exists("upload-identity") and not storage.exists("source-identity"):
+        if not storage.exists(candidate.name):
+            assert (
+                storage.put_bytes(candidate.name, (body,), byte_limit=max(1, len(body)))
+                == candidate
+            )
+    return candidate
+
+
+def initialized_body(storage, body, **kwargs):
+    with initialize_upload_identity(storage, candidate_body(storage, body), **kwargs) as stream:
         return stream.read()
 
 
@@ -139,7 +155,7 @@ def test_storage_identity_commits_original_reference_before_payload_and_reopens_
             )
             == body
         )
-        assert events == ["prepared"]
+        assert events and set(events) == {"prepared"}
         exact = storage.read_control("upload-identity", byte_limit=1024)
     with opened(path, backend, initialize=False) as storage:
         assert identity_body(storage, byte_limit=len(body)) == body
@@ -311,14 +327,30 @@ import importlib.util,io,json,sys
 from pathlib import Path
 root=Path(sys.argv[1]);sys.path.insert(0,str(root))
 from a_riverhog_cli import directory_upload
-from a_riverhog_cli.upload_identity import initialize_upload_identity,open_upload_identity
+from a_riverhog_cli.upload_identity import (
+    initialize_upload_identity,open_upload_identity,stage_upload_identity)
 def identity_body(storage, *, byte_limit):
     with open_upload_identity(storage, byte_limit=byte_limit) as stream:
         return stream.read()
 
 
-def initialized_body(*args, **kwargs):
-    with initialize_upload_identity(*args, **kwargs) as stream:
+def candidate_body(storage, body):
+    from riverhog_client import PrimaryByteFile
+
+    from hashlib import sha256
+
+    digest = sha256(body).hexdigest()
+    candidate = PrimaryByteFile("fixture-stage-" + digest, len(body), digest)
+    if not storage.exists("upload-identity") and not storage.exists("source-identity"):
+        if not storage.exists(candidate.name):
+            assert storage.put_bytes(
+                candidate.name, (body,), byte_limit=max(1, len(body))
+            ) == candidate
+    return candidate
+
+
+def initialized_body(storage, body, **kwargs):
+    with initialize_upload_identity(storage, candidate_body(storage, body), **kwargs) as stream:
         return stream.read()
 
 
@@ -355,8 +387,12 @@ try:
             for _ in range(512):
                 if sqlite_primary_preparation_step(storage,plan=plan):return
             raise AssertionError("identity preparation did not finish")
-        assert initialized_body(
-            identity,body,byte_limit=8192,control_capacity=1024, prepare_payload=prepare)==body
+        staged=stage_upload_identity(
+            identity,(body[:13],body[13:]),byte_limit=8192,prepare_payload=prepare)
+        with initialize_upload_identity(
+            identity,staged,byte_limit=8192,control_capacity=1024,
+            prepare_payload=prepare) as original:
+            assert original.read()==body
     def forbidden(*args,**kwargs):
         raise AssertionError("resume generated replacement identities")
     directory_upload.secrets.token_hex=forbidden
@@ -480,13 +516,16 @@ def test_small_identity_reference_slot_refuses_before_preparation_or_publication
 @pytest.mark.parametrize("capacity", [True, 0, -1, 1.5])
 def test_identity_reference_capacity_is_explicit_before_storage_access(capacity):
     with pytest.raises(ValueError, match="positive byte admission"):
-        initialized_body(
+        from riverhog_client import PrimaryByteFile
+
+        with initialize_upload_identity(
             object(),
-            b"original",
+            PrimaryByteFile("stage", 8, hashlib.sha256(b"original").hexdigest()),
             byte_limit=64,
             control_capacity=capacity,
             prepare_payload=lambda: None,
-        )
+        ):
+            pytest.fail("invalid reference admission reached storage")
 
 
 @pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
@@ -766,6 +805,7 @@ def test_identity_stream_has_no_implicit_consumer_read_and_closes_before_reuse(
                 )
                 == body
             )
+        candidate = candidate_body(storage, body) if initialize else None
         verified = storage.verified
         reads = []
         retained = []
@@ -789,15 +829,18 @@ def test_identity_stream_has_no_implicit_consumer_read_and_closes_before_reuse(
         @contextmanager
         def guarded(reference):
             with verified(reference) as actual:
-                retained.append(actual)
-                yield ConsumerWindow(actual)
+                if reference.name != "source-identity":
+                    yield actual
+                else:
+                    retained.append(actual)
+                    yield ConsumerWindow(actual)
 
         with monkeypatch.context() as observed:
             observed.setattr(storage, "verified", guarded)
             reader = (
                 initialize_upload_identity(
                     storage,
-                    body,
+                    candidate,
                     byte_limit=len(body),
                     control_capacity=1024,
                     prepare_payload=lambda: None,
@@ -829,7 +872,7 @@ def test_identity_stream_has_no_implicit_consumer_read_and_closes_before_reuse(
         with pytest.raises(FileExistsError):
             with initialize_upload_identity(
                 storage,
-                b"replacement",
+                candidate_body(storage, b"replacement"),
                 byte_limit=len(body),
                 control_capacity=1024,
                 prepare_payload=lambda: None,
@@ -878,7 +921,7 @@ def test_empty_opaque_identity_stream_keeps_the_exact_zero_length_commitment(tmp
     with opened(path, backend, initialize=True) as storage:
         with initialize_upload_identity(
             storage,
-            b"",
+            candidate_body(storage, b""),
             byte_limit=1,
             control_capacity=1024,
             prepare_payload=lambda: None,
@@ -1346,3 +1389,166 @@ def test_identity_preflight_requires_complete_ordered_metadata_exhaustion(tmp_pa
             IncompleteMetadata(),
             open_original=lambda: io.BytesIO(body),
         )
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("size", [0, 4095, 4096, 131073])
+def test_streamed_identity_staging_preserves_exact_commitment_and_bounded_copy_windows(
+    tmp_path, monkeypatch, backend, size
+):
+    from a_riverhog_cli.upload_identity import stage_upload_identity
+
+    path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
+    body = (b"original\0identity" * (size // 17 + 1))[:size]
+    phase = "stage"
+    prepared = []
+    windows = []
+    closed = []
+
+    def source():
+        try:
+            for offset in range(0, len(body), 137):
+                yield body[offset : offset + 137]
+        finally:
+            closed.append(True)
+
+    with opened(path, backend, initialize=True) as storage:
+        put = storage.put_bytes
+
+        def ready():
+            assert storage.exists("upload-identity") is (phase == "copy")
+            prepared.append(phase)
+
+        def observed(name, chunks, **kwargs):
+            def checked():
+                for chunk in chunks:
+                    assert 0 < len(chunk) <= 4096
+                    assert prepared[-1] == phase
+                    windows.append((phase, len(chunk)))
+                    yield chunk
+
+            return put(name, checked(), **kwargs)
+
+        monkeypatch.setattr(storage, "put_bytes", observed)
+        staged = stage_upload_identity(
+            storage, source(), byte_limit=max(1, size), prepare_payload=ready
+        )
+        assert staged.bytes == len(body) and staged.sha256 == hashlib.sha256(body).hexdigest()
+        assert closed == [True]
+        assert not storage.exists("upload-identity") and not storage.exists("source-identity")
+        phase = "copy"
+        with initialize_upload_identity(
+            storage,
+            staged,
+            byte_limit=max(1, size),
+            control_capacity=1024,
+            prepare_payload=ready,
+        ) as selected:
+            assert selected.read() == body
+        assert selected.closed
+        assert sum(length for phase, length in windows if phase == "stage") == size
+        assert sum(length for phase, length in windows if phase == "copy") == size
+        with storage.verified(staged) as retained:
+            assert retained.read() == body
+        assert storage.exists(staged.name)
+    with opened(path, backend, initialize=False) as storage:
+        assert identity_body(storage, byte_limit=max(1, size)) == body
+        with storage.verified(staged) as retained:
+            assert retained.read() == body
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("fault", ["absent", "length", "hash"])
+def test_identity_selection_refuses_unverified_staging_before_original_reference(
+    tmp_path, backend, fault
+):
+    from riverhog_client import PrimaryByteFile
+
+    path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
+    with opened(path, backend, initialize=True) as storage:
+        original = candidate_body(storage, b"original staging")
+        changed = PrimaryByteFile(
+            "absent-stage" if fault == "absent" else original.name,
+            original.bytes + (fault == "length"),
+            "0" * 64 if fault == "hash" else original.sha256,
+        )
+
+        def forbidden():
+            pytest.fail("unverified staging reached final payload preparation")
+
+        with pytest.raises((FileNotFoundError, PrimaryStateError)):
+            with initialize_upload_identity(
+                storage, changed, byte_limit=128, control_capacity=1024, prepare_payload=forbidden
+            ):
+                pytest.fail("unverified staging was exposed as original identity")
+        assert not storage.exists("upload-identity") and not storage.exists("source-identity")
+        with storage.verified(original) as retained:
+            assert retained.read() == b"original staging"
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("fault", ["input", "prepare"])
+def test_identity_staging_failure_closes_input_without_selecting_original_authority(
+    tmp_path, backend, fault
+):
+    from a_riverhog_cli.upload_identity import stage_upload_identity
+
+    path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
+
+    class Input:
+        closed = 0
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            raise OSError("input unavailable")
+
+        def close(self):
+            self.closed += 1
+
+    source = Input()
+    with opened(path, backend, initialize=True) as storage:
+
+        def ready():
+            if fault == "prepare":
+                raise OSError("preparation unavailable")
+
+        with pytest.raises(OSError, match="unavailable"):
+            stage_upload_identity(storage, source, byte_limit=8192, prepare_payload=ready)
+        assert source.closed == 1
+    with opened(path, backend, initialize=False) as storage:
+        assert not storage.exists("upload-identity") and not storage.exists("source-identity")
+        with pytest.raises(FileNotFoundError):
+            identity_body(storage, byte_limit=8192)
+
+
+@pytest.mark.skipif(os.name != "posix", reason="actual POSIX and Unix-VFS identity adapters")
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("retained", ["stage", "reference", "content"])
+def test_identity_staging_refuses_retained_roles_before_consuming_or_preparing_input(
+    tmp_path, backend, retained
+):
+    from a_riverhog_cli.upload_identity import stage_upload_identity
+
+    path = tmp_path / ("directory" if backend == "posix" else "identity.sqlite3")
+    with opened(path, backend, initialize=True) as storage:
+        if retained == "reference":
+            storage.prepare_controls(("upload-identity",), byte_limit=1024)
+            storage.put_control("upload-identity", b"retained original", byte_limit=1024)
+        else:
+            name = "staged-source-identity" if retained == "stage" else "source-identity"
+            storage.put_bytes(name, (b"retained original",), byte_limit=1024)
+
+        def forbidden():
+            pytest.fail("retained identity reached input consumption or preparation")
+
+        class Input:
+            def __iter__(self):
+                forbidden()
+
+        with pytest.raises(FileExistsError, match="conflicts with retained identity"):
+            stage_upload_identity(storage, Input(), byte_limit=1024, prepare_payload=forbidden)

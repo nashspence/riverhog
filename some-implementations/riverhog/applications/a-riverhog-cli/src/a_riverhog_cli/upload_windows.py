@@ -6,7 +6,6 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import partial
-from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Annotated
 
@@ -24,7 +23,11 @@ from riverhog_client import (
     sqlite_primary_preparation_step,
 )
 
-from a_riverhog_cli.upload_identity import initialize_upload_identity, open_upload_identity
+from a_riverhog_cli.upload_identity import (
+    initialize_upload_identity,
+    open_upload_identity,
+    stage_upload_identity,
+)
 from a_riverhog_cli.upload_sqlite import UploadSqliteResources
 
 if TYPE_CHECKING:
@@ -89,8 +92,8 @@ class WindowsUploadState:
 
     Identity bytes have their own explicit admission in addition to primary
     member admission. Physical container grants cover both. This selection
-    admits derived source ordering in the selected primary. Fresh identity
-    encoding and uniqueness checks retain separate Python and RSS costs.
+    admits source ordering and original encoding in the selected primary.
+    Identity uniqueness checks retain separate Python and RSS costs.
     Preparation is execution with an explicit quantum count, never status or
     close work. Exhaustion retains state and does not increase any grant.
     """
@@ -210,12 +213,12 @@ def prepare_windows_upload(
 
         if initialize:
             with current_sources() as (root, current):
-                with BytesIO() as encoded:
-                    for chunk in _upload_identity_chunks(
-                        _new_upload_identity(root, idempotency_key, current)
-                    ):
-                        encoded.write(chunk)
-                    original = encoded.getvalue()
+                original = stage_upload_identity(
+                    identity,
+                    _upload_identity_chunks(_new_upload_identity(root, idempotency_key, current)),
+                    byte_limit=selection.identity_bytes,
+                    prepare_payload=prepare,
+                )
                 with initialize_upload_identity(
                     identity,
                     original,
