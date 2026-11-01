@@ -31,7 +31,7 @@ from riverhog_core.catalog_registration_models import (
     CollectionRegistrationRecord,
     CollectionRegistrationVolumeRecord,
 )
-from riverhog_core.collection_upload_identity import upload_construction
+from riverhog_core.collection_construction import upload_construction
 from riverhog_core.incremental_emission import VolumeEmissionCapacity, VolumeEmissionLimits
 
 

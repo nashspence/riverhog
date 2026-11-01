@@ -45,7 +45,7 @@ from riverhog_core.collection_access import (
     require_collection_access,
     require_collection_create_access,
 )
-from riverhog_core.collection_upload_identity import upload_construction
+from riverhog_core.collection_construction import upload_construction
 from riverhog_core.domain.archive import ArchiveArtifact, PackVolumePlan
 from riverhog_core.incremental_emission import (
     VolumeEmissionCapacity,

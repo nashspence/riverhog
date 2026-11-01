@@ -31,7 +31,7 @@ from riverhog_core.catalog_archive_write_models import (
 )
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
-from riverhog_core.collection_upload_identity import upload_construction, upload_construction_fields
+from riverhog_core.collection_construction import upload_construction, upload_construction_fields
 
 _T = TypeVar("_T")
 Guard = Callable[[Session], None]
