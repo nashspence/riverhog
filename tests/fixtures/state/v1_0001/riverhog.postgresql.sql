@@ -2808,4 +2808,87 @@ CREATE TABLE collection_registration_volumes (
 	CONSTRAINT ck_collection_registration_volumes_registration_id_hex CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
+CREATE TABLE archive_write_controls (
+	collection_id BIGINT NOT NULL,
+	construction_json TEXT NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	gate VARCHAR NOT NULL,
+	next_call TEXT NOT NULL,
+	terminal_id VARCHAR(64),
+	PRIMARY KEY (collection_id),
+	CONSTRAINT ck_archive_write_controls_gate CHECK (gate IN ('open','closed')),
+	CONSTRAINT ck_archive_write_controls_terminal CHECK (terminal_id IS NULL OR gate = 'closed'),
+	CONSTRAINT ck_archive_write_controls_epoch_hex CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_write_controls_terminal_id_hex CHECK (terminal_id IS NULL OR length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE archive_write_preparations (
+	collection_id BIGINT NOT NULL,
+	object_id VARCHAR NOT NULL,
+	identity_json TEXT NOT NULL,
+	preparation_json TEXT NOT NULL,
+	PRIMARY KEY (collection_id, object_id),
+	FOREIGN KEY(collection_id) REFERENCES archive_write_controls (collection_id)
+);
+
+CREATE TABLE archive_write_effects (
+	id VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	object_id VARCHAR NOT NULL,
+	sequence TEXT NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	executor_id VARCHAR(64) NOT NULL,
+	dispatch_sha256 VARCHAR(64) NOT NULL,
+	request_sha256 VARCHAR(64) NOT NULL,
+	request_json TEXT NOT NULL,
+	resource VARCHAR NOT NULL,
+	kind VARCHAR NOT NULL,
+	state VARCHAR NOT NULL,
+	unresolved BOOLEAN NOT NULL,
+	control_bytes BIGINT NOT NULL,
+	result_capacity_bytes BIGINT NOT NULL,
+	observation_json TEXT,
+	result_json TEXT,
+	PRIMARY KEY (id),
+	FOREIGN KEY(collection_id, object_id) REFERENCES archive_write_preparations (collection_id, object_id),
+	CONSTRAINT ck_archive_write_effects_kind CHECK (kind IN ('begin','part','complete','lookup')),
+	CONSTRAINT ck_archive_write_effects_state CHECK (state IN ('armed','uncertain','settled')),
+	CONSTRAINT ck_archive_write_effects_bytes CHECK (control_bytes > 0 AND result_capacity_bytes > 0),
+	CONSTRAINT ck_archive_write_effects_result CHECK (state <> 'settled' OR result_json IS NOT NULL),
+	CONSTRAINT ck_archive_write_effects_unsettled CHECK (state = 'settled' OR result_json IS NULL),
+	CONSTRAINT ck_archive_write_effects_unresolved CHECK (state = 'settled' AND unresolved IS false OR state IN ('armed','uncertain') AND unresolved IS true),
+	CONSTRAINT ck_archive_write_effects_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_write_effects_epoch_hex CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_write_effects_executor_id_hex CHECK (length(executor_id) = 64 AND lower(executor_id) = executor_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(executor_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_write_effects_dispatch_sha256_hex CHECK (length(dispatch_sha256) = 64 AND lower(dispatch_sha256) = dispatch_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(dispatch_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_write_effects_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_archive_write_effects_capacity ON archive_write_effects (collection_id, id);
+
+CREATE INDEX ix_archive_write_effects_pending ON archive_write_effects (collection_id, unresolved, id);
+
+CREATE INDEX ix_archive_write_effects_volume ON archive_write_effects (collection_id, object_id, unresolved, resource);
+
+CREATE TABLE archive_upload_terminals (
+	id VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	request_json TEXT NOT NULL,
+	principal_id VARCHAR NOT NULL,
+	kind VARCHAR NOT NULL,
+	phase VARCHAR NOT NULL,
+	frontier TEXT NOT NULL,
+	original_epoch VARCHAR(64) NOT NULL,
+	result_json TEXT,
+	PRIMARY KEY (id),
+	FOREIGN KEY(collection_id) REFERENCES archive_write_controls (collection_id),
+	CONSTRAINT ck_archive_upload_terminals_kind CHECK (kind IN ('cancel','discard')),
+	CONSTRAINT ck_archive_upload_terminals_phase CHECK (phase IN ('draining','refused-sealed','needs-reconfirmation','cleanup-ready','cleaning','done')),
+	CONSTRAINT ck_archive_upload_terminals_result CHECK (phase <> 'done' OR result_json IS NOT NULL),
+	CONSTRAINT ck_archive_upload_terminals_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_upload_terminals_original_epoch_hex CHECK (length(original_epoch) = 64 AND lower(original_epoch) = original_epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(original_epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_archive_upload_terminals_collection ON archive_upload_terminals (collection_id, id);
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

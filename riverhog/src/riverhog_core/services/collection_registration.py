@@ -45,7 +45,7 @@ from riverhog_core.collection_access import (
     require_collection_access,
     require_collection_create_access,
 )
-from riverhog_core.collection_registration_identity import registration_construction
+from riverhog_core.collection_upload_identity import upload_construction
 from riverhog_core.domain.archive import ArchiveArtifact, PackVolumePlan
 from riverhog_core.incremental_emission import (
     VolumeEmissionCapacity,
@@ -255,7 +255,7 @@ def _live(
         upload.active_registration_id != operation.id
         or str(upload.registration_revision) != operation.base_revision
         or upload.planner_checkpoint_json != operation.base_checkpoint_json
-        or registration_construction(upload) != operation.construction_json
+        or upload_construction(upload) != operation.construction_json
         or upload.tag_staging_set_identity != operation.authorized_tag_set_identity
     ):
         raise Conflict("collection upload registration fence changed")
@@ -330,7 +330,7 @@ class CollectionRegistrationOwner:
         fence = _principal_key(session, principal, for_update=False)
         upload = session.get(CollectionUploadRecord, collection_id)
         if upload is not None:
-            if registration_construction(upload) != operation.construction_json:
+            if upload_construction(upload) != operation.construction_json:
                 raise NotFound("collection upload registration construction differs")
             if upload.initiated_by_principal_id == principal.id:
                 # A current key generation and exact tag-set identity retain the
@@ -509,7 +509,7 @@ class CollectionRegistrationOwner:
             if upload is None or upload.initiated_by_principal_id != principal.id:
                 raise NotFound("collection upload session not found")
             # Lock order is upload -> operation -> application key -> execution claim.
-            construction = registration_construction(upload)
+            construction = upload_construction(upload)
             operation_id = hashlib.sha256(
                 canonical_json_bytes(
                     {

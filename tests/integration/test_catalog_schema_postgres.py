@@ -1542,3 +1542,33 @@ def test_postgres_registration_disposal_checks_current_construction_and_selected
         partial(witness._service_with_archive_objects, database_url=isolated_database_url),
     )
     cleanup.test_cleanup_refuses_a_changed_construction_or_terminal_selection(tmp_path, changed)
+
+
+@pytest.mark.parametrize(
+    "witness",
+    [
+        "test_original_preparation_is_retained_before_arm_and_cold_retry",
+        "test_preparation_identity_and_authority_are_checked_before_new_effect",
+        "test_live_capability_dispatches_once_and_cold_observation_cannot_close_it",
+        "test_terminal_selection_keeps_armed_begin_and_original_volume",
+        "test_returned_result_and_catalog_change_commit_together_and_retry_exactly",
+        "test_positive_observation_keeps_execution_uncertainty",
+        "test_part_lanes_keep_identity_exclusion_and_completion_single_flight",
+        "test_retained_effect_reservations_cover_calls_and_future_result_bytes",
+        "test_oversize_preparation_terminal_and_result_keep_original_state",
+        "test_terminal_exact_selection_replays_and_changed_kind_or_request_conflicts",
+        "test_concurrent_terminal_requests_have_one_durable_selection",
+        "test_preparation_and_terminal_records_do_not_cascade_away_with_upload",
+        "test_absent_control_never_synthetically_settles_legacy_untracked_execution",
+        "test_call_frontier_does_not_wrap_at_database_integer_width",
+        "test_selected_exact_terminal_retry_keeps_original_plan_but_checks_current_access",
+        "test_changed_volume_cannot_reuse_original_preparation_for_dispatch",
+    ],
+)
+def test_postgres_archive_write_admission_preserves_exact_execution_ownership(
+    isolated_database_url, tmp_path, witness
+):
+    from tests.unit import test_archive_write_admission as admission
+
+    with admission._case(tmp_path, database_url=isolated_database_url) as case:
+        getattr(admission, witness)(case)

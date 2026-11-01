@@ -31,7 +31,7 @@ from riverhog_core.catalog_registration_models import (
     CollectionRegistrationRecord,
     CollectionRegistrationVolumeRecord,
 )
-from riverhog_core.collection_registration_identity import registration_construction
+from riverhog_core.collection_upload_identity import upload_construction
 from riverhog_core.incremental_emission import VolumeEmissionCapacity, VolumeEmissionLimits
 
 
@@ -45,7 +45,7 @@ def _reservation(upload: CollectionUploadRecord, operation: CollectionRegistrati
         or upload.active_registration_id != operation.id
         or str(upload.registration_revision) != operation.base_revision
         or upload.planner_checkpoint_json != operation.base_checkpoint_json
-        or registration_construction(upload) != operation.construction_json
+        or upload_construction(upload) != operation.construction_json
     ):
         raise Conflict("registration disposal reservation changed")
     if upload.state != "discarding":
