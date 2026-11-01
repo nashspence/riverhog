@@ -281,6 +281,7 @@ class StorageAdapterClient:
             f"{self.base_url}/v1/objects/read",
             headers=self._request_headers("/v1/objects/read"),
             json=request.model_dump(mode="json", exclude_none=True),
+            follow_redirects=False,
         )
         response = context.__enter__()
         try:
@@ -451,6 +452,8 @@ class StorageAdapterClient:
                     else None
                 ),
                 content=content,
+                # A supplied client must not replay this request at a redirect.
+                follow_redirects=False,
             )
         except httpx.HTTPError as exc:
             raise StorageAdapterProtocolError(f"storage adapter request failed: {exc}") from exc
