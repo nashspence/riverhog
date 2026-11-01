@@ -1990,6 +1990,7 @@ class SqlAlchemyCollectionUploadService:
                     select(CollectionArchiveObjectUploadRecord)
                     .where(
                         CollectionArchiveObjectUploadRecord.collection_id == normalized_id,
+                        CollectionArchiveObjectUploadRecord.sequence < upload.planner_next_sequence,
                         # Keep the partial-index predicate provable in generic prepared plans.
                         CollectionArchiveObjectUploadRecord.state != literal_column("'sealed'"),
                         CollectionArchiveObjectUploadRecord.work_ready.is_(true()),
@@ -2000,6 +2001,8 @@ class SqlAlchemyCollectionUploadService:
                                     CollectionUploadArtifactRecord.collection_id == normalized_id,
                                     CollectionUploadArtifactRecord.artifact_id
                                     == CollectionArchiveObjectUploadRecord.source_artifact_id,
+                                    CollectionUploadArtifactRecord.artifact_order
+                                    < upload.artifact_count,
                                     CollectionUploadArtifactRecord.raw_parts_accepted
                                     >= (
                                         CollectionArchiveObjectUploadRecord.source_first_part
@@ -2011,6 +2014,8 @@ class SqlAlchemyCollectionUploadService:
                     )
                     .order_by(CollectionArchiveObjectUploadRecord.sequence)
                     .limit(limit)
+                    # Both publication markers are pinned by this read snapshot.
+                    .execution_options(include_unpublished_registration=True)
                 )
             )
             work = [_unit_assignment_payload(row) for row in volumes]

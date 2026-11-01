@@ -944,6 +944,7 @@ def test_postgres_archive_sequence_state_round_trips_full_v1_domain(
                 select(CollectionArchiveObjectUploadRecord.sequence)
                 .where(CollectionArchiveObjectUploadRecord.collection_id == collection_id)
                 .order_by(CollectionArchiveObjectUploadRecord.sequence)
+                .execution_options(include_unpublished_registration=True)
             )
         ) == list(values)
 
