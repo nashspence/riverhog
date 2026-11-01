@@ -2738,4 +2738,65 @@ CREATE INDEX ix_discovery_validation_state_workspace ON discovery_validation_job
 
 CREATE UNIQUE INDEX uq_discovery_validation_build ON discovery_validation_jobs (build_id) WHERE build_id IS NOT NULL;
 
+CREATE TABLE collection_registrations (
+	id VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	principal_id VARCHAR NOT NULL,
+	construction_json TEXT NOT NULL,
+	request_sha256 VARCHAR(64) NOT NULL,
+	request_json TEXT NOT NULL,
+	new_members_json TEXT NOT NULL,
+	base_checkpoint_json TEXT NOT NULL,
+	base_revision TEXT NOT NULL,
+	stage_frontier_json TEXT NOT NULL,
+	verify_frontier_json TEXT NOT NULL,
+	stage_chain VARCHAR(64) NOT NULL,
+	verify_chain VARCHAR(64) NOT NULL,
+	stage_totals_json TEXT NOT NULL,
+	verify_totals_json TEXT NOT NULL,
+	coverage_audit_after_artifact_id VARCHAR(64),
+	coverage_audit_after_object_id VARCHAR,
+	coverage_audited_rows TEXT NOT NULL,
+	phase VARCHAR NOT NULL,
+	execution_epoch VARCHAR(64) NOT NULL,
+	authorized_tag_set_identity VARCHAR(64) NOT NULL,
+	key_id VARCHAR,
+	key_app VARCHAR,
+	key_generation VARCHAR(64),
+	claim_id VARCHAR,
+	acknowledgement_json TEXT,
+	failure_json TEXT,
+	due_at VARCHAR,
+	created_at VARCHAR NOT NULL,
+	updated_at VARCHAR NOT NULL,
+	PRIMARY KEY (id),
+	CONSTRAINT ck_collection_registrations_phase CHECK (phase IN ('staging','verifying','auditing','ready','published','paused','cleaning','disposed','failed')),
+	CONSTRAINT ck_collection_registrations_key CHECK ((key_id IS NULL AND key_app IS NULL AND key_generation IS NULL) OR (key_id IS NOT NULL AND key_app IS NOT NULL AND key_generation IS NOT NULL)),
+	CONSTRAINT ck_collection_registrations_ack CHECK ((phase = 'published') = (acknowledgement_json IS NOT NULL)),
+	CONSTRAINT ck_collection_registrations_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_stage_chain_hex CHECK (length(stage_chain) = 64 AND lower(stage_chain) = stage_chain AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stage_chain, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_verify_chain_hex CHECK (length(verify_chain) = 64 AND lower(verify_chain) = verify_chain AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(verify_chain, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_57c49f0cfe6bea1d CHECK (coverage_audit_after_artifact_id IS NULL OR length(coverage_audit_after_artifact_id) = 64 AND lower(coverage_audit_after_artifact_id) = coverage_audit_after_artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(coverage_audit_after_artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_execution_epoch_hex CHECK (length(execution_epoch) = 64 AND lower(execution_epoch) = execution_epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_authorized_tag_set_identity_hex CHECK (length(authorized_tag_set_identity) = 64 AND lower(authorized_tag_set_identity) = authorized_tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authorized_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_key_generation_hex CHECK (key_generation IS NULL OR length(key_generation) = 64 AND lower(key_generation) = key_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(key_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_collection_registrations_due ON collection_registrations (phase, due_at, collection_id, id);
+
+CREATE INDEX ix_collection_registrations_request ON collection_registrations (collection_id, request_sha256);
+
+CREATE TABLE collection_registration_volumes (
+	registration_id VARCHAR(64) NOT NULL,
+	sequence VARCHAR(64) NOT NULL,
+	object_id VARCHAR NOT NULL,
+	kind VARCHAR NOT NULL,
+	PRIMARY KEY (registration_id, sequence),
+	FOREIGN KEY(registration_id) REFERENCES collection_registrations (id),
+	CONSTRAINT ck_collection_registration_volumes_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_registration_volumes_kind CHECK (kind IN ('pack','segment')),
+	CONSTRAINT ck_collection_registration_volumes_registration_id_hex CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');
