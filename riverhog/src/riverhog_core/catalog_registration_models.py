@@ -43,6 +43,8 @@ class CollectionRegistrationRecord(Base):
     claim_id: Mapped[str | None] = mapped_column(String, nullable=True)
     acknowledgement_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     failure_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    disposition_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    cleanup_phase: Mapped[str | None] = mapped_column(String, nullable=True)
     due_at: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[str] = mapped_column(String)
     updated_at: Mapped[str] = mapped_column(String)
@@ -68,6 +70,24 @@ class CollectionRegistrationRecord(Base):
             "acknowledgement_json IS NULL OR phase = 'published'",
             name="ck_collection_registrations_published",
         ),
+        CheckConstraint(
+            "cleanup_phase IS NULL OR cleanup_phase IN "
+            "('coverage','plans','members','summaries','finish','done')",
+            name="ck_collection_registrations_cleanup",
+        ),
+        CheckConstraint(
+            "phase NOT IN ('cleaning','disposed') OR disposition_json IS NOT NULL",
+            name="ck_collection_registrations_disposition",
+        ),
+        CheckConstraint(
+            "phase NOT IN ('cleaning','disposed') OR cleanup_phase IS NOT NULL",
+            name="ck_collection_registrations_cleanup_required",
+        ),
+        CheckConstraint(
+            "phase <> 'disposed' OR cleanup_phase = 'done'",
+            name="ck_collection_registrations_disposed",
+        ),
+        Index("ix_collection_registrations_collection", "collection_id", "id"),
         Index("ix_collection_registrations_request", "collection_id", "request_sha256"),
         Index("ix_collection_registrations_due", "phase", "due_at", "collection_id", "id"),
     )

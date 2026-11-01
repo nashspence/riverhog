@@ -1482,3 +1482,63 @@ def test_postgres_registration_retains_actual_delegated_claim_authority(
     delegated.test_registration_accepts_the_real_write_capability_and_retains_its_live_claim(
         tmp_path, combined
     )
+
+
+@pytest.mark.parametrize("prior_pack", [False, True])
+def test_postgres_registration_disposal_preserves_the_accepted_prefix_after_cold_resume(
+    isolated_database_url, tmp_path, monkeypatch, prior_pack
+):
+    from functools import partial
+
+    from tests.unit import test_collection_registration_cleanup as cleanup
+    from tests.unit import test_collection_registration_operations as witness
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    cleanup.test_cleanup_cold_resumes_bounded_windows_and_preserves_the_accepted_prefix(
+        tmp_path, prior_pack
+    )
+
+
+@pytest.mark.parametrize("case", ["interruption", "capacity", "dependent-state"])
+def test_postgres_registration_disposal_preserves_retained_state_on_refusal(
+    isolated_database_url, tmp_path, monkeypatch, case
+):
+    from functools import partial
+
+    from tests.unit import test_collection_registration_cleanup as cleanup
+    from tests.unit import test_collection_registration_operations as witness
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    if case == "interruption":
+        cleanup.test_cleanup_transaction_interruption_rolls_back_deletes_and_progress(
+            tmp_path, monkeypatch
+        )
+    elif case == "capacity":
+        cleanup.test_cleanup_capacity_preserves_disposition_and_cursor_and_backs_off(tmp_path)
+    else:
+        cleanup.test_cleanup_refuses_member_children_instead_of_using_fk_cascade(tmp_path)
+
+
+@pytest.mark.parametrize("changed", ["construction", "owner", "disposition"])
+def test_postgres_registration_disposal_checks_current_construction_and_selected_owner(
+    isolated_database_url, tmp_path, monkeypatch, changed
+):
+    from functools import partial
+
+    from tests.unit import test_collection_registration_cleanup as cleanup
+    from tests.unit import test_collection_registration_operations as witness
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    cleanup.test_cleanup_refuses_a_changed_construction_or_terminal_selection(tmp_path, changed)

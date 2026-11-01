@@ -72,7 +72,8 @@ from riverhog_core.services.app_keys import (
 
 _CHAIN_INITIAL = hashlib.sha256(b"riverhog-registration-emission-chain/v1\0").hexdigest()
 _TOTALS_INITIAL = '{"coverage_rows":"0","metadata_bytes":"0"}'
-_RUNNABLE_PHASES = ("staging", "verifying", "auditing", "ready")
+_REGISTRATION_PHASES = ("staging", "verifying", "auditing", "ready")
+_RUNNABLE_PHASES = (*_REGISTRATION_PHASES, "cleaning")
 
 
 def _busy(error: OperationalError) -> bool:
@@ -378,7 +379,7 @@ class CollectionRegistrationOwner:
                 return operation
             raise NotFound("collection upload registration not found")
         collection = session.get(CollectionRecord, collection_id)
-        if collection is None:
+        if collection is None or not collection.is_published:
             raise NotFound("collection upload registration not found")
         if collection.created_by_principal_id == principal.id:
             require_collection_create_access(principal, COLLECTIONS_CREATE)
@@ -569,7 +570,7 @@ class CollectionRegistrationOwner:
                     failure = json.loads(operation.failure_json or "{}")
                     if failure.get("kind") == "authority":
                         resume_phase = failure.get("resume_phase")
-                if resume_phase not in _RUNNABLE_PHASES:
+                if resume_phase not in _REGISTRATION_PHASES:
                     raise Conflict(
                         "collection upload registration cannot resume in its current phase"
                     )
@@ -704,7 +705,7 @@ class CollectionRegistrationOwner:
                 raise NotFound("collection upload registration not found")
             if expected_epoch is not None and operation.execution_epoch != expected_epoch:
                 raise Conflict("collection upload registration execution changed")
-            if operation.phase == "published":
+            if operation.phase in {"published", "disposed"}:
                 return _outcome(operation)
             if upload is None:
                 raise Conflict("collection upload registration construction is unavailable")
@@ -719,8 +720,17 @@ class CollectionRegistrationOwner:
         operation: CollectionRegistrationRecord,
         limits: VolumeEmissionLimits,
     ) -> None:
-        _live(session, upload, operation)
-        if operation.phase == "staging":
+        if operation.phase == "cleaning":
+            from riverhog_core.services.collection_registration_cleanup import (
+                advance_registration_cleanup,
+            )
+
+            advance_registration_cleanup(session, upload, operation, limits=limits)
+        else:
+            _live(session, upload, operation)
+        if operation.phase in {"cleaning", "disposed"}:
+            pass
+        elif operation.phase == "staging":
             self._stage(session, upload, operation, limits)
         elif operation.phase == "verifying":
             self._verify(session, upload, operation, limits)
@@ -732,7 +742,7 @@ class CollectionRegistrationOwner:
             raise Conflict("collection upload registration cannot advance in its current phase")
         operation.updated_at = utc_timestamp_now()
         operation.failure_json = None
-        if operation.phase != "published":
+        if operation.phase not in {"published", "disposed"}:
             operation.due_at = operation.updated_at
 
     def process_due(self, *, limit: int = 1) -> int:
@@ -846,9 +856,13 @@ class CollectionRegistrationOwner:
                 operation.due_at = format_utc_timestamp(utc_now() + tuning.retry_delay)
                 operation.updated_at = now
             except (Conflict, NotFound):
-                operation.phase = "paused"
+                operation.phase = "failed" if phase == "cleaning" else "paused"
                 operation.execution_epoch = secrets.token_hex(32)
-                operation.failure_json = _json({"kind": "authority", "resume_phase": phase})
+                operation.failure_json = _json(
+                    {"kind": "disposal-fence"}
+                    if phase == "cleaning"
+                    else {"kind": "authority", "resume_phase": phase}
+                )
                 operation.due_at = None
                 operation.updated_at = now
             except (RuntimeError, ValueError):

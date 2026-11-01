@@ -6038,6 +6038,8 @@ CREATE TABLE collection_registrations (
 	claim_id VARCHAR,
 	acknowledgement_json TEXT,
 	failure_json TEXT,
+	disposition_json TEXT,
+	cleanup_phase VARCHAR,
 	due_at VARCHAR,
 	created_at VARCHAR NOT NULL,
 	updated_at VARCHAR NOT NULL,
@@ -6046,6 +6048,10 @@ CREATE TABLE collection_registrations (
 	CONSTRAINT ck_collection_registrations_key CHECK (key_id IS NULL AND key_app IS NULL AND key_generation IS NULL OR key_id IS NOT NULL AND key_app IS NOT NULL AND key_generation IS NOT NULL),
 	CONSTRAINT ck_collection_registrations_ack CHECK (phase <> 'published' OR acknowledgement_json IS NOT NULL),
 	CONSTRAINT ck_collection_registrations_published CHECK (acknowledgement_json IS NULL OR phase = 'published'),
+	CONSTRAINT ck_collection_registrations_cleanup CHECK (cleanup_phase IS NULL OR cleanup_phase IN ('coverage','plans','members','summaries','finish','done')),
+	CONSTRAINT ck_collection_registrations_disposition CHECK (phase NOT IN ('cleaning','disposed') OR disposition_json IS NOT NULL),
+	CONSTRAINT ck_collection_registrations_cleanup_required CHECK (phase NOT IN ('cleaning','disposed') OR cleanup_phase IS NOT NULL),
+	CONSTRAINT ck_collection_registrations_disposed CHECK (phase <> 'disposed' OR cleanup_phase = 'done'),
 	CONSTRAINT ck_collection_registrations_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_registrations_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_registrations_stage_chain_hex CHECK (length(stage_chain) = 64 AND lower(stage_chain) = stage_chain AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stage_chain, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
@@ -6055,6 +6061,9 @@ CREATE TABLE collection_registrations (
 	CONSTRAINT ck_collection_registrations_authorized_tag_set_identity_hex CHECK (length(authorized_tag_set_identity) = 64 AND lower(authorized_tag_set_identity) = authorized_tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authorized_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_registrations_key_generation_hex CHECK (key_generation IS NULL OR length(key_generation) = 64 AND lower(key_generation) = key_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(key_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 )
+    """.strip(),
+    """
+CREATE INDEX ix_collection_registrations_collection ON collection_registrations (collection_id, id)
     """.strip(),
     """
 CREATE INDEX ix_collection_registrations_due ON collection_registrations (phase, due_at, collection_id, id)
@@ -6108,6 +6117,8 @@ CREATE TABLE collection_registrations (
 	claim_id VARCHAR,
 	acknowledgement_json TEXT,
 	failure_json TEXT,
+	disposition_json TEXT,
+	cleanup_phase VARCHAR,
 	due_at VARCHAR,
 	created_at VARCHAR NOT NULL,
 	updated_at VARCHAR NOT NULL,
@@ -6116,6 +6127,10 @@ CREATE TABLE collection_registrations (
 	CONSTRAINT ck_collection_registrations_key CHECK (key_id IS NULL AND key_app IS NULL AND key_generation IS NULL OR key_id IS NOT NULL AND key_app IS NOT NULL AND key_generation IS NOT NULL),
 	CONSTRAINT ck_collection_registrations_ack CHECK (phase <> 'published' OR acknowledgement_json IS NOT NULL),
 	CONSTRAINT ck_collection_registrations_published CHECK (acknowledgement_json IS NULL OR phase = 'published'),
+	CONSTRAINT ck_collection_registrations_cleanup CHECK (cleanup_phase IS NULL OR cleanup_phase IN ('coverage','plans','members','summaries','finish','done')),
+	CONSTRAINT ck_collection_registrations_disposition CHECK (phase NOT IN ('cleaning','disposed') OR disposition_json IS NOT NULL),
+	CONSTRAINT ck_collection_registrations_cleanup_required CHECK (phase NOT IN ('cleaning','disposed') OR cleanup_phase IS NOT NULL),
+	CONSTRAINT ck_collection_registrations_disposed CHECK (phase <> 'disposed' OR cleanup_phase = 'done'),
 	CONSTRAINT ck_collection_registrations_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_registrations_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_registrations_stage_chain_hex CHECK (length(stage_chain) = 64 AND lower(stage_chain) = stage_chain AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stage_chain, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
@@ -6125,6 +6140,9 @@ CREATE TABLE collection_registrations (
 	CONSTRAINT ck_collection_registrations_authorized_tag_set_identity_hex CHECK (length(authorized_tag_set_identity) = 64 AND lower(authorized_tag_set_identity) = authorized_tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authorized_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_registrations_key_generation_hex CHECK (key_generation IS NULL OR length(key_generation) = 64 AND lower(key_generation) = key_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(key_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 )
+    """.strip(),
+    """
+CREATE INDEX ix_collection_registrations_collection ON collection_registrations (collection_id, id)
     """.strip(),
     """
 CREATE INDEX ix_collection_registrations_due ON collection_registrations (phase, due_at, collection_id, id)
