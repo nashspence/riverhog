@@ -1,0 +1,103 @@
+{
+  "kind": "reference-only; not service or custody qualification",
+  "source": "efb9a6155b61cf498dbf56fdd6eaec2e3ffb8055",
+  "python": "3.13.5",
+  "sqlite": "3.46.1",
+  "missing_rfc8785_fail_on_use_sentinel": true,
+  "tests": 12,
+  "failures": 0,
+  "errors": 0,
+  "elapsed_seconds": 2.340654982999922,
+  "samples": [
+    {
+      "raw_volumes": 1,
+      "quantum": 1,
+      "calls": 2,
+      "peak_plans": 1
+    },
+    {
+      "raw_volumes": 1,
+      "quantum": 3,
+      "calls": 1,
+      "peak_plans": 1
+    },
+    {
+      "raw_volumes": 1,
+      "quantum": 16,
+      "calls": 1,
+      "peak_plans": 1
+    },
+    {
+      "raw_volumes": 16,
+      "quantum": 1,
+      "calls": 17,
+      "peak_plans": 1
+    },
+    {
+      "raw_volumes": 16,
+      "quantum": 3,
+      "calls": 6,
+      "peak_plans": 3
+    },
+    {
+      "raw_volumes": 16,
+      "quantum": 16,
+      "calls": 2,
+      "peak_plans": 16
+    },
+    {
+      "raw_volumes": 17,
+      "quantum": 1,
+      "calls": 18,
+      "peak_plans": 1
+    },
+    {
+      "raw_volumes": 17,
+      "quantum": 3,
+      "calls": 6,
+      "peak_plans": 3
+    },
+    {
+      "raw_volumes": 17,
+      "quantum": 16,
+      "calls": 2,
+      "peak_plans": 16
+    },
+    {
+      "raw_volumes": 129,
+      "quantum": 1,
+      "calls": 130,
+      "peak_plans": 1
+    },
+    {
+      "raw_volumes": 129,
+      "quantum": 3,
+      "calls": 44,
+      "peak_plans": 3
+    },
+    {
+      "raw_volumes": 129,
+      "quantum": 16,
+      "calls": 9,
+      "peak_plans": 16
+    },
+    {
+      "raw_volumes": 1000,
+      "quantum": 1,
+      "calls": 1001,
+      "peak_plans": 1
+    },
+    {
+      "raw_volumes": 1000,
+      "quantum": 3,
+      "calls": 334,
+      "peak_plans": 3
+    },
+    {
+      "raw_volumes": 1000,
+      "quantum": 16,
+      "calls": 63,
+      "peak_plans": 16
+    }
+  ]
+}
