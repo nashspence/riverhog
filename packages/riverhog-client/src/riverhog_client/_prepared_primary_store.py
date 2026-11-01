@@ -36,6 +36,10 @@ from riverhog_client._prepared_primary_documents import (
     primary_control_bytes,
 )
 from riverhog_client._prepared_primary_factory import posix_primary_files
+from riverhog_client._prepared_primary_pending_sources import (
+    PendingSourceQueue,
+    recover_pending_sources,
+)
 from riverhog_client._prepared_primary_storage import PrimaryStorage, PrimaryStorageFactory
 from riverhog_client._prepared_primary_types import (
     PrimaryStateBusy,
@@ -58,8 +62,18 @@ _ROOT_NAMES = (
     "custody-closing",
     "custody-settled",
     "inventory",
+    "pending-sources",
+    "pending-source-transition",
 )
-_MEMBER_NAMES = (*_BYTE_NAMES, "prepared", "decision-accepted", "custody", "reclaimed")
+_MEMBER_NAMES = (
+    *_BYTE_NAMES,
+    "prepared",
+    "decision-accepted",
+    "custody",
+    "reclaimed",
+    "pending-source",
+    "pending-source-next",
+)
 
 
 def _commit(raw: bytes) -> ByteCommitment:
@@ -102,12 +116,12 @@ class PrimaryStoreLimits:
 
     @property
     def root_reservation(self) -> int:
-        return 14 * self.control_bytes + self.inventory_order_bytes
+        return 16 * self.control_bytes + self.inventory_order_bytes
 
     @property
     def member_reservation(self) -> int:
-        # Prepared, decision ack, custody, reclaim marker, and one publication candidate.
-        return 5 * self.control_bytes
+        # Four authority controls, a pending node/stage, and a publication candidate.
+        return 7 * self.control_bytes
 
 
 def _allocation_document(
@@ -200,6 +214,7 @@ class PrimaryStore:
                 )
                 self._write(self._files, "allocation", expected)
                 self._write(self._files, "usage", PrimaryUsage())
+                self._write(self._files, "pending-sources", PendingSourceQueue())
             self.allocation = self._read(self._files, "allocation", PrimaryAllocation)
             if self.allocation != expected:
                 raise PrimaryStateError(
@@ -282,7 +297,7 @@ class PrimaryStore:
 
     @property
     def _root_reservation(self) -> int:
-        return 14 * self.limits.control_bytes + max(
+        return 16 * self.limits.control_bytes + max(
             self.limits.inventory_order_bytes, self._files.ordering_reserved_bytes()
         )
 
@@ -455,7 +470,14 @@ class PrimaryStore:
                 with child(shard, key) as files:
                     if create:
                         files.prepare_controls(
-                            ("prepared", "decision-accepted", "custody", "reclaimed"),
+                            (
+                                "prepared",
+                                "decision-accepted",
+                                "custody",
+                                "reclaimed",
+                                "pending-source",
+                                "pending-source-next",
+                            ),
                             byte_limit=self.limits.control_bytes,
                         )
                     yield files
@@ -699,6 +721,8 @@ class PrimaryStore:
             if not self._files.discard_candidates(_ROOT_NAMES):
                 return self._cleanup_pending(require_complete=require_complete)
             self._root_candidates_pending = False
+        if not recover_pending_sources(self):
+            return self._cleanup_pending(require_complete=require_complete)
         transition = self._optional(self._files, "transition", PrimaryTransition)
         if transition is None:
             from riverhog_client._prepared_primary_closing import recover_closing

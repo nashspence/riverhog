@@ -14,7 +14,11 @@ from riverhog_protocol import ArtifactId
 
 def _producer(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     producer = object.__new__(owner.IncrementalCollectionProducer)
-    producer._sources = {}
+
+    class LiveSources(dict):
+        live_values = dict.values
+
+    producer._sources = LiveSources()
     producer._restored_sources = OrderedDict()
     producer._source_lock = threading.RLock()
     producer._operation_lock = threading.RLock()

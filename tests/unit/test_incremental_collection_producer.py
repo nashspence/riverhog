@@ -616,7 +616,10 @@ def test_stop_retains_owned_resources_until_the_heartbeat_worker_actually_exits(
             assert exited_worker.is_set()
             released_source.set()
 
-    producer._sources = {"pending": Source()}
+    class LiveSources(dict):
+        live_values = dict.values
+
+    producer._sources = LiveSources(pending=Source())
     producer._restored_sources = {}
 
     def worker():

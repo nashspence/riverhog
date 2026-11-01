@@ -1428,7 +1428,7 @@ def test_reserved_custody_commitment_progresses_when_full_receipt_exceeds_contro
         control_bytes=control_bytes,
         pending_bytes=pending,
         preparation_bytes=pending,
-        total_bytes=20 * control_bytes + 1 + pending,
+        total_bytes=24 * control_bytes + 1 + pending,
     )
     root = tmp_path.resolve() / "saturated"
     with _open(root, initialize=True, limits=limits) as store:
@@ -2239,7 +2239,7 @@ def test_larger_ordering_grant_cannot_borrow_existing_member_reservations(
         LIMITS,
         inventory_order_bytes=128 * 1024,
         total_bytes=(
-            14 * LIMITS.control_bytes
+            16 * LIMITS.control_bytes
             + 128 * 1024
             + before.control_bytes
             + before.pending_bytes
@@ -2708,3 +2708,278 @@ def test_prepared_canonical_inventory_admits_before_consuming_owner_input(
         with pytest.raises(PrimaryStateCapacity):
             prepare_primary_inventory(store, unadmitted())
         assert store.load(_member()) == original
+
+
+def _pending_queue_open(root, backend, *, initialize=False, limits=LIMITS):
+    if backend == "posix":
+        return _open(root, initialize=initialize, limits=limits)
+    from riverhog_client._prepared_primary_sqlite import (
+        SqlitePrimaryLimits,
+        TransactionalPrimaryFiles,
+    )
+
+    from tests.support.prepared_primary import SqlitePrimaryTestGuard
+
+    def factory(path, *, allocation_descriptor, initialize):
+        if initialize:
+            path.touch(exist_ok=False)
+        return TransactionalPrimaryFiles(
+            SqlitePrimaryTestGuard(path),
+            allocation_descriptor=allocation_descriptor,
+            limits=SqlitePrimaryLimits(16 * 1024**2, 32 * 1024**2, 128 * 1024),
+            initialize=initialize,
+        )
+
+    return _open(root, initialize=initialize, limits=limits, storage_factory=factory)
+
+
+def _pending_queue_prepare(store, members=3, *, hint=None, raw=False):
+    from riverhog_client._prepared_primary_pending_sources import PendingSourceIndex
+    from riverhog_client.producer import _PendingSources, _Source
+
+    queue = PendingSourceIndex(store)
+    for number in range(1, members + 1):
+        member = _member(number)
+        store.prepare_or_load(member, REQUEST, lambda _grant, member=member: _author(member))
+        source = _Source(
+            artifact_id=member.artifact_id,
+            bytes=member.bytes,
+            sha256=member.sha256,
+            materialization_hint=hint,
+            allow_missing_materialization_hint=hint is None,
+            raw_parts=(
+                {
+                    "part_plaintext_bytes": "65536",
+                    "part_count": "1",
+                    "ordered_sha256": "b" * 64,
+                }
+                if raw
+                else None
+            ),
+        )
+        queue.record(_PendingSources._metadata(source), payload_sealed=True)
+    return queue
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_pending_source_queue_reopens_and_retires_only_with_original_custody(
+    tmp_path, monkeypatch, backend
+):
+    from riverhog_client._prepared_primary_pending_sources import PendingSourceIndex
+
+    root = tmp_path / "queue-state"
+    with _pending_queue_open(root, backend, initialize=True) as store:
+        queue = _pending_queue_prepare(store, 17)
+        expected = [_member(number).artifact_id for number in range(1, 18)]
+
+        def no_scan(*_args, **_kwargs):
+            pytest.fail("pending source point work enumerated the member backlog")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(os, "scandir", no_scan)
+            patch.setattr(Path, "iterdir", no_scan)
+            assert [node.source.member.artifact_id for node in queue.rows()] == expected
+            for member in expected:
+                queue.rotate_front(member)
+            assert [node.source.member.artifact_id for node in queue.rows()] == expected
+        assert queue.count == 17
+    with _pending_queue_open(root, backend) as store:
+        queue = PendingSourceIndex(store)
+        assert [node.source.member.artifact_id for node in queue.rows()] == expected
+        for number in [9, 1, 17, *range(2, 9), *range(10, 17)]:
+            member = _member(number)
+            record = store.load(member)
+            record = store.accept_decision(record, b"exact decision")
+            store.accept_custody(record, _receipt(record.prepared))
+            store.reclaim(member)
+            metadata = queue.get(member.artifact_id).source
+            queue.retire(member.artifact_id)
+            queue.retire(member.artifact_id)
+            assert queue.get(member.artifact_id) is None
+            assert queue.record(metadata, payload_sealed=True) is False
+            for _ in range(64):
+                if store.reclaim(member):
+                    break
+            else:
+                pytest.fail("bounded pending source reclaim did not settle")
+        assert queue.count == 0 and list(queue.rows()) == []
+        assert store.usage.control_bytes == 17 * store.limits.member_reservation
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize(
+    "boundary",
+    [
+        "stage-1",
+        "stage-2",
+        "stage-3",
+        "intent-before",
+        "intent-after",
+        "node-1",
+        "node-2",
+        "node-3",
+        "head",
+        "intent-remove",
+    ],
+)
+def test_pending_source_queue_recovers_each_lost_transition_boundary(
+    tmp_path, monkeypatch, backend, boundary
+):
+    from riverhog_client._prepared_primary_pending_sources import PendingSourceIndex
+
+    root = tmp_path / "queue-state"
+    store = _pending_queue_open(root, backend, initialize=True)
+    queue = _pending_queue_prepare(store)
+    write = store._write
+    remove = store._files.remove_control
+    reached = {"nodes": 0, "stages": 0, "faulted": False}
+
+    def fail():
+        reached["faulted"] = True
+        raise OSError("injected pending queue transition response loss")
+
+    def faulty_write(files, name, document, *, expected=None):
+        if boundary == "intent-before" and name == "pending-source-transition":
+            fail()
+        result = write(files, name, document, expected=expected)
+        if boundary == "intent-after" and name == "pending-source-transition":
+            fail()
+        if name == "pending-source-next":
+            reached["stages"] += 1
+            if boundary == f"stage-{reached['stages']}":
+                fail()
+        if name == "pending-source":
+            reached["nodes"] += 1
+            if boundary == f"node-{reached['nodes']}":
+                fail()
+        if boundary == "head" and name == "pending-sources":
+            fail()
+        return result
+
+    def faulty_remove(name, *, expected):
+        result = remove(name, expected=expected)
+        if boundary == "intent-remove" and name == "pending-source-transition":
+            fail()
+        return result
+
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(store, "_write", faulty_write)
+            patch.setattr(store._files, "remove_control", faulty_remove)
+            with pytest.raises(OSError, match="injected pending queue"):
+                queue.rotate_front(_member(1).artifact_id)
+    finally:
+        store.close()
+    assert reached["faulted"]
+    with _pending_queue_open(root, backend) as store:
+        queue = PendingSourceIndex(store)
+        expected = (
+            [1, 2, 3] if boundary.startswith("stage-") or boundary == "intent-before" else [2, 3, 1]
+        )
+        assert [node.source.member.artifact_id for node in queue.rows()] == [
+            _member(number).artifact_id for number in expected
+        ]
+        assert queue.count == 3
+        assert not store._files.exists("pending-source-transition")
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_pending_source_compact_selection_fits_its_control_admission(tmp_path, backend):
+    root = tmp_path / "queue-state"
+    limits = replace(LIMITS, control_bytes=3000)
+    with _pending_queue_open(root, backend, initialize=True, limits=limits) as store:
+        queue = _pending_queue_prepare(store, raw=True)
+        queue.rotate_front(_member(1).artifact_id)
+        assert [node.source.member.artifact_id for node in queue.rows()] == [
+            _member(number).artifact_id for number in (2, 3, 1)
+        ]
+        assert queue.count == 3
+        assert not store._files.exists("pending-source-transition")
+        assert all(store.load_controls(_member(number)) is not None for number in (1, 2, 3))
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_pending_source_retirement_refuses_missing_custody_before_selecting_intent(
+    tmp_path, backend
+):
+    root = tmp_path / "queue-state"
+    with _pending_queue_open(root, backend, initialize=True) as store:
+        queue = _pending_queue_prepare(store)
+        before = list(queue.rows())
+        with pytest.raises(PrimaryStateError, match="no original custody"):
+            queue.retire(_member(2).artifact_id)
+        assert list(queue.rows()) == before
+        assert not store._files.exists("pending-source-transition")
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_pending_source_staging_capacity_preserves_the_original_queue(
+    tmp_path, monkeypatch, backend
+):
+    root = tmp_path / "queue-state"
+    with _pending_queue_open(root, backend, initialize=True) as store:
+        queue = _pending_queue_prepare(store)
+        before = list(queue.rows())
+        write = store._write
+        staged = 0
+
+        def refuse(files, name, document, *, expected=None):
+            nonlocal staged
+            if name == "pending-source-next":
+                staged += 1
+                if staged == 2:
+                    raise PrimaryStateCapacity("injected pending staging admission refusal")
+            return write(files, name, document, expected=expected)
+
+        with monkeypatch.context() as patch:
+            patch.setattr(store, "_write", refuse)
+            with pytest.raises(PrimaryStateCapacity, match="staging admission"):
+                queue.rotate_front(_member(1).artifact_id)
+        assert list(queue.rows()) == before
+        assert not store._files.exists("pending-source-transition")
+        queue.rotate_front(_member(1).artifact_id)
+        assert [node.source.member.artifact_id for node in queue.rows()] == [
+            _member(number).artifact_id for number in (2, 3, 1)
+        ]
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+@pytest.mark.parametrize("damage", ["missing", "changed"])
+def test_pending_source_selected_stage_damage_fails_before_recovery_writes(
+    tmp_path, monkeypatch, backend, damage
+):
+    from riverhog_client._prepared_primary_pending_sources import PendingSourceWrite
+
+    root = tmp_path / "queue-state"
+    store = _pending_queue_open(root, backend, initialize=True)
+    queue = _pending_queue_prepare(store)
+    write = store._write
+
+    def lose_selection_response(files, name, document, *, expected=None):
+        result = write(files, name, document, expected=expected)
+        if name == "pending-source-transition":
+            raise OSError("injected selected pending intent response loss")
+        return result
+
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(store, "_write", lose_selection_response)
+            with pytest.raises(OSError, match="selected pending intent"):
+                queue.rotate_front(_member(1).artifact_id)
+        with store._member(str(_member(1).artifact_id), create=False) as files:
+            stage = store._read(files, "pending-source-next", PendingSourceWrite)
+            if damage == "missing":
+                files.remove_control("pending-source-next", expected=primary_control_bytes(stage))
+            else:
+                changed = stage.model_copy(
+                    update={
+                        "after": stage.after.model_copy(
+                            update={"payload_sealed": not stage.after.payload_sealed}
+                        )
+                    }
+                )
+                store._write(files, "pending-source-next", changed, expected=stage)
+    finally:
+        store.close()
+    with pytest.raises(PrimaryStateError, match="selected pending source write"):
+        _pending_queue_open(root, backend)

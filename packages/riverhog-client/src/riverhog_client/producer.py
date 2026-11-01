@@ -10,14 +10,15 @@ import tempfile
 import threading
 import time
 from collections import OrderedDict
-from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
-from dataclasses import dataclass, replace
+from collections.abc import Callable, Iterable, Iterator, Mapping, MutableMapping, Sequence
+from dataclasses import dataclass
 from dataclasses import field as dataclass_field
 from functools import partial, wraps
 from pathlib import Path
 from typing import Any, BinaryIO, Concatenate
 
 from pydantic import TypeAdapter
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_protocol import (
     CollectionDescription,
     CollectionTag,
@@ -39,6 +40,10 @@ from riverhog_client._prepared_primary_closing import (
     advance_closing,
     advance_custody,
     freeze_inventory,
+)
+from riverhog_client._prepared_primary_pending_sources import (
+    PendingSourceIndex,
+    PendingSourceMetadata,
 )
 from riverhog_client._prepared_primary_publisher import (
     DeclaredPrimaryObservation,
@@ -189,6 +194,124 @@ class _Source:
             self.raw_digest_spool.close()
         if isinstance(self.reader, _VerifiedRangeReader):
             self.reader.close()
+
+
+class _PendingSources(MutableMapping[ArtifactId, _Source]):
+    """Materialize one pending window; retain readers only for live payload."""
+
+    def __init__(self, index: PendingSourceIndex) -> None:
+        self._index = index
+        self._live: OrderedDict[ArtifactId, _Source] = OrderedDict()
+        self._closed = False
+
+    @staticmethod
+    def _metadata(source: _Source) -> PendingSourceMetadata:
+        return PendingSourceMetadata.model_validate(
+            {
+                "member": _member_identity(source),
+                "registration_identity_sha256": _registration_identity_sha256(source),
+                "raw_parts": source.raw_parts,
+            }
+        )
+
+    @staticmethod
+    def _source(metadata: PendingSourceMetadata) -> _Source:
+        return _Source(
+            artifact_id=metadata.member.artifact_id,
+            bytes=metadata.member.bytes,
+            sha256=metadata.member.sha256,
+            materialization_hint=None,
+            allow_missing_materialization_hint=True,
+            raw_parts=(
+                metadata.raw_parts.model_dump(mode="json")
+                if metadata.raw_parts is not None
+                else None
+            ),
+        )
+
+    def __getitem__(self, key: ArtifactId) -> _Source:
+        if self._closed:
+            raise KeyError(key)
+        live = self._live.get(key)
+        if live is not None:
+            return live
+        node = self._index.get(key)
+        if node is None:
+            raise KeyError(key)
+        return self._source(node.source)
+
+    def __setitem__(self, key: ArtifactId, source: _Source) -> None:
+        if self._closed:
+            raise PrimaryStateError("pending source view is closed")
+        if source.artifact_id != key:
+            raise ValueError("pending source key differs from its original identity")
+        self._live[key] = source
+
+    def __delitem__(self, key: ArtifactId) -> None:
+        if key not in self:
+            raise KeyError(key)
+        self.release(key)
+
+    def __iter__(self) -> Iterator[ArtifactId]:
+        if self._closed:
+            return
+        for node in self._index.rows():
+            yield node.source.member.artifact_id
+        for key in self._live:
+            if self._index.get(key) is None:
+                yield key
+
+    def __len__(self) -> int:
+        if self._closed:
+            return 0
+        return self._index.count + sum(self._index.get(key) is None for key in self._live)
+
+    def pending_values(self) -> Iterator[_Source]:
+        if not self._closed:
+            for node in self._index.rows():
+                yield self._source(node.source)
+
+    def live_values(self) -> Iterable[_Source]:
+        return self._live.values()
+
+    def admit(self, source: _Source) -> None:
+        self._index.record(self._metadata(source), payload_sealed=False)
+
+    def matches_registration(self, source: _Source) -> bool:
+        live = self._live.get(source.artifact_id)
+        if live is not None:
+            return _registered_identity(live) == _registered_identity(source)
+        node = self._index.get(source.artifact_id)
+        return node is None or (
+            node.source.registration_identity_sha256 == _registration_identity_sha256(source)
+        )
+
+    def record_registration(self, source: _Source, *, payload_sealed: bool) -> None:
+        node = self._index.get(source.artifact_id)
+        if node is None:
+            raise PrimaryStateError("registration omitted original retained custody")
+        if _source_identity(self._source(node.source)) != _source_identity(source):
+            raise PrimaryStateError("pending registration changed its original identity")
+        self._index.record(node.source, payload_sealed=payload_sealed)
+        if payload_sealed:
+            owned = self._live.get(source.artifact_id)
+            if owned is not None:
+                owned.close()
+                self._live.pop(source.artifact_id)
+
+    def move_to_end(self, key: ArtifactId) -> None:
+        self._index.rotate_front(key)
+
+    def release(self, key: ArtifactId) -> None:
+        self._index.retire(key)
+        owned = self._live.get(key)
+        if owned is not None:
+            owned.close()
+            self._live.pop(key)
+
+    def clear(self) -> None:
+        self._live.clear()
+        self._closed = True
 
 
 def _member_identity(source: ProducerArtifactIdentity | _Source) -> ArtifactMemberIdentityDocument:
@@ -417,7 +540,7 @@ class IncrementalCollectionProducer:
             construction_identity=construction_identity,
             completion_requirement=completion_requirement,
         )
-        self._sources: OrderedDict[ArtifactId, _Source] = OrderedDict()
+        self._sources = _PendingSources(PendingSourceIndex(primary_store))
         self._pending_source_resolver: Callable[[ArtifactId], ProducerInput] | None = None
         self._restored_sources: OrderedDict[ArtifactId, _Source] = OrderedDict()
         self._source_lock = threading.RLock()
@@ -495,7 +618,7 @@ class IncrementalCollectionProducer:
             # A requested stop or a timed-out join is not proof of quiescence.
             thread.join()
         self._heartbeat_thread = None
-        for source in self._sources.values():
+        for source in self._sources.live_values():
             source.close()
         self._sources.clear()
         for source in self._restored_sources.values():
@@ -700,9 +823,7 @@ class IncrementalCollectionProducer:
             raise ValueError("incremental producer artifact IDs must be unique")
         for source in candidates:
             existing = self._sources.get(source.artifact_id)
-            if existing is not None and _registered_identity(existing) != _registered_identity(
-                source
-            ):
+            if not self._sources.matches_registration(source):
                 raise RuntimeError(
                     f"resumed producer artifact identity changed: {source.artifact_id}"
                 )
@@ -722,6 +843,8 @@ class IncrementalCollectionProducer:
             )
             for source in candidates
         }
+        for source in candidates:
+            self._sources.admit(source)
         self._stage_journals(provenance_journals)
         registration = [_source_registration(source) for source in candidates]
         constraints = self.constraints
@@ -813,7 +936,9 @@ class IncrementalCollectionProducer:
         if constraints is None:
             raise RuntimeError("incremental collection producer has no registration constraints")
         pending = list(
-            itertools.islice(self._sources.values(), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES)
+            itertools.islice(
+                self._sources.pending_values(), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
+            )
         )
         if not pending:
             return ()
@@ -900,18 +1025,13 @@ class IncrementalCollectionProducer:
                         receipt=receipt,
                     )
                 )
-                owned = self._sources.pop(source.artifact_id, None)
-                if owned is not None:
-                    owned.close()
-            elif row.get("payload_sealed") is True:
-                # Only the internal range reader can be released here. The
-                # adapter retains its source until the full custody receipt.
-                owned = self._sources.get(source.artifact_id)
-                if owned is not None:
-                    owned.close()
-                    self._sources[source.artifact_id] = replace(
-                        owned, reader=None, content=None, raw_digest_spool=None, observation=None
-                    )
+                self._sources.release(source.artifact_id)
+            else:
+                # The caller retains source bytes until full custody. Persist
+                # the exact pending state before releasing an internal reader.
+                self._sources.record_registration(
+                    expected_source, payload_sealed=row.get("payload_sealed") is True
+                )
         if expected_by_id:
             raise RuntimeError("Riverhog omitted requested registered artifacts")
         return tuple(receipts)
@@ -1158,6 +1278,23 @@ def _registered_identity(source: _Source) -> tuple[str, int, str, tuple[str, ...
         source.materialization_hint,
         source.allow_missing_materialization_hint,
     )
+
+
+def _registration_identity_sha256(source: _Source) -> str:
+    return hashlib.sha256(
+        b"riverhog-producer-registration-identity/v1\n"
+        + canonical_json_bytes(
+            {
+                "member": _member_identity(source).model_dump(mode="json"),
+                "materialization_hint": (
+                    list(source.materialization_hint)
+                    if source.materialization_hint is not None
+                    else None
+                ),
+                "allow_missing_materialization_hint": source.allow_missing_materialization_hint,
+            }
+        )
+    ).hexdigest()
 
 
 def _source_registration(source: _Source) -> dict[str, object]:

@@ -111,11 +111,47 @@ def test_public_producer_prepares_sql_before_remote_creation_and_cold_replays_na
     )
 
 
-class _CountedPendingSources(OrderedDict):
+class _MemoryPendingSourceIndex:
+    """Scheduling stand-in; real byte-owner durability is exercised separately."""
+
+    def __init__(self):
+        self.pending = OrderedDict()
+
+    @property
+    def count(self):
+        return len(self.pending)
+
+    def get(self, key):
+        return self.pending.get(key)
+
+    def record(self, source, *, payload_sealed):
+        key = source.member.artifact_id
+        old = self.pending.get(key)
+        if old is not None:
+            assert old.source == source
+            payload_sealed = payload_sealed or old.payload_sealed
+        self.pending[key] = SimpleNamespace(source=source, payload_sealed=payload_sealed)
+        return True
+
+    def rotate_front(self, key):
+        assert next(iter(self.pending)) == key
+        self.pending.move_to_end(key)
+
+    def retire(self, key):
+        self.pending.pop(key, None)
+
+    def rows(self):
+        yield from self.pending.values()
+
+
+class _CountedPendingSources(producer_module._PendingSources):
     scanned = 0
 
-    def values(self):
-        for source in super().values():
+    def __init__(self):
+        super().__init__(_MemoryPendingSourceIndex())
+
+    def pending_values(self):
+        for source in super().pending_values():
             self.scanned += 1
             yield source
 
@@ -131,6 +167,7 @@ def _pending_custody_producer(members, *, sealed=True):
             member, len(content), hashlib.sha256(content).hexdigest(), None, True, content=content
         )
         sources[member] = source
+        sources.admit(source)
         originals[member] = (source.bytes, source.sha256)
 
     class Api:
@@ -246,6 +283,7 @@ def test_custody_poll_rotates_past_waiting_members_and_includes_new_arrivals():
     producer._sources[member] = producer_module._Source(
         member, 0, hashlib.sha256(b"").hexdigest(), None, True, content=b""
     )
+    producer._sources.admit(producer._sources[member])
     for _ in range(2):
         assert producer._reconcile_pending_sources() == ()
     assert api.seen == {*originals, member}
@@ -303,3 +341,127 @@ def test_custody_poll_returns_late_receipts_in_bounded_windows_without_early_rel
     assert {row.artifact.artifact_id for row in (*first, *second)} == set(originals)
     assert len(store.accepted) == len(store.reclaimed) == 17
     assert set(store.accepted) == set(store.reclaimed) == set(originals)
+
+
+@pytest.mark.parametrize("members", [1, 16, 17, 129, 1000])
+def test_sealed_pending_metadata_bounds_live_sources(
+    members, monkeypatch, record_testsuite_property
+):
+    import weakref
+
+    original_type = producer_module._Source
+    live = weakref.WeakValueDictionary()
+    working_set = {"peak_live_sources": 0}
+
+    class TrackedSource(original_type):
+        __slots__ = ("__weakref__",)
+
+        def __init__(self, *args, **kwargs):
+            original_type.__init__(self, *args, **kwargs)
+            live[id(self)] = self
+            working_set["peak_live_sources"] = max(working_set["peak_live_sources"], len(live))
+
+    monkeypatch.setattr(producer_module, "_Source", TrackedSource)
+    producer, api, store, originals = _pending_custody_producer(0)
+    for index in range(members):
+        content = b"x" * (128 // members + (index < 128 % members))
+        member = ArtifactId(f"{index + 1:064x}")
+        digest = hashlib.sha256(content).hexdigest()
+        originals[member] = (len(content), digest)
+        source = TrackedSource(member, len(content), digest, None, True, content=content)
+        producer._sources[member] = source
+        producer._sources.admit(source)
+        assert (
+            producer._accept_registered_rows(
+                iter(
+                    (
+                        {
+                            "artifact_id": member,
+                            "bytes": str(len(content)),
+                            "sha256": digest,
+                            "payload_sealed": True,
+                        },
+                    )
+                ),
+                expected=(source,),
+            )
+            == ()
+        )
+        del source
+    window = producer_module.COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
+    assert working_set["peak_live_sources"] <= 2 * window + 8, (members, working_set)
+    assert not store.accepted and not store.reclaimed
+    for _ in range((members + window - 1) // window):
+        assert producer._reconcile_pending_sources() == ()
+    assert api.seen == set(originals)
+    assert all(len(batch) <= window for batch in api.calls)
+    assert len(producer._sources) == members
+    assert not store.accepted and not store.reclaimed
+    api.grant_custody = True
+    receipts = []
+    for _ in range((members + window - 1) // window):
+        receipts.extend(producer._reconcile_pending_sources())
+    assert {row.artifact.artifact_id for row in receipts} == set(originals)
+    assert not producer._sources
+    assert set(store.accepted) == set(store.reclaimed) == set(originals)
+    assert working_set["peak_live_sources"] <= 2 * window + 8, (members, working_set)
+    record_testsuite_property(
+        f"sealed_pending_source_working_set_{members}", json.dumps(working_set)
+    )
+
+
+def test_pending_metadata_capacity_retains_the_live_source_before_durable_sealing(monkeypatch):
+    from riverhog_client import PrimaryStateCapacity
+
+    index = _MemoryPendingSourceIndex()
+    sources = producer_module._PendingSources(index)
+    closed = []
+
+    class Source(producer_module._Source):
+        def close(self):
+            closed.append(self.artifact_id)
+            super().close()
+
+    source = Source(
+        ArtifactId("c" * 64), 1, hashlib.sha256(b"x").hexdigest(), None, True, content=b"x"
+    )
+    sources[source.artifact_id] = source
+    sources.admit(source)
+    record = index.record
+
+    def refuse(metadata, *, payload_sealed):
+        if payload_sealed:
+            raise PrimaryStateCapacity("injected pending source admission refusal")
+        return record(metadata, payload_sealed=payload_sealed)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(index, "record", refuse)
+        with pytest.raises(PrimaryStateCapacity, match="source admission"):
+            sources.record_registration(source, payload_sealed=True)
+    assert sources[source.artifact_id] is source
+    assert closed == []
+    sources.record_registration(source, payload_sealed=True)
+    assert closed == [source.artifact_id]
+    assert sources[source.artifact_id].content is None
+    assert len(sources) == 1
+
+
+def test_sealed_pending_retry_preserves_the_original_hint_commitment():
+    index = _MemoryPendingSourceIndex()
+    sources = producer_module._PendingSources(index)
+    source = producer_module._Source(
+        ArtifactId("d" * 64),
+        1,
+        hashlib.sha256(b"x").hexdigest(),
+        ("source.txt",),
+        False,
+        content=b"x",
+    )
+    sources[source.artifact_id] = source
+    sources.admit(source)
+    sources.record_registration(source, payload_sealed=True)
+    assert sources.matches_registration(source)
+    changed = producer_module._Source(
+        source.artifact_id, source.bytes, source.sha256, ("changed.txt",), False, content=b"x"
+    )
+    assert not sources.matches_registration(changed)
