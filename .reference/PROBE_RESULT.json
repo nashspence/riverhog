@@ -1,0 +1,23 @@
+{
+  "format": "reference-probe/v1",
+  "source": "533ac4ee06def4692288c39c9279bf9387525a3e",
+  "python": "3.13.5",
+  "platform": "Linux",
+  "sqlite": "3.46.1",
+  "tests": 22,
+  "failures": 0,
+  "errors": 0,
+  "elapsed_seconds": 1.7445725810000567,
+  "scope": "isolated SQLite/effect model; no maintained service or provider execution",
+  "events": "event/barrier ordered threads, no timing sleeps; one actual child exit after commit",
+  "not_validated": [
+    "PostgreSQL",
+    "actual HTTP",
+    "S3",
+    "filesystem adapter",
+    "encryption",
+    "custody roots",
+    "power loss",
+    "product growth"
+  ]
+}
