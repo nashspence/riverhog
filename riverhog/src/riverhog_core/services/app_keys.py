@@ -122,22 +122,21 @@ class KeyAuthorizationFence:
 
 
 def retain_key_authorization(
-    session: Session, principal: Principal
+    session: Session, principal: Principal, *, for_update: bool = True
 ) -> KeyAuthorizationFence | None:
     """Pin a validated current view while holding the application's key fence.
 
     The caller owns the early SQLite writer transaction and checks the operation's
     permissions and construction scope in that same transaction. A background
     continuation can then check this reference without reloading the grant set.
+    Read-only controls select the same current proof from one read snapshot.
     """
     if principal.key_id is None:
         return None
-    key = session.scalar(
-        select(AppKeyRecord)
-        .where(AppKeyRecord.id == principal.key_id)
-        .with_for_update()
-        .execution_options(populate_existing=True)
-    )
+    statement = select(AppKeyRecord).where(AppKeyRecord.id == principal.key_id)
+    if for_update:
+        statement = statement.with_for_update()
+    key = session.scalar(statement.execution_options(populate_existing=True))
     if key is None or _status(key, now=format_utc_timestamp(utc_now())) != "active":
         raise NotFound("application key is no longer active")
     require_current_principal(session, principal)

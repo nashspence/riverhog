@@ -35,6 +35,7 @@ def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizatio
     collection_uploads = SimpleNamespace(
         requeue_interrupted_finalizations_for_startup=Mock(return_value=2),
         requeue_interrupted_orphan_discards_for_startup=Mock(return_value=1),
+        process_due_registrations=Mock(return_value=0),
         process_due_provenance_journal_validations=Mock(return_value=0),
         process_due_custody_receipts=Mock(return_value=0),
         process_due_finalizations=Mock(return_value=1),
@@ -87,6 +88,7 @@ def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizatio
     collection_uploads.requeue_interrupted_orphan_discards_for_startup.assert_called_once_with(
         limit=100
     )
+    collection_uploads.process_due_registrations.assert_called_once_with(limit=1)
     collection_uploads.process_due_provenance_journal_validations.assert_called_once_with(limit=1)
     collection_uploads.process_due_finalizations.assert_called_once_with(limit=1)
     collection_uploads.reap_expired_custody_transfers.assert_called_once_with(limit=100)
@@ -113,6 +115,7 @@ def test_archive_maintenance_drains_bounded_progress_before_idle_interval() -> N
                 collection_uploads=SimpleNamespace(
                     requeue_interrupted_finalizations_for_startup=zero,
                     requeue_interrupted_orphan_discards_for_startup=zero,
+                    process_due_registrations=zero,
                     process_due_provenance_journal_validations=zero,
                     process_due_custody_receipts=zero,
                     process_due_finalizations=finalizations,

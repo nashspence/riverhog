@@ -90,3 +90,29 @@ def test_sqlite_immediate_writer_fences_before_reading_a_registration_cursor(tmp
             assert observer.scalar(text("SELECT accepted FROM head")) == 1
     finally:
         engine.dispose()
+
+
+@pytest.mark.parametrize("contended", [False, True])
+def test_sqlite_deferred_writer_restores_connection_timeout(tmp_path, contended):
+    engine = create_catalog_engine(f"sqlite:///{tmp_path / 'deferred-writer.sqlite3'}")
+    try:
+        with engine.connect() as first, engine.connect() as second:
+            second.exec_driver_sql("PRAGMA busy_timeout=321")
+            second.commit()
+            first.execution_options(sqlite_immediate_writer=True).begin()
+            if contended:
+                with pytest.raises(OperationalError):
+                    second.execution_options(
+                        sqlite_immediate_writer=True, sqlite_defer_if_busy=True
+                    ).begin()
+                second.rollback()
+            else:
+                first.rollback()
+                second.execution_options(
+                    sqlite_immediate_writer=True, sqlite_defer_if_busy=True
+                ).begin()
+                second.rollback()
+            assert second.exec_driver_sql("PRAGMA busy_timeout").scalar_one() == 321
+            first.rollback()
+    finally:
+        engine.dispose()

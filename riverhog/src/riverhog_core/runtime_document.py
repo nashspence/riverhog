@@ -15,6 +15,7 @@ from time_formats import parse_duration
 
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
+from riverhog_core.registration_tuning import RegistrationTuning
 from riverhog_core.runtime_config import (
     DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR,
     DEFAULT_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES,
@@ -30,6 +31,7 @@ from riverhog_core.throughput import ArchiveThroughputTuning
 _VOLUME = CollectionVolumePolicy()
 _THROUGHPUT = ArchiveThroughputTuning()
 _RANGE = PackRangeRetrievalPolicy()
+_REGISTRATION = RegistrationTuning()
 
 
 class _Document(BaseModel):
@@ -116,6 +118,38 @@ class ThroughputDocument(_Document):
         )
 
 
+class RegistrationDocument(_Document):
+    plans_per_step: int = Field(default=_REGISTRATION.plans_per_step, ge=1, strict=True)
+    coverage_rows_per_step: int = Field(
+        default=_REGISTRATION.coverage_rows_per_step, ge=1, strict=True
+    )
+    metadata_bytes_per_step: str = str(_REGISTRATION.metadata_bytes_per_step)
+    input_transitions_per_step: int = Field(
+        default=_REGISTRATION.input_transitions_per_step, ge=1, strict=True
+    )
+    summary_page_bytes: str = Field(
+        default=str(_REGISTRATION.summary_page_bytes),
+        description="Canonical summary bytes per page; bounded controls are charged separately.",
+    )
+    execution_quantum: str = "1s"
+    retry_delay: str = "30s"
+
+    def tuning(self) -> RegistrationTuning:
+        return RegistrationTuning(
+            plans_per_step=self.plans_per_step,
+            coverage_rows_per_step=self.coverage_rows_per_step,
+            metadata_bytes_per_step=_bytes(
+                self.metadata_bytes_per_step, "registration.metadata_bytes_per_step", 1
+            ),
+            input_transitions_per_step=self.input_transitions_per_step,
+            summary_page_bytes=_bytes(
+                self.summary_page_bytes, "registration.summary_page_bytes", 1
+            ),
+            execution_quantum=parse_duration(self.execution_quantum),
+            retry_delay=parse_duration(self.retry_delay),
+        )
+
+
 class RangePolicyDocument(_Document):
     merge_gap_ciphertext_bytes: str = str(_RANGE.merge_gap_ciphertext_bytes)
     max_request_ciphertext_bytes: str = str(_RANGE.max_request_ciphertext_bytes)
@@ -184,6 +218,7 @@ class RiverhogDocument(_Document):
     catalog_sync_history_retention: str = "30d"
     catalog_sync_page_size_max: int = Field(default=100, ge=1, le=100)
     catalog_sync_history_reap_batch_size: int = Field(default=100, ge=1)
+    registration: RegistrationDocument = Field(default_factory=RegistrationDocument)
     volume_policy: VolumePolicyDocument = Field(default_factory=VolumePolicyDocument)
     throughput: ThroughputDocument = Field(default_factory=ThroughputDocument)
     range_policy: RangePolicyDocument = Field(default_factory=RangePolicyDocument)
@@ -300,6 +335,7 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         catalog_sync_history_retention=parse_duration(document.catalog_sync_history_retention),
         catalog_sync_page_size_max=document.catalog_sync_page_size_max,
         catalog_sync_history_reap_batch_size=document.catalog_sync_history_reap_batch_size,
+        registration=document.registration.tuning(),
         volume_policy=document.volume_policy.policy(),
         throughput_tuning=document.throughput.tuning(),
         range_policy=document.range_policy.policy(),

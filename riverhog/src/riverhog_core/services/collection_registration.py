@@ -5,10 +5,13 @@ from __future__ import annotations
 import hashlib
 import json
 import secrets
+import sqlite3
+import time
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from riverhog_canonical_json import format_scalar
+from http_api_contracts.browse import BrowseTokenCodec, BrowseTokenError
+from riverhog_canonical_json import format_scalar, parse_scalar
 from riverhog_protocol import (
     CollectionUploadArtifactBatchDocument,
     CollectionUploadRegistrationConstraintsDocument,
@@ -18,13 +21,17 @@ from riverhog_protocol.errors import BadRequest, Conflict, NotFound
 from riverhog_protocol.pack_ingress import canonical_json_bytes
 from riverhog_protocol.transport import COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX
 from sqlalchemy import select, tuple_
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
-from time_formats import utc_timestamp_now
+from state_schema import read_snapshot
+from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
 
-from riverhog_core.app_permissions import Principal
+from riverhog_core.app_permissions import COLLECTIONS_CREATE, COLLECTIONS_DELETE, Principal
+from riverhog_core.browse import validate_page_size
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectUploadRecord,
+    CollectionRecord,
     CollectionUploadArtifactRecord,
     CollectionUploadArtifactVolumeRecord,
     CollectionUploadRecord,
@@ -34,6 +41,10 @@ from riverhog_core.catalog_registration_models import (
     CollectionRegistrationVolumeRecord,
 )
 from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
+from riverhog_core.collection_access import (
+    require_collection_access,
+    require_collection_create_access,
+)
 from riverhog_core.domain.archive import ArchiveArtifact, PackVolumePlan
 from riverhog_core.incremental_emission import (
     VolumeEmissionCapacity,
@@ -60,15 +71,29 @@ from riverhog_core.services.app_keys import (
 
 _CHAIN_INITIAL = hashlib.sha256(b"riverhog-registration-emission-chain/v1\0").hexdigest()
 _TOTALS_INITIAL = '{"coverage_rows":"0","metadata_bytes":"0"}'
+_RUNNABLE_PHASES = ("staging", "verifying", "auditing", "ready")
+
+
+def _busy(error: OperationalError) -> bool:
+    original = error.orig
+    code = getattr(original, "sqlite_errorcode", None)
+    return (
+        isinstance(code, int) and code & 0xFF in (sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED)
+    ) or getattr(original, "sqlstate", None) in {"40001", "40P01", "55P03"}
 
 
 def _json(value: object) -> str:
     return canonical_json_bytes(value).decode("utf-8")
 
 
-def _begin_writer(session: Session) -> None:
+def _begin_writer(session: Session, *, defer_if_busy: bool = False) -> None:
     if session.get_bind().dialect.name == "sqlite":
-        session.connection(execution_options={"sqlite_immediate_writer": True})
+        session.connection(
+            execution_options={
+                "sqlite_immediate_writer": True,
+                "sqlite_defer_if_busy": defer_if_busy,
+            }
+        )
 
 
 def _construction(upload: CollectionUploadRecord) -> str:
@@ -107,21 +132,26 @@ def _open_lease(upload: CollectionUploadRecord) -> None:
         raise Conflict("collection upload custody lease is not active")
 
 
-def _claim(session: Session, upload: CollectionUploadRecord, key_id: str | None) -> str | None:
+def _claim(
+    session: Session,
+    upload: CollectionUploadRecord,
+    key_id: str | None,
+    *,
+    for_update: bool = True,
+) -> str | None:
     if not upload.initiated_by_principal_id.startswith("processing:"):
         return None
     execution = upload.initiated_by_principal_id.removeprefix("processing:")
-    claim = session.execute(
-        select(
-            CollectionProcessingClaimRecord.id,
-            CollectionProcessingClaimRecord.state,
-            CollectionProcessingClaimRecord.plan_sealed_at,
-            CollectionProcessingClaimRecord.expires_at,
-            CollectionProcessingClaimRecord.consumer_key_id,
-        )
-        .where(CollectionProcessingClaimRecord.execution_id == execution)
-        .with_for_update()
-    ).one_or_none()
+    statement = select(
+        CollectionProcessingClaimRecord.id,
+        CollectionProcessingClaimRecord.state,
+        CollectionProcessingClaimRecord.plan_sealed_at,
+        CollectionProcessingClaimRecord.expires_at,
+        CollectionProcessingClaimRecord.consumer_key_id,
+    ).where(CollectionProcessingClaimRecord.execution_id == execution)
+    if for_update:
+        statement = statement.with_for_update()
+    claim = session.execute(statement).one_or_none()
     if (
         claim is None
         or claim.state != "active"
@@ -195,12 +225,15 @@ def _outcome(operation: CollectionRegistrationRecord) -> dict[str, object]:
         if operation.acknowledgement_json is None:
             raise RuntimeError("published registration has no acknowledgement")
         return dict(json.loads(operation.acknowledgement_json))
-    return {
+    result: dict[str, object] = {
         "phase": operation.phase,
         "operation_id": operation.id,
         "collection_id": format_scalar("sequence63", operation.collection_id),
         "request_sha256": operation.request_sha256,
     }
+    if operation.failure_json is not None:
+        result["failure"] = json.loads(operation.failure_json)
+    return result
 
 
 def _live(
@@ -277,6 +310,173 @@ class CollectionRegistrationOwner:
     def __init__(self, service: uploads.SqlAlchemyCollectionUploadService) -> None:
         self._service = service
         self._factory = service._session_factory
+        self._tokens = BrowseTokenCodec(
+            service._config.browse_token_signing_key,
+            lifetime_seconds=int(service._config.browse_token_lifetime.total_seconds()),
+        )
+
+    def _readable(
+        self,
+        session: Session,
+        collection_id: int,
+        operation_id: str,
+        principal: Principal,
+    ) -> CollectionRegistrationRecord:
+        operation = session.scalar(
+            select(CollectionRegistrationRecord).where(
+                CollectionRegistrationRecord.collection_id == collection_id,
+                CollectionRegistrationRecord.id == operation_id,
+            )
+        )
+        if operation is None:
+            raise NotFound("collection upload registration not found")
+        fence = retain_key_authorization(session, principal, for_update=False)
+        upload = session.get(CollectionUploadRecord, collection_id)
+        if upload is not None:
+            if _construction(upload) != operation.construction_json:
+                raise NotFound("collection upload registration construction differs")
+            if upload.initiated_by_principal_id == principal.id:
+                # A current key generation and exact tag-set identity retain the
+                # admission proof. Changed access is checked against today's set.
+                if not (
+                    fence is not None
+                    and operation.principal_id == principal.id
+                    and operation.key_id == fence.key_id
+                    and operation.key_app == fence.app
+                    and operation.key_generation == fence.generation
+                    and operation.authorized_tag_set_identity == upload.tag_staging_set_identity
+                ):
+                    uploads._require_upload_create_access(session, collection_id, principal)
+                _claim(session, upload, principal.key_id, for_update=False)
+                return operation
+            if uploads._upload_visible_to_deleter(session, upload, principal):
+                return operation
+            raise NotFound("collection upload registration not found")
+        collection = session.get(CollectionRecord, collection_id)
+        if collection is None:
+            raise NotFound("collection upload registration not found")
+        if collection.created_by_principal_id == principal.id:
+            require_collection_create_access(principal, COLLECTIONS_CREATE)
+        else:
+            require_collection_access(session, principal, COLLECTIONS_DELETE, collection_id)
+        return operation
+
+    def status(
+        self, collection_id: int, operation_id: str, *, principal: Principal
+    ) -> dict[str, object]:
+        normalized_id = uploads._collection_id(collection_id)
+        with read_snapshot(self._factory) as session:
+            return _outcome(self._readable(session, normalized_id, operation_id, principal))
+
+    def list_volumes(
+        self,
+        collection_id: int,
+        operation_id: str,
+        *,
+        principal: Principal,
+        page_size: int = 100,
+        page_token: str | None = None,
+    ) -> dict[str, object]:
+        validate_page_size(page_size)
+        normalized_id = uploads._collection_id(collection_id)
+        with read_snapshot(self._factory) as session:
+            operation = self._readable(session, normalized_id, operation_id, principal)
+            if operation.phase != "published":
+                raise Conflict("collection upload registration is not published")
+            acknowledgement = _outcome(operation)
+            interval = acknowledgement["emitted"]
+            if not isinstance(interval, dict):
+                raise RuntimeError("registration acknowledgement interval is invalid")
+            first = parse_scalar("sequence256", interval["first"])
+            end = parse_scalar("sequence256", interval["next"])
+            selectors = {
+                "collection_id": format_scalar("sequence63", normalized_id),
+                "operation_id": operation.id,
+                "construction_sha256": hashlib.sha256(
+                    operation.construction_json.encode()
+                ).hexdigest(),
+                "request_sha256": operation.request_sha256,
+                "first": interval["first"],
+                "next": interval["next"],
+                "order": "sequence-asc",
+                "page_size": page_size,
+            }
+            identity = {"principal_id": principal.id, "key_id": principal.key_id}
+            try:
+                position = self._tokens.verify(
+                    page_token,
+                    operation="collection-registration-volumes",
+                    principal=identity,
+                    selectors=selectors,
+                )
+                after = None
+                if position is not None:
+                    if len(position) != 1:
+                        raise ValueError("registration page position has the wrong arity")
+                    after = parse_scalar("sequence256", position[0])
+                    if not first <= after < end:
+                        raise ValueError("registration page position is outside its interval")
+            except (BrowseTokenError, ValueError) as exc:
+                raise BadRequest(str(exc)) from exc
+            statement = select(CollectionRegistrationVolumeRecord).where(
+                CollectionRegistrationVolumeRecord.registration_id == operation.id,
+                CollectionRegistrationVolumeRecord.sequence >= first,
+                CollectionRegistrationVolumeRecord.sequence < end,
+            )
+            if after is not None:
+                statement = statement.where(CollectionRegistrationVolumeRecord.sequence > after)
+            rows = list(
+                session.scalars(
+                    statement.order_by(CollectionRegistrationVolumeRecord.sequence).limit(
+                        page_size + 1
+                    )
+                )
+            )
+            expected = first if after is None else after + 1
+            for row in rows:
+                if row.sequence != expected:
+                    raise RuntimeError("published registration summary interval has a gap")
+                expected += 1
+            if len(rows) < page_size + 1 and expected != end:
+                raise RuntimeError("published registration summary interval is incomplete")
+            summaries: list[dict[str, str]] = []
+            used = 0
+            budget = self._service._config.registration.summary_page_bytes
+            for row in rows[:page_size]:
+                summary = {
+                    "sequence": format_scalar("sequence256", row.sequence),
+                    "object_id": row.object_id,
+                    "kind": row.kind,
+                }
+                charged = len(canonical_json_bytes(summary))
+                if charged > budget and not summaries:
+                    raise VolumeEmissionCapacity(
+                        dimension="summary_page_bytes", required=charged, admitted=budget
+                    )
+                if used + charged > budget:
+                    break
+                summaries.append(summary)
+                used += charged
+            has_more = len(rows) > len(summaries)
+            next_token = (
+                self._tokens.issue(
+                    operation="collection-registration-volumes",
+                    principal=identity,
+                    selectors=selectors,
+                    position=(summaries[-1]["sequence"],),
+                )
+                if has_more
+                else None
+            )
+            return {
+                "collection_id": selectors["collection_id"],
+                "operation_id": operation.id,
+                "request_sha256": operation.request_sha256,
+                "emitted": interval,
+                "volumes": summaries,
+                "next_page_token": next_token,
+                "exhausted": not has_more,
+            }
 
     def admit(
         self,
@@ -338,7 +538,12 @@ class CollectionRegistrationOwner:
                     raise Conflict("collection upload registration identity collision")
                 if operation.phase == "published":
                     return _outcome(operation)
-                if operation.phase not in {"staging", "verifying", "auditing", "ready"}:
+                resume_phase = operation.phase
+                if operation.phase == "paused":
+                    failure = json.loads(operation.failure_json or "{}")
+                    if failure.get("kind") == "authority":
+                        resume_phase = failure.get("resume_phase")
+                if resume_phase not in _RUNNABLE_PHASES:
                     raise Conflict(
                         "collection upload registration cannot resume in its current phase"
                     )
@@ -355,6 +560,11 @@ class CollectionRegistrationOwner:
                 operation.key_app = fence.app if fence is not None else None
                 operation.key_generation = fence.generation if fence is not None else None
                 operation.authorized_tag_set_identity = upload.tag_staging_set_identity
+                if operation.phase == "paused":
+                    operation.phase = resume_phase
+                    operation.execution_epoch = secrets.token_hex(32)
+                    operation.failure_json = None
+                    operation.due_at = utc_timestamp_now()
                 uploads._touch_upload(upload, config=self._service._config)
                 return _outcome(operation)
             _open_lease(upload)
@@ -472,22 +682,157 @@ class CollectionRegistrationOwner:
                 return _outcome(operation)
             if upload is None:
                 raise Conflict("collection upload registration construction is unavailable")
-            _live(session, upload, operation)
-            if operation.phase == "staging":
-                self._stage(session, upload, operation, limits)
-            elif operation.phase == "verifying":
-                self._verify(session, upload, operation, limits)
-            elif operation.phase == "auditing":
-                self._audit_coverage(session, operation, limits)
-            elif operation.phase == "ready":
-                self._publish(session, upload, operation)
-            else:
-                raise Conflict("collection upload registration cannot advance in its current phase")
-            operation.updated_at = utc_timestamp_now()
-            if operation.phase != "published":
-                operation.due_at = operation.updated_at
+            self._advance(session, upload, operation, limits)
             session.flush()
             return _outcome(operation)
+
+    def _advance(
+        self,
+        session: Session,
+        upload: CollectionUploadRecord,
+        operation: CollectionRegistrationRecord,
+        limits: VolumeEmissionLimits,
+    ) -> None:
+        _live(session, upload, operation)
+        if operation.phase == "staging":
+            self._stage(session, upload, operation, limits)
+        elif operation.phase == "verifying":
+            self._verify(session, upload, operation, limits)
+        elif operation.phase == "auditing":
+            self._audit_coverage(session, operation, limits)
+        elif operation.phase == "ready":
+            self._publish(session, upload, operation)
+        else:
+            raise Conflict("collection upload registration cannot advance in its current phase")
+        operation.updated_at = utc_timestamp_now()
+        operation.failure_json = None
+        if operation.phase != "published":
+            operation.due_at = operation.updated_at
+
+    def process_due(self, *, limit: int = 1) -> int:
+        """Advance one quantum per selected construction, yielding between turns."""
+        if limit < 1:
+            return 0
+        tuning = self._service._config.registration
+        deadline = time.monotonic() + tuning.execution_quantum.total_seconds()
+        visited: list[str] = []
+        processed = 0
+        for _ in range(limit):
+            if processed and time.monotonic() >= deadline:
+                break
+            try:
+                operation_id = self._process_one_due(excluding=visited)
+            except OperationalError as exc:
+                if not _busy(exc):
+                    raise
+                break
+            if operation_id is None:
+                break
+            visited.append(operation_id)
+            processed += 1
+        return processed
+
+    def _process_one_due(self, *, excluding: Sequence[str]) -> str | None:
+        tuning = self._service._config.registration
+        with session_scope(self._factory) as session:
+            _begin_writer(session, defer_if_busy=True)
+            session.info["include_unpublished_registration"] = True
+            now = utc_timestamp_now()
+            # One seek per fixed phase uses (phase, due_at, collection_id, id).
+            # PostgreSQL locks the upload first and skips other workers' owners.
+            heads = []
+            for phase in _RUNNABLE_PHASES:
+                statement = (
+                    select(
+                        CollectionRegistrationRecord.due_at,
+                        CollectionRegistrationRecord.collection_id,
+                        CollectionRegistrationRecord.id,
+                        CollectionRegistrationRecord.execution_epoch,
+                    )
+                    .join(
+                        CollectionUploadRecord,
+                        (
+                            CollectionUploadRecord.collection_id
+                            == CollectionRegistrationRecord.collection_id
+                        )
+                        & (
+                            CollectionUploadRecord.active_registration_id
+                            == CollectionRegistrationRecord.id
+                        ),
+                    )
+                    .where(
+                        CollectionRegistrationRecord.phase == phase,
+                        CollectionRegistrationRecord.due_at <= now,
+                    )
+                    .order_by(
+                        CollectionRegistrationRecord.due_at,
+                        CollectionRegistrationRecord.collection_id,
+                        CollectionRegistrationRecord.id,
+                    )
+                    .limit(1)
+                    .with_for_update(of=CollectionUploadRecord, skip_locked=True)
+                )
+                if excluding:
+                    statement = statement.where(CollectionRegistrationRecord.id.not_in(excluding))
+                head = session.execute(statement).one_or_none()
+                if head is not None:
+                    heads.append(head)
+            if not heads:
+                return None
+            due_at, collection_id, operation_id, epoch = min(heads)
+            upload = session.get(CollectionUploadRecord, collection_id)
+            operation = session.scalar(
+                select(CollectionRegistrationRecord)
+                .where(
+                    CollectionRegistrationRecord.id == operation_id,
+                    CollectionRegistrationRecord.execution_epoch == epoch,
+                    CollectionRegistrationRecord.phase.in_(_RUNNABLE_PHASES),
+                    CollectionRegistrationRecord.due_at == due_at,
+                )
+                .with_for_update()
+                .execution_options(populate_existing=True)
+            )
+            if upload is None or operation is None:
+                return None
+            if session.get_bind().dialect.name == "postgresql":
+                # Lock contention is deferred work, not an unbounded coordinator wait.
+                from sqlalchemy import text
+
+                session.execute(
+                    text("SELECT set_config('lock_timeout', :timeout, true)"),
+                    {"timeout": str(max(1, int(tuning.execution_quantum.total_seconds() * 1000)))},
+                )
+            phase = operation.phase
+            try:
+                # Failed quanta leave no rows, cursor movement or partial marker.
+                with session.begin_nested():
+                    self._advance(session, upload, operation, tuning.emission_limits())
+                    session.flush()
+            except VolumeEmissionCapacity as exc:
+                operation.failure_json = _json(
+                    {
+                        "kind": "capacity",
+                        "dimension": exc.dimension,
+                        "required": format_scalar("nonnegative", exc.required),
+                        "admitted": format_scalar("nonnegative", exc.admitted),
+                    }
+                )
+                operation.due_at = format_utc_timestamp(utc_now() + tuning.retry_delay)
+                operation.updated_at = now
+            except (Conflict, NotFound):
+                operation.phase = "paused"
+                operation.execution_epoch = secrets.token_hex(32)
+                operation.failure_json = _json({"kind": "authority", "resume_phase": phase})
+                operation.due_at = None
+                operation.updated_at = now
+            except (RuntimeError, ValueError):
+                operation.phase = "failed"
+                operation.execution_epoch = secrets.token_hex(32)
+                operation.failure_json = _json({"kind": "integrity"})
+                operation.due_at = None
+                operation.updated_at = now
+            session.flush()
+            return str(operation.id)
 
     def _stage(
         self,

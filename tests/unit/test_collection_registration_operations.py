@@ -258,6 +258,10 @@ def test_service_registration_reopens_hidden_quantum_and_publishes_one_exact_ack
         )
         service.complete(collection_id)
         assert owner.admit(collection_id, [member], principal=principal) == acknowledgement
+        assert owner.status(collection_id, operation_id, principal=principal) == acknowledgement
+        page = owner.list_volumes(collection_id, operation_id, principal=principal, page_size=3)
+        assert len(page["volumes"]) == 3
+        assert not page["exhausted"] and page["next_page_token"] is not None
         assert raw_calls == 34
     finally:
         _close(service, keys)

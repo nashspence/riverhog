@@ -82,7 +82,21 @@ def create_catalog_engine(database_url: str) -> Engine:
             immediate = connection.get_execution_options().get("sqlite_immediate_writer", False)
             if type(immediate) is not bool:
                 raise ValueError("SQLite writer selection must be boolean")
-            if immediate:
+            defer_if_busy = connection.get_execution_options().get("sqlite_defer_if_busy", False)
+            if type(defer_if_busy) is not bool:
+                raise ValueError("SQLite writer deferral must be boolean")
+            if immediate and defer_if_busy:
+                cursor = connection.connection.cursor()
+                try:
+                    timeout = int(cursor.execute("PRAGMA busy_timeout").fetchone()[0])
+                    cursor.execute("PRAGMA busy_timeout=0")
+                    try:
+                        connection.exec_driver_sql("BEGIN IMMEDIATE")
+                    finally:
+                        cursor.execute(f"PRAGMA busy_timeout={timeout}")
+                finally:
+                    cursor.close()
+            elif immediate:
                 connection.exec_driver_sql("BEGIN IMMEDIATE")
 
     return engine

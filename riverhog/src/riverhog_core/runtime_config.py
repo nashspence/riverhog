@@ -19,6 +19,7 @@ from sqlalchemy.engine import make_url
 
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
+from riverhog_core.registration_tuning import RegistrationTuning
 from riverhog_core.throughput import ArchiveThroughputTuning
 
 _BYTES_RE = re.compile(r"^(\d+(?:_\d+)*)([kmgt]i?b?|b)?$", re.IGNORECASE)
@@ -137,6 +138,7 @@ class RuntimeConfig:
     catalog_sync_page_size_max: int = CATALOG_SYNC_PAGE_SIZE_MAX
     catalog_sync_history_reap_batch_size: int = 100
     bootstrap_token: str = field(default="", repr=False)
+    registration: RegistrationTuning = field(default_factory=RegistrationTuning)
     volume_policy: CollectionVolumePolicy = field(default_factory=CollectionVolumePolicy)
     throughput_tuning: ArchiveThroughputTuning = field(default_factory=ArchiveThroughputTuning)
     range_policy: PackRangeRetrievalPolicy = field(default_factory=PackRangeRetrievalPolicy)

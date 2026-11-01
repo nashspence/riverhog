@@ -164,6 +164,7 @@ def _process_archive_maintenance(
                 "startup requested retrieval-cache accounting reconciliation: count=%s",
                 requested_cache_reconciliations,
             )
+    progressed += container.collection_uploads.process_due_registrations(limit=1)
     progressed += container.collection_uploads.process_due_provenance_journal_validations(limit=1)
     progressed += container.collection_uploads.process_due_custody_receipts(limit=1)
     progressed += container.catalog_sync.reap_expired_history()

@@ -1426,3 +1426,40 @@ def test_postgres_registration_advancers_serialize_without_repeating_a_quantum(
         other.close()
         dispose_session_factory(other._session_factory)
         witness._close(service, keys)
+
+
+def test_postgres_due_registration_skips_a_locked_construction_and_preserves_readonly_status(
+    isolated_database_url, tmp_path, monkeypatch
+):
+    from functools import partial
+
+    from riverhog_core.services.collection_registration import CollectionRegistrationOwner
+
+    from tests.unit import test_collection_registration_operations as witness
+    from tests.unit.test_collection_registration_maintenance import _other, _sequence, _tune
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    service, keys, principal, created, first = witness._open(tmp_path)
+    try:
+        _tune(service)
+        second = _other(service, principal)
+        owner = CollectionRegistrationOwner(service)
+        a = owner.admit(first, [witness._member()], principal=principal)["operation_id"]
+        b = owner.admit(second, [witness._member("3", 4)], principal=principal)["operation_id"]
+        with session_scope(service._session_factory) as blocker:
+            blocker.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == first)
+                .with_for_update()
+            )
+            assert service.process_due_registrations() == 1
+            assert (_sequence(service, a), _sequence(service, b)) == (0, 3)
+            assert owner.status(first, a, principal=principal)["phase"] == "staging"
+        assert service.process_due_registrations() == 1
+        assert (_sequence(service, a), _sequence(service, b)) == (3, 3)
+    finally:
+        witness._close(service, keys)

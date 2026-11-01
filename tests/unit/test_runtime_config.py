@@ -386,3 +386,36 @@ def test_yaml_selects_retained_validation_resources(tmp_path, monkeypatch):
     assert config.journal_validation_workspace == selected
     assert config.journal_validation_concurrency == 7
     assert not selected.exists()
+
+
+def test_registration_operator_grants_round_trip_and_reject_invalid_capacity(tmp_path, monkeypatch):
+    path, document = _document(tmp_path, monkeypatch)
+    document["registration"] = {
+        "plans_per_step": 3,
+        "coverage_rows_per_step": 16,
+        "metadata_bytes_per_step": "100KiB",
+        "input_transitions_per_step": 4,
+        "summary_page_bytes": "1KiB",
+        "execution_quantum": "2s",
+        "retry_delay": "10s",
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    grant = config.registration
+    assert grant.emission_limits().plans == 3
+    assert grant.emission_limits().metadata_bytes == 102400
+    assert grant.summary_page_bytes == 1024
+    assert grant.execution_quantum == timedelta(seconds=2)
+    for key, value in (
+        ("plans_per_step", 0),
+        ("plans_per_step", True),
+        ("metadata_bytes_per_step", "0B"),
+        ("summary_page_bytes", "0B"),
+        ("retry_delay", "0s"),
+        ("execution_quantum", "0s"),
+    ):
+        invalid = dict(document["registration"])
+        invalid[key] = value
+        _write(path, {**document, "registration": invalid})
+        with pytest.raises(ValueError):
+            load_runtime_config()
