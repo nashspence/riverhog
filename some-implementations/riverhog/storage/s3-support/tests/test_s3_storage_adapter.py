@@ -817,7 +817,7 @@ def test_lost_begin_response_reconciles_the_exact_nonterminal_write() -> None:
 
 
 def test_s3_transport_and_source_boundary_are_adapter_owned() -> None:
-    tuning = S3TransportTuning(max_pool_connections=64, max_attempts=9)
+    tuning = S3TransportTuning(max_pool_connections=64)
     assert tuning.max_pool_connections == 64
 
     source = Path(__file__).resolve().parents[1] / "src/a_riverhog_s3_store_lib"
