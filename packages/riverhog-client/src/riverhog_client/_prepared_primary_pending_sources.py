@@ -302,8 +302,6 @@ def _read_pending_node(store: PrimaryStore, artifact_id: ArtifactId) -> PendingS
 def recover_pending_sources(store: PrimaryStore) -> bool:
     """Roll forward one selected intent without enumerating other members."""
     files = store._files
-    if not files.discard_candidates(("pending-sources", "pending-source-transition")):
-        return False
     try:
         queue = store._read(files, "pending-sources", PendingSourceQueue)
     except FileNotFoundError:
@@ -311,6 +309,8 @@ def recover_pending_sources(store: PrimaryStore) -> bool:
     intent = store._optional(files, "pending-source-transition", PendingSourceIntent)
     if intent is None:
         return True
+    if not files.discard_candidates(("pending-sources", "pending-source-transition")):
+        return False
     if queue not in (intent.before, intent.after):
         raise PrimaryStateError("pending source queue differs from its selected transition")
     selected = []

@@ -2983,3 +2983,25 @@ def test_pending_source_selected_stage_damage_fails_before_recovery_writes(
         store.close()
     with pytest.raises(PrimaryStateError, match="selected pending source write"):
         _pending_queue_open(root, backend)
+
+
+@pytest.mark.parametrize("backend", ["posix", "sqlite"])
+def test_pending_source_status_reuses_cold_root_reconciliation(tmp_path, monkeypatch, backend):
+    from riverhog_client._prepared_primary_pending_sources import PendingSourceIndex
+
+    root = tmp_path / "queue-state"
+    with _pending_queue_open(root, backend, initialize=True) as store:
+        queue = _pending_queue_prepare(store)
+        original = list(queue.rows())
+    with _pending_queue_open(root, backend) as store:
+        queue = PendingSourceIndex(store)
+
+        def repeated_cleanup(_names):
+            pytest.fail("idle pending point reads repeated cold root candidate cleanup")
+
+        monkeypatch.setattr(store._files, "discard_candidates", repeated_cleanup)
+        for _ in range(10):
+            assert store.session_bound and store.usage.members == len(original)
+            assert queue.count == len(original)
+            for node in original:
+                assert queue.get(node.source.member.artifact_id) == node
