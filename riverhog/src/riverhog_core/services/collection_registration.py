@@ -67,6 +67,7 @@ from riverhog_core.services.app_keys import (
     KeyAuthorizationFence,
     require_key_authorization,
     retain_key_authorization,
+    retain_key_validity,
 )
 
 _CHAIN_INITIAL = hashlib.sha256(b"riverhog-registration-emission-chain/v1\0").hexdigest()
@@ -132,6 +133,16 @@ def _open_lease(upload: CollectionUploadRecord) -> None:
         raise Conflict("collection upload custody lease is not active")
 
 
+def _principal_key(
+    session: Session, principal: Principal, *, for_update: bool = True
+) -> KeyAuthorizationFence | None:
+    if principal.id.startswith("processing:"):
+        if principal.key_id is None:
+            raise NotFound("collection upload execution key is unavailable")
+        return retain_key_validity(session, principal.key_id, for_update=for_update)
+    return retain_key_authorization(session, principal, for_update=for_update)
+
+
 def _claim(
     session: Session,
     upload: CollectionUploadRecord,
@@ -139,9 +150,21 @@ def _claim(
     *,
     for_update: bool = True,
 ) -> str | None:
-    if not upload.initiated_by_principal_id.startswith("processing:"):
+    return _execution_claim(
+        session, upload.initiated_by_principal_id, key_id, for_update=for_update
+    )
+
+
+def _execution_claim(
+    session: Session,
+    principal_id: str,
+    key_id: str | None,
+    *,
+    for_update: bool = True,
+) -> str | None:
+    if not principal_id.startswith("processing:"):
         return None
-    execution = upload.initiated_by_principal_id.removeprefix("processing:")
+    execution = principal_id.removeprefix("processing:")
     statement = select(
         CollectionProcessingClaimRecord.id,
         CollectionProcessingClaimRecord.state,
@@ -330,7 +353,7 @@ class CollectionRegistrationOwner:
         )
         if operation is None:
             raise NotFound("collection upload registration not found")
-        fence = retain_key_authorization(session, principal, for_update=False)
+        fence = _principal_key(session, principal, for_update=False)
         upload = session.get(CollectionUploadRecord, collection_id)
         if upload is not None:
             if _construction(upload) != operation.construction_json:
@@ -340,6 +363,8 @@ class CollectionRegistrationOwner:
                 # admission proof. Changed access is checked against today's set.
                 if not (
                     fence is not None
+                    and principal.authorization_view_identity is not None
+                    and not principal.has_artifact_scope
                     and operation.principal_id == principal.id
                     and operation.key_id == fence.key_id
                     and operation.key_app == fence.app
@@ -357,6 +382,7 @@ class CollectionRegistrationOwner:
             raise NotFound("collection upload registration not found")
         if collection.created_by_principal_id == principal.id:
             require_collection_create_access(principal, COLLECTIONS_CREATE)
+            _execution_claim(session, principal.id, principal.key_id, for_update=False)
         else:
             require_collection_access(session, principal, COLLECTIONS_DELETE, collection_id)
         return operation
@@ -524,7 +550,7 @@ class CollectionRegistrationOwner:
                 .where(CollectionRegistrationRecord.id == operation_id)
                 .with_for_update()
             )
-            fence = retain_key_authorization(session, principal)
+            fence = _principal_key(session, principal)
             uploads._require_upload_create_access(session, normalized_id, principal)
             if upload.copy_to_json != "[]" and upload.initiated_by_key_id != principal.key_id:
                 raise Conflict("collection upload copy intent initiator changed")

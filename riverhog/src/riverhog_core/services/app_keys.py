@@ -133,17 +133,29 @@ def retain_key_authorization(
     """
     if principal.key_id is None:
         return None
-    statement = select(AppKeyRecord).where(AppKeyRecord.id == principal.key_id)
+    fence = retain_key_validity(session, principal.key_id, for_update=for_update)
+    require_current_principal(session, principal)
+    if not principal.has_artifact_scope and (
+        principal.authorization_view_identity is None or fence.app != principal.id
+    ):
+        raise NotFound("application key authorization view is required")
+    return fence
+
+
+def retain_key_validity(
+    session: Session, key_id: str, *, for_update: bool = True
+) -> KeyAuthorizationFence:
+    """Retain a live key generation, without granting application or claim access.
+
+    Delegated owners validate their exact current claim and permission separately
+    in the same transaction. This point reference does not contain either.
+    """
+    statement = select(AppKeyRecord).where(AppKeyRecord.id == key_id)
     if for_update:
         statement = statement.with_for_update()
     key = session.scalar(statement.execution_options(populate_existing=True))
     if key is None or _status(key, now=format_utc_timestamp(utc_now())) != "active":
         raise NotFound("application key is no longer active")
-    require_current_principal(session, principal)
-    if not principal.has_artifact_scope and (
-        principal.authorization_view_identity is None or key.app != principal.id
-    ):
-        raise NotFound("application key authorization view is required")
     return KeyAuthorizationFence(key.id, key.app, key.access_generation)
 
 

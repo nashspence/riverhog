@@ -1463,3 +1463,22 @@ def test_postgres_due_registration_skips_a_locked_construction_and_preserves_rea
         assert (_sequence(service, a), _sequence(service, b)) == (3, 3)
     finally:
         witness._close(service, keys)
+
+
+@pytest.mark.parametrize("combined", [False, True])
+def test_postgres_registration_retains_actual_delegated_claim_authority(
+    isolated_database_url, tmp_path, monkeypatch, combined
+):
+    from functools import partial
+
+    from tests.unit import test_collection_registration_delegation as delegated
+    from tests.unit import test_collection_registration_operations as witness
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    delegated.test_registration_accepts_the_real_write_capability_and_retains_its_live_claim(
+        tmp_path, combined
+    )
