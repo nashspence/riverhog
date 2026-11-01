@@ -107,6 +107,7 @@ def _construction(
                 archive_phase_updated_at="2026-01-01T00:00:00Z",
                 archive_storage_prefix="collection/1",
                 planner_checkpoint_json="{}",
+                planner_next_sequence=2,
                 state="open",
                 artifact_count=1,
                 artifact_bytes=3,

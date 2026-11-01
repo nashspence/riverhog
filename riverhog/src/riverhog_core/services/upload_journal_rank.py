@@ -310,8 +310,8 @@ def _begin(
                 "sql_statements",
                 COUNT,
                 "equal",
-                Expression("constant", value=2, unit=COUNT),
-                "One source/cursor fence and one indexed page query.",
+                Expression("constant", value=3, unit=COUNT),
+                "One explicit snapshot start, one source/cursor fence, and one indexed page query.",
             ),
             Bound(
                 "returned_rows",

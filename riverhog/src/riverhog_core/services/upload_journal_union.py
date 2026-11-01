@@ -402,8 +402,8 @@ def _fact_rows(factory: SessionFactory, work: _Work) -> tuple[Fact, ...] | None:
                 "sql_statements",
                 COUNT,
                 "equal",
-                Expression("constant", value=2, unit=COUNT),
-                "One fence probe and one indexed active-page query.",
+                Expression("constant", value=3, unit=COUNT),
+                "One explicit snapshot start, one fence probe, and one indexed active-page query.",
             ),
             Bound(
                 "returned_rows",

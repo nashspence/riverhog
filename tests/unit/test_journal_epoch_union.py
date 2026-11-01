@@ -584,7 +584,15 @@ def test_actual_indexed_active_seed_work(tmp_path, monkeypatch, record_property)
             assert [row.assertion_id for row in actual] == expected
             assert len(actual) == observed["returned_positions"]
             assert observed["closed"] and not payload_reads and engine.pool.checkedout() == 0
-            for statement, parameters in statements:
+            selects = [
+                (statement, parameters)
+                for statement, parameters in statements
+                if statement.lstrip().upper().startswith("SELECT")
+            ]
+            starts = sum(statement.strip().upper() == "BEGIN" for statement, _ in statements)
+            assert len(selects) == 2 and starts == 1
+            assert len(statements) == len(selects) + starts
+            for statement, parameters in selects:
                 with engine.connect() as connection:
                     result = connection.exec_driver_sql(
                         "EXPLAIN QUERY PLAN " + statement, parameters

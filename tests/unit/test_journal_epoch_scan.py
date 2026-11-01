@@ -409,7 +409,15 @@ def test_actual_fenced_epoch_frame_window_work(tmp_path, monkeypatch, record_pro
                 event.remove(engine, "before_cursor_execute", sql)
             assert len(actual) == min(count, requested) == counts["returned_positions"]
             assert counts["closed"] and not payload_reads and engine.pool.checkedout() == 0
-            for statement, parameters in statements:
+            selects = [
+                (statement, parameters)
+                for statement, parameters in statements
+                if statement.lstrip().upper().startswith("SELECT")
+            ]
+            starts = sum(statement.strip().upper() == "BEGIN" for statement, _ in statements)
+            assert len(selects) == 2 and starts == 1
+            assert len(statements) == len(selects) + starts
+            for statement, parameters in selects:
                 with engine.connect() as connection:
                     result = connection.exec_driver_sql(
                         "EXPLAIN QUERY PLAN " + statement, parameters

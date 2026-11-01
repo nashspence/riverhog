@@ -170,8 +170,9 @@ def _begin_scan(
                 "sql_statements",
                 COUNT,
                 "equal",
-                Expression("constant", value=2, unit=COUNT),
-                "One joined exact-fence probe and one indexed position window.",
+                Expression("constant", value=3, unit=COUNT),
+                "One explicit snapshot start, one joined exact-fence probe, "
+                "and one indexed position window.",
             ),
             Bound(
                 "returned_positions",
