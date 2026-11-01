@@ -134,10 +134,13 @@ def prepare(case, kind):
     )
     expected = admitted and states.count("sealed") == expected_sequence
     with case.factory() as session, session.begin():
-        session.execute(delete(Volume).where(Volume.collection_id == case.identity)).close()
+        session.execute(
+            delete(Volume.__table__).where(Volume.__table__.c.collection_id == case.identity)
+        ).close()
         session.add_all(volume(case.identity, number, state) for number, state in enumerate(states))
         upload = session.get(Upload, case.identity)
         upload.planner_checkpoint_json = text
+        upload.planner_next_sequence = len(states)
         upload.artifact_count = upload.artifact_bytes = artifacts
         upload.payload_sealed_artifact_count, upload.payload_sealed_artifact_bytes = (
             payload_count,
