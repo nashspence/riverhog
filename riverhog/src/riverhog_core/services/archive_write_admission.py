@@ -239,6 +239,50 @@ class ArchiveWriteAdmission:
         if control.epoch != epoch:
             raise Conflict("archive write admission epoch changed")
 
+    def _preparation_record(
+        self,
+        session: Session,
+        collection_id: int,
+        object_id: str,
+        *,
+        epoch: str,
+        identity: Mapping[str, Any],
+    ) -> ArchiveWritePreparationRecord | None:
+        upload = self._upload(session, collection_id)
+        control = self._control(session, upload)
+        self._require_epoch(control, epoch)
+        self._terminal_lock(session, control)
+        volume = self._volume(session, collection_id, object_id)
+        expected = {
+            "kind": volume.kind,
+            "object_path": volume.object_path,
+            "plan_sha256": volume.plan_sha256,
+        }
+        if dict(identity) != expected:
+            raise Conflict("archive write preparation identity changed")
+        stored = session.get(ArchiveWritePreparationRecord, (collection_id, object_id))
+        if stored is not None and stored.identity_json != _json(identity):
+            raise Conflict("archive write preparation identity changed")
+        return stored
+
+    def load_preparation(
+        self,
+        collection_id: int,
+        object_id: str,
+        *,
+        epoch: str,
+        identity: Mapping[str, Any],
+        guard: Guard,
+    ) -> str | None:
+        """Read an actor's original preparation without creating or admitting work."""
+        with session_scope(self._factory) as session:
+            _writer(session)
+            guard(session)
+            stored = self._preparation_record(
+                session, collection_id, object_id, epoch=epoch, identity=identity
+            )
+            return stored.preparation_json if stored is not None else None
+
     def prepare(
         self,
         collection_id: int,
@@ -257,22 +301,10 @@ class ArchiveWriteAdmission:
         with session_scope(self._factory) as session:
             _writer(session)
             guard(session)
-            upload = self._upload(session, collection_id)
-            control = self._control(session, upload)
-            self._require_epoch(control, epoch)
-            self._terminal_lock(session, control)
-            volume = self._volume(session, collection_id, object_id)
-            expected = {
-                "kind": volume.kind,
-                "object_path": volume.object_path,
-                "plan_sha256": volume.plan_sha256,
-            }
-            if dict(identity) != expected:
-                raise Conflict("archive write preparation identity changed")
-            stored = session.get(ArchiveWritePreparationRecord, (collection_id, object_id))
+            stored = self._preparation_record(
+                session, collection_id, object_id, epoch=epoch, identity=identity
+            )
             if stored is not None:
-                if stored.identity_json != identity_json:
-                    raise Conflict("archive write preparation identity changed")
                 return stored.preparation_json
             session.add(
                 ArchiveWritePreparationRecord(

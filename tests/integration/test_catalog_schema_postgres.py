@@ -1612,3 +1612,15 @@ def test_postgres_archive_write_actor_cannot_gain_a_new_admission_epoch(
 
     with _case(tmp_path, database_url=isolated_database_url) as case:
         _assert_actor_epoch_is_pinned(case)
+
+
+def test_postgres_original_crypto_is_committed_before_provider_begin(
+    tmp_path, isolated_database_url: str, monkeypatch
+) -> None:
+    from tests.unit.test_archive_write_admission import (
+        _assert_original_crypto_precedes_begin,
+        _case,
+    )
+
+    with _case(tmp_path, database_url=isolated_database_url) as case:
+        _assert_original_crypto_precedes_begin(case, monkeypatch)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import threading
@@ -24,6 +25,7 @@ from riverhog_core.services.archive_write_admission import (
     ClosedArchiveWrite,
 )
 from riverhog_protocol.errors import Conflict, NotFound
+from riverhog_protocol.pack_ingress import canonical_json_bytes
 from sqlalchemy import event, func, select
 from sqlalchemy.exc import IntegrityError
 
@@ -620,6 +622,14 @@ def _assert_actor_epoch_is_pinned(case):
         _prepare(case, preparation={"replacement": "must-not-be-retained"})
     with pytest.raises(Conflict, match="epoch changed"):
         _arm(case)
+    with pytest.raises(Conflict, match="epoch changed"):
+        case.owner.load_preparation(
+            case.collection_id,
+            case.object_id,
+            epoch=old_epoch,
+            identity=case.identity,
+            guard=_guard,
+        )
     assert case.owner.unresolved(case.collection_id, limit=1) == ()
     case.epoch = fresh
     assert _prepare(case, preparation={"replacement": "must-not-be-retained"}) == original
@@ -658,3 +668,113 @@ def test_epoch_binding_never_synthesizes_missing_control(case):
         session.delete(session.get(ArchiveWriteControlRecord, case.collection_id))
     with pytest.raises(Conflict, match="owner is uninitialized"):
         case.owner.bind_epoch(case.collection_id, guard=_guard)
+
+
+def _assert_original_crypto_precedes_begin(case, monkeypatch):
+    from riverhog_age import UploadState
+    from riverhog_core.pack_volume import parse_pack_volume_plan
+    from riverhog_core.raw_volume import parse_raw_volume_plan
+
+    with session_scope(case.factory) as session:
+        record = session.get(
+            CollectionArchiveObjectUploadRecord, (case.collection_id, case.object_id)
+        )
+        upload = session.get(CollectionUploadRecord, case.collection_id)
+        kind = record.kind
+        relative_path = record.relative_path
+        plan_json = record.plan_json
+        passphrase_id = upload.passphrase_id
+        part_bytes = record.unit_plaintext_bytes
+    if kind == "pack":
+        plan = parse_pack_volume_plan(plan_json)
+        uploader = case.service._pack_uploader(case.provider, passphrase_id=passphrase_id)
+        extra = {}
+    else:
+        assert kind == "segment"
+        plan = parse_raw_volume_plan(plan_json)
+        uploader = case.service._raw_uploader(case.provider, passphrase_id=passphrase_id)
+        extra = {"target_part_plaintext_bytes": part_bytes}
+    original = uploader.prepare(plan=plan).to_json_bytes()
+    retained = case.owner.prepare(
+        case.collection_id,
+        case.object_id,
+        epoch=case.epoch,
+        identity=case.identity,
+        preparation={"age_state": json.loads(original)},
+        grants=GRANTS,
+        guard=_guard,
+    )
+    assert not case.provider.uploads
+    cold = ArchiveWriteAdmission(case.factory)
+    loaded = cold.load_preparation(
+        case.collection_id,
+        case.object_id,
+        epoch=case.epoch,
+        identity=case.identity,
+        guard=_guard,
+    )
+    unchanged = loaded == retained
+    assert unchanged
+    begin = case.provider.begin_write
+    observed = []
+
+    def inspect_committed_preparation(**arguments):
+        with session_scope(case.factory) as session:
+            prepared = session.get(
+                ArchiveWritePreparationRecord, (case.collection_id, case.object_id)
+            )
+            unchanged = prepared.preparation_json == retained
+            assert unchanged
+            record = session.get(
+                CollectionArchiveObjectUploadRecord, (case.collection_id, case.object_id)
+            )
+            assert record.checkpoint_json is None
+        observed.append("preparation-visible-before-begin")
+        return begin(**arguments)
+
+    monkeypatch.setattr(case.provider, "begin_write", inspect_committed_preparation)
+    restored = UploadState.from_json_bytes(canonical_json_bytes(json.loads(retained)["age_state"]))
+    checkpoint = uploader.open(
+        collection_id=case.collection_id,
+        plan=plan,
+        object_path=case.identity["object_path"],
+        relative_path=relative_path,
+        prepared_state=restored,
+        **extra,
+    )
+    unchanged = checkpoint.age_state_json.encode() == original
+    assert unchanged and observed == ["preparation-visible-before-begin"]
+
+
+def test_original_crypto_is_committed_before_provider_begin(case, monkeypatch):
+    _assert_original_crypto_precedes_begin(case, monkeypatch)
+
+
+def test_preparation_lookup_creates_neither_preparation_nor_dispatch_right(case):
+    def load(*, identity=None, guard=_guard):
+        return case.owner.load_preparation(
+            case.collection_id,
+            case.object_id,
+            epoch=case.epoch,
+            identity=case.identity if identity is None else identity,
+            guard=guard,
+        )
+
+    assert load() is None
+    with session_scope(case.factory) as session:
+        assert session.scalar(select(func.count()).select_from(ArchiveWritePreparationRecord)) == 0
+    retained = _prepare(case)
+    assert load() == retained
+    assert case.owner.unresolved(case.collection_id, limit=1) == ()
+    assert not case.provider.uploads
+    with pytest.raises(Conflict, match="identity changed"):
+        load(identity={**case.identity, "object_path": "different"})
+
+    def deny(session):
+        raise NotFound("current preparation authority unavailable")
+
+    with pytest.raises(NotFound, match="current preparation authority"):
+        load(guard=deny)
+    _selected(case)
+    with pytest.raises(Conflict, match="admission is closed"):
+        load()

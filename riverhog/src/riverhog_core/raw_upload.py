@@ -304,6 +304,40 @@ class RawVolumeUploader:
             derivation_gate=self._derivation_gate,
         )
 
+    def prepare(self, *, plan: RawVolumePlan) -> UploadState:
+        """Create candidate encryption state without checkpoint or provider access.
+
+        The construction owner retains it with the exact volume identity before dispatch.
+        """
+        started = time.perf_counter()
+        _, state, waited, crypto_seconds = self._prepare_age_state(plan.plaintext_bytes)
+        self._observe_timing(
+            TransferTiming(
+                operation="raw_upload_prepare",
+                identity=plan.volume_id,
+                plaintext_bytes=0,
+                stored_bytes=0,
+                queue_wait_seconds=waited,
+                source_seconds=0.0,
+                crypto_seconds=crypto_seconds,
+                remote_seconds=0.0,
+                checkpoint_seconds=0.0,
+                elapsed_seconds=time.perf_counter() - started,
+            )
+        )
+        return state
+
+    def _prepare_age_state(
+        self, plaintext_bytes: int
+    ) -> tuple[ResumableAgeScryptSession, UploadState, float, float]:
+        with self._derivation_gate.reserve() as waited:
+            started = time.perf_counter()
+            session = ResumableAgeScryptSession.create(self._passphrase, log_n=self._scrypt_log_n)
+            crypto_seconds = time.perf_counter() - started
+        state = session.export_state(plaintext_size=plaintext_bytes)
+        self._session_cache.remember(state, session)
+        return session, state, waited, crypto_seconds
+
     def open(
         self,
         *,
@@ -313,8 +347,13 @@ class RawVolumeUploader:
         relative_path: str,
         target_part_plaintext_bytes: int,
         expected_part_sha256s: Sequence[str] = (),
+        prepared_state: UploadState | None = None,
     ) -> RawUploadCheckpoint:
         opened_started = time.perf_counter()
+        if prepared_state is not None:
+            prepared_state = UploadState.from_json_bytes(prepared_state.to_json_bytes())
+            if prepared_state.plaintext_size != plan.plaintext_bytes:
+                raise ValueError("raw upload preparation does not match the plan size")
         if collection_id < 1 or not object_path:
             raise ValueError("raw upload collection and object identities are required")
         normalized_relative_path = validate_canonical_relpath(relative_path)
@@ -335,6 +374,11 @@ class RawVolumeUploader:
         if existing is not None:
             checkpoint = RawUploadCheckpoint.from_json(existing)
             self._validate(plan, checkpoint)
+            if prepared_state is not None and (
+                prepared_state.to_json_bytes()
+                != UploadState.from_json_bytes(checkpoint.age_state_json).to_json_bytes()
+            ):
+                raise ValueError("raw upload original encryption preparation changed")
             if (
                 checkpoint.collection_id != collection_id
                 or checkpoint.object_path != object_path
@@ -354,13 +398,15 @@ class RawVolumeUploader:
                     return self._mark_completed(checkpoint, completed)
             return checkpoint
 
-        with self._derivation_gate.reserve() as derivation_wait_seconds:
-            crypto_started = time.perf_counter()
-            session = ResumableAgeScryptSession.create(
-                self._passphrase,
-                log_n=self._scrypt_log_n,
+        if prepared_state is None:
+            session, prepared_state, derivation_wait_seconds, crypto_seconds = (
+                self._prepare_age_state(plan.plaintext_bytes)
             )
+        else:
+            crypto_started = time.perf_counter()
+            session = self._session_cache.get(prepared_state)
             crypto_seconds = time.perf_counter() - crypto_started
+            derivation_wait_seconds = 0.0
         planned_parts = raw_age_aligned_unit_plans(
             plan,
             session,
@@ -368,11 +414,7 @@ class RawVolumeUploader:
         )
         if expected_digests and len(expected_digests) != len(planned_parts):
             raise ValueError("raw upload expected part digest count does not match the plan")
-        age_state_json = (
-            session.export_state(plaintext_size=plan.plaintext_bytes)
-            .to_json_bytes()
-            .decode("utf-8")
-        )
+        age_state_json = prepared_state.to_json_bytes().decode("utf-8")
         self._session_cache.remember(age_state_json, session)
         expected_stored_bytes = age_ciphertext_len_for_plaintext_len(
             plan.plaintext_bytes,

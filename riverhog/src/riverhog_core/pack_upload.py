@@ -270,6 +270,40 @@ class PackVolumeUploader:
             derivation_gate=self._derivation_gate,
         )
 
+    def prepare(self, *, plan: PackVolumePlan) -> UploadState:
+        """Create candidate encryption state without checkpoint or provider access.
+
+        The construction owner retains it with the exact volume identity before dispatch.
+        """
+        started = time.perf_counter()
+        _, state, waited, crypto_seconds = self._prepare_age_state(plan.plaintext_bytes)
+        self._observe_timing(
+            TransferTiming(
+                operation="pack_upload_prepare",
+                identity=plan.volume_id,
+                plaintext_bytes=0,
+                stored_bytes=0,
+                queue_wait_seconds=waited,
+                source_seconds=0.0,
+                crypto_seconds=crypto_seconds,
+                remote_seconds=0.0,
+                checkpoint_seconds=0.0,
+                elapsed_seconds=time.perf_counter() - started,
+            )
+        )
+        return state
+
+    def _prepare_age_state(
+        self, plaintext_bytes: int
+    ) -> tuple[ResumableAgeScryptSession, UploadState, float, float]:
+        with self._derivation_gate.reserve() as waited:
+            started = time.perf_counter()
+            session = ResumableAgeScryptSession.create(self._passphrase, log_n=self._scrypt_log_n)
+            crypto_seconds = time.perf_counter() - started
+        state = session.export_state(plaintext_size=plaintext_bytes)
+        self._session_cache.remember(state, session)
+        return session, state, waited, crypto_seconds
+
     def open(
         self,
         *,
@@ -277,8 +311,13 @@ class PackVolumeUploader:
         plan: PackVolumePlan,
         object_path: str,
         relative_path: str,
+        prepared_state: UploadState | None = None,
     ) -> PackUploadCheckpoint:
         opened_started = time.perf_counter()
+        if prepared_state is not None:
+            prepared_state = UploadState.from_json_bytes(prepared_state.to_json_bytes())
+            if prepared_state.plaintext_size != plan.plaintext_bytes:
+                raise ValueError("pack upload preparation does not match the plan size")
         if collection_id < 1:
             raise ValueError("collection id must be positive")
         normalized_relative_path = validate_canonical_relpath(relative_path)
@@ -300,6 +339,11 @@ class PackVolumeUploader:
                 object_path=object_path,
                 relative_path=normalized_relative_path,
             )
+            if prepared_state is not None and (
+                prepared_state.to_json_bytes()
+                != UploadState.from_json_bytes(checkpoint.age_state_json).to_json_bytes()
+            ):
+                raise ValueError("pack upload original encryption preparation changed")
             if checkpoint.completed is None:
                 completed = self._object_store.find_completed_write(
                     object_path=object_path,
@@ -311,18 +355,16 @@ class PackVolumeUploader:
                     return self._mark_completed(checkpoint, completed)
             return checkpoint
 
-        with self._derivation_gate.reserve() as derivation_wait_seconds:
-            crypto_started = time.perf_counter()
-            session = ResumableAgeScryptSession.create(
-                self._passphrase,
-                log_n=self._scrypt_log_n,
+        if prepared_state is None:
+            session, prepared_state, derivation_wait_seconds, crypto_seconds = (
+                self._prepare_age_state(plan.plaintext_bytes)
             )
+        else:
+            crypto_started = time.perf_counter()
+            session = self._session_cache.get(prepared_state)
             crypto_seconds = time.perf_counter() - crypto_started
-        age_state_json = (
-            session.export_state(plaintext_size=plan.plaintext_bytes)
-            .to_json_bytes()
-            .decode("utf-8")
-        )
+            derivation_wait_seconds = 0.0
+        age_state_json = prepared_state.to_json_bytes().decode("utf-8")
         self._session_cache.remember(age_state_json, session)
         expected_stored_bytes = age_ciphertext_len_for_plaintext_len(
             plan.plaintext_bytes,
