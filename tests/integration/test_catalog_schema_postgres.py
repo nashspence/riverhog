@@ -1854,7 +1854,11 @@ def test_postgres_registration_rechecks_authority_expiry_after_waiting_for_const
 
     from riverhog_core.catalog_models import AppKeyRecord
     from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
-    from riverhog_core.services import app_keys, collection_registration
+    from riverhog_core.services import (
+        app_keys,
+        collection_registration,
+        collection_upload_authority,
+    )
     from riverhog_core.services.collection_registration import CollectionRegistrationOwner
     from riverhog_protocol.errors import NotFound
     from time_formats import format_utc_timestamp, utc_now
@@ -1906,6 +1910,9 @@ def test_postgres_registration_rechecks_authority_expiry_after_waiting_for_const
         monkeypatch.setattr(app_keys, "utc_now", clock)
         monkeypatch.setattr(
             collection_registration, "utc_timestamp_now", lambda: format_utc_timestamp(clock())
+        )
+        monkeypatch.setattr(
+            collection_upload_authority, "utc_timestamp_now", lambda: format_utc_timestamp(clock())
         )
         with ThreadPoolExecutor(max_workers=1) as executor:
             with session_scope(service._session_factory) as blocker:
