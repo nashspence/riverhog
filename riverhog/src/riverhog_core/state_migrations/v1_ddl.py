@@ -1176,11 +1176,13 @@ CREATE TABLE collection_archive_object_uploads (
 	failure TEXT,
 	uploaded_bytes BIGINT NOT NULL,
 	uploaded_units INTEGER NOT NULL,
+	next_unit INTEGER DEFAULT 0 NOT NULL,
 	total_units INTEGER NOT NULL,
 	updated_at VARCHAR NOT NULL,
 	sealed_at VARCHAR,
 	registration_id VARCHAR(64),
 	PRIMARY KEY (collection_id, object_id),
+	CONSTRAINT ck_archive_object_uploads_next_unit CHECK (next_unit >= 0 AND next_unit <= uploaded_units),
 	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
 	CONSTRAINT ck_archive_object_uploads_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_archive_object_uploads_plaintext CHECK (plaintext_bytes >= 0),
@@ -3845,11 +3847,13 @@ CREATE TABLE collection_archive_object_uploads (
 	failure TEXT,
 	uploaded_bytes BIGINT NOT NULL,
 	uploaded_units INTEGER NOT NULL,
+	next_unit INTEGER DEFAULT 0 NOT NULL,
 	total_units INTEGER NOT NULL,
 	updated_at VARCHAR NOT NULL,
 	sealed_at VARCHAR,
 	registration_id VARCHAR(64),
 	PRIMARY KEY (collection_id, object_id),
+	CONSTRAINT ck_archive_object_uploads_next_unit CHECK (next_unit >= 0 AND next_unit <= uploaded_units),
 	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
 	CONSTRAINT ck_archive_object_uploads_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_archive_object_uploads_plaintext CHECK (plaintext_bytes >= 0),
@@ -6185,4 +6189,12 @@ POSTGRESQL_DDL += (
     "CREATE INDEX ix_archive_write_effects_volume ON archive_write_effects (collection_id, object_id, unresolved, resource)",
     "CREATE TABLE archive_upload_terminals (\n\tid VARCHAR(64) NOT NULL,\n\tcollection_id BIGINT NOT NULL,\n\trequest_json TEXT NOT NULL,\n\tprincipal_id VARCHAR NOT NULL,\n\tkind VARCHAR NOT NULL,\n\tphase VARCHAR NOT NULL,\n\tfrontier TEXT NOT NULL,\n\toriginal_epoch VARCHAR(64) NOT NULL,\n\tresult_json TEXT,\n\tPRIMARY KEY (id),\n\tFOREIGN KEY(collection_id) REFERENCES archive_write_controls (collection_id),\n\tCONSTRAINT ck_archive_upload_terminals_kind CHECK (kind IN ('cancel','discard')),\n\tCONSTRAINT ck_archive_upload_terminals_phase CHECK (phase IN ('draining','refused-sealed','needs-reconfirmation','cleanup-ready','cleaning','done')),\n\tCONSTRAINT ck_archive_upload_terminals_result CHECK (phase <> 'done' OR result_json IS NOT NULL),\n\tCONSTRAINT ck_archive_upload_terminals_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),\n\tCONSTRAINT ck_archive_upload_terminals_original_epoch_hex CHECK (length(original_epoch) = 64 AND lower(original_epoch) = original_epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(original_epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')\n)",
     "CREATE INDEX ix_archive_upload_terminals_collection ON archive_upload_terminals (collection_id, id)",
+)
+
+SQLITE_DDL += (
+    "CREATE TABLE collection_archive_object_upload_units (\n\tcollection_id INTEGER NOT NULL,\n\tobject_id VARCHAR NOT NULL,\n\tunit INTEGER NOT NULL,\n\tPRIMARY KEY (collection_id, object_id, unit),\n\tFOREIGN KEY(collection_id, object_id) REFERENCES collection_archive_object_uploads (collection_id, object_id) ON DELETE CASCADE,\n\tCONSTRAINT ck_archive_object_upload_units_unit CHECK (unit >= 0)\n)",
+)
+
+POSTGRESQL_DDL += (
+    "CREATE TABLE collection_archive_object_upload_units (\n\tcollection_id BIGINT NOT NULL,\n\tobject_id VARCHAR NOT NULL,\n\tunit INTEGER NOT NULL,\n\tPRIMARY KEY (collection_id, object_id, unit),\n\tFOREIGN KEY(collection_id, object_id) REFERENCES collection_archive_object_uploads (collection_id, object_id) ON DELETE CASCADE,\n\tCONSTRAINT ck_archive_object_upload_units_unit CHECK (unit >= 0)\n)",
 )

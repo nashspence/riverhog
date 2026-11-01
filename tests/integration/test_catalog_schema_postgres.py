@@ -1603,3 +1603,12 @@ def test_postgres_concurrent_part_checkpoints_preserve_independent_construction_
         tmp_path, database_url=isolated_database_url, concurrent_parts=True
     ) as case:
         settlement._assert_parallel_checkpoint_progress(case, monkeypatch)
+
+
+def test_postgres_archive_write_actor_cannot_gain_a_new_admission_epoch(
+    tmp_path, isolated_database_url: str
+) -> None:
+    from tests.unit.test_archive_write_admission import _assert_actor_epoch_is_pinned, _case
+
+    with _case(tmp_path, database_url=isolated_database_url) as case:
+        _assert_actor_epoch_is_pinned(case)

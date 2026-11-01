@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import Protocol, TypeVar
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, load_only, object_session
 
 from riverhog_core.catalog_archive_write_models import (
@@ -13,6 +13,7 @@ from riverhog_core.catalog_archive_write_models import (
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectUploadRecord,
+    CollectionArchiveObjectUploadUnitRecord,
     CollectionUploadRecord,
 )
 from riverhog_core.domain.archive import StoredArchivePart
@@ -258,6 +259,20 @@ class SqlAlchemyArchiveUploadCheckpointStore:
         record.checkpoint_json = encoded
         record.uploaded_bytes = sum(item.stored_bytes for item in merged.archive_parts)
         record.uploaded_units = len(merged.archive_parts)
+        committed = {part.number - 1 for part in merged.archive_parts}
+        previous_units = (
+            {part.number - 1 for part in previous.archive_parts} if previous is not None else set()
+        )
+        for unit in sorted(committed - previous_units):
+            session.add(
+                CollectionArchiveObjectUploadUnitRecord(
+                    collection_id=upload.collection_id, object_id=record.object_id, unit=unit
+                )
+            )
+        next_unit = 0
+        while next_unit in committed:
+            next_unit += 1
+        record.next_unit = next_unit
         record.state = "sealed" if merged.completed is not None else "uploading"
         if added_payload_bytes:
             upload.uploaded_payload_bytes = (
@@ -269,6 +284,13 @@ class SqlAlchemyArchiveUploadCheckpointStore:
         with session_scope(self._session_factory) as session:
             _, record = self._lock(session, collection_id=collection_id, volume_id=volume_id)
             if record is not None and record.kind == kind:
+                session.execute(
+                    delete(CollectionArchiveObjectUploadUnitRecord).where(
+                        CollectionArchiveObjectUploadUnitRecord.collection_id == collection_id,
+                        CollectionArchiveObjectUploadUnitRecord.object_id == volume_id,
+                    )
+                )
+                record.next_unit = 0
                 record.checkpoint_json = None
                 record.uploaded_bytes = 0
                 record.uploaded_units = 0

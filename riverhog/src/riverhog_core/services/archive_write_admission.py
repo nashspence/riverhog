@@ -221,11 +221,30 @@ class ArchiveWriteAdmission:
             if terminal is None:
                 raise RuntimeError("archive write terminal intent is missing")
 
+    def bind_epoch(self, collection_id: int, *, guard: Guard) -> str:
+        """Bind one authorized actor before it prepares or admits forward work."""
+        with session_scope(self._factory) as session:
+            _writer(session)
+            guard(session)
+            upload = self._upload(session, collection_id)
+            control = self._control(session, upload)
+            if control.gate != "open":
+                raise Conflict("archive write admission is closed")
+            return control.epoch
+
+    @staticmethod
+    def _require_epoch(control: ArchiveWriteControlRecord, epoch: str) -> None:
+        if control.gate != "open":
+            raise Conflict("archive write admission is closed")
+        if control.epoch != epoch:
+            raise Conflict("archive write admission epoch changed")
+
     def prepare(
         self,
         collection_id: int,
         object_id: str,
         *,
+        epoch: str,
         identity: Mapping[str, Any],
         preparation: Mapping[str, Any],
         grants: ArchiveWriteGrants,
@@ -240,6 +259,7 @@ class ArchiveWriteAdmission:
             guard(session)
             upload = self._upload(session, collection_id)
             control = self._control(session, upload)
+            self._require_epoch(control, epoch)
             self._terminal_lock(session, control)
             volume = self._volume(session, collection_id, object_id)
             expected = {
@@ -254,8 +274,6 @@ class ArchiveWriteAdmission:
                 if stored.identity_json != identity_json:
                     raise Conflict("archive write preparation identity changed")
                 return stored.preparation_json
-            if control.gate != "open":
-                raise Conflict("archive write admission is closed")
             session.add(
                 ArchiveWritePreparationRecord(
                     collection_id=collection_id,
@@ -271,6 +289,7 @@ class ArchiveWriteAdmission:
         collection_id: int,
         object_id: str,
         *,
+        epoch: str,
         kind: str,
         resource: str,
         arguments: Mapping[str, Any],
@@ -295,8 +314,7 @@ class ArchiveWriteAdmission:
             guard(session)
             upload = self._upload(session, collection_id)
             control = self._control(session, upload)
-            if control.gate != "open":
-                raise Conflict("archive write admission is closed")
+            self._require_epoch(control, epoch)
             if upload.state not in {"open", "closing", "uploading"}:
                 raise Conflict("archive write construction cannot accept payload")
             volume = self._volume(session, collection_id, object_id)

@@ -167,7 +167,7 @@ from sqlalchemy import (
     update,
 )
 from sqlalchemy.engine import CursorResult
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session, load_only, selectinload
 from state_schema import read_snapshot
 from time_formats import (
     add_utc_timestamp,
@@ -229,6 +229,7 @@ from riverhog_core.catalog_models import (
     CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
     CollectionArchiveObjectUploadRecord,
+    CollectionArchiveObjectUploadUnitRecord,
     CollectionArtifactProvenanceRecord,
     CollectionArtifactRecord,
     CollectionDescriptionPublicationRecord,
@@ -1991,6 +1992,19 @@ class SqlAlchemyCollectionUploadService:
             volumes = list(
                 session.scalars(
                     select(CollectionArchiveObjectUploadRecord)
+                    .options(
+                        load_only(
+                            CollectionArchiveObjectUploadRecord.collection_id,
+                            CollectionArchiveObjectUploadRecord.object_id,
+                            CollectionArchiveObjectUploadRecord.sequence,
+                            CollectionArchiveObjectUploadRecord.kind,
+                            CollectionArchiveObjectUploadRecord.plan_json,
+                            CollectionArchiveObjectUploadRecord.plan_sha256,
+                            CollectionArchiveObjectUploadRecord.unit_plaintext_bytes,
+                            CollectionArchiveObjectUploadRecord.total_units,
+                            CollectionArchiveObjectUploadRecord.next_unit,
+                        )
+                    )
                     .where(
                         CollectionArchiveObjectUploadRecord.collection_id == normalized_id,
                         CollectionArchiveObjectUploadRecord.sequence < upload.planner_next_sequence,
@@ -2163,10 +2177,28 @@ class SqlAlchemyCollectionUploadService:
             record = session.get(
                 CollectionArchiveObjectUploadRecord,
                 (normalized_id, volume_id),
+                options=(
+                    load_only(
+                        CollectionArchiveObjectUploadRecord.collection_id,
+                        CollectionArchiveObjectUploadRecord.object_id,
+                        CollectionArchiveObjectUploadRecord.kind,
+                        CollectionArchiveObjectUploadRecord.plan_json,
+                        CollectionArchiveObjectUploadRecord.total_units,
+                        CollectionArchiveObjectUploadRecord.unit_plaintext_bytes,
+                        CollectionArchiveObjectUploadRecord.state,
+                    ),
+                ),
             )
             if record is None or unit < 0 or unit >= record.total_units:
                 raise NotFound(f"collection upload unit not found: {unit}")
-            return _unit_work_payload(record, unit)
+            committed = (
+                record.state == "sealed"
+                or session.get(
+                    CollectionArchiveObjectUploadUnitRecord, (normalized_id, volume_id, unit)
+                )
+                is not None
+            )
+            return _unit_work_payload(record, unit, committed=committed)
 
     def get(self, collection_id: int) -> dict[str, object]:
         normalized_id = _collection_id(collection_id)
@@ -2651,6 +2683,7 @@ class SqlAlchemyCollectionUploadService:
             record.sealed_at = receipt.completed_at
             record.updated_at = now
             record.uploaded_units = len(receipt.parts)
+            record.next_unit = len(receipt.parts)
             record.uploaded_bytes = receipt.stored_bytes
             if upload is not None:
                 _touch_upload(upload, config=self._config, now=now)
@@ -8109,8 +8142,9 @@ def _volume_work_payload(record: CollectionArchiveObjectUploadRecord) -> dict[st
 def _unit_work_payload(
     record: CollectionArchiveObjectUploadRecord,
     unit: int,
+    *,
+    committed: bool,
 ) -> dict[str, object]:
-    committed = unit < record.uploaded_units or record.state == "sealed"
     if record.kind == "pack":
         descriptors = pack_unit_descriptors(parse_pack_volume_plan(record.plan_json))
         if unit < 0 or unit >= len(descriptors):
@@ -8159,7 +8193,7 @@ def _unit_work_payload(
 
 
 def _unit_assignment_payload(record: CollectionArchiveObjectUploadRecord) -> dict[str, object]:
-    if record.uploaded_units >= record.total_units:
+    if record.next_unit >= record.total_units:
         raise RuntimeError("unsealed archive volume has no actionable upload unit")
     return {
         "volume": {
@@ -8168,7 +8202,7 @@ def _unit_assignment_payload(record: CollectionArchiveObjectUploadRecord) -> dic
             "kind": record.kind,
         },
         "plan_sha256": record.plan_sha256,
-        "unit": _unit_work_payload(record, record.uploaded_units),
+        "unit": _unit_work_payload(record, record.next_unit, committed=False),
     }
 
 

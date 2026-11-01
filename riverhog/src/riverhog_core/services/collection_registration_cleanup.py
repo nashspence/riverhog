@@ -198,6 +198,7 @@ def _empty_plan(
         plan.c.failure.is_(None),
         plan.c.uploaded_bytes == 0,
         plan.c.uploaded_units == 0,
+        plan.c.next_unit == 0,
         plan.c.sealed_at.is_(None),
     )
 

@@ -106,6 +106,9 @@ def _source_case(tmp_path, *, database_url=None, concurrent_parts=False):
         yield SimpleNamespace(
             service=service,
             factory=service._session_factory,
+            epoch=ArchiveWriteAdmission(service._session_factory).bind_epoch(
+                collection_id, guard=_guard
+            ),
             provider=provider,
             collection_id=collection_id,
             object_id=object_id,
@@ -157,6 +160,7 @@ def _assert_lost_checkpoint_report(case, monkeypatch):
     owner.prepare(
         case.collection_id,
         case.object_id,
+        epoch=case.epoch,
         identity=case.identity,
         preparation={"age_state": json.loads(case.initial.age_state_json)},
         grants=GRANTS,
@@ -165,6 +169,7 @@ def _assert_lost_checkpoint_report(case, monkeypatch):
     ticket = owner.arm(
         case.collection_id,
         case.object_id,
+        epoch=case.epoch,
         kind="part",
         resource="part:1",
         arguments={"number": 1, "plaintext_sha256": case.digest},
@@ -263,6 +268,7 @@ def _assert_lost_checkpoint_report(case, monkeypatch):
         owner.arm(
             case.collection_id,
             case.object_id,
+            epoch=case.epoch,
             kind="complete",
             resource="complete",
             arguments={},
@@ -282,12 +288,12 @@ def test_actual_upload_unit_retries_lost_checkpoint_report_without_resending_par
 
 def _assert_parallel_checkpoint_progress(case, monkeypatch):
     ready = threading.Barrier(3)
-    release = threading.Event()
+    releases = {1: threading.Event(), 2: threading.Event()}
     write = case.provider.write_segment
 
     def held_write(**arguments):
         ready.wait(15)
-        if not release.wait(15):
+        if not releases[arguments["number"]].wait(15):
             raise AssertionError("provider fixture release deadline")
         return write(**arguments)
 
@@ -314,8 +320,46 @@ def _assert_parallel_checkpoint_progress(case, monkeypatch):
                 event_context=None,
             )
             assert int(other["collection_id"]) != case.collection_id
+            releases[2].set()
+            assert futures[1].result(timeout=20)["state"] == "committed"
+            statements = []
+            engine = case.factory.kw["bind"]
+
+            def record_sql(connection, cursor, statement, parameters, context, executemany):
+                if statement.lstrip().upper().startswith("SELECT"):
+                    statements.append(statement)
+
+            event.listen(engine, "before_cursor_execute", record_sql)
+            try:
+                assert (
+                    case.service.get_unit(case.collection_id, case.object_id, 0)["state"]
+                    == "pending"
+                )
+                assert (
+                    case.service.get_unit(case.collection_id, case.object_id, 1)["state"]
+                    == "committed"
+                )
+                work = case.service.acquire_work(case.collection_id, limit=1)["work"]
+                assert len(work) == 1 and work[0]["unit"]["unit"] == "0"
+                assert work[0]["unit"]["state"] == "pending"
+            finally:
+                event.remove(engine, "before_cursor_execute", record_sql)
+            assert all(
+                "collection_archive_object_uploads.checkpoint_json" not in statement
+                for statement in statements
+            )
+            point_reads = [
+                statement
+                for statement in statements
+                if "FROM collection_archive_object_upload_units " in statement
+            ]
+            assert len(point_reads) == 2 and all(
+                "collection_archive_object_upload_units.unit =" in statement
+                for statement in point_reads
+            )
         finally:
-            release.set()
+            for release in releases.values():
+                release.set()
         results = [future.result(timeout=20) for future in futures]
     assert all(reply["state"] == "committed" for reply in results)
     with session_scope(case.factory) as session:

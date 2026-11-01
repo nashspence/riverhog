@@ -67,12 +67,15 @@ def _case(tmp_path, *, database_url=None):
             }
             upload = session.get(CollectionUploadRecord, collection_id)
             incarnation = upload.archive_incarnation_id
+        owner = ArchiveWriteAdmission(service._session_factory)
+        epoch = owner.bind_epoch(collection_id, guard=_guard)
         yield SimpleNamespace(
             service=service,
             config=config,
             provider=provider,
             factory=service._session_factory,
-            owner=ArchiveWriteAdmission(service._session_factory),
+            owner=owner,
+            epoch=epoch,
             collection_id=collection_id,
             object_id=volume["volume_id"],
             identity=identity,
@@ -93,6 +96,7 @@ def _prepare(case, *, preparation=None, grants=GRANTS):
     return case.owner.prepare(
         case.collection_id,
         case.object_id,
+        epoch=case.epoch,
         identity=case.identity,
         preparation=preparation or {"original_preparation": "retained-before-provider"},
         grants=grants,
@@ -104,6 +108,7 @@ def _arm(case, *, kind="begin", resource="begin", grants=GRANTS, arguments=None)
     return case.owner.arm(
         case.collection_id,
         case.object_id,
+        epoch=case.epoch,
         kind=kind,
         resource=resource,
         arguments=arguments
@@ -150,6 +155,7 @@ def test_original_preparation_is_retained_before_arm_and_cold_retry(case):
         cold.prepare(
             case.collection_id,
             case.object_id,
+            epoch=case.epoch,
             identity=case.identity,
             preparation={"different_candidate_crypto": "must-not-replace-original"},
             grants=GRANTS,
@@ -169,6 +175,7 @@ def test_preparation_identity_and_authority_are_checked_before_new_effect(case):
         case.owner.prepare(
             case.collection_id,
             case.object_id,
+            epoch=case.epoch,
             identity={**case.identity, "object_path": "different"},
             preparation={},
             grants=GRANTS,
@@ -182,6 +189,7 @@ def test_preparation_identity_and_authority_are_checked_before_new_effect(case):
         case.owner.arm(
             case.collection_id,
             case.object_id,
+            epoch=case.epoch,
             kind="begin",
             resource="begin",
             arguments={},
@@ -405,7 +413,7 @@ import os,sys
 from riverhog_core.catalog_db import make_session_factory
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission,ArchiveWriteGrants
 owner=ArchiveWriteAdmission(make_session_factory(sys.argv[1]))
-owner.arm(int(sys.argv[2]),sys.argv[3],kind="begin",resource="begin",arguments={},
+owner.arm(int(sys.argv[2]),sys.argv[3],epoch=sys.argv[4],kind="begin",resource="begin",arguments={},
  executor_id="e"*64,result_capacity_bytes=1000,
  grants=ArchiveWriteGrants(4,20000,10000,10000),guard=lambda session: None)
 os._exit(71)
@@ -418,6 +426,7 @@ os._exit(71)
             case.config.database_url,
             str(case.collection_id),
             case.object_id,
+            case.epoch,
         ],
         timeout=15,
         capture_output=True,
@@ -597,3 +606,55 @@ def test_running_dispatch_keeps_its_reservation_until_actual_return(case):
         running.result(timeout=10)
     case.owner.settle_closed(ticket, _closure(case, ticket), apply_result=_apply)
     assert case.owner.unresolved(case.collection_id, limit=1) == ()
+
+
+def _assert_actor_epoch_is_pinned(case):
+    original = _prepare(case)
+    old_epoch = case.epoch
+    with session_scope(case.factory) as session:
+        control = session.get(ArchiveWriteControlRecord, case.collection_id)
+        control.epoch = "f" * 64 if old_epoch != "f" * 64 else "d" * 64
+    fresh = case.owner.bind_epoch(case.collection_id, guard=_guard)
+    assert fresh != old_epoch
+    with pytest.raises(Conflict, match="epoch changed"):
+        _prepare(case, preparation={"replacement": "must-not-be-retained"})
+    with pytest.raises(Conflict, match="epoch changed"):
+        _arm(case)
+    assert case.owner.unresolved(case.collection_id, limit=1) == ()
+    case.epoch = fresh
+    assert _prepare(case, preparation={"replacement": "must-not-be-retained"}) == original
+    ticket = _arm(case)
+    with session_scope(case.factory) as session:
+        effect = session.get(ArchiveWriteEffectRecord, ticket.call_id)
+        assert effect.epoch == fresh
+        assert (
+            session.get(
+                ArchiveWritePreparationRecord, (case.collection_id, case.object_id)
+            ).preparation_json
+            == original
+        )
+
+
+def test_actor_cannot_gain_new_epoch_by_reusing_original_preparation(case):
+    _assert_actor_epoch_is_pinned(case)
+
+
+def test_epoch_binding_requires_current_authority_and_open_gate(case):
+    def deny(session):
+        raise NotFound("authority revoked")
+
+    with pytest.raises(NotFound, match="authority revoked"):
+        case.owner.bind_epoch(case.collection_id, guard=deny)
+    assert case.owner.bind_epoch(case.collection_id, guard=_guard) == case.epoch
+    _selected(case)
+    with pytest.raises(Conflict, match="admission is closed"):
+        case.owner.bind_epoch(case.collection_id, guard=_guard)
+    with pytest.raises(Conflict, match="admission is closed"):
+        _prepare(case)
+
+
+def test_epoch_binding_never_synthesizes_missing_control(case):
+    with session_scope(case.factory) as session:
+        session.delete(session.get(ArchiveWriteControlRecord, case.collection_id))
+    with pytest.raises(Conflict, match="owner is uninitialized"):
+        case.owner.bind_epoch(case.collection_id, guard=_guard)

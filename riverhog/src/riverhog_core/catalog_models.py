@@ -3941,6 +3941,7 @@ class CollectionArchiveObjectUploadRecord(Base):
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
     uploaded_bytes: Mapped[int] = mapped_column(BigInteger, default=0)
     uploaded_units: Mapped[int] = mapped_column(Integer, default=0)
+    next_unit: Mapped[int] = mapped_column(Integer, default=0, server_default=text("0"))
     total_units: Mapped[int] = mapped_column(Integer, default=0)
     updated_at: Mapped[str] = mapped_column(String)
     sealed_at: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -4006,12 +4007,38 @@ class CollectionArchiveObjectUploadRecord(Base):
         CheckConstraint("uploaded_units >= 0", name="ck_archive_object_uploads_uploaded_units"),
         CheckConstraint("total_units >= 0", name="ck_archive_object_uploads_total_units"),
         CheckConstraint(
+            "next_unit >= 0 AND next_unit <= uploaded_units",
+            name="ck_archive_object_uploads_next_unit",
+        ),
+        CheckConstraint(
             "uploaded_units <= total_units",
             name="ck_archive_object_uploads_unit_progress",
         ),
     )
 
     upload: Mapped[CollectionUploadRecord] = relationship(back_populates="archive_objects")
+
+
+class CollectionArchiveObjectUploadUnitRecord(Base):
+    """Exact committed-unit facts projected atomically from the owning checkpoint."""
+
+    __tablename__ = "collection_archive_object_upload_units"
+
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    object_id: Mapped[str] = mapped_column(String, primary_key=True)
+    unit: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "object_id"],
+            [
+                "collection_archive_object_uploads.collection_id",
+                "collection_archive_object_uploads.object_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint("unit >= 0", name="ck_archive_object_upload_units_unit"),
+    )
 
 
 class CollectionUploadArtifactVolumeRecord(Base):
