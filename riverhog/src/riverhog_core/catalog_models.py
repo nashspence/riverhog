@@ -1833,6 +1833,9 @@ class AppKeyRecord(Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     app: Mapped[str] = mapped_column(String)
     token_sha256: Mapped[str] = mapped_column(String(64))
+    access_generation: Mapped[str] = mapped_column(
+        String(64), nullable=False, default=lambda: secrets.token_hex(32)
+    )
     monthly_download_quota_bytes: Mapped[int | None] = mapped_column(
         BigInteger,
         default=0,
