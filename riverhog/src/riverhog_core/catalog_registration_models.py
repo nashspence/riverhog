@@ -56,13 +56,17 @@ class CollectionRegistrationRecord(Base):
             name="ck_collection_registrations_phase",
         ),
         CheckConstraint(
-            "(key_id IS NULL AND key_app IS NULL AND key_generation IS NULL) OR "
-            "(key_id IS NOT NULL AND key_app IS NOT NULL AND key_generation IS NOT NULL)",
+            "key_id IS NULL AND key_app IS NULL AND key_generation IS NULL OR "
+            "key_id IS NOT NULL AND key_app IS NOT NULL AND key_generation IS NOT NULL",
             name="ck_collection_registrations_key",
         ),
         CheckConstraint(
-            "(phase = 'published') = (acknowledgement_json IS NOT NULL)",
+            "phase <> 'published' OR acknowledgement_json IS NOT NULL",
             name="ck_collection_registrations_ack",
+        ),
+        CheckConstraint(
+            "acknowledgement_json IS NULL OR phase = 'published'",
+            name="ck_collection_registrations_published",
         ),
         Index("ix_collection_registrations_request", "collection_id", "request_sha256"),
         Index("ix_collection_registrations_due", "phase", "due_at", "collection_id", "id"),

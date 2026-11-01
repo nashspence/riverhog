@@ -486,13 +486,14 @@ def _service_with_archive_objects(
     *,
     policy: CollectionVolumePolicy | None = None,
     throughput_tuning: ArchiveThroughputTuning | None = None,
+    database_url: str | None = None,
 ) -> tuple[
     SqlAlchemyCollectionUploadService,
     RuntimeConfig,
     MemoryResumableStore,
     MemoryImmutableStore,
 ]:
-    database_url = sqlite_url(tmp_path / "catalog.sqlite3")
+    database_url = database_url or sqlite_url(tmp_path / "catalog.sqlite3")
     config = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     initialize_db(database_url)
     with session_scope(make_session_factory(database_url)) as session:

@@ -16,6 +16,7 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.errors import BadRequest, Conflict, NotFound
 from riverhog_protocol.pack_ingress import canonical_json_bytes
+from riverhog_protocol.transport import COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX
 from sqlalchemy import select, tuple_
 from sqlalchemy.orm import Session
 from time_formats import utc_timestamp_now
@@ -285,6 +286,11 @@ class CollectionRegistrationOwner:
         principal: Principal,
     ) -> dict[str, object]:
         normalized_id = uploads._collection_id(collection_id)
+        if not artifacts or len(artifacts) > COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX:
+            raise BadRequest(
+                "collection upload artifact batch must contain "
+                f"1 to {COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX} artifacts"
+            )
         try:
             document = CollectionUploadArtifactBatchDocument.model_validate(
                 {"artifacts": list(artifacts)}

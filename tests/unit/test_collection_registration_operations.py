@@ -521,3 +521,24 @@ def test_first_service_quantum_does_not_construct_a_growing_raw_prefix(
         assert service.list_volumes(collection_id)["volumes"] == []
     finally:
         _close(service, keys)
+
+
+def test_admission_refuses_an_oversized_batch_before_materializing_it(tmp_path):
+    from riverhog_protocol.errors import BadRequest
+    from riverhog_protocol.transport import COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX
+
+    class OversizedBatch:
+        def __len__(self):
+            return COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX + 1
+
+        def __iter__(self):
+            raise AssertionError("oversized request was materialized")
+
+    service, keys, principal, created, collection_id = _open(tmp_path)
+    try:
+        with pytest.raises(BadRequest, match="artifact batch"):
+            CollectionRegistrationOwner(service).admit(
+                collection_id, OversizedBatch(), principal=principal
+            )
+    finally:
+        _close(service, keys)

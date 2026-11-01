@@ -25,6 +25,7 @@ from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import (
     catalog_state_schema,
     create_catalog_engine,
+    dispose_session_factory,
     initialize_db,
     make_session_factory,
     session_scope,
@@ -1346,3 +1347,82 @@ def test_postgres_payload_accounting_uses_generic_index_plans(
     record_property("postgres_pending_rows_examined", pending_examined)
     record_property("postgres_peak_live_archive_records", working_set["peak_live_archive_records"])
     engine.dispose()
+
+
+@pytest.mark.parametrize("prior_pending_pack", [False, True])
+def test_postgres_registration_reopens_bounded_quantum_and_publishes_once(
+    isolated_database_url, tmp_path, monkeypatch, prior_pending_pack
+):
+    from functools import partial
+
+    from tests.unit import test_collection_registration_operations as witness
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    witness.test_service_registration_reopens_hidden_quantum_and_publishes_one_exact_acknowledgement(
+        tmp_path, monkeypatch, prior_pending_pack
+    )
+
+
+def test_postgres_registration_advancers_serialize_without_repeating_a_quantum(
+    isolated_database_url, tmp_path, monkeypatch
+):
+    from concurrent.futures import ThreadPoolExecutor
+    from functools import partial
+    from threading import Barrier
+
+    from riverhog_core.catalog_registration_models import CollectionRegistrationRecord
+    from riverhog_core.incremental_emission import parse_volume_emission_frontier
+    from riverhog_core.services.collection_registration import CollectionRegistrationOwner
+
+    from tests.unit import test_collection_registration_operations as witness
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    service, keys, principal, created, collection_id = witness._open(tmp_path)
+    other = SqlAlchemyCollectionUploadService(
+        service._config, service._archive_stores, policy=service._policy
+    )
+    first = CollectionRegistrationOwner(service)
+    second = CollectionRegistrationOwner(other)
+    operation_id = first.admit(collection_id, [witness._member()], principal=principal)[
+        "operation_id"
+    ]
+    start = Barrier(2)
+
+    def advance(owner):
+        start.wait(timeout=10)
+        return owner.advance(collection_id, operation_id, limits=witness.LIMITS)
+
+    try:
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            replies = list(executor.map(advance, (first, second)))
+        assert all(reply["phase"] == "staging" for reply in replies)
+        with session_scope(service._session_factory) as session:
+            session.info["include_unpublished_registration"] = True
+            operation = session.get(CollectionRegistrationRecord, operation_id)
+            frontier = parse_volume_emission_frontier(operation.stage_frontier_json)
+            assert frontier.checkpoint.next_sequence == 6
+            rows = list(
+                session.scalars(
+                    select(CollectionArchiveObjectUploadRecord.sequence)
+                    .where(
+                        CollectionArchiveObjectUploadRecord.collection_id == collection_id,
+                        CollectionArchiveObjectUploadRecord.registration_id == operation_id,
+                    )
+                    .order_by(CollectionArchiveObjectUploadRecord.sequence)
+                )
+            )
+            assert rows == list(range(6))
+            assert session.get(CollectionUploadRecord, collection_id).planner_next_sequence == 0
+        assert service.list_volumes(collection_id)["volumes"] == []
+    finally:
+        other.close()
+        dispose_session_factory(other._session_factory)
+        witness._close(service, keys)
