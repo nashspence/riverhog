@@ -2613,6 +2613,13 @@ class CollectionUploadRecord(Base):
         String, nullable=False, default=lambda: f"urn:uuid:{uuid.uuid4()}"
     )
     planner_checkpoint_json: Mapped[str] = mapped_column(Text)
+    planner_next_sequence: Mapped[int] = mapped_column(
+        archive_sequence_type(), default=0, server_default=text(f"'{_ARCHIVE_SEQUENCE_ZERO}'")
+    )
+    registration_revision: Mapped[int] = mapped_column(
+        BigInteger, default=0, server_default=text("0")
+    )
+    active_registration_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     archive_tree_next_artifact_order: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
     )
@@ -2757,6 +2764,18 @@ class CollectionUploadRecord(Base):
             postgresql_ops={"search_text": "gin_trgm_ops"},
         ),
         CheckConstraint("artifact_count >= 0", name="ck_collection_uploads_artifact_count"),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("planner_next_sequence", 64),
+            name="ck_collection_uploads_planner_sequence",
+        ),
+        CheckConstraint(
+            "registration_revision >= 0",
+            name="ck_collection_uploads_registration_revision",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("active_registration_id", 64),
+            name="ck_collection_uploads_active_registration",
+        ),
         CheckConstraint(
             "archive_tree_next_artifact_order >= 0",
             name="ck_collection_uploads_tree_progress",
@@ -2964,7 +2983,16 @@ class CollectionUploadArtifactRecord(Base):
     payload_sealed_at: Mapped[str | None] = mapped_column(String, nullable=True)
     custody_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
+    registration_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
     __table_args__ = (
+        Index(
+            "ix_upload_members_registration", "collection_id", "registration_id", "artifact_order"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("registration_id", 64),
+            name="ck_upload_members_registration",
+        ),
         ForeignKeyConstraint(
             ["collection_id"],
             ["collection_uploads.collection_id"],
@@ -3914,7 +3942,14 @@ class CollectionArchiveObjectUploadRecord(Base):
     updated_at: Mapped[str] = mapped_column(String)
     sealed_at: Mapped[str | None] = mapped_column(String, nullable=True)
 
+    registration_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
     __table_args__ = (
+        Index("ix_upload_plans_registration", "collection_id", "registration_id", "sequence"),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("registration_id", 64),
+            name="ck_upload_plans_registration",
+        ),
         ForeignKeyConstraint(
             ["collection_id"],
             ["collection_uploads.collection_id"],
@@ -3985,7 +4020,20 @@ class CollectionUploadArtifactVolumeRecord(Base):
     artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     object_id: Mapped[str] = mapped_column(String, primary_key=True)
 
+    registration_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
     __table_args__ = (
+        Index(
+            "ix_upload_coverage_registration",
+            "collection_id",
+            "registration_id",
+            "artifact_id",
+            "object_id",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("registration_id", 64),
+            name="ck_upload_coverage_registration",
+        ),
         ForeignKeyConstraint(
             ["collection_id", "artifact_id"],
             [

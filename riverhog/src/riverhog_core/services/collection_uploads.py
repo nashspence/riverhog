@@ -854,6 +854,8 @@ class SqlAlchemyCollectionUploadService:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
             if upload.state != "open":
                 raise Conflict(f"collection upload session is not open: {normalized_id}")
+            if upload.active_registration_id is not None:
+                raise Conflict("collection upload registration is pending")
             checkpoint = _planner_checkpoint(upload)
             try:
                 batch_document = CollectionUploadArtifactBatchDocument.model_validate(
@@ -929,10 +931,11 @@ class SqlAlchemyCollectionUploadService:
             upload.artifact_count += len(new_artifacts)
             upload.artifact_bytes += sum(current["bytes"] for current in new_artifacts)
             batch = advance_incremental_volume_plan(checkpoint, ordered)
-            _persist_plan_batch(session, upload=upload, batch=batch)
             upload.planner_checkpoint_json = incremental_volume_planner_checkpoint_bytes(
                 batch.checkpoint
             ).decode("utf-8")
+            upload.planner_next_sequence = batch.checkpoint.next_sequence
+            _persist_plan_batch(session, upload=upload, batch=batch)
             _touch_upload(upload, config=self._config)
             has_archive_objects = (
                 session.scalar(
@@ -6663,6 +6666,8 @@ def _seal_open_collection_upload(
     checkpoint: Any,
     config: RuntimeConfig,
 ) -> None:
+    if upload.active_registration_id is not None:
+        raise Conflict("collection upload registration is pending")
     collection_id = upload.collection_id
     incomplete_raw = session.scalar(
         select(CollectionUploadArtifactRecord.artifact_id)
@@ -6702,10 +6707,11 @@ def _seal_open_collection_upload(
         or sealed.bytes_seen != upload.artifact_bytes
     ):
         raise Conflict("collection upload planner differs from registered artifacts")
-    _persist_plan_batch(session, upload=upload, batch=batch)
     upload.planner_checkpoint_json = incremental_volume_planner_checkpoint_bytes(sealed).decode(
         "utf-8"
     )
+    upload.planner_next_sequence = sealed.next_sequence
+    _persist_plan_batch(session, upload=upload, batch=batch)
     upload.catalog_artifact_set_identity = None
     upload.catalog_phase = "artifact-set-identity"
     upload.catalog_cursor_json = "{}"
@@ -6728,7 +6734,13 @@ def _seal_open_collection_upload(
     session.flush()
 
 
-def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, batch: Any) -> None:
+def _persist_plan_batch(
+    session: Session,
+    *,
+    upload: CollectionUploadRecord,
+    batch: Any,
+    registration_id: str | None = None,
+) -> None:
     if not upload.archive_storage_prefix:
         raise RuntimeError("collection archive storage prefix is missing")
     now = utc_timestamp_now()
@@ -6739,6 +6751,7 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
         session.add(
             CollectionArchiveObjectUploadRecord(
                 collection_id=upload.collection_id,
+                registration_id=registration_id,
                 object_id=plan.volume_id,
                 sequence=plan.sequence,
                 kind="pack",
@@ -6765,6 +6778,7 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
         session.add(
             CollectionArchiveObjectUploadRecord(
                 collection_id=upload.collection_id,
+                registration_id=registration_id,
                 object_id=plan.volume_id,
                 sequence=plan.sequence,
                 kind="segment",
@@ -6804,6 +6818,7 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
         session.add(
             CollectionUploadArtifactVolumeRecord(
                 collection_id=upload.collection_id,
+                registration_id=registration_id,
                 artifact_id=artifact_id,
                 object_id=volume_id,
             )

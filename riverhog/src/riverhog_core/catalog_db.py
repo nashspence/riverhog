@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from sqlalchemy import create_engine, event
-from sqlalchemy.engine import Engine, make_url
+from sqlalchemy.engine import Connection, Engine, make_url
 from sqlalchemy.orm import Session, sessionmaker
 from state_schema import (
     StateSchema,
@@ -29,6 +29,7 @@ from riverhog_core import catalog_models as _catalog_models  # noqa: E402,F401
 from riverhog_core import (
     catalog_provenance_index_models as _catalog_provenance_index_models,  # noqa: E402,F401
 )
+from riverhog_core import catalog_upload_visibility as _catalog_upload_visibility  # noqa: E402,F401
 from riverhog_core import catalog_workflow_models as _catalog_workflow_models  # noqa: E402,F401
 from riverhog_core.catalog_base import Base
 
@@ -72,6 +73,14 @@ def create_catalog_engine(database_url: str) -> Engine:
             cursor.execute("PRAGMA journal_mode=WAL;")
             cursor.execute("PRAGMA foreign_keys=ON;")
             cursor.close()
+
+        @event.listens_for(engine, "begin")
+        def begin_sqlite_transaction(connection: Connection) -> None:
+            immediate = connection.get_execution_options().get("sqlite_immediate_writer", False)
+            if type(immediate) is not bool:
+                raise ValueError("SQLite writer selection must be boolean")
+            if immediate:
+                connection.exec_driver_sql("BEGIN IMMEDIATE")
 
     return engine
 

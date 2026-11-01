@@ -396,6 +396,14 @@ def read_snapshot(session_factory: SessionFactory) -> CollectionsIterator[Sessio
         connection = session.connection(execution_options=execution_options)
         if bind.dialect.name == "postgresql":
             connection.exec_driver_sql("SET TRANSACTION READ ONLY")
+        elif bind.dialect.name == "sqlite":
+            # Legacy sqlite3 does not begin a transaction for SELECT. Other
+            # engine owners may already have begun it through their own hook.
+            driver = connection.connection.driver_connection
+            if driver is None:
+                raise StateSchemaError("SQLite snapshot connection is unavailable")
+            if not driver.in_transaction:
+                connection.exec_driver_sql("BEGIN")
         yield session
     finally:
         # ``Session.close()`` rolls the read transaction back while preserving
