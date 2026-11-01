@@ -302,3 +302,34 @@ def test_cleanup_refuses_a_changed_construction_or_terminal_selection(tmp_path, 
         assert _snapshot(service, operation) == before
     finally:
         _close(service, keys)
+
+
+@pytest.mark.parametrize("background", [False, True])
+def test_selected_cleanup_keeps_its_original_rights_after_forward_key_revocation(
+    tmp_path, background
+):
+    service, keys, principal, created, collection_id, operation, prior = _staged(tmp_path)
+    try:
+        epoch = _fence(service, collection_id)
+        keys.revoke(app=principal.id, key_id=principal.key_id)
+        owner = CollectionRegistrationOwner(service)
+        for _ in range(40):
+            if background:
+                assert owner.process_due() == 1
+                phase = _snapshot(service, operation)["phase"]
+            else:
+                phase = owner.advance(
+                    collection_id, operation, limits=CLEANUP, expected_epoch=epoch
+                )["phase"]
+            if phase == "disposed":
+                break
+        else:
+            pytest.fail("selected cleanup did not finish")
+        result = owner.advance(collection_id, operation, limits=CLEANUP, expected_epoch=epoch)
+        assert result["phase"] == "disposed"
+        assert (
+            owner.advance(collection_id, operation, limits=CLEANUP, expected_epoch=epoch) == result
+        )
+        assert owner.process_due() == 0
+    finally:
+        _close(service, keys)

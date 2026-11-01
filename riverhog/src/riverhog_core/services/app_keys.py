@@ -159,14 +159,22 @@ def retain_key_validity(
     return KeyAuthorizationFence(key.id, key.app, key.access_generation)
 
 
-def require_key_authorization(session: Session, fence: KeyAuthorizationFence) -> None:
-    """Fence one mutation against revocation, expiry and replaced access."""
-    key = session.scalar(
-        select(AppKeyRecord)
-        .where(AppKeyRecord.id == fence.key_id)
-        .with_for_update()
-        .execution_options(populate_existing=True)
-    )
+def require_key_authorization(
+    session: Session,
+    fence: KeyAuthorizationFence,
+    *,
+    for_update: bool = True,
+    nowait: bool = False,
+) -> None:
+    """Check current validity and generation, retaining the key row by default.
+
+    An owner that already holds this exact row can recheck expiry after waiting
+    on a later lock without acquiring an earlier lock class again.
+    """
+    statement = select(AppKeyRecord).where(AppKeyRecord.id == fence.key_id)
+    if for_update:
+        statement = statement.with_for_update(nowait=nowait)
+    key = session.scalar(statement.execution_options(populate_existing=True))
     if key is None or _status(key, now=format_utc_timestamp(utc_now())) != "active":
         raise NotFound("application key is no longer active")
     if key.app != fence.app or key.access_generation != fence.generation:

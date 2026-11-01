@@ -14,14 +14,17 @@ class RegistrationTuning:
     coverage_rows_per_step: int = 50000
     metadata_bytes_per_step: int = 32 * 1024 * 1024
     input_transitions_per_step: int = 128
+    candidates_per_step: int = 32
     summary_page_bytes: int = 64 * 1024
     execution_quantum: timedelta = timedelta(seconds=1)
     retry_delay: timedelta = timedelta(seconds=30)
 
     def __post_init__(self) -> None:
         self.emission_limits()
-        if type(self.summary_page_bytes) is not int or self.summary_page_bytes < 1:
-            raise ValueError("registration summary_page_bytes must be positive")
+        for name in ("candidates_per_step", "summary_page_bytes"):
+            value = getattr(self, name)
+            if type(value) is not int or value < 1:
+                raise ValueError(f"registration {name} must be positive")
         for name in ("execution_quantum", "retry_delay"):
             value = getattr(self, name)
             if not isinstance(value, timedelta) or value.total_seconds() <= 0:

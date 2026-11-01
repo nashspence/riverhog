@@ -417,6 +417,9 @@ class SqlAlchemyCollectionUploadService:
             concurrency=config.journal_validation_concurrency,
         )
         self._journal_validation_after: tuple[int, str] | None = None
+        # Volatile seek hints retain no permission, work or completion authority.
+        self._registration_due_after: tuple[str, int, str] | None = None
+        self._registration_due_before: str | None = None
         from .upload_journal_validation_retirement import UploadJournalValidationRetirement
 
         self._journal_validation_retirement = UploadJournalValidationRetirement(

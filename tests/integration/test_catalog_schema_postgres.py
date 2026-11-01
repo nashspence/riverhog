@@ -1624,3 +1624,342 @@ def test_postgres_original_crypto_is_committed_before_provider_begin(
 
     with _case(tmp_path, database_url=isolated_database_url) as case:
         _assert_original_crypto_precedes_begin(case, monkeypatch)
+
+
+@pytest.mark.parametrize("entry", ["admit", "advance", "due"])
+def test_postgres_registration_locks_live_key_and_sealed_claim_before_construction(
+    isolated_database_url, tmp_path, monkeypatch, entry
+):
+    from functools import partial
+
+    from riverhog_core.catalog_models import AppKeyRecord
+    from riverhog_core.catalog_registration_models import CollectionRegistrationRecord
+    from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
+    from riverhog_core.services.collection_registration import CollectionRegistrationOwner
+
+    from tests.unit import test_collection_registration_operations as witness
+    from tests.unit.test_collection_registration_delegation import _delegated
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    service, keys, workflows, principal, collection_id = _delegated(tmp_path)
+    owner = CollectionRegistrationOwner(service)
+    expected = [
+        AppKeyRecord.__tablename__,
+        CollectionProcessingClaimRecord.__tablename__,
+        CollectionUploadRecord.__tablename__,
+        CollectionRegistrationRecord.__tablename__,
+    ]
+    locked = []
+
+    def capture(connection, cursor, statement, parameters, context, executemany):
+        if statement.lstrip().startswith("SELECT") and "FOR UPDATE" in statement:
+            for table in expected:
+                if f"FROM {table} " in statement.replace("\n", " "):
+                    locked.append(table)
+
+    engine = service._session_factory.kw["bind"]
+    try:
+        if entry != "admit":
+            operation = owner.admit(collection_id, [witness._member()], principal=principal)[
+                "operation_id"
+            ]
+        event.listen(engine, "before_cursor_execute", capture)
+        try:
+            if entry == "admit":
+                assert (
+                    owner.admit(collection_id, [witness._member()], principal=principal)["phase"]
+                    == "staging"
+                )
+            elif entry == "advance":
+                assert (
+                    owner.advance(collection_id, operation, limits=witness.LIMITS)["phase"]
+                    == "staging"
+                )
+            else:
+                assert owner.process_due() == 1
+        finally:
+            event.remove(engine, "before_cursor_execute", capture)
+        assert locked == expected
+    finally:
+        dispose_session_factory(workflows._session_factory)
+        witness._close(service, keys)
+
+
+@pytest.mark.parametrize("blocked", ["key", "claim", "upload", "registration"])
+@pytest.mark.parametrize(
+    ("candidate_budget", "independent_phase"),
+    [(1, "staging"), (2, "staging"), (1, "ready")],
+)
+def test_postgres_due_registration_defers_busy_authority_without_starving_independent_work(
+    isolated_database_url, tmp_path, monkeypatch, blocked, candidate_budget, independent_phase
+):
+    from dataclasses import replace
+    from functools import partial
+
+    from riverhog_core.catalog_models import AppKeyRecord
+    from riverhog_core.catalog_registration_models import CollectionRegistrationRecord
+    from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
+    from riverhog_core.services.collection_registration import CollectionRegistrationOwner
+
+    from tests.unit import test_collection_registration_operations as witness
+    from tests.unit.test_app_keys import BOOTSTRAP
+    from tests.unit.test_collection_registration_delegation import _delegated
+    from tests.unit.test_collection_registration_maintenance import _other, _sequence, _tune
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    workflows = None
+    if blocked == "claim":
+        service, keys, workflows, principal, first = _delegated(tmp_path)
+    else:
+        service, keys, principal, created, first = witness._open(tmp_path)
+    try:
+        _tune(service)
+        service._config = replace(
+            service._config,
+            registration=replace(
+                service._config.registration, candidates_per_step=candidate_budget
+            ),
+        )
+        other_key = keys.create(
+            app="independent-registration",
+            access=(ApplicationAccess(COLLECTIONS_CREATE),),
+            grantor=BOOTSTRAP,
+        )
+        other_principal = keys.authenticate(str(other_key["token"]))
+        assert other_principal is not None
+        second = _other(service, other_principal)
+        owner = CollectionRegistrationOwner(service)
+        a = owner.admit(first, [witness._member()], principal=principal)["operation_id"]
+        b = owner.admit(second, [witness._member("3", 4)], principal=other_principal)[
+            "operation_id"
+        ]
+        if independent_phase != "staging":
+            witness._until(service, second, b, independent_phase)
+        second_sequence = _sequence(service, b)
+        before = witness._read(service, a)
+        with session_scope(service._session_factory) as blocker:
+            if blocked == "key":
+                statement = select(AppKeyRecord).where(AppKeyRecord.id == principal.key_id)
+            elif blocked == "claim":
+                statement = select(CollectionProcessingClaimRecord).where(
+                    CollectionProcessingClaimRecord.execution_id
+                    == principal.id.removeprefix("processing:")
+                )
+            elif blocked == "upload":
+                statement = select(CollectionUploadRecord).where(
+                    CollectionUploadRecord.collection_id == first
+                )
+            else:
+                statement = select(CollectionRegistrationRecord).where(
+                    CollectionRegistrationRecord.id == a
+                )
+            assert blocker.scalar(statement.with_for_update()) is not None
+            if candidate_budget == 1:
+                assert CollectionRegistrationOwner(service).process_due() == 0
+                assert (_sequence(service, a), _sequence(service, b)) == (0, second_sequence)
+            # A new callback shares only the service's volatile seek hint.
+            assert CollectionRegistrationOwner(service).process_due() == 1
+            assert _sequence(service, a) == 0
+            if independent_phase == "staging":
+                assert _sequence(service, b) == 3
+            else:
+                assert witness._read(service, b)["phase"] == "published"
+            assert witness._read(service, a) == before
+            assert owner.status(first, a, principal=principal)["phase"] == "staging"
+        assert CollectionRegistrationOwner(service).process_due() == 1
+        assert _sequence(service, a) == 3
+    finally:
+        if workflows is not None:
+            dispose_session_factory(workflows._session_factory)
+        witness._close(service, keys)
+
+
+def test_postgres_waiting_registration_cannot_rebind_a_selected_disposal_epoch(
+    isolated_database_url, tmp_path, monkeypatch
+):
+    from functools import partial
+
+    from riverhog_core.services import collection_registration_cleanup as cleanup
+    from riverhog_core.services.collection_registration import CollectionRegistrationOwner
+    from riverhog_protocol.errors import Conflict
+
+    from tests.unit import test_collection_registration_operations as witness
+    from tests.unit.test_collection_registration_maintenance import _sequence
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    service, keys, principal, created, collection_id = witness._open(tmp_path)
+    owner = CollectionRegistrationOwner(service)
+    operation = owner.admit(collection_id, [witness._member()], principal=principal)["operation_id"]
+    waiting = threading.Event()
+    caller = threading.get_ident()
+    engine = service._session_factory.kw["bind"]
+
+    def at_construction(connection, cursor, statement, parameters, context, executemany):
+        if (
+            threading.get_ident() != caller
+            and "FOR UPDATE" in statement
+            and "FROM collection_uploads " in statement.replace("\n", " ")
+        ):
+            waiting.set()
+
+    try:
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            with session_scope(service._session_factory) as blocker:
+                upload = blocker.scalar(
+                    select(CollectionUploadRecord)
+                    .where(CollectionUploadRecord.collection_id == collection_id)
+                    .with_for_update()
+                )
+                event.listen(engine, "before_cursor_execute", at_construction)
+                try:
+                    future = executor.submit(
+                        owner.advance, collection_id, operation, limits=witness.LIMITS
+                    )
+                    assert waiting.wait(timeout=10)
+                    assert not future.done()
+                    upload.state = "discarding"
+                    selected = cleanup.fence_registration_disposal(
+                        blocker, upload, kind="orphan-discard", identity="e" * 64
+                    )
+                    assert selected is not None
+                finally:
+                    event.remove(engine, "before_cursor_execute", at_construction)
+            with pytest.raises(Conflict, match="execution changed"):
+                future.result(timeout=10)
+        assert witness._read(service, operation)["phase"] == "cleaning"
+        assert _sequence(service, operation) == 0
+    finally:
+        witness._close(service, keys)
+
+
+@pytest.mark.parametrize("entry", ["admit", "advance"])
+@pytest.mark.parametrize("expires", ["key", "claim"])
+def test_postgres_registration_rechecks_authority_expiry_after_waiting_for_construction(
+    isolated_database_url, tmp_path, monkeypatch, entry, expires
+):
+    from datetime import timedelta
+    from functools import partial
+
+    from riverhog_core.catalog_models import AppKeyRecord
+    from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
+    from riverhog_core.services import app_keys, collection_registration
+    from riverhog_core.services.collection_registration import CollectionRegistrationOwner
+    from riverhog_protocol.errors import NotFound
+    from time_formats import format_utc_timestamp, utc_now
+
+    from tests.unit import test_collection_registration_operations as witness
+    from tests.unit.test_collection_registration_delegation import _delegated
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    service, keys, workflows, principal, collection_id = _delegated(tmp_path)
+    owner = CollectionRegistrationOwner(service)
+    waiting = threading.Event()
+    caller = threading.get_ident()
+    engine = service._session_factory.kw["bind"]
+    now = utc_now()
+
+    def clock():
+        return now + timedelta(minutes=2) if waiting.is_set() else now
+
+    def at_construction(connection, cursor, statement, parameters, context, executemany):
+        if (
+            threading.get_ident() != caller
+            and "FOR UPDATE" in statement
+            and "FROM collection_uploads " in statement.replace("\n", " ")
+        ):
+            waiting.set()
+
+    try:
+        operation = None
+        if entry == "advance":
+            operation = owner.admit(collection_id, [witness._member()], principal=principal)[
+                "operation_id"
+            ]
+            before = witness._read(service, operation)
+        with session_scope(service._session_factory) as session:
+            if expires == "key":
+                record = session.get(AppKeyRecord, principal.key_id)
+            else:
+                record = session.scalar(
+                    select(CollectionProcessingClaimRecord).where(
+                        CollectionProcessingClaimRecord.execution_id
+                        == principal.id.removeprefix("processing:")
+                    )
+                )
+            record.expires_at = format_utc_timestamp(now + timedelta(minutes=1))
+        monkeypatch.setattr(app_keys, "utc_now", clock)
+        monkeypatch.setattr(
+            collection_registration, "utc_timestamp_now", lambda: format_utc_timestamp(clock())
+        )
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            with session_scope(service._session_factory) as blocker:
+                blocker.scalar(
+                    select(CollectionUploadRecord)
+                    .where(CollectionUploadRecord.collection_id == collection_id)
+                    .with_for_update()
+                )
+                event.listen(engine, "before_cursor_execute", at_construction)
+                try:
+                    if entry == "admit":
+                        future = executor.submit(
+                            owner.admit, collection_id, [witness._member()], principal=principal
+                        )
+                    else:
+                        future = executor.submit(
+                            owner.advance, collection_id, operation, limits=witness.LIMITS
+                        )
+                    assert waiting.wait(timeout=10)
+                    assert not future.done()
+                finally:
+                    event.remove(engine, "before_cursor_execute", at_construction)
+            message = "no longer active" if expires == "key" else "execution authority"
+            with pytest.raises(NotFound, match=message):
+                future.result(timeout=10)
+        if operation is None:
+            with session_scope(service._session_factory) as session:
+                assert (
+                    session.get(CollectionUploadRecord, collection_id).active_registration_id
+                    is None
+                )
+        else:
+            assert witness._read(service, operation) == before
+    finally:
+        dispose_session_factory(workflows._session_factory)
+        witness._close(service, keys)
+
+
+@pytest.mark.parametrize("background", [False, True])
+def test_postgres_selected_registration_cleanup_retains_its_rights_after_key_revocation(
+    isolated_database_url, tmp_path, monkeypatch, background
+):
+    from functools import partial
+
+    from tests.unit import test_collection_registration_operations as witness
+    from tests.unit.test_collection_registration_cleanup import (
+        test_selected_cleanup_keeps_its_original_rights_after_forward_key_revocation,
+    )
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    test_selected_cleanup_keeps_its_original_rights_after_forward_key_revocation(
+        tmp_path, background
+    )

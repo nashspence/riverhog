@@ -119,6 +119,7 @@ class ThroughputDocument(_Document):
 
 
 class RegistrationDocument(_Document):
+    candidates_per_step: int = Field(default=_REGISTRATION.candidates_per_step, ge=1, strict=True)
     plans_per_step: int = Field(default=_REGISTRATION.plans_per_step, ge=1, strict=True)
     coverage_rows_per_step: int = Field(
         default=_REGISTRATION.coverage_rows_per_step, ge=1, strict=True
@@ -136,6 +137,7 @@ class RegistrationDocument(_Document):
 
     def tuning(self) -> RegistrationTuning:
         return RegistrationTuning(
+            candidates_per_step=self.candidates_per_step,
             plans_per_step=self.plans_per_step,
             coverage_rows_per_step=self.coverage_rows_per_step,
             metadata_bytes_per_step=_bytes(

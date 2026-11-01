@@ -391,6 +391,7 @@ def test_yaml_selects_retained_validation_resources(tmp_path, monkeypatch):
 def test_registration_operator_grants_round_trip_and_reject_invalid_capacity(tmp_path, monkeypatch):
     path, document = _document(tmp_path, monkeypatch)
     document["registration"] = {
+        "candidates_per_step": 2,
         "plans_per_step": 3,
         "coverage_rows_per_step": 16,
         "metadata_bytes_per_step": "100KiB",
@@ -402,11 +403,14 @@ def test_registration_operator_grants_round_trip_and_reject_invalid_capacity(tmp
     _write(path, document)
     config = load_runtime_config()
     grant = config.registration
+    assert grant.candidates_per_step == 2
     assert grant.emission_limits().plans == 3
     assert grant.emission_limits().metadata_bytes == 102400
     assert grant.summary_page_bytes == 1024
     assert grant.execution_quantum == timedelta(seconds=2)
     for key, value in (
+        ("candidates_per_step", 0),
+        ("candidates_per_step", True),
         ("plans_per_step", 0),
         ("plans_per_step", True),
         ("metadata_bytes_per_step", "0B"),
