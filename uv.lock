@@ -104,6 +104,8 @@ members = [
 browser = [{ name = "playwright", specifier = "==1.63.0" }]
 dev = [
     { name = "boto3-stubs", extras = ["s3"], specifier = ">=1.43.59,<2.0" },
+    { name = "cryptography", specifier = ">=50,<51" },
+    { name = "h2", specifier = ">=4.4.1,<5" },
     { name = "httpx2", specifier = ">=2,<3" },
     { name = "license-expression", specifier = ">=30.4,<31" },
     { name = "markdown-it-py", specifier = "==4.2.0" },
@@ -3250,7 +3252,7 @@ version = "0.1.0"
 source = { editable = "packages/riverhog-storage-adapter-support" }
 dependencies = [
     { name = "http-api-contracts" },
-    { name = "httpx", extra = ["http2"] },
+    { name = "httpx" },
     { name = "pydantic" },
     { name = "release-documentation-lib" },
     { name = "riverhog-canonical-json" },
@@ -3260,7 +3262,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
-    { name = "httpx", extras = ["http2"], specifier = ">=0.27,<1.0" },
+    { name = "httpx", specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },

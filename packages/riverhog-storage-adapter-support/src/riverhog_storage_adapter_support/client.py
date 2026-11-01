@@ -103,7 +103,8 @@ class StorageAdapterClient:
         self._expected_incarnation_id: str | None = None
         self._owns_client = client is None
         self._client = client or httpx.Client(
-            http2=True,
+            # HTTP/2 GOAWAY handling can resubmit a fully sent request.
+            http2=False,
             timeout=timeout,
             limits=httpx.Limits(
                 max_connections=maximum_connections,
