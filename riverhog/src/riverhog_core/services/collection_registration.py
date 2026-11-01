@@ -45,6 +45,7 @@ from riverhog_core.collection_access import (
     require_collection_access,
     require_collection_create_access,
 )
+from riverhog_core.collection_registration_identity import registration_construction
 from riverhog_core.domain.archive import ArchiveArtifact, PackVolumePlan
 from riverhog_core.incremental_emission import (
     VolumeEmissionCapacity,
@@ -59,7 +60,6 @@ from riverhog_core.incremental_plan import (
     IncrementalVolumePlanBatch,
     OrderedArchiveArtifact,
     incremental_volume_planner_checkpoint_bytes,
-    incremental_volume_planner_checkpoint_payload,
     parse_incremental_volume_planner_checkpoint,
 )
 from riverhog_core.services import collection_uploads as uploads
@@ -96,33 +96,6 @@ def _begin_writer(session: Session, *, defer_if_busy: bool = False) -> None:
                 "sqlite_defer_if_busy": defer_if_busy,
             }
         )
-
-
-def _construction(upload: CollectionUploadRecord) -> str:
-    checkpoint = uploads._planner_checkpoint(upload)
-    return _json(
-        {
-            "collection_id": format_scalar("sequence63", upload.collection_id),
-            "creation_identity": upload.creation_identity_sha256,
-            "idempotency_key": upload.idempotency_key,
-            "delivery_context_id": upload.delivery_context_id,
-            "archive_generation": upload.archive_generation,
-            "archive_store": upload.archive_store,
-            "archive_incarnation_id": upload.archive_incarnation_id,
-            "archive_storage_prefix": upload.archive_storage_prefix,
-            "encryption_format": upload.encryption_format,
-            "passphrase_id": upload.passphrase_id,
-            "principal_id": upload.initiated_by_principal_id,
-            "initial_key_id": upload.initiated_by_key_id,
-            "initial_tag_set_identity": upload.initial_tag_set_identity,
-            "ingest_source": upload.ingest_source,
-            "event_context": json.loads(upload.event_context_json or "null"),
-            "custody_mode": upload.custody_mode,
-            "use_cache": upload.use_cache,
-            "copy_to": json.loads(upload.copy_to_json),
-            "policy": incremental_volume_planner_checkpoint_payload(checkpoint)["policy"],
-        }
-    )
 
 
 def _open_lease(upload: CollectionUploadRecord) -> None:
@@ -282,7 +255,7 @@ def _live(
         upload.active_registration_id != operation.id
         or str(upload.registration_revision) != operation.base_revision
         or upload.planner_checkpoint_json != operation.base_checkpoint_json
-        or _construction(upload) != operation.construction_json
+        or registration_construction(upload) != operation.construction_json
         or upload.tag_staging_set_identity != operation.authorized_tag_set_identity
     ):
         raise Conflict("collection upload registration fence changed")
@@ -357,7 +330,7 @@ class CollectionRegistrationOwner:
         fence = _principal_key(session, principal, for_update=False)
         upload = session.get(CollectionUploadRecord, collection_id)
         if upload is not None:
-            if _construction(upload) != operation.construction_json:
+            if registration_construction(upload) != operation.construction_json:
                 raise NotFound("collection upload registration construction differs")
             if upload.initiated_by_principal_id == principal.id:
                 # A current key generation and exact tag-set identity retain the
@@ -536,7 +509,7 @@ class CollectionRegistrationOwner:
             if upload is None or upload.initiated_by_principal_id != principal.id:
                 raise NotFound("collection upload session not found")
             # Lock order is upload -> operation -> application key -> execution claim.
-            construction = _construction(upload)
+            construction = registration_construction(upload)
             operation_id = hashlib.sha256(
                 canonical_json_bytes(
                     {

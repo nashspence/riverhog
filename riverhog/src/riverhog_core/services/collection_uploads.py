@@ -1746,11 +1746,6 @@ class SqlAlchemyCollectionUploadService:
                 raise Conflict("canonical provenance journal is not sealed")
             yield from _iter_upload_journal_chunks(session, record)
 
-    def process_due_registrations(self, *, limit: int = 1) -> int:
-        from riverhog_core.services.collection_registration import CollectionRegistrationOwner
-
-        return CollectionRegistrationOwner(self).process_due(limit=limit)
-
     def process_due_provenance_journal_validations(self, *, limit: int = 1) -> int:
         processed = 0
         for _ in range(max(0, limit)):

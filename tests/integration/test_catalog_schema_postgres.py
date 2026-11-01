@@ -1456,10 +1456,10 @@ def test_postgres_due_registration_skips_a_locked_construction_and_preserves_rea
                 .where(CollectionUploadRecord.collection_id == first)
                 .with_for_update()
             )
-            assert service.process_due_registrations() == 1
+            assert CollectionRegistrationOwner(service).process_due() == 1
             assert (_sequence(service, a), _sequence(service, b)) == (0, 3)
             assert owner.status(first, a, principal=principal)["phase"] == "staging"
-        assert service.process_due_registrations() == 1
+        assert CollectionRegistrationOwner(service).process_due() == 1
         assert (_sequence(service, a), _sequence(service, b)) == (3, 3)
     finally:
         witness._close(service, keys)

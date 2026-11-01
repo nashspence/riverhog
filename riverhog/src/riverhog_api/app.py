@@ -29,6 +29,7 @@ from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.catalog_db import catalog_state_schema
 from riverhog_core.runtime_document import load_runtime_config
 from riverhog_core.scratch_workspace import process_workspace
+from riverhog_core.services.collection_registration import CollectionRegistrationOwner
 from riverhog_protocol import RIVERHOG_HTTP_ERROR_AUTHORITY
 from riverhog_protocol.errors import RiverhogError, ServiceUnavailable
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -164,7 +165,7 @@ def _process_archive_maintenance(
                 "startup requested retrieval-cache accounting reconciliation: count=%s",
                 requested_cache_reconciliations,
             )
-    progressed += container.collection_uploads.process_due_registrations(limit=1)
+    progressed += CollectionRegistrationOwner(container.collection_uploads).process_due(limit=1)
     progressed += container.collection_uploads.process_due_provenance_journal_validations(limit=1)
     progressed += container.collection_uploads.process_due_custody_receipts(limit=1)
     progressed += container.catalog_sync.reap_expired_history()

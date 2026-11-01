@@ -188,14 +188,14 @@ def test_cleanup_capacity_preserves_disposition_and_cursor_and_backs_off(tmp_pat
                 input_transitions_per_step=1,
             ),
         )
-        assert service.process_due_registrations() == 1
+        assert CollectionRegistrationOwner(service).process_due() == 1
         current = _snapshot(service, operation)
         assert current["phase"] == "cleaning"
         assert current["cleanup"] == before["cleanup"]
         assert current["disposition"] == before["disposition"]
         assert current["counts"] == before["counts"]
         assert json.loads(current["failure"])["kind"] == "capacity"
-        assert service.process_due_registrations() == 0
+        assert CollectionRegistrationOwner(service).process_due() == 0
         CollectionRegistrationOwner(service).advance(collection_id, operation, limits=CLEANUP)
         assert _snapshot(service, operation)["failure"] is None
     finally:

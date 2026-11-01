@@ -64,9 +64,9 @@ def test_due_turn_is_one_configured_quantum_per_construction_and_rotates_fairly(
         owner = CollectionRegistrationOwner(service)
         a = owner.admit(first, [_member()], principal=principal)["operation_id"]
         b = owner.admit(second, [_member("3", 4)], principal=principal)["operation_id"]
-        assert service.process_due_registrations(limit=2) == 2
+        assert CollectionRegistrationOwner(service).process_due(limit=2) == 2
         assert (_sequence(service, a), _sequence(service, b)) == (3, 3)
-        assert service.process_due_registrations(limit=100) == 2
+        assert CollectionRegistrationOwner(service).process_due(limit=100) == 2
         assert (_sequence(service, a), _sequence(service, b)) == (6, 4)
         assert service.list_volumes(first)["volumes"] == []
         assert service.list_volumes(second)["volumes"] == []
@@ -82,12 +82,12 @@ def test_due_resource_refusal_preserves_progress_and_backs_off_until_retry(tmp_p
         pending = owner.admit(collection_id, [_member()], principal=principal)
         operation = pending["operation_id"]
         before = _read(service, operation)
-        assert service.process_due_registrations() == 1
+        assert CollectionRegistrationOwner(service).process_due() == 1
         after = _read(service, operation)
         assert after["stage"] == before["stage"] and after["epoch"] == before["epoch"]
         status = owner.status(collection_id, operation, principal=principal)
         assert status["failure"]["kind"] == "capacity"
-        assert service.process_due_registrations() == 0
+        assert CollectionRegistrationOwner(service).process_due() == 0
         with session_scope(service._session_factory) as session:
             session.info["include_unpublished_registration"] = True
             assert (
@@ -102,7 +102,7 @@ def test_due_resource_refusal_preserves_progress_and_backs_off_until_retry(tmp_p
         later = utc_now() + timedelta(minutes=1)
         monkeypatch.setattr(registration, "utc_now", lambda: later)
         monkeypatch.setattr(registration, "utc_timestamp_now", lambda: format_utc_timestamp(later))
-        assert service.process_due_registrations() == 1
+        assert CollectionRegistrationOwner(service).process_due() == 1
         assert _sequence(service, operation) == 3
         assert "failure" not in owner.status(collection_id, operation, principal=principal)
     finally:
@@ -115,7 +115,7 @@ def test_due_authority_pause_fences_old_worker_and_exact_admission_resumes_curso
         _tune(service)
         owner = CollectionRegistrationOwner(service)
         operation = owner.admit(collection_id, [_member()], principal=principal)["operation_id"]
-        assert service.process_due_registrations() == 1
+        assert CollectionRegistrationOwner(service).process_due() == 1
         before = _read(service, operation)
         keys.replace_access(
             app=principal.id,
@@ -123,12 +123,12 @@ def test_due_authority_pause_fences_old_worker_and_exact_admission_resumes_curso
             access=(ApplicationAccess(COLLECTIONS_CREATE),),
             grantor=BOOTSTRAP,
         )
-        assert service.process_due_registrations() == 1
+        assert CollectionRegistrationOwner(service).process_due() == 1
         paused = _read(service, operation)
         assert paused["phase"] == "paused"
         assert paused["epoch"] != before["epoch"]
         assert paused["stage"] == before["stage"]
-        assert service.process_due_registrations() == 0
+        assert CollectionRegistrationOwner(service).process_due() == 0
         renewed = keys.authenticate(str(created["token"]))
         reply = owner.admit(collection_id, [_member()], principal=renewed)
         assert reply["phase"] == "staging"
@@ -140,7 +140,7 @@ def test_due_authority_pause_fences_old_worker_and_exact_admission_resumes_curso
                 limits=service._config.registration.emission_limits(),
                 expected_epoch=before["epoch"],
             )
-        assert service.process_due_registrations() == 1
+        assert CollectionRegistrationOwner(service).process_due() == 1
         assert _sequence(service, operation) == 6
     finally:
         _close(service, keys)
@@ -156,9 +156,9 @@ def test_due_integrity_failure_is_retained_without_publishing_or_hot_looping(tmp
         with session_scope(service._session_factory) as session:
             record = session.get(CollectionRegistrationRecord, operation)
             record.verify_chain = "f" * 64
-        assert service.process_due_registrations() == 1
+        assert CollectionRegistrationOwner(service).process_due() == 1
         assert _read(service, operation)["phase"] == "failed"
-        assert service.process_due_registrations() == 0
+        assert CollectionRegistrationOwner(service).process_due() == 0
         status = owner.status(collection_id, operation, principal=principal)
         assert status["failure"] == {"kind": "integrity"}
         assert service.list_volumes(collection_id)["volumes"] == []
@@ -175,9 +175,9 @@ def test_sqlite_due_writer_contention_defers_without_touching_the_cursor(tmp_pat
         before = _read(service, operation)
         with service._session_factory.kw["bind"].connect() as writer:
             with writer.execution_options(sqlite_immediate_writer=True).begin():
-                assert service.process_due_registrations() == 0
+                assert CollectionRegistrationOwner(service).process_due() == 0
         assert _read(service, operation) == before
-        assert service.process_due_registrations() == 1
+        assert CollectionRegistrationOwner(service).process_due() == 1
         assert _sequence(service, operation) == 3
     finally:
         _close(service, keys)
