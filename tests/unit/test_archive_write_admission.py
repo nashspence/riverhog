@@ -139,7 +139,7 @@ def _closure(case, ticket, result=None):
         )
 
 
-def _apply(session, volume, result):
+def _apply(session, upload, volume, result):
     volume.failure = result["marker"]
 
 
@@ -213,7 +213,7 @@ def test_live_capability_dispatches_once_and_cold_observation_cannot_close_it(ca
             case.collection_id,
             ticket.call_id,
             None,
-            apply_observation=lambda session, volume, result: None,
+            apply_observation=lambda session, upload, volume, result: None,
         )
     assert cold.unresolved(case.collection_id, limit=1) == (ticket.call_id,)
 
@@ -249,8 +249,8 @@ def test_returned_result_and_catalog_change_commit_together_and_retry_exactly(ca
     ticket.dispatch(lambda: None)
     evidence = _closure(case, ticket)
 
-    def fail_after_apply(session, volume, result):
-        _apply(session, volume, result)
+    def fail_after_apply(session, upload, volume, result):
+        _apply(session, upload, volume, result)
         session.flush()
         raise OSError("injected checkpoint commit failure")
 
@@ -562,4 +562,38 @@ def test_changed_volume_cannot_reuse_original_preparation_for_dispatch(case):
         ).plan_sha256 = "f" * 64
     with pytest.raises(Conflict, match="prepared volume identity changed"):
         _arm(case)
+    assert case.owner.unresolved(case.collection_id, limit=1) == ()
+
+
+def test_closed_unused_dispatch_cannot_invoke_a_late_provider_effect(case):
+    _prepare(case)
+    ticket = _arm(case)
+    case.owner.settle_closed(ticket, _closure(case, ticket), apply_result=_apply)
+    with pytest.raises(Conflict, match="already used"):
+        ticket.dispatch(lambda: pytest.fail("settled dispatch cannot mutate a provider"))
+
+
+def test_running_dispatch_keeps_its_reservation_until_actual_return(case):
+    _prepare(case)
+    ticket = _arm(case)
+    entered = threading.Event()
+    release = threading.Event()
+
+    def held():
+        entered.set()
+        if not release.wait(10):
+            raise AssertionError("dispatch fixture release deadline")
+
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        running = pool.submit(ticket.dispatch, held)
+        try:
+            assert entered.wait(10)
+            with pytest.raises(Conflict, match="executor is still running"):
+                case.owner.settle_closed(ticket, _closure(case, ticket), apply_result=_apply)
+            assert case.owner.unresolved(case.collection_id, limit=1) == (ticket.call_id,)
+            _selected(case)
+        finally:
+            release.set()
+        running.result(timeout=10)
+    case.owner.settle_closed(ticket, _closure(case, ticket), apply_result=_apply)
     assert case.owner.unresolved(case.collection_id, limit=1) == ()

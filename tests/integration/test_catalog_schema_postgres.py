@@ -1563,6 +1563,8 @@ def test_postgres_registration_disposal_checks_current_construction_and_selected
         "test_call_frontier_does_not_wrap_at_database_integer_width",
         "test_selected_exact_terminal_retry_keeps_original_plan_but_checks_current_access",
         "test_changed_volume_cannot_reuse_original_preparation_for_dispatch",
+        "test_closed_unused_dispatch_cannot_invoke_a_late_provider_effect",
+        "test_running_dispatch_keeps_its_reservation_until_actual_return",
     ],
 )
 def test_postgres_archive_write_admission_preserves_exact_execution_ownership(
@@ -1572,3 +1574,32 @@ def test_postgres_archive_write_admission_preserves_exact_execution_ownership(
 
     with admission._case(tmp_path, database_url=isolated_database_url) as case:
         getattr(admission, witness)(case)
+
+
+def test_postgres_checkpoint_progress_uses_construction_before_volume_locks(
+    isolated_database_url, tmp_path
+):
+    from tests.unit import test_archive_write_settlement as settlement
+
+    with settlement._source_case(tmp_path, database_url=isolated_database_url) as case:
+        settlement._assert_checkpoint_lock_order(case)
+
+
+def test_postgres_lost_checkpoint_report_settles_atomically_without_part_replay(
+    isolated_database_url, tmp_path, monkeypatch
+):
+    from tests.unit import test_archive_write_settlement as settlement
+
+    with settlement._source_case(tmp_path, database_url=isolated_database_url) as case:
+        settlement._assert_lost_checkpoint_report(case, monkeypatch)
+
+
+def test_postgres_concurrent_part_checkpoints_preserve_independent_construction_progress(
+    isolated_database_url, tmp_path, monkeypatch
+):
+    from tests.unit import test_archive_write_settlement as settlement
+
+    with settlement._source_case(
+        tmp_path, database_url=isolated_database_url, concurrent_parts=True
+    ) as case:
+        settlement._assert_parallel_checkpoint_progress(case, monkeypatch)

@@ -35,7 +35,9 @@ from riverhog_core.collection_upload_identity import upload_construction, upload
 
 _T = TypeVar("_T")
 Guard = Callable[[Session], None]
-ApplyResult = Callable[[Session, CollectionArchiveObjectUploadRecord, Mapping[str, Any]], None]
+ApplyResult = Callable[
+    [Session, CollectionUploadRecord, CollectionArchiveObjectUploadRecord, Mapping[str, Any]], None
+]
 
 
 def _json(value: object) -> str:
@@ -93,13 +95,25 @@ class ArmedArchiveWrite:
         self._nonce = nonce
         self._lock = threading.Lock()
         self._used = False
+        self._running = False
 
     def dispatch(self, invoke: Callable[[], _T]) -> _T:
         with self._lock:
             if self._used:
                 raise Conflict("archive write dispatch capability was already used")
             self._used = True
-        return invoke()
+            self._running = True
+        try:
+            return invoke()
+        finally:
+            with self._lock:
+                self._running = False
+
+    def _close_dispatch(self) -> None:
+        with self._lock:
+            if self._running:
+                raise Conflict("archive write executor is still running")
+            self._used = True
 
 
 def initialize_archive_write_control(session: Session, upload: CollectionUploadRecord) -> None:
@@ -360,7 +374,9 @@ class ArchiveWriteAdmission:
 
     def _report_context(
         self, session: Session, ticket: ArmedArchiveWrite
-    ) -> tuple[CollectionArchiveObjectUploadRecord, ArchiveWriteEffectRecord, str]:
+    ) -> tuple[
+        CollectionUploadRecord, CollectionArchiveObjectUploadRecord, ArchiveWriteEffectRecord, str
+    ]:
         upload = self._upload(session, ticket.collection_id)
         control = self._control(session, upload)
         self._terminal_lock(session, control)
@@ -379,7 +395,7 @@ class ArchiveWriteAdmission:
         ):
             raise Conflict("archive write report identity changed")
         incarnation = str(json.loads(control.construction_json)["archive_incarnation_id"])
-        return volume, effect, incarnation
+        return upload, volume, effect, incarnation
 
     def settle_closed(
         self,
@@ -388,10 +404,11 @@ class ArchiveWriteAdmission:
         *,
         apply_result: ApplyResult,
     ) -> None:
+        ticket._close_dispatch()
         encoded = _json(evidence.result)
         with session_scope(self._factory) as session:
             _writer(session)
-            volume, effect, incarnation = self._report_context(session, ticket)
+            upload, volume, effect, incarnation = self._report_context(session, ticket)
             if (
                 evidence.call_id != effect.id
                 or evidence.request_sha256 != effect.request_sha256
@@ -407,7 +424,7 @@ class ArchiveWriteAdmission:
                 return
             if effect.observation_json not in {None, encoded}:
                 raise Conflict("archive write closure conflicts with its observed result")
-            apply_result(session, volume, evidence.result)
+            apply_result(session, upload, volume, evidence.result)
             effect.result_json = encoded
             effect.state = "settled"
             effect.unresolved = False
@@ -451,13 +468,13 @@ class ArchiveWriteAdmission:
             if effect.observation_json not in {None, encoded}:
                 raise Conflict("archive write observation changed")
             assert observation is not None
-            apply_observation(session, volume, observation)
+            apply_observation(session, upload, volume, observation)
             effect.observation_json = encoded
 
     def record_unknown(self, ticket: ArmedArchiveWrite) -> None:
         with session_scope(self._factory) as session:
             _writer(session)
-            _, effect, _ = self._report_context(session, ticket)
+            _, _, effect, _ = self._report_context(session, ticket)
             if effect.unresolved:
                 effect.state = "uncertain"
 
@@ -465,7 +482,7 @@ class ArchiveWriteAdmission:
         """Retire only after the live dispatcher received exact settlement confirmation."""
         with session_scope(self._factory) as session:
             _writer(session)
-            _, effect, _ = self._report_context(session, ticket)
+            _, _, effect, _ = self._report_context(session, ticket)
             if effect.state != "settled":
                 raise Conflict("unresolved archive write cannot release its reservation")
             session.delete(effect)
