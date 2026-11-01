@@ -34,7 +34,7 @@ from . import upload_journal_validation_jobs as jobs
 
 def _retirement_catalog_declaration(mode: str) -> Declaration:
     selecting = mode == "_select"
-    statements, contexts, versions = (6, 6, 0) if selecting else (1, 1, 1)
+    statements, contexts, versions = (9, 6, 0) if selecting else (1, 1, 1)
 
     def count(value: int) -> Expression:
         return Expression("constant", value=value, unit=COUNT)
@@ -110,7 +110,7 @@ def _retirement_catalog_declaration(mode: str) -> Declaration:
                     "three phases with at"
                     " most one keyset "
                     "probe and one wrap "
-                    "per phase; mutations"
+                    "and one explicit snapshot start per phase; mutations"
                     " use one exact point"
                     " CAS."
                 ),

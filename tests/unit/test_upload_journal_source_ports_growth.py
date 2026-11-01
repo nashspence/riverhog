@@ -427,6 +427,8 @@ class ReadRecorder:
             item.actual.closed for item in self.results
         )
         for statement, parameters in self.statements:
+            if statement.strip().upper() == "BEGIN":
+                continue
             with case.engine.connect() as connection:
                 with connection.exec_driver_sql(
                     "EXPLAIN QUERY PLAN " + statement, parameters

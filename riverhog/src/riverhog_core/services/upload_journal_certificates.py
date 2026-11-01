@@ -132,10 +132,12 @@ def _lifecycle_declaration(mode: str) -> Declaration:
                 "sql_statements",
                 COUNT,
                 "upper",
-                count(12 if constructing else 1),
+                count(14 if constructing else 2),
                 (
                     "Application point queries include union/rank restoration, "
-                    "optional last-record checks and final manifest selection."
+                    "optional last-record checks and final manifest selection, plus "
+                    "two explicit snapshot starts during construction or one "
+                    "during currentness verification."
                 ),
             ),
             Bound(
@@ -354,8 +356,9 @@ def _point_declaration() -> Declaration:
                 "sql_statements",
                 COUNT,
                 "upper",
-                count(1),
-                "One exact indexed join includes both endpoint rank aliases.",
+                count(2),
+                "One explicit snapshot start and one exact indexed join "
+                "including both endpoint rank aliases.",
             ),
             Bound(
                 "driver_statements",

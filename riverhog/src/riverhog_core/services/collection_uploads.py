@@ -7830,8 +7830,8 @@ def _check_upload_journal_capture_segment(
                 "sql_statements",
                 COUNT,
                 "equal",
-                Expression("constant", value=2, unit=COUNT),
-                "One fixed-shape attempt probe and one source-page primary-key probe.",
+                Expression("constant", value=3, unit=COUNT),
+                "One explicit snapshot start, one attempt probe and one source-page probe.",
             ),
             Bound(
                 "source_rows",
@@ -9041,13 +9041,13 @@ def _journal_service_catalog_declaration(mode: str) -> Declaration:
                 "sql_statements",
                 COUNT,
                 "upper",
-                number(2 if selecting else 1),
+                number(3 if selecting else 2),
                 (
                     "Selection uses one "
                     "forward seek and at "
                     "most one wrap; "
                     "stamps use one point"
-                    " join."
+                    " join. Both include one explicit snapshot start."
                 ),
             ),
             Bound(

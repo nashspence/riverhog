@@ -211,9 +211,10 @@ def _read_declaration(mode: str) -> Declaration:
                 add(
                     delegate("current", "sql_statements"),
                     delegate("capture", "sql_statements"),
-                    deferred(count(2)),
+                    deferred(count(3)),
                 ),
-                "Actual currentness/page delegates and two additional deferred point queries.",
+                "Actual currentness/page delegates and one deferred snapshot start "
+                "with two additional point queries.",
             ),
             Bound(
                 "returned_rows",

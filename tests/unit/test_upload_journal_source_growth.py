@@ -231,7 +231,11 @@ def observe_current(
     assert metrics["changed_rows"] == 0 and engine.pool.checkedout() == 0
     assert len(children) == len(results) == 1 and all(item.actual.closed for item in results)
     assert metadata_snapshot(factory, work) == before
+    assert len(statements) == 2
+    assert sum(statement.strip().upper() == "BEGIN" for statement, _ in statements) == 1
     for statement, parameters in statements:
+        if statement.strip().upper() == "BEGIN":
+            continue
         with engine.connect() as connection:
             with connection.exec_driver_sql("EXPLAIN QUERY PLAN " + statement, parameters) as rows:
                 plan = " ".join(row[3] for row in rows)

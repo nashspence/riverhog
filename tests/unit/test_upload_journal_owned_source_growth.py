@@ -399,6 +399,8 @@ class Recorder:
         assert not engine.pool.checkedout() and not sum(db.total_changes for db in self.native)
         assert all(cursor.closed for cursor in self.cursors)
         for statement, parameters in self.statements:
+            if statement.strip().upper() == "BEGIN":
+                continue
             with engine.connect() as connection:
                 with connection.exec_driver_sql(
                     "EXPLAIN QUERY PLAN " + statement, parameters

@@ -34,9 +34,9 @@ def _job_declaration(mode: str) -> Declaration:
     sql = {
         "select_job": 4,
         "claim_worker": 2,
-        "worker_current": 1,
+        "worker_current": 2,
         "publish_progress": 2,
-        "creation_current": 1,
+        "creation_current": 2,
         "retire_source": 1,
         "encode_progress": 0,
         "decode_progress": 0,
@@ -115,7 +115,7 @@ def _job_declaration(mode: str) -> Declaration:
                 (
                     "Exact source selection and one job lookup/CAS; replacing a "
                     "selected old attempt may flush one orphan and insert one new"
-                    " row."
+                    " row. Read-only currentness includes one explicit snapshot start."
                 ),
             ),
             Bound(

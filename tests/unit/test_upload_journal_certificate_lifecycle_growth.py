@@ -180,6 +180,8 @@ class Recorder:
         self.metrics["source_payload_octets"] = 0
         assert self.metrics["changed_rows"] == 0 and engine.pool.checkedout() == 0
         for statement, parameters in self.statements:
+            if statement.strip().upper() == "BEGIN":
+                continue
             with engine.connect() as connection:
                 with connection.exec_driver_sql(
                     "EXPLAIN QUERY PLAN " + statement, parameters

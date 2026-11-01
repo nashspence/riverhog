@@ -434,7 +434,11 @@ def test_actual_replay_binding_metadata_probe_work(tmp_path, monkeypatch, record
                 event.remove(engine, "before_cursor_execute", sql)
             assert observed["returned_positions"] == 1 and observed["closed"]
             assert not payload_reads and engine.pool.checkedout() == 0
+            assert len(statements) == 2
+            assert sum(statement.strip().upper() == "BEGIN" for statement, _ in statements) == 1
             for statement, parameters in statements:
+                if statement.strip().upper() == "BEGIN":
+                    continue
                 with engine.connect() as connection:
                     result = connection.exec_driver_sql(
                         "EXPLAIN QUERY PLAN " + statement, parameters
