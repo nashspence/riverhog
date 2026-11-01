@@ -62,7 +62,9 @@ def test_native_rank_point_returns_detached_source_bound_evidence(tmp_path, kind
             work, source_owner.admission_provenance_catalog()
         )
         assert engine.pool.checkedout() == 0
-        assert len(queries) == 1
+        assert len(queries) == 2
+        assert queries[0].strip().upper() == "BEGIN"
+        assert queries[1].lstrip().upper().startswith("SELECT")
         assert not any(".content" in sql for sql in queries)
 
 
