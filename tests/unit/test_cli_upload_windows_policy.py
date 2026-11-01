@@ -386,7 +386,7 @@ def exercise_selected_command(tmp_path, monkeypatch, member_count, native, progr
     else:
         monkeypatch.setenv("A_RIVERHOG_CLI_WINDOWS_PRIMARY", json.dumps(payload))
     first = invoke([*args, "--initialize-state"], "fresh", payload["readiness"]["target_pages"])
-    if member_count >= 16:
+    if member_count > 1:
         assert isinstance(first.exception, PrimaryStateCapacity)
         assert "payload would consume progress headroom" in str(first.exception)
         assert api.session_calls == 1 and api.rows == {} and api.completed is None
@@ -478,7 +478,7 @@ def test_selected_cli_command_completes_and_cold_reopens_original_state(
     assert commands[-2]["exit_code"] == 0
     assert commands[-1]["phase"] == "fresh_conflict_returned"
     assert commands[-1]["exit_code"] != 0
-    if member_count >= 16:
+    if member_count > 1:
         assert commands[0]["exit_code"] != 0
         replenished = [phase for phase in commands if phase["phase"] == "replenished_returned"]
         assert 1 <= len(replenished) <= 3 and replenished[-1]["exit_code"] == 0
