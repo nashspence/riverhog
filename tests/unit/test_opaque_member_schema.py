@@ -47,6 +47,7 @@ def test_upload_membership_is_opaque_and_provenance_binding_is_exact() -> None:
                 archive_phase_updated_at="2026-01-01T00:00:00Z",
                 archive_storage_prefix="collections/1",
                 planner_checkpoint_json="{}",
+                artifact_count=2,
             )
         )
     with Session(engine) as session, session.begin():
