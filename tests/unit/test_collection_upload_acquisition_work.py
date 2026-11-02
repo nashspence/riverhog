@@ -167,6 +167,7 @@ def test_acquisition_preserves_raw_readiness_order_progress_and_retries(tmp_path
             collection_id,
             assignment["volume"]["volume_id"],
             int(unit["unit"]),
+            principal=_CREATOR,
             plan_sha256=plan_sha256 or assignment["plan_sha256"],
             content=content,
         )

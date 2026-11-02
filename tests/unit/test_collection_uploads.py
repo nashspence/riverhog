@@ -100,13 +100,13 @@ from tests.unit.test_pack_upload import MemoryResumableStore
 
 _CREATOR = Principal(
     id="uploader",
-    key_id="key-1",
+    key_id=None,
     access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
 )
 
 _TAGGED_CREATOR = Principal(
     id="tagged-uploader",
-    key_id="tagged-key-1",
+    key_id=None,
     access=frozenset(
         {
             ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES),
@@ -617,6 +617,7 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
         collection_id,
         str(volume["volume_id"]),
         0,
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=content,
     )
@@ -664,6 +665,7 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
         reencrypted_collection_id,
         str(reencrypted_volume["volume_id"]),
         0,
+        principal=_CREATOR,
         plan_sha256=str(reencrypted_volume["plan_sha256"]),
         content=content,
     )
@@ -748,6 +750,7 @@ def test_restore_required_ingress_commits_encrypted_cache_with_initial_lease(
         collection_id,
         str(volume["volume_id"]),
         int(unit["unit"]),
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=content,
     )
@@ -886,6 +889,7 @@ def test_mandatory_primary_and_member_history_survive_encrypted_archive_publicat
                 collection_id,
                 str(volume["volume_id"]),
                 int(unit["unit"]),
+                principal=_CREATOR,
                 plan_sha256=str(volume["plan_sha256"]),
                 content=payload,
             )
@@ -1076,6 +1080,7 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
         collection_id,
         str(volume["volume_id"]),
         0,
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=content,
     )
@@ -1302,6 +1307,7 @@ def test_closed_custody_transfer_keeps_lease_until_final_tail_is_custodied(
         collection_id,
         str(volume["volume_id"]),
         int(unit["unit"]),
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=content,
     )
@@ -1364,6 +1370,7 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
         collection_id,
         str(volume["volume_id"]),
         int(unit["unit"]),
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=b"".join(contents[str(source["artifact_id"])] for source in unit["sources"]),
     )
@@ -1628,6 +1635,7 @@ def test_server_owned_membership_is_independent_of_registration_order(
                     collection_id,
                     str(volume["volume_id"]),
                     int(unit["unit"]),
+                    principal=_CREATOR,
                     plan_sha256=str(volume["plan_sha256"]),
                     content=payload,
                 )
@@ -1801,6 +1809,7 @@ def test_startup_reconciles_interrupted_finalization_from_its_durable_checkpoint
         collection_id,
         str(volume["volume_id"]),
         0,
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=content,
     )

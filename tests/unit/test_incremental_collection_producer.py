@@ -401,7 +401,7 @@ def _bounded_service_api(
     )
     principal = Principal(
         id="fixture-target",
-        key_id="fixture-key",
+        key_id=None,
         access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
     )
     return UploadServiceApi(service, principal), store

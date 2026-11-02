@@ -180,7 +180,12 @@ def test_staged_registration_rows_remain_hidden_from_service_and_orm_after_reope
                 service.get_volume(collection_id, plan.volume_id)
             with pytest.raises(NotFound):
                 service.upload_unit(
-                    collection_id, plan.volume_id, 0, plan_sha256="a" * 64, content=b""
+                    collection_id,
+                    plan.volume_id,
+                    0,
+                    principal=_CREATOR,
+                    plan_sha256="a" * 64,
+                    content=b"",
                 )
             assert (
                 service._checkpoints.load_raw_upload_checkpoint(

@@ -1970,3 +1970,157 @@ def test_postgres_selected_registration_cleanup_retains_its_rights_after_key_rev
     test_selected_cleanup_keeps_its_original_rights_after_forward_key_revocation(
         tmp_path, background
     )
+
+
+def test_postgres_payload_entry_locks_live_key_and_sealed_claim_before_construction(
+    isolated_database_url, tmp_path, monkeypatch
+):
+    from functools import partial
+
+    from riverhog_core.catalog_models import AppKeyRecord
+    from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
+    from riverhog_protocol.errors import Conflict
+
+    from tests.unit import test_collection_registration_operations as witness
+    from tests.unit.test_collection_registration_delegation import _delegated
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    service, keys, workflows, principal, collection_id = _delegated(tmp_path)
+    expected = [
+        AppKeyRecord.__tablename__,
+        CollectionProcessingClaimRecord.__tablename__,
+        CollectionUploadRecord.__tablename__,
+    ]
+    locked = []
+
+    def capture(connection, cursor, statement, parameters, context, executemany):
+        if statement.lstrip().startswith("SELECT") and "FOR UPDATE" in statement:
+            for table in expected:
+                if f"FROM {table} " in statement.replace("\n", " "):
+                    locked.append(table)
+
+    engine = service._session_factory.kw["bind"]
+    try:
+        service.register_artifacts(collection_id, [witness._member("1", 1)])
+        volume = service.list_volumes(collection_id)["volumes"][0]
+        event.listen(engine, "before_cursor_execute", capture)
+        try:
+            with pytest.raises(Conflict, match="plan identity changed"):
+                service.upload_unit(
+                    collection_id,
+                    volume["volume_id"],
+                    0,
+                    principal=principal,
+                    plan_sha256="f" * 64,
+                    content=b"",
+                )
+        finally:
+            event.remove(engine, "before_cursor_execute", capture)
+        assert locked == expected
+    finally:
+        dispose_session_factory(workflows._session_factory)
+        witness._close(service, keys)
+
+
+@pytest.mark.parametrize("expires", ["key", "claim", "lease"])
+def test_postgres_payload_entry_rechecks_expiry_after_waiting_for_construction(
+    isolated_database_url, tmp_path, monkeypatch, expires
+):
+    from datetime import timedelta
+    from functools import partial
+
+    from riverhog_core.catalog_models import AppKeyRecord
+    from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
+    from riverhog_core.services import app_keys, collection_upload_authority, collection_uploads
+    from riverhog_protocol.errors import Conflict, NotFound
+    from time_formats import format_utc_timestamp, utc_now
+
+    from tests.unit import test_collection_registration_operations as witness
+    from tests.unit.test_collection_registration_delegation import _delegated
+
+    monkeypatch.setattr(
+        witness,
+        "_service_with_archive_objects",
+        partial(witness._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    service, keys, workflows, principal, collection_id = _delegated(tmp_path)
+    waiting = threading.Event()
+    caller = threading.get_ident()
+    engine = service._session_factory.kw["bind"]
+    now = utc_now()
+
+    def clock():
+        return now + timedelta(minutes=2) if waiting.is_set() else now
+
+    def at_construction(connection, cursor, statement, parameters, context, executemany):
+        if (
+            threading.get_ident() != caller
+            and "FOR UPDATE" in statement
+            and "FROM collection_uploads " in statement.replace("\n", " ")
+        ):
+            waiting.set()
+
+    try:
+        service.register_artifacts(collection_id, [witness._member("1", 1)])
+        volume = service.list_volumes(collection_id)["volumes"][0]
+        with session_scope(service._session_factory) as session:
+            if expires == "key":
+                record = session.get(AppKeyRecord, principal.key_id)
+                record.expires_at = format_utc_timestamp(now + timedelta(minutes=1))
+            elif expires == "claim":
+                record = session.scalar(
+                    select(CollectionProcessingClaimRecord).where(
+                        CollectionProcessingClaimRecord.execution_id
+                        == principal.id.removeprefix("processing:")
+                    )
+                )
+                record.expires_at = format_utc_timestamp(now + timedelta(minutes=1))
+            else:
+                upload = session.get(CollectionUploadRecord, collection_id)
+                upload.custody_mode = "custody-transfer"
+                upload.lease_expires_at = format_utc_timestamp(now + timedelta(minutes=1))
+        monkeypatch.setattr(app_keys, "utc_now", clock)
+        for owner in (collection_upload_authority, collection_uploads):
+            monkeypatch.setattr(owner, "utc_timestamp_now", lambda: format_utc_timestamp(clock()))
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            with session_scope(service._session_factory) as blocker:
+                blocker.scalar(
+                    select(CollectionUploadRecord)
+                    .where(CollectionUploadRecord.collection_id == collection_id)
+                    .with_for_update()
+                )
+                event.listen(engine, "before_cursor_execute", at_construction)
+                try:
+                    future = executor.submit(
+                        service.upload_unit,
+                        collection_id,
+                        volume["volume_id"],
+                        0,
+                        principal=principal,
+                        plan_sha256=volume["plan_sha256"],
+                        content=b"",
+                    )
+                    assert waiting.wait(timeout=10)
+                    assert not future.done()
+                finally:
+                    event.remove(engine, "before_cursor_execute", at_construction)
+            expected = Conflict if expires == "lease" else NotFound
+            message = (
+                "lease"
+                if expires == "lease"
+                else ("no longer active" if expires == "key" else "execution authority")
+            )
+            with pytest.raises(expected, match=message):
+                future.result(timeout=10)
+        with session_scope(service._session_factory) as session:
+            record = session.get(
+                CollectionArchiveObjectUploadRecord, (collection_id, volume["volume_id"])
+            )
+            assert record.checkpoint_json is None
+    finally:
+        dispose_session_factory(workflows._session_factory)
+        witness._close(service, keys)

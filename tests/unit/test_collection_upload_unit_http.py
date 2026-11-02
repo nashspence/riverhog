@@ -21,9 +21,11 @@ class _IssuedUnit:
         self.denied = denied
         self.access_checks = 0
         self.uploads = []
+        self.principal = None
 
     def require_access(self, collection_id, principal):
         self.access_checks += 1
+        self.principal = principal
         if self.denied:
             raise Forbidden("upload session belongs to another principal")
 
@@ -43,7 +45,8 @@ class _IssuedUnit:
             "state": "pending",
         }
 
-    def upload_unit(self, collection_id, volume_id, unit, *, plan_sha256, content):
+    def upload_unit(self, collection_id, volume_id, unit, *, plan_sha256, content, principal):
+        assert principal is self.principal
         self.uploads.append((collection_id, volume_id, unit, plan_sha256, content))
         return {**self.get_unit(collection_id, volume_id, unit), "state": "committed"}
 

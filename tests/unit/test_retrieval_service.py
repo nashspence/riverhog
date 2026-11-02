@@ -459,6 +459,7 @@ def _seed_collection(
                 collection_id,
                 str(volume["volume_id"]),
                 int(unit["unit"]),
+                principal=_creator(),
                 plan_sha256=str(volume["plan_sha256"]),
                 content=payload,
             )
@@ -507,7 +508,7 @@ def _creator():
 
     return Principal(
         id="uploader",
-        key_id="key-1",
+        key_id=None,
         access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
     )
 

@@ -199,6 +199,7 @@ def _assert_lost_checkpoint_report(case, monkeypatch):
                     case.collection_id,
                     case.object_id,
                     0,
+                    principal=_CREATOR,
                     plan_sha256=case.identity["plan_sha256"],
                     content=case.content,
                 )
@@ -305,6 +306,7 @@ def _assert_parallel_checkpoint_progress(case, monkeypatch):
                 case.collection_id,
                 case.object_id,
                 unit,
+                principal=_CREATOR,
                 plan_sha256=case.identity["plan_sha256"],
                 content=case.content[unit * PART : (unit + 1) * PART],
             )

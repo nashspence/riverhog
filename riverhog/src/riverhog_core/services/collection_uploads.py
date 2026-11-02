@@ -323,9 +323,14 @@ from riverhog_core.retrieval_cache_receipts import (
     retrieval_cache_receipt_payload,
 )
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.app_keys import KeyAuthorizationFence, require_key_authorization
 from riverhog_core.services.collection_tags import (
     advance_collection_tag_set,
     collection_tag_sha256,
+)
+from riverhog_core.services.collection_upload_authority import (
+    retain_upload_claim,
+    retain_upload_key,
 )
 from riverhog_core.services.lifecycle_events import (
     SqlAlchemyLifecycleEventService,
@@ -2060,6 +2065,62 @@ class SqlAlchemyCollectionUploadService:
                 raise NotFound(f"collection upload volume not found: {volume_id}")
             return _volume_work_payload(record)
 
+    def _payload_write_guard(
+        self, collection_id: int, principal: Principal
+    ) -> Callable[[Session], None]:
+        """Retain current payload authority before admission's construction locks.
+
+        The caller starts the early SQLite writer. A verified permission proof is
+        reusable only for this immutable caller and the unchanged tag set; key and
+        claim validity, construction ownership, state and lease stay live checks.
+        """
+        normalized_id = _collection_id(collection_id)
+        authorized = False
+        key: KeyAuthorizationFence | None = None
+        authorized_tags: str | None = None
+
+        def guard(session: Session) -> None:
+            nonlocal authorized, key, authorized_tags
+            if authorized and key is not None:
+                require_key_authorization(session, key)
+            else:
+                key = retain_upload_key(session, principal)
+            claim_id = retain_upload_claim(session, principal.id, principal.key_id)
+            upload = session.execute(
+                select(
+                    CollectionUploadRecord.initiated_by_principal_id,
+                    CollectionUploadRecord.state,
+                    CollectionUploadRecord.custody_mode,
+                    CollectionUploadRecord.lease_expires_at,
+                    CollectionUploadRecord.tag_staging_set_identity,
+                )
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update()
+            ).one_or_none()
+            if upload is None or upload.initiated_by_principal_id != principal.id:
+                raise NotFound(f"collection upload not found: {normalized_id}")
+            if upload.state not in {"open", "closing", "uploading"}:
+                raise Conflict(f"collection upload session is {upload.state}: {normalized_id}")
+            if upload.custody_mode == "custody-transfer" and (
+                upload.lease_expires_at is None or upload.lease_expires_at <= utc_timestamp_now()
+            ):
+                raise Conflict("collection upload custody lease is not active")
+            # Expiry can advance while a later construction lock is awaited.
+            # These references are already retained; do not reacquire earlier locks.
+            if key is not None:
+                require_key_authorization(session, key, for_update=False)
+            if (
+                retain_upload_claim(session, principal.id, principal.key_id, for_update=False)
+                != claim_id
+            ):
+                raise Conflict("collection upload execution authority changed")
+            if not authorized or authorized_tags != upload.tag_staging_set_identity:
+                _require_upload_create_access(session, normalized_id, principal)
+                authorized_tags = upload.tag_staging_set_identity
+            authorized = True
+
+        return guard
+
     def upload_unit(
         self,
         collection_id: int,
@@ -2068,9 +2129,14 @@ class SqlAlchemyCollectionUploadService:
         *,
         plan_sha256: str,
         content: bytes,
+        principal: Principal,
     ) -> dict[str, object]:
         normalized_id = _collection_id(collection_id)
+        guard = self._payload_write_guard(normalized_id, principal)
         with session_scope(self._session_factory) as session:
+            if session.get_bind().dialect.name == "sqlite":
+                session.connection(execution_options={"sqlite_immediate_writer": True})
+            guard(session)
             upload = session.get(CollectionUploadRecord, normalized_id)
             record = session.get(
                 CollectionArchiveObjectUploadRecord,

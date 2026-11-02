@@ -455,7 +455,7 @@ def test_upload_publication_atomically_queues_the_accepted_copy(
             AppKeyRecord(
                 id=COPY_INTENT_KEY,
                 app="producer",
-                token_sha256="d" * 64,
+                token_sha256=hashlib.sha256(b"copy-publication-fixture-token").hexdigest(),
                 created_at=now,
             )
         )
@@ -469,16 +469,11 @@ def test_upload_publication_atomically_queues_the_accepted_copy(
                     created_at=now,
                 )
             )
-    actor = Principal(
-        id="producer",
-        key_id=COPY_INTENT_KEY,
-        access=frozenset(
-            {
-                ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES),
-                ApplicationAccess(ARCHIVES_MANAGE, ALL_RESOURCES),
-            }
-        ),
-    )
+    from riverhog_core.services.app_keys import SqlAlchemyAppKeyService
+
+    key_service = SqlAlchemyAppKeyService(config)
+    actor = key_service.authenticate("copy-publication-fixture-token")
+    assert actor is not None
     uploader = SqlAlchemyCollectionUploadService(config, registry)
     api = UploadServiceApi(uploader, actor)
     content = b"durable copy intent from accepted upload"
