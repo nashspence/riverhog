@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import secrets
+import threading
 from collections import deque
 from collections.abc import Mapping
+from dataclasses import dataclass, field
 from typing import Any
 
 from riverhog_protocol.errors import Conflict, NotFound
@@ -27,6 +29,7 @@ from riverhog_core.provider_write_dispatch import (
     ArmedProviderWrite,
     ClosedProviderWrite,
     ProviderWriteReport,
+    WithdrawnProviderWrite,
 )
 from riverhog_core.services.archive_write_admission import (
     ArchiveWriteAdmission,
@@ -35,6 +38,16 @@ from riverhog_core.services.archive_write_admission import (
 from riverhog_core.stores.sqlalchemy_archive_upload_checkpoints import (
     SqlAlchemyArchiveUploadCheckpointStore,
 )
+
+
+@dataclass(frozen=True, slots=True)
+class AdmittedArchiveUploadWrite:
+    """One actor's original admitted invocation, before physical dispatch."""
+
+    ticket: ArmedProviderWrite = field(repr=False)
+    invocation: WriteInvocation = field(repr=False)
+    _nonce: str = field(repr=False)
+    _request_sha256: str = field(repr=False)
 
 
 class ArchiveUploadWrites:
@@ -67,6 +80,11 @@ class ArchiveUploadWrites:
         self._result_capacity_bytes = grants.result_bytes
         self._guard = guard
         self._executor_id = secrets.token_hex(32)
+        self._armed: dict[str, AdmittedArchiveUploadWrite] = {}
+        self._armed_lock = threading.Lock()
+        self._withdrawal_lock = threading.Lock()
+        self._retirement_lock = threading.Lock()
+        self._withdrawals: deque[WithdrawnProviderWrite] = deque()
         self._pending: list[tuple[ArmedProviderWrite, WriteExecutionResult]] = []
         self._retire: deque[ArmedProviderWrite] = deque()
         self._confirmed_checkpoint: tuple[str | None, str | None] | None = None
@@ -74,6 +92,12 @@ class ArchiveUploadWrites:
     def execute_write_operation(
         self, operation: WriteOperation, *, content: bytes = b""
     ) -> WriteExecutionResult:
+        admitted = self.arm_write_operation(operation)
+        return self.execute_admitted_write(admitted, content=content)
+
+    def arm_write_operation(self, operation: WriteOperation) -> AdmittedArchiveUploadWrite:
+        """Commit the original child intent without starting its provider."""
+        self.flush_withdrawals()
         self._retire_confirmed()
         arguments: dict[str, Any] = {
             "operation": operation.model_dump(mode="json"),
@@ -105,6 +129,48 @@ class ArchiveUploadWrites:
             ),
             operation=operation,
         )
+        admitted = AdmittedArchiveUploadWrite(
+            ticket=ticket,
+            invocation=WriteInvocation.model_validate_json(invocation.model_dump_json()),
+            _nonce=ticket._nonce,
+            _request_sha256=ticket.request_sha256,
+        )
+        with self._armed_lock:
+            self._armed[ticket.call_id] = admitted
+        return admitted
+
+    def _require_admitted(self, admitted: AdmittedArchiveUploadWrite) -> None:
+        ticket, invocation = admitted.ticket, admitted.invocation
+        if (
+            self._armed.get(ticket.call_id) is not admitted
+            or ticket.collection_id != self._collection_id
+            or ticket.object_id != self._object_id
+            or ticket.call_id != invocation.call.call_id
+            or ticket.executor_id != invocation.call.dispatch_owner
+            or ticket.target_incarnation != invocation.call.target_incarnation
+            or ticket._nonce != admitted._nonce
+            or ticket.request_sha256 != admitted._request_sha256
+        ):
+            raise Conflict("archive invocation was not admitted by this live actor")
+        invocation._require_exact_request()
+
+    def execute_admitted_write(
+        self, admitted: AdmittedArchiveUploadWrite, *, content: bytes = b""
+    ) -> WriteExecutionResult:
+        with self._armed_lock:
+            self._require_admitted(admitted)
+        ticket, invocation = admitted.ticket, admitted.invocation
+        if isinstance(invocation.operation, WritePartOperation):
+            if (
+                len(content) != invocation.operation.request.stored_bytes
+                or hashlib.sha256(content).hexdigest() != invocation.operation.stored_sha256
+            ):
+                raise Conflict("archive ciphertext differs from its admitted commitment")
+        elif content:
+            raise Conflict("archive control invocation cannot accept payload bytes")
+        with self._armed_lock:
+            self._require_admitted(admitted)
+            self._armed.pop(ticket.call_id)
         try:
             response = ticket.dispatch(
                 lambda: self._executor.execute_write(invocation, content=content)
@@ -120,6 +186,29 @@ class ArchiveUploadWrites:
         if response.outcome == "no_effect":
             self._report(None, kind=None)
         return response
+
+    def withdraw_admitted_write(self, admitted: AdmittedArchiveUploadWrite) -> None:
+        """Retain proof across settlement failures when a sibling cannot admit."""
+        with self._armed_lock:
+            self._require_admitted(admitted)
+            proof = admitted.ticket.withdraw()
+            self._withdrawals.append(proof)
+            self._armed.pop(admitted.ticket.call_id)
+        self.flush_withdrawals()
+
+    def flush_withdrawals(self) -> None:
+        """Retry only retained original proofs; never reconstruct or resend work."""
+        with self._withdrawal_lock:
+            while True:
+                with self._armed_lock:
+                    if not self._withdrawals:
+                        break
+                    proof = self._withdrawals[0]
+                self._admission.settle_withdrawn(proof)
+                self._retire.append(proof.ticket)
+                with self._armed_lock:
+                    self._withdrawals.popleft()
+        self._retire_confirmed()
 
     @staticmethod
     def _report_result(
@@ -210,15 +299,16 @@ class ArchiveUploadWrites:
         return current
 
     def _retire_confirmed(self) -> None:
-        while self._retire:
-            ticket = self._retire[0]
-            try:
-                self._admission.acknowledge_report(ticket)
-            except NotFound:
-                # This live actor already received exact settlement confirmation;
-                # absence here is only a lost acknowledgement of its own retirement.
-                pass
-            self._retire.popleft()
+        with self._retirement_lock:
+            while self._retire:
+                ticket = self._retire[0]
+                try:
+                    self._admission.acknowledge_report(ticket)
+                except NotFound:
+                    # This live actor already received exact settlement confirmation;
+                    # absence here is only a lost acknowledgement of its own retirement.
+                    pass
+                self._retire.popleft()
 
     def _identity(self, collection_id: int, volume_id: str) -> None:
         if collection_id != self._collection_id or volume_id != self._object_id:

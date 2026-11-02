@@ -583,3 +583,144 @@ def test_actual_http_timeout_and_negative_observation_do_not_close_late_admitted
             finally:
                 release.set()
                 assert finished.wait(timeout=5)
+
+
+def test_archive_actor_admits_before_dispatch_and_withdraws_on_sibling_refusal(
+    tmp_path, monkeypatch
+):
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        _open(actor)
+        original = _stored(actor)
+        operation = next(call.operation for call in actor.seen if call.operation.kind == "begin")
+        seen = len(actor.seen)
+        admitted = actor.journal.arm_write_operation(operation)
+        assert len(actor.seen) == seen
+        with session_scope(actor.case.factory) as session:
+            row = session.get(ArchiveWriteEffectRecord, admitted.ticket.call_id)
+            assert row.state == "armed" and row.unresolved
+        with pytest.raises(Conflict, match="sibling refused"):
+            try:
+                raise Conflict("sibling refused before either provider started")
+            finally:
+                actor.journal.withdraw_admitted_write(admitted)
+        assert len(actor.seen) == seen and _stored(actor) == original
+
+
+def test_archive_actor_keeps_withdrawal_proof_after_settlement_acknowledgement_loss(
+    tmp_path, monkeypatch
+):
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        _open(actor)
+        original = _stored(actor)
+        operation = next(call.operation for call in actor.seen if call.operation.kind == "begin")
+        admitted = actor.journal.arm_write_operation(operation)
+        report = actor.admission.settle_withdrawn
+        reports = []
+
+        def lose_ack(proof):
+            report(proof)
+            reports.append(proof)
+            if len(reports) == 1:
+                raise OSError("injected withdrawal acknowledgement loss")
+
+        monkeypatch.setattr(actor.admission, "settle_withdrawn", lose_ack)
+        seen = len(actor.seen)
+        with pytest.raises(OSError, match="acknowledgement loss"):
+            actor.journal.withdraw_admitted_write(admitted)
+        assert _stored(actor)[1][0][1:3] == ("settled", False)
+        actor.journal.flush_withdrawals()
+        assert reports[0] is reports[1]
+        assert len(actor.seen) == seen and _stored(actor) == original
+        with pytest.raises(Conflict, match="live actor"):
+            actor.journal.execute_admitted_write(admitted)
+
+
+def test_archive_actor_refuses_copied_or_another_actors_admission(tmp_path, monkeypatch):
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        _open(actor)
+        operation = actor.seen[0].operation
+        admitted = actor.journal.arm_write_operation(operation)
+        seen = len(actor.seen)
+        other = ArchiveUploadWrites(
+            admission=actor.admission,
+            checkpoints=actor.case.service._checkpoints,
+            executor=actor.executor,
+            collection_id=actor.case.collection_id,
+            object_id=actor.case.object_id,
+            epoch=actor.journal._epoch,
+            grants=actor.journal._grants,
+            guard=actor.journal._guard,
+        )
+        for target, invocation in ((actor.journal, replace(admitted)), (other, admitted)):
+            with pytest.raises(Conflict, match="live actor"):
+                target.execute_admitted_write(invocation)
+            with pytest.raises(Conflict, match="live actor"):
+                target.withdraw_admitted_write(invocation)
+        actor.journal.withdraw_admitted_write(admitted)
+        assert len(actor.seen) == seen
+
+
+def test_archive_actor_executes_admitted_original_once(tmp_path, monkeypatch):
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        _open(actor)
+        admitted = actor.journal.arm_write_operation(actor.seen[0].operation)
+        seen = len(actor.seen)
+        response = actor.journal.execute_admitted_write(admitted)
+        assert response.outcome == "no_effect" and len(actor.seen) == seen + 1
+        with pytest.raises(Conflict, match="live actor"):
+            actor.journal.execute_admitted_write(admitted)
+
+
+def test_archive_actor_changed_ciphertext_refuses_before_dispatch(tmp_path, monkeypatch):
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        checkpoint = _open(actor)
+        content = []
+        execute = actor.executor.execute_write
+
+        def capture(invocation, **kwargs):
+            if invocation.operation.kind == "part":
+                content.append(kwargs["content"])
+            return execute(invocation, **kwargs)
+
+        monkeypatch.setattr(actor.executor, "execute_write", capture)
+        _unit(actor, checkpoint)
+        operation = next(call.operation for call in actor.seen if call.operation.kind == "part")
+        admitted = actor.journal.arm_write_operation(operation)
+        seen = len(actor.seen)
+        with pytest.raises(Conflict, match="ciphertext"):
+            actor.journal.execute_admitted_write(admitted, content=b"changed")
+        assert len(actor.seen) == seen and content
+        actor.journal.withdraw_admitted_write(admitted)
+
+
+def test_archive_actor_running_admission_cannot_execute_twice_or_be_withdrawn(
+    tmp_path, monkeypatch
+):
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        _open(actor)
+        admitted = actor.journal.arm_write_operation(actor.seen[0].operation)
+        entered, release = threading.Event(), threading.Event()
+        execute = actor.executor.execute_write
+        seen = len(actor.seen)
+
+        def held(invocation, **kwargs):
+            entered.set()
+            assert release.wait(timeout=5)
+            return execute(invocation, **kwargs)
+
+        monkeypatch.setattr(actor.executor, "execute_write", held)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            running = pool.submit(actor.journal.execute_admitted_write, admitted)
+            try:
+                assert entered.wait(timeout=5)
+                with pytest.raises(Conflict, match="live actor"):
+                    actor.journal.execute_admitted_write(admitted)
+                with pytest.raises(Conflict, match="live actor"):
+                    actor.journal.withdraw_admitted_write(admitted)
+                with session_scope(actor.case.factory) as session:
+                    row = session.get(ArchiveWriteEffectRecord, admitted.ticket.call_id)
+                    assert row.state == "armed" and row.unresolved
+            finally:
+                release.set()
+            assert running.result(timeout=5).outcome == "no_effect"
+        assert len(actor.seen) == seen + 1
