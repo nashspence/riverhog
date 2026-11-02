@@ -158,7 +158,8 @@ def test_failure_evidence_write_does_not_replace_original_failure(tmp_path, monk
     assert caught.value is original
 
 
-def test_witness_main_records_last_phase_on_failure(tmp_path, monkeypatch):
+@pytest.mark.parametrize("readable_report", (True, False))
+def test_witness_main_records_last_phase_on_failure(tmp_path, monkeypatch, readable_report):
     report = tmp_path / "witness.json"
 
     def failed(root, *, progress):
@@ -169,7 +170,16 @@ def test_witness_main_records_last_phase_on_failure(tmp_path, monkeypatch):
     monkeypatch.setattr(
         sys, "argv", ["witness", "--witness", str(tmp_path), "--report", str(report)]
     )
-    assert native.main() == 1
+    original_open = Path.open
+
+    def write_only(path, mode="r", *args, **kwargs):
+        if path == report and "r" in mode and not readable_report:
+            raise PermissionError("standard-user report grants allow writes only")
+        return original_open(path, mode, *args, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(Path, "open", write_only)
+        assert native.main() == 1
     result = json.loads(report.read_text())
     assert result["failed"] is True and result["origin"] == "witness"
     assert result["progress"]["phase"] == "control-vfs"

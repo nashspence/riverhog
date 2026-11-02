@@ -87,15 +87,16 @@ class _WitnessProgress:
     def enter(self, phase: str, completed_cases: int) -> None:
         assert phase in _WITNESS_PHASES
         assert type(completed_cases) is int and 0 <= completed_cases <= 157
-        _write_diagnostic(
-            self.report,
-            {
-                "format": _PROGRESS_FORMAT,
-                "phase": phase,
-                "completed_cases": completed_cases,
-                "elapsed_seconds": round(time.monotonic() - self.started, 3),
-            },
-        )
+        self._snapshot = {
+            "format": _PROGRESS_FORMAT,
+            "phase": phase,
+            "completed_cases": completed_cases,
+            "elapsed_seconds": round(time.monotonic() - self.started, 3),
+        }
+        _write_diagnostic(self.report, self._snapshot)
+
+    def snapshot(self) -> dict:
+        return dict(self._snapshot)
 
 
 def _retained_progress(report: Path) -> dict | None:
@@ -130,7 +131,13 @@ def _retained_progress(report: Path) -> dict | None:
     return value
 
 
-def record_witness_failure(report: Path, error: BaseException, *, origin: str) -> None:
+def record_witness_failure(
+    report: Path,
+    error: BaseException,
+    *,
+    origin: str,
+    progress: _WitnessProgress | None = None,
+) -> None:
     """Keep bounded phase evidence without copying exception or process payloads."""
     assert origin in {"launcher", "witness"}
     category = "unexpected"
@@ -163,7 +170,7 @@ def record_witness_failure(report: Path, error: BaseException, *, origin: str) -
             "failed": True,
             "origin": origin,
             "failure_class": category,
-            "progress": _retained_progress(report),
+            "progress": progress.snapshot() if progress is not None else _retained_progress(report),
             "source_frames": list(frames),
         },
     )
@@ -1273,10 +1280,11 @@ def main() -> int:
         return 43
     if args.crash:
         _crash(args.crash, args.when)
+    progress = _WitnessProgress(args.report)
     try:
-        result = witness(args.witness, progress=_WitnessProgress(args.report))
+        result = witness(args.witness, progress=progress)
     except BaseException as exc:
-        record_witness_failure(args.report, exc, origin="witness")
+        record_witness_failure(args.report, exc, origin="witness", progress=progress)
         return 1
     args.report.write_text(json.dumps(result, indent=2) + "\n")
     return 0
