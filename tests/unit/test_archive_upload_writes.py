@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from dataclasses import replace
 from types import SimpleNamespace
@@ -26,7 +28,11 @@ from riverhog_core.stores.storage_adapter_archive_objects import (
     StorageAdapterArchiveResumableObjectStore,
 )
 from riverhog_protocol.errors import Conflict
-from riverhog_storage_adapter_protocol import unknown_write_execution, write_operation_sha256
+from riverhog_storage_adapter_protocol import (
+    CompletedWriteLookupRequest,
+    unknown_write_execution,
+    write_operation_sha256,
+)
 from sqlalchemy import select
 
 from tests.unit.test_archive_write_execution import _executor
@@ -483,3 +489,97 @@ def test_retained_capacity_refusal_precedes_provider_access(tmp_path, monkeypatc
         with pytest.raises(Conflict, match="grant is exhausted"):
             _open(actor)
         assert actor.seen == [] and _stored(actor) == (None, [])
+
+
+@pytest.mark.parametrize("kind", ["pack", "segment"])
+@pytest.mark.parametrize("phase", ["begin", "complete"])
+def test_actual_http_timeout_and_negative_observation_do_not_close_late_admitted_write(
+    tmp_path, monkeypatch, kind, phase
+):
+    with _actor(tmp_path, monkeypatch, kind, mode="owned-http") as actor:
+        opened = _open(actor) if phase == "complete" else None
+        entered, release, finished = threading.Event(), threading.Event(), threading.Event()
+        name = "begin_write" if phase == "begin" else "complete_write"
+        original = getattr(actor.adapter, name)
+        calls = []
+
+        def delayed(request):
+            calls.append(request)
+            entered.set()
+            try:
+                assert release.wait(timeout=10)
+                return original(request)
+            finally:
+                finished.set()
+
+        monkeypatch.setattr(actor.adapter, name, delayed)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = (
+                pool.submit(_open, actor) if opened is None else pool.submit(_unit, actor, opened)
+            )
+            try:
+                assert entered.wait(timeout=5)
+                invocation = actor.seen[-1]
+                assert invocation.operation.kind == phase
+                selected = actor.admission.select_terminal(
+                    actor.case.collection_id,
+                    kind="cancel",
+                    request={"fixture": "actual-http-" + phase},
+                    principal_id=_CREATOR.id,
+                    grants=actor.case.service._config.archive_write,
+                    guard=actor.case.service._payload_write_guard(
+                        actor.case.collection_id, _CREATOR
+                    ),
+                    validate_selection=lambda *args: None,
+                )
+                assert selected and not finished.is_set()
+                request = invocation.operation.request
+                lookup = CompletedWriteLookupRequest(
+                    object_path=request.object_path
+                    if phase == "begin"
+                    else request.session.object_path,
+                    expected_bytes=request.expected_bytes,
+                    expected_content_type=request.content_type
+                    if phase == "begin"
+                    else request.expected_content_type,
+                    required_identity_assertions=request.required_identity_assertions,
+                    expected_placement_policy=request.placement_policy
+                    if phase == "begin"
+                    else request.expected_placement_policy,
+                )
+                for _ in range(3):
+                    assert actor.adapter.find_completed_write(lookup) is None
+                    actor.admission.observe(
+                        actor.case.collection_id,
+                        invocation.call.call_id,
+                        None,
+                        apply_observation=lambda *args: pytest.fail(
+                            "absence cannot apply a result"
+                        ),
+                    )
+                with pytest.raises(Conflict, match="remains unknown"):
+                    future.result(timeout=5)
+                stored, effects = _stored(actor)
+                assert len(effects) == 1 and effects[0][1:3] == ("uncertain", True)
+                assert effects[0][0] == invocation.call.call_id and effects[0][3:] == (None, None)
+                if phase == "begin":
+                    assert (
+                        stored is None and list((tmp_path / "provider" / "writes").iterdir()) == []
+                    )
+                else:
+                    assert json.loads(stored)["completed"] is None
+                release.set()
+                assert finished.wait(timeout=5) and len(calls) == 1
+                if phase == "begin":
+                    assert len(list((tmp_path / "provider" / "writes").iterdir())) == 1
+                else:
+                    assert actor.adapter.find_completed_write(lookup) is not None
+                # Actual remote completion after HTTP exit supplies no report to
+                # this actor. Earlier absence never authorized releasing its charge.
+                assert _stored(actor) == (stored, effects)
+                assert actor.admission.unresolved(actor.case.collection_id, limit=1) == (
+                    invocation.call.call_id,
+                )
+            finally:
+                release.set()
+                assert finished.wait(timeout=5)
