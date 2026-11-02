@@ -31,12 +31,15 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterErrorCode,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteExecutionResult,
+    WriteInvocation,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSegmentRequest,
     WriteSession,
     WriteStartRequest,
+    unknown_write_execution,
     validate_completed_write_response,
     validate_object_metadata_response,
     validate_object_read_response,
@@ -44,6 +47,7 @@ from riverhog_storage_adapter_protocol import (
     validate_small_object_response,
     validate_storage_incarnation_id,
     validate_write_completion_request,
+    validate_write_execution,
     validate_write_segment_page_response,
     validate_write_segment_request,
     validate_write_segment_response,
@@ -171,6 +175,32 @@ class StorageAdapterClient:
 
     def check_readiness(self) -> None:
         self._require_success(self._request("GET", "/health/ready"))
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        try:
+            if self.descriptor().storage_incarnation_id != invocation.call.target_incarnation:
+                return unknown_write_execution(invocation)
+            response = self._model(
+                "POST",
+                "/v1/writes/execute",
+                WriteExecutionResult,
+                content=framed_body(invocation, content),
+                headers={
+                    "Content-Length": str(framed_body_length(invocation)),
+                    "Content-Type": FRAMED_BODY_MEDIA_TYPE,
+                },
+            )
+            validate_write_execution(invocation, response)
+            if not self._owns_client and response.execution == "closed":
+                # A supplied transport may have retried or forked this invocation.
+                if response.outcome == "no_effect":
+                    return unknown_write_execution(invocation)
+                return response.model_copy(update={"execution": "unknown"})
+            return response
+        except Exception:
+            return unknown_write_execution(invocation)
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
         self._validate_request(validate_write_start_request, request, self.descriptor())

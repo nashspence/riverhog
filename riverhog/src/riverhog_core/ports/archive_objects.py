@@ -4,7 +4,12 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Protocol
 
-from riverhog_storage_adapter_protocol import ObjectPlacementPolicy
+from riverhog_storage_adapter_protocol import (
+    BinaryContent,
+    ObjectPlacementPolicy,
+    WriteExecutionResult,
+    WriteInvocation,
+)
 
 from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
 
@@ -63,6 +68,14 @@ class CompletedObjectReceipt:
     bytes: int
     completed_at: str
     retrieval_cache: RetrievalCacheReceipt | None = None
+
+
+class ArchiveObjectWriteExecutor(Protocol):
+    """Correlated execution evidence from the selected effect-owning adapter."""
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult: ...
 
 
 class ArchiveResumableObjectStore(Protocol):

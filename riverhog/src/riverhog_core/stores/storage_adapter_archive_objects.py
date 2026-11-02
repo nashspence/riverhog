@@ -4,6 +4,7 @@ import hashlib
 from collections.abc import Iterator
 
 from riverhog_storage_adapter_protocol import (
+    BinaryContent,
     CompletedWriteLookupRequest,
     ObjectHeadRequest,
     ObjectLocator,
@@ -13,6 +14,8 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterPort,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteExecutionResult,
+    WriteInvocation,
     WriteSegmentListRequest,
     WriteStartRequest,
     validated_storage_adapter,
@@ -51,6 +54,11 @@ class StorageAdapterArchiveResumableObjectStore:
     ) -> None:
         self._adapter = validated_storage_adapter(adapter)
         self._placement_policy = placement_policy
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        return self._adapter.execute_write(invocation, content=content)
 
     def write_constraints(self) -> ResumableWriteConstraints:
         descriptor = self._adapter.descriptor()
@@ -191,6 +199,11 @@ class StorageAdapterImmutableArchiveObjectStore:
 
     def __init__(self, adapter: StorageAdapterPort) -> None:
         self._adapter = validated_storage_adapter(adapter)
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        return self._adapter.execute_write(invocation, content=content)
 
     def put_immutable_object(
         self,

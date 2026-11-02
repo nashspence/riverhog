@@ -839,6 +839,144 @@ def validate_read_status_response(
         raise ValueError("adapter read status differs from its request")
 
 
+class BeginWriteOperation(StorageAdapterModel):
+    kind: Literal["begin"] = "begin"
+    request: WriteStartRequest
+
+
+class WritePartOperation(StorageAdapterModel):
+    kind: Literal["part"] = "part"
+    request: WriteSegmentRequest
+    stored_sha256: Sha256
+
+
+class CompleteWriteOperation(StorageAdapterModel):
+    kind: Literal["complete"] = "complete"
+    request: WriteCompleteRequest
+
+
+class LookupWriteOperation(StorageAdapterModel):
+    kind: Literal["lookup"] = "lookup"
+    request: CompletedWriteLookupRequest
+
+
+class PutObjectOperation(StorageAdapterModel):
+    kind: Literal["put"] = "put"
+    request: SmallObjectWriteRequest
+
+
+type WriteOperation = Annotated[
+    BeginWriteOperation
+    | WritePartOperation
+    | CompleteWriteOperation
+    | LookupWriteOperation
+    | PutObjectOperation,
+    Field(discriminator="kind"),
+]
+
+
+def write_operation_sha256(operation: WriteOperation) -> str:
+    """Commit the complete canonical provider request, including opaque payload digest."""
+    return sha256(canonical_json_bytes(operation.model_dump(mode="json"))).hexdigest()
+
+
+class WriteCallIdentity(StorageAdapterModel):
+    """Correlation for one already admitted invocation; none of these fields grant access."""
+
+    call_id: Sha256
+    exact_request_sha256: Sha256
+    target_incarnation: StorageIncarnationId
+    dispatch_owner: Sha256
+
+
+class WriteInvocation(StorageAdapterModel):
+    call: WriteCallIdentity
+    operation: WriteOperation
+
+    @model_validator(mode="after")
+    def exact_request(self) -> WriteInvocation:
+        self._require_exact_request()
+        return self
+
+    def _require_exact_request(self) -> None:
+        if self.call.exact_request_sha256 != write_operation_sha256(self.operation):
+            raise ValueError("write invocation differs from its exact request commitment")
+
+    @property
+    def stored_bytes(self) -> int:
+        if isinstance(self.operation, (WritePartOperation, PutObjectOperation)):
+            return self.operation.request.stored_bytes
+        return 0
+
+
+class WriteExecutionResult(StorageAdapterModel):
+    """An executor-owned claim, accepted only through its trusted adapter boundary.
+
+    A positive result with unknown execution preserves observation without claiming
+    that delegated work has stopped. A missing response never creates closure.
+    """
+
+    call: WriteCallIdentity
+    execution: Literal["closed", "unknown"]
+    outcome: Literal["no_effect", "session", "part", "completed", "unknown"]
+    result: (
+        WriteSession | WriteSegmentReceipt | CompletedObjectReceipt | ImmutableObjectReceipt | None
+    ) = None
+
+    @model_validator(mode="after")
+    def result_shape(self) -> WriteExecutionResult:
+        self._require_result_shape()
+        return self
+
+    def _require_result_shape(self) -> None:
+        if self.outcome == "unknown":
+            if self.execution != "unknown" or self.result is not None:
+                raise ValueError("unknown execution cannot claim a confirmed outcome")
+        elif self.outcome == "no_effect":
+            if self.execution != "closed" or self.result is not None:
+                raise ValueError("no-effect requires closed execution without a result")
+        elif self.outcome == "session":
+            if not isinstance(self.result, WriteSession):
+                raise ValueError("session outcome requires the exact write session")
+        elif self.outcome == "part":
+            if not isinstance(self.result, WriteSegmentReceipt):
+                raise ValueError("part outcome requires the exact segment receipt")
+        elif not isinstance(self.result, (CompletedObjectReceipt, ImmutableObjectReceipt)):
+            raise ValueError("completed outcome requires the exact object receipt")
+
+
+def unknown_write_execution(invocation: WriteInvocation) -> WriteExecutionResult:
+    return WriteExecutionResult(
+        call=invocation.call, execution="unknown", outcome="unknown", result=None
+    )
+
+
+def validate_write_execution(invocation: WriteInvocation, response: WriteExecutionResult) -> None:
+    invocation._require_exact_request()
+    response._require_result_shape()
+    if response.call != invocation.call:
+        raise ValueError("write execution correlation differs from the admitted invocation")
+    if response.outcome == "unknown":
+        return
+    operation, result = invocation.operation, response.result
+    if isinstance(operation, BeginWriteOperation) and isinstance(result, WriteSession):
+        validate_write_session_response(operation.request, result)
+    elif isinstance(operation, WritePartOperation) and isinstance(result, WriteSegmentReceipt):
+        validate_write_segment_response(operation.request, result)
+        if result.stored_sha256 is not None and result.stored_sha256 != operation.stored_sha256:
+            raise ValueError("write execution segment digest differs from the original content")
+    elif isinstance(operation, (CompleteWriteOperation, LookupWriteOperation)) and isinstance(
+        result, CompletedObjectReceipt
+    ):
+        validate_completed_write_response(operation.request, result)
+    elif isinstance(operation, LookupWriteOperation) and response.outcome == "no_effect":
+        return
+    elif isinstance(operation, PutObjectOperation) and isinstance(result, ImmutableObjectReceipt):
+        validate_small_object_response(operation.request, result)
+    else:
+        raise ValueError("write execution outcome differs from its operation")
+
+
 class StorageAdapterPort(Protocol):
     """Transport-neutral effects required from one configured adapter target.
 
@@ -848,6 +986,10 @@ class StorageAdapterPort(Protocol):
     """
 
     def descriptor(self) -> AdapterDescriptor: ...
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult: ...
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession: ...
 
@@ -959,6 +1101,34 @@ class ValidatedStorageAdapterPort:
                 "descriptor",
             )
         return self._descriptor
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        try:
+            invocation._require_exact_request()
+            if self.descriptor().storage_incarnation_id != invocation.call.target_incarnation:
+                return unknown_write_execution(invocation)
+            validation = _ContentValidation(content, expected_bytes=invocation.stored_bytes)
+            response = self._adapter.execute_write(invocation, content=validation.content())
+            if not isinstance(response, WriteExecutionResult):
+                return unknown_write_execution(invocation)
+            validate_write_execution(invocation, response)
+            if response.outcome != "unknown":
+                validation.require_complete()
+                operation = invocation.operation
+                expected_sha256 = (
+                    operation.stored_sha256
+                    if isinstance(operation, WritePartOperation)
+                    else operation.request.stored_sha256
+                    if isinstance(operation, PutObjectOperation)
+                    else None
+                )
+                if expected_sha256 is not None and validation.digest.hexdigest() != expected_sha256:
+                    return unknown_write_execution(invocation)
+            return response
+        except Exception:
+            return unknown_write_execution(invocation)
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
         validate_write_start_request(request, self.descriptor())
@@ -1134,6 +1304,18 @@ def validated_storage_adapter(adapter: StorageAdapterPort) -> ValidatedStorageAd
 
 
 __all__ = [
+    "BeginWriteOperation",
+    "CompleteWriteOperation",
+    "LookupWriteOperation",
+    "PutObjectOperation",
+    "WriteCallIdentity",
+    "WriteExecutionResult",
+    "WriteInvocation",
+    "WriteOperation",
+    "WritePartOperation",
+    "unknown_write_execution",
+    "validate_write_execution",
+    "write_operation_sha256",
     "ADAPTER_PRIVATE_ASSERTION_PREFIX",
     "MAX_WRITE_SEGMENT_PAGE_ITEMS",
     "STORAGE_ADAPTER_PROTOCOL",

@@ -47,11 +47,14 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterRejection,
     WriteCompleteRequest,
     WriteCompletionPrecondition,
+    WriteExecutionResult,
+    WriteInvocation,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
     WriteStartRequest,
+    execute_write_invocation,
 )
 from time_formats import format_utc_timestamp, utc_now
 
@@ -518,6 +521,13 @@ class FilesystemStorageAdapter:
             minimum_nonfinal_segment_bytes=self._config.segment_bytes,
             maximum_segment_bytes=self._config.segment_bytes,
             maximum_segment_count=None,
+        )
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        return execute_write_invocation(
+            self, invocation, content=content, profile="joined-single-attempt"
         )
 
     def readiness(self) -> None:

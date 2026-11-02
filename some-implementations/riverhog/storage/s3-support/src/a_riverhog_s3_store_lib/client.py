@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Literal, cast
+from weakref import WeakSet
+
+_SINGLE_ATTEMPT_CLIENTS: WeakSet[Any] = WeakSet()
 
 
 @dataclass(frozen=True, slots=True)
@@ -86,7 +89,19 @@ def create_s3_client(
     # normalization, before its service-wide retry/redirect handlers. An error
     # cannot authorize replay or establish no-effect.
     client.meta.events.register_last("needs-retry.s3.*", cast(Any, _single_attempt))
+    try:
+        _SINGLE_ATTEMPT_CLIENTS.add(client)
+    except TypeError:
+        pass
     return client
+
+
+def uses_single_attempt_dispatch(client: Any) -> bool:
+    """Only this owner's constructed transport can supply its attempt profile."""
+    try:
+        return client in _SINGLE_ATTEMPT_CLIENTS
+    except TypeError:
+        return False
 
 
 def _single_attempt(

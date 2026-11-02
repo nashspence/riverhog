@@ -37,6 +37,8 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterPort,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteExecutionResult,
+    WriteInvocation,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
@@ -282,6 +284,12 @@ class StorageAdapterHttpBinding:
                     "invalid_request",
                     "adapter request Content-Length is invalid",
                 )
+            if normalized_method == "POST" and path == "/v1/writes/execute":
+                invocation, content = self._parse_framed_stream(
+                    chunks, WriteInvocation, content_length=content_length
+                )
+                execution = self.adapter.execute_write(invocation, content=content)
+                return _model_response(execution)
             if normalized_method == "POST" and path == "/v1/writes/segment":
                 segment_request, content = self._parse_framed_stream(
                     chunks,
@@ -429,6 +437,14 @@ def _storage_operation(*args: Any, **kwargs: Any) -> HttpOperationContract:
 
 
 STORAGE_ADAPTER_HTTP_OPERATIONS = (
+    _storage_operation(
+        "POST",
+        "/v1/writes/execute",
+        WriteInvocation,
+        WriteExecutionResult,
+        "framed",
+        errors=_adapter_errors("length_required", "request_too_large"),
+    ),
     _storage_operation(
         "GET",
         "/v1/adapter",

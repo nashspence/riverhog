@@ -35,14 +35,18 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterRejection,
     WriteCompleteRequest,
     WriteCompletionPrecondition,
+    WriteExecutionResult,
+    WriteInvocation,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
     WriteStartRequest,
+    execute_write_invocation,
 )
 from time_formats import format_utc_timestamp, utc_now
 
+from a_riverhog_s3_store_lib.client import uses_single_attempt_dispatch
 from a_riverhog_s3_store_lib.incarnation import (
     STORAGE_INCARNATION_MARKER_PREFIX,
     StorageIncarnationError,
@@ -228,6 +232,18 @@ class S3StorageAdapter:
             minimum_nonfinal_segment_bytes=_MINIMUM_NONFINAL_PART_BYTES,
             maximum_segment_bytes=_MAXIMUM_PART_BYTES,
             maximum_segment_count=_MAXIMUM_PART_COUNT,
+        )
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        return execute_write_invocation(
+            self,
+            invocation,
+            content=content,
+            profile="joined-single-attempt"
+            if uses_single_attempt_dispatch(self._client)
+            else "unaccounted",
         )
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
