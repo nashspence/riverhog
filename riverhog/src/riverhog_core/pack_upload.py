@@ -270,6 +270,50 @@ class PackVolumeUploader:
             derivation_gate=self._derivation_gate,
         )
 
+    def _load_checkpoint(
+        self,
+        *,
+        collection_id: int,
+        plan: PackVolumePlan,
+        object_path: str,
+        relative_path: str,
+    ) -> PackUploadCheckpoint | None:
+        existing = self._checkpoint_store.load_pack_upload_checkpoint(
+            collection_id=collection_id, volume_id=plan.volume_id
+        )
+        if existing is None:
+            return None
+        checkpoint = PackUploadCheckpoint.from_json(existing)
+        self._validate_checkpoint(
+            collection_id=collection_id,
+            plan=plan,
+            checkpoint=checkpoint,
+            object_path=object_path,
+            relative_path=relative_path,
+        )
+        return checkpoint
+
+    def load_preparation(
+        self,
+        *,
+        collection_id: int,
+        plan: PackVolumePlan,
+        object_path: str,
+        relative_path: str,
+    ) -> UploadState | None:
+        """Validate an existing checkpoint's original state without provider access."""
+        checkpoint = self._load_checkpoint(
+            collection_id=collection_id,
+            plan=plan,
+            object_path=object_path,
+            relative_path=relative_path,
+        )
+        return (
+            UploadState.from_json_bytes(checkpoint.age_state_json)
+            if checkpoint is not None
+            else None
+        )
+
     def prepare(self, *, plan: PackVolumePlan) -> UploadState:
         """Create candidate encryption state without checkpoint or provider access.
 
@@ -326,19 +370,13 @@ class PackVolumeUploader:
             raise ValueError("pack volume relative path is not canonical")
         if not object_path.endswith(f"/{normalized_relative_path}"):
             raise ValueError("pack volume object path does not contain its relative path")
-        existing_json = self._checkpoint_store.load_pack_upload_checkpoint(
+        checkpoint = self._load_checkpoint(
             collection_id=collection_id,
-            volume_id=plan.volume_id,
+            plan=plan,
+            object_path=object_path,
+            relative_path=normalized_relative_path,
         )
-        if existing_json is not None:
-            checkpoint = PackUploadCheckpoint.from_json(existing_json)
-            self._validate_checkpoint(
-                collection_id=collection_id,
-                plan=plan,
-                checkpoint=checkpoint,
-                object_path=object_path,
-                relative_path=normalized_relative_path,
-            )
+        if checkpoint is not None:
             if prepared_state is not None and (
                 prepared_state.to_json_bytes()
                 != UploadState.from_json_bytes(checkpoint.age_state_json).to_json_bytes()

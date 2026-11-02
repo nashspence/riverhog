@@ -23,6 +23,7 @@ from sqlalchemy import Select, select
 from sqlalchemy.orm import Session, load_only
 from state_schema import read_snapshot
 
+from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.catalog_archive_write_models import (
     ArchiveUploadTerminalRecord,
     ArchiveWriteControlRecord,
@@ -56,18 +57,6 @@ def _writer(session: Session) -> None:
 def _positive(value: int) -> None:
     if type(value) is not int or value < 1:
         raise ValueError("archive write grants must be positive integers")
-
-
-@dataclass(frozen=True, slots=True)
-class ArchiveWriteGrants:
-    calls: int
-    control_bytes: int
-    preparation_bytes: int
-    terminal_bytes: int
-
-    def __post_init__(self) -> None:
-        for value in (self.calls, self.control_bytes, self.preparation_bytes, self.terminal_bytes):
-            _positive(value)
 
 
 @dataclass(frozen=True, slots=True)

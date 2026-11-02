@@ -13,6 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from riverhog_archive_contracts import ARCHIVE_PACK_ARTIFACTS_MAX
 from time_formats import parse_duration
 
+from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
 from riverhog_core.registration_tuning import RegistrationTuning
@@ -32,6 +33,7 @@ _VOLUME = CollectionVolumePolicy()
 _THROUGHPUT = ArchiveThroughputTuning()
 _RANGE = PackRangeRetrievalPolicy()
 _REGISTRATION = RegistrationTuning()
+_ARCHIVE_WRITE = ArchiveWriteGrants()
 
 
 class _Document(BaseModel):
@@ -115,6 +117,35 @@ class ThroughputDocument(_Document):
             ),
             age_session_cache_entries=self.age_session_cache_entries,
             age_derivation_concurrency=self.age_derivation_concurrency,
+        )
+
+
+class ArchiveWriteDocument(_Document):
+    calls: int = Field(
+        default=_ARCHIVE_WRITE.calls,
+        ge=1,
+        strict=True,
+        description="Retained effect records per upload construction, including unsettled reports.",
+    )
+    control_bytes: str = Field(
+        default=str(_ARCHIVE_WRITE.control_bytes),
+        description="Retained effect request/report bytes per upload construction.",
+    )
+    preparation_bytes: str = Field(
+        default=str(_ARCHIVE_WRITE.preparation_bytes),
+        description="Original encryption preparation and identity bytes per volume.",
+    )
+    terminal_bytes: str = Field(
+        default=str(_ARCHIVE_WRITE.terminal_bytes),
+        description="Retained terminal request/result bytes per selected request.",
+    )
+
+    def grants(self) -> ArchiveWriteGrants:
+        return ArchiveWriteGrants(
+            calls=self.calls,
+            control_bytes=_bytes(self.control_bytes, "archive_write.control_bytes", 1),
+            preparation_bytes=_bytes(self.preparation_bytes, "archive_write.preparation_bytes", 1),
+            terminal_bytes=_bytes(self.terminal_bytes, "archive_write.terminal_bytes", 1),
         )
 
 
@@ -220,6 +251,7 @@ class RiverhogDocument(_Document):
     catalog_sync_history_retention: str = "30d"
     catalog_sync_page_size_max: int = Field(default=100, ge=1, le=100)
     catalog_sync_history_reap_batch_size: int = Field(default=100, ge=1)
+    archive_write: ArchiveWriteDocument = Field(default_factory=ArchiveWriteDocument)
     registration: RegistrationDocument = Field(default_factory=RegistrationDocument)
     volume_policy: VolumePolicyDocument = Field(default_factory=VolumePolicyDocument)
     throughput: ThroughputDocument = Field(default_factory=ThroughputDocument)
@@ -337,6 +369,7 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         catalog_sync_history_retention=parse_duration(document.catalog_sync_history_retention),
         catalog_sync_page_size_max=document.catalog_sync_page_size_max,
         catalog_sync_history_reap_batch_size=document.catalog_sync_history_reap_batch_size,
+        archive_write=document.archive_write.grants(),
         registration=document.registration.tuning(),
         volume_policy=document.volume_policy.policy(),
         throughput_tuning=document.throughput.tuning(),

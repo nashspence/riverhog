@@ -304,6 +304,59 @@ class RawVolumeUploader:
             derivation_gate=self._derivation_gate,
         )
 
+    def _load_checkpoint(
+        self,
+        *,
+        collection_id: int,
+        plan: RawVolumePlan,
+        object_path: str,
+        relative_path: str,
+        target_part_plaintext_bytes: int,
+        expected_part_sha256s: Sequence[str],
+    ) -> RawUploadCheckpoint | None:
+        existing = self._checkpoint_store.load_raw_upload_checkpoint(
+            collection_id=collection_id, volume_id=plan.volume_id
+        )
+        if existing is None:
+            return None
+        checkpoint = RawUploadCheckpoint.from_json(existing)
+        self._validate(plan, checkpoint)
+        if (
+            checkpoint.collection_id != collection_id
+            or checkpoint.object_path != object_path
+            or checkpoint.relative_path != validate_canonical_relpath(relative_path)
+            or checkpoint.target_part_plaintext_bytes != target_part_plaintext_bytes
+            or checkpoint.expected_part_sha256s
+            != tuple(_sha(current, "expected part plaintext") for current in expected_part_sha256s)
+        ):
+            raise ValueError("raw upload checkpoint does not match the requested upload")
+        return checkpoint
+
+    def load_preparation(
+        self,
+        *,
+        collection_id: int,
+        plan: RawVolumePlan,
+        object_path: str,
+        relative_path: str,
+        target_part_plaintext_bytes: int,
+        expected_part_sha256s: Sequence[str] = (),
+    ) -> UploadState | None:
+        """Validate an existing checkpoint's original state without provider access."""
+        checkpoint = self._load_checkpoint(
+            collection_id=collection_id,
+            plan=plan,
+            object_path=object_path,
+            relative_path=relative_path,
+            target_part_plaintext_bytes=target_part_plaintext_bytes,
+            expected_part_sha256s=expected_part_sha256s,
+        )
+        return (
+            UploadState.from_json_bytes(checkpoint.age_state_json)
+            if checkpoint is not None
+            else None
+        )
+
     def prepare(self, *, plan: RawVolumePlan) -> UploadState:
         """Create candidate encryption state without checkpoint or provider access.
 
@@ -367,26 +420,20 @@ class RawVolumeUploader:
         expected_digests = tuple(
             _sha(current, "expected part plaintext") for current in expected_part_sha256s
         )
-        existing = self._checkpoint_store.load_raw_upload_checkpoint(
+        checkpoint = self._load_checkpoint(
             collection_id=collection_id,
-            volume_id=plan.volume_id,
+            plan=plan,
+            object_path=object_path,
+            relative_path=normalized_relative_path,
+            target_part_plaintext_bytes=target_part_plaintext_bytes,
+            expected_part_sha256s=expected_digests,
         )
-        if existing is not None:
-            checkpoint = RawUploadCheckpoint.from_json(existing)
-            self._validate(plan, checkpoint)
+        if checkpoint is not None:
             if prepared_state is not None and (
                 prepared_state.to_json_bytes()
                 != UploadState.from_json_bytes(checkpoint.age_state_json).to_json_bytes()
             ):
                 raise ValueError("raw upload original encryption preparation changed")
-            if (
-                checkpoint.collection_id != collection_id
-                or checkpoint.object_path != object_path
-                or checkpoint.relative_path != normalized_relative_path
-                or checkpoint.target_part_plaintext_bytes != target_part_plaintext_bytes
-                or checkpoint.expected_part_sha256s != expected_digests
-            ):
-                raise ValueError("raw upload checkpoint does not match the requested upload")
             if checkpoint.completed is None:
                 completed = self._object_store.find_completed_write(
                     object_path=object_path,

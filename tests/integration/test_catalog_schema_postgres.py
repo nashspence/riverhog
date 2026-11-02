@@ -2124,3 +2124,45 @@ def test_postgres_payload_entry_rechecks_expiry_after_waiting_for_construction(
     finally:
         dispose_session_factory(workflows._session_factory)
         witness._close(service, keys)
+
+
+@pytest.mark.parametrize("kind", ["pack", "segment"])
+def test_postgres_actual_unit_retains_original_crypto_before_lookup_and_begin(
+    isolated_database_url, tmp_path, monkeypatch, kind
+):
+    from tests.unit import test_collection_upload_preparation as witness
+
+    with witness._case(tmp_path, kind, database_url=isolated_database_url) as case:
+        witness._assert_preparation_committed_before_provider(case, monkeypatch)
+
+
+@pytest.mark.parametrize("kind", ["pack", "segment"])
+@pytest.mark.parametrize("vector", ["terminal-during-crypto", "original-checkpoint"])
+def test_postgres_preparation_epoch_and_original_checkpoint_survive_interruption(
+    isolated_database_url, tmp_path, monkeypatch, kind, vector
+):
+    from functools import partial
+
+    from tests.unit import test_collection_upload_preparation as witness
+
+    monkeypatch.setattr(
+        witness, "_case", partial(witness._case, database_url=isolated_database_url)
+    )
+    if vector == "terminal-during-crypto":
+        witness.test_terminal_selection_during_crypto_preparation_prevents_provider_dispatch(
+            tmp_path, monkeypatch, kind
+        )
+    else:
+        witness.test_existing_checkpoint_preparation_is_validated_without_provider_access(
+            tmp_path, monkeypatch, kind
+        )
+
+
+@pytest.mark.parametrize("kind", ["pack", "segment"])
+def test_postgres_competing_preparations_retain_one_exact_original(
+    isolated_database_url, tmp_path, monkeypatch, kind
+):
+    from tests.unit import test_collection_upload_preparation as witness
+
+    with witness._case(tmp_path, kind, database_url=isolated_database_url) as case:
+        witness._assert_competing_candidates_retain_one_original(case, monkeypatch)

@@ -423,3 +423,34 @@ def test_registration_operator_grants_round_trip_and_reject_invalid_capacity(tmp
         _write(path, {**document, "registration": invalid})
         with pytest.raises(ValueError):
             load_runtime_config()
+
+
+def test_archive_write_operator_grants_round_trip_and_reject_invalid_capacity(
+    tmp_path, monkeypatch
+):
+    path, document = _document(tmp_path, monkeypatch)
+    document["archive_write"] = {
+        "calls": 3,
+        "control_bytes": "2MiB",
+        "preparation_bytes": "4KiB",
+        "terminal_bytes": "8KiB",
+    }
+    _write(path, document)
+    grant = load_runtime_config().archive_write
+    assert (grant.calls, grant.control_bytes, grant.preparation_bytes, grant.terminal_bytes) == (
+        3,
+        2 * 1024 * 1024,
+        4 * 1024,
+        8 * 1024,
+    )
+    for key, value in (
+        ("calls", 0),
+        ("calls", True),
+        ("control_bytes", "0B"),
+        ("preparation_bytes", "0B"),
+        ("terminal_bytes", "0B"),
+    ):
+        invalid = {**document["archive_write"], key: value}
+        _write(path, {**document, "archive_write": invalid})
+        with pytest.raises(ValueError):
+            load_runtime_config()

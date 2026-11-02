@@ -10,6 +10,7 @@ from dataclasses import replace
 from types import SimpleNamespace
 
 import pytest
+from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.catalog_archive_write_models import (
     ArchiveUploadTerminalRecord,
     ArchiveWriteControlRecord,
@@ -21,7 +22,6 @@ from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, Co
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.services.archive_write_admission import (
     ArchiveWriteAdmission,
-    ArchiveWriteGrants,
     ClosedArchiveWrite,
 )
 from riverhog_protocol.errors import Conflict, NotFound
@@ -413,7 +413,8 @@ def test_cold_owner_retains_effect_after_actual_dispatch_process_exit(case):
     code = """
 import os,sys
 from riverhog_core.catalog_db import make_session_factory
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission,ArchiveWriteGrants
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.archive_write_grants import ArchiveWriteGrants
 owner=ArchiveWriteAdmission(make_session_factory(sys.argv[1]))
 owner.arm(int(sys.argv[2]),sys.argv[3],epoch=sys.argv[4],kind="begin",resource="begin",arguments={},
  executor_id="e"*64,result_capacity_bytes=1000,

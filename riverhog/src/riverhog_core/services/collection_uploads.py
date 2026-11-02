@@ -14,6 +14,7 @@ from itertools import islice
 from typing import Any, Literal, TypedDict, cast
 
 from http_api_contracts import BrowseScalar, closed_literal_values
+from riverhog_age import UploadState
 from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
     MEMBER_HISTORY_IMPORTS_SCHEMA,
@@ -324,6 +325,7 @@ from riverhog_core.retrieval_cache_receipts import (
 )
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.app_keys import KeyAuthorizationFence, require_key_authorization
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_core.services.collection_tags import (
     advance_collection_tag_set,
     collection_tag_sha256,
@@ -2121,6 +2123,39 @@ class SqlAlchemyCollectionUploadService:
 
         return guard
 
+    def _retain_volume_preparation(
+        self,
+        *,
+        admission: ArchiveWriteAdmission,
+        collection_id: int,
+        volume_id: str,
+        epoch: str,
+        identity: Mapping[str, str],
+        guard: Callable[[Session], None],
+        load: Callable[[], UploadState | None],
+        prepare: Callable[[], UploadState],
+    ) -> UploadState:
+        retained = admission.load_preparation(
+            collection_id, volume_id, epoch=epoch, identity=identity, guard=guard
+        )
+        if retained is None:
+            original = load()
+            if original is None:
+                original = prepare()
+            retained = admission.prepare(
+                collection_id,
+                volume_id,
+                epoch=epoch,
+                identity=identity,
+                preparation={"age_state": json.loads(original.to_json_bytes())},
+                grants=self._config.archive_write,
+                guard=guard,
+            )
+        document = json.loads(retained)
+        if not isinstance(document, dict) or set(document) != {"age_state"}:
+            raise RuntimeError("archive write original preparation is invalid")
+        return UploadState.from_json_bytes(canonical_json_bytes(document["age_state"]))
+
     def upload_unit(
         self,
         collection_id: int,
@@ -2156,6 +2191,9 @@ class SqlAlchemyCollectionUploadService:
             plan_json = record.plan_json
             unit_plaintext_bytes = record.unit_plaintext_bytes
 
+        admission = ArchiveWriteAdmission(self._session_factory)
+        epoch = admission.bind_epoch(normalized_id, guard=guard)
+        identity = {"kind": kind, "object_path": object_path, "plan_sha256": plan_sha256}
         receipt: SealedPackVolume | SealedRawVolume | None
         try:
             if kind == "pack":
@@ -2171,11 +2209,27 @@ class SqlAlchemyCollectionUploadService:
                     ),
                     passphrase_id=passphrase_id,
                 )
+                pack_preparation = self._retain_volume_preparation(
+                    admission=admission,
+                    collection_id=normalized_id,
+                    volume_id=volume_id,
+                    epoch=epoch,
+                    identity=identity,
+                    guard=guard,
+                    load=lambda: pack_uploader.load_preparation(
+                        collection_id=normalized_id,
+                        plan=pack_plan,
+                        object_path=object_path,
+                        relative_path=relative_path,
+                    ),
+                    prepare=lambda: pack_uploader.prepare(plan=pack_plan),
+                )
                 pack_checkpoint = pack_uploader.open(
                     collection_id=normalized_id,
                     plan=pack_plan,
                     object_path=object_path,
                     relative_path=relative_path,
+                    prepared_state=pack_preparation,
                 )
                 pack_checkpoint = pack_uploader.upload_unit(
                     plan=pack_plan,
@@ -2210,6 +2264,23 @@ class SqlAlchemyCollectionUploadService:
                     ),
                     passphrase_id=passphrase_id,
                 )
+                raw_preparation = self._retain_volume_preparation(
+                    admission=admission,
+                    collection_id=normalized_id,
+                    volume_id=volume_id,
+                    epoch=epoch,
+                    identity=identity,
+                    guard=guard,
+                    load=lambda: raw_uploader.load_preparation(
+                        collection_id=normalized_id,
+                        plan=raw_plan,
+                        object_path=object_path,
+                        relative_path=relative_path,
+                        target_part_plaintext_bytes=unit_plaintext_bytes,
+                        expected_part_sha256s=expected,
+                    ),
+                    prepare=lambda: raw_uploader.prepare(plan=raw_plan),
+                )
                 raw_checkpoint = raw_uploader.open(
                     collection_id=normalized_id,
                     plan=raw_plan,
@@ -2217,6 +2288,7 @@ class SqlAlchemyCollectionUploadService:
                     relative_path=relative_path,
                     target_part_plaintext_bytes=unit_plaintext_bytes,
                     expected_part_sha256s=expected,
+                    prepared_state=raw_preparation,
                 )
                 raw_checkpoint = raw_uploader.upload_unit(
                     plan=raw_plan,
