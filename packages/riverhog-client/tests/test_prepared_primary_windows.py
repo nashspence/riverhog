@@ -24,7 +24,7 @@ def test_windows_container_filename_commits_the_original_framed_descriptor():
 
 @pytest.mark.skipif(os.name != "nt", reason="requires native unprivileged Windows and NTFS")
 def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
-    from tests.platform.windows_primary_process import run_unprivileged
+    from tests.platform.windows_primary_process import record_witness_failure, run_unprivileged
 
     root = Path(__file__).resolve().parents[3]
     helper = root / "tests/platform/windows_primary_process.py"
@@ -40,7 +40,7 @@ def test_native_unprivileged_owner_and_transaction_process_boundaries(tmp_path):
             report=report,
         )
     except BaseException as exc:
-        report.write_text(json.dumps({"failed": True, "launcher_error": str(exc)}))
+        record_witness_failure(report, exc, origin="launcher")
         raise
     raw = report.read_text() if report.is_file() else ""
     evidence = json.loads(raw) if raw else {"missing_report": True, "exit_code": code}

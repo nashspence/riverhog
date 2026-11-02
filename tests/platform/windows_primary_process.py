@@ -7,6 +7,7 @@ import argparse
 import ctypes
 import hashlib
 import json
+import math
 import os
 import secrets
 import shutil
@@ -14,9 +15,10 @@ import sqlite3
 import subprocess
 import sys
 import time
-import traceback
+from collections import deque
 from ctypes import wintypes
 from pathlib import Path
+from types import FunctionType
 
 from riverhog_client import PrimaryStateBusy, PrimaryStateError
 from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits, TransactionalPrimaryFiles
@@ -39,6 +41,132 @@ CONTENT = b"original\x00" * 1900
 _REPOSITORY_ROOT = str(Path(__file__).resolve().parents[2])
 if _REPOSITORY_ROOT not in sys.path:
     sys.path.append(_REPOSITORY_ROOT)
+
+
+_PROGRESS_FORMAT = "riverhog-windows-primary-progress/v1"
+_WITNESS_PHASES = frozenset(
+    (
+        "initialization",
+        "bytes-controls",
+        "inventory-ordering",
+        "shared-replay",
+        "rename-exclusion",
+        "crash-before-selection",
+        "crash-after-selection",
+        "path-rejections",
+        "selection-vfs",
+        "fixed-barrier",
+        "write-quota",
+        "compiled-write-quota",
+        "native-write-vfs",
+        "resource-recovery",
+        "resource-vfs",
+        "control-vfs",
+        "journal-capacity",
+        "control-capacity",
+        "physical-space",
+        "runtime-attestation",
+    )
+)
+
+
+def _write_diagnostic(report: Path, value: dict) -> None:
+    # The standard token may write the existing report, not replace its parent entry.
+    try:
+        report.write_text(json.dumps(value, allow_nan=False) + "\n")
+    except OSError:
+        pass
+
+
+class _WitnessProgress:
+    def __init__(self, report: Path):
+        self.report = report
+        self.started = time.monotonic()
+        self.enter("initialization", 0)
+
+    def enter(self, phase: str, completed_cases: int) -> None:
+        assert phase in _WITNESS_PHASES
+        assert type(completed_cases) is int and 0 <= completed_cases <= 157
+        _write_diagnostic(
+            self.report,
+            {
+                "format": _PROGRESS_FORMAT,
+                "phase": phase,
+                "completed_cases": completed_cases,
+                "elapsed_seconds": round(time.monotonic() - self.started, 3),
+            },
+        )
+
+
+def _retained_progress(report: Path) -> dict | None:
+    try:
+        with report.open("rb") as stream:
+            raw = stream.read(4097)
+        if len(raw) > 4096:
+            return None
+        value = json.loads(raw)
+    except (OSError, ValueError, UnicodeError, RecursionError):
+        return None
+    if not isinstance(value, dict) or set(value) != {
+        "format",
+        "phase",
+        "completed_cases",
+        "elapsed_seconds",
+    }:
+        return None
+    elapsed = value["elapsed_seconds"]
+    if (
+        value["format"] != _PROGRESS_FORMAT
+        or not isinstance(value["phase"], str)
+        or value["phase"] not in _WITNESS_PHASES
+        or type(value["completed_cases"]) is not int
+        or not 0 <= value["completed_cases"] <= 157
+        or type(elapsed) not in (int, float)
+        or elapsed < 0
+        or elapsed > 86400
+        or not math.isfinite(elapsed)
+    ):
+        return None
+    return value
+
+
+def record_witness_failure(report: Path, error: BaseException, *, origin: str) -> None:
+    """Keep bounded phase evidence without copying exception or process payloads."""
+    assert origin in {"launcher", "witness"}
+    category = "unexpected"
+    for kind, name in (
+        ((TimeoutError, subprocess.TimeoutExpired), "timeout"),
+        (AssertionError, "assertion"),
+        (OSError, "filesystem"),
+        (ValueError, "value"),
+        (TypeError, "type"),
+        (RuntimeError, "runtime"),
+    ):
+        if isinstance(error, kind):
+            category = name
+            break
+    owned = {
+        value.__code__
+        for value in globals().values()
+        if isinstance(value, FunctionType) and value.__globals__ is globals()
+    }
+    frames: deque[dict[str, object]] = deque(maxlen=3)
+    trace = error.__traceback__
+    while trace is not None:
+        if trace.tb_frame.f_code in owned:
+            frames.append({"function": trace.tb_frame.f_code.co_name, "line": trace.tb_lineno})
+        trace = trace.tb_next
+    _write_diagnostic(
+        report,
+        {
+            "format": "riverhog-windows-primary-failure/v1",
+            "failed": True,
+            "origin": origin,
+            "failure_class": category,
+            "progress": _retained_progress(report),
+            "source_frames": list(frames),
+        },
+    )
 
 
 class _Startup(ctypes.Structure):
@@ -319,6 +447,8 @@ def run_unprivileged(
                 exited = k.WaitForSingleObject(process.process, 10000)
                 if exited != 0:
                     raise AssertionError("standard-user witness has not exited")
+                if waited == 258:
+                    raise TimeoutError("standard-user witness exceeded its deadline")
                 raise AssertionError(f"standard-user witness did not finish ({waited})")
             result = _DWORD()
             api._required(
@@ -809,11 +939,12 @@ def _control_vfs_witness(parent: Path):
     return {"runtime": identity, "cases": reports}
 
 
-def witness(root: Path) -> dict:
+def witness(root: Path, *, progress: _WitnessProgress) -> dict:
     api = _WindowsAPI()
     assert not _elevated(api), "native qualification must run in a non-elevated process"
     started = time.monotonic()
     cases = []
+    progress.enter("bytes-controls", len(cases))
     _parent(root / "private")
     parent = root / "private"
     file = PrimaryByteFile("journal", len(CONTENT), hashlib.sha256(CONTENT).hexdigest())
@@ -924,6 +1055,7 @@ def witness(root: Path) -> dict:
         while not files.remove_step("retiring"):
             steps += 1
         assert steps == 3
+        progress.enter("inventory-ordering", len(cases))
         rows = [("b", 2, "b" * 64), ("a", 1, "a" * 64)]
 
         def inventory():
@@ -972,6 +1104,7 @@ def witness(root: Path) -> dict:
     from tests.support.prepared_primary_replay import DESCRIPTOR
     from tests.support.prepared_primary_replay import witness as shared_replay
 
+    progress.enter("shared-replay", len(cases))
     shared_replay(windows_container_path(parent, DESCRIPTOR), _metadata_factory)
     cases.extend(
         [
@@ -981,9 +1114,11 @@ def witness(root: Path) -> dict:
         ]
     )
     cases.extend(["cold-reopen-exact-winner", "bounded-cold-generation-cleanup"])
+    progress.enter("rename-exclusion", len(cases))
     _guard_rename_exclusion(path)
     cases.extend(["live-database-rename-exclusion", "live-parent-rename-exclusion"])
     for when in ("before", "after"):
+        progress.enter("crash-" + when + "-selection", len(cases))
         allocation = ALLOCATION + when.encode()
         candidate = windows_container_path(parent, allocation)
         # Each terminated process explicitly initializes a genuinely new container.
@@ -1006,6 +1141,7 @@ def witness(root: Path) -> dict:
                 assert count == (len(CONTENT) + 4095) // 4096
                 cases.append("adapter-owned-candidate-continuation")
         cases.append("fresh-process-death-" + when + "-selection")
+    progress.enter("path-rejections", len(cases))
     linked = parent / "linked.sqlite3"
     os.link(path, linked)
     try:
@@ -1027,24 +1163,31 @@ def witness(root: Path) -> dict:
     else:
         raise AssertionError("unadmitted sidecar parent was accepted")
     cases.append("unadmitted-parent-rejection")
+    progress.enter("selection-vfs", len(cases))
     vfs_faults = _vfs_fault_witness(parent)
     cases.extend(
         "vfs-" + fault["operation"] + "-" + fault["file"] + "-" + fault["when"]
         for fault in vfs_faults["faults"]
     )
+    progress.enter("fixed-barrier", len(cases))
     fixed_barrier = _fixed_barrier_witness(parent)
     cases.extend("fixed-barrier-" + str(index) for index in range(len(fixed_barrier["cases"])))
+    progress.enter("write-quota", len(cases))
     write_quota = _write_quota_witness(parent)
     cases.extend("write-quota-" + case["refusal"] for case in write_quota["cases"])
+    progress.enter("compiled-write-quota", len(cases))
     compiled_quota = _write_quota_witness(parent, compiled=True)
     cases.extend("compiled-quota-" + case["refusal"] for case in compiled_quota["cases"])
+    progress.enter("native-write-vfs", len(cases))
     native_write_vfs = _write_quota_witness(parent, compiled=True, native_vfs=True)
     cases.extend("native-write-vfs-" + case["refusal"] for case in native_write_vfs["cases"])
+    progress.enter("resource-recovery", len(cases))
     resource_recovery = _shared_resource_recovery_witness(parent)
     cases.extend(
         f"shared-resource-{case['role']}-{case['phase']}-{int(case['commit_executed'])}"
         for case in resource_recovery
     )
+    progress.enter("resource-vfs", len(cases))
     resource_vfs = _shared_resource_vfs_witness(parent)
     cases.extend(
         f"shared-resource-vfs-{case['role']}-{case['phase']}-"
@@ -1052,20 +1195,25 @@ def witness(root: Path) -> dict:
         f"{case['vfs_fault']['when']}"
         for case in resource_vfs["cases"]
     )
+    progress.enter("control-vfs", len(cases))
     control_vfs = _control_vfs_witness(parent)
     cases.extend(
         f"control-vfs-{case['change']}-{case['vfs_fault']['operation']}-"
         f"{case['vfs_fault']['file']}-{case['vfs_fault']['when']}"
         for case in control_vfs["cases"]
     )
+    progress.enter("journal-capacity", len(cases))
     journals = _journal_capacity_witness(parent)
     cases.extend(
         f"prepared-journal-headroom-{case['capacity_bytes']}" for case in journals["cases"]
     )
+    progress.enter("control-capacity", len(cases))
     controls = _control_capacity_witness(parent)
     cases.append("reserved-control-progress-at-page-ceiling")
+    progress.enter("physical-space", len(cases))
     space = _physical_space_witness(parent)
     cases.extend(["physical-space-bounded-maintenance", "cold-journal-extent-retention"])
+    progress.enter("runtime-attestation", len(cases))
     with sqlite3.connect(":memory:") as runtime:
         source_id = runtime.execute("SELECT sqlite_source_id()").fetchone()[0]
         compile_options = [row[0] for row in runtime.execute("PRAGMA compile_options")]
@@ -1126,9 +1274,9 @@ def main() -> int:
     if args.crash:
         _crash(args.crash, args.when)
     try:
-        result = witness(args.witness)
-    except BaseException:
-        args.report.write_text(json.dumps({"failed": True, "traceback": traceback.format_exc()}))
+        result = witness(args.witness, progress=_WitnessProgress(args.report))
+    except BaseException as exc:
+        record_witness_failure(args.report, exc, origin="witness")
         return 1
     args.report.write_text(json.dumps(result, indent=2) + "\n")
     return 0
