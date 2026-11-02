@@ -11,10 +11,8 @@ from __future__ import annotations
 import hashlib
 import json
 import secrets
-import threading
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass, field
-from typing import Any, TypeVar
+from typing import Any
 
 from riverhog_canonical_json import format_scalar, parse_scalar
 from riverhog_protocol.errors import Conflict, NotFound
@@ -33,10 +31,14 @@ from riverhog_core.catalog_archive_write_models import (
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
 from riverhog_core.collection_construction import upload_construction
+from riverhog_core.provider_write_dispatch import (
+    ArmedProviderWrite,
+    ClosedProviderWrite,
+    ProviderWriteReport,
+)
 from riverhog_core.services.collection_registration_cleanup import freeze_registration_execution
 from riverhog_core.services.collection_upload_authority import require_archive_write_control
 
-_T = TypeVar("_T")
 Guard = Callable[[Session], None]
 ApplyResult = Callable[
     [Session, CollectionUploadRecord, CollectionArchiveObjectUploadRecord, Mapping[str, Any]], None
@@ -59,74 +61,6 @@ def _writer(session: Session) -> None:
 def _positive(value: int) -> None:
     if type(value) is not int or value < 1:
         raise ValueError("archive write grants must be positive integers")
-
-
-@dataclass(frozen=True, slots=True)
-class ClosedArchiveWrite:
-    """Private adapter-owner evidence, never a public caller's assertion.
-
-    The adapter must account for every delegated attempt before supplying this
-    evidence. A response observation or a transport exception cannot construct it.
-    """
-
-    call_id: str
-    request_sha256: str
-    executor_id: str
-    target_incarnation: str
-    result: Mapping[str, Any] = field(repr=False)
-
-
-class ArmedArchiveWrite:
-    """A live one-use dispatch right; retained rows cannot recreate it."""
-
-    def __init__(
-        self,
-        *,
-        call_id: str,
-        collection_id: int,
-        object_id: str,
-        nonce: str,
-        request_sha256: str,
-        executor_id: str,
-        target_incarnation: str,
-    ) -> None:
-        self.call_id = call_id
-        self.collection_id = collection_id
-        self.object_id = object_id
-        self.request_sha256 = request_sha256
-        self.executor_id = executor_id
-        self.target_incarnation = target_incarnation
-        self._nonce = nonce
-        self._lock = threading.Lock()
-        self._used = False
-        self._running = False
-
-    def dispatch(self, invoke: Callable[[], _T]) -> _T:
-        with self._lock:
-            if self._used:
-                raise Conflict("archive write dispatch capability was already used")
-            self._used = True
-            self._running = True
-        try:
-            return invoke()
-        finally:
-            with self._lock:
-                self._running = False
-
-    def _close_dispatch(self) -> None:
-        with self._lock:
-            if self._running:
-                raise Conflict("archive write executor is still running")
-            self._used = True
-
-
-@dataclass(frozen=True, slots=True)
-class ArchiveWriteReport:
-    """One returned result; only adapter-owner evidence can close its invocation."""
-
-    ticket: ArmedArchiveWrite
-    result: Mapping[str, Any] = field(repr=False)
-    closure: ClosedArchiveWrite | None = None
 
 
 def initialize_archive_write_control(session: Session, upload: CollectionUploadRecord) -> None:
@@ -333,7 +267,7 @@ class ArchiveWriteAdmission:
         result_capacity_bytes: int,
         grants: ArchiveWriteGrants,
         guard: Guard,
-    ) -> ArmedArchiveWrite:
+    ) -> ArmedProviderWrite:
         if kind not in {"begin", "part", "complete", "lookup"}:
             raise ValueError("archive write effect kind/resource is invalid")
         number = arguments.get("number") if kind == "part" else None
@@ -435,7 +369,7 @@ class ArchiveWriteAdmission:
                 )
             )
         # No capability exists until the transaction's commit returned successfully.
-        return ArmedArchiveWrite(
+        return ArmedProviderWrite(
             call_id=call_id,
             collection_id=collection_id,
             object_id=object_id,
@@ -446,7 +380,7 @@ class ArchiveWriteAdmission:
         )
 
     def _report_context(
-        self, session: Session, ticket: ArmedArchiveWrite
+        self, session: Session, ticket: ArmedProviderWrite
     ) -> tuple[
         CollectionUploadRecord, CollectionArchiveObjectUploadRecord, ArchiveWriteEffectRecord, str
     ]:
@@ -472,19 +406,19 @@ class ArchiveWriteAdmission:
 
     def settle_closed(
         self,
-        ticket: ArmedArchiveWrite,
-        evidence: ClosedArchiveWrite,
+        ticket: ArmedProviderWrite,
+        evidence: ClosedProviderWrite,
         *,
         apply_result: ApplyResult,
     ) -> None:
         self.apply_reports(
-            (ArchiveWriteReport(ticket, evidence.result, evidence),),
+            (ProviderWriteReport(ticket, evidence.result, evidence),),
             apply_result=apply_result,
         )
 
     def apply_reports(
         self,
-        reports: tuple[ArchiveWriteReport, ...],
+        reports: tuple[ProviderWriteReport, ...],
         *,
         apply_result: ApplyResult,
     ) -> None:
@@ -595,14 +529,14 @@ class ArchiveWriteAdmission:
             apply_observation(session, upload, volume, observation)
             effect.observation_json = encoded
 
-    def record_unknown(self, ticket: ArmedArchiveWrite) -> None:
+    def record_unknown(self, ticket: ArmedProviderWrite) -> None:
         with session_scope(self._factory) as session:
             _writer(session)
             _, _, effect, _ = self._report_context(session, ticket)
             if effect.unresolved:
                 effect.state = "uncertain"
 
-    def acknowledge_report(self, ticket: ArmedArchiveWrite) -> None:
+    def acknowledge_report(self, ticket: ArmedProviderWrite) -> None:
         """Retire only after the live dispatcher received exact settlement confirmation."""
         with session_scope(self._factory) as session:
             _writer(session)

@@ -20,10 +20,8 @@ from riverhog_core.catalog_archive_write_models import (
 from riverhog_core.catalog_db import dispose_session_factory, session_scope, validate_db
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
 from riverhog_core.collection_plan import CollectionVolumePolicy
-from riverhog_core.services.archive_write_admission import (
-    ArchiveWriteAdmission,
-    ClosedArchiveWrite,
-)
+from riverhog_core.provider_write_dispatch import ClosedProviderWrite
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_protocol.pack_ingress import canonical_json_bytes
 from sqlalchemy import event, func, select
@@ -137,7 +135,7 @@ def _selected(case, *, kind="cancel", request=None):
 def _closure(case, ticket, result=None):
     with session_scope(case.factory) as session:
         effect = session.get(ArchiveWriteEffectRecord, ticket.call_id)
-        return ClosedArchiveWrite(
+        return ClosedProviderWrite(
             call_id=ticket.call_id,
             request_sha256=effect.request_sha256,
             executor_id=effect.executor_id,

@@ -16,13 +16,13 @@ from riverhog_core.catalog_archive_write_models import ArchiveWriteEffectRecord
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
 from riverhog_core.pack_volume import parse_pack_volume_plan
+from riverhog_core.provider_write_dispatch import (
+    ClosedProviderWrite,
+    ProviderWriteReport,
+)
 from riverhog_core.raw_volume import parse_raw_volume_plan
 from riverhog_core.services.archive_upload_writes import ArchiveUploadWrites
-from riverhog_core.services.archive_write_admission import (
-    ArchiveWriteAdmission,
-    ArchiveWriteReport,
-    ClosedArchiveWrite,
-)
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_core.stores.executing_archive_objects import ExecutingArchiveResumableObjectStore
 from riverhog_core.stores.storage_adapter_archive_objects import (
     StorageAdapterArchiveResumableObjectStore,
@@ -336,7 +336,7 @@ def test_positive_unknown_begin_retains_original_checkpoint_and_late_closure(
             _unit(actor, opened)
         assert len(actor.seen) == 2
         ticket = original.ticket
-        closure = ClosedArchiveWrite(
+        closure = ClosedProviderWrite(
             call_id=ticket.call_id,
             request_sha256=ticket.request_sha256,
             executor_id=ticket.executor_id,
@@ -347,7 +347,7 @@ def test_positive_unknown_begin_retains_original_checkpoint_and_late_closure(
         )
         applied = []
         actor.admission.apply_reports(
-            (ArchiveWriteReport(ticket, original.result, closure),),
+            (ProviderWriteReport(ticket, original.result, closure),),
             apply_result=lambda *args: applied.append("closed"),
         )
         assert applied == ["closed"] and _stored(actor)[1][0][1:3] == ("settled", False)

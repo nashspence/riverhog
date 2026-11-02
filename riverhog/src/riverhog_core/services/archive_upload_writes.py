@@ -23,11 +23,13 @@ from sqlalchemy.orm import Session
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
 from riverhog_core.ports.archive_objects import ArchiveObjectWriteExecutor
+from riverhog_core.provider_write_dispatch import (
+    ArmedProviderWrite,
+    ClosedProviderWrite,
+    ProviderWriteReport,
+)
 from riverhog_core.services.archive_write_admission import (
     ArchiveWriteAdmission,
-    ArchiveWriteReport,
-    ArmedArchiveWrite,
-    ClosedArchiveWrite,
     Guard,
 )
 from riverhog_core.stores.sqlalchemy_archive_upload_checkpoints import (
@@ -65,8 +67,8 @@ class ArchiveUploadWrites:
         self._result_capacity_bytes = grants.result_bytes
         self._guard = guard
         self._executor_id = secrets.token_hex(32)
-        self._pending: list[tuple[ArmedArchiveWrite, WriteExecutionResult]] = []
-        self._retire: deque[ArmedArchiveWrite] = deque()
+        self._pending: list[tuple[ArmedProviderWrite, WriteExecutionResult]] = []
+        self._retire: deque[ArmedProviderWrite] = deque()
         self._confirmed_checkpoint: tuple[str | None, str | None] | None = None
 
     def execute_write_operation(
@@ -143,7 +145,7 @@ class ArchiveUploadWrites:
         for ticket, response in self._pending:
             result = self._report_result(response, checkpoint_identity[1])
             closure = (
-                ClosedArchiveWrite(
+                ClosedProviderWrite(
                     call_id=ticket.call_id,
                     request_sha256=ticket.request_sha256,
                     executor_id=ticket.executor_id,
@@ -153,7 +155,7 @@ class ArchiveUploadWrites:
                 if response.execution == "closed"
                 else None
             )
-            reports.append(ArchiveWriteReport(ticket, result, closure))
+            reports.append(ProviderWriteReport(ticket, result, closure))
         if not reports:
             if checkpoint_json is None or self._confirmed_checkpoint != checkpoint_identity:
                 raise Conflict("archive upload checkpoint has no admitted write outcome")

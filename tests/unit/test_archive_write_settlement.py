@@ -12,11 +12,9 @@ from riverhog_core.catalog_archive_write_models import ArchiveWriteEffectRecord
 from riverhog_core.catalog_db import dispose_session_factory, session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
 from riverhog_core.collection_plan import CollectionVolumePolicy
+from riverhog_core.provider_write_dispatch import ClosedProviderWrite
 from riverhog_core.raw_volume import parse_raw_volume_plan
-from riverhog_core.services.archive_write_admission import (
-    ArchiveWriteAdmission,
-    ClosedArchiveWrite,
-)
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_protocol import CollectionUploadRawDigestBatchDocument
 from riverhog_protocol.errors import Conflict
 from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
@@ -217,7 +215,7 @@ def _assert_lost_checkpoint_report(case, monkeypatch):
     )
     with session_scope(case.factory) as session:
         effect = session.get(ArchiveWriteEffectRecord, ticket.call_id)
-        evidence = ClosedArchiveWrite(
+        evidence = ClosedProviderWrite(
             call_id=ticket.call_id,
             request_sha256=effect.request_sha256,
             executor_id=effect.executor_id,
