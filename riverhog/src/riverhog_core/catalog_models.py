@@ -2339,6 +2339,9 @@ class RetrievalCacheObjectRecord(Base):
 class RetrievalCachePopulationRecord(Base):
     __tablename__ = "retrieval_cache_populations"
 
+    generation: Mapped[str] = mapped_column(String(64), default=lambda: secrets.token_hex(32))
+    begin_call_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
     source_store: Mapped[str] = mapped_column(String, primary_key=True)
     source_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
@@ -2374,6 +2377,21 @@ class RetrievalCachePopulationRecord(Base):
         CheckConstraint(
             "expected_bytes >= 1",
             name="ck_retrieval_cache_populations_expected_bytes",
+        ),
+        Index(
+            "ix_retrieval_cache_populations_reap",
+            "begin_call_id",
+            "updated_at",
+            "source_store",
+            "collection_id",
+            "object_id",
+        ),
+        Index(
+            "ix_retrieval_cache_populations_source_reap",
+            "begin_call_id",
+            "source_store",
+            "collection_id",
+            "object_id",
         ),
         CheckConstraint(
             "state IN ('waiting','admitting','admitted','writing','abandoning')",

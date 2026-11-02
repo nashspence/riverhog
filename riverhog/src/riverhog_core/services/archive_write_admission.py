@@ -100,6 +100,7 @@ class ArchiveWriteAdmission:
                     CollectionUploadRecord.idempotency_key,
                     CollectionUploadRecord.ingest_source,
                     CollectionUploadRecord.initial_tag_set_identity,
+                    CollectionUploadRecord.lease_expires_at,
                     CollectionUploadRecord.initiated_by_key_id,
                     CollectionUploadRecord.initiated_by_principal_id,
                     CollectionUploadRecord.passphrase_id,
@@ -176,6 +177,18 @@ class ArchiveWriteAdmission:
             raise Conflict("archive write admission is closed")
         if control.epoch != epoch:
             raise Conflict("archive write admission epoch changed")
+
+    @classmethod
+    def require_forward_construction(
+        cls, session: Session, collection_id: int, *, epoch: str
+    ) -> tuple[CollectionUploadRecord, ArchiveWriteControlRecord]:
+        """Retain the parent upload interlock before a child owner admits work."""
+        upload = cls._upload(session, collection_id)
+        control = cls._control(session, upload)
+        cls._require_epoch(control, epoch)
+        if upload.state not in {"open", "closing", "uploading"}:
+            raise Conflict("archive write construction cannot accept payload")
+        return upload, control
 
     def _preparation_record(
         self,
@@ -282,11 +295,7 @@ class ArchiveWriteAdmission:
         with session_scope(self._factory) as session:
             _writer(session)
             guard(session)
-            upload = self._upload(session, collection_id)
-            control = self._control(session, upload)
-            self._require_epoch(control, epoch)
-            if upload.state not in {"open", "closing", "uploading"}:
-                raise Conflict("archive write construction cannot accept payload")
+            upload, control = self.require_forward_construction(session, collection_id, epoch=epoch)
             volume = self._volume(session, collection_id, object_id)
             operation = arguments.get("operation")
             if operation is not None:

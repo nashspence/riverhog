@@ -23,6 +23,9 @@ from riverhog_core import (
     catalog_archive_write_models as _catalog_archive_write_models,  # noqa: E402,F401
 )
 from riverhog_core import (
+    catalog_cache_write_models as _catalog_cache_write_models,  # noqa: E402,F401
+)
+from riverhog_core import (
     catalog_discovery_validation_models as _catalog_discovery_validation_models,  # noqa: E402,F401
 )
 from riverhog_core import (

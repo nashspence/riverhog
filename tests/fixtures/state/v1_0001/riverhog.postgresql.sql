@@ -919,6 +919,8 @@ CREATE TABLE key_download_usage (
 );
 
 CREATE TABLE retrieval_cache_populations (
+	generation VARCHAR(64) NOT NULL,
+	begin_call_id VARCHAR(64),
 	source_store VARCHAR NOT NULL,
 	source_incarnation_id VARCHAR(36) NOT NULL,
 	collection_id BIGINT NOT NULL,
@@ -937,7 +939,9 @@ CREATE TABLE retrieval_cache_populations (
 	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
 	CONSTRAINT ck_retrieval_cache_populations_expected_bytes CHECK (expected_bytes >= 1),
 	CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','abandoning')),
-	CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing') OR state = 'abandoning'))
+	CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing') OR state = 'abandoning')),
+	CONSTRAINT ck_retrieval_cache_populations_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_retrieval_cache_populations_begin_call_id_hex CHECK (begin_call_id IS NULL OR length(begin_call_id) = 64 AND lower(begin_call_id) = begin_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(begin_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE INDEX ix_retrieval_cache_populations_store_state ON retrieval_cache_populations (cache_store, state, updated_at, collection_id, source_store, object_id);
@@ -2455,6 +2459,47 @@ CREATE INDEX ix_collection_artifacts_id_trgm ON collection_artifacts USING gin (
 
 CREATE INDEX ix_collection_artifacts_sha_trgm ON collection_artifacts USING gin (sha256 gin_trgm_ops)
 ;
+
+CREATE TABLE cache_population_begins (
+	id VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	source_store VARCHAR NOT NULL,
+	object_id VARCHAR NOT NULL,
+	population_generation VARCHAR(64) NOT NULL,
+	cache_store VARCHAR NOT NULL,
+	cache_incarnation_id VARCHAR(36) NOT NULL,
+	executor_id VARCHAR(64) NOT NULL,
+	dispatch_sha256 VARCHAR(64) NOT NULL,
+	request_sha256 VARCHAR(64) NOT NULL,
+	request_json TEXT NOT NULL,
+	state VARCHAR NOT NULL,
+	unresolved BOOLEAN NOT NULL,
+	control_bytes BIGINT NOT NULL,
+	result_capacity_bytes BIGINT NOT NULL,
+	cleanup_capacity_bytes BIGINT NOT NULL,
+	observation_json TEXT,
+	result_json TEXT,
+	PRIMARY KEY (id),
+	CONSTRAINT uq_cache_population_begins_generation UNIQUE (population_generation),
+	CONSTRAINT ck_cache_population_begins_state CHECK (state IN ('armed','uncertain','settled')),
+	CONSTRAINT ck_cache_population_begins_capacity CHECK (control_bytes > 0 AND result_capacity_bytes > 0 AND cleanup_capacity_bytes > 0),
+	CONSTRAINT ck_cache_population_begins_outcome CHECK (state = 'settled' AND unresolved IS false AND result_json IS NOT NULL OR state IN ('armed','uncertain') AND unresolved IS true AND result_json IS NULL),
+	CONSTRAINT ck_cache_population_begins_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_begins_population_generation_hex CHECK (length(population_generation) = 64 AND lower(population_generation) = population_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(population_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_begins_executor_id_hex CHECK (length(executor_id) = 64 AND lower(executor_id) = executor_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(executor_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_begins_dispatch_sha256_hex CHECK (length(dispatch_sha256) = 64 AND lower(dispatch_sha256) = dispatch_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(dispatch_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_begins_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_cache_population_begins_capacity ON cache_population_begins (collection_id, id);
+
+CREATE INDEX ix_cache_population_begins_object ON cache_population_begins (source_store, collection_id, object_id);
+
+CREATE INDEX ix_cache_population_begins_pending ON cache_population_begins (collection_id, unresolved, id);
+
+CREATE INDEX ix_retrieval_cache_populations_reap ON retrieval_cache_populations (begin_call_id, updated_at, source_store, collection_id, object_id);
+
+CREATE INDEX ix_retrieval_cache_populations_source_reap ON retrieval_cache_populations (begin_call_id, source_store, collection_id, object_id);
 
 CREATE INDEX ix_collection_processing_capability_scope_owner ON collection_processing_capabilities (artifact_scope_capability_id, id);
 
