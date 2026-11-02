@@ -38,7 +38,7 @@ from riverhog_core.ports.archive_objects import (
     WriteSession,
 )
 from riverhog_core.ports.archive_store import ArchiveObjectIdentity, ArchiveReadStatus
-from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
+from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission, RetrievalCacheReceipt
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.archive_copy_jobs import SqlAlchemyArchiveCopyJobService
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
@@ -108,6 +108,34 @@ class _ArchiveCopyCache:
             expected_bytes=expected_bytes,
             write_token=session.write_token,
             admitted_at="2026-08-08T00:00:00.000000000Z",
+        )
+
+    def observe_completed_population(
+        self,
+        *,
+        owner: str,
+        source_store: str,
+        collection_id: int,
+        object_id: str,
+        expected_bytes: int,
+    ) -> RetrievalCacheReceipt | None:
+        _ = owner
+        completed = self.store.find_completed_write(
+            object_path=f"cache/{source_store}/{collection_id}/{object_id}",
+            expected_bytes=expected_bytes,
+            expected_content_type="application/octet-stream",
+            expected_metadata={},
+        )
+        if completed is None:
+            return None
+        return RetrievalCacheReceipt(
+            cache_store="memory",
+            object_path=completed.object_path,
+            revision=completed.revision,
+            stored_bytes=completed.bytes,
+            stored_sha256=None,
+            cached_at=completed.completed_at,
+            verified_at=completed.completed_at,
         )
 
     def resumable_object_store(self, **_: object) -> MemoryArchiveStore:

@@ -6,7 +6,8 @@ from riverhog_protocol.errors import Conflict
 from riverhog_storage_adapter_protocol import StorageAdapterRejection
 from sqlalchemy import delete, select, tuple_
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
+from state_schema import read_snapshot
 from time_formats import format_utc_timestamp, utc_now
 
 from riverhog_core.catalog_db import SessionFactory, session_scope
@@ -395,6 +396,86 @@ class SqlAlchemyRetrievalCache:
                     raise RuntimeError("retrieval cache admission claim was released")
                 return self._admission(population, owner=owner)
         return None
+
+    def observe_completed_population(
+        self,
+        *,
+        owner: str,
+        source_store: str,
+        collection_id: int,
+        object_id: str,
+        expected_bytes: int,
+    ) -> RetrievalCacheReceipt | None:
+        """Read exact existing placement; absence never admits or disposes work."""
+        if not owner.strip() or expected_bytes < 1:
+            raise ValueError("retrieval cache observation requires owner and positive bytes")
+        key = (source_store, collection_id, object_id)
+        with read_snapshot(self._session_factory) as session:
+            ready = session.get(
+                RetrievalCacheObjectRecord,
+                key,
+                options=(load_only(RetrievalCacheObjectRecord.stored_bytes, raiseload=True),),
+            )
+            if ready is not None:
+                if ready.stored_bytes != expected_bytes:
+                    raise RuntimeError("retrieval cache object byte identity changed")
+                # Published placement has independent lifetime/lease ownership.
+                # Observation cannot acquire it for this population owner.
+                return None
+            population = session.get(
+                RetrievalCachePopulationRecord,
+                key,
+                options=(
+                    load_only(
+                        RetrievalCachePopulationRecord.expected_bytes,
+                        RetrievalCachePopulationRecord.state,
+                        RetrievalCachePopulationRecord.cache_store,
+                        RetrievalCachePopulationRecord.cache_incarnation_id,
+                        RetrievalCachePopulationRecord.source_incarnation_id,
+                        RetrievalCachePopulationRecord.object_path,
+                        raiseload=True,
+                    ),
+                ),
+            )
+            if population is None:
+                return None
+            if population.expected_bytes != expected_bytes:
+                raise RuntimeError("retrieval cache population byte identity changed")
+            if (
+                population.state not in {"admitting", "admitted", "writing"}
+                or population.cache_store is None
+                or population.cache_incarnation_id is None
+                or population.object_path is None
+                or session.get(RetrievalCachePopulationClaimRecord, (owner, *key)) is None
+            ):
+                return None
+            cache_store = population.cache_store
+            cache_incarnation = population.cache_incarnation_id
+            source_incarnation = population.source_incarnation_id
+            object_path = population.object_path
+            if (
+                require_storage_incarnation(session, "archive", source_store, bound=False)
+                != source_incarnation
+                or require_storage_incarnation(session, "cache", cache_store, bound=False)
+                != cache_incarnation
+            ):
+                raise RuntimeError("retrieval cache observation incarnation changed")
+        candidate = self._stores.get(cache_store)
+        if candidate is None or not candidate.is_current_incarnation(cache_incarnation):
+            return None
+        if candidate.object_path(*key) != object_path:
+            raise RuntimeError("retrieval cache observation object path changed")
+        completed = candidate.find_completed_population(
+            source_store=source_store,
+            collection_id=collection_id,
+            object_id=object_id,
+            expected_bytes=expected_bytes,
+        )
+        return (
+            candidate.receipt(completed=completed, stored_sha256=None)
+            if completed is not None
+            else None
+        )
 
     def release(self, *, owner: str) -> int:
         if not owner.strip():
