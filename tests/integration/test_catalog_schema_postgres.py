@@ -1565,6 +1565,8 @@ def test_postgres_registration_disposal_checks_current_construction_and_selected
         "test_changed_volume_cannot_reuse_original_preparation_for_dispatch",
         "test_closed_unused_dispatch_cannot_invoke_a_late_provider_effect",
         "test_running_dispatch_keeps_its_reservation_until_actual_return",
+        "test_archive_withdrawal_survives_terminal_and_parent_volume_retirement",
+        "test_archive_withdrawal_commit_and_ack_failures_retain_exact_live_proof",
     ],
 )
 def test_postgres_archive_write_admission_preserves_exact_execution_ownership(

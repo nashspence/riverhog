@@ -355,3 +355,16 @@ def test_postgres_cache_begin_concurrent_reports_keep_closed_original_after_popu
             event.remove(engine, "after_cursor_execute", capture)
         assert witness._stored(case, ticket)[0:2] == ("settled", False)
         assert witness._stored(case, ticket)[-1] == 3
+
+
+@pytest.mark.parametrize(
+    "witness",
+    ["_assert_withdrawal_survives_owner_retirement", "_assert_withdrawal_commit_and_ack_failures"],
+)
+def test_postgres_original_cache_withdrawal_preserves_owned_reservation(
+    database_url, tmp_path, witness
+):
+    from tests.unit import test_cache_population_begin as cache_begin
+
+    with cache_begin._case(tmp_path, database_url=database_url) as case:
+        getattr(cache_begin, witness)(case, tmp_path)

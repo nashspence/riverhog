@@ -35,6 +35,7 @@ from riverhog_core.provider_write_dispatch import (
     ArmedProviderWrite,
     ClosedProviderWrite,
     ProviderWriteReport,
+    WithdrawnProviderWrite,
 )
 from riverhog_core.services.collection_registration_cleanup import freeze_registration_execution
 from riverhog_core.services.collection_upload_authority import require_archive_write_control
@@ -537,6 +538,53 @@ class ArchiveWriteAdmission:
             assert observation is not None
             apply_observation(session, upload, volume, observation)
             effect.observation_json = encoded
+
+    def settle_withdrawn(self, evidence: WithdrawnProviderWrite) -> None:
+        """Retain a never-started dispatch result without applying a checkpoint.
+
+        Original ownership survives parent/volume retirement. Current forward
+        authority and provider closure are not needed to report this local proof.
+        """
+        ticket = evidence.ticket
+        ticket._require_withdrawal(evidence)
+        encoded = _json({"dispatch": "never-started"})
+        with session_scope(self._factory) as session:
+            _writer(session)
+            control = session.get(
+                ArchiveWriteControlRecord,
+                evidence.collection_id,
+                with_for_update=True,
+                populate_existing=True,
+            )
+            if control is None:
+                raise NotFound("archive write original construction is unavailable")
+            self._terminal_lock(session, control)
+            effect = session.get(
+                ArchiveWriteEffectRecord,
+                evidence.call_id,
+                with_for_update=True,
+                populate_existing=True,
+            )
+            if effect is None:
+                raise NotFound("archive write original effect is unavailable")
+            if (
+                effect.collection_id != evidence.collection_id
+                or effect.object_id != evidence.object_id
+                or effect.dispatch_sha256 != _sha(evidence._nonce)
+                or effect.request_sha256 != evidence.request_sha256
+                or _sha(effect.request_json) != effect.request_sha256
+                or effect.executor_id != evidence.executor_id
+                or json.loads(control.construction_json)["archive_incarnation_id"]
+                != evidence.target_incarnation
+            ):
+                raise Conflict("archive write withdrawal original invocation changed")
+            if len(encoded.encode()) > effect.result_capacity_bytes:
+                raise Conflict("archive write withdrawal exceeds its reserved byte grant")
+            if effect.observation_json is not None or (
+                effect.state == "settled" and effect.result_json != encoded
+            ):
+                raise Conflict("archive write withdrawal conflicts with its original outcome")
+            effect.state, effect.unresolved, effect.result_json = "settled", False, encoded
 
     def record_unknown(self, ticket: ArmedProviderWrite) -> None:
         with session_scope(self._factory) as session:

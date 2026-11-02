@@ -41,7 +41,7 @@ from riverhog_core.catalog_models import (
     RetrievalCachePopulationClaimRecord,
     RetrievalCachePopulationRecord,
 )
-from riverhog_core.provider_write_dispatch import ArmedProviderWrite
+from riverhog_core.provider_write_dispatch import ArmedProviderWrite, WithdrawnProviderWrite
 from riverhog_core.runtime_config import RetrievalCacheStoreRegistration
 from riverhog_core.services.app_keys import require_key_authorization
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
@@ -292,7 +292,9 @@ class CachePopulationBeginAdmission:
         )
 
     @staticmethod
-    def _effect(session: Session, ticket: ArmedProviderWrite) -> CachePopulationBeginRecord:
+    def _effect(
+        session: Session, ticket: ArmedProviderWrite | WithdrawnProviderWrite
+    ) -> CachePopulationBeginRecord:
         effect = session.get(
             CachePopulationBeginRecord,
             ticket.call_id,
@@ -361,6 +363,26 @@ class CachePopulationBeginAdmission:
         # The composing live actor retains this response across report retries.
         # Persisting it is a separate step and can never redispatch this capability.
         return response
+
+    def settle_withdrawn(self, evidence: WithdrawnProviderWrite) -> None:
+        """Record only the original capability's proof that no executor started.
+
+        Keep the original population, reservation and retained charges. This
+        report creates neither a provider outcome nor cleanup authority.
+        """
+        ticket = evidence.ticket
+        ticket._require_withdrawal(evidence)
+        encoded = _json({"dispatch": "never-started"})
+        with session_scope(self._factory) as session:
+            _writer(session)
+            effect = self._effect(session, evidence)
+            if len(encoded.encode()) > effect.result_capacity_bytes:
+                raise Conflict("cache begin withdrawal exceeds its reserved byte grant")
+            if effect.observation_json is not None or (
+                effect.state == "settled" and effect.result_json != encoded
+            ):
+                raise Conflict("cache begin withdrawal conflicts with its original outcome")
+            effect.state, effect.unresolved, effect.result_json = "settled", False, encoded
 
     def record_unknown(self, ticket: ArmedProviderWrite) -> None:
         ticket._close_dispatch()

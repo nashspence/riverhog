@@ -777,3 +777,98 @@ def test_preparation_lookup_creates_neither_preparation_nor_dispatch_right(case)
     _selected(case)
     with pytest.raises(Conflict, match="admission is closed"):
         load()
+
+
+def test_archive_withdrawal_survives_terminal_and_parent_volume_retirement(case):
+    _prepare(case)
+    ticket = _arm(case)
+    terminal_id = _selected(case)
+    with session_scope(case.factory) as session:
+        before = session.get(ArchiveWriteEffectRecord, ticket.call_id).control_bytes
+        session.delete(session.get(CollectionUploadRecord, case.collection_id))
+    proof = ticket.withdraw()
+    case.owner.settle_withdrawn(proof)
+    ArchiveWriteAdmission(case.factory).settle_withdrawn(proof)
+    assert case.owner.unresolved(case.collection_id, limit=1) == ()
+    with session_scope(case.factory) as session:
+        effect = session.get(ArchiveWriteEffectRecord, ticket.call_id)
+        assert effect.state == "settled" and not effect.unresolved
+        assert json.loads(effect.result_json) == {"dispatch": "never-started"}
+        assert effect.control_bytes == before and effect.observation_json is None
+        assert session.get(CollectionUploadRecord, case.collection_id) is None
+        assert (
+            session.get(CollectionArchiveObjectUploadRecord, (case.collection_id, case.object_id))
+            is None
+        )
+        assert session.get(ArchiveUploadTerminalRecord, terminal_id).phase == "draining"
+    with pytest.raises(Conflict, match="already used"):
+        ticket.dispatch(
+            lambda: pytest.fail("retired parent cannot start a withdrawn provider call")
+        )
+
+
+def test_archive_withdrawal_commit_and_ack_failures_retain_exact_live_proof(case):
+    from sqlalchemy.orm import Session
+
+    _prepare(case)
+    ticket = _arm(case)
+    proof = ticket.withdraw()
+
+    def fail_commit(session):
+        if any(isinstance(row, ArchiveWriteEffectRecord) for row in session.dirty):
+            raise OSError("injected withdrawal commit failure")
+
+    event.listen(Session, "before_commit", fail_commit)
+    try:
+        with pytest.raises(OSError, match="withdrawal commit failure"):
+            case.owner.settle_withdrawn(proof)
+    finally:
+        event.remove(Session, "before_commit", fail_commit)
+    assert case.owner.unresolved(case.collection_id, limit=1) == (ticket.call_id,)
+    assert ticket.withdraw() is proof
+    with pytest.raises(OSError, match="withdrawal acknowledgement loss"):
+        case.owner.settle_withdrawn(proof)
+        raise OSError("injected withdrawal acknowledgement loss")
+    case.owner.settle_withdrawn(proof)
+    with session_scope(case.factory) as session:
+        volume = session.get(
+            CollectionArchiveObjectUploadRecord, (case.collection_id, case.object_id)
+        )
+        assert volume.failure is None
+    assert case.owner.unresolved(case.collection_id, limit=1) == ()
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("_nonce", "changed"),
+        ("request_sha256", "f" * 64),
+        ("executor_id", "f" * 64),
+        ("target_incarnation", "changed"),
+    ],
+)
+def test_archive_withdrawal_rechecks_original_invocation(case, field, value):
+    _prepare(case)
+    ticket = _arm(case)
+    setattr(ticket, field, value)
+    proof = ticket.withdraw()
+    with pytest.raises(Conflict, match="original invocation changed"):
+        case.owner.settle_withdrawn(proof)
+    assert case.owner.unresolved(case.collection_id, limit=1) == (ticket.call_id,)
+
+
+def test_archive_withdrawal_cannot_replace_a_positive_observation(case):
+    _prepare(case)
+    ticket = _arm(case)
+    case.owner.observe(
+        case.collection_id,
+        ticket.call_id,
+        {"marker": "observed"},
+        apply_observation=_apply,
+    )
+    with pytest.raises(Conflict, match="conflicts with its original outcome"):
+        case.owner.settle_withdrawn(ticket.withdraw())
+    with session_scope(case.factory) as session:
+        row = session.get(ArchiveWriteEffectRecord, ticket.call_id)
+        assert row.unresolved and row.result_json is None
+        assert json.loads(row.observation_json) == {"marker": "observed"}

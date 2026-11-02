@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
@@ -512,3 +513,97 @@ def test_cache_pending_status_and_reaper_use_owned_indexes(tmp_path):
             ]
         assert any("ix_cache_population_begins_pending" in plan for plan in plans)
         assert any("ix_retrieval_cache_populations_reap" in plan for plan in plans)
+
+
+def _assert_withdrawal_survives_owner_retirement(case, tmp_path):
+    ticket = _arm(case)
+    before = _stored(case, ticket)
+    terminal = _terminal(case)
+    assert case.cache.release(owner="upload-cache") == 0
+    with session_scope(case.factory) as session:
+        session.delete(session.get(CollectionUploadRecord, case.collection_id))
+        session.execute(delete(RetrievalCachePopulationRecord))
+    proof = ticket.withdraw()
+    case.owner.settle_withdrawn(proof)
+    CachePopulationBeginAdmission(case.factory).settle_withdrawn(proof)
+    after = _stored(case, ticket)
+    assert after[0:2] == ("settled", False)
+    assert after[2:4] == before[2:4] and after[5:] == before[5:]
+    assert json.loads(after[4]) == {"dispatch": "never-started"}
+    assert case.owner.unresolved(case.collection_id, limit=1) == ()
+    assert not list((tmp_path / "cache" / "writes").iterdir())
+    assert case.cache.reap_abandoned_populations() == 0
+    from riverhog_core.catalog_archive_write_models import ArchiveUploadTerminalRecord
+
+    with session_scope(case.factory) as session:
+        assert session.get(ArchiveUploadTerminalRecord, terminal).phase == "draining"
+        assert session.scalar(select(RetrievalCachePopulationRecord.object_id)) is None
+        assert session.scalar(select(RetrievalCachePopulationClaimRecord.owner)) is None
+    with pytest.raises(Conflict, match="already used"):
+        case.owner.execute(ticket, candidate=case.candidate)
+
+
+def test_cache_withdrawal_survives_terminal_claim_loss_and_parent_population_retirement(tmp_path):
+    with _case(tmp_path) as case:
+        _assert_withdrawal_survives_owner_retirement(case, tmp_path)
+
+
+def _assert_withdrawal_commit_and_ack_failures(case, tmp_path):
+    ticket = _arm(case)
+    before = _stored(case, ticket)
+    proof = ticket.withdraw()
+
+    def fail_commit(session):
+        if any(isinstance(row, CachePopulationBeginRecord) for row in session.dirty):
+            raise OSError("injected withdrawal commit failure")
+
+    event.listen(Session, "before_commit", fail_commit)
+    try:
+        with pytest.raises(OSError, match="withdrawal commit failure"):
+            case.owner.settle_withdrawn(proof)
+    finally:
+        event.remove(Session, "before_commit", fail_commit)
+    assert _stored(case, ticket) == before and ticket.withdraw() is proof
+    with pytest.raises(OSError, match="withdrawal acknowledgement loss"):
+        case.owner.settle_withdrawn(proof)
+        raise OSError("injected withdrawal acknowledgement loss")
+    settled = _stored(case, ticket)
+    case.owner.settle_withdrawn(proof)
+    assert _stored(case, ticket) == settled and settled[-1] == 3
+    assert not list((tmp_path / "cache" / "writes").iterdir())
+
+
+def test_cache_withdrawal_commit_and_ack_failures_keep_exact_proof_and_reservation(tmp_path):
+    with _case(tmp_path) as case:
+        _assert_withdrawal_commit_and_ack_failures(case, tmp_path)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("_nonce", "changed"),
+        ("request_sha256", "f" * 64),
+        ("executor_id", "f" * 64),
+        ("target_incarnation", "changed"),
+    ],
+)
+def test_cache_withdrawal_rechecks_original_invocation(tmp_path, field, value):
+    with _case(tmp_path) as case:
+        ticket = _arm(case)
+        setattr(ticket, field, value)
+        with pytest.raises(Conflict, match="original invocation changed"):
+            case.owner.settle_withdrawn(ticket.withdraw())
+        assert _stored(case, ticket)[0:2] == ("armed", True)
+        assert not list((tmp_path / "cache" / "writes").iterdir())
+
+
+def test_actual_cache_invocation_with_unknown_closure_cannot_be_withdrawn(tmp_path):
+    with _case(tmp_path, mode="supplied") as case:
+        ticket = _arm(case)
+        response = _execute(case, ticket)
+        assert response.execution == "unknown" and response.outcome == "session"
+        with pytest.raises(Conflict, match="already started"):
+            ticket.withdraw()
+        assert _stored(case, ticket)[0:2] == ("uncertain", True)
+        assert _stored(case, ticket)[-1] == 3
+        assert len(list((tmp_path / "cache" / "writes").iterdir())) == 1
