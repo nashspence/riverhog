@@ -1948,3 +1948,79 @@ def test_postgres_one_receipt_cannot_commit_for_two_effect_executions(database_u
         services[0].begin_source_collection_retirement(
             loser.claim_id, fence=1, principal=WORKFLOW_PRINCIPAL
         )
+
+
+@pytest.mark.parametrize("kind", ["cancel", "discard"])
+def test_postgres_claim_renewal_preserves_selected_output_gate(database_url, kind):
+    from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
+    from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
+    from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+
+    _seed(database_url)
+    workflows = SqlAlchemyCollectionWorkflowService(
+        RuntimeConfig.for_testing(database_url=database_url)
+    )
+    root, claim = _workflow_claim(workflows)
+    claim_id = str(claim["id"])
+    _seal_workflow_claim(workflows, claim_id)
+    capability = _issue_capability(
+        workflows,
+        claim_id,
+        audience="fixture.target/v1",
+        actions=("read-inputs", "write-output"),
+        artifacts=(_workflow_artifact(root),),
+    )
+    transform = workflows.authenticate_capability(str(capability["token"]))
+    assert transform is not None
+    service = _upload_service(database_url)
+    request = {
+        "idempotency_key": EXECUTION_ID,
+        "ingest_source": f"processing:{EXECUTION_ID}",
+        "archive_store": None,
+        "initiator": transform,
+        "event_context": None,
+    }
+    collection_id = int(service.create_or_resume(**request)["collection_id"])
+    admission = ArchiveWriteAdmission(service._session_factory)
+    selected = admission.select_terminal(
+        collection_id,
+        kind=kind,
+        request={"fixture": "selected-original-output"},
+        principal_id=transform.id,
+        grants=service._config.archive_write,
+        guard=lambda session: None,
+        validate_selection=lambda *args: None,
+    )
+    with session_scope(service._session_factory) as session:
+        original = session.get(ArchiveWriteControlRecord, collection_id)
+        retained = (
+            original.construction_json,
+            original.gate,
+            original.epoch,
+            original.terminal_id,
+        )
+        execution = session.get(CollectionProcessingClaimRecord, claim_id)
+        execution.expires_at = "2000-01-01T00:00:00Z"
+    renewed = workflows.renew_claim(
+        claim_id, fence=1, lease_seconds=600, principal=WORKFLOW_PRINCIPAL
+    )
+    assert renewed["state"] == "active" and renewed["fence"] == "1"
+    assert renewed["plan"]["execution_id"] == EXECUTION_ID
+    assert workflows.authenticate_capability(str(capability["token"])) is not None
+    with pytest.raises(Conflict, match="admission is closed"):
+        service.create_or_resume(**request)
+    with pytest.raises(Conflict, match="prior execution owns an output"):
+        workflows.restart_claim(claim_id, fence=1, lease_seconds=600, principal=WORKFLOW_PRINCIPAL)
+    with session_scope(service._session_factory) as session:
+        current = session.get(ArchiveWriteControlRecord, collection_id)
+        assert (
+            current.construction_json,
+            current.gate,
+            current.epoch,
+            current.terminal_id,
+        ) == retained
+        assert current.terminal_id == selected
+        execution = session.get(CollectionProcessingClaimRecord, claim_id)
+        assert execution.state == "active" and execution.fence == 1
+        assert execution.execution_id == EXECUTION_ID
+        assert execution.expires_at == renewed["expires_at"]

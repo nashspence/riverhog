@@ -2324,3 +2324,113 @@ def test_postgres_registration_actor_cannot_cross_selected_terminal(
         assert after["operation"]["phase"] == "ready"
         assert after["operation"]["acknowledgement_json"] is None
         assert after["rows"] == before["rows"] and after["upload"] == before["upload"]
+
+
+@pytest.mark.parametrize("delegated", [False, True])
+@pytest.mark.parametrize("state", ["open", "orphaned"])
+@pytest.mark.parametrize("kind", ["cancel", "discard"])
+def test_postgres_output_resume_retains_selected_terminal(
+    isolated_database_url, tmp_path, monkeypatch, delegated, state, kind
+):
+    from functools import partial
+
+    from tests.unit import test_collection_registration_operations as fixtures
+    from tests.unit import test_collection_terminal_resume as witness
+
+    monkeypatch.setattr(
+        fixtures,
+        "_service_with_archive_objects",
+        partial(fixtures._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    witness.test_existing_output_resume_cannot_cross_selected_terminal(
+        tmp_path, delegated, state, kind
+    )
+
+
+@pytest.mark.parametrize("delegated", [False, True])
+@pytest.mark.parametrize("kind", ["cancel", "discard"])
+def test_postgres_output_resume_waits_for_terminal_selection(
+    isolated_database_url, tmp_path, monkeypatch, delegated, kind
+):
+    import threading
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+    from functools import partial
+
+    from riverhog_core.services import archive_write_admission
+    from riverhog_protocol.errors import Conflict
+    from sqlalchemy import event, text
+
+    from tests.unit import test_collection_registration_operations as fixtures
+    from tests.unit import test_collection_terminal_resume as witness
+
+    monkeypatch.setattr(
+        fixtures,
+        "_service_with_archive_objects",
+        partial(fixtures._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    with witness._case(tmp_path, delegated=delegated) as case:
+        service, principal, collection_id, request = case
+        entered, release, waiting = threading.Event(), threading.Event(), threading.Event()
+        selected_pid, resume_pid = [], []
+        execution = threading.local()
+        original = archive_write_admission.freeze_registration_execution
+
+        def paused(session, *args, **kwargs):
+            original(session, *args, **kwargs)
+            selected_pid.append(session.scalar(text("SELECT pg_backend_pid()")))
+            entered.set()
+            assert release.wait(timeout=10)
+
+        monkeypatch.setattr(archive_write_admission, "freeze_registration_execution", paused)
+        engine = service._session_factory.kw["bind"]
+
+        def capture(connection, cursor, statement, parameters, context, executemany):
+            owner = "collection_processing_claims" if delegated else "collection_uploads"
+            if (
+                getattr(execution, "resuming", False)
+                and owner in statement
+                and "FOR UPDATE" in statement
+            ):
+                cursor.execute("SELECT pg_backend_pid()")
+                resume_pid.append(cursor.fetchone()[0])
+                waiting.set()
+
+        event.listen(engine, "before_cursor_execute", capture)
+        try:
+            with ThreadPoolExecutor(max_workers=2, thread_name_prefix="terminal_resume") as pool:
+                selected = pool.submit(witness._select, service, principal, collection_id, kind)
+                try:
+                    assert entered.wait(timeout=10)
+
+                    def resume():
+                        execution.resuming = True
+                        return service.create_or_resume(**request)
+
+                    resumed = pool.submit(resume)
+                    assert waiting.wait(timeout=10)
+                    deadline = time.monotonic() + 10
+                    blocked = False
+                    with engine.connect() as observer:
+                        while time.monotonic() < deadline:
+                            blockers = observer.scalar(
+                                text("SELECT pg_blocking_pids(:pid)"),
+                                {"pid": resume_pid[0]},
+                            )
+                            if selected_pid[0] in blockers:
+                                blocked = True
+                                break
+                            time.sleep(0.01)
+                    assert blocked
+                finally:
+                    release.set()
+                assert selected.result(timeout=10)
+                with pytest.raises(Conflict, match="admission is closed"):
+                    resumed.result(timeout=10)
+        finally:
+            release.set()
+            event.remove(engine, "before_cursor_execute", capture)
+        snapshot = witness._snapshot(service, collection_id)
+        assert snapshot[0] and snapshot[1]
+        assert witness._select(service, principal, collection_id, kind)
+        assert witness._snapshot(service, collection_id) == snapshot

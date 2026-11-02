@@ -2391,9 +2391,9 @@ def _execution_output_exists(
     claim: CollectionProcessingClaimRecord,
 ) -> bool:
     outcome = session.scalar(
-        select(CollectionProcessingOutcomeRecord.claim_id).where(
-            CollectionProcessingOutcomeRecord.claim_id == claim.id
-        )
+        select(CollectionProcessingOutcomeRecord.claim_id)
+        .where(CollectionProcessingOutcomeRecord.claim_id == claim.id)
+        .limit(1)
     )
     return (
         outcome is not None
@@ -2412,16 +2412,18 @@ def _transform_output_exists(
         return False
     execution_principal_id = f"processing:{claim.execution_id}"
     finalized = session.scalar(
-        select(func.count())
-        .select_from(CollectionRecord)
+        select(CollectionRecord.id)
         .where(CollectionRecord.created_by_principal_id == execution_principal_id)
+        .limit(1)
     )
+    if finalized is not None:
+        return True
     uploading = session.scalar(
-        select(func.count())
-        .select_from(CollectionUploadRecord)
+        select(CollectionUploadRecord.collection_id)
         .where(CollectionUploadRecord.initiated_by_principal_id == execution_principal_id)
+        .limit(1)
     )
-    return bool(int(finalized or 0) or int(uploading or 0))
+    return uploading is not None
 
 
 def _require_no_execution_output(

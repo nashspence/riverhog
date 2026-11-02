@@ -335,6 +335,7 @@ from riverhog_core.services.collection_tags import (
     collection_tag_sha256,
 )
 from riverhog_core.services.collection_upload_authority import (
+    require_open_upload_writes,
     retain_upload_claim,
     retain_upload_key,
 )
@@ -489,6 +490,8 @@ class SqlAlchemyCollectionUploadService:
         context_json = event_context_json(event_context)
         normalized_custody_mode = _normalize_custody_mode(custody_mode)
         with session_scope(self._session_factory) as session:
+            if session.get_bind().dialect.name == "sqlite":
+                session.connection(execution_options={"sqlite_immediate_writer": True})
             _require_transform_output_intent(
                 session,
                 initiator=initiator,
@@ -599,6 +602,7 @@ class SqlAlchemyCollectionUploadService:
             if upload is not None:
                 if upload.creation_identity_sha256 != creation_identity.creation_identity_sha256:
                     raise Conflict("collection upload idempotency identity changed")
+                require_open_upload_writes(session, upload)
                 if upload.state == "orphaned":
                     checkpoint = _planner_checkpoint(upload)
                     upload.state = "closing" if checkpoint.closed else "open"
