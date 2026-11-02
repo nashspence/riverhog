@@ -520,6 +520,9 @@ class SqlAlchemyCollectionUploadService:
                 )
                 .with_for_update()
             )
+            # The exact execution claim is already retained. Recheck clock expiry
+            # after a later upload lock wait without acquiring earlier locks again.
+            retain_upload_claim(session, initiator.id, initiator.key_id, for_update=False)
             persisted_store = (
                 collection.creation_archive_store
                 if collection is not None

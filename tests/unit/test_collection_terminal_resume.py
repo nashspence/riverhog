@@ -146,3 +146,50 @@ def test_processing_output_existence_is_an_indexed_point_seek(tmp_path):
                 )
                 assert not any("SCAN " in row[-1].upper() for row in plan)
                 assert any("SEARCH " in row[-1].upper() for row in plan)
+
+
+@pytest.mark.parametrize("state", ["open", "orphaned"])
+def test_output_claim_expiry_after_upload_lock_is_rechecked(tmp_path, monkeypatch, state):
+    from riverhog_core.services import collection_upload_authority, collection_uploads
+    from riverhog_protocol.errors import NotFound
+    from time_formats import format_utc_ns, parse_utc_timestamp
+
+    with _case(tmp_path, delegated=True) as case:
+        service, _, collection_id, request = case
+        with session_scope(service._session_factory) as session:
+            upload = session.get(CollectionUploadRecord, collection_id)
+            upload.state = state
+            if state == "orphaned":
+                upload.orphaned_at = "2000-01-01T00:00:00Z"
+                upload.archive_phase = "orphaned"
+            original = tuple(getattr(upload, column.name) for column in upload.__table__.columns)
+        clock = [parse_utc_timestamp("2026-11-01T00:00:00Z")]
+        monkeypatch.setattr(collection_uploads, "utc_epoch_ns_now", lambda: clock[0])
+        monkeypatch.setattr(
+            collection_upload_authority, "utc_timestamp_now", lambda: format_utc_ns(clock[0])
+        )
+        observations = []
+
+        def after_lock(connection, cursor, statement, parameters, context, executemany):
+            if (
+                "FROM collection_uploads" in statement
+                and "collection_uploads.idempotency_key =" in statement
+            ):
+                clock[0] = parse_utc_timestamp("2999-01-02T00:00:00Z")
+                observations.append(statement)
+
+        engine = service._session_factory.kw["bind"]
+        event.listen(engine, "after_cursor_execute", after_lock)
+        try:
+            with pytest.raises(NotFound, match="execution authority"):
+                service.create_or_resume(**request)
+        finally:
+            event.remove(engine, "after_cursor_execute", after_lock)
+        assert observations
+        with session_scope(service._session_factory) as session:
+            upload = session.get(CollectionUploadRecord, collection_id)
+            assert (
+                tuple(getattr(upload, column.name) for column in upload.__table__.columns)
+                == original
+            )
+            assert session.get(ArchiveWriteControlRecord, collection_id).gate == "open"

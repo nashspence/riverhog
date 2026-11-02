@@ -2434,3 +2434,97 @@ def test_postgres_output_resume_waits_for_terminal_selection(
         assert snapshot[0] and snapshot[1]
         assert witness._select(service, principal, collection_id, kind)
         assert witness._snapshot(service, collection_id) == snapshot
+
+
+@pytest.mark.parametrize("state", ["open", "orphaned"])
+def test_postgres_output_claim_expiry_rechecked_after_upload_lock(
+    isolated_database_url, tmp_path, monkeypatch, state
+):
+    import threading
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+    from functools import partial
+
+    from riverhog_core.catalog_db import session_scope
+    from riverhog_core.catalog_models import CollectionUploadRecord
+    from riverhog_core.services import collection_upload_authority, collection_uploads
+    from riverhog_protocol.errors import NotFound
+    from sqlalchemy import event, select, text
+    from time_formats import format_utc_ns, parse_utc_timestamp
+
+    from tests.unit import test_collection_registration_operations as fixtures
+    from tests.unit import test_collection_terminal_resume as witness
+
+    monkeypatch.setattr(
+        fixtures,
+        "_service_with_archive_objects",
+        partial(fixtures._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    with witness._case(tmp_path, delegated=True) as case:
+        service, _, collection_id, request = case
+        with session_scope(service._session_factory) as session:
+            upload = session.get(CollectionUploadRecord, collection_id)
+            upload.state = state
+            if state == "orphaned":
+                upload.orphaned_at = "2000-01-01T00:00:00Z"
+                upload.archive_phase = "orphaned"
+            original = tuple(getattr(upload, column.name) for column in upload.__table__.columns)
+        clock = [parse_utc_timestamp("2026-11-01T00:00:00Z")]
+        monkeypatch.setattr(collection_uploads, "utc_epoch_ns_now", lambda: clock[0])
+        monkeypatch.setattr(
+            collection_upload_authority, "utc_timestamp_now", lambda: format_utc_ns(clock[0])
+        )
+        waiting, execution, pids = threading.Event(), threading.local(), []
+        engine = service._session_factory.kw["bind"]
+
+        def capture(connection, cursor, statement, parameters, context, executemany):
+            if (
+                getattr(execution, "resuming", False)
+                and "FROM collection_uploads" in statement
+                and "FOR UPDATE" in statement
+            ):
+                cursor.execute("SELECT pg_backend_pid()")
+                pids.append(cursor.fetchone()[0])
+                waiting.set()
+
+        def resume():
+            execution.resuming = True
+            return service.create_or_resume(**request)
+
+        blocker = service._session_factory()
+        event.listen(engine, "before_cursor_execute", capture)
+        try:
+            blocker.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == collection_id)
+                .with_for_update()
+            )
+            blocker_pid = blocker.scalar(text("SELECT pg_backend_pid()"))
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                result = pool.submit(resume)
+                try:
+                    assert waiting.wait(timeout=10)
+                    deadline, blocked = time.monotonic() + 10, False
+                    with engine.connect() as observer:
+                        while time.monotonic() < deadline:
+                            if blocker_pid in observer.scalar(
+                                text("SELECT pg_blocking_pids(:pid)"), {"pid": pids[0]}
+                            ):
+                                blocked = True
+                                break
+                            time.sleep(0.01)
+                    assert blocked
+                    clock[0] = parse_utc_timestamp("2999-01-02T00:00:00Z")
+                finally:
+                    blocker.rollback()
+                with pytest.raises(NotFound, match="execution authority"):
+                    result.result(timeout=10)
+        finally:
+            blocker.close()
+            event.remove(engine, "before_cursor_execute", capture)
+        with session_scope(service._session_factory) as session:
+            upload = session.get(CollectionUploadRecord, collection_id)
+            assert (
+                tuple(getattr(upload, column.name) for column in upload.__table__.columns)
+                == original
+            )
