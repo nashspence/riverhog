@@ -8,6 +8,7 @@ from dataclasses import replace
 from types import SimpleNamespace
 
 import pytest
+from riverhog_core.cache_write_grants import CacheWriteGrants
 from riverhog_core.catalog_cache_write_models import CachePopulationBeginRecord
 from riverhog_core.catalog_db import dispose_session_factory, session_scope, validate_db
 from riverhog_core.catalog_models import (
@@ -22,7 +23,6 @@ from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.provider_write_dispatch import ArmedProviderWrite
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_core.services.cache_population_begin import (
-    CacheBeginGrants,
     CachePopulationBeginAdmission,
 )
 from riverhog_core.services.retrieval_cache import SqlAlchemyRetrievalCache
@@ -37,7 +37,7 @@ from tests.unit.test_collection_uploads import _CREATOR, _service_with_archive_o
 from tests.unit.test_retrieval_cache_coordinator import _registration
 from tests.unit.test_retrieval_cache_write_execution import _candidate
 
-GRANTS = CacheBeginGrants(calls=4, control_bytes=100000, result_bytes=10000, cleanup_bytes=1000)
+GRANTS = CacheWriteGrants(calls=4, control_bytes=100000, result_bytes=10000, cleanup_bytes=1000)
 
 
 @contextmanager

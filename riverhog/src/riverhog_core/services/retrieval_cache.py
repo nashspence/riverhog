@@ -10,7 +10,10 @@ from sqlalchemy.orm import Session, load_only
 from state_schema import read_snapshot
 from time_formats import format_utc_timestamp, utc_now
 
-from riverhog_core.catalog_cache_write_models import CachePopulationBeginRecord
+from riverhog_core.catalog_cache_write_models import (
+    CachePopulationBeginRecord,
+    CachePopulationWriteEffectRecord,
+)
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import (
     ArchiveCopyRetirementRecord,
@@ -32,6 +35,7 @@ from riverhog_core.ports.archive_objects import (
 )
 from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
 from riverhog_core.runtime_config import RetrievalCacheStoreRegistration
+from riverhog_core.services.cache_write_capacity import retains_cache_write
 from riverhog_core.services.retrieval_cache_accounting import (
     adjust_cache_committed_bytes,
     locked_cache_accounting,
@@ -528,6 +532,16 @@ class SqlAlchemyRetrievalCache:
                         CachePopulationBeginRecord.collection_id
                         == RetrievalCachePopulationRecord.collection_id,
                         CachePopulationBeginRecord.object_id
+                        == RetrievalCachePopulationRecord.object_id,
+                    )
+                    .exists(),
+                    ~select(CachePopulationWriteEffectRecord.id)
+                    .where(
+                        CachePopulationWriteEffectRecord.source_store
+                        == RetrievalCachePopulationRecord.source_store,
+                        CachePopulationWriteEffectRecord.collection_id
+                        == RetrievalCachePopulationRecord.collection_id,
+                        CachePopulationWriteEffectRecord.object_id
                         == RetrievalCachePopulationRecord.object_id,
                     )
                     .exists(),
@@ -1135,18 +1149,7 @@ class SqlAlchemyRetrievalCache:
 
 
 def _require_unmanaged_population(session: Session, key: tuple[str, int, str]) -> None:
-    if (
-        session.scalar(
-            select(CachePopulationBeginRecord.id)
-            .where(
-                CachePopulationBeginRecord.source_store == key[0],
-                CachePopulationBeginRecord.collection_id == key[1],
-                CachePopulationBeginRecord.object_id == key[2],
-            )
-            .limit(1)
-        )
-        is not None
-    ):
+    if retains_cache_write(session, key):
         raise Conflict("retrieval cache population retains admitted provider effects")
 
 

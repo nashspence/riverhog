@@ -2468,6 +2468,7 @@ CREATE TABLE cache_population_begins (
 	population_generation VARCHAR(64) NOT NULL,
 	cache_store VARCHAR NOT NULL,
 	cache_incarnation_id VARCHAR(36) NOT NULL,
+	completion_call_id VARCHAR(64),
 	executor_id VARCHAR(64) NOT NULL,
 	dispatch_sha256 VARCHAR(64) NOT NULL,
 	request_sha256 VARCHAR(64) NOT NULL,
@@ -2486,6 +2487,7 @@ CREATE TABLE cache_population_begins (
 	CONSTRAINT ck_cache_population_begins_outcome CHECK (state = 'settled' AND unresolved IS false AND result_json IS NOT NULL OR state IN ('armed','uncertain') AND unresolved IS true AND result_json IS NULL),
 	CONSTRAINT ck_cache_population_begins_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_cache_population_begins_population_generation_hex CHECK (length(population_generation) = 64 AND lower(population_generation) = population_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(population_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_begins_completion_call_id_hex CHECK (completion_call_id IS NULL OR length(completion_call_id) = 64 AND lower(completion_call_id) = completion_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(completion_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_cache_population_begins_executor_id_hex CHECK (length(executor_id) = 64 AND lower(executor_id) = executor_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(executor_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_cache_population_begins_dispatch_sha256_hex CHECK (length(dispatch_sha256) = 64 AND lower(dispatch_sha256) = dispatch_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(dispatch_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_cache_population_begins_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
@@ -2946,5 +2948,48 @@ CREATE TABLE collection_archive_object_upload_units (
 	FOREIGN KEY(collection_id, object_id) REFERENCES collection_archive_object_uploads (collection_id, object_id) ON DELETE CASCADE,
 	CONSTRAINT ck_archive_object_upload_units_unit CHECK (unit >= 0)
 );
+
+CREATE TABLE cache_population_write_effects (
+	id VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	source_store VARCHAR NOT NULL,
+	object_id VARCHAR NOT NULL,
+	population_generation VARCHAR(64) NOT NULL,
+	cache_store VARCHAR NOT NULL,
+	cache_incarnation_id VARCHAR(36) NOT NULL,
+	begin_call_id VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	resource VARCHAR NOT NULL,
+	executor_id VARCHAR(64) NOT NULL,
+	dispatch_sha256 VARCHAR(64) NOT NULL,
+	request_sha256 VARCHAR(64) NOT NULL,
+	request_json TEXT NOT NULL,
+	state VARCHAR NOT NULL,
+	unresolved BOOLEAN NOT NULL,
+	control_bytes BIGINT NOT NULL,
+	result_capacity_bytes BIGINT NOT NULL,
+	cleanup_capacity_bytes BIGINT NOT NULL,
+	observation_json TEXT,
+	result_json TEXT,
+	PRIMARY KEY (id),
+	CONSTRAINT ck_cache_write_effects_kind CHECK (kind IN ('part','complete')),
+	CONSTRAINT ck_cache_write_effects_state CHECK (state IN ('armed','uncertain','settled')),
+	CONSTRAINT ck_cache_write_effects_capacity CHECK (control_bytes > 0 AND result_capacity_bytes > 0 AND cleanup_capacity_bytes > 0),
+	CONSTRAINT ck_cache_write_effects_outcome CHECK (state = 'settled' AND unresolved IS false AND result_json IS NOT NULL OR state IN ('armed','uncertain') AND unresolved IS true AND result_json IS NULL),
+	CONSTRAINT ck_cache_population_write_effects_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_write_effects_population_generation_hex CHECK (length(population_generation) = 64 AND lower(population_generation) = population_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(population_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_write_effects_begin_call_id_hex CHECK (length(begin_call_id) = 64 AND lower(begin_call_id) = begin_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(begin_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_write_effects_executor_id_hex CHECK (length(executor_id) = 64 AND lower(executor_id) = executor_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(executor_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_write_effects_dispatch_sha256_hex CHECK (length(dispatch_sha256) = 64 AND lower(dispatch_sha256) = dispatch_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(dispatch_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_write_effects_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_cache_write_effects_capacity ON cache_population_write_effects (collection_id, id);
+
+CREATE INDEX ix_cache_write_effects_pending ON cache_population_write_effects (collection_id, unresolved, id);
+
+CREATE INDEX ix_cache_write_effects_session ON cache_population_write_effects (begin_call_id, unresolved, resource, id);
+
+CREATE INDEX ix_cache_write_effects_object ON cache_population_write_effects (source_store, collection_id, object_id);
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

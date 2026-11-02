@@ -11,7 +11,6 @@ import hashlib
 import json
 import secrets
 from collections.abc import Callable
-from dataclasses import dataclass
 
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_protocol.pack_ingress import canonical_json_bytes
@@ -31,6 +30,7 @@ from state_schema import read_snapshot
 from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
 
 from riverhog_core.app_permissions import Principal
+from riverhog_core.cache_write_grants import CacheWriteGrants
 from riverhog_core.catalog_cache_write_models import CachePopulationBeginRecord
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import (
@@ -45,6 +45,10 @@ from riverhog_core.provider_write_dispatch import ArmedProviderWrite, WithdrawnP
 from riverhog_core.runtime_config import RetrievalCacheStoreRegistration
 from riverhog_core.services.app_keys import require_key_authorization
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
+from riverhog_core.services.cache_write_capacity import (
+    require_cache_write_capacity,
+    retains_cache_write,
+)
 from riverhog_core.services.collection_upload_authority import (
     retain_upload_claim,
     retain_upload_key,
@@ -67,19 +71,6 @@ def _writer(session: Session) -> None:
         session.connection(execution_options={"sqlite_immediate_writer": True})
 
 
-@dataclass(frozen=True, slots=True)
-class CacheBeginGrants:
-    calls: int
-    control_bytes: int
-    result_bytes: int
-    cleanup_bytes: int
-
-    def __post_init__(self) -> None:
-        for value in (self.calls, self.control_bytes, self.result_bytes, self.cleanup_bytes):
-            if type(value) is not int or value < 1:
-                raise ValueError("cache begin grants must be positive integers")
-
-
 class CachePopulationBeginAdmission:
     def __init__(self, session_factory: SessionFactory) -> None:
         self._factory = session_factory
@@ -96,7 +87,7 @@ class CachePopulationBeginAdmission:
         executor_id: str,
         candidate: StorageAdapterRetrievalCache,
         registration: RetrievalCacheStoreRegistration,
-        grants: CacheBeginGrants,
+        grants: CacheWriteGrants,
         guard: Guard,
         validate_population: Callable[[Session, CollectionUploadRecord, str, int], None],
     ) -> ArmedProviderWrite:
@@ -167,18 +158,7 @@ class CachePopulationBeginAdmission:
                 or population.begin_call_id is not None
             ):
                 raise Conflict("cache begin original population changed")
-            if (
-                session.scalar(
-                    select(CachePopulationBeginRecord.id)
-                    .where(
-                        CachePopulationBeginRecord.source_store == source_store,
-                        CachePopulationBeginRecord.collection_id == collection_id,
-                        CachePopulationBeginRecord.object_id == object_id,
-                    )
-                    .limit(1)
-                )
-                is not None
-            ):
+            if retains_cache_write(session, key):
                 raise Conflict("cache begin original effect is retained")
             incarnation = require_storage_incarnation(session, "cache", candidate.name)
             if (
@@ -208,19 +188,9 @@ class CachePopulationBeginAdmission:
                 }
             )
             # Reserve both report copies and the population's original continuation.
-            charged = len(encoded.encode()) + 3 * grants.result_bytes + grants.cleanup_bytes
-            retained = list(
-                session.execute(
-                    select(CachePopulationBeginRecord.id, CachePopulationBeginRecord.control_bytes)
-                    .where(CachePopulationBeginRecord.collection_id == collection_id)
-                    .order_by(CachePopulationBeginRecord.id)
-                    .limit(grants.calls)
-                )
-            )
-            if len(retained) >= grants.calls or (
-                sum(row.control_bytes for row in retained) + charged > grants.control_bytes
-            ):
-                raise Conflict("cache begin retained-effect grant is exhausted")
+            # The completion marker has one fixed-size original call identity.
+            charged = len(encoded.encode()) + 3 * grants.result_bytes + grants.cleanup_bytes + 64
+            require_cache_write_capacity(session, collection_id, charged=charged, grants=grants)
             accounting = locked_cache_accounting(session, candidate.name)
             if accounting.cache_incarnation_id != incarnation:
                 raise Conflict("cache begin accounting incarnation changed")

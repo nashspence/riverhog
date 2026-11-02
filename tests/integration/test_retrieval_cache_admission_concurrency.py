@@ -368,3 +368,111 @@ def test_postgres_original_cache_withdrawal_preserves_owned_reservation(
 
     with cache_begin._case(tmp_path, database_url=database_url) as case:
         getattr(cache_begin, witness)(case, tmp_path)
+
+
+def test_postgres_original_cache_session_parts_and_completion(database_url, tmp_path, monkeypatch):
+    from tests.unit import test_cache_population_writes as witness
+
+    with witness._writing(tmp_path, database_url=database_url) as writing:
+        witness._assert_actual_session_parts_and_completion(writing, monkeypatch, "direct")
+
+
+@pytest.mark.parametrize("kind", ["part", "complete"])
+def test_postgres_late_http_cache_session_effect_survives_retirement(
+    database_url, tmp_path, monkeypatch, kind
+):
+    from tests.unit import test_cache_population_writes as witness
+
+    with witness._writing(tmp_path, database_url=database_url, mode="owned-http") as writing:
+        witness._assert_late_http_effect_survives_retirement(writing, tmp_path, monkeypatch, kind)
+
+
+def test_postgres_cache_session_write_rechecks_custody_after_original_begin_wait(
+    database_url, tmp_path, monkeypatch
+):
+    import time
+
+    from riverhog_core.catalog_cache_write_models import (
+        CachePopulationBeginRecord,
+        CachePopulationWriteEffectRecord,
+    )
+    from riverhog_core.catalog_models import CollectionUploadRecord
+    from riverhog_core.services import (
+        cache_population_begin,
+        cache_population_writes,
+        collection_uploads,
+    )
+    from riverhog_protocol.errors import Conflict
+    from sqlalchemy import event, select
+
+    from tests.unit import test_cache_population_writes as witness
+
+    clock = ["2026-11-02T21:00:00Z"]
+    for module in (cache_population_begin, cache_population_writes, collection_uploads):
+        monkeypatch.setattr(module, "utc_timestamp_now", lambda: clock[0])
+    with witness._writing(
+        tmp_path, database_url=database_url, custody_mode="custody-transfer"
+    ) as writing:
+        case = writing.case
+        with session_scope(case.factory) as session:
+            session.get(
+                CollectionUploadRecord, case.collection_id
+            ).lease_expires_at = "2026-11-02T22:00:00Z"
+        waiting, execution, pids = threading.Event(), threading.local(), []
+        engine = case.factory.kw["bind"]
+
+        def capture(connection, cursor, statement, parameters, context, executemany):
+            if (
+                getattr(execution, "admitting", False)
+                and "FROM cache_population_begins" in statement
+                and "FOR UPDATE" in statement
+            ):
+                cursor.execute("SELECT pg_backend_pid()")
+                pids.append(cursor.fetchone()[0])
+                waiting.set()
+
+        def admit():
+            execution.admitting = True
+            return witness._arm(writing, witness._part(writing))
+
+        blocker = case.factory()
+        event.listen(engine, "before_cursor_execute", capture)
+        try:
+            blocker.scalar(
+                select(CachePopulationBeginRecord)
+                .where(CachePopulationBeginRecord.id == writing.begin.call_id)
+                .with_for_update()
+            )
+            blocker_pid = blocker.scalar(text("SELECT pg_backend_pid()"))
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                admitted = pool.submit(admit)
+                try:
+                    assert waiting.wait(timeout=10)
+                    deadline, blocked = time.monotonic() + 10, False
+                    with engine.connect() as observer:
+                        while time.monotonic() < deadline:
+                            if blocker_pid in observer.scalar(
+                                text("SELECT pg_blocking_pids(:pid)"), {"pid": pids[0]}
+                            ):
+                                blocked = True
+                                break
+                            time.sleep(0.01)
+                    assert blocked
+                    clock[0] = "2026-11-02T23:00:00Z"
+                finally:
+                    blocker.rollback()
+                with pytest.raises(Conflict, match="custody lease"):
+                    admitted.result(timeout=10)
+        finally:
+            blocker.close()
+            event.remove(engine, "before_cursor_execute", capture)
+        with session_scope(case.factory) as session:
+            assert session.scalar(select(CachePopulationWriteEffectRecord.id)) is None
+            assert (
+                session.get(CachePopulationBeginRecord, writing.begin.call_id).completion_call_id
+                is None
+            )
+            assert (
+                session.get(RetrievalCacheStoreAccountingRecord, case.candidate.name).reserved_bytes
+                == 3
+            )
