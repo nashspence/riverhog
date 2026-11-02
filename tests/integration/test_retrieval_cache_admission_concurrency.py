@@ -233,10 +233,12 @@ def test_postgres_cache_begin_waits_for_selected_parent_terminal(
             )
 
 
+@pytest.mark.parametrize("data_available", (True, False))
 def test_postgres_cache_begin_rechecks_custody_expiry_after_accounting_wait(
-    database_url, tmp_path, monkeypatch
+    database_url, tmp_path, monkeypatch, data_available
 ):
     import time
+    from dataclasses import replace
 
     from riverhog_core.catalog_cache_write_models import CachePopulationBeginRecord
     from riverhog_core.catalog_models import CollectionUploadRecord
@@ -271,7 +273,12 @@ def test_postgres_cache_begin_rechecks_custody_expiry_after_accounting_wait(
 
         def admit():
             execution.admitting = True
-            return witness._arm(case)
+            return witness._arm(
+                case,
+                registration=replace(
+                    case.registration, admission_budget_bytes=100 if data_available else 2
+                ),
+            )
 
         blocker = case.factory()
         event.listen(engine, "before_cursor_execute", capture)
@@ -299,8 +306,11 @@ def test_postgres_cache_begin_rechecks_custody_expiry_after_accounting_wait(
                     clock[0] = "2026-11-02T19:00:00Z"
                 finally:
                     blocker.rollback()
-                with pytest.raises(Conflict, match="custody lease"):
+                with pytest.raises(Conflict, match="custody lease") as refused:
                     admitted.result(timeout=10)
+                assert not isinstance(
+                    refused.value, cache_population_begin.CacheDataReservationUnavailable
+                )
         finally:
             blocker.close()
             event.remove(engine, "before_cursor_execute", capture)

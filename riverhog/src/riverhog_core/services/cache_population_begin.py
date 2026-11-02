@@ -71,6 +71,10 @@ def _writer(session: Session) -> None:
         session.connection(execution_options={"sqlite_immediate_writer": True})
 
 
+class CacheDataReservationUnavailable(Conflict):
+    """Current authority is valid, but optional cache data capacity is unavailable."""
+
+
 class CachePopulationBeginAdmission:
     def __init__(self, session_factory: SessionFactory) -> None:
         self._factory = session_factory
@@ -194,11 +198,6 @@ class CachePopulationBeginAdmission:
             accounting = locked_cache_accounting(session, candidate.name)
             if accounting.cache_incarnation_id != incarnation:
                 raise Conflict("cache begin accounting incarnation changed")
-            budget = registration.admission_budget_bytes
-            if budget is not None and (
-                accounting.reserved_bytes + accounting.committed_bytes + expected_bytes > budget
-            ):
-                raise Conflict("cache begin data reservation is exhausted")
             # Cache/accounting locks can wait behind unrelated collections. The
             # earlier key/claim rows are retained; only recheck their current facts.
             if key_fence is not None:
@@ -212,6 +211,11 @@ class CachePopulationBeginAdmission:
                 upload.lease_expires_at is None or upload.lease_expires_at <= utc_timestamp_now()
             ):
                 raise Conflict("cache begin custody lease is not active")
+            budget = registration.admission_budget_bytes
+            if budget is not None and (
+                accounting.reserved_bytes + accounting.committed_bytes + expected_bytes > budget
+            ):
+                raise CacheDataReservationUnavailable("cache begin data reservation is exhausted")
             now = format_utc_timestamp(utc_now())
             accounting.reserved_bytes += expected_bytes
             accounting.updated_at = now

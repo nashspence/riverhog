@@ -23,6 +23,7 @@ from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.provider_write_dispatch import ArmedProviderWrite
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_core.services.cache_population_begin import (
+    CacheDataReservationUnavailable,
     CachePopulationBeginAdmission,
 )
 from riverhog_core.services.retrieval_cache import SqlAlchemyRetrievalCache
@@ -295,8 +296,9 @@ def test_cache_begin_capacity_refusal_rolls_back_population_and_all_reservations
             if capacity == "control"
             else {"registration": replace(case.registration, admission_budget_bytes=2)}
         )
-        with pytest.raises(Conflict, match="exhausted"):
+        with pytest.raises(Conflict, match="exhausted") as refused:
             _arm(case, **changes)
+        assert isinstance(refused.value, CacheDataReservationUnavailable) is (capacity == "data")
         with session_scope(case.factory) as session:
             assert session.scalar(select(CachePopulationBeginRecord.id)) is None
             assert session.scalar(select(RetrievalCachePopulationRecord.object_id)) is None
@@ -607,3 +609,18 @@ def test_actual_cache_invocation_with_unknown_closure_cannot_be_withdrawn(tmp_pa
         assert _stored(case, ticket)[0:2] == ("uncertain", True)
         assert _stored(case, ticket)[-1] == 3
         assert len(list((tmp_path / "cache" / "writes").iterdir())) == 1
+
+
+def test_full_optional_cache_does_not_hide_selected_terminal_authority(tmp_path):
+    with _case(tmp_path) as case:
+        _terminal(case)
+        with pytest.raises(Conflict) as refused:
+            _arm(case, registration=replace(case.registration, admission_budget_bytes=2))
+        assert not isinstance(refused.value, CacheDataReservationUnavailable)
+        with session_scope(case.factory) as session:
+            assert session.scalar(select(CachePopulationBeginRecord.id)) is None
+            assert (
+                session.get(RetrievalCacheStoreAccountingRecord, case.candidate.name).reserved_bytes
+                == 0
+            )
+        assert not list((tmp_path / "cache" / "writes").iterdir())
