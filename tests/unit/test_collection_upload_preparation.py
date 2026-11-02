@@ -30,12 +30,12 @@ from tests.unit.test_collection_uploads import _CREATOR, _service_with_archive_o
 
 
 @contextmanager
-def _case(tmp_path, kind, *, database_url=None):
+def _case(tmp_path, kind, *, database_url=None, content=None):
     service, config, provider, roots = _service_with_archive_objects(
         tmp_path,
         policy=CollectionVolumePolicy(
             pack_artifacts=1,
-            pack_member_bytes=64 if kind == "pack" else 8,
+            pack_member_bytes=max(64, len(content or b"") + 1) if kind == "pack" else 8,
             raw_part_plaintext_bytes=CHUNK_SIZE,
             raw_volume_plaintext_bytes=2 * CHUNK_SIZE,
         ),
@@ -50,7 +50,7 @@ def _case(tmp_path, kind, *, database_url=None):
             event_context=None,
         )
         collection_id = int(opened["collection_id"])
-        content = b"retained original encryption"
+        content = b"retained original encryption" if content is None else content
         digest = hashlib.sha256(content).hexdigest()
         member = {"artifact_id": "1" * 64, "bytes": str(len(content)), "sha256": digest}
         if kind == "segment":

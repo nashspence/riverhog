@@ -9,6 +9,7 @@ from riverhog_storage_adapter_protocol import (
     ObjectPlacementPolicy,
     WriteExecutionResult,
     WriteInvocation,
+    WriteOperation,
 )
 
 from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
@@ -75,6 +76,14 @@ class ArchiveObjectWriteExecutor(Protocol):
 
     def execute_write(
         self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult: ...
+
+
+class ArchiveWriteOperationExecutor(Protocol):
+    """The workflow owner admits an exact operation before assigning its invocation."""
+
+    def execute_write_operation(
+        self, operation: WriteOperation, *, content: bytes = b""
     ) -> WriteExecutionResult: ...
 
 

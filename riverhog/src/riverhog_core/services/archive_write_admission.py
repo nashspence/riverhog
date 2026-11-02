@@ -77,10 +77,23 @@ class ClosedArchiveWrite:
 class ArmedArchiveWrite:
     """A live one-use dispatch right; retained rows cannot recreate it."""
 
-    def __init__(self, *, call_id: str, collection_id: int, object_id: str, nonce: str) -> None:
+    def __init__(
+        self,
+        *,
+        call_id: str,
+        collection_id: int,
+        object_id: str,
+        nonce: str,
+        request_sha256: str,
+        executor_id: str,
+        target_incarnation: str,
+    ) -> None:
         self.call_id = call_id
         self.collection_id = collection_id
         self.object_id = object_id
+        self.request_sha256 = request_sha256
+        self.executor_id = executor_id
+        self.target_incarnation = target_incarnation
         self._nonce = nonce
         self._lock = threading.Lock()
         self._used = False
@@ -103,6 +116,15 @@ class ArmedArchiveWrite:
             if self._running:
                 raise Conflict("archive write executor is still running")
             self._used = True
+
+
+@dataclass(frozen=True, slots=True)
+class ArchiveWriteReport:
+    """One returned result; only adapter-owner evidence can close its invocation."""
+
+    ticket: ArmedArchiveWrite
+    result: Mapping[str, Any] = field(repr=False)
+    closure: ClosedArchiveWrite | None = None
 
 
 def initialize_archive_write_control(session: Session, upload: CollectionUploadRecord) -> None:
@@ -339,6 +361,19 @@ class ArchiveWriteAdmission:
             if upload.state not in {"open", "closing", "uploading"}:
                 raise Conflict("archive write construction cannot accept payload")
             volume = self._volume(session, collection_id, object_id)
+            operation = arguments.get("operation")
+            if operation is not None:
+                if not isinstance(operation, Mapping) or operation.get("kind") != kind:
+                    raise Conflict("archive write provider operation changed")
+                request = operation.get("request")
+                if not isinstance(request, Mapping):
+                    raise Conflict("archive write provider request is invalid")
+                target = request if kind in {"begin", "lookup"} else request.get("session")
+                if (
+                    not isinstance(target, Mapping)
+                    or target.get("object_path") != volume.object_path
+                ):
+                    raise Conflict("archive write provider target differs from the original volume")
             preparation = session.get(ArchiveWritePreparationRecord, (collection_id, object_id))
             if preparation is None:
                 raise Conflict("archive write original preparation is missing")
@@ -408,7 +443,13 @@ class ArchiveWriteAdmission:
             )
         # No capability exists until the transaction's commit returned successfully.
         return ArmedArchiveWrite(
-            call_id=call_id, collection_id=collection_id, object_id=object_id, nonce=nonce
+            call_id=call_id,
+            collection_id=collection_id,
+            object_id=object_id,
+            nonce=nonce,
+            request_sha256=_sha(request_json),
+            executor_id=executor_id,
+            target_incarnation=str(json.loads(control.construction_json)["archive_incarnation_id"]),
         )
 
     def _report_context(
@@ -443,30 +484,81 @@ class ArchiveWriteAdmission:
         *,
         apply_result: ApplyResult,
     ) -> None:
-        ticket._close_dispatch()
-        encoded = _json(evidence.result)
+        self.apply_reports(
+            (ArchiveWriteReport(ticket, evidence.result, evidence),),
+            apply_result=apply_result,
+        )
+
+    def apply_reports(
+        self,
+        reports: tuple[ArchiveWriteReport, ...],
+        *,
+        apply_result: ApplyResult,
+    ) -> None:
+        """Apply one checkpoint with its exact bounded batch of returned outcomes.
+
+        All effect reservations already exist. Duplicate reports cannot reapply a
+        checkpoint, and unknown execution retains its original unresolved charge.
+        """
+        if not reports:
+            raise ValueError("archive write report batch is empty")
+        first = reports[0].ticket
+        identities = set()
+        for report in reports:
+            ticket = report.ticket
+            if (
+                ticket.collection_id != first.collection_id
+                or ticket.object_id != first.object_id
+                or ticket.call_id in identities
+            ):
+                raise ValueError("archive write report batch identity changed")
+            identities.add(ticket.call_id)
+            ticket._close_dispatch()
         with session_scope(self._factory) as session:
             _writer(session)
-            upload, volume, effect, incarnation = self._report_context(session, ticket)
-            if (
-                evidence.call_id != effect.id
-                or evidence.request_sha256 != effect.request_sha256
-                or evidence.executor_id != effect.executor_id
-                or evidence.target_incarnation != incarnation
-            ):
-                raise Conflict("archive write closure evidence identity changed")
-            if len(encoded.encode()) > effect.result_capacity_bytes:
-                raise Conflict("archive write result exceeds its reserved byte grant")
-            if effect.state == "settled":
-                if effect.result_json != encoded:
+            updates = []
+            changed = False
+            for report in reports:
+                upload, volume, effect, incarnation = self._report_context(session, report.ticket)
+                encoded = _json(report.result)
+                if (
+                    report.ticket.request_sha256 != effect.request_sha256
+                    or report.ticket.executor_id != effect.executor_id
+                    or report.ticket.target_incarnation != incarnation
+                ):
+                    raise Conflict("archive write report commitment changed")
+                if len(encoded.encode()) > effect.result_capacity_bytes:
+                    raise Conflict("archive write result exceeds its reserved byte grant")
+                if report.closure is not None:
+                    evidence = report.closure
+                    if (
+                        evidence.call_id != effect.id
+                        or evidence.request_sha256 != effect.request_sha256
+                        or evidence.executor_id != effect.executor_id
+                        or evidence.target_incarnation != incarnation
+                        or _json(evidence.result) != encoded
+                    ):
+                        raise Conflict("archive write closure evidence identity changed")
+                if effect.state == "settled" and effect.result_json != encoded:
                     raise Conflict("archive write confirmed outcome changed")
-                return
-            if effect.observation_json not in {None, encoded}:
-                raise Conflict("archive write closure conflicts with its observed result")
-            apply_result(session, upload, volume, evidence.result)
-            effect.result_json = encoded
-            effect.state = "settled"
-            effect.unresolved = False
+                if effect.observation_json not in {None, encoded}:
+                    raise Conflict("archive write closure conflicts with its observed result")
+                changed = changed or (
+                    effect.state != "settled"
+                    if report.closure is not None
+                    else effect.state != "settled" and effect.observation_json is None
+                )
+                updates.append((effect, report, encoded))
+            if changed:
+                apply_result(session, upload, volume, reports[-1].result)
+            for effect, report, encoded in updates:
+                if report.closure is not None:
+                    effect.result_json = encoded
+                    effect.state = "settled"
+                    effect.unresolved = False
+                elif effect.state != "settled":
+                    effect.observation_json = encoded
+                    effect.state = "uncertain"
 
     def observe(
         self,

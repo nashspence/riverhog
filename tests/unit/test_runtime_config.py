@@ -434,14 +434,22 @@ def test_archive_write_operator_grants_round_trip_and_reject_invalid_capacity(
         "control_bytes": "2MiB",
         "preparation_bytes": "4KiB",
         "terminal_bytes": "8KiB",
+        "result_bytes": "16KiB",
     }
     _write(path, document)
     grant = load_runtime_config().archive_write
-    assert (grant.calls, grant.control_bytes, grant.preparation_bytes, grant.terminal_bytes) == (
+    assert (
+        grant.calls,
+        grant.control_bytes,
+        grant.preparation_bytes,
+        grant.terminal_bytes,
+        grant.result_bytes,
+    ) == (
         3,
         2 * 1024 * 1024,
         4 * 1024,
         8 * 1024,
+        16 * 1024,
     )
     for key, value in (
         ("calls", 0),
@@ -449,6 +457,7 @@ def test_archive_write_operator_grants_round_trip_and_reject_invalid_capacity(
         ("control_bytes", "0B"),
         ("preparation_bytes", "0B"),
         ("terminal_bytes", "0B"),
+        ("result_bytes", "0B"),
     ):
         invalid = {**document["archive_write"], key: value}
         _write(path, {**document, "archive_write": invalid})

@@ -2166,3 +2166,62 @@ def test_postgres_competing_preparations_retain_one_exact_original(
 
     with witness._case(tmp_path, kind, database_url=isolated_database_url) as case:
         witness._assert_competing_candidates_retain_one_original(case, monkeypatch)
+
+
+@pytest.mark.parametrize("kind", ["pack", "segment"])
+@pytest.mark.parametrize(
+    "vector",
+    [
+        "actual",
+        "lost-report",
+        "rollback",
+        "positive-unknown",
+        "late-begin",
+        "late-complete",
+        "multiple-segments",
+        "lost-retirement",
+        "mixed-segments",
+    ],
+)
+def test_postgres_actual_uploader_admission_and_atomic_reports(
+    isolated_database_url, tmp_path, monkeypatch, kind, vector
+):
+    from functools import partial
+
+    from tests.unit import test_archive_upload_writes as witness
+
+    monkeypatch.setattr(
+        witness, "_actor", partial(witness._actor, database_url=isolated_database_url)
+    )
+    if vector == "actual":
+        witness.test_actual_uploader_commits_admitted_filesystem_outcomes_with_checkpoints(
+            tmp_path, monkeypatch, kind, "direct"
+        )
+    elif vector == "lost-report":
+        witness.test_checkpoint_report_retry_after_lost_commit_ack_never_resends_provider(
+            tmp_path, monkeypatch, kind
+        )
+    elif vector == "rollback":
+        witness.test_checkpoint_and_all_segment_reports_roll_back_together(
+            tmp_path, monkeypatch, kind
+        )
+    elif vector == "positive-unknown":
+        witness.test_positive_unknown_begin_retains_original_checkpoint_and_late_closure(
+            tmp_path, monkeypatch, kind
+        )
+    elif vector in {"late-begin", "late-complete"}:
+        witness.test_terminal_selection_retains_exact_late_provider_outcome(
+            tmp_path, monkeypatch, kind, vector.removeprefix("late-")
+        )
+    elif vector == "multiple-segments":
+        witness.test_multiple_provider_segments_settle_with_one_logical_checkpoint(
+            tmp_path, monkeypatch, kind
+        )
+    elif vector == "lost-retirement":
+        witness.test_lost_retirement_ack_retries_only_the_confirmed_exact_checkpoint(
+            tmp_path, monkeypatch, kind
+        )
+    else:
+        witness.test_mixed_closed_and_unknown_segments_commit_one_checkpoint_and_keep_unknown_charge(
+            tmp_path, monkeypatch, kind
+        )

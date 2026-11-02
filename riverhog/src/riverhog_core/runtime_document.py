@@ -140,12 +140,18 @@ class ArchiveWriteDocument(_Document):
         description="Retained terminal request/result bytes per selected request.",
     )
 
+    result_bytes: str = Field(
+        default=str(_ARCHIVE_WRITE.result_bytes),
+        description="Reserved exact outcome bytes per admitted provider call.",
+    )
+
     def grants(self) -> ArchiveWriteGrants:
         return ArchiveWriteGrants(
             calls=self.calls,
             control_bytes=_bytes(self.control_bytes, "archive_write.control_bytes", 1),
             preparation_bytes=_bytes(self.preparation_bytes, "archive_write.preparation_bytes", 1),
             terminal_bytes=_bytes(self.terminal_bytes, "archive_write.terminal_bytes", 1),
+            result_bytes=_bytes(self.result_bytes, "archive_write.result_bytes", 1),
         )
 
 

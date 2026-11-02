@@ -313,6 +313,10 @@ from riverhog_core.pack_volume import (
 )
 from riverhog_core.placement_choices import resolve_use_cache
 from riverhog_core.ports.archive_objects import ArchiveResumableObjectStore
+from riverhog_core.ports.archive_upload_checkpoints import (
+    PackUploadCheckpointStore,
+    RawUploadCheckpointStore,
+)
 from riverhog_core.ports.retrieval_cache import RetrievalCache
 from riverhog_core.provenance_binding import verify_member_binding
 from riverhog_core.provenance_catalog import admission_provenance_catalog
@@ -2693,11 +2697,14 @@ class SqlAlchemyCollectionUploadService:
         object_store: ArchiveResumableObjectStore,
         *,
         passphrase_id: str,
+        checkpoint_store: PackUploadCheckpointStore | None = None,
     ) -> PackVolumeUploader:
         passphrase = self._config.archive_passphrase_for(passphrase_id)
         return PackVolumeUploader(
             object_store=object_store,
-            checkpoint_store=self._checkpoints,
+            checkpoint_store=checkpoint_store
+            if checkpoint_store is not None
+            else self._checkpoints,
             passphrase=passphrase,
             scrypt_log_n=self._config.archive_scrypt_work_factor,
             source_read_chunk_bytes=self._throughput.source_read_chunk_bytes,
@@ -2740,11 +2747,14 @@ class SqlAlchemyCollectionUploadService:
         object_store: ArchiveResumableObjectStore,
         *,
         passphrase_id: str,
+        checkpoint_store: RawUploadCheckpointStore | None = None,
     ) -> RawVolumeUploader:
         passphrase = self._config.archive_passphrase_for(passphrase_id)
         return RawVolumeUploader(
             object_store=object_store,
-            checkpoint_store=self._checkpoints,
+            checkpoint_store=checkpoint_store
+            if checkpoint_store is not None
+            else self._checkpoints,
             passphrase=passphrase,
             scrypt_log_n=self._config.archive_scrypt_work_factor,
             source_read_chunk_bytes=self._throughput.source_read_chunk_bytes,

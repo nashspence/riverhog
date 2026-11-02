@@ -1,0 +1,257 @@
+"""One live volume actor's admitted writes and atomic checkpoint reports."""
+
+from __future__ import annotations
+
+import hashlib
+import secrets
+from collections import deque
+from collections.abc import Mapping
+from typing import Any
+
+from riverhog_protocol.errors import Conflict, NotFound
+from riverhog_storage_adapter_protocol import (
+    WriteCallIdentity,
+    WriteExecutionResult,
+    WriteInvocation,
+    WriteOperation,
+    WritePartOperation,
+    validate_write_execution,
+    write_operation_sha256,
+)
+from sqlalchemy.orm import Session
+
+from riverhog_core.archive_write_grants import ArchiveWriteGrants
+from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
+from riverhog_core.ports.archive_objects import ArchiveObjectWriteExecutor
+from riverhog_core.services.archive_write_admission import (
+    ArchiveWriteAdmission,
+    ArchiveWriteReport,
+    ArmedArchiveWrite,
+    ClosedArchiveWrite,
+    Guard,
+)
+from riverhog_core.stores.sqlalchemy_archive_upload_checkpoints import (
+    SqlAlchemyArchiveUploadCheckpointStore,
+)
+
+
+class ArchiveUploadWrites:
+    """Retain each request before dispatch; report retries never invoke the provider.
+
+    The owning uploader saves after begin, each logical part, and completion.
+    A logical part can contain several separately admitted provider segments.
+    This actor is scoped to that uploader invocation, not shared between units.
+    """
+
+    def __init__(
+        self,
+        *,
+        admission: ArchiveWriteAdmission,
+        checkpoints: SqlAlchemyArchiveUploadCheckpointStore,
+        executor: ArchiveObjectWriteExecutor,
+        collection_id: int,
+        object_id: str,
+        epoch: str,
+        grants: ArchiveWriteGrants,
+        guard: Guard,
+    ) -> None:
+        self._admission = admission
+        self._checkpoints = checkpoints
+        self._executor = executor
+        self._collection_id = collection_id
+        self._object_id = object_id
+        self._epoch = epoch
+        self._grants = grants
+        self._result_capacity_bytes = grants.result_bytes
+        self._guard = guard
+        self._executor_id = secrets.token_hex(32)
+        self._pending: list[tuple[ArmedArchiveWrite, WriteExecutionResult]] = []
+        self._retire: deque[ArmedArchiveWrite] = deque()
+        self._confirmed_checkpoint: tuple[str | None, str | None] | None = None
+
+    def execute_write_operation(
+        self, operation: WriteOperation, *, content: bytes = b""
+    ) -> WriteExecutionResult:
+        self._retire_confirmed()
+        arguments: dict[str, Any] = {
+            "operation": operation.model_dump(mode="json"),
+            "provider_request_sha256": write_operation_sha256(operation),
+        }
+        if isinstance(operation, WritePartOperation):
+            arguments["number"] = operation.request.number
+            resource = f"part:{operation.request.number}"
+        else:
+            resource = operation.kind
+        ticket = self._admission.arm(
+            self._collection_id,
+            self._object_id,
+            epoch=self._epoch,
+            kind=operation.kind,
+            resource=resource,
+            arguments=arguments,
+            executor_id=self._executor_id,
+            result_capacity_bytes=self._result_capacity_bytes,
+            grants=self._grants,
+            guard=self._guard,
+        )
+        invocation = WriteInvocation(
+            call=WriteCallIdentity(
+                call_id=ticket.call_id,
+                exact_request_sha256=arguments["provider_request_sha256"],
+                target_incarnation=ticket.target_incarnation,
+                dispatch_owner=ticket.executor_id,
+            ),
+            operation=operation,
+        )
+        try:
+            response = ticket.dispatch(
+                lambda: self._executor.execute_write(invocation, content=content)
+            )
+            validate_write_execution(invocation, response)
+        except BaseException:
+            self._admission.record_unknown(ticket)
+            raise
+        if response.outcome == "unknown":
+            self._admission.record_unknown(ticket)
+            raise Conflict("archive write execution remains unknown")
+        self._pending.append((ticket, response))
+        if response.outcome == "no_effect":
+            self._report(None, kind=None)
+        return response
+
+    @staticmethod
+    def _report_result(
+        response: WriteExecutionResult, checkpoint_sha256: str | None
+    ) -> Mapping[str, Any]:
+        # Observation and later closure commit the same outcome, independently of
+        # execution status. The catalog and provider request hashes have different preimages.
+        return {
+            "call": response.call.model_dump(mode="json"),
+            "outcome": response.outcome,
+            "result": response.result.model_dump(mode="json") if response.result else None,
+            "checkpoint_sha256": checkpoint_sha256,
+        }
+
+    def _report(self, checkpoint_json: str | None, *, kind: str | None) -> str | None:
+        checkpoint_identity = (
+            kind,
+            hashlib.sha256(checkpoint_json.encode()).hexdigest()
+            if checkpoint_json is not None
+            else None,
+        )
+        reports = []
+        for ticket, response in self._pending:
+            result = self._report_result(response, checkpoint_identity[1])
+            closure = (
+                ClosedArchiveWrite(
+                    call_id=ticket.call_id,
+                    request_sha256=ticket.request_sha256,
+                    executor_id=ticket.executor_id,
+                    target_incarnation=ticket.target_incarnation,
+                    result=result,
+                )
+                if response.execution == "closed"
+                else None
+            )
+            reports.append(ArchiveWriteReport(ticket, result, closure))
+        if not reports:
+            if checkpoint_json is None or self._confirmed_checkpoint != checkpoint_identity:
+                raise Conflict("archive upload checkpoint has no admitted write outcome")
+            self._retire_confirmed()
+            return self._load_confirmed_checkpoint(kind)
+        saved = []
+
+        def apply(
+            session: Session,
+            upload: CollectionUploadRecord,
+            volume: CollectionArchiveObjectUploadRecord,
+            result: Mapping[str, Any],
+        ) -> None:
+            if checkpoint_json is None:
+                return
+            save = (
+                self._checkpoints.apply_pack_upload_checkpoint
+                if kind == "pack"
+                else self._checkpoints.apply_raw_upload_checkpoint
+            )
+            saved.append(
+                save(
+                    session=session,
+                    upload=upload,
+                    record=volume,
+                    checkpoint_json=checkpoint_json,
+                )
+            )
+
+        self._admission.apply_reports(tuple(reports), apply_result=apply)
+        # Only confirmed settlement can retire a reservation. A lost report
+        # acknowledgement leaves the same pending reports available for retry.
+        self._retire.extend(report.ticket for report in reports if report.closure is not None)
+        self._pending.clear()
+        self._confirmed_checkpoint = checkpoint_identity
+        self._retire_confirmed()
+        if checkpoint_json is None:
+            return None
+        if saved:
+            return saved[0]
+        return self._load_confirmed_checkpoint(kind)
+
+    def _load_confirmed_checkpoint(self, kind: str | None) -> str:
+        load = (
+            self._checkpoints.load_pack_upload_checkpoint
+            if kind == "pack"
+            else self._checkpoints.load_raw_upload_checkpoint
+        )
+        current = load(collection_id=self._collection_id, volume_id=self._object_id)
+        if current is None:
+            raise RuntimeError("confirmed archive write checkpoint is missing")
+        return current
+
+    def _retire_confirmed(self) -> None:
+        while self._retire:
+            ticket = self._retire[0]
+            try:
+                self._admission.acknowledge_report(ticket)
+            except NotFound:
+                # This live actor already received exact settlement confirmation;
+                # absence here is only a lost acknowledgement of its own retirement.
+                pass
+            self._retire.popleft()
+
+    def _identity(self, collection_id: int, volume_id: str) -> None:
+        if collection_id != self._collection_id or volume_id != self._object_id:
+            raise Conflict("archive upload write actor identity changed")
+
+    def load_pack_upload_checkpoint(self, *, collection_id: int, volume_id: str) -> str | None:
+        self._identity(collection_id, volume_id)
+        return self._checkpoints.load_pack_upload_checkpoint(
+            collection_id=collection_id, volume_id=volume_id
+        )
+
+    def load_raw_upload_checkpoint(self, *, collection_id: int, volume_id: str) -> str | None:
+        self._identity(collection_id, volume_id)
+        return self._checkpoints.load_raw_upload_checkpoint(
+            collection_id=collection_id, volume_id=volume_id
+        )
+
+    def merge_pack_upload_checkpoint(
+        self, *, collection_id: int, volume_id: str, checkpoint_json: str
+    ) -> str:
+        self._identity(collection_id, volume_id)
+        result = self._report(checkpoint_json, kind="pack")
+        assert result is not None
+        return result
+
+    def merge_raw_upload_checkpoint(
+        self, *, collection_id: int, volume_id: str, checkpoint_json: str
+    ) -> str:
+        self._identity(collection_id, volume_id)
+        result = self._report(checkpoint_json, kind="segment")
+        assert result is not None
+        return result
+
+    def delete_pack_upload_checkpoint(self, *, collection_id: int, volume_id: str) -> None:
+        raise Conflict("forward archive write actor cannot dispose checkpoints")
+
+    def delete_raw_upload_checkpoint(self, *, collection_id: int, volume_id: str) -> None:
+        raise Conflict("forward archive write actor cannot dispose checkpoints")
