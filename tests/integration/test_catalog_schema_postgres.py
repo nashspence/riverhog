@@ -2225,3 +2225,102 @@ def test_postgres_actual_uploader_admission_and_atomic_reports(
         witness.test_mixed_closed_and_unknown_segments_commit_one_checkpoint_and_keep_unknown_charge(
             tmp_path, monkeypatch, kind
         )
+
+
+@pytest.mark.parametrize(
+    "vector",
+    [
+        "staging-cancel",
+        "verifying-cancel",
+        "auditing-cancel",
+        "ready-cancel",
+        "staging-discard",
+        "verifying-discard",
+        "auditing-discard",
+        "ready-discard",
+        "rollback",
+        "revision",
+        "checkpoint",
+        "construction",
+        "published",
+        "unresolved",
+    ],
+)
+def test_postgres_terminal_selection_freezes_registration_without_cleanup(
+    isolated_database_url, tmp_path, monkeypatch, vector
+):
+    from functools import partial
+
+    from tests.unit import test_collection_registration_operations as fixtures
+    from tests.unit import test_collection_terminal_registration as witness
+
+    monkeypatch.setattr(
+        fixtures,
+        "_service_with_archive_objects",
+        partial(fixtures._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    if vector == "rollback":
+        witness.test_terminal_freeze_rolls_back_with_its_selection_transaction(
+            tmp_path, monkeypatch
+        )
+    elif vector in {"revision", "checkpoint", "construction"}:
+        witness.test_terminal_selection_refuses_changed_active_registration_reservation(
+            tmp_path, vector
+        )
+    elif vector == "published":
+        witness.test_terminal_freeze_preserves_published_acknowledgement_replay(tmp_path)
+    elif vector == "unresolved":
+        witness.test_terminal_freeze_keeps_original_unresolved_effect_and_hidden_rows(tmp_path)
+    else:
+        phase, kind = vector.split("-")
+        witness.test_terminal_selection_freezes_hidden_registration_without_cleanup(
+            tmp_path, phase, kind
+        )
+
+
+def test_postgres_registration_actor_cannot_cross_selected_terminal(
+    isolated_database_url, tmp_path, monkeypatch
+):
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+    from functools import partial
+
+    from riverhog_core.services import collection_registration
+    from riverhog_protocol.errors import Conflict
+
+    from tests.unit import test_collection_registration_operations as fixtures
+    from tests.unit import test_collection_terminal_registration as witness
+
+    monkeypatch.setattr(
+        fixtures,
+        "_service_with_archive_objects",
+        partial(fixtures._service_with_archive_objects, database_url=isolated_database_url),
+    )
+    with witness._case(tmp_path, "ready") as case:
+        service, principal, collection_id, registration, operation_id, _ = case
+        original = collection_registration._execution
+        entered, release = threading.Event(), threading.Event()
+
+        def paused(*args):
+            execution = original(*args)
+            entered.set()
+            assert release.wait(timeout=10)
+            return execution
+
+        monkeypatch.setattr(collection_registration, "_execution", paused)
+        before = witness._snapshot(service, collection_id, operation_id)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(
+                registration.advance, collection_id, operation_id, limits=witness.LIMITS
+            )
+            try:
+                assert entered.wait(timeout=10)
+                witness._select(service, principal, collection_id)
+            finally:
+                release.set()
+            with pytest.raises(Conflict, match="execution changed"):
+                future.result(timeout=10)
+        after = witness._snapshot(service, collection_id, operation_id)
+        assert after["operation"]["phase"] == "ready"
+        assert after["operation"]["acknowledgement_json"] is None
+        assert after["rows"] == before["rows"] and after["upload"] == before["upload"]

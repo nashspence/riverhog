@@ -32,7 +32,9 @@ from riverhog_core.catalog_archive_write_models import (
 )
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
-from riverhog_core.collection_construction import upload_construction, upload_construction_fields
+from riverhog_core.collection_construction import upload_construction
+from riverhog_core.services.collection_registration_cleanup import freeze_registration_execution
+from riverhog_core.services.collection_upload_authority import require_archive_write_control
 
 _T = TypeVar("_T")
 Guard = Callable[[Session], None]
@@ -185,16 +187,7 @@ class ArchiveWriteAdmission:
 
     @staticmethod
     def _control(session: Session, upload: CollectionUploadRecord) -> ArchiveWriteControlRecord:
-        control = session.get(ArchiveWriteControlRecord, upload.collection_id)
-        if control is None:
-            raise Conflict("archive write admission owner is uninitialized")
-        original = json.loads(control.construction_json)
-        if not isinstance(original, dict) or "policy" not in original:
-            raise RuntimeError("archive write original construction is invalid")
-        original.pop("policy")
-        if original != upload_construction_fields(upload):
-            raise Conflict("archive write construction identity changed")
-        return control
+        return require_archive_write_control(session, upload)
 
     @staticmethod
     def _volume(
@@ -677,6 +670,9 @@ class ArchiveWriteAdmission:
             if control.gate != "open" or control.terminal_id is not None:
                 raise Conflict("a different archive upload terminal request was selected")
             validate_selection(session, upload)
+            freeze_registration_execution(
+                session, upload, construction_json=control.construction_json
+            )
             session.add(
                 ArchiveUploadTerminalRecord(
                     id=operation_id,

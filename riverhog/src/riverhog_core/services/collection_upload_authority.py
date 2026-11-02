@@ -1,4 +1,4 @@
-"""Live key and sealed execution-claim fences for collection-owned operations.
+"""Live key, sealed claim and write-control fences for collection-owned operations.
 
 These references do not grant operation permissions or construction custody.
 The composing owner checks those scopes while retaining its construction lock.
@@ -6,13 +6,18 @@ The composing owner checks those scopes while retaining its construction lock.
 
 from __future__ import annotations
 
-from riverhog_protocol.errors import NotFound
+import json
+
+from riverhog_protocol.errors import Conflict, NotFound
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from time_formats import utc_timestamp_now
 
 from riverhog_core.app_permissions import Principal
+from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
+from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
+from riverhog_core.collection_construction import upload_construction_fields
 from riverhog_core.services.app_keys import (
     KeyAuthorizationFence,
     retain_key_authorization,
@@ -60,3 +65,29 @@ def retain_upload_claim(
     ):
         raise NotFound("collection upload execution authority is no longer active")
     return str(claim.id)
+
+
+def require_archive_write_control(
+    session: Session, upload: CollectionUploadRecord
+) -> ArchiveWriteControlRecord:
+    """Read original write authority under the caller's construction write lock."""
+    control = session.get(ArchiveWriteControlRecord, upload.collection_id)
+    if control is None:
+        raise Conflict("archive write admission owner is uninitialized")
+    original = json.loads(control.construction_json)
+    if not isinstance(original, dict) or "policy" not in original:
+        raise RuntimeError("archive write original construction is invalid")
+    original.pop("policy")
+    if original != upload_construction_fields(upload):
+        raise Conflict("archive write construction identity changed")
+    return control
+
+
+def require_open_upload_writes(
+    session: Session, upload: CollectionUploadRecord
+) -> ArchiveWriteControlRecord:
+    """A current permission/lease cannot reopen a selected terminal's write gate."""
+    control = require_archive_write_control(session, upload)
+    if control.gate != "open":
+        raise Conflict("archive write admission is closed")
+    return control

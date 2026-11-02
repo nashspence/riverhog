@@ -68,6 +68,7 @@ from riverhog_core.services.app_keys import (
     require_key_authorization,
 )
 from riverhog_core.services.collection_upload_authority import (
+    require_open_upload_writes,
     retain_upload_claim,
     retain_upload_key,
 )
@@ -100,9 +101,10 @@ def _begin_writer(session: Session, *, defer_if_busy: bool = False) -> None:
         )
 
 
-def _open_lease(upload: CollectionUploadRecord) -> None:
+def _open_lease(session: Session, upload: CollectionUploadRecord) -> None:
     if upload.state != "open":
         raise Conflict("collection upload registration requires an open construction")
+    require_open_upload_writes(session, upload)
     if upload.custody_mode == "custody-transfer" and (
         upload.lease_expires_at is None or upload.lease_expires_at <= utc_timestamp_now()
     ):
@@ -267,7 +269,7 @@ def _live(
 ) -> None:
     if retained is None or retained.execution != _Execution.of(operation):
         raise Conflict("collection upload registration execution changed")
-    _open_lease(upload)
+    _open_lease(session, upload)
     if (
         hashlib.sha256(operation.request_json.encode()).hexdigest() != operation.request_sha256
         or hashlib.sha256(
@@ -595,7 +597,7 @@ class CollectionRegistrationOwner:
                     raise Conflict(
                         "collection upload registration cannot resume in its current phase"
                     )
-                _open_lease(upload)
+                _open_lease(session, upload)
                 if upload.active_registration_id != operation.id or operation.claim_id != claim_id:
                     raise Conflict("collection upload registration fence changed")
                 if (
@@ -615,7 +617,7 @@ class CollectionRegistrationOwner:
                     operation.due_at = utc_timestamp_now()
                 uploads._touch_upload(upload, config=self._service._config)
                 return _outcome(operation)
-            _open_lease(upload)
+            _open_lease(session, upload)
             if upload.active_registration_id is not None:
                 raise Conflict("collection upload registration is pending")
             try:

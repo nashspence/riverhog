@@ -39,7 +39,7 @@ def _json(value: object) -> str:
     return canonical_json_bytes(value).decode()
 
 
-def _reservation(upload: CollectionUploadRecord, operation: CollectionRegistrationRecord) -> None:
+def _identity(upload: CollectionUploadRecord, operation: CollectionRegistrationRecord) -> None:
     if (
         operation.collection_id != upload.collection_id
         or upload.active_registration_id != operation.id
@@ -48,6 +48,10 @@ def _reservation(upload: CollectionUploadRecord, operation: CollectionRegistrati
         or upload_construction(upload) != operation.construction_json
     ):
         raise Conflict("registration disposal reservation changed")
+
+
+def _reservation(upload: CollectionUploadRecord, operation: CollectionRegistrationRecord) -> None:
+    _identity(upload, operation)
     if upload.state != "discarding":
         raise Conflict("registration disposal requires its selected terminal owner")
     if operation.disposition_json is not None:
@@ -61,6 +65,54 @@ def _reservation(upload: CollectionUploadRecord, operation: CollectionRegistrati
             or _json(selected) != operation.disposition_json
         ):
             raise RuntimeError("registration disposal selection is invalid")
+
+
+def freeze_registration_execution(
+    session: Session, upload: CollectionUploadRecord, *, construction_json: str
+) -> None:
+    """Fence staged execution with terminal selection, retaining all hidden state.
+
+    The caller owns the construction lock and closes its write gate in this same
+    transaction. This supplies neither disposal authority nor cleanup scheduling.
+    """
+    active_id = session.scalar(
+        select(CollectionUploadRecord.active_registration_id).where(
+            CollectionUploadRecord.collection_id == upload.collection_id
+        )
+    )
+    if active_id is None:
+        return
+    operation = session.scalar(
+        select(CollectionRegistrationRecord)
+        .where(
+            CollectionRegistrationRecord.collection_id == upload.collection_id,
+            CollectionRegistrationRecord.id == active_id,
+        )
+        .with_for_update()
+    )
+    if operation is None:
+        raise RuntimeError("registration freeze has no retained active operation")
+    base = session.execute(
+        select(
+            CollectionUploadRecord.registration_revision,
+            CollectionUploadRecord.planner_checkpoint_json,
+        ).where(CollectionUploadRecord.collection_id == upload.collection_id)
+    ).one()
+    if (
+        operation.collection_id != upload.collection_id
+        or operation.base_revision != str(base.registration_revision)
+        or operation.base_checkpoint_json != base.planner_checkpoint_json
+        or operation.construction_json != construction_json
+    ):
+        raise Conflict("registration freeze reservation changed")
+    if (
+        operation.phase not in {"staging", "verifying", "auditing", "ready", "paused", "failed"}
+        or operation.disposition_json is not None
+    ):
+        raise Conflict("registration cannot freeze under a different terminal owner")
+    operation.execution_epoch = secrets.token_hex(32)
+    operation.due_at = None
+    operation.updated_at = utc_timestamp_now()
 
 
 def fence_registration_disposal(
