@@ -78,7 +78,8 @@ class ArchiveWriteEffectRecord(Base):
             ["archive_write_preparations.collection_id", "archive_write_preparations.object_id"],
         ),
         CheckConstraint(
-            "kind IN ('begin','part','complete','lookup')", name="ck_archive_write_effects_kind"
+            "kind IN ('begin','part','complete','lookup','put')",
+            name="ck_archive_write_effects_kind",
         ),
         CheckConstraint(
             "state IN ('armed','uncertain','settled')", name="ck_archive_write_effects_state"

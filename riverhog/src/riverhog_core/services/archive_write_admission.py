@@ -322,61 +322,19 @@ class ArchiveWriteAdmission:
                 }
             ):
                 raise Conflict("archive write prepared volume identity changed")
-            request_json = _json(
-                {
-                    "kind": kind,
-                    "resource": resource,
-                    "identity": json.loads(preparation.identity_json),
-                    "preparation_sha256": _sha(preparation.preparation_json),
-                    "arguments": arguments,
-                }
-            )
-            control_bytes = len(request_json.encode()) + 2 * result_capacity_bytes
-            retained = list(
-                session.execute(
-                    select(ArchiveWriteEffectRecord.id, ArchiveWriteEffectRecord.control_bytes)
-                    .where(ArchiveWriteEffectRecord.collection_id == collection_id)
-                    .order_by(ArchiveWriteEffectRecord.id)
-                    .limit(grants.calls)
-                )
-            )
-            if len(retained) >= grants.calls or (
-                sum(row.control_bytes for row in retained) + control_bytes > grants.control_bytes
-            ):
-                raise Conflict("archive write retained-effect grant is exhausted")
-            overlap = select(ArchiveWriteEffectRecord.id).where(
-                ArchiveWriteEffectRecord.collection_id == collection_id,
-                ArchiveWriteEffectRecord.object_id == object_id,
-                ArchiveWriteEffectRecord.unresolved.is_(True),
-            )
-            if kind not in {"begin", "complete", "lookup"}:
-                overlap = overlap.where(
-                    (ArchiveWriteEffectRecord.resource == resource)
-                    | ArchiveWriteEffectRecord.kind.in_(("begin", "complete", "lookup"))
-                )
-            if session.scalar(overlap.limit(1)) is not None:
-                raise Conflict("archive write effect is already unresolved")
-            call_id = secrets.token_hex(32)
-            sequence = parse_scalar("nonnegative", control.next_call)
-            control.next_call = format_scalar("nonnegative", sequence + 1)
-            session.add(
-                ArchiveWriteEffectRecord(
-                    id=call_id,
-                    collection_id=collection_id,
-                    object_id=object_id,
-                    sequence=format_scalar("nonnegative", sequence),
-                    epoch=control.epoch,
-                    executor_id=executor_id,
-                    dispatch_sha256=_sha(nonce),
-                    request_sha256=_sha(request_json),
-                    request_json=request_json,
-                    resource=resource,
-                    kind=kind,
-                    state="armed",
-                    unresolved=True,
-                    control_bytes=control_bytes,
-                    result_capacity_bytes=result_capacity_bytes,
-                )
+            call_id, nonce, request_sha256 = self._reserve_effect(
+                session,
+                control,
+                preparation,
+                collection_id=collection_id,
+                object_id=object_id,
+                kind=kind,
+                resource=resource,
+                arguments=arguments,
+                executor_id=executor_id,
+                result_capacity_bytes=result_capacity_bytes,
+                grants=grants,
+                nonce=nonce,
             )
         # No capability exists until the transaction's commit returned successfully.
         return ArmedProviderWrite(
@@ -384,10 +342,89 @@ class ArchiveWriteAdmission:
             collection_id=collection_id,
             object_id=object_id,
             nonce=nonce,
-            request_sha256=_sha(request_json),
+            request_sha256=request_sha256,
             executor_id=executor_id,
             target_incarnation=str(json.loads(control.construction_json)["archive_incarnation_id"]),
         )
+
+    @staticmethod
+    def _reserve_effect(
+        session: Session,
+        control: ArchiveWriteControlRecord,
+        preparation: ArchiveWritePreparationRecord,
+        *,
+        collection_id: int,
+        object_id: str,
+        kind: str,
+        resource: str,
+        arguments: Mapping[str, Any],
+        executor_id: str,
+        result_capacity_bytes: int,
+        grants: ArchiveWriteGrants,
+        nonce: str,
+    ) -> tuple[str, str, str]:
+        """Reserve shared bounded call capacity under the construction lock.
+
+        Returned facts are inert; the caller mints a live capability only after
+        its admission transaction has returned an unambiguous commit.
+        """
+        request_json = _json(
+            {
+                "kind": kind,
+                "resource": resource,
+                "identity": json.loads(preparation.identity_json),
+                "preparation_sha256": _sha(preparation.preparation_json),
+                "arguments": arguments,
+            }
+        )
+        control_bytes = len(request_json.encode()) + 2 * result_capacity_bytes
+        retained = list(
+            session.execute(
+                select(ArchiveWriteEffectRecord.id, ArchiveWriteEffectRecord.control_bytes)
+                .where(ArchiveWriteEffectRecord.collection_id == collection_id)
+                .order_by(ArchiveWriteEffectRecord.id)
+                .limit(grants.calls)
+            )
+        )
+        if len(retained) >= grants.calls or (
+            sum(row.control_bytes for row in retained) + control_bytes > grants.control_bytes
+        ):
+            raise Conflict("archive write retained-effect grant is exhausted")
+        overlap = select(ArchiveWriteEffectRecord.id).where(
+            ArchiveWriteEffectRecord.collection_id == collection_id,
+            ArchiveWriteEffectRecord.object_id == object_id,
+            ArchiveWriteEffectRecord.unresolved.is_(True),
+        )
+        if kind == "part":
+            overlap = overlap.where(
+                (ArchiveWriteEffectRecord.resource == resource)
+                | ArchiveWriteEffectRecord.kind.in_(("begin", "complete", "lookup"))
+            )
+        if session.scalar(overlap.limit(1)) is not None:
+            raise Conflict("archive write effect is already unresolved")
+        call_id = secrets.token_hex(32)
+        sequence = parse_scalar("nonnegative", control.next_call)
+        control.next_call = format_scalar("nonnegative", sequence + 1)
+        session.add(
+            ArchiveWriteEffectRecord(
+                id=call_id,
+                collection_id=collection_id,
+                object_id=object_id,
+                sequence=format_scalar("nonnegative", sequence),
+                epoch=control.epoch,
+                executor_id=executor_id,
+                dispatch_sha256=_sha(nonce),
+                request_sha256=_sha(request_json),
+                request_json=request_json,
+                resource=resource,
+                kind=kind,
+                state="armed",
+                unresolved=True,
+                control_bytes=control_bytes,
+                result_capacity_bytes=result_capacity_bytes,
+            )
+        )
+        return call_id, nonce, _sha(request_json)
 
     def _report_context(
         self, session: Session, ticket: ArmedProviderWrite

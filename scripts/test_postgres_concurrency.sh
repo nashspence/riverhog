@@ -40,6 +40,7 @@ database_url="postgresql+psycopg://$(compose_env_value POSTGRES_USER riverhog):$
 default_tests=(
   tests/integration/test_catalog_schema_postgres.py
   tests/integration/test_immutable_archive_preparation_concurrency.py
+    tests/integration/test_immutable_archive_admission_concurrency.py
   tests/integration/test_collection_deletion_concurrency.py
   tests/integration/test_collection_upload_custody_concurrency.py
   tests/integration/test_operation_lifecycle_postgres.py

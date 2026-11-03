@@ -2907,7 +2907,7 @@ CREATE TABLE archive_write_effects (
 	result_json TEXT,
 	PRIMARY KEY (id),
 	FOREIGN KEY(collection_id, object_id) REFERENCES archive_write_preparations (collection_id, object_id),
-	CONSTRAINT ck_archive_write_effects_kind CHECK (kind IN ('begin','part','complete','lookup')),
+	CONSTRAINT ck_archive_write_effects_kind CHECK (kind IN ('begin','part','complete','lookup','put')),
 	CONSTRAINT ck_archive_write_effects_state CHECK (state IN ('armed','uncertain','settled')),
 	CONSTRAINT ck_archive_write_effects_bytes CHECK (control_bytes > 0 AND result_capacity_bytes > 0),
 	CONSTRAINT ck_archive_write_effects_result CHECK (state <> 'settled' OR result_json IS NOT NULL),

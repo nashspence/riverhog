@@ -145,13 +145,13 @@ class ImmutableArchivePreparation:
         guard: Guard,
         validate_metadata: ValidateMetadata,
     ) -> PreparedImmutableArchiveObject:
+        # Retain an independent validated snapshot before permission or catalog
+        # waits. Neither the caller nor its validation callback can edit it.
+        operation = PutObjectOperation.model_validate_json(operation.model_dump_json())
         if operation.request.mode != "create_only" or (
             operation.request.expected_current_stored_sha256 is not None
         ):
             raise Conflict("immutable archive preparation requires create-only metadata")
-        # Retain an independent validated snapshot before permission or catalog
-        # waits. Neither the caller nor its validation callback can edit it.
-        operation = PutObjectOperation.model_validate_json(operation.model_dump_json())
         if (
             not isinstance(content, bytes)
             or len(content) != operation.request.stored_bytes
