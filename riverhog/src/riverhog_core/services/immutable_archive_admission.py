@@ -28,6 +28,7 @@ from riverhog_core.catalog_archive_write_models import (
 )
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import StorageIncarnationRecord
+from riverhog_core.immutable_archive_identity import require_immutable_archive_receipt
 from riverhog_core.ports.archive_objects import ArchiveObjectWriteExecutor
 from riverhog_core.provider_write_dispatch import ArmedProviderWrite, WithdrawnProviderWrite
 from riverhog_core.services.archive_write_admission import (
@@ -325,6 +326,40 @@ class ImmutableArchiveAdmission:
                 if response.result is not None:
                     effect.observation_json = encoded
 
+    def accept_existing(
+        self,
+        admitted: AdmittedImmutableArchiveWrite,
+        evidence: WithdrawnProviderWrite,
+        receipt: ImmutableObjectReceipt,
+        *,
+        apply_receipt: ApplyImmutableReceipt,
+    ) -> None:
+        """Receive object authority separately from an original unused dispatch.
+
+        The observed object may have different randomized ciphertext. Its receipt
+        is never represented as execution of the admitted exact Put request.
+        """
+        if evidence.ticket is not admitted.ticket:
+            raise Conflict("immutable archive unused proof belongs to another invocation")
+        admitted.ticket._require_withdrawal(evidence)
+        receipt = ImmutableObjectReceipt.model_validate_json(receipt.model_dump_json())
+        require_immutable_archive_receipt(admitted.prepared.operation.request, receipt)
+        encoded = _json(
+            {"dispatch": "never-started", "observed_object": receipt.model_dump(mode="json")}
+        )
+        with session_scope(self._factory) as session:
+            _writer(session)
+            effect = self._original_context(session, admitted)
+            if len(encoded.encode()) > effect.result_capacity_bytes:
+                raise Conflict("immutable archive observation exceeds its reserved byte grant")
+            if effect.observation_json is not None or (
+                effect.state == "settled" and effect.result_json != encoded
+            ):
+                raise Conflict("immutable archive unused observation conflicts with its outcome")
+            if effect.state != "settled":
+                apply_receipt(session, admitted.prepared, receipt)
+            effect.state, effect.unresolved, effect.result_json = "settled", False, encoded
+
     def record_unknown(self, admitted: AdmittedImmutableArchiveWrite) -> None:
         with session_scope(self._factory) as session:
             _writer(session)
@@ -351,8 +386,14 @@ class ImmutableArchiveAdmission:
                 raise Conflict("unresolved immutable archive write must retain its reservation")
             result = json.loads(effect.result_json)
             if result != {"dispatch": "never-started"}:
-                if verify_receipt is None or result.get("outcome") != "completed":
+                if verify_receipt is None:
                     raise Conflict("immutable archive original receipt has no receiving proof")
-                receipt = ImmutableObjectReceipt.model_validate(result["result"])
+                if result.get("dispatch") == "never-started" and "observed_object" in result:
+                    receipt = ImmutableObjectReceipt.model_validate(result["observed_object"])
+                    require_immutable_archive_receipt(admitted.prepared.operation.request, receipt)
+                elif result.get("outcome") == "completed":
+                    receipt = ImmutableObjectReceipt.model_validate(result["result"])
+                else:
+                    raise Conflict("immutable archive original receipt has no receiving proof")
                 verify_receipt(session, admitted.prepared, receipt)
             session.delete(effect)

@@ -7,9 +7,13 @@ from typing import Protocol
 from riverhog_storage_adapter_protocol import (
     BinaryContent,
     ObjectPlacementPolicy,
+    SmallObjectWriteRequest,
     WriteExecutionResult,
     WriteInvocation,
     WriteOperation,
+)
+from riverhog_storage_adapter_protocol import (
+    ImmutableObjectReceipt as AdapterImmutableObjectReceipt,
 )
 
 from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
@@ -144,6 +148,14 @@ class ImmutableObjectReceipt:
     stored_bytes: int
     stored_sha256: str
     completed_at: str
+
+
+class ImmutableArchiveObjectObserver(Protocol):
+    """Read-only compatible object authority, independent of write execution."""
+
+    def observe_immutable_object(
+        self, request: SmallObjectWriteRequest
+    ) -> AdapterImmutableObjectReceipt | None: ...
 
 
 class ImmutableArchiveObjectStore(Protocol):

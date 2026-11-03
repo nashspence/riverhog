@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from riverhog_protocol.errors import Conflict, NotFound
-from riverhog_storage_adapter_protocol import PutObjectOperation, SmallObjectWriteRequest
+from riverhog_storage_adapter_protocol import PutObjectOperation
 from sqlalchemy.orm import Session
 
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
@@ -20,6 +20,7 @@ from riverhog_core.catalog_archive_write_models import (
 )
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord
+from riverhog_core.immutable_archive_identity import immutable_archive_identity
 from riverhog_core.services.archive_write_admission import (
     ArchiveWriteAdmission,
     Guard,
@@ -30,28 +31,6 @@ from riverhog_core.services.archive_write_admission import (
 from riverhog_core.storage_incarnations import require_storage_incarnation
 
 ValidateMetadata = Callable[[Session, CollectionUploadRecord, PutObjectOperation], None]
-
-
-def _identity(request: SmallObjectWriteRequest) -> dict[str, Any]:
-    identity: dict[str, Any] = {
-        "kind": "immutable",
-        "object_path": request.object_path,
-        "content_type": request.content_type,
-        "required_identity_assertions": request.required_identity_assertions,
-        "placement_policy": request.placement_policy,
-        "mode": request.mode,
-    }
-    # Only the archive owner's complete plaintext assertions allow randomized
-    # ciphertext to differ while retaining the same immutable archive identity.
-    if (
-        not {
-            "riverhog-plaintext-bytes",
-            "riverhog-plaintext-sha256",
-        }
-        <= request.required_identity_assertions.keys()
-    ):
-        identity.update(stored_bytes=request.stored_bytes, stored_sha256=request.stored_sha256)
-    return identity
 
 
 @dataclass(frozen=True, slots=True)
@@ -126,7 +105,7 @@ class ImmutableArchivePreparation:
             or value["construction_sha256"] != _sha(control.construction_json)
             or value["target_incarnation"]
             != json.loads(control.construction_json)["archive_incarnation_id"]
-            or record.identity_json != _json(_identity(operation.request))
+            or record.identity_json != _json(immutable_archive_identity(operation.request))
             or object_id != ImmutableArchivePreparation.object_id(operation.request.object_path)
         ):
             raise Conflict("immutable archive original construction or identity changed")
@@ -159,7 +138,7 @@ class ImmutableArchivePreparation:
         ):
             raise Conflict("immutable archive ciphertext differs from its original request")
         object_id = self.object_id(operation.request.object_path)
-        identity_json = _json(_identity(operation.request))
+        identity_json = _json(immutable_archive_identity(operation.request))
         with session_scope(self._factory) as session:
             _writer(session)
             guard(session)
