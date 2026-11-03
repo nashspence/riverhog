@@ -137,7 +137,7 @@ class MirroredArchiveBegin:
                 # independently retained effect remains charged and unresolved.
                 if isinstance(error, Exception):
                     return self._archive_response
-                raise
+                raise error from None
             self._flush_preserving_failure()
             raise
         # A failed cache report keeps this same returned response for retry.

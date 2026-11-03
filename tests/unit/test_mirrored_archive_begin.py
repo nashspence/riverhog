@@ -434,3 +434,53 @@ def test_prephysical_cache_refusal_is_not_optional_and_preserves_original_archiv
         assert state[:2] == ("settled", False)
         assert json.loads(state[4]) == {"dispatch": "never-started"}
         assert state[-1] > 0 and not list((tmp_path / "cache" / "writes").iterdir())
+
+
+def _assert_cache_failure_after_dispatch(
+    tmp_path,
+    monkeypatch,
+    interrupted,
+    *,
+    database_url=None,
+):
+    with _joint(tmp_path, monkeypatch, database_url=database_url) as joint:
+        execute = joint.candidate.execute_write
+        error = (
+            KeyboardInterrupt("injected cache execution interrupt")
+            if interrupted
+            else OSError("injected lost cache begin result")
+        )
+        calls = []
+
+        def failed(invocation, **kwargs):
+            calls.append(invocation)
+            execute(invocation, **kwargs)
+            raise error
+
+        monkeypatch.setattr(joint.candidate, "execute_write", failed)
+        if interrupted:
+            with pytest.raises(KeyboardInterrupt) as caught:
+                _open(joint.actor)
+            assert caught.value is error
+            assert joint.actor.journal._pending[0][1] is joint.mirror.archive_response
+        else:
+            opened = _open(joint.actor)
+            assert opened.write_token == joint.mirror.archive_response.result.write_token
+            assert _stored(joint.actor) == (opened.to_json(), [])
+        assert joint.mirror.archive_response is not None
+        assert joint.mirror.cache_session is None
+        state = _cache_state(joint)
+        assert state[:2] == ("uncertain", True) and state[-1] > 0
+        assert state[3:5] == (None, None)
+        assert len(calls) == 1
+        assert len(list((tmp_path / "provider" / "writes").iterdir())) == 1
+        assert len(list((tmp_path / "cache" / "writes").iterdir())) == 1
+
+
+@pytest.mark.parametrize("interrupted", (False, True))
+def test_cache_failure_after_physical_dispatch_keeps_original_archive_and_interrupt(
+    tmp_path,
+    monkeypatch,
+    interrupted,
+):
+    _assert_cache_failure_after_dispatch(tmp_path, monkeypatch, interrupted)

@@ -520,3 +520,20 @@ def test_postgres_late_cache_begin_keeps_original_archive_checkpoint(
     from tests.unit.test_mirrored_archive_begin import _assert_late_cache_begin
 
     _assert_late_cache_begin(tmp_path, monkeypatch, database_url=database_url)
+
+
+@pytest.mark.parametrize("interrupted", (False, True))
+def test_postgres_joint_begin_preserves_original_cache_dispatch_interrupt(
+    database_url,
+    tmp_path,
+    monkeypatch,
+    interrupted,
+):
+    from tests.unit.test_mirrored_archive_begin import _assert_cache_failure_after_dispatch
+
+    _assert_cache_failure_after_dispatch(
+        tmp_path,
+        monkeypatch,
+        interrupted,
+        database_url=database_url,
+    )
