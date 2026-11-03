@@ -64,6 +64,29 @@ class AdmittedImmutableArchiveWrite:
         return WriteInvocation.model_validate_json(self.invocation_json)
 
 
+@dataclass(frozen=True, slots=True)
+class SettledImmutableArchiveWrite:
+    """Original closed data; neither a live ticket nor a fresh dispatch right."""
+
+    prepared: PreparedImmutableArchiveObject = field(repr=False)
+    call_id: str
+    invocation_json: str = field(repr=False)
+    result_json: str = field(repr=False)
+    record_sha256: str = field(repr=False)
+
+    @property
+    def receipt(self) -> ImmutableObjectReceipt | None:
+        result = json.loads(self.result_json)
+        if result == {"dispatch": "never-started"}:
+            return None
+        value = (
+            result["observed_object"]
+            if result.get("dispatch") == "never-started"
+            else result["result"]
+        )
+        return ImmutableObjectReceipt.model_validate(value)
+
+
 class ImmutableArchiveAdmission:
     """Share retained-call grants without borrowing a payload-volume identity.
 
@@ -176,16 +199,19 @@ class ImmutableArchiveAdmission:
         return admitted
 
     @staticmethod
-    def _original_context(
-        session: Session, admitted: AdmittedImmutableArchiveWrite
-    ) -> ArchiveWriteEffectRecord:
-        ticket, prepared, invocation = admitted.ticket, admitted.prepared, admitted.invocation
-        # Keep construction-before-child ordering when the source parent still
-        # exists. The independent control retains ownership after its retirement.
-        upload = session.scalar(ArchiveWriteAdmission._upload_query(ticket.collection_id))
+    def _retained_context(
+        session: Session,
+        collection_id: int,
+        object_id: str,
+        *,
+        call_id: str | None,
+    ) -> tuple[PreparedImmutableArchiveObject, ArchiveWriteEffectRecord, WriteInvocation] | None:
+        # Parent-before-child ordering also applies to cold receivers. The
+        # independent construction retains original facts after parent retirement.
+        upload = session.scalar(ArchiveWriteAdmission._upload_query(collection_id))
         control = session.get(
             ArchiveWriteControlRecord,
-            ticket.collection_id,
+            collection_id,
             with_for_update=True,
             populate_existing=True,
         )
@@ -194,16 +220,30 @@ class ImmutableArchiveAdmission:
         if upload is not None:
             ArchiveWriteAdmission._control(session, upload)
         ArchiveWriteAdmission._terminal_lock(session, control)
-        record = session.get(
-            ArchiveWritePreparationRecord, (ticket.collection_id, ticket.object_id)
-        )
+        record = session.get(ArchiveWritePreparationRecord, (collection_id, object_id))
         if record is None:
+            if call_id is None:
+                return None
             raise NotFound("immutable archive original preparation is unavailable")
-        original = ImmutableArchivePreparation._original(
-            ticket.collection_id, ticket.object_id, control, record
-        )
+        original = ImmutableArchivePreparation._original(collection_id, object_id, control, record)
+        if call_id is None:
+            # Read at most one already closed call from this object's indexed
+            # retained controls. Absence says nothing about provider execution.
+            call_id = session.scalar(
+                select(ArchiveWriteEffectRecord.id)
+                .where(
+                    ArchiveWriteEffectRecord.collection_id == collection_id,
+                    ArchiveWriteEffectRecord.object_id == object_id,
+                    ArchiveWriteEffectRecord.unresolved.is_(False),
+                    ArchiveWriteEffectRecord.resource == "put",
+                    ArchiveWriteEffectRecord.state == "settled",
+                )
+                .limit(1)
+            )
+            if call_id is None:
+                return None
         effect = session.get(
-            ArchiveWriteEffectRecord, ticket.call_id, with_for_update=True, populate_existing=True
+            ArchiveWriteEffectRecord, call_id, with_for_update=True, populate_existing=True
         )
         if effect is None:
             raise NotFound("immutable archive original effect is unavailable")
@@ -221,30 +261,183 @@ class ImmutableArchiveAdmission:
             }
         )
         if (
-            original != prepared
-            or ticket.collection_id != prepared.collection_id
-            or ticket.object_id != prepared.object_id
-            or effect.collection_id != prepared.collection_id
-            or effect.object_id != prepared.object_id
+            effect.collection_id != collection_id
+            or effect.object_id != object_id
             or effect.kind != "put"
             or effect.resource != "put"
-            or effect.dispatch_sha256 != _sha(ticket._nonce)
             or effect.request_json != request_json
             or effect.request_sha256 != _sha(request_json)
-            or ticket.request_sha256 != effect.request_sha256
-            or ticket.executor_id != effect.executor_id
-            or invocation.call
-            != WriteCallIdentity(
+        ):
+            raise Conflict("immutable archive original invocation changed")
+        invocation = WriteInvocation(
+            call=WriteCallIdentity(
                 call_id=effect.id,
                 exact_request_sha256=write_operation_sha256(original.operation),
                 target_incarnation=json.loads(control.construction_json)["archive_incarnation_id"],
                 dispatch_owner=effect.executor_id,
-            )
-            or invocation.operation != original.operation
+            ),
+            operation=original.operation,
+        )
+        return original, effect, invocation
+
+    @staticmethod
+    def _original_context(
+        session: Session, admitted: AdmittedImmutableArchiveWrite
+    ) -> ArchiveWriteEffectRecord:
+        ticket = admitted.ticket
+        context = ImmutableArchiveAdmission._retained_context(
+            session, ticket.collection_id, ticket.object_id, call_id=ticket.call_id
+        )
+        assert context is not None
+        original, effect, invocation = context
+        if (
+            original != admitted.prepared
+            or effect.dispatch_sha256 != _sha(ticket._nonce)
+            or ticket.request_sha256 != effect.request_sha256
+            or ticket.executor_id != effect.executor_id
             or ticket.target_incarnation != invocation.call.target_incarnation
+            or admitted.invocation != invocation
         ):
             raise Conflict("immutable archive original invocation changed")
         return effect
+
+    @staticmethod
+    def _settled_snapshot(
+        prepared: PreparedImmutableArchiveObject,
+        effect: ArchiveWriteEffectRecord,
+        invocation: WriteInvocation,
+    ) -> SettledImmutableArchiveWrite:
+        if effect.state != "settled" or effect.unresolved or effect.result_json is None:
+            raise Conflict("unresolved immutable archive write must retain its reservation")
+        if len(
+            effect.result_json.encode()
+        ) > effect.result_capacity_bytes or effect.observation_json not in {
+            None,
+            effect.result_json,
+        }:
+            raise Conflict("immutable archive retained outcome changed")
+        result = json.loads(effect.result_json)
+        if not isinstance(result, dict) or _json(result) != effect.result_json:
+            raise Conflict("immutable archive retained outcome encoding changed")
+        if result.get("dispatch") == "never-started":
+            if set(result) == {"dispatch", "observed_object"}:
+                receipt = ImmutableObjectReceipt.model_validate(result["observed_object"])
+                require_immutable_archive_receipt(prepared.operation.request, receipt)
+            elif set(result) != {"dispatch"}:
+                raise Conflict("immutable archive retained unused proof changed")
+        else:
+            if set(result) != {"call", "outcome", "result"}:
+                raise Conflict("immutable archive retained execution shape changed")
+            response = WriteExecutionResult.model_validate({**result, "execution": "closed"})
+            validate_write_execution(invocation, response)
+            if response.outcome != "completed" or not isinstance(
+                response.result, ImmutableObjectReceipt
+            ):
+                raise Conflict("immutable archive retained execution has no receipt")
+        commitment = _json(
+            {
+                "preparation_sha256": _sha(prepared.preparation_json),
+                "invocation": invocation.model_dump(mode="json"),
+                "sequence": effect.sequence,
+                "epoch": effect.epoch,
+                "dispatch_sha256": effect.dispatch_sha256,
+                "request_sha256": effect.request_sha256,
+                "control_bytes": effect.control_bytes,
+                "result_capacity_bytes": effect.result_capacity_bytes,
+                "observation_json": effect.observation_json,
+                "result_json": effect.result_json,
+            }
+        )
+        return SettledImmutableArchiveWrite(
+            prepared, effect.id, invocation.model_dump_json(), effect.result_json, _sha(commitment)
+        )
+
+    @staticmethod
+    def _settled_context(
+        session: Session, settled: SettledImmutableArchiveWrite
+    ) -> ArchiveWriteEffectRecord:
+        context = ImmutableArchiveAdmission._retained_context(
+            session,
+            settled.prepared.collection_id,
+            settled.prepared.object_id,
+            call_id=settled.call_id,
+        )
+        assert context is not None
+        original, effect, invocation = context
+        if ImmutableArchiveAdmission._settled_snapshot(original, effect, invocation) != settled:
+            raise Conflict("immutable archive receiving proof changed")
+        return effect
+
+    def load_next_report(
+        self, collection_id: int, object_path: str
+    ) -> SettledImmutableArchiveWrite | None:
+        """Read one original closed fact, including its original preparation epoch.
+
+        No current forward permission is granted. An absent fact neither observes
+        provider absence nor permits replacement of an unknown original call.
+        """
+        with session_scope(self._factory) as session:
+            _writer(session)
+            context = self._retained_context(
+                session,
+                collection_id,
+                ImmutableArchivePreparation.object_id(object_path),
+                call_id=None,
+            )
+            if context is None:
+                return None
+            original, effect, invocation = context
+            return self._settled_snapshot(original, effect, invocation)
+
+    def receive_settled(
+        self,
+        settled: SettledImmutableArchiveWrite,
+        *,
+        apply_receipt: ApplyImmutableReceipt,
+        verify_receipt: ApplyImmutableReceipt,
+    ) -> None:
+        """Ensure and verify the receiving owner's idempotent original checkpoint.
+
+        No provider call or forward authorization occurs here. The source owner
+        must ensure the same receipt on retries, including lost commit replies.
+        A separate positive acknowledgement retires the original call control.
+        """
+        with session_scope(self._factory) as session:
+            _writer(session)
+            self._settled_context(session, settled)
+            receipt = settled.receipt
+            if receipt is not None:
+                apply_receipt(session, settled.prepared, receipt)
+                # The receiver cannot change the original result passed to its
+                # verifier through a mutable assertion dictionary.
+                original = settled.receipt
+                assert original is not None
+                verify_receipt(session, settled.prepared, original)
+
+    def acknowledge_settled(
+        self,
+        settled: SettledImmutableArchiveWrite,
+        *,
+        verify_receipt: ApplyImmutableReceipt | None = None,
+    ) -> None:
+        """Retire only the exact original closed control against durable ownership."""
+        with session_scope(self._factory) as session:
+            _writer(session)
+            effect = self._settled_context(session, settled)
+            self._verify_receiving(settled, session, verify_receipt)
+            session.delete(effect)
+
+    @staticmethod
+    def _verify_receiving(
+        settled: SettledImmutableArchiveWrite,
+        session: Session,
+        verify_receipt: ApplyImmutableReceipt | None,
+    ) -> None:
+        receipt = settled.receipt
+        if receipt is not None:
+            if verify_receipt is None:
+                raise Conflict("immutable archive original receipt has no receiving proof")
+            verify_receipt(session, settled.prepared, receipt)
 
     def execute(
         self, admitted: AdmittedImmutableArchiveWrite, executor: ArchiveObjectWriteExecutor
@@ -382,18 +575,6 @@ class ImmutableArchiveAdmission:
         with session_scope(self._factory) as session:
             _writer(session)
             effect = self._original_context(session, admitted)
-            if effect.state != "settled" or effect.result_json is None:
-                raise Conflict("unresolved immutable archive write must retain its reservation")
-            result = json.loads(effect.result_json)
-            if result != {"dispatch": "never-started"}:
-                if verify_receipt is None:
-                    raise Conflict("immutable archive original receipt has no receiving proof")
-                if result.get("dispatch") == "never-started" and "observed_object" in result:
-                    receipt = ImmutableObjectReceipt.model_validate(result["observed_object"])
-                    require_immutable_archive_receipt(admitted.prepared.operation.request, receipt)
-                elif result.get("outcome") == "completed":
-                    receipt = ImmutableObjectReceipt.model_validate(result["result"])
-                else:
-                    raise Conflict("immutable archive original receipt has no receiving proof")
-                verify_receipt(session, admitted.prepared, receipt)
+            settled = self._settled_snapshot(admitted.prepared, effect, admitted.invocation)
+            self._verify_receiving(settled, session, verify_receipt)
             session.delete(effect)
