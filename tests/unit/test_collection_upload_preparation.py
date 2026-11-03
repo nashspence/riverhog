@@ -30,7 +30,9 @@ from tests.unit.test_collection_uploads import _CREATOR, _service_with_archive_o
 
 
 @contextmanager
-def _case(tmp_path, kind, *, database_url=None, content=None):
+def _case(
+    tmp_path, kind, *, database_url=None, content=None, configure_service=None, use_cache=False
+):
     service, config, provider, roots = _service_with_archive_objects(
         tmp_path,
         policy=CollectionVolumePolicy(
@@ -42,10 +44,13 @@ def _case(tmp_path, kind, *, database_url=None, content=None):
         database_url=database_url,
     )
     try:
+        if configure_service is not None:
+            configure_service(service)
         opened = service.create_or_resume(
             idempotency_key="retained-preparation",
             ingest_source="fixture",
             archive_store=None,
+            use_cache=use_cache,
             initiator=_CREATOR,
             event_context=None,
         )

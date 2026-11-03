@@ -41,8 +41,25 @@ from tests.unit.test_collection_uploads import _CREATOR
 
 
 @contextmanager
-def _actor(tmp_path, monkeypatch, kind, *, mode="direct", database_url=None, content=None):
-    with _case(tmp_path, kind, database_url=database_url, content=content) as case:
+def _actor(
+    tmp_path,
+    monkeypatch,
+    kind,
+    *,
+    mode="direct",
+    database_url=None,
+    content=None,
+    configure_service=None,
+    use_cache=False,
+):
+    with _case(
+        tmp_path,
+        kind,
+        database_url=database_url,
+        content=content,
+        configure_service=configure_service,
+        use_cache=use_cache,
+    ) as case:
         with session_scope(case.factory) as session:
             row = session.get(
                 CollectionArchiveObjectUploadRecord, (case.collection_id, case.object_id)

@@ -486,3 +486,37 @@ def test_postgres_cache_session_write_rechecks_custody_after_original_begin_wait
                 session.get(RetrievalCacheStoreAccountingRecord, case.candidate.name).reserved_bytes
                 == 3
             )
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+def test_postgres_joint_begin_preserves_both_original_effects_before_dispatch(
+    database_url,
+    tmp_path,
+    monkeypatch,
+    kind,
+):
+    from tests.unit.test_mirrored_archive_begin import _assert_joint_begin
+
+    _assert_joint_begin(tmp_path, monkeypatch, kind, "direct", database_url=database_url)
+
+
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_joint_begin_cache_report_retry_preserves_archive_checkpoint(
+    database_url,
+    tmp_path,
+    monkeypatch,
+    committed,
+):
+    from tests.unit.test_mirrored_archive_begin import _assert_cache_report_retry
+
+    _assert_cache_report_retry(tmp_path, monkeypatch, committed, database_url=database_url)
+
+
+def test_postgres_late_cache_begin_keeps_original_archive_checkpoint(
+    database_url,
+    tmp_path,
+    monkeypatch,
+):
+    from tests.unit.test_mirrored_archive_begin import _assert_late_cache_begin
+
+    _assert_late_cache_begin(tmp_path, monkeypatch, database_url=database_url)

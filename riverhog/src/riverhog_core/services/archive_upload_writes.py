@@ -89,6 +89,11 @@ class ArchiveUploadWrites:
         self._retire: deque[ArmedProviderWrite] = deque()
         self._confirmed_checkpoint: tuple[str | None, str | None] | None = None
 
+    @property
+    def scope(self) -> tuple[int, str, str]:
+        """Describe this actor without granting admission or dispatch authority."""
+        return self._collection_id, self._object_id, self._epoch
+
     def execute_write_operation(
         self, operation: WriteOperation, *, content: bytes = b""
     ) -> WriteExecutionResult:
