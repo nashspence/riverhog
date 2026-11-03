@@ -537,3 +537,60 @@ def test_postgres_joint_begin_preserves_original_cache_dispatch_interrupt(
         interrupted,
         database_url=database_url,
     )
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+def test_postgres_joint_parts_complete_preserve_original_sibling_intents(
+    database_url, tmp_path, monkeypatch, kind
+):
+    from tests.unit.test_mirrored_archive_upload_writes import _assert_joint_upload
+
+    _assert_joint_upload(tmp_path, monkeypatch, kind, "direct", database_url=database_url)
+
+
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_joint_archive_checkpoint_ack_controls_cache_part_retirement(
+    database_url, tmp_path, monkeypatch, committed
+):
+    from tests.unit.test_mirrored_archive_upload_writes import _assert_archive_checkpoint_retry
+
+    _assert_archive_checkpoint_retry(tmp_path, monkeypatch, committed, database_url=database_url)
+
+
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_joint_cache_part_report_ack_retries_original_after_archive_checkpoint(
+    database_url, tmp_path, monkeypatch, committed
+):
+    from tests.unit.test_mirrored_archive_upload_writes import _assert_cache_report_retry
+
+    _assert_cache_report_retry(tmp_path, monkeypatch, committed, database_url=database_url)
+
+
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_joint_cache_part_retirement_ack_retries_original(
+    database_url, tmp_path, monkeypatch, committed
+):
+    from tests.unit.test_mirrored_archive_upload_writes import _assert_cache_retirement_retry
+
+    _assert_cache_retirement_retry(tmp_path, monkeypatch, committed, database_url=database_url)
+
+
+@pytest.mark.parametrize("phase", ("part", "complete"))
+@pytest.mark.parametrize("interrupted", (False, True))
+def test_postgres_joint_cache_child_failure_preserves_original_archive_and_interrupt(
+    database_url, tmp_path, monkeypatch, phase, interrupted
+):
+    from tests.unit.test_mirrored_archive_upload_writes import _assert_cache_child_failure
+
+    _assert_cache_child_failure(
+        tmp_path, monkeypatch, phase, interrupted, database_url=database_url
+    )
+
+
+@pytest.mark.parametrize("phase", ("part", "complete"))
+def test_postgres_joint_late_http_cache_child_remains_owned_after_terminal(
+    database_url, tmp_path, monkeypatch, phase
+):
+    from tests.unit.test_mirrored_archive_upload_writes import _assert_late_cache_child
+
+    _assert_late_cache_child(tmp_path, monkeypatch, phase, database_url=database_url)

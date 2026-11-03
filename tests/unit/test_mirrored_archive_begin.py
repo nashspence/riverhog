@@ -35,7 +35,16 @@ from tests.unit.test_retrieval_cache_write_execution import _candidate
 
 
 @contextmanager
-def _joint(tmp_path, monkeypatch, kind="pack", *, mode="direct", database_url=None, budget=1000000):
+def _joint(
+    tmp_path,
+    monkeypatch,
+    kind="pack",
+    *,
+    mode="direct",
+    database_url=None,
+    budget=1000000,
+    content=None,
+):
     with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as transport:
         candidate = _candidate(transport)
         registration = replace(_registration(candidate.name), admission_budget_bytes=budget)
@@ -60,6 +69,7 @@ def _joint(tmp_path, monkeypatch, kind="pack", *, mode="direct", database_url=No
             # exercises the independent cache child.
             mode="direct" if mode == "supplied" else mode,
             database_url=database_url,
+            content=content,
             configure_service=configure,
             use_cache=True,
         ) as actor:
