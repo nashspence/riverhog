@@ -44,7 +44,11 @@ def reconcile_storage_incarnations(
     with session_scope(session_factory) as session:
         records = {
             (cast(StorageKind, record.kind), record.name): record
-            for record in session.scalars(select(StorageIncarnationRecord).with_for_update())
+            for record in session.scalars(
+                select(StorageIncarnationRecord)
+                .order_by(StorageIncarnationRecord.kind, StorageIncarnationRecord.name)
+                .with_for_update()
+            )
         }
         configured_names: dict[str, StorageKind] = {}
         for kind, name in observations:

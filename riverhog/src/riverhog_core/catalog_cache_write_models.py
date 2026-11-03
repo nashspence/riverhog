@@ -31,6 +31,7 @@ class CachePopulationBeginRecord(Base):
     cleanup_capacity_bytes: Mapped[int] = mapped_column(BigInteger)
     observation_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    publication_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
         UniqueConstraint("population_generation", name="uq_cache_population_begins_generation"),
@@ -45,6 +46,11 @@ class CachePopulationBeginRecord(Base):
             "state = 'settled' AND unresolved IS false AND result_json IS NOT NULL OR "
             "state IN ('armed','uncertain') AND unresolved IS true AND result_json IS NULL",
             name="ck_cache_population_begins_outcome",
+        ),
+        CheckConstraint(
+            "publication_json IS NULL OR state = 'settled' AND unresolved IS false "
+            "AND result_json IS NOT NULL",
+            name="ck_cache_population_begins_publication",
         ),
         Index("ix_cache_population_begins_pending", "collection_id", "unresolved", "id"),
         Index("ix_cache_population_begins_capacity", "collection_id", "id"),

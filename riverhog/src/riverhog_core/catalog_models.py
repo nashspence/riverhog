@@ -2394,7 +2394,7 @@ class RetrievalCachePopulationRecord(Base):
             "object_id",
         ),
         CheckConstraint(
-            "state IN ('waiting','admitting','admitted','writing','abandoning')",
+            "state IN ('waiting','admitting','admitted','writing','published','abandoning')",
             name="ck_retrieval_cache_populations_state",
         ),
         CheckConstraint(
@@ -2402,9 +2402,13 @@ class RetrievalCachePopulationRecord(Base):
             "AND state IN ('waiting','abandoning') OR "
             "cache_store IS NOT NULL AND object_path IS NOT NULL AND "
             "(write_token IS NULL AND state = 'admitting' OR "
-            "write_token IS NOT NULL AND state IN ('admitted','writing') OR "
+            "write_token IS NOT NULL AND state IN ('admitted','writing','published') OR "
             "state = 'abandoning')",
             name="ck_retrieval_cache_populations_session",
+        ),
+        CheckConstraint(
+            "state != 'published' OR begin_call_id IS NOT NULL",
+            name="ck_retrieval_cache_populations_publication",
         ),
     )
 

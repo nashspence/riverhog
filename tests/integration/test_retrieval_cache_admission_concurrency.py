@@ -594,3 +594,137 @@ def test_postgres_joint_late_http_cache_child_remains_owned_after_terminal(
     from tests.unit.test_mirrored_archive_upload_writes import _assert_late_cache_child
 
     _assert_late_cache_child(tmp_path, monkeypatch, phase, database_url=database_url)
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+def test_postgres_original_cache_publication_transfers_once_and_preserves_archive(
+    database_url, tmp_path, monkeypatch, kind
+):
+    from tests.unit.test_cache_population_publication import _assert_publication
+
+    _assert_publication(tmp_path, monkeypatch, kind, "direct", database_url=database_url)
+
+
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_cache_publication_transaction_reply_loss_retries_original(
+    database_url, tmp_path, monkeypatch, committed
+):
+    from tests.unit.test_cache_population_publication import _assert_publication_reply_loss
+
+    _assert_publication_reply_loss(tmp_path, monkeypatch, committed, database_url=database_url)
+
+
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_cache_publication_retirement_reply_loss_retries_original(
+    database_url, tmp_path, monkeypatch, committed
+):
+    from tests.unit.test_cache_population_publication import _assert_publication_retirement_loss
+
+    _assert_publication_retirement_loss(tmp_path, monkeypatch, committed, database_url=database_url)
+
+
+def test_postgres_cache_publication_evicted_receipt_replay_never_recreates_placement(
+    database_url, tmp_path, monkeypatch
+):
+    from tests.unit.test_cache_population_publication import _assert_publication_after_eviction
+
+    _assert_publication_after_eviction(tmp_path, monkeypatch, database_url=database_url)
+
+
+def test_postgres_publication_retains_bindings_through_accounting_wait(
+    database_url, tmp_path, monkeypatch
+):
+    import time
+
+    from riverhog_core.catalog_models import StorageIncarnationRecord
+    from riverhog_core.storage_incarnations import reconcile_storage_incarnations
+    from sqlalchemy import event, select
+
+    from tests.unit.test_cache_population_publication import _completed, _state
+
+    with _completed(tmp_path, monkeypatch, database_url=database_url) as joint:
+        factory = joint.actor.case.factory
+        engine = factory.kw["bind"]
+        execution = threading.local()
+        waiting, configuring = threading.Event(), threading.Event()
+        pids = {}
+
+        def capture(connection, cursor, statement, parameters, context, executemany):
+            lane = getattr(execution, "lane", None)
+            if lane == "publication" and (
+                "FROM retrieval_cache_store_accounting" in statement and "FOR UPDATE" in statement
+            ):
+                cursor.execute("SELECT pg_backend_pid()")
+                pids[lane] = cursor.fetchone()[0]
+                waiting.set()
+            if lane == "configuration" and (
+                "FROM storage_incarnations" in statement and "FOR UPDATE" in statement
+            ):
+                cursor.execute("SELECT pg_backend_pid()")
+                pids[lane] = cursor.fetchone()[0]
+                configuring.set()
+
+        def publish():
+            execution.lane = "publication"
+            return joint.publisher.publish(joint.completion)
+
+        with session_scope(factory) as session:
+            observations = {
+                (row.kind, row.name): row.id
+                for row in session.scalars(select(StorageIncarnationRecord))
+                if (row.kind, row.name) != ("cache", joint.candidate.name)
+            }
+
+        def configure():
+            execution.lane = "configuration"
+            return reconcile_storage_incarnations(factory, observations)
+
+        def blocked(pid, blocker):
+            deadline = time.monotonic() + 10
+            with engine.connect() as observer:
+                while time.monotonic() < deadline:
+                    if blocker in observer.scalar(
+                        text("SELECT pg_blocking_pids(:pid)"), {"pid": pid}
+                    ):
+                        return True
+                    time.sleep(0.01)
+            return False
+
+        blocker = factory()
+        event.listen(engine, "before_cursor_execute", capture)
+        try:
+            blocker.scalar(
+                select(RetrievalCacheStoreAccountingRecord)
+                .where(RetrievalCacheStoreAccountingRecord.cache_store == joint.candidate.name)
+                .with_for_update()
+            )
+            blocker_pid = blocker.scalar(text("SELECT pg_backend_pid()"))
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                publication = pool.submit(publish)
+                configuration = None
+                try:
+                    assert waiting.wait(timeout=10)
+                    assert blocked(pids["publication"], blocker_pid)
+                    configuration = pool.submit(configure)
+                    assert configuring.wait(timeout=10)
+                    assert blocked(pids["configuration"], pids["publication"])
+                    assert not publication.done() and not configuration.done()
+                finally:
+                    blocker.rollback()
+                published = publication.result(timeout=10)
+                assert configuration is not None
+                configuration.result(timeout=10)
+        finally:
+            blocker.close()
+            event.remove(engine, "before_cursor_execute", capture)
+        before = _state(joint)
+        with session_scope(factory) as session:
+            assert (
+                session.get(StorageIncarnationRecord, ("cache", joint.candidate.name)).state
+                == "disabled"
+            )
+        # This is the original accepted transfer, independent of current binding.
+        assert joint.publisher.publish(joint.completion) == published
+        assert _state(joint) == before
+        joint.publisher.acknowledge(published)
+        assert _state(joint)["committed"] == published.receipt.stored_bytes

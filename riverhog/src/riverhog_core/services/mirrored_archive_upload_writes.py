@@ -24,11 +24,16 @@ from sqlalchemy.orm import Session
 from riverhog_core.app_permissions import Principal
 from riverhog_core.cache_write_grants import CacheWriteGrants
 from riverhog_core.catalog_models import CollectionUploadRecord
+from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
 from riverhog_core.ports.archive_objects import WriteSegmentCursor
 from riverhog_core.ports.archive_objects import WriteSession as ArchiveSession
 from riverhog_core.provider_write_dispatch import ArmedProviderWrite, WithdrawnProviderWrite
 from riverhog_core.services.archive_upload_writes import ArchiveUploadWrites
 from riverhog_core.services.archive_write_admission import Guard
+from riverhog_core.services.cache_population_publication import (
+    CachePopulationPublication,
+    PublishedCachePopulation,
+)
 from riverhog_core.services.cache_population_writes import CachePopulationWriteAdmission
 from riverhog_core.services.mirrored_archive_begin import MirroredArchiveBegin
 from riverhog_core.stores.storage_adapter_retrieval_cache import StorageAdapterRetrievalCache
@@ -85,6 +90,9 @@ class MirroredArchiveUploadWrites:
         self._retire: deque[_CacheEffect] = deque()
         self._checkpoint_pending: list[_CacheEffect] = []
         self._cache_writable = True
+        self._publication: PublishedCachePopulation | None = None
+        self._publication_acknowledged = False
+        self._publication_retirement_uncertain = False
 
     def _cache_operation(
         self, operation: WritePartOperation | CompleteWriteOperation
@@ -338,3 +346,38 @@ class MirroredArchiveUploadWrites:
 
     def delete_raw_upload_checkpoint(self, *, collection_id: int, volume_id: str) -> None:
         raise Conflict("forward joint write actor cannot dispose checkpoints")
+
+    def publish_cache(self, publisher: CachePopulationPublication) -> RetrievalCacheReceipt | None:
+        """Transfer only an original closed completion after accepted archive publication."""
+        with self._lock:
+            if self._publication_acknowledged:
+                assert self._publication is not None
+                return self._publication.receipt
+            self.flush_cache_reports()
+            if self._begin.cache_begin_call_id is None:
+                return None
+            if self._publication is None:
+                completed = [
+                    effect
+                    for effect in self._effects.values()
+                    if effect.kind == "complete"
+                    and effect.reported
+                    and effect.archive_confirmed
+                    and effect.response is not None
+                    and effect.response.outcome == "completed"
+                    and effect.response.execution == "closed"
+                ]
+                if len(completed) != 1:
+                    raise Conflict("joint cache population has no confirmed original completion")
+                self._publication = publisher.publish(completed[0].ticket)
+            try:
+                publisher.acknowledge(self._publication)
+            except NotFound:
+                if not self._publication_retirement_uncertain:
+                    raise
+            except Exception:
+                self._publication_retirement_uncertain = True
+                raise
+            self._effects.pop(self._publication.ticket.call_id)
+            self._publication_acknowledged = True
+            return self._publication.receipt
