@@ -38,7 +38,8 @@ from tests.unit.test_collection_uploads import _CREATOR, _service_with_archive_o
 from tests.unit.test_retrieval_cache_coordinator import _registration
 from tests.unit.test_retrieval_cache_write_execution import _candidate
 
-GRANTS = CacheWriteGrants(calls=4, control_bytes=100000, result_bytes=10000, cleanup_bytes=1000)
+# Cover four retained calls plus bounded source/receiver receipt metadata.
+GRANTS = CacheWriteGrants(calls=4, control_bytes=200000, result_bytes=10000, cleanup_bytes=1000)
 
 
 @contextmanager

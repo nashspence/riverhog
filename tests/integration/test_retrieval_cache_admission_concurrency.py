@@ -666,7 +666,7 @@ def test_postgres_publication_retains_bindings_through_accounting_wait(
 
         def publish():
             execution.lane = "publication"
-            return joint.publisher.publish(joint.completion)
+            return joint.publisher.publish(joint.closed)
 
         with session_scope(factory) as session:
             observations = {
@@ -724,7 +724,124 @@ def test_postgres_publication_retains_bindings_through_accounting_wait(
                 == "disabled"
             )
         # This is the original accepted transfer, independent of current binding.
-        assert joint.publisher.publish(joint.completion) == published
+        assert joint.publisher.publish(joint.closed) == published
         assert _state(joint) == before
         joint.publisher.acknowledge(published)
         assert _state(joint)["committed"] == published.receipt.stored_bytes
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+def test_postgres_closed_cache_receipt_owns_data_before_archive_visibility(
+    database_url, tmp_path, monkeypatch, kind
+):
+    from tests.unit.test_cache_population_closure import _assert_closure
+
+    _assert_closure(tmp_path, monkeypatch, kind, "direct", database_url=database_url)
+
+
+@pytest.mark.parametrize("committed", (False, True))
+@pytest.mark.parametrize("phase", ("accept", "acknowledge"))
+def test_postgres_closed_cache_transfer_commit_and_reply_loss_retries_original(
+    database_url, tmp_path, monkeypatch, committed, phase
+):
+    from tests.unit.test_cache_population_closure import _assert_transfer_loss
+
+    _assert_transfer_loss(tmp_path, monkeypatch, committed, phase=phase, database_url=database_url)
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+def test_postgres_fixed_call_grants_progress_through_many_original_volumes(
+    database_url, tmp_path, monkeypatch, kind
+):
+    from tests.unit.test_cache_population_closure import _assert_many_volumes
+
+    _assert_many_volumes(tmp_path, monkeypatch, kind, "direct", database_url=database_url)
+
+
+def test_postgres_closed_cache_acceptance_serializes_original_receiving_evidence(
+    database_url, tmp_path, monkeypatch
+):
+    import time
+
+    from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord
+    from riverhog_core.services.cache_population_closure import CachePopulationClosure
+    from sqlalchemy import event
+
+    from tests.unit.test_cache_population_closure import _sealed
+    from tests.unit.test_cache_population_publication import _state
+
+    with _sealed(tmp_path, monkeypatch, database_url=database_url) as joint:
+        factory = joint.actor.case.factory
+        engine = factory.kw["bind"]
+        execution = threading.local()
+        waiting, replaying = threading.Event(), threading.Event()
+        pids = {}
+        physical = list(joint.actor.seen)
+        before = _state(joint)
+
+        def capture(connection, cursor, statement, parameters, context, executemany):
+            lane = getattr(execution, "lane", None)
+            table = {
+                "first": "FROM collection_archive_object_uploads",
+                "second": "FROM collection_uploads",
+            }.get(lane)
+            if table is not None and table in statement and "FOR UPDATE" in statement:
+                cursor.execute("SELECT pg_backend_pid()")
+                pids[lane] = cursor.fetchone()[0]
+                (waiting if lane == "first" else replaying).set()
+
+        def accept(lane):
+            execution.lane = lane
+            owner = CachePopulationClosure(factory)
+            return owner.accept_report(
+                joint.actor.case.collection_id, joint.actor.case.object_id, joint.completion.call_id
+            )
+
+        def blocked(pid, blocker):
+            deadline = time.monotonic() + 10
+            with engine.connect() as observer:
+                while time.monotonic() < deadline:
+                    if blocker in observer.scalar(
+                        text("SELECT pg_blocking_pids(:pid)"), {"pid": pid}
+                    ):
+                        return True
+                    time.sleep(0.01)
+            return False
+
+        blocker = factory()
+        event.listen(engine, "before_cursor_execute", capture)
+        try:
+            blocker.get(
+                CollectionArchiveObjectUploadRecord,
+                (joint.actor.case.collection_id, joint.actor.case.object_id),
+                with_for_update=True,
+            )
+            blocker_pid = blocker.scalar(text("SELECT pg_backend_pid()"))
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                first = pool.submit(accept, "first")
+                second = None
+                try:
+                    assert waiting.wait(timeout=10)
+                    assert blocked(pids["first"], blocker_pid)
+                    second = pool.submit(accept, "second")
+                    assert replaying.wait(timeout=10)
+                    assert blocked(pids["second"], pids["first"])
+                finally:
+                    blocker.rollback()
+                closed = first.result(timeout=10)
+                assert second is not None
+                assert second.result(timeout=10) == closed
+        finally:
+            blocker.close()
+            event.remove(engine, "before_cursor_execute", capture)
+        owner = CachePopulationClosure(factory)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            results = [pool.submit(owner.acknowledge, closed) for _ in range(2)]
+            for result in results:
+                result.result(timeout=10)
+        after = _state(joint)
+        assert after["begins"] == after["children"] == []
+        assert after["reserved"] == before["reserved"] and after["committed"] == 0
+        assert after["generation"] == before["generation"]
+        assert after["populations"] == [("sealed", closed.generation)]
+        assert joint.actor.seen == physical

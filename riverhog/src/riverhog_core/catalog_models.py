@@ -2341,6 +2341,8 @@ class RetrievalCachePopulationRecord(Base):
 
     generation: Mapped[str] = mapped_column(String(64), default=lambda: secrets.token_hex(32))
     begin_call_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    closed_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    publication_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     source_store: Mapped[str] = mapped_column(String, primary_key=True)
     source_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
@@ -2394,7 +2396,8 @@ class RetrievalCachePopulationRecord(Base):
             "object_id",
         ),
         CheckConstraint(
-            "state IN ('waiting','admitting','admitted','writing','published','abandoning')",
+            "state IN ('waiting','admitting','admitted','writing',"
+            "'sealed','published','abandoning')",
             name="ck_retrieval_cache_populations_state",
         ),
         CheckConstraint(
@@ -2402,12 +2405,17 @@ class RetrievalCachePopulationRecord(Base):
             "AND state IN ('waiting','abandoning') OR "
             "cache_store IS NOT NULL AND object_path IS NOT NULL AND "
             "(write_token IS NULL AND state = 'admitting' OR "
-            "write_token IS NOT NULL AND state IN ('admitted','writing','published') OR "
+            "write_token IS NOT NULL AND state IN ('admitted','writing','sealed','published') OR "
             "state = 'abandoning')",
             name="ck_retrieval_cache_populations_session",
         ),
         CheckConstraint(
-            "state != 'published' OR begin_call_id IS NOT NULL",
+            "state NOT IN ('sealed','published') OR "
+            "begin_call_id IS NOT NULL AND closed_receipt_json IS NOT NULL",
+            name="ck_retrieval_cache_populations_closed_receipt",
+        ),
+        CheckConstraint(
+            "publication_json IS NULL OR state = 'published' AND closed_receipt_json IS NOT NULL",
             name="ck_retrieval_cache_populations_publication",
         ),
     )
@@ -3960,6 +3968,8 @@ class CollectionArchiveObjectUploadRecord(Base):
     checkpoint_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     sealed_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     metadata_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    cache_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    cache_publication_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
     uploaded_bytes: Mapped[int] = mapped_column(BigInteger, default=0)
     uploaded_units: Mapped[int] = mapped_column(Integer, default=0)
@@ -4010,6 +4020,10 @@ class CollectionArchiveObjectUploadRecord(Base):
         CheckConstraint(
             _fixed_lowercase_integer_check("sequence", 64),
             name="ck_archive_object_uploads_sequence",
+        ),
+        CheckConstraint(
+            "cache_publication_json IS NULL OR cache_receipt_json IS NOT NULL",
+            name="ck_archive_object_uploads_cache_publication",
         ),
         CheckConstraint("plaintext_bytes >= 0", name="ck_archive_object_uploads_plaintext"),
         CheckConstraint("source_bytes >= 0", name="ck_archive_object_uploads_source"),

@@ -30,6 +30,7 @@ from riverhog_core.ports.archive_objects import WriteSession as ArchiveSession
 from riverhog_core.provider_write_dispatch import ArmedProviderWrite, WithdrawnProviderWrite
 from riverhog_core.services.archive_upload_writes import ArchiveUploadWrites
 from riverhog_core.services.archive_write_admission import Guard
+from riverhog_core.services.cache_population_closure import ClosedCachePopulation
 from riverhog_core.services.cache_population_publication import (
     CachePopulationPublication,
     PublishedCachePopulation,
@@ -90,6 +91,8 @@ class MirroredArchiveUploadWrites:
         self._retire: deque[_CacheEffect] = deque()
         self._checkpoint_pending: list[_CacheEffect] = []
         self._cache_writable = True
+        self._closed: ClosedCachePopulation | None = None
+        self._closure_acknowledged = False
         self._publication: PublishedCachePopulation | None = None
         self._publication_acknowledged = False
         self._publication_retirement_uncertain = False
@@ -347,16 +350,15 @@ class MirroredArchiveUploadWrites:
     def delete_raw_upload_checkpoint(self, *, collection_id: int, volume_id: str) -> None:
         raise Conflict("forward joint write actor cannot dispose checkpoints")
 
-    def publish_cache(self, publisher: CachePopulationPublication) -> RetrievalCacheReceipt | None:
-        """Transfer only an original closed completion after accepted archive publication."""
+    def transfer_cache(self, publisher: CachePopulationPublication) -> ClosedCachePopulation | None:
+        """Receive closed bytes durably before releasing the original call slots."""
         with self._lock:
-            if self._publication_acknowledged:
-                assert self._publication is not None
-                return self._publication.receipt
+            if self._closure_acknowledged:
+                return self._closed
             self.flush_cache_reports()
             if self._begin.cache_begin_call_id is None:
                 return None
-            if self._publication is None:
+            if self._closed is None:
                 completed = [
                     effect
                     for effect in self._effects.values()
@@ -369,7 +371,24 @@ class MirroredArchiveUploadWrites:
                 ]
                 if len(completed) != 1:
                     raise Conflict("joint cache population has no confirmed original completion")
-                self._publication = publisher.publish(completed[0].ticket)
+                self._closed = publisher.closure.accept(completed[0].ticket)
+            publisher.closure.acknowledge(self._closed)
+            value = publisher.closure._value(self._closed)
+            self._effects.pop(value["completion_call_id"], None)
+            self._closure_acknowledged = True
+            return self._closed
+
+    def publish_cache(self, publisher: CachePopulationPublication) -> RetrievalCacheReceipt | None:
+        """Publish retained closure only after accepted archive authority."""
+        with self._lock:
+            if self._publication_acknowledged:
+                assert self._publication is not None
+                return self._publication.receipt
+            closed = self.transfer_cache(publisher)
+            if closed is None:
+                return None
+            if self._publication is None:
+                self._publication = publisher.publish(closed)
             try:
                 publisher.acknowledge(self._publication)
             except NotFound:
@@ -378,6 +397,5 @@ class MirroredArchiveUploadWrites:
             except Exception:
                 self._publication_retirement_uncertain = True
                 raise
-            self._effects.pop(self._publication.ticket.call_id)
             self._publication_acknowledged = True
             return self._publication.receipt

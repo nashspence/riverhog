@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import threading
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import replace
 from types import SimpleNamespace
 
@@ -44,8 +44,19 @@ def _joint(
     database_url=None,
     budget=1000000,
     content=None,
+    existing_case=None,
+    archive_root=None,
+    cache_adapter=None,
+    grants=None,
 ):
-    with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as transport:
+    with (
+        (
+            nullcontext(cache_adapter)
+            if cache_adapter is not None
+            else _filesystem(tmp_path / "cache")
+        ) as adapter,
+        _executor(adapter, mode) as transport,
+    ):
         candidate = _candidate(transport)
         registration = replace(_registration(candidate.name), admission_budget_bytes=budget)
 
@@ -72,6 +83,8 @@ def _joint(
             content=content,
             configure_service=configure,
             use_cache=True,
+            existing_case=existing_case,
+            archive_root=archive_root,
         ) as actor:
             case = actor.case
             cache = CachePopulationBeginAdmission(case.factory)
@@ -110,7 +123,8 @@ def _joint(
                 registration=registration,
                 owner="joint-cache",
                 principal=_CREATOR,
-                grants=CacheWriteGrants(
+                grants=grants
+                or CacheWriteGrants(
                     calls=4,
                     control_bytes=100000,
                     result_bytes=10000,

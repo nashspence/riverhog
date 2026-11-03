@@ -30,9 +30,24 @@ from tests.unit.test_mirrored_archive_begin import _cache_state, _joint, _termin
 
 
 @contextmanager
-def _writing(tmp_path, monkeypatch, kind="pack", *, mode="direct", database_url=None, content=None):
+def _writing(
+    tmp_path,
+    monkeypatch,
+    kind="pack",
+    *,
+    mode="direct",
+    database_url=None,
+    content=None,
+    **fixture_options,
+):
     with _joint(
-        tmp_path, monkeypatch, kind, mode=mode, database_url=database_url, content=content
+        tmp_path,
+        monkeypatch,
+        kind,
+        mode=mode,
+        database_url=database_url,
+        content=content,
+        **fixture_options,
     ) as joint:
         actor = joint.actor
         with session_scope(actor.case.factory) as session:
@@ -58,7 +73,8 @@ def _writing(tmp_path, monkeypatch, kind="pack", *, mode="direct", database_url=
             source_store=source_store,
             owner="joint-cache",
             principal=_CREATOR,
-            grants=CacheWriteGrants(
+            grants=fixture_options.get("grants")
+            or CacheWriteGrants(
                 calls=4, control_bytes=100000, result_bytes=10000, cleanup_bytes=1000
             ),
             guard=actor.case.service._payload_write_guard(actor.case.collection_id, _CREATOR),
@@ -548,7 +564,17 @@ def test_cache_retirement_loss_retries_only_after_both_exact_confirmations(
 def test_one_logical_checkpoint_confirms_all_original_cache_segments_once(
     tmp_path, monkeypatch, kind
 ):
-    with _writing(tmp_path, monkeypatch, kind, content=b"x" * 65536) as joint:
+    # This logical checkpoint retains two original segment reports together
+    # with bounded source/receiver receipt copies.
+    with _writing(
+        tmp_path,
+        monkeypatch,
+        kind,
+        content=b"x" * 65536,
+        grants=CacheWriteGrants(
+            calls=4, control_bytes=200000, result_bytes=10000, cleanup_bytes=1000
+        ),
+    ) as joint:
         opened = _open(joint.actor)
         report = joint.writes.record_response
         acknowledge = joint.writes.acknowledge_report

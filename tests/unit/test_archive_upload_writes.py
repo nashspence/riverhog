@@ -5,7 +5,7 @@ import json
 import threading
 import uuid
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import replace
 from types import SimpleNamespace
 
@@ -51,15 +51,23 @@ def _actor(
     content=None,
     configure_service=None,
     use_cache=False,
+    existing_case=None,
+    archive_root=None,
 ):
-    with _case(
-        tmp_path,
-        kind,
-        database_url=database_url,
-        content=content,
-        configure_service=configure_service,
-        use_cache=use_cache,
+    with (
+        nullcontext(existing_case)
+        if existing_case is not None
+        else _case(
+            tmp_path,
+            kind,
+            database_url=database_url,
+            content=content,
+            configure_service=configure_service,
+            use_cache=use_cache,
+        )
     ) as case:
+        if existing_case is not None and configure_service is not None:
+            configure_service(case.service)
         with session_scope(case.factory) as session:
             row = session.get(
                 CollectionArchiveObjectUploadRecord, (case.collection_id, case.object_id)
@@ -83,8 +91,8 @@ def _actor(
                 arguments["target_part_plaintext_bytes"] = row.unit_plaintext_bytes
                 arguments["expected_part_sha256s"] = (hashlib.sha256(case.content).hexdigest(),)
             passphrase_id = upload.passphrase_id
-        root = tmp_path / "provider"
-        root.mkdir()
+        root = archive_root or tmp_path / "provider"
+        root.mkdir(exist_ok=archive_root is not None)
         with monkeypatch.context() as patch:
             patch.setattr(filesystem_incarnation, "uuid4", lambda: uuid.UUID(incarnation))
             assert filesystem_incarnation.provision_storage_root(root) == incarnation

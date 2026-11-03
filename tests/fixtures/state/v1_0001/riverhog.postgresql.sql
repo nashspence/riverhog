@@ -921,6 +921,8 @@ CREATE TABLE key_download_usage (
 CREATE TABLE retrieval_cache_populations (
 	generation VARCHAR(64) NOT NULL,
 	begin_call_id VARCHAR(64),
+	closed_receipt_json TEXT,
+	publication_json TEXT,
 	source_store VARCHAR NOT NULL,
 	source_incarnation_id VARCHAR(36) NOT NULL,
 	collection_id BIGINT NOT NULL,
@@ -938,9 +940,10 @@ CREATE TABLE retrieval_cache_populations (
 	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
 	CONSTRAINT ck_retrieval_cache_populations_expected_bytes CHECK (expected_bytes >= 1),
-	CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','published','abandoning')),
-	CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing','published') OR state = 'abandoning')),
-	CONSTRAINT ck_retrieval_cache_populations_publication CHECK (state != 'published' OR begin_call_id IS NOT NULL),
+	CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','sealed','published','abandoning')),
+	CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing','sealed','published') OR state = 'abandoning')),
+	CONSTRAINT ck_retrieval_cache_populations_closed_receipt CHECK (state NOT IN ('sealed','published') OR begin_call_id IS NOT NULL AND closed_receipt_json IS NOT NULL),
+	CONSTRAINT ck_retrieval_cache_populations_publication CHECK (publication_json IS NULL OR state = 'published' AND closed_receipt_json IS NOT NULL),
 	CONSTRAINT ck_retrieval_cache_populations_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_retrieval_cache_populations_begin_call_id_hex CHECK (begin_call_id IS NULL OR length(begin_call_id) = 64 AND lower(begin_call_id) = begin_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(begin_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
@@ -1069,6 +1072,8 @@ CREATE TABLE collection_archive_object_uploads (
 	checkpoint_json TEXT,
 	sealed_receipt_json TEXT,
 	metadata_receipt_json TEXT,
+	cache_receipt_json TEXT,
+	cache_publication_json TEXT,
 	failure TEXT,
 	uploaded_bytes BIGINT NOT NULL,
 	uploaded_units INTEGER NOT NULL,
@@ -1078,9 +1083,10 @@ CREATE TABLE collection_archive_object_uploads (
 	sealed_at VARCHAR,
 	registration_id VARCHAR(64),
 	PRIMARY KEY (collection_id, object_id),
-	CONSTRAINT ck_archive_object_uploads_next_unit CHECK (next_unit >= 0 AND next_unit <= uploaded_units),
+	CONSTRAINT ck_upload_plans_registration CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
 	CONSTRAINT ck_archive_object_uploads_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_archive_object_uploads_cache_publication CHECK (cache_publication_json IS NULL OR cache_receipt_json IS NOT NULL),
 	CONSTRAINT ck_archive_object_uploads_plaintext CHECK (plaintext_bytes >= 0),
 	CONSTRAINT ck_archive_object_uploads_source CHECK (source_bytes >= 0),
 	CONSTRAINT ck_archive_object_uploads_source_parts CHECK (kind = 'pack' AND source_artifact_id IS NULL AND source_first_part IS NULL AND source_part_count IS NULL OR kind = 'segment' AND source_artifact_id IS NOT NULL AND source_first_part >= 0 AND source_part_count > 0),
@@ -1089,11 +1095,11 @@ CREATE TABLE collection_archive_object_uploads (
 	CONSTRAINT ck_archive_object_uploads_uploaded_bytes CHECK (uploaded_bytes >= 0),
 	CONSTRAINT ck_archive_object_uploads_uploaded_units CHECK (uploaded_units >= 0),
 	CONSTRAINT ck_archive_object_uploads_total_units CHECK (total_units >= 0),
+	CONSTRAINT ck_archive_object_uploads_next_unit CHECK (next_unit >= 0 AND next_unit <= uploaded_units),
 	CONSTRAINT ck_archive_object_uploads_unit_progress CHECK (uploaded_units <= total_units),
 	CONSTRAINT ck_collection_archive_object_uploads_source_artifact_id_hex CHECK (source_artifact_id IS NULL OR length(source_artifact_id) = 64 AND lower(source_artifact_id) = source_artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_archive_object_uploads_plan_sha256_hex CHECK (length(plan_sha256) = 64 AND lower(plan_sha256) = plan_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plan_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_archive_object_uploads_registration_id_hex CHECK (registration_id IS NULL OR length(registration_id) = 64 AND lower(registration_id) = registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_upload_plans_registration CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)
+	CONSTRAINT ck_collection_archive_object_uploads_registration_id_hex CHECK (registration_id IS NULL OR length(registration_id) = 64 AND lower(registration_id) = registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE INDEX ix_upload_plans_registration ON collection_archive_object_uploads (collection_id, registration_id, sequence);
@@ -2481,13 +2487,11 @@ CREATE TABLE cache_population_begins (
 	cleanup_capacity_bytes BIGINT NOT NULL,
 	observation_json TEXT,
 	result_json TEXT,
-	publication_json TEXT,
 	PRIMARY KEY (id),
 	CONSTRAINT uq_cache_population_begins_generation UNIQUE (population_generation),
 	CONSTRAINT ck_cache_population_begins_state CHECK (state IN ('armed','uncertain','settled')),
 	CONSTRAINT ck_cache_population_begins_capacity CHECK (control_bytes > 0 AND result_capacity_bytes > 0 AND cleanup_capacity_bytes > 0),
 	CONSTRAINT ck_cache_population_begins_outcome CHECK (state = 'settled' AND unresolved IS false AND result_json IS NOT NULL OR state IN ('armed','uncertain') AND unresolved IS true AND result_json IS NULL),
-	CONSTRAINT ck_cache_population_begins_publication CHECK (publication_json IS NULL OR state = 'settled' AND unresolved IS false AND result_json IS NOT NULL),
 	CONSTRAINT ck_cache_population_begins_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_cache_population_begins_population_generation_hex CHECK (length(population_generation) = 64 AND lower(population_generation) = population_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(population_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_cache_population_begins_completion_call_id_hex CHECK (completion_call_id IS NULL OR length(completion_call_id) = 64 AND lower(completion_call_id) = completion_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(completion_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),

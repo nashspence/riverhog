@@ -31,7 +31,14 @@ from tests.unit.test_collection_uploads import _CREATOR, _service_with_archive_o
 
 @contextmanager
 def _case(
-    tmp_path, kind, *, database_url=None, content=None, configure_service=None, use_cache=False
+    tmp_path,
+    kind,
+    *,
+    database_url=None,
+    content=None,
+    configure_service=None,
+    use_cache=False,
+    artifact_count=None,
 ):
     service, config, provider, roots = _service_with_archive_objects(
         tmp_path,
@@ -74,14 +81,19 @@ def _case(
                     "sha256": hashlib.sha256(b"").hexdigest(),
                 }
             )
+        if artifact_count is not None:
+            members = [
+                {**member, "artifact_id": format(i + 1, "064x")} for i in range(artifact_count)
+            ]
         service.register_artifacts(collection_id, members)
         if kind == "segment":
-            service.register_raw_part_digests(
-                collection_id,
-                CollectionUploadRawDigestBatchDocument(
-                    artifact_id="1" * 64, first_part="0", sha256s=[digest]
-                ),
-            )
+            for current in members:
+                service.register_raw_part_digests(
+                    collection_id,
+                    CollectionUploadRawDigestBatchDocument(
+                        artifact_id=current["artifact_id"], first_part="0", sha256s=[digest]
+                    ),
+                )
         volume = service.list_volumes(collection_id)["volumes"][0]
         assert volume["kind"] == kind
         yield SimpleNamespace(

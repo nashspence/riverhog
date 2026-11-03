@@ -11,6 +11,7 @@ from riverhog_core.catalog_cache_write_models import (
     CachePopulationBeginRecord,
     CachePopulationWriteEffectRecord,
 )
+from riverhog_core.catalog_models import RetrievalCachePopulationRecord
 
 
 def require_cache_write_capacity(
@@ -49,4 +50,5 @@ def retains_cache_write(session: Session, key: tuple[str, int, str]) -> bool:
             is not None
         ):
             return True
-    return False
+    population = session.get(RetrievalCachePopulationRecord, key)
+    return population is not None and population.begin_call_id is not None

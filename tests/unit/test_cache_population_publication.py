@@ -13,6 +13,7 @@ from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import (
     CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
+    CollectionArchiveObjectUploadRecord,
     CollectionRecord,
     RetrievalCacheObjectRecord,
     RetrievalCachePopulationRecord,
@@ -32,8 +33,13 @@ def _accept_archive(joint, completed):
     case = joint.actor.case
     with session_scope(case.factory) as session:
         begin = session.get(CachePopulationBeginRecord, joint.mirror.cache_begin_call_id)
-        original = json.loads(begin.request_json)
-        construction = original["construction"]
+        if begin is not None:
+            construction = json.loads(begin.request_json)["construction"]
+        else:
+            source = session.get(
+                CollectionArchiveObjectUploadRecord, (case.collection_id, case.object_id)
+            )
+            construction = json.loads(source.cache_receipt_json)["construction"]
         collection = session.get(CollectionRecord, case.collection_id)
         if collection is None:
             collection = CollectionRecord(
@@ -100,6 +106,9 @@ def _completed(tmp_path, monkeypatch, kind="pack", *, mode="direct", database_ur
         joint.completion = next(
             effect.ticket for effect in joint.writer._effects.values() if effect.kind == "complete"
         )
+        with pytest.raises(Conflict, match="independently owned"):
+            joint.writes.acknowledge_report(joint.completion)
+        joint.closed = joint.writer.transfer_cache(joint.publisher)
         yield joint
 
 
@@ -137,22 +146,20 @@ def _assert_publication(tmp_path, monkeypatch, kind, mode, *, database_url=None)
         assert before["reserved"] > 0 and before["committed"] == 0
         physical = list(joint.actor.seen)
         checkpoint = _stored(joint.actor)
-        published = joint.publisher.publish(joint.completion)
+        published = joint.publisher.publish(joint.closed)
         current = _state(joint)
         assert current["reserved"] == 0 and current["committed"] == before["reserved"]
         assert current["generation"] == before["generation"] + 1
         assert current["begins"] == before["begins"] and current["children"] == before["children"]
         assert current["populations"][0][0] == "published"
         assert current["ready"] == [(published.receipt.object_path, published.receipt.stored_bytes)]
-        assert published.ticket is joint.completion
-        assert joint.publisher.publish(joint.completion) == published
+        assert published.closed is joint.closed
+        assert joint.publisher.publish(joint.closed) == published
         assert _state(joint) == current
         assert joint.actor.seen == physical and _stored(joint.actor) == checkpoint
         assert published.receipt.object_path != joint.completed.object_path
         assert published.receipt.stored_sha256 is None
         assert joint.actor.case.service._retrieval_cache.release(owner="joint-cache") == 0
-        with pytest.raises(Conflict, match="independently owned"):
-            joint.writes.acknowledge_report(joint.completion)
         joint.publisher.acknowledge(published)
         after = _state(joint)
         assert after["reserved"] == 0 and after["committed"] == before["reserved"]
@@ -195,7 +202,7 @@ def _assert_publication_reply_loss(tmp_path, monkeypatch, committed, *, database
         with pytest.raises(OSError, match="reply loss"):
             joint.writer.publish_cache(joint.publisher)
         held = _state(joint)
-        assert held["begins"] and held["children"] and held["populations"]
+        assert held["begins"] == held["children"] == [] and held["populations"]
         assert held["committed"] == (before["reserved"] if committed else 0)
         receipt = joint.writer.publish_cache(joint.publisher)
         after = _state(joint)
@@ -203,7 +210,7 @@ def _assert_publication_reply_loss(tmp_path, monkeypatch, committed, *, database
         assert after["committed"] == before["reserved"] and after["reserved"] == 0
         assert after["generation"] == before["generation"] + 1
         assert after["begins"] == after["children"] == after["populations"] == []
-        assert attempts == [joint.completion, joint.completion]
+        assert attempts == [joint.closed, joint.closed]
         assert joint.writer.publish_cache(joint.publisher) is receipt
         assert joint.actor.seen == physical and _stored(joint.actor) == checkpoint
 
@@ -262,15 +269,15 @@ def test_publication_refuses_unaccepted_or_changed_original_archive_and_populati
     with _completed(tmp_path, monkeypatch) as joint:
         case = joint.actor.case
         with session_scope(case.factory) as session:
-            begin = session.get(CachePopulationBeginRecord, joint.mirror.cache_begin_call_id)
-            key = (begin.source_store, case.collection_id, case.object_id)
+            original = json.loads(joint.closed.receipt_json)
+            key = (original["source_store"], case.collection_id, case.object_id)
             collection = session.get(CollectionRecord, case.collection_id)
             copy = session.get(
-                CollectionArchiveCopyRecord, (case.collection_id, begin.source_store)
+                CollectionArchiveCopyRecord, (case.collection_id, original["source_store"])
             )
             obj = session.get(
                 CollectionArchiveObjectRecord,
-                (case.collection_id, begin.source_store, case.object_id),
+                (case.collection_id, original["source_store"], case.object_id),
             )
             population = session.get(RetrievalCachePopulationRecord, key)
             if changed == "unpublished":
@@ -293,13 +300,13 @@ def test_publication_refuses_unaccepted_or_changed_original_archive_and_populati
                 population.state = "abandoning"
             elif changed == "cache_disabled":
                 session.get(
-                    StorageIncarnationRecord, ("cache", begin.cache_store)
+                    StorageIncarnationRecord, ("cache", original["cache_store"])
                 ).state = "disabled"
             elif changed == "source_disabled":
                 session.get(StorageIncarnationRecord, ("archive", copy.store)).state = "disabled"
         before = _state(joint)
         with pytest.raises(Conflict):
-            joint.publisher.publish(joint.completion)
+            joint.publisher.publish(joint.closed)
         assert _state(joint) == before
 
 
@@ -307,7 +314,7 @@ def test_publication_acknowledgement_refuses_changed_receipt_without_releasing_c
     tmp_path, monkeypatch
 ):
     with _completed(tmp_path, monkeypatch) as joint:
-        published = joint.publisher.publish(joint.completion)
+        published = joint.publisher.publish(joint.closed)
         before = _state(joint)
         changed = replace(published, receipt=replace(published.receipt, stored_bytes=1))
         with pytest.raises(Conflict, match="receipt"):
@@ -317,14 +324,14 @@ def test_publication_acknowledgement_refuses_changed_receipt_without_releasing_c
 
 def _assert_publication_after_eviction(tmp_path, monkeypatch, *, database_url=None):
     with _completed(tmp_path, monkeypatch, database_url=database_url) as joint:
-        published = joint.publisher.publish(joint.completion)
+        published = joint.publisher.publish(joint.closed)
         physical = list(joint.actor.seen)
         coordinator = joint.actor.case.service._retrieval_cache
         assert coordinator._evict_one(cache_store=joint.candidate.name)
         evicted = _state(joint)
         assert evicted["reserved"] == evicted["committed"] == 0 and evicted["ready"] == []
-        assert evicted["begins"] and evicted["children"]
-        assert joint.publisher.publish(joint.completion) == published
+        assert evicted["begins"] == evicted["children"] == [] and evicted["populations"]
+        assert joint.publisher.publish(joint.closed) == published
         assert _state(joint) == evicted and joint.actor.seen == physical
         joint.publisher.acknowledge(published)
         after = _state(joint)
@@ -358,7 +365,7 @@ def test_actual_uncertain_cache_completion_never_publishes_or_releases_original_
         )
         before = _state(joint)
         with pytest.raises(Conflict, match="closed completion"):
-            publisher.publish(ticket)
+            publisher.closure.accept(ticket)
         with pytest.raises(Conflict, match="confirmed original completion"):
             joint.writer.publish_cache(publisher)
         assert _state(joint) == before and before["reserved"] > 0 and before["ready"] == []
@@ -433,13 +440,13 @@ def test_publication_requires_every_original_part_control_acknowledged(tmp_path,
 
 def test_original_publication_acknowledgement_survives_population_retirement(tmp_path, monkeypatch):
     with _completed(tmp_path, monkeypatch) as joint:
-        published = joint.publisher.publish(joint.completion)
+        published = joint.publisher.publish(joint.closed)
         with session_scope(joint.actor.case.factory) as session:
             population = session.scalar(select(RetrievalCachePopulationRecord))
             session.delete(population)
         before = _state(joint)
-        assert before["populations"] == [] and before["begins"] and before["children"]
-        assert joint.publisher.publish(joint.completion) == published
+        assert before["populations"] == before["begins"] == before["children"] == []
+        assert joint.publisher.publish(joint.closed) == published
         assert _state(joint) == before
         joint.publisher.acknowledge(published)
         after = _state(joint)
