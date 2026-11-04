@@ -401,6 +401,29 @@ class ArchiveProvenanceJournalSource:
         self._receive(session, receipt, apply=False)
         return receipt
 
+    def received_association(
+        self, session: Session, selected: ProvenanceJournalRange
+    ) -> SealedProvenanceObject | None:
+        """Only an exact retained physical and logical proof completes this position."""
+        receipt = self.received(session)
+        row = session.get(
+            Custody,
+            (
+                self.collection_id,
+                selected.journal_id,
+                selected.offset,
+                selected.plaintext_sha256,
+            ),
+            with_for_update=True,
+            populate_existing=True,
+        )
+        if row is None:
+            return None
+        if receipt is None:
+            raise Conflict("provenance journal association has no physical receiving proof")
+        self._association(session, selected, self._projection(receipt), apply=False)
+        return receipt
+
     def receive_association(
         self, session: Session, selected: ProvenanceJournalRange
     ) -> SealedProvenanceObject:
