@@ -3000,4 +3000,17 @@ CREATE INDEX ix_cache_write_effects_session ON cache_population_write_effects (b
 
 CREATE INDEX ix_cache_write_effects_object ON cache_population_write_effects (source_store, collection_id, object_id);
 
+CREATE TABLE collection_upload_provenance_journal_publications (
+	collection_id BIGINT NOT NULL,
+	plaintext_sha256 VARCHAR(64) NOT NULL,
+	source_json TEXT NOT NULL,
+	source_sha256 VARCHAR(64) NOT NULL,
+	receipt_json TEXT,
+	PRIMARY KEY (collection_id, plaintext_sha256),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_journal_publication_source CHECK (length(source_json) > 0),
+	CONSTRAINT ck_sha256_b2d44a0b6ebd9697 CHECK (length(plaintext_sha256) = 64 AND lower(plaintext_sha256) = plaintext_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plaintext_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_565b9cec51421e53 CHECK (length(source_sha256) = 64 AND lower(source_sha256) = source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

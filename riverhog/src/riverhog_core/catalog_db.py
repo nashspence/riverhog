@@ -36,6 +36,9 @@ from riverhog_core import (
     catalog_provenance_index_models as _catalog_provenance_index_models,  # noqa: E402,F401
 )
 from riverhog_core import (
+    catalog_provenance_publication_models as _catalog_provenance_publication_models,  # noqa: E402,F401
+)
+from riverhog_core import (
     catalog_registration_models as _catalog_registration_models,  # noqa: E402,F401
 )
 from riverhog_core import catalog_upload_visibility as _catalog_upload_visibility  # noqa: E402,F401
