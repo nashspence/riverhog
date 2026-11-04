@@ -11,7 +11,7 @@ from collections.abc import Callable, Generator, Iterator, Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import timedelta
 from itertools import islice
-from typing import Any, Literal, TypedDict, cast
+from typing import Any, TypedDict, cast
 
 from http_api_contracts import BrowseScalar, closed_literal_values
 from riverhog_age import UploadState
@@ -23,7 +23,6 @@ from riverhog_archive_contracts import (
     PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
     PROVENANCE_BINDINGS_FORMAT,
     PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
-    PROVENANCE_SEQUENCE_DOMAIN,
     RETAINED_HISTORY_EXTENT,
     CollectionArchiveTerminalDocument,
     CollectionEncryptionBinding,
@@ -34,7 +33,6 @@ from riverhog_archive_contracts import (
     MemberHistoryPrimary,
     MemberHistoryRoot,
     MemberHistoryStore,
-    ProvenancePayload,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
@@ -177,6 +175,7 @@ from time_formats import (
     utc_timestamp_now,
 )
 
+from riverhog_core import provenance_volume_source
 from riverhog_core import upload_journal_ranges as journal_ranges
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
@@ -4553,9 +4552,9 @@ class SqlAlchemyCollectionUploadService:
                         )
                         if structural is None:
                             raise Conflict("final member history descriptor bytes are missing")
-                        history = _member_history_binding_row(final).verify_descriptor(
-                            structural.content
-                        )
+                        history = provenance_volume_source.member_history_binding_row(
+                            final
+                        ).verify_descriptor(structural.content)
                         expected_primary = MemberHistoryPrimary.from_mapping(
                             {
                                 "journal": binding.journal.model_dump(mode="json"),
@@ -4695,7 +4694,10 @@ class SqlAlchemyCollectionUploadService:
                 )
                 if not rows:
                     raise RuntimeError("provenance binding pages do not cover the member set")
-                bindings = [_member_history_binding_row(row).to_mapping() for row in rows]
+                bindings = [
+                    provenance_volume_source.member_history_binding_row(row).to_mapping()
+                    for row in rows
+                ]
                 validate_member_history_binding_page(
                     bindings, max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX
                 )
@@ -4704,7 +4706,7 @@ class SqlAlchemyCollectionUploadService:
                 )
                 if len(payload) > PROVENANCE_BINDING_PAGE_BYTES_MAX:
                     raise RuntimeError("bounded binding page exceeds its byte contract")
-                document = _provenance_volume_document(
+                document = provenance_volume_source.provenance_volume_document(
                     archive_generation=archive_generation,
                     artifact_set_sha256=artifact_set_sha256,
                     sequence=sequence,
@@ -4716,7 +4718,9 @@ class SqlAlchemyCollectionUploadService:
                 next_artifact_order += len(rows)
                 after_artifact_id = rows[-1].artifact_id
             else:
-                journal = _next_provenance_publication_journal(session, upload)
+                journal = provenance_volume_source.next_provenance_publication_journal(
+                    session, upload
+                )
                 if journal is not None:
                     offset = int(upload.provenance_archive_current_journal_offset)
                     payload = journal_ranges.upload_journal_range_bytes(
@@ -4726,7 +4730,7 @@ class SqlAlchemyCollectionUploadService:
                         offset=offset,
                         size=min(PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX, journal.bytes - offset),
                     )
-                    document = _provenance_volume_document(
+                    document = provenance_volume_source.provenance_volume_document(
                         archive_generation=archive_generation,
                         artifact_set_sha256=artifact_set_sha256,
                         sequence=sequence,
@@ -4762,7 +4766,7 @@ class SqlAlchemyCollectionUploadService:
                         delivery_context_id=upload.delivery_context_id,
                         binding_count=upload.artifact_count,
                         binding_tree_sha256=binding_tree_commitment(
-                            _member_history_binding_row(row)
+                            provenance_volume_source.member_history_binding_row(row)
                             for row in session.scalars(
                                 select(CollectionUploadMemberHistoryRecord)
                                 .where(
@@ -4811,7 +4815,7 @@ class SqlAlchemyCollectionUploadService:
                 if upload is None:
                     return False
                 if upload.provenance_archive_terminal_receipt_json is None:
-                    digest = _provenance_commitment(upload)
+                    digest = provenance_volume_source.provenance_commitment(upload)
                     update_provenance_commitment(digest, terminal)
                     upload.provenance_archive_terminal_receipt_json = (
                         _sealed_provenance_object_json(sealed_terminal)
@@ -4833,7 +4837,7 @@ class SqlAlchemyCollectionUploadService:
                 return False
             if upload.provenance_archive_next_sequence != sequence:
                 return True
-            digest = _provenance_commitment(upload)
+            digest = provenance_volume_source.provenance_commitment(upload)
             update_provenance_commitment(digest, document)
             session.add(
                 CollectionUploadProvenanceArchiveVolumeRecord(
@@ -5849,7 +5853,9 @@ def _advance_catalog_canonical_index(
                     primary=primary,
                     corpus=corpus,
                     delivery_context_id=upload.delivery_context_id,
-                    history_binding=_member_history_binding_row(history_record),
+                    history_binding=provenance_volume_source.member_history_binding_row(
+                        history_record
+                    ),
                     closure=closure,
                     catalog=admission_provenance_catalog(),
                 ) as relevance,
@@ -6239,10 +6245,6 @@ def _stage_provenance_structure(
         raise Conflict("provenance structure retry differs from accepted bytes")
 
 
-def _member_history_binding_row(row: CollectionUploadMemberHistoryRecord) -> MemberHistoryBinding:
-    return MemberHistoryBinding.from_mapping(json.loads(row.binding_json))
-
-
 def _iter_staged_history_pages(
     session: Session, collection_id: int, authority: RecordSetRef
 ) -> Iterator[RecordPage]:
@@ -6304,7 +6306,10 @@ def _validate_staged_canonical_journal_set(
         ):
             # Publication retains every selected local documentary root. Each
             # inherited selection keeps its own exact accepted transfer extent.
-            closure.resolve(_member_history_binding_row(final), extent=RETAINED_HISTORY_EXTENT)
+            closure.resolve(
+                provenance_volume_source.member_history_binding_row(final),
+                extent=RETAINED_HISTORY_EXTENT,
+            )
         count = 0
         for record in session.scalars(
             select(CollectionUploadProvenanceJournalRecord)
@@ -6431,11 +6436,14 @@ def _validate_staged_execution_completion(
                     raise Conflict(
                         "completion output has no exact primary/key/history correspondence"
                     )
-                history = closure.store.descriptor(_member_history_binding_row(final))
+                history = closure.store.descriptor(
+                    provenance_volume_source.member_history_binding_row(final)
+                )
                 if not any(
                     root.journal == completion_anchor
                     for root in closure.store.roots(
-                        _member_history_binding_row(final), extent=BOUND_HISTORY_EXTENT
+                        provenance_volume_source.member_history_binding_row(final),
+                        extent=BOUND_HISTORY_EXTENT,
                     )
                 ):
                     raise Conflict("member history omits its required exact completion snapshot")
@@ -6457,7 +6465,9 @@ def _validate_staged_execution_completion(
                 .order_by(CollectionUploadMemberHistoryRecord.artifact_id)
                 .execution_options(yield_per=_FINALIZATION_FILE_BATCH)
             ):
-                history = closure.store.descriptor(_member_history_binding_row(final))
+                history = closure.store.descriptor(
+                    provenance_volume_source.member_history_binding_row(final)
+                )
                 yield {"artifact_id": final.artifact_id, "imports": history.imports.to_mapping()}
 
         record_identities = validate_completion_preimages(
@@ -6494,83 +6504,6 @@ def _validate_staged_execution_completion(
         if upload.completion_receipt_json not in (None, encoded):
             raise Conflict("accepted completion publication identities cannot be replaced")
         upload.completion_receipt_json = encoded
-
-
-def _provenance_volume_document(
-    *,
-    archive_generation: str,
-    artifact_set_sha256: str,
-    sequence: int,
-    payload: bytes,
-    first_artifact_id: str | None = None,
-    last_artifact_id: str | None = None,
-    binding_count: int | None = None,
-    journal: CollectionUploadProvenanceJournalRecord | None = None,
-    journal_offset: int | None = None,
-) -> ProvenanceVolumeDocument:
-    kind: Literal["bindings", "journal"] = "journal" if journal is not None else "bindings"
-    identity = ProvenancePayload(
-        kind=kind,
-        sequence=sequence,
-        bytes=len(payload),
-        sha256=hashlib.sha256(payload).hexdigest(),
-    )
-    if journal is None:
-        return ProvenanceVolumeDocument(
-            archive_generation=archive_generation,
-            artifact_set_sha256=artifact_set_sha256,
-            sequence=sequence,
-            payload=identity,
-            first_artifact_id=first_artifact_id,
-            last_artifact_id=last_artifact_id,
-            binding_count=binding_count,
-        )
-    return ProvenanceVolumeDocument(
-        archive_generation=archive_generation,
-        artifact_set_sha256=artifact_set_sha256,
-        sequence=sequence,
-        payload=identity,
-        journal_id=journal.journal_id,
-        journal_offset=journal_offset,
-        journal_bytes=journal.bytes,
-        journal_sha256=journal.sha256,
-    )
-
-
-def _provenance_commitment(upload: CollectionUploadRecord) -> CheckpointSHA256:
-    if upload.provenance_archive_hash_state is not None:
-        return CheckpointSHA256.from_state(upload.provenance_archive_hash_state)
-    if upload.provenance_archive_next_sequence != 0:
-        raise RuntimeError("provenance volume commitment state is missing")
-    digest = CheckpointSHA256()
-    digest.update(PROVENANCE_SEQUENCE_DOMAIN)
-    return digest
-
-
-def _next_provenance_publication_journal(
-    session: Session,
-    upload: CollectionUploadRecord,
-) -> CollectionUploadProvenanceJournalRecord | None:
-    if upload.provenance_archive_current_journal_id is not None:
-        journal = session.get(
-            CollectionUploadProvenanceJournalRecord,
-            (upload.collection_id, upload.provenance_archive_current_journal_id),
-        )
-    else:
-        statement = select(CollectionUploadProvenanceJournalRecord).where(
-            CollectionUploadProvenanceJournalRecord.collection_id == upload.collection_id
-        )
-        if upload.provenance_archive_last_journal_id is not None:
-            statement = statement.where(
-                CollectionUploadProvenanceJournalRecord.journal_id
-                > upload.provenance_archive_last_journal_id
-            )
-        journal = session.scalar(
-            statement.order_by(CollectionUploadProvenanceJournalRecord.journal_id).limit(1)
-        )
-    if journal is not None and journal.state != "sealed":
-        raise Conflict(f"provenance journal is not sealed: {journal.journal_id}")
-    return journal
 
 
 def _planner_checkpoint(upload: CollectionUploadRecord) -> Any:
