@@ -46,6 +46,7 @@ default_tests=(
   tests/integration/test_collection_finalization_concurrency.py
   tests/integration/test_archive_volume_metadata_checkpoint_concurrency.py \
   tests/integration/test_archive_volume_metadata_receiving_concurrency.py
+  tests/integration/test_archive_volume_metadata_writes_concurrency.py
   tests/integration/test_operation_lifecycle_postgres.py
   tests/integration/test_canonical_discovery_rebuild_postgres.py
   tests/integration/test_canonical_discovery_corpus_jobs_postgres.py
