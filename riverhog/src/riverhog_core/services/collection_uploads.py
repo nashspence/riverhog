@@ -49,7 +49,6 @@ from riverhog_archive_contracts import (
     member_history_object_path,
     provenance_structure_identity,
     provenance_structure_object_id,
-    update_archive_sequence_commitment,
     update_provenance_commitment,
     validate_member_history_binding_page,
     verify_member_history_sets,
@@ -329,6 +328,7 @@ from riverhog_core.retrieval_cache_receipts import (
 )
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.app_keys import KeyAuthorizationFence, require_key_authorization
+from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_core.services.collection_tags import (
     advance_collection_tag_set,
@@ -4932,29 +4932,19 @@ class SqlAlchemyCollectionUploadService:
                 return False
             total_volumes = _planner_checkpoint(upload).next_sequence
             sequence = upload.archive_volume_next_sequence
-            if sequence >= total_volumes:
-                if sequence != total_volumes:
-                    raise RuntimeError("archive volume metadata checkpoint exceeds its authority")
+            document: CollectionArchiveTerminalDocument | CollectionArchiveVolumeDocument
+            if sequence == total_volumes:
                 if upload.archive_terminal_receipt_json is not None:
                     if upload.archive_ordered_volume_sha256 is None:
                         raise RuntimeError("archive terminal has no ordered commitment")
                     return False
-                prefix = upload.archive_storage_prefix
-                store_name = upload.archive_store
-                archive_generation = upload.archive_generation
-                passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
-                artifact_set_sha256 = upload.archive_tree_sha256
-                terminal = build_collection_archive_terminal_document(
-                    archive_generation=archive_generation,
-                    artifact_set_sha256=artifact_set_sha256,
+                record = None
+                document = build_collection_archive_terminal_document(
+                    archive_generation=upload.archive_generation,
+                    artifact_set_sha256=upload.archive_tree_sha256,
                     sequence=sequence,
                 )
-                terminal_mode = True
-            else:
-                terminal_mode = False
-            if terminal_mode:
-                record = None
-            else:
+            elif sequence < total_volumes:
                 record = session.scalar(
                     select(CollectionArchiveObjectUploadRecord).where(
                         CollectionArchiveObjectUploadRecord.collection_id == collection_id,
@@ -4963,11 +4953,6 @@ class SqlAlchemyCollectionUploadService:
                 )
                 if record is None or record.sealed_receipt_json is None:
                     raise RuntimeError("archive volume metadata source is not sealed")
-                prefix = upload.archive_storage_prefix
-                store_name = upload.archive_store
-                archive_generation = upload.archive_generation
-                passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
-                artifact_set_sha256 = upload.archive_tree_sha256
                 receipt: SealedPackVolume | SealedRawVolume
                 plan: PackVolumePlan | None
                 if record.kind == "pack":
@@ -4978,69 +4963,36 @@ class SqlAlchemyCollectionUploadService:
                     receipt = _parse_sealed_raw(record.sealed_receipt_json)
                 else:
                     raise RuntimeError(f"unsupported archive volume kind: {record.kind}")
+                document = build_collection_archive_volume_document(
+                    archive_generation=upload.archive_generation,
+                    artifact_set_sha256=upload.archive_tree_sha256,
+                    plan=plan,
+                    receipt=receipt,
+                )
+            else:
+                raise RuntimeError("archive volume metadata checkpoint exceeds its authority")
+            source = ArchiveVolumeMetadataSource.capture(
+                upload=upload, record=record, document=document, total_volumes=total_volumes
+            )
+            prefix = upload.archive_storage_prefix
+            store_name = upload.archive_store
+            passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
         publisher = ArchiveRootPublisher(
             object_store=self._archive_stores.require(store_name).immutable_objects,
             passphrase=passphrase,
             scrypt_log_n=self._config.archive_scrypt_work_factor,
         )
-        document: CollectionArchiveTerminalDocument | CollectionArchiveVolumeDocument
-        if terminal_mode:
-            document = terminal
+        if isinstance(document, CollectionArchiveTerminalDocument):
             published = publisher.publish_terminal_metadata(
-                archive_storage_prefix=prefix, document=terminal
+                archive_storage_prefix=prefix, document=document
             )
         else:
-            volume_document = build_collection_archive_volume_document(
-                archive_generation=archive_generation,
-                artifact_set_sha256=artifact_set_sha256,
-                plan=plan,
-                receipt=receipt,
-            )
-            document = volume_document
             published = publisher.publish_volume_metadata(
-                archive_storage_prefix=prefix,
-                document=volume_document,
+                archive_storage_prefix=prefix, document=document
             )
         with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            record = (
-                session.scalar(
-                    select(CollectionArchiveObjectUploadRecord)
-                    .where(
-                        CollectionArchiveObjectUploadRecord.collection_id == collection_id,
-                        CollectionArchiveObjectUploadRecord.sequence == sequence,
-                    )
-                    .with_for_update()
-                )
-                if not terminal_mode
-                else None
-            )
-            if upload is None or (not terminal_mode and record is None):
-                return False
-            if upload.archive_volume_next_sequence != sequence:
-                return True
-            digest = (
-                CheckpointSHA256.from_state(upload.archive_volume_hash_state)
-                if upload.archive_volume_hash_state is not None
-                else CheckpointSHA256()
-            )
-            update_archive_sequence_commitment(digest, document)
-            if terminal_mode:
-                upload.archive_terminal_receipt_json = _archive_volume_metadata_receipt_json(
-                    published
-                )
-                upload.archive_ordered_volume_sha256 = digest.hexdigest()
-                upload.archive_volume_hash_state = None
-            else:
-                assert record is not None
-                record.metadata_receipt_json = _archive_volume_metadata_receipt_json(published)
-                upload.archive_volume_next_sequence = sequence + 1
-                upload.archive_volume_hash_state = digest.export_state()
-            return True
+            source.apply_receipt(session, published)
+        return True
 
     def _requeue_finalization_step(self, collection_id: int) -> None:
         now = utc_timestamp_now()
@@ -8411,26 +8363,6 @@ def _sealed_volume_json(receipt: SealedPackVolume | SealedRawVolume) -> str:
             }
         )
     return json.dumps(common, sort_keys=True, separators=(",", ":"))
-
-
-def _archive_volume_metadata_receipt_json(
-    receipt: SealedArchiveVolumeMetadata,
-) -> str:
-    return json.dumps(
-        {
-            "sequence": receipt.sequence,
-            "object_path": receipt.object_path,
-            "relative_path": receipt.relative_path,
-            "revision": receipt.revision,
-            "plaintext_bytes": receipt.plaintext_bytes,
-            "plaintext_sha256": receipt.plaintext_sha256,
-            "stored_bytes": receipt.stored_bytes,
-            "stored_sha256": receipt.stored_sha256,
-            "completed_at": receipt.completed_at,
-        },
-        sort_keys=True,
-        separators=(",", ":"),
-    )
 
 
 def _parse_archive_volume_metadata_receipt(
