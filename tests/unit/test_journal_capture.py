@@ -8,6 +8,7 @@ from dataclasses import fields
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_core import upload_journal_ranges as journal_ranges
 from riverhog_core.catalog_db import initialize_db, validate_db
 from riverhog_core.catalog_models import CollectionUploadProvenanceFrameRecord as Frame
 from riverhog_core.services import collection_uploads as owner
@@ -370,7 +371,7 @@ def test_capture_loads_and_commits_only_admitted_rows_and_closes_readers(tmp_pat
     raw = b"\x1e{}\n" * 20000
     with retained(tmp_path, raw) as (engine, factory):
         observations = []
-        actual = owner._upload_journal_chunk_at
+        actual = journal_ranges.upload_journal_chunk_at
 
         def observed(session, *args, **kwargs):
             with monkeypatch.context() as patch:
@@ -380,7 +381,7 @@ def test_capture_loads_and_commits_only_admitted_rows_and_closes_readers(tmp_pat
             observations.append(counts)
             return result
 
-        monkeypatch.setattr(owner, "_upload_journal_chunk_at", observed)
+        monkeypatch.setattr(journal_ranges, "upload_journal_chunk_at", observed)
         work = owner._read_upload_journal_capture(factory, 1, JOURNAL)
         assert engine.pool.checkedout() == 0
         assert len(work.content) <= owner._JOURNAL_CAPTURE_OCTET_BUDGET

@@ -9,6 +9,7 @@ from types import SimpleNamespace
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_core import upload_journal_ranges as journal_ranges
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_replay as replay
 from riverhog_core.services.upload_journal_source import UploadJournalValidationSource
@@ -271,7 +272,7 @@ class ReadRecorder:
         real_snapshot = replay.read_snapshot
         real_current = UploadJournalValidationSource.verify_current
         real_probe, real_capture = replay._probe, source_owner._read_upload_journal_capture_segment
-        real_chunk = source_owner._upload_journal_chunk_at
+        real_chunk = journal_ranges.upload_journal_chunk_at
         real_loads, real_encode = codec_owner.json.loads, codec_owner.canonical_json_bytes
         real_hash = source_owner.hashlib.sha256
         with case.engine.connect() as connection:
@@ -408,7 +409,7 @@ class ReadRecorder:
                 patch.setattr(UploadJournalValidationSource, "verify_current", current)
                 patch.setattr(replay, "_probe", probe)
                 patch.setattr(source_owner, "_read_upload_journal_capture_segment", capture)
-                patch.setattr(source_owner, "_upload_journal_chunk_at", chunk)
+                patch.setattr(journal_ranges, "upload_journal_chunk_at", chunk)
                 patch.setattr(codec_owner, "json", SimpleNamespace(loads=loads))
                 patch.setattr(codec_owner, "canonical_json_bytes", encode)
                 patch.setattr(source_owner, "hashlib", SimpleNamespace(sha256=sha256))

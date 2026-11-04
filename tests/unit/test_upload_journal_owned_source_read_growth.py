@@ -7,6 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from riverhog_core import upload_journal_ranges as journal_ranges
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_certificates as certificates_owner
 from riverhog_core.services import upload_journal_validation_jobs as jobs
@@ -172,7 +173,7 @@ class ReadRecorder(Recorder):
     def observe(self, engine, *, cold):
         with super().observe(engine, cold=cold):
             actual_capture = source_owner._read_upload_journal_capture_segment
-            actual_chunk = source_owner._upload_journal_chunk_at
+            actual_chunk = journal_ranges.upload_journal_chunk_at
             previous_profile = sys.getprofile()
 
             def capture(factory, work, *, ordinal):
@@ -198,7 +199,7 @@ class ReadRecorder(Recorder):
             try:
                 with pytest.MonkeyPatch.context() as patch:
                     patch.setattr(source_owner, "_read_upload_journal_capture_segment", capture)
-                    patch.setattr(source_owner, "_upload_journal_chunk_at", chunk)
+                    patch.setattr(journal_ranges, "upload_journal_chunk_at", chunk)
                     sys.setprofile(profile)
                     yield
             finally:

@@ -21,6 +21,7 @@ from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import select
 from state_schema import read_snapshot
 
+from riverhog_core import upload_journal_ranges as journal_ranges
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.catalog_models import CollectionUploadProvenanceJournalRecord as Journal
 
@@ -430,7 +431,7 @@ class UploadJournalValidationSource:
                 is None
             ):
                 raise source_owner._StaleUploadJournalValidation
-            _, start, raw = source_owner._upload_journal_chunk_at(
+            _, start, raw = journal_ranges.upload_journal_chunk_at(
                 session, self.source.collection_id, self.source.journal_id, offset=offset
             )
         begin = offset - start
