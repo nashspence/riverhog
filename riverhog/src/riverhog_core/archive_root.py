@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from riverhog_age import encrypt_age_scrypt
 from riverhog_archive_contracts import (
@@ -157,6 +157,87 @@ class SealedArchiveRoot:
     volume_metadata: tuple[SealedArchiveVolumeMetadata, ...]
 
 
+@dataclass(frozen=True, slots=True)
+class ArchiveRootPublication:
+    """Format-owned manifest identity and projection of its stored ciphertext."""
+
+    archive_storage_prefix: str
+    plaintext: bytes = field(repr=False)
+    authority: CollectionArchiveManifest = field(init=False, repr=False)
+    plaintext_sha256: str = field(init=False)
+
+    def __post_init__(self) -> None:
+        prefix = self.archive_storage_prefix.strip("/")
+        if not prefix:
+            raise ValueError("archive storage prefix must not be empty")
+        if not isinstance(self.plaintext, bytes):
+            raise TypeError("archive root plaintext must be immutable bytes")
+        object.__setattr__(self, "archive_storage_prefix", prefix)
+        object.__setattr__(
+            self, "authority", CollectionArchiveManifest.from_json_bytes(self.plaintext)
+        )
+        object.__setattr__(self, "plaintext_sha256", hashlib.sha256(self.plaintext).hexdigest())
+
+    @property
+    def relative_path(self) -> str:
+        return validate_canonical_relpath(ROOT_MANIFEST_RELATIVE_PATH)
+
+    @property
+    def object_path(self) -> str:
+        return f"{self.archive_storage_prefix}/{self.relative_path}"
+
+    @property
+    def required_identity_assertions(self) -> dict[str, str]:
+        return {
+            "riverhog-format": ROOT_MANIFEST_STORAGE_FORMAT,
+            "riverhog-plaintext-bytes": str(len(self.plaintext)),
+            "riverhog-plaintext-sha256": self.plaintext_sha256,
+            "riverhog-artifact-set-sha256": self.authority.artifact_set.sha256,
+        }
+
+    def request(self, content: bytes) -> SmallObjectWriteRequest:
+        return SmallObjectWriteRequest(
+            object_path=self.object_path,
+            content_type=ROOT_MANIFEST_CONTENT_TYPE,
+            required_identity_assertions=self.required_identity_assertions,
+            placement_policy="immediate_default",
+            mode="create_only",
+            stored_bytes=len(content),
+            stored_sha256=hashlib.sha256(content).hexdigest(),
+        )
+
+    def require_request(self, request: SmallObjectWriteRequest) -> None:
+        # The preparation owner retains exact original randomized ciphertext.
+        if (
+            request.object_path != self.object_path
+            or request.content_type != ROOT_MANIFEST_CONTENT_TYPE
+            or request.required_identity_assertions != self.required_identity_assertions
+            or request.placement_policy != "immediate_default"
+            or request.mode != "create_only"
+            or request.expected_current_stored_sha256 is not None
+        ):
+            raise ValueError("archive root request differs from its source")
+
+    def sealed_receipt(self, receipt: ImmutableObjectReceipt) -> SealedArchiveRoot:
+        if receipt.object_path != self.object_path or receipt.stored_bytes <= 0:
+            raise RuntimeError("immutable root store returned an inconsistent receipt")
+        return SealedArchiveRoot(
+            object_path=receipt.object_path,
+            relative_path=self.relative_path,
+            revision=receipt.revision,
+            plaintext_bytes=len(self.plaintext),
+            plaintext_sha256=self.plaintext_sha256,
+            stored_bytes=receipt.stored_bytes,
+            stored_sha256=receipt.stored_sha256,
+            artifact_set_sha256=self.authority.artifact_set.sha256,
+            artifact_count=self.authority.artifact_set.count,
+            artifact_bytes=self.authority.artifact_set.bytes,
+            completed_at=receipt.completed_at,
+            manifest_bytes=self.plaintext,
+            volume_metadata=(),
+        )
+
+
 class ArchiveRootPublisher:
     """Write the immutable root once after all referenced volumes are sealed.
 
@@ -202,7 +283,6 @@ class ArchiveRootPublisher:
             provenance_identity=provenance_identity,
             provenance_objects=provenance_objects,
         )
-        plaintext_sha256 = hashlib.sha256(manifest).hexdigest()
         artifact_set = collection_artifact_set_identity(artifacts)
         sealed_metadata: list[SealedArchiveVolumeMetadata] = []
         for document in volume_documents:
@@ -220,41 +300,8 @@ class ArchiveRootPublisher:
                 document=terminal,
             )
         )
-        ciphertext = encrypt_age_scrypt(
-            manifest,
-            self._passphrase,
-            log_n=self._scrypt_log_n,
-        )
-        object_path = f"{prefix}/{ROOT_MANIFEST_RELATIVE_PATH}"
-        receipt = self._object_store.put_immutable_object(
-            object_path=object_path,
-            content=ciphertext,
-            content_type=ROOT_MANIFEST_CONTENT_TYPE,
-            required_identity_assertions={
-                "riverhog-format": ROOT_MANIFEST_STORAGE_FORMAT,
-                "riverhog-plaintext-bytes": str(len(manifest)),
-                "riverhog-plaintext-sha256": plaintext_sha256,
-                "riverhog-artifact-set-sha256": str(artifact_set["sha256"]),
-            },
-            placement_policy="immediate_default",
-        )
-        if receipt.object_path != object_path or receipt.stored_bytes <= 0:
-            raise RuntimeError("immutable root store returned an inconsistent receipt")
-        return SealedArchiveRoot(
-            object_path=receipt.object_path,
-            relative_path=validate_canonical_relpath(ROOT_MANIFEST_RELATIVE_PATH),
-            revision=receipt.revision,
-            plaintext_bytes=len(manifest),
-            plaintext_sha256=plaintext_sha256,
-            stored_bytes=receipt.stored_bytes,
-            stored_sha256=receipt.stored_sha256,
-            artifact_set_sha256=str(artifact_set["sha256"]),
-            artifact_count=artifact_set["count"],
-            artifact_bytes=artifact_set["bytes"],
-            completed_at=receipt.completed_at,
-            manifest_bytes=manifest,
-            volume_metadata=tuple(sealed_metadata),
-        )
+        root = self.publish_root_manifest(archive_storage_prefix=prefix, manifest=manifest)
+        return replace(root, volume_metadata=tuple(sealed_metadata))
 
     def publish_volume_metadata(
         self,
@@ -307,42 +354,16 @@ class ArchiveRootPublisher:
     ) -> SealedArchiveRoot:
         """Publish only the small final authority after its exact sequence is durable."""
 
-        prefix = archive_storage_prefix.strip("/")
-        if not prefix:
-            raise ValueError("archive storage prefix must not be empty")
-        authority = CollectionArchiveManifest.from_json_bytes(manifest)
-        plaintext_sha256 = hashlib.sha256(manifest).hexdigest()
-        object_path = f"{prefix}/{ROOT_MANIFEST_RELATIVE_PATH}"
+        publication = ArchiveRootPublication(archive_storage_prefix, manifest)
+        content = encrypt_age_scrypt(
+            publication.plaintext, self._passphrase, log_n=self._scrypt_log_n
+        )
+        request = publication.request(content)
         receipt = self._object_store.put_immutable_object(
-            object_path=object_path,
-            content=encrypt_age_scrypt(
-                manifest,
-                self._passphrase,
-                log_n=self._scrypt_log_n,
-            ),
-            content_type=ROOT_MANIFEST_CONTENT_TYPE,
-            required_identity_assertions={
-                "riverhog-format": ROOT_MANIFEST_STORAGE_FORMAT,
-                "riverhog-plaintext-bytes": str(len(manifest)),
-                "riverhog-plaintext-sha256": plaintext_sha256,
-                "riverhog-artifact-set-sha256": authority.artifact_set.sha256,
-            },
-            placement_policy="immediate_default",
+            object_path=request.object_path,
+            content=content,
+            content_type=request.content_type,
+            required_identity_assertions=request.required_identity_assertions,
+            placement_policy=request.placement_policy,
         )
-        if receipt.object_path != object_path or receipt.stored_bytes <= 0:
-            raise RuntimeError("immutable root store returned an inconsistent receipt")
-        return SealedArchiveRoot(
-            object_path=receipt.object_path,
-            relative_path=validate_canonical_relpath(ROOT_MANIFEST_RELATIVE_PATH),
-            revision=receipt.revision,
-            plaintext_bytes=len(manifest),
-            plaintext_sha256=plaintext_sha256,
-            stored_bytes=receipt.stored_bytes,
-            stored_sha256=receipt.stored_sha256,
-            artifact_set_sha256=authority.artifact_set.sha256,
-            artifact_count=authority.artifact_set.count,
-            artifact_bytes=authority.artifact_set.bytes,
-            completed_at=receipt.completed_at,
-            manifest_bytes=manifest,
-            volume_metadata=(),
-        )
+        return publication.sealed_receipt(receipt)
