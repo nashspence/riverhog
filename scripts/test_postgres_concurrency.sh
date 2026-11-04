@@ -50,6 +50,7 @@ default_tests=(
   tests/integration/test_archive_volume_metadata_finalizer_concurrency.py
   tests/integration/test_archive_authority_checkpoint_concurrency.py
   tests/integration/test_immutable_archive_writes_concurrency.py
+  tests/integration/test_archive_immutable_source_receiving_concurrency.py
   tests/integration/test_operation_lifecycle_postgres.py
   tests/integration/test_canonical_discovery_rebuild_postgres.py
   tests/integration/test_canonical_discovery_corpus_jobs_postgres.py

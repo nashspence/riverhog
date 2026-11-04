@@ -263,7 +263,7 @@ def test_positive_unknown_receipt_never_becomes_execution_closure_on_publisher_r
         assert len(original.calls["observe"]) == len(original.calls["execute"]) == 1
         assert _count(original.case) == 1 and _snapshot(original.case)[0] == 1
         assert original.actor.has_pending
-        assert not _fresh_coordinator(original.case)._drain_archive_volume_metadata_report(
+        assert not _fresh_coordinator(original.case)._drain_archive_immutable_report(
             original.case.collection_id
         )
 
@@ -284,7 +284,7 @@ def test_live_publisher_accepts_actual_cold_receiving_proof_after_lost_report_re
             with pytest.raises(OSError, match="before cold drain"):
                 _publish(original)
         assert original.actor.has_pending and _count(original.case) == 1
-        assert _fresh_coordinator(original.case)._drain_archive_volume_metadata_report(
+        assert _fresh_coordinator(original.case)._drain_archive_immutable_report(
             original.case.collection_id
         )
         before = _snapshot(original.case)
@@ -316,7 +316,7 @@ def test_original_unused_proof_survives_lost_settlement_reply_and_cold_retiremen
                 _publish(original)
             assert error.value is interruption
         assert original.actor._withdrawal is not None and _count(original.case) == 1
-        assert _fresh_coordinator(original.case)._drain_archive_volume_metadata_report(
+        assert _fresh_coordinator(original.case)._drain_archive_immutable_report(
             original.case.collection_id
         )
         assert _count(original.case) == 0 and _snapshot(original.case)[0] == 0

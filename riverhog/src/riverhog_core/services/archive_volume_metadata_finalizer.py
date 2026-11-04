@@ -14,6 +14,7 @@ from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
 from riverhog_core.services.archive_volume_metadata_writes import ArchiveVolumeMetadataWrites
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.immutable_archive_receiving import drain_original_immutable_report
 
 
 class ArchiveVolumeMetadataFinalizer:
@@ -51,7 +52,7 @@ class ArchiveVolumeMetadataFinalizer:
             # Retain and retry this exact actor before selecting another source.
             if self._actor is not None:
                 return self._publish_current()
-            if ArchiveVolumeMetadataSource.drain_one(self._factory, self._collection_id):
+            if drain_original_immutable_report(self._factory, self._collection_id):
                 return True
             # A positive observation is not closure. Actor loss cannot turn an
             # advanced source pointer into permission for the next writer.

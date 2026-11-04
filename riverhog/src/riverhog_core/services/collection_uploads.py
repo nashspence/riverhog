@@ -340,6 +340,7 @@ from riverhog_core.services.collection_upload_authority import (
     retain_upload_claim,
     retain_upload_key,
 )
+from riverhog_core.services.immutable_archive_receiving import drain_original_immutable_report
 from riverhog_core.services.lifecycle_events import (
     SqlAlchemyLifecycleEventService,
     event_context_json,
@@ -3077,7 +3078,7 @@ class SqlAlchemyCollectionUploadService:
             upload.archive_failure = f"{type(exc).__name__}: {exc}"[:1000]
 
     def _finalize(self, collection_id: int) -> None:
-        if self._drain_archive_volume_metadata_report(collection_id):
+        if self._drain_archive_immutable_report(collection_id):
             self._requeue_finalization_step(collection_id)
             return
         if self._stage_next_member_histories(collection_id):
@@ -4927,13 +4928,13 @@ class SqlAlchemyCollectionUploadService:
                 upload.archive_tree_hash_state = digest.export_state()
             return True
 
-    def _drain_archive_volume_metadata_report(self, collection_id: int) -> bool:
-        return ArchiveVolumeMetadataSource.drain_one(self._session_factory, collection_id)
+    def _drain_archive_immutable_report(self, collection_id: int) -> bool:
+        return drain_original_immutable_report(self._session_factory, collection_id)
 
     def _publish_next_archive_volume_metadata(self, collection_id: int) -> bool:
         """Publish and checkpoint one bounded volume document in sequence order."""
 
-        if self._drain_archive_volume_metadata_report(collection_id):
+        if self._drain_archive_immutable_report(collection_id):
             return True
         with session_scope(self._session_factory) as session:
             upload = session.get(CollectionUploadRecord, collection_id)

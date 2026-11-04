@@ -28,7 +28,6 @@ from riverhog_core.archive_root import (
     SealedArchiveVolumeMetadata,
 )
 from riverhog_core.archive_volume_receipts import parse_sealed_pack, parse_sealed_raw
-from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectUploadRecord,
     CollectionUploadRecord,
@@ -41,7 +40,6 @@ from riverhog_core.incremental_plan import parse_incremental_volume_planner_chec
 from riverhog_core.pack_volume import parse_pack_volume_plan
 from riverhog_core.ports.archive_objects import ImmutableObjectReceipt
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
-from riverhog_core.services.immutable_archive_admission import ImmutableArchiveAdmission
 from riverhog_core.services.immutable_archive_preparation import (
     ImmutableArchivePreparation,
     PreparedImmutableArchiveObject,
@@ -224,24 +222,6 @@ class ArchiveVolumeMetadataSource:
         receipt: AdapterImmutableObjectReceipt,
     ) -> None:
         cls.from_prepared(session, prepared).verify_prepared_receipt(session, prepared, receipt)
-
-    @classmethod
-    def drain_one(cls, factory: SessionFactory, collection_id: int) -> bool:
-        """Receive one original closed report before advancing its source."""
-        owner = ImmutableArchiveAdmission(factory)
-        settled = owner.load_next_collection_report(collection_id)
-        if settled is None:
-            return False
-        if settled.receipt is None:
-            owner.acknowledge_settled(settled)
-        else:
-            owner.receive_settled(
-                settled,
-                apply_receipt=cls.receive_original_receipt,
-                verify_receipt=cls.verify_original_receipt,
-            )
-            owner.acknowledge_settled(settled, verify_receipt=cls.verify_original_receipt)
-        return True
 
     @classmethod
     def from_prepared(

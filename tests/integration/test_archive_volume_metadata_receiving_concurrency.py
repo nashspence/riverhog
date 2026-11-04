@@ -43,9 +43,7 @@ def test_postgres_cold_receiving_rechecks_original_source_after_real_parent_wait
 
         def compete():
             lane.contender = True
-            return _fresh_coordinator(case)._drain_archive_volume_metadata_report(
-                case.collection_id
-            )
+            return _fresh_coordinator(case)._drain_archive_immutable_report(case.collection_id)
 
         def blocked():
             deadline = time.monotonic() + 10

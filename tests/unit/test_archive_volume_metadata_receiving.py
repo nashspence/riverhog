@@ -153,9 +153,9 @@ def test_actual_cold_finalizer_drains_original_receipt_after_pointer_advanced(
         before = _snapshot(case)
         assert before[0] == 1 and _count(case) == 1
         cold = _fresh_coordinator(case)
-        assert cold._drain_archive_volume_metadata_report(case.collection_id)
+        assert cold._drain_archive_immutable_report(case.collection_id)
         assert _snapshot(case) == before and _count(case) == 0
-        assert not cold._drain_archive_volume_metadata_report(case.collection_id)
+        assert not cold._drain_archive_immutable_report(case.collection_id)
         # Cold recovery selected the original object rather than next sequence 1.
         assert owner._live == {}
         with session_scope(case.factory) as session:
@@ -177,9 +177,7 @@ def test_cold_receiving_preserves_actual_ciphertext_and_once_only_terminal_commi
                 with session_scope(case.factory) as session:
                     upload = session.get(Upload, case.collection_id)
                     upload.state = upload.archive_phase = "orphaned"
-            assert _fresh_coordinator(case)._drain_archive_volume_metadata_report(
-                case.collection_id
-            )
+            assert _fresh_coordinator(case)._drain_archive_immutable_report(case.collection_id)
             assert _snapshot(case) == before and _count(case) == 0
             with session_scope(case.factory) as session:
                 source.verify_prepared_receipt(session, admitted.prepared, receipt)
@@ -216,10 +214,10 @@ def test_actual_cold_receiving_retries_transaction_and_reply_loss_without_anothe
         with monkeypatch.context() as patch:
             patch.setattr(admission_module, "session_scope", lost)
             with pytest.raises(OSError, match="injected cold receiving"):
-                _fresh_coordinator(case)._drain_archive_volume_metadata_report(case.collection_id)
+                _fresh_coordinator(case)._drain_archive_immutable_report(case.collection_id)
         assert _count(case) == (0 if phase == "retirement" and committed else 1)
         assert _snapshot(case)[0] == (int(committed) if phase == "receiving" else 1)
-        _fresh_coordinator(case)._drain_archive_volume_metadata_report(case.collection_id)
+        _fresh_coordinator(case)._drain_archive_immutable_report(case.collection_id)
         assert _count(case) == 0 and _snapshot(case)[0] == 1
 
 
@@ -244,7 +242,7 @@ def test_missing_or_changed_receiving_source_retains_original_closed_control(
                 value["stored_sha256"] = "f" * 64
                 row.metadata_receipt_json = json.dumps(value, sort_keys=True, separators=(",", ":"))
         with pytest.raises((Conflict, NotFound)):
-            _fresh_coordinator(case)._drain_archive_volume_metadata_report(case.collection_id)
+            _fresh_coordinator(case)._drain_archive_immutable_report(case.collection_id)
         assert _count(case) == 1
         with session_scope(case.factory) as session:
             assert not session.get(ArchiveWriteEffectRecord, admitted.ticket.call_id).unresolved
@@ -295,9 +293,7 @@ def test_actual_metadata_draining_progresses_under_fixed_one_call_grant(
             for sequence in range(count + 1):
                 source, _, _, _ = _reported(fixture, sequence)
                 update_archive_sequence_commitment(expected, source.document)
-                assert _fresh_coordinator(case)._drain_archive_volume_metadata_report(
-                    case.collection_id
-                )
+                assert _fresh_coordinator(case)._drain_archive_immutable_report(case.collection_id)
             assert _count(case) == 0 and _snapshot(case)[3] == expected.hexdigest()
         finally:
             event.remove(engine, "before_cursor_execute", capture)
@@ -343,7 +339,7 @@ def test_cold_unused_metadata_control_retires_without_fabricating_a_source_recei
         owner.settle_withdrawal(owner.withdraw(admitted))
         with session_scope(case.factory) as session:
             session.delete(session.get(Upload, case.collection_id))
-        assert _fresh_coordinator(case)._drain_archive_volume_metadata_report(case.collection_id)
+        assert _fresh_coordinator(case)._drain_archive_immutable_report(case.collection_id)
         assert _count(case) == 0
 
 
@@ -359,9 +355,7 @@ def test_positive_unknown_metadata_remains_charged_without_cold_closure(tmp_path
         )
         before = _snapshot(case)
         assert before[0] == 1
-        assert not _fresh_coordinator(case)._drain_archive_volume_metadata_report(
-            case.collection_id
-        )
+        assert not _fresh_coordinator(case)._drain_archive_immutable_report(case.collection_id)
         with pytest.raises(Conflict, match="unresolved provider writes"):
             _admit(fixture, 1)
         assert _count(case) == 1 and _snapshot(case) == before
@@ -370,7 +364,7 @@ def test_positive_unknown_metadata_remains_charged_without_cold_closure(tmp_path
         # Original closure, when actually returned by the selected executor,
         # can close this same original observation without applying it twice.
         owner.report(admitted, response, apply_receipt=source.apply_prepared_receipt)
-        assert _fresh_coordinator(case)._drain_archive_volume_metadata_report(case.collection_id)
+        assert _fresh_coordinator(case)._drain_archive_immutable_report(case.collection_id)
         assert _count(case) == 0 and _snapshot(case) == before
 
 
@@ -381,6 +375,6 @@ def test_a_different_metadata_owner_cannot_be_acknowledged_as_a_volume_source(
 
     with _closed_source(tmp_path, monkeypatch) as original:
         case = original.case.actor.case
-        with pytest.raises(Conflict, match="original sequence is invalid"):
-            _fresh_coordinator(case)._drain_archive_volume_metadata_report(case.collection_id)
+        with pytest.raises(Conflict, match="no source receiver"):
+            _fresh_coordinator(case)._drain_archive_immutable_report(case.collection_id)
         assert _count(case) == 1
