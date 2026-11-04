@@ -15,11 +15,11 @@ from riverhog_core.archive_root import (
     ArchiveRootPublisher,
     ArchiveVolumeMetadataPublication,
 )
+from riverhog_core.archive_volume_receipts import parse_sealed_pack, parse_sealed_raw
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord as Volume
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.pack_volume import parse_pack_volume_plan
-from riverhog_core.services.collection_uploads import _parse_sealed_pack, _parse_sealed_raw
 
 from tests.unit.test_archive_root import MemoryImmutableStore
 from tests.unit.test_collection_upload_preparation import _case
@@ -44,10 +44,10 @@ def test_actual_volume_document_preserves_publisher_bytes_identity_and_receipt(t
             volume = session.get(Volume, (case.collection_id, case.object_id))
             if kind == "pack":
                 plan = parse_pack_volume_plan(volume.plan_json)
-                receipt = _parse_sealed_pack(volume.sealed_receipt_json)
+                receipt = parse_sealed_pack(volume.sealed_receipt_json)
             else:
                 plan = None
-                receipt = _parse_sealed_raw(volume.sealed_receipt_json)
+                receipt = parse_sealed_raw(volume.sealed_receipt_json)
             prefix = upload.archive_storage_prefix
             document = build_collection_archive_volume_document(
                 archive_generation=upload.archive_generation,

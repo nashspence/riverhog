@@ -8,23 +8,39 @@ from dataclasses import dataclass, field
 from riverhog_archive_contracts import (
     CollectionArchiveTerminalDocument,
     CollectionArchiveVolumeDocument,
+    parse_archive_sequence,
     update_archive_sequence_commitment,
 )
 from riverhog_protocol.errors import Conflict, NotFound
+from riverhog_storage_adapter_protocol import (
+    ImmutableObjectReceipt as AdapterImmutableObjectReceipt,
+)
 from riverhog_storage_adapter_protocol import PutObjectOperation
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from riverhog_core.archive_manifest import (
+    build_collection_archive_terminal_document,
+    build_collection_archive_volume_document,
+)
 from riverhog_core.archive_root import (
     ArchiveVolumeMetadataPublication,
     SealedArchiveVolumeMetadata,
 )
+from riverhog_core.archive_volume_receipts import parse_sealed_pack, parse_sealed_raw
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectUploadRecord,
     CollectionUploadRecord,
 )
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
+from riverhog_core.domain.archive import SealedPackVolume, SealedRawVolume
+from riverhog_core.immutable_archive_identity import require_immutable_archive_receipt
+from riverhog_core.pack_volume import parse_pack_volume_plan
 from riverhog_core.ports.archive_objects import ImmutableObjectReceipt
+from riverhog_core.services.immutable_archive_preparation import (
+    ImmutableArchivePreparation,
+    PreparedImmutableArchiveObject,
+)
 
 
 def _json(value: object) -> str:
@@ -118,6 +134,125 @@ class ArchiveVolumeMetadataSource:
             _json({"construction": _parent_identity(upload), "volume": _volume_identity(record)}),
             publication,
         )
+
+    @classmethod
+    def load(
+        cls, session: Session, collection_id: int, sequence: int
+    ) -> ArchiveVolumeMetadataSource:
+        """Rebuild one original document from indexed, source-owned facts."""
+        upload = session.scalar(
+            select(CollectionUploadRecord)
+            .where(CollectionUploadRecord.collection_id == collection_id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+        if upload is None:
+            raise NotFound("archive volume metadata receiving source is unavailable")
+        if upload.archive_tree_sha256 is None:
+            raise Conflict("archive volume metadata tree identity is unavailable")
+        document: CollectionArchiveVolumeDocument | CollectionArchiveTerminalDocument
+        total = upload.planner_next_sequence
+        if sequence == total:
+            record = None
+            document = build_collection_archive_terminal_document(
+                archive_generation=upload.archive_generation,
+                artifact_set_sha256=upload.archive_tree_sha256,
+                sequence=sequence,
+            )
+        elif 0 <= sequence < total:
+            record = session.scalar(
+                select(CollectionArchiveObjectUploadRecord)
+                .where(
+                    CollectionArchiveObjectUploadRecord.collection_id == collection_id,
+                    CollectionArchiveObjectUploadRecord.sequence == sequence,
+                )
+                .with_for_update()
+                .execution_options(populate_existing=True)
+            )
+            if record is None or record.state != "sealed" or record.sealed_receipt_json is None:
+                raise Conflict("archive volume metadata original source is not sealed")
+            receipt: SealedPackVolume | SealedRawVolume
+            if record.kind == "pack":
+                plan = parse_pack_volume_plan(record.plan_json)
+                receipt = parse_sealed_pack(record.sealed_receipt_json)
+            elif record.kind == "segment":
+                plan = None
+                receipt = parse_sealed_raw(record.sealed_receipt_json)
+            else:
+                raise Conflict("archive volume metadata original source kind is invalid")
+            document = build_collection_archive_volume_document(
+                archive_generation=upload.archive_generation,
+                artifact_set_sha256=upload.archive_tree_sha256,
+                plan=plan,
+                receipt=receipt,
+            )
+        else:
+            raise Conflict("archive volume metadata original sequence is outside its construction")
+        return cls.capture(upload=upload, record=record, document=document, total_volumes=total)
+
+    @classmethod
+    def from_prepared(
+        cls, session: Session, prepared: PreparedImmutableArchiveObject
+    ) -> ArchiveVolumeMetadataSource:
+        """Route original metadata facts without acquiring fresh forward authority."""
+        request = prepared.operation.request
+        try:
+            sequence = parse_archive_sequence(
+                request.required_identity_assertions.get("riverhog-volume-sequence")
+            )
+        except ValueError as exc:
+            raise Conflict("archive volume metadata original sequence is invalid") from exc
+        source = cls.load(session, prepared.collection_id, sequence)
+        source._require_prepared(prepared)
+        return source
+
+    def _require_prepared(self, prepared: PreparedImmutableArchiveObject) -> None:
+        if (
+            prepared.collection_id != self.collection_id
+            or prepared.object_id
+            != ImmutableArchivePreparation.object_id(self.publication.object_path)
+            or prepared._value()["target_incarnation"]
+            != json.loads(self.identity_json)["construction"]["archive_incarnation_id"]
+        ):
+            raise Conflict("archive volume metadata preparation belongs to another construction")
+        try:
+            self.publication.require_request(prepared.operation.request)
+        except ValueError as exc:
+            raise Conflict(str(exc)) from exc
+
+    def _prepared_receipt(
+        self, prepared: PreparedImmutableArchiveObject, receipt: AdapterImmutableObjectReceipt
+    ) -> SealedArchiveVolumeMetadata:
+        self._require_prepared(prepared)
+        # Compatible observation may name different randomized ciphertext. The
+        # admission owner, rather than this projection, proves execution closure.
+        require_immutable_archive_receipt(prepared.operation.request, receipt)
+        return self.publication.sealed_receipt(
+            ImmutableObjectReceipt(
+                object_path=receipt.object_path,
+                revision=receipt.revision,
+                entity_token=receipt.entity_token,
+                stored_bytes=receipt.stored_bytes,
+                stored_sha256=receipt.stored_sha256,
+                completed_at=receipt.completed_at,
+            )
+        )
+
+    def apply_prepared_receipt(
+        self,
+        session: Session,
+        prepared: PreparedImmutableArchiveObject,
+        receipt: AdapterImmutableObjectReceipt,
+    ) -> None:
+        self.apply_receipt(session, self._prepared_receipt(prepared, receipt))
+
+    def verify_prepared_receipt(
+        self,
+        session: Session,
+        prepared: PreparedImmutableArchiveObject,
+        receipt: AdapterImmutableObjectReceipt,
+    ) -> None:
+        self.verify_receipt(session, self._prepared_receipt(prepared, receipt))
 
     @property
     def document(self) -> CollectionArchiveVolumeDocument | CollectionArchiveTerminalDocument:

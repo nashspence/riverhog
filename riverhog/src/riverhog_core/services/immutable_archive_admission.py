@@ -389,6 +389,35 @@ class ImmutableArchiveAdmission:
             original, effect, invocation = context
             return self._settled_snapshot(original, effect, invocation)
 
+    def load_next_collection_report(
+        self, collection_id: int
+    ) -> SettledImmutableArchiveWrite | None:
+        """Read one closed metadata report from the finite retained call pool.
+
+        Selection does not depend on the source workflow's current pointer.
+        Pending payload calls share this pool but retain their own receiving owner.
+        """
+        with session_scope(self._factory) as session:
+            _writer(session)
+            selected = session.execute(
+                select(ArchiveWriteEffectRecord.id, ArchiveWriteEffectRecord.object_id)
+                .where(
+                    ArchiveWriteEffectRecord.collection_id == collection_id,
+                    ArchiveWriteEffectRecord.unresolved.is_(False),
+                    ArchiveWriteEffectRecord.resource == "put",
+                    ArchiveWriteEffectRecord.state == "settled",
+                )
+                .order_by(ArchiveWriteEffectRecord.id)
+                .limit(1)
+            ).first()
+            if selected is None:
+                return None
+            context = self._retained_context(
+                session, collection_id, selected.object_id, call_id=selected.id
+            )
+            assert context is not None
+            return self._settled_snapshot(*context)
+
     def receive_settled(
         self,
         settled: SettledImmutableArchiveWrite,

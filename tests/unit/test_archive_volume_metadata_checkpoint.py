@@ -10,12 +10,12 @@ from riverhog_core.archive_manifest import (
     build_collection_archive_volume_document,
 )
 from riverhog_core.archive_root import ArchiveRootPublisher
+from riverhog_core.archive_volume_receipts import parse_sealed_pack, parse_sealed_raw
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord as Volume
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.pack_volume import parse_pack_volume_plan
 from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
-from riverhog_core.services.collection_uploads import _parse_sealed_pack, _parse_sealed_raw
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_storage_adapter_protocol import PutObjectOperation
 from sqlalchemy import select
@@ -44,10 +44,10 @@ def _source(case, sequence, *, terminal=False):
             )
             if record.kind == "pack":
                 plan = parse_pack_volume_plan(record.plan_json)
-                receipt = _parse_sealed_pack(record.sealed_receipt_json)
+                receipt = parse_sealed_pack(record.sealed_receipt_json)
             else:
                 plan = None
-                receipt = _parse_sealed_raw(record.sealed_receipt_json)
+                receipt = parse_sealed_raw(record.sealed_receipt_json)
             document = build_collection_archive_volume_document(
                 archive_generation=upload.archive_generation,
                 artifact_set_sha256=upload.archive_tree_sha256,

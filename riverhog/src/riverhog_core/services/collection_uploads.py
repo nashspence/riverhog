@@ -26,7 +26,6 @@ from riverhog_archive_contracts import (
     PROVENANCE_SEQUENCE_DOMAIN,
     RETAINED_HISTORY_EXTENT,
     CollectionArchiveTerminalDocument,
-    CollectionArchiveVolumeDocument,
     CollectionEncryptionBinding,
     HistoryJournalAnchor,
     MemberHistoryBinding,
@@ -152,6 +151,9 @@ from riverhog_provenance import (
     external_reference,
     validate_journal_chunks,
 )
+from riverhog_storage_adapter_protocol import (
+    ImmutableObjectReceipt as AdapterImmutableObjectReceipt,
+)
 from sqlalchemy import (
     asc,
     case,
@@ -190,8 +192,6 @@ from riverhog_core.app_permissions import (
 )
 from riverhog_core.archive_manifest import (
     build_collection_archive_root_manifest,
-    build_collection_archive_terminal_document,
-    build_collection_archive_volume_document,
 )
 from riverhog_core.archive_provenance import (
     ArchiveProvenancePublisher,
@@ -205,6 +205,11 @@ from riverhog_core.archive_root import (
     SealedArchiveVolumeMetadata,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
+from riverhog_core.archive_volume_receipts import (
+    parse_sealed_pack,
+    parse_sealed_raw,
+    stored_nonnegative_int,
+)
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
 from riverhog_core.canonical_discovery_build import stage_relevant_member
 from riverhog_core.canonical_discovery_index import (
@@ -323,7 +328,6 @@ from riverhog_core.provenance_custody_set import ProvenanceCustodySet
 from riverhog_core.raw_upload import RawUploadCheckpoint, RawVolumeUploader
 from riverhog_core.raw_volume import parse_raw_volume_plan, raw_volume_plan_bytes
 from riverhog_core.retrieval_cache_receipts import (
-    parse_retrieval_cache_receipt,
     retrieval_cache_receipt_payload,
 )
 from riverhog_core.runtime_config import RuntimeConfig
@@ -339,6 +343,8 @@ from riverhog_core.services.collection_upload_authority import (
     retain_upload_claim,
     retain_upload_key,
 )
+from riverhog_core.services.immutable_archive_admission import ImmutableArchiveAdmission
+from riverhog_core.services.immutable_archive_preparation import PreparedImmutableArchiveObject
 from riverhog_core.services.lifecycle_events import (
     SqlAlchemyLifecycleEventService,
     event_context_json,
@@ -3076,6 +3082,9 @@ class SqlAlchemyCollectionUploadService:
             upload.archive_failure = f"{type(exc).__name__}: {exc}"[:1000]
 
     def _finalize(self, collection_id: int) -> None:
+        if self._drain_archive_volume_metadata_report(collection_id):
+            self._requeue_finalization_step(collection_id)
+            return
         if self._stage_next_member_histories(collection_id):
             self._requeue_finalization_step(collection_id)
             return
@@ -3958,9 +3967,9 @@ class SqlAlchemyCollectionUploadService:
                 if record is None or record.sealed_receipt_json is None:
                     raise RuntimeError("catalog archive volume receipt is unavailable")
                 volume = (
-                    _parse_sealed_pack(record.sealed_receipt_json)
+                    parse_sealed_pack(record.sealed_receipt_json)
                     if record.kind == "pack"
-                    else _parse_sealed_raw(record.sealed_receipt_json)
+                    else parse_sealed_raw(record.sealed_receipt_json)
                 )
                 session.add(
                     CollectionArchiveObjectRecord(
@@ -4923,57 +4932,54 @@ class SqlAlchemyCollectionUploadService:
                 upload.archive_tree_hash_state = digest.export_state()
             return True
 
+    def _drain_archive_volume_metadata_report(self, collection_id: int) -> bool:
+        """Receive one original closed report before advancing or retiring its source."""
+        owner = ImmutableArchiveAdmission(self._session_factory)
+        settled = owner.load_next_collection_report(collection_id)
+        if settled is None:
+            return False
+        if settled.receipt is None:
+            # Original unused dispatch has no object receipt to transfer.
+            owner.acknowledge_settled(settled)
+            return True
+
+        def apply(
+            session: Session,
+            prepared: PreparedImmutableArchiveObject,
+            receipt: AdapterImmutableObjectReceipt,
+        ) -> None:
+            source = ArchiveVolumeMetadataSource.from_prepared(session, prepared)
+            source.apply_prepared_receipt(session, prepared, receipt)
+
+        def verify(
+            session: Session,
+            prepared: PreparedImmutableArchiveObject,
+            receipt: AdapterImmutableObjectReceipt,
+        ) -> None:
+            source = ArchiveVolumeMetadataSource.from_prepared(session, prepared)
+            source.verify_prepared_receipt(session, prepared, receipt)
+
+        owner.receive_settled(settled, apply_receipt=apply, verify_receipt=verify)
+        owner.acknowledge_settled(settled, verify_receipt=verify)
+        return True
+
     def _publish_next_archive_volume_metadata(self, collection_id: int) -> bool:
         """Publish and checkpoint one bounded volume document in sequence order."""
 
+        if self._drain_archive_volume_metadata_report(collection_id):
+            return True
         with session_scope(self._session_factory) as session:
             upload = session.get(CollectionUploadRecord, collection_id)
             if upload is None or upload.archive_tree_sha256 is None:
                 return False
             total_volumes = _planner_checkpoint(upload).next_sequence
             sequence = upload.archive_volume_next_sequence
-            document: CollectionArchiveTerminalDocument | CollectionArchiveVolumeDocument
-            if sequence == total_volumes:
-                if upload.archive_terminal_receipt_json is not None:
-                    if upload.archive_ordered_volume_sha256 is None:
-                        raise RuntimeError("archive terminal has no ordered commitment")
-                    return False
-                record = None
-                document = build_collection_archive_terminal_document(
-                    archive_generation=upload.archive_generation,
-                    artifact_set_sha256=upload.archive_tree_sha256,
-                    sequence=sequence,
-                )
-            elif sequence < total_volumes:
-                record = session.scalar(
-                    select(CollectionArchiveObjectUploadRecord).where(
-                        CollectionArchiveObjectUploadRecord.collection_id == collection_id,
-                        CollectionArchiveObjectUploadRecord.sequence == sequence,
-                    )
-                )
-                if record is None or record.sealed_receipt_json is None:
-                    raise RuntimeError("archive volume metadata source is not sealed")
-                receipt: SealedPackVolume | SealedRawVolume
-                plan: PackVolumePlan | None
-                if record.kind == "pack":
-                    plan = parse_pack_volume_plan(record.plan_json)
-                    receipt = _parse_sealed_pack(record.sealed_receipt_json)
-                elif record.kind == "segment":
-                    plan = None
-                    receipt = _parse_sealed_raw(record.sealed_receipt_json)
-                else:
-                    raise RuntimeError(f"unsupported archive volume kind: {record.kind}")
-                document = build_collection_archive_volume_document(
-                    archive_generation=upload.archive_generation,
-                    artifact_set_sha256=upload.archive_tree_sha256,
-                    plan=plan,
-                    receipt=receipt,
-                )
-            else:
-                raise RuntimeError("archive volume metadata checkpoint exceeds its authority")
-            source = ArchiveVolumeMetadataSource.capture(
-                upload=upload, record=record, document=document, total_volumes=total_volumes
-            )
+            if sequence == total_volumes and upload.archive_terminal_receipt_json is not None:
+                if upload.archive_ordered_volume_sha256 is None:
+                    raise RuntimeError("archive terminal has no ordered commitment")
+                return False
+            source = ArchiveVolumeMetadataSource.load(session, collection_id, sequence)
+            document = source.document
             prefix = upload.archive_storage_prefix
             store_name = upload.archive_store
             passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
@@ -5670,7 +5676,7 @@ def _advance_catalog_artifact_objects(session: Session, upload: CollectionUpload
             ],
         )
     elif record.kind == "segment":
-        volume = _parse_sealed_raw(record.sealed_receipt_json)
+        volume = parse_sealed_raw(record.sealed_receipt_json)
         if record.source_first_part is None:
             raise RuntimeError("raw archive segment has no source sequence")
         session.add(
@@ -8370,13 +8376,15 @@ def _parse_archive_volume_metadata_receipt(
 ) -> SealedArchiveVolumeMetadata:
     value = json.loads(content)
     return SealedArchiveVolumeMetadata(
-        sequence=_stored_int(value["sequence"], "metadata sequence"),
+        sequence=stored_nonnegative_int(value["sequence"], "metadata sequence"),
         object_path=str(value["object_path"]),
         relative_path=str(value["relative_path"]),
         revision=str(value["revision"]) if value["revision"] is not None else None,
-        plaintext_bytes=_stored_int(value["plaintext_bytes"], "metadata plaintext bytes"),
+        plaintext_bytes=stored_nonnegative_int(
+            value["plaintext_bytes"], "metadata plaintext bytes"
+        ),
         plaintext_sha256=str(value["plaintext_sha256"]),
-        stored_bytes=_stored_int(value["stored_bytes"], "metadata stored bytes"),
+        stored_bytes=stored_nonnegative_int(value["stored_bytes"], "metadata stored bytes"),
         stored_sha256=str(value["stored_sha256"]),
         completed_at=str(value["completed_at"]),
     )
@@ -8408,9 +8416,11 @@ def _parse_sealed_provenance_object(content: str) -> Any:
         object_id=str(value["object_id"]),
         kind=str(value["kind"]),
         relative_path=str(value["relative_path"]),
-        plaintext_bytes=_stored_int(value["plaintext_bytes"], "provenance plaintext bytes"),
+        plaintext_bytes=stored_nonnegative_int(
+            value["plaintext_bytes"], "provenance plaintext bytes"
+        ),
         plaintext_sha256=str(value["plaintext_sha256"]),
-        stored_bytes=_stored_int(value["stored_bytes"], "provenance stored bytes"),
+        stored_bytes=stored_nonnegative_int(value["stored_bytes"], "provenance stored bytes"),
         stored_sha256=str(value["stored_sha256"]),
         revision=str(value["revision"]) if value["revision"] is not None else None,
         completed_at=str(value["completed_at"]),
@@ -8454,64 +8464,6 @@ def _sealed_upload_provenance(
     if receipt.identity != upload.provenance_identity:
         raise RuntimeError("provenance root identity differs from upload state")
     return receipt
-
-
-def _parse_parts(values: Sequence[Mapping[str, object]]) -> tuple[StoredArchivePart, ...]:
-    return tuple(
-        StoredArchivePart(
-            number=_stored_int(value["number"], "part number"),
-            plaintext_start=_stored_int(value["plaintext_start"], "part plaintext start"),
-            plaintext_bytes=_stored_int(value["plaintext_bytes"], "part plaintext bytes"),
-            plaintext_sha256=str(value["plaintext_sha256"]),
-            stored_bytes=_stored_int(value["stored_bytes"], "part stored bytes"),
-            stored_sha256=str(value["stored_sha256"]),
-        )
-        for value in values
-    )
-
-
-def _stored_int(value: object, label: str) -> int:
-    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
-        raise ValueError(f"{label} must be a non-negative integer")
-    return value
-
-
-def _parse_sealed_pack(content: str) -> SealedPackVolume:
-    value = json.loads(content)
-    return SealedPackVolume(
-        volume_id=str(value["volume_id"]),
-        sequence=int(value["sequence"]),
-        relative_path=str(value["relative_path"]),
-        artifacts=int(value["artifacts"]),
-        source_bytes=int(value["source_bytes"]),
-        plaintext_bytes=int(value["plaintext_bytes"]),
-        age_state_json=json.dumps(value["age_state"], sort_keys=True, separators=(",", ":")),
-        index_sha256=str(value["index_sha256"]),
-        plan_sha256=str(value["plan_sha256"]),
-        parts=_parse_parts(value["parts"]),
-        revision=str(value["revision"]) if value["revision"] is not None else None,
-        completed_at=str(value["completed_at"]),
-        retrieval_cache=parse_retrieval_cache_receipt(value.get("retrieval_cache")),
-    )
-
-
-def _parse_sealed_raw(content: str) -> SealedRawVolume:
-    value = json.loads(content)
-    return SealedRawVolume(
-        volume_id=str(value["volume_id"]),
-        sequence=int(value["sequence"]),
-        relative_path=str(value["relative_path"]),
-        artifact_id=str(value["artifact_id"]),
-        artifact_offset=int(value["artifact_offset"]),
-        plaintext_bytes=int(value["plaintext_bytes"]),
-        artifact_bytes=int(value["artifact_bytes"]),
-        artifact_sha256=str(value["artifact_sha256"]),
-        age_state_json=json.dumps(value["age_state"], sort_keys=True, separators=(",", ":")),
-        parts=_parse_parts(value["parts"]),
-        revision=str(value["revision"]) if value["revision"] is not None else None,
-        completed_at=str(value["completed_at"]),
-        retrieval_cache=parse_retrieval_cache_receipt(value.get("retrieval_cache")),
-    )
 
 
 def _custody_stats(session: Session, collection_id: int) -> tuple[int, int]:
