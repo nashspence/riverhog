@@ -7,6 +7,9 @@ from riverhog_storage_adapter_protocol import ImmutableObjectReceipt
 from sqlalchemy.orm import Session
 
 from riverhog_core.archive_formats import (
+    PROVENANCE_HISTORY_STORAGE_FORMAT,
+    PROVENANCE_RECORD_PAGE_STORAGE_FORMAT,
+    PROVENANCE_SOURCE_PROOF_STORAGE_FORMAT,
     RECOVERY_DESCRIPTOR_STORAGE_FORMAT,
     ROOT_MANIFEST_STORAGE_FORMAT,
     VOLUME_METADATA_STORAGE_FORMAT,
@@ -15,6 +18,9 @@ from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.services.archive_authority_checkpoint import (
     ArchiveRecoverySource,
     ArchiveRootSource,
+)
+from riverhog_core.services.archive_provenance_structure_checkpoint import (
+    ArchiveProvenanceStructureSource,
 )
 from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
 from riverhog_core.services.immutable_archive_admission import ImmutableArchiveAdmission
@@ -30,6 +36,12 @@ def _source(session: Session, prepared: PreparedImmutableArchiveObject) -> Immut
         return ArchiveRootSource.from_prepared(session, prepared)
     if format_name == RECOVERY_DESCRIPTOR_STORAGE_FORMAT:
         return ArchiveRecoverySource.from_prepared(session, prepared)
+    if format_name in {
+        PROVENANCE_HISTORY_STORAGE_FORMAT,
+        PROVENANCE_RECORD_PAGE_STORAGE_FORMAT,
+        PROVENANCE_SOURCE_PROOF_STORAGE_FORMAT,
+    }:
+        return ArchiveProvenanceStructureSource.from_prepared(session, prepared)
     raise Conflict("immutable archive report has no source receiver")
 
 
