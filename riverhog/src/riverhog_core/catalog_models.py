@@ -2700,6 +2700,7 @@ class CollectionUploadRecord(Base):
         Text, nullable=True
     )
     provenance_archive_root_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    archive_root_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     final_authority_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     catalog_phase: Mapped[str] = mapped_column(
         String, default="artifact-set-identity", server_default=text("'artifact-set-identity'")
