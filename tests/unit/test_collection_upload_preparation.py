@@ -20,7 +20,10 @@ from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_upload import PackUploadCheckpoint, PackVolumeUploader
 from riverhog_core.raw_upload import RawUploadCheckpoint, RawVolumeUploader
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
-from riverhog_protocol import CollectionUploadRawDigestBatchDocument
+from riverhog_protocol import (
+    COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX,
+    CollectionUploadRawDigestBatchDocument,
+)
 from riverhog_protocol.errors import Conflict
 from riverhog_protocol.pack_ingress import canonical_json_bytes
 from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
@@ -85,7 +88,10 @@ def _case(
             members = [
                 {**member, "artifact_id": format(i + 1, "064x")} for i in range(artifact_count)
             ]
-        service.register_artifacts(collection_id, members)
+        for first in range(0, len(members), COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX):
+            service.register_artifacts(
+                collection_id, members[first : first + COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX]
+            )
         if kind == "segment":
             for current in members:
                 service.register_raw_part_digests(

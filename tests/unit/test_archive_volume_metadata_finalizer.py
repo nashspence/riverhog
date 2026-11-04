@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from contextlib import contextmanager
 from dataclasses import replace
 from types import SimpleNamespace
@@ -342,5 +343,116 @@ def test_actual_finalizer_progress_keeps_one_call_grant_and_avoids_volume_census
                 "call_grant": 1,
                 "effect_selects": len(statements),
                 "sealed_volume_censuses": len(censuses),
+            },
+        )
+
+
+@pytest.mark.parametrize("budget", ["default", "explicit-small"])
+def test_actual_many_part_pack_metadata_uses_independent_configured_preparation_grant(
+    tmp_path, monkeypatch, record_property, budget
+):
+    from riverhog_age import CHUNK_SIZE
+    from riverhog_core.archive_write_grants import ArchiveWriteGrants
+    from riverhog_core.catalog_archive_write_models import ArchiveWritePreparationRecord
+    from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord as Volume
+    from riverhog_core.services.immutable_archive_preparation import ImmutableArchivePreparation
+
+    from tests.unit.test_collection_uploads import _CREATOR
+
+    def configure(service):
+        service._policy = replace(
+            service._policy, pack_artifacts=128, pack_part_plaintext_bytes=CHUNK_SIZE
+        )
+
+    def seal(case):
+        case.service.complete(case.collection_id)
+        volumes = case.service.list_volumes(case.collection_id)["volumes"]
+        assert len(volumes) == 2
+        for volume in volumes:
+            with session_scope(case.factory) as session:
+                units = session.get(Volume, (case.collection_id, volume["volume_id"])).total_units
+            for number in range(units):
+                work = case.service.get_unit(case.collection_id, volume["volume_id"], number)
+                content = b"".join(
+                    case.content[
+                        int(source["offset"]) : int(source["offset"]) + int(source["bytes"])
+                    ]
+                    for source in work["sources"]
+                )
+                case.service.upload_unit(
+                    case.collection_id,
+                    volume["volume_id"],
+                    number,
+                    principal=_CREATOR,
+                    plan_sha256=volume["plan_sha256"],
+                    content=content,
+                )
+        while case.service._advance_archive_tree_checkpoint(case.collection_id):
+            pass
+
+    with _metadata_source(
+        tmp_path,
+        monkeypatch,
+        "pack",
+        count=129,
+        content=b"x" * (CHUNK_SIZE - 512),
+        configure_service=configure,
+        seal_case=seal,
+    ) as fixture:
+        original = _owner(fixture)
+        with session_scope(original.case.factory) as session:
+            source = ArchiveVolumeMetadataSource.load(session, original.case.collection_id, 0)
+        plaintext_bytes = len(source.publication.plaintext)
+        assert plaintext_bytes > ArchiveWriteGrants().preparation_bytes
+        if budget == "explicit-small":
+            original.owner._config = replace(
+                original.config,
+                archive_write=replace(
+                    original.config.archive_write,
+                    metadata_preparation_bytes=ArchiveWriteGrants().preparation_bytes,
+                ),
+            )
+            with pytest.raises(Conflict, match="preparation exceeds its byte grant"):
+                original.owner.advance()
+            assert original.calls == {"observe": [], "execute": []} and _count(original.case) == 0
+            with session_scope(original.case.factory) as session:
+                assert (
+                    session.get(
+                        ArchiveWritePreparationRecord,
+                        (
+                            original.case.collection_id,
+                            ImmutableArchivePreparation.object_id(source.publication.object_path),
+                        ),
+                    )
+                    is None
+                )
+        else:
+            assert original.owner.advance()
+            with session_scope(original.case.factory) as session:
+                prepared = session.get(
+                    ArchiveWritePreparationRecord,
+                    (
+                        original.case.collection_id,
+                        ImmutableArchivePreparation.object_id(source.publication.object_path),
+                    ),
+                )
+                stored = json.loads(prepared.preparation_json)
+                capacity = stored["capacity_bytes"]
+                assert (
+                    len(prepared.preparation_json.encode()) > ArchiveWriteGrants().preparation_bytes
+                )
+                assert capacity == ArchiveWriteGrants().metadata_preparation_bytes
+            assert original.owner.advance()
+            assert original.owner.advance()
+            assert not original.owner.advance()
+            assert _count(original.case) == 0 and not original.owner.has_pending
+        current_grant = original.owner._config.archive_write
+        record_property(
+            "metadata_preparation_work",
+            {
+                "members": 129,
+                "volume_metadata_plaintext_bytes": plaintext_bytes,
+                "payload_preparation_grant": ArchiveWriteGrants().preparation_bytes,
+                "metadata_preparation_grant": current_grant.metadata_preparation_bytes,
             },
         )

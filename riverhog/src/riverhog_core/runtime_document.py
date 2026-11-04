@@ -135,6 +135,10 @@ class ArchiveWriteDocument(_Document):
         default=str(_ARCHIVE_WRITE.preparation_bytes),
         description="Original encryption preparation and identity bytes per volume.",
     )
+    metadata_preparation_bytes: str = Field(
+        default=str(_ARCHIVE_WRITE.metadata_preparation_bytes),
+        description="Original immutable metadata ciphertext/request and identity bytes per object.",
+    )
     terminal_bytes: str = Field(
         default=str(_ARCHIVE_WRITE.terminal_bytes),
         description="Retained terminal request/result bytes per selected request.",
@@ -150,6 +154,9 @@ class ArchiveWriteDocument(_Document):
             calls=self.calls,
             control_bytes=_bytes(self.control_bytes, "archive_write.control_bytes", 1),
             preparation_bytes=_bytes(self.preparation_bytes, "archive_write.preparation_bytes", 1),
+            metadata_preparation_bytes=_bytes(
+                self.metadata_preparation_bytes, "archive_write.metadata_preparation_bytes", 1
+            ),
             terminal_bytes=_bytes(self.terminal_bytes, "archive_write.terminal_bytes", 1),
             result_bytes=_bytes(self.result_bytes, "archive_write.result_bytes", 1),
         )

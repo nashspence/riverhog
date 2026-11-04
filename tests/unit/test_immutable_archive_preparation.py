@@ -285,7 +285,7 @@ def test_refused_preparation_does_not_create_original_metadata_or_call_a_provide
     with _metadata(tmp_path, monkeypatch) as case:
         options = {}
         if changed == "grant":
-            options["grants"] = replace(case.grants, preparation_bytes=1)
+            options["grants"] = replace(case.grants, metadata_preparation_bytes=1)
         elif changed == "ciphertext":
             options["content"] = case.content + b"changed"
         elif changed == "guard":
@@ -407,7 +407,7 @@ def test_metadata_preparation_snapshots_mutable_caller_and_validator_inputs(tmp_
 def test_replay_retains_original_grant_but_requires_current_owner_permission(tmp_path, monkeypatch):
     with _metadata(tmp_path, monkeypatch) as case:
         original = _prepare(case)
-        assert _prepare(case, grants=replace(case.grants, preparation_bytes=1)) == original
+        assert _prepare(case, grants=replace(case.grants, metadata_preparation_bytes=1)) == original
         before = _stored(case)
 
         def revoked(session):
@@ -434,3 +434,41 @@ def test_cold_preparation_refuses_changed_opaque_bytes_without_repair(tmp_path, 
                 original.collection_id, case.operation.request.object_path, epoch=case.epoch
             )
         assert _stored(case) == before and case.actor.seen == []
+
+
+def test_default_metadata_preparation_grant_accounts_for_an_encrypted_frame_and_encoding(
+    tmp_path, monkeypatch
+):
+    from riverhog_archive_contracts import ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX
+    from riverhog_core.archive_write_grants import ArchiveWriteGrants
+
+    with _metadata(tmp_path, monkeypatch) as case:
+        plaintext = b"x" * ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX
+        content = encrypt_age_scrypt(plaintext, "fixture", log_n=1)
+        request = case.operation.request.model_copy(
+            update={
+                "stored_bytes": len(content),
+                "stored_sha256": hashlib.sha256(content).hexdigest(),
+                "required_identity_assertions": {
+                    "riverhog-plaintext-bytes": str(len(plaintext)),
+                    "riverhog-plaintext-sha256": hashlib.sha256(plaintext).hexdigest(),
+                },
+            }
+        )
+        grants = ArchiveWriteGrants()
+        prepared = _prepare(
+            case,
+            operation=case.operation.model_copy(update={"request": request}),
+            content=content,
+            grants=grants,
+        )
+        identity, encoded = _stored(case)
+        assert len(content) > grants.preparation_bytes
+        assert len(identity.encode()) + len(encoded.encode()) <= grants.metadata_preparation_bytes
+        assert json.loads(encoded)["capacity_bytes"] == grants.metadata_preparation_bytes
+        assert prepared.content == content
+        assert (
+            case.owner.load(prepared.collection_id, request.object_path, epoch=prepared.epoch)
+            == prepared
+        )
+        assert case.actor.seen == []

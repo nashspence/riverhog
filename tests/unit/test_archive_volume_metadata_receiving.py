@@ -36,11 +36,32 @@ from tests.unit.test_finalization_claim_readiness import _fresh_coordinator, _se
 
 @contextmanager
 def _metadata_source(
-    tmp_path, monkeypatch, kind="segment", mode="direct", count=2, *, database_url=None
+    tmp_path,
+    monkeypatch,
+    kind="segment",
+    mode="direct",
+    count=2,
+    *,
+    database_url=None,
+    content=None,
+    configure_service=None,
+    seal_case=None,
 ):
-    with _case(tmp_path, kind, artifact_count=count, database_url=database_url) as case:
-        _seal(case)
-        initial = _source(case, 0)
+    with _case(
+        tmp_path,
+        kind,
+        artifact_count=count,
+        database_url=database_url,
+        content=content,
+        configure_service=configure_service,
+    ) as case:
+        if seal_case is None:
+            _seal(case)
+            initial = _source(case, 0)
+        else:
+            seal_case(case)
+            with session_scope(case.factory) as session:
+                initial = ArchiveVolumeMetadataSource.load(session, case.collection_id, 0)
         assert case.service._claim_due_finalization() == case.collection_id
         epoch = ArchiveWriteAdmission(case.factory).bind_epoch(
             case.collection_id, guard=initial.guard

@@ -171,7 +171,7 @@ class ImmutableArchivePreparation:
             validate_metadata(session, upload, operation.model_copy(deep=True))
             # This is a per-object preparation grant, independent of total
             # collection extent and the bounded retained provider-call grants.
-            if len(content) > grants.preparation_bytes:
+            if len(content) > grants.metadata_preparation_bytes:
                 raise Conflict("immutable archive preparation exceeds its byte grant")
             encoded = _json(
                 {
@@ -180,12 +180,15 @@ class ImmutableArchivePreparation:
                     "epoch": control.epoch,
                     "construction_sha256": _sha(control.construction_json),
                     "target_incarnation": upload.archive_incarnation_id,
-                    "capacity_bytes": grants.preparation_bytes,
+                    "capacity_bytes": grants.metadata_preparation_bytes,
                     "operation": operation.model_dump(mode="json"),
                     "content_base64": base64.b64encode(content).decode("ascii"),
                 }
             )
-            if len(identity_json.encode()) + len(encoded.encode()) > grants.preparation_bytes:
+            if (
+                len(identity_json.encode()) + len(encoded.encode())
+                > grants.metadata_preparation_bytes
+            ):
                 raise Conflict("immutable archive preparation exceeds its byte grant")
             record = ArchiveWritePreparationRecord(
                 collection_id=collection_id,
