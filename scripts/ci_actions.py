@@ -12,7 +12,7 @@ import sys
 import time
 import tomllib
 import zipfile
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime, timedelta
 from pathlib import Path, PurePosixPath
 from tempfile import TemporaryDirectory
@@ -58,6 +58,14 @@ from scripts.validation_witnesses import collect_test_witnesses
 MAX_ROWS = 512
 MAX_FILES = 4096
 TIMESTAMP_RESOLUTION_SECONDS = 1
+
+
+EvidenceProgress = Callable[[str, str | None], None]
+
+
+def _progress(observer: EvidenceProgress | None, phase: str, work: str | None = None) -> None:
+    if observer is not None:
+        observer(phase, work)
 
 
 def ci_execution_work() -> dict[str, ValidationWork]:
@@ -298,18 +306,26 @@ def extract_artifact(
 
 
 def verify_ci_artifacts(
-    remote: GitHubPublication, run: Mapping[str, Any], source_sha: str, directory: Path
+    remote: GitHubPublication,
+    run: Mapping[str, Any],
+    source_sha: str,
+    directory: Path,
+    *,
+    progress: EvidenceProgress | None = None,
 ) -> dict[str, object]:
     """Consume actual owner artifacts, never an unbound pass string in a summary."""
     budget = validation_storage_budget()
     cases = ci_execution_work()
+    _progress(progress, "artifact-list")
     artifacts = bounded_rows(remote, f"actions/runs/{run['id']}/artifacts", "artifacts")
     attempt = run["run_attempt"]
+    _progress(progress, "execution-history")
     jobs = latest_execution_jobs(remote, run)
     results: dict[str, object] = {}
     total = 0
     expanded_total = 0
     for job, work in cases.items():
+        _progress(progress, "job-measurement", work.name)
         owned_jobs = [
             row
             for row in jobs
@@ -324,6 +340,7 @@ def verify_ci_artifacts(
         runner = dict(work.conditions).get("runner_image")
         if runner is not None and runner not in owned_jobs[0]["labels"]:
             raise ValueError("execution ran under a different runner condition")
+        _progress(progress, "artifact-selection", work.name)
         name = f"validation-{work.name}-{run['id']}-attempt-{origin}"
         matches = [row for row in artifacts if row.get("name") == name]
         if len(matches) != 1:
@@ -336,9 +353,11 @@ def verify_ci_artifacts(
         if total > budget:
             raise ValueError("complete execution artifacts exceed the collection budget")
         owned = directory / work.name
+        _progress(progress, "artifact-extraction", work.name)
         expanded_total += extract_artifact(remote, artifact, run, owned)
         if expanded_total > budget:
             raise ValueError("complete expanded artifacts exceed the collection budget")
+        _progress(progress, "receipt-validation", work.name)
         receipt = require_canonical_json((owned / "receipt.json").read_bytes())
         report = validate_evidence_records(
             [receipt], expected=[work], source_sha=source_sha, run_id=run_identity
@@ -350,6 +369,7 @@ def verify_ci_artifacts(
             if not isinstance(conditions, dict) or conditions.get("platform") != expected_platform:
                 raise ValueError("native evidence contradicts the actual platform condition")
         if work.command[0] == "make":
+            _progress(progress, "make-validation", work.name)
             manifests = [
                 require_canonical_json(path.read_bytes())
                 for path in (owned / "make" / run_identity).glob("*/manifest.json")
@@ -386,6 +406,7 @@ def verify_ci_artifacts(
                     report["qualification_exit_status"] or make_report["qualification_exit_status"]
                 )
         if work.growth_witnesses:
+            _progress(progress, "growth-validation", work.name)
             actual = collect_test_witnesses(
                 tuple((owned / "pytest").glob(f"*/{run_identity}/*/*.json")),
                 root=ROOT,
@@ -537,10 +558,17 @@ def _job_completion(job: Mapping[str, Any], run: Mapping[str, Any]) -> dict[str,
     return result
 
 
-def collect_gate(remote: GitHubPublication, run_id: int, attempt: int) -> dict[str, object]:
+def collect_gate(
+    remote: GitHubPublication,
+    run_id: int,
+    attempt: int,
+    *,
+    progress: EvidenceProgress | None = None,
+) -> dict[str, object]:
     source = source_identity(ROOT)
     if source["source_clean"] is not True:
         raise ValueError("gate source must be exact and clean")
+    _progress(progress, "execution-identity")
     run = trusted_attempt(remote, run_id, attempt)
     owners = {".github/workflows/ci.yml"}
     for path in (ROOT / ".github/workflows").glob("*.yml"):
@@ -552,10 +580,14 @@ def collect_gate(remote: GitHubPublication, run_id: int, attempt: int) -> dict[s
     if run["path"] not in owners:
         raise ValueError("execution artifacts are not owned by a maintained CI workflow")
     with TemporaryDirectory(prefix="riverhog-ci-evidence-") as temporary:
-        results = verify_ci_artifacts(remote, run, str(source["source_sha"]), Path(temporary))
+        results = verify_ci_artifacts(
+            remote, run, str(source["source_sha"]), Path(temporary), progress=progress
+        )
+    _progress(progress, "execution-recheck")
     after = trusted_attempt(remote, run_id, attempt)
     if attempt_identity(after) != attempt_identity(run) or source_identity(ROOT) != source:
         raise ValueError("execution identity changed during consumption")
+    _progress(progress, "qualification-summary")
     statuses = []
     for row in results.values():
         if not isinstance(row, dict) or not isinstance(row.get("result"), dict):
@@ -874,10 +906,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error("evidence output must not overwrite another attempt")
     write_record(args.output, record)
     status = 2
+    failure_context: dict[str, str | None] = {"phase": "collector-start", "work": None}
+
+    def progress(phase: str, work: str | None) -> None:
+        # Only source-owned stage names and declared workload names reach this
+        # receipt. Exception messages, API bodies and environments stay outside it.
+        failure_context.update(phase=phase, work=work)
+
     try:
         remote = GitHubPublication(args.repository)
         record["result"] = (
-            collect_gate(remote, args.run_id, args.attempt)
+            collect_gate(remote, args.run_id, args.attempt, progress=progress)
             if args.command == "gate"
             else collect_completed(remote, args.run_id, args.attempt)
         )
@@ -907,8 +946,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         yaml.YAMLError,
         subprocess.CalledProcessError,
         ContractAtlasError,
-    ):
+    ) as error:
         record["state"] = "evidence-failed"
+        record["failure_context"] = {
+            **failure_context,
+            "category": (
+                "command"
+                if isinstance(error, subprocess.CalledProcessError)
+                else "archive"
+                if isinstance(error, zipfile.BadZipFile)
+                else "schema"
+                if isinstance(error, yaml.YAMLError)
+                else "github"
+                if isinstance(error, ContractAtlasError)
+                else "io"
+                if isinstance(error, OSError)
+                else "shape"
+                if isinstance(error, KeyError)
+                else "type"
+                if isinstance(error, TypeError)
+                else "validation"
+            ),
+        }
         print("Actions validation evidence is invalid or incomplete.")
     finally:
         record.update(

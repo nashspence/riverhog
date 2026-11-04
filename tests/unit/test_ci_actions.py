@@ -955,3 +955,141 @@ def test_ci_partition_growth_coverage_cannot_omit_or_repeat_required_work(monkey
     monkeypatch.setattr(ci_actions, "validation_workloads", lambda: tuple(definitions))
     with pytest.raises(ValueError, match="omit or duplicate required growth"):
         ci_actions.ci_execution_work()
+
+
+@pytest.mark.parametrize(
+    ("stage", "phase", "work_name", "category"),
+    [
+        ("history", "execution-history", None, "validation"),
+        ("archive", "artifact-extraction", "fixture", "archive"),
+        ("receipt", "receipt-validation", "fixture", "validation"),
+        ("make", "make-validation", "fixture", "validation"),
+    ],
+)
+def test_failed_gate_retains_bounded_owner_stage_without_exception_payload(
+    actual_make_execution, tmp_path, monkeypatch, capsys, stage, phase, work_name, category
+):
+    work, receipt, manifest, source = actual_make_execution
+    sentinel = "synthetic-private-error-value"
+    selected_manifest = copy.deepcopy(manifest)
+    if stage == "make":
+        selected_manifest["work_definitions"] = []
+    files = [
+        ("receipt.json", receipt if stage != "receipt" else sentinel.encode()),
+        (
+            f"make/23-2/{manifest['span']}/manifest.json",
+            json.dumps(selected_manifest, sort_keys=True, separators=(",", ":")).encode(),
+        ),
+    ]
+    archive = b"invalid archive " + sentinel.encode() if stage == "archive" else zipped(files)
+    remote = Remote(artifact=artifact_record(archive), archive=archive)
+    remote.run["path"] = ".github/workflows/ci.yml"
+    if stage == "history":
+        remote.jobs.append(copy.deepcopy(remote.jobs[0]))
+    monkeypatch.setattr(ci_actions, "ROOT", source)
+    monkeypatch.setattr(
+        ci_actions,
+        "source_identity",
+        lambda root: {"source_sha": manifest["source_sha"], "source_clean": True},
+    )
+    monkeypatch.setattr(ci_actions, "GitHubPublication", lambda repository: remote)
+    monkeypatch.setattr(ci_actions, "ci_execution_work", lambda: {"actual fixture": work})
+    monkeypatch.setattr(
+        ci_make, "make_work_definitions", lambda goals, parameters: [work.definition()]
+    )
+    output = tmp_path / "gate.json"
+    assert (
+        ci_actions.main(
+            (
+                "gate",
+                "--repository",
+                "owner/repo",
+                "--run-id",
+                "23",
+                "--attempt",
+                "2",
+                "--output",
+                str(output),
+            )
+        )
+        == 2
+    )
+    record = require_canonical_json(output.read_bytes())
+    assert record["state"] == "evidence-failed" and record["exit_status"] == 2
+    assert record["failure_context"] == {
+        "phase": phase,
+        "work": work_name,
+        "category": category,
+    }
+    assert sentinel not in output.read_text()
+    assert sentinel not in capsys.readouterr().out
+    assert record["elapsed_seconds"] >= 0
+
+
+def test_gate_diagnostics_do_not_publish_command_stderr_or_exception_text(
+    tmp_path, monkeypatch, capsys
+):
+    sentinel = "synthetic-private-command-output"
+    monkeypatch.setattr(ci_actions, "GitHubPublication", lambda repository: object())
+    monkeypatch.setattr(
+        ci_actions, "source_identity", lambda root: {"source_sha": "a" * 40, "source_clean": True}
+    )
+
+    def refused(remote, run_id, attempt, *, progress):
+        progress("artifact-extraction", "unit-unit-2")
+        raise subprocess.CalledProcessError(
+            1, ["fixture"], output=sentinel.encode(), stderr=sentinel.encode()
+        )
+
+    monkeypatch.setattr(ci_actions, "collect_gate", refused)
+    output = tmp_path / "gate.json"
+    assert (
+        ci_actions.main(
+            (
+                "gate",
+                "--repository",
+                "owner/repo",
+                "--run-id",
+                "23",
+                "--attempt",
+                "2",
+                "--output",
+                str(output),
+            )
+        )
+        == 2
+    )
+    record = require_canonical_json(output.read_bytes())
+    assert record["failure_context"] == {
+        "phase": "artifact-extraction",
+        "work": "unit-unit-2",
+        "category": "command",
+    }
+    assert sentinel not in output.read_text() and sentinel not in capsys.readouterr().out
+
+
+def test_actual_evidence_progress_observes_same_single_consumption(
+    actual_execution, tmp_path, monkeypatch
+):
+    work, receipt, source_sha = actual_execution
+    archive = zipped([("receipt.json", receipt)])
+    remote = Remote(artifact=artifact_record(archive), archive=archive)
+    monkeypatch.setattr(ci_actions, "ci_execution_work", lambda: {"actual fixture": work})
+    observed = []
+    result = ci_actions.verify_ci_artifacts(
+        remote,
+        remote.run,
+        source_sha,
+        tmp_path,
+        progress=lambda phase, work_name: observed.append((phase, work_name)),
+    )
+    assert result["actual fixture"]["result"]["qualification_exit_status"] == 0
+    assert remote.downloads == 1
+    assert observed == [
+        ("artifact-list", None),
+        ("execution-history", None),
+        ("job-measurement", "fixture"),
+        ("artifact-selection", "fixture"),
+        ("artifact-extraction", "fixture"),
+        ("receipt-validation", "fixture"),
+    ]
