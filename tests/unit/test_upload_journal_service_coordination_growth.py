@@ -331,6 +331,9 @@ def scheduling_samples(root, samples, *, large=True):
             for cold in (False, True):
                 identity = 2**61 if kind == "absent" else case.identity
                 before = rows(case.engine, Upload)
+                with case.factory() as session:
+                    upload = session.get(Upload, identity)
+                    eligible = upload is not None and upload.state in {"closing", "uploading"}
                 own_dimensions = {
                     "retained_rows": sum(map(len, before.values())),
                     "metadata_row_octets": max(
@@ -394,7 +397,7 @@ def scheduling_samples(root, samples, *, large=True):
                     own_dimensions["readiness_" + item.name] = (
                         dimensions[item.name] if children else 0
                     )
-                assert len(children) == int(kind != "absent")
+                assert len(children) == int(eligible)
                 if error or not expected or kind == "absent":
                     assert rows(case.engine, Upload) == before
                     assert metrics["changed_rows"] == int(kind == "interrupted" and not cold)

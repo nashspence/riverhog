@@ -43,6 +43,7 @@ default_tests=(
     tests/integration/test_immutable_archive_admission_concurrency.py
   tests/integration/test_collection_deletion_concurrency.py
   tests/integration/test_collection_upload_custody_concurrency.py
+  tests/integration/test_collection_finalization_concurrency.py
   tests/integration/test_operation_lifecycle_postgres.py
   tests/integration/test_canonical_discovery_rebuild_postgres.py
   tests/integration/test_canonical_discovery_corpus_jobs_postgres.py

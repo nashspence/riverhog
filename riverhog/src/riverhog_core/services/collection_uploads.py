@@ -2868,9 +2868,10 @@ class SqlAlchemyCollectionUploadService:
             )
             for upload in uploads:
                 interrupted = upload.state == "finalizing" and upload.archive_phase == "finalizing"
-                if not interrupted and not _ready_for_finalization(session, upload):
-                    continue
-                upload.state = "finalizing"
+                if upload.state != "finalizing":
+                    if not _ready_for_finalization(session, upload):
+                        continue
+                    _mark_finalization_ready(upload, now=now)
                 upload.archive_phase = "retry_wait" if interrupted else "finalization_queued"
                 upload.archive_next_attempt_at = now
                 upload.archive_phase_updated_at = now
@@ -2969,13 +2970,8 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 return None
-            if not _ready_for_finalization(session, upload):
-                upload.state = "uploading"
-                upload.archive_phase = "uploading"
-                upload.archive_next_attempt_at = None
-                upload.archive_phase_updated_at = now
-                return None
-            upload.state = "finalizing"
+            # Entering finalizing commits exact readiness under the upload lock.
+            # Its closed plan and payload seals survive every bounded metadata step.
             upload.archive_phase = "finalizing"
             upload.archive_phase_updated_at = now
             upload.archive_last_attempt_at = now
@@ -2991,7 +2987,11 @@ class SqlAlchemyCollectionUploadService:
                 .where(CollectionUploadRecord.collection_id == collection_id)
                 .with_for_update()
             )
-            if upload is None or not _ready_for_finalization(session, upload):
+            if (
+                upload is None
+                or upload.state not in {"closing", "uploading"}
+                or not _ready_for_finalization(session, upload)
+            ):
                 return
             _mark_finalization_ready(upload, now=now)
 
@@ -3056,11 +3056,18 @@ class SqlAlchemyCollectionUploadService:
     def _record_finalization_retry(self, collection_id: int, exc: Exception) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None:
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == collection_id)
+                .with_for_update()
+            )
+            if (
+                upload is None
+                or upload.state != "finalizing"
+                or upload.archive_phase != "finalizing"
+            ):
                 return
             delay = min(3600, 2 ** min(upload.archive_attempt_count, 10))
-            upload.state = "finalizing"
             upload.archive_phase = "retry_wait"
             upload.archive_phase_updated_at = now
             upload.archive_next_attempt_at = format_utc_timestamp(
@@ -5038,10 +5045,17 @@ class SqlAlchemyCollectionUploadService:
     def _requeue_finalization_step(self, collection_id: int) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None:
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == collection_id)
+                .with_for_update()
+            )
+            if (
+                upload is None
+                or upload.state != "finalizing"
+                or upload.archive_phase != "finalizing"
+            ):
                 return
-            upload.state = "finalizing"
             upload.archive_phase = "finalization_queued"
             upload.archive_phase_updated_at = now
             upload.archive_next_attempt_at = now
@@ -9509,6 +9523,8 @@ def _journal_service_schedule_declaration() -> Declaration:
         ),
         invariants=(
             "Missing uploads and incomplete readiness never queue publication.",
+            "Only closing or uploading constructions enter accepted finalization.",
+            "Already accepted finalization retains its current claim or queued retry.",
             (
                 "Only the existing exact readiness predicate permits the existing "
                 "finalizing/queued state transition."
