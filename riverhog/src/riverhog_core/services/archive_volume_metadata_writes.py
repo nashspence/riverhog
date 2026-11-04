@@ -6,6 +6,7 @@ import hashlib
 import secrets
 import threading
 
+from riverhog_archive_contracts import CollectionArchiveTerminalDocument
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_storage_adapter_protocol import (
     ImmutableObjectReceipt as AdapterImmutableObjectReceipt,
@@ -17,6 +18,7 @@ from riverhog_storage_adapter_protocol import (
     WriteExecutionResult,
 )
 
+from riverhog_core.archive_root import ArchiveRootPublisher, SealedArchiveVolumeMetadata
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.ports.archive_objects import (
@@ -76,6 +78,26 @@ class ArchiveVolumeMetadataWrites:
     @property
     def has_pending(self) -> bool:
         return self._admission_pending or (self._admitted is not None and not self._retired)
+
+    def publish(self, *, passphrase: str, scrypt_log_n: int) -> SealedArchiveVolumeMetadata:
+        """Resume an original result before spending another encryption step."""
+        with self._lock:
+            received = self._flush()
+        if received is not None:
+            return self._source.publication.sealed_receipt(received)
+        publisher = ArchiveRootPublisher(
+            object_store=self, passphrase=passphrase, scrypt_log_n=scrypt_log_n
+        )
+        document = self._source.document
+        if isinstance(document, CollectionArchiveTerminalDocument):
+            return publisher.publish_terminal_metadata(
+                archive_storage_prefix=self._source.publication.archive_storage_prefix,
+                document=document,
+            )
+        return publisher.publish_volume_metadata(
+            archive_storage_prefix=self._source.publication.archive_storage_prefix,
+            document=document,
+        )
 
     def _receipt(self) -> AdapterImmutableObjectReceipt | None:
         if self._observed_json is not None:

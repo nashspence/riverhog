@@ -161,6 +161,22 @@ class ArchiveWriteAdmission:
             if terminal is None:
                 raise RuntimeError("archive write terminal intent is missing")
 
+    @staticmethod
+    def require_no_unresolved_calls(session: Session, collection_id: int) -> None:
+        """Require closure while the caller retains the construction write lock."""
+        if (
+            session.scalar(
+                select(ArchiveWriteEffectRecord.id)
+                .where(
+                    ArchiveWriteEffectRecord.collection_id == collection_id,
+                    ArchiveWriteEffectRecord.unresolved.is_(True),
+                )
+                .limit(1)
+            )
+            is not None
+        ):
+            raise Conflict("archive construction has unresolved provider writes")
+
     def bind_epoch(self, collection_id: int, *, guard: Guard) -> str:
         """Bind one authorized actor before it prepares or admits forward work."""
         with session_scope(self._factory) as session:

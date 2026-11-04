@@ -28,15 +28,20 @@ from riverhog_core.archive_root import (
     SealedArchiveVolumeMetadata,
 )
 from riverhog_core.archive_volume_receipts import parse_sealed_pack, parse_sealed_raw
+from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectUploadRecord,
     CollectionUploadRecord,
 )
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
+from riverhog_core.collection_construction import upload_construction_fields
 from riverhog_core.domain.archive import SealedPackVolume, SealedRawVolume
 from riverhog_core.immutable_archive_identity import require_immutable_archive_receipt
+from riverhog_core.incremental_plan import parse_incremental_volume_planner_checkpoint
 from riverhog_core.pack_volume import parse_pack_volume_plan
 from riverhog_core.ports.archive_objects import ImmutableObjectReceipt
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.immutable_archive_admission import ImmutableArchiveAdmission
 from riverhog_core.services.immutable_archive_preparation import (
     ImmutableArchivePreparation,
     PreparedImmutableArchiveObject,
@@ -49,11 +54,7 @@ def _json(value: object) -> str:
 
 def _parent_identity(upload: CollectionUploadRecord) -> dict[str, object]:
     return {
-        "collection_id": upload.collection_id,
-        "archive_store": upload.archive_store,
-        "archive_incarnation_id": upload.archive_incarnation_id,
-        "archive_generation": upload.archive_generation,
-        "archive_storage_prefix": upload.archive_storage_prefix,
+        **upload_construction_fields(upload),
         "archive_tree_sha256": upload.archive_tree_sha256,
         "planner_next_sequence": upload.planner_next_sequence,
     }
@@ -151,7 +152,11 @@ class ArchiveVolumeMetadataSource:
         if upload.archive_tree_sha256 is None:
             raise Conflict("archive volume metadata tree identity is unavailable")
         document: CollectionArchiveVolumeDocument | CollectionArchiveTerminalDocument
-        total = upload.planner_next_sequence
+        if not upload.planner_checkpoint_json:
+            raise Conflict("archive volume metadata canonical planner is unavailable")
+        total = parse_incremental_volume_planner_checkpoint(
+            upload.planner_checkpoint_json
+        ).next_sequence
         if sequence == total:
             record = None
             document = build_collection_archive_terminal_document(
@@ -189,6 +194,54 @@ class ArchiveVolumeMetadataSource:
         else:
             raise Conflict("archive volume metadata original sequence is outside its construction")
         return cls.capture(upload=upload, record=record, document=document, total_volumes=total)
+
+    @property
+    def archive_store(self) -> str:
+        return str(json.loads(self.identity_json)["construction"]["archive_store"])
+
+    @property
+    def archive_incarnation_id(self) -> str:
+        return str(json.loads(self.identity_json)["construction"]["archive_incarnation_id"])
+
+    @property
+    def passphrase_id(self) -> str:
+        return str(json.loads(self.identity_json)["construction"]["passphrase_id"])
+
+    @classmethod
+    def receive_original_receipt(
+        cls,
+        session: Session,
+        prepared: PreparedImmutableArchiveObject,
+        receipt: AdapterImmutableObjectReceipt,
+    ) -> None:
+        cls.from_prepared(session, prepared).apply_prepared_receipt(session, prepared, receipt)
+
+    @classmethod
+    def verify_original_receipt(
+        cls,
+        session: Session,
+        prepared: PreparedImmutableArchiveObject,
+        receipt: AdapterImmutableObjectReceipt,
+    ) -> None:
+        cls.from_prepared(session, prepared).verify_prepared_receipt(session, prepared, receipt)
+
+    @classmethod
+    def drain_one(cls, factory: SessionFactory, collection_id: int) -> bool:
+        """Receive one original closed report before advancing its source."""
+        owner = ImmutableArchiveAdmission(factory)
+        settled = owner.load_next_collection_report(collection_id)
+        if settled is None:
+            return False
+        if settled.receipt is None:
+            owner.acknowledge_settled(settled)
+        else:
+            owner.receive_settled(
+                settled,
+                apply_receipt=cls.receive_original_receipt,
+                verify_receipt=cls.verify_original_receipt,
+            )
+            owner.acknowledge_settled(settled, verify_receipt=cls.verify_original_receipt)
+        return True
 
     @classmethod
     def from_prepared(
@@ -301,6 +354,7 @@ class ArchiveVolumeMetadataSource:
             or (self.object_id is None and upload.archive_terminal_receipt_json is not None)
         ):
             raise Conflict("archive volume metadata finalizer claim is not current")
+        ArchiveWriteAdmission.require_no_unresolved_calls(session, self.collection_id)
 
     def validate_metadata(
         self, session: Session, upload: CollectionUploadRecord, operation: PutObjectOperation

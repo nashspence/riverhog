@@ -191,7 +191,9 @@ def test_durable_receiving_proof_requires_the_original_projection(tmp_path, fiel
         assert _snapshot(case) == before
 
 
-@pytest.mark.parametrize("field", ["tree", "prefix", "plan", "seal", "planned_count"])
+@pytest.mark.parametrize(
+    "field", ["tree", "prefix", "plan", "seal", "planned_count", "passphrase", "creation_identity"]
+)
 def test_receiving_rechecks_exact_source_after_original_capture(tmp_path, field):
     with _case(tmp_path, "segment", artifact_count=2) as case:
         _seal(case)
@@ -208,6 +210,10 @@ def test_receiving_rechecks_exact_source_after_original_capture(tmp_path, field)
                 upload.planner_next_sequence += 1
             elif field == "plan":
                 volume.plan_json = "{}"
+            elif field == "passphrase":
+                upload.passphrase_id = "changed-key"
+            elif field == "creation_identity":
+                upload.creation_identity_sha256 = "f" * 64
             else:
                 volume.sealed_receipt_json = "{}"
         before = _snapshot(case)

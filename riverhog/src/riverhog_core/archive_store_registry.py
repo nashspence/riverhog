@@ -9,6 +9,7 @@ from riverhog_core.ports.archive_objects import (
     ArchiveObjectRangeStore,
     ArchiveResumableObjectStore,
     ImmutableArchiveObjectStore,
+    ImmutableArchiveWritePort,
 )
 from riverhog_core.ports.archive_store import ArchiveStore
 
@@ -22,6 +23,12 @@ class ArchiveStoreBinding:
     resumable_objects: ArchiveResumableObjectStore
     immutable_objects: ImmutableArchiveObjectStore
     object_ranges: ArchiveObjectRangeStore
+    immutable_writes: ImmutableArchiveWritePort | None = None
+
+    def require_immutable_writes(self) -> ImmutableArchiveWritePort:
+        if self.immutable_writes is None:
+            raise ServiceUnavailable("archive store has no immutable execution/observation port")
+        return self.immutable_writes
 
 
 class ArchiveStoreRegistry:

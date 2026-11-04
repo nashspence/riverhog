@@ -143,6 +143,7 @@ def _archive_store_binding(
     download_allowance: DownloadAllowance,
 ) -> ArchiveStoreBinding:
     adapter = validated_storage_adapter(client)
+    immutable = StorageAdapterImmutableArchiveObjectStore(adapter)
     return ArchiveStoreBinding(
         incarnation_id=adapter.descriptor().storage_incarnation_id,
         store=StorageAdapterArchiveStore(
@@ -152,7 +153,8 @@ def _archive_store_binding(
             download_allowance=download_allowance,
         ),
         resumable_objects=StorageAdapterArchiveResumableObjectStore(adapter),
-        immutable_objects=StorageAdapterImmutableArchiveObjectStore(adapter),
+        immutable_objects=immutable,
+        immutable_writes=immutable,
         object_ranges=StorageAdapterArchiveObjectRangeStore(adapter),
     )
 

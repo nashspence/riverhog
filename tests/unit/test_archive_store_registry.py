@@ -49,5 +49,6 @@ def test_composition_binds_every_capability_to_each_configured_archive_store(
         validated = binding.store._adapter  # type: ignore[attr-defined]
         assert validated._adapter is expected  # type: ignore[attr-defined]
         assert binding.resumable_objects._adapter is validated  # type: ignore[attr-defined]
+        assert binding.require_immutable_writes() is binding.immutable_objects
         assert binding.immutable_objects._adapter is validated  # type: ignore[attr-defined]
         assert binding.object_ranges._adapter is validated  # type: ignore[attr-defined]

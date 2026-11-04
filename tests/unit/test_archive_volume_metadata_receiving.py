@@ -282,7 +282,21 @@ def test_actual_metadata_draining_progresses_under_fixed_one_call_grant(
             event.remove(engine, "before_cursor_execute", capture)
         # All retained effects share one call slot. Every replay lookup is a
         # bounded pool selection or exact original call lookup, never history.
-        assert len(statements) <= 10 * (count + 1) + 1
+        # Fresh admission now checks predecessor closure before and after its
+        # waits. Account for that additional authority work separately while
+        # preserving the receiving/replay bound.
+        closure_checks = [
+            statement
+            for statement in statements
+            if "archive_write_effects.unresolved IS 1" in statement
+            and "archive_write_effects.object_id =" not in statement
+        ]
+        receiving_checks = [
+            statement for statement in statements if statement not in closure_checks
+        ]
+        assert len(receiving_checks) <= 10 * (count + 1) + 1
+        assert 0 < len(closure_checks) <= 4 * (count + 1)
+        assert len(statements) <= 14 * (count + 1) + 1
         assert all(
             "LIMIT" in s or "archive_write_effects.id =" in s or "count(" in s for s in statements
         )
@@ -292,6 +306,8 @@ def test_actual_metadata_draining_progresses_under_fixed_one_call_grant(
                 "volumes": count,
                 "metadata_objects": count + 1,
                 "effect_selects": len(statements),
+                "receiving_effect_selects": len(receiving_checks),
+                "admission_closure_selects": len(closure_checks),
                 "call_grant": 1,
             },
         )
@@ -325,7 +341,7 @@ def test_positive_unknown_metadata_remains_charged_without_cold_closure(tmp_path
         assert not _fresh_coordinator(case)._drain_archive_volume_metadata_report(
             case.collection_id
         )
-        with pytest.raises(Conflict, match="grant is exhausted"):
+        with pytest.raises(Conflict, match="unresolved provider writes"):
             _admit(fixture, 1)
         assert _count(case) == 1 and _snapshot(case) == before
         with session_scope(case.factory) as session:

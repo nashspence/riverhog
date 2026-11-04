@@ -158,6 +158,12 @@ class ImmutableArchiveObjectObserver(Protocol):
     ) -> AdapterImmutableObjectReceipt | None: ...
 
 
+class ImmutableArchiveWritePort(
+    ArchiveObjectWriteExecutor, ImmutableArchiveObjectObserver, Protocol
+):
+    """One selected immutable execution owner and its read-only observer."""
+
+
 class ImmutableArchiveObjectStore(Protocol):
     def put_immutable_object(
         self,

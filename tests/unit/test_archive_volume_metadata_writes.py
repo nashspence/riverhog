@@ -130,7 +130,7 @@ def test_publisher_retry_retains_original_bytes_response_and_retirement_proof(
             assert original.actor._admitted is None and original.actor.has_pending
             with pytest.raises(Conflict, match="admission remains unconfirmed"):
                 original.actor.flush()
-            with pytest.raises(Conflict, match="grant is exhausted"):
+            with pytest.raises(Conflict, match="unresolved provider writes"):
                 _publish(original)
             assert original.calls == {"observe": [], "execute": []}
             assert _count(original.case) == 1
@@ -333,6 +333,11 @@ def test_original_actor_receives_closed_result_after_terminal_and_forward_state_
         original = _actor(fixture)
         execute = original.actor._executor.execute_write
 
+        def terminal_guard(session):
+            # The fixture's independent terminal owner retains the original
+            # construction. It must be able to fence unresolved forward work.
+            original.source._parent(session)
+
         def revoked(invocation, *, content):
             response = execute(invocation, content=content)
             ArchiveWriteAdmission(original.case.factory).select_terminal(
@@ -341,7 +346,7 @@ def test_original_actor_receives_closed_result_after_terminal_and_forward_state_
                 request={"fixture": "original-metadata"},
                 principal_id="fixture-operator",
                 grants=fixture.grants,
-                guard=original.source.guard,
+                guard=terminal_guard,
                 validate_selection=lambda *args: None,
             )
             with session_scope(original.case.factory) as session:

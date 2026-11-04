@@ -151,9 +151,6 @@ from riverhog_provenance import (
     external_reference,
     validate_journal_chunks,
 )
-from riverhog_storage_adapter_protocol import (
-    ImmutableObjectReceipt as AdapterImmutableObjectReceipt,
-)
 from sqlalchemy import (
     asc,
     case,
@@ -343,8 +340,6 @@ from riverhog_core.services.collection_upload_authority import (
     retain_upload_claim,
     retain_upload_key,
 )
-from riverhog_core.services.immutable_archive_admission import ImmutableArchiveAdmission
-from riverhog_core.services.immutable_archive_preparation import PreparedImmutableArchiveObject
 from riverhog_core.services.lifecycle_events import (
     SqlAlchemyLifecycleEventService,
     event_context_json,
@@ -4933,35 +4928,7 @@ class SqlAlchemyCollectionUploadService:
             return True
 
     def _drain_archive_volume_metadata_report(self, collection_id: int) -> bool:
-        """Receive one original closed report before advancing or retiring its source."""
-        owner = ImmutableArchiveAdmission(self._session_factory)
-        settled = owner.load_next_collection_report(collection_id)
-        if settled is None:
-            return False
-        if settled.receipt is None:
-            # Original unused dispatch has no object receipt to transfer.
-            owner.acknowledge_settled(settled)
-            return True
-
-        def apply(
-            session: Session,
-            prepared: PreparedImmutableArchiveObject,
-            receipt: AdapterImmutableObjectReceipt,
-        ) -> None:
-            source = ArchiveVolumeMetadataSource.from_prepared(session, prepared)
-            source.apply_prepared_receipt(session, prepared, receipt)
-
-        def verify(
-            session: Session,
-            prepared: PreparedImmutableArchiveObject,
-            receipt: AdapterImmutableObjectReceipt,
-        ) -> None:
-            source = ArchiveVolumeMetadataSource.from_prepared(session, prepared)
-            source.verify_prepared_receipt(session, prepared, receipt)
-
-        owner.receive_settled(settled, apply_receipt=apply, verify_receipt=verify)
-        owner.acknowledge_settled(settled, verify_receipt=verify)
-        return True
+        return ArchiveVolumeMetadataSource.drain_one(self._session_factory, collection_id)
 
     def _publish_next_archive_volume_metadata(self, collection_id: int) -> bool:
         """Publish and checkpoint one bounded volume document in sequence order."""
