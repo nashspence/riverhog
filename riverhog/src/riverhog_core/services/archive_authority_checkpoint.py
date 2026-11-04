@@ -167,6 +167,18 @@ class ArchiveRootSource:
             raise Conflict("archive authority original construction changed")
         return upload
 
+    @property
+    def archive_store(self) -> str:
+        return str(json.loads(self.identity_json)["archive_store"])
+
+    @property
+    def archive_incarnation_id(self) -> str:
+        return str(json.loads(self.identity_json)["archive_incarnation_id"])
+
+    @property
+    def passphrase_id(self) -> str:
+        return str(json.loads(self.identity_json)["passphrase_id"])
+
     def guard(self, session: Session) -> None:
         upload = self._parent(session)
         _claimed(session, upload)
@@ -375,6 +387,27 @@ class ArchiveRecoverySource:
 
     def verify_receipt(self, session: Session, receipt: SealedRecoveryDescriptor) -> None:
         self._receive(session, receipt, apply=False)
+
+    def received(self, session: Session) -> SealedRecoveryDescriptor | None:
+        upload = self._parent(session)
+        if upload.final_authority_json is None:
+            return None
+        try:
+            value = json.loads(upload.final_authority_json)["recovery"]
+            receipt = self.publication.sealed_receipt(
+                ImmutableObjectReceipt(
+                    object_path=value["object_path"],
+                    revision=value["revision"],
+                    entity_token=None,
+                    stored_bytes=value["bytes"],
+                    stored_sha256=value["sha256"],
+                    completed_at=value["completed_at"],
+                )
+            )
+        except (KeyError, TypeError, ValueError, RuntimeError) as exc:
+            raise Conflict("archive authority receiving proof changed") from exc
+        self.verify_receipt(session, receipt)
+        return receipt
 
     @classmethod
     def from_prepared(
