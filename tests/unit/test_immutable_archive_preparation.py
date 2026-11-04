@@ -472,3 +472,84 @@ def test_default_metadata_preparation_grant_accounts_for_an_encrypted_frame_and_
             == prepared
         )
         assert case.actor.seen == []
+
+
+def test_default_metadata_grant_retains_actual_maximum_provenance_journal_frame(
+    tmp_path, monkeypatch, record_property
+):
+    from riverhog_age import decrypt_age_scrypt
+    from riverhog_archive_contracts import PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX
+    from riverhog_core.archive_provenance import (
+        ArchiveProvenancePublication,
+        ArchiveProvenancePublisher,
+    )
+    from riverhog_core.archive_write_grants import ArchiveWriteGrants
+
+    from tests.unit.test_archive_root import MemoryImmutableStore
+
+    with _metadata(tmp_path, monkeypatch) as case:
+        plaintext = b"x" * PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX
+        publication = ArchiveProvenancePublication.from_journal_segment(
+            archive_storage_prefix=case.prefix, content=plaintext
+        )
+        store = MemoryImmutableStore()
+        receipt = ArchiveProvenancePublisher(
+            object_store=store, passphrase="fixture", scrypt_log_n=1
+        ).publish_journal_segment(archive_storage_prefix=case.prefix, content=plaintext)
+        content = store.objects[publication.object_path].content
+        assert decrypt_age_scrypt(content, "fixture") == plaintext
+        assert receipt == publication.sealed_receipt(store.objects[publication.object_path].receipt)
+        operation = PutObjectOperation(request=publication.request(content))
+        object_id = case.owner.object_id(publication.object_path)
+
+        def validate(session, upload, original):
+            assert upload.collection_id == case.actor.case.collection_id
+            publication.require_request(original.request)
+
+        # Ciphertext alone fitting is insufficient: retained encoding, the
+        # original request and logical identity must all fit the same grant.
+        with pytest.raises(Conflict, match="exceeds its byte grant"):
+            _prepare(
+                case,
+                operation=operation,
+                content=content,
+                validate_metadata=validate,
+                grants=replace(ArchiveWriteGrants(), metadata_preparation_bytes=len(content)),
+            )
+        with session_scope(case.actor.case.factory) as session:
+            assert (
+                session.get(
+                    ArchiveWritePreparationRecord, (case.actor.case.collection_id, object_id)
+                )
+                is None
+            )
+
+        grants = ArchiveWriteGrants()
+        prepared = _prepare(
+            case,
+            operation=operation,
+            content=content,
+            validate_metadata=validate,
+            grants=grants,
+        )
+        with session_scope(case.actor.case.factory) as session:
+            stored = session.get(ArchiveWritePreparationRecord, (prepared.collection_id, object_id))
+            identity, encoded = stored.identity_json, stored.preparation_json
+        assert len(content) > len(plaintext) > grants.preparation_bytes
+        retained = len(identity.encode()) + len(encoded.encode())
+        assert len(content) < retained <= grants.metadata_preparation_bytes
+        assert json.loads(encoded)["capacity_bytes"] == grants.metadata_preparation_bytes
+        assert prepared.content == content
+        assert (
+            case.owner.load(prepared.collection_id, publication.object_path, epoch=prepared.epoch)
+            == prepared
+        )
+        assert case.actor.seen == []
+        for key, value in {
+            "plaintext_bytes": len(plaintext),
+            "stored_bytes": len(content),
+            "retained_identity_bytes": len(identity.encode()),
+            "retained_preparation_bytes": len(encoded.encode()),
+            "operator_grant_bytes": grants.metadata_preparation_bytes,
+        }.items():
+            record_property(key, value)

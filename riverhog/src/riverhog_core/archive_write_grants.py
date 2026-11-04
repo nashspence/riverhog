@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from riverhog_archive_contracts import ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX
+from riverhog_archive_contracts import (
+    ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX,
+    PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -16,7 +19,9 @@ class ArchiveWriteGrants:
     preparation_bytes: int = 16 * 1024
     terminal_bytes: int = 64 * 1024
     result_bytes: int = 64 * 1024
-    metadata_preparation_bytes: int = 2 * ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX
+    metadata_preparation_bytes: int = 2 * max(
+        ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX, PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX
+    )
 
     def __post_init__(self) -> None:
         for name in (
