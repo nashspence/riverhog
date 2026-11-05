@@ -439,6 +439,14 @@ class SqlAlchemyCollectionUploadService:
         self._archive_finalizers = ArchiveFinalizerRegistry(
             self._session_factory, self._archive_execution, config.archive_execution
         )
+        from .archive_finalizer_work import ArchiveFinalizerWork
+
+        self._archive_finalizer_work = ArchiveFinalizerWork(
+            self._session_factory,
+            self._archive_finalizers,
+            config=config,
+            archive_stores=archive_stores,
+        )
         self._journal_validation_after: tuple[int, str] | None = None
         # Volatile seek hints retain no permission, work or completion authority.
         self._registration_due_after: tuple[str, int, str] | None = None
