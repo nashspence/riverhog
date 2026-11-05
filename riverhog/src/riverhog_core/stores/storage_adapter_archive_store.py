@@ -7,16 +7,9 @@ from typing import Literal
 
 from riverhog_age import encrypt_age_scrypt, iter_decrypt_age_scrypt
 from riverhog_protocol import (
-    COLLECTION_DESCRIPTION_DOCUMENT_FORMAT,
     COLLECTION_DESCRIPTION_RELATIVE_PATH,
-    COLLECTION_TAG_HEAD_FORMAT,
     COLLECTION_TAG_HEAD_RELATIVE_PATH,
-    COLLECTION_TAG_NODE_FORMAT,
-    CollectionDescriptionDocument,
-    CollectionTagHeadDocument,
-    collection_tag_node_digest,
     collection_tag_node_path,
-    decode_collection_tag_node,
 )
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
@@ -35,6 +28,7 @@ from riverhog_storage_adapter_protocol import (
 )
 from time_formats import utc_timestamp_now
 
+from riverhog_core.archive_collection_metadata import ArchiveCollectionMetadataPublication
 from riverhog_core.archive_formats import archive_object_storage_format
 from riverhog_core.archive_safety import archive_agents_guidance, archive_recovery_readme
 from riverhog_core.ports.archive_store import (
@@ -148,54 +142,17 @@ class StorageAdapterArchiveStore:
         passphrase_id: str,
         expected_current_stored_sha256: str | None = None,
     ) -> CollectionDescriptionReceipt:
-        description = CollectionDescriptionDocument.from_json_bytes(document)
-        object_path = (
-            f"{_archive_prefix(archive_storage_prefix)}/{COLLECTION_DESCRIPTION_RELATIVE_PATH}"
+        _ = collection_id
+        publication = ArchiveCollectionMetadataPublication(
+            archive_storage_prefix, "description", document, passphrase_id
         )
-        plaintext_sha256 = hashlib.sha256(document).hexdigest()
-        identity = {
-            "riverhog-format": COLLECTION_DESCRIPTION_DOCUMENT_FORMAT,
-            "riverhog-archive-root-sha256": description.archive_root_sha256,
-            "riverhog-description-identity": description.description_identity,
-            "riverhog-description-revision": str(description.revision),
-            "riverhog-encryption": "age-v1-scrypt",
-            "riverhog-passphrase-id": passphrase_id,
-            _PLAINTEXT_BYTES_METADATA: str(len(document)),
-            _PLAINTEXT_SHA256_METADATA: plaintext_sha256,
-        }
-        existing = self._head(
-            object_path=object_path,
-            revision=None,
-            placement_policy="immediate_default",
-        )
-        if existing is not None and _metadata_contains(existing, identity):
-            return CollectionDescriptionReceipt(
-                object_path=existing.object_path,
-                revision=existing.revision,
-                stored_bytes=existing.stored_bytes,
-                stored_sha256=_required_stored_sha256(existing, object_path=object_path),
-                published_at=existing.completed_at,
+        receipt = publication.receipt(
+            self._publish_collection_metadata(
+                publication, expected_current_stored_sha256=expected_current_stored_sha256
             )
-        ciphertext = encrypt_age_scrypt(
-            document,
-            self._config.archive_passphrase_for(passphrase_id),
-            log_n=self._config.archive_scrypt_work_factor,
         )
-        receipt = self._put_small(
-            object_path=object_path,
-            content=ciphertext,
-            content_type="application/vnd.riverhog.collection-description.v1+age",
-            identity=identity,
-            mode=("create_only" if expected_current_stored_sha256 is None else "replace_current"),
-            expected_current_stored_sha256=expected_current_stored_sha256,
-        )
-        return CollectionDescriptionReceipt(
-            object_path=receipt.object_path,
-            revision=receipt.revision,
-            stored_bytes=receipt.stored_bytes,
-            stored_sha256=receipt.stored_sha256,
-            published_at=receipt.completed_at,
-        )
+        assert isinstance(receipt, CollectionDescriptionReceipt)
+        return receipt
 
     def delete_collection_description(
         self,
@@ -229,37 +186,14 @@ class StorageAdapterArchiveStore:
         passphrase_id: str,
     ) -> CollectionTagObjectReceipt:
         _ = collection_id
-        decode_collection_tag_node(encoded)
-        if collection_tag_node_digest(encoded) != digest:
+        publication = ArchiveCollectionMetadataPublication(
+            archive_storage_prefix, "tag-node", encoded, passphrase_id
+        )
+        if publication.required_identity_assertions["riverhog-tag-node-sha256"] != digest:
             raise ValueError("collection tag node digest differs")
-        relative_path = collection_tag_node_path(digest)
-        object_path = f"{_archive_prefix(archive_storage_prefix)}/{relative_path}"
-        identity = {
-            "riverhog-format": COLLECTION_TAG_NODE_FORMAT,
-            "riverhog-tag-node-sha256": digest,
-            "riverhog-encryption": "age-v1-scrypt",
-            "riverhog-passphrase-id": passphrase_id,
-            _PLAINTEXT_BYTES_METADATA: str(len(encoded)),
-            _PLAINTEXT_SHA256_METADATA: hashlib.sha256(encoded).hexdigest(),
-        }
-        existing = self._head(
-            object_path=object_path, revision=None, placement_policy="immediate_default"
-        )
-        if existing is not None and _metadata_contains(existing, identity):
-            return _tag_receipt(existing)
-        ciphertext = encrypt_age_scrypt(
-            encoded,
-            self._config.archive_passphrase_for(passphrase_id),
-            log_n=self._config.archive_scrypt_work_factor,
-        )
-        receipt = self._put_small(
-            object_path=object_path,
-            content=ciphertext,
-            content_type="application/vnd.riverhog.collection-tag-node.v1+age",
-            identity=identity,
-            mode="create_only",
-        )
-        return _tag_receipt(receipt)
+        receipt = publication.receipt(self._publish_collection_metadata(publication))
+        assert isinstance(receipt, CollectionTagObjectReceipt)
+        return receipt
 
     def publish_collection_tag_head(
         self,
@@ -271,40 +205,41 @@ class StorageAdapterArchiveStore:
         expected_current_stored_sha256: str | None = None,
     ) -> CollectionTagObjectReceipt:
         _ = collection_id
-        head = CollectionTagHeadDocument.from_json_bytes(document)
-        object_path = (
-            f"{_archive_prefix(archive_storage_prefix)}/{COLLECTION_TAG_HEAD_RELATIVE_PATH}"
+        publication = ArchiveCollectionMetadataPublication(
+            archive_storage_prefix, "tag-head", document, passphrase_id
         )
-        identity = {
-            "riverhog-format": COLLECTION_TAG_HEAD_FORMAT,
-            "riverhog-archive-root-sha256": head.archive_root_sha256,
-            "riverhog-tag-head-identity": head.head_identity,
-            "riverhog-tag-set-identity": head.tag_set_identity,
-            "riverhog-tag-revision": str(head.revision),
-            "riverhog-encryption": "age-v1-scrypt",
-            "riverhog-passphrase-id": passphrase_id,
-            _PLAINTEXT_BYTES_METADATA: str(len(document)),
-            _PLAINTEXT_SHA256_METADATA: hashlib.sha256(document).hexdigest(),
-        }
+        receipt = publication.receipt(
+            self._publish_collection_metadata(
+                publication, expected_current_stored_sha256=expected_current_stored_sha256
+            )
+        )
+        assert isinstance(receipt, CollectionTagObjectReceipt)
+        return receipt
+
+    def _publish_collection_metadata(
+        self,
+        publication: ArchiveCollectionMetadataPublication,
+        *,
+        expected_current_stored_sha256: str | None = None,
+    ) -> ObjectMetadataReceipt | ImmutableObjectReceipt:
         existing = self._head(
-            object_path=object_path, revision=None, placement_policy="immediate_default"
+            object_path=publication.object_path,
+            revision=None,
+            placement_policy="immediate_default",
         )
-        if existing is not None and _metadata_contains(existing, identity):
-            return _tag_receipt(existing)
+        if existing is not None and _metadata_contains(
+            existing, publication.required_identity_assertions
+        ):
+            return existing
         ciphertext = encrypt_age_scrypt(
-            document,
-            self._config.archive_passphrase_for(passphrase_id),
+            publication.plaintext,
+            self._config.archive_passphrase_for(publication.passphrase_id),
             log_n=self._config.archive_scrypt_work_factor,
         )
-        receipt = self._put_small(
-            object_path=object_path,
-            content=ciphertext,
-            content_type="application/vnd.riverhog.collection-tag-head.v1+age",
-            identity=identity,
-            mode=("create_only" if expected_current_stored_sha256 is None else "replace_current"),
-            expected_current_stored_sha256=expected_current_stored_sha256,
+        request = publication.request(
+            ciphertext, expected_current_stored_sha256=expected_current_stored_sha256
         )
-        return _tag_receipt(receipt)
+        return self._adapter.put_small_object(request, ciphertext)
 
     def delete_collection_tags(
         self,
@@ -712,18 +647,6 @@ def _required_stored_sha256(
     ):
         raise RuntimeError(f"archive object is missing its stored sha256: {object_path}")
     return value
-
-
-def _tag_receipt(
-    receipt: ObjectMetadataReceipt | ImmutableObjectReceipt,
-) -> CollectionTagObjectReceipt:
-    return CollectionTagObjectReceipt(
-        object_path=receipt.object_path,
-        revision=receipt.revision,
-        stored_bytes=receipt.stored_bytes,
-        stored_sha256=_required_stored_sha256(receipt, object_path=receipt.object_path),
-        published_at=receipt.completed_at,
-    )
 
 
 def _archive_prefix(value: str) -> str:
