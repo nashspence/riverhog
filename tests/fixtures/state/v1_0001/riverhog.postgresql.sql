@@ -1833,7 +1833,11 @@ CREATE TABLE collection_upload_tag_publication_frontier (
 	CONSTRAINT ck_sha256_6acac9b414fb5e15 CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_collection_upload_tag_frontier_work ON collection_upload_tag_publication_frontier (collection_id, published, expanded, node_digest);
+CREATE INDEX ix_upload_tag_frontier_receipts ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE published IS true;
+
+CREATE INDEX ix_upload_tag_frontier_expand_pending ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE expanded IS false;
+
+CREATE INDEX ix_upload_tag_frontier_publish_pending ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE published IS false;
 
 CREATE TABLE collection_upload_tags (
 	collection_id BIGINT NOT NULL,

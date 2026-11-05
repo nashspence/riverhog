@@ -2969,11 +2969,25 @@ class CollectionUploadTagPublicationFrontierRecord(Base):
             name="ck_collection_upload_tag_frontier_receipt",
         ),
         Index(
-            "ix_collection_upload_tag_frontier_work",
+            "ix_upload_tag_frontier_receipts",
             "collection_id",
-            "published",
-            "expanded",
             "node_digest",
+            sqlite_where=text("published IS 1"),
+            postgresql_where=text("published IS true"),
+        ),
+        Index(
+            "ix_upload_tag_frontier_expand_pending",
+            "collection_id",
+            "node_digest",
+            sqlite_where=text("expanded IS 0"),
+            postgresql_where=text("expanded IS false"),
+        ),
+        Index(
+            "ix_upload_tag_frontier_publish_pending",
+            "collection_id",
+            "node_digest",
+            sqlite_where=text("published IS 0"),
+            postgresql_where=text("published IS false"),
         ),
     )
 

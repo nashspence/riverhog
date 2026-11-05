@@ -1897,7 +1897,13 @@ CREATE TABLE collection_upload_tag_publication_frontier (
 )
     """.strip(),
     """
-CREATE INDEX ix_collection_upload_tag_frontier_work ON collection_upload_tag_publication_frontier (collection_id, published, expanded, node_digest)
+CREATE INDEX ix_upload_tag_frontier_receipts ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE published IS 1
+    """.strip(),
+    """
+CREATE INDEX ix_upload_tag_frontier_expand_pending ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE expanded IS 0
+    """.strip(),
+    """
+CREATE INDEX ix_upload_tag_frontier_publish_pending ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE published IS 0
     """.strip(),
     """
 CREATE TABLE collection_upload_tags (
@@ -4517,7 +4523,13 @@ CREATE TABLE collection_upload_tag_publication_frontier (
 )
     """.strip(),
     """
-CREATE INDEX ix_collection_upload_tag_frontier_work ON collection_upload_tag_publication_frontier (collection_id, published, expanded, node_digest)
+CREATE INDEX ix_upload_tag_frontier_receipts ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE published IS true
+    """.strip(),
+    """
+CREATE INDEX ix_upload_tag_frontier_expand_pending ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE expanded IS false
+    """.strip(),
+    """
+CREATE INDEX ix_upload_tag_frontier_publish_pending ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE published IS false
     """.strip(),
     """
 CREATE TABLE collection_upload_tags (

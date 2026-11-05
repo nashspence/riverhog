@@ -340,6 +340,7 @@ from riverhog_core.services.collection_upload_authority import (
     retain_upload_claim,
     retain_upload_key,
 )
+from riverhog_core.services.collection_upload_tag_frontier import pending_initial_tag_query
 from riverhog_core.services.immutable_archive_receiving import drain_original_immutable_report
 from riverhog_core.services.lifecycle_events import (
     SqlAlchemyLifecycleEventService,
@@ -3634,15 +3635,7 @@ class SqlAlchemyCollectionUploadService:
                     )
                 return True
 
-            frontier = session.scalar(
-                select(CollectionUploadTagPublicationFrontierRecord)
-                .where(
-                    CollectionUploadTagPublicationFrontierRecord.collection_id == collection_id,
-                    CollectionUploadTagPublicationFrontierRecord.expanded.is_(False),
-                )
-                .order_by(CollectionUploadTagPublicationFrontierRecord.node_digest)
-                .limit(1)
-            )
+            frontier = session.scalar(pending_initial_tag_query(collection_id, work="expand"))
             if frontier is not None:
                 node_record = session.get(CollectionTagNodeRecord, frontier.node_digest)
                 if node_record is None:
@@ -3663,15 +3656,7 @@ class SqlAlchemyCollectionUploadService:
                 frontier.expanded = True
                 return True
 
-            frontier = session.scalar(
-                select(CollectionUploadTagPublicationFrontierRecord)
-                .where(
-                    CollectionUploadTagPublicationFrontierRecord.collection_id == collection_id,
-                    CollectionUploadTagPublicationFrontierRecord.published.is_(False),
-                )
-                .order_by(CollectionUploadTagPublicationFrontierRecord.node_digest)
-                .limit(1)
-            )
+            frontier = session.scalar(pending_initial_tag_query(collection_id, work="publish"))
             if frontier is not None:
                 node_record = session.get(CollectionTagNodeRecord, frontier.node_digest)
                 if node_record is None:
