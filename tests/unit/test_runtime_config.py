@@ -467,3 +467,31 @@ def test_archive_write_operator_grants_round_trip_and_reject_invalid_capacity(
         _write(path, {**document, "archive_write": invalid})
         with pytest.raises(ValueError):
             load_runtime_config()
+
+
+def test_archive_execution_configuration_reserves_physical_terminal_headroom(tmp_path, monkeypatch):
+    from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
+
+    path, document = _document(tmp_path, monkeypatch)
+    document["archive_execution"] = {
+        "forward_workers": 6,
+        "terminal_workers": 3,
+        "forward_workers_per_target": 2,
+        "terminal_workers_per_target": 1,
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.archive_execution == ArchiveExecutionTuning(
+        forward_workers=6,
+        terminal_workers=3,
+        forward_workers_per_target=2,
+        terminal_workers_per_target=1,
+    )
+    for field in tuple(document["archive_execution"]):
+        original = document["archive_execution"][field]
+        for invalid in (0, -1, True, 1.5, "2"):
+            document["archive_execution"][field] = invalid
+            _write(path, document)
+            with pytest.raises(ValueError):
+                load_runtime_config()
+        document["archive_execution"][field] = original

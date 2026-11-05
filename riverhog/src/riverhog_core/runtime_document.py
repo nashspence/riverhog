@@ -13,6 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from riverhog_archive_contracts import ARCHIVE_PACK_ARTIFACTS_MAX
 from time_formats import parse_duration
 
+from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
@@ -34,6 +35,7 @@ _THROUGHPUT = ArchiveThroughputTuning()
 _RANGE = PackRangeRetrievalPolicy()
 _REGISTRATION = RegistrationTuning()
 _ARCHIVE_WRITE = ArchiveWriteGrants()
+_ARCHIVE_EXECUTION = ArchiveExecutionTuning()
 
 
 class _Document(BaseModel):
@@ -162,6 +164,25 @@ class ArchiveWriteDocument(_Document):
         )
 
 
+class ArchiveExecutionDocument(_Document):
+    forward_workers: int = Field(default=_ARCHIVE_EXECUTION.forward_workers, ge=1, strict=True)
+    terminal_workers: int = Field(default=_ARCHIVE_EXECUTION.terminal_workers, ge=1, strict=True)
+    forward_workers_per_target: int = Field(
+        default=_ARCHIVE_EXECUTION.forward_workers_per_target, ge=1, strict=True
+    )
+    terminal_workers_per_target: int = Field(
+        default=_ARCHIVE_EXECUTION.terminal_workers_per_target, ge=1, strict=True
+    )
+
+    def tuning(self) -> ArchiveExecutionTuning:
+        return ArchiveExecutionTuning(
+            forward_workers=self.forward_workers,
+            terminal_workers=self.terminal_workers,
+            forward_workers_per_target=self.forward_workers_per_target,
+            terminal_workers_per_target=self.terminal_workers_per_target,
+        )
+
+
 class RegistrationDocument(_Document):
     candidates_per_step: int = Field(default=_REGISTRATION.candidates_per_step, ge=1, strict=True)
     plans_per_step: int = Field(default=_REGISTRATION.plans_per_step, ge=1, strict=True)
@@ -264,6 +285,7 @@ class RiverhogDocument(_Document):
     catalog_sync_history_retention: str = "30d"
     catalog_sync_page_size_max: int = Field(default=100, ge=1, le=100)
     catalog_sync_history_reap_batch_size: int = Field(default=100, ge=1)
+    archive_execution: ArchiveExecutionDocument = Field(default_factory=ArchiveExecutionDocument)
     archive_write: ArchiveWriteDocument = Field(default_factory=ArchiveWriteDocument)
     registration: RegistrationDocument = Field(default_factory=RegistrationDocument)
     volume_policy: VolumePolicyDocument = Field(default_factory=VolumePolicyDocument)
@@ -382,6 +404,7 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         catalog_sync_history_retention=parse_duration(document.catalog_sync_history_retention),
         catalog_sync_page_size_max=document.catalog_sync_page_size_max,
         catalog_sync_history_reap_batch_size=document.catalog_sync_history_reap_batch_size,
+        archive_execution=document.archive_execution.tuning(),
         archive_write=document.archive_write.grants(),
         registration=document.registration.tuning(),
         volume_policy=document.volume_policy.policy(),
