@@ -153,6 +153,8 @@ def test_finalizer_retains_same_actor_after_reply_loss_and_advanced_source(
             patch.setattr(admission_module, "session_scope", lost)
             with pytest.raises(OSError, match="injected finalizer"):
                 original.owner.advance()
+        original.owner._config = None
+        original.owner._archive_stores = None
         actor = original.owner._actor
         assert original.owner.has_pending
         assert _snapshot(original.case)[0] == (int(committed) if phase == "report" else 1)

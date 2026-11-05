@@ -40,6 +40,7 @@ class ArchiveVolumeMetadataFinalizer:
         self._actor: ArchiveVolumeMetadataWrites | None = None
         self._source: ArchiveVolumeMetadataSource | None = None
         self._passphrase: str | None = None
+        self._scrypt_log_n: int | None = None
 
     @property
     def has_pending(self) -> bool:
@@ -92,17 +93,19 @@ class ArchiveVolumeMetadataFinalizer:
             )
             # Install ownership before encryption, preparation or provider work.
             self._source, self._actor, self._passphrase = source, actor, passphrase
+            self._scrypt_log_n = self._config.archive_scrypt_work_factor
             return self._publish_current()
 
     def _publish_current(self) -> bool:
         assert self._actor is not None and self._source is not None
-        assert self._passphrase is not None
+        assert self._passphrase is not None and self._scrypt_log_n is not None
         self._actor.publish(
             passphrase=self._passphrase,
-            scrypt_log_n=self._config.archive_scrypt_work_factor,
+            scrypt_log_n=self._scrypt_log_n,
         )
         # publish returned only after receiving and retirement acknowledgement.
         self._actor = None
         self._source = None
         self._passphrase = None
+        self._scrypt_log_n = None
         return True

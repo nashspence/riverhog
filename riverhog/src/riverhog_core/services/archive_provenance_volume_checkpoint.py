@@ -472,6 +472,13 @@ class ArchiveProvenanceVolumeSource:
                 raise Conflict("provenance volume original journal payload proof changed")
         return receipt
 
+    def received_payload(self, session: Session) -> SealedProvenanceObject | None:
+        """Return an exact original payload fact without acquiring forward authority."""
+        _, row = self._source(session)
+        if row.payload_receipt_json is None:
+            return None
+        return self._require_payload(session, row)
+
     def receive_journal_payload(self, session: Session) -> SealedProvenanceObject:
         _, row = self._source(session)
         document = self.document
