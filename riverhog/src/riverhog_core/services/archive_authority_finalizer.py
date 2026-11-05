@@ -17,6 +17,10 @@ from riverhog_core.services.archive_authority_checkpoint import (
     ArchiveRecoverySource,
     ArchiveRootSource,
 )
+from riverhog_core.services.archive_finalizer_terminal import (
+    ArchiveFinalizerTerminal,
+    TerminalDrainStatus,
+)
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_core.services.immutable_archive_receiving import drain_original_immutable_report
 from riverhog_core.services.immutable_archive_writes import ImmutableArchiveWrites
@@ -38,6 +42,7 @@ class ArchiveAuthorityFinalizer:
         self._config = config
         self._archive_stores = archive_stores
         self._lock = threading.Lock()
+        self._terminal = ArchiveFinalizerTerminal(factory, collection_id)
         self._actor: ImmutableArchiveWrites | None = None
         self._source: ArchiveRootSource | ArchiveRecoverySource | None = None
         self._passphrase: str | None = None
@@ -47,9 +52,19 @@ class ArchiveAuthorityFinalizer:
     def has_pending(self) -> bool:
         return self._actor is not None
 
+    def drain_terminal(self, operation_id: str) -> TerminalDrainStatus:
+        """Fence this owner and drain its original child without releasing inputs."""
+        if not self._lock.acquire(blocking=False):
+            return "busy"
+        try:
+            return self._terminal.drain_original(operation_id, self._actor)
+        finally:
+            self._lock.release()
+
     def advance(self) -> bool:
         """Receive one original closed fact or complete one current authority object."""
         with self._lock:
+            self._terminal.require_forward()
             if self._actor is not None:
                 return self._publish_current()
             if drain_original_immutable_report(self._factory, self._collection_id):

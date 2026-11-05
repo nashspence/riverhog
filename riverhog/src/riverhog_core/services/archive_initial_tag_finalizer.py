@@ -10,6 +10,10 @@ from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.archive_finalizer_terminal import (
+    ArchiveFinalizerTerminal,
+    TerminalDrainStatus,
+)
 from riverhog_core.services.archive_initial_tag_checkpoint import (
     ArchiveInitialTagSource,
 )
@@ -34,6 +38,7 @@ class ArchiveInitialTagFinalizer:
         self._config = config
         self._archive_stores = archive_stores
         self._lock = threading.Lock()
+        self._terminal = ArchiveFinalizerTerminal(factory, collection_id)
         self._source: ArchiveInitialTagSource | None = None
         self._phase: Literal["publish", "progress"] | None = None
         self._actor: ImmutableArchiveWrites | None = None
@@ -44,9 +49,19 @@ class ArchiveInitialTagFinalizer:
     def has_pending(self) -> bool:
         return self._source is not None
 
+    def drain_terminal(self, operation_id: str) -> TerminalDrainStatus:
+        """Fence this owner and drain its original child without releasing inputs."""
+        if not self._lock.acquire(blocking=False):
+            return "busy"
+        try:
+            return self._terminal.drain_original(operation_id, self._actor)
+        finally:
+            self._lock.release()
+
     def advance(self) -> bool:
         """Finish an original step before selecting any fresh authority work."""
         with self._lock:
+            self._terminal.require_forward()
             if self._source is not None:
                 return self._advance_original()
             if drain_original_immutable_report(self._factory, self._collection_id):

@@ -9,6 +9,10 @@ from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.archive_finalizer_terminal import (
+    ArchiveFinalizerTerminal,
+    TerminalDrainStatus,
+)
 from riverhog_core.services.archive_provenance_structure_checkpoint import (
     ArchiveProvenanceStructureSource,
 )
@@ -35,6 +39,7 @@ class ArchiveProvenanceStructureWriter:
         self._archive_stores = archive_stores
         self._forward_guard = forward_guard
         self._lock = threading.Lock()
+        self._terminal = ArchiveFinalizerTerminal(factory, collection_id)
         self._source: ArchiveProvenanceStructureSource | None = None
         self._actor: ImmutableArchiveWrites | None = None
         self._passphrase: str | None = None
@@ -44,9 +49,19 @@ class ArchiveProvenanceStructureWriter:
     def has_pending(self) -> bool:
         return self._actor is not None
 
+    def drain_terminal(self, operation_id: str) -> TerminalDrainStatus:
+        """Fence this owner and drain its original child without releasing inputs."""
+        if not self._lock.acquire(blocking=False):
+            return "busy"
+        try:
+            return self._terminal.drain_original(operation_id, self._actor)
+        finally:
+            self._lock.release()
+
     def advance(self, *, selected_object_id: str | None = None) -> bool:
         """Finish an original actor or publish one currently selected structure."""
         with self._lock:
+            self._terminal.require_forward()
             if self._actor is not None:
                 return self._publish_current()
             if drain_original_immutable_report(self._factory, self._collection_id):
