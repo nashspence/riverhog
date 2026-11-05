@@ -19,6 +19,7 @@ from riverhog_protocol import (
     collection_tag_node_path,
     decode_collection_tag_node,
 )
+from riverhog_protocol.paths import validate_canonical_relpath
 from riverhog_storage_adapter_protocol import (
     ImmutableObjectReceipt as AdapterReceipt,
 )
@@ -54,9 +55,10 @@ class ArchiveCollectionMetadataPublication:
         if not isinstance(self.plaintext, bytes):
             raise TypeError("collection metadata plaintext must be immutable bytes")
         prefix = self.archive_storage_prefix.strip("/")
-        parts = prefix.split("/")
-        if len(parts) != 2 or parts[0] != "archives" or not parts[1]:
-            raise ValueError("archive storage prefix is not canonical")
+        try:
+            validate_canonical_relpath(prefix)
+        except ValueError as exc:
+            raise ValueError("archive storage prefix is not canonical") from exc
         if self.role == "description":
             document = CollectionDescriptionDocument.from_json_bytes(self.plaintext)
             relative_path = COLLECTION_DESCRIPTION_RELATIVE_PATH

@@ -144,7 +144,7 @@ class StorageAdapterArchiveStore:
     ) -> CollectionDescriptionReceipt:
         _ = collection_id
         publication = ArchiveCollectionMetadataPublication(
-            archive_storage_prefix, "description", document, passphrase_id
+            _archive_prefix(archive_storage_prefix), "description", document, passphrase_id
         )
         receipt = publication.receipt(
             self._publish_collection_metadata(
@@ -187,7 +187,7 @@ class StorageAdapterArchiveStore:
     ) -> CollectionTagObjectReceipt:
         _ = collection_id
         publication = ArchiveCollectionMetadataPublication(
-            archive_storage_prefix, "tag-node", encoded, passphrase_id
+            _archive_prefix(archive_storage_prefix), "tag-node", encoded, passphrase_id
         )
         if publication.required_identity_assertions["riverhog-tag-node-sha256"] != digest:
             raise ValueError("collection tag node digest differs")
@@ -206,7 +206,7 @@ class StorageAdapterArchiveStore:
     ) -> CollectionTagObjectReceipt:
         _ = collection_id
         publication = ArchiveCollectionMetadataPublication(
-            archive_storage_prefix, "tag-head", document, passphrase_id
+            _archive_prefix(archive_storage_prefix), "tag-head", document, passphrase_id
         )
         receipt = publication.receipt(
             self._publish_collection_metadata(

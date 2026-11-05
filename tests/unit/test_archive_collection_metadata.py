@@ -235,7 +235,7 @@ def test_invalid_original_documents_and_receipts_never_succeed(role):
     with pytest.raises(TypeError, match="immutable bytes"):
         replace(publication, plaintext=bytearray(publication.plaintext))
     with pytest.raises(ValueError, match="canonical"):
-        replace(publication, archive_storage_prefix="archives/another/nested")
+        replace(publication, archive_storage_prefix="archives/../nested")
     physical = MemoryImmutableStore()
     publisher = ArchiveCollectionMetadataPublisher(
         object_store=physical,
@@ -277,3 +277,25 @@ def test_publisher_key_and_supported_role_are_explicit(monkeypatch):
     with pytest.raises(OSError, match="injected"):
         publisher.publish_object(publication)
     assert not physical.objects
+
+
+@pytest.mark.parametrize("role", _ROLES)
+def test_format_owner_preserves_canonical_nested_prefix_and_existing_store_placement(role):
+    publication, *_ = _publication(role)
+    nested = replace(publication, archive_storage_prefix="archives/fixture/nested")
+    physical = MemoryImmutableStore()
+    publisher = ArchiveCollectionMetadataPublisher(
+        object_store=physical,
+        passphrase="fixture key",
+        scrypt_log_n=1,
+    )
+    receipt = publisher.publish_object(nested)
+    assert receipt.object_path == "archives/fixture/nested/" + publication.relative_path
+    assert (
+        decrypt_age_scrypt(physical.objects[receipt.object_path].content, "fixture key")
+        == publication.plaintext
+    )
+    adapter = _MemoryAdapter()
+    with pytest.raises(ValueError, match="canonical"):
+        _store_publish(_store(adapter), nested)
+    assert not adapter.objects

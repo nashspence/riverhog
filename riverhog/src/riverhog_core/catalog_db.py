@@ -29,6 +29,9 @@ from riverhog_core import (
     catalog_discovery_validation_models as _catalog_discovery_validation_models,  # noqa: E402,F401
 )
 from riverhog_core import (
+    catalog_initial_metadata_models as _catalog_initial_metadata_models,  # noqa: E402,F401
+)
+from riverhog_core import (
     catalog_journal_validation_models as _catalog_journal_validation_models,  # noqa: E402,F401
 )
 from riverhog_core import catalog_models as _catalog_models  # noqa: E402,F401
