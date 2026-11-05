@@ -3066,4 +3066,20 @@ CREATE TABLE collection_upload_initial_descriptions (
 	CONSTRAINT ck_collection_upload_initial_descriptions_source_sha256_hex CHECK (length(source_sha256) = 64 AND lower(source_sha256) = source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
+CREATE TABLE collection_upload_initial_tag_publications (
+	collection_id BIGINT NOT NULL,
+	object_id VARCHAR NOT NULL,
+	role VARCHAR NOT NULL,
+	document_bytes BYTEA NOT NULL,
+	source_json TEXT NOT NULL,
+	source_sha256 VARCHAR(64) NOT NULL,
+	receipt_json TEXT,
+	progress_receipt_json TEXT,
+	PRIMARY KEY (collection_id, object_id),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_initial_tag_publication_source CHECK (role IN ('state','expand','node','head') AND length(document_bytes) > 0 AND length(source_json) > 0),
+	CONSTRAINT ck_initial_tag_physical_receipt CHECK (role IN ('node','head') OR receipt_json IS NULL),
+	CONSTRAINT ck_sha256_2ea99c99b63cd9a9 CHECK (length(source_sha256) = 64 AND lower(source_sha256) = source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

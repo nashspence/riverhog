@@ -28,8 +28,16 @@ from tests.unit.test_archive_volume_metadata_receiving import _count, _metadata_
 
 
 @contextmanager
-def _authority_source(tmp_path, monkeypatch, mode="direct", *, database_url=None):
-    with _metadata_source(tmp_path, monkeypatch, mode=mode, database_url=database_url) as fixture:
+def _authority_source(
+    tmp_path, monkeypatch, mode="direct", *, database_url=None, configure_service=None
+):
+    with _metadata_source(
+        tmp_path,
+        monkeypatch,
+        mode=mode,
+        database_url=database_url,
+        configure_service=configure_service,
+    ) as fixture:
         publisher = ArchiveRootPublisher(
             object_store=fixture.physical, passphrase="fixture", scrypt_log_n=1
         )

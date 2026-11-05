@@ -61,6 +61,7 @@ default_tests=(
   tests/integration/test_archive_provenance_authority_finalizer_concurrency.py
   tests/integration/test_collection_upload_tag_frontier.py
   tests/integration/test_archive_initial_description_concurrency.py
+  tests/integration/test_archive_initial_tag_concurrency.py
   tests/integration/test_immutable_archive_writes_concurrency.py
   tests/integration/test_archive_immutable_source_receiving_concurrency.py
   tests/integration/test_operation_lifecycle_postgres.py

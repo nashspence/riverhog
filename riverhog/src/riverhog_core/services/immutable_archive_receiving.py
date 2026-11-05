@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
-from riverhog_protocol import COLLECTION_DESCRIPTION_DOCUMENT_FORMAT
+from riverhog_protocol import (
+    COLLECTION_DESCRIPTION_DOCUMENT_FORMAT,
+    COLLECTION_TAG_HEAD_FORMAT,
+    COLLECTION_TAG_NODE_FORMAT,
+)
 from riverhog_protocol.errors import Conflict
 from riverhog_storage_adapter_protocol import ImmutableObjectReceipt
 from sqlalchemy.orm import Session
@@ -28,6 +32,7 @@ from riverhog_core.services.archive_authority_checkpoint import (
 from riverhog_core.services.archive_initial_description_checkpoint import (
     ArchiveInitialDescriptionSource,
 )
+from riverhog_core.services.archive_initial_tag_checkpoint import ArchiveInitialTagSource
 from riverhog_core.services.archive_provenance_authority_checkpoint import (
     ArchiveProvenanceAuthoritySource,
 )
@@ -48,6 +53,10 @@ from riverhog_core.services.immutable_archive_writes import ImmutableArchiveSour
 
 def _source(session: Session, prepared: PreparedImmutableArchiveObject) -> ImmutableArchiveSource:
     format_name = prepared.operation.request.required_identity_assertions.get("riverhog-format")
+    if format_name == COLLECTION_TAG_NODE_FORMAT:
+        return ArchiveInitialTagSource.from_prepared(session, prepared, role="node")
+    if format_name == COLLECTION_TAG_HEAD_FORMAT:
+        return ArchiveInitialTagSource.from_prepared(session, prepared, role="head")
     if format_name == COLLECTION_DESCRIPTION_DOCUMENT_FORMAT:
         return ArchiveInitialDescriptionSource.from_prepared(session, prepared)
     if format_name == VOLUME_METADATA_STORAGE_FORMAT:
