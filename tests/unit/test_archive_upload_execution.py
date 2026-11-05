@@ -94,7 +94,7 @@ def test_forward_exhaustion_preserves_target_isolation_and_terminal_headroom(own
     )
     release.set()
     _joined(owner)
-    assert {result.key.collection_id for result in owner.collect(limit=3)} == {1, 2, 3}
+    assert {result.key.collection_id for result in owner.collect(owner=None, limit=3)} == {1, 2, 3}
 
 
 def test_terminal_target_limit_leaves_independent_terminal_work_available(owned):
@@ -107,7 +107,7 @@ def test_terminal_target_limit_leaves_independent_terminal_work_available(owned)
     assert _submit(owner, 2, lambda: 42, terminal=True, target="target-b") == "submitted"
     release.set()
     _joined(owner)
-    results = owner.collect(limit=2)
+    results = owner.collect(owner=None, limit=2)
     assert [result.result() for result in results] == [None, 42]
 
 
@@ -122,12 +122,12 @@ def test_duplicate_submission_keeps_original_callback_and_unreceived_result(owne
     release.set()
     _joined(owner)
     assert _submit(owner, 1, lambda: pytest.fail("lost original result")) == "retained"
-    (result,) = owner.collect(limit=1)
+    (result,) = owner.collect(owner=None, limit=1)
     assert result.key == _key()
     assert result.target_incarnation == "target-a"
     assert result.terminal is False
     assert result.result() is result.result() is original
-    assert owner.collect(limit=1) == ()
+    assert owner.collect(owner=None, limit=1) == ()
     assert _submit(owner, 1, lambda: "next turn") == "submitted"
 
 
@@ -165,7 +165,7 @@ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, mo
     slot = owner._slots[1]
     assert slot.future.done() and slot.future.result() is original
     assert slot.worker.is_alive()
-    assert owner.collect(limit=1) == ()
+    assert owner.collect(owner=None, limit=1) == ()
     assert _submit(owner, 2, lambda: pytest.fail("physical capacity still held")) == "capacity"
     assert _submit(owner, 1, lambda: pytest.fail("original outcome still held")) == "retained"
     release.set()
@@ -178,7 +178,7 @@ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, mo
         actual_join(timeout)
 
     monkeypatch.setattr(slot.worker, "join", observe_join)
-    (result,) = owner.collect(limit=1)
+    (result,) = owner.collect(owner=None, limit=1)
     assert joins == [0]
     assert result.result() is original
     assert _submit(owner, 2, lambda: None) == "submitted"
@@ -193,11 +193,11 @@ def test_failed_worker_preserves_the_exact_original_exception_for_receiving(owne
 
     assert _submit(owner, 1, fail) == "submitted"
     _joined(owner)
-    (completion,) = owner.collect(limit=1)
+    (completion,) = owner.collect(owner=None, limit=1)
     with pytest.raises(SystemExit) as observed:
         completion.result()
     assert observed.value is failure
-    assert owner.collect(limit=1) == ()
+    assert owner.collect(owner=None, limit=1) == ()
 
 
 def test_collect_has_bounded_fair_progress_past_a_stuck_worker(owned):
@@ -209,10 +209,10 @@ def test_collect_has_bounded_fair_progress_past_a_stuck_worker(owned):
     assert _submit(owner, 2, lambda: "independent") == "submitted"
     owner._slots[2].worker.join(timeout=5)
     assert not owner._slots[2].worker.is_alive()
-    assert owner.collect(limit=1) == ()
-    (completion,) = owner.collect(limit=1)
+    assert owner.collect(owner=None, limit=1) == ()
+    (completion,) = owner.collect(owner=None, limit=1)
     assert completion.key.collection_id == 2 and completion.result() == "independent"
-    assert owner.collect(limit=1) == ()
+    assert owner.collect(owner=None, limit=1) == ()
 
 
 def test_poll_and_submission_defer_under_registry_contention_without_waiting(owned):
@@ -221,7 +221,7 @@ def test_poll_and_submission_defer_under_registry_contention_without_waiting(own
         with ThreadPoolExecutor(max_workers=1) as executor:
             result = executor.submit(_submit, owner, 1, lambda: None)
             assert result.result(timeout=5) == "busy"
-            assert executor.submit(owner.collect, limit=1).result(timeout=5) == ()
+            assert executor.submit(owner.collect, owner=None, limit=1).result(timeout=5) == ()
 
 
 @pytest.mark.parametrize("after_start", [False, True])
@@ -249,11 +249,11 @@ def test_startup_failure_releases_only_a_worker_that_never_started(owned, monkey
         assert _submit(owner, 2, lambda: pytest.fail("physical capacity charged")) == "capacity"
         release.set()
         _joined(owner)
-        (completion,) = owner.collect(limit=1)
+        (completion,) = owner.collect(owner=None, limit=1)
         assert completion.result() == "original"
     else:
         assert not entered.is_set()
-        assert owner.collect(limit=1) == ()
+        assert owner.collect(owner=None, limit=1) == ()
         assert _submit(owner, 2, lambda: "replacement") == "submitted"
 
 
@@ -283,7 +283,7 @@ def test_shutdown_joins_without_dropping_original_result_or_disposing_its_owner(
         release.set()
         pending.result(timeout=5)
     assert _submit(owner, 2, lambda: pytest.fail("closed owner")) == "closed"
-    (result,) = owner.collect(limit=1)
+    (result,) = owner.collect(owner=None, limit=1)
     assert result.result() is original
     owner.close()
 
@@ -319,7 +319,7 @@ def test_one_service_owns_configured_capacity_and_joins_before_dependency_shutdo
             release.set()
             pending.result(timeout=5)
         assert disposed.is_set()
-        (result,) = owner.collect(limit=1)
+        (result,) = owner.collect(owner=None, limit=1)
         assert result.result() == "original"
         assert _submit(owner, 2, lambda: None) == "closed"
     finally:
@@ -347,7 +347,7 @@ def test_physical_capacity_requires_explicit_positive_integer_grants(field, valu
 @pytest.mark.parametrize("limit", [0, -1, True, 1.5])
 def test_collection_quantum_rejects_invalid_limits(owned, limit):
     with pytest.raises(ValueError, match="limit"):
-        owned.make().collect(limit=limit)
+        owned.make().collect(owner=None, limit=limit)
 
 
 def test_point_status_tracks_local_execution_without_claiming_global_closure(owned):
@@ -366,7 +366,7 @@ def test_point_status_tracks_local_execution_without_claiming_global_closure(own
     release.set()
     _joined(owner)
     assert owner.status(_key()) == "awaiting-join"
-    (completion,) = owner.collect(limit=1)
+    (completion,) = owner.collect(owner=None, limit=1)
     assert completion.result() == "original"
     assert owner.status(_key()) == "untracked"
 
@@ -383,14 +383,14 @@ def test_missing_original_outcome_stays_charged_without_losing_independent_resul
     assert _submit(owner, 3, lambda: "third original") == "submitted"
     _joined(owner)
     assert owner.status(_key(2)) == "outcome-missing"
-    results = owner.collect(limit=3)
+    results = owner.collect(owner=None, limit=3)
     assert [(r.key.collection_id, r.result()) for r in results] == [
         (1, "first original"),
         (3, "third original"),
     ]
     assert owner.status(_key(2)) == "outcome-missing"
     assert _submit(owner, 2, lambda: pytest.fail("cannot replace missing original")) == "retained"
-    assert owner.collect(limit=3) == ()
+    assert owner.collect(owner=None, limit=3) == ()
 
 
 @pytest.mark.parametrize("collection_id", [0, -1, True, "1"])
@@ -403,3 +403,143 @@ def test_execution_identity_requires_the_original_collection(collection_id):
 def test_execution_identity_requires_the_exact_original_digest(digest):
     with pytest.raises(ValueError, match="original construction digest"):
         _key(digest=digest)
+
+
+def test_receiver_identity_keeps_foreign_results_and_capacity_charged(owned, monkeypatch):
+    class EqualOwner:
+        def __eq__(self, other):
+            pytest.fail("receiving compares exact owner identity, never equality")
+
+    pool = owned.make(forward_workers=2, forward_workers_per_target=2)
+    first, second = EqualOwner(), EqualOwner()
+    foreign_result, own_result = object(), object()
+    assert (
+        pool.try_submit(
+            _key(1),
+            target_incarnation="target-a",
+            terminal=False,
+            owner=second,
+            work=lambda: foreign_result,
+        )
+        == "submitted"
+    )
+    assert (
+        pool.try_submit(
+            _key(2),
+            target_incarnation="target-a",
+            terminal=False,
+            owner=first,
+            work=lambda: own_result,
+        )
+        == "submitted"
+    )
+    _joined(pool)
+    foreign = pool._slots[1]
+
+    def forbidden_join(timeout=None):
+        pytest.fail("another receiver cannot join or retire this original")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(foreign.worker, "join", forbidden_join)
+        assert pool.collect(limit=1, owner=first) == ()
+        assert pool._counts[False] == 2 and pool.status(_key(1)) == "awaiting-join"
+        (received,) = pool.collect(limit=1, owner=first)
+        assert received.key == _key(2) and received.owner is first
+        assert received.result() is own_result
+        assert pool.collect(limit=2, owner=None) == ()
+        assert pool.status(_key(1)) == "awaiting-join"
+    assert pool._counts[False] == 1
+    assert (
+        pool.try_submit(
+            _key(3),
+            target_incarnation="target-b",
+            terminal=False,
+            owner=first,
+            work=lambda: "another turn",
+        )
+        == "submitted"
+    )
+    assert (
+        _submit(pool, 4, lambda: pytest.fail("foreign result still charges capacity")) == "capacity"
+    )
+    (received,) = pool.collect(limit=2, owner=second)
+    assert received.key == _key(1) and received.owner is second
+    assert received.result() is foreign_result
+
+
+def test_foreign_failed_result_waits_for_its_original_receiver_after_shutdown(owned):
+    pool = owned.make()
+    original = object()
+    failure = SystemExit("synthetic owner-specific failure")
+
+    def fail():
+        raise failure
+
+    assert (
+        pool.try_submit(
+            _key(),
+            target_incarnation="target-a",
+            terminal=True,
+            owner=original,
+            work=fail,
+        )
+        == "submitted"
+    )
+    pool.close()
+    assert pool.collect(limit=1, owner=object()) == ()
+    assert pool.collect(limit=1, owner=None) == ()
+    assert pool.status(_key()) == "awaiting-join" and pool._counts[True] == 1
+    (completion,) = pool.collect(limit=1, owner=original)
+    assert completion.owner is original and completion.terminal
+    with pytest.raises(SystemExit) as received:
+        completion.result()
+    assert received.value is failure
+    assert pool.status(_key()) == "untracked"
+
+
+def test_each_receiving_quantum_is_bounded_across_foreign_and_stuck_work(owned):
+    pool = owned.make(forward_workers=3, forward_workers_per_target=3)
+    foreign, current = object(), object()
+    release = owned.event()
+    entered = threading.Event()
+    assert (
+        pool.try_submit(
+            _key(1),
+            target_incarnation="target-a",
+            terminal=False,
+            owner=foreign,
+            work=lambda: "foreign",
+        )
+        == "submitted"
+    )
+    assert (
+        pool.try_submit(
+            _key(2),
+            target_incarnation="target-a",
+            terminal=False,
+            owner=current,
+            work=lambda: _blocked(entered, release),
+        )
+        == "submitted"
+    )
+    assert entered.wait(5)
+    assert (
+        pool.try_submit(
+            _key(3),
+            target_incarnation="target-a",
+            terminal=False,
+            owner=current,
+            work=lambda: "independent",
+        )
+        == "submitted"
+    )
+    pool._slots[3].worker.join(timeout=5)
+    assert not pool._slots[3].worker.is_alive()
+    pool._slots[1].worker.join(timeout=5)
+    assert not pool._slots[1].worker.is_alive()
+    assert pool.collect(limit=1, owner=current) == ()
+    assert pool.collect(limit=1, owner=current) == ()
+    (completion,) = pool.collect(limit=1, owner=current)
+    assert completion.key == _key(3) and completion.result() == "independent"
+    assert pool.status(_key(1)) == "awaiting-join"
+    assert pool.status(_key(2)) == "running"

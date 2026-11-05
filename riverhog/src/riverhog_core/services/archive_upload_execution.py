@@ -44,6 +44,7 @@ class ArchiveUploadExecutionCompletion:
     key: ArchiveUploadExecutionKey
     target_incarnation: str
     terminal: bool
+    owner: object | None = field(repr=False, compare=False)
     _future: Future[object] = field(repr=False, compare=False)
 
     def result(self) -> object:
@@ -166,8 +167,15 @@ class ArchiveUploadExecutionOwner:
         finally:
             self._lock.release()
 
-    def collect(self, *, limit: int) -> tuple[ArchiveUploadExecutionCompletion, ...]:
-        """Inspect at most limit slots; return only joined original outcomes."""
+    def collect(
+        self, *, limit: int, owner: object | None
+    ) -> tuple[ArchiveUploadExecutionCompletion, ...]:
+        """Inspect at most limit slots for the exact local receiving owner.
+
+        Other work kinds retain their original outcome and capacity charge.
+        Matching an owner is only local routing, never admission or closure
+        authority. Bounded rotation permits independent receivers to progress.
+        """
         if type(limit) is not int or limit < 1:
             raise ValueError("upload execution collection limit must be positive")
         if not self._lock.acquire(blocking=False):
@@ -177,6 +185,9 @@ class ArchiveUploadExecutionOwner:
             for _ in range(min(limit, len(self._poll))):
                 collection_id = self._poll.popleft()
                 slot = self._slots[collection_id]
+                if slot.owner is not owner:
+                    self._poll.append(collection_id)
+                    continue
                 if slot.worker.is_alive():
                     self._poll.append(collection_id)
                     continue
@@ -190,7 +201,7 @@ class ArchiveUploadExecutionOwner:
                     continue
                 completed.append(
                     ArchiveUploadExecutionCompletion(
-                        slot.key, slot.target_incarnation, slot.terminal, slot.future
+                        slot.key, slot.target_incarnation, slot.terminal, slot.owner, slot.future
                     )
                 )
                 self._remove(slot)

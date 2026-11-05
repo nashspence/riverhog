@@ -175,7 +175,7 @@ class ArchiveFinalizerRegistry:
             return ArchiveFinalizerTurn(context.selection, context.advance())
 
     def collect(self, *, limit: int) -> tuple[ArchiveUploadExecutionCompletion, ...]:
-        return self._execution.collect(limit=limit)
+        return self._execution.collect(limit=limit, owner=self)
 
     def fence_terminal(
         self, key: ArchiveUploadExecutionKey, *, target_incarnation: str, operation_id: str

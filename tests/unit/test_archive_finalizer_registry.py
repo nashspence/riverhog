@@ -227,8 +227,10 @@ def test_a_racing_foreign_execution_cannot_be_adopted_as_this_registry_work(owne
     with pytest.raises(ArchiveExecutionOccupied):
         _submit(registry, create=lambda: pytest.fail("must not run foreign constructor"))
     assert registry._contexts == {}
-    (result,) = _receive(registry, pool)
-    assert result.result() == "foreign"
+    assert _receive(registry, pool) == ()
+    assert pool.status(_key()) == "awaiting-join"
+    (result,) = pool.collect(limit=1, owner=None)
+    assert result.owner is None and result.result() == "foreign"
 
 
 def test_failed_constructor_retains_its_reserved_unknown_context(owned):
@@ -435,3 +437,29 @@ def _actual_description_terminal(fixture, monkeypatch, owned, committed):
     assert original._actor is actor and original.has_pending
     assert _snapshot(fixture) == before
     assert not registry.retire_idle(key, target_incarnation=target)
+
+
+def test_finalizer_receiving_cannot_retire_another_work_kinds_terminal_outcome(owned):
+    registry, pool = owned.make()
+    terminal_owner = object()
+    terminal_result = object()
+    assert (
+        pool.try_submit(
+            _key(2),
+            target_incarnation="target-b",
+            terminal=True,
+            owner=terminal_owner,
+            work=lambda: terminal_result,
+        )
+        == "submitted"
+    )
+    assert _submit(registry) == "submitted"
+    (result,) = _receive(registry, pool)
+    assert result.key == _key() and result.owner is registry
+    assert result.result().progressed
+    assert pool.status(_key(2)) == "awaiting-join"
+    assert pool._counts[True] == 1
+    assert registry.collect(limit=2) == ()
+    (result,) = pool.collect(limit=2, owner=terminal_owner)
+    assert result.owner is terminal_owner and result.terminal
+    assert result.result() is terminal_result and pool._counts[True] == 0
