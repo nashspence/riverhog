@@ -334,6 +334,8 @@ def test_one_service_owns_configured_capacity_and_joins_before_dependency_shutdo
         "terminal_workers",
         "forward_workers_per_target",
         "terminal_workers_per_target",
+        "retained_finalizer_constructions",
+        "retained_finalizer_constructions_per_target",
     ],
 )
 @pytest.mark.parametrize("value", [0, -1, True, 1.5, "2"])

@@ -17,6 +17,10 @@ from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 Submission = Literal["submitted", "retained", "capacity", "target-capacity", "busy", "closed"]
 
 
+class ArchiveExecutionOccupied(Conflict):
+    """An original turn belongs to a different construction, lane or local owner."""
+
+
 @dataclass(frozen=True, slots=True)
 class ArchiveUploadExecutionKey:
     collection_id: int
@@ -51,6 +55,7 @@ class _Slot:
     key: ArchiveUploadExecutionKey
     target_incarnation: str
     terminal: bool
+    owner: object | None
     future: Future[object]
     worker: Thread
 
@@ -89,6 +94,7 @@ class ArchiveUploadExecutionOwner:
         target_incarnation: str,
         terminal: bool,
         work: Callable[[], object],
+        owner: object | None = None,
     ) -> Submission:
         if type(terminal) is not bool or not target_incarnation:
             raise ValueError("upload execution requires an exact target and work lane")
@@ -103,8 +109,11 @@ class ArchiveUploadExecutionOwner:
                     prior.key != key
                     or prior.target_incarnation != target_incarnation
                     or prior.terminal != terminal
+                    or prior.owner is not owner
                 ):
-                    raise Conflict("upload execution already retains another original turn")
+                    raise ArchiveExecutionOccupied(
+                        "upload execution already retains another original turn"
+                    )
                 return "retained"
             capacity = self._tuning.terminal_workers if terminal else self._tuning.forward_workers
             per_target = (
@@ -121,7 +130,7 @@ class ArchiveUploadExecutionOwner:
             worker = Thread(
                 target=_run, args=(work, future), name="archive-upload-execution", daemon=False
             )
-            slot = _Slot(key, target_incarnation, terminal, future, worker)
+            slot = _Slot(key, target_incarnation, terminal, owner, future, worker)
             self._slots[key.collection_id] = slot
             self._poll.append(key.collection_id)
             self._counts[terminal] += 1

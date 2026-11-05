@@ -478,6 +478,8 @@ def test_archive_execution_configuration_reserves_physical_terminal_headroom(tmp
         "terminal_workers": 3,
         "forward_workers_per_target": 2,
         "terminal_workers_per_target": 1,
+        "retained_finalizer_constructions": 9,
+        "retained_finalizer_constructions_per_target": 3,
     }
     _write(path, document)
     config = load_runtime_config()
@@ -486,6 +488,8 @@ def test_archive_execution_configuration_reserves_physical_terminal_headroom(tmp
         terminal_workers=3,
         forward_workers_per_target=2,
         terminal_workers_per_target=1,
+        retained_finalizer_constructions=9,
+        retained_finalizer_constructions_per_target=3,
     )
     for field in tuple(document["archive_execution"]):
         original = document["archive_execution"][field]
