@@ -2345,27 +2345,31 @@ def _write_private_environment(path: Path, values: Mapping[str, str]) -> None:
         raise
 
 
-def _adapter_config_paths(output: Path) -> dict[str, Path]:
+def _private_artifact_directory(output: Path) -> Path:
     resolved = output.expanduser().resolve()
+    return resolved.with_name(f"{resolved.name}.private")
+
+
+def _adapter_config_paths(output: Path) -> dict[str, Path]:
+    directory = _private_artifact_directory(output)
     return {
-        "aws-deep-archive": resolved.with_name(f"{resolved.name}.aws-adapter.yaml"),
-        "b2-archive": resolved.with_name(f"{resolved.name}.b2-archive-adapter.yaml"),
-        "b2-retrieval-cache": resolved.with_name(f"{resolved.name}.b2-cache-adapter.yaml"),
+        "aws-deep-archive": directory / "aws-adapter.yaml",
+        "b2-archive": directory / "b2-archive-adapter.yaml",
+        "b2-retrieval-cache": directory / "b2-cache-adapter.yaml",
     }
 
 
 def _riverhog_config_path(output: Path) -> Path:
-    resolved = output.expanduser().resolve()
-    return resolved.with_name(f"{resolved.name}.riverhog.yaml")
+    return _private_artifact_directory(output) / "riverhog.yaml"
 
 
 def _private_artifact_path(output: Path, name: str) -> Path:
-    resolved = output.expanduser().resolve()
-    return resolved.with_name(f"{resolved.name}.{name}")
+    return _private_artifact_directory(output) / name
 
 
 def _write_private_bytes(path: Path, value: bytes) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
+    # The host directory is owner-only. Group readability is needed only
+    # through individual read-only bind mounts into the selected containers.
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o640)
     try:
         os.fchmod(descriptor, 0o640)
@@ -2594,7 +2598,14 @@ def write_runtime_configuration(
     ]
     if any(path.exists() for path in paths):
         raise QualificationError("deployment configuration output must not already exist")
+    private_directory = _private_artifact_directory(output)
+    private_directory.parent.mkdir(parents=True, exist_ok=True)
     try:
+        private_directory.mkdir(mode=0o700)
+    except FileExistsError as exc:
+        raise QualificationError("deployment private directory must not already exist") from exc
+    try:
+        private_directory.chmod(0o700)
         for name, path in secret_paths.items():
             _write_private_bytes(path, secret_values[name])
         _write_private_yaml(riverhog_path, riverhog_document)
@@ -2605,6 +2616,7 @@ def write_runtime_configuration(
     except BaseException:
         for path in paths:
             path.unlink(missing_ok=True)
+        private_directory.rmdir()
         raise
 
 
