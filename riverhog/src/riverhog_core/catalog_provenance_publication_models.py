@@ -38,6 +38,7 @@ class CollectionUploadProvenanceVolumePublicationRecord(Base):
     binding_payload_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     payload_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     metadata_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    progress_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
         ForeignKeyConstraint(

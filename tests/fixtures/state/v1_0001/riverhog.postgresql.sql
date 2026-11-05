@@ -3022,6 +3022,7 @@ CREATE TABLE collection_upload_provenance_volume_publications (
 	binding_payload_sha256 VARCHAR(64),
 	payload_receipt_json TEXT,
 	metadata_receipt_json TEXT,
+	progress_receipt_json TEXT,
 	PRIMARY KEY (collection_id, sequence),
 	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
 	CONSTRAINT uq_provenance_volume_publication_binding_payload UNIQUE (collection_id, binding_payload_sha256),

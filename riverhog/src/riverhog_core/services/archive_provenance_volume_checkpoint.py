@@ -11,8 +11,10 @@ from riverhog_archive_contracts import (
     PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
     PROVENANCE_BINDINGS_FORMAT,
     PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
+    PROVENANCE_SEQUENCE_DOMAIN,
     ProvenanceVolumeDocument,
     parse_archive_sequence,
+    update_provenance_commitment,
     validate_member_history_binding_page,
 )
 from riverhog_canonical_json import canonical_json_bytes
@@ -26,10 +28,14 @@ from riverhog_core import provenance_volume_source as volumes
 from riverhog_core.archive_provenance import ArchiveProvenancePublication
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.catalog_models import CollectionUploadMemberHistoryRecord as History
+from riverhog_core.catalog_models import (
+    CollectionUploadProvenanceArchiveVolumeRecord as FinalVolume,
+)
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.catalog_provenance_publication_models import (
     CollectionUploadProvenanceVolumePublicationRecord as Volume,
 )
+from riverhog_core.checkpoint_sha256 import CheckpointSHA256
 from riverhog_core.collection_construction import upload_construction
 from riverhog_core.domain.archive import SealedProvenanceObject
 from riverhog_core.immutable_archive_identity import require_immutable_archive_receipt
@@ -113,6 +119,7 @@ def _context(upload: Upload) -> dict[str, Any]:
         "last_journal_id": upload.provenance_archive_last_journal_id,
         "current_journal_id": upload.provenance_archive_current_journal_id,
         "current_journal_offset": upload.provenance_archive_current_journal_offset,
+        "hash_state": upload.provenance_archive_hash_state,
     }
 
 
@@ -136,6 +143,10 @@ class ArchiveProvenanceVolumeSource:
         sequence = upload.provenance_archive_next_sequence
         _claim(upload, sequence)
         assert upload.archive_tree_sha256 is not None
+        try:
+            volumes.provenance_commitment(upload)
+        except (ValueError, RuntimeError) as exc:
+            raise Conflict("provenance volume current commitment is invalid") from exc
         ArchiveWriteAdmission.require_no_unresolved_calls(session, collection_id)
         control = ArchiveWriteAdmission._control(session, upload)
         ArchiveWriteAdmission._terminal_lock(session, control)
@@ -543,3 +554,139 @@ class ArchiveProvenanceVolumeSource:
         self, session: Session, prepared: PreparedImmutableArchiveObject, receipt: AdapterReceipt
     ) -> None:
         self._receive_prepared(session, prepared, receipt, apply=False)
+
+    def _progress_value(self, session: Session, row: Volume) -> dict[str, Any]:
+        if self.role != "metadata":
+            raise Conflict("provenance volume progress requires its metadata source")
+        self._require_payload(session, row)
+        if self.received(session) is None:
+            raise Conflict("provenance volume original metadata is not received")
+        original = json.loads(self.source_json)
+        before = original["hash_state"]
+        try:
+            if before is None:
+                if self.sequence != 0:
+                    raise ValueError("original commitment is missing")
+                digest = CheckpointSHA256()
+                digest.update(PROVENANCE_SEQUENCE_DOMAIN)
+            else:
+                digest = CheckpointSHA256.from_state(before)
+        except (ValueError, TypeError) as exc:
+            raise Conflict("provenance volume original commitment is invalid") from exc
+        document = self.document
+        update_provenance_commitment(digest, document)
+        cursor = {
+            name: original[name]
+            for name in (
+                "after_artifact_id",
+                "next_artifact_order",
+                "last_journal_id",
+                "current_journal_id",
+                "current_journal_offset",
+            )
+        }
+        if document.payload.kind == "bindings":
+            assert document.binding_count is not None
+            cursor["next_artifact_order"] += document.binding_count
+            cursor["after_artifact_id"] = document.last_artifact_id
+        else:
+            assert document.journal_offset is not None
+            stop = document.journal_offset + document.payload.bytes
+            if stop == document.journal_bytes:
+                cursor["last_journal_id"] = document.journal_id
+                cursor["current_journal_id"] = None
+                cursor["current_journal_offset"] = 0
+            else:
+                cursor["current_journal_id"] = document.journal_id
+                cursor["current_journal_offset"] = stop
+        assert row.payload_receipt_json is not None and row.metadata_receipt_json is not None
+        return {
+            "collection_id": self.collection_id,
+            "sequence": self.sequence,
+            "source_sha256": _sha(self.source_json),
+            "document_sha256": _sha(self.document_json),
+            "payload_receipt_sha256": _sha(row.payload_receipt_json),
+            "metadata_receipt_sha256": _sha(row.metadata_receipt_json),
+            "next_sequence": self.sequence + 1,
+            "cursor": cursor,
+            "hash_state": digest.export_state(),
+        }
+
+    def _verify_progress(self, session: Session, upload: Upload, row: Volume) -> None:
+        expected = self._progress_value(session, row)
+        if row.progress_receipt_json != _json(expected):
+            raise Conflict("provenance volume original progress proof changed")
+        final = session.get(
+            FinalVolume,
+            (self.collection_id, self.sequence),
+            with_for_update=True,
+            populate_existing=True,
+        )
+        if final is None or (
+            final.kind,
+            final.document_json,
+            final.payload_receipt_json,
+            final.metadata_receipt_json,
+        ) != (
+            self.document.payload.kind,
+            self.document_json,
+            row.payload_receipt_json,
+            row.metadata_receipt_json,
+        ):
+            raise Conflict("provenance volume original final row changed")
+        if upload.provenance_archive_next_sequence < expected["next_sequence"]:
+            raise Conflict("provenance volume original progress cursor regressed")
+        if upload.provenance_archive_next_sequence == expected["next_sequence"]:
+            current = _context(upload)
+            if (
+                current["hash_state"] != expected["hash_state"]
+                or {name: current[name] for name in expected["cursor"]} != expected["cursor"]
+            ):
+                raise Conflict("provenance volume original progress cursor changed")
+
+    def verify_progress(self, session: Session) -> None:
+        """Verify an original positive progress fact, without granting forward work."""
+        upload, row = self._source(session)
+        self._verify_progress(session, upload, row)
+
+    def commit_volume(self, session: Session) -> bool:
+        """Commit the original pair and cursor once, or acknowledge its exact old proof.
+
+        Data can survive unknown execution and lost forward authority. Fresh
+        cursor progression requires closure and the current accepted claim.
+        """
+        _writer(session)
+        upload, row = self._source(session)
+        if row.progress_receipt_json is not None:
+            self._verify_progress(session, upload, row)
+            return False
+        _claim(upload, self.sequence)
+        if self.source_json != _json(_context(upload)):
+            raise Conflict("provenance volume original cursor changed")
+        ArchiveWriteAdmission.require_no_unresolved_calls(session, self.collection_id)
+        control = ArchiveWriteAdmission._control(session, upload)
+        ArchiveWriteAdmission._terminal_lock(session, control)
+        if control.gate != "open":
+            raise Conflict("provenance volume progress admission is closed")
+        expected = self._progress_value(session, row)
+        if session.get(FinalVolume, (self.collection_id, self.sequence)) is not None:
+            raise Conflict("provenance volume final row has no original progress proof")
+        assert row.payload_receipt_json is not None and row.metadata_receipt_json is not None
+        session.add(
+            FinalVolume(
+                collection_id=self.collection_id,
+                sequence=self.sequence,
+                kind=self.document.payload.kind,
+                document_json=self.document_json,
+                payload_receipt_json=row.payload_receipt_json,
+                metadata_receipt_json=row.metadata_receipt_json,
+            )
+        )
+        upload.provenance_archive_next_sequence = expected["next_sequence"]
+        for name, value in expected["cursor"].items():
+            setattr(upload, "provenance_archive_" + name, value)
+        upload.provenance_archive_hash_state = expected["hash_state"]
+        row.progress_receipt_json = _json(expected)
+        session.flush()
+        self._verify_progress(session, upload, row)
+        return True
