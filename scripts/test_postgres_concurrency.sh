@@ -51,6 +51,7 @@ default_tests=(
   tests/integration/test_archive_authority_checkpoint_concurrency.py
   tests/integration/test_archive_authority_finalizer_concurrency.py
   tests/integration/test_archive_provenance_structure_checkpoint_concurrency.py
+  tests/integration/test_archive_provenance_structure_writer_concurrency.py
   tests/integration/test_archive_provenance_journal_checkpoint_concurrency.py
   tests/integration/test_archive_provenance_journal_writer_concurrency.py
   tests/integration/test_archive_provenance_volume_checkpoint_concurrency.py

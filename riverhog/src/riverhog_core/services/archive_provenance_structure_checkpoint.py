@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 
 from riverhog_archive_contracts import (
     MemberHistoryBinding,
@@ -23,6 +23,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from riverhog_core.archive_provenance import ArchiveProvenancePublication
+from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.catalog_models import (
     CollectionUploadProvenanceStructureRecord as Structure,
 )
@@ -31,7 +32,7 @@ from riverhog_core.collection_construction import upload_construction, upload_co
 from riverhog_core.domain.archive import SealedProvenanceObject
 from riverhog_core.immutable_archive_identity import require_immutable_archive_receipt
 from riverhog_core.ports.archive_objects import ImmutableObjectReceipt
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard, _writer
 from riverhog_core.services.immutable_archive_preparation import (
     ImmutableArchivePreparation,
     PreparedImmutableArchiveObject,
@@ -134,6 +135,67 @@ class ArchiveProvenanceStructureSource:
         return cls.capture(
             upload, _structure(session, collection_id, object_id), forward_guard=forward_guard
         )
+
+    @classmethod
+    def select_current(
+        cls,
+        session: Session,
+        collection_id: int,
+        *,
+        forward_guard: Guard,
+        grants: ArchiveWriteGrants,
+        selected_object_id: str | None = None,
+    ) -> ArchiveProvenanceStructureSource | None:
+        """Select one pending source under the caller's current key or claim."""
+        _writer(session)
+        forward_guard(session)
+        upload = _upload(session, collection_id)
+        if upload.state not in {"open", "closing", "uploading", "finalizing"}:
+            raise Conflict("provenance structure construction cannot select writes")
+        ArchiveWriteAdmission.require_no_unresolved_calls(session, collection_id)
+        require_closure = selected_object_id is None
+        if require_closure and not upload.provenance_closure_validated:
+            return None
+        # The maintained partial index contains only pending objects, so repeated
+        # selection does not scan the already published prefix.
+        statement = select(Structure).where(
+            Structure.collection_id == collection_id,
+            Structure.receipt_json.is_(None),
+        )
+        if selected_object_id is not None:
+            statement = statement.where(Structure.object_id == selected_object_id)
+        row = session.scalar(statement.order_by(Structure.object_id).limit(1).with_for_update())
+        if row is None:
+            return None
+
+        def current(session: Session) -> None:
+            forward_guard(session)
+            if require_closure and not _upload(session, collection_id).provenance_closure_validated:
+                raise Conflict("provenance structure closure is no longer validated")
+
+        source = cls.capture(upload, row, forward_guard=current)
+        source.write_grants(grants)
+        return source
+
+    @property
+    def reserved_source_bytes(self) -> int:
+        # Staged content and original context remain alongside preparation.
+        # Database index/page costs belong to the database resource owner.
+        return (
+            len(str(self.collection_id).encode())
+            + len(self.object_id.encode())
+            + len(self.publication.relative_path.encode())
+            + len(self.publication.kind.removeprefix("provenance-").encode())
+            + len(self.publication.plaintext)
+            + len(self.construction_json.encode())
+            + len(self.construction_sha256.encode())
+        )
+
+    def write_grants(self, grants: ArchiveWriteGrants) -> ArchiveWriteGrants:
+        remaining = grants.metadata_preparation_bytes - self.reserved_source_bytes
+        if remaining < 1:
+            raise Conflict("provenance structure source exceeds its preparation grant")
+        return replace(grants, metadata_preparation_bytes=remaining)
 
     def _source(self, session: Session) -> tuple[Upload, Structure]:
         upload = _upload(session, self.collection_id)
