@@ -57,6 +57,7 @@ default_tests=(
   tests/integration/test_archive_provenance_volume_checkpoint_concurrency.py
   tests/integration/test_archive_provenance_volume_progress_concurrency.py
   tests/integration/test_archive_provenance_volume_finalizer_concurrency.py
+  tests/integration/test_archive_provenance_authority_checkpoint_concurrency.py
   tests/integration/test_immutable_archive_writes_concurrency.py
   tests/integration/test_archive_immutable_source_receiving_concurrency.py
   tests/integration/test_operation_lifecycle_postgres.py

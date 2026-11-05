@@ -11,7 +11,9 @@ from riverhog_core.archive_formats import (
     PROVENANCE_HISTORY_STORAGE_FORMAT,
     PROVENANCE_JOURNAL_SEGMENT_STORAGE_FORMAT,
     PROVENANCE_RECORD_PAGE_STORAGE_FORMAT,
+    PROVENANCE_ROOT_STORAGE_FORMAT,
     PROVENANCE_SOURCE_PROOF_STORAGE_FORMAT,
+    PROVENANCE_TERMINAL_STORAGE_FORMAT,
     PROVENANCE_VOLUME_METADATA_STORAGE_FORMAT,
     RECOVERY_DESCRIPTOR_STORAGE_FORMAT,
     ROOT_MANIFEST_STORAGE_FORMAT,
@@ -21,6 +23,9 @@ from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.services.archive_authority_checkpoint import (
     ArchiveRecoverySource,
     ArchiveRootSource,
+)
+from riverhog_core.services.archive_provenance_authority_checkpoint import (
+    ArchiveProvenanceAuthoritySource,
 )
 from riverhog_core.services.archive_provenance_journal_checkpoint import (
     ArchiveProvenanceJournalSource,
@@ -45,6 +50,10 @@ def _source(session: Session, prepared: PreparedImmutableArchiveObject) -> Immut
         return ArchiveRootSource.from_prepared(session, prepared)
     if format_name == RECOVERY_DESCRIPTOR_STORAGE_FORMAT:
         return ArchiveRecoverySource.from_prepared(session, prepared)
+    if format_name == PROVENANCE_TERMINAL_STORAGE_FORMAT:
+        return ArchiveProvenanceAuthoritySource.from_prepared(session, prepared, role="terminal")
+    if format_name == PROVENANCE_ROOT_STORAGE_FORMAT:
+        return ArchiveProvenanceAuthoritySource.from_prepared(session, prepared, role="root")
     if format_name == PROVENANCE_JOURNAL_SEGMENT_STORAGE_FORMAT:
         return ArchiveProvenanceJournalSource.from_prepared(session, prepared)
     if format_name == PROVENANCE_BINDING_SEGMENT_STORAGE_FORMAT:

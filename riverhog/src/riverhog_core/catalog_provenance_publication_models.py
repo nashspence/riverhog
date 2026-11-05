@@ -54,3 +54,26 @@ class CollectionUploadProvenanceVolumePublicationRecord(Base):
             name="ck_provenance_volume_publication_source",
         ),
     )
+
+
+class CollectionUploadProvenanceAuthorityPublicationRecord(Base):
+    __tablename__ = "collection_upload_provenance_authority_publications"
+
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    role: Mapped[str] = mapped_column(String, primary_key=True)
+    document_json: Mapped[str] = mapped_column(Text)
+    source_json: Mapped[str] = mapped_column(Text)
+    source_sha256: Mapped[str] = mapped_column(String(64))
+    receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    progress_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id"], ["collection_uploads.collection_id"], ondelete="CASCADE"
+        ),
+        CheckConstraint("role IN ('terminal','root')", name="ck_provenance_authority_role"),
+        CheckConstraint(
+            "length(document_json) > 0 AND length(source_json) > 0",
+            name="ck_provenance_authority_source",
+        ),
+    )

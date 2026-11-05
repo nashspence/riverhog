@@ -3033,4 +3033,19 @@ CREATE TABLE collection_upload_provenance_volume_publications (
 	CONSTRAINT ck_sha256_749d13725ffed583 CHECK (binding_payload_sha256 IS NULL OR length(binding_payload_sha256) = 64 AND lower(binding_payload_sha256) = binding_payload_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(binding_payload_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
+CREATE TABLE collection_upload_provenance_authority_publications (
+	collection_id BIGINT NOT NULL,
+	role VARCHAR NOT NULL,
+	document_json TEXT NOT NULL,
+	source_json TEXT NOT NULL,
+	source_sha256 VARCHAR(64) NOT NULL,
+	receipt_json TEXT,
+	progress_receipt_json TEXT,
+	PRIMARY KEY (collection_id, role),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_authority_role CHECK (role IN ('terminal','root')),
+	CONSTRAINT ck_provenance_authority_source CHECK (length(document_json) > 0 AND length(source_json) > 0),
+	CONSTRAINT ck_sha256_12eb1cba1c399936 CHECK (length(source_sha256) = 64 AND lower(source_sha256) = source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');
