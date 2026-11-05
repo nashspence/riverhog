@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import secrets
 import threading
-from typing import Protocol
+from typing import Literal, Protocol
 
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_storage_adapter_protocol import (
@@ -28,6 +28,7 @@ from riverhog_core.ports.archive_objects import (
     ImmutableObjectReceipt,
 )
 from riverhog_core.provider_write_dispatch import WithdrawnProviderWrite
+from riverhog_core.services.archive_upload_drain import inspect_terminal_write_records
 from riverhog_core.services.immutable_archive_admission import (
     AdmittedImmutableArchiveWrite,
     ImmutableArchiveAdmission,
@@ -106,6 +107,8 @@ class ImmutableArchiveWrites:
         self._started = False
         self._report_confirmed = False
         self._retired = False
+        self._terminal_operation_id: str | None = None
+        self._terminal_drained = False
 
     @property
     def has_pending(self) -> bool:
@@ -119,6 +122,53 @@ class ImmutableArchiveWrites:
         """
         with self._lock:
             return self._flush()
+
+    def drain_terminal(self, operation_id: str) -> Literal["busy", "pending", "closed"]:
+        """Stop this original actor under an exact selected terminal request.
+
+        A busy actor is observed without waiting for provider IO. An unused live
+        capability can be withdrawn; an uncertain admission or execution stays
+        retained. Closed means only this actor cannot dispatch again and its
+        original report/proof retirement was acknowledged. It grants no worker
+        join, resource transfer, disposal or global quiescence.
+        """
+        if not self._lock.acquire(blocking=False):
+            return "busy"
+        try:
+            if self._terminal_operation_id is not None:
+                if self._terminal_operation_id != operation_id:
+                    raise Conflict("archive metadata actor has another terminal request")
+                if self._terminal_drained:
+                    return "closed"
+            else:
+                with session_scope(self._factory) as session:
+                    inspect_terminal_write_records(
+                        session, self._source.collection_id, operation_id
+                    )
+                # Install the forward fence before any original report/proof IO.
+                self._terminal_operation_id = operation_id
+            if self._admission_pending and self._admitted is None:
+                return "pending"
+            admitted = self._admitted
+            if admitted is not None and not self._retired and self._response_json is None:
+                if self._withdrawal is None:
+                    try:
+                        self._withdrawal = self._admission.withdraw(admitted)
+                    except Conflict:
+                        # The exact live ticket retains a minted withdrawal
+                        # through a lost helper reply. A started ticket cannot
+                        # mint one, even after its executor returned.
+                        try:
+                            self._withdrawal = admitted.ticket.withdraw()
+                        except Conflict:
+                            return "pending"
+            self._flush()
+            if self.has_pending:
+                return "pending"
+            self._terminal_drained = True
+            return "closed"
+        finally:
+            self._lock.release()
 
     def _receipt(self) -> AdapterImmutableObjectReceipt | None:
         if self._observed_json is not None:
@@ -247,6 +297,8 @@ class ImmutableArchiveWrites:
             received = self._flush()
             if received is not None:
                 return received
+            if self._terminal_operation_id is not None:
+                raise Conflict("archive metadata actor was stopped for its terminal request")
             if self._retired:
                 self._reset_unused()
             if self._prepared is None:
