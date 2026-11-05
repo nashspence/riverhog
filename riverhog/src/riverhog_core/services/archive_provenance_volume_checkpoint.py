@@ -120,6 +120,8 @@ def _context(upload: Upload) -> dict[str, Any]:
         "current_journal_id": upload.provenance_archive_current_journal_id,
         "current_journal_offset": upload.provenance_archive_current_journal_offset,
         "hash_state": upload.provenance_archive_hash_state,
+        "binding_tree_state": upload.provenance_archive_binding_tree_state,
+        "journal_count": upload.provenance_archive_journal_count,
     }
 
 
@@ -147,6 +149,13 @@ class ArchiveProvenanceVolumeSource:
             volumes.provenance_commitment(upload)
         except (ValueError, RuntimeError) as exc:
             raise Conflict("provenance volume current commitment is invalid") from exc
+        volumes.provenance_binding_checkpoint(
+            state=upload.provenance_archive_binding_tree_state,
+            count=upload.provenance_archive_next_artifact_order,
+            after_artifact_id=upload.provenance_archive_after_artifact_id,
+        )
+        if not 0 <= upload.provenance_archive_journal_count <= sequence:
+            raise Conflict("provenance volume journal count is invalid")
         ArchiveWriteAdmission.require_no_unresolved_calls(session, collection_id)
         control = ArchiveWriteAdmission._control(session, upload)
         ArchiveWriteAdmission._terminal_lock(session, control)
@@ -590,16 +599,30 @@ class ArchiveProvenanceVolumeSource:
                 "last_journal_id",
                 "current_journal_id",
                 "current_journal_offset",
+                "binding_tree_state",
+                "journal_count",
             )
         }
+        checkpoint = volumes.provenance_binding_checkpoint(
+            state=original["binding_tree_state"],
+            count=original["next_artifact_order"],
+            after_artifact_id=original["after_artifact_id"],
+        )
         if document.payload.kind == "bindings":
             assert document.binding_count is not None
+            _, rows = _bindings(session, self.collection_id, original["after_artifact_id"])
+            if len(rows) != document.binding_count:
+                raise Conflict("provenance volume binding tree page changed")
+            for binding in rows:
+                checkpoint = checkpoint.append(volumes.member_history_binding_row(binding))
             cursor["next_artifact_order"] += document.binding_count
             cursor["after_artifact_id"] = document.last_artifact_id
+            cursor["binding_tree_state"] = checkpoint.to_json_bytes().decode()
         else:
             assert document.journal_offset is not None
             stop = document.journal_offset + document.payload.bytes
             if stop == document.journal_bytes:
+                cursor["journal_count"] += 1
                 cursor["last_journal_id"] = document.journal_id
                 cursor["current_journal_id"] = None
                 cursor["current_journal_offset"] = 0

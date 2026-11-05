@@ -6,7 +6,11 @@ from dataclasses import replace
 from types import SimpleNamespace
 
 import pytest
-from riverhog_archive_contracts import PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX, MemberHistoryBinding
+from riverhog_archive_contracts import (
+    PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
+    MemberBindingTreeCheckpoint,
+    MemberHistoryBinding,
+)
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.archive_provenance import ArchiveProvenancePublisher
 from riverhog_core.catalog_archive_write_models import ArchiveWritePreparationRecord
@@ -44,6 +48,7 @@ def _volume_source(
     *,
     database_url=None,
     journal_content=b"original journal corpus",
+    binding_count=None,
 ):
     with _metadata_source(tmp_path, monkeypatch, mode=mode, database_url=database_url) as fixture:
         case = fixture.case
@@ -52,9 +57,34 @@ def _volume_source(
             # Native history validation remains qualified by its maintained owner.
             upload = session.get(Upload, case.collection_id)
             upload.provenance_closure_validated = True
-            for artifact in session.scalars(
-                select(Artifact).where(Artifact.collection_id == case.collection_id)
-            ):
+            artifacts = list(
+                session.scalars(
+                    select(Artifact)
+                    .where(Artifact.collection_id == case.collection_id)
+                    .order_by(Artifact.artifact_id)
+                )
+            )
+            if binding_count is not None:
+                first = artifacts[0]
+                original_count = len(artifacts)
+                assert binding_count >= original_count
+                for index in range(binding_count - original_count):
+                    artifact = Artifact(
+                        collection_id=case.collection_id,
+                        artifact_id=hashlib.sha256(
+                            f"accepted binding {index}".encode()
+                        ).hexdigest(),
+                        artifact_order=original_count + index,
+                        bytes=first.bytes,
+                        sha256=first.sha256,
+                    )
+                    session.add(artifact)
+                    artifacts.append(artifact)
+                session.flush()
+                artifacts.sort(key=lambda artifact: artifact.artifact_id)
+                upload.artifact_count = binding_count
+            checkpoint = MemberBindingTreeCheckpoint()
+            for artifact in artifacts:
                 binding = MemberHistoryBinding(
                     artifact.artifact_id,
                     artifact.bytes,
@@ -62,6 +92,7 @@ def _volume_source(
                     hashlib.sha256(artifact.artifact_id.encode()).hexdigest(),
                     42,
                 )
+                checkpoint = checkpoint.append(binding)
                 session.add(
                     History(
                         collection_id=case.collection_id,
@@ -73,6 +104,8 @@ def _volume_source(
                 )
             if kind == "journal":
                 upload.provenance_archive_next_artifact_order = upload.artifact_count
+                upload.provenance_archive_after_artifact_id = checkpoint.previous_artifact_id
+                upload.provenance_archive_binding_tree_state = checkpoint.to_json_bytes().decode()
         f = SimpleNamespace(case=case)
         if kind == "journal":
             _stage_journal(f, _JOURNAL, journal_content)

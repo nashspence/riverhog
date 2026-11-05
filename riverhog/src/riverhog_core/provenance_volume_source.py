@@ -8,6 +8,7 @@ from typing import Literal
 
 from riverhog_archive_contracts import (
     PROVENANCE_SEQUENCE_DOMAIN,
+    MemberBindingTreeCheckpoint,
     MemberHistoryBinding,
     ProvenancePayload,
     ProvenanceVolumeDocument,
@@ -103,3 +104,20 @@ def next_provenance_publication_journal(
     if journal is not None and journal.state != "sealed":
         raise Conflict(f"provenance journal is not sealed: {journal.journal_id}")
     return journal
+
+
+def provenance_binding_checkpoint(
+    *, state: str | None, count: int, after_artifact_id: str | None
+) -> MemberBindingTreeCheckpoint:
+    """Verify a bounded frontier against its exact original traversal cursor."""
+    try:
+        checkpoint = (
+            MemberBindingTreeCheckpoint()
+            if state is None
+            else MemberBindingTreeCheckpoint.from_json_bytes(state.encode())
+        )
+        if checkpoint.count != count or checkpoint.previous_artifact_id != after_artifact_id:
+            raise ValueError("member binding checkpoint cursor changed")
+    except (TypeError, ValueError, AttributeError) as exc:
+        raise Conflict("provenance binding tree checkpoint is invalid") from exc
+    return checkpoint

@@ -2695,6 +2695,11 @@ class CollectionUploadRecord(Base):
         archive_sequence_type(), default=0, server_default=text(f"'{_ARCHIVE_SEQUENCE_ZERO}'")
     )
     provenance_archive_hash_state: Mapped[str | None] = mapped_column(Text, nullable=True)
+    provenance_archive_binding_tree_state: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Each completed journal consumes at least one v1 archive sequence.
+    provenance_archive_journal_count: Mapped[int] = mapped_column(
+        archive_sequence_type(), default=0, server_default=text(f"'{_ARCHIVE_SEQUENCE_ZERO}'")
+    )
     provenance_archive_ordered_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     provenance_archive_terminal_receipt_json: Mapped[str | None] = mapped_column(
         Text, nullable=True
@@ -2822,7 +2827,8 @@ class CollectionUploadRecord(Base):
             "provenance_validation_next_artifact_order >= 0 AND "
             "provenance_archive_next_artifact_order >= 0 AND "
             "provenance_archive_current_journal_offset >= 0 AND "
-            f"{_fixed_lowercase_integer_check('provenance_archive_next_sequence', 64)}",
+            f"{_fixed_lowercase_integer_check('provenance_archive_next_sequence', 64)} AND "
+            f"{_fixed_lowercase_integer_check('provenance_archive_journal_count', 64)}",
             name="ck_collection_uploads_provenance_progress",
         ),
         CheckConstraint(

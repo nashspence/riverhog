@@ -5,13 +5,17 @@ import json
 import pytest
 from riverhog_archive_contracts import (
     PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
+    MemberBindingTreeCheckpoint,
     ProvenanceTerminalDocument,
+    binding_tree_commitment,
     ordered_provenance_commitment,
     update_provenance_commitment,
 )
+from riverhog_core import provenance_volume_source as volumes
 from riverhog_core.archive_provenance import ArchiveProvenancePublisher
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord as Control
 from riverhog_core.catalog_db import session_scope
+from riverhog_core.catalog_models import CollectionUploadMemberHistoryRecord as History
 from riverhog_core.catalog_models import (
     CollectionUploadProvenanceArchiveVolumeRecord as FinalVolume,
 )
@@ -55,6 +59,8 @@ def _snapshot(f):
             upload.provenance_archive_last_journal_id,
             upload.provenance_archive_current_journal_id,
             upload.provenance_archive_current_journal_offset,
+            upload.provenance_archive_binding_tree_state,
+            upload.provenance_archive_journal_count,
             row.progress_receipt_json,
             session.scalar(select(func.count()).select_from(FinalVolume)),
         )
@@ -188,7 +194,9 @@ def test_positive_unknown_original_data_never_commits_corpus_progress(tmp_path, 
         assert _snapshot(f) == before and _count(f.case) == 1
 
 
-@pytest.mark.parametrize("change", ("marker", "final", "cursor", "receipt"))
+@pytest.mark.parametrize(
+    "change", ("marker", "final", "cursor", "receipt", "binding_tree", "journals")
+)
 def test_progress_acknowledgement_requires_its_actual_original_proof(tmp_path, monkeypatch, change):
     with _volume_source(tmp_path, monkeypatch) as f:
         _ready(f)
@@ -200,6 +208,12 @@ def test_progress_acknowledgement_requires_its_actual_original_proof(tmp_path, m
                 session.get(FinalVolume, (f.case.collection_id, 0)).metadata_receipt_json = "{}"
             elif change == "cursor":
                 session.get(Upload, f.case.collection_id).provenance_archive_next_sequence = 0
+            elif change == "binding_tree":
+                session.get(
+                    Upload, f.case.collection_id
+                ).provenance_archive_binding_tree_state = None
+            elif change == "journals":
+                session.get(Upload, f.case.collection_id).provenance_archive_journal_count = 1
             else:
                 session.get(Volume, (f.case.collection_id, 0)).payload_receipt_json = "{}"
         before = _snapshot(f)
@@ -255,6 +269,9 @@ def test_actual_binding_then_journal_progress_keeps_original_prior_proof_point_r
         before = _snapshot(f)
         assert not _commit(f, first) and _snapshot(f) == before
         assert before[0] == 2 and before[4] == _JOURNAL and before[5:7] == (None, 0)
+        assert before[8] == 1
+        tree = MemberBindingTreeCheckpoint.from_json_bytes(before[7].encode())
+        assert tree.count == first.document.binding_count
         terminal = ProvenanceTerminalDocument(
             archive_generation=first.document.archive_generation,
             artifact_set_sha256=first.document.artifact_set_sha256,
@@ -278,6 +295,7 @@ def test_actual_multi_frame_journal_progress_preserves_exact_continuation_and_te
         assert _commit(f)
         before = _snapshot(f)
         assert before[4:7] == (None, _JOURNAL, PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX)
+        assert before[8] == 0
         with session_scope(f.case.factory) as session:
             second = Source.stage_next(session, f.case.collection_id, grants=f.original_grants)
         assert second.document.journal_offset == PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX
@@ -286,6 +304,7 @@ def test_actual_multi_frame_journal_progress_preserves_exact_continuation_and_te
         assert _commit(f, second)
         after = _snapshot(f)
         assert after[0] == 2 and after[4:7] == (_JOURNAL, None, 0)
+        assert after[8] == 1 and after[7] == before[7]
         terminal = ProvenanceTerminalDocument(
             archive_generation=first.document.archive_generation,
             artifact_set_sha256=first.document.artifact_set_sha256,
@@ -297,3 +316,80 @@ def test_actual_multi_frame_journal_progress_preserves_exact_continuation_and_te
             (first.document, second.document, terminal)
         )
         assert f.calls == {"observe": 4, "execute": 4} and _count(f.case) == 0
+
+
+@pytest.mark.parametrize("change", ("binding_tree", "journal_count"))
+def test_new_corpus_selection_refuses_root_input_checkpoint_drift(tmp_path, monkeypatch, change):
+    with _volume_source(tmp_path, monkeypatch) as f:
+        with session_scope(f.case.factory) as session:
+            upload = session.get(Upload, f.case.collection_id)
+            if change == "binding_tree":
+                upload.provenance_archive_binding_tree_state = "{}"
+            else:
+                upload.provenance_archive_journal_count = 1
+        with pytest.raises(Conflict, match="binding tree checkpoint|journal count"):
+            with session_scope(f.case.factory) as session:
+                Source.stage_next(session, f.case.collection_id, grants=f.original_grants)
+        assert f.calls == {"observe": 0, "execute": 0}
+
+
+def _multi_page_binding_progress(f, monkeypatch):
+    with session_scope(f.case.factory) as session:
+        bindings = [
+            volumes.member_history_binding_row(row)
+            for row in session.scalars(
+                select(History)
+                .where(History.collection_id == f.case.collection_id)
+                .order_by(History.artifact_id)
+            )
+        ]
+    expected = binding_tree_commitment(bindings)
+    _ready(f)
+    assert _commit(f)
+    first = _snapshot(f)
+    checkpoint = MemberBindingTreeCheckpoint.from_json_bytes(first[7].encode())
+    assert checkpoint.count == 512 and checkpoint.previous_artifact_id == bindings[511].artifact_id
+    assert not _commit(f) and _snapshot(f) == first
+    calls = []
+    convert = volumes.member_history_binding_row
+
+    def original_page(row):
+        calls.append(row.artifact_id)
+        return convert(row)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(volumes, "member_history_binding_row", original_page)
+        with session_scope(f.case.factory) as session:
+            metadata = Source.stage_next(session, f.case.collection_id, grants=f.original_grants)
+        with session_scope(f.case.factory) as session:
+            payload = Source.load(session, f.case.collection_id, 1, role="bindings")
+        _publish_source(f, payload)
+        _publish_source(f, metadata)
+        assert _commit(f, metadata)
+    assert calls and set(calls) == {bindings[-1].artifact_id}
+    after = _snapshot(f)
+    checkpoint = MemberBindingTreeCheckpoint.from_json_bytes(after[7].encode())
+    assert checkpoint.count == expected.count == 513
+    assert checkpoint.root_sha256 == expected.root_sha256
+    assert after[8] == 0 and after[0] == after[-1] == 2
+    assert not _commit(f, metadata) and _snapshot(f) == after
+    assert not _commit(f) and _snapshot(f) == after
+    assert f.calls == {"observe": 4, "execute": 4} and _count(f.case) == 0
+
+
+def test_actual_multi_page_binding_progress_retains_exact_root_without_prefix_replay(
+    tmp_path, monkeypatch
+):
+    with _volume_source(tmp_path, monkeypatch, binding_count=513) as f:
+        _multi_page_binding_progress(f, monkeypatch)
+
+
+@pytest.mark.parametrize("count", (2**63, 2**255 - 1))
+def test_completed_journal_checkpoint_preserves_v1_sequence_extent(tmp_path, monkeypatch, count):
+    with _volume_source(tmp_path, monkeypatch) as f:
+        with session_scope(f.case.factory) as session:
+            session.get(Upload, f.case.collection_id).provenance_archive_journal_count = count
+        with session_scope(f.case.factory) as session:
+            assert (
+                session.get(Upload, f.case.collection_id).provenance_archive_journal_count == count
+            )

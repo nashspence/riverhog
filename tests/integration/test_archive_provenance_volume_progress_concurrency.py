@@ -17,6 +17,7 @@ from tests.unit.test_archive_provenance_volume_checkpoint import _volume_source
 from tests.unit.test_archive_provenance_volume_progress import (
     _commit,
     _journal_pair,
+    _multi_page_binding_progress,
     _ready,
     _snapshot,
 )
@@ -102,5 +103,26 @@ def test_postgres_actual_journal_pair_advances_its_original_journal_cursor(
         before = _snapshot(f)
         assert before[0] == 1 and before[4] == f.metadata.document.journal_id
         assert before[5:7] == (None, 0) and before[-1] == 1
+        assert before[8] == 1
         assert not _commit(f) and _snapshot(f) == before
         assert f.calls == {"observe": 2, "execute": 2}
+
+
+@pytest.mark.parametrize("count", (2**63, 2**255 - 1))
+def test_postgres_completed_journal_checkpoint_preserves_v1_sequence_extent(
+    database_url, tmp_path, monkeypatch, count
+):
+    with _volume_source(tmp_path, monkeypatch, database_url=database_url) as f:
+        with session_scope(f.case.factory) as session:
+            session.get(Upload, f.case.collection_id).provenance_archive_journal_count = count
+        with session_scope(f.case.factory) as session:
+            assert (
+                session.get(Upload, f.case.collection_id).provenance_archive_journal_count == count
+            )
+
+
+def test_postgres_actual_multi_page_binding_progress_retains_the_exact_root(
+    database_url, tmp_path, monkeypatch
+):
+    with _volume_source(tmp_path, monkeypatch, database_url=database_url, binding_count=513) as f:
+        _multi_page_binding_progress(f, monkeypatch)
