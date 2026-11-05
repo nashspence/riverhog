@@ -29,25 +29,13 @@ def complete_capture(factory):
 
 
 def service_for(factory):
-    service = object.__new__(owner.SqlAlchemyCollectionUploadService)
+    from riverhog_core.archive_store_registry import ArchiveStoreRegistry
     from riverhog_core.runtime_config import RuntimeConfig
-    from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
 
-    service._session_factory = factory
-    service._config = RuntimeConfig.for_testing(database_url=str(factory.kw["bind"].url))
-    service._journal_validation_owner = UploadJournalValidationOwner(
-        factory, service._config.journal_validation_workspace
+    config = RuntimeConfig.for_testing(database_url=str(factory.kw["bind"].url))
+    return owner.SqlAlchemyCollectionUploadService(
+        config, ArchiveStoreRegistry({}), session_factory=factory
     )
-    service._journal_validation_after = None
-    from riverhog_core.services.upload_journal_validation_retirement import (
-        UploadJournalValidationRetirement,
-    )
-
-    service._journal_validation_retirement = UploadJournalValidationRetirement(
-        factory, service._config.journal_validation_workspace
-    )
-    service._journal_validation_cleanup_turn = False
-    return service
 
 
 def native_outcome(factory, work):

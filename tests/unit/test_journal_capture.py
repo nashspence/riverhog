@@ -67,11 +67,15 @@ def retained(root, raw):
 
 @contextmanager
 def validation_service(factory, root):
-    from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
+    from riverhog_core.archive_store_registry import ArchiveStoreRegistry
+    from riverhog_core.runtime_config import RuntimeConfig
 
-    service = object.__new__(owner.SqlAlchemyCollectionUploadService)
-    service._session_factory = factory
-    service._journal_validation_owner = UploadJournalValidationOwner(factory, root)
+    config = RuntimeConfig.for_testing(
+        database_url=str(factory.kw["bind"].url), journal_validation_workspace=root
+    )
+    service = owner.SqlAlchemyCollectionUploadService(
+        config, ArchiveStoreRegistry({}), session_factory=factory
+    )
     try:
         yield service
     finally:
