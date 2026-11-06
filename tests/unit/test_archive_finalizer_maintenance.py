@@ -15,7 +15,7 @@ from riverhog_core.catalog_archive_write_models import (
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.services import archive_finalizer_maintenance as maintenance_module
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
-from sqlalchemy import event, insert, select
+from sqlalchemy import event, func, insert, select
 from time_formats import format_utc_timestamp, utc_now
 
 from tests.unit.test_archive_finalizer_registry import Finalizer, _scope
@@ -298,7 +298,7 @@ def test_due_selector_work_is_independent_of_settled_and_future_backlog(tmp_path
     with _case(tmp_path) as case:
         operation = _selected(case)
         counts = []
-        prior = 1
+        prior = 0
         for size in (16, 256, 4096):
             with session_scope(case.factory) as session:
                 row = (
@@ -327,6 +327,21 @@ def test_due_selector_work_is_independent_of_settled_and_future_backlog(tmp_path
                 ]
                 session.execute(insert(Terminal), rows)
             prior = size
+            with session_scope(case.factory) as session:
+                assert (
+                    session.scalar(
+                        select(func.count()).select_from(Terminal).where(Terminal.phase == "done")
+                    )
+                    == size
+                )
+                assert (
+                    session.scalar(
+                        select(func.count())
+                        .select_from(Terminal)
+                        .where(Terminal.drain_next_attempt_at == "9999-01-01T00:00:00.000000000Z")
+                    )
+                    == size
+                )
             instructions = 0
             with session_scope(case.factory) as session:
                 connection = session.connection().connection.driver_connection
