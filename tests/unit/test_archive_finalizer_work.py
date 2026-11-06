@@ -19,6 +19,7 @@ from tests.unit.test_archive_finalizer_terminal_drain import _original, _termina
 from tests.unit.test_archive_provenance_journal_checkpoint import _JOURNAL
 from tests.unit.test_archive_provenance_journal_writer import _lose_ack
 from tests.unit.test_archive_volume_metadata_receiving import _count
+from tests.unit.test_finalization_claim_readiness import _current_claim
 
 _KINDS = (
     "archive-volume",
@@ -253,7 +254,7 @@ def test_changed_construction_cannot_adopt_pending_original(tmp_path, monkeypatc
 
 
 @contextmanager
-def _lost_queue_feedback(monkeypatch, service, collection_id, committed):
+def _lost_queue_feedback(monkeypatch, service, claim, committed):
     actual = service_module.session_scope
     state = {"active": False, "fired": False}
     calls = []
@@ -274,7 +275,13 @@ def _lost_queue_feedback(monkeypatch, service, collection_id, committed):
         calls.append(progressed)
         state["active"] = True
         try:
-            service._requeue_finalization_step(collection_id)
+            if claim is None:
+                # Pre-finalization structure/journal owners acknowledge their
+                # own workflow without inventing a finalization queue claim.
+                with service_module.session_scope(service._session_factory):
+                    pass
+            else:
+                service._requeue_finalization_step(claim)
         finally:
             state["active"] = False
 
@@ -291,6 +298,7 @@ def _queue_snapshot(case):
             upload.archive_phase,
             upload.archive_next_attempt_at,
             upload.archive_failure,
+            upload.archive_claim_id,
         )
 
 
@@ -332,7 +340,8 @@ def _actual_feedback(
     ):
         initial = _queue_snapshot(original.case)
         finalizing = initial[:2] == ("finalizing", "finalizing")
-        with _lost_queue_feedback(monkeypatch, service, original.case.collection_id, committed) as (
+        claim = _current_claim(original.case) if finalizing else None
+        with _lost_queue_feedback(monkeypatch, service, claim, committed) as (
             receive,
             calls,
         ):
@@ -416,12 +425,13 @@ def _actual_gate_closed_feedback(tmp_path, monkeypatch, mode, *, database_url=No
     ):
         entered, release = threading.Event(), threading.Event()
         calls = []
+        claim = _current_claim(original.case)
 
         def receive(progressed):
             calls.append(progressed)
             entered.set()
             assert release.wait(10)
-            service._requeue_finalization_step(original.case.collection_id)
+            service._requeue_finalization_step(claim)
 
         try:
             assert _submit(service, original, receive=receive) == "submitted"
@@ -447,3 +457,66 @@ def _actual_gate_closed_feedback(tmp_path, monkeypatch, mode, *, database_url=No
             assert _completed(service) == "closed"
         finally:
             release.set()
+
+
+@pytest.mark.parametrize(
+    "kind",
+    (
+        "archive-volume",
+        "description",
+        "tag-node",
+        "provenance-authority",
+        "root",
+        "volume-bindings",
+    ),
+)
+@pytest.mark.parametrize("mode", ("direct", "http"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_original_feedback_acknowledgement_cannot_requeue_a_newer_claim(
+    tmp_path, monkeypatch, kind, mode, committed
+):
+    _actual_claim_feedback(tmp_path, monkeypatch, kind, mode, committed)
+
+
+def _actual_claim_feedback(tmp_path, monkeypatch, kind, mode, committed, *, database_url=None):
+    from tests.unit.test_finalization_claim_readiness import _fresh_coordinator
+
+    with (
+        _original(tmp_path, monkeypatch, kind, mode, database_url=database_url) as original,
+        _service(original) as service,
+    ):
+        claim = _current_claim(original.case)
+        with _lost_queue_feedback(monkeypatch, service, claim, committed) as (receive, calls):
+            assert _submit(service, original, receive=receive) == "submitted"
+            with pytest.raises(OSError, match="injected queue feedback"):
+                _completed(service)
+        context = service._archive_finalizers._contexts[original.case.collection_id]
+        retained, child = context.owner, context.owner._original
+        assert retained.has_pending and retained._result is True
+        assert not child.has_pending and _count(original.case) == 0
+        current = _fresh_coordinator(original.case)
+        if not committed:
+            assert current.requeue_interrupted_finalizations_for_startup() == 1
+        replacement = current._claim_due_finalization()
+        assert replacement.collection_id == claim.collection_id
+        assert replacement.claim_id != claim.claim_id
+        before = _queue_snapshot(original.case)
+
+        def forbidden(*args, **kwargs):
+            pytest.fail(
+                "original feedback retry must not repeat publication or replace its receiver"
+            )
+
+        with monkeypatch.context() as patch:
+            patch.setattr(type(child), "advance", forbidden)
+            assert (
+                service._archive_finalizer_work.submit_metadata(
+                    original.case.collection_id, kind="initial-description", receive=forbidden
+                )
+                == "submitted"
+            )
+            turn = _completed(service)
+        assert turn.selection == _SELECTIONS[kind] and turn.progressed
+        assert context.owner is retained and retained._result is None and not retained.has_pending
+        assert calls == [True, True] and _queue_snapshot(original.case) == before
+        assert _count(original.case) == 0

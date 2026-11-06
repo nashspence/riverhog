@@ -16,7 +16,7 @@ from sqlalchemy import delete
 from tests.unit.test_archive_authority_checkpoint import _authority_source, _snapshot
 from tests.unit.test_archive_volume_metadata_finalizer import _owner as _volume_owner
 from tests.unit.test_archive_volume_metadata_receiving import _count
-from tests.unit.test_finalization_claim_readiness import _fresh_coordinator
+from tests.unit.test_finalization_claim_readiness import _current_claim, _fresh_coordinator
 
 
 def _owner(fixture):
@@ -56,8 +56,10 @@ def test_actual_authority_finalizer_keeps_one_call_through_root_recovery_and_req
             before = _snapshot(fixture)
             assert before[0] is not None and (before[1] is not None) == (kind == "recovery")
             coordinator = _fresh_coordinator(original.case)
-            coordinator._requeue_finalization_step(original.case.collection_id)
-            assert coordinator._claim_due_finalization() == original.case.collection_id
+            coordinator._requeue_finalization_step(_current_claim(original.case))
+            assert (
+                coordinator._claim_due_finalization().collection_id == original.case.collection_id
+            )
         assert not original.owner.advance()
         assert len(original.calls["execute"]) == len(original.calls["observe"]) == 2
 

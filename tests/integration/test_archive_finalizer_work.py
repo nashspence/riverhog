@@ -46,3 +46,15 @@ def test_postgres_terminal_selection_prevents_feedback_requeue(
     tmp_path, monkeypatch, database_url, mode
 ):
     _actual_gate_closed_feedback(tmp_path, monkeypatch, mode, database_url=database_url)
+
+
+@pytest.mark.parametrize("mode", ("direct", "http"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_original_feedback_cannot_requeue_another_claim(
+    database_url, tmp_path, monkeypatch, mode, committed
+):
+    from tests.unit.test_archive_finalizer_work import _actual_claim_feedback
+
+    _actual_claim_feedback(
+        tmp_path, monkeypatch, "description", mode, committed, database_url=database_url
+    )

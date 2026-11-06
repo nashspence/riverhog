@@ -16,7 +16,7 @@ from tests.integration.test_collection_upload_custody_concurrency import (
 from tests.unit.test_archive_volume_metadata_checkpoint import _snapshot
 from tests.unit.test_archive_volume_metadata_finalizer import _fresh, _owner
 from tests.unit.test_archive_volume_metadata_receiving import _count, _metadata_source
-from tests.unit.test_finalization_claim_readiness import _fresh_coordinator
+from tests.unit.test_finalization_claim_readiness import _current_claim, _fresh_coordinator
 
 pytestmark = pytest.mark.integration
 
@@ -30,8 +30,10 @@ def test_postgres_explicit_finalizer_composes_actual_requeued_metadata_steps(
         for _ in range(3):
             assert original.owner.advance()
             coordinator = _fresh_coordinator(original.case)
-            coordinator._requeue_finalization_step(original.case.collection_id)
-            assert coordinator._claim_due_finalization() == original.case.collection_id
+            coordinator._requeue_finalization_step(_current_claim(original.case))
+            assert (
+                coordinator._claim_due_finalization().collection_id == original.case.collection_id
+            )
         assert not original.owner.advance()
         assert not original.owner.has_pending and _count(original.case) == 0
         assert _snapshot(original.case)[3] is not None

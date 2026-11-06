@@ -2640,6 +2640,7 @@ class CollectionUploadRecord(Base):
     archive_attempt_count: Mapped[int] = mapped_column(Integer, default=0)
     archive_next_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
     archive_last_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    archive_claim_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     archive_failure: Mapped[str | None] = mapped_column(String, nullable=True)
     archive_storage_prefix: Mapped[str] = mapped_column(String)
     delivery_context_id: Mapped[str] = mapped_column(

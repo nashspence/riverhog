@@ -781,6 +781,7 @@ CREATE TABLE collection_uploads (
 	archive_attempt_count INTEGER NOT NULL,
 	archive_next_attempt_at VARCHAR,
 	archive_last_attempt_at VARCHAR,
+	archive_claim_id VARCHAR(64),
 	archive_failure VARCHAR,
 	archive_storage_prefix VARCHAR NOT NULL,
 	delivery_context_id VARCHAR NOT NULL,
@@ -874,6 +875,7 @@ CREATE TABLE collection_uploads (
 	CONSTRAINT ck_collection_uploads_catalog_inventory_identity_hex CHECK (catalog_inventory_identity IS NULL OR length(catalog_inventory_identity) = 64 AND lower(catalog_inventory_identity) = catalog_inventory_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(catalog_inventory_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_uploads_active_registration CHECK (length(active_registration_id) = 64 AND lower(active_registration_id) = active_registration_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(active_registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_collection_uploads_active_registration_id_hex CHECK (active_registration_id IS NULL OR length(active_registration_id) = 64 AND lower(active_registration_id) = active_registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(active_registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_archive_claim_id_hex CHECK (archive_claim_id IS NULL OR length(archive_claim_id) = 64 AND lower(archive_claim_id) = archive_claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_uploads_planner_sequence CHECK (length(planner_next_sequence) = 64 AND lower(planner_next_sequence) = planner_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(planner_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_collection_uploads_registration_revision CHECK (registration_revision >= 0)
 );

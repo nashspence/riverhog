@@ -230,7 +230,7 @@ def test_accepted_finalizer_authority_is_separate_from_receiving_facts(tmp_path)
         with session_scope(case.factory) as session:
             with pytest.raises(Conflict, match="claim is not current"):
                 source.guard(session)
-        assert case.service._claim_due_finalization() == case.collection_id
+        assert case.service._claim_due_finalization().collection_id == case.collection_id
         operation = PutObjectOperation(request=source.publication.request(b"opaque ciphertext"))
         with session_scope(case.factory) as session:
             source.guard(session)

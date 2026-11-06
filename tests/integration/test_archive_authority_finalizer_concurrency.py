@@ -16,7 +16,7 @@ from tests.integration.test_collection_upload_custody_concurrency import (
 from tests.unit.test_archive_authority_checkpoint import _authority_source, _snapshot
 from tests.unit.test_archive_authority_finalizer import _fresh, _owner, _prior_root
 from tests.unit.test_archive_volume_metadata_receiving import _count
-from tests.unit.test_finalization_claim_readiness import _fresh_coordinator
+from tests.unit.test_finalization_claim_readiness import _current_claim, _fresh_coordinator
 
 pytestmark = pytest.mark.integration
 
@@ -30,8 +30,10 @@ def test_postgres_retained_authority_finalizer_composes_actual_requeued_steps(
         for _ in range(2):
             assert original.owner.advance()
             coordinator = _fresh_coordinator(original.case)
-            coordinator._requeue_finalization_step(original.case.collection_id)
-            assert coordinator._claim_due_finalization() == original.case.collection_id
+            coordinator._requeue_finalization_step(_current_claim(original.case))
+            assert (
+                coordinator._claim_due_finalization().collection_id == original.case.collection_id
+            )
         assert not original.owner.advance()
         assert _snapshot(fixture)[1] is not None and _count(fixture.case) == 0
         assert len(original.calls["execute"]) == len(original.calls["observe"]) == 2

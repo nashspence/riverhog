@@ -27,9 +27,14 @@ def test_postgres_claims_reuse_accepted_readiness(database_url, tmp_path, record
 
 
 @pytest.mark.parametrize("callback", ["retry", "requeue"])
-def test_postgres_stale_callback_rechecks_state_after_parent_lock(database_url, tmp_path, callback):
+@pytest.mark.parametrize("change", ("orphan", "new-claim"))
+def test_postgres_stale_callback_rechecks_state_after_parent_lock(
+    database_url, tmp_path, callback, change
+):
     with _case(tmp_path, "segment", artifact_count=1, database_url=database_url) as case:
         _seal(case)
+        claim = case.service._claim_due_finalization()
+        assert claim is not None
         engine = case.factory.kw["bind"]
         waiting = threading.Event()
         lane = threading.local()
@@ -49,9 +54,9 @@ def test_postgres_stale_callback_rechecks_state_after_parent_lock(database_url, 
             lane.contender = True
             current = _fresh_coordinator(case)
             if callback == "retry":
-                current._record_finalization_retry(case.collection_id, OSError("late report"))
+                current._record_finalization_retry(claim, OSError("late report"))
             else:
-                current._requeue_finalization_step(case.collection_id)
+                current._requeue_finalization_step(claim)
 
         def blocked():
             deadline = time.monotonic() + 10
@@ -75,7 +80,11 @@ def test_postgres_stale_callback_rechecks_state_after_parent_lock(database_url, 
                         .with_for_update()
                     )
                     pids["holder"] = session.scalar(text("SELECT pg_backend_pid()"))
-                    upload.state = upload.archive_phase = "orphaned"
+                    if change == "orphan":
+                        upload.state = upload.archive_phase = "orphaned"
+                    else:
+                        upload.archive_claim_id = "f" * 64
+                        assert upload.archive_claim_id != claim.claim_id
                     upload.archive_next_attempt_at = None
                     upload.archive_failure = "current owner"
                     session.flush()
@@ -87,6 +96,12 @@ def test_postgres_stale_callback_rechecks_state_after_parent_lock(database_url, 
             event.remove(engine, "before_cursor_execute", capture)
         with session_scope(case.factory) as session:
             upload = session.get(Upload, case.collection_id)
-            assert upload.state == upload.archive_phase == "orphaned"
+            assert (
+                upload.state
+                == upload.archive_phase
+                == ("orphaned" if change == "orphan" else "finalizing")
+            )
+            if change == "new-claim":
+                assert upload.archive_claim_id == "f" * 64
             assert upload.archive_next_attempt_at is None
             assert upload.archive_failure == "current owner"

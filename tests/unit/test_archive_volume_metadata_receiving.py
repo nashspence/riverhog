@@ -62,7 +62,7 @@ def _metadata_source(
             seal_case(case)
             with session_scope(case.factory) as session:
                 initial = ArchiveVolumeMetadataSource.load(session, case.collection_id, 0)
-        assert case.service._claim_due_finalization() == case.collection_id
+        assert case.service._claim_due_finalization().collection_id == case.collection_id
         epoch = ArchiveWriteAdmission(case.factory).bind_epoch(
             case.collection_id, guard=initial.guard
         )

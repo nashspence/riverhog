@@ -406,6 +406,14 @@ class _InitialTagReceipt(TypedDict):
     stored_sha256: str
 
 
+@dataclass(frozen=True)
+class _FinalizationClaim:
+    """An exact workflow turn; it grants no provider or terminal authority."""
+
+    collection_id: int
+    claim_id: str
+
+
 class SqlAlchemyCollectionUploadService:
     """Own direct-to-final collection ingress and its final catalog transaction."""
 
@@ -2875,6 +2883,7 @@ class SqlAlchemyCollectionUploadService:
         now = utc_timestamp_now()
         requeued = 0
         with session_scope(self._session_factory) as session:
+            _writer(session)
             uploads = list(
                 session.scalars(
                     select(CollectionUploadRecord)
@@ -2893,6 +2902,7 @@ class SqlAlchemyCollectionUploadService:
                     if not _ready_for_finalization(session, upload):
                         continue
                     _mark_finalization_ready(upload, now=now)
+                upload.archive_claim_id = None
                 upload.archive_phase = "retry_wait" if interrupted else "finalization_queued"
                 upload.archive_next_attempt_at = now
                 upload.archive_phase_updated_at = now
@@ -2933,17 +2943,17 @@ class SqlAlchemyCollectionUploadService:
         self._schedule_ready_finalizations(limit=max(100, limit))
         processed = 0
         for _ in range(limit):
-            collection_id = self._claim_due_finalization()
-            if collection_id is None:
+            claim = self._claim_due_finalization()
+            if claim is None:
                 break
             try:
-                self._reconcile_sealed_volume_receipts(collection_id)
-                self._finalize(collection_id)
+                self._reconcile_sealed_volume_receipts(claim.collection_id)
+                self._finalize(claim)
             except Exception as exc:
-                self._record_finalization_retry(collection_id, exc)
+                self._record_finalization_retry(claim, exc)
                 _LOG.exception(
                     "collection archive finalization failed; retry scheduled: collection_id=%s",
-                    collection_id,
+                    claim.collection_id,
                 )
             processed += 1
         return processed
@@ -2971,9 +2981,10 @@ class SqlAlchemyCollectionUploadService:
                 scheduled += 1
         return scheduled
 
-    def _claim_due_finalization(self) -> int | None:
+    def _claim_due_finalization(self) -> _FinalizationClaim | None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(
@@ -2998,7 +3009,8 @@ class SqlAlchemyCollectionUploadService:
             upload.archive_last_attempt_at = now
             upload.archive_next_attempt_at = None
             upload.archive_failure = None
-            return upload.collection_id
+            upload.archive_claim_id = secrets.token_hex(32)
+            return _FinalizationClaim(upload.collection_id, upload.archive_claim_id)
 
     def _schedule_finalization_if_ready(self, collection_id: int) -> None:
         now = utc_timestamp_now()
@@ -3074,24 +3086,26 @@ class SqlAlchemyCollectionUploadService:
                 raise RuntimeError(f"unsupported archive volume kind: {kind}")
             self._record_sealed_volume(collection_id, receipt)
 
-    def _record_finalization_retry(self, collection_id: int, exc: Exception) -> None:
+    def _record_finalization_retry(self, claim: _FinalizationClaim, exc: Exception) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
             _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
+                .where(CollectionUploadRecord.collection_id == claim.collection_id)
                 .with_for_update()
             )
             if (
                 upload is None
                 or upload.state != "finalizing"
                 or upload.archive_phase != "finalizing"
+                or upload.archive_claim_id != claim.claim_id
             ):
                 return
             if require_archive_write_control(session, upload).gate != "open":
                 return
             delay = min(3600, 2 ** min(upload.archive_attempt_count, 10))
+            upload.archive_claim_id = None
             upload.archive_phase = "retry_wait"
             upload.archive_phase_updated_at = now
             upload.archive_next_attempt_at = format_utc_timestamp(
@@ -3099,42 +3113,43 @@ class SqlAlchemyCollectionUploadService:
             )
             upload.archive_failure = f"{type(exc).__name__}: {exc}"[:1000]
 
-    def _finalize(self, collection_id: int) -> None:
+    def _finalize(self, claim: _FinalizationClaim) -> None:
+        collection_id = claim.collection_id
         if self._drain_archive_immutable_report(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
             return
         if self._stage_next_member_histories(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
             return
         if self._advance_provenance_closure_validation(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
             return
         if self._publish_next_provenance_structure(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
             return
         if self._advance_archive_tree_checkpoint(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
             return
         if self._publish_next_archive_volume_metadata(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
             return
         if self._publish_next_provenance_archive_object(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
             return
         if self._publish_final_authority(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
             return
         if self._publish_custody_receipts(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
             return
         if self._publish_initial_tags(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
             return
         if self._publish_initial_description(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
             return
         if self._advance_catalog_projection(collection_id):
-            self._requeue_finalization_step(collection_id)
+            self._requeue_finalization_step(claim)
 
     def _publish_final_authority(self, collection_id: int) -> bool:
         """Publish the bounded immutable root once and persist its exact receipts."""
@@ -4979,23 +4994,25 @@ class SqlAlchemyCollectionUploadService:
             source.apply_receipt(session, published)
         return True
 
-    def _requeue_finalization_step(self, collection_id: int) -> None:
+    def _requeue_finalization_step(self, claim: _FinalizationClaim) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
             _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
+                .where(CollectionUploadRecord.collection_id == claim.collection_id)
                 .with_for_update()
             )
             if (
                 upload is None
                 or upload.state != "finalizing"
                 or upload.archive_phase != "finalizing"
+                or upload.archive_claim_id != claim.claim_id
             ):
                 return
             if require_archive_write_control(session, upload).gate != "open":
                 return
+            upload.archive_claim_id = None
             upload.archive_phase = "finalization_queued"
             upload.archive_phase_updated_at = now
             upload.archive_next_attempt_at = now
@@ -7058,6 +7075,7 @@ def _has_complete_payload_seal(upload: CollectionUploadRecord) -> bool:
 def _mark_finalization_ready(upload: CollectionUploadRecord, *, now: str) -> None:
     upload.state = "finalizing"
     upload.lease_expires_at = None
+    upload.archive_claim_id = None
     upload.archive_phase = "finalization_queued"
     upload.archive_phase_updated_at = now
     upload.archive_next_attempt_at = now
