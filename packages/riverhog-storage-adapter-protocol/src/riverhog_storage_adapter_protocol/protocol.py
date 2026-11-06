@@ -1095,11 +1095,32 @@ class CleanupStepRequest(StorageAdapterModel):
     Control bytes cover the serialized invocation and response JSON together.
     """
 
+    kind: Literal["dispose"] = "dispose"
     selected_terminal_sha256: Sha256
     inventory: CleanupInventoryPage
     maximum_provider_requests: PositiveDecimal
     maximum_control_bytes: PositiveDecimal
     maximum_in_flight: PositiveDecimal
+
+
+class CleanupInventoryStepRequest(StorageAdapterModel):
+    """Budgeted observation in an original selected terminal scope.
+
+    A returned page grants neither disposal authority nor closure of any earlier
+    forward call. The execution envelope accounts only for this physical read.
+    """
+
+    kind: Literal["inventory"] = "inventory"
+    selected_terminal_sha256: Sha256
+    inventory: CleanupInventoryRequest
+    maximum_provider_requests: PositiveDecimal
+    maximum_control_bytes: PositiveDecimal
+    maximum_in_flight: PositiveDecimal
+
+
+type CleanupRequest = Annotated[
+    CleanupStepRequest | CleanupInventoryStepRequest, Field(discriminator="kind")
+]
 
 
 class CleanupInvocation(StorageAdapterModel):
@@ -1110,7 +1131,7 @@ class CleanupInvocation(StorageAdapterModel):
     """
 
     call: WriteCallIdentity
-    request: CleanupStepRequest
+    request: CleanupRequest
     adapter_hops_remaining: Literal[0, 1] = 1
 
     @model_validator(mode="after")
@@ -1119,7 +1140,12 @@ class CleanupInvocation(StorageAdapterModel):
         return self
 
     def _require_exact_request(self, *, request_bytes: int | None = None) -> None:
-        CleanupStepRequest.model_validate_json(self.request.model_dump_json())
+        if isinstance(self.request, CleanupStepRequest):
+            CleanupStepRequest.model_validate_json(self.request.model_dump_json())
+        elif isinstance(self.request, CleanupInventoryStepRequest):
+            CleanupInventoryStepRequest.model_validate_json(self.request.model_dump_json())
+        else:
+            raise ValueError("cleanup operation request is invalid")
         WriteCallIdentity.model_validate_json(self.call.model_dump_json())
         if type(self.adapter_hops_remaining) is not int or self.adapter_hops_remaining not in {
             0,
@@ -1131,7 +1157,10 @@ class CleanupInvocation(StorageAdapterModel):
             or self.call.target_incarnation != self.request.inventory.target_incarnation
         ):
             raise ValueError("cleanup invocation differs from its exact selection")
-        if self.request.inventory.scanned_items > MAX_CLEANUP_INVENTORY_PAGE_ITEMS:
+        if (
+            isinstance(self.request, CleanupStepRequest)
+            and self.request.inventory.scanned_items > MAX_CLEANUP_INVENTORY_PAGE_ITEMS
+        ):
             raise ValueError("cleanup selection exceeds one bounded inventory page")
         for value in (
             self.request.maximum_provider_requests,
@@ -1151,7 +1180,7 @@ class CleanupInvocation(StorageAdapterModel):
             raise ValueError("cleanup control grant cannot retain the exact request and response")
 
 
-def cleanup_step_sha256(request: CleanupStepRequest) -> str:
+def cleanup_step_sha256(request: CleanupRequest) -> str:
     return sha256(canonical_json_bytes(request.model_dump(mode="json"))).hexdigest()
 
 
@@ -1180,11 +1209,18 @@ class CleanupProgress(StorageAdapterModel):
     exhausted: bool
 
 
+class CleanupInventoryProgress(StorageAdapterModel):
+    """One bounded observation and its complete transport request charge."""
+
+    inventory: CleanupInventoryPage
+    provider_requests: NonnegativeDecimal
+
+
 class CleanupExecutionResult(StorageAdapterModel):
     call: WriteCallIdentity
     execution: Literal["closed", "unknown"]
-    outcome: Literal["cleanup_progress", "unknown"]
-    result: CleanupProgress | None = None
+    outcome: Literal["cleanup_progress", "cleanup_inventory", "unknown"]
+    result: CleanupProgress | CleanupInventoryProgress | None = None
 
     @model_validator(mode="after")
     def result_shape(self) -> Self:
@@ -1194,20 +1230,42 @@ class CleanupExecutionResult(StorageAdapterModel):
     def _require_result_shape(self) -> None:
         if self.execution not in {"closed", "unknown"} or self.outcome not in {
             "cleanup_progress",
+            "cleanup_inventory",
             "unknown",
         }:
             raise ValueError("cleanup execution outcome is invalid")
         if self.outcome == "unknown":
             if self.execution != "unknown" or self.result is not None:
                 raise ValueError("unknown cleanup cannot claim an adopted result")
-        elif not isinstance(self.result, CleanupProgress):
-            raise ValueError("cleanup progress requires exact per-item results")
+        elif self.outcome == "cleanup_progress":
+            if not isinstance(self.result, CleanupProgress):
+                raise ValueError("cleanup progress requires exact per-item results")
+        elif not isinstance(self.result, CleanupInventoryProgress):
+            raise ValueError("cleanup inventory requires an exact bounded observation")
 
 
 def _cleanup_control_reservation(invocation: CleanupInvocation) -> int:
     # Reserve the longest item status, request-count decimal and continuation,
     # even when they would not occur together in an accepted result.
     request = invocation.request
+    if isinstance(request, CleanupInventoryStepRequest):
+        upper = {
+            "call": invocation.call.model_dump(mode="json"),
+            "execution": "unknown",
+            "outcome": "cleanup_inventory",
+            "result": {
+                "inventory": None,
+                "provider_requests": format_scalar(
+                    "nonnegative", request.maximum_provider_requests
+                ),
+            },
+        }
+        return (
+            len(invocation.model_dump_json(exclude_none=True).encode())
+            + len(canonical_json_bytes(upper))
+            - len(b"null")
+            + request.inventory.maximum_response_bytes
+        )
     upper = {
         "call": invocation.call.model_dump(mode="json"),
         "execution": "unknown",
@@ -1239,6 +1297,9 @@ def cleanup_execution_result(
     provider_requests: int,
     execution: Literal["closed", "unknown"],
 ) -> CleanupExecutionResult:
+    request = invocation.request
+    if not isinstance(request, CleanupStepRequest):
+        raise ValueError("cleanup disposal result requires its exact selected page")
     complete = all(item.outcome == "disposed" for item in items)
     response = CleanupExecutionResult(
         call=invocation.call,
@@ -1248,9 +1309,26 @@ def cleanup_execution_result(
             items=items,
             provider_requests=provider_requests,
             selection_complete=complete,
-            continuation=invocation.request.inventory.continuation if complete else None,
-            exhausted=complete and invocation.request.inventory.exhausted,
+            continuation=request.inventory.continuation if complete else None,
+            exhausted=complete and request.inventory.exhausted,
         ),
+    )
+    validate_cleanup_execution(invocation, response)
+    return response
+
+
+def cleanup_inventory_execution_result(
+    invocation: CleanupInvocation,
+    page: CleanupInventoryPage,
+    *,
+    provider_requests: int,
+    execution: Literal["closed", "unknown"],
+) -> CleanupExecutionResult:
+    response = CleanupExecutionResult(
+        call=invocation.call,
+        execution=execution,
+        outcome="cleanup_inventory",
+        result=CleanupInventoryProgress(inventory=page, provider_requests=provider_requests),
     )
     validate_cleanup_execution(invocation, response)
     return response
@@ -1266,7 +1344,16 @@ def validate_cleanup_execution(
     if response.outcome == "unknown":
         return
     result = response.result
-    assert result is not None
+    if isinstance(invocation.request, CleanupInventoryStepRequest):
+        if response.outcome != "cleanup_inventory" or not isinstance(
+            result, CleanupInventoryProgress
+        ):
+            raise ValueError("cleanup inventory response differs from its operation")
+        validate_cleanup_inventory_response(invocation.request.inventory, result.inventory)
+        _validate_cleanup_resources(invocation, response, result.provider_requests)
+        return
+    if response.outcome != "cleanup_progress" or not isinstance(result, CleanupProgress):
+        raise ValueError("cleanup disposal response differs from its operation")
     selected = invocation.request.inventory
     if type(result.selection_complete) is not bool or type(result.exhausted) is not bool:
         raise ValueError("cleanup progression flags must be booleans")
@@ -1286,9 +1373,15 @@ def validate_cleanup_execution(
         or result.exhausted != (complete and selected.exhausted)
     ):
         raise ValueError("cleanup continuation cannot advance an incomplete selection")
+    _validate_cleanup_resources(invocation, response, result.provider_requests)
+
+
+def _validate_cleanup_resources(
+    invocation: CleanupInvocation, response: CleanupExecutionResult, provider_requests: int
+) -> None:
     if (
-        type(result.provider_requests) is not int
-        or not 1 <= result.provider_requests <= invocation.request.maximum_provider_requests
+        type(provider_requests) is not int
+        or not 1 <= provider_requests <= invocation.request.maximum_provider_requests
     ):
         raise ValueError("cleanup exceeded its complete transport request grant")
     if (

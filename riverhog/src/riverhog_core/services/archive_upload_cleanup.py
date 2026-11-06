@@ -22,6 +22,8 @@ from riverhog_storage_adapter_protocol import (
     CleanupExecutionResult,
     CleanupInventoryRequest,
     CleanupInvocation,
+    CleanupProgress,
+    CleanupRequest,
     CleanupStepRequest,
     WriteCallIdentity,
     cleanup_step_sha256,
@@ -169,7 +171,7 @@ class ArchiveUploadCleanup:
 
     @staticmethod
     def _require_scope(
-        request: CleanupStepRequest, control: ArchiveWriteControlRecord, operation_id: str
+        request: CleanupRequest, control: ArchiveWriteControlRecord, operation_id: str
     ) -> None:
         construction = json.loads(control.construction_json)
         if (
@@ -450,6 +452,8 @@ class ArchiveUploadCleanup:
         if record is None or record.terminal_id != operation_id:
             raise NotFound("original cleanup attempt is unavailable")
         invocation = CleanupInvocation.model_validate_json(record.invocation_json)
+        if not isinstance(invocation.request, CleanupStepRequest):
+            raise Conflict("retained disposal attempt has another operation kind")
         if invocation.call.call_id != record.id:
             raise Conflict("retained cleanup attempt identity changed")
         validate_cleanup_execution(invocation, response)
@@ -477,7 +481,7 @@ class ArchiveUploadCleanup:
             if page_record is not None and page_record.request_sha256 == record.page_sha256:
                 page = self._page(page_record, operation_id, control)
                 disposed = set(page.disposed)
-                if response.result is not None:
+                if isinstance(response.result, CleanupProgress):
                     positions = {
                         (item.object_path, item.kind, item.token): index
                         for index, item in enumerate(page.request.inventory.candidates)

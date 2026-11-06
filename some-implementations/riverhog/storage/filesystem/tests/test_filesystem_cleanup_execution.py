@@ -203,3 +203,57 @@ def test_filesystem_exact_cleanup_does_not_enumerate_revision_history(
         with os.scandir(revisions) as entries:
             assert sum(1 for _ in entries) == history
         record_property("retained_revision_directories", history)
+
+
+def test_filesystem_budgeted_inventory_observes_without_disposal(tmp_path):
+    from riverhog_storage_adapter_protocol import (
+        CleanupInventoryProgress,
+        CleanupInventoryStepRequest,
+    )
+
+    root = tmp_path / "inventory-store"
+    root.mkdir()
+    provision_storage_root(root)
+    with FilesystemStorageAdapter(
+        FilesystemStorageAdapterConfig(
+            root=root,
+            segment_bytes=65536,
+            read_chunk_bytes=65536,
+            minimum_free_bytes=0,
+        )
+    ) as adapter:
+        session = adapter.begin_write(
+            WriteStartRequest(
+                object_path="archive/a",
+                expected_bytes=1,
+                content_type="application/octet-stream",
+                required_identity_assertions={},
+                placement_policy="archive_default",
+            )
+        )
+        request = CleanupInventoryStepRequest(
+            selected_terminal_sha256="1" * 64,
+            inventory=CleanupInventoryRequest(
+                object_prefix="archive/",
+                target_incarnation=adapter.descriptor().storage_incarnation_id,
+                maximum_response_bytes=32768,
+            ),
+            maximum_provider_requests=1,
+            maximum_control_bytes=65536,
+            maximum_in_flight=1,
+        )
+        invocation = CleanupInvocation(
+            call=WriteCallIdentity(
+                call_id="6" * 64,
+                exact_request_sha256=cleanup_step_sha256(request),
+                target_incarnation=request.inventory.target_incarnation,
+                dispatch_owner="3" * 64,
+            ),
+            request=request,
+        )
+        response = adapter.execute_cleanup(invocation)
+        assert response.execution == "closed" and response.outcome == "cleanup_inventory"
+        assert isinstance(response.result, CleanupInventoryProgress)
+        assert response.result.provider_requests == 1
+        assert response.result.inventory.candidates[0].token == session.write_token
+        assert adapter._write_dir_by_key(adapter._object_key(session.object_path)).exists()

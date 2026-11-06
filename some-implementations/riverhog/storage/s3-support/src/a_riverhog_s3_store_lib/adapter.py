@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Literal, Protocol, cast
@@ -20,6 +20,7 @@ from riverhog_storage_adapter_protocol import (
     CleanupExecutionResult,
     CleanupInventoryPage,
     CleanupInventoryRequest,
+    CleanupInventoryStepRequest,
     CleanupInvocation,
     CleanupItemOutcome,
     CompletedObjectReceipt,
@@ -54,6 +55,7 @@ from riverhog_storage_adapter_protocol import (
     WriteSession,
     WriteStartRequest,
     cleanup_execution_result,
+    cleanup_inventory_execution_result,
     execute_write_invocation,
     unknown_cleanup_execution,
     validate_cleanup_inventory_response,
@@ -300,7 +302,8 @@ class S3StorageAdapter:
         if (
             not uses_single_attempt_dispatch(self._client)
             or grant.maximum_in_flight < 2
-            or grant.maximum_provider_requests < 2
+            or grant.maximum_provider_requests
+            < (3 if isinstance(grant, CleanupInventoryStepRequest) else 2)
             or invocation.call.target_incarnation != self._incarnation_id
         ):
             return unknown_cleanup_execution(invocation)
@@ -317,10 +320,19 @@ class S3StorageAdapter:
                 raise RuntimeError("cleanup request grant is exhausted")
             charged += 1
             response = getattr(self._client, method)(**kwargs)
-            expected_status = 200 if method == "list_parts" else 204
+            expected_status = 200 if method.startswith("list_") else 204
             if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != expected_status:
                 raise RuntimeError("cleanup provider response has no exact success status")
             return response
+
+        if isinstance(grant, CleanupInventoryStepRequest):
+            try:
+                page = self._cleanup_inventory_page(grant.inventory, invoke=invoke)
+                return cleanup_inventory_execution_result(
+                    invocation, page, provider_requests=charged, execution="closed"
+                )
+            except Exception:
+                return unknown_cleanup_execution(invocation)
 
         items: list[CleanupItemOutcome] = []
         execution: Literal["closed", "unknown"] = "closed"
@@ -622,6 +634,11 @@ class S3StorageAdapter:
 
     def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
         """Observe versions/markers and multipart sessions in separate bounded SDK pages."""
+        return self._cleanup_inventory_page(request)
+
+    def _cleanup_inventory_page(
+        self, request: CleanupInventoryRequest, *, invoke: Callable[..., Any] | None = None
+    ) -> CleanupInventoryPage:
         if request.target_incarnation != self._incarnation_id:
             raise StorageIncarnationError("S3 cleanup inventory incarnation changed")
         prefix = self._key(request.object_prefix)
@@ -677,10 +694,15 @@ class S3StorageAdapter:
             provider_request["VersionIdMarker" if stage == "versions" else "UploadIdMarker"] = (
                 previous[1]
             )
-        self._require_incarnation()
+        if invoke is None:
+            self._require_incarnation()
+
+            def invoke(method: str, **kwargs: Any) -> Any:
+                return getattr(self._client, method)(**kwargs)
+
         fields: tuple[tuple[str, CleanupCandidateKind, str], ...]
         if stage == "versions":
-            response = cast(dict[str, Any], self._client.list_object_versions(**provider_request))
+            response = cast(dict[str, Any], invoke("list_object_versions", **provider_request))
             fields = (
                 ("Versions", "object_revision", "VersionId"),
                 ("DeleteMarkers", "deletion_marker", "VersionId"),
@@ -688,7 +710,7 @@ class S3StorageAdapter:
         else:
             provider_request["EncodingType"] = "url"
             response = _decoded_multipart_upload_page(
-                cast(dict[str, Any], self._client.list_multipart_uploads(**provider_request))
+                cast(dict[str, Any], invoke("list_multipart_uploads", **provider_request))
             )
             fields = (("Uploads", "open_write", "UploadId"),)
         if response.get("CommonPrefixes"):

@@ -33,6 +33,7 @@ from riverhog_storage_adapter_protocol import (
     CleanupExecutionResult,
     CleanupInventoryPage,
     CleanupInventoryRequest,
+    CleanupInventoryStepRequest,
     CleanupInvocation,
     CleanupItemOutcome,
     CompletedObjectReceipt,
@@ -65,6 +66,7 @@ from riverhog_storage_adapter_protocol import (
     WriteSession,
     WriteStartRequest,
     cleanup_execution_result,
+    cleanup_inventory_execution_result,
     execute_write_invocation,
     unknown_cleanup_execution,
     validate_cleanup_inventory_response,
@@ -592,6 +594,14 @@ class FilesystemStorageAdapter:
                 return unknown_cleanup_execution(invocation)
         except Exception:
             return unknown_cleanup_execution(invocation)
+        if isinstance(invocation.request, CleanupInventoryStepRequest):
+            try:
+                page = self.list_cleanup_candidates(invocation.request.inventory)
+                return cleanup_inventory_execution_result(
+                    invocation, page, provider_requests=1, execution="closed"
+                )
+            except Exception:
+                return unknown_cleanup_execution(invocation)
         items: list[CleanupItemOutcome] = []
         execution: Literal["closed", "unknown"] = "closed"
         stopped = False

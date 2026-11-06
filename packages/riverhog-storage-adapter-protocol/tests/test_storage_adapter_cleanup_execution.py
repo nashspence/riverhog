@@ -6,11 +6,15 @@ from riverhog_storage_adapter_protocol import (
     CleanupCandidate,
     CleanupExecutionResult,
     CleanupInventoryPage,
+    CleanupInventoryProgress,
+    CleanupInventoryRequest,
+    CleanupInventoryStepRequest,
     CleanupInvocation,
     CleanupItemOutcome,
     CleanupStepRequest,
     WriteCallIdentity,
     cleanup_execution_result,
+    cleanup_inventory_execution_result,
     cleanup_step_sha256,
     unknown_cleanup_execution,
     validate_cleanup_execution,
@@ -159,3 +163,84 @@ def test_validated_cleanup_has_no_implicit_descriptor_provider_call() -> None:
 
     port = validated_storage_adapter(Owner())  # type: ignore[arg-type]
     assert port.execute_cleanup(invocation) == unknown_cleanup_execution(invocation)
+
+
+def _inventory_invocation(*, control_bytes=1024 * 1024, response_bytes=65536):
+    request = CleanupInventoryStepRequest(
+        selected_terminal_sha256="1" * 64,
+        inventory=CleanupInventoryRequest(
+            object_prefix="archive/",
+            target_incarnation=_INCARNATION,
+            maximum_items=2,
+            maximum_response_bytes=response_bytes,
+        ),
+        maximum_provider_requests=3,
+        maximum_control_bytes=control_bytes,
+        maximum_in_flight=2,
+    )
+    return CleanupInvocation(
+        call=WriteCallIdentity(
+            call_id="5" * 64,
+            exact_request_sha256=cleanup_step_sha256(request),
+            target_incarnation=_INCARNATION,
+            dispatch_owner="3" * 64,
+        ),
+        request=request,
+    )
+
+
+def test_budgeted_inventory_correlates_only_its_own_read_and_preserves_unknown_execution():
+    invocation = _inventory_invocation()
+    page = _invocation().request.inventory
+    response = cleanup_inventory_execution_result(
+        invocation, page, provider_requests=3, execution="closed"
+    )
+    assert response.outcome == "cleanup_inventory"
+    assert isinstance(response.result, CleanupInventoryProgress)
+    assert response.result.inventory == page
+    assert response.result.provider_requests == 3
+    assert CleanupInvocation.model_validate_json(invocation.model_dump_json()) == invocation
+    assert CleanupExecutionResult.model_validate_json(response.model_dump_json()) == response
+    validate_cleanup_execution(invocation, response.model_copy(update={"execution": "unknown"}))
+    with pytest.raises(ValueError, match="differs from its operation"):
+        validate_cleanup_execution(
+            _invocation(), response.model_copy(update={"call": _invocation().call})
+        )
+
+
+@pytest.mark.parametrize("change", ("call", "prefix", "incarnation", "requests", "count", "bytes"))
+def test_budgeted_inventory_rejects_changed_observations_and_resource_overruns(change):
+    invocation = _inventory_invocation(response_bytes=2048)
+    response = cleanup_inventory_execution_result(
+        invocation, _invocation().request.inventory, provider_requests=3, execution="closed"
+    )
+    if change == "call":
+        response = response.model_copy(
+            update={"call": response.call.model_copy(update={"call_id": "f" * 64})}
+        )
+    elif change == "requests":
+        response = response.model_copy(
+            update={"result": response.result.model_copy(update={"provider_requests": 4})}
+        )
+    else:
+        updates = {
+            "prefix": {"object_prefix": "elsewhere/"},
+            "incarnation": {"target_incarnation": "00000000-0000-4000-8000-000000000099"},
+            "count": {"scanned_items": 3},
+            "bytes": {"continuation": "x" * 3000},
+        }[change]
+        page = response.result.inventory.model_copy(update=updates)
+        response = response.model_copy(
+            update={"result": response.result.model_copy(update={"inventory": page})}
+        )
+    with pytest.raises(ValueError):
+        validate_cleanup_execution(invocation, response)
+
+
+def test_budgeted_inventory_reserves_complete_response_capacity_before_dispatch():
+    with pytest.raises(ValidationError, match="control grant"):
+        _inventory_invocation(control_bytes=65536, response_bytes=65536)
+    invocation = _inventory_invocation()
+    changed = invocation.request.model_copy(update={"selected_terminal_sha256": "f" * 64})
+    with pytest.raises(ValidationError, match="exact selection"):
+        CleanupInvocation(call=invocation.call, request=changed)

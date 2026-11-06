@@ -151,7 +151,7 @@ WITNESSES = (
             ),
             _protocol_subject(
                 "generated:riverhog-storage-adapter",
-                "schemas/CleanupInvocation/$defs/CleanupInventoryPage/properties/candidates",
+                "schemas/CleanupExecutionResult/$defs/CleanupInventoryPage/properties/candidates",
             ),
         ),
         test_node_ids=(
@@ -167,6 +167,8 @@ WITNESSES = (
             "some-implementations/riverhog/storage/s3-support/tests/"
             "test_s3_dispatch_attempts.py::"
             "test_cleanup_inventory_and_open_writes_preserve_encoded_keys_through_owned_sdk",
+            "tests/unit/test_archive_write_execution.py::"
+            "test_owned_inventory_cleanup_counts_every_hop_without_hidden_discovery",
         ),
         gates=("make unit",),
         test_scopes=(
@@ -181,6 +183,9 @@ WITNESSES = (
             "Locked owned SDK over a local HTTP server parses complete version/marker "
             "and multipart pages, preserves encoded keys and opaque IDs, and performs "
             "only the counted GET requests; not an external provider or closure proof.",
+            "Owned local HTTP/ASGI/SDK inventory execution reserves and counts every "
+            "transport request across version and multipart stages, preserves encoded "
+            "keys and tokens, and never treats observation as forward-call closure.",
         ),
     ),
     SegmentedExtentWitness(

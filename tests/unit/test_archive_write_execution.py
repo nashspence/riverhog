@@ -792,8 +792,45 @@ def _cleanup_provider_wire(fault: str | None) -> Iterator[tuple[str, list[tuple[
             if url.path == "/fixture-bucket/" + marker_key("owned"):
                 self.respond(200, marker_document(_INCARNATION))
                 return
+            query = parse_qs(url.query, keep_blank_values=True)
+            if url.path in {"/fixture-bucket", "/fixture-bucket/"} and (
+                "versions" in query or "uploads" in query
+            ):
+                from urllib.parse import quote
+
+                if fault == "inventory-lost":
+                    self.connection.shutdown(socket.SHUT_RDWR)
+                    self.connection.close()
+                    self.close_connection = True
+                    return
+                if fault == "inventory-denied":
+                    self.respond(403, b"<Error><Code>AccessDenied</Code></Error>")
+                    return
+                assert query["prefix"] == ["owned/archive/"]
+                encoded = quote(key, safe="/")
+                if "versions" in query:
+                    assert query["max-keys"] == ["1"]
+                    body = (
+                        "<ListVersionsResult><EncodingType>url</EncodingType>"
+                        "<IsTruncated>false</IsTruncated><Version><Key>"
+                        + encoded
+                        + "</Key><VersionId>revision-%2B+%-1</VersionId>"
+                        "</Version></ListVersionsResult>"
+                    ).encode()
+                else:
+                    assert query["max-uploads"] == ["1"]
+                    body = (
+                        "<ListMultipartUploadsResult><EncodingType>url</EncodingType>"
+                        "<IsTruncated>false</IsTruncated><Upload><Key>"
+                        + encoded
+                        + "</Key><UploadId>upload-%2B+%-1</UploadId>"
+                        "</Upload></ListMultipartUploadsResult>"
+                    ).encode()
+                if fault == "inventory-malformed":
+                    body = body.replace(b"<IsTruncated>false</IsTruncated>", b"")
+                self.respond(206 if fault == "inventory-wrong-status" else 200, body)
+                return
             assert unquote(url.path) == "/fixture-bucket/" + key
-            query = parse_qs(url.query)
             assert query["uploadId"] == ["upload-%2B+%-1"]
             assert query["max-parts"] == ["1"]
             if fault == "remaining-parts":
@@ -1081,3 +1118,83 @@ def test_cleanup_cannot_hide_an_additional_http_adapter_hop() -> None:
                 result = client.execute_cleanup(_cleanup_invocation(grant=6))
                 assert result.outcome == "unknown"
                 assert not backend_paths and not requests
+
+
+def _inventory_cleanup_invocation(*, grant=3, continuation=None, call_id="6" * 64):
+    from riverhog_storage_adapter_protocol import (
+        CleanupInventoryStepRequest,
+        CleanupInvocation,
+        cleanup_step_sha256,
+    )
+
+    request = CleanupInventoryStepRequest(
+        selected_terminal_sha256="1" * 64,
+        inventory=CleanupInventoryRequest(
+            object_prefix="archive/",
+            target_incarnation=_INCARNATION,
+            maximum_items=1,
+            maximum_response_bytes=32768,
+            continuation=continuation,
+        ),
+        maximum_provider_requests=grant,
+        maximum_control_bytes=1024 * 1024,
+        maximum_in_flight=2,
+    )
+    return CleanupInvocation(
+        call=WriteCallIdentity(
+            call_id=call_id,
+            exact_request_sha256=cleanup_step_sha256(request),
+            target_incarnation=_INCARNATION,
+            dispatch_owner="3" * 64,
+        ),
+        request=request,
+    )
+
+
+@pytest.mark.parametrize("grant", (1, 2, 3, 4))
+def test_owned_inventory_cleanup_counts_every_hop_without_hidden_discovery(grant, record_property):
+    from riverhog_storage_adapter_protocol import CleanupInventoryProgress
+
+    with _cleanup_executor(None) as (client, requests, paths):
+        response = client.execute_cleanup(_inventory_cleanup_invocation(grant=grant))
+        assert paths == ["/v1/cleanup/execute"]
+        if grant < 3:
+            assert response.outcome == "unknown" and response.execution == "unknown"
+            assert requests == []
+            return
+        assert response.execution == "closed" and response.outcome == "cleanup_inventory"
+        assert isinstance(response.result, CleanupInventoryProgress)
+        page = response.result.inventory
+        assert (
+            len(requests) == 2
+            and response.result.provider_requests == len(requests) + len(paths) == 3
+        )
+        assert [item.token for item in page.candidates] == ["revision-%2B+%-1"]
+        assert page.candidates[0].object_path == "archive/α%20&/volume.age"
+        assert not page.exhausted and page.continuation is not None
+        second = client.execute_cleanup(
+            _inventory_cleanup_invocation(
+                grant=grant, continuation=page.continuation, call_id="7" * 64
+            )
+        )
+        assert second.execution == "closed" and second.outcome == "cleanup_inventory"
+        assert second.result.inventory.exhausted
+        assert second.result.inventory.candidates[0].token == "upload-%2B+%-1"
+        assert second.result.inventory.candidates[0].object_path == page.candidates[0].object_path
+        assert len(requests) == 4 and len(paths) == 2
+        assert {method for method, _ in requests} == {"GET"}
+        assert second.result.provider_requests == 3
+        record_property("inventory_lower_provider_requests", len(requests))
+        record_property("inventory_adapter_http_hops", len(paths))
+
+
+@pytest.mark.parametrize(
+    "fault", ("inventory-lost", "inventory-denied", "inventory-malformed", "inventory-wrong-status")
+)
+def test_owned_inventory_cleanup_keeps_failed_observation_unknown_without_retry(fault):
+    with _cleanup_executor(fault) as (client, requests, paths):
+        response = client.execute_cleanup(_inventory_cleanup_invocation())
+        assert response.execution == "unknown" and response.outcome == "unknown"
+        assert response.result is None
+        assert len(requests) == 2 and paths == ["/v1/cleanup/execute"]
+        assert {method for method, _ in requests} == {"GET"}

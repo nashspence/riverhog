@@ -22,6 +22,7 @@ from riverhog_storage_adapter_protocol import (
     CleanupExecutionResult,
     CleanupInventoryPage,
     CleanupInventoryRequest,
+    CleanupInventoryStepRequest,
     CleanupInvocation,
     CleanupItemOutcome,
     CompletedObjectReceipt,
@@ -52,6 +53,7 @@ from riverhog_storage_adapter_protocol import (
     WriteSession,
     WriteStartRequest,
     cleanup_execution_result,
+    cleanup_inventory_execution_result,
     unknown_cleanup_execution,
     write_operation_sha256,
 )
@@ -116,6 +118,13 @@ class MemoryAdapter:
         invocation._require_exact_request()
         if invocation.call.target_incarnation != self.descriptor().storage_incarnation_id:
             return unknown_cleanup_execution(invocation)
+        if isinstance(invocation.request, CleanupInventoryStepRequest):
+            return cleanup_inventory_execution_result(
+                invocation,
+                self.list_cleanup_candidates(invocation.request.inventory),
+                provider_requests=1,
+                execution="closed",
+            )
         for item in invocation.request.inventory.candidates:
             if item.kind == "open_write":
                 self.created.pop(item.token, None)
@@ -1183,6 +1192,7 @@ def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> N
             "write-stream",
             "read-preparation",
             "cleanup-inventory",
+            "bounded-cleanup-inventory",
             "bounded-selected-cleanup",
             "write-abort",
             "exact-deletion",
