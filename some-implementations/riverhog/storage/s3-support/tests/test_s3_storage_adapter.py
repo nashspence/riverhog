@@ -855,7 +855,7 @@ class _OpenWritePageClient(_FakeS3Client):
             {"Key": "owned/archive/volume", "UploadId": f"token-{index}"} for index in range(count)
         ] + [
             {"Key": "owned/archive/volume-extra", "UploadId": f"foreign-token-{index}"}
-            for index in range(3)
+            for index in range(7)
         ]
         self.positions = {
             (row["Key"], row["UploadId"]): index for index, row in enumerate(self.rows)
@@ -890,7 +890,7 @@ class _OpenWritePageClient(_FakeS3Client):
         raise AssertionError("observation must never abort a write")
 
 
-@pytest.mark.parametrize("count", [1, 5, 129])
+@pytest.mark.parametrize("count", [1, 16, 256, 4096])
 def test_open_write_observation_pages_every_exact_token_with_linear_provider_calls(
     count: int,
 ) -> None:
@@ -902,6 +902,7 @@ def test_open_write_observation_pages_every_exact_token_with_linear_provider_cal
     tokens: list[str] = []
     scanned = 0
     pages = 0
+    zero_match_continuations = 0
     while True:
         # A fresh adapter instance consumes only provider-owned continuation state.
         adapter = S3StorageAdapter(client, _config())
@@ -915,12 +916,14 @@ def test_open_write_observation_pages_every_exact_token_with_linear_provider_cal
         assert page.scanned_items <= 3 and len(page.observations) <= page.scanned_items
         scanned += page.scanned_items
         pages += 1
+        zero_match_continuations += int(not page.observations and not page.exhausted)
         if page.exhausted:
             break
         request = request.model_copy(update={"continuation": page.continuation})
     assert tokens == [f"token-{index}" for index in range(count)]
-    assert scanned == count + 3
-    assert pages == (count + 5) // 3
+    assert scanned == count + 7
+    assert pages == (count + 9) // 3
+    assert zero_match_continuations >= 1
     assert len(client.list_requests) == pages
     assert not client.uploads and not client.deleted
 

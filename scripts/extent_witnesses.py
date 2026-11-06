@@ -102,6 +102,40 @@ WITNESSES = (
         gates=("make unit", "make filesystem-recovery-qualification"),
     ),
     SegmentedExtentWitness(
+        id="riverhog-storage-open-write-progression/v1",
+        owner="riverhog-storage-adapter-protocol",
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _protocol_subject(
+                "generated:riverhog-storage-adapter",
+                "schemas/OpenWritePage/properties/observations",
+            ),
+        ),
+        test_node_ids=(
+            "some-implementations/riverhog/storage/s3-support/tests/"
+            "test_s3_storage_adapter.py::"
+            "test_open_write_observation_pages_every_exact_token_with_linear_provider_calls",
+            "some-implementations/riverhog/storage/filesystem/tests/"
+            "test_filesystem_storage_adapter.py::"
+            "test_open_write_observation_is_exact_pure_and_survives_restart",
+            "packages/riverhog-storage-adapter-support/tests/"
+            "test_storage_adapter_support.py::"
+            "test_client_observes_open_writes_without_begin_replay",
+        ),
+        gates=("make unit",),
+        test_scopes=(
+            "Maintained S3 adapter over a paginated SDK model observes every exact token "
+            "beyond the per-page bound, preserves zero-match continuations across adapter "
+            "recreation, and counts one list and incarnation read per page. Does not "
+            "qualify an external provider, an immutable view or execution closure.",
+            "Maintained filesystem owner observes exact durable begin identity through "
+            "cold reopen without beginning, writing or aborting; its layout permits "
+            "one active token per exact key.",
+            "Official HTTP client and binding preserve read-only exact-key observations "
+            "over a shared in-memory adapter fixture without calling begin again.",
+        ),
+    ),
+    SegmentedExtentWitness(
         id="riverhog-storage-write-segment-progression/v1",
         owner="riverhog-storage-adapter-protocol",
         rule_id="bounded-segment/v1",
