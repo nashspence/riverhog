@@ -32,10 +32,13 @@ from riverhog_storage_adapter_protocol import (
     CleanupCandidate,
     CleanupInventoryPage,
     CleanupInventoryRequest,
+    CleanupInventoryStepRequest,
     CleanupItemOutcome,
     CleanupStepRequest,
     SmallObjectWriteRequest,
     cleanup_execution_result,
+    cleanup_inventory_execution_result,
+    cleanup_step_sha256,
     unknown_cleanup_execution,
 )
 from sqlalchemy import event, func, insert, select
@@ -68,6 +71,7 @@ def _request(ready, *, count=2, continuation=None):
         object_prefix=ready.prefix,
         target_incarnation=ready.incarnation,
         maximum_items=2,
+        maximum_response_bytes=2048,
         continuation=continuation,
     )
     request = CleanupStepRequest(
@@ -93,17 +97,59 @@ def _request(ready, *, count=2, continuation=None):
     return inventory_request, request
 
 
+def _inventory_arm(ready, inventory_request=None, *, after=None, guard=_guard):
+    inventory_request = inventory_request or _request(ready)[0]
+    return ready.owner.arm_inventory(
+        ready.case.collection_id,
+        ready.operation,
+        request=CleanupInventoryStepRequest(
+            selected_terminal_sha256=ready.operation,
+            inventory=inventory_request,
+            maximum_provider_requests=1,
+            maximum_control_bytes=4096,
+            maximum_in_flight=1,
+        ),
+        after=after,
+        dispatch_owner="d" * 64,
+        guard=guard,
+    )
+
+
 def _select(ready, *, inventory_request=None, request=None, after=None, guard=_guard):
     if request is None:
         inventory_request, request = _request(ready)
-    return ready.owner.select_page(
+    with session_scope(ready.case.factory) as session:
+        current = session.get(Page, ready.operation)
+        retained = (
+            current.inventory_call_id
+            if current is not None and current.request_sha256 == cleanup_step_sha256(request)
+            else None
+        )
+    response = None
+    if retained is None:
+        ticket = _inventory_arm(ready, inventory_request, after=after, guard=guard)
+
+        class Inventory:
+            def execute_cleanup(self, invocation):
+                return cleanup_inventory_execution_result(
+                    invocation, request.inventory, provider_requests=1, execution="closed"
+                )
+
+        response = ready.owner.execute(ticket, Inventory())
+        ready.owner.record_response(ready.case.collection_id, ready.operation, response)
+        retained = ticket.invocation.call.call_id
+    page = ready.owner.select_page(
         ready.case.collection_id,
         ready.operation,
+        inventory_call_id=retained,
         inventory_request=inventory_request,
         request=request,
         after=after,
         guard=guard,
     )
+    if response is not None:
+        ready.owner.acknowledge_response(ready.case.collection_id, ready.operation, response)
+    return page
 
 
 def _cleanup_arm(ready, page=None, *, guard=_guard, **attempt_grants):
@@ -167,7 +213,9 @@ def _partial_retry(ready):
     with session_scope(ready.case.factory) as session:
         remaining = session.scalars(select(Attempt)).all()
         assert len(remaining) == 1 and remaining[0].id == first.invocation.call.call_id
-        assert remaining[0].unresolved and remaining[0].response_json == partial.model_dump_json()
+        assert remaining[0].unresolved and remaining[0].response_json == partial.model_dump_json(
+            exclude_none=True
+        )
         assert int(remaining[0].control_bytes) > 8192
         assert remaining[0].provider_requests == "2" and remaining[0].in_flight == "1"
         assert session.get(Terminal, ready.operation).phase == "cleaning"
@@ -313,10 +361,9 @@ def test_provider_execution_is_outside_writer_and_original_attempt_runs_only_onc
                 # the provider callback is running.
                 with session_scope(case.factory) as session:
                     _writer(session)
-                    assert (
-                        session.get(Attempt, invocation.call.call_id).invocation_json
-                        == invocation.model_dump_json()
-                    )
+                    assert session.get(
+                        Attempt, invocation.call.call_id
+                    ).invocation_json == invocation.model_dump_json(exclude_none=True)
                 calls.append(invocation)
                 return _response(ticket, ("disposed", "disposed"))
 
@@ -402,11 +449,25 @@ def test_filesystem_cleanup_reopens_from_retained_selection_after_lost_response(
                 )
             target = StorageAdapterArchiveObjectCleanup(adapter)
             inventory_request = CleanupInventoryRequest(
-                object_prefix=ready.prefix, target_incarnation=ready.incarnation
+                object_prefix=ready.prefix,
+                target_incarnation=ready.incarnation,
+                maximum_response_bytes=2048,
             )
-            inventory = target.list_cleanup_candidates(inventory_request)
+            read = _inventory_arm(ready, inventory_request)
+            observed = ready.owner.execute(read, target)
+            _receive(ready, observed)
+            inventory = observed.result.inventory
             request = _request(ready)[1].model_copy(update={"inventory": inventory})
-            _select(ready, inventory_request=inventory_request, request=request)
+            ready.owner.select_page(
+                ready.case.collection_id,
+                ready.operation,
+                inventory_call_id=read.invocation.call.call_id,
+                inventory_request=inventory_request,
+                request=request,
+                after=None,
+                guard=_guard,
+            )
+            _ack(ready, observed)
             first = _cleanup_arm(ready)
             lost = ready.owner.execute(first, target)
             assert lost.result.selection_complete

@@ -162,6 +162,7 @@ class ArchiveCleanupPageRecord(Base):
 
     terminal_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     request_sha256: Mapped[str] = mapped_column(String(64))
+    inventory_call_id: Mapped[str] = mapped_column(String(64))
     inventory_request_json: Mapped[str] = mapped_column(Text)
     request_json: Mapped[str] = mapped_column(Text)
     disposed_json: Mapped[str] = mapped_column(Text)
@@ -176,7 +177,7 @@ class ArchiveCleanupAttemptRecord(Base):
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     terminal_id: Mapped[str] = mapped_column(String(64))
-    page_sha256: Mapped[str] = mapped_column(String(64))
+    page_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     dispatch_sha256: Mapped[str] = mapped_column(String(64))
     invocation_json: Mapped[str] = mapped_column(Text)
     unresolved: Mapped[bool] = mapped_column(Boolean)

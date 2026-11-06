@@ -20,7 +20,9 @@ from riverhog_canonical_json import canonical_json_bytes, format_scalar, parse_s
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_storage_adapter_protocol import (
     CleanupExecutionResult,
+    CleanupInventoryProgress,
     CleanupInventoryRequest,
+    CleanupInventoryStepRequest,
     CleanupInvocation,
     CleanupProgress,
     CleanupRequest,
@@ -112,13 +114,17 @@ class RetainedCleanupAttempt:
     def _dispatch(self, target: ArchiveObjectCleanupPort) -> CleanupExecutionResult:
         with self._lock:
             if self._response is not None:
-                return CleanupExecutionResult.model_validate_json(self._response.model_dump_json())
+                return CleanupExecutionResult.model_validate_json(
+                    self._response.model_dump_json(exclude_none=True)
+                )
             if self._started:
                 raise Conflict("original cleanup attempt is still running or unaccounted")
             self._started = True
         try:
             response = target.execute_cleanup(self.invocation)
-            response = CleanupExecutionResult.model_validate_json(response.model_dump_json())
+            response = CleanupExecutionResult.model_validate_json(
+                response.model_dump_json(exclude_none=True)
+            )
             validate_cleanup_execution(self.invocation, response)
         except Exception:
             response = unknown_cleanup_execution(self.invocation)
@@ -191,6 +197,7 @@ class ArchiveUploadCleanup:
                 {
                     "terminal_id": operation_id,
                     "request_sha256": cleanup_step_sha256(request),
+                    "inventory_call_id": "0" * 64,
                     "inventory_request": json.loads(inventory_request_json),
                     "request": request.model_dump(mode="json"),
                     "disposed": list(range(len(request.inventory.candidates))),
@@ -201,6 +208,8 @@ class ArchiveUploadCleanup:
     @staticmethod
     def _attempt_bytes(invocation: CleanupInvocation, operation_id: str) -> int:
         request = invocation.request
+        # Persist invocation/response JSON with the same omission policy as
+        # their protocol grant; optional nulls must not escape byte accounting.
         reservation = request.maximum_control_bytes
         while True:
             header = {
@@ -276,17 +285,97 @@ class ArchiveUploadCleanup:
         ):
             raise Conflict("cleanup outstanding reservations exhaust the retention grant")
 
+    @staticmethod
+    def _predecessor(
+        record: ArchiveCleanupPageRecord | None,
+        inventory_request: CleanupInventoryRequest,
+        after: str | None,
+        operation_id: str,
+        control: ArchiveWriteControlRecord,
+    ) -> None:
+        if record is None:
+            if after is not None or inventory_request.continuation is not None:
+                raise Conflict("cleanup first selection has no retained predecessor")
+            return
+        prior = ArchiveUploadCleanup._page(record, operation_id, control)
+        if (
+            after != prior.request_sha256
+            or not prior.complete
+            or prior.request.inventory.exhausted
+            or inventory_request.continuation != prior.request.inventory.continuation
+        ):
+            raise Conflict("cleanup cannot advance an incomplete or different page")
+
+    def arm_inventory(
+        self,
+        collection_id: int,
+        operation_id: str,
+        *,
+        request: CleanupInventoryStepRequest,
+        after: str | None,
+        dispatch_owner: str,
+        guard: Callable[[Session], None],
+    ) -> RetainedCleanupAttempt:
+        """Retain the original read and all grants before any provider access."""
+        request = CleanupInventoryStepRequest.model_validate_json(request.model_dump_json())
+        invocation = CleanupInvocation(
+            call=WriteCallIdentity(
+                call_id=secrets.token_hex(32),
+                exact_request_sha256=cleanup_step_sha256(request),
+                target_incarnation=request.inventory.target_incarnation,
+                dispatch_owner=dispatch_owner,
+            ),
+            request=request,
+        )
+        nonce = secrets.token_hex(32)
+        with session_scope(self._factory) as session:
+            control, _ = self._context(
+                session, collection_id, operation_id, admit=True, guard=guard
+            )
+            self._require_scope(request, control, operation_id)
+            page_record = session.get(ArchiveCleanupPageRecord, operation_id)
+            self._predecessor(page_record, request.inventory, after, operation_id, control)
+            page_bytes = (
+                self._page_bytes(
+                    operation_id,
+                    self._page(page_record, operation_id, control).request,
+                    page_record.inventory_request_json,
+                )
+                if page_record is not None
+                else 0
+            )
+            self._reserve(session, operation_id, page_bytes=page_bytes, invocation=invocation)
+            session.add(
+                ArchiveCleanupAttemptRecord(
+                    id=invocation.call.call_id,
+                    terminal_id=operation_id,
+                    page_sha256=after,
+                    dispatch_sha256=_sha(nonce),
+                    invocation_json=invocation.model_dump_json(exclude_none=True),
+                    unresolved=True,
+                    control_bytes=format_scalar(
+                        "nonnegative", self._attempt_bytes(invocation, operation_id)
+                    ),
+                    provider_requests=format_scalar(
+                        "nonnegative", request.maximum_provider_requests
+                    ),
+                    in_flight=format_scalar("nonnegative", request.maximum_in_flight),
+                )
+            )
+        return RetainedCleanupAttempt(collection_id, operation_id, invocation, nonce)
+
     def select_page(
         self,
         collection_id: int,
         operation_id: str,
         *,
+        inventory_call_id: str,
         inventory_request: CleanupInventoryRequest,
         request: CleanupStepRequest,
         after: str | None,
         guard: Callable[[Session], None],
     ) -> RetainedCleanupPage:
-        """Retain the complete original selection before any destructive attempt."""
+        """Select only a retained original read, before any destructive attempt."""
         inventory_request = CleanupInventoryRequest.model_validate_json(
             inventory_request.model_dump_json()
         )
@@ -314,22 +403,31 @@ class ArchiveUploadCleanup:
             record = session.get(ArchiveCleanupPageRecord, operation_id)
             if record is not None:
                 prior = self._page(record, operation_id, control)
-                if prior.request_sha256 == request_sha256:
+                if record.inventory_call_id == inventory_call_id:
                     if (
-                        record.request_json != encoded
+                        prior.request_sha256 != request_sha256
+                        or record.request_json != encoded
                         or record.inventory_request_json != inventory_encoded
                     ):
                         raise Conflict("cleanup selection preimage changed")
                     return prior
-                if (
-                    after != prior.request_sha256
-                    or not prior.complete
-                    or prior.request.inventory.exhausted
-                    or inventory_request.continuation != prior.request.inventory.continuation
-                ):
-                    raise Conflict("cleanup cannot advance an incomplete or different page")
-            elif after is not None or inventory_request.continuation is not None:
-                raise Conflict("cleanup first selection has no retained predecessor")
+            self._predecessor(record, inventory_request, after, operation_id, control)
+            observed = session.get(ArchiveCleanupAttemptRecord, inventory_call_id)
+            if observed is None or observed.terminal_id != operation_id:
+                raise NotFound("original cleanup inventory attempt is unavailable")
+            if observed.response_json is None:
+                raise Conflict("cleanup inventory has no retained original observation")
+            response = CleanupExecutionResult.model_validate_json(observed.response_json)
+            original, invocation = self._attempt(session, operation_id, response)
+            if (
+                original.id != inventory_call_id
+                or not isinstance(invocation.request, CleanupInventoryStepRequest)
+                or not isinstance(response.result, CleanupInventoryProgress)
+                or observed.page_sha256 != after
+                or invocation.request.inventory != inventory_request
+                or response.result.inventory != request.inventory
+            ):
+                raise Conflict("cleanup selection differs from its original inventory read")
             # Reserve the largest disposed-index encoding before any effect.
             page_bytes = self._page_bytes(operation_id, request, inventory_encoded)
             self._reserve(session, operation_id, page_bytes=page_bytes)
@@ -337,6 +435,7 @@ class ArchiveUploadCleanup:
                 record = ArchiveCleanupPageRecord(terminal_id=operation_id)
                 session.add(record)
             record.request_sha256 = request_sha256
+            record.inventory_call_id = inventory_call_id
             record.inventory_request_json = inventory_encoded
             record.request_json = encoded
             record.disposed_json = "[]"
@@ -411,7 +510,7 @@ class ArchiveUploadCleanup:
                     terminal_id=operation_id,
                     page_sha256=page.request_sha256,
                     dispatch_sha256=_sha(nonce),
-                    invocation_json=invocation.model_dump_json(),
+                    invocation_json=invocation.model_dump_json(exclude_none=True),
                     unresolved=True,
                     control_bytes=format_scalar(
                         "nonnegative", self._attempt_bytes(invocation, operation_id)
@@ -437,7 +536,7 @@ class ArchiveUploadCleanup:
                 record is None
                 or record.terminal_id != ticket.operation_id
                 or record.dispatch_sha256 != _sha(ticket._nonce)
-                or record.invocation_json != ticket.invocation.model_dump_json()
+                or record.invocation_json != ticket.invocation.model_dump_json(exclude_none=True)
             ):
                 raise Conflict("original live cleanup dispatch capability changed")
         return ticket._dispatch(target)
@@ -452,8 +551,8 @@ class ArchiveUploadCleanup:
         if record is None or record.terminal_id != operation_id:
             raise NotFound("original cleanup attempt is unavailable")
         invocation = CleanupInvocation.model_validate_json(record.invocation_json)
-        if not isinstance(invocation.request, CleanupStepRequest):
-            raise Conflict("retained disposal attempt has another operation kind")
+        if isinstance(invocation.request, CleanupStepRequest) and record.page_sha256 is None:
+            raise Conflict("retained disposal attempt has no original selection")
         if invocation.call.call_id != record.id:
             raise Conflict("retained cleanup attempt identity changed")
         validate_cleanup_execution(invocation, response)
@@ -463,8 +562,10 @@ class ArchiveUploadCleanup:
         self, collection_id: int, operation_id: str, response: CleanupExecutionResult
     ) -> None:
         """Receive the trusted original response after fencing, without redispatch."""
-        response = CleanupExecutionResult.model_validate_json(response.model_dump_json())
-        encoded = response.model_dump_json()
+        response = CleanupExecutionResult.model_validate_json(
+            response.model_dump_json(exclude_none=True)
+        )
+        encoded = response.model_dump_json(exclude_none=True)
         with session_scope(self._factory) as session:
             control, _ = self._context(session, collection_id, operation_id)
             record, invocation = self._attempt(session, operation_id, response)
@@ -474,11 +575,15 @@ class ArchiveUploadCleanup:
                 if (
                     (prior.execution == "closed" and prior != response)
                     or (prior.result is not None and prior.result != response.result)
-                    or (prior.result is not None and response.outcome != "cleanup_progress")
+                    or (prior.result is not None and response.outcome != prior.outcome)
                 ):
                     raise Conflict("cleanup response conflicts with its retained original")
             page_record = session.get(ArchiveCleanupPageRecord, operation_id)
-            if page_record is not None and page_record.request_sha256 == record.page_sha256:
+            if (
+                isinstance(invocation.request, CleanupStepRequest)
+                and page_record is not None
+                and page_record.request_sha256 == record.page_sha256
+            ):
                 page = self._page(page_record, operation_id, control)
                 disposed = set(page.disposed)
                 if isinstance(response.result, CleanupProgress):
@@ -505,11 +610,15 @@ class ArchiveUploadCleanup:
         self, collection_id: int, operation_id: str, response: CleanupExecutionResult
     ) -> None:
         """Retire only the exact closed response received by its independent owner."""
-        response = CleanupExecutionResult.model_validate_json(response.model_dump_json())
+        response = CleanupExecutionResult.model_validate_json(
+            response.model_dump_json(exclude_none=True)
+        )
         with session_scope(self._factory) as session:
             control, _ = self._context(session, collection_id, operation_id)
             record, invocation = self._attempt(session, operation_id, response)
             self._require_scope(invocation.request, control, operation_id)
-            if record.unresolved or record.response_json != response.model_dump_json():
+            if record.unresolved or record.response_json != response.model_dump_json(
+                exclude_none=True
+            ):
                 raise Conflict("cleanup attempt has no acknowledged exact closed response")
             session.delete(record)
