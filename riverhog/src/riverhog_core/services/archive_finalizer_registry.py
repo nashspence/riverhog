@@ -12,9 +12,12 @@ from typing import Literal, Protocol
 from riverhog_protocol.errors import Conflict
 from sqlalchemy.exc import OperationalError
 
-from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
 from riverhog_core.catalog_db import SessionFactory, catalog_write_contention, session_scope
+from riverhog_core.services.archive_construction_retention import (
+    ArchiveConstructionReservation,
+    ArchiveConstructionRetention,
+)
 from riverhog_core.services.archive_finalizer_terminal import TerminalDrainStatus
 from riverhog_core.services.archive_upload_drain import inspect_terminal_write_records
 from riverhog_core.services.archive_upload_execution import (
@@ -46,6 +49,7 @@ class ArchiveFinalizerTurn:
 class _Context:
     key: ArchiveUploadExecutionKey
     target: str
+    reservation: ArchiveConstructionReservation
     lock: Lock = field(default_factory=Lock)
     owner: RetainedArchiveFinalizer | None = None
     selection: str | None = None
@@ -69,15 +73,14 @@ class ArchiveFinalizerRegistry:
         self,
         factory: SessionFactory,
         execution: ArchiveUploadExecutionOwner,
-        tuning: ArchiveExecutionTuning,
+        retention: ArchiveConstructionRetention,
     ) -> None:
         self._factory = factory
         self._execution = execution
-        self._tuning = tuning
+        self._retention = retention
         self._lock = Lock()
         self._closed = False
         self._contexts: dict[int, _Context] = {}
-        self._targets: dict[str, int] = {}
 
     def _existing(self, key: ArchiveUploadExecutionKey, target: str) -> _Context | None:
         value = self._contexts.get(key.collection_id)
@@ -107,15 +110,13 @@ class ArchiveFinalizerRegistry:
                 # Do not adopt an execution owned by another service work kind.
                 if self._execution.status(key) != "untracked":
                     return "busy"
-                if len(self._contexts) >= self._tuning.retained_finalizer_constructions:
-                    return "retention-capacity"
-                if self._targets.get(target_incarnation, 0) >= (
-                    self._tuning.retained_finalizer_constructions_per_target
-                ):
-                    return "target-retention-capacity"
-                context = _Context(key, target_incarnation)
+                reservation = self._retention.try_retain(
+                    key, target_incarnation=target_incarnation, owner=self
+                )
+                if isinstance(reservation, str):
+                    return reservation
+                context = _Context(key, target_incarnation, reservation)
                 self._contexts[key.collection_id] = context
-                self._targets[target_incarnation] = self._targets.get(target_incarnation, 0) + 1
             if context.terminal_id is not None:
                 raise Conflict("retained finalizer is fenced for its terminal request")
             selected = context
@@ -159,7 +160,10 @@ class ArchiveFinalizerRegistry:
                 context.selection = selection
                 context.advance = None
                 try:
-                    context.owner = create()
+                    original_owner: RetainedArchiveFinalizer | None = create()
+                    if original_owner is None:
+                        raise ValueError("original finalizer constructor returned no receiver")
+                    context.owner = original_owner
                 except BaseException as error:
                     context.construction_failure = error
                     raise
@@ -299,24 +303,21 @@ class ArchiveFinalizerRegistry:
             try:
                 if (
                     context.construction_failure is not None
-                    or context.owner is None
-                    or context.owner.has_pending
+                    or (context.owner is None and context.selection is not None)
+                    or (context.owner is not None and context.owner.has_pending)
                 ):
                     return False
-                self._remove(context)
-                return True
+                return self._remove(context)
             finally:
                 context.lock.release()
         finally:
             self._lock.release()
 
-    def _remove(self, context: _Context) -> None:
+    def _remove(self, context: _Context) -> bool:
+        if not self._retention.retire(context.reservation, owner=self):
+            return False
         del self._contexts[context.key.collection_id]
-        count = self._targets[context.target] - 1
-        if count:
-            self._targets[context.target] = count
-        else:
-            del self._targets[context.target]
+        return True
 
     def close(self) -> None:
         with self._lock:

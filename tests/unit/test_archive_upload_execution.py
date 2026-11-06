@@ -11,6 +11,7 @@ from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services import archive_upload_execution as source
 from riverhog_core.services.archive_upload_execution import (
+    ArchiveExecutionOccupied,
     ArchiveUploadExecutionKey,
     ArchiveUploadExecutionOwner,
 )
@@ -334,8 +335,8 @@ def test_one_service_owns_configured_capacity_and_joins_before_dependency_shutdo
         "terminal_workers",
         "forward_workers_per_target",
         "terminal_workers_per_target",
-        "retained_finalizer_constructions",
-        "retained_finalizer_constructions_per_target",
+        "retained_constructions",
+        "retained_constructions_per_target",
     ],
 )
 @pytest.mark.parametrize("value", [0, -1, True, 1.5, "2"])
@@ -543,3 +544,57 @@ def test_each_receiving_quantum_is_bounded_across_foreign_and_stuck_work(owned):
     assert completion.key == _key(3) and completion.result() == "independent"
     assert pool.status(_key(1)) == "awaiting-join"
     assert pool.status(_key(2)) == "running"
+
+
+def test_same_receiver_cannot_adopt_another_original_invocation(owned):
+    pool = owned.make()
+    receiver, original, another = object(), object(), object()
+    calls = []
+    assert (
+        pool.try_submit(
+            _key(),
+            target_incarnation="target-a",
+            terminal=False,
+            owner=receiver,
+            identity=original,
+            work=lambda: calls.append("original"),
+        )
+        == "submitted"
+    )
+    with pytest.raises(ArchiveExecutionOccupied):
+        pool.try_submit(
+            _key(),
+            target_incarnation="target-a",
+            terminal=False,
+            owner=receiver,
+            identity=another,
+            work=lambda: pytest.fail("another invocation cannot adopt the original slot"),
+        )
+    assert (
+        pool.try_submit(
+            _key(),
+            target_incarnation="target-a",
+            terminal=False,
+            owner=receiver,
+            identity=original,
+            work=lambda: pytest.fail("a retained original cannot dispatch twice"),
+        )
+        == "retained"
+    )
+    _joined(pool)
+    (completion,) = pool.collect(limit=1, owner=receiver)
+    assert completion.identity is original and calls == ["original"]
+    assert (
+        pool.try_submit(
+            _key(),
+            target_incarnation="target-a",
+            terminal=False,
+            owner=receiver,
+            identity=another,
+            work=lambda: "another",
+        )
+        == "submitted"
+    )
+    _joined(pool)
+    (completion,) = pool.collect(limit=1, owner=receiver)
+    assert completion.identity is another and completion.result() == "another"

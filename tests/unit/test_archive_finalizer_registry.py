@@ -10,6 +10,7 @@ from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.services import archive_upload_execution as execution_module
+from riverhog_core.services.archive_construction_retention import ArchiveConstructionRetention
 from riverhog_core.services.archive_finalizer_registry import ArchiveFinalizerRegistry
 from riverhog_core.services.archive_upload_execution import (
     ArchiveExecutionOccupied,
@@ -67,10 +68,12 @@ def _scope(case):
 def owned():
     registries, releases = [], []
 
-    def make(factory=None, **values):
+    def make(factory=None, *, retention=None, execution=None, **values):
         tuning = ArchiveExecutionTuning(**values)
-        pool = ArchiveUploadExecutionOwner(tuning)
-        registry = ArchiveFinalizerRegistry(factory, pool, tuning)
+        pool = execution or ArchiveUploadExecutionOwner(tuning)
+        registry = ArchiveFinalizerRegistry(
+            factory, pool, retention or ArchiveConstructionRetention(tuning)
+        )
         registries.append(registry)
         return registry, pool
 
@@ -106,9 +109,7 @@ def _receive(registry, pool):
 
 
 def test_pending_original_retention_is_independent_of_received_physical_capacity(owned):
-    registry, pool = owned.make(
-        retained_finalizer_constructions=2, retained_finalizer_constructions_per_target=1
-    )
+    registry, pool = owned.make(retained_constructions=2, retained_constructions_per_target=1)
     owner = Finalizer()
 
     def fail(original):
@@ -173,7 +174,7 @@ def test_idle_owner_cannot_retire_between_future_publication_and_actual_join(own
             assert release.wait(10)
 
     monkeypatch.setattr(execution_module, "Thread", HeldExit)
-    registry, pool = owned.make(retained_finalizer_constructions=1)
+    registry, pool = owned.make(retained_constructions=1)
     assert _submit(registry) == "submitted"
     assert returned.wait(5)
     assert pool._slots[1].future.done()
@@ -234,7 +235,7 @@ def test_a_racing_foreign_execution_cannot_be_adopted_as_this_registry_work(owne
 
 
 def test_failed_constructor_retains_its_reserved_unknown_context(owned):
-    registry, pool = owned.make(retained_finalizer_constructions=1)
+    registry, pool = owned.make(retained_constructions=1)
 
     def construct():
         raise OSError("constructor acknowledgement")
@@ -463,3 +464,138 @@ def test_finalizer_receiving_cannot_retire_another_work_kinds_terminal_outcome(o
     (result,) = pool.collect(limit=2, owner=terminal_owner)
     assert result.owner is terminal_owner and result.terminal
     assert result.result() is terminal_result and pool._counts[True] == 0
+
+
+def test_independent_registries_share_global_and_target_retention_without_releasing_unknowns(owned):
+    tuning = ArchiveExecutionTuning(
+        retained_constructions=2,
+        retained_constructions_per_target=1,
+    )
+    retention = ArchiveConstructionRetention(tuning)
+    execution = ArchiveUploadExecutionOwner(tuning)
+    first, _ = owned.make(retention=retention, execution=execution)
+    second, _ = owned.make(retention=retention, execution=execution)
+    original = Finalizer()
+    original.pending = True
+    assert _submit(first, _key(), create=lambda: original) == "submitted"
+    _receive(first, execution)
+    assert (
+        _submit(
+            second, _key(2), create=lambda: pytest.fail("target grant must precede construction")
+        )
+        == "target-retention-capacity"
+    )
+    assert _submit(second, _key(2), target="target-b") == "submitted"
+    _receive(second, execution)
+    assert (
+        _submit(
+            first,
+            _key(3),
+            target="target-c",
+            create=lambda: pytest.fail("global grant must precede construction"),
+        )
+        == "retention-capacity"
+    )
+    assert not first.retire_idle(_key(), target_incarnation="target-a")
+    assert second.retire_idle(_key(2), target_incarnation="target-b")
+    assert _submit(second, _key(3), target="target-c") == "submitted"
+    _receive(second, execution)
+    assert first._contexts[1].owner is original and original.has_pending
+
+
+def test_same_construction_in_another_registry_does_not_retire_an_earlier_original(owned):
+    tuning = ArchiveExecutionTuning(retained_constructions=2)
+    retention = ArchiveConstructionRetention(tuning)
+    execution = ArchiveUploadExecutionOwner(tuning)
+    first, _ = owned.make(retention=retention, execution=execution)
+    second, _ = owned.make(retention=retention, execution=execution)
+    original = Finalizer()
+    original.pending = True
+    assert _submit(first, create=lambda: original) == "submitted"
+    _receive(first, execution)
+    assert _submit(second) == "submitted"
+    _receive(second, execution)
+    assert second.retire_idle(_key(), target_incarnation="target-a")
+    assert not first.retire_idle(_key(), target_incarnation="target-a")
+    assert first._contexts[1].owner is original
+    assert _submit(second, _key(2), target="target-b") == "submitted"
+    _receive(second, execution)
+    assert _submit(second, _key(3), target="target-c") == "retention-capacity"
+
+
+def test_busy_retention_owner_defers_idle_retirement_without_losing_its_context(owned):
+    tuning = ArchiveExecutionTuning(retained_constructions=1)
+    retention = ArchiveConstructionRetention(tuning)
+    registry, execution = owned.make(retention=retention)
+    assert _submit(registry) == "submitted"
+    _receive(registry, execution)
+    with retention._lock:
+        assert not registry.retire_idle(_key(), target_incarnation="target-a")
+        assert _submit(registry, _key(2)) == "busy"
+    assert _submit(registry, _key(2)) == "retention-capacity"
+    assert registry.retire_idle(_key(), target_incarnation="target-a")
+    assert _submit(registry, _key(2)) == "submitted"
+
+
+def test_unstarted_capacity_refusal_can_retire_after_shared_retention_contention(
+    owned, monkeypatch
+):
+    tuning = ArchiveExecutionTuning(forward_workers=1, retained_constructions=1)
+    retention = ArchiveConstructionRetention(tuning)
+    registry, execution = owned.make(retention=retention, forward_workers=1)
+    release = owned.event()
+    assert (
+        execution.try_submit(
+            _key(9), target_incarnation="target-a", terminal=False, work=lambda: release.wait(10)
+        )
+        == "submitted"
+    )
+    actual = execution.try_submit
+
+    def refuse(*args, **kwargs):
+        outcome = actual(*args, **kwargs)
+        assert outcome == "capacity"
+        retention._lock.acquire()
+        return outcome
+
+    monkeypatch.setattr(execution, "try_submit", refuse)
+    try:
+        assert (
+            _submit(registry, create=lambda: pytest.fail("refused constructor cannot start"))
+            == "capacity"
+        )
+        assert registry._contexts[1].owner is None and registry._contexts[1].selection is None
+        assert not registry.retire_idle(_key(), target_incarnation="target-a")
+    finally:
+        retention._lock.release()
+    assert registry.retire_idle(_key(), target_incarnation="target-a")
+    release.set()
+
+
+def test_missing_original_finalizer_receiver_cannot_become_terminal_drainage(tmp_path, owned):
+    with _case(tmp_path) as case:
+        operation = _operation(case)
+        key, target = _scope(case)
+        registry, pool = owned.make(case.factory)
+        assert _submit(registry, key, target=target, create=lambda: None) == "submitted"
+        (failed,) = _receive(registry, pool)
+        with pytest.raises(ValueError, match="no receiver"):
+            failed.result()
+        assert (
+            registry.submit_terminal(
+                key,
+                target_incarnation=target,
+                operation_id=operation,
+            )
+            == "submitted"
+        )
+        (pending,) = _receive(registry, pool)
+        assert pending.result() == "pending"
+        assert (
+            registry.fence_terminal(
+                key,
+                target_incarnation=target,
+                operation_id=operation,
+            )
+            == "fenced"
+        )

@@ -45,6 +45,7 @@ class ArchiveUploadExecutionCompletion:
     target_incarnation: str
     terminal: bool
     owner: object | None = field(repr=False, compare=False)
+    identity: object | None = field(repr=False, compare=False)
     _future: Future[object] = field(repr=False, compare=False)
 
     def result(self) -> object:
@@ -57,6 +58,7 @@ class _Slot:
     target_incarnation: str
     terminal: bool
     owner: object | None
+    identity: object | None
     future: Future[object]
     worker: Thread
 
@@ -96,6 +98,7 @@ class ArchiveUploadExecutionOwner:
         terminal: bool,
         work: Callable[[], object],
         owner: object | None = None,
+        identity: object | None = None,
     ) -> Submission:
         if type(terminal) is not bool or not target_incarnation:
             raise ValueError("upload execution requires an exact target and work lane")
@@ -111,6 +114,7 @@ class ArchiveUploadExecutionOwner:
                     or prior.target_incarnation != target_incarnation
                     or prior.terminal != terminal
                     or prior.owner is not owner
+                    or prior.identity is not identity
                 ):
                     raise ArchiveExecutionOccupied(
                         "upload execution already retains another original turn"
@@ -131,7 +135,7 @@ class ArchiveUploadExecutionOwner:
             worker = Thread(
                 target=_run, args=(work, future), name="archive-upload-execution", daemon=False
             )
-            slot = _Slot(key, target_incarnation, terminal, owner, future, worker)
+            slot = _Slot(key, target_incarnation, terminal, owner, identity, future, worker)
             self._slots[key.collection_id] = slot
             self._poll.append(key.collection_id)
             self._counts[terminal] += 1
@@ -201,7 +205,12 @@ class ArchiveUploadExecutionOwner:
                     continue
                 completed.append(
                     ArchiveUploadExecutionCompletion(
-                        slot.key, slot.target_incarnation, slot.terminal, slot.owner, slot.future
+                        slot.key,
+                        slot.target_incarnation,
+                        slot.terminal,
+                        slot.owner,
+                        slot.identity,
+                        slot.future,
                     )
                 )
                 self._remove(slot)

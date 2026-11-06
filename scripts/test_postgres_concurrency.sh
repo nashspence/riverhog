@@ -64,6 +64,7 @@ default_tests=(
   tests/integration/test_archive_initial_tag_concurrency.py
   tests/integration/test_archive_upload_drain_concurrency.py
   tests/integration/test_archive_upload_cleanup_concurrency.py
+  tests/integration/test_archive_upload_invocation_concurrency.py
   tests/integration/test_immutable_archive_terminal_drain.py \
   tests/integration/test_archive_finalizer_terminal_drain.py
   tests/integration/test_archive_finalizer_registry.py

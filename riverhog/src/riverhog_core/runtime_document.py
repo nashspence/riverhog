@@ -174,11 +174,11 @@ class ArchiveExecutionDocument(_Document):
         default=_ARCHIVE_EXECUTION.terminal_workers_per_target, ge=1, strict=True
     )
 
-    retained_finalizer_constructions: int = Field(
-        default=_ARCHIVE_EXECUTION.retained_finalizer_constructions, ge=1, strict=True
+    retained_constructions: int = Field(
+        default=_ARCHIVE_EXECUTION.retained_constructions, ge=1, strict=True
     )
-    retained_finalizer_constructions_per_target: int = Field(
-        default=_ARCHIVE_EXECUTION.retained_finalizer_constructions_per_target, ge=1, strict=True
+    retained_constructions_per_target: int = Field(
+        default=_ARCHIVE_EXECUTION.retained_constructions_per_target, ge=1, strict=True
     )
 
     def tuning(self) -> ArchiveExecutionTuning:
@@ -187,8 +187,8 @@ class ArchiveExecutionDocument(_Document):
             terminal_workers=self.terminal_workers,
             forward_workers_per_target=self.forward_workers_per_target,
             terminal_workers_per_target=self.terminal_workers_per_target,
-            retained_finalizer_constructions=self.retained_finalizer_constructions,
-            retained_finalizer_constructions_per_target=self.retained_finalizer_constructions_per_target,
+            retained_constructions=self.retained_constructions,
+            retained_constructions_per_target=self.retained_constructions_per_target,
         )
 
 

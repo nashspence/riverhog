@@ -443,10 +443,17 @@ class SqlAlchemyCollectionUploadService:
         from .archive_upload_execution import ArchiveUploadExecutionOwner
 
         self._archive_execution = ArchiveUploadExecutionOwner(config.archive_execution)
+        from .archive_construction_retention import ArchiveConstructionRetention
         from .archive_finalizer_registry import ArchiveFinalizerRegistry
 
+        self._archive_retention = ArchiveConstructionRetention(config.archive_execution)
         self._archive_finalizers = ArchiveFinalizerRegistry(
-            self._session_factory, self._archive_execution, config.archive_execution
+            self._session_factory, self._archive_execution, self._archive_retention
+        )
+        from .archive_upload_invocations import ArchiveUploadInvocationRegistry
+
+        self._archive_invocations = ArchiveUploadInvocationRegistry(
+            self._session_factory, self._archive_execution, self._archive_retention
         )
         from .archive_finalizer_work import ArchiveFinalizerWork
 
@@ -494,6 +501,7 @@ class SqlAlchemyCollectionUploadService:
         }
 
     def close(self) -> None:
+        self._archive_invocations.close()
         self._archive_finalizers.close()
         self._journal_validation_owner.close()
 

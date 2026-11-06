@@ -9,6 +9,7 @@ from dataclasses import dataclass
 class ArchiveExecutionTuning:
     """Process-local slots, independently reserved for forward and terminal work.
 
+    Retained constructions share one budget across payload and metadata actors.
     These limits do not replace durable effect, preparation or buffer accounting.
     A joined worker with an unconsumed result still occupies its execution slot.
     """
@@ -17,8 +18,8 @@ class ArchiveExecutionTuning:
     terminal_workers: int = 2
     forward_workers_per_target: int = 2
     terminal_workers_per_target: int = 1
-    retained_finalizer_constructions: int = 16
-    retained_finalizer_constructions_per_target: int = 4
+    retained_constructions: int = 16
+    retained_constructions_per_target: int = 4
 
     def __post_init__(self) -> None:
         for name in (
@@ -26,8 +27,8 @@ class ArchiveExecutionTuning:
             "terminal_workers",
             "forward_workers_per_target",
             "terminal_workers_per_target",
-            "retained_finalizer_constructions",
-            "retained_finalizer_constructions_per_target",
+            "retained_constructions",
+            "retained_constructions_per_target",
         ):
             value = getattr(self, name)
             if type(value) is not int or value < 1:
