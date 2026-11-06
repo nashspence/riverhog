@@ -29,6 +29,7 @@ from riverhog_core.ports.archive_objects import (
     CompletedObjectReceipt,
     WriteCompletionPrecondition,
     WriteSegmentCursor,
+    WriteSegmentReceipt,
     WriteSession,
 )
 from riverhog_core.ports.archive_upload_checkpoints import RawUploadCheckpointStore
@@ -55,6 +56,12 @@ from riverhog_core.throughput import (
     TransferConcurrencyGate,
     TransferTiming,
     WeightedByteSemaphore,
+)
+from riverhog_core.upload_continuation import (
+    UploadContinuation,
+    UploadSteps,
+    run_upload,
+    upload_step,
 )
 from riverhog_core.write_segments import WriteSegmentPlan, iter_write_segments
 
@@ -402,6 +409,52 @@ class RawVolumeUploader:
         expected_part_sha256s: Sequence[str] = (),
         prepared_state: UploadState | None = None,
     ) -> RawUploadCheckpoint:
+        return run_upload(
+            self._open_steps(
+                collection_id=collection_id,
+                plan=plan,
+                object_path=object_path,
+                relative_path=relative_path,
+                prepared_state=prepared_state,
+                target_part_plaintext_bytes=target_part_plaintext_bytes,
+                expected_part_sha256s=expected_part_sha256s,
+            )
+        )
+
+    def retain_open(
+        self,
+        *,
+        collection_id: int,
+        plan: RawVolumePlan,
+        object_path: str,
+        relative_path: str,
+        target_part_plaintext_bytes: int,
+        expected_part_sha256s: Sequence[str] = (),
+        prepared_state: UploadState | None = None,
+    ) -> UploadContinuation[RawUploadCheckpoint]:
+        return UploadContinuation(
+            self._open_steps(
+                collection_id=collection_id,
+                plan=plan,
+                object_path=object_path,
+                relative_path=relative_path,
+                prepared_state=prepared_state,
+                target_part_plaintext_bytes=target_part_plaintext_bytes,
+                expected_part_sha256s=expected_part_sha256s,
+            )
+        )
+
+    def _open_steps(
+        self,
+        *,
+        collection_id: int,
+        plan: RawVolumePlan,
+        object_path: str,
+        relative_path: str,
+        target_part_plaintext_bytes: int,
+        expected_part_sha256s: Sequence[str] = (),
+        prepared_state: UploadState | None = None,
+    ) -> UploadSteps[RawUploadCheckpoint]:
         opened_started = time.perf_counter()
         if prepared_state is not None:
             prepared_state = UploadState.from_json_bytes(prepared_state.to_json_bytes())
@@ -420,7 +473,7 @@ class RawVolumeUploader:
         expected_digests = tuple(
             _sha(current, "expected part plaintext") for current in expected_part_sha256s
         )
-        checkpoint = self._load_checkpoint(
+        loaded_checkpoint = self._load_checkpoint(
             collection_id=collection_id,
             plan=plan,
             object_path=object_path,
@@ -428,22 +481,24 @@ class RawVolumeUploader:
             target_part_plaintext_bytes=target_part_plaintext_bytes,
             expected_part_sha256s=expected_digests,
         )
-        if checkpoint is not None:
+        if loaded_checkpoint is not None:
             if prepared_state is not None and (
                 prepared_state.to_json_bytes()
-                != UploadState.from_json_bytes(checkpoint.age_state_json).to_json_bytes()
+                != UploadState.from_json_bytes(loaded_checkpoint.age_state_json).to_json_bytes()
             ):
                 raise ValueError("raw upload original encryption preparation changed")
-            if checkpoint.completed is None:
-                completed = self._object_store.find_completed_write(
-                    object_path=object_path,
-                    expected_bytes=_stored_bytes_for_state(checkpoint.age_state_json),
-                    expected_content_type=RAW_VOLUME_CONTENT_TYPE,
-                    expected_metadata=_metadata(plan, checkpoint.age_state_json),
+            if loaded_checkpoint.completed is None:
+                completed = yield from upload_step(
+                    lambda: self._object_store.find_completed_write(
+                        object_path=object_path,
+                        expected_bytes=_stored_bytes_for_state(loaded_checkpoint.age_state_json),
+                        expected_content_type=RAW_VOLUME_CONTENT_TYPE,
+                        expected_metadata=_metadata(plan, loaded_checkpoint.age_state_json),
+                    )
                 )
                 if completed is not None:
-                    return self._mark_completed(checkpoint, completed)
-            return checkpoint
+                    return (yield from self._mark_completed(loaded_checkpoint, completed))
+            return loaded_checkpoint
 
         if prepared_state is None:
             session, prepared_state, derivation_wait_seconds, crypto_seconds = (
@@ -467,20 +522,24 @@ class RawVolumeUploader:
             plan.plaintext_bytes,
             age_prefix_len=len(session.age_prefix),
         )
-        completed = self._object_store.find_completed_write(
-            object_path=object_path,
-            expected_bytes=expected_stored_bytes,
-            expected_content_type=RAW_VOLUME_CONTENT_TYPE,
-            expected_metadata=_metadata(plan),
+        completed = yield from upload_step(
+            lambda: self._object_store.find_completed_write(
+                object_path=object_path,
+                expected_bytes=expected_stored_bytes,
+                expected_content_type=RAW_VOLUME_CONTENT_TYPE,
+                expected_metadata=_metadata(plan),
+            )
         )
         if completed is not None:
             raise RuntimeError("completed raw object exists without its durable checkpoint")
         remote_started = time.perf_counter()
-        write_session = self._object_store.begin_write(
-            object_path=object_path,
-            expected_bytes=expected_stored_bytes,
-            content_type=RAW_VOLUME_CONTENT_TYPE,
-            metadata=_metadata(plan, age_state_json),
+        write_session = yield from upload_step(
+            lambda: self._object_store.begin_write(
+                object_path=object_path,
+                expected_bytes=expected_stored_bytes,
+                content_type=RAW_VOLUME_CONTENT_TYPE,
+                metadata=_metadata(plan, age_state_json),
+            )
         )
         remote_seconds = time.perf_counter() - remote_started
         checkpoint = RawUploadCheckpoint(
@@ -501,7 +560,7 @@ class RawVolumeUploader:
             archive_parts=(),
         )
         checkpoint_started = time.perf_counter()
-        checkpoint = self._save(checkpoint)
+        checkpoint = yield from upload_step(lambda: self._save(checkpoint), checkpoint=True)
         checkpoint_seconds = time.perf_counter() - checkpoint_started
         self._observe_timing(
             TransferTiming(
@@ -535,7 +594,7 @@ class RawVolumeUploader:
             target_plaintext_bytes=checkpoint.target_part_plaintext_bytes,
         )
         if checkpoint.next_part >= len(plans):
-            return self._complete(checkpoint)
+            return run_upload(self._complete(checkpoint))
         return self.upload_unit(
             plan=plan,
             checkpoint=checkpoint,
@@ -551,6 +610,34 @@ class RawVolumeUploader:
         unit_number: int,
         plaintext: bytes | Iterable[bytes],
     ) -> RawUploadCheckpoint:
+        return run_upload(
+            self._unit_steps(
+                plan=plan, checkpoint=checkpoint, unit_number=unit_number, plaintext=plaintext
+            )
+        )
+
+    def retain_unit(
+        self,
+        *,
+        plan: RawVolumePlan,
+        checkpoint: RawUploadCheckpoint,
+        unit_number: int,
+        plaintext: bytes | Iterable[bytes],
+    ) -> UploadContinuation[RawUploadCheckpoint]:
+        return UploadContinuation(
+            self._unit_steps(
+                plan=plan, checkpoint=checkpoint, unit_number=unit_number, plaintext=plaintext
+            )
+        )
+
+    def _unit_steps(
+        self,
+        *,
+        plan: RawVolumePlan,
+        checkpoint: RawUploadCheckpoint,
+        unit_number: int,
+        plaintext: bytes | Iterable[bytes],
+    ) -> UploadSteps[RawUploadCheckpoint]:
         self._validate(plan, checkpoint)
         if checkpoint.completed is not None:
             return checkpoint
@@ -559,19 +646,19 @@ class RawVolumeUploader:
             raise ValueError("raw upload part number is outside the plan")
         if _part_by_number(checkpoint.archive_parts, unit_number) is not None:
             return checkpoint
-        uploaded = self._prepare_and_write_archive_part(
+        uploaded = yield from self._prepare_and_write_archive_part(
             plan=plan,
             checkpoint=checkpoint,
             part=planned[unit_number - 1],
             plaintext_chunks=_chunks(plaintext),
         )
-        checkpoint, checkpoint_seconds = self._record_part(
+        checkpoint, checkpoint_seconds = yield from self._record_part(
             checkpoint,
             uploaded.receipt,
         )
         self._observe(uploaded, checkpoint_seconds=checkpoint_seconds)
         if len(checkpoint.archive_parts) == len(planned):
-            return self._complete(checkpoint)
+            return (yield from self._complete(checkpoint))
         return checkpoint
 
     def sealed_receipt(self, checkpoint: RawUploadCheckpoint) -> SealedRawVolume:
@@ -617,7 +704,7 @@ class RawVolumeUploader:
         checkpoint: RawUploadCheckpoint,
         part: AgeAlignedUnitPlan,
         plaintext_chunks: Iterable[bytes],
-    ) -> _UploadedRawPart:
+    ) -> UploadSteps[_UploadedRawPart]:
         started = time.perf_counter()
         session = self._session_cache.get(checkpoint.age_state_json)
         working_bytes = (
@@ -660,23 +747,31 @@ class RawVolumeUploader:
                 if current.archive_part_number == part.unit_number
             )
             for segment_plan in segment_plans:
-                with self._request_gate.reserve() as current_wait_seconds:
-                    request_wait_seconds += current_wait_seconds
-                    content = prepared.ciphertext[
-                        segment_plan.archive_part_offset : segment_plan.archive_part_offset
-                        + segment_plan.stored_bytes
-                    ]
-                    remote_started = time.perf_counter()
-                    remote = self._object_store.write_segment(
-                        session=WriteSession(
-                            checkpoint.object_path,
-                            checkpoint.write_token,
-                            _stored_bytes_for_state(checkpoint.age_state_json),
-                        ),
-                        number=segment_plan.number,
-                        content=content,
-                    )
-                    remote_seconds += time.perf_counter() - remote_started
+                content = prepared.ciphertext[
+                    segment_plan.archive_part_offset : segment_plan.archive_part_offset
+                    + segment_plan.stored_bytes
+                ]
+
+                def write_segment(
+                    current: WriteSegmentPlan = segment_plan, body: bytes = content
+                ) -> WriteSegmentReceipt:
+                    nonlocal request_wait_seconds, remote_seconds
+                    with self._request_gate.reserve() as current_wait_seconds:
+                        request_wait_seconds += current_wait_seconds
+                        remote_started = time.perf_counter()
+                        written = self._object_store.write_segment(
+                            session=WriteSession(
+                                checkpoint.object_path,
+                                checkpoint.write_token,
+                                _stored_bytes_for_state(checkpoint.age_state_json),
+                            ),
+                            number=current.number,
+                            content=body,
+                        )
+                        remote_seconds += time.perf_counter() - remote_started
+                        return written
+
+                remote = yield from upload_step(write_segment)
                 if remote.number != segment_plan.number or remote.bytes != len(content):
                     raise RuntimeError(
                         "resumable store returned an inconsistent write-segment receipt"
@@ -698,7 +793,7 @@ class RawVolumeUploader:
         self,
         checkpoint: RawUploadCheckpoint,
         part: StoredArchivePart,
-    ) -> tuple[RawUploadCheckpoint, float]:
+    ) -> UploadSteps[tuple[RawUploadCheckpoint, float]]:
         existing = _part_by_number(checkpoint.archive_parts, part.number)
         if existing is not None and existing != part:
             raise RuntimeError("raw upload part receipt changed for an immutable part number")
@@ -711,10 +806,10 @@ class RawVolumeUploader:
             archive_parts=tuple(sorted(parts, key=lambda current: current.number)),
         )
         started = time.perf_counter()
-        persisted = self._save(updated)
+        persisted = yield from upload_step(lambda: self._save(updated), checkpoint=True)
         return persisted, time.perf_counter() - started
 
-    def _complete(self, checkpoint: RawUploadCheckpoint) -> RawUploadCheckpoint:
+    def _complete(self, checkpoint: RawUploadCheckpoint) -> UploadSteps[RawUploadCheckpoint]:
         if checkpoint.completed is not None:
             return checkpoint
         expected_parts = self._planned_parts(_checkpoint_plan(checkpoint), checkpoint)
@@ -728,23 +823,26 @@ class RawVolumeUploader:
             checkpoint.write_token,
             _stored_bytes_for_state(checkpoint.age_state_json),
         )
-        completed = self._object_store.complete_write(
-            session=session,
-            completion=self._completion_precondition(checkpoint, session=session),
-            expected_bytes=sum(current.stored_bytes for current in parts),
-            expected_content_type=RAW_VOLUME_CONTENT_TYPE,
-            expected_metadata=_metadata(
-                _checkpoint_plan(checkpoint),
-                checkpoint.age_state_json,
-            ),
+        completion = self._completion_precondition(checkpoint, session=session)
+        completed = yield from upload_step(
+            lambda: self._object_store.complete_write(
+                session=session,
+                completion=completion,
+                expected_bytes=sum(current.stored_bytes for current in parts),
+                expected_content_type=RAW_VOLUME_CONTENT_TYPE,
+                expected_metadata=_metadata(
+                    _checkpoint_plan(checkpoint),
+                    checkpoint.age_state_json,
+                ),
+            )
         )
-        return self._mark_completed(checkpoint, completed)
+        return (yield from self._mark_completed(checkpoint, completed))
 
     def _mark_completed(
         self,
         checkpoint: RawUploadCheckpoint,
         completed: CompletedObjectReceipt,
-    ) -> RawUploadCheckpoint:
+    ) -> UploadSteps[RawUploadCheckpoint]:
         if completed.bytes != sum(current.stored_bytes for current in checkpoint.archive_parts):
             raise RuntimeError("completed raw object byte count mismatch")
         if completed.object_path != checkpoint.object_path:
@@ -762,7 +860,7 @@ class RawVolumeUploader:
                 retrieval_cache=completed.retrieval_cache,
             ),
         )
-        return self._save(sealed)
+        return (yield from upload_step(lambda: self._save(sealed), checkpoint=True))
 
     def _planned_parts(
         self,

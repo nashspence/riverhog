@@ -42,14 +42,15 @@ def _case(
     configure_service=None,
     use_cache=False,
     artifact_count=None,
+    unit_plaintext_bytes=CHUNK_SIZE,
 ):
     service, config, provider, roots = _service_with_archive_objects(
         tmp_path,
         policy=CollectionVolumePolicy(
             pack_artifacts=1,
             pack_member_bytes=max(64, len(content or b"") + 1) if kind == "pack" else 8,
-            raw_part_plaintext_bytes=CHUNK_SIZE,
-            raw_volume_plaintext_bytes=2 * CHUNK_SIZE,
+            raw_part_plaintext_bytes=unit_plaintext_bytes,
+            raw_volume_plaintext_bytes=2 * unit_plaintext_bytes,
         ),
         database_url=database_url,
     )
@@ -70,12 +71,12 @@ def _case(
         member = {"artifact_id": "1" * 64, "bytes": str(len(content)), "sha256": digest}
         if kind == "segment":
             part_digests = [
-                hashlib.sha256(content[first : first + CHUNK_SIZE]).hexdigest()
-                for first in range(0, len(content), CHUNK_SIZE)
+                hashlib.sha256(content[first : first + unit_plaintext_bytes]).hexdigest()
+                for first in range(0, len(content), unit_plaintext_bytes)
             ]
             count, commitment = ordered_raw_part_commitment(part_digests)
             member["raw_parts"] = {
-                "part_plaintext_bytes": str(CHUNK_SIZE),
+                "part_plaintext_bytes": str(unit_plaintext_bytes),
                 "part_count": str(count),
                 "ordered_sha256": commitment,
             }

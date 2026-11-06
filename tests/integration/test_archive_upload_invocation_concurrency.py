@@ -7,6 +7,7 @@ from tests.integration.test_collection_upload_custody_concurrency import (
 )
 from tests.unit.test_archive_payload_continuation import _two_units
 from tests.unit.test_archive_upload_invocations import _actual_begin_receiving
+from tests.unit.test_upload_continuation import _retained_unit_retry
 
 pytestmark = pytest.mark.integration
 
@@ -50,3 +51,12 @@ def test_postgres_continuation_checks_current_guard_and_capacity_before_payload_
     database_url, tmp_path, monkeypatch, mode, refusal
 ):
     _two_units(tmp_path, monkeypatch, mode, False, database_url=database_url, refuse_next=refusal)
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_retained_logical_unit_does_not_repeat_emitted_segments(
+    database_url, tmp_path, monkeypatch, kind, mode, committed
+):
+    _retained_unit_retry(tmp_path, monkeypatch, kind, mode, committed, database_url=database_url)

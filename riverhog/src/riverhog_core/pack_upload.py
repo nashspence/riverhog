@@ -31,6 +31,7 @@ from riverhog_core.ports.archive_objects import (
     CompletedObjectReceipt,
     WriteCompletionPrecondition,
     WriteSegmentCursor,
+    WriteSegmentReceipt,
     WriteSession,
 )
 from riverhog_core.ports.archive_upload_checkpoints import PackUploadCheckpointStore
@@ -56,6 +57,12 @@ from riverhog_core.throughput import (
     TransferConcurrencyGate,
     TransferTiming,
     WeightedByteSemaphore,
+)
+from riverhog_core.upload_continuation import (
+    UploadContinuation,
+    UploadSteps,
+    run_upload,
+    upload_step,
 )
 from riverhog_core.write_segments import WriteSegmentPlan, iter_write_segments
 
@@ -357,6 +364,44 @@ class PackVolumeUploader:
         relative_path: str,
         prepared_state: UploadState | None = None,
     ) -> PackUploadCheckpoint:
+        return run_upload(
+            self._open_steps(
+                collection_id=collection_id,
+                plan=plan,
+                object_path=object_path,
+                relative_path=relative_path,
+                prepared_state=prepared_state,
+            )
+        )
+
+    def retain_open(
+        self,
+        *,
+        collection_id: int,
+        plan: PackVolumePlan,
+        object_path: str,
+        relative_path: str,
+        prepared_state: UploadState | None = None,
+    ) -> UploadContinuation[PackUploadCheckpoint]:
+        return UploadContinuation(
+            self._open_steps(
+                collection_id=collection_id,
+                plan=plan,
+                object_path=object_path,
+                relative_path=relative_path,
+                prepared_state=prepared_state,
+            )
+        )
+
+    def _open_steps(
+        self,
+        *,
+        collection_id: int,
+        plan: PackVolumePlan,
+        object_path: str,
+        relative_path: str,
+        prepared_state: UploadState | None = None,
+    ) -> UploadSteps[PackUploadCheckpoint]:
         opened_started = time.perf_counter()
         if prepared_state is not None:
             prepared_state = UploadState.from_json_bytes(prepared_state.to_json_bytes())
@@ -370,28 +415,30 @@ class PackVolumeUploader:
             raise ValueError("pack volume relative path is not canonical")
         if not object_path.endswith(f"/{normalized_relative_path}"):
             raise ValueError("pack volume object path does not contain its relative path")
-        checkpoint = self._load_checkpoint(
+        loaded_checkpoint = self._load_checkpoint(
             collection_id=collection_id,
             plan=plan,
             object_path=object_path,
             relative_path=normalized_relative_path,
         )
-        if checkpoint is not None:
+        if loaded_checkpoint is not None:
             if prepared_state is not None and (
                 prepared_state.to_json_bytes()
-                != UploadState.from_json_bytes(checkpoint.age_state_json).to_json_bytes()
+                != UploadState.from_json_bytes(loaded_checkpoint.age_state_json).to_json_bytes()
             ):
                 raise ValueError("pack upload original encryption preparation changed")
-            if checkpoint.completed is None:
-                completed = self._object_store.find_completed_write(
-                    object_path=object_path,
-                    expected_bytes=_stored_bytes_for_state(checkpoint.age_state_json),
-                    expected_content_type=PACK_VOLUME_CONTENT_TYPE,
-                    expected_metadata=_object_metadata(plan, checkpoint.age_state_json),
+            if loaded_checkpoint.completed is None:
+                completed = yield from upload_step(
+                    lambda: self._object_store.find_completed_write(
+                        object_path=object_path,
+                        expected_bytes=_stored_bytes_for_state(loaded_checkpoint.age_state_json),
+                        expected_content_type=PACK_VOLUME_CONTENT_TYPE,
+                        expected_metadata=_object_metadata(plan, loaded_checkpoint.age_state_json),
+                    )
                 )
                 if completed is not None:
-                    return self._mark_completed(checkpoint, completed)
-            return checkpoint
+                    return (yield from self._mark_completed(loaded_checkpoint, completed))
+            return loaded_checkpoint
 
         if prepared_state is None:
             session, prepared_state, derivation_wait_seconds, crypto_seconds = (
@@ -408,11 +455,13 @@ class PackVolumeUploader:
             plan.plaintext_bytes,
             age_prefix_len=len(session.age_prefix),
         )
-        completed = self._object_store.find_completed_write(
-            object_path=object_path,
-            expected_bytes=expected_stored_bytes,
-            expected_content_type=PACK_VOLUME_CONTENT_TYPE,
-            expected_metadata=_object_metadata(plan),
+        completed = yield from upload_step(
+            lambda: self._object_store.find_completed_write(
+                object_path=object_path,
+                expected_bytes=expected_stored_bytes,
+                expected_content_type=PACK_VOLUME_CONTENT_TYPE,
+                expected_metadata=_object_metadata(plan),
+            )
         )
         if completed is not None:
             raise RuntimeError(
@@ -420,11 +469,13 @@ class PackVolumeUploader:
                 "transaction before discarding checkpoint state"
             )
         remote_started = time.perf_counter()
-        write_session = self._object_store.begin_write(
-            object_path=object_path,
-            expected_bytes=expected_stored_bytes,
-            content_type=PACK_VOLUME_CONTENT_TYPE,
-            metadata=_object_metadata(plan, age_state_json),
+        write_session = yield from upload_step(
+            lambda: self._object_store.begin_write(
+                object_path=object_path,
+                expected_bytes=expected_stored_bytes,
+                content_type=PACK_VOLUME_CONTENT_TYPE,
+                metadata=_object_metadata(plan, age_state_json),
+            )
         )
         remote_seconds = time.perf_counter() - remote_started
         checkpoint = PackUploadCheckpoint(
@@ -440,7 +491,7 @@ class PackVolumeUploader:
             archive_parts=(),
         )
         checkpoint_started = time.perf_counter()
-        checkpoint = self._save(checkpoint)
+        checkpoint = yield from upload_step(lambda: self._save(checkpoint), checkpoint=True)
         checkpoint_seconds = time.perf_counter() - checkpoint_started
         self._observe_timing(
             TransferTiming(
@@ -468,7 +519,7 @@ class PackVolumeUploader:
         if checkpoint.completed is not None:
             return checkpoint
         if checkpoint.next_unit >= len(plan.units):
-            return self._complete(plan=plan, checkpoint=checkpoint)
+            return run_upload(self._complete(plan=plan, checkpoint=checkpoint))
         return self.upload_unit(
             plan=plan,
             checkpoint=checkpoint,
@@ -484,6 +535,40 @@ class PackVolumeUploader:
         unit_number: int,
         payload_chunks: Iterable[bytes],
     ) -> PackUploadCheckpoint:
+        return run_upload(
+            self._unit_steps(
+                plan=plan,
+                checkpoint=checkpoint,
+                unit_number=unit_number,
+                payload_chunks=payload_chunks,
+            )
+        )
+
+    def retain_unit(
+        self,
+        *,
+        plan: PackVolumePlan,
+        checkpoint: PackUploadCheckpoint,
+        unit_number: int,
+        payload_chunks: Iterable[bytes],
+    ) -> UploadContinuation[PackUploadCheckpoint]:
+        return UploadContinuation(
+            self._unit_steps(
+                plan=plan,
+                checkpoint=checkpoint,
+                unit_number=unit_number,
+                payload_chunks=payload_chunks,
+            )
+        )
+
+    def _unit_steps(
+        self,
+        *,
+        plan: PackVolumePlan,
+        checkpoint: PackUploadCheckpoint,
+        unit_number: int,
+        payload_chunks: Iterable[bytes],
+    ) -> UploadSteps[PackUploadCheckpoint]:
         self._validate_checkpoint(
             collection_id=checkpoint.collection_id,
             plan=plan,
@@ -497,19 +582,19 @@ class PackVolumeUploader:
             raise ValueError("pack upload unit number is outside the plan")
         if _part_by_number(checkpoint.archive_parts, unit_number + 1) is not None:
             return checkpoint
-        uploaded = self._prepare_and_upload_unit(
+        uploaded = yield from self._prepare_and_upload_unit(
             plan=plan,
             checkpoint=checkpoint,
             unit_number=unit_number,
             payload_chunks=payload_chunks,
         )
-        checkpoint, checkpoint_seconds = self._record_part(
+        checkpoint, checkpoint_seconds = yield from self._record_part(
             checkpoint,
             uploaded.receipt,
         )
         self._observe(uploaded, checkpoint_seconds=checkpoint_seconds)
         if len(checkpoint.archive_parts) == len(plan.units):
-            return self._complete(plan=plan, checkpoint=checkpoint)
+            return (yield from self._complete(plan=plan, checkpoint=checkpoint))
         return checkpoint
 
     def sealed_receipt(
@@ -566,7 +651,7 @@ class PackVolumeUploader:
         checkpoint: PackUploadCheckpoint,
         unit_number: int,
         payload_chunks: Iterable[bytes],
-    ) -> _UploadedPackPart:
+    ) -> UploadSteps[_UploadedPackPart]:
         started = time.perf_counter()
         unit = plan.units[unit_number]
         session = self._session_cache.get(checkpoint.age_state_json)
@@ -611,23 +696,31 @@ class PackVolumeUploader:
                 if current.archive_part_number == unit_number + 1
             )
             for segment_plan in segment_plans:
-                with self._request_gate.reserve() as current_wait_seconds:
-                    request_wait_seconds += current_wait_seconds
-                    content = prepared.ciphertext[
-                        segment_plan.archive_part_offset : segment_plan.archive_part_offset
-                        + segment_plan.stored_bytes
-                    ]
-                    remote_started = time.perf_counter()
-                    remote_segment = self._object_store.write_segment(
-                        session=WriteSession(
-                            object_path=checkpoint.object_path,
-                            write_token=checkpoint.write_token,
-                            expected_bytes=_stored_bytes_for_state(checkpoint.age_state_json),
-                        ),
-                        number=segment_plan.number,
-                        content=content,
-                    )
-                    remote_seconds += time.perf_counter() - remote_started
+                content = prepared.ciphertext[
+                    segment_plan.archive_part_offset : segment_plan.archive_part_offset
+                    + segment_plan.stored_bytes
+                ]
+
+                def write_segment(
+                    current: WriteSegmentPlan = segment_plan, body: bytes = content
+                ) -> WriteSegmentReceipt:
+                    nonlocal request_wait_seconds, remote_seconds
+                    with self._request_gate.reserve() as current_wait_seconds:
+                        request_wait_seconds += current_wait_seconds
+                        remote_started = time.perf_counter()
+                        written = self._object_store.write_segment(
+                            session=WriteSession(
+                                object_path=checkpoint.object_path,
+                                write_token=checkpoint.write_token,
+                                expected_bytes=_stored_bytes_for_state(checkpoint.age_state_json),
+                            ),
+                            number=current.number,
+                            content=body,
+                        )
+                        remote_seconds += time.perf_counter() - remote_started
+                        return written
+
+                remote_segment = yield from upload_step(write_segment)
                 if (
                     remote_segment.number != segment_plan.number
                     or remote_segment.bytes != segment_plan.stored_bytes
@@ -652,7 +745,7 @@ class PackVolumeUploader:
         self,
         checkpoint: PackUploadCheckpoint,
         part: StoredArchivePart,
-    ) -> tuple[PackUploadCheckpoint, float]:
+    ) -> UploadSteps[tuple[PackUploadCheckpoint, float]]:
         existing = _part_by_number(checkpoint.archive_parts, part.number)
         if existing is not None and existing != part:
             raise RuntimeError("pack upload part receipt changed for an immutable part number")
@@ -674,7 +767,7 @@ class PackVolumeUploader:
             completed=checkpoint.completed,
         )
         started = time.perf_counter()
-        persisted = self._save(updated)
+        persisted = yield from upload_step(lambda: self._save(updated), checkpoint=True)
         return persisted, time.perf_counter() - started
 
     def _complete(
@@ -682,7 +775,7 @@ class PackVolumeUploader:
         *,
         plan: PackVolumePlan,
         checkpoint: PackUploadCheckpoint,
-    ) -> PackUploadCheckpoint:
+    ) -> UploadSteps[PackUploadCheckpoint]:
         if checkpoint.completed is not None:
             return checkpoint
         expected_numbers = tuple(range(1, len(plan.units) + 1))
@@ -695,20 +788,22 @@ class PackVolumeUploader:
             _stored_bytes_for_state(checkpoint.age_state_json),
         )
         completion = self._completion_precondition(plan=plan, checkpoint=checkpoint)
-        completed = self._object_store.complete_write(
-            session=session,
-            completion=completion,
-            expected_bytes=sum(current.stored_bytes for current in parts),
-            expected_content_type=PACK_VOLUME_CONTENT_TYPE,
-            expected_metadata=_object_metadata(plan, checkpoint.age_state_json),
+        completed = yield from upload_step(
+            lambda: self._object_store.complete_write(
+                session=session,
+                completion=completion,
+                expected_bytes=sum(current.stored_bytes for current in parts),
+                expected_content_type=PACK_VOLUME_CONTENT_TYPE,
+                expected_metadata=_object_metadata(plan, checkpoint.age_state_json),
+            )
         )
-        return self._mark_completed(checkpoint, completed)
+        return (yield from self._mark_completed(checkpoint, completed))
 
     def _mark_completed(
         self,
         checkpoint: PackUploadCheckpoint,
         completed: CompletedObjectReceipt,
-    ) -> PackUploadCheckpoint:
+    ) -> UploadSteps[PackUploadCheckpoint]:
         expected_bytes = sum(current.stored_bytes for current in checkpoint.archive_parts)
         if completed.object_path != checkpoint.object_path or completed.bytes != expected_bytes:
             raise RuntimeError("completed pack object does not match its checkpoint")
@@ -733,7 +828,7 @@ class PackVolumeUploader:
                 retrieval_cache=completed.retrieval_cache,
             ),
         )
-        return self._save(sealed)
+        return (yield from upload_step(lambda: self._save(sealed), checkpoint=True))
 
     def _validate_checkpoint(
         self,

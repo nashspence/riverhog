@@ -12,6 +12,7 @@ from types import SimpleNamespace
 import pytest
 from a_riverhog_filesystem_store import FilesystemStorageAdapter, FilesystemStorageAdapterConfig
 from a_riverhog_filesystem_store import incarnation as filesystem_incarnation
+from riverhog_age import CHUNK_SIZE
 from riverhog_core.catalog_archive_write_models import ArchiveWriteEffectRecord
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
@@ -54,6 +55,7 @@ def _actor(
     existing_case=None,
     archive_root=None,
     segment_bytes=64 * 1024,
+    unit_plaintext_bytes=CHUNK_SIZE,
 ):
     with (
         nullcontext(existing_case)
@@ -65,6 +67,7 @@ def _actor(
             content=content,
             configure_service=configure_service,
             use_cache=use_cache,
+            unit_plaintext_bytes=unit_plaintext_bytes,
         )
     ) as case:
         if existing_case is not None and configure_service is not None:
