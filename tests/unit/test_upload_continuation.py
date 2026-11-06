@@ -337,3 +337,33 @@ def test_service_registry_retains_the_exact_logical_unit_after_checkpoint_failur
             assert len(created) == 1 and registry.retire_idle(second)
         finally:
             assert original.close()
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+def test_checkpoint_receiving_cannot_start_provider_reconciliation_or_completion(
+    tmp_path, monkeypatch, kind, mode
+):
+    with _actor(tmp_path, monkeypatch, kind, mode=mode, content=b"x" * CHUNK_SIZE) as actor:
+        opened = _open(actor)
+        original = _unit(actor, opened)
+        try:
+            # Two physical segments, followed by their original unit checkpoint.
+            for _ in range(3):
+                assert not original.advance()
+            calls = list(actor.seen)
+            assert [v.operation.kind for v in calls] == ["lookup", "begin", "part", "part"]
+            assert not actor.journal.has_pending
+            monkeypatch.setattr(
+                actor.provider,
+                "list_segments",
+                lambda **kwargs: pytest.fail(
+                    "terminal receiving started fresh provider reconciliation"
+                ),
+            )
+            assert original.receive_checkpoint() is None
+            assert actor.seen == calls
+            with pytest.raises(Conflict, match="no completed result"):
+                original.result()
+        finally:
+            assert original.close()

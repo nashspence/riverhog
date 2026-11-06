@@ -823,7 +823,9 @@ class RawVolumeUploader:
             checkpoint.write_token,
             _stored_bytes_for_state(checkpoint.age_state_json),
         )
-        completion = self._completion_precondition(checkpoint, session=session)
+        completion = yield from upload_step(
+            lambda: self._completion_precondition(checkpoint, session=session)
+        )
         completed = yield from upload_step(
             lambda: self._object_store.complete_write(
                 session=session,

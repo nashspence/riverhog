@@ -787,7 +787,9 @@ class PackVolumeUploader:
             checkpoint.write_token,
             _stored_bytes_for_state(checkpoint.age_state_json),
         )
-        completion = self._completion_precondition(plan=plan, checkpoint=checkpoint)
+        completion = yield from upload_step(
+            lambda: self._completion_precondition(plan=plan, checkpoint=checkpoint)
+        )
         completed = yield from upload_step(
             lambda: self._object_store.complete_write(
                 session=session,

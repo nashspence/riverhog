@@ -157,6 +157,30 @@ class ArchiveUploadWrites:
         finally:
             self._lock.release()
 
+    def receive_terminal_parts(self, operation_id: str) -> None:
+        """Receive abandoned-unit segments after its original format stack closes.
+
+        This creates no logical-part checkpoint. Begin and complete results
+        require their original format receiving instead. Execution joins and
+        global disposal authority remain with their separate owners.
+        """
+        from riverhog_storage_adapter_protocol import WriteSegmentReceipt
+
+        if not self._lock.acquire(blocking=False):
+            return
+        try:
+            if self._terminal_operation_id != operation_id or self._running:
+                return
+            if self._report_input is not None or not self._pending:
+                return
+            if all(
+                response.outcome == "part" and isinstance(response.result, WriteSegmentReceipt)
+                for _, response in self._pending
+            ):
+                self._report(None, kind=None)
+        finally:
+            self._lock.release()
+
     @property
     def scope(self) -> tuple[int, str, str]:
         """Describe this actor without granting admission or dispatch authority."""

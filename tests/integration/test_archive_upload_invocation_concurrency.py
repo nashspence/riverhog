@@ -6,6 +6,7 @@ from tests.integration.test_collection_upload_custody_concurrency import (
     database_url as database_url,
 )
 from tests.unit.test_archive_payload_continuation import _two_units
+from tests.unit.test_archive_payload_unit import _held_terminal, _preparation_retry
 from tests.unit.test_archive_upload_invocations import _actual_begin_receiving
 from tests.unit.test_upload_continuation import _retained_unit_retry
 
@@ -60,3 +61,37 @@ def test_postgres_retained_logical_unit_does_not_repeat_emitted_segments(
     database_url, tmp_path, monkeypatch, kind, mode, committed
 ):
     _retained_unit_retry(tmp_path, monkeypatch, kind, mode, committed, database_url=database_url)
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_service_payload_preserves_original_preparation_after_acknowledgement_loss(
+    database_url, tmp_path, monkeypatch, kind, mode, committed
+):
+    _preparation_retry(tmp_path, monkeypatch, kind, mode, committed, database_url=database_url)
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("phase", ("key", "begin", "part", "complete"))
+def test_postgres_service_payload_fence_retains_original_execution_and_receiving(
+    database_url, tmp_path, monkeypatch, kind, mode, phase
+):
+    _held_terminal(tmp_path, monkeypatch, kind, mode, phase, database_url=database_url)
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+def test_postgres_actual_payload_progresses_during_an_independent_held_key_constructor(
+    database_url, tmp_path, monkeypatch, kind, mode
+):
+    _held_terminal(
+        tmp_path,
+        monkeypatch,
+        kind,
+        mode,
+        "key",
+        database_url=database_url,
+        independent=True,
+    )

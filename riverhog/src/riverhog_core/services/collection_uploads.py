@@ -11,7 +11,7 @@ from collections.abc import Callable, Generator, Iterator, Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import timedelta
 from itertools import islice
-from typing import Any, TypedDict, cast
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 
 from http_api_contracts import BrowseScalar, closed_literal_values
 from riverhog_age import UploadState
@@ -412,6 +412,14 @@ class _FinalizationClaim:
 
     collection_id: int
     claim_id: str
+
+
+if TYPE_CHECKING:
+    from riverhog_core.services.archive_payload_unit import (
+        ArchivePayloadMirrorFactory,
+        ArchivePayloadUnit,
+    )
+    from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
 
 
 class SqlAlchemyCollectionUploadService:
@@ -2177,6 +2185,32 @@ class SqlAlchemyCollectionUploadService:
             authorized = True
 
         return guard
+
+    def _payload_unit_invocation(
+        self,
+        *,
+        key: ArchiveUploadExecutionKey,
+        target_incarnation: str,
+        volume_id: str,
+        unit: int,
+        plan_sha256: str,
+        content: bytes,
+        principal: Principal,
+        mirror: ArchivePayloadMirrorFactory | None = None,
+    ) -> ArchivePayloadUnit:
+        from .archive_payload_unit import ArchivePayloadUnit
+
+        return ArchivePayloadUnit(
+            self,
+            key=key,
+            target_incarnation=target_incarnation,
+            volume_id=volume_id,
+            unit=unit,
+            plan_sha256=plan_sha256,
+            content=content,
+            principal=principal,
+            mirror=mirror,
+        )
 
     def _retain_volume_preparation(
         self,

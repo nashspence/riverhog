@@ -856,6 +856,7 @@ def test_terminal_never_invents_a_checkpoint_for_an_unreceived_positive_response
                 operation = _selected_terminal(actor)
                 calls = list(actor.seen)
                 assert actor.journal.drain_terminal(operation) == "pending"
+                actor.journal.receive_terminal_parts(operation)
                 assert actor.journal.drain_terminal(operation) == "pending"
                 assert actor.seen == calls and _stored(actor) == before
             finally:

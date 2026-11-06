@@ -157,6 +157,14 @@ class MirroredArchiveUploadWrites:
             self._cache_forward.writable = False
 
     @property
+    def archive(self) -> ArchiveUploadWrites:
+        return self._archive
+
+    @property
+    def scope(self) -> tuple[int, str, str]:
+        return self._archive.scope
+
+    @property
     def has_pending(self) -> bool:
         return (
             self._archive.has_pending
@@ -203,6 +211,9 @@ class MirroredArchiveUploadWrites:
             return "pending" if self.has_pending or status == "pending" else "closed"
         finally:
             self._lock.release()
+
+    def receive_terminal_parts(self, operation_id: str) -> None:
+        self._archive.receive_terminal_parts(operation_id)
 
     def _cache_operation(
         self, operation: WritePartOperation | CompleteWriteOperation
