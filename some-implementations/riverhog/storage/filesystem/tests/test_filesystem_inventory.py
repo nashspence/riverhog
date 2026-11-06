@@ -4,7 +4,11 @@ from pathlib import Path
 
 import pytest
 from a_riverhog_filesystem_store.inventory import FilesystemInventory
-from riverhog_storage_adapter_protocol import CleanupCandidate, StorageAdapterRejection
+from riverhog_storage_adapter_protocol import (
+    CleanupCandidate,
+    CleanupCandidateKind,
+    StorageAdapterRejection,
+)
 
 
 @pytest.mark.parametrize("dimension", ["history", "unrelated"])
@@ -92,3 +96,49 @@ def test_inventory_is_disposable_and_failure_is_not_empty_success(tmp_path: Path
             reopened.check()
     finally:
         reopened.close()
+
+
+@pytest.mark.parametrize("kind", ["object_revision", "open_write"])
+@pytest.mark.parametrize("count", [16, 256, 4096])
+def test_exact_retirement_seeks_without_removing_retained_history(
+    tmp_path: Path,
+    kind: CleanupCandidateKind,
+    count: int,
+    record_property,
+) -> None:
+    inventory = FilesystemInventory(tmp_path)
+    try:
+        inventory._connection.execute("BEGIN")
+        candidates = tuple(
+            CleanupCandidate(object_path="archive/owned", kind=kind, token=f"{index:08d}")
+            for index in range(count)
+        )
+        for candidate in candidates:
+            inventory.add(candidate)
+        inventory._connection.execute("COMMIT")
+        assert (
+            inventory._connection.execute("SELECT COUNT(*) FROM candidates").fetchone()[0] == count
+        )
+        steps = [0]
+        statements: list[str] = []
+
+        def tick() -> int:
+            steps[0] += 1
+            return 0
+
+        inventory._connection.set_trace_callback(statements.append)
+        inventory._connection.set_progress_handler(tick, 1)
+        try:
+            inventory.remove(candidates[-1])
+        finally:
+            inventory._connection.set_progress_handler(None, 0)
+            inventory._connection.set_trace_callback(None)
+        record_property("history_rows", count)
+        record_property("retirement_vm_instructions", steps[0])
+        assert steps[0] < 120
+        assert len(statements) == 1
+        plan = inventory._connection.execute("EXPLAIN QUERY PLAN " + statements[0]).fetchall()
+        assert any("USING PRIMARY KEY" in str(row) for row in plan)
+        assert inventory.page("archive/", after=None, limit=count) == candidates[:-1]
+    finally:
+        inventory.close()

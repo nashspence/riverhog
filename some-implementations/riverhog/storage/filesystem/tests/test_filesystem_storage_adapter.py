@@ -11,6 +11,7 @@ from a_riverhog_filesystem_store import (
 from a_riverhog_filesystem_store.incarnation import provision_storage_root
 from riverhog_storage_adapter_protocol import (
     BeginWriteOperation,
+    CleanupCandidate,
     CleanupInventoryRequest,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -1093,3 +1094,52 @@ def test_cleanup_inventory_preserves_revision_when_publication_reply_is_lost(
         assert adapter._revision_dir(
             adapter._object_key(page[0].object_path), page[0].token
         ).is_dir()
+
+
+@pytest.mark.parametrize("count", [16, 256, 4096])
+def test_session_retirement_is_exact_and_bounded_with_retained_candidate_history(
+    tmp_path: Path,
+    count: int,
+    record_property,
+) -> None:
+    with _adapter(tmp_path / "store") as adapter:
+        session = adapter.begin_write(_start("archive/volume", 1))
+        assert adapter._inventory is not None
+        inventory = adapter._inventory
+        inventory._connection.execute("BEGIN")
+        for index in range(count):
+            inventory.add(
+                CleanupCandidate(
+                    object_path=session.object_path,
+                    kind="open_write",
+                    token=f"retained-{index:08d}",
+                )
+            )
+        inventory._connection.execute("COMMIT")
+        assert (
+            inventory._connection.execute("SELECT COUNT(*) FROM candidates").fetchone()[0]
+            == count + 1
+        )
+        steps = [0]
+
+        def tick() -> int:
+            steps[0] += 1
+            return 0
+
+        inventory._connection.set_progress_handler(tick, 1)
+        try:
+            adapter.abort_write(session)
+        finally:
+            inventory._connection.set_progress_handler(None, 0)
+        record_property("retained_candidates", count)
+        record_property("retirement_vm_instructions", steps[0])
+        assert steps[0] < 120
+        assert (
+            inventory._connection.execute("SELECT COUNT(*) FROM candidates").fetchone()[0] == count
+        )
+        assert (
+            inventory._connection.execute(
+                "SELECT COUNT(*) FROM candidates WHERE token = ?", (session.write_token,)
+            ).fetchone()[0]
+            == 0
+        )

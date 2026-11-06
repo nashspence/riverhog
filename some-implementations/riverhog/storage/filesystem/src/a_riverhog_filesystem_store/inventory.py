@@ -78,17 +78,18 @@ class FilesystemInventory:
             (path, item.kind, item.token, hashlib.sha256(path).hexdigest()),
         )
 
-    def remove_key(
-        self, object_key: str, *, kind: str | None = None, token: str | None = None
-    ) -> None:
+    def remove(self, item: CleanupCandidate) -> None:
+        self._execute(
+            "DELETE FROM candidates WHERE path = ? AND kind = ? AND token = ?",
+            (item.object_path.encode("utf-8"), item.kind, item.token),
+        )
+
+    def remove_key(self, object_key: str, *, kind: str | None = None) -> None:
         sql = "DELETE FROM candidates WHERE object_key = ?"
         parameters: tuple[object, ...] = (object_key,)
         if kind is not None:
             sql += " AND kind = ?"
             parameters += (kind,)
-        if token is not None:
-            sql += " AND token = ?"
-            parameters += (token,)
         self._execute(sql, parameters)
 
     def page(

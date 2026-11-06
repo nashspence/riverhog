@@ -1149,7 +1149,13 @@ class FilesystemStorageAdapter:
             current_revision = self._read_current_revision(object_dir)
             shutil.rmtree(revision_dir)
             if self._inventory is not None:
-                self._inventory.remove_key(object_key, kind="object_revision", token=revision)
+                self._inventory.remove(
+                    CleanupCandidate(
+                        object_path=request.object.object_path,
+                        kind="object_revision",
+                        token=revision,
+                    )
+                )
             if current_revision == revision:
                 (object_dir / "current").unlink(missing_ok=True)
             revisions_dir = object_dir / "revisions"
@@ -1912,9 +1918,18 @@ class FilesystemStorageAdapter:
             if missing_ok:
                 return
             raise RuntimeError("filesystem write directory is missing")
+        candidate = None
+        state_path = write_dir / "state.json"
+        if self._inventory is not None and state_path.exists():
+            state = _WriteState.from_json(self._read_json(state_path))
+            if self._object_key(state.object_path) != object_key:
+                raise RuntimeError("filesystem write directory differs from its object identity")
+            candidate = CleanupCandidate(
+                object_path=state.object_path, kind="open_write", token=state.token
+            )
         shutil.rmtree(write_dir)
-        if self._inventory is not None:
-            self._inventory.remove_key(object_key, kind="open_write")
+        if self._inventory is not None and candidate is not None:
+            self._inventory.remove(candidate)
         self._prune_empty_parents(write_dir.parent, stop=self._root / "writes")
 
     def _iter_object_dirs(self) -> Iterator[Path]:
