@@ -981,12 +981,12 @@ def test_terminal_retains_unconfirmed_original_admission_without_dispatch(
 def test_confirmed_transactional_refusal_does_not_create_an_uncertain_admission(
     tmp_path, monkeypatch
 ):
-    from riverhog_core.services.archive_write_admission import ArchiveWriteRefused
+    from riverhog_core.provider_write_dispatch import ProviderWriteAdmissionRefused
 
     with _actor(tmp_path, monkeypatch, "segment") as actor:
         _open(actor)
         selected = _selected_terminal(actor)
-        with pytest.raises(ArchiveWriteRefused, match="admission is closed"):
+        with pytest.raises(ProviderWriteAdmissionRefused, match="admission is closed"):
             actor.journal.arm_write_operation(actor.seen[0].operation)
         assert not actor.journal.has_pending
         assert actor.journal.drain_terminal(selected) == "closed"

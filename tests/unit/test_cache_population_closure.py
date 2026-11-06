@@ -210,8 +210,12 @@ def test_terminal_selection_keeps_closed_cache_data_with_its_receiving_owner(tmp
     with _sealed(tmp_path, monkeypatch) as joint:
         _terminal(joint)
         before = _state(joint)
+        assert joint.writer.has_pending and joint.mirror.has_pending
         closed = joint.writer.transfer_cache(joint.publisher)
         assert closed is not None
+        assert not joint.writer.has_pending and not joint.mirror.has_pending
+        selected = _terminal(joint)
+        assert joint.writer.drain_terminal(selected) == "closed"
         after = _state(joint)
         assert after["begins"] == after["children"] == []
         assert after["reserved"] == before["reserved"] > 0
@@ -361,3 +365,84 @@ def test_fixed_grants_continue_archive_when_only_optional_cache_data_budget_is_f
     tmp_path, monkeypatch
 ):
     _assert_many_volumes(tmp_path, monkeypatch, "pack", "direct", budget_absence=True)
+
+
+def _assert_begin_receiving_loss(tmp_path, monkeypatch, committed, *, database_url=None):
+    with _sealed(tmp_path, monkeypatch, database_url=database_url) as joint:
+        acknowledge = joint.mirror.acknowledge_transfer
+        attempts = []
+
+        def lose(receipt):
+            attempts.append(receipt)
+            if len(attempts) == 1:
+                if committed:
+                    acknowledge(receipt)
+                raise OSError("injected original begin receiving reply loss")
+            return acknowledge(receipt)
+
+        monkeypatch.setattr(joint.mirror, "acknowledge_transfer", lose)
+        physical = list(joint.actor.seen)
+        with pytest.raises(OSError, match="begin receiving"):
+            joint.writer.transfer_cache(joint.publisher)
+        assert joint.writer.has_pending and not joint.writer._closure_acknowledged
+        selected = _terminal(joint)
+        assert joint.writer.drain_terminal(selected) == "pending"
+        closed = joint.writer.transfer_cache(joint.publisher)
+        assert attempts[0] is attempts[1] and closed is attempts[0]
+        assert joint.writer.drain_terminal(selected) == "closed"
+        assert not joint.writer.has_pending and not joint.mirror.has_pending
+        assert joint.actor.seen == physical
+        state = _state(joint)
+        assert state["reserved"] > 0 and state["committed"] == 0
+        assert state["begins"] == state["children"] == [] and state["populations"]
+
+
+@pytest.mark.parametrize("committed", (False, True))
+def test_original_begin_receiving_acknowledgement_loss_retains_complete_actor(
+    tmp_path, monkeypatch, committed
+):
+    _assert_begin_receiving_loss(tmp_path, monkeypatch, committed)
+
+
+@pytest.mark.parametrize("changed", ("call", "request", "incarnation", "durability"))
+def test_begin_receiving_requires_its_original_call_and_actual_durable_evidence(
+    tmp_path, monkeypatch, changed
+):
+    with _sealed(tmp_path, monkeypatch) as joint:
+        closed = joint.publisher.closure.accept(joint.completion)
+        if changed == "durability":
+            with session_scope(joint.actor.case.factory) as session:
+                source = session.get(
+                    CollectionArchiveObjectUploadRecord,
+                    (closed.collection_id, closed.object_id),
+                )
+                receiver = session.get(
+                    RetrievalCachePopulationRecord,
+                    (closed.source_store, closed.collection_id, closed.object_id),
+                )
+                source.cache_receipt_json = receiver.closed_receipt_json = None
+                receiver.state = "admitted"
+        else:
+            value = json.loads(closed.receipt_json)
+            key = {
+                "call": "begin_call_id",
+                "request": "begin_request_sha256",
+                "incarnation": "cache_incarnation_id",
+            }[changed]
+            value[key] = "f" * 64
+            closed = replace(closed, receipt_json=json.dumps(value))
+        with pytest.raises(Conflict, match="another original call|not durable"):
+            joint.mirror.acknowledge_transfer(closed)
+        assert joint.mirror.has_pending and joint.writer.has_pending
+
+
+def test_original_begin_receiving_replay_rejects_changed_receipt_scope(tmp_path, monkeypatch):
+    with _sealed(tmp_path, monkeypatch) as joint:
+        closed = joint.writer.transfer_cache(joint.publisher)
+        assert closed is not None and not joint.mirror.has_pending
+        joint.mirror.acknowledge_transfer(closed)
+        with pytest.raises(Conflict, match="receiving acknowledgement changed"):
+            joint.mirror.acknowledge_transfer(
+                replace(closed, collection_id=closed.collection_id + 1)
+            )
+        assert not joint.mirror.has_pending

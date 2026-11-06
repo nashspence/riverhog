@@ -506,7 +506,7 @@ def _assert_late_cache_child(tmp_path, monkeypatch, phase, *, database_url=None)
             work = pool.submit(_unit, joint.actor, opened)
             try:
                 assert entered.wait(timeout=5)
-                _terminal(joint)
+                selected = _terminal(joint)
                 assert joint.actor.case.service._retrieval_cache.release(owner="joint-cache") == 0
                 if phase == "part":
                     # The original part checkpoint may settle, but terminal
@@ -527,6 +527,8 @@ def _assert_late_cache_child(tmp_path, monkeypatch, phase, *, database_url=None)
                     before[0][0],
                 )
                 assert _cache_state(joint)[-1] > 0
+                assert joint.writer.drain_terminal(selected) == "pending"
+                assert joint.writer.has_pending and _effects(joint) == before
             finally:
                 release.set()
                 assert finished.wait(timeout=5)
@@ -599,3 +601,148 @@ def test_one_logical_checkpoint_confirms_all_original_cache_segments_once(
         assert retired == parts
         assert [row[1] for row in _effects(joint)] == ["complete"]
         assert _stored(joint.actor) == (completed.to_json(), [])
+
+
+def _assert_terminal_cache_actor(tmp_path, monkeypatch, kind, mode, phase, *, database_url=None):
+    with _writing(tmp_path, monkeypatch, kind, mode=mode, database_url=database_url) as joint:
+        opened = None if phase == "begin" else _open(joint.actor)
+        execute = joint.candidate.execute_write
+        entered, release = threading.Event(), threading.Event()
+        calls = []
+
+        def held(invocation, **arguments):
+            calls.append(invocation)
+            if invocation.operation.kind == phase:
+                entered.set()
+                assert release.wait(timeout=10)
+            return execute(invocation, **arguments)
+
+        monkeypatch.setattr(joint.candidate, "execute_write", held)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = (
+                pool.submit(_open, joint.actor)
+                if opened is None
+                else pool.submit(_unit, joint.actor, opened)
+            )
+            try:
+                assert entered.wait(timeout=5)
+                selected = _terminal(joint)
+                before = _cache_state(joint)
+                assert before[-1] > 0 and joint.writer.has_pending
+                assert joint.writer.drain_terminal(selected) == "busy"
+                assert not future.done() and _cache_state(joint) == before
+            finally:
+                release.set()
+            if phase == "part":
+                with pytest.raises(Conflict, match="admission is closed"):
+                    future.result(timeout=5)
+            else:
+                checkpoint = future.result(timeout=5)
+                assert (checkpoint.completed is not None) == (phase == "complete")
+        before, physical, checkpoint = _cache_state(joint), list(calls), _stored(joint.actor)
+        assert before[:2] == ("settled", False)
+        assert joint.mirror.has_pending
+        for _ in range(2):
+            assert joint.writer.drain_terminal(selected) == "pending"
+            assert _cache_state(joint) == before and calls == physical
+            assert _stored(joint.actor) == checkpoint
+        assert joint.actor.case.service._retrieval_cache.release(owner="joint-cache") == 0
+        assert joint.writer.has_pending and _cache_state(joint)[-1] == before[-1]
+        with pytest.raises(Conflict, match="stopped for its terminal"):
+            joint.writer.execute_write_operation(joint.actor.seen[0].operation)
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("phase", ("begin", "part", "complete"))
+def test_original_joint_terminal_drain_retains_separate_cache_population_and_charge(
+    tmp_path, monkeypatch, kind, mode, phase
+):
+    _assert_terminal_cache_actor(tmp_path, monkeypatch, kind, mode, phase)
+
+
+def _assert_terminal_checkpoint_retry(tmp_path, monkeypatch, committed, *, database_url=None):
+    with _writing(tmp_path, monkeypatch, database_url=database_url) as joint:
+        opened = _open(joint.actor)
+        apply = joint.actor.admission.apply_reports
+        attempted = []
+
+        def lose(batch, *, apply_result):
+            if batch[0].result["outcome"] != "part" or attempted:
+                return apply(batch, apply_result=apply_result)
+            attempted.append(joint.writer._checkpoint_input)
+            if committed:
+                apply(batch, apply_result=apply_result)
+            raise OSError("injected original joint checkpoint reply loss")
+
+        monkeypatch.setattr(joint.actor.admission, "apply_reports", lose)
+        with pytest.raises(OSError, match="joint checkpoint"):
+            _unit(joint.actor, opened)
+        original = joint.writer._checkpoint_input
+        assert original is not None and attempted == [original]
+        with pytest.raises(Conflict, match="checkpoint report changed"):
+            _merge(joint, original[-1] + " ")
+        selected = _terminal(joint)
+        physical = list(joint.actor.seen)
+        assert joint.writer.drain_terminal(selected) == "pending"
+        assert joint.writer._checkpoint_input is None and not joint.writer._checkpoint_pending
+        assert _effects(joint) == [] and _stored(joint.actor) == (original[-1], [])
+        assert joint.actor.seen == physical
+        assert joint.mirror.has_pending and joint.writer.has_pending
+        assert _cache_state(joint)[-1] > 0
+
+
+@pytest.mark.parametrize("committed", (False, True))
+def test_terminal_retries_original_joint_checkpoint_before_releasing_cache_parts(
+    tmp_path, monkeypatch, committed
+):
+    _assert_terminal_checkpoint_retry(tmp_path, monkeypatch, committed)
+
+
+@pytest.mark.parametrize("phase", ("begin", "part"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_joint_terminal_retains_unknown_cache_admission_without_reconstructing_a_ticket(
+    tmp_path, monkeypatch, phase, committed
+):
+    with _writing(tmp_path, monkeypatch) as joint:
+        opened = None if phase == "begin" else _open(joint.actor)
+        owner = joint.cache if phase == "begin" else joint.writes
+        arm = owner.arm
+
+        def lose(*arguments, **keywords):
+            if committed:
+                arm(*arguments, **keywords)
+            raise OSError("injected original cache admission reply loss")
+
+        monkeypatch.setattr(owner, "arm", lose)
+        with pytest.raises(OSError, match="cache admission"):
+            _open(joint.actor) if opened is None else _unit(joint.actor, opened)
+        selected = _terminal(joint)
+        physical = list(joint.actor.seen)
+        assert joint.writer.drain_terminal(selected) == "pending"
+        assert joint.writer.drain_terminal(selected) == "pending"
+        assert joint.actor.seen == physical and joint.writer.has_pending
+        assert (
+            joint.mirror._cache_admission_pending
+            if phase == "begin"
+            else joint.writer._cache_admission_pending
+        )
+        with session_scope(joint.actor.case.factory) as session:
+            model = (
+                CachePopulationBeginRecord if phase == "begin" else CachePopulationWriteEffectRecord
+            )
+            assert len(list(session.scalars(select(model)))) == int(committed)
+
+
+def test_joint_terminal_can_close_local_actor_when_cache_reservation_was_refused(
+    tmp_path, monkeypatch
+):
+    with _writing(tmp_path, monkeypatch, budget=1) as joint:
+        checkpoint = _open(joint.actor)
+        assert joint.mirror.cache_begin_call_id is None
+        assert not joint.mirror.has_pending and not joint.writer.has_pending
+        physical = list(joint.actor.seen)
+        selected = _terminal(joint)
+        assert joint.writer.drain_terminal(selected) == "closed"
+        assert _stored(joint.actor) == (checkpoint.to_json(), [])
+        assert joint.actor.seen == physical

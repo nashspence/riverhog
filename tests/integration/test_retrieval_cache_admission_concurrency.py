@@ -845,3 +845,34 @@ def test_postgres_closed_cache_acceptance_serializes_original_receiving_evidence
         assert after["generation"] == before["generation"]
         assert after["populations"] == [("sealed", closed.generation)]
         assert joint.actor.seen == physical
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("phase", ("begin", "part", "complete"))
+def test_postgres_joint_terminal_retains_original_cache_population(
+    database_url, tmp_path, monkeypatch, kind, mode, phase
+):
+    from tests.unit.test_mirrored_archive_upload_writes import _assert_terminal_cache_actor
+
+    _assert_terminal_cache_actor(
+        tmp_path, monkeypatch, kind, mode, phase, database_url=database_url
+    )
+
+
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_joint_terminal_retries_original_checkpoint_before_cache_retirement(
+    database_url, tmp_path, monkeypatch, committed
+):
+    from tests.unit.test_mirrored_archive_upload_writes import _assert_terminal_checkpoint_retry
+
+    _assert_terminal_checkpoint_retry(tmp_path, monkeypatch, committed, database_url=database_url)
+
+
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_original_cache_begin_receiving_acknowledgement_loss(
+    database_url, tmp_path, monkeypatch, committed
+):
+    from tests.unit.test_cache_population_closure import _assert_begin_receiving_loss
+
+    _assert_begin_receiving_loss(tmp_path, monkeypatch, committed, database_url=database_url)

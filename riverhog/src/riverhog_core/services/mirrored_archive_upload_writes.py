@@ -7,6 +7,7 @@ import threading
 from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Literal
 
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_storage_adapter_protocol import (
@@ -24,13 +25,16 @@ from sqlalchemy.orm import Session
 from riverhog_core.app_permissions import Principal
 from riverhog_core.cache_write_grants import CacheWriteGrants
 from riverhog_core.catalog_models import CollectionUploadRecord
-from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
+from riverhog_core.domain.retrieval_cache import ClosedCachePopulation, RetrievalCacheReceipt
 from riverhog_core.ports.archive_objects import WriteSegmentCursor
 from riverhog_core.ports.archive_objects import WriteSession as ArchiveSession
-from riverhog_core.provider_write_dispatch import ArmedProviderWrite, WithdrawnProviderWrite
+from riverhog_core.provider_write_dispatch import (
+    ArmedProviderWrite,
+    ProviderWriteAdmissionRefused,
+    WithdrawnProviderWrite,
+)
 from riverhog_core.services.archive_upload_writes import ArchiveUploadWrites
 from riverhog_core.services.archive_write_admission import Guard
-from riverhog_core.services.cache_population_closure import ClosedCachePopulation
 from riverhog_core.services.cache_population_publication import (
     CachePopulationPublication,
     PublishedCachePopulation,
@@ -91,11 +95,54 @@ class MirroredArchiveUploadWrites:
         self._retire: deque[_CacheEffect] = deque()
         self._checkpoint_pending: list[_CacheEffect] = []
         self._cache_writable = True
+        self._cache_admission_pending = False
+        self._terminal_operation_id: str | None = None
+        self._checkpoint_input: tuple[str, int, str, str] | None = None
         self._closed: ClosedCachePopulation | None = None
         self._closure_acknowledged = False
         self._publication: PublishedCachePopulation | None = None
         self._publication_acknowledged = False
         self._publication_retirement_uncertain = False
+
+    @property
+    def has_pending(self) -> bool:
+        return (
+            self._archive.has_pending
+            or self._begin.has_pending
+            or self._cache_admission_pending
+            or bool(self._effects)
+            or bool(self._checkpoint_pending)
+            or self._checkpoint_input is not None
+            or self._publication is not None
+            and not self._publication_acknowledged
+        )
+
+    def drain_terminal(self, operation_id: str) -> Literal["busy", "pending", "closed"]:
+        """Receive only original child work; a cache population keeps its owner."""
+        if not self._lock.acquire(blocking=False):
+            return "busy"
+        try:
+            if (
+                self._terminal_operation_id is not None
+                and self._terminal_operation_id != operation_id
+            ):
+                raise Conflict("joint write actor has another terminal request")
+            status = self._begin.drain_terminal(operation_id)
+            if status == "busy":
+                return "busy"
+            self._terminal_operation_id = operation_id
+            if self._checkpoint_input is not None:
+                kind, collection_id, volume_id, checkpoint = self._checkpoint_input
+                self._merge(
+                    kind,
+                    collection_id=collection_id,
+                    volume_id=volume_id,
+                    checkpoint_json=checkpoint,
+                )
+            self.flush_cache_reports()
+            return "pending" if self.has_pending or status == "pending" else "closed"
+        finally:
+            self._lock.release()
 
     def _cache_operation(
         self, operation: WritePartOperation | CompleteWriteOperation
@@ -168,6 +215,12 @@ class MirroredArchiveUploadWrites:
         self, operation: WriteOperation, *, content: bytes = b""
     ) -> WriteExecutionResult:
         with self._lock:
+            if self._terminal_operation_id is not None:
+                raise Conflict("joint write actor was stopped for its terminal request")
+            if self._cache_admission_pending:
+                raise Conflict("original joint cache admission remains unconfirmed")
+            if self._checkpoint_input is not None:
+                raise Conflict("original joint archive checkpoint remains unconfirmed")
             self.flush_cache_reports()
             if isinstance(operation, BeginWriteOperation):
                 if content:
@@ -183,6 +236,7 @@ class MirroredArchiveUploadWrites:
                 raise Conflict("joint cache write has no original begin identity")
             admitted = self._archive.arm_write_operation(operation)
             collection_id, object_id, epoch = self._archive.scope
+            self._cache_admission_pending = True
             try:
                 ticket = self._cache.arm(
                     collection_id,
@@ -198,7 +252,10 @@ class MirroredArchiveUploadWrites:
                     guard=self._guard,
                     validate_population=self._validate_population,
                 )
+                self._cache_admission_pending = False
             except BaseException as error:
+                if isinstance(error, ProviderWriteAdmissionRefused):
+                    self._cache_admission_pending = False
                 try:
                     self._archive.withdraw_admitted_write(admitted)
                 except Exception:
@@ -297,6 +354,10 @@ class MirroredArchiveUploadWrites:
 
     def _merge(self, kind: str, *, collection_id: int, volume_id: str, checkpoint_json: str) -> str:
         with self._lock:
+            original = (kind, collection_id, volume_id, checkpoint_json)
+            if self._checkpoint_input is not None and self._checkpoint_input != original:
+                raise Conflict("original joint archive checkpoint report changed")
+            self._checkpoint_input = original
             merge = (
                 self._archive.merge_pack_upload_checkpoint
                 if kind == "pack"
@@ -311,6 +372,7 @@ class MirroredArchiveUploadWrites:
                 if self._closed_confirmed_part(effect):
                     self._retire.append(effect)
             self._checkpoint_pending.clear()
+            self._checkpoint_input = None
             self._flush_preserving_failure()
             return result
 
@@ -373,6 +435,7 @@ class MirroredArchiveUploadWrites:
                     raise Conflict("joint cache population has no confirmed original completion")
                 self._closed = publisher.closure.accept(completed[0].ticket)
             publisher.closure.acknowledge(self._closed)
+            self._begin.acknowledge_transfer(self._closed)
             value = publisher.closure._value(self._closed)
             self._effects.pop(value["completion_call_id"], None)
             self._closure_acknowledged = True

@@ -17,6 +17,10 @@ from riverhog_protocol.errors import Conflict
 _T = TypeVar("_T")
 
 
+class ProviderWriteAdmissionRefused(Conflict):
+    """The original admission transaction rejected and rolled back before commit."""
+
+
 @dataclass(frozen=True, slots=True)
 class ClosedProviderWrite:
     """Private adapter-owner evidence, never a public caller's assertion.

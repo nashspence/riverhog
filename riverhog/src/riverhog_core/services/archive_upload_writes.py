@@ -31,13 +31,13 @@ from riverhog_core.ports.archive_objects import ArchiveObjectWriteExecutor
 from riverhog_core.provider_write_dispatch import (
     ArmedProviderWrite,
     ClosedProviderWrite,
+    ProviderWriteAdmissionRefused,
     ProviderWriteReport,
     WithdrawnProviderWrite,
 )
 from riverhog_core.services.archive_upload_drain import inspect_terminal_write_records
 from riverhog_core.services.archive_write_admission import (
     ArchiveWriteAdmission,
-    ArchiveWriteRefused,
     Guard,
 )
 from riverhog_core.stores.sqlalchemy_archive_upload_checkpoints import (
@@ -202,7 +202,7 @@ class ArchiveUploadWrites:
                     grants=self._grants,
                     guard=self._guard,
                 )
-            except ArchiveWriteRefused:
+            except ProviderWriteAdmissionRefused:
                 self._admission_pending = False
                 raise
             self._retained[ticket.call_id] = ticket

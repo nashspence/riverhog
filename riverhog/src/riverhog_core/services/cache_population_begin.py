@@ -41,7 +41,11 @@ from riverhog_core.catalog_models import (
     RetrievalCachePopulationClaimRecord,
     RetrievalCachePopulationRecord,
 )
-from riverhog_core.provider_write_dispatch import ArmedProviderWrite, WithdrawnProviderWrite
+from riverhog_core.provider_write_dispatch import (
+    ArmedProviderWrite,
+    ProviderWriteAdmissionRefused,
+    WithdrawnProviderWrite,
+)
 from riverhog_core.runtime_config import RetrievalCacheStoreRegistration
 from riverhog_core.services.app_keys import require_key_authorization
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
@@ -71,7 +75,7 @@ def _writer(session: Session) -> None:
         session.connection(execution_options={"sqlite_immediate_writer": True})
 
 
-class CacheDataReservationUnavailable(Conflict):
+class CacheDataReservationUnavailable(ProviderWriteAdmissionRefused):
     """Current authority is valid, but optional cache data capacity is unavailable."""
 
 
@@ -100,162 +104,176 @@ class CachePopulationBeginAdmission:
         if len(executor_id) != 64 or any(c not in "0123456789abcdef" for c in executor_id):
             raise ValueError("cache begin executor identity is invalid")
         if candidate.name != registration.name or not registration.admission_enabled:
-            raise Conflict("cache begin candidate is not enabled")
+            raise ProviderWriteAdmissionRefused("cache begin candidate is not enabled")
         nonce, call_id = secrets.token_hex(32), secrets.token_hex(32)
         with session_scope(self._factory) as session:
-            _writer(session)
-            key_fence = retain_upload_key(session, principal)
-            claim_id = retain_upload_claim(session, principal.id, principal.key_id)
-            guard(session)
-            upload, control = ArchiveWriteAdmission.require_forward_construction(
-                session, collection_id, epoch=epoch
-            )
-            if upload.initiated_by_principal_id != principal.id:
-                raise NotFound("cache begin construction owner is unavailable")
-            if not upload.use_cache:
-                raise Conflict("cache begin construction cannot accept payload")
-            validate_population(session, upload, object_id, expected_bytes)
-            source_store = upload.archive_store
-            key = (source_store, collection_id, object_id)
-            if (
-                session.get(ArchiveCopyRetirementRecord, (collection_id, source_store)) is not None
-                or session.get(CollectionDeletionRecord, collection_id) is not None
-            ):
-                raise Conflict("cache begin source is retiring")
-            if session.get(RetrievalCacheObjectRecord, key) is not None:
-                raise Conflict("cache begin placement is already published")
-            population = session.get(
-                RetrievalCachePopulationRecord, key, with_for_update=True, populate_existing=True
-            )
-            if population is None:
-                now = format_utc_timestamp(utc_now())
-                try:
-                    with session.begin_nested():
-                        session.add(
-                            RetrievalCachePopulationRecord(
-                                source_store=source_store,
-                                source_incarnation_id=upload.archive_incarnation_id,
-                                collection_id=collection_id,
-                                object_id=object_id,
-                                expected_bytes=expected_bytes,
-                                state="waiting",
-                                initiated_at=now,
-                                updated_at=now,
-                            )
-                        )
-                        session.flush()
-                except IntegrityError:
-                    pass
+            try:
+                _writer(session)
+                key_fence = retain_upload_key(session, principal)
+                claim_id = retain_upload_claim(session, principal.id, principal.key_id)
+                guard(session)
+                upload, control = ArchiveWriteAdmission.require_forward_construction(
+                    session, collection_id, epoch=epoch
+                )
+                if upload.initiated_by_principal_id != principal.id:
+                    raise NotFound("cache begin construction owner is unavailable")
+                if not upload.use_cache:
+                    raise Conflict("cache begin construction cannot accept payload")
+                validate_population(session, upload, object_id, expected_bytes)
+                source_store = upload.archive_store
+                key = (source_store, collection_id, object_id)
+                if (
+                    session.get(ArchiveCopyRetirementRecord, (collection_id, source_store))
+                    is not None
+                    or session.get(CollectionDeletionRecord, collection_id) is not None
+                ):
+                    raise Conflict("cache begin source is retiring")
+                if session.get(RetrievalCacheObjectRecord, key) is not None:
+                    raise Conflict("cache begin placement is already published")
                 population = session.get(
                     RetrievalCachePopulationRecord,
                     key,
                     with_for_update=True,
                     populate_existing=True,
                 )
-            if population is None:
-                raise Conflict("cache begin population is unavailable")
-            if (
-                population.expected_bytes != expected_bytes
-                or population.source_incarnation_id != upload.archive_incarnation_id
-                or population.state != "waiting"
-                or population.cache_store is not None
-                or population.begin_call_id is not None
-            ):
-                raise Conflict("cache begin original population changed")
-            if retains_cache_write(session, key):
-                raise Conflict("cache begin original effect is retained")
-            incarnation = require_storage_incarnation(session, "cache", candidate.name)
-            if (
-                incarnation != candidate.incarnation_id
-                or require_storage_incarnation(session, "archive", source_store)
-                != population.source_incarnation_id
-            ):
-                raise Conflict("cache begin original target incarnation changed")
-            operation = BeginWriteOperation(
-                request=candidate.population_write_request(
-                    source_store=source_store,
-                    collection_id=collection_id,
-                    object_id=object_id,
-                    expected_bytes=expected_bytes,
-                )
-            )
-            encoded = _json(
-                {
-                    "construction": json.loads(control.construction_json),
-                    "epoch": control.epoch,
-                    "owner": owner,
-                    "population_generation": population.generation,
-                    "source_incarnation_id": population.source_incarnation_id,
-                    "cache_store": candidate.name,
-                    "cache_incarnation_id": incarnation,
-                    "operation": operation.model_dump(mode="json"),
-                }
-            )
-            # Reserve both reports, the population continuation, and bounded
-            # source/receiver copies of the closed receipt and publication acknowledgement.
-            # The completion marker has one fixed-size original call identity.
-            charged = len(encoded.encode()) + 7 * grants.result_bytes + grants.cleanup_bytes + 64
-            require_cache_write_capacity(session, collection_id, charged=charged, grants=grants)
-            accounting = locked_cache_accounting(session, candidate.name)
-            if accounting.cache_incarnation_id != incarnation:
-                raise Conflict("cache begin accounting incarnation changed")
-            # Cache/accounting locks can wait behind unrelated collections. The
-            # earlier key/claim rows are retained; only recheck their current facts.
-            if key_fence is not None:
-                require_key_authorization(session, key_fence, for_update=False)
-            if (
-                retain_upload_claim(session, principal.id, principal.key_id, for_update=False)
-                != claim_id
-            ):
-                raise Conflict("cache begin execution authority changed")
-            if upload.custody_mode == "custody-transfer" and (
-                upload.lease_expires_at is None or upload.lease_expires_at <= utc_timestamp_now()
-            ):
-                raise Conflict("cache begin custody lease is not active")
-            budget = registration.admission_budget_bytes
-            if budget is not None and (
-                accounting.reserved_bytes + accounting.committed_bytes + expected_bytes > budget
-            ):
-                raise CacheDataReservationUnavailable("cache begin data reservation is exhausted")
-            now = format_utc_timestamp(utc_now())
-            accounting.reserved_bytes += expected_bytes
-            accounting.updated_at = now
-            population.begin_call_id = call_id
-            population.cache_store = candidate.name
-            population.cache_incarnation_id = incarnation
-            population.object_path = operation.request.object_path
-            population.state = "admitting"
-            population.updated_at = now
-            if session.get(RetrievalCachePopulationClaimRecord, (owner, *key)) is None:
-                session.add(
-                    RetrievalCachePopulationClaimRecord(
-                        owner=owner,
+                if population is None:
+                    now = format_utc_timestamp(utc_now())
+                    try:
+                        with session.begin_nested():
+                            session.add(
+                                RetrievalCachePopulationRecord(
+                                    source_store=source_store,
+                                    source_incarnation_id=upload.archive_incarnation_id,
+                                    collection_id=collection_id,
+                                    object_id=object_id,
+                                    expected_bytes=expected_bytes,
+                                    state="waiting",
+                                    initiated_at=now,
+                                    updated_at=now,
+                                )
+                            )
+                            session.flush()
+                    except IntegrityError:
+                        pass
+                    population = session.get(
+                        RetrievalCachePopulationRecord,
+                        key,
+                        with_for_update=True,
+                        populate_existing=True,
+                    )
+                if population is None:
+                    raise Conflict("cache begin population is unavailable")
+                if (
+                    population.expected_bytes != expected_bytes
+                    or population.source_incarnation_id != upload.archive_incarnation_id
+                    or population.state != "waiting"
+                    or population.cache_store is not None
+                    or population.begin_call_id is not None
+                ):
+                    raise Conflict("cache begin original population changed")
+                if retains_cache_write(session, key):
+                    raise Conflict("cache begin original effect is retained")
+                incarnation = require_storage_incarnation(session, "cache", candidate.name)
+                if (
+                    incarnation != candidate.incarnation_id
+                    or require_storage_incarnation(session, "archive", source_store)
+                    != population.source_incarnation_id
+                ):
+                    raise Conflict("cache begin original target incarnation changed")
+                operation = BeginWriteOperation(
+                    request=candidate.population_write_request(
                         source_store=source_store,
                         collection_id=collection_id,
                         object_id=object_id,
-                        created_at=now,
+                        expected_bytes=expected_bytes,
                     )
                 )
-            session.add(
-                CachePopulationBeginRecord(
-                    id=call_id,
-                    collection_id=collection_id,
-                    source_store=source_store,
-                    object_id=object_id,
-                    population_generation=population.generation,
-                    cache_store=candidate.name,
-                    cache_incarnation_id=incarnation,
-                    executor_id=executor_id,
-                    dispatch_sha256=_sha(nonce),
-                    request_sha256=_sha(encoded),
-                    request_json=encoded,
-                    state="armed",
-                    unresolved=True,
-                    control_bytes=charged,
-                    result_capacity_bytes=grants.result_bytes,
-                    cleanup_capacity_bytes=grants.cleanup_bytes,
+                encoded = _json(
+                    {
+                        "construction": json.loads(control.construction_json),
+                        "epoch": control.epoch,
+                        "owner": owner,
+                        "population_generation": population.generation,
+                        "source_incarnation_id": population.source_incarnation_id,
+                        "cache_store": candidate.name,
+                        "cache_incarnation_id": incarnation,
+                        "operation": operation.model_dump(mode="json"),
+                    }
                 )
-            )
+                # Reserve both reports, the population continuation, and bounded
+                # source/receiver copies of the closed receipt and publication acknowledgement.
+                # The completion marker has one fixed-size original call identity.
+                charged = (
+                    len(encoded.encode()) + 7 * grants.result_bytes + grants.cleanup_bytes + 64
+                )
+                require_cache_write_capacity(session, collection_id, charged=charged, grants=grants)
+                accounting = locked_cache_accounting(session, candidate.name)
+                if accounting.cache_incarnation_id != incarnation:
+                    raise Conflict("cache begin accounting incarnation changed")
+                # Cache/accounting locks can wait behind unrelated collections. The
+                # earlier key/claim rows are retained; only recheck their current facts.
+                if key_fence is not None:
+                    require_key_authorization(session, key_fence, for_update=False)
+                if (
+                    retain_upload_claim(session, principal.id, principal.key_id, for_update=False)
+                    != claim_id
+                ):
+                    raise Conflict("cache begin execution authority changed")
+                if upload.custody_mode == "custody-transfer" and (
+                    upload.lease_expires_at is None
+                    or upload.lease_expires_at <= utc_timestamp_now()
+                ):
+                    raise Conflict("cache begin custody lease is not active")
+                budget = registration.admission_budget_bytes
+                if budget is not None and (
+                    accounting.reserved_bytes + accounting.committed_bytes + expected_bytes > budget
+                ):
+                    raise CacheDataReservationUnavailable(
+                        "cache begin data reservation is exhausted"
+                    )
+                now = format_utc_timestamp(utc_now())
+                accounting.reserved_bytes += expected_bytes
+                accounting.updated_at = now
+                population.begin_call_id = call_id
+                population.cache_store = candidate.name
+                population.cache_incarnation_id = incarnation
+                population.object_path = operation.request.object_path
+                population.state = "admitting"
+                population.updated_at = now
+                if session.get(RetrievalCachePopulationClaimRecord, (owner, *key)) is None:
+                    session.add(
+                        RetrievalCachePopulationClaimRecord(
+                            owner=owner,
+                            source_store=source_store,
+                            collection_id=collection_id,
+                            object_id=object_id,
+                            created_at=now,
+                        )
+                    )
+                session.add(
+                    CachePopulationBeginRecord(
+                        id=call_id,
+                        collection_id=collection_id,
+                        source_store=source_store,
+                        object_id=object_id,
+                        population_generation=population.generation,
+                        cache_store=candidate.name,
+                        cache_incarnation_id=incarnation,
+                        executor_id=executor_id,
+                        dispatch_sha256=_sha(nonce),
+                        request_sha256=_sha(encoded),
+                        request_json=encoded,
+                        state="armed",
+                        unresolved=True,
+                        control_bytes=charged,
+                        result_capacity_bytes=grants.result_bytes,
+                        cleanup_capacity_bytes=grants.cleanup_bytes,
+                    )
+                )
+            except ProviderWriteAdmissionRefused:
+                raise
+            except Conflict as error:
+                raise ProviderWriteAdmissionRefused(str(error)) from error
         return ArmedProviderWrite(
             call_id=call_id,
             collection_id=collection_id,

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
 from typing import Any
 
 from riverhog_protocol.errors import Conflict, NotFound
@@ -28,6 +27,7 @@ from riverhog_core.catalog_models import (
     CollectionUploadRecord,
     RetrievalCachePopulationRecord,
 )
+from riverhog_core.domain.retrieval_cache import ClosedCachePopulation
 from riverhog_core.pack_upload import PackUploadCheckpoint
 from riverhog_core.provider_write_dispatch import ArmedProviderWrite
 from riverhog_core.raw_upload import RawUploadCheckpoint
@@ -38,15 +38,6 @@ from riverhog_core.services.cache_population_begin import (
     _writer,
 )
 from riverhog_core.services.cache_population_writes import CachePopulationWriteAdmission
-
-
-@dataclass(frozen=True, slots=True)
-class ClosedCachePopulation:
-    source_store: str
-    collection_id: int
-    object_id: str
-    generation: str
-    receipt_json: str
 
 
 class CachePopulationClosure:

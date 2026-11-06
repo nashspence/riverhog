@@ -26,7 +26,7 @@ from riverhog_core.catalog_models import (
     RetrievalCacheObjectRecord,
     StorageIncarnationRecord,
 )
-from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
+from riverhog_core.domain.retrieval_cache import ClosedCachePopulation, RetrievalCacheReceipt
 from riverhog_core.retrieval_cache_receipts import (
     parse_retrieval_cache_receipt,
     retrieval_cache_receipt_payload,
@@ -38,7 +38,6 @@ from riverhog_core.services.cache_population_begin import (
 )
 from riverhog_core.services.cache_population_closure import (
     CachePopulationClosure,
-    ClosedCachePopulation,
 )
 from riverhog_core.services.retrieval_cache_accounting import (
     adjust_cache_committed_bytes,

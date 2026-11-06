@@ -35,6 +35,7 @@ from riverhog_core.collection_construction import upload_construction
 from riverhog_core.provider_write_dispatch import (
     ArmedProviderWrite,
     ClosedProviderWrite,
+    ProviderWriteAdmissionRefused,
     ProviderWriteReport,
     WithdrawnProviderWrite,
 )
@@ -81,10 +82,6 @@ def initialize_archive_write_control(session: Session, upload: CollectionUploadR
             next_call="0",
         )
     )
-
-
-class ArchiveWriteRefused(Conflict):
-    """The original admission transaction rejected and rolled back before commit."""
 
 
 class ArchiveWriteAdmission:
@@ -368,7 +365,7 @@ class ArchiveWriteAdmission:
                     nonce=nonce,
                 )
             except Conflict as error:
-                raise ArchiveWriteRefused(str(error)) from error
+                raise ProviderWriteAdmissionRefused(str(error)) from error
         # No capability exists until the transaction's commit returned successfully.
         return ArmedProviderWrite(
             call_id=call_id,

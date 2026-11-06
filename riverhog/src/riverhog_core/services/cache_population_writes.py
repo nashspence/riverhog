@@ -43,7 +43,11 @@ from riverhog_core.catalog_models import (
     RetrievalCachePopulationClaimRecord,
     RetrievalCachePopulationRecord,
 )
-from riverhog_core.provider_write_dispatch import ArmedProviderWrite, WithdrawnProviderWrite
+from riverhog_core.provider_write_dispatch import (
+    ArmedProviderWrite,
+    ProviderWriteAdmissionRefused,
+    WithdrawnProviderWrite,
+)
 from riverhog_core.services.app_keys import require_key_authorization
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
 from riverhog_core.services.cache_population_begin import _json, _sha, _writer
@@ -86,164 +90,175 @@ class CachePopulationWriteAdmission:
             raise ValueError("cache session write owner or executor is invalid")
         call_id, nonce = secrets.token_hex(32), secrets.token_hex(32)
         with session_scope(self._factory) as session:
-            _writer(session)
-            key_fence = retain_upload_key(session, principal)
-            claim_id = retain_upload_claim(session, principal.id, principal.key_id)
-            guard(session)
-            upload, control = ArchiveWriteAdmission.require_forward_construction(
-                session, collection_id, epoch=epoch
-            )
-            if upload.initiated_by_principal_id != principal.id or not upload.use_cache:
-                raise NotFound("cache session write construction owner is unavailable")
-            validate_population(
-                session, upload, object_id, operation.request.session.expected_bytes
-            )
-            source_store = upload.archive_store
-            key = (source_store, collection_id, object_id)
-            if (
-                session.get(ArchiveCopyRetirementRecord, (collection_id, source_store)) is not None
-                or session.get(CollectionDeletionRecord, collection_id) is not None
-            ):
-                raise Conflict("cache session write source is retiring")
-            population = session.get(
-                RetrievalCachePopulationRecord, key, with_for_update=True, populate_existing=True
-            )
-            begin = session.get(
-                CachePopulationBeginRecord,
-                begin_call_id,
-                with_for_update=True,
-                populate_existing=True,
-            )
-            if population is None or begin is None:
-                raise NotFound("cache session write original population is unavailable")
-            if _sha(begin.request_json) != begin.request_sha256:
-                raise Conflict("cache session write original begin commitment changed")
-            original = json.loads(begin.request_json)
-            if (
-                begin.collection_id != collection_id
-                or begin.source_store != source_store
-                or begin.object_id != object_id
-                or population.generation != begin.population_generation
-                or population.begin_call_id != begin.id
-                or population.source_incarnation_id != original["source_incarnation_id"]
-                or population.cache_store != begin.cache_store
-                or population.cache_incarnation_id != begin.cache_incarnation_id
-                or population.state != "admitted"
-                or begin.cache_store != candidate.name
-                or begin.cache_incarnation_id != candidate.incarnation_id
-                or original["owner"] != owner
-                or original["epoch"] != epoch
-                or original["construction"] != json.loads(control.construction_json)
-                or session.get(RetrievalCachePopulationClaimRecord, (owner, *key)) is None
-            ):
-                raise Conflict("cache session write original ownership changed")
-            if (
-                begin.state != "settled"
-                or begin.unresolved
-                or begin.result_json is None
-                or begin.completion_call_id is not None
-            ):
-                raise Conflict("cache session write original begin is not writable")
-            report = json.loads(begin.result_json)
-            if report.get("outcome") != "session":
-                raise Conflict("cache session write has no original continuation")
-            continuation = WriteSession.model_validate(report["result"])
-            start = BeginWriteOperation.model_validate(original["operation"]).request
-            if (
-                operation.request.session != continuation
-                or population.write_token != continuation.write_token
-                or population.object_path != continuation.object_path
-                or population.expected_bytes != continuation.expected_bytes
-                or start.object_path != continuation.object_path
-                or start.expected_bytes != continuation.expected_bytes
-            ):
-                raise Conflict("cache session write original continuation changed")
-            if isinstance(operation, CompleteWriteOperation):
-                request = operation.request
+            try:
+                _writer(session)
+                key_fence = retain_upload_key(session, principal)
+                claim_id = retain_upload_claim(session, principal.id, principal.key_id)
+                guard(session)
+                upload, control = ArchiveWriteAdmission.require_forward_construction(
+                    session, collection_id, epoch=epoch
+                )
+                if upload.initiated_by_principal_id != principal.id or not upload.use_cache:
+                    raise NotFound("cache session write construction owner is unavailable")
+                validate_population(
+                    session, upload, object_id, operation.request.session.expected_bytes
+                )
+                source_store = upload.archive_store
+                key = (source_store, collection_id, object_id)
                 if (
-                    request.expected_bytes != start.expected_bytes
-                    or request.expected_content_type != start.content_type
-                    or request.required_identity_assertions != start.required_identity_assertions
-                    or request.expected_placement_policy != start.placement_policy
+                    session.get(ArchiveCopyRetirementRecord, (collection_id, source_store))
+                    is not None
+                    or session.get(CollectionDeletionRecord, collection_id) is not None
                 ):
-                    raise Conflict("cache completion original identity changed")
-                resource = "complete"
-            else:
-                if operation.request.stored_bytes > start.expected_bytes:
-                    raise Conflict("cache part exceeds its original population bytes")
-                resource = f"part:{operation.request.number}"
-            overlap = select(CachePopulationWriteEffectRecord.id).where(
-                CachePopulationWriteEffectRecord.begin_call_id == begin.id,
-                CachePopulationWriteEffectRecord.unresolved.is_(True),
-            )
-            if isinstance(operation, WritePartOperation):
-                overlap = overlap.where(
-                    (CachePopulationWriteEffectRecord.resource == resource)
-                    | (CachePopulationWriteEffectRecord.kind == "complete")
+                    raise Conflict("cache session write source is retiring")
+                population = session.get(
+                    RetrievalCachePopulationRecord,
+                    key,
+                    with_for_update=True,
+                    populate_existing=True,
                 )
-            if session.scalar(overlap.limit(1)) is not None:
-                raise Conflict("cache session write original lane is unresolved")
-            if (
-                require_storage_incarnation(session, "cache", candidate.name)
-                != begin.cache_incarnation_id
-                or require_storage_incarnation(session, "archive", source_store)
-                != population.source_incarnation_id
-            ):
-                raise Conflict("cache session write original target incarnation changed")
-            encoded = _json(
-                {
-                    "construction": original["construction"],
-                    "epoch": original["epoch"],
-                    "owner": owner,
-                    "begin_call_id": begin.id,
-                    "population_generation": begin.population_generation,
-                    "source_incarnation_id": original["source_incarnation_id"],
-                    "cache_store": begin.cache_store,
-                    "cache_incarnation_id": begin.cache_incarnation_id,
-                    "operation": operation.model_dump(mode="json"),
-                }
-            )
-            charged = len(encoded.encode()) + 2 * grants.result_bytes + grants.cleanup_bytes
-            require_cache_write_capacity(session, collection_id, charged=charged, grants=grants)
-            # Population/begin locks may have waited. Recheck retained authority
-            # without acquiring earlier locks again or renewing its lease.
-            if key_fence is not None:
-                require_key_authorization(session, key_fence, for_update=False)
-            if (
-                retain_upload_claim(session, principal.id, principal.key_id, for_update=False)
-                != claim_id
-            ):
-                raise Conflict("cache session write execution authority changed")
-            if upload.custody_mode == "custody-transfer" and (
-                upload.lease_expires_at is None or upload.lease_expires_at <= utc_timestamp_now()
-            ):
-                raise Conflict("cache session write custody lease is not active")
-            if isinstance(operation, CompleteWriteOperation):
-                begin.completion_call_id = call_id
-            incarnation = begin.cache_incarnation_id
-            session.add(
-                CachePopulationWriteEffectRecord(
-                    id=call_id,
-                    collection_id=collection_id,
-                    source_store=source_store,
-                    object_id=object_id,
-                    population_generation=begin.population_generation,
-                    cache_store=begin.cache_store,
-                    cache_incarnation_id=begin.cache_incarnation_id,
-                    begin_call_id=begin.id,
-                    kind=operation.kind,
-                    resource=resource,
-                    executor_id=executor_id,
-                    dispatch_sha256=_sha(nonce),
-                    request_sha256=_sha(encoded),
-                    request_json=encoded,
-                    state="armed",
-                    unresolved=True,
-                    control_bytes=charged,
-                    result_capacity_bytes=grants.result_bytes,
-                    cleanup_capacity_bytes=grants.cleanup_bytes,
+                begin = session.get(
+                    CachePopulationBeginRecord,
+                    begin_call_id,
+                    with_for_update=True,
+                    populate_existing=True,
                 )
-            )
+                if population is None or begin is None:
+                    raise NotFound("cache session write original population is unavailable")
+                if _sha(begin.request_json) != begin.request_sha256:
+                    raise Conflict("cache session write original begin commitment changed")
+                original = json.loads(begin.request_json)
+                if (
+                    begin.collection_id != collection_id
+                    or begin.source_store != source_store
+                    or begin.object_id != object_id
+                    or population.generation != begin.population_generation
+                    or population.begin_call_id != begin.id
+                    or population.source_incarnation_id != original["source_incarnation_id"]
+                    or population.cache_store != begin.cache_store
+                    or population.cache_incarnation_id != begin.cache_incarnation_id
+                    or population.state != "admitted"
+                    or begin.cache_store != candidate.name
+                    or begin.cache_incarnation_id != candidate.incarnation_id
+                    or original["owner"] != owner
+                    or original["epoch"] != epoch
+                    or original["construction"] != json.loads(control.construction_json)
+                    or session.get(RetrievalCachePopulationClaimRecord, (owner, *key)) is None
+                ):
+                    raise Conflict("cache session write original ownership changed")
+                if (
+                    begin.state != "settled"
+                    or begin.unresolved
+                    or begin.result_json is None
+                    or begin.completion_call_id is not None
+                ):
+                    raise Conflict("cache session write original begin is not writable")
+                report = json.loads(begin.result_json)
+                if report.get("outcome") != "session":
+                    raise Conflict("cache session write has no original continuation")
+                continuation = WriteSession.model_validate(report["result"])
+                start = BeginWriteOperation.model_validate(original["operation"]).request
+                if (
+                    operation.request.session != continuation
+                    or population.write_token != continuation.write_token
+                    or population.object_path != continuation.object_path
+                    or population.expected_bytes != continuation.expected_bytes
+                    or start.object_path != continuation.object_path
+                    or start.expected_bytes != continuation.expected_bytes
+                ):
+                    raise Conflict("cache session write original continuation changed")
+                if isinstance(operation, CompleteWriteOperation):
+                    request = operation.request
+                    if (
+                        request.expected_bytes != start.expected_bytes
+                        or request.expected_content_type != start.content_type
+                        or request.required_identity_assertions
+                        != start.required_identity_assertions
+                        or request.expected_placement_policy != start.placement_policy
+                    ):
+                        raise Conflict("cache completion original identity changed")
+                    resource = "complete"
+                else:
+                    if operation.request.stored_bytes > start.expected_bytes:
+                        raise Conflict("cache part exceeds its original population bytes")
+                    resource = f"part:{operation.request.number}"
+                overlap = select(CachePopulationWriteEffectRecord.id).where(
+                    CachePopulationWriteEffectRecord.begin_call_id == begin.id,
+                    CachePopulationWriteEffectRecord.unresolved.is_(True),
+                )
+                if isinstance(operation, WritePartOperation):
+                    overlap = overlap.where(
+                        (CachePopulationWriteEffectRecord.resource == resource)
+                        | (CachePopulationWriteEffectRecord.kind == "complete")
+                    )
+                if session.scalar(overlap.limit(1)) is not None:
+                    raise Conflict("cache session write original lane is unresolved")
+                if (
+                    require_storage_incarnation(session, "cache", candidate.name)
+                    != begin.cache_incarnation_id
+                    or require_storage_incarnation(session, "archive", source_store)
+                    != population.source_incarnation_id
+                ):
+                    raise Conflict("cache session write original target incarnation changed")
+                encoded = _json(
+                    {
+                        "construction": original["construction"],
+                        "epoch": original["epoch"],
+                        "owner": owner,
+                        "begin_call_id": begin.id,
+                        "population_generation": begin.population_generation,
+                        "source_incarnation_id": original["source_incarnation_id"],
+                        "cache_store": begin.cache_store,
+                        "cache_incarnation_id": begin.cache_incarnation_id,
+                        "operation": operation.model_dump(mode="json"),
+                    }
+                )
+                charged = len(encoded.encode()) + 2 * grants.result_bytes + grants.cleanup_bytes
+                require_cache_write_capacity(session, collection_id, charged=charged, grants=grants)
+                # Population/begin locks may have waited. Recheck retained authority
+                # without acquiring earlier locks again or renewing its lease.
+                if key_fence is not None:
+                    require_key_authorization(session, key_fence, for_update=False)
+                if (
+                    retain_upload_claim(session, principal.id, principal.key_id, for_update=False)
+                    != claim_id
+                ):
+                    raise Conflict("cache session write execution authority changed")
+                if upload.custody_mode == "custody-transfer" and (
+                    upload.lease_expires_at is None
+                    or upload.lease_expires_at <= utc_timestamp_now()
+                ):
+                    raise Conflict("cache session write custody lease is not active")
+                if isinstance(operation, CompleteWriteOperation):
+                    begin.completion_call_id = call_id
+                incarnation = begin.cache_incarnation_id
+                session.add(
+                    CachePopulationWriteEffectRecord(
+                        id=call_id,
+                        collection_id=collection_id,
+                        source_store=source_store,
+                        object_id=object_id,
+                        population_generation=begin.population_generation,
+                        cache_store=begin.cache_store,
+                        cache_incarnation_id=begin.cache_incarnation_id,
+                        begin_call_id=begin.id,
+                        kind=operation.kind,
+                        resource=resource,
+                        executor_id=executor_id,
+                        dispatch_sha256=_sha(nonce),
+                        request_sha256=_sha(encoded),
+                        request_json=encoded,
+                        state="armed",
+                        unresolved=True,
+                        control_bytes=charged,
+                        result_capacity_bytes=grants.result_bytes,
+                        cleanup_capacity_bytes=grants.cleanup_bytes,
+                    )
+                )
+            except ProviderWriteAdmissionRefused:
+                raise
+            except Conflict as error:
+                raise ProviderWriteAdmissionRefused(str(error)) from error
         return ArmedProviderWrite(
             call_id=call_id,
             collection_id=collection_id,

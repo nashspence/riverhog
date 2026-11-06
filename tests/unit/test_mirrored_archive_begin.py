@@ -117,6 +117,7 @@ def _joint(
                 assert int(original["expected_bytes"]) == expected_bytes
 
             mirror = MirroredArchiveBegin(
+                actor.case.factory,
                 archive=actor.journal,
                 cache=cache,
                 candidate=candidate,
