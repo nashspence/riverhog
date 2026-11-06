@@ -69,7 +69,11 @@ def _case(
         digest = hashlib.sha256(content).hexdigest()
         member = {"artifact_id": "1" * 64, "bytes": str(len(content)), "sha256": digest}
         if kind == "segment":
-            count, commitment = ordered_raw_part_commitment((digest,))
+            part_digests = [
+                hashlib.sha256(content[first : first + CHUNK_SIZE]).hexdigest()
+                for first in range(0, len(content), CHUNK_SIZE)
+            ]
+            count, commitment = ordered_raw_part_commitment(part_digests)
             member["raw_parts"] = {
                 "part_plaintext_bytes": str(CHUNK_SIZE),
                 "part_count": str(count),
@@ -97,7 +101,7 @@ def _case(
                 service.register_raw_part_digests(
                     collection_id,
                     CollectionUploadRawDigestBatchDocument(
-                        artifact_id=current["artifact_id"], first_part="0", sha256s=[digest]
+                        artifact_id=current["artifact_id"], first_part="0", sha256s=part_digests
                     ),
                 )
         volume = service.list_volumes(collection_id)["volumes"][0]

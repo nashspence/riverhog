@@ -48,12 +48,13 @@ def _joint(
     archive_root=None,
     cache_adapter=None,
     grants=None,
+    segment_bytes=64 * 1024,
 ):
     with (
         (
             nullcontext(cache_adapter)
             if cache_adapter is not None
-            else _filesystem(tmp_path / "cache")
+            else _filesystem(tmp_path / "cache", segment_bytes=segment_bytes)
         ) as adapter,
         _executor(adapter, mode) as transport,
     ):
@@ -85,6 +86,7 @@ def _joint(
             use_cache=True,
             existing_case=existing_case,
             archive_root=archive_root,
+            segment_bytes=segment_bytes,
         ) as actor:
             case = actor.case
             cache = CachePopulationBeginAdmission(case.factory)

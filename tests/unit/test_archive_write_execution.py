@@ -78,13 +78,15 @@ def _start(path: str = "archives/volume.age") -> WriteStartRequest:
 
 
 @contextmanager
-def _filesystem(root: Path) -> Iterator[FilesystemStorageAdapter]:
+def _filesystem(
+    root: Path, *, segment_bytes: int = 64 * 1024
+) -> Iterator[FilesystemStorageAdapter]:
     root.mkdir()
     provision_storage_root(root)
     with FilesystemStorageAdapter(
         FilesystemStorageAdapterConfig(
             root=root,
-            segment_bytes=64 * 1024,
+            segment_bytes=segment_bytes,
             read_chunk_bytes=64 * 1024,
             minimum_free_bytes=0,
         )

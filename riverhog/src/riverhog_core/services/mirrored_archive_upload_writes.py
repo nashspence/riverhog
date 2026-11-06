@@ -6,7 +6,7 @@ import secrets
 import threading
 from collections import deque
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 from riverhog_protocol.errors import Conflict, NotFound
@@ -55,6 +55,14 @@ class _CacheEffect:
     retirement_uncertain: bool = False
 
 
+@dataclass
+class _CacheForward:
+    original_archive: ArchiveUploadWrites
+    lock: threading.RLock = field(default_factory=threading.RLock)
+    writable: bool = True
+    terminal_operation_id: str | None = None
+
+
 class MirroredArchiveUploadWrites:
     """Execute sibling intents, retiring parts only after both owners confirm.
 
@@ -94,7 +102,7 @@ class MirroredArchiveUploadWrites:
         self._reports: deque[_CacheEffect] = deque()
         self._retire: deque[_CacheEffect] = deque()
         self._checkpoint_pending: list[_CacheEffect] = []
-        self._cache_writable = True
+        self._cache_forward = _CacheForward(archive)
         self._cache_admission_pending = False
         self._terminal_operation_id: str | None = None
         self._checkpoint_input: tuple[str, int, str, str] | None = None
@@ -103,6 +111,50 @@ class MirroredArchiveUploadWrites:
         self._publication: PublishedCachePopulation | None = None
         self._publication_acknowledged = False
         self._publication_retirement_uncertain = False
+
+    def continue_invocation(
+        self,
+        *,
+        archive: ArchiveUploadWrites,
+        principal: Principal,
+        grants: CacheWriteGrants,
+        guard: Guard,
+        validate_population: Callable[[Session, CollectionUploadRecord, str, int], None],
+    ) -> MirroredArchiveUploadWrites:
+        """Retain the volume's exact original begin, with fresh per-unit admission.
+
+        Each invocation keeps its own archive journal, cache child receiving and
+        current guards. The shared stop can only reduce optional forward work;
+        it grants neither a fresh provider call nor population closure.
+        """
+        with self._lock, self._cache_forward.lock:
+            if (
+                self._terminal_operation_id is not None
+                or self._cache_forward.terminal_operation_id is not None
+            ):
+                raise Conflict("joint write construction is fenced for its terminal request")
+            if archive is self._archive or archive.scope != self._archive.scope:
+                raise Conflict(
+                    "joint continuation requires another original invocation in its scope"
+                )
+            continuation = MirroredArchiveUploadWrites(
+                archive=archive,
+                begin=self._begin,
+                cache=self._cache,
+                candidate=self._candidate,
+                source_store=self._source_store,
+                owner=self._owner,
+                principal=principal,
+                grants=grants,
+                guard=guard,
+                validate_population=validate_population,
+            )
+            continuation._cache_forward = self._cache_forward
+            return continuation
+
+    def _stop_cache_forward(self) -> None:
+        with self._cache_forward.lock:
+            self._cache_forward.writable = False
 
     @property
     def has_pending(self) -> bool:
@@ -131,6 +183,14 @@ class MirroredArchiveUploadWrites:
             if status == "busy":
                 return "busy"
             self._terminal_operation_id = operation_id
+            with self._cache_forward.lock:
+                self._cache_forward.terminal_operation_id = operation_id
+            if self._archive is not self._cache_forward.original_archive:
+                own_status = self._archive.drain_terminal(operation_id)
+                if own_status == "busy":
+                    return "busy"
+                if own_status == "pending":
+                    status = "pending"
             if self._checkpoint_input is not None:
                 kind, collection_id, volume_id, checkpoint = self._checkpoint_input
                 self._merge(
@@ -151,7 +211,9 @@ class MirroredArchiveUploadWrites:
         if original is None or operation.request.session != original.result:
             raise Conflict("joint write does not use its original archive session")
         session = self._begin.cache_session
-        if not self._cache_writable or session is None:
+        with self._cache_forward.lock:
+            writable = self._cache_forward.writable
+        if not writable or session is None:
             return None
         if isinstance(operation, WritePartOperation):
             return WritePartOperation(
@@ -215,7 +277,9 @@ class MirroredArchiveUploadWrites:
         self, operation: WriteOperation, *, content: bytes = b""
     ) -> WriteExecutionResult:
         with self._lock:
-            if self._terminal_operation_id is not None:
+            with self._cache_forward.lock:
+                terminal = self._cache_forward.terminal_operation_id
+            if self._terminal_operation_id is not None or terminal is not None:
                 raise Conflict("joint write actor was stopped for its terminal request")
             if self._cache_admission_pending:
                 raise Conflict("original joint cache admission remains unconfirmed")
@@ -256,6 +320,8 @@ class MirroredArchiveUploadWrites:
             except BaseException as error:
                 if isinstance(error, ProviderWriteAdmissionRefused):
                     self._cache_admission_pending = False
+                else:
+                    self._stop_cache_forward()
                 try:
                     self._archive.withdraw_admitted_write(admitted)
                 except Exception:
@@ -284,7 +350,7 @@ class MirroredArchiveUploadWrites:
                 try:
                     effect.withdrawal = ticket.withdraw()
                 except Conflict:
-                    self._cache_writable = False
+                    self._stop_cache_forward()
                     if isinstance(error, Exception):
                         return result
                     raise error from None
@@ -294,7 +360,7 @@ class MirroredArchiveUploadWrites:
             self._reports.append(effect)
             expected_outcome = "part" if sibling.kind == "part" else "completed"
             if effect.response.execution != "closed" or effect.response.outcome != expected_outcome:
-                self._cache_writable = False
+                self._stop_cache_forward()
             self._flush_preserving_failure()
             return result
 

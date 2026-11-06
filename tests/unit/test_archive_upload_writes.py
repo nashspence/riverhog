@@ -53,6 +53,7 @@ def _actor(
     use_cache=False,
     existing_case=None,
     archive_root=None,
+    segment_bytes=64 * 1024,
 ):
     with (
         nullcontext(existing_case)
@@ -89,7 +90,12 @@ def _actor(
             else:
                 arguments["plan"] = parse_raw_volume_plan(row.plan_json)
                 arguments["target_part_plaintext_bytes"] = row.unit_plaintext_bytes
-                arguments["expected_part_sha256s"] = (hashlib.sha256(case.content).hexdigest(),)
+                arguments["expected_part_sha256s"] = tuple(
+                    hashlib.sha256(
+                        case.content[first : first + row.unit_plaintext_bytes]
+                    ).hexdigest()
+                    for first in range(0, len(case.content), row.unit_plaintext_bytes)
+                )
             passphrase_id = upload.passphrase_id
         root = archive_root or tmp_path / "provider"
         root.mkdir(exist_ok=archive_root is not None)
@@ -100,7 +106,7 @@ def _actor(
             FilesystemStorageAdapter(
                 FilesystemStorageAdapterConfig(
                     root=root,
-                    segment_bytes=64 * 1024,
+                    segment_bytes=segment_bytes,
                     read_chunk_bytes=64 * 1024,
                     minimum_free_bytes=0,
                 )
