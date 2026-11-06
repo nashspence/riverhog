@@ -136,16 +136,19 @@ class ArchiveUploadCleanup:
         collection_id: int,
         operation_id: str,
         *,
+        admit: bool = False,
         guard: Callable[[Session], None] | None = None,
     ) -> tuple[ArchiveWriteControlRecord, ArchiveUploadTerminalRecord]:
+        if admit and not callable(guard):
+            raise ValueError("cleanup admission requires a current disposal guard")
         control, terminal = lock_terminal_selection(
             session,
             collection_id,
             operation_id,
-            require_upload=guard is not None,
+            require_upload=admit,
             guard=guard,
         )
-        if guard is not None:
+        if admit:
             if terminal.phase not in {"cleanup-ready", "cleaning"}:
                 raise Conflict("upload terminal has no retained cleanup-ready decision")
             for model in (
@@ -302,7 +305,9 @@ class ArchiveUploadCleanup:
         encoded = request.model_dump_json()
         inventory_encoded = inventory_request.model_dump_json()
         with session_scope(self._factory) as session:
-            control, terminal = self._context(session, collection_id, operation_id, guard=guard)
+            control, terminal = self._context(
+                session, collection_id, operation_id, admit=True, guard=guard
+            )
             self._require_scope(request, control, operation_id)
             record = session.get(ArchiveCleanupPageRecord, operation_id)
             if record is not None:
@@ -364,7 +369,9 @@ class ArchiveUploadCleanup:
         """
         nonce = secrets.token_hex(32)
         with session_scope(self._factory) as session:
-            control, _ = self._context(session, collection_id, operation_id, guard=guard)
+            control, _ = self._context(
+                session, collection_id, operation_id, admit=True, guard=guard
+            )
             record = session.get(ArchiveCleanupPageRecord, operation_id)
             if record is None:
                 raise NotFound("upload terminal cleanup page is unavailable")

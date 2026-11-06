@@ -556,3 +556,24 @@ def test_new_attempt_budget_preserves_original_selection_and_every_earlier_charg
             assert len(records) == 2 and all(row.unresolved for row in records)
             assert sum(int(row.provider_requests) for row in records) == 7
             assert sum(int(row.in_flight) for row in records) == 3
+
+
+@pytest.mark.parametrize("action", ("select", "arm"))
+@pytest.mark.parametrize("guard", (None, False))
+def test_cleanup_admission_cannot_omit_its_runtime_disposal_guard(tmp_path, action, guard):
+    with _case(tmp_path) as case:
+        ready = _ready(case)
+        if action == "arm":
+            page = _select(ready)
+        with session_scope(case.factory) as session:
+            session.get(Terminal, ready.operation).phase = "draining"
+        with pytest.raises(ValueError, match="requires a current disposal guard"):
+            if action == "select":
+                _select(ready, guard=guard)
+            else:
+                _cleanup_arm(ready, page, guard=guard)
+        with session_scope(case.factory) as session:
+            assert session.get(Terminal, ready.operation).phase == "draining"
+            assert session.scalar(select(func.count()).select_from(Attempt)) == 0
+            if action == "select":
+                assert session.get(Page, ready.operation) is None
