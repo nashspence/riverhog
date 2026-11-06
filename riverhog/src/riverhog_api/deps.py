@@ -71,6 +71,7 @@ from riverhog_core.storage_incarnations import (
     reconcile_storage_incarnations,
 )
 from riverhog_core.stores.storage_adapter_archive_objects import (
+    StorageAdapterArchiveObjectCleanup,
     StorageAdapterArchiveObjectRangeStore,
     StorageAdapterArchiveResumableObjectStore,
     StorageAdapterImmutableArchiveObjectStore,
@@ -144,6 +145,7 @@ def _archive_store_binding(
 ) -> ArchiveStoreBinding:
     adapter = validated_storage_adapter(client)
     immutable = StorageAdapterImmutableArchiveObjectStore(adapter)
+    resumable = StorageAdapterArchiveResumableObjectStore(adapter)
     return ArchiveStoreBinding(
         incarnation_id=adapter.descriptor().storage_incarnation_id,
         store=StorageAdapterArchiveStore(
@@ -152,7 +154,9 @@ def _archive_store_binding(
             adapter=adapter,
             download_allowance=download_allowance,
         ),
-        resumable_objects=StorageAdapterArchiveResumableObjectStore(adapter),
+        resumable_objects=resumable,
+        resumable_writes=resumable,
+        object_cleanup=StorageAdapterArchiveObjectCleanup(adapter),
         immutable_objects=immutable,
         immutable_writes=immutable,
         object_ranges=StorageAdapterArchiveObjectRangeStore(adapter),
