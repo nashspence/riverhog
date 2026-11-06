@@ -2530,3 +2530,48 @@ def test_postgres_output_claim_expiry_rechecked_after_upload_lock(
                 tuple(getattr(upload, column.name) for column in upload.__table__.columns)
                 == original
             )
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("phase", ("begin", "complete"))
+def test_postgres_original_mutable_actor_receives_before_terminal_drain(
+    isolated_database_url, tmp_path, monkeypatch, kind, mode, phase
+):
+    from tests.unit.test_archive_upload_writes import _assert_original_terminal_drain
+
+    _assert_original_terminal_drain(
+        tmp_path, monkeypatch, kind, mode, phase, database_url=isolated_database_url
+    )
+
+
+@pytest.mark.parametrize("lock", ("upload", "control", "terminal"))
+def test_postgres_mutable_actor_terminal_fence_defers_actual_row_locks(
+    isolated_database_url, tmp_path, monkeypatch, lock
+):
+    from concurrent.futures import ThreadPoolExecutor
+
+    from riverhog_core.catalog_archive_write_models import (
+        ArchiveUploadTerminalRecord,
+        ArchiveWriteControlRecord,
+    )
+    from riverhog_core.catalog_models import CollectionUploadRecord
+
+    from tests.unit.test_archive_upload_writes import _actor, _open, _selected_terminal
+
+    with _actor(tmp_path, monkeypatch, "segment", database_url=isolated_database_url) as actor:
+        _open(actor)
+        selected = _selected_terminal(actor)
+        model, key = {
+            "upload": (CollectionUploadRecord, actor.case.collection_id),
+            "control": (ArchiveWriteControlRecord, actor.case.collection_id),
+            "terminal": (ArchiveUploadTerminalRecord, selected),
+        }[lock]
+        with session_scope(actor.case.factory) as session:
+            session.get(model, key, with_for_update=True)
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                assert (
+                    pool.submit(actor.journal.drain_terminal, selected).result(timeout=3) == "busy"
+                )
+            assert actor.journal._terminal_operation_id is None
+        assert actor.journal.drain_terminal(selected) == "closed"

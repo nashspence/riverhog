@@ -138,6 +138,7 @@ def _actor(
 
             executor = AuditedExecutor()
             journal = ArchiveUploadWrites(
+                case.factory,
                 admission=admission,
                 checkpoints=case.service._checkpoints,
                 executor=executor,
@@ -667,6 +668,7 @@ def test_archive_actor_refuses_copied_or_another_actors_admission(tmp_path, monk
         admitted = actor.journal.arm_write_operation(operation)
         seen = len(actor.seen)
         other = ArchiveUploadWrites(
+            actor.case.factory,
             admission=actor.admission,
             checkpoints=actor.case.service._checkpoints,
             executor=actor.executor,
@@ -749,3 +751,326 @@ def test_archive_actor_running_admission_cannot_execute_twice_or_be_withdrawn(
                 release.set()
             assert running.result(timeout=5).outcome == "no_effect"
         assert len(actor.seen) == seen + 1
+
+
+def _selected_terminal(actor):
+    return actor.admission.select_terminal(
+        actor.case.collection_id,
+        kind="cancel",
+        request={"fixture": "original-upload-actor"},
+        principal_id=_CREATOR.id,
+        grants=actor.case.service._config.archive_write,
+        guard=actor.case.service._payload_write_guard(actor.case.collection_id, _CREATOR),
+        validate_selection=lambda *args: None,
+    )
+
+
+def _assert_original_terminal_drain(tmp_path, monkeypatch, kind, mode, phase, *, database_url=None):
+    with _actor(tmp_path, monkeypatch, kind, mode=mode, database_url=database_url) as actor:
+        opened = _open(actor) if phase == "complete" else None
+        entered, release = threading.Event(), threading.Event()
+        execute = actor.executor.execute_write
+
+        def held(invocation, **arguments):
+            if invocation.operation.kind == phase:
+                entered.set()
+                assert release.wait(timeout=10)
+            return execute(invocation, **arguments)
+
+        monkeypatch.setattr(actor.executor, "execute_write", held)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = (
+                pool.submit(_open, actor) if opened is None else pool.submit(_unit, actor, opened)
+            )
+            try:
+                assert entered.wait(timeout=5)
+                assert actor.journal.has_pending
+                operation = _selected_terminal(actor)
+                before = _stored(actor)
+                assert actor.journal.drain_terminal(operation) == "busy"
+                assert not future.done() and _stored(actor) == before
+                with session_scope(actor.case.factory) as session:
+                    assert session.get(CollectionUploadRecord, actor.case.collection_id) is not None
+                    assert session.get(
+                        CollectionArchiveObjectUploadRecord,
+                        (actor.case.collection_id, actor.case.object_id),
+                    ).plan_json
+            finally:
+                release.set()
+            checkpoint = future.result(timeout=5)
+        assert _stored(actor) == (checkpoint.to_json(), [])
+        assert not actor.journal.has_pending
+        assert actor.journal.drain_terminal(operation) == "closed"
+        assert actor.journal.drain_terminal(operation) == "closed"
+        with pytest.raises(Conflict, match="another terminal"):
+            actor.journal.drain_terminal("f" * 64)
+        if phase == "begin":
+            assert checkpoint.completed is None
+            with pytest.raises(Conflict, match="stopped for its terminal"):
+                _unit(actor, checkpoint)
+        else:
+            assert checkpoint.completed is not None
+        assert _stored(actor) == (checkpoint.to_json(), [])
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("phase", ("begin", "complete"))
+def test_original_actor_drains_exact_late_begin_and_seal_without_provider_replay(
+    tmp_path, monkeypatch, kind, mode, phase
+):
+    _assert_original_terminal_drain(tmp_path, monkeypatch, kind, mode, phase)
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+def test_terminal_never_invents_a_checkpoint_for_an_unreceived_positive_response(
+    tmp_path, monkeypatch, kind
+):
+    with _actor(tmp_path, monkeypatch, kind) as actor:
+        method = "merge_pack_upload_checkpoint" if kind == "pack" else "merge_raw_upload_checkpoint"
+        merge = getattr(actor.journal, method)
+        entered, release = threading.Event(), threading.Event()
+
+        def held(**arguments):
+            entered.set()
+            assert release.wait(timeout=10)
+            return merge(**arguments)
+
+        monkeypatch.setattr(actor.journal, method, held)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(_open, actor)
+            try:
+                assert entered.wait(timeout=5)
+                assert actor.journal._report_input is None and actor.journal.has_pending
+                before = _stored(actor)
+                assert before[0] is None and len(before[1]) == 1
+                operation = _selected_terminal(actor)
+                calls = list(actor.seen)
+                assert actor.journal.drain_terminal(operation) == "pending"
+                assert actor.journal.drain_terminal(operation) == "pending"
+                assert actor.seen == calls and _stored(actor) == before
+            finally:
+                release.set()
+            checkpoint = future.result(timeout=5)
+        assert _stored(actor) == (checkpoint.to_json(), [])
+        assert actor.journal.drain_terminal(operation) == "closed"
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_terminal_retries_only_the_original_format_checkpoint_after_lost_report(
+    tmp_path, monkeypatch, kind, committed
+):
+    with _actor(tmp_path, monkeypatch, kind) as actor:
+        apply = actor.admission.apply_reports
+        attempted = []
+
+        def lose(batch, *, apply_result):
+            if batch[0].result["outcome"] != "session" or attempted:
+                return apply(batch, apply_result=apply_result)
+            attempted.append(actor.journal._report_input)
+            if committed:
+                apply(batch, apply_result=apply_result)
+            raise OSError("injected original checkpoint reply loss")
+
+        monkeypatch.setattr(actor.admission, "apply_reports", lose)
+        with pytest.raises(OSError, match="original checkpoint"):
+            _open(actor)
+        original = actor.journal._report_input
+        assert attempted == [original] and original is not None and actor.journal.has_pending
+        checkpoint, checkpoint_kind = original
+        with pytest.raises(Conflict, match="checkpoint report changed"):
+            actor.journal._report(checkpoint + " ", kind=checkpoint_kind)
+        with pytest.raises(Conflict, match="checkpoint report remains unconfirmed"):
+            actor.journal.arm_write_operation(actor.seen[0].operation)
+        operation = _selected_terminal(actor)
+        calls = list(actor.seen)
+        assert actor.journal.drain_terminal(operation) == "closed"
+        assert actor.seen == calls and not actor.journal.has_pending
+        assert _stored(actor) == (checkpoint, [])
+        assert actor.journal._report_input is None
+
+
+@pytest.mark.parametrize("phase", ("settlement", "retirement"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_terminal_retains_original_unused_proof_through_lost_acknowledgements(
+    tmp_path, monkeypatch, phase, committed
+):
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        _open(actor)
+        admitted = actor.journal.arm_write_operation(actor.seen[0].operation)
+        method = "settle_withdrawn" if phase == "settlement" else "acknowledge_report"
+        original = getattr(actor.admission, method)
+        attempts = []
+
+        def lose(proof):
+            attempts.append(proof)
+            if len(attempts) == 1:
+                if committed:
+                    original(proof)
+                raise OSError("injected original withdrawal reply loss")
+            return original(proof)
+
+        monkeypatch.setattr(actor.admission, method, lose)
+        operation = _selected_terminal(actor)
+        calls = list(actor.seen)
+        with pytest.raises(OSError, match="withdrawal reply"):
+            actor.journal.drain_terminal(operation)
+        assert actor.journal.has_pending
+        assert actor.journal.drain_terminal(operation) == "closed"
+        assert attempts[0] is attempts[1]
+        assert actor.seen == calls and not actor.journal.has_pending
+        with pytest.raises(Conflict, match="live actor"):
+            actor.journal.execute_admitted_write(admitted)
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+def test_terminal_retains_positive_observation_without_execution_closure(
+    tmp_path, monkeypatch, kind
+):
+    with _actor(tmp_path, monkeypatch, kind) as actor:
+        execute = actor.executor.execute_write
+
+        def unknown(invocation, **arguments):
+            response = execute(invocation, **arguments)
+            return (
+                response.model_copy(update={"execution": "unknown"})
+                if invocation.operation.kind == "begin"
+                else response
+            )
+
+        monkeypatch.setattr(actor.executor, "execute_write", unknown)
+        checkpoint = _open(actor)
+        before = _stored(actor)
+        assert before[0] == checkpoint.to_json() and before[1][0][1:3] == ("uncertain", True)
+        assert actor.journal.has_pending and not actor.journal._pending
+        operation = _selected_terminal(actor)
+        calls = list(actor.seen)
+        for _ in range(3):
+            assert actor.journal.drain_terminal(operation) == "pending"
+            assert actor.seen == calls and _stored(actor) == before
+
+
+@pytest.mark.parametrize("error_type", (OSError, KeyboardInterrupt, SystemExit))
+@pytest.mark.parametrize("committed", (False, True))
+def test_terminal_retains_unconfirmed_original_admission_without_dispatch(
+    tmp_path, monkeypatch, error_type, committed
+):
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        _open(actor)
+        arm = actor.admission.arm
+        operation = actor.seen[0].operation
+
+        def lose(*args, **kwargs):
+            if committed:
+                arm(*args, **kwargs)
+            raise error_type("injected original admission reply loss")
+
+        monkeypatch.setattr(actor.admission, "arm", lose)
+        calls = list(actor.seen)
+        with pytest.raises(error_type, match="admission reply"):
+            actor.journal.arm_write_operation(operation)
+        assert actor.journal.has_pending and actor.journal._admission_pending
+        selected = _selected_terminal(actor)
+        for _ in range(2):
+            assert actor.journal.drain_terminal(selected) == "pending"
+        assert actor.seen == calls
+        assert len(_stored(actor)[1]) == int(committed)
+
+
+def test_confirmed_transactional_refusal_does_not_create_an_uncertain_admission(
+    tmp_path, monkeypatch
+):
+    from riverhog_core.services.archive_write_admission import ArchiveWriteRefused
+
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        _open(actor)
+        selected = _selected_terminal(actor)
+        with pytest.raises(ArchiveWriteRefused, match="admission is closed"):
+            actor.journal.arm_write_operation(actor.seen[0].operation)
+        assert not actor.journal.has_pending
+        assert actor.journal.drain_terminal(selected) == "closed"
+
+
+def test_terminal_withdraws_one_unused_effect_per_turn(tmp_path, monkeypatch):
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        completed = _unit(actor, _open(actor))
+        operation = next(call.operation for call in actor.seen if call.operation.kind == "part")
+        for number in (1, 2, 3):
+            actor.journal.arm_write_operation(
+                operation.model_copy(
+                    update={"request": operation.request.model_copy(update={"number": number})}
+                )
+            )
+        selected = _selected_terminal(actor)
+        calls = list(actor.seen)
+        for count, status in ((2, "pending"), (1, "pending"), (0, "closed")):
+            assert actor.journal.drain_terminal(selected) == status
+            assert len(_stored(actor)[1]) == count
+            assert len(actor.journal._retained) == count and actor.seen == calls
+        assert _stored(actor) == (completed.to_json(), [])
+
+
+def test_terminal_validation_failure_does_not_poison_original_actor(tmp_path, monkeypatch):
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        _open(actor)
+        with pytest.raises(Conflict, match="selection is not current"):
+            actor.journal.drain_terminal("f" * 64)
+        assert actor.journal._terminal_operation_id is None
+        admitted = actor.journal.arm_write_operation(actor.seen[0].operation)
+        actor.journal.withdraw_admitted_write(admitted)
+        selected = _selected_terminal(actor)
+        epoch = actor.journal._epoch
+        actor.journal._epoch = "f" * 64
+        with pytest.raises(Conflict, match="epoch differs"):
+            actor.journal.drain_terminal(selected)
+        assert actor.journal._terminal_operation_id is None
+        actor.journal._epoch = epoch
+        assert actor.journal.drain_terminal(selected) == "closed"
+
+
+def test_terminal_defers_actual_sqlite_writer_without_installing_a_local_fence(
+    tmp_path, monkeypatch
+):
+    with _actor(tmp_path, monkeypatch, "segment") as actor:
+        _open(actor)
+        selected = _selected_terminal(actor)
+        with session_scope(actor.case.factory) as session:
+            session.connection(execution_options={"sqlite_immediate_writer": True})
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                assert (
+                    pool.submit(actor.journal.drain_terminal, selected).result(timeout=3) == "busy"
+                )
+            assert actor.journal._terminal_operation_id is None
+        assert actor.journal.drain_terminal(selected) == "closed"
+
+
+def test_held_original_mutable_provider_does_not_block_an_independent_construction(
+    tmp_path, monkeypatch
+):
+    other_path = tmp_path / "independent"
+    other_path.mkdir()
+    with (
+        _actor(tmp_path, monkeypatch, "segment") as first,
+        _actor(other_path, monkeypatch, "segment") as second,
+    ):
+        execute = first.executor.execute_write
+        entered, release = threading.Event(), threading.Event()
+
+        def held(invocation, **arguments):
+            if invocation.operation.kind == "begin":
+                entered.set()
+                assert release.wait(timeout=10)
+            return execute(invocation, **arguments)
+
+        monkeypatch.setattr(first.executor, "execute_write", held)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(_open, first)
+            try:
+                assert entered.wait(timeout=5)
+                checkpoint = _open(second)
+                assert checkpoint.completed is None and not second.journal.has_pending
+                assert not future.done()
+            finally:
+                release.set()
+            future.result(timeout=5)

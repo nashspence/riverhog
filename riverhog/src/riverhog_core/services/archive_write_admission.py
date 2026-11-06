@@ -83,6 +83,10 @@ def initialize_archive_write_control(session: Session, upload: CollectionUploadR
     )
 
 
+class ArchiveWriteRefused(Conflict):
+    """The original admission transaction rejected and rolled back before commit."""
+
+
 class ArchiveWriteAdmission:
     def __init__(self, session_factory: SessionFactory) -> None:
         self._factory = session_factory
@@ -316,48 +320,55 @@ class ArchiveWriteAdmission:
         _positive(result_capacity_bytes)
         nonce = secrets.token_hex(32)
         with session_scope(self._factory) as session:
-            _writer(session)
-            guard(session)
-            upload, control = self.require_forward_construction(session, collection_id, epoch=epoch)
-            volume = self._volume(session, collection_id, object_id)
-            operation = arguments.get("operation")
-            if operation is not None:
-                if not isinstance(operation, Mapping) or operation.get("kind") != kind:
-                    raise Conflict("archive write provider operation changed")
-                request = operation.get("request")
-                if not isinstance(request, Mapping):
-                    raise Conflict("archive write provider request is invalid")
-                target = request if kind in {"begin", "lookup"} else request.get("session")
-                if (
-                    not isinstance(target, Mapping)
-                    or target.get("object_path") != volume.object_path
+            try:
+                _writer(session)
+                guard(session)
+                upload, control = self.require_forward_construction(
+                    session, collection_id, epoch=epoch
+                )
+                volume = self._volume(session, collection_id, object_id)
+                operation = arguments.get("operation")
+                if operation is not None:
+                    if not isinstance(operation, Mapping) or operation.get("kind") != kind:
+                        raise Conflict("archive write provider operation changed")
+                    request = operation.get("request")
+                    if not isinstance(request, Mapping):
+                        raise Conflict("archive write provider request is invalid")
+                    target = request if kind in {"begin", "lookup"} else request.get("session")
+                    if (
+                        not isinstance(target, Mapping)
+                        or target.get("object_path") != volume.object_path
+                    ):
+                        raise Conflict(
+                            "archive write provider target differs from the original volume"
+                        )
+                preparation = session.get(ArchiveWritePreparationRecord, (collection_id, object_id))
+                if preparation is None:
+                    raise Conflict("archive write original preparation is missing")
+                if preparation.identity_json != _json(
+                    {
+                        "kind": volume.kind,
+                        "object_path": volume.object_path,
+                        "plan_sha256": volume.plan_sha256,
+                    }
                 ):
-                    raise Conflict("archive write provider target differs from the original volume")
-            preparation = session.get(ArchiveWritePreparationRecord, (collection_id, object_id))
-            if preparation is None:
-                raise Conflict("archive write original preparation is missing")
-            if preparation.identity_json != _json(
-                {
-                    "kind": volume.kind,
-                    "object_path": volume.object_path,
-                    "plan_sha256": volume.plan_sha256,
-                }
-            ):
-                raise Conflict("archive write prepared volume identity changed")
-            call_id, nonce, request_sha256 = self._reserve_effect(
-                session,
-                control,
-                preparation,
-                collection_id=collection_id,
-                object_id=object_id,
-                kind=kind,
-                resource=resource,
-                arguments=arguments,
-                executor_id=executor_id,
-                result_capacity_bytes=result_capacity_bytes,
-                grants=grants,
-                nonce=nonce,
-            )
+                    raise Conflict("archive write prepared volume identity changed")
+                call_id, nonce, request_sha256 = self._reserve_effect(
+                    session,
+                    control,
+                    preparation,
+                    collection_id=collection_id,
+                    object_id=object_id,
+                    kind=kind,
+                    resource=resource,
+                    arguments=arguments,
+                    executor_id=executor_id,
+                    result_capacity_bytes=result_capacity_bytes,
+                    grants=grants,
+                    nonce=nonce,
+                )
+            except Conflict as error:
+                raise ArchiveWriteRefused(str(error)) from error
         # No capability exists until the transaction's commit returned successfully.
         return ArmedProviderWrite(
             call_id=call_id,
