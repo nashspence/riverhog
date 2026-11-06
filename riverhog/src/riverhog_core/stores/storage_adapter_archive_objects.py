@@ -5,6 +5,10 @@ from collections.abc import Iterator
 
 from riverhog_storage_adapter_protocol import (
     BinaryContent,
+    CleanupExecutionResult,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
+    CleanupInvocation,
     CompletedWriteLookupRequest,
     ObjectHeadRequest,
     ObjectLocator,
@@ -45,6 +49,19 @@ from riverhog_core.ports.archive_objects import (
     WriteSegmentReceipt,
     WriteSession,
 )
+
+
+class StorageAdapterArchiveObjectCleanup:
+    """Cleanup over exactly one selected adapter, without a mirrored cache side effect."""
+
+    def __init__(self, adapter: StorageAdapterPort) -> None:
+        self._adapter = validated_storage_adapter(adapter)
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
+        return self._adapter.list_cleanup_candidates(request)
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        return self._adapter.execute_cleanup(invocation)
 
 
 class StorageAdapterArchiveResumableObjectStore:
@@ -369,6 +386,7 @@ def _raise_identity_conflict(exc: StorageAdapterRejection) -> None:
 
 
 __all__ = [
+    "StorageAdapterArchiveObjectCleanup",
     "StorageAdapterArchiveResumableObjectStore",
     "StorageAdapterArchiveObjectRangeStore",
     "StorageAdapterImmutableArchiveObjectStore",

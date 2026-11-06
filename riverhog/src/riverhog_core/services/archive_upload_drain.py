@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -55,30 +56,36 @@ class TerminalWriteRecords:
     cache_write_retained: bool
 
 
-def inspect_terminal_write_records(
-    session: Session, collection_id: int, operation_id: str, *, nowait: bool = False
-) -> TerminalWriteRecords:
-    """Observe indexed owner facts under the closed construction/terminal lock.
-
-    This does not adopt forward admission's archive-only predicate: an uncertain
-    optional cache effect must remain visible to terminal drainage independently
-    of whether archive preservation can continue.
-    """
+def lock_terminal_selection(
+    session: Session,
+    collection_id: int,
+    operation_id: str,
+    *,
+    nowait: bool = False,
+    require_upload: bool = True,
+    guard: Callable[[Session], None] | None = None,
+) -> tuple[ArchiveWriteControlRecord, ArchiveUploadTerminalRecord]:
+    """Lock the exact original selection; receiving can outlive its upload row."""
     _writer(session, defer_if_busy=nowait)
+    if guard is not None:
+        guard(session)
     upload = session.scalar(
         ArchiveWriteAdmission._upload_query(collection_id)
         .with_for_update(nowait=nowait)
         .execution_options(populate_existing=True)
     )
-    if upload is None:
+    if upload is None and require_upload:
         raise NotFound("upload terminal construction is unavailable")
-    session.get(
+    control = session.get(
         ArchiveWriteControlRecord,
         collection_id,
         with_for_update={"nowait": nowait},
         populate_existing=True,
     )
-    control = ArchiveWriteAdmission._control(session, upload)
+    if upload is not None:
+        control = ArchiveWriteAdmission._control(session, upload)
+    if control is None:
+        raise NotFound("upload terminal construction is unavailable")
     if control.gate != "closed" or control.terminal_id != operation_id:
         raise Conflict("upload terminal selection is not current")
     terminal = session.get(
@@ -105,6 +112,20 @@ def inspect_terminal_write_records(
             raise Conflict("upload terminal original selection changed")
     except (KeyError, TypeError, ValueError) as exc:
         raise Conflict("upload terminal original request is invalid") from exc
+
+    return control, terminal
+
+
+def inspect_terminal_write_records(
+    session: Session, collection_id: int, operation_id: str, *, nowait: bool = False
+) -> TerminalWriteRecords:
+    """Observe indexed owner facts under the closed construction/terminal lock.
+
+    This does not adopt forward admission's archive-only predicate: an uncertain
+    optional cache effect must remain visible to terminal drainage independently
+    of whether archive preservation can continue.
+    """
+    lock_terminal_selection(session, collection_id, operation_id, nowait=nowait)
 
     def retained(model: EffectModel, *, unclosed: bool) -> bool:
         return session.scalar(_record_query(model, collection_id, unclosed=unclosed)) is not None
