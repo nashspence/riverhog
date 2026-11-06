@@ -20,6 +20,7 @@ from riverhog_storage_adapter_protocol import (
     ObjectHeadRequest,
     ObjectLocator,
     ObjectReadRequest,
+    OpenWriteListRequest,
     ReadPreparationRequest,
     SmallObjectWriteRequest,
     WriteCompleteRequest,
@@ -88,6 +89,7 @@ def _expected_checks(descriptor: AdapterDescriptor) -> tuple[str, ...]:
     if descriptor.maximum_segment_count is None or descriptor.maximum_segment_count >= 2:
         checks.append("sparse-write-reconciliation")
     checks.append("write-begin-recovery")
+    checks.append("read-only-open-write-observation")
     checks.append("write-segment-idempotent-authority")
     if descriptor.maximum_segment_count is None or descriptor.maximum_segment_count >= 2:
         checks.append("write-traversal-invalidation")
@@ -275,6 +277,29 @@ def run_storage_adapter_conformance(
         if recovered_session != session:
             raise AssertionError("lost begin response created a different write session")
         checks.append("write-begin-recovery")
+        continuation = None
+        seen_continuations: set[str] = set()
+        observed_tokens: set[str] = set()
+        while True:
+            page = continuation_client.list_open_writes(
+                OpenWriteListRequest(
+                    object_path=write_path,
+                    target_incarnation=descriptor.storage_incarnation_id,
+                    maximum_items=1,
+                    continuation=continuation,
+                )
+            )
+            observed_tokens.update(item.write_token for item in page.observations)
+            if page.exhausted:
+                break
+            assert page.continuation is not None
+            if page.continuation in seen_continuations:
+                raise AssertionError("open-write observation repeated its continuation")
+            seen_continuations.add(page.continuation)
+            continuation = page.continuation
+        if observed_tokens != {session.write_token}:
+            raise AssertionError("open-write observation differs from the exact known session")
+        checks.append("read-only-open-write-observation")
         first_segment = client.write_segment(
             session=session,
             number=1,

@@ -27,6 +27,7 @@ from typing import Any, Self, cast
 
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
+    BeginWriteOperation,
     BinaryContent,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
@@ -40,6 +41,9 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
+    OpenWriteListRequest,
+    OpenWriteObservation,
+    OpenWritePage,
     ReadPreparationRequest,
     ReadReady,
     ReadStatus,
@@ -55,6 +59,8 @@ from riverhog_storage_adapter_protocol import (
     WriteSession,
     WriteStartRequest,
     execute_write_invocation,
+    validate_open_write_page_response,
+    write_operation_sha256,
 )
 from time_formats import format_utc_timestamp, utc_now
 
@@ -770,6 +776,56 @@ class FilesystemStorageAdapter:
             return self._completed_receipt(record)
         finally:
             gate.release_read()
+
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:
+        self._require_open()
+        if request.target_incarnation != self._incarnation_id:
+            raise StorageIncarnationError("filesystem storage incarnation differs from observation")
+        if request.continuation is not None:
+            raise StorageAdapterRejection(
+                "traversal_invalidated", "unknown open-write continuation"
+            )
+        key = self._object_key(request.object_path)
+        observations: tuple[OpenWriteObservation, ...] = ()
+        gate = self._gate(key)
+        gate.acquire_read()
+        try:
+            state_path = self._write_dir_by_key(key) / "state.json"
+            if state_path.exists():
+                state = self._read_write_state(state_path, request.object_path)
+                start = WriteStartRequest(
+                    object_path=state.object_path,
+                    expected_bytes=state.expected_bytes,
+                    content_type=state.content_type,
+                    required_identity_assertions=state.required_identity_assertions,
+                    placement_policy=state.placement_policy,
+                )
+                observations = (
+                    OpenWriteObservation(
+                        write_token=state.token,
+                        begin_request_sha256=write_operation_sha256(
+                            BeginWriteOperation(request=start)
+                        ),
+                    ),
+                )
+        finally:
+            gate.release_read()
+        page = OpenWritePage(
+            object_path=request.object_path,
+            target_incarnation=self._incarnation_id,
+            observations=observations,
+            scanned_items=len(observations),
+            exhausted=True,
+        )
+        if (
+            len(page.model_dump_json(exclude_none=True).encode("utf-8"))
+            > request.maximum_response_bytes
+        ):
+            raise StorageAdapterRejection(
+                "request_too_large", "open-write response grant is too small"
+            )
+        validate_open_write_page_response(request, page)
+        return page
 
     def abort_write(self, session: WriteSession) -> None:
         self._require_open()

@@ -24,6 +24,7 @@ from riverhog_storage_adapter_protocol import (
     ObjectHeadRequest,
     ObjectLocator,
     ObjectReadRequest,
+    OpenWriteListRequest,
     ReadPreparationRequest,
     ReadReadiness,
     ReadReady,
@@ -845,3 +846,144 @@ def test_s3_client_preserves_one_pass_request_bodies() -> None:
 
     assert client.meta.config.request_checksum_calculation == "when_required"
     assert client.meta.config.s3["payload_signing_enabled"] is False
+
+
+class _OpenWritePageClient(_FakeS3Client):
+    def __init__(self, count: int) -> None:
+        super().__init__()
+        self.rows = [
+            {"Key": "owned/archive/volume", "UploadId": f"token-{index}"} for index in range(count)
+        ] + [
+            {"Key": "owned/archive/volume-extra", "UploadId": f"foreign-token-{index}"}
+            for index in range(3)
+        ]
+        self.positions = {
+            (row["Key"], row["UploadId"]): index for index, row in enumerate(self.rows)
+        }
+        self.list_requests: list[dict[str, Any]] = []
+        self.marker_reads = 0
+        self.response_override: dict[str, Any] | None = None
+
+    def get_object(self, **request: Any) -> dict[str, object]:
+        self.marker_reads += 1
+        return super().get_object(**request)
+
+    def list_multipart_uploads(self, **request: Any) -> dict[str, object]:
+        self.list_requests.append(request)
+        assert request["Prefix"] == "owned/archive/volume"
+        if self.response_override is not None:
+            return self.response_override
+        marker = (request.get("KeyMarker"), request.get("UploadIdMarker"))
+        offset = self.positions[marker] + 1 if marker[0] is not None else 0
+        selected = self.rows[offset : offset + request["MaxUploads"]]
+        more = offset + len(selected) < len(self.rows)
+        response: dict[str, object] = {"Uploads": selected, "IsTruncated": more}
+        if more:
+            response["NextKeyMarker"] = selected[-1]["Key"]
+            response["NextUploadIdMarker"] = selected[-1]["UploadId"]
+        return response
+
+    def create_multipart_upload(self, **request: Any) -> dict[str, str]:
+        raise AssertionError("observation must never begin a write")
+
+    def abort_multipart_upload(self, **request: Any) -> None:
+        raise AssertionError("observation must never abort a write")
+
+
+@pytest.mark.parametrize("count", [1, 5, 129])
+def test_open_write_observation_pages_every_exact_token_with_linear_provider_calls(
+    count: int,
+) -> None:
+    client = _OpenWritePageClient(count)
+    adapter = S3StorageAdapter(client, _config())
+    request = OpenWriteListRequest(
+        object_path="archive/volume", target_incarnation=client.incarnation_id, maximum_items=3
+    )
+    tokens: list[str] = []
+    scanned = 0
+    pages = 0
+    while True:
+        # A fresh adapter instance consumes only provider-owned continuation state.
+        adapter = S3StorageAdapter(client, _config())
+        marker_reads = client.marker_reads
+        list_calls = len(client.list_requests)
+        page = adapter.list_open_writes(request)
+        assert client.marker_reads == marker_reads + 1
+        assert len(client.list_requests) == list_calls + 1
+        assert all(item.begin_request_sha256 is None for item in page.observations)
+        tokens.extend(item.write_token for item in page.observations)
+        assert page.scanned_items <= 3 and len(page.observations) <= page.scanned_items
+        scanned += page.scanned_items
+        pages += 1
+        if page.exhausted:
+            break
+        request = request.model_copy(update={"continuation": page.continuation})
+    assert tokens == [f"token-{index}" for index in range(count)]
+    assert scanned == count + 3
+    assert pages == (count + 5) // 3
+    assert len(client.list_requests) == pages
+    assert not client.uploads and not client.deleted
+
+
+def test_open_write_continuation_is_bound_to_exact_target_and_rejects_bad_pages() -> None:
+    client = _OpenWritePageClient(5)
+    adapter = S3StorageAdapter(client, _config())
+    request = OpenWriteListRequest(
+        object_path="archive/volume", target_incarnation=client.incarnation_id, maximum_items=1
+    )
+    first = adapter.list_open_writes(request)
+    assert first.continuation is not None and not first.exhausted
+    continued = request.model_copy(update={"continuation": first.continuation})
+    calls = len(client.list_requests)
+    for foreign in (
+        continued.model_copy(update={"object_path": "another/volume"}),
+        continued.model_copy(update={"target_incarnation": "00000000-0000-4000-8000-000000000002"}),
+    ):
+        with pytest.raises(StorageAdapterRejection):
+            adapter.list_open_writes(foreign)
+        assert len(client.list_requests) == calls
+    with pytest.raises(StorageAdapterRejection, match="response grant"):
+        adapter.list_open_writes(request.model_copy(update={"maximum_response_bytes": 1}))
+    client.response_override = {
+        "Uploads": [],
+        "IsTruncated": True,
+        "NextKeyMarker": "owned/archive/volume",
+        "NextUploadIdMarker": "token-0",
+    }
+    with pytest.raises(RuntimeError, match="advance"):
+        adapter.list_open_writes(continued)
+    client.response_override = {"Uploads": [], "IsTruncated": True}
+    with pytest.raises(RuntimeError, match="advance"):
+        adapter.list_open_writes(request)
+    client.response_override = {"Uploads": []}
+    with pytest.raises(RuntimeError, match="exhaustion"):
+        adapter.list_open_writes(request)
+    client.response_override = {
+        "Uploads": [{"Key": "owned/unrelated", "UploadId": "foreign"}],
+        "IsTruncated": False,
+    }
+    with pytest.raises(RuntimeError, match="invalid open-write"):
+        adapter.list_open_writes(request)
+    client.response_override = {"Uploads": client.rows[:2], "IsTruncated": False}
+    with pytest.raises(RuntimeError, match="candidate grant"):
+        adapter.list_open_writes(request)
+    client.incarnation_id = "00000000-0000-4000-8000-000000000002"
+    calls = len(client.list_requests)
+    with pytest.raises(StorageIncarnationError, match="changed"):
+        adapter.list_open_writes(request)
+    assert len(client.list_requests) == calls
+
+
+def test_denied_open_write_observation_is_not_empty_success() -> None:
+    class Denied(_FakeS3Client):
+        def list_multipart_uploads(self, **request: Any) -> dict[str, object]:
+            raise _client_error("AccessDenied", 403, "ListMultipartUploads")
+
+    client = Denied()
+    adapter = S3StorageAdapter(client, _config())
+    with pytest.raises(ClientError, match="AccessDenied"):
+        adapter.list_open_writes(
+            OpenWriteListRequest(
+                object_path="archive/volume", target_incarnation=client.incarnation_id
+            )
+        )

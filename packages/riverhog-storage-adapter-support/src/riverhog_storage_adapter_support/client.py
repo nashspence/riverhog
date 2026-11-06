@@ -24,6 +24,8 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
+    OpenWriteListRequest,
+    OpenWritePage,
     ReadPreparationRequest,
     ReadStatus,
     SmallObjectWriteRequest,
@@ -43,6 +45,7 @@ from riverhog_storage_adapter_protocol import (
     validate_completed_write_response,
     validate_object_metadata_response,
     validate_object_read_response,
+    validate_open_write_page_response,
     validate_read_status_response,
     validate_small_object_response,
     validate_storage_incarnation_id,
@@ -233,6 +236,11 @@ class StorageAdapterClient:
             },
         )
         self._validate(validate_write_segment_response, request, response)
+        return response
+
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:
+        response = self._model("POST", "/v1/writes/open", OpenWritePage, request)
+        self._validate(validate_open_write_page_response, request, response)
         return response
 
     def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:

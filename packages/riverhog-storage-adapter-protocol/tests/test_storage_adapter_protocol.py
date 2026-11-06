@@ -26,6 +26,9 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
+    OpenWriteListRequest,
+    OpenWriteObservation,
+    OpenWritePage,
     ReadPreparationRequest,
     ReadReady,
     ReadRequested,
@@ -44,6 +47,7 @@ from riverhog_storage_adapter_protocol import (
     validate_object_metadata_response,
     validate_object_path,
     validate_object_read_response,
+    validate_open_write_page_response,
     validate_read_status_response,
     validate_small_object_response,
     validate_write_completion_request,
@@ -132,6 +136,7 @@ def test_protocol_matches_the_existing_capability_port_inventory() -> None:
         "execute_write",
         "head_object",
         "read_object",
+        "list_open_writes",
         "list_segments",
         "prepare_read",
         "put_small_object",
@@ -862,3 +867,41 @@ def test_protocol_imports_no_runtime_or_provider_implementation() -> None:
         "assert not loaded, sorted(loaded)\n"
     )
     subprocess.run([sys.executable, "-c", code], check=True)
+
+
+def test_open_write_observation_has_no_execution_or_adoption_authority() -> None:
+    request = OpenWriteListRequest(
+        object_path="archive/volume",
+        target_incarnation="00000000-0000-4000-8000-000000000001",
+        maximum_items=1,
+    )
+    page = OpenWritePage(
+        object_path=request.object_path,
+        target_incarnation=request.target_incarnation,
+        observations=(OpenWriteObservation(write_token="observed-token"),),
+        scanned_items=1,
+        continuation="next",
+        exhausted=False,
+    )
+    validate_open_write_page_response(request, page)
+    assert page.observations[0].begin_request_sha256 is None
+    assert "execution" not in page.model_dump()
+    for updates in (
+        {"object_path": "another/volume"},
+        {"target_incarnation": "00000000-0000-4000-8000-000000000002"},
+        {"scanned_items": 2},
+    ):
+        with pytest.raises(ValueError):
+            validate_open_write_page_response(request, page.model_copy(update=updates))
+    with pytest.raises(ValueError, match="advance"):
+        validate_open_write_page_response(request.model_copy(update={"continuation": "next"}), page)
+    with pytest.raises(ValueError, match="response grant"):
+        validate_open_write_page_response(
+            request.model_copy(update={"maximum_response_bytes": 1}), page
+        )
+    with pytest.raises(ValidationError, match="exhaustion"):
+        OpenWritePage.model_validate({**page.model_dump(), "exhausted": True})
+    with pytest.raises(ValidationError, match="unique"):
+        OpenWritePage.model_validate(
+            {**page.model_dump(), "observations": page.observations * 2, "scanned_items": 2}
+        )

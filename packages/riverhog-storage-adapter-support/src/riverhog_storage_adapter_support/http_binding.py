@@ -28,6 +28,8 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
+    OpenWriteListRequest,
+    OpenWritePage,
     ReadPreparationRequest,
     ReadStatus,
     SmallObjectWriteRequest,
@@ -154,6 +156,9 @@ class StorageAdapterHttpBinding:
                 session = self.adapter.begin_write(start_request)
                 validate_write_session_response(start_request, session)
                 return _model_response(session)
+            if normalized_method == "POST" and path == "/v1/writes/open":
+                open_request = self._parse(body, OpenWriteListRequest)
+                return _model_response(self.adapter.list_open_writes(open_request))
             if normalized_method == "POST" and path == "/v1/writes/segments":
                 list_request = self._parse(body, WriteSegmentListRequest)
                 segment_page = self.adapter.list_segments(list_request)
@@ -466,6 +471,14 @@ STORAGE_ADAPTER_HTTP_OPERATIONS = (
         WriteSegmentReceipt,
         "framed",
         errors=_adapter_errors("length_required", "request_too_large", "invalid_path", "not_found"),
+    ),
+    _storage_operation(
+        "POST",
+        "/v1/writes/open",
+        OpenWriteListRequest,
+        OpenWritePage,
+        "json",
+        errors=_adapter_errors("request_too_large", "invalid_path", "traversal_invalidated"),
     ),
     _storage_operation(
         "POST",

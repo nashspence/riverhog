@@ -43,6 +43,7 @@ _METADATA_KEY_PATTERN = re.compile(r"^[a-z0-9](?:[a-z0-9._-]{0,126}[a-z0-9])?$")
 _MAX_IDENTITY_ASSERTIONS_ITEMS = 64
 _MAX_IDENTITY_ASSERTIONS_BYTES = 16 * 1024
 MAX_WRITE_SEGMENT_PAGE_ITEMS = 128
+MAX_OPEN_WRITE_PAGE_ITEMS = 128
 _MAX_WRITE_COMPLETION_PRECONDITION_TOKEN_LENGTH = 4000
 
 Sha256 = Annotated[str, StringConstraints(pattern=_SHA256_PATTERN)]
@@ -264,6 +265,99 @@ class WriteStartRequest(StorageAdapterModel):
     @classmethod
     def canonical_metadata(cls, value: dict[str, str]) -> dict[str, str]:
         return _canonical_identity_assertions(value)
+
+
+class OpenWriteObservation(StorageAdapterModel):
+    """One observed token, without execution closure or permission to adopt it."""
+
+    write_token: str = Field(min_length=1, max_length=4000)
+    begin_request_sha256: Sha256 | None = Field(
+        default=None,
+        description=(
+            "The complete BeginWriteOperation commitment only when the adapter owns "
+            "durable evidence of every original request field. An absent commitment "
+            "does not establish that this token belongs to a caller's request."
+        ),
+    )
+
+
+class OpenWriteListRequest(StorageAdapterModel):
+    """Read one bounded live page for an exact key; observation never begins a write."""
+
+    object_path: str = Field(min_length=1, max_length=4096)
+    target_incarnation: StorageIncarnationId
+    maximum_items: int = Field(
+        default=MAX_OPEN_WRITE_PAGE_ITEMS, ge=1, le=MAX_OPEN_WRITE_PAGE_ITEMS
+    )
+    maximum_response_bytes: PositiveDecimal = Field(default=1024 * 1024)
+    continuation: str | None = Field(default=None, min_length=1, max_length=16000)
+
+    @field_validator("object_path")
+    @classmethod
+    def canonical_path(cls, value: str) -> str:
+        return validate_object_path(value)
+
+
+class OpenWritePage(StorageAdapterModel):
+    """A live observation, not a snapshot or a barrier against delayed provider effects.
+
+    scanned_items includes provider prefix candidates rejected by exact-key filtering.
+    Exhaustion describes this traversal only; it never proves execution has stopped.
+    """
+
+    object_path: str = Field(min_length=1, max_length=4096)
+    target_incarnation: StorageIncarnationId
+    observations: tuple[OpenWriteObservation, ...] = Field(
+        default=(),
+        max_length=MAX_OPEN_WRITE_PAGE_ITEMS,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-exact-key-open-write-observation",
+                "progression": "adapter-live-open-write-continuation",
+            }
+        },
+    )
+    scanned_items: NonnegativeDecimal
+    continuation: str | None = Field(default=None, min_length=1, max_length=16000)
+    exhausted: bool
+
+    @field_validator("object_path")
+    @classmethod
+    def canonical_path(cls, value: str) -> str:
+        return validate_object_path(value)
+
+    @model_validator(mode="after")
+    def exact_page(self) -> Self:
+        self._require_exact_page()
+        return self
+
+    def _require_exact_page(self) -> None:
+        if self.exhausted != (self.continuation is None):
+            raise ValueError("open-write exhaustion differs from its continuation")
+        tokens = [item.write_token for item in self.observations]
+        if len(set(tokens)) != len(tokens) or self.scanned_items < len(tokens):
+            raise ValueError("open-write observations must be unique within the scanned page")
+
+
+def validate_open_write_page_response(
+    request: OpenWriteListRequest, response: OpenWritePage
+) -> None:
+    response._require_exact_page()
+    if (
+        response.object_path != request.object_path
+        or response.target_incarnation != request.target_incarnation
+    ):
+        raise ValueError("open-write observation differs from its exact target")
+    if response.scanned_items > request.maximum_items:
+        raise ValueError("open-write observation exceeds its candidate count grant")
+    if response.continuation is not None and response.continuation == request.continuation:
+        raise ValueError("open-write continuation did not advance")
+    if (
+        len(response.model_dump_json(exclude_none=True).encode("utf-8"))
+        > request.maximum_response_bytes
+    ):
+        raise ValueError("open-write observation exceeds its encoded response grant")
 
 
 class WriteSegmentReceipt(StorageAdapterModel):
@@ -1002,6 +1096,8 @@ class StorageAdapterPort(Protocol):
         content: BinaryContent,
     ) -> WriteSegmentReceipt: ...
 
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage: ...
+
     def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage: ...
 
     def complete_write(
@@ -1169,6 +1265,13 @@ class ValidatedStorageAdapterPort:
             and response.stored_sha256 != validation.digest.hexdigest()
         ):
             raise ValueError("adapter segment digest differs from the supplied content")
+        return response
+
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:
+        response = _response(
+            self._adapter.list_open_writes(request), OpenWritePage, "open-write page"
+        )
+        validate_open_write_page_response(request, response)
         return response
 
     def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:

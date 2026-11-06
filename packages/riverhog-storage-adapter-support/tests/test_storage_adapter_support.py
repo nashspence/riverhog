@@ -14,6 +14,7 @@ from http_api_contracts import canonical_json_bytes
 from pydantic import ValidationError
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
+    BeginWriteOperation,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -25,6 +26,9 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
+    OpenWriteListRequest,
+    OpenWriteObservation,
+    OpenWritePage,
     ReadPreparationRequest,
     ReadReady,
     ReadStatus,
@@ -38,6 +42,7 @@ from riverhog_storage_adapter_protocol import (
     WriteSegmentRequest,
     WriteSession,
     WriteStartRequest,
+    write_operation_sha256,
 )
 from riverhog_storage_adapter_support import (
     FRAMED_BODY_FORMAT,
@@ -127,6 +132,27 @@ class MemoryAdapter:
             number=number,
             segment_token=f"part-{number}",
             stored_bytes=len(content),
+        )
+
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:
+        if request.target_incarnation != self.descriptor().storage_incarnation_id:
+            raise StorageAdapterRejection("provider_unavailable", "observation target changed")
+        if request.continuation is not None:
+            raise StorageAdapterRejection("traversal_invalidated", "unknown continuation")
+        observed = tuple(
+            OpenWriteObservation(
+                write_token=token,
+                begin_request_sha256=write_operation_sha256(BeginWriteOperation(request=start)),
+            )
+            for token, start in self.created.items()
+            if start.object_path == request.object_path
+        )
+        return OpenWritePage(
+            object_path=request.object_path,
+            target_incarnation=request.target_incarnation,
+            observations=observed,
+            scanned_items=len(observed),
+            exhausted=True,
         )
 
     def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
@@ -1027,6 +1053,7 @@ def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> N
             "identity-conflict",
             "sparse-write-reconciliation",
             "write-begin-recovery",
+            "read-only-open-write-observation",
             "write-segment-idempotent-authority",
             "write-traversal-invalidation",
             "write-continuation-replay",
@@ -1048,5 +1075,44 @@ def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> N
     finally:
         continuation_client.close()
         continuation_http.close()
+        client.close()
+        http.close()
+
+
+def test_client_observes_open_writes_without_begin_replay() -> None:
+    adapter = MemoryAdapter()
+    start = WriteStartRequest(
+        object_path="archive/volume",
+        expected_bytes=7,
+        content_type="application/octet-stream",
+        required_identity_assertions={"identity": "original"},
+        placement_policy="archive_default",
+    )
+    session = adapter.begin_write(start)
+    requests: list[httpx.Request] = []
+    client, http = _client(adapter, requests=requests)
+    try:
+        request = OpenWriteListRequest(
+            object_path=start.object_path,
+            target_incarnation=adapter.descriptor().storage_incarnation_id,
+            maximum_items=1,
+        )
+        first = client.list_open_writes(request)
+        second = client.list_open_writes(request)
+        assert first == second
+        assert first.exhausted and first.continuation is None
+        assert first.observations == (
+            OpenWriteObservation(
+                write_token=session.write_token,
+                begin_request_sha256=write_operation_sha256(BeginWriteOperation(request=start)),
+            ),
+        )
+        assert [request.url.path for request in requests] == [
+            "/v1/adapter",
+            "/v1/writes/open",
+            "/v1/writes/open",
+        ]
+        assert len(adapter.created) == 1 and not adapter.objects and not adapter.segments
+    finally:
         client.close()
         http.close()

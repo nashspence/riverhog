@@ -10,12 +10,14 @@ from a_riverhog_filesystem_store import (
 )
 from a_riverhog_filesystem_store.incarnation import provision_storage_root
 from riverhog_storage_adapter_protocol import (
+    BeginWriteOperation,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
     DeletePrefixRequest,
     ObjectHeadRequest,
     ObjectLocator,
     ObjectReadRequest,
+    OpenWriteListRequest,
     ReadPreparationRequest,
     SmallObjectWriteRequest,
     StorageAdapterRejection,
@@ -24,6 +26,7 @@ from riverhog_storage_adapter_protocol import (
     WriteSegmentListRequest,
     WriteSession,
     WriteStartRequest,
+    write_operation_sha256,
 )
 
 SEGMENT_BYTES = 64 * 1024
@@ -920,3 +923,38 @@ def test_restart_finalizes_revision_installed_before_current_pointer(tmp_path: P
             assert b"".join(stream.content) == payload
         with pytest.raises(StorageAdapterRejection, match="write session"):
             recovered.list_segments(WriteSegmentListRequest(session=session))
+
+
+def test_open_write_observation_is_exact_pure_and_survives_restart(tmp_path: Path) -> None:
+    root = tmp_path / "store"
+    start = _start("collection/volume", 1)
+    with _adapter(root) as adapter:
+        session = adapter.begin_write(start)
+        adapter.begin_write(_start("collection/volume-extra", 2))
+        request = OpenWriteListRequest(
+            object_path=start.object_path,
+            target_incarnation=adapter.descriptor().storage_incarnation_id,
+            maximum_items=1,
+        )
+        first = adapter.list_open_writes(request)
+        assert first.exhausted and first.scanned_items == 1 and len(first.observations) == 1
+        assert first.observations[0].write_token == session.write_token
+        assert first.observations[0].begin_request_sha256 == write_operation_sha256(
+            BeginWriteOperation(request=start)
+        )
+        missing = adapter.list_open_writes(request.model_copy(update={"object_path": "absent"}))
+        assert missing.exhausted and missing.scanned_items == 0 and not missing.observations
+        assert adapter.list_segments(WriteSegmentListRequest(session=session)).segments == ()
+        with pytest.raises(StorageAdapterRejection, match="response grant"):
+            adapter.list_open_writes(request.model_copy(update={"maximum_response_bytes": 1}))
+    with _adapter(root) as reopened:
+        assert reopened.list_open_writes(request) == first
+        assert reopened.begin_write(start) == session
+        with pytest.raises(StorageAdapterRejection, match="continuation"):
+            reopened.list_open_writes(request.model_copy(update={"continuation": "foreign"}))
+        with pytest.raises(StorageAdapterRejection, match="incarnation"):
+            reopened.list_open_writes(
+                request.model_copy(
+                    update={"target_incarnation": "00000000-0000-4000-8000-000000000002"}
+                )
+            )

@@ -26,6 +26,9 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
+    OpenWriteListRequest,
+    OpenWriteObservation,
+    OpenWritePage,
     ReadMode,
     ReadPreparationRequest,
     ReadReadiness,
@@ -43,6 +46,7 @@ from riverhog_storage_adapter_protocol import (
     WriteSession,
     WriteStartRequest,
     execute_write_invocation,
+    validate_open_write_page_response,
 )
 from time_formats import format_utc_timestamp, utc_now
 
@@ -485,6 +489,114 @@ class S3StorageAdapter:
             verified_identity_assertions=request.required_identity_assertions,
             verified_placement_policy=request.expected_placement_policy,
         )
+
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:
+        """One SDK list page; never use the mutating begin/recovery convenience path."""
+        if request.target_incarnation != self._incarnation_id:
+            raise StorageIncarnationError("S3 storage incarnation differs from observation")
+        key = self._key(request.object_path)
+        scope = hashlib.sha256(
+            json.dumps(
+                [
+                    self._incarnation_id,
+                    self._config.bucket,
+                    self._config.root_prefix,
+                    request.object_path,
+                ],
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        provider_request: dict[str, Any] = {
+            "Bucket": self._config.bucket,
+            "Prefix": key,
+            "MaxUploads": request.maximum_items,
+        }
+        previous: tuple[str, str] | None = None
+        if request.continuation is not None:
+            try:
+                cursor = json.loads(request.continuation)
+                if (
+                    not isinstance(cursor, dict)
+                    or set(cursor) != {"scope", "key", "upload"}
+                    or cursor["scope"] != scope
+                    or not isinstance(cursor["key"], str)
+                    or not cursor["key"].startswith(request.object_path)
+                    or len(cursor["key"]) > 4096
+                    or not isinstance(cursor["upload"], str)
+                    or not 1 <= len(cursor["upload"]) <= 4000
+                ):
+                    raise ValueError("open-write cursor differs from observation")
+                previous = (self._key(cursor["key"]), cursor["upload"])
+            except (ValueError, TypeError, KeyError) as exc:
+                raise StorageAdapterRejection(
+                    "traversal_invalidated", "open-write continuation differs from its target"
+                ) from exc
+            provider_request["KeyMarker"], provider_request["UploadIdMarker"] = previous
+        self._require_incarnation()
+        response = cast(dict[str, Any], self._client.list_multipart_uploads(**provider_request))
+        rows = response.get("Uploads") or []
+        if not isinstance(rows, list) or len(rows) > request.maximum_items:
+            raise RuntimeError("S3 open-write page exceeds its candidate grant")
+        observations = []
+        for row in rows:
+            if (
+                not isinstance(row, dict)
+                or not isinstance(row.get("Key"), str)
+                or not row["Key"].startswith(key)
+                or not isinstance(row.get("UploadId"), str)
+                or not 1 <= len(row["UploadId"]) <= 4000
+            ):
+                raise RuntimeError("S3 returned an invalid open-write observation")
+            if row["Key"] == key:
+                # ListMultipartUploads does not attest the original create metadata.
+                observations.append(OpenWriteObservation(write_token=row["UploadId"]))
+        truncated = response.get("IsTruncated")
+        if type(truncated) is not bool:
+            raise RuntimeError("S3 open-write page has no explicit exhaustion")
+        continuation = None
+        if truncated:
+            next_key, next_upload = (
+                response.get("NextKeyMarker"),
+                response.get("NextUploadIdMarker"),
+            )
+            if (
+                not isinstance(next_key, str)
+                or not next_key.startswith(key)
+                or not isinstance(next_upload, str)
+                or not 1 <= len(next_upload) <= 4000
+                or (next_key, next_upload) == previous
+            ):
+                raise RuntimeError("S3 open-write continuation did not advance within the target")
+            relative = (
+                next_key[len(self._config.root_prefix) + 1 :]
+                if self._config.root_prefix
+                else next_key
+            )
+            if len(relative) > 4096:
+                raise RuntimeError("S3 open-write continuation key is too large")
+            continuation = json.dumps(
+                {"scope": scope, "key": relative, "upload": next_upload},
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+        page = OpenWritePage(
+            object_path=request.object_path,
+            target_incarnation=self._incarnation_id,
+            observations=tuple(observations),
+            scanned_items=len(rows),
+            continuation=continuation,
+            exhausted=not truncated,
+        )
+        if (
+            len(page.model_dump_json(exclude_none=True).encode("utf-8"))
+            > request.maximum_response_bytes
+        ):
+            raise StorageAdapterRejection(
+                "request_too_large", "open-write response grant is too small"
+            )
+        validate_open_write_page_response(request, page)
+        return page
 
     def abort_write(self, session: WriteSession) -> None:
         self._require_incarnation()
