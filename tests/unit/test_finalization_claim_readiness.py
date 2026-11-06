@@ -130,3 +130,36 @@ def test_duplicate_callback_preserves_already_queued_work(tmp_path, callback):
             assert upload.archive_phase == "finalization_queued"
             assert upload.archive_next_attempt_at == queued_at
             assert upload.archive_failure == "current queued owner"
+
+
+@pytest.mark.parametrize("callback", ("retry", "requeue"))
+def test_late_finalizer_feedback_preserves_the_selected_terminal_queue(tmp_path, callback):
+    from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+
+    with _case(tmp_path, "segment", artifact_count=1) as case:
+        _seal(case)
+        current = _fresh_coordinator(case)
+        assert current._claim_due_finalization() == case.collection_id
+        ArchiveWriteAdmission(case.factory).select_terminal(
+            case.collection_id,
+            kind="cancel",
+            request={"fixture": "late-finalizer-feedback"},
+            principal_id="uploader",
+            grants=case.service._config.archive_write,
+            guard=lambda session: None,
+            validate_selection=lambda *args: None,
+        )
+        with session_scope(case.factory) as session:
+            upload = session.get(Upload, case.collection_id)
+            before = (upload.archive_phase, upload.archive_next_attempt_at, upload.archive_failure)
+        if callback == "retry":
+            current._record_finalization_retry(case.collection_id, OSError("late result"))
+        else:
+            current._requeue_finalization_step(case.collection_id)
+        with session_scope(case.factory) as session:
+            upload = session.get(Upload, case.collection_id)
+            assert (
+                upload.archive_phase,
+                upload.archive_next_attempt_at,
+                upload.archive_failure,
+            ) == before

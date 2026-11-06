@@ -8,7 +8,9 @@ from dataclasses import replace
 import pytest
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord as Control
 from riverhog_core.catalog_db import session_scope
+from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.services import archive_finalizer_work as work_module
+from riverhog_core.services import collection_uploads as service_module
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 from riverhog_protocol.errors import Conflict, NotFound
 
@@ -64,7 +66,7 @@ def _service(original, **tuning):
         service.close()
 
 
-def _submit(service, original):
+def _submit(service, original, *, receive=lambda progressed: None):
     work = service._archive_finalizer_work
     collection_id = original.case.collection_id
     if original.kind == "structure":
@@ -72,6 +74,7 @@ def _submit(service, original):
             collection_id,
             forward_guard=original.fixture.forward_guard,
             selected_object_id=original.fixture.source.object_id,
+            receive=receive,
         )
     if original.kind == "journal":
         return work.submit_journal(
@@ -80,8 +83,9 @@ def _submit(service, original):
             journal_id=_JOURNAL,
             offset=8,
             size=8,
+            receive=receive,
         )
-    return work.submit_metadata(collection_id, kind=_SELECTIONS[original.kind])
+    return work.submit_metadata(collection_id, kind=_SELECTIONS[original.kind], receive=receive)
 
 
 def _completed(service):
@@ -97,7 +101,8 @@ def test_service_submits_actual_retained_finalizer_owners(tmp_path, monkeypatch,
         turn = _completed(service)
         assert turn.selection == _SELECTIONS[kind] and turn.progressed
         owner = service._archive_finalizers._contexts[original.case.collection_id].owner
-        assert owner is not original.owner and type(owner) is type(original.owner)
+        assert owner._original is not original.owner
+        assert type(owner._original) is type(original.owner)
         assert not owner.has_pending and _count(original.case) == 0
 
 
@@ -132,7 +137,8 @@ def _actual_service_retry(tmp_path, monkeypatch, kind, committed, mode, *, datab
             with pytest.raises(OSError, match="injected journal writer"):
                 _completed(service)
         context = service._archive_finalizers._contexts[original.case.collection_id]
-        owner, actor = context.owner, context.owner._actor
+        retained = context.owner
+        owner, actor = retained._original, retained._original._actor
         assert owner.has_pending and actor._response_json is not None
         prior_response = actor._response_json
         # New service inputs cannot replace original receiving, including when
@@ -143,13 +149,13 @@ def _actual_service_retry(tmp_path, monkeypatch, kind, committed, mode, *, datab
         different = "archive-authority" if kind == "description" else "initial-description"
         assert (
             service._archive_finalizer_work.submit_metadata(
-                original.case.collection_id, kind=different
+                original.case.collection_id, kind=different, receive=lambda progressed: None
             )
             == "submitted"
         )
         turn = _completed(service)
         assert turn.selection == _SELECTIONS[kind] and turn.progressed
-        assert context.owner is owner and not owner.has_pending
+        assert context.owner is retained and not retained.has_pending and not owner.has_pending
         assert actor._response_json == prior_response and _count(original.case) == 0
 
 
@@ -200,10 +206,14 @@ def test_submission_never_runs_constructor_or_key_provider_work_on_coordinator(
 def test_bad_selection_and_missing_construction_start_no_workers(tmp_path, monkeypatch):
     with _original(tmp_path, monkeypatch, "description") as original, _service(original) as service:
         with pytest.raises(ValueError, match="unknown archive metadata"):
-            service._archive_finalizer_work.submit_metadata(original.case.collection_id, kind="bad")
+            service._archive_finalizer_work.submit_metadata(
+                original.case.collection_id, kind="bad", receive=lambda progressed: None
+            )
         with pytest.raises(NotFound, match="construction is unavailable"):
             service._archive_finalizer_work.submit_metadata(
-                original.case.collection_id + 1, kind="initial-description"
+                original.case.collection_id + 1,
+                kind="initial-description",
+                receive=lambda progressed: None,
             )
         assert not service._archive_execution._slots
         assert not service._archive_finalizers._contexts
@@ -228,7 +238,8 @@ def test_changed_construction_cannot_adopt_pending_original(tmp_path, monkeypatc
             with pytest.raises(OSError):
                 _completed(service)
         context = service._archive_finalizers._contexts[original.case.collection_id]
-        owner, response = context.owner, context.owner._actor._response_json
+        retained = context.owner
+        owner, response = retained._original, retained._original._actor._response_json
         with session_scope(original.case.factory) as session:
             control = session.get(Control, original.case.collection_id)
             changed = json.loads(control.construction_json)
@@ -236,6 +247,203 @@ def test_changed_construction_cannot_adopt_pending_original(tmp_path, monkeypatc
             control.construction_json = json.dumps(changed, sort_keys=True, separators=(",", ":"))
         with pytest.raises(Conflict, match="another original construction"):
             _submit(service, original)
-        assert context.owner is owner and owner.has_pending
+        assert context.owner is retained and retained.has_pending and owner.has_pending
         assert owner._actor._response_json == response
         assert not service._archive_execution._slots
+
+
+@contextmanager
+def _lost_queue_feedback(monkeypatch, service, collection_id, committed):
+    actual = service_module.session_scope
+    state = {"active": False, "fired": False}
+    calls = []
+
+    @contextmanager
+    def transaction(factory):
+        selected = state["active"] and not state["fired"]
+        with actual(factory) as session:
+            yield session
+            if selected and not committed:
+                state["fired"] = True
+                raise OSError("injected queue feedback rollback")
+        if selected and committed:
+            state["fired"] = True
+            raise OSError("injected queue feedback commit reply")
+
+    def receive(progressed):
+        calls.append(progressed)
+        state["active"] = True
+        try:
+            service._requeue_finalization_step(collection_id)
+        finally:
+            state["active"] = False
+
+    with monkeypatch.context() as patch:
+        patch.setattr(service_module, "session_scope", transaction)
+        yield receive, calls
+
+
+def _queue_snapshot(case):
+    with session_scope(case.factory) as session:
+        upload = session.get(Upload, case.collection_id)
+        return (
+            upload.state,
+            upload.archive_phase,
+            upload.archive_next_attempt_at,
+            upload.archive_failure,
+        )
+
+
+@pytest.mark.parametrize(
+    "kind",
+    (
+        "archive-volume",
+        "description",
+        "tag-node",
+        "provenance-authority",
+        "root",
+        "structure",
+        "journal",
+        "volume-bindings",
+    ),
+)
+@pytest.mark.parametrize("mode", ("direct", "http"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_actual_finalizer_receives_original_queue_feedback_before_fresh_publication(
+    tmp_path, monkeypatch, kind, mode, committed
+):
+    _actual_feedback(tmp_path, monkeypatch, kind, mode, committed)
+
+
+@pytest.mark.parametrize("mode", ("direct", "http"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_terminal_fence_preserves_unacknowledged_workflow_feedback(
+    tmp_path, monkeypatch, mode, committed
+):
+    _actual_feedback(tmp_path, monkeypatch, "description", mode, committed, terminal=True)
+
+
+def _actual_feedback(
+    tmp_path, monkeypatch, kind, mode, committed, *, terminal=False, database_url=None
+):
+    with (
+        _original(tmp_path, monkeypatch, kind, mode, database_url=database_url) as original,
+        _service(original) as service,
+    ):
+        initial = _queue_snapshot(original.case)
+        finalizing = initial[:2] == ("finalizing", "finalizing")
+        with _lost_queue_feedback(monkeypatch, service, original.case.collection_id, committed) as (
+            receive,
+            calls,
+        ):
+            assert _submit(service, original, receive=receive) == "submitted"
+            with pytest.raises(OSError, match="injected queue feedback"):
+                _completed(service)
+        context = service._archive_finalizers._contexts[original.case.collection_id]
+        retained, child = context.owner, context.owner._original
+        assert retained.has_pending and retained._result is True
+        assert not child.has_pending and _count(original.case) == 0
+        assert calls == [True]
+        before = _queue_snapshot(original.case)
+        if finalizing and committed:
+            assert before[1] == "finalization_queued"
+        else:
+            assert before == initial
+
+        def forbidden(*args, **kwargs):
+            pytest.fail("saved feedback must precede new execution, receiver or inputs")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(type(child), "advance", forbidden)
+            service._archive_finalizer_work._config = None
+            service._archive_finalizer_work._archive_stores = None
+            if terminal:
+                operation = _terminal(original)
+                key, target = _scope(original.case)
+                assert (
+                    service._archive_finalizers.submit_terminal(
+                        key, target_incarnation=target, operation_id=operation
+                    )
+                    == "submitted"
+                )
+                assert _completed(service) == "closed"
+                assert retained._result is True and retained.has_pending
+                assert context.owner is retained and calls == [True]
+                assert _queue_snapshot(original.case) == before
+                assert not service._archive_finalizers.retire_idle(key, target_incarnation=target)
+                with pytest.raises(Conflict, match="stopped for its terminal"):
+                    retained.advance()
+                assert (
+                    service._archive_finalizers.submit_terminal(
+                        key, target_incarnation=target, operation_id=operation
+                    )
+                    == "drained"
+                )
+            else:
+                different = "archive-authority" if kind == "description" else "initial-description"
+                assert (
+                    service._archive_finalizer_work.submit_metadata(
+                        original.case.collection_id, kind=different, receive=forbidden
+                    )
+                    == "submitted"
+                )
+                turn = _completed(service)
+                assert turn.selection == _SELECTIONS[kind] and turn.progressed
+                assert context.owner is retained and not retained.has_pending
+                assert retained._result is None and calls == [True, True]
+                if finalizing:
+                    assert _queue_snapshot(original.case)[1] == "finalization_queued"
+                    if committed:
+                        assert _queue_snapshot(original.case) == before
+                else:
+                    # Structure/journal feedback does not invent readiness or
+                    # move a pre-finalization construction into the queue.
+                    assert _queue_snapshot(original.case) == initial
+            assert _count(original.case) == 0
+
+
+@pytest.mark.parametrize("mode", ("direct", "http"))
+def test_terminal_selected_during_feedback_prevents_a_late_requeue(tmp_path, monkeypatch, mode):
+    _actual_gate_closed_feedback(tmp_path, monkeypatch, mode)
+
+
+def _actual_gate_closed_feedback(tmp_path, monkeypatch, mode, *, database_url=None):
+    with (
+        _original(
+            tmp_path, monkeypatch, "description", mode, database_url=database_url
+        ) as original,
+        _service(original) as service,
+    ):
+        entered, release = threading.Event(), threading.Event()
+        calls = []
+
+        def receive(progressed):
+            calls.append(progressed)
+            entered.set()
+            assert release.wait(10)
+            service._requeue_finalization_step(original.case.collection_id)
+
+        try:
+            assert _submit(service, original, receive=receive) == "submitted"
+            assert entered.wait(5)
+            before = _queue_snapshot(original.case)
+            operation = _terminal(original)
+            key, target = _scope(original.case)
+            assert (
+                service._archive_finalizers.fence_terminal(
+                    key, target_incarnation=target, operation_id=operation
+                )
+                == "fenced"
+            )
+            release.set()
+            assert _completed(service).progressed
+            assert calls == [True] and _queue_snapshot(original.case) == before
+            assert (
+                service._archive_finalizers.submit_terminal(
+                    key, target_incarnation=target, operation_id=operation
+                )
+                == "submitted"
+            )
+            assert _completed(service) == "closed"
+        finally:
+            release.set()

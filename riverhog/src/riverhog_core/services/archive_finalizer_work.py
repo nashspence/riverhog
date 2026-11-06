@@ -16,6 +16,7 @@ from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.archive_authority_finalizer import ArchiveAuthorityFinalizer
+from riverhog_core.services.archive_finalizer_progress import ArchiveFinalizerProgress
 from riverhog_core.services.archive_finalizer_registry import (
     ArchiveFinalizerRegistry,
     FinalizerSubmission,
@@ -102,6 +103,7 @@ class ArchiveFinalizerWork:
         selection: str,
         create: Callable[[], RetainedArchiveFinalizer],
         advance: Callable[[RetainedArchiveFinalizer], bool],
+        receive: Callable[[bool], None],
     ) -> FinalizerSubmission:
         # This indexed point read retains no locks across worker submission and
         # invokes no semantic constructor, encryption, provider or key lookup.
@@ -113,16 +115,31 @@ class ArchiveFinalizerWork:
         key = ArchiveUploadExecutionKey(
             collection_id, hashlib.sha256(construction.encode()).hexdigest()
         )
+
+        def construct() -> ArchiveFinalizerProgress:
+            original = create()
+            return ArchiveFinalizerProgress(
+                self._factory,
+                collection_id=collection_id,
+                original=original,
+                advance=partial(advance, original),
+                receive=receive,
+            )
+
         return self._registry.submit(
             key,
             target_incarnation=json.loads(construction)["archive_incarnation_id"],
             selection=selection,
-            create=create,
-            advance=advance,
+            create=construct,
+            advance=lambda owner: cast(ArchiveFinalizerProgress, owner).advance(),
         )
 
     def submit_metadata(
-        self, collection_id: int, *, kind: MetadataFinalizerKind
+        self,
+        collection_id: int,
+        *,
+        kind: MetadataFinalizerKind,
+        receive: Callable[[bool], None],
     ) -> FinalizerSubmission:
         if kind not in _METADATA:
             raise ValueError("unknown archive metadata finalizer")
@@ -138,6 +155,7 @@ class ArchiveFinalizerWork:
             kind,
             create,
             lambda owner: cast(_MetadataFinalizer, owner).advance(),
+            receive,
         )
 
     def submit_structure(
@@ -146,6 +164,7 @@ class ArchiveFinalizerWork:
         *,
         forward_guard: Guard,
         selected_object_id: str | None = None,
+        receive: Callable[[bool], None],
     ) -> FinalizerSubmission:
         create = partial(
             ArchiveProvenanceStructureWriter,
@@ -162,6 +181,7 @@ class ArchiveFinalizerWork:
             lambda owner: cast(ArchiveProvenanceStructureWriter, owner).advance(
                 selected_object_id=selected_object_id
             ),
+            receive,
         )
 
     def submit_journal(
@@ -172,6 +192,7 @@ class ArchiveFinalizerWork:
         journal_id: str,
         offset: int,
         size: int,
+        receive: Callable[[bool], None],
     ) -> FinalizerSubmission:
         create = partial(
             ArchiveProvenanceJournalWriter,
@@ -188,4 +209,5 @@ class ArchiveFinalizerWork:
             lambda owner: cast(ArchiveProvenanceJournalWriter, owner).advance(
                 journal_id=journal_id, offset=offset, size=size
             ),
+            receive,
         )

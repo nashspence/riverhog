@@ -330,12 +330,13 @@ from riverhog_core.retrieval_cache_receipts import (
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.app_keys import KeyAuthorizationFence, require_key_authorization
 from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
 from riverhog_core.services.collection_tags import (
     advance_collection_tag_set,
     collection_tag_sha256,
 )
 from riverhog_core.services.collection_upload_authority import (
+    require_archive_write_control,
     require_open_upload_writes,
     retain_upload_claim,
     retain_upload_key,
@@ -3076,6 +3077,7 @@ class SqlAlchemyCollectionUploadService:
     def _record_finalization_retry(self, collection_id: int, exc: Exception) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
@@ -3086,6 +3088,8 @@ class SqlAlchemyCollectionUploadService:
                 or upload.state != "finalizing"
                 or upload.archive_phase != "finalizing"
             ):
+                return
+            if require_archive_write_control(session, upload).gate != "open":
                 return
             delay = min(3600, 2 ** min(upload.archive_attempt_count, 10))
             upload.archive_phase = "retry_wait"
@@ -4978,6 +4982,7 @@ class SqlAlchemyCollectionUploadService:
     def _requeue_finalization_step(self, collection_id: int) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
@@ -4988,6 +4993,8 @@ class SqlAlchemyCollectionUploadService:
                 or upload.state != "finalizing"
                 or upload.archive_phase != "finalizing"
             ):
+                return
+            if require_archive_write_control(session, upload).gate != "open":
                 return
             upload.archive_phase = "finalization_queued"
             upload.archive_phase_updated_at = now
