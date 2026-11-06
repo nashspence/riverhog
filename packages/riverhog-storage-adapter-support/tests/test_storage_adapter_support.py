@@ -3,8 +3,11 @@ from __future__ import annotations
 import ast
 import hashlib
 import struct
+import threading
 from collections.abc import Iterator
+from contextlib import closing, contextmanager
 from dataclasses import dataclass, field
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import GeneratorType
 
@@ -16,8 +19,11 @@ from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
     BeginWriteOperation,
     CleanupCandidate,
+    CleanupExecutionResult,
     CleanupInventoryPage,
     CleanupInventoryRequest,
+    CleanupInvocation,
+    CleanupItemOutcome,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -45,6 +51,8 @@ from riverhog_storage_adapter_protocol import (
     WriteSegmentRequest,
     WriteSession,
     WriteStartRequest,
+    cleanup_execution_result,
+    unknown_cleanup_execution,
     write_operation_sha256,
 )
 from riverhog_storage_adapter_support import (
@@ -102,6 +110,27 @@ class MemoryAdapter:
             minimum_nonfinal_segment_bytes=1,
             maximum_segment_bytes=1024 * 1024,
             maximum_segment_count=10_000,
+        )
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        invocation._require_exact_request()
+        if invocation.call.target_incarnation != self.descriptor().storage_incarnation_id:
+            return unknown_cleanup_execution(invocation)
+        for item in invocation.request.inventory.candidates:
+            if item.kind == "open_write":
+                self.created.pop(item.token, None)
+            elif item.object_path in self.objects:
+                row = self.objects[item.object_path]
+                if (row[3] or "null") == item.token:
+                    self.objects.pop(item.object_path)
+        return cleanup_execution_result(
+            invocation,
+            tuple(
+                CleanupItemOutcome(candidate=item, outcome="disposed")
+                for item in invocation.request.inventory.candidates
+            ),
+            provider_requests=1,
+            execution="closed",
         )
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
@@ -1072,13 +1101,61 @@ def test_client_surfaces_the_closed_adapter_error() -> None:
         http.close()
 
 
+@contextmanager
+def _owned_client(adapter: MemoryAdapter) -> Iterator[StorageAdapterClient]:
+    binding = StorageAdapterHttpBinding(adapter)
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, _format: str, *args: object) -> None:
+            pass
+
+        def do_GET(self) -> None:
+            self.dispatch()
+
+        def do_POST(self) -> None:
+            self.dispatch()
+
+        def dispatch(self) -> None:
+            body = self.rfile.read(int(self.headers.get("Content-Length", "0")))
+            response = binding.handle(
+                self.command,
+                self.path,
+                body,
+                expected_incarnation=self.headers.get("Riverhog-Expected-Storage-Incarnation"),
+            )
+            content = response.body if isinstance(response.body, bytes) else b"".join(response.body)
+            self.send_response(response.status)
+            for key, value in response.headers:
+                self.send_header(key, value)
+            self.end_headers()
+            self.wfile.write(content)
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    server.daemon_threads = False
+    thread = threading.Thread(target=lambda: server.serve_forever(poll_interval=0.01))
+    thread.start()
+    try:
+        with closing(
+            StorageAdapterClient(
+                f"http://127.0.0.1:{server.server_port}",
+                token="fixture-token",
+                allow_insecure_http=True,
+                timeout=5,
+            )
+        ) as client:
+            yield client
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+        assert not thread.is_alive()
+
+
 def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> None:
     state = MemoryAdapterState()
     adapter = MemoryAdapter(state)
     restarted_adapter = MemoryAdapter(state)
-    client, http = _client(adapter)
-    continuation_client, continuation_http = _client(restarted_adapter)
-    try:
+    with _owned_client(adapter) as client, _owned_client(restarted_adapter) as continuation_client:
         result = run_storage_adapter_conformance(
             client,
             continuation_client=continuation_client,
@@ -1106,6 +1183,7 @@ def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> N
             "write-stream",
             "read-preparation",
             "cleanup-inventory",
+            "bounded-selected-cleanup",
             "write-abort",
             "exact-deletion",
             "version-aware-prefix-cleanup",
@@ -1115,11 +1193,6 @@ def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> N
         with pytest.raises(ValidationError, match="exact check set"):
             type(result).model_validate(changed)
         assert not adapter.objects
-    finally:
-        continuation_client.close()
-        continuation_http.close()
-        client.close()
-        http.close()
 
 
 def test_client_observes_open_writes_without_begin_replay() -> None:

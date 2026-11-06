@@ -138,6 +138,7 @@ def test_protocol_matches_the_existing_capability_port_inventory() -> None:
         "descriptor",
         "find_completed_write",
         "execute_write",
+        "execute_cleanup",
         "head_object",
         "read_object",
         "list_cleanup_candidates",

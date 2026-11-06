@@ -13,8 +13,10 @@ from riverhog_canonical_json import parse_identity_json
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
     BinaryContent,
+    CleanupExecutionResult,
     CleanupInventoryPage,
     CleanupInventoryRequest,
+    CleanupInvocation,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -43,7 +45,9 @@ from riverhog_storage_adapter_protocol import (
     WriteSegmentRequest,
     WriteSession,
     WriteStartRequest,
+    unknown_cleanup_execution,
     unknown_write_execution,
+    validate_cleanup_execution,
     validate_cleanup_inventory_response,
     validate_completed_write_response,
     validate_object_metadata_response,
@@ -207,6 +211,48 @@ class StorageAdapterClient:
             return response
         except Exception:
             return unknown_write_execution(invocation)
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        """Dispatch one bounded hop without descriptor discovery or transport replay."""
+        try:
+            invocation._require_exact_request()
+            if (
+                not self._owns_client
+                or invocation.adapter_hops_remaining != 1
+                or (
+                    self._expected_incarnation_id is not None
+                    and self._expected_incarnation_id != invocation.call.target_incarnation
+                )
+            ):
+                return unknown_cleanup_execution(invocation)
+            delegated = invocation.model_copy(update={"adapter_hops_remaining": 0})
+            body = delegated.model_dump_json(exclude_none=True).encode()
+            remaining = invocation.request.maximum_control_bytes - len(body)
+            headers = {
+                **self._headers,
+                "Content-Type": "application/json",
+                "Riverhog-Expected-Storage-Incarnation": invocation.call.target_incarnation,
+            }
+            with self._client.stream(
+                "POST",
+                f"{self.base_url}/v1/cleanup/execute",
+                content=body,
+                headers=headers,
+                follow_redirects=False,
+            ) as response:
+                if response.status_code != 200:
+                    return unknown_cleanup_execution(invocation)
+                received = bytearray()
+                for chunk in response.iter_bytes(chunk_size=min(65536, remaining + 1)):
+                    if len(received) + len(chunk) > remaining:
+                        return unknown_cleanup_execution(invocation)
+                    received.extend(chunk)
+            parse_identity_json(bytes(received))
+            result = CleanupExecutionResult.model_validate_json(received)
+            validate_cleanup_execution(invocation, result)
+            return result
+        except Exception:
+            return unknown_cleanup_execution(invocation)
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
         self._validate_request(validate_write_start_request, request, self.descriptor())

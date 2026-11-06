@@ -7,7 +7,7 @@ import json
 from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Protocol, cast
+from typing import Any, Literal, Protocol, cast
 from urllib.parse import unquote
 
 from botocore.exceptions import ClientError
@@ -17,8 +17,11 @@ from riverhog_storage_adapter_protocol import (
     BinaryContent,
     CleanupCandidate,
     CleanupCandidateKind,
+    CleanupExecutionResult,
     CleanupInventoryPage,
     CleanupInventoryRequest,
+    CleanupInvocation,
+    CleanupItemOutcome,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -50,7 +53,9 @@ from riverhog_storage_adapter_protocol import (
     WriteSegmentReceipt,
     WriteSession,
     WriteStartRequest,
+    cleanup_execution_result,
     execute_write_invocation,
+    unknown_cleanup_execution,
     validate_cleanup_inventory_response,
     validate_open_write_page_response,
 )
@@ -277,6 +282,102 @@ class S3StorageAdapter:
             profile="joined-single-attempt"
             if uses_single_attempt_dispatch(self._client)
             else "unaccounted",
+        )
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        """One owned single-attempt, serial cleanup turn, with no descriptor prelude.
+
+        Charge the reserved adapter hop and the live incarnation GET before
+        item work. Versions/markers use individual exact deletes. A session
+        needs room for abort plus bounded ListParts verification. An ambiguous
+        call stops this turn before another lower-provider request can start.
+        """
+        try:
+            invocation._require_exact_request()
+        except Exception:
+            return unknown_cleanup_execution(invocation)
+        grant = invocation.request
+        if (
+            not uses_single_attempt_dispatch(self._client)
+            or grant.maximum_in_flight < 2
+            or grant.maximum_provider_requests < 2
+            or invocation.call.target_incarnation != self._incarnation_id
+        ):
+            return unknown_cleanup_execution(invocation)
+        charged = 1
+        try:
+            charged += 1
+            self._require_incarnation()
+        except Exception:
+            return unknown_cleanup_execution(invocation)
+
+        def invoke(method: str, **kwargs: Any) -> Any:
+            nonlocal charged
+            if charged >= grant.maximum_provider_requests:
+                raise RuntimeError("cleanup request grant is exhausted")
+            charged += 1
+            response = getattr(self._client, method)(**kwargs)
+            expected_status = 200 if method == "list_parts" else 204
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != expected_status:
+                raise RuntimeError("cleanup provider response has no exact success status")
+            return response
+
+        items: list[CleanupItemOutcome] = []
+        execution: Literal["closed", "unknown"] = "closed"
+        stopped = False
+        for candidate in grant.inventory.candidates:
+            required = 2 if candidate.kind == "open_write" else 1
+            outcome: Literal["disposed", "pending", "deferred", "rejected", "unknown"]
+            if stopped or charged + required > grant.maximum_provider_requests:
+                outcome = "deferred"
+                stopped = True
+            else:
+                try:
+                    key = self._key(candidate.object_path)
+                    if candidate.kind != "open_write":
+                        invoke(
+                            "delete_object",
+                            Bucket=self._config.bucket,
+                            Key=key,
+                            VersionId=candidate.token,
+                        )
+                        outcome = "disposed"
+                    else:
+                        request = {
+                            "Bucket": self._config.bucket,
+                            "Key": key,
+                            "UploadId": candidate.token,
+                        }
+                        try:
+                            invoke("abort_multipart_upload", **request)
+                        except ClientError as exc:
+                            if _client_error_identity(exc)[1] != "NoSuchUpload":
+                                raise
+                            outcome = "disposed"
+                        else:
+                            try:
+                                observed = invoke("list_parts", **request, MaxParts=1)
+                            except ClientError as exc:
+                                if _client_error_identity(exc)[1] != "NoSuchUpload":
+                                    raise
+                                outcome = "disposed"
+                            else:
+                                if (
+                                    observed.get("Key") != key
+                                    or observed.get("UploadId") != candidate.token
+                                    or type(observed.get("IsTruncated")) is not bool
+                                    or not isinstance(observed.get("Parts", []), list)
+                                    or len(observed.get("Parts", [])) > 1
+                                ):
+                                    raise RuntimeError("cleanup session verification is invalid")
+                                outcome = "pending"
+                except Exception:
+                    outcome = "unknown"
+                    execution = "unknown"
+                    stopped = True
+            items.append(CleanupItemOutcome(candidate=candidate, outcome=outcome))
+        return cleanup_execution_result(
+            invocation, tuple(items), provider_requests=charged, execution=execution
         )
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession:

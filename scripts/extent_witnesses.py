@@ -102,6 +102,45 @@ WITNESSES = (
         gates=("make unit", "make filesystem-recovery-qualification"),
     ),
     SegmentedExtentWitness(
+        id="riverhog-storage-selected-cleanup-progression/v1",
+        owner="riverhog-storage-adapter-protocol",
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _protocol_subject(
+                "generated:riverhog-storage-adapter",
+                "schemas/CleanupExecutionResult/$defs/CleanupProgress/properties/items",
+            ),
+        ),
+        test_node_ids=(
+            "some-implementations/riverhog/storage/s3-support/tests/test_s3_cleanup_execution.py::"
+            "test_cleanup_steps_cover_every_selected_identity_with_linear_model_requests",
+            "some-implementations/riverhog/storage/filesystem/tests/test_filesystem_cleanup_execution.py::"
+            "test_filesystem_selected_cleanup_replays_after_reopen_and_preserves_other_scope",
+            "some-implementations/riverhog/storage/filesystem/tests/test_filesystem_cleanup_execution.py::"
+            "test_filesystem_exact_cleanup_does_not_enumerate_revision_history",
+            "tests/unit/test_archive_write_execution.py::"
+            "test_owned_http_cleanup_accounts_for_the_complete_lower_provider_request_path",
+            "tests/unit/test_archive_write_execution.py::"
+            "test_owned_cleanup_retains_partial_failures_without_retry_or_false_exhaustion",
+        ),
+        gates=("make unit",),
+        test_scopes=(
+            "Synchronous SDK model disposes every exact version/marker/session at "
+            "16/256/4096 identities with linear counted requests and bounded steps; "
+            "not actual transport or external-provider qualification.",
+            "Actual filesystem owner replays the same retained selection with a new "
+            "attempt identity after cold reopen and preserves unrelated scope.",
+            "Actual exact filesystem deletion preserves 16/256/4096 retained revision "
+            "directories without materializing their history.",
+            "Actual owned HTTP client, authenticated ASGI shell and locked owned SDK "
+            "count the adapter hop and all lower-provider incarnation/delete/abort/"
+            "verification requests against independent grants; local HTTP only.",
+            "The same actual transport path retains partial progress, ambiguous calls "
+            "and remaining parts without automatic retry or false exhaustion; no "
+            "global forward-writer quiescence or external-provider proof.",
+        ),
+    ),
+    SegmentedExtentWitness(
         id="riverhog-storage-cleanup-inventory-progression/v1",
         owner="riverhog-storage-adapter-protocol",
         rule_id="bounded-segment/v1",
@@ -109,6 +148,10 @@ WITNESSES = (
             _protocol_subject(
                 "generated:riverhog-storage-adapter",
                 "schemas/CleanupInventoryPage/properties/candidates",
+            ),
+            _protocol_subject(
+                "generated:riverhog-storage-adapter",
+                "schemas/CleanupInvocation/$defs/CleanupInventoryPage/properties/candidates",
             ),
         ),
         test_node_ids=(

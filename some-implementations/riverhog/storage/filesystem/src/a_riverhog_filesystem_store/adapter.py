@@ -30,8 +30,11 @@ from riverhog_storage_adapter_protocol import (
     BeginWriteOperation,
     BinaryContent,
     CleanupCandidate,
+    CleanupExecutionResult,
     CleanupInventoryPage,
     CleanupInventoryRequest,
+    CleanupInvocation,
+    CleanupItemOutcome,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -61,7 +64,9 @@ from riverhog_storage_adapter_protocol import (
     WriteSegmentReceipt,
     WriteSession,
     WriteStartRequest,
+    cleanup_execution_result,
     execute_write_invocation,
+    unknown_cleanup_execution,
     validate_cleanup_inventory_response,
     validate_open_write_page_response,
     write_operation_sha256,
@@ -571,6 +576,80 @@ class FilesystemStorageAdapter:
             details = (self._root / name).stat(follow_symlinks=False)
             if not stat.S_ISDIR(details.st_mode):
                 raise RuntimeError("filesystem adapter internal path is not a directory")
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        """Dispose exact selected identities under the existing filesystem owner.
+
+        The serial local profile has no lower-provider network requests. One
+        adapter hop remains conservatively charged even for direct execution.
+        Namespace work is proportional to selected items plus indexed seeks;
+        unlink/fsync latency and filesystem allocation are not constant-cost claims.
+        """
+        try:
+            invocation._require_exact_request()
+            self._require_open()
+            if invocation.call.target_incarnation != self._incarnation_id:
+                return unknown_cleanup_execution(invocation)
+        except Exception:
+            return unknown_cleanup_execution(invocation)
+        items: list[CleanupItemOutcome] = []
+        execution: Literal["closed", "unknown"] = "closed"
+        stopped = False
+        for candidate in invocation.request.inventory.candidates:
+            outcome: Literal["disposed", "pending", "deferred", "rejected", "unknown"]
+            if stopped:
+                outcome = "deferred"
+            else:
+                try:
+                    outcome = self._cleanup_selected_candidate(candidate)
+                except Exception:
+                    outcome = "unknown"
+                if outcome == "unknown":
+                    execution = "unknown"
+                    stopped = True
+            items.append(CleanupItemOutcome(candidate=candidate, outcome=outcome))
+        return cleanup_execution_result(
+            invocation, tuple(items), provider_requests=1, execution=execution
+        )
+
+    def _cleanup_selected_candidate(
+        self, candidate: CleanupCandidate
+    ) -> Literal["disposed", "rejected", "unknown"]:
+        if candidate.kind == "deletion_marker":
+            return "rejected"
+        if candidate.kind == "object_revision":
+            self.delete_object(
+                DeleteObjectRequest(
+                    object=ObjectLocator(
+                        object_path=candidate.object_path, revision=candidate.token
+                    ),
+                    mode="exact_revision",
+                )
+            )
+            # Absence also retires a conservative entry left by a lost reply.
+            with self._capacity_lock:
+                if self._inventory is None:
+                    return "unknown"
+                self._inventory.remove(candidate)
+            return "disposed"
+        object_key = self._object_key(candidate.object_path)
+        with self._capacity_lock, self._gate(object_key).write():
+            self._require_open()
+            write_dir = self._write_dir_by_key(object_key)
+            state_path = write_dir / "state.json"
+            if write_dir.exists():
+                if not state_path.exists():
+                    # A partial private directory has no exact token to dispose.
+                    return "unknown"
+                state = _WriteState.from_json(self._read_json(state_path))
+                if state.object_path != candidate.object_path:
+                    return "unknown"
+                if state.token == candidate.token:
+                    self._remove_write_dir(object_key)
+            if self._inventory is None:
+                return "unknown"
+            self._inventory.remove(candidate)
+            return "disposed"
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
         self._require_open()
@@ -1159,7 +1238,9 @@ class FilesystemStorageAdapter:
             if current_revision == revision:
                 (object_dir / "current").unlink(missing_ok=True)
             revisions_dir = object_dir / "revisions"
-            if not any(revisions_dir.iterdir()):
+            with os.scandir(revisions_dir) as entries:
+                empty = next(entries, None) is None
+            if empty:
                 shutil.rmtree(object_dir)
                 self._prune_empty_parents(object_dir.parent, stop=self._root / "objects")
             else:

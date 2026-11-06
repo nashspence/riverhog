@@ -15,6 +15,8 @@ from riverhog_storage_adapter_protocol import (
     STORAGE_ADAPTER_PROTOCOL,
     AdapterDescriptor,
     CleanupInventoryRequest,
+    CleanupInvocation,
+    CleanupStepRequest,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
     DeletePrefixRequest,
@@ -24,10 +26,12 @@ from riverhog_storage_adapter_protocol import (
     OpenWriteListRequest,
     ReadPreparationRequest,
     SmallObjectWriteRequest,
+    WriteCallIdentity,
     WriteCompleteRequest,
     WriteSegmentListRequest,
     WriteSession,
     WriteStartRequest,
+    cleanup_step_sha256,
     validate_object_path,
 )
 
@@ -104,6 +108,7 @@ def _expected_checks(descriptor: AdapterDescriptor) -> tuple[str, ...]:
             "write-stream",
             "read-preparation",
             "cleanup-inventory",
+            "bounded-selected-cleanup",
             "write-abort",
             "exact-deletion",
             "version-aware-prefix-cleanup",
@@ -492,6 +497,52 @@ def run_storage_adapter_conformance(
         if not found_write or not found_revision:
             raise AssertionError("cleanup inventory omitted known provider state")
         checks.append("cleanup-inventory")
+        # The conformance owner retains this exact selection before dispatch;
+        # no producer runs concurrently in this disposable namespace.
+        selected_page = continuation_client.list_cleanup_candidates(
+            CleanupInventoryRequest(
+                object_prefix=aborted.object_path,
+                target_incarnation=descriptor.storage_incarnation_id,
+                maximum_items=1,
+            )
+        )
+        if (
+            len(selected_page.candidates) != 1
+            or selected_page.candidates[0].kind != "open_write"
+            or selected_page.candidates[0].token != aborted.write_token
+        ):
+            raise AssertionError("cleanup selection differs from its known session")
+        selected_request = CleanupStepRequest(
+            selected_terminal_sha256=hashlib.sha256(cleanup_prefix.encode()).hexdigest(),
+            inventory=selected_page,
+            maximum_provider_requests=4,
+            maximum_control_bytes=1024 * 1024,
+            maximum_in_flight=2,
+        )
+        selected_call = WriteCallIdentity(
+            call_id=hashlib.sha256(uuid.uuid4().bytes).hexdigest(),
+            exact_request_sha256=cleanup_step_sha256(selected_request),
+            target_incarnation=descriptor.storage_incarnation_id,
+            dispatch_owner=hashlib.sha256(uuid.uuid4().bytes).hexdigest(),
+        )
+        invocation = CleanupInvocation(call=selected_call, request=selected_request)
+        for _attempt in range(2):
+            invocation = invocation.model_copy(
+                update={
+                    "call": invocation.call.model_copy(
+                        update={"call_id": hashlib.sha256(uuid.uuid4().bytes).hexdigest()}
+                    )
+                }
+            )
+            cleanup_result = continuation_client.execute_cleanup(invocation)
+            if (
+                cleanup_result.execution != "closed"
+                or cleanup_result.outcome != "cleanup_progress"
+                or cleanup_result.result is None
+                or not cleanup_result.result.selection_complete
+            ):
+                raise AssertionError("exact session cleanup did not settle its selected item")
+        checks.append("bounded-selected-cleanup")
         continuation_client.abort_write(persisted_aborted)
         continuation_client.abort_write(persisted_aborted)
         checks.append("write-abort")

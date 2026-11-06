@@ -17,8 +17,10 @@ from pydantic import BaseModel, ValidationError
 from riverhog_canonical_json import parse_identity_json
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
+    CleanupExecutionResult,
     CleanupInventoryPage,
     CleanupInventoryRequest,
+    CleanupInvocation,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -125,6 +127,8 @@ class StorageAdapterHttpBinding:
         method: str,
         path: str,
         body: bytes = b"",
+        *,
+        expected_incarnation: str | None = None,
     ) -> StorageAdapterHttpResponse:
         normalized_method = method.upper()
         if normalized_method == "POST" and path in FRAMED_STORAGE_ADAPTER_HTTP_PATHS:
@@ -158,6 +162,22 @@ class StorageAdapterHttpBinding:
                 session = self.adapter.begin_write(start_request)
                 validate_write_session_response(start_request, session)
                 return _model_response(session)
+            if normalized_method == "POST" and path == "/v1/cleanup/execute":
+                invocation = self._parse(body, CleanupInvocation)
+                try:
+                    invocation._require_exact_request(request_bytes=len(body))
+                except ValueError as exc:
+                    raise StorageAdapterServiceError(
+                        413, "request_too_large", "cleanup wire control grant is too small"
+                    ) from exc
+                if expected_incarnation is not None and (
+                    expected_incarnation != invocation.call.target_incarnation
+                    or invocation.adapter_hops_remaining != 0
+                ):
+                    raise StorageAdapterServiceError(
+                        400, "invalid_request", "cleanup incarnation precondition differs"
+                    )
+                return _model_response(self.adapter.execute_cleanup(invocation))
             if normalized_method == "POST" and path == "/v1/cleanup/inventory":
                 inventory_request = self._parse(body, CleanupInventoryRequest)
                 return _model_response(self.adapter.list_cleanup_candidates(inventory_request))
@@ -447,6 +467,14 @@ def _storage_operation(*args: Any, **kwargs: Any) -> HttpOperationContract:
 
 
 STORAGE_ADAPTER_HTTP_OPERATIONS = (
+    _storage_operation(
+        "POST",
+        "/v1/cleanup/execute",
+        CleanupInvocation,
+        CleanupExecutionResult,
+        "json",
+        errors=_adapter_errors("request_too_large"),
+    ),
     _storage_operation(
         "POST",
         "/v1/writes/execute",

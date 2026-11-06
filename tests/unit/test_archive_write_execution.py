@@ -570,12 +570,20 @@ def test_supplied_s3_client_can_preserve_session_without_asserting_closure() -> 
 def test_execution_port_annotations_resolve_for_contract_consumers() -> None:
     from typing import get_type_hints
 
-    from riverhog_storage_adapter_protocol import StorageAdapterPort, ValidatedStorageAdapterPort
+    from riverhog_storage_adapter_protocol import (
+        CleanupExecutionResult,
+        CleanupInvocation,
+        StorageAdapterPort,
+        ValidatedStorageAdapterPort,
+    )
 
     for owner in (StorageAdapterPort, ValidatedStorageAdapterPort):
         hints = get_type_hints(owner.execute_write)
         assert hints["invocation"] is WriteInvocation
         assert hints["return"] is WriteExecutionResult
+        cleanup = get_type_hints(owner.execute_cleanup)
+        assert cleanup["invocation"] is CleanupInvocation
+        assert cleanup["return"] is CleanupExecutionResult
 
 
 def test_upload_correlation_cannot_supply_execution_closure() -> None:
@@ -755,3 +763,321 @@ def test_http_incarnation_wait_does_not_block_independent_requests(
                 assert responses[0].status_code == 200
                 assert CleanupInventoryPage.model_validate_json(responses[0].content).exhausted
                 assert observed == [request]
+
+
+@contextmanager
+def _cleanup_provider_wire(fault: str | None) -> Iterator[tuple[str, list[tuple[str, str]]]]:
+    from urllib.parse import parse_qs, unquote, urlsplit
+    from xml.sax.saxutils import escape
+
+    from a_riverhog_s3_store_lib.incarnation import marker_document, marker_key
+
+    requests: list[tuple[str, str]] = []
+    key = "owned/archive/α%20&/volume.age"
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, _format: str, *args: object) -> None:
+            pass
+
+        def respond(self, status: int, body: bytes = b"") -> None:
+            self.send_response(status)
+            self.send_header("Content-Type", "application/xml")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_GET(self) -> None:
+            requests.append((self.command, self.path))
+            url = urlsplit(self.path)
+            if url.path == "/fixture-bucket/" + marker_key("owned"):
+                self.respond(200, marker_document(_INCARNATION))
+                return
+            assert unquote(url.path) == "/fixture-bucket/" + key
+            query = parse_qs(url.query)
+            assert query["uploadId"] == ["upload-%2B+%-1"]
+            assert query["max-parts"] == ["1"]
+            if fault == "remaining-parts":
+                self.respond(
+                    200,
+                    (
+                        "<ListPartsResult><Key>" + escape(key) + "</Key>"
+                        "<UploadId>upload-%2B+%-1</UploadId><IsTruncated>false</IsTruncated>"
+                        "<Part><PartNumber>1</PartNumber><ETag>part</ETag><Size>1</Size></Part>"
+                        "</ListPartsResult>"
+                    ).encode(),
+                )
+            elif fault == "malformed-parts":
+                self.respond(200, b"<ListPartsResult/>")
+            else:
+                self.respond(404, b"<Error><Code>NoSuchUpload</Code></Error>")
+
+        def do_DELETE(self) -> None:
+            requests.append((self.command, self.path))
+            url = urlsplit(self.path)
+            assert unquote(url.path) == "/fixture-bucket/" + key
+            query = parse_qs(url.query)
+            if "versionId" in query:
+                assert query["versionId"][0] in {"revision-%2B+%-1", "marker-%2B+%-1"}
+                if fault == "lost-delete":
+                    self.connection.shutdown(socket.SHUT_RDWR)
+                    self.connection.close()
+                    self.close_connection = True
+                    return
+                if fault == "denied-delete":
+                    self.respond(403, b"<Error><Code>AccessDenied</Code></Error>")
+                    return
+                if fault == "wrong-success-status":
+                    self.respond(200)
+                    return
+            else:
+                assert query["uploadId"] == ["upload-%2B+%-1"]
+            self.respond(204)
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    server.daemon_threads = False
+    worker = threading.Thread(target=lambda: server.serve_forever(poll_interval=0.01))
+    worker.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}", requests
+    finally:
+        server.shutdown()
+        server.server_close()
+        worker.join(timeout=5)
+        assert not worker.is_alive()
+
+
+def _cleanup_invocation(*, grant: int) -> Any:
+    from riverhog_storage_adapter_protocol import (
+        CleanupCandidate,
+        CleanupInventoryPage,
+        CleanupInvocation,
+        CleanupStepRequest,
+        cleanup_step_sha256,
+    )
+
+    kinds = ("object_revision", "deletion_marker", "open_write")
+    tokens = ("revision-%2B+%-1", "marker-%2B+%-1", "upload-%2B+%-1")
+    request = CleanupStepRequest(
+        selected_terminal_sha256="1" * 64,
+        inventory=CleanupInventoryPage(
+            object_prefix="archive/",
+            target_incarnation=_INCARNATION,
+            candidates=tuple(
+                CleanupCandidate(
+                    object_path="archive/α%20&/volume.age",
+                    kind=kind,
+                    token=token,
+                )
+                for kind, token in zip(kinds, tokens, strict=True)
+            ),
+            scanned_items=3,
+            exhausted=True,
+        ),
+        maximum_provider_requests=grant,
+        maximum_control_bytes=1024 * 1024,
+        maximum_in_flight=2,
+    )
+    return CleanupInvocation(
+        call=WriteCallIdentity(
+            call_id="2" * 64,
+            exact_request_sha256=cleanup_step_sha256(request),
+            dispatch_owner="3" * 64,
+            target_incarnation=_INCARNATION,
+        ),
+        request=request,
+    )
+
+
+@contextmanager
+def _cleanup_executor(fault: str | None):
+    from a_riverhog_s3_store_lib import (
+        S3ClientConfig,
+        S3StorageAdapter,
+        S3StorageAdapterConfig,
+        S3TransportTuning,
+        create_s3_client,
+    )
+    from riverhog_storage_adapter_support import StorageAdapterClient
+
+    with _cleanup_provider_wire(fault) as (endpoint, requests):
+        sdk = create_s3_client(
+            S3ClientConfig(
+                endpoint_url=endpoint,
+                region="us-east-1",
+                access_key_id="fixture-key",
+                secret_access_key="fixture-secret",
+                force_path_style=True,
+            ),
+            tuning=S3TransportTuning(connect_timeout_seconds=1, read_timeout_seconds=1),
+        )
+        try:
+            adapter = S3StorageAdapter(
+                sdk,
+                S3StorageAdapterConfig(
+                    implementation_id="fixture.s3/v1",
+                    implementation_version="1",
+                    bucket="fixture-bucket",
+                    root_prefix="owned",
+                ),
+            )
+            requests.clear()  # Construction is a separately prepared owner, not this turn.
+            paths: list[str] = []
+            app = create_storage_adapter_app(
+                service="fixture-storage",
+                token="fixture-token",
+                adapter=adapter,
+            )
+
+            @app.middleware("http")
+            async def observe_path(request, call_next):
+                paths.append(request.url.path)
+                return await call_next(request)
+
+            with _asgi(app) as address:
+                client = StorageAdapterClient(
+                    address,
+                    token="fixture-token",
+                    allow_insecure_http=True,
+                    timeout=5,
+                )
+                try:
+                    yield client, requests, paths
+                finally:
+                    client.close()
+        finally:
+            sdk.close()
+
+
+@pytest.mark.parametrize("grant", [1, 2, 3, 5, 6])
+def test_owned_http_cleanup_accounts_for_the_complete_lower_provider_request_path(
+    grant: int,
+    record_property,
+) -> None:
+    with _cleanup_executor(None) as (client, requests, paths):
+        invocation = _cleanup_invocation(grant=grant)
+        result = client.execute_cleanup(invocation)
+        assert paths == ["/v1/cleanup/execute"]
+        if grant == 1:
+            assert result.outcome == "unknown" and not requests
+            return
+        assert result.result is not None and result.execution == "closed"
+        expected = {
+            2: ["deferred"] * 3,
+            3: ["disposed", "deferred", "deferred"],
+            5: ["disposed", "disposed", "deferred"],
+            6: ["disposed"] * 3,
+        }[grant]
+        assert [item.outcome for item in result.result.items] == expected
+        assert len(requests) + 1 == result.result.provider_requests <= grant
+        assert result.result.exhausted is (grant == 6)
+        assert sum("storage-incarnation" in path for method, path in requests) == 1
+        assert {method for method, _ in requests} <= {"GET", "DELETE"}
+        record_property("provider_request_grant", grant)
+        record_property("actual_lower_provider_requests", len(requests))
+        record_property("actual_adapter_http_requests", len(paths))
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [
+        "lost-delete",
+        "denied-delete",
+        "wrong-success-status",
+        "remaining-parts",
+        "malformed-parts",
+    ],
+)
+def test_owned_cleanup_retains_partial_failures_without_retry_or_false_exhaustion(
+    fault: str,
+) -> None:
+    with _cleanup_executor(fault) as (client, requests, paths):
+        result = client.execute_cleanup(_cleanup_invocation(grant=6))
+        assert paths == ["/v1/cleanup/execute"] and result.result is not None
+        outcomes = [item.outcome for item in result.result.items]
+        if fault in {"lost-delete", "denied-delete", "wrong-success-status"}:
+            assert result.execution == "unknown"
+            assert outcomes == ["unknown", "deferred", "deferred"]
+            assert len(requests) == 2
+        else:
+            assert outcomes[:2] == ["disposed", "disposed"]
+            assert outcomes[2] == ("pending" if fault == "remaining-parts" else "unknown")
+            assert result.execution == ("closed" if fault == "remaining-parts" else "unknown")
+            assert len(requests) == 5
+        assert result.result.provider_requests == len(requests) + 1
+        assert not result.result.selection_complete and not result.result.exhausted
+        assert result.result.continuation is None
+
+
+def test_cleanup_authentication_identity_and_actual_wire_bytes_precede_provider_work() -> None:
+    from riverhog_storage_adapter_protocol import CleanupInvocation, cleanup_step_sha256
+
+    with _cleanup_executor(None) as (client, requests, paths):
+        original = _cleanup_invocation(grant=6)
+        body = original.model_dump_json(exclude_none=True).encode()
+        headers = {
+            "Authorization": "Bearer fixture-token",
+            "Riverhog-Expected-Storage-Incarnation": _INCARNATION,
+        }
+        address = client.base_url + "/v1/cleanup/execute"
+        assert httpx.post(address, content=body, timeout=5).status_code == 401
+        assert not requests
+        changed = {
+            **headers,
+            "Riverhog-Expected-Storage-Incarnation": "00000000-0000-4000-8000-000000000002",
+        }
+        assert httpx.post(address, content=body, headers=changed, timeout=5).status_code == 400
+        assert not requests
+        request = original.request.model_copy(update={"maximum_control_bytes": 8192})
+        bounded = CleanupInvocation(
+            call=original.call.model_copy(
+                update={
+                    "exact_request_sha256": cleanup_step_sha256(request),
+                }
+            ),
+            request=request,
+        )
+        padded = b" " * 8192 + bounded.model_dump_json(exclude_none=True).encode()
+        assert httpx.post(address, content=padded, headers=headers, timeout=5).status_code == 413
+        assert not requests
+
+    from riverhog_storage_adapter_support import StorageAdapterClient
+
+    sent: list[str] = []
+    with httpx.Client(
+        transport=httpx.MockTransport(
+            lambda request: sent.append(request.url.path) or httpx.Response(200)
+        )
+    ) as supplied:
+        unowned = StorageAdapterClient(
+            "http://fixture.example.test",
+            token="fixture-token",
+            allow_insecure_http=True,
+            client=supplied,
+        )
+        assert unowned.execute_cleanup(_cleanup_invocation(grant=6)).outcome == "unknown"
+        assert not sent
+
+
+def test_cleanup_cannot_hide_an_additional_http_adapter_hop() -> None:
+    from contextlib import closing
+
+    from riverhog_storage_adapter_support import StorageAdapterClient
+
+    with _cleanup_executor(None) as (backend, requests, backend_paths):
+        proxy = create_storage_adapter_app(
+            service="fixture-proxy",
+            token="proxy-token",
+            adapter=backend,
+        )
+        with _asgi(proxy) as endpoint:
+            with closing(
+                StorageAdapterClient(
+                    endpoint,
+                    token="proxy-token",
+                    allow_insecure_http=True,
+                    timeout=5,
+                )
+            ) as client:
+                result = client.execute_cleanup(_cleanup_invocation(grant=6))
+                assert result.outcome == "unknown"
+                assert not backend_paths and not requests
