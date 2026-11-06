@@ -10,6 +10,7 @@ from sqlalchemy import (
     Index,
     String,
     Text,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -124,6 +125,11 @@ class ArchiveUploadTerminalRecord(Base):
     phase: Mapped[str] = mapped_column(String)
     frontier: Mapped[str] = mapped_column(Text)
     original_epoch: Mapped[str] = mapped_column(String(64))
+    drain_next_attempt_at: Mapped[str] = mapped_column(
+        String,
+        default="1970-01-01T00:00:00.000000000Z",
+        server_default=text("'1970-01-01T00:00:00.000000000Z'"),
+    )
     result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
@@ -139,4 +145,11 @@ class ArchiveUploadTerminalRecord(Base):
             name="ck_archive_upload_terminals_result",
         ),
         Index("ix_archive_upload_terminals_collection", "collection_id", "id"),
+        Index(
+            "ix_archive_upload_terminals_draining_due",
+            "drain_next_attempt_at",
+            "id",
+            sqlite_where=text("phase = 'draining'"),
+            postgresql_where=text("(phase) = 'draining'"),
+        ),
     )

@@ -56,7 +56,7 @@ class TerminalWriteRecords:
 
 
 def inspect_terminal_write_records(
-    session: Session, collection_id: int, operation_id: str
+    session: Session, collection_id: int, operation_id: str, *, nowait: bool = False
 ) -> TerminalWriteRecords:
     """Observe indexed owner facts under the closed construction/terminal lock.
 
@@ -64,16 +64,18 @@ def inspect_terminal_write_records(
     optional cache effect must remain visible to terminal drainage independently
     of whether archive preservation can continue.
     """
-    _writer(session)
+    _writer(session, defer_if_busy=nowait)
     upload = session.scalar(
-        ArchiveWriteAdmission._upload_query(collection_id).execution_options(populate_existing=True)
+        ArchiveWriteAdmission._upload_query(collection_id)
+        .with_for_update(nowait=nowait)
+        .execution_options(populate_existing=True)
     )
     if upload is None:
         raise NotFound("upload terminal construction is unavailable")
     session.get(
         ArchiveWriteControlRecord,
         collection_id,
-        with_for_update=True,
+        with_for_update={"nowait": nowait},
         populate_existing=True,
     )
     control = ArchiveWriteAdmission._control(session, upload)
@@ -82,7 +84,7 @@ def inspect_terminal_write_records(
     terminal = session.get(
         ArchiveUploadTerminalRecord,
         operation_id,
-        with_for_update=True,
+        with_for_update={"nowait": nowait},
         populate_existing=True,
     )
     if terminal is None:

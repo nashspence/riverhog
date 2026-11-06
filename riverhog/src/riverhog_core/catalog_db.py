@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sqlite3
 import weakref
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -8,6 +9,7 @@ from typing import Any
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Connection, Engine, make_url
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session, sessionmaker
 from state_schema import (
     StateSchema,
@@ -62,6 +64,15 @@ def _normalize_database_url(database_url: str) -> str:
     if "://" not in raw:
         raise ValueError("database URL must be a SQLAlchemy URL")
     return raw
+
+
+def catalog_write_contention(error: OperationalError) -> bool:
+    """Classify database deferral; it supplies no operation outcome or closure."""
+    original = error.orig
+    code = getattr(original, "sqlite_errorcode", None)
+    return (
+        isinstance(code, int) and code & 0xFF in (sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED)
+    ) or getattr(original, "sqlstate", None) in {"40001", "40P01", "55P03"}
 
 
 def create_catalog_engine(database_url: str) -> Engine:

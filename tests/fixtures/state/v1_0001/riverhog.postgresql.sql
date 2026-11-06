@@ -2944,6 +2944,7 @@ CREATE TABLE archive_upload_terminals (
 	phase VARCHAR NOT NULL,
 	frontier TEXT NOT NULL,
 	original_epoch VARCHAR(64) NOT NULL,
+	drain_next_attempt_at VARCHAR DEFAULT '1970-01-01T00:00:00.000000000Z' NOT NULL,
 	result_json TEXT,
 	PRIMARY KEY (id),
 	FOREIGN KEY(collection_id) REFERENCES archive_write_controls (collection_id),
@@ -3083,5 +3084,7 @@ CREATE TABLE collection_upload_initial_tag_publications (
 	CONSTRAINT ck_initial_tag_physical_receipt CHECK (role IN ('node','head') OR receipt_json IS NULL),
 	CONSTRAINT ck_sha256_2ea99c99b63cd9a9 CHECK (length(source_sha256) = 64 AND lower(source_sha256) = source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
+
+CREATE INDEX ix_archive_upload_terminals_draining_due ON archive_upload_terminals (drain_next_attempt_at, id) WHERE phase = 'draining';
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

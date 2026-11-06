@@ -10,10 +10,11 @@ from threading import Lock
 from typing import Literal, Protocol
 
 from riverhog_protocol.errors import Conflict
+from sqlalchemy.exc import OperationalError
 
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
-from riverhog_core.catalog_db import SessionFactory, session_scope
+from riverhog_core.catalog_db import SessionFactory, catalog_write_contention, session_scope
 from riverhog_core.services.archive_finalizer_terminal import TerminalDrainStatus
 from riverhog_core.services.archive_upload_drain import inspect_terminal_write_records
 from riverhog_core.services.archive_upload_execution import (
@@ -178,7 +179,12 @@ class ArchiveFinalizerRegistry:
         return self._execution.collect(limit=limit, owner=self)
 
     def fence_terminal(
-        self, key: ArchiveUploadExecutionKey, *, target_incarnation: str, operation_id: str
+        self,
+        key: ArchiveUploadExecutionKey,
+        *,
+        target_incarnation: str,
+        operation_id: str,
+        defer_if_busy: bool = False,
     ) -> Literal["busy", "untracked", "fenced", "drained"]:
         if not self._lock.acquire(blocking=False):
             return "busy"
@@ -192,17 +198,24 @@ class ArchiveFinalizerRegistry:
             self._lock.release()
         # Validate the exact selected request before installing a local fence.
         # No registry lock or provider IO is held during this bounded transaction.
-        with session_scope(self._factory) as session:
-            inspect_terminal_write_records(session, key.collection_id, operation_id)
-            control = session.get(ArchiveWriteControlRecord, key.collection_id)
-            assert control is not None
-            if (
-                hashlib.sha256(control.construction_json.encode()).hexdigest()
-                != key.construction_sha256
-                or json.loads(control.construction_json)["archive_incarnation_id"]
-                != target_incarnation
-            ):
-                raise Conflict("retained finalizer terminal construction changed")
+        try:
+            with session_scope(self._factory) as session:
+                inspect_terminal_write_records(
+                    session, key.collection_id, operation_id, nowait=defer_if_busy
+                )
+                control = session.get(ArchiveWriteControlRecord, key.collection_id)
+                assert control is not None
+                if (
+                    hashlib.sha256(control.construction_json.encode()).hexdigest()
+                    != key.construction_sha256
+                    or json.loads(control.construction_json)["archive_incarnation_id"]
+                    != target_incarnation
+                ):
+                    raise Conflict("retained finalizer terminal construction changed")
+        except OperationalError as exc:
+            if defer_if_busy and catalog_write_contention(exc):
+                return "busy"
+            raise
         if not self._lock.acquire(blocking=False):
             return "busy"
         try:
@@ -217,10 +230,18 @@ class ArchiveFinalizerRegistry:
             self._lock.release()
 
     def submit_terminal(
-        self, key: ArchiveUploadExecutionKey, *, target_incarnation: str, operation_id: str
+        self,
+        key: ArchiveUploadExecutionKey,
+        *,
+        target_incarnation: str,
+        operation_id: str,
+        defer_if_busy: bool = False,
     ) -> TerminalSubmission:
         fenced = self.fence_terminal(
-            key, target_incarnation=target_incarnation, operation_id=operation_id
+            key,
+            target_incarnation=target_incarnation,
+            operation_id=operation_id,
+            defer_if_busy=defer_if_busy,
         )
         if fenced in {"busy", "untracked"}:
             return fenced

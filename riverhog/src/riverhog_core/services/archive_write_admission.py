@@ -20,6 +20,7 @@ from riverhog_protocol.pack_ingress import canonical_json_bytes
 from sqlalchemy import Select, select
 from sqlalchemy.orm import Session, load_only
 from state_schema import read_snapshot
+from time_formats import utc_timestamp_now
 
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.catalog_archive_write_models import (
@@ -54,9 +55,14 @@ def _sha(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
-def _writer(session: Session) -> None:
+def _writer(session: Session, *, defer_if_busy: bool = False) -> None:
     if session.get_bind().dialect.name == "sqlite":
-        session.connection(execution_options={"sqlite_immediate_writer": True})
+        session.connection(
+            execution_options={
+                "sqlite_immediate_writer": True,
+                "sqlite_defer_if_busy": defer_if_busy,
+            }
+        )
 
 
 def _positive(value: int) -> None:
@@ -727,6 +733,7 @@ class ArchiveWriteAdmission:
                     phase="draining",
                     frontier=control.next_call,
                     original_epoch=control.epoch,
+                    drain_next_attempt_at=utc_timestamp_now(),
                 )
             )
             control.gate = "closed"
