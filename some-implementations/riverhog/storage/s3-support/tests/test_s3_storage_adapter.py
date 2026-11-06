@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from io import BytesIO
 from pathlib import Path
 from typing import Any, cast
+from urllib.parse import quote
 
 import pytest
 from a_riverhog_s3_store_lib import (
@@ -18,6 +19,7 @@ from a_riverhog_s3_store_lib import (
 from a_riverhog_s3_store_lib.incarnation import StorageIncarnationError, marker_document, marker_key
 from botocore.exceptions import ClientError
 from riverhog_storage_adapter_protocol import (
+    CleanupInventoryRequest,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
     DeletePrefixRequest,
@@ -872,12 +874,16 @@ class _OpenWritePageClient(_FakeS3Client):
         self.list_requests.append(request)
         assert request["Prefix"] == "owned/archive/volume"
         if self.response_override is not None:
-            return self.response_override
+            return {"EncodingType": "url", **self.response_override}
         marker = (request.get("KeyMarker"), request.get("UploadIdMarker"))
         offset = self.positions[marker] + 1 if marker[0] is not None else 0
         selected = self.rows[offset : offset + request["MaxUploads"]]
         more = offset + len(selected) < len(self.rows)
-        response: dict[str, object] = {"Uploads": selected, "IsTruncated": more}
+        response: dict[str, object] = {
+            "EncodingType": "url",
+            "Uploads": selected,
+            "IsTruncated": more,
+        }
         if more:
             response["NextKeyMarker"] = selected[-1]["Key"]
             response["NextUploadIdMarker"] = selected[-1]["UploadId"]
@@ -990,3 +996,189 @@ def test_denied_open_write_observation_is_not_empty_success() -> None:
                 object_path="archive/volume", target_incarnation=client.incarnation_id
             )
         )
+
+
+class _CleanupInventoryClient(_FakeS3Client):
+    def __init__(self, count: int) -> None:
+        super().__init__()
+        self.version_rows = [
+            {
+                "Key": "owned/archive/volume",
+                "VersionId": f"version-{index:08d}",
+                "field": "Versions" if index % 2 == 0 else "DeleteMarkers",
+            }
+            for index in range(count)
+        ]
+        self.write_rows = [
+            {"Key": f"owned/archive/open-{index:08d}", "UploadId": f"write-%2B+-%25-{index:08d}"}
+            for index in range(count)
+        ]
+        self.version_positions = {
+            (row["Key"], row["VersionId"]): index for index, row in enumerate(self.version_rows)
+        }
+        self.write_positions = {
+            (row["Key"], row["UploadId"]): index for index, row in enumerate(self.write_rows)
+        }
+        self.version_calls = 0
+        self.write_calls = 0
+        self.marker_reads = 0
+        self.version_override: dict[str, Any] | None = None
+
+    def get_object(self, **request: Any) -> dict[str, object]:
+        self.marker_reads += 1
+        return super().get_object(**request)
+
+    def list_object_versions(self, **request: Any) -> dict[str, Any]:
+        self.version_calls += 1
+        assert request["Prefix"] == "owned/archive/"
+        if self.version_override is not None:
+            return self.version_override
+        marker = (request.get("KeyMarker"), request.get("VersionIdMarker"))
+        offset = self.version_positions[marker] + 1 if marker[0] is not None else 0
+        rows = self.version_rows[offset : offset + request["MaxKeys"]]
+        more = offset + len(rows) < len(self.version_rows)
+        response: dict[str, Any] = {
+            "Versions": [
+                {k: row[k] for k in ("Key", "VersionId")}
+                for row in rows
+                if row["field"] == "Versions"
+            ],
+            "DeleteMarkers": [
+                {k: row[k] for k in ("Key", "VersionId")}
+                for row in rows
+                if row["field"] == "DeleteMarkers"
+            ],
+            "IsTruncated": more,
+        }
+        if more:
+            response.update(
+                NextKeyMarker=rows[-1]["Key"], NextVersionIdMarker=rows[-1]["VersionId"]
+            )
+        return response
+
+    def list_multipart_uploads(self, **request: Any) -> dict[str, Any]:
+        self.write_calls += 1
+        assert request["EncodingType"] == "url" and request["Prefix"] == "owned/archive/"
+        marker = (request.get("KeyMarker"), request.get("UploadIdMarker"))
+        offset = self.write_positions[marker] + 1 if marker[0] is not None else 0
+        rows = self.write_rows[offset : offset + request["MaxUploads"]]
+        more = offset + len(rows) < len(self.write_rows)
+        response: dict[str, Any] = {
+            "EncodingType": "url",
+            "Uploads": [{**row, "Key": quote(row["Key"], safe="")} for row in rows],
+            "IsTruncated": more,
+        }
+        if more:
+            response.update(
+                NextKeyMarker=quote(rows[-1]["Key"], safe=""),
+                NextUploadIdMarker=rows[-1]["UploadId"],
+            )
+        return response
+
+    def create_multipart_upload(self, **request: Any) -> dict[str, str]:
+        raise AssertionError("inventory must not begin a write")
+
+    def abort_multipart_upload(self, **request: Any) -> None:
+        raise AssertionError("inventory must not dispose a write")
+
+
+@pytest.mark.parametrize("count", [16, 256, 4096])
+def test_cleanup_inventory_pages_every_version_marker_and_write_without_total_limit(
+    count: int,
+) -> None:
+    client = _CleanupInventoryClient(count)
+    request = CleanupInventoryRequest(
+        object_prefix="archive/", target_incarnation=client.incarnation_id, maximum_items=7
+    )
+    observed = []
+    while True:
+        adapter = S3StorageAdapter(client, _config())
+        reads = client.marker_reads
+        calls = client.version_calls + client.write_calls
+        page = adapter.list_cleanup_candidates(request)
+        assert client.marker_reads == reads + 1
+        assert client.version_calls + client.write_calls == calls + 1
+        assert page.scanned_items == len(page.candidates) <= 7
+        observed.extend(page.candidates)
+        if page.exhausted:
+            break
+        request = request.model_copy(update={"continuation": page.continuation})
+    expected = {
+        (
+            "object_revision" if row["field"] == "Versions" else "deletion_marker",
+            "archive/volume",
+            row["VersionId"],
+        )
+        for row in client.version_rows
+    } | {
+        ("open_write", row["Key"].removeprefix("owned/"), row["UploadId"])
+        for row in client.write_rows
+    }
+    assert {(item.kind, item.object_path, item.token) for item in observed} == expected
+    assert len(observed) == 2 * count
+    assert client.version_calls == client.write_calls == (count + 6) // 7
+    assert not client.uploads and not client.deleted
+
+
+def test_cleanup_inventory_rejects_denied_malformed_and_foreign_continuations() -> None:
+    client = _CleanupInventoryClient(2)
+    adapter = S3StorageAdapter(client, _config())
+    request = CleanupInventoryRequest(
+        object_prefix="archive/", target_incarnation=client.incarnation_id, maximum_items=1
+    )
+    first = adapter.list_cleanup_candidates(request)
+    assert first.continuation is not None
+    with pytest.raises(StorageAdapterRejection, match="continuation"):
+        adapter.list_cleanup_candidates(
+            request.model_copy(
+                update={"object_prefix": "another/", "continuation": first.continuation}
+            )
+        )
+    with pytest.raises(StorageAdapterRejection, match="response grant"):
+        adapter.list_cleanup_candidates(request.model_copy(update={"maximum_response_bytes": 1}))
+    for response in (
+        {"Versions": {}, "IsTruncated": False},
+        {"Versions": [], "CommonPrefixes": [{"Prefix": "owned/archive/"}], "IsTruncated": False},
+        {"Versions": []},
+        {"Versions": [{"Key": "outside", "VersionId": "v"}], "IsTruncated": False},
+        {"Versions": [], "IsTruncated": True},
+    ):
+        client.version_override = response
+        with pytest.raises(RuntimeError):
+            adapter.list_cleanup_candidates(request)
+    client.version_override = {
+        "IsTruncated": True,
+        "NextKeyMarker": "owned/archive/volume",
+        "NextVersionIdMarker": "version-00000000",
+    }
+    with pytest.raises(RuntimeError, match="advance"):
+        adapter.list_cleanup_candidates(
+            request.model_copy(update={"continuation": first.continuation})
+        )
+
+    class Denied(_CleanupInventoryClient):
+        def list_object_versions(self, **request: Any) -> dict[str, Any]:
+            raise _client_error("AccessDenied", 403, "ListObjectVersions")
+
+    denied = Denied(1)
+    with pytest.raises(ClientError, match="AccessDenied"):
+        S3StorageAdapter(denied, _config()).list_cleanup_candidates(request)
+    assert denied.write_calls == 0
+
+
+def test_open_write_cursor_preserves_full_accepted_opaque_token_capacity() -> None:
+    client = _OpenWritePageClient(2)
+    client.rows[0]["UploadId"] = "\u0001" * 4000
+    client.positions = {
+        (row["Key"], row["UploadId"]): index for index, row in enumerate(client.rows)
+    }
+    adapter = S3StorageAdapter(client, _config())
+    request = OpenWriteListRequest(
+        object_path="archive/volume", target_incarnation=client.incarnation_id, maximum_items=1
+    )
+    page = adapter.list_open_writes(request)
+    assert page.continuation is not None and len(page.continuation) > 16000
+    continued = OpenWriteListRequest.model_validate_json(
+        request.model_copy(update={"continuation": page.continuation}).model_dump_json()
+    )
+    assert adapter.list_open_writes(continued).observations[0].write_token == "token-1"

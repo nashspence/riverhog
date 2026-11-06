@@ -17,6 +17,8 @@ from pydantic import BaseModel, ValidationError
 from riverhog_canonical_json import parse_identity_json
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -156,6 +158,9 @@ class StorageAdapterHttpBinding:
                 session = self.adapter.begin_write(start_request)
                 validate_write_session_response(start_request, session)
                 return _model_response(session)
+            if normalized_method == "POST" and path == "/v1/cleanup/inventory":
+                inventory_request = self._parse(body, CleanupInventoryRequest)
+                return _model_response(self.adapter.list_cleanup_candidates(inventory_request))
             if normalized_method == "POST" and path == "/v1/writes/open":
                 open_request = self._parse(body, OpenWriteListRequest)
                 return _model_response(self.adapter.list_open_writes(open_request))
@@ -471,6 +476,14 @@ STORAGE_ADAPTER_HTTP_OPERATIONS = (
         WriteSegmentReceipt,
         "framed",
         errors=_adapter_errors("length_required", "request_too_large", "invalid_path", "not_found"),
+    ),
+    _storage_operation(
+        "POST",
+        "/v1/cleanup/inventory",
+        CleanupInventoryRequest,
+        CleanupInventoryPage,
+        "json",
+        errors=_adapter_errors("request_too_large", "invalid_path", "traversal_invalidated"),
     ),
     _storage_operation(
         "POST",

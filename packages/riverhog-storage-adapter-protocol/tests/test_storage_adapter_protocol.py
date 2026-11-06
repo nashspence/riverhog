@@ -15,6 +15,9 @@ from pydantic import ValidationError
 from riverhog_storage_adapter_protocol import (
     ADAPTER_PRIVATE_ASSERTION_PREFIX,
     AdapterDescriptor,
+    CleanupCandidate,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -43,6 +46,7 @@ from riverhog_storage_adapter_protocol import (
     WriteSegmentReceipt,
     WriteSession,
     WriteStartRequest,
+    validate_cleanup_inventory_response,
     validate_completed_write_response,
     validate_object_metadata_response,
     validate_object_path,
@@ -136,6 +140,7 @@ def test_protocol_matches_the_existing_capability_port_inventory() -> None:
         "execute_write",
         "head_object",
         "read_object",
+        "list_cleanup_candidates",
         "list_open_writes",
         "list_segments",
         "prepare_read",
@@ -904,4 +909,38 @@ def test_open_write_observation_has_no_execution_or_adoption_authority() -> None
     with pytest.raises(ValidationError, match="unique"):
         OpenWritePage.model_validate(
             {**page.model_dump(), "observations": page.observations * 2, "scanned_items": 2}
+        )
+
+
+def test_cleanup_inventory_validates_scope_counts_bytes_and_explicit_exhaustion() -> None:
+    request = CleanupInventoryRequest(
+        object_prefix="archive/",
+        target_incarnation="00000000-0000-4000-8000-000000000001",
+        maximum_items=1,
+    )
+    candidate = CleanupCandidate(object_path="archive/volume", kind="object_revision", token="v1")
+    page = CleanupInventoryPage(
+        object_prefix=request.object_prefix,
+        target_incarnation=request.target_incarnation,
+        candidates=(candidate,),
+        scanned_items=1,
+        exhausted=True,
+    )
+    validate_cleanup_inventory_response(request, page)
+    for changes in (
+        {"object_prefix": "another/"},
+        {"target_incarnation": "00000000-0000-4000-8000-000000000002"},
+        {"scanned_items": 2},
+        {"exhausted": False},
+        {"candidates": (candidate, candidate), "scanned_items": 2},
+    ):
+        with pytest.raises(ValueError):
+            validate_cleanup_inventory_response(request, page.model_copy(update=changes))
+    with pytest.raises(ValueError, match="response grant"):
+        validate_cleanup_inventory_response(
+            request.model_copy(update={"maximum_response_bytes": 1}), page
+        )
+    for kind in ("object_revision", "deletion_marker", "open_write"):
+        assert (
+            CleanupCandidate(object_path="archive/volume", kind=kind, token="opaque").kind == kind
         )

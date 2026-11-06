@@ -11,6 +11,7 @@ from a_riverhog_filesystem_store import (
 from a_riverhog_filesystem_store.incarnation import provision_storage_root
 from riverhog_storage_adapter_protocol import (
     BeginWriteOperation,
+    CleanupInventoryRequest,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
     DeletePrefixRequest,
@@ -958,3 +959,137 @@ def test_open_write_observation_is_exact_pure_and_survives_restart(tmp_path: Pat
                     update={"target_incarnation": "00000000-0000-4000-8000-000000000002"}
                 )
             )
+
+
+def _cleanup_inventory(adapter, prefix: str, *, maximum_items: int = 7):  # type: ignore[no-untyped-def]
+    request = CleanupInventoryRequest(
+        object_prefix=prefix,
+        target_incarnation=adapter.descriptor().storage_incarnation_id,
+        maximum_items=maximum_items,
+    )
+    observed = []
+    while True:
+        page = adapter.list_cleanup_candidates(request)
+        assert len(page.candidates) <= maximum_items
+        observed.extend(page.candidates)
+        if page.exhausted:
+            return tuple(observed)
+        request = request.model_copy(update={"continuation": page.continuation})
+
+
+def test_cleanup_inventory_retains_all_revisions_sessions_and_cold_continuations(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "store"
+    revisions: set[str] = set()
+    with _adapter(root) as adapter:
+        for index in range(129):
+            content = f"revision-{index}".encode()
+            receipt = adapter.put_small_object(
+                SmallObjectWriteRequest(
+                    object_path="archive/owned/volume",
+                    content_type="application/octet-stream",
+                    required_identity_assertions={},
+                    placement_policy="immediate_default",
+                    mode="replace_current",
+                    stored_bytes=len(content),
+                    stored_sha256=hashlib.sha256(content).hexdigest(),
+                ),
+                content,
+            )
+            assert receipt.revision is not None
+            revisions.add(receipt.revision)
+        session = adapter.begin_write(_start("archive/owned/open", 1))
+        unrelated = adapter.begin_write(_start("archive/outside/open", 1))
+        request = CleanupInventoryRequest(
+            object_prefix="archive/owned/",
+            target_incarnation=adapter.descriptor().storage_incarnation_id,
+            maximum_items=7,
+        )
+        first = adapter.list_cleanup_candidates(request)
+        assert first.continuation is not None
+        expected_remainder = []
+        continuation = first.continuation
+        while continuation is not None:
+            page = adapter.list_cleanup_candidates(
+                request.model_copy(update={"continuation": continuation})
+            )
+            expected_remainder.extend(page.candidates)
+            continuation = page.continuation
+    with _adapter(root) as reopened:
+        continuation = first.continuation
+        actual_remainder = []
+        while continuation is not None:
+            page = reopened.list_cleanup_candidates(
+                request.model_copy(update={"continuation": continuation})
+            )
+            actual_remainder.extend(page.candidates)
+            continuation = page.continuation
+        assert tuple(actual_remainder) == tuple(expected_remainder)
+        all_items = (*first.candidates, *actual_remainder)
+        assert {item.token for item in all_items if item.kind == "object_revision"} == revisions
+        assert {
+            (item.object_path, item.token) for item in all_items if item.kind == "open_write"
+        } == {(session.object_path, session.write_token)}
+        assert len(all_items) == 130
+        with pytest.raises(StorageAdapterRejection, match="cursor"):
+            reopened.list_cleanup_candidates(
+                request.model_copy(
+                    update={"object_prefix": "another/", "continuation": first.continuation}
+                )
+            )
+        with pytest.raises(StorageAdapterRejection, match="response grant"):
+            reopened.list_cleanup_candidates(
+                request.model_copy(update={"maximum_response_bytes": 1})
+            )
+        # Existing owner mutations keep inventory consistent without rebuilding or scanning.
+        reopened.abort_write(session)
+        assert all(
+            item.kind != "open_write" for item in _cleanup_inventory(reopened, "archive/owned/")
+        )
+        reopened.delete_object(
+            DeleteObjectRequest(
+                object=ObjectLocator(
+                    object_path="archive/owned/volume", revision=next(iter(revisions))
+                ),
+                mode="exact_revision",
+            )
+        )
+        assert len(_cleanup_inventory(reopened, "archive/owned/")) == 128
+        reopened.delete_prefix(DeletePrefixRequest(object_prefix="archive/owned/"))
+        assert _cleanup_inventory(reopened, "archive/owned/") == ()
+        assert reopened.begin_write(_start(unrelated.object_path, 1)) == unrelated
+
+
+def test_cleanup_inventory_preserves_revision_when_publication_reply_is_lost(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with _adapter(tmp_path / "store") as adapter:
+        write = adapter._write_text_atomic
+
+        def lose_current(path: Path, value: str) -> None:
+            if path.name == "current":
+                raise RuntimeError("lost current publication")
+            write(path, value)
+
+        monkeypatch.setattr(adapter, "_write_text_atomic", lose_current)
+        content = b"ciphertext"
+        with pytest.raises(RuntimeError, match="lost current"):
+            adapter.put_small_object(
+                SmallObjectWriteRequest(
+                    object_path="archive/owned/object",
+                    content_type="application/octet-stream",
+                    required_identity_assertions={},
+                    placement_policy="immediate_default",
+                    mode="create_only",
+                    stored_bytes=len(content),
+                    stored_sha256=hashlib.sha256(content).hexdigest(),
+                ),
+                content,
+            )
+        page = _cleanup_inventory(adapter, "archive/owned/")
+        assert len(page) == 1 and page[0].kind == "object_revision"
+        assert adapter._revision_dir(
+            adapter._object_key(page[0].object_path), page[0].token
+        ).is_dir()

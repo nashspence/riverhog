@@ -12,6 +12,8 @@ from http_api_contracts import FRAMED_BODY_MEDIA_TYPE
 from riverhog_storage_adapter_asgi_support import create_storage_adapter_app
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
     ImmutableObjectReceipt,
     ObjectLocator,
     ObjectReadReceipt,
@@ -362,3 +364,51 @@ def test_open_write_observation_has_authenticated_incarnation_fenced_asgi_route(
             == 503
         )
         assert adapter.observed == [request]
+
+
+def test_cleanup_inventory_route_authenticates_and_fences_before_observation() -> None:
+    class InventoryAdapter(_Adapter):
+        def __init__(self) -> None:
+            super().__init__()
+            self.requests: list[CleanupInventoryRequest] = []
+
+        def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
+            self.requests.append(request)
+            return CleanupInventoryPage(
+                object_prefix=request.object_prefix,
+                target_incarnation=self.incarnation_id,
+                scanned_items=0,
+                exhausted=True,
+            )
+
+    adapter = InventoryAdapter()
+    app = create_storage_adapter_app(
+        service="fixture-storage", token="fixture-token", adapter=cast(StorageAdapterPort, adapter)
+    )
+    request = CleanupInventoryRequest(
+        object_prefix="archive/", target_incarnation=adapter.incarnation_id
+    )
+    with TestClient(app) as client:
+        assert (
+            client.post("/v1/cleanup/inventory", content=request.model_dump_json()).status_code
+            == 401
+        )
+        assert not adapter.requests
+        headers = {
+            "Authorization": "Bearer fixture-token",
+            "Riverhog-Expected-Storage-Incarnation": "00000000-0000-4000-8000-000000000002",
+        }
+        assert (
+            client.post(
+                "/v1/cleanup/inventory", headers=headers, content=request.model_dump_json()
+            ).status_code
+            == 503
+        )
+        assert not adapter.requests
+        headers["Riverhog-Expected-Storage-Incarnation"] = adapter.incarnation_id
+        response = client.post(
+            "/v1/cleanup/inventory", headers=headers, content=request.model_dump_json()
+        )
+        assert response.status_code == 200
+        assert CleanupInventoryPage.model_validate_json(response.content).exhausted
+        assert adapter.requests == [request]

@@ -13,6 +13,8 @@ from riverhog_canonical_json import parse_identity_json
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
     BinaryContent,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -42,6 +44,7 @@ from riverhog_storage_adapter_protocol import (
     WriteSession,
     WriteStartRequest,
     unknown_write_execution,
+    validate_cleanup_inventory_response,
     validate_completed_write_response,
     validate_object_metadata_response,
     validate_object_read_response,
@@ -236,6 +239,11 @@ class StorageAdapterClient:
             },
         )
         self._validate(validate_write_segment_response, request, response)
+        return response
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
+        response = self._model("POST", "/v1/cleanup/inventory", CleanupInventoryPage, request)
+        self._validate(validate_cleanup_inventory_response, request, response)
         return response
 
     def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:

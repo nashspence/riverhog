@@ -102,6 +102,45 @@ WITNESSES = (
         gates=("make unit", "make filesystem-recovery-qualification"),
     ),
     SegmentedExtentWitness(
+        id="riverhog-storage-cleanup-inventory-progression/v1",
+        owner="riverhog-storage-adapter-protocol",
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _protocol_subject(
+                "generated:riverhog-storage-adapter",
+                "schemas/CleanupInventoryPage/properties/candidates",
+            ),
+        ),
+        test_node_ids=(
+            "some-implementations/riverhog/storage/s3-support/tests/"
+            "test_s3_storage_adapter.py::"
+            "test_cleanup_inventory_pages_every_version_marker_and_write_without_total_limit",
+            "some-implementations/riverhog/storage/filesystem/tests/"
+            "test_filesystem_storage_adapter.py::"
+            "test_cleanup_inventory_retains_all_revisions_sessions_and_cold_continuations",
+            "some-implementations/riverhog/storage/filesystem/tests/"
+            "test_filesystem_inventory.py::"
+            "test_inventory_pages_seek_past_history_without_rescanning_unrelated_objects",
+            "some-implementations/riverhog/storage/s3-support/tests/"
+            "test_s3_dispatch_attempts.py::"
+            "test_cleanup_inventory_and_open_writes_preserve_encoded_keys_through_owned_sdk",
+        ),
+        gates=("make unit",),
+        test_scopes=(
+            "Maintained S3 adapter over a paginated SDK model inventories 16/256/4096 "
+            "versions and deletion markers plus independent multipart sessions, with "
+            "one list and incarnation read per page; no external-provider qualification.",
+            "Actual filesystem owner inventories 129 immutable revisions and an open "
+            "session, resumes a cold continuation and preserves unrelated scope.",
+            "Disposable filesystem index measures bounded SQL-program work and indexed "
+            "compound seeks under independent history and unrelated-namespace growth; "
+            "B-tree descent remains logarithmic.",
+            "Locked owned SDK over a local HTTP server parses complete version/marker "
+            "and multipart pages, preserves encoded keys and opaque IDs, and performs "
+            "only the counted GET requests; not an external provider or closure proof.",
+        ),
+    ),
+    SegmentedExtentWitness(
         id="riverhog-storage-open-write-progression/v1",
         owner="riverhog-storage-adapter-protocol",
         rule_id="bounded-segment/v1",

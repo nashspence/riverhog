@@ -6,10 +6,19 @@ from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
+from urllib.parse import parse_qs, quote, urlsplit
 
 import pytest
-from a_riverhog_s3_store_lib import S3ClientConfig, S3TransportTuning, create_s3_client
+from a_riverhog_s3_store_lib import (
+    S3ClientConfig,
+    S3StorageAdapter,
+    S3StorageAdapterConfig,
+    S3TransportTuning,
+    create_s3_client,
+)
+from a_riverhog_s3_store_lib.incarnation import marker_document, marker_key
 from botocore.exceptions import ClientError, ConnectionClosedError
+from riverhog_storage_adapter_protocol import CleanupInventoryRequest, OpenWriteListRequest
 
 _SUCCESS = {
     "begin": b"<InitiateMultipartUploadResult><UploadId>original-upload</UploadId>"
@@ -182,3 +191,103 @@ def test_s3_single_attempt_policy_overrides_environment_retry_defaults(
         finally:
             client.close()
     assert len(requests) == 1
+
+
+def test_cleanup_inventory_and_open_writes_preserve_encoded_keys_through_owned_sdk() -> None:
+    incarnation = "00000000-0000-4000-8000-000000000001"
+    path = "archive/α%20&/volume.age"
+    key = "owned/" + path
+    encoded = quote(key, safe="")
+    requests: list[tuple[str, str]] = []
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, _format: str, *args: object) -> None:
+            pass
+
+        def do_GET(self) -> None:
+            requests.append((self.command, self.path))
+            url = urlsplit(self.path)
+            query = parse_qs(url.query, keep_blank_values=True)
+            if url.path == "/fixture-bucket/" + marker_key("owned"):
+                body = marker_document(incarnation)
+                content_type = "application/octet-stream"
+            elif "versions" in query:
+                assert query["max-keys"] == ["1"]
+                assert query["encoding-type"] == ["url"]
+                if "version-id-marker" not in query:
+                    body = (
+                        "<ListVersionsResult><EncodingType>url</EncodingType>"
+                        "<IsTruncated>true</IsTruncated>"
+                        f"<NextKeyMarker>{encoded}</NextKeyMarker>"
+                        "<NextVersionIdMarker>revision-%2B+1</NextVersionIdMarker>"
+                        f"<Version><Key>{encoded}</Key><VersionId>revision-%2B+1</VersionId></Version>"
+                        "</ListVersionsResult>"
+                    ).encode()
+                else:
+                    assert query["key-marker"] == [key]
+                    assert query["version-id-marker"] == ["revision-%2B+1"]
+                    body = (
+                        "<ListVersionsResult><EncodingType>url</EncodingType>"
+                        "<IsTruncated>false</IsTruncated>"
+                        f"<DeleteMarker><Key>{encoded}</Key><VersionId>marker-1</VersionId></DeleteMarker>"
+                        "</ListVersionsResult>"
+                    ).encode()
+                content_type = "application/xml"
+            else:
+                assert "uploads" in query and query["encoding-type"] == ["url"]
+                assert query["prefix"] in (["owned/archive/"], [key])
+                body = (
+                    "<ListMultipartUploadsResult><EncodingType>url</EncodingType>"
+                    "<IsTruncated>false</IsTruncated>"
+                    f"<Upload><Key>{encoded}</Key><UploadId>write-%2B+%-1</UploadId></Upload>"
+                    "</ListMultipartUploadsResult>"
+                ).encode()
+                content_type = "application/xml"
+            self.send_response(200)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    server.daemon_threads = False
+    worker = threading.Thread(target=lambda: server.serve_forever(poll_interval=0.01))
+    worker.start()
+    client = _client(f"http://127.0.0.1:{server.server_port}")
+    try:
+        adapter = S3StorageAdapter(
+            client,
+            S3StorageAdapterConfig(
+                implementation_id="fixture.s3/v1",
+                implementation_version="1",
+                bucket="fixture-bucket",
+                root_prefix="owned",
+            ),
+        )
+        request = CleanupInventoryRequest(
+            object_prefix="archive/", target_incarnation=incarnation, maximum_items=1
+        )
+        observed = []
+        for index in range(3):
+            before = len(requests)
+            page = adapter.list_cleanup_candidates(request)
+            assert len(requests) == before + 2
+            observed.extend(page.candidates)
+            assert page.exhausted is (index == 2)
+            request = request.model_copy(update={"continuation": page.continuation})
+        assert [(item.kind, item.object_path, item.token) for item in observed] == [
+            ("object_revision", path, "revision-%2B+1"),
+            ("deletion_marker", path, "marker-1"),
+            ("open_write", path, "write-%2B+%-1"),
+        ]
+        open_page = adapter.list_open_writes(
+            OpenWriteListRequest(object_path=path, target_incarnation=incarnation, maximum_items=1)
+        )
+        assert open_page.exhausted and open_page.observations[0].write_token == "write-%2B+%-1"
+        assert len(requests) == 9 and {method for method, _path in requests} == {"GET"}
+    finally:
+        client.close()
+        server.shutdown()
+        server.server_close()
+        worker.join(timeout=5)
+        assert not worker.is_alive()

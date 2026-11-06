@@ -15,6 +15,9 @@ from pydantic import ValidationError
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
     BeginWriteOperation,
+    CleanupCandidate,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -132,6 +135,45 @@ class MemoryAdapter:
             number=number,
             segment_token=f"part-{number}",
             stored_bytes=len(content),
+        )
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
+        if request.target_incarnation != self.descriptor().storage_incarnation_id:
+            raise StorageAdapterRejection("provider_unavailable", "inventory target changed")
+        candidates = sorted(
+            [
+                CleanupCandidate(object_path=path, kind="object_revision", token=row[3] or "null")
+                for path, row in self.objects.items()
+                if path.startswith(request.object_prefix)
+            ]
+            + [
+                CleanupCandidate(object_path=start.object_path, kind="open_write", token=token)
+                for token, start in self.created.items()
+                if start.object_path.startswith(request.object_prefix)
+                and start.object_path not in self.objects
+            ],
+            key=lambda item: (item.object_path, item.kind, item.token),
+        )
+        after = (
+            None
+            if request.continuation is None
+            else CleanupCandidate.model_validate_json(request.continuation)
+        )
+        selected = tuple(
+            item
+            for item in candidates
+            if after is None
+            or (item.object_path, item.kind, item.token)
+            > (after.object_path, after.kind, after.token)
+        )[: request.maximum_items]
+        exhausted = len(selected) < request.maximum_items
+        return CleanupInventoryPage(
+            object_prefix=request.object_prefix,
+            target_incarnation=request.target_incarnation,
+            candidates=selected,
+            scanned_items=len(selected),
+            exhausted=exhausted,
+            continuation=None if exhausted else selected[-1].model_dump_json(),
         )
 
     def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:
@@ -1063,6 +1105,7 @@ def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> N
             "write-completed-object-authority",
             "write-stream",
             "read-preparation",
+            "cleanup-inventory",
             "write-abort",
             "exact-deletion",
             "version-aware-prefix-cleanup",
@@ -1113,6 +1156,41 @@ def test_client_observes_open_writes_without_begin_replay() -> None:
             "/v1/writes/open",
         ]
         assert len(adapter.created) == 1 and not adapter.objects and not adapter.segments
+    finally:
+        client.close()
+        http.close()
+
+
+def test_http_cleanup_inventory_observes_objects_and_sessions_without_disposal() -> None:
+    adapter = MemoryAdapter()
+    start = WriteStartRequest(
+        object_path="archive/open",
+        expected_bytes=1,
+        content_type="application/octet-stream",
+        required_identity_assertions={},
+        placement_policy="archive_default",
+    )
+    session = adapter.begin_write(start)
+    adapter.objects["archive/old"] = (b"x", "application/octet-stream", {}, "v1", "archive_default")
+    client, http = _client(adapter)
+    try:
+        request = CleanupInventoryRequest(
+            object_prefix="archive/",
+            target_incarnation=adapter.descriptor().storage_incarnation_id,
+            maximum_items=1,
+        )
+        observed = []
+        while True:
+            page = client.list_cleanup_candidates(request)
+            observed.extend(page.candidates)
+            if page.exhausted:
+                break
+            request = request.model_copy(update={"continuation": page.continuation})
+        assert {(item.kind, item.object_path, item.token) for item in observed} == {
+            ("object_revision", "archive/old", "v1"),
+            ("open_write", session.object_path, session.write_token),
+        }
+        assert session.write_token in adapter.created and "archive/old" in adapter.objects
     finally:
         client.close()
         http.close()

@@ -44,6 +44,7 @@ _MAX_IDENTITY_ASSERTIONS_ITEMS = 64
 _MAX_IDENTITY_ASSERTIONS_BYTES = 16 * 1024
 MAX_WRITE_SEGMENT_PAGE_ITEMS = 128
 MAX_OPEN_WRITE_PAGE_ITEMS = 128
+MAX_CLEANUP_INVENTORY_PAGE_ITEMS = 128
 _MAX_WRITE_COMPLETION_PRECONDITION_TOKEN_LENGTH = 4000
 
 Sha256 = Annotated[str, StringConstraints(pattern=_SHA256_PATTERN)]
@@ -290,7 +291,7 @@ class OpenWriteListRequest(StorageAdapterModel):
         default=MAX_OPEN_WRITE_PAGE_ITEMS, ge=1, le=MAX_OPEN_WRITE_PAGE_ITEMS
     )
     maximum_response_bytes: PositiveDecimal = Field(default=1024 * 1024)
-    continuation: str | None = Field(default=None, min_length=1, max_length=16000)
+    continuation: str | None = Field(default=None, min_length=1, max_length=65536)
 
     @field_validator("object_path")
     @classmethod
@@ -319,7 +320,7 @@ class OpenWritePage(StorageAdapterModel):
         },
     )
     scanned_items: NonnegativeDecimal
-    continuation: str | None = Field(default=None, min_length=1, max_length=16000)
+    continuation: str | None = Field(default=None, min_length=1, max_length=65536)
     exhausted: bool
 
     @field_validator("object_path")
@@ -358,6 +359,103 @@ def validate_open_write_page_response(
         > request.maximum_response_bytes
     ):
         raise ValueError("open-write observation exceeds its encoded response grant")
+
+
+CleanupCandidateKind = Literal["object_revision", "deletion_marker", "open_write"]
+
+
+class CleanupCandidate(StorageAdapterModel):
+    """An exact provider-private address to reconcile before separately authorized disposal.
+
+    A candidate may survive interrupted publication or a lost cleanup reply. Neither
+    its presence nor its absence proves closure of any earlier provider invocation.
+    """
+
+    object_path: str = Field(min_length=1, max_length=4096)
+    kind: CleanupCandidateKind
+    token: str = Field(min_length=1, max_length=4000)
+
+    @field_validator("object_path")
+    @classmethod
+    def canonical_path(cls, value: str) -> str:
+        return validate_object_path(value)
+
+
+class CleanupInventoryRequest(StorageAdapterModel):
+    """Observe bounded candidates under one exact namespace without disposing them."""
+
+    object_prefix: str = Field(min_length=1, max_length=4096)
+    target_incarnation: StorageIncarnationId
+    maximum_items: int = Field(
+        default=MAX_CLEANUP_INVENTORY_PAGE_ITEMS, ge=1, le=MAX_CLEANUP_INVENTORY_PAGE_ITEMS
+    )
+    maximum_response_bytes: PositiveDecimal = Field(default=1024 * 1024)
+    continuation: str | None = Field(default=None, min_length=1, max_length=65536)
+
+    @field_validator("object_prefix")
+    @classmethod
+    def canonical_prefix(cls, value: str) -> str:
+        return validate_object_path(value, allow_prefix=True)
+
+
+class CleanupInventoryPage(StorageAdapterModel):
+    """One live inventory page, never quiescence or authority to delete its candidates."""
+
+    object_prefix: str = Field(min_length=1, max_length=4096)
+    target_incarnation: StorageIncarnationId
+    candidates: tuple[CleanupCandidate, ...] = Field(
+        default=(),
+        max_length=MAX_CLEANUP_INVENTORY_PAGE_ITEMS,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-cleanup-namespace-inventory",
+                "progression": "adapter-live-cleanup-inventory-continuation",
+            }
+        },
+    )
+    scanned_items: NonnegativeDecimal
+    continuation: str | None = Field(default=None, min_length=1, max_length=65536)
+    exhausted: bool
+
+    @field_validator("object_prefix")
+    @classmethod
+    def canonical_prefix(cls, value: str) -> str:
+        return validate_object_path(value, allow_prefix=True)
+
+    @model_validator(mode="after")
+    def exact_page(self) -> Self:
+        self._require_exact_page()
+        return self
+
+    def _require_exact_page(self) -> None:
+        if self.exhausted != (self.continuation is None):
+            raise ValueError("cleanup inventory exhaustion differs from its continuation")
+        identities = [(item.object_path, item.kind, item.token) for item in self.candidates]
+        if len(set(identities)) != len(identities) or self.scanned_items < len(identities):
+            raise ValueError("cleanup candidates must be unique within their scanned page")
+        if any(not item.object_path.startswith(self.object_prefix) for item in self.candidates):
+            raise ValueError("cleanup candidate is outside its exact namespace")
+
+
+def validate_cleanup_inventory_response(
+    request: CleanupInventoryRequest, response: CleanupInventoryPage
+) -> None:
+    response._require_exact_page()
+    if (
+        request.object_prefix != response.object_prefix
+        or request.target_incarnation != response.target_incarnation
+    ):
+        raise ValueError("cleanup inventory differs from its exact target")
+    if response.scanned_items > request.maximum_items:
+        raise ValueError("cleanup inventory exceeds its candidate count grant")
+    if response.continuation is not None and response.continuation == request.continuation:
+        raise ValueError("cleanup inventory continuation did not advance")
+    if (
+        len(response.model_dump_json(exclude_none=True).encode("utf-8"))
+        > request.maximum_response_bytes
+    ):
+        raise ValueError("cleanup inventory exceeds its encoded response grant")
 
 
 class WriteSegmentReceipt(StorageAdapterModel):
@@ -1096,6 +1194,8 @@ class StorageAdapterPort(Protocol):
         content: BinaryContent,
     ) -> WriteSegmentReceipt: ...
 
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage: ...
+
     def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage: ...
 
     def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage: ...
@@ -1265,6 +1365,15 @@ class ValidatedStorageAdapterPort:
             and response.stored_sha256 != validation.digest.hexdigest()
         ):
             raise ValueError("adapter segment digest differs from the supplied content")
+        return response
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
+        response = _response(
+            self._adapter.list_cleanup_candidates(request),
+            CleanupInventoryPage,
+            "cleanup inventory",
+        )
+        validate_cleanup_inventory_response(request, response)
         return response
 
     def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:

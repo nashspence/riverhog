@@ -14,6 +14,7 @@ from pydantic import BaseModel, ConfigDict, model_validator
 from riverhog_storage_adapter_protocol import (
     STORAGE_ADAPTER_PROTOCOL,
     AdapterDescriptor,
+    CleanupInventoryRequest,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
     DeletePrefixRequest,
@@ -102,6 +103,7 @@ def _expected_checks(descriptor: AdapterDescriptor) -> tuple[str, ...]:
             "write-completed-object-authority",
             "write-stream",
             "read-preparation",
+            "cleanup-inventory",
             "write-abort",
             "exact-deletion",
             "version-aware-prefix-cleanup",
@@ -457,6 +459,39 @@ def run_storage_adapter_conformance(
             write_request.model_copy(update={"object_path": f"{normalized_prefix}/aborted.bin"})
         )
         persisted_aborted = WriteSession.model_validate_json(aborted.model_dump_json())
+        continuation = None
+        seen_inventory_positions: set[str] = set()
+        found_write = False
+        found_revision = False
+        while True:
+            inventory_page = continuation_client.list_cleanup_candidates(
+                CleanupInventoryRequest(
+                    object_prefix=cleanup_prefix,
+                    target_incarnation=descriptor.storage_incarnation_id,
+                    maximum_items=1,
+                    continuation=continuation,
+                )
+            )
+            found_write |= any(
+                item.kind == "open_write"
+                and item.object_path == aborted.object_path
+                and item.token == aborted.write_token
+                for item in inventory_page.candidates
+            )
+            found_revision |= any(
+                item.kind == "object_revision" and item.object_path == write_path
+                for item in inventory_page.candidates
+            )
+            if inventory_page.exhausted:
+                break
+            assert inventory_page.continuation is not None
+            if inventory_page.continuation in seen_inventory_positions:
+                raise AssertionError("cleanup inventory repeated its continuation")
+            seen_inventory_positions.add(inventory_page.continuation)
+            continuation = inventory_page.continuation
+        if not found_write or not found_revision:
+            raise AssertionError("cleanup inventory omitted known provider state")
+        checks.append("cleanup-inventory")
         continuation_client.abort_write(persisted_aborted)
         continuation_client.abort_write(persisted_aborted)
         checks.append("write-abort")
