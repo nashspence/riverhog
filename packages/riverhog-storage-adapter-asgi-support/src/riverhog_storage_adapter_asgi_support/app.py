@@ -145,7 +145,7 @@ def create_storage_adapter_app(
                     400, "invalid_request", "storage incarnation precondition is required"
                 )
             try:
-                descriptor = adapter.descriptor()
+                descriptor = await run_in_threadpool(adapter.descriptor)
                 if not isinstance(descriptor, AdapterDescriptor):
                     raise ValueError("storage adapter descriptor is invalid")
                 observed_incarnation = descriptor.storage_incarnation_id

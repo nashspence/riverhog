@@ -26,7 +26,10 @@ from riverhog_core.stores.storage_adapter_archive_objects import (
 )
 from riverhog_storage_adapter_asgi_support import create_storage_adapter_app
 from riverhog_storage_adapter_protocol import (
+    AdapterDescriptor,
     BeginWriteOperation,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
     CompletedWriteLookupRequest,
     CompleteWriteOperation,
     LookupWriteOperation,
@@ -669,3 +672,86 @@ def test_execution_validation_rejects_put_digest_even_with_a_matching_claimed_re
             invocation, content=iter((b"xyz",))
         )
         assert result == unknown_write_execution(invocation)
+
+
+@pytest.mark.parametrize("changed_incarnation", [False, True])
+def test_http_incarnation_wait_does_not_block_independent_requests(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    changed_incarnation: bool,
+) -> None:
+    entered = threading.Event()
+    release = threading.Event()
+    responses: list[httpx.Response] = []
+    errors: list[BaseException] = []
+    observed: list[CleanupInventoryRequest] = []
+    with _filesystem(tmp_path / "store") as adapter:
+        descriptor = adapter.descriptor()
+        incarnation = descriptor.storage_incarnation_id
+        original_descriptor = adapter.descriptor
+        original_inventory = adapter.list_cleanup_candidates
+
+        def held_descriptor() -> AdapterDescriptor:
+            if not entered.is_set():
+                entered.set()
+                assert release.wait(10), "descriptor fixture was not released"
+            value = original_descriptor()
+            return (
+                value.model_copy(update={"storage_incarnation_id": _INCARNATION})
+                if changed_incarnation
+                else value
+            )
+
+        def observe_inventory(request: CleanupInventoryRequest) -> CleanupInventoryPage:
+            observed.append(request)
+            return original_inventory(request)
+
+        monkeypatch.setattr(adapter, "descriptor", held_descriptor)
+        monkeypatch.setattr(adapter, "list_cleanup_candidates", observe_inventory)
+        app = create_storage_adapter_app(
+            service="fixture-storage",
+            token="fixture-token",
+            adapter=adapter,
+        )
+        request = CleanupInventoryRequest(
+            object_prefix="archive/",
+            target_incarnation=incarnation,
+        )
+        with _asgi(app) as endpoint:
+
+            def invoke() -> None:
+                try:
+                    responses.append(
+                        httpx.post(
+                            endpoint + "/v1/cleanup/inventory",
+                            headers={
+                                "Authorization": "Bearer fixture-token",
+                                "Riverhog-Expected-Storage-Incarnation": incarnation,
+                            },
+                            content=request.model_dump_json(),
+                            timeout=8,
+                        )
+                    )
+                except BaseException as exc:
+                    errors.append(exc)
+
+            caller = threading.Thread(target=invoke, name="held-incarnation-caller")
+            caller.start()
+            try:
+                assert entered.wait(5), "incarnation precondition was not reached"
+                assert not observed
+                assert httpx.get(endpoint + "/health/live", timeout=2).status_code == 200
+                assert caller.is_alive() and not release.is_set()
+            finally:
+                release.set()
+                caller.join(timeout=5)
+            assert not caller.is_alive() and not errors
+            assert len(responses) == 1
+            if changed_incarnation:
+                assert responses[0].status_code == 503
+                assert responses[0].json()["error"]["code"] == "provider_unavailable"
+                assert observed == []
+            else:
+                assert responses[0].status_code == 200
+                assert CleanupInventoryPage.model_validate_json(responses[0].content).exhausted
+                assert observed == [request]
