@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from contextlib import contextmanager
 
 import pytest
@@ -110,3 +111,73 @@ def test_terminal_fence_precedes_published_root_and_copy_handoff(tmp_path):
             )
             with pytest.raises(Conflict, match="archive write admission is closed"):
                 case.service._publish_catalog_collection(session, upload)
+
+
+@pytest.mark.parametrize("change", ("terminal", "readiness", "planner"))
+def test_point_readiness_matches_current_facts_in_its_atomic_update(tmp_path, monkeypatch, change):
+    from riverhog_core.services import collection_uploads as owner
+
+    with _case(tmp_path, "segment", artifact_count=1) as case:
+        _seal(case)
+        with session_scope(case.factory) as session:
+            upload = session.get(Upload, case.collection_id)
+            upload.state, upload.archive_phase = "uploading", "uploading"
+            upload.archive_next_attempt_at = None
+        entered, release, changed = (threading.Event() for _ in range(3))
+        actual, errors, operations = owner._ready_for_finalization, [], []
+
+        def hold(session, upload):
+            assert actual(session, upload)
+            entered.set()
+            assert release.wait(10)
+            return True
+
+        def point():
+            try:
+                case.service._schedule_finalization_if_ready(case.collection_id)
+            except BaseException as error:
+                errors.append(error)
+
+        def writer():
+            try:
+                if change == "terminal":
+                    operations.append(
+                        ArchiveWriteAdmission(case.factory).select_terminal(
+                            case.collection_id,
+                            kind="cancel",
+                            request={"fixture": "point-readiness-current-facts"},
+                            principal_id="uploader",
+                            grants=case.service._config.archive_write,
+                            guard=lambda session: None,
+                            validate_selection=lambda session, upload: None,
+                        )
+                    )
+                else:
+                    with session_scope(case.factory) as session:
+                        upload = session.get(Upload, case.collection_id)
+                        if change == "readiness":
+                            upload.artifact_bytes += 1
+                        else:
+                            upload.planner_next_sequence += 1
+            except BaseException as error:
+                errors.append(error)
+            finally:
+                changed.set()
+
+        monkeypatch.setattr(owner, "_ready_for_finalization", hold)
+        pending, concurrent = threading.Thread(target=point), threading.Thread(target=writer)
+        pending.start()
+        try:
+            assert entered.wait(10)
+            concurrent.start()
+            assert changed.wait(5)
+            assert not errors
+            before = _claim_snapshot(case)
+        finally:
+            release.set()
+            pending.join(10)
+            if concurrent.ident is not None:
+                concurrent.join(10)
+        assert not pending.is_alive() and not concurrent.is_alive() and not errors
+        assert _claim_snapshot(case) == before
+        assert len(operations) == int(change == "terminal")

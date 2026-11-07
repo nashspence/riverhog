@@ -7,12 +7,15 @@ from types import SimpleNamespace
 import pytest
 import riverhog_canonical_json as canonical
 from riverhog_core import incremental_plan as planner_owner
+from riverhog_core.archive_write_grants import ArchiveWriteGrants
+from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord as Control
 from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
 from riverhog_core.catalog_models import CollectionUploadProvenanceEpochScanRecord as Scan
 from riverhog_core.catalog_models import CollectionUploadProvenanceJournalRecord as Journal
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
 from riverhog_core.services import collection_uploads as owner
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_growth_contracts import (
     growth_binding,
     project_bindings,
@@ -318,9 +321,10 @@ def scheduling_samples(root, samples, *, large=True):
             "missing-planner",
             "noncanonical-number",
             "interrupted",
+            "closed-admission",
         ):
             dimensions, expected = readiness.prepare(
-                case, "match" if kind in {"absent", "interrupted"} else kind
+                case, "match" if kind in {"absent", "interrupted", "closed-admission"} else kind
             )
             if kind == "interrupted" and not expected:
                 continue
@@ -328,12 +332,28 @@ def scheduling_samples(root, samples, *, large=True):
                 upload = session.get(Upload, case.identity)
                 upload.state, upload.archive_phase = "uploading", "uploading"
                 upload.archive_next_attempt_at = None
+            if kind == "closed-admission":
+                ArchiveWriteAdmission(case.factory).select_terminal(
+                    case.identity,
+                    kind="cancel",
+                    request={"fixture": "readiness-admission"},
+                    principal_id="uploader",
+                    grants=ArchiveWriteGrants(),
+                    guard=lambda session: None,
+                    validate_selection=lambda session, upload: None,
+                )
             for cold in (False, True):
                 identity = 2**61 if kind == "absent" else case.identity
                 before = rows(case.engine, Upload)
                 with case.factory() as session:
                     upload = session.get(Upload, identity)
-                    eligible = upload is not None and upload.state in {"closing", "uploading"}
+                    control = session.get(Control, identity)
+                    eligible = (
+                        upload is not None
+                        and upload.state in {"closing", "uploading"}
+                        and control is not None
+                        and control.gate == "open"
+                    )
                 own_dimensions = {
                     "retained_rows": sum(map(len, before.values())),
                     "metadata_row_octets": max(
@@ -398,7 +418,7 @@ def scheduling_samples(root, samples, *, large=True):
                         dimensions[item.name] if children else 0
                     )
                 assert len(children) == int(eligible)
-                if error or not expected or kind == "absent":
+                if error or not expected or kind in {"absent", "closed-admission"}:
                     assert rows(case.engine, Upload) == before
                     assert metrics["changed_rows"] == int(kind == "interrupted" and not cold)
                 else:

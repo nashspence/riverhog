@@ -135,3 +135,107 @@ def test_postgres_selected_terminal_preserves_closed_workflow_state(database_url
 )
 def test_postgres_selected_terminal_fences_forward_catalog_steps(database_url, tmp_path, stage):
     _closed_catalog_stage(tmp_path, stage, database_url=database_url)
+
+
+def test_postgres_point_readiness_rechecks_gate_after_terminal_lock_wait(
+    database_url, tmp_path, monkeypatch
+):
+    _point_readiness_after_terminal_lock(tmp_path, monkeypatch, database_url=database_url)
+
+
+def _point_readiness_after_terminal_lock(tmp_path, monkeypatch, *, database_url):
+    from contextlib import contextmanager
+
+    from riverhog_core.services import archive_write_admission as admission
+    from riverhog_core.services import collection_uploads as owner
+
+    with _case(tmp_path, "segment", artifact_count=1, database_url=database_url) as case:
+        _seal(case)
+        with session_scope(case.factory) as session:
+            upload = session.get(Upload, case.collection_id)
+            upload.state, upload.archive_phase = "uploading", "uploading"
+            upload.archive_next_attempt_at = None
+        from tests.unit.test_finalization_claim_readiness import _claim_snapshot
+
+        before = _claim_snapshot(case)
+        held, release, point_waiting = (threading.Event() for _ in range(3))
+        lane, pids, operations, errors, calls = threading.local(), {}, [], [], []
+        engine = case.factory.kw["bind"]
+        actual_scope, actual_readiness = admission.session_scope, owner._ready_for_finalization
+
+        @contextmanager
+        def held_selection(factory):
+            with actual_scope(factory) as session:
+                pids["holder"] = session.scalar(text("SELECT pg_backend_pid()"))
+                yield session
+                session.flush()
+                held.set()
+                assert release.wait(10)
+
+        def observe_readiness(session, upload):
+            calls.append(upload.collection_id)
+            return actual_readiness(session, upload)
+
+        def capture(connection, cursor, statement, parameters, context, executemany):
+            if getattr(lane, "point", False) and (
+                "FROM collection_uploads" in statement and "FOR UPDATE" in statement
+            ):
+                cursor.execute("SELECT pg_backend_pid()")
+                pids["point"] = cursor.fetchone()[0]
+                point_waiting.set()
+
+        def terminal():
+            try:
+                operations.append(
+                    admission.ArchiveWriteAdmission(case.factory).select_terminal(
+                        case.collection_id,
+                        kind="cancel",
+                        request={"fixture": "point-readiness-wait"},
+                        principal_id="uploader",
+                        grants=case.service._config.archive_write,
+                        guard=lambda session: None,
+                        validate_selection=lambda session, upload: None,
+                    )
+                )
+            except BaseException as error:
+                errors.append(error)
+
+        def point():
+            lane.point = True
+            try:
+                case.service._schedule_finalization_if_ready(case.collection_id)
+            except BaseException as error:
+                errors.append(error)
+
+        monkeypatch.setattr(admission, "session_scope", held_selection)
+        monkeypatch.setattr(owner, "_ready_for_finalization", observe_readiness)
+        event.listen(engine, "before_cursor_execute", capture)
+        selected, pending = threading.Thread(target=terminal), threading.Thread(target=point)
+        try:
+            selected.start()
+            assert held.wait(10)
+            pending.start()
+            assert point_waiting.wait(10)
+            deadline, blocked = time.monotonic() + 10, False
+            with engine.connect() as observer:
+                while time.monotonic() < deadline:
+                    blockers = observer.scalar(
+                        text("SELECT pg_blocking_pids(:pid)"), {"pid": pids["point"]}
+                    )
+                    if pids["holder"] in blockers:
+                        blocked = True
+                        break
+                    time.sleep(0.01)
+            assert blocked
+        finally:
+            release.set()
+            selected.join(10)
+            if pending.ident is not None:
+                pending.join(10)
+            event.remove(engine, "before_cursor_execute", capture)
+        assert not selected.is_alive() and not pending.is_alive() and not errors
+        assert len(operations) == 1
+        # This original lookup saw the pre-commit gate while its parent lock
+        # waited. The fresh UPDATE snapshot must still exclude the terminal.
+        assert calls == [case.collection_id]
+        assert _claim_snapshot(case) == before

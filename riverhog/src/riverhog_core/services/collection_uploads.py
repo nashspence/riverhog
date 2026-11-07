@@ -3231,20 +3231,56 @@ class SqlAlchemyCollectionUploadService:
     def _schedule_finalization_if_ready(self, collection_id: int) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
-            _writer(session)
-            upload = session.scalar(
-                select(CollectionUploadRecord)
+            selected = session.execute(
+                select(
+                    CollectionUploadRecord,
+                    ArchiveWriteControlRecord.gate,
+                    ArchiveWriteControlRecord.epoch,
+                )
+                .join(
+                    ArchiveWriteControlRecord,
+                    ArchiveWriteControlRecord.collection_id == CollectionUploadRecord.collection_id,
+                )
                 .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
+                .with_for_update(of=CollectionUploadRecord)
+            ).one_or_none()
+            if selected is None:
+                return
+            upload, gate, epoch = selected
             if (
-                upload is None
-                or upload.state not in {"closing", "uploading"}
-                or require_archive_write_control(session, upload).gate != "open"
+                upload.state not in {"closing", "uploading"}
+                or gate != "open"
                 or not _ready_for_finalization(session, upload)
             ):
                 return
-            _mark_finalization_ready(upload, now=now)
+            # SQLite reads need not hold a writer lock, and a PostgreSQL parent
+            # wait can outlive the joined gate's snapshot. Match the original
+            # readiness facts and current admission in this atomic transition.
+            session.execute(
+                update(CollectionUploadRecord)
+                .where(
+                    CollectionUploadRecord.collection_id == collection_id,
+                    CollectionUploadRecord.state.in_(("closing", "uploading")),
+                    CollectionUploadRecord.planner_checkpoint_json
+                    == upload.planner_checkpoint_json,
+                    CollectionUploadRecord.planner_next_sequence == upload.planner_next_sequence,
+                    CollectionUploadRecord.artifact_count == upload.artifact_count,
+                    CollectionUploadRecord.artifact_bytes == upload.artifact_bytes,
+                    CollectionUploadRecord.payload_sealed_artifact_count
+                    == upload.payload_sealed_artifact_count,
+                    CollectionUploadRecord.payload_sealed_artifact_bytes
+                    == upload.payload_sealed_artifact_bytes,
+                    exists(
+                        select(ArchiveWriteControlRecord.collection_id).where(
+                            ArchiveWriteControlRecord.collection_id == collection_id,
+                            ArchiveWriteControlRecord.gate == "open",
+                            ArchiveWriteControlRecord.epoch == epoch,
+                        )
+                    ),
+                )
+                .values(**_finalization_ready_values(now=now))
+                .execution_options(synchronize_session=False)
+            ).close()
 
     def _reconcile_sealed_volume_receipts(self, collection_id: int) -> None:
         with session_scope(self._session_factory) as session:
@@ -7317,14 +7353,21 @@ def _open_finalization_query() -> Select[tuple[CollectionUploadRecord]]:
     )
 
 
+def _finalization_ready_values(*, now: str) -> dict[str, Any]:
+    return {
+        "state": "finalizing",
+        "lease_expires_at": None,
+        "archive_claim_id": None,
+        "archive_phase": "finalization_queued",
+        "archive_phase_updated_at": now,
+        "archive_next_attempt_at": now,
+        "archive_failure": None,
+    }
+
+
 def _mark_finalization_ready(upload: CollectionUploadRecord, *, now: str) -> None:
-    upload.state = "finalizing"
-    upload.lease_expires_at = None
-    upload.archive_claim_id = None
-    upload.archive_phase = "finalization_queued"
-    upload.archive_phase_updated_at = now
-    upload.archive_next_attempt_at = now
-    upload.archive_failure = None
+    for name, value in _finalization_ready_values(now=now).items():
+        setattr(upload, name, value)
 
 
 def _registration_constraints_payload(policy: CollectionVolumePolicy) -> dict[str, str]:

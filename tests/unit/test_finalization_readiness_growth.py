@@ -15,6 +15,7 @@ from riverhog_core.incremental_plan import (
     incremental_volume_planner_checkpoint_bytes,
 )
 from riverhog_core.services import collection_uploads as owner
+from riverhog_core.services.archive_write_admission import initialize_archive_write_control
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import delete
 
@@ -50,7 +51,10 @@ def clone_upload(factory, identity):
         old = session.get(Upload, 1)
         values = {column.key: getattr(old, column.key) for column in Upload.__table__.columns}
         values.update(collection_id=identity, idempotency_key=f"readiness-{identity}")
-        session.add(Upload(**values))
+        cloned = Upload(**values)
+        session.add(cloned)
+        session.flush()
+        initialize_archive_write_control(session, cloned)
 
 
 def cases(root, *, large=True):
