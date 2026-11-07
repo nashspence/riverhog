@@ -36,11 +36,17 @@ from riverhog_core.provider_write_dispatch import ProviderWriteAdmissionRefused
 from riverhog_core.raw_upload import RawUploadCheckpoint, RawVolumeUploader
 from riverhog_core.raw_volume import parse_raw_volume_plan
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.archive_cache_families import (
+    ArchivePayloadMirror,
+    ArchivePayloadMirrorFactory,
+    CacheFamilyNotAdmitted,
+)
 from riverhog_core.services.archive_payload_input import ArchivePayloadInput
 from riverhog_core.services.archive_upload_drain import inspect_terminal_write_records
 from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
 from riverhog_core.services.archive_upload_writes import ArchiveUploadWrites
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
+from riverhog_core.services.cache_population_publication import CachePopulationPublication
 from riverhog_core.services.mirrored_archive_upload_writes import MirroredArchiveUploadWrites
 from riverhog_core.stores.executing_archive_objects import ExecutingArchiveResumableObjectStore
 from riverhog_core.stores.sqlalchemy_archive_upload_checkpoints import (
@@ -50,9 +56,6 @@ from riverhog_core.upload_continuation import UploadContinuation
 
 type _Checkpoint = PackUploadCheckpoint | RawUploadCheckpoint
 type _Writes = ArchiveUploadWrites | MirroredArchiveUploadWrites
-type ArchivePayloadMirrorFactory = Callable[
-    [ArchiveUploadWrites, Guard], MirroredArchiveUploadWrites
-]
 
 
 class ArchivePayloadService(Protocol):
@@ -181,6 +184,7 @@ class ArchivePayloadUnit:
         self._mirror = mirror
         self._mirror_unresolved = False
         self._mirror_original: object | None = None
+        self._mirror_binding: ArchivePayloadMirror | None = None
         self._archive: ArchiveUploadWrites | None = None
         self._writes: _Writes | None = None
         self._guard = service._payload_write_guard(key.collection_id, principal)
@@ -220,7 +224,11 @@ class ArchivePayloadUnit:
         return (
             self._mirror_unresolved
             or self._writes is not None
-            and self._writes.has_pending
+            and (
+                self._mirror_binding.has_pending
+                if self._mirror_binding is not None
+                else self._writes.has_pending
+            )
             or self._receipt is not None
             and not self._receipt_recorded
             or self._result is None
@@ -302,12 +310,17 @@ class ArchivePayloadUnit:
                 if self._mirror is None:
                     raise Conflict("accepted retrieval cache requires its original write factory")
                 self._mirror_unresolved = True
-                self._mirror_original = self._mirror(self._archive, self._guard)
-                if not isinstance(self._mirror_original, MirroredArchiveUploadWrites):
+                try:
+                    self._mirror_original = self._mirror(self._archive, self._guard)
+                except CacheFamilyNotAdmitted:
+                    self._mirror_unresolved = False
+                    raise
+                if not isinstance(self._mirror_original, ArchivePayloadMirror):
                     raise Conflict("original payload cache constructor returned no receiver")
-                if self._mirror_original.archive is not self._archive:
+                if self._mirror_original.writes.archive is not self._archive:
                     raise Conflict("payload cache write owner has another original archive")
-                self._writes = self._mirror_original
+                self._mirror_binding = self._mirror_original
+                self._writes = self._mirror_binding.writes
                 self._mirror_unresolved = False
             else:
                 if self._mirror is not None:
@@ -489,6 +502,10 @@ class ArchivePayloadUnit:
         if not self._receipt_recorded:
             self._service._record_sealed_volume(self._key.collection_id, self._receipt)
             self._receipt_recorded = True
+        if self._mirror_binding is not None:
+            self._mirror_binding.receive_complete(
+                CachePopulationPublication(self._service._session_factory)
+            )
 
     def advance(self) -> dict[str, object]:
         if not self._lock.acquire(blocking=False):
@@ -540,10 +557,15 @@ class ArchivePayloadUnit:
             writes = self._writes or self._archive
             if writes is None:
                 return "pending" if self._mirror_unresolved else "closed"
-            status = writes.drain_terminal(operation_id)
+            drain = (
+                self._mirror_binding.drain_terminal
+                if self._mirror_binding is not None
+                else writes.drain_terminal
+            )
+            status = drain(operation_id)
             if status != "busy":
                 writes.receive_terminal_parts(operation_id)
-                status = writes.drain_terminal(operation_id)
+                status = drain(operation_id)
             return "pending" if self._mirror_unresolved and status != "busy" else status
         finally:
             self._lock.release()

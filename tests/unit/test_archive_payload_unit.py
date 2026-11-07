@@ -550,47 +550,7 @@ def test_actual_service_unit_keeps_the_selected_original_cache_receiver(
         built = []
 
         def mirror(archive, guard):
-            from riverhog_core.services.mirrored_archive_begin import MirroredArchiveBegin
-            from riverhog_core.services.mirrored_archive_upload_writes import (
-                MirroredArchiveUploadWrites,
-            )
-
-            original = joint.mirror
-            begin = MirroredArchiveBegin(
-                actor.case.factory,
-                archive=archive,
-                cache=original._cache,
-                candidate=joint.candidate,
-                registration=original._registration,
-                owner=original._owner,
-                principal=_CREATOR,
-                grants=original._grants,
-                guard=guard,
-                validate_population=original._validate_population,
-            )
-
-            def validate(session, upload, object_id, expected_bytes):
-                volume = session.get(
-                    CollectionArchiveObjectUploadRecord,
-                    (actor.case.collection_id, object_id),
-                    with_for_update=True,
-                )
-                assert volume is not None and upload.collection_id == actor.case.collection_id
-                assert begin.cache_session is not None
-                assert expected_bytes == begin.cache_session.expected_bytes
-
-            writer = MirroredArchiveUploadWrites(
-                archive=archive,
-                begin=begin,
-                cache=joint.writes,
-                candidate=joint.candidate,
-                source_store=name,
-                owner=original._owner,
-                principal=_CREATOR,
-                grants=joint.writer._grants,
-                guard=guard,
-                validate_population=validate,
-            )
+            writer = _service_cache_writer(joint, archive, guard)
             built.append(writer)
             return writer
 
@@ -605,7 +565,12 @@ def test_actual_service_unit_keeps_the_selected_original_cache_receiver(
             plan_sha256=actor.case.plan_sha256,
             payload=payload,
             principal=_CREATOR,
-            mirror=mirror,
+            mirror=service._payload_cache_family(
+                payload,
+                create=mirror,
+                grants=joint.writer._grants,
+                validate_population=joint.writer._validate_population,
+            ),
         )
         registry, execution = service._archive_invocations, service._archive_execution
         request = payload.request_sha256
@@ -640,6 +605,11 @@ def test_actual_service_unit_keeps_the_selected_original_cache_receiver(
         )
         assert (actor.seen, cache_calls) == before
         assert built[0]._begin.cache_begin_call_id == begin
+        if unknown:
+            assert not service._archive_cache_families.retire(payload)
+        else:
+            assert service._archive_cache_families.retire(payload)
+            assert not owner.has_pending and registry.retire_idle(received)
 
 
 @pytest.mark.parametrize("kind", ("pack", "segment"))
@@ -650,7 +620,7 @@ def test_independent_actual_payload_progresses_while_another_key_constructor_is_
     _held_terminal(tmp_path, monkeypatch, kind, mode, "key", independent=True)
 
 
-@pytest.mark.parametrize("outcome", ("raises", "missing", "foreign"))
+@pytest.mark.parametrize("outcome", ("raises", "missing", "foreign", "refused"))
 def test_uncertain_cache_constructor_keeps_original_archive_and_retention_charge(
     tmp_path, monkeypatch, outcome
 ):
@@ -677,6 +647,10 @@ def test_uncertain_cache_constructor_keeps_original_archive_and_retention_charge
             entered.append(archive)
             if outcome == "raises":
                 raise OSError("injected original cache constructor acknowledgement loss")
+            if outcome == "refused":
+                from riverhog_core.services.archive_cache_families import CacheFamilyNotAdmitted
+
+                raise CacheFamilyNotAdmitted("constructor entered before refusal")
             return None if outcome == "missing" else joint.writer
 
         payload = _payload(
@@ -690,7 +664,12 @@ def test_uncertain_cache_constructor_keeps_original_archive_and_retention_charge
             plan_sha256=actor.case.plan_sha256,
             payload=payload,
             principal=_CREATOR,
-            mirror=mirror,
+            mirror=service._payload_cache_family(
+                payload,
+                create=mirror,
+                grants=joint.writer._grants,
+                validate_population=joint.writer._validate_population,
+            ),
         )
         registry, execution = service._archive_invocations, service._archive_execution
         request = payload.request_sha256
@@ -737,3 +716,47 @@ def test_uncertain_cache_constructor_keeps_original_archive_and_retention_charge
         assert received.result() == "pending"
         assert owner.has_pending and registry._invocations[request].owner is owner
         assert not actor.seen
+
+
+def _service_cache_writer(joint, archive, guard):
+    from riverhog_core.services.mirrored_archive_begin import MirroredArchiveBegin
+    from riverhog_core.services.mirrored_archive_upload_writes import MirroredArchiveUploadWrites
+
+    actor, original = joint.actor, joint.mirror
+    with session_scope(actor.case.factory) as session:
+        name = session.get(CollectionUploadRecord, actor.case.collection_id).archive_store
+    begin = MirroredArchiveBegin(
+        actor.case.factory,
+        archive=archive,
+        cache=original._cache,
+        candidate=joint.candidate,
+        registration=original._registration,
+        owner=original._owner,
+        principal=_CREATOR,
+        grants=original._grants,
+        guard=guard,
+        validate_population=original._validate_population,
+    )
+
+    def validate(session, upload, object_id, expected_bytes):
+        volume = session.get(
+            CollectionArchiveObjectUploadRecord,
+            (actor.case.collection_id, object_id),
+            with_for_update=True,
+        )
+        assert volume is not None and upload.collection_id == actor.case.collection_id
+        assert begin.cache_session is not None
+        assert expected_bytes == begin.cache_session.expected_bytes
+
+    return MirroredArchiveUploadWrites(
+        archive=archive,
+        begin=begin,
+        cache=joint.writes,
+        candidate=joint.candidate,
+        source_store=name,
+        owner=original._owner,
+        principal=_CREATOR,
+        grants=joint.writer._grants,
+        guard=guard,
+        validate_population=validate,
+    )

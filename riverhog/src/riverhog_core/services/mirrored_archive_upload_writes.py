@@ -166,9 +166,13 @@ class MirroredArchiveUploadWrites:
 
     @property
     def has_pending(self) -> bool:
+        return self._begin.has_pending or self.has_pending_invocation
+
+    @property
+    def has_pending_invocation(self) -> bool:
+        """Child receiving only; the original begin requires a separate owner."""
         return (
             self._archive.has_pending
-            or self._begin.has_pending
             or self._cache_admission_pending
             or bool(self._effects)
             or bool(self._checkpoint_pending)
@@ -178,7 +182,16 @@ class MirroredArchiveUploadWrites:
         )
 
     def drain_terminal(self, operation_id: str) -> Literal["busy", "pending", "closed"]:
-        """Receive only original child work; a cache population keeps its owner."""
+        """Receive original work including the independently retained begin."""
+        return self._drain_terminal(operation_id, include_begin=True)
+
+    def drain_invocation(self, operation_id: str) -> Literal["busy", "pending", "closed"]:
+        """Receive a child's work while its family retains the original begin."""
+        return self._drain_terminal(operation_id, include_begin=False)
+
+    def _drain_terminal(
+        self, operation_id: str, *, include_begin: bool
+    ) -> Literal["busy", "pending", "closed"]:
         if not self._lock.acquire(blocking=False):
             return "busy"
         try:
@@ -187,13 +200,13 @@ class MirroredArchiveUploadWrites:
                 and self._terminal_operation_id != operation_id
             ):
                 raise Conflict("joint write actor has another terminal request")
-            status = self._begin.drain_terminal(operation_id)
+            status = self._begin.drain_terminal(operation_id) if include_begin else "closed"
             if status == "busy":
                 return "busy"
             self._terminal_operation_id = operation_id
             with self._cache_forward.lock:
                 self._cache_forward.terminal_operation_id = operation_id
-            if self._archive is not self._cache_forward.original_archive:
+            if not include_begin or self._archive is not self._cache_forward.original_archive:
                 own_status = self._archive.drain_terminal(operation_id)
                 if own_status == "busy":
                     return "busy"
@@ -208,7 +221,8 @@ class MirroredArchiveUploadWrites:
                     checkpoint_json=checkpoint,
                 )
             self.flush_cache_reports()
-            return "pending" if self.has_pending or status == "pending" else "closed"
+            pending = self.has_pending if include_begin else self.has_pending_invocation
+            return "pending" if pending or status == "pending" else "closed"
         finally:
             self._lock.release()
 
@@ -488,6 +502,19 @@ class MirroredArchiveUploadWrites:
 
     def delete_raw_upload_checkpoint(self, *, collection_id: int, volume_id: str) -> None:
         raise Conflict("forward joint write actor cannot dispose checkpoints")
+
+    @property
+    def has_transferable_cache(self) -> bool:
+        """Only a retained, confirmed original completion can transfer."""
+        return self._closed is not None or any(
+            effect.kind == "complete"
+            and effect.reported
+            and effect.archive_confirmed
+            and effect.response is not None
+            and effect.response.outcome == "completed"
+            and effect.response.execution == "closed"
+            for effect in self._effects.values()
+        )
 
     def transfer_cache(self, publisher: CachePopulationPublication) -> ClosedCachePopulation | None:
         """Receive closed bytes durably before releasing the original call slots."""

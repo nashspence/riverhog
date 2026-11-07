@@ -415,9 +415,14 @@ class _FinalizationClaim:
 
 
 if TYPE_CHECKING:
+    from riverhog_core.cache_write_grants import CacheWriteGrants
+    from riverhog_core.services.archive_cache_families import (
+        ArchiveCacheCreate,
+        ArchiveCacheValidate,
+        ArchivePayloadMirrorFactory,
+    )
     from riverhog_core.services.archive_payload_input import ArchivePayloadInput
     from riverhog_core.services.archive_payload_unit import (
-        ArchivePayloadMirrorFactory,
         ArchivePayloadUnit,
     )
     from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
@@ -459,6 +464,7 @@ class SqlAlchemyCollectionUploadService:
         self._archive_finalizers = ArchiveFinalizerRegistry(
             self._session_factory, self._archive_execution, self._archive_retention
         )
+        from .archive_cache_families import ArchiveCacheFamilies
         from .archive_payload_input import ArchivePayloadInputs
         from .archive_upload_invocations import ArchiveUploadInvocationRegistry
 
@@ -467,6 +473,7 @@ class SqlAlchemyCollectionUploadService:
         self._archive_invocations = ArchiveUploadInvocationRegistry(
             self._session_factory, self._archive_execution, self._archive_retention
         )
+        self._archive_cache_families = ArchiveCacheFamilies(self._archive_invocations)
         from .archive_finalizer_work import ArchiveFinalizerWork
 
         self._archive_finalizer_work = ArchiveFinalizerWork(
@@ -2189,6 +2196,19 @@ class SqlAlchemyCollectionUploadService:
             authorized = True
 
         return guard
+
+    def _payload_cache_family(
+        self,
+        payload: ArchivePayloadInput,
+        *,
+        create: ArchiveCacheCreate,
+        grants: CacheWriteGrants,
+        validate_population: ArchiveCacheValidate,
+    ) -> ArchivePayloadMirrorFactory:
+        payload.require_pool(self._archive_inputs)
+        return self._archive_cache_families.factory(
+            payload, create=create, grants=grants, validate_population=validate_population
+        )
 
     def _payload_unit_invocation(
         self,

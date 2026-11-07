@@ -5,6 +5,7 @@ import pytest
 from tests.integration.test_collection_upload_custody_concurrency import (
     database_url as database_url,
 )
+from tests.unit.test_archive_cache_families import _service_family_units
 from tests.unit.test_archive_payload_continuation import _two_units
 from tests.unit.test_archive_payload_unit import _held_terminal, _preparation_retry
 from tests.unit.test_archive_upload_invocations import _actual_begin_receiving
@@ -94,4 +95,40 @@ def test_postgres_actual_payload_progresses_during_an_independent_held_key_const
         "key",
         database_url=database_url,
         independent=True,
+    )
+
+
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("unknown", (False, True))
+def test_postgres_service_units_share_charged_cache_family_and_durable_receiving(
+    database_url, tmp_path, monkeypatch, mode, unknown
+):
+    _service_family_units(tmp_path, monkeypatch, mode, unknown, database_url=database_url)
+
+
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+def test_postgres_service_cache_closed_receipt_retries_original_acknowledgement(
+    database_url, tmp_path, monkeypatch, mode
+):
+    _service_family_units(
+        tmp_path,
+        monkeypatch,
+        mode,
+        False,
+        database_url=database_url,
+        lose_transfer=True,
+    )
+
+
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+def test_postgres_terminal_child_receives_its_work_without_closing_unknown_cache_family(
+    database_url, tmp_path, monkeypatch, mode
+):
+    _service_family_units(
+        tmp_path,
+        monkeypatch,
+        mode,
+        True,
+        database_url=database_url,
+        terminal_unknown=True,
     )

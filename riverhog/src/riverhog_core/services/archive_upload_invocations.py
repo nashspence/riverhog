@@ -53,6 +53,34 @@ class ArchiveUploadInvocationCompletion:
 
 
 @dataclass(slots=True)
+class _PinLifetime:
+    registry: ArchiveUploadInvocationRegistry | None
+    owner: object | None
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class ArchiveUploadInvocationPin:
+    """Retain one original invocation; this grants no provider or closure right."""
+
+    key: ArchiveUploadExecutionKey
+    target_incarnation: str
+    epoch: str
+    volume_id: str
+    request_sha256: str
+    _lifetime: _PinLifetime = field(repr=False, compare=False)
+
+    @property
+    def active(self) -> bool:
+        return self._lifetime.registry is not None
+
+    def release(self, *, owner: object) -> bool:
+        registry = self._lifetime.registry
+        if registry is None:
+            return True
+        return registry._release_pin(self, owner=owner)
+
+
+@dataclass(slots=True)
 class _Construction:
     key: ArchiveUploadExecutionKey
     target: str
@@ -77,6 +105,7 @@ class _Invocation:
     terminal_received: ArchiveUploadExecutionCompletion | None = None
     succeeded: bool = False
     drained: bool = False
+    family_pin: ArchiveUploadInvocationPin | None = None
 
 
 class ArchiveUploadInvocationRegistry:
@@ -283,6 +312,75 @@ class ArchiveUploadInvocationRegistry:
         finally:
             self._lock.release()
 
+    def pin_family(
+        self,
+        request_sha256: str,
+        *,
+        key: ArchiveUploadExecutionKey,
+        target_incarnation: str,
+        epoch: str,
+        volume_id: str,
+        owner: object,
+    ) -> ArchiveUploadInvocationPin | Literal["busy", "untracked"]:
+        """Pin the first original payload before constructing its cache family."""
+        if not self._lock.acquire(blocking=False):
+            return "busy"
+        try:
+            context = self._invocations.get(request_sha256)
+            if context is None:
+                return "untracked"
+            if self._closed or context.construction.terminal_id is not None or context.drained:
+                raise Conflict("upload invocation cannot acquire a fresh family pin")
+            if context.payload is None:
+                raise Conflict("family pin requires the exact original payload input")
+            request = context.payload.request
+            if (
+                context.construction.key != key
+                or context.construction.target != target_incarnation
+                or request.epoch != epoch
+                or request.volume_id != volume_id
+            ):
+                raise Conflict("family pin differs from its original payload scope")
+            if context.family_pin is not None:
+                if context.family_pin._lifetime.owner is not owner:
+                    raise Conflict("family pin belongs to another original owner")
+                return context.family_pin
+            pin = ArchiveUploadInvocationPin(
+                key,
+                target_incarnation,
+                epoch,
+                volume_id,
+                request_sha256,
+                _PinLifetime(self, owner),
+            )
+            context.family_pin = pin
+            return pin
+        finally:
+            self._lock.release()
+
+    def _release_pin(self, pin: ArchiveUploadInvocationPin, *, owner: object) -> bool:
+        if not self._lock.acquire(blocking=False):
+            return False
+        try:
+            if pin._lifetime.registry is None:
+                return True
+            context = self._invocations.get(pin.request_sha256)
+            if (
+                context is None
+                or context.family_pin is not pin
+                or pin._lifetime.registry is not self
+                or pin._lifetime.owner is not owner
+            ):
+                raise Conflict("family pin is not this original receiving owner")
+            if self._execution.status(context.construction.key) != "untracked":
+                return False
+            context.family_pin = None
+            pin._lifetime.owner = None
+            pin._lifetime.registry = None
+            return True
+        finally:
+            self._lock.release()
+
     def retire_idle(self, completion: ArchiveUploadInvocationCompletion) -> bool:
         if not self._lock.acquire(blocking=False):
             return False
@@ -294,6 +392,7 @@ class ArchiveUploadInvocationRegistry:
                 self._closed
                 or context.construction.terminal_id is not None
                 or not context.succeeded
+                or context.family_pin is not None
                 or self._execution.status(context.construction.key) != "untracked"
                 or not context.lock.acquire(blocking=False)
             ):
@@ -322,6 +421,7 @@ class ArchiveUploadInvocationRegistry:
             if (
                 context is None
                 or self._closed
+                or context.family_pin is not None
                 or context.construction.terminal_id is not None
                 or self._execution.status(context.construction.key) != "untracked"
                 or not context.lock.acquire(blocking=False)
@@ -341,6 +441,8 @@ class ArchiveUploadInvocationRegistry:
             self._lock.release()
 
     def _remove(self, context: _Invocation) -> bool:
+        if context.family_pin is not None:
+            return False
         if not self._retention.retire(context.reservation, owner=self):
             return False
         if context.payload is not None and not context.payload.released:
@@ -452,6 +554,8 @@ class ArchiveUploadInvocationRegistry:
             if type(result) is not str or result not in {"busy", "pending", "closed"}:
                 raise ValueError("original upload actor returned invalid drainage evidence")
             with self._lock:
+                if result == "closed" and context.family_pin is not None:
+                    result = "pending"
                 if result == "closed" and not context.drained:
                     context.drained = True
                     context.construction.remaining -= 1
